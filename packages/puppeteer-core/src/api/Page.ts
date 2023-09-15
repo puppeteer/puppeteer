@@ -510,10 +510,7 @@ export interface NewDocumentScriptEvaluation {
  *
  * @public
  */
-export abstract class Page
-  extends EventEmitter<PageEvents>
-  implements AsyncDisposable, Disposable
-{
+export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * @internal
    */
@@ -2882,10 +2879,12 @@ export abstract class Page
     throw new Error('Not implemented');
   }
 
+  /** @internal */
   [Symbol.dispose](): void {
     return void this.close().catch(debugError);
   }
 
+  /** @internal */
   [Symbol.asyncDispose](): Promise<void> {
     return this.close();
   }

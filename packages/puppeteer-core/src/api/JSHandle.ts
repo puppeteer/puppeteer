@@ -21,7 +21,6 @@ import {
   type EvaluateFuncWith,
   type HandleFor,
   type HandleOr,
-  type Moveable,
 } from '../common/types.js';
 import {debugError, withSourcePuppeteerURLIfNone} from '../common/util.js';
 import {moveable, throwIfDisposed} from '../util/decorators.js';
@@ -51,9 +50,7 @@ import {type Realm} from './Realm.js';
  * @public
  */
 @moveable
-export abstract class JSHandle<T = unknown>
-  implements Disposable, AsyncDisposable, Moveable
-{
+export abstract class JSHandle<T = unknown> {
   declare move: () => this;
 
   /**
@@ -219,10 +216,12 @@ export abstract class JSHandle<T = unknown>
    */
   abstract remoteObject(): Protocol.Runtime.RemoteObject;
 
+  /** @internal */
   [Symbol.dispose](): void {
     return void this.dispose().catch(debugError);
   }
 
+  /** @internal */
   [Symbol.asyncDispose](): Promise<void> {
     return this.dispose();
   }

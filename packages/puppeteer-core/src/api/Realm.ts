@@ -101,6 +101,7 @@ export abstract class Realm implements Disposable {
   }
 
   #disposed = false;
+  /** @internal */
   [Symbol.dispose](): void {
     this.#disposed = true;
     this.taskManager.terminateAll(
