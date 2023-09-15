@@ -9,12 +9,10 @@ A Browser is created when Puppeteer connects to a browser instance, either throu
 #### Signature:
 
 ```typescript
-export declare class Browser extends EventEmitter<BrowserEvents> implements AsyncDisposable, Disposable
+export declare class Browser extends EventEmitter<BrowserEvents>
 ```
 
 **Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;[BrowserEvents](./puppeteer.browserevents.md)&gt;
-
-**Implements:** AsyncDisposable, Disposable
 
 ## Remarks
 
@@ -62,8 +60,6 @@ import puppeteer from 'puppeteer';
 
 | Method                                                                                         | Modifiers | Description                                                                                                                                                                                                            |
 | ---------------------------------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [\[Symbol.asyncDispose\]()](./puppeteer.browser._symbol.asyncdispose_.md)                      |           |                                                                                                                                                                                                                        |
-| [\[Symbol.dispose\]()](./puppeteer.browser._symbol.dispose_.md)                                |           |                                                                                                                                                                                                                        |
 | [browserContexts()](./puppeteer.browser.browsercontexts.md)                                    |           | Returns an array of all open browser contexts. In a newly created browser, this will return a single instance of [BrowserContext](./puppeteer.browsercontext.md).                                                      |
 | [close()](./puppeteer.browser.close.md)                                                        |           | Closes the browser and all of its pages (if any were opened). The [Browser](./puppeteer.browser.md) object itself is considered to be disposed and cannot be used anymore.                                             |
 | [createIncognitoBrowserContext(options)](./puppeteer.browser.createincognitobrowsercontext.md) |           | Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.                                                                                                                   |

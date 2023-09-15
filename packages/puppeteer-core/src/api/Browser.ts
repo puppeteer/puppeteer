@@ -241,10 +241,7 @@ export interface BrowserEvents extends Record<EventType, unknown> {
  *
  * @public
  */
-export class Browser
-  extends EventEmitter<BrowserEvents>
-  implements AsyncDisposable, Disposable
-{
+export class Browser extends EventEmitter<BrowserEvents> {
   /**
    * @internal
    */
@@ -506,10 +503,12 @@ export class Browser
     throw new Error('Not implemented');
   }
 
+  /** @internal */
   [Symbol.dispose](): void {
     return void this.close().catch(debugError);
   }
 
+  /** @internal */
   [Symbol.asyncDispose](): Promise<void> {
     return this.close();
   }

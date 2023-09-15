@@ -1,3 +1,18 @@
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation. All rights reserved.
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at http://www.apache.org/licenses/LICENSE-2.0
+
+THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+MERCHANTABLITY OR NON-INFRINGEMENT.
+
+See the Apache Version 2.0 License for specific language governing permissions
+and limitations under the License.
+***************************************************************************** */
+
 import 'disposablestack/auto';
 
 declare global {
@@ -21,93 +36,156 @@ declare global {
     [Symbol.asyncDispose](): PromiseLike<void>;
   }
 
-  class DisposableStack implements Disposable {
-    constructor();
+  interface SuppressedError extends Error {
+    error: any;
+    suppressed: any;
+  }
 
+  interface SuppressedErrorConstructor extends ErrorConstructor {
+    new (error: any, suppressed: any, message?: string): SuppressedError;
+    (error: any, suppressed: any, message?: string): SuppressedError;
+    readonly prototype: SuppressedError;
+  }
+  var SuppressedError: SuppressedErrorConstructor;
+
+  interface DisposableStack {
     /**
-     * Gets a value indicating whether the stack has been disposed.
+     * Returns a value indicating whether this stack has been disposed.
      */
-    get disposed(): boolean;
-
+    readonly disposed: boolean;
     /**
-     * Alias for `[Symbol.dispose]()`.
+     * Disposes each resource in the stack in the reverse order that they were added.
      */
     dispose(): void;
-
     /**
-     * Adds a resource to the top of the stack. Has no effect if provided `null`
-     * or `undefined`.
+     * Adds a disposable resource to the stack, returning the resource.
+     * @param value The resource to add. `null` and `undefined` will not be added, but will be returned.
+     * @returns The provided {@link value}.
      */
-    use<T>(value: T): T;
-
+    use<T extends Disposable | null | undefined>(value: T): T;
     /**
-     * Adds a non-disposable resource and a disposal callback to the top of the
-     * stack.
+     * Adds a value and associated disposal callback as a resource to the stack.
+     * @param value The value to add.
+     * @param onDispose The callback to use in place of a `[Symbol.dispose]()` method. Will be invoked with `value`
+     * as the first parameter.
+     * @returns The provided {@link value}.
      */
     adopt<T>(value: T, onDispose: (value: T) => void): T;
-
     /**
-     * Adds a disposal callback to the top of the stack.
+     * Adds a callback to be invoked when the stack is disposed.
      */
     defer(onDispose: () => void): void;
-
     /**
-     * Moves all resources currently in this stack into a new `DisposableStack`.
+     * Move all resources out of this stack and into a new `DisposableStack`, and marks this stack as disposed.
+     * @example
+     * ```ts
+     * class C {
+     *   #res1: Disposable;
+     *   #res2: Disposable;
+     *   #disposables: DisposableStack;
+     *   constructor() {
+     *     // stack will be disposed when exiting constructor for any reason
+     *     using stack = new DisposableStack();
+     *
+     *     // get first resource
+     *     this.#res1 = stack.use(getResource1());
+     *
+     *     // get second resource. If this fails, both `stack` and `#res1` will be disposed.
+     *     this.#res2 = stack.use(getResource2());
+     *
+     *     // all operations succeeded, move resources out of `stack` so that they aren't disposed
+     *     // when constructor exits
+     *     this.#disposables = stack.move();
+     *   }
+     *
+     *   [Symbol.dispose]() {
+     *     this.#disposables.dispose();
+     *   }
+     * }
+     * ```
      */
     move(): DisposableStack;
-
-    /**
-     * Disposes of resources within this object.
-     */
     [Symbol.dispose](): void;
+    readonly [Symbol.toStringTag]: string;
   }
 
-  class AsyncDisposableStack implements AsyncDisposable {
-    constructor();
+  interface DisposableStackConstructor {
+    new (): DisposableStack;
+    readonly prototype: DisposableStack;
+  }
+  var DisposableStack: DisposableStackConstructor;
 
+  interface AsyncDisposableStack {
     /**
-     * Gets a value indicating whether the stack has been disposed.
+     * Returns a value indicating whether this stack has been disposed.
      */
-    get disposed(): boolean;
-
+    readonly disposed: boolean;
     /**
-     * Alias for `[Symbol.dispose]()`.
+     * Disposes each resource in the stack in the reverse order that they were added.
      */
-    dispose(): void;
-
+    disposeAsync(): Promise<void>;
     /**
-     * Adds a resource to the top of the stack. Has no effect if provided `null`
-     * or `undefined`.
+     * Adds a disposable resource to the stack, returning the resource.
+     * @param value The resource to add. `null` and `undefined` will not be added, but will be returned.
+     * @returns The provided {@link value}.
      */
-    use<T>(value: T): T;
-
+    use<T extends AsyncDisposable | Disposable | null | undefined>(value: T): T;
     /**
-     * Adds a non-disposable resource and a disposal callback to the top of the
-     * stack.
+     * Adds a value and associated disposal callback as a resource to the stack.
+     * @param value The value to add.
+     * @param onDisposeAsync The callback to use in place of a `[Symbol.asyncDispose]()` method. Will be invoked with `value`
+     * as the first parameter.
+     * @returns The provided {@link value}.
      */
-    adopt<T>(value: T, onDispose: (value: T) => Promise<void>): T;
-
+    adopt<T>(
+      value: T,
+      onDisposeAsync: (value: T) => PromiseLike<void> | void
+    ): T;
     /**
-     * Adds a disposal callback to the top of the stack.
+     * Adds a callback to be invoked when the stack is disposed.
      */
-    defer(onDispose: () => Promise<void>): void;
-
+    defer(onDisposeAsync: () => PromiseLike<void> | void): void;
     /**
-     * Moves all resources currently in this stack into a new `DisposableStack`.
+     * Move all resources out of this stack and into a new `DisposableStack`, and marks this stack as disposed.
+     * @example
+     * ```ts
+     * class C {
+     *   #res1: Disposable;
+     *   #res2: Disposable;
+     *   #disposables: DisposableStack;
+     *   constructor() {
+     *     // stack will be disposed when exiting constructor for any reason
+     *     using stack = new DisposableStack();
+     *
+     *     // get first resource
+     *     this.#res1 = stack.use(getResource1());
+     *
+     *     // get second resource. If this fails, both `stack` and `#res1` will be disposed.
+     *     this.#res2 = stack.use(getResource2());
+     *
+     *     // all operations succeeded, move resources out of `stack` so that they aren't disposed
+     *     // when constructor exits
+     *     this.#disposables = stack.move();
+     *   }
+     *
+     *   [Symbol.dispose]() {
+     *     this.#disposables.dispose();
+     *   }
+     * }
+     * ```
      */
     move(): AsyncDisposableStack;
-
-    /**
-     * Disposes of resources within this object.
-     */
     [Symbol.asyncDispose](): Promise<void>;
+    readonly [Symbol.toStringTag]: string;
   }
+
+  interface AsyncDisposableStackConstructor {
+    new (): AsyncDisposableStack;
+    readonly prototype: AsyncDisposableStack;
+  }
+  var AsyncDisposableStack: AsyncDisposableStackConstructor;
 }
 
 export const Symbol = globalThis.Symbol;
-export const DisposableStack = (
-  globalThis as unknown as {DisposableStack: DisposableStack}
-).DisposableStack;
-export const AsyncDisposableStack = (
-  globalThis as unknown as {AsyncDisposableStack: AsyncDisposableStack}
-).AsyncDisposableStack;
+export const DisposableStack = globalThis.DisposableStack;
+export const AsyncDisposableStack = globalThis.AsyncDisposableStack;

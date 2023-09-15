@@ -13,10 +13,8 @@ Handles can be used as arguments for any evaluation function such as [Page.$eval
 #### Signature:
 
 ```typescript
-export declare abstract class JSHandle<T = unknown> implements Disposable, AsyncDisposable, Moveable
+export declare abstract class JSHandle<T = unknown>
 ```
-
-**Implements:** Disposable, AsyncDisposable, [Moveable](./puppeteer.moveable.md)
 
 ## Remarks
 
@@ -39,8 +37,6 @@ const windowHandle = await page.evaluateHandle(() => window);
 
 | Method                                                                       | Modifiers | Description                                                                                                                                                    |
 | ---------------------------------------------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [\[Symbol.asyncDispose\]()](./puppeteer.jshandle._symbol.asyncdispose_.md)   |           |                                                                                                                                                                |
-| [\[Symbol.dispose\]()](./puppeteer.jshandle._symbol.dispose_.md)             |           |                                                                                                                                                                |
 | [asElement()](./puppeteer.jshandle.aselement.md)                             |           | Either <code>null</code> or the handle itself if the handle is an instance of [ElementHandle](./puppeteer.elementhandle.md).                                   |
 | [dispose()](./puppeteer.jshandle.dispose.md)                                 |           | Releases the object referenced by the handle for garbage collection.                                                                                           |
 | [evaluate(pageFunction, args)](./puppeteer.jshandle.evaluate.md)             |           | Evaluates the given function with the current handle as its first argument.                                                                                    |

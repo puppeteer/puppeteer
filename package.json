@@ -175,6 +175,11 @@
     "wireit": "0.13.0",
     "zod": "3.22.2"
   },
+  "overrides": {
+    "@microsoft/api-extractor": {
+      "typescript": "$typescript"
+    }
+  },
   "workspaces": [
     "packages/*",
     "test",
