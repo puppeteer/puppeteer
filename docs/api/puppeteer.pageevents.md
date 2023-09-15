@@ -35,7 +35,7 @@ export interface PageEvents extends Record<EventType, unknown>
 | request                |           | [HTTPRequest](./puppeteer.httprequest.md)                      |             |         |
 | requestfailed          |           | [HTTPRequest](./puppeteer.httprequest.md)                      |             |         |
 | requestfinished        |           | [HTTPRequest](./puppeteer.httprequest.md)                      |             |         |
-| requestservedfromcache |           | [HTTPRequest](./puppeteer.httprequest.md)                      |             |         |
+| requestservedfromcache |           | [HTTPRequest](./puppeteer.httprequest.md) \| undefined         |             |         |
 | response               |           | [HTTPResponse](./puppeteer.httpresponse.md)                    |             |         |
 | workercreated          |           | [WebWorker](./puppeteer.webworker.md)                          |             |         |
 | workerdestroyed        |           | [WebWorker](./puppeteer.webworker.md)                          |             |         |

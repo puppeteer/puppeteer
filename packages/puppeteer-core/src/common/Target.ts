@@ -44,11 +44,11 @@ export enum InitializationStatus {
  */
 export class CdpTarget extends Target {
   #browserContext?: BrowserContext;
-  #session?: CDPSession;
+  #session?: CdpCDPSession;
   #targetInfo: Protocol.Target.TargetInfo;
   #targetManager?: TargetManager;
   #sessionFactory:
-    | ((isAutoAttachEmulated: boolean) => Promise<CDPSession>)
+    | ((isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>)
     | undefined;
 
   _initializedDeferred = Deferred.create<InitializationStatus>();
@@ -62,11 +62,11 @@ export class CdpTarget extends Target {
    */
   constructor(
     targetInfo: Protocol.Target.TargetInfo,
-    session: CDPSession | undefined,
+    session: CdpCDPSession | undefined,
     browserContext: BrowserContext | undefined,
     targetManager: TargetManager | undefined,
     sessionFactory:
-      | ((isAutoAttachEmulated: boolean) => Promise<CDPSession>)
+      | ((isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>)
       | undefined
   ) {
     super();
@@ -85,13 +85,13 @@ export class CdpTarget extends Target {
     return this.#targetInfo.subtype;
   }
 
-  _session(): CDPSession | undefined {
+  _session(): CdpCDPSession | undefined {
     return this.#session;
   }
 
   protected _sessionFactory(): (
     isAutoAttachEmulated: boolean
-  ) => Promise<CDPSession> {
+  ) => Promise<CdpCDPSession> {
     if (!this.#sessionFactory) {
       throw new Error('sessionFactory is not initialized');
     }
@@ -188,16 +188,16 @@ export class CdpTarget extends Target {
  */
 export class PageTarget extends CdpTarget {
   #defaultViewport?: Viewport;
-  protected pagePromise?: Promise<Page>;
+  protected pagePromise?: Promise<CdpPage>;
   #screenshotTaskQueue: TaskQueue;
   #ignoreHTTPSErrors: boolean;
 
   constructor(
     targetInfo: Protocol.Target.TargetInfo,
-    session: CDPSession | undefined,
+    session: CdpCDPSession | undefined,
     browserContext: BrowserContext,
     targetManager: TargetManager,
-    sessionFactory: (isAutoAttachEmulated: boolean) => Promise<CDPSession>,
+    sessionFactory: (isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>,
     ignoreHTTPSErrors: boolean,
     defaultViewport: Viewport | null,
     screenshotTaskQueue: TaskQueue

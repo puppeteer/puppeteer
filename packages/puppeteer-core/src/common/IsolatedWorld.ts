@@ -198,7 +198,6 @@ export class IsolatedWorld extends Realm {
       return;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     using _ = await this.#mutex.acquire();
     try {
       await context._client.send(

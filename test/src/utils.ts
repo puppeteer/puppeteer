@@ -19,7 +19,10 @@ import path from 'path';
 import expect from 'expect';
 import {type Frame} from 'puppeteer-core/internal/api/Frame.js';
 import {type Page} from 'puppeteer-core/internal/api/Page.js';
-import {type EventEmitter} from 'puppeteer-core/internal/common/EventEmitter.js';
+import {
+  EventSubscription,
+  type EventEmitter,
+} from 'puppeteer-core/internal/common/EventEmitter.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 
 import {compare} from './golden-utils.js';
@@ -150,10 +153,6 @@ export const waitEvent = async <T = any>(
     }
     deferred.resolve(event);
   };
-  emitter.on(eventName, handler);
-  try {
-    return await deferred.valueOrThrow();
-  } finally {
-    emitter.off(eventName, handler);
-  }
+  using _ = new EventSubscription(emitter, eventName, handler);
+  return await deferred.valueOrThrow();
 };

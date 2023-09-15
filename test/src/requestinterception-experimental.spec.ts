@@ -664,7 +664,7 @@ describe('request interception', function () {
 
       const cached: HTTPRequest[] = [];
       page.on('requestservedfromcache', r => {
-        return cached.push(r);
+        return cached.push(r!);
       });
 
       await page.reload();
@@ -684,7 +684,7 @@ describe('request interception', function () {
 
       const cached: HTTPRequest[] = [];
       page.on('requestservedfromcache', r => {
-        return cached.push(r);
+        return cached.push(r!);
       });
 
       await page.reload();

@@ -22,13 +22,14 @@ import {TargetType} from '../api/Target.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
+import {type CdpCDPSession} from './CDPSession.js';
 import {type Connection} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
 import {CdpTarget, InitializationStatus} from './Target.js';
 import {
+  TargetManagerEvent,
   type TargetFactory,
   type TargetManager,
-  TargetManagerEvent,
   type TargetManagerEvents,
 } from './TargetManager.js';
 import {debugError} from './util.js';
@@ -202,7 +203,7 @@ export class ChromeTargetManager
     return result;
   }
 
-  #setupAttachmentListeners(session: CDPSession | Connection): void {
+  #setupAttachmentListeners(session: CdpCDPSession | Connection): void {
     const listener = (event: Protocol.Target.AttachedToTargetEvent) => {
       void this.#onAttachedToTarget(session, event);
     };
@@ -327,7 +328,7 @@ export class ChromeTargetManager
   };
 
   #onAttachedToTarget = async (
-    parentSession: Connection | CDPSession,
+    parentSession: Connection | CdpCDPSession,
     event: Protocol.Target.AttachedToTargetEvent
   ) => {
     const targetInfo = event.targetInfo;
@@ -382,7 +383,7 @@ export class ChromeTargetManager
       ? this.#attachedTargetsByTargetId.get(targetInfo.targetId)!
       : this.#targetFactory(
           targetInfo,
-          session,
+          session as CdpCDPSession,
           parentSession instanceof CDPSession ? parentSession : undefined
         );
 
@@ -397,7 +398,7 @@ export class ChromeTargetManager
       target._initialize();
     }
 
-    this.#setupAttachmentListeners(session);
+    this.#setupAttachmentListeners(session as CdpCDPSession);
 
     if (isExistingTarget) {
       this.#attachedTargetsBySessionId.set(

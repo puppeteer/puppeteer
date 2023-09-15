@@ -216,8 +216,8 @@ export class EventEmitter<Events extends Record<EventType, unknown>>
  */
 export class EventSubscription<
   Target extends CommonEventEmitter<Record<Type, Event>>,
-  Type extends EventType = EventType,
-  Event = unknown,
+  Type extends EventType,
+  Event,
 > {
   #target: Target;
   #type: Type;

@@ -18,7 +18,7 @@ import expect from 'expect';
 import {TimeoutError} from 'puppeteer-core';
 import {
   Locator,
-  LocatorEmittedEvents,
+  LocatorEvent,
 } from 'puppeteer-core/internal/api/locators/locators.js';
 import sinon from 'sinon';
 
@@ -38,7 +38,7 @@ describe('Locator', function () {
     await page
       .mainFrame()
       .locator('button')
-      .on(LocatorEmittedEvents.Action, () => {
+      .on(LocatorEvent.Action, () => {
         willClick = true;
       })
       .click();
@@ -65,7 +65,7 @@ describe('Locator', function () {
       .setVisibility(null)
       .setWaitForEnabled(false)
       .setWaitForStableBoundingBox(false)
-      .on(LocatorEmittedEvents.Action, () => {
+      .on(LocatorEvent.Action, () => {
         willClick = true;
       })
       .click();
@@ -88,7 +88,7 @@ describe('Locator', function () {
       let willClick = false;
       await page
         .locator('button')
-        .on(LocatorEmittedEvents.Action, () => {
+        .on(LocatorEvent.Action, () => {
           willClick = true;
         })
         .click();
@@ -110,7 +110,7 @@ describe('Locator', function () {
       let clicked = false;
       await page
         .locator('::-p-text(test), ::-p-xpath(/button)')
-        .on(LocatorEmittedEvents.Action, () => {
+        .on(LocatorEvent.Action, () => {
           clicked = true;
         })
         .click();
@@ -304,7 +304,7 @@ describe('Locator', function () {
       let willClick = false;
       await frame
         .locator('button')
-        .on(LocatorEmittedEvents.Action, () => {
+        .on(LocatorEvent.Action, () => {
           willClick = true;
         })
         .click();
@@ -328,7 +328,7 @@ describe('Locator', function () {
       let hovered = false;
       await page
         .locator('button')
-        .on(LocatorEmittedEvents.Action, () => {
+        .on(LocatorEvent.Action, () => {
           hovered = true;
         })
         .hover();
@@ -354,7 +354,7 @@ describe('Locator', function () {
       let scrolled = false;
       await page
         .locator('div')
-        .on(LocatorEmittedEvents.Action, () => {
+        .on(LocatorEvent.Action, () => {
           scrolled = true;
         })
         .scroll({
@@ -380,7 +380,7 @@ describe('Locator', function () {
       let filled = false;
       await page
         .locator('textarea')
-        .on(LocatorEmittedEvents.Action, () => {
+        .on(LocatorEvent.Action, () => {
           filled = true;
         })
         .fill('test');
@@ -404,7 +404,7 @@ describe('Locator', function () {
       let filled = false;
       await page
         .locator('select')
-        .on(LocatorEmittedEvents.Action, () => {
+        .on(LocatorEvent.Action, () => {
           filled = true;
         })
         .fill('value2');

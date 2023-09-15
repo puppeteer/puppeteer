@@ -20,14 +20,13 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {
   Browser,
-  type BrowserCloseCallback,
-  type BrowserContextOptions,
   BrowserEvent,
+  type BrowserCloseCallback,
 } from '../../api/Browser.js';
 import {BrowserContextEvent} from '../../api/BrowserContext.js';
 import {type Page} from '../../api/Page.js';
 import {type Target} from '../../api/Target.js';
-import {type Handler} from '../EventEmitter.js';
+import {EventSubscription} from '../EventEmitter.js';
 import {type Viewport} from '../PuppeteerViewport.js';
 
 import {BidiBrowserContext} from './BrowserContext.js';
@@ -122,17 +121,7 @@ export class BidiBrowser extends Browser {
   #targets = new Map<string, BidiTarget>();
   #contexts: BidiBrowserContext[] = [];
   #browserTarget: BiDiBrowserTarget;
-
-  #connectionEventHandlers = new Map<
-    Bidi.BrowsingContextEvent['method'],
-    Handler<any>
-  >([
-    ['browsingContext.contextCreated', this.#onContextCreated.bind(this)],
-    ['browsingContext.contextDestroyed', this.#onContextDestroyed.bind(this)],
-    ['browsingContext.domContentLoaded', this.#onContextDomLoaded.bind(this)],
-    ['browsingContext.fragmentNavigated', this.#onContextNavigation.bind(this)],
-    ['browsingContext.navigationStarted', this.#onContextNavigation.bind(this)],
-  ]);
+  #subscriptions = new DisposableStack();
 
   constructor(
     opts: Options & {
@@ -159,12 +148,44 @@ export class BidiBrowser extends Browser {
     this.#browserTarget = new BiDiBrowserTarget(this.#defaultContext);
     this.#contexts.push(this.#defaultContext);
 
-    for (const [eventName, handler] of this.#connectionEventHandlers) {
-      this.#connection.on(eventName, handler);
-    }
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#connection,
+        'browsingContext.contextCreated',
+        this.#onContextCreated.bind(this)
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#connection,
+        'browsingContext.contextDestroyed',
+        this.#onContextDestroyed.bind(this)
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#connection,
+        'browsingContext.domContentLoaded',
+        this.#onContextDomLoaded.bind(this)
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#connection,
+        'browsingContext.fragmentNavigated',
+        this.#onContextNavigation.bind(this)
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#connection,
+        'browsingContext.navigationStarted',
+        this.#onContextNavigation.bind(this)
+      )
+    );
   }
 
-  #onContextDomLoaded(event: Bidi.BrowsingContext.Info) {
+  #onContextDomLoaded(event: Bidi.BrowsingContext.NavigationInfo) {
     const target = this.#targets.get(event.context);
     if (target) {
       this.emit(BrowserEvent.TargetChanged, target);
@@ -239,9 +260,7 @@ export class BidiBrowser extends Browser {
   }
 
   override async close(): Promise<void> {
-    for (const [eventName, handler] of this.#connectionEventHandlers) {
-      this.#connection.off(eventName, handler);
-    }
+    this.#subscriptions.dispose();
     if (this.#connection.closed) {
       return;
     }
@@ -258,9 +277,7 @@ export class BidiBrowser extends Browser {
     return this.#process ?? null;
   }
 
-  override async createIncognitoBrowserContext(
-    _options?: BrowserContextOptions
-  ): Promise<BidiBrowserContext> {
+  override async createIncognitoBrowserContext(): Promise<BidiBrowserContext> {
     // TODO: implement incognito context https://github.com/w3c/webdriver-bidi/issues/289.
     const context = new BidiBrowserContext(this, {
       defaultViewport: this.#defaultViewport,

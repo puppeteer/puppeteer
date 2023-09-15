@@ -442,7 +442,7 @@ export interface PageEvents extends Record<EventType, unknown> {
   [PageEvent.Response]: HTTPResponse;
   [PageEvent.RequestFailed]: HTTPRequest;
   [PageEvent.RequestFinished]: HTTPRequest;
-  [PageEvent.RequestServedFromCache]: HTTPRequest;
+  [PageEvent.RequestServedFromCache]: HTTPRequest | undefined;
   [PageEvent.WorkerCreated]: WebWorker;
   [PageEvent.WorkerDestroyed]: WebWorker;
 }

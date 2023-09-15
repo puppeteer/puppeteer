@@ -16,8 +16,7 @@
 
 import {type Protocol} from 'devtools-protocol';
 
-import {type CDPSession} from '../api/CDPSession.js';
-
+import {type CdpCDPSession} from './CDPSession.js';
 import {type EventEmitter, type EventType} from './EventEmitter.js';
 import {type CdpTarget} from './Target.js';
 
@@ -26,8 +25,8 @@ import {type CdpTarget} from './Target.js';
  */
 export type TargetFactory = (
   targetInfo: Protocol.Target.TargetInfo,
-  session?: CDPSession,
-  parentSession?: CDPSession
+  session?: CdpCDPSession,
+  parentSession?: CdpCDPSession
 ) => CdpTarget;
 
 /**

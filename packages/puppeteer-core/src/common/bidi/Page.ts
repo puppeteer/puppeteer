@@ -21,11 +21,11 @@ import type Protocol from 'devtools-protocol';
 
 import {type CDPSession} from '../../api/CDPSession.js';
 import {
+  Page,
+  PageEvent,
   type GeolocationOptions,
   type MediaFeature,
   type NewDocumentScriptEvaluation,
-  Page,
-  PageEvent,
   type ScreenshotOptions,
   type WaitForOptions,
 } from '../../api/Page.js';
@@ -39,7 +39,7 @@ import {
 import {Coverage} from '../Coverage.js';
 import {EmulationManager as CdpEmulationManager} from '../EmulationManager.js';
 import {TargetCloseError} from '../Errors.js';
-import {type Handler} from '../EventEmitter.js';
+import {EventSubscription} from '../EventEmitter.js';
 import {FrameTree} from '../FrameTree.js';
 import {NetworkManagerEvent} from '../NetworkManager.js';
 import {type PDFOptions} from '../PDFOptions.js';
@@ -59,9 +59,9 @@ import {
 import {type BidiBrowser} from './Browser.js';
 import {type BidiBrowserContext} from './BrowserContext.js';
 import {
-  type BrowsingContext,
   BrowsingContextEvent,
   CdpSessionWrapper,
+  type BrowsingContext,
 } from './BrowsingContext.js';
 import {type BidiConnection} from './Connection.js';
 import {BidiDialog} from './Dialog.js';
@@ -85,56 +85,7 @@ export class BidiPage extends Page {
   #networkManager: BidiNetworkManager;
   #viewport: Viewport | null = null;
   #closedDeferred = Deferred.create<TargetCloseError>();
-  #subscribedEvents = new Map<Bidi.Event['method'], Handler<any>>([
-    ['log.entryAdded', this.#onLogEntryAdded.bind(this)],
-    ['browsingContext.load', this.#onFrameLoaded.bind(this)],
-    [
-      'browsingContext.fragmentNavigated',
-      this.#onFrameFragmentNavigated.bind(this),
-    ],
-    [
-      'browsingContext.domContentLoaded',
-      this.#onFrameDOMContentLoaded.bind(this),
-    ],
-    ['browsingContext.userPromptOpened', this.#onDialog.bind(this)],
-  ]);
-  #networkManagerEvents = Object.freeze([
-    [
-      NetworkManagerEvent.Request,
-      (request: BidiHTTPRequest) => {
-        this.emit(PageEvent.Request, request);
-      },
-    ],
-    [
-      NetworkManagerEvent.RequestServedFromCache,
-      (request: BidiHTTPRequest) => {
-        this.emit(PageEvent.RequestServedFromCache, request);
-      },
-    ],
-    [
-      NetworkManagerEvent.RequestFailed,
-      (request: BidiHTTPRequest) => {
-        this.emit(PageEvent.RequestFailed, request);
-      },
-    ],
-    [
-      NetworkManagerEvent.RequestFinished,
-      (request: BidiHTTPRequest) => {
-        this.emit(PageEvent.RequestFinished, request);
-      },
-    ],
-    [
-      NetworkManagerEvent.Response,
-      (response: BidiHTTPResponse) => {
-        this.emit(PageEvent.Response, response);
-      },
-    ],
-  ] as const);
-
-  #browsingContextEvents = new Map<symbol, Handler<any>>([
-    [BrowsingContextEvent.Created, this.#onContextCreated.bind(this)],
-    [BrowsingContextEvent.Destroyed, this.#onContextDestroyed.bind(this)],
-  ]);
+  #subscriptions = new DisposableStack();
   #tracing: Tracing;
   #coverage: Coverage;
   #cdpEmulationManager: CdpEmulationManager;
@@ -158,20 +109,103 @@ export class BidiPage extends Page {
     this.#browserContext = browserContext;
     this.#connection = browsingContext.connection;
 
-    for (const [event, subscriber] of this.#browsingContextEvents) {
-      this.#browsingContext.on(event, subscriber);
-    }
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#browsingContext,
+        BrowsingContextEvent.Created,
+        this.#onContextCreated.bind(this)
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#browsingContext,
+        BrowsingContextEvent.Destroyed,
+        this.#onContextDestroyed.bind(this)
+      )
+    );
 
     this.#networkManager = new BidiNetworkManager(this.#connection, this);
 
-    for (const [event, subscriber] of this.#subscribedEvents) {
-      this.#connection.on(event, subscriber);
-    }
-
-    for (const [event, subscriber] of this.#networkManagerEvents) {
-      // TODO: remove any
-      this.#networkManager.on(event, subscriber as any);
-    }
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#connection,
+        'log.entryAdded',
+        this.#onLogEntryAdded.bind(this)
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#connection,
+        'browsingContext.load',
+        this.#onFrameLoaded.bind(this)
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#connection,
+        'browsingContext.fragmentNavigated',
+        this.#onFrameFragmentNavigated.bind(this)
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#connection,
+        'browsingContext.domContentLoaded',
+        this.#onFrameDOMContentLoaded.bind(this)
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#connection,
+        'browsingContext.userPromptOpened',
+        this.#onDialog.bind(this)
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#networkManager,
+        NetworkManagerEvent.Request,
+        (request: BidiHTTPRequest) => {
+          this.emit(PageEvent.Request, request);
+        }
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#networkManager,
+        NetworkManagerEvent.RequestServedFromCache,
+        (request: BidiHTTPRequest) => {
+          this.emit(PageEvent.RequestServedFromCache, request);
+        }
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#networkManager,
+        NetworkManagerEvent.RequestFailed,
+        (request: BidiHTTPRequest) => {
+          this.emit(PageEvent.RequestFailed, request);
+        }
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#networkManager,
+        NetworkManagerEvent.RequestFinished,
+        (request: BidiHTTPRequest) => {
+          this.emit(PageEvent.RequestFinished, request);
+        }
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#networkManager,
+        NetworkManagerEvent.Response,
+        (response: BidiHTTPResponse) => {
+          this.emit(PageEvent.Response, response);
+        }
+      )
+    );
 
     const frame = new BidiFrame(
       this,
@@ -407,6 +441,7 @@ export class BidiPage extends Page {
     });
 
     this.emit(PageEvent.Close, undefined);
+    this.#subscriptions.dispose();
     this.removeAllListeners();
   }
 

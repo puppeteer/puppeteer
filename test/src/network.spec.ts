@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import assert from 'assert';
 import fs from 'fs';
 import {type ServerResponse} from 'http';
 import path from 'path';
@@ -486,6 +487,7 @@ describe('network', function () {
 
       const cached: string[] = [];
       page.on('requestservedfromcache', r => {
+        assert(r);
         return cached.push(r.url().split('/').pop()!);
       });
 

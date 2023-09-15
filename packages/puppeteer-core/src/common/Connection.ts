@@ -387,7 +387,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
   async _createSession(
     targetInfo: Protocol.Target.TargetInfo,
     isAutoAttachEmulated = true
-  ): Promise<CDPSession> {
+  ): Promise<CdpCDPSession> {
     if (!isAutoAttachEmulated) {
       this.#manuallyAttached.add(targetInfo.targetId);
     }

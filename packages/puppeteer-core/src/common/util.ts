@@ -362,7 +362,6 @@ export async function waitForEvent<T>(
     message: `Timeout exceeded while waiting for event ${String(eventName)}`,
     timeout,
   });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   using _ = new EventSubscription(emitter, eventName, async (event: any) => {
     if (await predicate(event)) {
       deferred.resolve(event);

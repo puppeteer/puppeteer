@@ -52,6 +52,7 @@ import {type DeviceRequestPrompt} from './DeviceRequestPrompt.js';
 import {CdpDialog} from './Dialog.js';
 import {EmulationManager} from './EmulationManager.js';
 import {TargetCloseError} from './Errors.js';
+import {EventSubscription} from './EventEmitter.js';
 import {FileChooser} from './FileChooser.js';
 import {type CdpFrame} from './Frame.js';
 import {FrameManager, FrameManagerEvent} from './FrameManager.js';
@@ -92,7 +93,7 @@ import {WebWorker} from './WebWorker.js';
  */
 export class CdpPage extends Page {
   static async _create(
-    client: CDPSession,
+    client: CdpCDPSession,
     target: CdpTarget,
     ignoreHTTPSErrors: boolean,
     defaultViewport: Viewport | null,
@@ -120,7 +121,7 @@ export class CdpPage extends Page {
   }
 
   #closed = false;
-  #client: CDPSession;
+  #client: CdpCDPSession;
   #tabSession: CDPSession | undefined;
   #target: CdpTarget;
   #keyboard: CdpKeyboard;
@@ -141,94 +142,10 @@ export class CdpPage extends Page {
   #sessionCloseDeferred = Deferred.create<TargetCloseError>();
   #serviceWorkerBypassed = false;
   #userDragInterceptionEnabled = false;
-
-  #frameManagerHandlers = Object.freeze([
-    [
-      FrameManagerEvent.FrameAttached,
-      (frame: CdpFrame) => {
-        this.emit(PageEvent.FrameAttached, frame);
-      },
-    ],
-    [
-      FrameManagerEvent.FrameDetached,
-      (frame: CdpFrame) => {
-        this.emit(PageEvent.FrameDetached, frame);
-      },
-    ],
-    [
-      FrameManagerEvent.FrameNavigated,
-      (frame: CdpFrame) => {
-        this.emit(PageEvent.FrameNavigated, frame);
-      },
-    ],
-  ] as const);
-
-  #networkManagerHandlers = Object.freeze([
-    [
-      NetworkManagerEvent.Request,
-      (request: HTTPRequest) => {
-        this.emit(PageEvent.Request, request);
-      },
-    ],
-    [
-      NetworkManagerEvent.RequestServedFromCache,
-      (request: HTTPRequest) => {
-        this.emit(PageEvent.RequestServedFromCache, request);
-      },
-    ],
-    [
-      NetworkManagerEvent.Response,
-      (response: HTTPResponse) => {
-        this.emit(PageEvent.Response, response);
-      },
-    ],
-    [
-      NetworkManagerEvent.RequestFailed,
-      (request: HTTPRequest) => {
-        this.emit(PageEvent.RequestFailed, request);
-      },
-    ],
-    [
-      NetworkManagerEvent.RequestFinished,
-      (request: HTTPRequest) => {
-        this.emit(PageEvent.RequestFinished, request);
-      },
-    ],
-  ] as const);
-
-  #sessionHandlers = Object.freeze([
-    [
-      CDPSessionEvent.Disconnected,
-      () => {
-        this.#sessionCloseDeferred.resolve(
-          new TargetCloseError('Target closed')
-        );
-      },
-    ],
-    [
-      'Page.domContentEventFired',
-      () => {
-        return this.emit(PageEvent.DOMContentLoaded, undefined);
-      },
-    ],
-    [
-      'Page.loadEventFired',
-      () => {
-        return this.emit(PageEvent.Load, undefined);
-      },
-    ],
-    ['Runtime.consoleAPICalled', this.#onConsoleAPI.bind(this)],
-    ['Runtime.bindingCalled', this.#onBindingCalled.bind(this)],
-    ['Page.javascriptDialogOpening', this.#onDialog.bind(this)],
-    ['Runtime.exceptionThrown', this.#handleException.bind(this)],
-    ['Inspector.targetCrashed', this.#onTargetCrashed.bind(this)],
-    ['Performance.metrics', this.#emitMetrics.bind(this)],
-    ['Log.entryAdded', this.#onLogEntryAdded.bind(this)],
-    ['Page.fileChooserOpened', this.#onFileChooser.bind(this)],
-  ] as const);
+  #subscriptions = new DisposableStack();
 
   constructor(
-    client: CDPSession,
+    client: CdpCDPSession,
     target: CdpTarget,
     ignoreHTTPSErrors: boolean,
     screenshotTaskQueue: TaskQueue
@@ -253,68 +170,225 @@ export class CdpPage extends Page {
     this.#screenshotTaskQueue = screenshotTaskQueue;
     this.#viewport = null;
 
-    this.#setupEventListeners();
+    this.once(PageEvent.Close, () => {
+      this.#subscriptions.dispose();
+    });
 
-    this.#tabSession?.on(CDPSessionEvent.Swapped, async newSession => {
-      this.#client = newSession;
-      assert(
-        this.#client instanceof CdpCDPSession,
-        'CDPSession is not instance of CDPSessionImpl'
-      );
-      this.#target = this.#client._target();
-      assert(this.#target, 'Missing target on swap');
-      this.#keyboard.updateClient(newSession);
-      this.#mouse.updateClient(newSession);
-      this.#touchscreen.updateClient(newSession);
-      this.#accessibility.updateClient(newSession);
-      this.#emulationManager.updateClient(newSession);
-      this.#tracing.updateClient(newSession);
-      this.#coverage.updateClient(newSession);
-      await this.#frameManager.swapFrameTree(newSession);
-      this.#setupEventListeners();
-    });
-    this.#tabSession?.on(CDPSessionEvent.Ready, session => {
-      assert(session instanceof CdpCDPSession);
-      if (session._target()._subtype() !== 'prerender') {
-        return;
-      }
-      this.#frameManager.registerSpeculativeSession(session).catch(debugError);
-      this.#emulationManager
-        .registerSpeculativeSession(session)
-        .catch(debugError);
-    });
+    if (this.#tabSession) {
+      this.#tabSession.on(CDPSessionEvent.Swapped, async newSession => {
+        assert(
+          newSession instanceof CdpCDPSession,
+          'CDPSession is not instance of CDPSessionImpl'
+        );
+        this.#client = newSession;
+
+        this.#target = this.#client._target();
+        assert(this.#target, 'Missing target on swap');
+        this.#keyboard.updateClient(this.#client);
+        this.#mouse.updateClient(this.#client);
+        this.#touchscreen.updateClient(this.#client);
+        this.#accessibility.updateClient(this.#client);
+        this.#emulationManager.updateClient(this.#client);
+        this.#tracing.updateClient(this.#client);
+        this.#coverage.updateClient(this.#client);
+        await this.#frameManager.swapFrameTree(this.#client);
+        this.#updateSubscriptions();
+      });
+      this.#tabSession.on(CDPSessionEvent.Ready, session => {
+        assert(session instanceof CdpCDPSession);
+        if (session._target()._subtype() !== 'prerender') {
+          return;
+        }
+        this.#frameManager
+          .registerSpeculativeSession(session)
+          .catch(debugError);
+        this.#emulationManager
+          .registerSpeculativeSession(session)
+          .catch(debugError);
+      });
+    }
   }
 
-  #setupEventListeners() {
-    this.#client.on(CDPSessionEvent.Ready, this.#onAttachedToTarget);
-
-    this.#target
-      ._targetManager()
-      .on(TargetManagerEvent.TargetGone, this.#onDetachedFromTarget);
-
-    for (const [eventName, handler] of this.#frameManagerHandlers) {
-      this.#frameManager.on(eventName, handler);
+  #updateSubscriptions() {
+    if (!this.#subscriptions.disposed) {
+      this.#subscriptions.dispose();
+      this.#subscriptions = new DisposableStack();
     }
 
-    for (const [eventName, handler] of this.#networkManagerHandlers) {
-      // TODO: Remove any.
-      this.#frameManager.networkManager.on(eventName, handler as any);
-    }
+    // Session subscriptions
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#client,
+        CDPSessionEvent.Ready,
+        this.#onAttachedToTarget
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(this.#client, CDPSessionEvent.Disconnected, () => {
+        this.#sessionCloseDeferred.resolve(
+          new TargetCloseError('Target closed')
+        );
+      })
+    );
+    this.#subscriptions.use(
+      new EventSubscription(this.#client, 'Page.domContentEventFired', () => {
+        return this.emit(PageEvent.DOMContentLoaded, undefined);
+      })
+    );
+    this.#subscriptions.use(
+      new EventSubscription(this.#client, 'Page.loadEventFired', () => {
+        return this.emit(PageEvent.Load, undefined);
+      })
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#client,
+        'Runtime.consoleAPICalled',
+        this.#onConsoleAPI.bind(this)
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#client,
+        'Runtime.bindingCalled',
+        this.#onBindingCalled.bind(this)
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#client,
+        'Page.javascriptDialogOpening',
+        this.#onDialog.bind(this)
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#client,
+        'Runtime.exceptionThrown',
+        this.#handleException.bind(this)
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#client,
+        'Inspector.targetCrashed',
+        this.#onTargetCrashed.bind(this)
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#client,
+        'Performance.metrics',
+        this.#emitMetrics.bind(this)
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#client,
+        'Log.entryAdded',
+        this.#onLogEntryAdded.bind(this)
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#client,
+        'Page.fileChooserOpened',
+        this.#onFileChooser.bind(this)
+      )
+    );
 
-    for (const [eventName, handler] of this.#sessionHandlers) {
-      // TODO: Remove any.
-      this.#client.on(eventName, handler as any);
-    }
+    // Target manager subscriptions
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#target._targetManager(),
+        TargetManagerEvent.TargetGone,
+        this.#onDetachedFromTarget
+      )
+    );
+
+    // Frame manager subscriptions
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#frameManager,
+        FrameManagerEvent.FrameAttached,
+        (frame: CdpFrame) => {
+          this.emit(PageEvent.FrameAttached, frame);
+        }
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#frameManager,
+        FrameManagerEvent.FrameDetached,
+        (frame: CdpFrame) => {
+          this.emit(PageEvent.FrameDetached, frame);
+        }
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#frameManager,
+        FrameManagerEvent.FrameNavigated,
+        (frame: CdpFrame) => {
+          this.emit(PageEvent.FrameNavigated, frame);
+        }
+      )
+    );
+
+    // Network manager subscriptions
+    const {networkManager} = this.#frameManager;
+    this.#subscriptions.use(
+      new EventSubscription(
+        networkManager,
+        NetworkManagerEvent.Request,
+        (request: HTTPRequest) => {
+          this.emit(PageEvent.Request, request);
+        }
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        networkManager,
+        NetworkManagerEvent.RequestServedFromCache,
+        (request: HTTPRequest | undefined) => {
+          this.emit(PageEvent.RequestServedFromCache, request);
+        }
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        networkManager,
+        NetworkManagerEvent.Response,
+        (response: HTTPResponse) => {
+          this.emit(PageEvent.Response, response);
+        }
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        networkManager,
+        NetworkManagerEvent.RequestFailed,
+        (request: HTTPRequest) => {
+          this.emit(PageEvent.RequestFailed, request);
+        }
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        networkManager,
+        NetworkManagerEvent.RequestFinished,
+        (request: HTTPRequest) => {
+          this.emit(PageEvent.RequestFinished, request);
+        }
+      )
+    );
 
     this.#target._isClosedDeferred
       .valueOrThrow()
       .then(() => {
-        this.#client.off(CDPSessionEvent.Ready, this.#onAttachedToTarget);
-
-        this.#target
-          ._targetManager()
-          .off(TargetManagerEvent.TargetGone, this.#onDetachedFromTarget);
-
+        if (this.#closed) {
+          return;
+        }
         this.emit(PageEvent.Close, undefined);
         this.#closed = true;
       })
