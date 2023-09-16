@@ -18,7 +18,6 @@ import {type Protocol} from 'devtools-protocol';
 
 import {type Frame} from '../api/Frame.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
-import {type WaitForSelectorOptions} from '../common/IsolatedWorld.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {
   type ElementFor,
@@ -39,7 +38,7 @@ import {
   type MouseClickOptions,
 } from './Input.js';
 import {JSHandle} from './JSHandle.js';
-import {type ScreenshotOptions} from './Page.js';
+import {type ScreenshotOptions, type WaitForSelectorOptions} from './Page.js';
 
 /**
  * @public

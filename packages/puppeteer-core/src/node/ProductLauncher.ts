@@ -27,19 +27,19 @@ import {
 } from '@puppeteer/browsers';
 
 import {type Browser, type BrowserCloseCallback} from '../api/Browser.js';
-import {CdpBrowser} from '../common/Browser.js';
-import {Connection} from '../common/Connection.js';
+import {CdpBrowser} from '../cdp/Browser.js';
+import {Connection} from '../cdp/Connection.js';
 import {TimeoutError} from '../common/Errors.js';
-import {NodeWebSocketTransport as WebSocketTransport} from '../common/NodeWebSocketTransport.js';
 import {type Product} from '../common/Product.js';
-import {type Viewport} from '../common/PuppeteerViewport.js';
 import {debugError} from '../common/util.js';
+import {type Viewport} from '../common/Viewport.js';
 
 import {
   type BrowserLaunchArgumentOptions,
   type ChromeReleaseChannel,
   type PuppeteerNodeLaunchOptions,
 } from './LaunchOptions.js';
+import {NodeWebSocketTransport as WebSocketTransport} from './NodeWebSocketTransport.js';
 import {PipeTransport} from './PipeTransport.js';
 import {type PuppeteerNode} from './PuppeteerNode.js';
 
@@ -335,9 +335,7 @@ export class ProductLauncher {
     }
   ): Promise<Browser> {
     // TODO: use other options too.
-    const BiDi = await import(
-      /* webpackIgnore: true */ '../common/bidi/bidi.js'
-    );
+    const BiDi = await import(/* webpackIgnore: true */ '../bidi/bidi.js');
     const bidiConnection = await BiDi.connectBidiOverCdp(connection);
     return await BiDi.BidiBrowser.create({
       connection: bidiConnection,
@@ -368,9 +366,7 @@ export class ProductLauncher {
         opts.timeout
       )) + '/session';
     const transport = await WebSocketTransport.create(browserWSEndpoint);
-    const BiDi = await import(
-      /* webpackIgnore: true */ '../common/bidi/bidi.js'
-    );
+    const BiDi = await import(/* webpackIgnore: true */ '../bidi/bidi.js');
     const bidiConnection = new BiDi.BidiConnection(
       browserWSEndpoint,
       transport,

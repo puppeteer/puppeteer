@@ -18,17 +18,18 @@ import type Protocol from 'devtools-protocol';
 
 import {type ClickOptions, type ElementHandle} from '../api/ElementHandle.js';
 import {type HTTPResponse} from '../api/HTTPResponse.js';
-import {type Page, type WaitTimeoutOptions} from '../api/Page.js';
-import {type DeviceRequestPrompt} from '../common/DeviceRequestPrompt.js';
+import {
+  type Page,
+  type WaitForSelectorOptions,
+  type WaitTimeoutOptions,
+} from '../api/Page.js';
+import {type DeviceRequestPrompt} from '../cdp/DeviceRequestPrompt.js';
+import {type IsolatedWorldChart} from '../cdp/IsolatedWorld.js';
+import {type PuppeteerLifeCycleEvent} from '../cdp/LifecycleWatcher.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {transposeIterableHandle} from '../common/HandleIterator.js';
-import {
-  type IsolatedWorldChart,
-  type WaitForSelectorOptions,
-} from '../common/IsolatedWorld.js';
 import {LazyArg} from '../common/LazyArg.js';
-import {type PuppeteerLifeCycleEvent} from '../common/LifecycleWatcher.js';
 import {
   type Awaitable,
   type EvaluateFunc,

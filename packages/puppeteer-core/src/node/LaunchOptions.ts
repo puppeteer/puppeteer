@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {type BrowserConnectOptions} from '../common/BrowserConnector.js';
+import {type BrowserConnectOptions} from '../cdp/BrowserConnector.js';
 import {type Product} from '../common/Product.js';
 
 /**

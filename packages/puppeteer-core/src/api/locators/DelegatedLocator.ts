@@ -15,7 +15,7 @@
  */
 
 import {type Observable} from '../../../third_party/rxjs/rxjs.js';
-import {type HandleFor} from '../../common/common.js';
+import {type HandleFor} from '../../common/types.js';
 
 import {Locator, type VisibilityOption} from './locators.js';
 

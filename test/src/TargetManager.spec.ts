@@ -15,7 +15,7 @@
  */
 
 import expect from 'expect';
-import {type CdpBrowser} from 'puppeteer-core/internal/common/Browser.js';
+import {type CdpBrowser} from 'puppeteer-core/internal/cdp/Browser.js';
 
 import {getTestState, launch} from './mocha-utils.js';
 import {attachFrame} from './utils.js';

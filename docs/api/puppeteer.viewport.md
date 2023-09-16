@@ -4,8 +4,6 @@ sidebar_label: Viewport
 
 # Viewport interface
 
-Sets the viewport of the page.
-
 #### Signature:
 
 ```typescript

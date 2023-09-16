@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {type Viewport} from './PuppeteerViewport.js';
+import {type Viewport} from './Viewport.js';
 
 /**
  * @public
