@@ -1369,6 +1369,7 @@ describe('Page', function () {
         page.goto(server.PREFIX + '/error.html'),
       ]);
       expect(error.message).toContain('Fancy');
+      expect(error.stack).toContain('error.html:130');
     });
   });
 
