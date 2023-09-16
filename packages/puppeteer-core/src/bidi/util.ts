@@ -19,7 +19,7 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {debug} from '../common/Debug.js';
 import {PuppeteerURL} from '../common/util.js';
 
-import {type Realm} from './Realm.js';
+import {type BidiRealm} from './Realm.js';
 import {BidiSerializer} from './Serializer.js';
 
 /**
@@ -31,7 +31,7 @@ export const debugError = debug('puppeteer:error');
  * @internal
  */
 export async function releaseReference(
-  client: Realm,
+  client: BidiRealm,
   remoteReference: Bidi.Script.RemoteReference
 ): Promise<void> {
   if (!remoteReference.handle) {

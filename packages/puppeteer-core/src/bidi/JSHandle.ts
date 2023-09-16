@@ -15,12 +15,11 @@
  */
 
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
-import type Protocol from 'devtools-protocol';
 
 import {type ElementHandle} from '../api/ElementHandle.js';
 import {JSHandle} from '../api/JSHandle.js';
 
-import {type Realm} from './Realm.js';
+import {type BidiRealm} from './Realm.js';
 import {type Sandbox} from './Sandbox.js';
 import {BidiSerializer} from './Serializer.js';
 import {releaseReference} from './util.js';
@@ -39,7 +38,7 @@ export class BidiJSHandle<T = unknown> extends JSHandle<T> {
     this.#remoteValue = remoteValue;
   }
 
-  context(): Realm {
+  context(): BidiRealm {
     return this.realm.environment.context();
   }
 
@@ -105,7 +104,7 @@ export class BidiJSHandle<T = unknown> extends JSHandle<T> {
     return this.#remoteValue;
   }
 
-  override remoteObject(): Protocol.Runtime.RemoteObject {
+  override remoteObject(): never {
     throw new Error('Not available in WebDriver BiDi');
   }
 }

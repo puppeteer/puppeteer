@@ -16,7 +16,7 @@ import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
 import {type BidiConnection} from './Connection.js';
-import {Realm} from './Realm.js';
+import {BidiRealm} from './Realm.js';
 import {debugError} from './util.js';
 
 /**
@@ -150,7 +150,7 @@ export interface BrowsingContextEvents extends Record<EventType, unknown> {
 /**
  * @internal
  */
-export class BrowsingContext extends Realm {
+export class BrowsingContext extends BidiRealm {
   #id: string;
   #url: string;
   #cdpSession: CDPSession;
@@ -182,8 +182,8 @@ export class BrowsingContext extends Realm {
     this.#url = info.url;
   }
 
-  createRealmForSandbox(): Realm {
-    return new Realm(this.connection);
+  createRealmForSandbox(): BidiRealm {
+    return new BidiRealm(this.connection);
   }
 
   get url(): string {

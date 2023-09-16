@@ -80,7 +80,7 @@ export namespace NetworkManagerEvent {
 /**
  * @internal
  */
-export interface NetworkManagerEvents extends Record<EventType, unknown> {
+export interface CdpNetworkManagerEvents extends Record<EventType, unknown> {
   [NetworkManagerEvent.Request]: CdpHTTPRequest;
   [NetworkManagerEvent.RequestServedFromCache]: CdpHTTPRequest | undefined;
   [NetworkManagerEvent.Response]: CdpHTTPResponse;
@@ -98,7 +98,7 @@ export interface FrameProvider {
 /**
  * @internal
  */
-export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
+export class NetworkManager extends EventEmitter<CdpNetworkManagerEvents> {
   #ignoreHTTPSErrors: boolean;
   #frameManager: FrameProvider;
   #networkEventManager = new NetworkEventManager();

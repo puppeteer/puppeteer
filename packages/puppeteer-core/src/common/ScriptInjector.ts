@@ -1,6 +1,9 @@
 import {source as injectedSource} from '../generated/injected.js';
 
-class ScriptInjector {
+/**
+ * @internal
+ */
+export class ScriptInjector {
   #updated = false;
   #amendments = new Set<string>();
 
@@ -17,7 +20,7 @@ class ScriptInjector {
     });
   }
 
-  inject(inject: (script: string) => void, force = false) {
+  inject(inject: (script: string) => void, force = false): void {
     if (this.#updated || force) {
       inject(this.#get());
     }

@@ -21,7 +21,7 @@ import {FrameEvent} from '../api/Frame.js';
 import {type Page} from '../api/Page.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {type TimeoutSettings} from '../common/TimeoutSettings.js';
-import {debugError, PuppeteerURL} from '../common/util.js';
+import {debugError, PuppeteerURL, UTILITY_WORLD_NAME} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
@@ -36,11 +36,6 @@ import {type IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {NetworkManager} from './NetworkManager.js';
 import {type CdpTarget} from './Target.js';
-
-/**
- * @internal
- */
-export const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
 /**
  * We use symbols to prevent external parties listening to these events.

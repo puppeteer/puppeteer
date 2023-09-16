@@ -654,3 +654,19 @@ export function timeout(ms: number): Observable<never> {
         })
       );
 }
+
+/**
+ * @internal
+ */
+export const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
+
+/**
+ * @internal
+ */
+export const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
+/**
+ * @internal
+ */
+export function getSourceUrlComment(url: string): string {
+  return `//# sourceURL=${url}`;
+}

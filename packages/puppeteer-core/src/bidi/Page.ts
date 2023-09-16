@@ -69,7 +69,7 @@ import {EmulationManager} from './EmulationManager.js';
 import {BidiFrame} from './Frame.js';
 import {type BidiHTTPRequest} from './HTTPRequest.js';
 import {type BidiHTTPResponse} from './HTTPResponse.js';
-import {Keyboard, Mouse, Touchscreen} from './Input.js';
+import {BidiKeyboard, BidiMouse, BidiTouchscreen} from './Input.js';
 import {BidiNetworkManager} from './NetworkManager.js';
 import {createBidiHandle} from './Realm.js';
 import {BidiSerializer} from './Serializer.js';
@@ -139,9 +139,9 @@ export class BidiPage extends Page {
   #coverage: Coverage;
   #cdpEmulationManager: CdpEmulationManager;
   #emulationManager: EmulationManager;
-  #mouse: Mouse;
-  #touchscreen: Touchscreen;
-  #keyboard: Keyboard;
+  #mouse: BidiMouse;
+  #touchscreen: BidiTouchscreen;
+  #keyboard: BidiKeyboard;
   #browsingContext: BrowsingContext;
   #browserContext: BidiBrowserContext;
 
@@ -192,9 +192,9 @@ export class BidiPage extends Page {
       this.mainFrame().context().cdpSession
     );
     this.#emulationManager = new EmulationManager(browsingContext);
-    this.#mouse = new Mouse(this.mainFrame().context());
-    this.#touchscreen = new Touchscreen(this.mainFrame().context());
-    this.#keyboard = new Keyboard(this.mainFrame().context());
+    this.#mouse = new BidiMouse(this.mainFrame().context());
+    this.#touchscreen = new BidiTouchscreen(this.mainFrame().context());
+    this.#keyboard = new BidiKeyboard(this.mainFrame().context());
   }
 
   _setBrowserContext(browserContext: BidiBrowserContext): void {
@@ -213,15 +213,15 @@ export class BidiPage extends Page {
     return this.#coverage;
   }
 
-  override get mouse(): Mouse {
+  override get mouse(): BidiMouse {
     return this.#mouse;
   }
 
-  override get touchscreen(): Touchscreen {
+  override get touchscreen(): BidiTouchscreen {
     return this.#touchscreen;
   }
 
-  override get keyboard(): Keyboard {
+  override get keyboard(): BidiKeyboard {
     return this.#keyboard;
   }
 

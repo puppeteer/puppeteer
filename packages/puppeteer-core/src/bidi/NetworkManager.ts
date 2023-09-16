@@ -32,7 +32,7 @@ import {type BidiPage} from './Page.js';
 /**
  * @internal
  */
-export interface NetworkManagerEvents extends Record<EventType, unknown> {
+export interface BidiNetworkManagerEvents extends Record<EventType, unknown> {
   [NetworkManagerEvent.Request]: BidiHTTPRequest;
   [NetworkManagerEvent.RequestServedFromCache]: BidiHTTPRequest;
   [NetworkManagerEvent.Response]: BidiHTTPResponse;
@@ -43,7 +43,7 @@ export interface NetworkManagerEvents extends Record<EventType, unknown> {
 /**
  * @internal
  */
-export class BidiNetworkManager extends EventEmitter<NetworkManagerEvents> {
+export class BidiNetworkManager extends EventEmitter<BidiNetworkManagerEvents> {
   #connection: BidiConnection;
   #page: BidiPage;
   #subscriptions = new DisposableStack();

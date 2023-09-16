@@ -24,9 +24,11 @@ import {scriptInjector} from '../common/ScriptInjector.js';
 import {type EvaluateFunc, type HandleFor} from '../common/types.js';
 import {
   PuppeteerURL,
+  SOURCE_URL_REGEX,
   createEvaluationError,
   debugError,
   getSourcePuppeteerURLIfAvailable,
+  getSourceUrlComment,
   isString,
   valueFromRemoteObject,
 } from '../common/util.js';
@@ -39,12 +41,6 @@ import {Binding} from './Binding.js';
 import {CdpElementHandle} from './ElementHandle.js';
 import {type IsolatedWorld} from './IsolatedWorld.js';
 import {CdpJSHandle} from './JSHandle.js';
-
-const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
-
-const getSourceUrlComment = (url: string) => {
-  return `//# sourceURL=${url}`;
-};
 
 /**
  * @internal
