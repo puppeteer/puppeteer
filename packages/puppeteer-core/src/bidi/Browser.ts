@@ -250,7 +250,7 @@ export class BidiBrowser extends Browser {
     await this.#closeCallback?.call(null);
   }
 
-  override isConnected(): boolean {
+  override get connected(): boolean {
     return !this.#connection.closed;
   }
 
@@ -274,10 +274,6 @@ export class BidiBrowser extends Browser {
     return `${this.#browserName}/${this.#browserVersion}`;
   }
 
-  /**
-   * Returns an array of all open browser contexts. In a newly created browser, this will
-   * return a single instance of {@link BidiBrowserContext}.
-   */
   override browserContexts(): BidiBrowserContext[] {
     // TODO: implement incognito context https://github.com/w3c/webdriver-bidi/issues/289.
     return this.#contexts;
@@ -295,9 +291,6 @@ export class BidiBrowser extends Browser {
     }
   }
 
-  /**
-   * Returns the default browser context. The default browser context cannot be closed.
-   */
   override defaultBrowserContext(): BidiBrowserContext {
     return this.#defaultContext;
   }
