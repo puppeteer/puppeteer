@@ -1,17 +1,11 @@
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type ProtocolMapping from 'devtools-protocol/types/protocol-mapping.js';
 
 import {CDPSession} from '../api/CDPSession.js';
-import {type WaitForOptions} from '../api/Page.js';
 import {type Connection as CdpConnection} from '../cdp/Connection.js';
 import {type PuppeteerLifeCycleEvent} from '../cdp/LifecycleWatcher.js';
-import {
-  ProtocolError,
-  TargetCloseError,
-  TimeoutError,
-} from '../common/Errors.js';
+import {TargetCloseError} from '../common/Errors.js';
 import {type EventType} from '../common/EventEmitter.js';
-import {setPageContent, waitWithTimeout} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
@@ -28,17 +22,6 @@ export const lifeCycleToSubscribedEvent = new Map<
 >([
   ['load', 'browsingContext.load'],
   ['domcontentloaded', 'browsingContext.domContentLoaded'],
-]);
-
-/**
- * @internal
- */
-const lifeCycleToReadinessState = new Map<
-  PuppeteerLifeCycleEvent,
-  Bidi.BrowsingContext.ReadinessState
->([
-  ['load', Bidi.BrowsingContext.ReadinessState.Complete],
-  ['domcontentloaded', Bidi.BrowsingContext.ReadinessState.Interactive],
 ]);
 
 /**
@@ -202,112 +185,11 @@ export class BrowsingContext extends BidiRealm {
     return this.#cdpSession;
   }
 
-  async goto(
-    url: string,
-    options: {
-      referer?: string;
-      referrerPolicy?: string;
-      timeout: number;
-      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    }
-  ): Promise<string | null> {
-    const {waitUntil = 'load', timeout} = options;
-
-    const readinessState = lifeCycleToReadinessState.get(
-      getWaitUntilSingle(waitUntil)
-    ) as Bidi.BrowsingContext.ReadinessState;
-
-    try {
-      const {result} = await waitWithTimeout(
-        this.connection.send('browsingContext.navigate', {
-          url: url,
-          context: this.#id,
-          wait: readinessState,
-        }),
-        'Navigation',
-        timeout
-      );
-      this.#url = result.url;
-
-      return result.navigation;
-    } catch (error) {
-      if (error instanceof ProtocolError) {
-        error.message += ` at ${url}`;
-      } else if (error instanceof TimeoutError) {
-        error.message = 'Navigation timeout of ' + timeout + ' ms exceeded';
-      }
-      throw error;
-    }
-  }
-
-  async reload(
-    options: WaitForOptions & {timeout: number}
-  ): Promise<string | null> {
-    const {waitUntil = 'load', timeout} = options;
-
-    const readinessState = lifeCycleToReadinessState.get(
-      getWaitUntilSingle(waitUntil)
-    ) as Bidi.BrowsingContext.ReadinessState;
-
-    try {
-      const {result} = await waitWithTimeout(
-        this.connection.send('browsingContext.reload', {
-          context: this.#id,
-          wait: readinessState,
-        }),
-        'Navigation',
-        timeout
-      );
-
-      return result.navigation;
-    } catch (error) {
-      if (error instanceof ProtocolError) {
-        error.message += ` at ${this.url}`;
-      } else if (error instanceof TimeoutError) {
-        error.message = 'Navigation timeout of ' + timeout + ' ms exceeded';
-      }
-      throw error;
-    }
-  }
-
-  async setContent(
-    html: string,
-    options: {
-      timeout: number;
-      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    }
-  ): Promise<void> {
-    const {waitUntil = 'load', timeout} = options;
-
-    const waitUntilEvent = lifeCycleToSubscribedEvent.get(
-      getWaitUntilSingle(waitUntil)
-    ) as string;
-
-    await Promise.all([
-      setPageContent(this, html),
-      waitWithTimeout(
-        new Promise<void>(resolve => {
-          this.once(waitUntilEvent, () => {
-            resolve();
-          });
-        }),
-        waitUntilEvent,
-        timeout
-      ),
-    ]);
-  }
-
   async sendCdpCommand<T extends keyof ProtocolMapping.Commands>(
     method: T,
     ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
     return await this.#cdpSession.send(method, ...paramArgs);
-  }
-
-  title(): Promise<string> {
-    return this.evaluate(() => {
-      return document.title;
-    });
   }
 
   dispose(): void {

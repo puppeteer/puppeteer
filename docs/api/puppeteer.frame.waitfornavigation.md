@@ -12,24 +12,23 @@ Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/Hist
 
 ```typescript
 class Frame {
-  abstract waitForNavigation(options?: {
-    timeout?: number;
-    waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-  }): Promise<HTTPResponse | null>;
+  abstract waitForNavigation(
+    options?: WaitForOptions
+  ): Promise<HTTPResponse | null>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                                                                                                          | Description                                                                 |
-| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| options   | { timeout?: number; waitUntil?: [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) \| [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)\[\]; } | _(Optional)_ options to configure when the navigation is consided finished. |
+| Parameter | Type                                            | Description                                         |
+| --------- | ----------------------------------------------- | --------------------------------------------------- |
+| options   | [WaitForOptions](./puppeteer.waitforoptions.md) | _(Optional)_ Options to configure waiting behavior. |
 
 **Returns:**
 
 Promise&lt;[HTTPResponse](./puppeteer.httpresponse.md) \| null&gt;
 
-a promise that resolves when the frame navigates to a new URL.
+A promise which resolves to the main resource response.
 
 ## Example
 

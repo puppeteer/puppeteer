@@ -17,17 +17,28 @@
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {type CDPSession} from '../api/CDPSession.js';
-import {Frame, throwIfDetached} from '../api/Frame.js';
+import {
+  Frame,
+  type GoToOptions,
+  type WaitForOptions,
+  throwIfDetached,
+} from '../api/Frame.js';
 import {type PuppeteerLifeCycleEvent} from '../cdp/LifecycleWatcher.js';
+import {ProtocolError, TimeoutError} from '../common/Errors.js';
 import {type TimeoutSettings} from '../common/TimeoutSettings.js';
 import {type Awaitable} from '../common/types.js';
-import {UTILITY_WORLD_NAME, waitForEvent} from '../common/util.js';
+import {
+  UTILITY_WORLD_NAME,
+  setPageContent,
+  waitForEvent,
+  waitWithTimeout,
+} from '../common/util.js';
 import {Deferred} from '../util/Deferred.js';
 
 import {
-  type BrowsingContext,
   getWaitUntilSingle,
   lifeCycleToSubscribedEvent,
+  type BrowsingContext,
 } from './BrowsingContext.js';
 import {ExposeableFunction} from './ExposedFunction.js';
 import {type BidiHTTPResponse} from './HTTPResponse.js';
@@ -38,6 +49,17 @@ import {
   Sandbox,
   type SandboxChart,
 } from './Sandbox.js';
+
+/**
+ * @internal
+ */
+export const lifeCycleToReadinessState = new Map<
+  PuppeteerLifeCycleEvent,
+  Bidi.BrowsingContext.ReadinessState
+>([
+  ['load', Bidi.BrowsingContext.ReadinessState.Complete],
+  ['domcontentloaded', Bidi.BrowsingContext.ReadinessState.Interactive],
+]);
 
 /**
  * Puppeteer's Frame class could be viewed as a BiDi BrowsingContext implementation
@@ -107,32 +129,65 @@ export class BidiFrame extends Frame {
   @throwIfDetached
   override async goto(
     url: string,
-    options?: {
-      referer?: string;
-      referrerPolicy?: string;
-      timeout?: number;
-      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    }
+    options: GoToOptions = {}
   ): Promise<BidiHTTPResponse | null> {
-    const navigationId = await this.#context.goto(url, {
-      ...options,
-      timeout: options?.timeout ?? this.#timeoutSettings.navigationTimeout(),
-    });
-    return this.#page.getNavigationResponse(navigationId);
+    const {
+      waitUntil = 'load',
+      timeout = this.#timeoutSettings.navigationTimeout(),
+    } = options;
+
+    const readinessState = lifeCycleToReadinessState.get(
+      getWaitUntilSingle(waitUntil)
+    ) as Bidi.BrowsingContext.ReadinessState;
+
+    try {
+      const {result} = await waitWithTimeout(
+        this.#context.connection.send('browsingContext.navigate', {
+          url: url,
+          context: this._id,
+          wait: readinessState,
+        }),
+        'Navigation',
+        timeout
+      );
+
+      return this.#page.getNavigationResponse(result.navigation);
+    } catch (error) {
+      if (error instanceof ProtocolError) {
+        error.message += ` at ${url}`;
+      } else if (error instanceof TimeoutError) {
+        error.message = 'Navigation timeout of ' + timeout + ' ms exceeded';
+      }
+      throw error;
+    }
   }
 
   @throwIfDetached
-  override setContent(
+  override async setContent(
     html: string,
-    options: {
-      timeout?: number;
-      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    }
+    options: WaitForOptions = {}
   ): Promise<void> {
-    return this.#context.setContent(html, {
-      ...options,
-      timeout: options?.timeout ?? this.#timeoutSettings.navigationTimeout(),
-    });
+    const {
+      waitUntil = 'load',
+      timeout = this.#timeoutSettings.navigationTimeout(),
+    } = options;
+
+    const waitUntilEvent = lifeCycleToSubscribedEvent.get(
+      getWaitUntilSingle(waitUntil)
+    ) as string;
+
+    await Promise.all([
+      setPageContent(this, html),
+      waitWithTimeout(
+        new Promise<void>(resolve => {
+          this.#context.once(waitUntilEvent, () => {
+            resolve();
+          });
+        }),
+        waitUntilEvent,
+        timeout
+      ),
+    ]);
   }
 
   context(): BrowsingContext {
@@ -141,10 +196,7 @@ export class BidiFrame extends Frame {
 
   @throwIfDetached
   override async waitForNavigation(
-    options: {
-      timeout?: number;
-      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    } = {}
+    options: WaitForOptions = {}
   ): Promise<BidiHTTPResponse | null> {
     const {
       waitUntil = 'load',

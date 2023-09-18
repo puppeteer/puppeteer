@@ -4,7 +4,7 @@ sidebar_label: Frame.goto
 
 # Frame.goto() method
 
-Navigates a frame to the given url.
+Navigates the frame to the given `url`.
 
 #### Signature:
 
@@ -24,10 +24,10 @@ class Frame {
 
 ## Parameters
 
-| Parameter | Type                                                                                                                                                                                                                     | Description                                                                                                                                                                                                                            |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| url       | string                                                                                                                                                                                                                   | the URL to navigate the frame to. This should include the scheme, e.g. <code>https://</code>.                                                                                                                                          |
-| options   | { referer?: string; referrerPolicy?: string; timeout?: number; waitUntil?: [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) \| [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)\[\]; } | _(Optional)_ navigation options. <code>waitUntil</code> is useful to define when the navigation should be considered successful - see the docs for [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) for more details. |
+| Parameter | Type                                                                                                                                                                                                                     | Description                                                                             |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| url       | string                                                                                                                                                                                                                   | URL to navigate the frame to. The URL should include scheme, e.g. <code>https://</code> |
+| options   | { referer?: string; referrerPolicy?: string; timeout?: number; waitUntil?: [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) \| [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)\[\]; } | _(Optional)_ Options to configure waiting behavior.                                     |
 
 **Returns:**
 
@@ -37,9 +37,9 @@ A promise which resolves to the main resource response. In case of multiple redi
 
 ## Exceptions
 
-This method will throw an error if:
+If:
 
-- there's an SSL error (e.g. in case of self-signed certificates). - target URL is invalid. - the `timeout` is exceeded during navigation. - the remote server does not respond or is unreachable. - the main resource failed to load.
+- there's an SSL error (e.g. in case of self-signed certificates). - target URL is invalid. - the timeout is exceeded during navigation. - the remote server does not respond or is unreachable. - the main resource failed to load.
 
 This method will not throw an error when any valid HTTP status code is returned by the remote server, including 404 "Not Found" and 500 "Internal Server Error". The status code for such responses can be retrieved by calling [HTTPResponse.status()](./puppeteer.httpresponse.status.md).
 

@@ -28,11 +28,11 @@ import {
   fromEvent,
   map,
   merge,
-  type Observable,
   of,
   raceWith,
   startWith,
   switchMap,
+  type Observable,
 } from '../../third_party/rxjs/rxjs.js';
 import type {HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
@@ -40,12 +40,11 @@ import type {BidiNetworkManager} from '../bidi/NetworkManager.js';
 import type {Accessibility} from '../cdp/Accessibility.js';
 import type {Coverage} from '../cdp/Coverage.js';
 import {type DeviceRequestPrompt} from '../cdp/DeviceRequestPrompt.js';
-import type {PuppeteerLifeCycleEvent} from '../cdp/LifecycleWatcher.js';
 import {
+  NetworkManagerEvent,
   type NetworkManager as CdpNetworkManager,
   type Credentials,
   type NetworkConditions,
-  NetworkManagerEvent,
 } from '../cdp/NetworkManager.js';
 import type {Tracing} from '../cdp/Tracing.js';
 import type {WebWorker} from '../cdp/WebWorker.js';
@@ -60,8 +59,8 @@ import {
 } from '../common/EventEmitter.js';
 import type {FileChooser} from '../common/FileChooser.js';
 import {
-  type LowerCasePaperFormat,
   paperFormats,
+  type LowerCasePaperFormat,
   type ParsedPDFOptions,
   type PDFOptions,
 } from '../common/PDFOptions.js';
@@ -94,6 +93,8 @@ import type {
   FrameAddScriptTagOptions,
   FrameAddStyleTagOptions,
   FrameWaitForFunctionOptions,
+  GoToOptions,
+  WaitForOptions,
 } from './Frame.js';
 import {
   type Keyboard,
@@ -103,10 +104,10 @@ import {
 } from './Input.js';
 import type {JSHandle} from './JSHandle.js';
 import {
-  type AwaitedLocator,
   FunctionLocator,
   Locator,
   NodeLocator,
+  type AwaitedLocator,
 } from './locators/locators.js';
 import type {Target} from './Target.js';
 
@@ -142,23 +143,6 @@ export interface WaitTimeoutOptions {
    * @defaultValue `30000`
    */
   timeout?: number;
-}
-
-/**
- * @public
- */
-export interface WaitForOptions {
-  /**
-   * Maximum wait time in milliseconds. Pass 0 to disable the timeout.
-   *
-   * The default value can be changed by using the
-   * {@link Page.setDefaultTimeout} or {@link Page.setDefaultNavigationTimeout}
-   * methods.
-   *
-   * @defaultValue `30000`
-   */
-  timeout?: number;
-  waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
 }
 
 /**
@@ -1553,40 +1537,29 @@ export abstract class Page extends EventEmitter<PageEvents> {
   }
 
   /**
+   * Navigates the page to the given `url`.
+   *
+   * @remarks
+   * Navigation to `about:blank` or navigation to the same URL with a different
+   * hash will succeed and return `null`.
+   *
+   * :::warning
+   *
+   * Headless mode doesn't support navigation to a PDF document. See the {@link
+   * https://bugs.chromium.org/p/chromium/issues/detail?id=761295 | upstream
+   * issue}.
+   *
+   * :::
+   *
+   * Shortcut for {@link Frame.goto | page.mainFrame().goto(url, options)}.
+   *
    * @param url - URL to navigate page to. The URL should include scheme, e.g.
    * `https://`
-   * @param options - Navigation Parameter
-   * @returns Promise which resolves to the main resource response. In case of
+   * @param options - Options to configure waiting behavior.
+   * @returns A promise which resolves to the main resource response. In case of
    * multiple redirects, the navigation will resolve with the response of the
    * last redirect.
-   * @remarks
-   * The argument `options` might have the following properties:
-   *
-   * - `timeout` : Maximum navigation time in milliseconds, defaults to 30
-   *   seconds, pass 0 to disable timeout. The default value can be changed by
-   *   using the {@link Page.setDefaultNavigationTimeout} or
-   *   {@link Page.setDefaultTimeout} methods.
-   *
-   * - `waitUntil`:When to consider navigation succeeded, defaults to `load`.
-   *   Given an array of event strings, navigation is considered to be
-   *   successful after all events have been fired. Events can be either:<br/>
-   * - `load` : consider navigation to be finished when the load event is
-   *   fired.<br/>
-   * - `domcontentloaded` : consider navigation to be finished when the
-   *   DOMContentLoaded event is fired.<br/>
-   * - `networkidle0` : consider navigation to be finished when there are no
-   *   more than 0 network connections for at least `500` ms.<br/>
-   * - `networkidle2` : consider navigation to be finished when there are no
-   *   more than 2 network connections for at least `500` ms.
-   *
-   * - `referer` : Referer header value. If provided it will take preference
-   *   over the referer header value set by
-   *   {@link Page.setExtraHTTPHeaders |page.setExtraHTTPHeaders()}.<br/>
-   * - `referrerPolicy` : ReferrerPolicy. If provided it will take preference
-   *   over the referer-policy header value set by
-   *   {@link Page.setExtraHTTPHeaders |page.setExtraHTTPHeaders()}.
-   *
-   * `page.goto` will throw an error if:
+   * @throws If:
    *
    * - there's an SSL error (e.g. in case of self-signed certificates).
    * - target URL is invalid.
@@ -1594,53 +1567,22 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * - the remote server does not respond or is unreachable.
    * - the main resource failed to load.
    *
-   * `page.goto` will not throw an error when any valid HTTP status code is
-   * returned by the remote server, including 404 "Not Found" and 500
-   * "Internal Server Error". The status code for such responses can be
-   * retrieved by calling response.status().
-   *
-   * NOTE: `page.goto` either throws an error or returns a main resource
-   * response. The only exceptions are navigation to about:blank or navigation
-   * to the same URL with a different hash, which would succeed and return null.
-   *
-   * NOTE: Headless mode doesn't support navigation to a PDF document. See the
-   * {@link https://bugs.chromium.org/p/chromium/issues/detail?id=761295 |
-   * upstream issue}.
-   *
-   * Shortcut for {@link Frame.goto | page.mainFrame().goto(url, options)}.
+   * This method will not throw an error when any valid HTTP status code is
+   * returned by the remote server, including 404 "Not Found" and 500 "Internal
+   * Server Error". The status code for such responses can be retrieved by
+   * calling {@link HTTPResponse.status}.
    */
-  async goto(
-    url: string,
-    options?: WaitForOptions & {referer?: string; referrerPolicy?: string}
-  ): Promise<HTTPResponse | null> {
+  async goto(url: string, options?: GoToOptions): Promise<HTTPResponse | null> {
     return await this.mainFrame().goto(url, options);
   }
 
   /**
-   * @param options - Navigation parameters which might have the following
-   * properties:
-   * @returns Promise which resolves to the main resource response. In case of
+   * Reloads the page.
+   *
+   * @param options - Options to configure waiting behavior.
+   * @returns A promise which resolves to the main resource response. In case of
    * multiple redirects, the navigation will resolve with the response of the
    * last redirect.
-   * @remarks
-   * The argument `options` might have the following properties:
-   *
-   * - `timeout` : Maximum navigation time in milliseconds, defaults to 30
-   *   seconds, pass 0 to disable timeout. The default value can be changed by
-   *   using the {@link Page.setDefaultNavigationTimeout} or
-   *   {@link Page.setDefaultTimeout} methods.
-   *
-   * - `waitUntil`: When to consider navigation succeeded, defaults to `load`.
-   *   Given an array of event strings, navigation is considered to be
-   *   successful after all events have been fired. Events can be either:<br/>
-   * - `load` : consider navigation to be finished when the load event is
-   *   fired.<br/>
-   * - `domcontentloaded` : consider navigation to be finished when the
-   *   DOMContentLoaded event is fired.<br/>
-   * - `networkidle0` : consider navigation to be finished when there are no
-   *   more than 0 network connections for at least `500` ms.<br/>
-   * - `networkidle2` : consider navigation to be finished when there are no
-   *   more than 2 network connections for at least `500` ms.
    */
   async reload(options?: WaitForOptions): Promise<HTTPResponse | null>;
   async reload(): Promise<HTTPResponse | null> {
