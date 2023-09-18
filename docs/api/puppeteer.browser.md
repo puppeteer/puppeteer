@@ -54,6 +54,12 @@ const browser2 = await puppeteer.connect({browserWSEndpoint});
 await browser2.close();
 ```
 
+## Properties
+
+| Property  | Modifiers             | Type    | Description                                                               |
+| --------- | --------------------- | ------- | ------------------------------------------------------------------------- |
+| connected | <code>readonly</code> | boolean | Whether Puppeteer is connected to this [browser](./puppeteer.browser.md). |
+
 ## Methods
 
 | Method                                                                                         | Modifiers | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |

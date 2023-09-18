@@ -195,10 +195,6 @@ export class CdpBrowser extends BrowserBase {
     );
   }
 
-  /**
-   * The spawned browser process. Returns `null` if the browser instance was created with
-   * {@link Puppeteer.connect}.
-   */
   override process(): ChildProcess | null {
     return this.#process ?? null;
   }
@@ -223,24 +219,6 @@ export class CdpBrowser extends BrowserBase {
     return this.#isPageTargetCallback;
   }
 
-  /**
-   * Creates a new incognito browser context. This won't share cookies/cache with other
-   * browser contexts.
-   *
-   * @example
-   *
-   * ```ts
-   * (async () => {
-   *   const browser = await puppeteer.launch();
-   *   // Create a new incognito browser context.
-   *   const context = await browser.createIncognitoBrowserContext();
-   *   // Create a new page in a pristine context.
-   *   const page = await context.newPage();
-   *   // Do stuff
-   *   await page.goto('https://example.com');
-   * })();
-   * ```
-   */
   override async createIncognitoBrowserContext(
     options: BrowserContextOptions = {}
   ): Promise<CdpBrowserContext> {
@@ -262,17 +240,10 @@ export class CdpBrowser extends BrowserBase {
     return context;
   }
 
-  /**
-   * Returns an array of all open browser contexts. In a newly created browser, this will
-   * return a single instance of {@link BrowserContext}.
-   */
   override browserContexts(): CdpBrowserContext[] {
     return [this.#defaultContext, ...Array.from(this.#contexts.values())];
   }
 
-  /**
-   * Returns the default browser context. The default browser context cannot be closed.
-   */
   override defaultBrowserContext(): CdpBrowserContext {
     return this.#defaultContext;
   }
@@ -387,31 +358,10 @@ export class CdpBrowser extends BrowserBase {
     this.emit(BrowserEvent.TargetDiscovered, targetInfo);
   };
 
-  /**
-   * The browser websocket endpoint which can be used as an argument to
-   * {@link Puppeteer.connect}.
-   *
-   * @returns The Browser websocket url.
-   *
-   * @remarks
-   *
-   * The format is `ws://${host}:${port}/devtools/browser/<id>`.
-   *
-   * You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/version`.
-   * Learn more about the
-   * {@link https://chromedevtools.github.io/devtools-protocol | devtools protocol} and
-   * the {@link
-   * https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target
-   * | browser endpoint}.
-   */
   override wsEndpoint(): string {
     return this.#connection.url();
   }
 
-  /**
-   * Promise which resolves to a new {@link Page} object. The Page is created in
-   * a default browser context.
-   */
   override async newPage(): Promise<Page> {
     return await this.#defaultContext.newPage();
   }
@@ -442,10 +392,6 @@ export class CdpBrowser extends BrowserBase {
     return page;
   }
 
-  /**
-   * All active targets inside the Browser. In case of multiple browser contexts, returns
-   * an array with all the targets in all browser contexts.
-   */
   override targets(): CdpTarget[] {
     return Array.from(
       this.#targetManager.getAvailableTargets().values()
@@ -456,9 +402,6 @@ export class CdpBrowser extends BrowserBase {
     });
   }
 
-  /**
-   * The target associated with the browser.
-   */
   override target(): CdpTarget {
     const browserTarget = this.targets().find(target => {
       return target.type() === 'browser';
@@ -474,10 +417,6 @@ export class CdpBrowser extends BrowserBase {
     return version.product;
   }
 
-  /**
-   * The browser's original user agent. Pages can override the browser user agent with
-   * {@link Page.setUserAgent}.
-   */
   override async userAgent(): Promise<string> {
     const version = await this.#getVersion();
     return version.userAgent;
@@ -494,10 +433,7 @@ export class CdpBrowser extends BrowserBase {
     this._detach();
   }
 
-  /**
-   * Indicates that the browser is connected.
-   */
-  override isConnected(): boolean {
+  override get connected(): boolean {
     return !this.#connection._closed;
   }
 
@@ -525,35 +461,12 @@ export class CdpBrowserContext extends BrowserContext {
     return this.#id;
   }
 
-  /**
-   * An array of all active targets inside the browser context.
-   */
   override targets(): CdpTarget[] {
     return this.#browser.targets().filter(target => {
       return target.browserContext() === this;
     });
   }
 
-  /**
-   * This searches for a target in this specific browser context.
-   *
-   * @example
-   * An example of finding a target for a page opened via `window.open`:
-   *
-   * ```ts
-   * await page.evaluate(() => window.open('https://www.example.com/'));
-   * const newWindowTarget = await browserContext.waitForTarget(
-   *   target => target.url() === 'https://www.example.com/'
-   * );
-   * ```
-   *
-   * @param predicate - A function to be run for every target
-   * @param options - An object of options. Accepts a timeout,
-   * which is the maximum wait time in milliseconds.
-   * Pass `0` to disable the timeout. Defaults to 30 seconds.
-   * @returns Promise which resolves to the first target found
-   * that matches the `predicate` function.
-   */
   override waitForTarget(
     predicate: (x: Target) => boolean | Promise<boolean>,
     options: {timeout?: number} = {}
@@ -563,13 +476,6 @@ export class CdpBrowserContext extends BrowserContext {
     }, options);
   }
 
-  /**
-   * An array of all pages inside the browser context.
-   *
-   * @returns Promise which resolves to an array of all open pages.
-   * Non visible pages, such as `"background_page"`, will not be listed here.
-   * You can find them using {@link Target.page | the target page}.
-   */
   override async pages(): Promise<Page[]> {
     const pages = await Promise.all(
       this.targets()
@@ -589,31 +495,10 @@ export class CdpBrowserContext extends BrowserContext {
     });
   }
 
-  /**
-   * Returns whether BrowserContext is incognito.
-   * The default browser context is the only non-incognito browser context.
-   *
-   * @remarks
-   * The default browser context cannot be closed.
-   */
   override isIncognito(): boolean {
     return !!this.#id;
   }
 
-  /**
-   * @example
-   *
-   * ```ts
-   * const context = browser.defaultBrowserContext();
-   * await context.overridePermissions('https://html5demos.com', [
-   *   'geolocation',
-   * ]);
-   * ```
-   *
-   * @param origin - The origin to grant permissions to, e.g. "https://example.com".
-   * @param permissions - An array of permissions to grant.
-   * All permissions that are not listed here will be automatically denied.
-   */
   override async overridePermissions(
     origin: string,
     permissions: Permission[]
@@ -633,45 +518,20 @@ export class CdpBrowserContext extends BrowserContext {
     });
   }
 
-  /**
-   * Clears all permission overrides for the browser context.
-   *
-   * @example
-   *
-   * ```ts
-   * const context = browser.defaultBrowserContext();
-   * context.overridePermissions('https://example.com', ['clipboard-read']);
-   * // do stuff ..
-   * context.clearPermissionOverrides();
-   * ```
-   */
   override async clearPermissionOverrides(): Promise<void> {
     await this.#connection.send('Browser.resetPermissions', {
       browserContextId: this.#id || undefined,
     });
   }
 
-  /**
-   * Creates a new page in the browser context.
-   */
   override newPage(): Promise<Page> {
     return this.#browser._createPageInContext(this.#id);
   }
 
-  /**
-   * The browser this browser context belongs to.
-   */
   override browser(): CdpBrowser {
     return this.#browser;
   }
 
-  /**
-   * Closes the browser context. All the targets that belong to the browser context
-   * will be closed.
-   *
-   * @remarks
-   * Only incognito browser contexts can be closed.
-   */
   override async close(): Promise<void> {
     assert(this.#id, 'Non-incognito profiles cannot be closed!');
     await this.#browser._disposeContext(this.#id);
