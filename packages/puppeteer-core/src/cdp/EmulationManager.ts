@@ -78,6 +78,7 @@ interface JavascriptEnabledState {
 
 interface ClientProvider {
   clients(): CDPSession[];
+  registerState(state: EmulatedState<any>): void;
 }
 
 class EmulatedState<T extends {active: boolean}> {
@@ -93,11 +94,16 @@ class EmulatedState<T extends {active: boolean}> {
     this.#state = initialState;
     this.#clientProvider = clientProvider;
     this.#updater = updater;
+    this.#clientProvider.registerState(this);
   }
 
   async setState(state: T): Promise<void> {
     this.#state = state;
     await this.sync();
+  }
+
+  get state(): T {
+    return this.#state;
   }
 
   async sync(): Promise<void> {
@@ -118,6 +124,8 @@ export class EmulationManager {
   #emulatingMobile = false;
   #hasTouch = false;
 
+  #states: Array<EmulatedState<any>> = [];
+
   #viewportState = new EmulatedState<ViewportState>(
     {
       active: false,
@@ -125,34 +133,70 @@ export class EmulationManager {
     this,
     this.#applyViewport
   );
-  #idleOverridesState: IdleOverridesState = {
-    active: false,
-  };
-  #timezoneState: TimezoneState = {
-    active: false,
-  };
-  #visionDeficiencyState: VisionDeficiencyState = {
-    active: false,
-  };
-  #cpuThrottlingState: CpuThrottlingState = {
-    active: false,
-  };
-  #mediaFeaturesState: MediaFeaturesState = {
-    active: false,
-  };
-  #mediaTypeState: MediaTypeState = {
-    active: false,
-  };
-  #geoLocationState: GeoLocationState = {
-    active: false,
-  };
-  #defaultBackgroundColorState: DefaultBackgroundColorState = {
-    active: false,
-  };
-  #javascriptEnabledState: JavascriptEnabledState = {
-    javaScriptEnabled: true,
-    active: false,
-  };
+  #idleOverridesState = new EmulatedState<IdleOverridesState>(
+    {
+      active: false,
+    },
+    this,
+    this.#emulateIdleState
+  );
+  #timezoneState = new EmulatedState<TimezoneState>(
+    {
+      active: false,
+    },
+    this,
+    this.#emulateTimezone
+  );
+  #visionDeficiencyState = new EmulatedState<VisionDeficiencyState>(
+    {
+      active: false,
+    },
+    this,
+    this.#emulateVisionDeficiency
+  );
+  #cpuThrottlingState = new EmulatedState<CpuThrottlingState>(
+    {
+      active: false,
+    },
+    this,
+    this.#emulateCpuThrottling
+  );
+  #mediaFeaturesState = new EmulatedState<MediaFeaturesState>(
+    {
+      active: false,
+    },
+    this,
+    this.#emulateMediaFeatures
+  );
+  #mediaTypeState = new EmulatedState<MediaTypeState>(
+    {
+      active: false,
+    },
+    this,
+    this.#emulateMediaType
+  );
+  #geoLocationState = new EmulatedState<GeoLocationState>(
+    {
+      active: false,
+    },
+    this,
+    this.#setGeolocation
+  );
+  #defaultBackgroundColorState = new EmulatedState<DefaultBackgroundColorState>(
+    {
+      active: false,
+    },
+    this,
+    this.#setDefaultBackgroundColor
+  );
+  #javascriptEnabledState = new EmulatedState<JavascriptEnabledState>(
+    {
+      javaScriptEnabled: true,
+      active: false,
+    },
+    this,
+    this.#setJavaScriptEnabled
+  );
 
   #secondaryClients = new Set<CDPSession>();
 
@@ -165,6 +209,14 @@ export class EmulationManager {
     this.#secondaryClients.delete(client);
   }
 
+  registerState(state: EmulatedState<any>): void {
+    this.#states.push(state);
+  }
+
+  clients(): CDPSession[] {
+    return [this.#client, ...Array.from(this.#secondaryClients)];
+  }
+
   async registerSpeculativeSession(client: CDPSession): Promise<void> {
     this.#secondaryClients.add(client);
     client.once(CDPSessionEvent.Disconnected, () => {
@@ -172,24 +224,15 @@ export class EmulationManager {
     });
     // We don't await here because we want to register all state changes before
     // the target is unpaused.
-    void this.#viewportState.sync().catch(debugError);
-    void this.#syncIdleState().catch(debugError);
-    void this.#syncTimezoneState().catch(debugError);
-    void this.#syncVisionDeficiencyState().catch(debugError);
-    void this.#syncCpuThrottlingState().catch(debugError);
-    void this.#syncMediaFeaturesState().catch(debugError);
-    void this.#syncMediaTypeState().catch(debugError);
-    void this.#syncGeoLocationState().catch(debugError);
-    void this.#syncDefaultBackgroundColorState().catch(debugError);
-    void this.#syncJavaScriptEnabledState().catch(debugError);
+    void Promise.all(
+      this.#states.map(s => {
+        return s.sync().catch(debugError);
+      })
+    );
   }
 
   get javascriptEnabled(): boolean {
-    return this.#javascriptEnabledState.javaScriptEnabled;
-  }
-
-  clients(): CDPSession[] {
-    return [this.#client, ...Array.from(this.#secondaryClients)];
+    return this.#javascriptEnabledState.state.javaScriptEnabled;
   }
 
   async emulateViewport(viewport: Viewport): Promise<boolean> {
@@ -245,20 +288,10 @@ export class EmulationManager {
     isUserActive: boolean;
     isScreenUnlocked: boolean;
   }): Promise<void> {
-    this.#idleOverridesState = {
+    await this.#idleOverridesState.setState({
       active: true,
       overrides,
-    };
-    await this.#syncIdleState();
-  }
-
-  async #syncIdleState() {
-    await Promise.all([
-      this.#emulateIdleState(this.#client, this.#idleOverridesState),
-      ...Array.from(this.#secondaryClients).map(client => {
-        return this.#emulateIdleState(client, this.#idleOverridesState);
-      }),
-    ]);
+    });
   }
 
   @invokeAtMostOnceForArguments
@@ -299,21 +332,11 @@ export class EmulationManager {
     }
   }
 
-  async #syncTimezoneState() {
-    await Promise.all([
-      this.#emulateTimezone(this.#client, this.#timezoneState),
-      ...Array.from(this.#secondaryClients).map(client => {
-        return this.#emulateTimezone(client, this.#timezoneState);
-      }),
-    ]);
-  }
-
   async emulateTimezone(timezoneId?: string): Promise<void> {
-    this.#timezoneState = {
+    await this.#timezoneState.setState({
       timezoneId,
       active: true,
-    };
-    await this.#syncTimezoneState();
+    });
   }
 
   @invokeAtMostOnceForArguments
@@ -327,18 +350,6 @@ export class EmulationManager {
     await client.send('Emulation.setEmulatedVisionDeficiency', {
       type: visionDeficiency.visionDeficiency || 'none',
     });
-  }
-
-  async #syncVisionDeficiencyState() {
-    await Promise.all([
-      this.#emulateVisionDeficiency(this.#client, this.#visionDeficiencyState),
-      ...Array.from(this.#secondaryClients).map(client => {
-        return this.#emulateVisionDeficiency(
-          client,
-          this.#visionDeficiencyState
-        );
-      }),
-    ]);
   }
 
   async emulateVisionDeficiency(
@@ -358,11 +369,10 @@ export class EmulationManager {
       !type || visionDeficiencies.has(type),
       `Unsupported vision deficiency: ${type}`
     );
-    this.#visionDeficiencyState = {
+    await this.#visionDeficiencyState.setState({
       active: true,
       visionDeficiency: type,
-    };
-    await this.#syncVisionDeficiencyState();
+    });
   }
 
   @invokeAtMostOnceForArguments
@@ -378,25 +388,15 @@ export class EmulationManager {
     });
   }
 
-  async #syncCpuThrottlingState() {
-    await Promise.all([
-      this.#emulateCpuThrottling(this.#client, this.#cpuThrottlingState),
-      ...Array.from(this.#secondaryClients).map(client => {
-        return this.#emulateCpuThrottling(client, this.#cpuThrottlingState);
-      }),
-    ]);
-  }
-
   async emulateCPUThrottling(factor: number | null): Promise<void> {
     assert(
       factor === null || factor >= 1,
       'Throttling rate should be greater or equal to 1'
     );
-    this.#cpuThrottlingState = {
+    await this.#cpuThrottlingState.setState({
       active: true,
       factor: factor ?? undefined,
-    };
-    await this.#syncCpuThrottlingState();
+    });
   }
 
   @invokeAtMostOnceForArguments
@@ -412,15 +412,6 @@ export class EmulationManager {
     });
   }
 
-  async #syncMediaFeaturesState() {
-    await Promise.all([
-      this.#emulateMediaFeatures(this.#client, this.#mediaFeaturesState),
-      ...Array.from(this.#secondaryClients).map(client => {
-        return this.#emulateMediaFeatures(client, this.#mediaFeaturesState);
-      }),
-    ]);
-  }
-
   async emulateMediaFeatures(features?: MediaFeature[]): Promise<void> {
     if (Array.isArray(features)) {
       for (const mediaFeature of features) {
@@ -433,11 +424,10 @@ export class EmulationManager {
         );
       }
     }
-    this.#mediaFeaturesState = {
+    await this.#mediaFeaturesState.setState({
       active: true,
       mediaFeatures: features,
-    };
-    await this.#syncMediaFeaturesState();
+    });
   }
 
   @invokeAtMostOnceForArguments
@@ -453,15 +443,6 @@ export class EmulationManager {
     });
   }
 
-  async #syncMediaTypeState() {
-    await Promise.all([
-      this.#emulateMediaType(this.#client, this.#mediaTypeState),
-      ...Array.from(this.#secondaryClients).map(client => {
-        return this.#emulateMediaType(client, this.#mediaTypeState);
-      }),
-    ]);
-  }
-
   async emulateMediaType(type?: string): Promise<void> {
     assert(
       type === 'screen' ||
@@ -469,11 +450,10 @@ export class EmulationManager {
         (type ?? undefined) === undefined,
       'Unsupported media type: ' + type
     );
-    this.#mediaTypeState = {
+    await this.#mediaTypeState.setState({
       type,
       active: true,
-    };
-    await this.#syncMediaTypeState();
+    });
   }
 
   @invokeAtMostOnceForArguments
@@ -496,15 +476,6 @@ export class EmulationManager {
     );
   }
 
-  async #syncGeoLocationState() {
-    await Promise.all([
-      this.#setGeolocation(this.#client, this.#geoLocationState),
-      ...Array.from(this.#secondaryClients).map(client => {
-        return this.#setGeolocation(client, this.#geoLocationState);
-      }),
-    ]);
-  }
-
   async setGeolocation(options: GeolocationOptions): Promise<void> {
     const {longitude, latitude, accuracy = 0} = options;
     if (longitude < -180 || longitude > 180) {
@@ -522,15 +493,14 @@ export class EmulationManager {
         `Invalid accuracy "${accuracy}": precondition 0 <= ACCURACY failed.`
       );
     }
-    this.#geoLocationState = {
+    await this.#geoLocationState.setState({
       active: true,
       geoLocation: {
         longitude,
         latitude,
         accuracy,
       },
-    };
-    await this.#syncGeoLocationState();
+    });
   }
 
   @invokeAtMostOnceForArguments
@@ -546,41 +516,24 @@ export class EmulationManager {
     });
   }
 
-  async #syncDefaultBackgroundColorState() {
-    await Promise.all([
-      this.#setDefaultBackgroundColor(
-        this.#client,
-        this.#defaultBackgroundColorState
-      ),
-      ...Array.from(this.#secondaryClients).map(client => {
-        return this.#setDefaultBackgroundColor(
-          client,
-          this.#defaultBackgroundColorState
-        );
-      }),
-    ]);
-  }
-
   /**
    * Resets default white background
    */
   async resetDefaultBackgroundColor(): Promise<void> {
-    this.#defaultBackgroundColorState = {
+    await this.#defaultBackgroundColorState.setState({
       active: true,
       color: undefined,
-    };
-    await this.#syncDefaultBackgroundColorState();
+    });
   }
 
   /**
    * Hides default white background
    */
   async setTransparentBackgroundColor(): Promise<void> {
-    this.#defaultBackgroundColorState = {
+    await this.#defaultBackgroundColorState.setState({
       active: true,
       color: {r: 0, g: 0, b: 0, a: 0},
-    };
-    await this.#syncDefaultBackgroundColorState();
+    });
   }
 
   @invokeAtMostOnceForArguments
@@ -596,20 +549,10 @@ export class EmulationManager {
     });
   }
 
-  async #syncJavaScriptEnabledState() {
-    await Promise.all([
-      this.#setJavaScriptEnabled(this.#client, this.#javascriptEnabledState),
-      ...Array.from(this.#secondaryClients).map(client => {
-        return this.#setJavaScriptEnabled(client, this.#javascriptEnabledState);
-      }),
-    ]);
-  }
-
   async setJavaScriptEnabled(enabled: boolean): Promise<void> {
-    this.#javascriptEnabledState = {
+    await this.#javascriptEnabledState.setState({
       active: true,
       javaScriptEnabled: enabled,
-    };
-    await this.#syncJavaScriptEnabledState();
+    });
   }
 }
