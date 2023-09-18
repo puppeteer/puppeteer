@@ -62,7 +62,7 @@ jobs:
         run: docker/pack.sh
       # Based on https://docs.github.com/en/actions/publishing-packages/publishing-docker-images.
       - name: Log in to the Container registry
-        uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc # v2.2.0
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
