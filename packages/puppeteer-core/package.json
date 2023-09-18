@@ -129,13 +129,7 @@
     }
   },
   "files": [
-    "lib",
-    "src",
-    "!*.test.js",
-    "!*.test.d.ts",
-    "!*.test.js.map",
-    "!*.test.d.ts.map",
-    "!*.tsbuildinfo"
+    "lib"
   ],
   "author": "The Chromium Authors",
   "license": "Apache-2.0",

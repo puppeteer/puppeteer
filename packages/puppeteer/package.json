@@ -110,13 +110,7 @@
   },
   "files": [
     "lib",
-    "src",
-    "install.js",
-    "!*.test.js",
-    "!*.test.d.ts",
-    "!*.test.js.map",
-    "!*.test.d.ts.map",
-    "!*.tsbuildinfo"
+    "install.js"
   ],
   "author": "The Chromium Authors",
   "license": "Apache-2.0",

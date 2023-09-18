@@ -1,0 +1,7 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "../lib/esm/puppeteer",
+    "sourceRoot": "https://github.com/puppeteer/puppeteer/tree/puppeteer-v21.2.1/packages/puppeteer/src" // x-release-please-version
+  }
+}

@@ -1,8 +1,7 @@
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "declarationMap": false,
     "outDir": "../lib/esm/third_party",
-    "sourceMap": false
+    "sourceRoot": "https://github.com/puppeteer/puppeteer/tree/puppeteer-core-v21.2.1/packages/puppeteer-core/third_party" // x-release-please-version
   }
 }
