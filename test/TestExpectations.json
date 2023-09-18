@@ -2598,12 +2598,6 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[navigation.spec] navigation Page.goto should return last response in redirect chain",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[navigation.spec] navigation Page.goto should return response when page changes its URL after load",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],

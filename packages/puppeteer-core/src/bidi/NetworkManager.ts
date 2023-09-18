@@ -93,12 +93,10 @@ export class BidiNetworkManager extends EventEmitter<BidiNetworkManagerEvents> {
       return;
     }
     const request = this.#requestMap.get(event.request.request);
-
     let upsertRequest: BidiHTTPRequest;
     if (request) {
-      const requestChain = request._redirectChain;
-
-      upsertRequest = new BidiHTTPRequest(event, frame, requestChain);
+      request._redirectChain.push(request);
+      upsertRequest = new BidiHTTPRequest(event, frame, request._redirectChain);
     } else {
       upsertRequest = new BidiHTTPRequest(event, frame, []);
     }
@@ -123,7 +121,6 @@ export class BidiNetworkManager extends EventEmitter<BidiNetworkManagerEvents> {
     }
     this.emit(NetworkManagerEvent.Response, response);
     this.emit(NetworkManagerEvent.RequestFinished, request);
-    this.#requestMap.delete(event.request.request);
   }
 
   #onFetchError(event: Bidi.Network.FetchErrorParameters) {
