@@ -4,13 +4,13 @@ sidebar_label: Browser.newPage
 
 # Browser.newPage() method
 
-Promise which resolves to a new [Page](./puppeteer.page.md) object. The Page is created in a default browser context.
+Creates a new [page](./puppeteer.page.md) in the [default browser context](./puppeteer.browser.defaultbrowsercontext.md).
 
 #### Signature:
 
 ```typescript
 class Browser {
-  newPage(): Promise<Page>;
+  abstract newPage(): Promise<Page>;
 }
 ```
 

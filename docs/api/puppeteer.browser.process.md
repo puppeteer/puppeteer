@@ -4,7 +4,7 @@ sidebar_label: Browser.process
 
 # Browser.process() method
 
-The spawned browser process. Returns `null` if the browser instance was created with [Puppeteer.connect()](./puppeteer.puppeteer.connect.md).
+Gets the associated [ChildProcess](https://nodejs.org/api/child_process.html#class-childprocess).
 
 #### Signature:
 
@@ -17,3 +17,5 @@ class Browser {
 **Returns:**
 
 ChildProcess \| null
+
+`null` if this instance was connected to via [Puppeteer.connect()](./puppeteer.puppeteer.connect.md).

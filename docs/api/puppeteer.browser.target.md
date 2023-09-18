@@ -4,13 +4,13 @@ sidebar_label: Browser.target
 
 # Browser.target() method
 
-The target associated with the browser.
+Gets the [target](./puppeteer.target.md) associated with the [default browser context](./puppeteer.browser.defaultbrowsercontext.md)).
 
 #### Signature:
 
 ```typescript
 class Browser {
-  target(): Target;
+  abstract target(): Target;
 }
 ```
 

@@ -4,7 +4,9 @@ sidebar_label: Browser.waitForTarget
 
 # Browser.waitForTarget() method
 
-Searches for a target in all browser contexts.
+Waits until a [target](./puppeteer.target.md) matching the given `predicate` appears and returns it.
+
+This will look all open [browser contexts](./puppeteer.browsercontext.md).
 
 #### Signature:
 
@@ -19,20 +21,18 @@ class Browser {
 
 ## Parameters
 
-| Parameter | Type                                                                         | Description                            |
-| --------- | ---------------------------------------------------------------------------- | -------------------------------------- |
-| predicate | (x: [Target](./puppeteer.target.md)) =&gt; boolean \| Promise&lt;boolean&gt; | A function to be run for every target. |
-| options   | [WaitForTargetOptions](./puppeteer.waitfortargetoptions.md)                  | _(Optional)_                           |
+| Parameter | Type                                                                         | Description  |
+| --------- | ---------------------------------------------------------------------------- | ------------ |
+| predicate | (x: [Target](./puppeteer.target.md)) =&gt; boolean \| Promise&lt;boolean&gt; |              |
+| options   | [WaitForTargetOptions](./puppeteer.waitfortargetoptions.md)                  | _(Optional)_ |
 
 **Returns:**
 
 Promise&lt;[Target](./puppeteer.target.md)&gt;
 
-The first target found that matches the `predicate` function.
-
 ## Example
 
-An example of finding a target for a page opened via `window.open`:
+Finding a target for a page opened via `window.open`:
 
 ```ts
 await page.evaluate(() => window.open('https://www.example.com/'));

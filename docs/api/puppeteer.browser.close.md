@@ -4,13 +4,13 @@ sidebar_label: Browser.close
 
 # Browser.close() method
 
-Closes the browser and all of its pages (if any were opened). The [Browser](./puppeteer.browser.md) object itself is considered to be disposed and cannot be used anymore.
+Closes this [browser](./puppeteer.browser.md) and all associated [pages](./puppeteer.page.md).
 
 #### Signature:
 
 ```typescript
 class Browser {
-  close(): Promise<void>;
+  abstract close(): Promise<void>;
 }
 ```
 

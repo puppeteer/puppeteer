@@ -4,13 +4,19 @@ sidebar_label: Browser.wsEndpoint
 
 # Browser.wsEndpoint() method
 
-The browser websocket endpoint which can be used as an argument to [Puppeteer.connect()](./puppeteer.puppeteer.connect.md).
+Gets the WebSocket URL to connect to this [browser](./puppeteer.browser.md).
+
+This is usually used with [Puppeteer.connect()](./puppeteer.puppeteer.connect.md).
+
+You can find the debugger URL (`webSocketDebuggerUrl`) from `http://${host}:${port}/json/version`.
+
+See [browser endpoint](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target) for more information.
 
 #### Signature:
 
 ```typescript
 class Browser {
-  wsEndpoint(): string;
+  abstract wsEndpoint(): string;
 }
 ```
 
@@ -18,10 +24,6 @@ class Browser {
 
 string
 
-The Browser websocket url.
-
 ## Remarks
 
-The format is `ws://${host}:${port}/devtools/browser/<id>`.
-
-You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/version`. Learn more about the [devtools protocol](https://chromedevtools.github.io/devtools-protocol) and the [browser endpoint](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target).
+The format is always `ws://${host}:${port}/devtools/browser/<id>`.

@@ -4,7 +4,9 @@ sidebar_label: Browser.pages
 
 # Browser.pages() method
 
-An array of all open pages inside the Browser.
+Gets a list of all open [pages](./puppeteer.page.md) inside this .
+
+If there ar multiple [browser contexts](./puppeteer.browsercontext.md), this returns all [pages](./puppeteer.page.md) in all [browser contexts](./puppeteer.browsercontext.md).
 
 #### Signature:
 
@@ -20,4 +22,4 @@ Promise&lt;[Page](./puppeteer.page.md)\[\]&gt;
 
 ## Remarks
 
-In case of multiple browser contexts, returns an array with all the pages in all browser contexts. Non-visible pages, such as `"background_page"`, will not be listed here. You can find them using [Target.page()](./puppeteer.target.page.md).
+Non-visible [pages](./puppeteer.page.md), such as `"background_page"`, will not be listed here. You can find them using [Target.page()](./puppeteer.target.page.md).
