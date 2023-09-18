@@ -423,11 +423,13 @@ describe('Evaluation specs', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.PREFIX + '/one-style.html');
+      const onRequest = server.waitForRequest('/empty.html');
       const result = await page.evaluate(() => {
         (window as any).location = '/empty.html';
         return [42];
       });
       expect(result).toEqual([42]);
+      await onRequest;
     });
     it('should transfer 100Mb of data from page to node.js', async function () {
       this.timeout(25_000);
