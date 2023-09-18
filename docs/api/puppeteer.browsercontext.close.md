@@ -4,13 +4,13 @@ sidebar_label: BrowserContext.close
 
 # BrowserContext.close() method
 
-Closes the browser context. All the targets that belong to the browser context will be closed.
+Closes this [browser context](./puppeteer.browsercontext.md) and all associated [pages](./puppeteer.page.md).
 
 #### Signature:
 
 ```typescript
 class BrowserContext {
-  close(): Promise<void>;
+  abstract close(): Promise<void>;
 }
 ```
 
@@ -20,4 +20,4 @@ Promise&lt;void&gt;
 
 ## Remarks
 
-Only incognito browser contexts can be closed.
+The [default browser context](./puppeteer.browser.defaultbrowsercontext.md) cannot be closed.
