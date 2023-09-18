@@ -344,24 +344,27 @@ export class BidiPage extends Page {
         )
       );
     } else if (isJavaScriptLogEntry(event)) {
-      let message = event.text ?? '';
+      const error = new Error(event.text ?? '');
 
+      const messageHeight = error.message.split('\n').length;
+      const messageLines = error.stack!.split('\n').splice(0, messageHeight);
+
+      const stackLines = [];
       if (event.stackTrace) {
-        for (const callFrame of event.stackTrace.callFrames) {
-          const location =
-            callFrame.url +
-            ':' +
-            callFrame.lineNumber +
-            ':' +
-            callFrame.columnNumber;
-          const functionName = callFrame.functionName || '<anonymous>';
-          message += `\n    at ${functionName} (${location})`;
+        for (const frame of event.stackTrace.callFrames) {
+          // Note we need to add `1` because the values are 0-indexed.
+          stackLines.push(
+            `    at ${frame.functionName || '<anonymous>'} (${frame.url}:${
+              frame.lineNumber + 1
+            }:${frame.columnNumber + 1})`
+          );
+          if (stackLines.length >= Error.stackTraceLimit) {
+            break;
+          }
         }
       }
 
-      const error = new Error(message);
-      error.stack = ''; // Don't capture Puppeteer stacktrace.
-
+      error.stack = [...messageLines, ...stackLines].join('\n');
       this.emit(PageEvent.PageError, error);
     } else {
       debugError(

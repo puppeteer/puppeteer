@@ -124,18 +124,20 @@ export function createClientError(
     name = detail.name;
     message = detail.message;
   }
-  const messageHeight = message.split('\n').length;
   const error = new Error(message);
   error.name = name;
 
-  const stackLines = [];
+  const messageHeight = error.message.split('\n').length;
   const messageLines = error.stack!.split('\n').splice(0, messageHeight);
-  if (details.stackTrace && stackLines.length < Error.stackTraceLimit) {
-    for (const frame of details.stackTrace.callFrames.reverse()) {
+
+  const stackLines = [];
+  if (details.stackTrace) {
+    for (const frame of details.stackTrace.callFrames) {
+      // Note we need to add `1` because the values are 0-indexed.
       stackLines.push(
         `    at ${frame.functionName || '<anonymous>'} (${frame.url}:${
-          frame.lineNumber
-        }:${frame.columnNumber})`
+          frame.lineNumber + 1
+        }:${frame.columnNumber + 1})`
       );
       if (stackLines.length >= Error.stackTraceLimit) {
         break;
