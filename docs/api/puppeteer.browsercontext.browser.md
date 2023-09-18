@@ -4,13 +4,13 @@ sidebar_label: BrowserContext.browser
 
 # BrowserContext.browser() method
 
-The browser this browser context belongs to.
+Gets the [browser](./puppeteer.browser.md) associated with this [browser context](./puppeteer.browsercontext.md).
 
 #### Signature:
 
 ```typescript
 class BrowserContext {
-  browser(): Browser;
+  abstract browser(): Browser;
 }
 ```
 

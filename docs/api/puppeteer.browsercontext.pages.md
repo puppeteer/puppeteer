@@ -4,13 +4,13 @@ sidebar_label: BrowserContext.pages
 
 # BrowserContext.pages() method
 
-An array of all pages inside the browser context.
+Gets a list of all open [pages](./puppeteer.page.md) inside this [browser context](./puppeteer.browsercontext.md).
 
 #### Signature:
 
 ```typescript
 class BrowserContext {
-  pages(): Promise<Page[]>;
+  abstract pages(): Promise<Page[]>;
 }
 ```
 
@@ -18,4 +18,6 @@ class BrowserContext {
 
 Promise&lt;[Page](./puppeteer.page.md)\[\]&gt;
 
-Promise which resolves to an array of all open pages. Non visible pages, such as `"background_page"`, will not be listed here. You can find them using [the target page](./puppeteer.target.page.md).
+## Remarks
+
+Non-visible [pages](./puppeteer.page.md), such as `"background_page"`, will not be listed here. You can find them using [Target.page()](./puppeteer.target.page.md).

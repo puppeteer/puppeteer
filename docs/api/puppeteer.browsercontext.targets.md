@@ -4,7 +4,7 @@ sidebar_label: BrowserContext.targets
 
 # BrowserContext.targets() method
 
-An array of all active targets inside the browser context.
+Gets all active [targets](./puppeteer.target.md) inside this [browser context](./puppeteer.browsercontext.md).
 
 #### Signature:
 

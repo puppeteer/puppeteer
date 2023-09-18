@@ -4,27 +4,29 @@ sidebar_label: BrowserContext
 
 # BrowserContext class
 
-BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has a single BrowserContext used by default. The method [Browser.newPage](./puppeteer.browser.newpage.md) creates a page in the default browser context.
+[BrowserContext](./puppeteer.browsercontext.md) represents individual sessions within a [browser](./puppeteer.browser.md).
+
+When a [browser](./puppeteer.browser.md) is launched, it has a single [browser context](./puppeteer.browsercontext.md) by default. Others can be created using [Browser.createIncognitoBrowserContext()](./puppeteer.browser.createincognitobrowsercontext.md).
+
+[BrowserContext](./puppeteer.browsercontext.md) [emits](./puppeteer.eventemitter.md) various events which are documented in the [BrowserContextEvent](./puppeteer.browsercontextevent.md) enum.
+
+If a [page](./puppeteer.page.md) opens another [page](./puppeteer.page.md), e.g. using `window.open`, the popup will belong to the parent [page's browser context](./puppeteer.page.browsercontext.md).
 
 #### Signature:
 
 ```typescript
-export declare class BrowserContext extends EventEmitter<BrowserContextEvents>
+export declare abstract class BrowserContext extends EventEmitter<BrowserContextEvents>
 ```
 
 **Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;[BrowserContextEvents](./puppeteer.browsercontextevents.md)&gt;
 
 ## Remarks
 
-The Browser class extends from Puppeteer's [EventEmitter](./puppeteer.eventemitter.md) class and will emit various events which are documented in the [BrowserContextEvents](./puppeteer.browsercontextevents.md) enum.
-
-If a page opens another page, e.g. with a `window.open` call, the popup will belong to the parent page's browser context.
-
-Puppeteer allows creation of "incognito" browser contexts with [Browser.createIncognitoBrowserContext](./puppeteer.browser.createincognitobrowsercontext.md) method. "Incognito" browser contexts don't write any browsing data to disk.
-
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `BrowserContext` class.
 
 ## Example
+
+Creating an incognito [browser context](./puppeteer.browsercontext.md):
 
 ```ts
 // Create a new incognito browser context
@@ -39,20 +41,21 @@ await context.close();
 
 ## Properties
 
-| Property | Modifiers             | Type                | Description |
-| -------- | --------------------- | ------------------- | ----------- |
-| id       | <code>readonly</code> | string \| undefined |             |
+| Property | Modifiers             | Type                | Description                                                              |
+| -------- | --------------------- | ------------------- | ------------------------------------------------------------------------ |
+| closed   | <code>readonly</code> | boolean             | Whether this [browser context](./puppeteer.browsercontext.md) is closed. |
+| id       | <code>readonly</code> | string \| undefined | Identifier for this [browser context](./puppeteer.browsercontext.md).    |
 
 ## Methods
 
-| Method                                                                                        | Modifiers | Description                                                                                                         |
-| --------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------- |
-| [browser()](./puppeteer.browsercontext.browser.md)                                            |           | The browser this browser context belongs to.                                                                        |
-| [clearPermissionOverrides()](./puppeteer.browsercontext.clearpermissionoverrides.md)          |           | Clears all permission overrides for the browser context.                                                            |
-| [close()](./puppeteer.browsercontext.close.md)                                                |           | Closes the browser context. All the targets that belong to the browser context will be closed.                      |
-| [isIncognito()](./puppeteer.browsercontext.isincognito.md)                                    |           | Returns whether BrowserContext is incognito. The default browser context is the only non-incognito browser context. |
-| [newPage()](./puppeteer.browsercontext.newpage.md)                                            |           | Creates a new page in the browser context.                                                                          |
-| [overridePermissions(origin, permissions)](./puppeteer.browsercontext.overridepermissions.md) |           |                                                                                                                     |
-| [pages()](./puppeteer.browsercontext.pages.md)                                                |           | An array of all pages inside the browser context.                                                                   |
-| [targets()](./puppeteer.browsercontext.targets.md)                                            |           | An array of all active targets inside the browser context.                                                          |
-| [waitForTarget(predicate, options)](./puppeteer.browsercontext.waitfortarget.md)              |           | This searches for a target in this specific browser context.                                                        |
+| Method                                                                                        | Modifiers | Description                                                                                                                                                                                                     |
+| --------------------------------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [browser()](./puppeteer.browsercontext.browser.md)                                            |           | Gets the [browser](./puppeteer.browser.md) associated with this [browser context](./puppeteer.browsercontext.md).                                                                                               |
+| [clearPermissionOverrides()](./puppeteer.browsercontext.clearpermissionoverrides.md)          |           | Clears all permission overrides for this [browser context](./puppeteer.browsercontext.md).                                                                                                                      |
+| [close()](./puppeteer.browsercontext.close.md)                                                |           | Closes this [browser context](./puppeteer.browsercontext.md) and all associated [pages](./puppeteer.page.md).                                                                                                   |
+| [isIncognito()](./puppeteer.browsercontext.isincognito.md)                                    |           | <p>Whether this [browser context](./puppeteer.browsercontext.md) is incognito.</p><p>The [default browser context](./puppeteer.browser.defaultbrowsercontext.md) is the only non-incognito browser context.</p> |
+| [newPage()](./puppeteer.browsercontext.newpage.md)                                            |           | Creates a new [page](./puppeteer.page.md) in this [browser context](./puppeteer.browsercontext.md).                                                                                                             |
+| [overridePermissions(origin, permissions)](./puppeteer.browsercontext.overridepermissions.md) |           | Grants this [browser context](./puppeteer.browsercontext.md) the given <code>permissions</code> within the given <code>origin</code>.                                                                           |
+| [pages()](./puppeteer.browsercontext.pages.md)                                                |           | Gets a list of all open [pages](./puppeteer.page.md) inside this [browser context](./puppeteer.browsercontext.md).                                                                                              |
+| [targets()](./puppeteer.browsercontext.targets.md)                                            |           | Gets all active [targets](./puppeteer.target.md) inside this [browser context](./puppeteer.browsercontext.md).                                                                                                  |
+| [waitForTarget(predicate, options)](./puppeteer.browsercontext.waitfortarget.md)              |           | <p>Waits until a [target](./puppeteer.target.md) matching the given <code>predicate</code> appears and returns it.</p><p>This will look all open [browser contexts](./puppeteer.browsercontext.md).</p>         |
