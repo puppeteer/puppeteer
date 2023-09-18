@@ -57,6 +57,45 @@ import {type Realm} from './Realm.js';
 /**
  * @public
  */
+export interface WaitForOptions {
+  /**
+   * Maximum wait time in milliseconds. Pass 0 to disable the timeout.
+   *
+   * The default value can be changed by using the
+   * {@link Page.setDefaultTimeout} or {@link Page.setDefaultNavigationTimeout}
+   * methods.
+   *
+   * @defaultValue `30000`
+   */
+  timeout?: number;
+  /**
+   * When to consider waiting succeeds. Given an array of event strings, waiting
+   * is considered to be successful after all events have been fired.
+   *
+   * @defaultValue `'load'`
+   */
+  waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
+}
+
+/**
+ * @public
+ */
+export interface GoToOptions extends WaitForOptions {
+  /**
+   * If provided, it will take preference over the referer header value set by
+   * {@link Page.setExtraHTTPHeaders | page.setExtraHTTPHeaders()}.
+   */
+  referer?: string;
+  /**
+   * If provided, it will take preference over the referer-policy header value
+   * set by {@link Page.setExtraHTTPHeaders | page.setExtraHTTPHeaders()}.
+   */
+  referrerPolicy?: string;
+}
+
+/**
+ * @public
+ */
 export interface FrameWaitForFunctionOptions {
   /**
    * An interval at which the `pageFunction` is executed, defaults to `raf`. If
@@ -278,7 +317,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   }
 
   /**
-   * Navigates a frame to the given url.
+   * Navigates the frame to the given `url`.
    *
    * @remarks
    * Navigation to `about:blank` or navigation to the same URL with a different
@@ -292,20 +331,17 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    *
    * :::
    *
-   * @param url - the URL to navigate the frame to. This should include the
-   * scheme, e.g. `https://`.
-   * @param options - navigation options. `waitUntil` is useful to define when
-   * the navigation should be considered successful - see the docs for
-   * {@link PuppeteerLifeCycleEvent} for more details.
-   *
+   * @param url - URL to navigate the frame to. The URL should include scheme,
+   * e.g. `https://`
+   * @param options - Options to configure waiting behavior.
    * @returns A promise which resolves to the main resource response. In case of
    * multiple redirects, the navigation will resolve with the response of the
    * last redirect.
-   * @throws This method will throw an error if:
+   * @throws If:
    *
    * - there's an SSL error (e.g. in case of self-signed certificates).
    * - target URL is invalid.
-   * - the `timeout` is exceeded during navigation.
+   * - the timeout is exceeded during navigation.
    * - the remote server does not respond or is unreachable.
    * - the main resource failed to load.
    *
@@ -343,14 +379,12 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * ]);
    * ```
    *
-   * @param options - options to configure when the navigation is consided
-   * finished.
-   * @returns a promise that resolves when the frame navigates to a new URL.
+   * @param options - Options to configure waiting behavior.
+   * @returns A promise which resolves to the main resource response.
    */
-  abstract waitForNavigation(options?: {
-    timeout?: number;
-    waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-  }): Promise<HTTPResponse | null>;
+  abstract waitForNavigation(
+    options?: WaitForOptions
+  ): Promise<HTTPResponse | null>;
 
   /**
    * @internal

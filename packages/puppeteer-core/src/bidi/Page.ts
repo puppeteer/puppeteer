@@ -20,14 +20,14 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type Protocol from 'devtools-protocol';
 
 import {type CDPSession} from '../api/CDPSession.js';
+import {type WaitForOptions} from '../api/Frame.js';
 import {
+  Page,
+  PageEvent,
   type GeolocationOptions,
   type MediaFeature,
   type NewDocumentScriptEvaluation,
-  Page,
-  PageEvent,
   type ScreenshotOptions,
-  type WaitForOptions,
 } from '../api/Page.js';
 import {Accessibility} from '../cdp/Accessibility.js';
 import {Coverage} from '../cdp/Coverage.js';
@@ -39,7 +39,11 @@ import {
   ConsoleMessage,
   type ConsoleMessageLocation,
 } from '../common/ConsoleMessage.js';
-import {TargetCloseError} from '../common/Errors.js';
+import {
+  ProtocolError,
+  TargetCloseError,
+  TimeoutError,
+} from '../common/Errors.js';
 import {type Handler} from '../common/EventEmitter.js';
 import {type PDFOptions} from '../common/PDFOptions.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
@@ -59,14 +63,15 @@ import {Deferred} from '../util/Deferred.js';
 import {type BidiBrowser} from './Browser.js';
 import {type BidiBrowserContext} from './BrowserContext.js';
 import {
-  type BrowsingContext,
   BrowsingContextEvent,
   CdpSessionWrapper,
+  getWaitUntilSingle,
+  type BrowsingContext,
 } from './BrowsingContext.js';
 import {type BidiConnection} from './Connection.js';
 import {BidiDialog} from './Dialog.js';
 import {EmulationManager} from './EmulationManager.js';
-import {BidiFrame} from './Frame.js';
+import {BidiFrame, lifeCycleToReadinessState} from './Frame.js';
 import {type BidiHTTPRequest} from './HTTPRequest.js';
 import {type BidiHTTPResponse} from './HTTPResponse.js';
 import {BidiKeyboard, BidiMouse, BidiTouchscreen} from './Input.js';
@@ -414,15 +419,36 @@ export class BidiPage extends Page {
   }
 
   override async reload(
-    options?: WaitForOptions
+    options: WaitForOptions = {}
   ): Promise<BidiHTTPResponse | null> {
-    const navigationId = await this.mainFrame()
-      .context()
-      .reload({
-        ...options,
-        timeout: options?.timeout ?? this.#timeoutSettings.navigationTimeout(),
-      });
-    return this.getNavigationResponse(navigationId);
+    const {
+      waitUntil = 'load',
+      timeout = this.#timeoutSettings.navigationTimeout(),
+    } = options;
+
+    const readinessState = lifeCycleToReadinessState.get(
+      getWaitUntilSingle(waitUntil)
+    ) as Bidi.BrowsingContext.ReadinessState;
+
+    try {
+      const {result} = await waitWithTimeout(
+        this.#connection.send('browsingContext.reload', {
+          context: this.mainFrame()._id,
+          wait: readinessState,
+        }),
+        'Navigation',
+        timeout
+      );
+
+      return this.getNavigationResponse(result.navigation);
+    } catch (error) {
+      if (error instanceof ProtocolError) {
+        error.message += ` at ${this.url}`;
+      } else if (error instanceof TimeoutError) {
+        error.message = 'Navigation timeout of ' + timeout + ' ms exceeded';
+      }
+      throw error;
+    }
   }
 
   override setDefaultNavigationTimeout(timeout: number): void {

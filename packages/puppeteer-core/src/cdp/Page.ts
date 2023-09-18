@@ -20,22 +20,21 @@ import {Protocol} from 'devtools-protocol';
 
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
-import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
+import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import {type ElementHandle} from '../api/ElementHandle.js';
-import {type Frame} from '../api/Frame.js';
+import {type WaitForOptions, type Frame} from '../api/Frame.js';
 import {type HTTPRequest} from '../api/HTTPRequest.js';
 import {type HTTPResponse} from '../api/HTTPResponse.js';
 import {type JSHandle} from '../api/JSHandle.js';
 import {
+  Page,
+  PageEvent,
   type GeolocationOptions,
   type MediaFeature,
   type Metrics,
   type NewDocumentScriptEvaluation,
-  Page,
-  PageEvent,
   type ScreenshotClip,
   type ScreenshotOptions,
-  type WaitForOptions,
   type WaitTimeoutOptions,
 } from '../api/Page.js';
 import {
@@ -80,9 +79,9 @@ import {FrameManager, FrameManagerEvent} from './FrameManager.js';
 import {CdpKeyboard, CdpMouse, CdpTouchscreen} from './Input.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
 import {
+  NetworkManagerEvent,
   type Credentials,
   type NetworkConditions,
-  NetworkManagerEvent,
 } from './NetworkManager.js';
 import {type CdpTarget} from './Target.js';
 import {TargetManagerEvent} from './TargetManager.js';
@@ -865,12 +864,12 @@ export class CdpPage extends Page {
   override async reload(
     options?: WaitForOptions
   ): Promise<HTTPResponse | null> {
-    const result = await Promise.all([
+    const [result] = await Promise.all([
       this.waitForNavigation(options),
       this.#client.send('Page.reload'),
     ]);
 
-    return result[0];
+    return result;
   }
 
   override async createCDPSession(): Promise<CDPSession> {
