@@ -139,7 +139,10 @@ and [examples](https://github.com/puppeteer/puppeteer/tree/main/examples).
 
 #### Example
 
-The following example searches [developer.chrome.com](https://developer.chrome.com/) for blog posts with text "automate beyond recorder", click on the first result and print the full title of the blog post.
+The following example searches
+[developer.chrome.com](https://developer.chrome.com/) for blog posts with text
+"automate beyond recorder", click on the first result and print the full title
+of the blog post.
 
 ```ts
 import puppeteer from 'puppeteer';
@@ -189,7 +192,8 @@ const browser = await puppeteer.launch();
 const browser = await puppeteer.launch({headless: true});
 ```
 
-[Chrome 112 launched a new Headless mode](https://developer.chrome.com/articles/new-headless/) that might cause some differences in behavior compared to the old Headless implementation.
+[Chrome 112 launched a new Headless mode](https://developer.chrome.com/articles/new-headless/)
+that might cause some differences in behavior compared to the old Headless implementation.
 In the future Puppeteer will start defaulting to new implementation.
 We recommend you try it out before the switch:
 
