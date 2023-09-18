@@ -29,7 +29,7 @@ describe('Fixtures', function () {
   it('dumpio option should work with pipe option', async () => {
     const {defaultBrowserOptions, puppeteerPath, headless} =
       await getTestState();
-    if (headless === 'new') {
+    if (headless !== 'true') {
       // This test only works in the old headless mode.
       return;
     }
@@ -46,7 +46,7 @@ describe('Fixtures', function () {
       JSON.stringify(options),
     ]);
     res.stderr.on('data', data => {
-      return (dumpioData += data.toString('utf8'));
+      dumpioData += data.toString('utf8');
     });
     await new Promise(resolve => {
       return res.on('close', resolve);
@@ -65,7 +65,7 @@ describe('Fixtures', function () {
       JSON.stringify(options),
     ]);
     res.stderr.on('data', data => {
-      return (dumpioData += data.toString('utf8'));
+      dumpioData += data.toString('utf8');
     });
     await new Promise(resolve => {
       return res.on('close', resolve);
@@ -88,7 +88,7 @@ describe('Fixtures', function () {
     ]);
     let wsEndPointCallback: (value: string) => void;
     const wsEndPointPromise = new Promise<string>(x => {
-      return (wsEndPointCallback = x);
+      wsEndPointCallback = x;
     });
     let output = '';
     res.stdout.on('data', data => {
@@ -103,7 +103,7 @@ describe('Fixtures', function () {
     const promises = [
       waitEvent(browser, 'disconnected'),
       new Promise(resolve => {
-        return res.on('close', resolve);
+        res.on('close', resolve);
       }),
     ];
     if (process.platform === 'win32') {

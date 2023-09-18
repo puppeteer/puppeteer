@@ -3990,18 +3990,6 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
-    "testIdPattern": "[fixtures.spec] Fixtures dumpio option should work with pipe option",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome", "headful"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[fixtures.spec] Fixtures dumpio option should work with pipe option",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome", "new-headless"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
     "testIdPattern": "[headful.spec] headful tests HEADFUL OOPIF: should expose events within OOPIFs",
     "platforms": ["linux"],
     "parameters": ["cdp", "chrome", "headless"],
