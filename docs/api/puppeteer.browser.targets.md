@@ -4,13 +4,15 @@ sidebar_label: Browser.targets
 
 # Browser.targets() method
 
-All active targets inside the Browser. In case of multiple browser contexts, returns an array with all the targets in all browser contexts.
+Gets all active [targets](./puppeteer.target.md).
+
+In case of multiple [browser contexts](./puppeteer.browsercontext.md), this returns all [targets](./puppeteer.target.md) in all [browser contexts](./puppeteer.browsercontext.md).
 
 #### Signature:
 
 ```typescript
 class Browser {
-  targets(): Target[];
+  abstract targets(): Target[];
 }
 ```
 
