@@ -36,7 +36,7 @@
   "scripts": {
     "build:docs": "wireit",
     "build": "wireit",
-    "clean": "git clean -Xf $(ls -A | grep -v node_modules)",
+    "clean": "../../tools/clean.js",
     "postinstall": "node install.js",
     "prepack": "wireit"
   },

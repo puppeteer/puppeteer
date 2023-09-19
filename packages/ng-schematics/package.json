@@ -4,7 +4,7 @@
   "description": "Puppeteer Angular schematics",
   "scripts": {
     "build": "wireit",
-    "clean": "git clean -Xf $(ls -A | grep -v node_modules)",
+    "clean": "../../tools/clean.js",
     "dev:test": "npm run test --watch",
     "dev": "npm run build --watch",
     "sandbox:test": "node tools/sandbox.js --test",
