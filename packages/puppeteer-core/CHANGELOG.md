@@ -20,6 +20,25 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.3.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.2.1...puppeteer-core-v21.3.0) (2023-09-19)
+
+
+### Features
+
+* implement `Browser.connected` ([#10927](https://github.com/puppeteer/puppeteer/issues/10927)) ([a4345a4](https://github.com/puppeteer/puppeteer/commit/a4345a477f58541f5d95da11ffee74abe24c12bf))
+* implement `BrowserContext.closed` ([#10928](https://github.com/puppeteer/puppeteer/issues/10928)) ([2292078](https://github.com/puppeteer/puppeteer/commit/2292078969fa46a27d5759989cd44a4d48beb310))
+* implement improved Drag n' Drop APIs ([#10651](https://github.com/puppeteer/puppeteer/issues/10651)) ([9342bac](https://github.com/puppeteer/puppeteer/commit/9342bac2639702090f39fc1e3a97d43a934f3f0b))
+* implement typed events ([#10889](https://github.com/puppeteer/puppeteer/issues/10889)) ([9b6f1de](https://github.com/puppeteer/puppeteer/commit/9b6f1de8b99445c661c5aebcf041fe90daf469b9))
+* roll to Chrome 117.0.5938.62 (r1181205) ([#10893](https://github.com/puppeteer/puppeteer/issues/10893)) ([4b8d20d](https://github.com/puppeteer/puppeteer/commit/4b8d20d0edeccaa3028e0c1c0b63c022cfabcee2))
+
+
+### Bug Fixes
+
+* fix line/column number in errors ([#10926](https://github.com/puppeteer/puppeteer/issues/10926)) ([a0e57f7](https://github.com/puppeteer/puppeteer/commit/a0e57f7eb230ba6a659c2d418da8d3f67add2d00))
+* handle frame manager init without unhandled rejection ([#10902](https://github.com/puppeteer/puppeteer/issues/10902)) ([ea14834](https://github.com/puppeteer/puppeteer/commit/ea14834fdf1c7c1afa45bdd1fb5339380f4631a2))
+* remove explicit resource management from types ([#10918](https://github.com/puppeteer/puppeteer/issues/10918)) ([a1b1bff](https://github.com/puppeteer/puppeteer/commit/a1b1bffb7258f1dec3b0a2e9ce068baf2cc3db19))
+* roll to Chrome 117.0.5938.88 (r1181205) ([#10920](https://github.com/puppeteer/puppeteer/issues/10920)) ([b7bcc9a](https://github.com/puppeteer/puppeteer/commit/b7bcc9a733a3ac376397a32c3f62eb68101bedf9))
+
 ## [21.2.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.2.0...puppeteer-core-v21.2.1) (2023-09-13)
 
 
