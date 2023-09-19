@@ -23,6 +23,7 @@
     "lint": "run-s lint:prettier lint:eslint",
     "postinstall": "npm run postinstall --workspaces --if-present",
     "prepare": "npm run prepare --workspaces --if-present",
+    "doctest": "wireit",
     "test-install": "npm run test --workspace @puppeteer-test/installation",
     "test-types": "tsd -t packages/puppeteer",
     "test:chrome:headful": "wireit",
@@ -57,6 +58,13 @@
         "./packages/browsers:build:docs",
         "./packages/puppeteer:build:docs",
         "./packages/puppeteer-core:build:docs"
+      ]
+    },
+    "doctest": {
+      "command": "npx ./tools/doctest 'packages/puppeteer-core/lib/esm/**/*.js'",
+      "dependencies": [
+        "./packages/puppeteer-core:build",
+        "./tools/doctest:build"
       ]
     },
     "test:chrome:headful": {
@@ -184,6 +192,7 @@
     "packages/*",
     "test",
     "test/installation",
-    "tools/eslint"
+    "tools/eslint",
+    "tools/doctest"
   ]
 }

@@ -1,0 +1,41 @@
+{
+  "name": "@puppeteer/doctest",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "bin": "./bin/doctest.js",
+  "description": "Tests JSDoc @example code within a file.",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "wireit",
+    "clean": "../clean.js"
+  },
+  "wireit": {
+    "build": {
+      "command": "tsc -b && chmod +x ./bin/doctest.js",
+      "clean": "if-file-deleted",
+      "files": [
+        "src/**"
+      ],
+      "output": [
+        "bin/**",
+        "tsconfig.tsbuildinfo"
+      ]
+    }
+  },
+  "dependencies": {
+    "@swc/core": "1.3.85",
+    "acorn": "8.10.0",
+    "doctrine": "3.0.0",
+    "glob": "10.3.4",
+    "pkg-dir": "7.0.0",
+    "source-map": "0.7.4",
+    "source-map-support": "0.5.21",
+    "yargs": "17.7.2"
+  },
+  "devDependencies": {
+    "@types/doctrine": "0.0.6",
+    "@types/node": "20.6.2",
+    "@types/source-map-support": "0.5.7"
+  }
+}
