@@ -57,7 +57,7 @@ export class CdpHTTPResponse extends HTTPResponse {
       port: responsePayload.remotePort,
     };
     this.#statusText =
-      this.#parseStatusTextFromExtrInfo(extraInfo) ||
+      this.#parseStatusTextFromExtraInfo(extraInfo) ||
       responsePayload.statusText;
     this.#url = request.url();
     this.#fromDiskCache = !!responsePayload.fromDiskCache;
@@ -75,7 +75,7 @@ export class CdpHTTPResponse extends HTTPResponse {
     this.#timing = responsePayload.timing || null;
   }
 
-  #parseStatusTextFromExtrInfo(
+  #parseStatusTextFromExtraInfo(
     extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null
   ): string | undefined {
     if (!extraInfo || !extraInfo.headersText) {

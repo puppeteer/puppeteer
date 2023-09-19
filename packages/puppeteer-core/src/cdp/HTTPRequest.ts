@@ -37,12 +37,7 @@ import {assert} from '../util/assert.js';
  * @internal
  */
 export class CdpHTTPRequest extends HTTPRequest {
-  override _requestId: string;
-  override _interceptionId: string | undefined;
-  override _failureText: string | null = null;
-  override _response: HTTPResponse | null = null;
-  override _fromMemoryCache = false;
-  override _redirectChain: CdpHTTPRequest[];
+  declare _redirectChain: CdpHTTPRequest[];
 
   #client: CDPSession;
   #isNavigationRequest: boolean;
