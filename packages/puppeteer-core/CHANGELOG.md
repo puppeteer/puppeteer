@@ -20,6 +20,13 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.3.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.3.0...puppeteer-core-v21.3.1) (2023-09-19)
+
+
+### Bug Fixes
+
+* make `CDPSessionEvent.SessionAttached` public ([#10941](https://github.com/puppeteer/puppeteer/issues/10941)) ([cfed7b9](https://github.com/puppeteer/puppeteer/commit/cfed7b93ec23e92ec11632f1cd90f00dac754739))
+
 ## [21.3.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.2.1...puppeteer-core-v21.3.0) (2023-09-19)
 
 
