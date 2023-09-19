@@ -104,7 +104,7 @@ export class BidiPage extends Page {
     ],
     ['browsingContext.userPromptOpened', this.#onDialog.bind(this)],
   ]);
-  #networkManagerEvents = Object.freeze([
+  readonly #networkManagerEvents = [
     [
       NetworkManagerEvent.Request,
       (request: BidiHTTPRequest) => {
@@ -135,9 +135,9 @@ export class BidiPage extends Page {
         this.emit(PageEvent.Response, response);
       },
     ],
-  ] as const);
+  ] as const;
 
-  #browsingContextEvents = new Map<symbol, Handler<any>>([
+  readonly #browsingContextEvents = new Map<symbol, Handler<any>>([
     [BrowsingContextEvent.Created, this.#onContextCreated.bind(this)],
     [BrowsingContextEvent.Destroyed, this.#onContextDestroyed.bind(this)],
   ]);

@@ -113,7 +113,7 @@ export class NetworkManager extends EventEmitter<CdpNetworkManagerEvents> {
   #userAgent?: string;
   #userAgentMetadata?: Protocol.Emulation.UserAgentMetadata;
 
-  #handlers = Object.freeze([
+  readonly #handlers = [
     ['Fetch.requestPaused', this.#onRequestPaused],
     ['Fetch.authRequired', this.#onAuthRequired],
     ['Network.requestWillBeSent', this.#onRequestWillBeSent],
@@ -123,7 +123,7 @@ export class NetworkManager extends EventEmitter<CdpNetworkManagerEvents> {
     ['Network.loadingFailed', this.#onLoadingFailed],
     ['Network.responseReceivedExtraInfo', this.#onResponseReceivedExtraInfo],
     [CDPSessionEvent.Disconnected, this.#removeClient],
-  ] as const);
+  ] as const;
 
   #clients = new Map<CDPSession, DisposableStack>();
 
