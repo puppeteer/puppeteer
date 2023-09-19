@@ -780,6 +780,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should launch Chrome properly with --no-startup-window and waitForInitialPage=false",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should take fullPage screenshots when defaultViewport is null",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1234,12 +1240,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[proxy.spec] request proxy should respect proxy bypass list",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi", "firefox"],
-    "expectations": ["PASS", "FAIL"]
   },
   {
     "testIdPattern": "[queryhandler.spec] Query handler tests P selectors should work ARIA selectors",
@@ -2352,12 +2352,6 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should launch Chrome properly with --no-startup-window and waitForInitialPage=false",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should work with no default arguments",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "headless"],
@@ -2966,8 +2960,8 @@
   {
     "testIdPattern": "[network.spec] network Response.fromCache should work",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi", "firefox"],
-    "expectations": ["PASS", "FAIL"]
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[network.spec] network Response.fromServiceWorker Response.fromServiceWorker",
@@ -3590,6 +3584,12 @@
   {
     "testIdPattern": "[proxy.spec] request proxy should respect proxy bypass list",
     "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"]
+  },
+  {
+    "testIdPattern": "[proxy.spec] request proxy should respect proxy bypass list",
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
   },
@@ -3884,8 +3884,8 @@
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work when resolved right before execution context disposal",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi", "firefox"],
-    "expectations": ["PASS", "FAIL"]
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work with strict CSP policy",
