@@ -134,6 +134,12 @@ sidebar_label: API
 | [WaitForTargetOptions](./puppeteer.waitfortargetoptions.md)                 |                                                                                                                                                                                     |
 | [WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md)                     |                                                                                                                                                                                     |
 
+## Namespaces
+
+| Namespace                                         | Description                             |
+| ------------------------------------------------- | --------------------------------------- |
+| [CDPSessionEvent](./puppeteer.cdpsessionevent.md) | Events that the CDPSession class emits. |
+
 ## Variables
 
 | Variable                                                                                      | Description                                                                                                                   |
