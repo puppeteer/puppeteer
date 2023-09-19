@@ -5,7 +5,7 @@
   "scripts": {
     "build:docs": "wireit",
     "build": "wireit",
-    "clean": "git clean -Xf -e '!node_modules' .",
+    "clean": "git clean -Xf $(ls -A | grep -v node_modules)",
     "test": "wireit"
   },
   "bin": "lib/cjs/main-cli.js",
