@@ -32,6 +32,7 @@ import {
   TargetManagerEvent,
   type TargetManagerEvents,
 } from './TargetManager.js';
+import {CdpCDPSession} from './CDPSession.js';
 
 function isTargetExposed(target: CdpTarget): boolean {
   return target.type() !== TargetType.TAB && !target._subtype();
@@ -400,6 +401,10 @@ export class ChromeTargetManager
     this.#setupAttachmentListeners(session);
 
     if (isExistingTarget) {
+      if (session instanceof CdpCDPSession) {
+        session._setTarget(target);
+      }
+
       this.#attachedTargetsBySessionId.set(
         session.id(),
         this.#attachedTargetsByTargetId.get(targetInfo.targetId)!
