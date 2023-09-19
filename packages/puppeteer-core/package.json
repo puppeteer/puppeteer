@@ -37,7 +37,7 @@
     "build:docs": "wireit",
     "build": "wireit",
     "check": "tsx tools/ensure-correct-devtools-protocol-package",
-    "clean": "git clean -Xdf -e '!node_modules' .",
+    "clean": "git clean -Xf -e '!node_modules' .",
     "prepack": "wireit",
     "unit": "wireit"
   },
