@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "wireit",
-    "clean": "git clean -Xdf -e '!node_modules' .",
+    "clean": "git clean -Xf -e '!node_modules' .",
     "test": "mocha"
   },
   "wireit": {
