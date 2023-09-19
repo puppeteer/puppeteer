@@ -16,6 +16,10 @@
 
 import expect from 'expect';
 import {JSHandle} from 'puppeteer-core/internal/api/JSHandle.js';
+import {
+  asyncDisposeSymbol,
+  disposeSymbol,
+} from 'puppeteer-core/internal/util/disposable.js';
 import sinon from 'sinon';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
@@ -338,7 +342,7 @@ describe('JSHandle', function () {
     it('should work', async () => {
       const {page} = await getTestState();
       using handle = await page.evaluateHandle('new Set()');
-      const spy = sinon.spy(handle, Symbol.dispose);
+      const spy = sinon.spy(handle, disposeSymbol);
       {
         using _ = handle;
       }
@@ -352,7 +356,7 @@ describe('JSHandle', function () {
     it('should work', async () => {
       const {page} = await getTestState();
       using handle = await page.evaluateHandle('new Set()');
-      const spy = sinon.spy(handle, Symbol.asyncDispose);
+      const spy = sinon.spy(handle, asyncDisposeSymbol);
       {
         await using _ = handle;
       }
@@ -366,7 +370,7 @@ describe('JSHandle', function () {
     it('should work', async () => {
       const {page} = await getTestState();
       using handle = await page.evaluateHandle('new Set()');
-      const spy = sinon.spy(handle, Symbol.dispose);
+      const spy = sinon.spy(handle, disposeSymbol);
       {
         using _ = handle;
         handle.move();

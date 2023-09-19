@@ -34,6 +34,7 @@ import {
   waitWithTimeout,
 } from '../common/util.js';
 import {Deferred} from '../util/Deferred.js';
+import {disposeSymbol} from '../util/disposable.js';
 
 import {
   getWaitUntilSingle,
@@ -250,15 +251,15 @@ export class BidiFrame extends Frame {
     return this.#disposed;
   }
 
-  [Symbol.dispose](): void {
+  [disposeSymbol](): void {
     if (this.#disposed) {
       return;
     }
     this.#disposed = true;
     this.#abortDeferred.reject(new Error('Frame detached'));
     this.#context.dispose();
-    this.sandboxes[MAIN_SANDBOX][Symbol.dispose]();
-    this.sandboxes[PUPPETEER_SANDBOX][Symbol.dispose]();
+    this.sandboxes[MAIN_SANDBOX][disposeSymbol]();
+    this.sandboxes[PUPPETEER_SANDBOX][disposeSymbol]();
   }
 
   #exposedFunctions = new Map<string, ExposeableFunction<never[], unknown>>();

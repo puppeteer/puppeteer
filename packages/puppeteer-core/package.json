@@ -148,7 +148,6 @@
     "ws": "8.14.1"
   },
   "devDependencies": {
-    "disposablestack": "1.1.1",
     "mitt": "3.0.1",
     "parsel-js": "1.1.2",
     "rxjs": "7.8.1"

@@ -16,6 +16,7 @@
 
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
+import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
 import type {Browser, Permission} from './Browser.js';
 import {type Page} from './Page.js';
@@ -226,12 +227,12 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
   }
 
   /** @internal */
-  [Symbol.dispose](): void {
+  [disposeSymbol](): void {
     return void this.close().catch(debugError);
   }
 
   /** @internal */
-  [Symbol.asyncDispose](): Promise<void> {
+  [asyncDisposeSymbol](): Promise<void> {
     return this.close();
   }
 }

@@ -22,6 +22,7 @@ import {type TimeoutError} from '../common/Errors.js';
 import {EventSubscription} from '../common/EventEmitter.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
+import {DisposableStack} from '../util/disposable.js';
 
 import {type CdpFrame} from './Frame.js';
 import {FrameManagerEvent} from './FrameManager.js';

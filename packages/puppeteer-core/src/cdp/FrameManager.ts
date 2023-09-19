@@ -24,6 +24,7 @@ import {type TimeoutSettings} from '../common/TimeoutSettings.js';
 import {debugError, PuppeteerURL, UTILITY_WORLD_NAME} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
+import {disposeSymbol} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {CdpCDPSession} from './CDPSession.js';
@@ -561,7 +562,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     for (const child of frame.childFrames()) {
       this.#removeFramesRecursively(child);
     }
-    frame[Symbol.dispose]();
+    frame[disposeSymbol]();
     this._frameTree.removeFrame(frame);
     this.emit(FrameManagerEvent.FrameDetached, frame);
     frame.emit(FrameEvent.FrameDetached, frame);

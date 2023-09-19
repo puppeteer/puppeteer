@@ -21,6 +21,7 @@ import {
   type InnerLazyParams,
 } from '../common/types.js';
 import {TaskManager, WaitTask} from '../common/WaitTask.js';
+import {disposeSymbol} from '../util/disposable.js';
 
 import {type ElementHandle} from './ElementHandle.js';
 import {type Environment} from './Environment.js';
@@ -102,7 +103,7 @@ export abstract class Realm implements Disposable {
 
   #disposed = false;
   /** @internal */
-  [Symbol.dispose](): void {
+  [disposeSymbol](): void {
     this.#disposed = true;
     this.taskManager.terminateAll(
       new Error('waitForFunction failed: frame got detached.')

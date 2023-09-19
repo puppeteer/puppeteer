@@ -17,6 +17,7 @@ import {type ConnectionTransport} from '../common/ConnectionTransport.js';
 import {EventSubscription} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
+import {DisposableStack} from '../util/disposable.js';
 
 /**
  * @internal

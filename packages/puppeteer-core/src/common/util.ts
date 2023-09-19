@@ -29,6 +29,7 @@ import {type Page} from '../api/Page.js';
 import {isNode} from '../environment.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
+import {disposeSymbol} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {debug} from './Debug.js';
@@ -614,7 +615,7 @@ export class Mutex {
     constructor(mutex: Mutex) {
       this.#mutex = mutex;
     }
-    [Symbol.dispose](): void {
+    [disposeSymbol](): void {
       return this.#mutex.release();
     }
   };
