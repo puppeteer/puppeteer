@@ -5,6 +5,7 @@ node_modules
 # Production
 build/
 lib/
+bin/
 
 # Generated files
 **/*.tsbuildinfo

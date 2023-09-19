@@ -111,6 +111,26 @@ jobs:
           curl -H "Content-Type: application/json" -X POST --user "$CRAWLER_USER_ID:$CRAWLER_API_KEY" \
             "https://crawler.algolia.com/api/1/crawlers/$CRAWLER_ID/reindex"
 
+  doctest:
+    name: Doctest
+    runs-on: ubuntu-latest
+    needs: check-changes
+    if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - name: Set up Node.js
+        uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d # v3.8.1
+        with:
+          cache: npm
+          node-version: lts/*
+      - name: Install dependencies
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
+      - name: Run tests
+        run: npm run doctest
+
   chrome-tests:
     name: ${{ matrix.suite }} tests on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
