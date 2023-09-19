@@ -11,6 +11,7 @@ import {
   isString,
 } from '../common/util.js';
 import type PuppeteerUtil from '../injected/injected.js';
+import {disposeSymbol} from '../util/disposable.js';
 import {stringifyFunction} from '../util/Function.js';
 
 import {type BidiConnection} from './Connection.js';
@@ -198,7 +199,7 @@ export class BidiRealm extends EventEmitter<Record<EventType, any>> {
       : createBidiHandle(sandbox, result.result);
   }
 
-  [Symbol.dispose](): void {
+  [disposeSymbol](): void {
     this.connection.off(
       Bidi.ChromiumBidi.Script.EventNames.RealmCreated,
       this.handleRealmCreated

@@ -59,6 +59,7 @@ import {
 import {type Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
+import {disposeSymbol} from '../util/disposable.js';
 
 import {type BidiBrowser} from './Browser.js';
 import {type BidiBrowserContext} from './BrowserContext.js';
@@ -314,7 +315,7 @@ export class BidiPage extends Page {
     for (const child of frame.childFrames()) {
       this.#removeFramesRecursively(child);
     }
-    frame[Symbol.dispose]();
+    frame[disposeSymbol]();
     this.#networkManager.clearMapAfterFrameDispose(frame);
     this.#frameTree.removeFrame(frame);
     this.emit(PageEvent.FrameDetached, frame);

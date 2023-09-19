@@ -82,6 +82,7 @@ import {
 import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
 import {type Deferred} from '../util/Deferred.js';
+import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
 import type {Browser} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';
@@ -2853,12 +2854,12 @@ export abstract class Page extends EventEmitter<PageEvents> {
   }
 
   /** @internal */
-  [Symbol.dispose](): void {
+  [disposeSymbol](): void {
     return void this.close().catch(debugError);
   }
 
   /** @internal */
-  [Symbol.asyncDispose](): Promise<void> {
+  [asyncDisposeSymbol](): Promise<void> {
     return this.close();
   }
 }

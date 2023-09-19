@@ -23,6 +23,7 @@ import {type Page, type WaitTimeoutOptions} from '../api/Page.js';
 import {setPageContent} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
+import {disposeSymbol} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {
@@ -338,12 +339,12 @@ export class CdpFrame extends Frame {
     return this.#detached;
   }
 
-  [Symbol.dispose](): void {
+  [disposeSymbol](): void {
     if (this.#detached) {
       return;
     }
     this.#detached = true;
-    this.worlds[MAIN_WORLD][Symbol.dispose]();
-    this.worlds[PUPPETEER_WORLD][Symbol.dispose]();
+    this.worlds[MAIN_WORLD][disposeSymbol]();
+    this.worlds[PUPPETEER_WORLD][disposeSymbol]();
   }
 }

@@ -22,6 +22,7 @@ import {
   EventSubscription,
   type EventType,
 } from '../common/EventEmitter.js';
+import {DisposableStack} from '../util/disposable.js';
 
 import {type BidiConnection} from './Connection.js';
 import {type BidiFrame} from './Frame.js';

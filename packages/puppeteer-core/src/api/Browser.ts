@@ -18,10 +18,10 @@ import {type ChildProcess} from 'child_process';
 
 import {type Protocol} from 'devtools-protocol';
 
-import {Symbol} from '../../third_party/disposablestack/disposablestack.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {debugError, waitWithTimeout} from '../common/util.js';
 import {Deferred} from '../util/Deferred.js';
+import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
 import type {BrowserContext} from './BrowserContext.js';
 import type {Page} from './Page.js';
@@ -488,12 +488,12 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
   abstract get connected(): boolean;
 
   /** @internal */
-  [Symbol.dispose](): void {
+  [disposeSymbol](): void {
     return void this.close().catch(debugError);
   }
 
   /** @internal */
-  [Symbol.asyncDispose](): Promise<void> {
+  [asyncDisposeSymbol](): Promise<void> {
     return this.close();
   }
 }

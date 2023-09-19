@@ -20,6 +20,7 @@ import {type CDPSession} from '../api/CDPSession.js';
 import {EventSubscription} from '../common/EventEmitter.js';
 import {debugError, PuppeteerURL} from '../common/util.js';
 import {assert} from '../util/assert.js';
+import {DisposableStack} from '../util/disposable.js';
 
 /**
  * The CoverageEntry class represents one entry of the coverage report.

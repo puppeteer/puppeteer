@@ -16,7 +16,6 @@
 
 import type Protocol from 'devtools-protocol';
 
-import {Symbol} from '../../third_party/disposablestack/disposablestack.js';
 import {
   type EvaluateFuncWith,
   type HandleFor,
@@ -24,6 +23,7 @@ import {
 } from '../common/types.js';
 import {debugError, withSourcePuppeteerURLIfNone} from '../common/util.js';
 import {moveable, throwIfDisposed} from '../util/decorators.js';
+import {disposeSymbol, asyncDisposeSymbol} from '../util/disposable.js';
 
 import {type ElementHandle} from './ElementHandle.js';
 import {type Realm} from './Realm.js';
@@ -217,12 +217,12 @@ export abstract class JSHandle<T = unknown> {
   abstract remoteObject(): Protocol.Runtime.RemoteObject;
 
   /** @internal */
-  [Symbol.dispose](): void {
+  [disposeSymbol](): void {
     return void this.dispose().catch(debugError);
   }
 
   /** @internal */
-  [Symbol.asyncDispose](): Promise<void> {
+  [asyncDisposeSymbol](): Promise<void> {
     return this.dispose();
   }
 }

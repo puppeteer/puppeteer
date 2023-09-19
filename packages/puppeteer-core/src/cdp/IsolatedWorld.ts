@@ -32,6 +32,7 @@ import {
   withSourcePuppeteerURLIfNone,
 } from '../common/util.js';
 import {Deferred} from '../util/Deferred.js';
+import {disposeSymbol} from '../util/disposable.js';
 
 import {type Binding} from './Binding.js';
 import {type ExecutionContext, createCdpHandle} from './ExecutionContext.js';
@@ -278,8 +279,8 @@ export class IsolatedWorld extends Realm {
     return newHandle;
   }
 
-  [Symbol.dispose](): void {
-    super[Symbol.dispose]();
+  [disposeSymbol](): void {
+    super[disposeSymbol]();
     this.client.off('Runtime.bindingCalled', this.#onBindingCalled);
   }
 }

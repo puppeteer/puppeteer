@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import {Symbol} from '../../third_party/disposablestack/disposablestack.js';
 import mitt, {
   type Emitter,
   type EventHandlerMap,
   type EventType,
 } from '../../third_party/mitt/index.js';
+import {disposeSymbol} from '../util/disposable.js';
 
 export {
   /**
@@ -230,7 +230,7 @@ export class EventSubscription<
     this.#target.on(this.#type, this.#handler);
   }
 
-  [Symbol.dispose](): void {
+  [disposeSymbol](): void {
     this.#target.off(this.#type, this.#handler);
   }
 }

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import {Symbol} from '../../third_party/disposablestack/disposablestack.js';
 import {type Disposed, type Moveable} from '../common/types.js';
+
+import {asyncDisposeSymbol, disposeSymbol} from './disposable.js';
 
 const instances = new WeakSet<object>();
 
@@ -23,9 +24,9 @@ export function moveable<
   Class extends abstract new (...args: never[]) => Moveable,
 >(Class: Class, _: ClassDecoratorContext<Class>): Class {
   let hasDispose = false;
-  if (Class.prototype[Symbol.dispose]) {
-    const dispose = Class.prototype[Symbol.dispose];
-    Class.prototype[Symbol.dispose] = function (this: InstanceType<Class>) {
+  if (Class.prototype[disposeSymbol]) {
+    const dispose = Class.prototype[disposeSymbol];
+    Class.prototype[disposeSymbol] = function (this: InstanceType<Class>) {
       if (instances.has(this)) {
         instances.delete(this);
         return;
@@ -34,11 +35,9 @@ export function moveable<
     };
     hasDispose = true;
   }
-  if (Class.prototype[Symbol.asyncDispose]) {
-    const asyncDispose = Class.prototype[Symbol.asyncDispose];
-    Class.prototype[Symbol.asyncDispose] = function (
-      this: InstanceType<Class>
-    ) {
+  if (Class.prototype[asyncDisposeSymbol]) {
+    const asyncDispose = Class.prototype[asyncDisposeSymbol];
+    Class.prototype[asyncDisposeSymbol] = function (this: InstanceType<Class>) {
       if (instances.has(this)) {
         instances.delete(this);
         return;
