@@ -15,8 +15,10 @@
  */
 
 import expect from 'expect';
+import {PageEvent} from 'puppeteer-core';
 
 import {launch} from './mocha-utils.js';
+import {waitEvent} from './utils.js';
 
 describe('BFCache', function () {
   it('can navigate to a BFCached page', async () => {
@@ -25,7 +27,7 @@ describe('BFCache', function () {
     });
 
     try {
-      page.setDefaultTimeout(2000);
+      page.setDefaultTimeout(3000);
 
       await page.goto(httpsServer.PREFIX + '/cached/bfcache/index.html');
 
@@ -40,6 +42,32 @@ describe('BFCache', function () {
           return document.body.innerText;
         })
       ).toBe('BFCachednext');
+    } finally {
+      await close();
+    }
+  });
+
+  it('can navigate to a BFCached page containing an OOPIF and a worker', async () => {
+    const {httpsServer, page, close} = await launch({
+      ignoreHTTPSErrors: true,
+    });
+    try {
+      page.setDefaultTimeout(3000);
+      const [worker1] = await Promise.all([
+        waitEvent(page, PageEvent.WorkerCreated),
+        page.goto(
+          httpsServer.PREFIX + '/cached/bfcache/worker-iframe-container.html'
+        ),
+      ]);
+      expect(await worker1.evaluate('1 + 1')).toBe(2);
+      await Promise.all([page.waitForNavigation(), page.locator('a').click()]);
+
+      const [worker2] = await Promise.all([
+        waitEvent(page, PageEvent.WorkerCreated),
+        page.waitForNavigation(),
+        page.goBack(),
+      ]);
+      expect(await worker2.evaluate('1 + 1')).toBe(2);
     } finally {
       await close();
     }
