@@ -155,6 +155,17 @@ export class BidiPage extends Page {
     return this.mainFrame().context().cdpSession;
   }
 
+  override async setUserAgent(
+    userAgent: string,
+    userAgentMetadata?: Protocol.Emulation.UserAgentMetadata | undefined
+  ): Promise<void> {
+    // TODO: handle CDP-specific cases such as mprach.
+    await this._client().send('Network.setUserAgentOverride', {
+      userAgent: userAgent,
+      userAgentMetadata: userAgentMetadata,
+    });
+  }
+
   constructor(
     browsingContext: BrowsingContext,
     browserContext: BidiBrowserContext

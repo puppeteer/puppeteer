@@ -48,6 +48,7 @@ describe('TargetManager', () => {
     await state.close();
   });
 
+  // CDP-specific test.
   it('should handle targets', async () => {
     const {server, context, browser} = state;
 
