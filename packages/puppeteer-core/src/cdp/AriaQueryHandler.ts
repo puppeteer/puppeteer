@@ -44,11 +44,10 @@ interface ARIASelector {
   role?: string;
 }
 
-const KNOWN_ATTRIBUTES = Object.freeze(['name', 'role']);
 const isKnownAttribute = (
   attribute: string
 ): attribute is keyof ARIASelector => {
-  return KNOWN_ATTRIBUTES.includes(attribute);
+  return ['name', 'role'].includes(attribute);
 };
 
 const normalizeValue = (value: string): string => {

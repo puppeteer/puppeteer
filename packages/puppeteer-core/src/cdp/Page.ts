@@ -143,7 +143,7 @@ export class CdpPage extends Page {
   #serviceWorkerBypassed = false;
   #userDragInterceptionEnabled = false;
 
-  #frameManagerHandlers = Object.freeze([
+  readonly #frameManagerHandlers = [
     [
       FrameManagerEvent.FrameAttached,
       (frame: CdpFrame) => {
@@ -162,9 +162,9 @@ export class CdpPage extends Page {
         this.emit(PageEvent.FrameNavigated, frame);
       },
     ],
-  ] as const);
+  ] as const;
 
-  #networkManagerHandlers = Object.freeze([
+  readonly #networkManagerHandlers = [
     [
       NetworkManagerEvent.Request,
       (request: HTTPRequest) => {
@@ -195,9 +195,9 @@ export class CdpPage extends Page {
         this.emit(PageEvent.RequestFinished, request);
       },
     ],
-  ] as const);
+  ] as const;
 
-  #sessionHandlers = Object.freeze([
+  readonly #sessionHandlers = [
     [
       CDPSessionEvent.Disconnected,
       () => {
@@ -226,7 +226,7 @@ export class CdpPage extends Page {
     ['Performance.metrics', this.#emitMetrics.bind(this)],
     ['Log.entryAdded', this.#onLogEntryAdded.bind(this)],
     ['Page.fileChooserOpened', this.#onFileChooser.bind(this)],
-  ] as const);
+  ] as const;
 
   constructor(
     client: CDPSession,

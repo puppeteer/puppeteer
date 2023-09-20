@@ -23,15 +23,12 @@ import type {QueryHandler} from './QueryHandler.js';
 import {TextQueryHandler} from './TextQueryHandler.js';
 import {XPathQueryHandler} from './XPathQueryHandler.js';
 
-/**
- * @internal
- */
-export const BUILTIN_QUERY_HANDLERS = Object.freeze({
+const BUILTIN_QUERY_HANDLERS = {
   aria: ARIAQueryHandler,
   pierce: PierceQueryHandler,
   xpath: XPathQueryHandler,
   text: TextQueryHandler,
-});
+} as const;
 
 const QUERY_SEPARATORS = ['=', '/'];
 
@@ -42,7 +39,7 @@ export function getQueryHandlerByName(
   name: string
 ): typeof QueryHandler | undefined {
   if (name in BUILTIN_QUERY_HANDLERS) {
-    return BUILTIN_QUERY_HANDLERS[name as 'aria'];
+    return BUILTIN_QUERY_HANDLERS[name as keyof typeof BUILTIN_QUERY_HANDLERS];
   }
   return customQueryHandlers.get(name);
 }
