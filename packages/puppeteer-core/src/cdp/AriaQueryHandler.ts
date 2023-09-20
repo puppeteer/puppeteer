@@ -23,8 +23,6 @@ import {type AwaitableIterable} from '../common/types.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 
-import {type IsolatedWorld} from './IsolatedWorld.js';
-
 const queryAXTree = async (
   client: CDPSession,
   element: ElementHandle<Node>,
@@ -114,9 +112,9 @@ export class ARIAQueryHandler extends QueryHandler {
       role
     );
     yield* AsyncIterableUtil.map(results, node => {
-      return (element.realm as IsolatedWorld).adoptBackendNode(
-        node.backendDOMNodeId
-      ) as Promise<ElementHandle<Node>>;
+      return element.realm.adoptBackendNode(node.backendDOMNodeId) as Promise<
+        ElementHandle<Node>
+      >;
     });
   }
 

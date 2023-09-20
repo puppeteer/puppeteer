@@ -21,6 +21,7 @@ import {type EvaluateFunc, type HandleFor} from '../common/types.js';
 import {withSourcePuppeteerURLIfNone} from '../common/util.js';
 
 import {type BrowsingContext} from './BrowsingContext.js';
+import {BidiElementHandle} from './ElementHandle.js';
 import {type BidiFrame} from './Frame.js';
 import {type BidiRealm as BidiRealm} from './Realm.js';
 /**
@@ -116,5 +117,17 @@ export class Sandbox extends Realm {
     }, handle);
     await handle.dispose();
     return transferredHandle as unknown as T;
+  }
+
+  override async adoptBackendNode(
+    backendNodeId?: number
+  ): Promise<JSHandle<Node>> {
+    const {object} = await this.environment.client.send('DOM.resolveNode', {
+      backendNodeId: backendNodeId,
+    });
+    return new BidiElementHandle(this, {
+      handle: object.objectId,
+      type: 'node',
+    });
   }
 }

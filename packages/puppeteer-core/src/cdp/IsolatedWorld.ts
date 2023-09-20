@@ -236,7 +236,7 @@ export class IsolatedWorld extends Realm {
     }
   };
 
-  async adoptBackendNode(
+  override async adoptBackendNode(
     backendNodeId?: Protocol.DOM.BackendNodeId
   ): Promise<JSHandle<Node>> {
     const executionContext = await this.#executionContext();

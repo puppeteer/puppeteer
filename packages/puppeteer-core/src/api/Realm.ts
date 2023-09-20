@@ -97,6 +97,8 @@ export abstract class Realm implements Disposable {
     return await waitTask.result;
   }
 
+  abstract adoptBackendNode(backendNodeId?: number): Promise<JSHandle<Node>>;
+
   get disposed(): boolean {
     return this.#disposed;
   }
