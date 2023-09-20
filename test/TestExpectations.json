@@ -3456,10 +3456,22 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass after cross-process navigation",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP header",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP header",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP in iframes as well",
@@ -3468,10 +3480,22 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP in iframes as well",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP meta tag",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP meta tag",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setCacheEnabled should enable or disable the cache based on the state passed",

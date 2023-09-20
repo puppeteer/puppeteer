@@ -1904,10 +1904,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * evaluation. Usually, this means that `page.setBypassCSP` should be called
    * before navigating to the domain.
    */
-  async setBypassCSP(enabled: boolean): Promise<void>;
-  async setBypassCSP(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract setBypassCSP(enabled: boolean): Promise<void>;
 
   /**
    * @param type - Changes the CSS media type of the page. The only allowed
