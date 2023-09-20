@@ -124,5 +124,8 @@
     "cosmiconfig": "8.3.6",
     "puppeteer-core": "21.3.1",
     "@puppeteer/browsers": "1.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "18.17.15"
   }
 }
