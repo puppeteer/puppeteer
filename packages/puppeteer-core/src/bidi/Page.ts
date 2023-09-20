@@ -155,17 +155,6 @@ export class BidiPage extends Page {
     return this.mainFrame().context().cdpSession;
   }
 
-  override async setUserAgent(
-    userAgent: string,
-    userAgentMetadata?: Protocol.Emulation.UserAgentMetadata | undefined
-  ): Promise<void> {
-    // TODO: handle CDP-specific cases such as mprach.
-    await this._client().send('Network.setUserAgentOverride', {
-      userAgent: userAgent,
-      userAgentMetadata: userAgentMetadata,
-    });
-  }
-
   constructor(
     browsingContext: BrowsingContext,
     browserContext: BidiBrowserContext
@@ -212,6 +201,22 @@ export class BidiPage extends Page {
     this.#mouse = new BidiMouse(this.mainFrame().context());
     this.#touchscreen = new BidiTouchscreen(this.mainFrame().context());
     this.#keyboard = new BidiKeyboard(this.mainFrame().context());
+  }
+
+  override async setUserAgent(
+    userAgent: string,
+    userAgentMetadata?: Protocol.Emulation.UserAgentMetadata | undefined
+  ): Promise<void> {
+    // TODO: handle CDP-specific cases such as mprach.
+    await this._client().send('Network.setUserAgentOverride', {
+      userAgent: userAgent,
+      userAgentMetadata: userAgentMetadata,
+    });
+  }
+
+  override async setBypassCSP(enabled: boolean): Promise<void> {
+    // TODO: handle CDP-specific cases such as mprach.
+    await this._client().send('Page.setBypassCSP', {enabled});
   }
 
   _setBrowserContext(browserContext: BidiBrowserContext): void {

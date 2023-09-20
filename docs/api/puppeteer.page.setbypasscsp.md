@@ -10,7 +10,7 @@ Toggles bypassing page's Content-Security-Policy.
 
 ```typescript
 class Page {
-  setBypassCSP(enabled: boolean): Promise<void>;
+  abstract setBypassCSP(enabled: boolean): Promise<void>;
 }
 ```
 
