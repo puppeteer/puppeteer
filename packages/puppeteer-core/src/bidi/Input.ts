@@ -492,7 +492,7 @@ export class BidiMouse extends Mouse {
             {
               type: ActionType.PointerMove,
               ...this.#lastMovePoint,
-              duration: (options.steps ?? 0) * 50,
+              duration: (options.steps ?? 0) * 15,
               origin: options.origin,
             },
           ],
