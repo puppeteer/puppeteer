@@ -10,7 +10,7 @@ Toggles ignoring cache for each request based on the enabled state. By default, 
 
 ```typescript
 class Page {
-  setCacheEnabled(enabled?: boolean): Promise<void>;
+  abstract setCacheEnabled(enabled?: boolean): Promise<void>;
 }
 ```
 
