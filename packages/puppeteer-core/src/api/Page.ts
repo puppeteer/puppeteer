@@ -1443,13 +1443,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * page
    * @returns Promise which resolves when the user agent is set.
    */
-  async setUserAgent(
+  abstract setUserAgent(
     userAgent: string,
     userAgentMetadata?: Protocol.Emulation.UserAgentMetadata
   ): Promise<void>;
-  async setUserAgent(): Promise<void> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * Object containing metrics as key/value pairs.
