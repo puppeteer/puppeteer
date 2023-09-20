@@ -746,6 +746,7 @@ export class BidiPage extends Page {
   }
 
   override async setCacheEnabled(enabled?: boolean): Promise<void> {
+    // TODO: handle CDP-specific cases such as mprach.
     await this._client().send('Network.setCacheDisabled', {
       cacheDisabled: !enabled,
     });
