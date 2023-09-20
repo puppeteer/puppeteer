@@ -458,7 +458,7 @@ const getBidiButton = (button: MouseButton) => {
  */
 export class BidiMouse extends Mouse {
   #context: BrowsingContext;
-  #lastMovePoint?: Point;
+  #lastMovePoint: Point = {x: 0, y: 0};
 
   constructor(context: BrowsingContext) {
     super();
@@ -466,7 +466,7 @@ export class BidiMouse extends Mouse {
   }
 
   override async reset(): Promise<void> {
-    this.#lastMovePoint = undefined;
+    this.#lastMovePoint = {x: 0, y: 0};
     await this.#context.connection.send('input.releaseActions', {
       context: this.#context.id,
     });
@@ -477,25 +477,35 @@ export class BidiMouse extends Mouse {
     y: number,
     options: Readonly<BidiMouseMoveOptions> = {}
   ): Promise<void> {
-    // https://w3c.github.io/webdriver-bidi/#command-input-performActions:~:text=input.PointerMoveAction%20%3D%20%7B%0A%20%20type%3A%20%22pointerMove%22%2C%0A%20%20x%3A%20js%2Dint%2C
-    this.#lastMovePoint = {
+    const from = this.#lastMovePoint;
+    const to = {
       x: Math.round(x),
       y: Math.round(y),
     };
+    const actions: Bidi.Input.PointerSourceAction[] = [];
+    const steps = options.steps ?? 0;
+    for (let i = 0; i < steps; ++i) {
+      actions.push({
+        type: ActionType.PointerMove,
+        x: from.x + (to.x - from.x) * (i / steps),
+        y: from.y + (to.y - from.y) * (i / steps),
+        origin: options.origin,
+      });
+    }
+    actions.push({
+      type: ActionType.PointerMove,
+      ...to,
+      origin: options.origin,
+    });
+    // https://w3c.github.io/webdriver-bidi/#command-input-performActions:~:text=input.PointerMoveAction%20%3D%20%7B%0A%20%20type%3A%20%22pointerMove%22%2C%0A%20%20x%3A%20js%2Dint%2C
+    this.#lastMovePoint = to;
     await this.#context.connection.send('input.performActions', {
       context: this.#context.id,
       actions: [
         {
           type: SourceActionsType.Pointer,
           id: InputId.Mouse,
-          actions: [
-            {
-              type: ActionType.PointerMove,
-              ...this.#lastMovePoint,
-              duration: (options.steps ?? 0) * 50,
-              origin: options.origin,
-            },
-          ],
+          actions,
         },
       ],
     });
