@@ -2274,10 +2274,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param enabled - sets the `enabled` state of cache
    * @defaultValue `true`
    */
-  async setCacheEnabled(enabled?: boolean): Promise<void>;
-  async setCacheEnabled(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract setCacheEnabled(enabled?: boolean): Promise<void>;
 
   /**
    * @internal

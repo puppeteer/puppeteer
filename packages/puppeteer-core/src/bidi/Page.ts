@@ -744,6 +744,12 @@ export class BidiPage extends Page {
   override isDragInterceptionEnabled(): boolean {
     return false;
   }
+
+  override async setCacheEnabled(enabled?: boolean): Promise<void> {
+    await this._client().send('Network.setCacheDisabled', {
+      cacheDisabled: !enabled,
+    });
+  }
 }
 
 function isConsoleLogEntry(
