@@ -27,16 +27,17 @@
  *  - `node install-browser.mjs`
  *  - `node install-browser.mjs /tmp/cache`
  */
-
-import fs from 'fs/promises';
+import {readFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
 
 import actions from '@actions/core';
-import {install, computeExecutablePath} from '@puppeteer/browsers';
+import {computeExecutablePath, install} from '@puppeteer/browsers';
 
 try {
-  const browserSpec = (
-    await fs.readFile('node_modules/chromium-bidi/.browser', 'utf-8')
-  ).trim();
+  const browserSpec = await readFile(
+    fileURLToPath(import.meta.resolve('chromium-bidi/.browser')),
+    'utf-8'
+  );
   const cacheDir = process.argv[2] || process.cwd();
   // See .browser for the format.
   const browser = browserSpec.split('@')[0];
