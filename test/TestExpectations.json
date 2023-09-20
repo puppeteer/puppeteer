@@ -1380,6 +1380,48 @@
     "expectations": ["FAIL", "TIMEOUT"]
   },
   {
+    "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler parseAriaSelector should find button",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler queryAll should find menu by name",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler queryAllArray $$eval should handle many elements",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler queryOne should find button by name and role",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler queryOne should find button by role",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler queryOne should find by name",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler queryOne should find first matching element",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler waitForSelector (aria) should throw when frame is detached",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
