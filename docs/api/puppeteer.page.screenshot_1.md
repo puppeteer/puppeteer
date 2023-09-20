@@ -8,7 +8,7 @@ sidebar_label: Page.screenshot_1
 
 ```typescript
 class Page {
-  screenshot(
+  abstract screenshot(
     options?: ScreenshotOptions & {
       encoding?: 'binary';
     }

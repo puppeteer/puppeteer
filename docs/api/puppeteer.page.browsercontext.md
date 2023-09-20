@@ -10,7 +10,7 @@ Get the browser context that the page belongs to.
 
 ```typescript
 class Page {
-  browserContext(): BrowserContext;
+  abstract browserContext(): BrowserContext;
 }
 ```
 

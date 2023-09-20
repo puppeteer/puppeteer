@@ -8,7 +8,7 @@ sidebar_label: Page.setDefaultTimeout
 
 ```typescript
 class Page {
-  setDefaultTimeout(timeout: number): void;
+  abstract setDefaultTimeout(timeout: number): void;
 }
 ```
 

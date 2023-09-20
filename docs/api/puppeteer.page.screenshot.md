@@ -10,7 +10,7 @@ Captures screenshot of the current page.
 
 ```typescript
 class Page {
-  screenshot(
+  abstract screenshot(
     options: ScreenshotOptions & {
       encoding: 'base64';
     }
