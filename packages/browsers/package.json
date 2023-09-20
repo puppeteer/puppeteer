@@ -103,9 +103,6 @@
     "proxy-agent": "6.3.1",
     "tar-fs": "3.0.4",
     "unbzip2-stream": "1.4.3",
-    "yargs": "17.7.1"
-  },
-  "devDependencies": {
-    "@types/yargs": "17.0.22"
+    "yargs": "17.7.2"
   }
 }
