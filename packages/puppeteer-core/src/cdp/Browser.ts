@@ -275,7 +275,7 @@ export class CdpBrowser extends BrowserBase {
     const createSession = (isAutoAttachEmulated: boolean) => {
       return this.#connection._createSession(targetInfo, isAutoAttachEmulated);
     };
-    const targetForFilter = new OtherTarget(
+    const otherTarget = new OtherTarget(
       targetInfo,
       session,
       context,
@@ -294,7 +294,7 @@ export class CdpBrowser extends BrowserBase {
         this.#screenshotTaskQueue
       );
     }
-    if (this.#isPageTargetCallback(targetForFilter)) {
+    if (this.#isPageTargetCallback(otherTarget)) {
       return new PageTarget(
         targetInfo,
         session,
@@ -318,13 +318,7 @@ export class CdpBrowser extends BrowserBase {
         createSession
       );
     }
-    return new OtherTarget(
-      targetInfo,
-      session,
-      context,
-      this.#targetManager,
-      createSession
-    );
+    return otherTarget;
   };
 
   #onAttachedToTarget = async (target: CdpTarget) => {
