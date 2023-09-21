@@ -52,6 +52,19 @@ function dimensions(): Dimensions {
 describe('Mouse', function () {
   setupTestBrowserHooks();
 
+  describe('performance', function () {
+    this.timeout(30000);
+
+    it('performance', async () => {
+      const {page} = await getTestState();
+      console.time('clicks');
+      for (let i = 1; i <= 1000; i++) {
+        await page.mouse.click(i % 100, i % 100);
+      }
+      console.timeEnd('clicks');
+    });
+  });
+
   it('should click the document', async () => {
     const {page} = await getTestState();
 
