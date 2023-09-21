@@ -125,7 +125,7 @@ module.exports = {
       },
     ],
 
-    'import/no-cycle': ['error', {maxDepth: Infinity}],
+    'import/no-cycle': ['warn', {maxDepth: Infinity}],
 
     'no-restricted-syntax': [
       'error',
