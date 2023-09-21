@@ -24,6 +24,7 @@ import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
+import {type CdpCDPSession} from './CDPSession.js';
 import {type Connection} from './Connection.js';
 import {CdpTarget, InitializationStatus} from './Target.js';
 import {
@@ -358,10 +359,7 @@ export class ChromeTargetManager
     // `this.#connection.isAutoAttached(targetInfo.targetId)`. In the future, we
     // should determine if a target is auto-attached or not with the help of
     // CDP.
-    if (
-      targetInfo.type === 'service_worker' &&
-      this.#connection.isAutoAttached(targetInfo.targetId)
-    ) {
+    if (targetInfo.type === 'service_worker') {
       this.#finishInitializationIfReady(targetInfo.targetId);
       await silentDetach();
       if (this.#attachedTargetsByTargetId.has(targetInfo.targetId)) {
@@ -393,18 +391,16 @@ export class ChromeTargetManager
       return;
     }
 
-    if (!isExistingTarget) {
-      target._initialize();
-    }
-
     this.#setupAttachmentListeners(session);
 
     if (isExistingTarget) {
+      (session as CdpCDPSession)._setTarget(target);
       this.#attachedTargetsBySessionId.set(
         session.id(),
         this.#attachedTargetsByTargetId.get(targetInfo.targetId)!
       );
     } else {
+      target._initialize();
       this.#attachedTargetsByTargetId.set(targetInfo.targetId, target);
       this.#attachedTargetsBySessionId.set(session.id(), target);
     }
