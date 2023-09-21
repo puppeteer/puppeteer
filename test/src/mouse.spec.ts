@@ -97,29 +97,30 @@ describe('Mouse', function () {
   it('should select the text with mouse', async () => {
     const {page, server} = await getTestState();
 
-    await page.goto(server.PREFIX + '/input/textarea.html');
-    await page.focus('textarea');
     const text =
       "This is the text that we are going to try to select. Let's see how it goes.";
+
+    await page.goto(`${server.PREFIX}/input/textarea.html`);
+    await page.focus('textarea');
     await page.keyboard.type(text);
-    // Firefox needs an extra frame here after typing or it will fail to set the scrollTop
-    await page.evaluate(() => {
-      return new Promise(requestAnimationFrame);
-    });
-    await page.evaluate(() => {
-      return (document.querySelector('textarea')!.scrollTop = 0);
-    });
+    using handle = await page
+      .locator('textarea')
+      .filterHandle(async element => {
+        return await element.evaluate((element, text) => {
+          return element.value === text;
+        }, text);
+      })
+      .waitHandle();
     const {x, y} = await page.evaluate(dimensions);
     await page.mouse.move(x + 2, y + 2);
     await page.mouse.down();
     await page.mouse.move(100, 100);
     await page.mouse.up();
     expect(
-      await page.evaluate(() => {
-        const textarea = document.querySelector('textarea')!;
-        return textarea.value.substring(
-          textarea.selectionStart,
-          textarea.selectionEnd
+      await handle.evaluate(element => {
+        return element.value.substring(
+          element.selectionStart,
+          element.selectionEnd
         );
       })
     ).toBe(text);
