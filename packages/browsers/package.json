@@ -8,15 +8,12 @@
     "clean": "../../tools/clean.js",
     "test": "wireit"
   },
+  "type": "commonjs",
   "bin": "lib/cjs/main-cli.js",
   "main": "./lib/cjs/main.js",
-  "module": "./lib/esm/main.js",
-  "type": "commonjs",
   "exports": {
-    ".": {
-      "import": "./lib/esm/main.js",
-      "require": "./lib/cjs/main.js"
-    }
+    "import": "./lib/esm/main.js",
+    "require": "./lib/cjs/main.js"
   },
   "wireit": {
     "build": {
