@@ -110,9 +110,10 @@
       ]
     },
     "test": {
-      "command": "cross-env PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 node tools/mocha-runner/lib/main.js --min-tests 1003",
+      "command": "cross-env PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 npx ./tools/mocha-runner --min-tests 1003",
       "dependencies": [
-        "./test:build"
+        "./test:build",
+        "./tools/mocha-runner:build"
       ]
     }
   },
@@ -195,6 +196,7 @@
     "test",
     "test/installation",
     "tools/eslint",
-    "tools/doctest"
+    "tools/doctest",
+    "tools/mocha-runner"
   ]
 }

@@ -1,3 +1,5 @@
+#! /usr/bin/env -S node
+
 /**
  * Copyright 2022 Google Inc. All rights reserved.
  *
@@ -21,23 +23,23 @@ import os from 'os';
 import path from 'path';
 
 import {
-  type TestExpectation,
-  type MochaResults,
-  zTestSuiteFile,
   zPlatform,
+  zTestSuiteFile,
+  type MochaResults,
+  type Platform,
+  type TestExpectation,
   type TestSuite,
   type TestSuiteFile,
-  type Platform,
 } from './types.js';
 import {
   extendProcessEnv,
-  filterByPlatform,
-  readJSON,
   filterByParameters,
+  filterByPlatform,
   getExpectationUpdates,
   printSuggestions,
-  type RecommendedExpectation,
+  readJSON,
   writeJSON,
+  type RecommendedExpectation,
 } from './utils.js';
 
 function getApplicableTestSuites(

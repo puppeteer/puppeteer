@@ -1,12 +1,13 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "allowJs": true,
-    "composite": true,
+    "rootDir": "./src",
+    "outDir": "./bin",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "outDir": "lib",
-    "rootDir": "src"
-  },
-  "include": ["src"]
+    "sourceMap": true,
+    "declaration": false,
+    "declarationMap": false,
+    "composite": false
+  }
 }

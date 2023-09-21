@@ -6,6 +6,5 @@
     "outDir": "build",
     "rootDir": "src"
   },
-  "include": ["src"],
-  "references": [{"path": "../tools/mocha-runner/tsconfig.json"}]
+  "include": ["src"]
 }
