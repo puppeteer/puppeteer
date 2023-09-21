@@ -8,19 +8,15 @@ sidebar_label: Page.screenshot_1
 
 ```typescript
 class Page {
-  abstract screenshot(
-    options?: ScreenshotOptions & {
-      encoding?: 'binary';
-    }
-  ): Promise<Buffer>;
+  screenshot(options?: Readonly<ScreenshotOptions>): Promise<Buffer>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                 | Description  |
-| --------- | ------------------------------------------------------------------------------------ | ------------ |
-| options   | [ScreenshotOptions](./puppeteer.screenshotoptions.md) &amp; { encoding?: 'binary'; } | _(Optional)_ |
+| Parameter | Type                                                                  | Description  |
+| --------- | --------------------------------------------------------------------- | ------------ |
+| options   | Readonly&lt;[ScreenshotOptions](./puppeteer.screenshotoptions.md)&gt; | _(Optional)_ |
 
 **Returns:**
 

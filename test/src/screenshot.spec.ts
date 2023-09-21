@@ -139,36 +139,6 @@ describe('Screenshots', function () {
         })
       );
     });
-    it('should allow transparency', async () => {
-      const {page, server} = await getTestState();
-
-      await page.setViewport({width: 100, height: 100});
-      await page.goto(server.EMPTY_PAGE);
-      const screenshot = await page.screenshot({omitBackground: true});
-      expect(screenshot).toBeGolden('transparent.png');
-    });
-    it('should render white background on jpeg file', async () => {
-      const {page, server} = await getTestState();
-
-      await page.setViewport({width: 100, height: 100});
-      await page.goto(server.EMPTY_PAGE);
-      const screenshot = await page.screenshot({
-        omitBackground: true,
-        type: 'jpeg',
-      });
-      expect(screenshot).toBeGolden('white.jpg');
-    });
-    it('should work with webp', async () => {
-      const {page, server} = await getTestState();
-
-      await page.setViewport({width: 100, height: 100});
-      await page.goto(server.PREFIX + '/grid.html');
-      const screenshot = await page.screenshot({
-        type: 'webp',
-      });
-
-      expect(screenshot).toBeInstanceOf(Buffer);
-    });
     it('should work with odd clip size on Retina displays', async () => {
       const {page} = await getTestState();
 
@@ -193,16 +163,6 @@ describe('Screenshots', function () {
       expect(Buffer.from(screenshot, 'base64')).toBeGolden(
         'screenshot-sanity.png'
       );
-    });
-    it('should work in "fromSurface: false" mode', async () => {
-      const {page, server} = await getTestState();
-
-      await page.setViewport({width: 500, height: 500});
-      await page.goto(server.PREFIX + '/grid.html');
-      const screenshot = await page.screenshot({
-        fromSurface: false,
-      });
-      expect(screenshot).toBeDefined(); // toBeGolden('screenshot-fromsurface-false.png');
     });
   });
 
@@ -381,6 +341,49 @@ describe('Screenshots', function () {
       using elementHandle = (await page.$('div'))!;
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-fractional-offset.png');
+    });
+  });
+
+  describe('Cdp', () => {
+    it('should allow transparency', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setViewport({width: 100, height: 100});
+      await page.goto(server.EMPTY_PAGE);
+      const screenshot = await page.screenshot({omitBackground: true});
+      expect(screenshot).toBeGolden('transparent.png');
+    });
+    it('should render white background on jpeg file', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setViewport({width: 100, height: 100});
+      await page.goto(server.EMPTY_PAGE);
+      const screenshot = await page.screenshot({
+        omitBackground: true,
+        type: 'jpeg',
+      });
+      expect(screenshot).toBeGolden('white.jpg');
+    });
+    it('should work with webp', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setViewport({width: 100, height: 100});
+      await page.goto(server.PREFIX + '/grid.html');
+      const screenshot = await page.screenshot({
+        type: 'webp',
+      });
+
+      expect(screenshot).toBeInstanceOf(Buffer);
+    });
+    it('should work in "fromSurface: false" mode', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(server.PREFIX + '/grid.html');
+      const screenshot = await page.screenshot({
+        fromSurface: false,
+      });
+      expect(screenshot).toBeDefined(); // toBeGolden('screenshot-fromsurface-false.png');
     });
   });
 });

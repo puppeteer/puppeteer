@@ -26,13 +26,13 @@ import {
   type HandleFor,
 } from '../common/types.js';
 import {
-  Mutex,
   addPageBinding,
   debugError,
   withSourcePuppeteerURLIfNone,
 } from '../common/util.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
+import {Mutex} from '../util/Mutex.js';
 
 import {type Binding} from './Binding.js';
 import {type ExecutionContext, createCdpHandle} from './ExecutionContext.js';

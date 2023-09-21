@@ -318,6 +318,18 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[screenshot.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Cdp *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[stacktrace.spec] Stack trace *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -792,12 +804,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should take fullPage screenshots when defaultViewport is null",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should work with no default arguments",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
@@ -1260,9 +1266,15 @@
     "expectations": ["FAIL", "SKIP"]
   },
   {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot *",
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should get screenshot bigger than the viewport",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should use scale for clip",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
@@ -3626,8 +3638,8 @@
   {
     "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should capture full element when larger than viewport",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["SKIP"]
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should work for an element with an offset",
@@ -3642,70 +3654,28 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should allow transparency",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should clip rect",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should get screenshot bigger than the viewport",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should render white background on jpeg file",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should return base64",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should return base64",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL", "PASS"]
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should use scale for clip",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work with webp",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["SKIP"]
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[stacktrace.spec] Stack trace should work for none error objects",
@@ -4068,28 +4038,46 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should return base64",
-    "platforms": ["linux"],
+    "testIdPattern": "[screenshot.spec] Screenshots Cdp should work in \"fromSurface: false\" mode",
+    "platforms": ["darwin", "win32"],
+    "parameters": ["cdp", "chrome", "headless"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Cdp should work in \"fromSurface: false\" mode",
+    "platforms": ["darwin"],
     "parameters": ["cdp", "chrome", "new-headless"],
-    "expectations": ["FAIL", "PASS"]
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should clip rect",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox", "headless"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should return base64",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox", "headless"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox", "headless"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should use scale for clip",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox", "headless"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work",
-    "platforms": ["linux"],
-    "parameters": ["cdp", "chrome", "new-headless"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work in \"fromSurface: false\" mode",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome", "headless"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work in \"fromSurface: false\" mode",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome", "new-headless"],
-    "expectations": ["SKIP"]
+    "parameters": ["cdp", "firefox", "headless"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[worker.spec] Workers Page.workers",

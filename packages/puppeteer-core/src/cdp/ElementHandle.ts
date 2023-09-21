@@ -17,8 +17,7 @@
 import {type Protocol} from 'devtools-protocol';
 
 import {type CDPSession} from '../api/CDPSession.js';
-import {type AutofillData, ElementHandle} from '../api/ElementHandle.js';
-import {type Page, type ScreenshotOptions} from '../api/Page.js';
+import {ElementHandle, type AutofillData} from '../api/ElementHandle.js';
 import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {throwIfDisposed} from '../util/decorators.js';
@@ -61,10 +60,6 @@ export class CdpElementHandle<
 
   get #frameManager(): FrameManager {
     return this.frame._frameManager;
-  }
-
-  get #page(): Page {
-    return this.frame.page();
   }
 
   override get frame(): CdpFrame {
@@ -160,66 +155,6 @@ export class CdpElementHandle<
         backendNodeId,
       });
     }
-  }
-
-  @throwIfDisposed()
-  @ElementHandle.bindIsolatedHandle
-  override async screenshot(
-    this: CdpElementHandle<Element>,
-    options: ScreenshotOptions = {}
-  ): Promise<string | Buffer> {
-    let needsViewportReset = false;
-
-    let boundingBox = await this.boundingBox();
-    assert(boundingBox, 'Node is either not visible or not an HTMLElement');
-
-    const viewport = this.#page.viewport();
-
-    if (
-      viewport &&
-      (boundingBox.width > viewport.width ||
-        boundingBox.height > viewport.height)
-    ) {
-      const newViewport = {
-        width: Math.max(viewport.width, Math.ceil(boundingBox.width)),
-        height: Math.max(viewport.height, Math.ceil(boundingBox.height)),
-      };
-      await this.#page.setViewport(Object.assign({}, viewport, newViewport));
-
-      needsViewportReset = true;
-    }
-
-    await this.scrollIntoViewIfNeeded();
-
-    boundingBox = await this.boundingBox();
-    assert(boundingBox, 'Node is either not visible or not an HTMLElement');
-    assert(boundingBox.width !== 0, 'Node has 0 width.');
-    assert(boundingBox.height !== 0, 'Node has 0 height.');
-
-    const layoutMetrics = await this.client.send('Page.getLayoutMetrics');
-    // Fallback to `layoutViewport` in case of using Firefox.
-    const {pageX, pageY} =
-      layoutMetrics.cssVisualViewport || layoutMetrics.layoutViewport;
-
-    const clip = Object.assign({}, boundingBox);
-    clip.x += pageX;
-    clip.y += pageY;
-
-    const imageData = await this.#page.screenshot(
-      Object.assign(
-        {},
-        {
-          clip,
-        },
-        options
-      )
-    );
-
-    if (needsViewportReset && viewport) {
-      await this.#page.setViewport(viewport);
-    }
-
-    return imageData;
   }
 
   @throwIfDisposed()

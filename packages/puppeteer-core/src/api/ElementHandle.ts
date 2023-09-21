@@ -104,6 +104,16 @@ export interface Point {
 }
 
 /**
+ * @public
+ */
+export interface ElementScreenshotOptions extends ScreenshotOptions {
+  /**
+   * @defaultValue true
+   */
+  scrollIntoView?: boolean;
+}
+
+/**
  * ElementHandle represents an in-page DOM element.
  *
  * @remarks
@@ -1319,12 +1329,61 @@ export abstract class ElementHandle<
    * {@link Page.(screenshot:3) } to take a screenshot of the element.
    * If the element is detached from DOM, the method throws an error.
    */
+  @throwIfDisposed()
+  @ElementHandle.bindIsolatedHandle
   async screenshot(
     this: ElementHandle<Element>,
-    options?: ScreenshotOptions
-  ): Promise<string | Buffer>;
-  async screenshot(this: ElementHandle<Element>): Promise<string | Buffer> {
-    throw new Error('Not implemented');
+    options: Readonly<ElementScreenshotOptions> = {}
+  ): Promise<string | Buffer> {
+    const {
+      scrollIntoView = true,
+      captureBeyondViewport = true,
+      allowViewportExpansion = true,
+    } = options;
+
+    let clip = await this.#nonEmptyVisibleBoundingBox();
+
+    const page = this.frame.page();
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    await using _ =
+      (captureBeyondViewport || allowViewportExpansion) && clip
+        ? await page._createTemporaryViewportContainingBox(clip)
+        : null;
+
+    if (scrollIntoView) {
+      await this.scrollIntoViewIfNeeded();
+
+      // We measure again just in case.
+      clip = await this.#nonEmptyVisibleBoundingBox();
+    }
+
+    const [pageLeft, pageTop] = await this.evaluate(() => {
+      if (!window.visualViewport) {
+        throw new Error('window.visualViewport is not supported.');
+      }
+      return [
+        window.visualViewport.pageLeft,
+        window.visualViewport.pageTop,
+      ] as const;
+    });
+    clip.x += pageLeft;
+    clip.y += pageTop;
+
+    return await page.screenshot({
+      ...options,
+      captureBeyondViewport: false,
+      allowViewportExpansion: false,
+      clip,
+    });
+  }
+
+  async #nonEmptyVisibleBoundingBox() {
+    const box = await this.boundingBox();
+    assert(box, 'Node is either not visible or not an HTMLElement');
+    assert(box.width !== 0, 'Node has 0 width.');
+    assert(box.height !== 0, 'Node has 0 height.');
+    return box;
   }
 
   /**

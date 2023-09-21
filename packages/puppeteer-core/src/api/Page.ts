@@ -81,8 +81,13 @@ import {
 } from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
+import {guarded} from '../util/decorators.js';
 import {type Deferred} from '../util/Deferred.js';
-import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
+import {
+  AsyncDisposableStack,
+  asyncDisposeSymbol,
+  disposeSymbol,
+} from '../util/disposable.js';
 
 import type {Browser} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';
@@ -227,9 +232,31 @@ export interface ScreenshotOptions {
    */
   optimizeForSpeed?: boolean;
   /**
-   * @defaultValue `png`
+   * @defaultValue `'png'`
    */
   type?: 'png' | 'jpeg' | 'webp';
+  /**
+   * Quality of the image, between 0-100. Not applicable to `png` images.
+   */
+  quality?: number;
+  /**
+   * Capture the screenshot from the surface, rather than the view.
+   *
+   * @defaultValue `false`
+   */
+  fromSurface?: boolean;
+  /**
+   * When `true`, takes a screenshot of the full page.
+   *
+   * @defaultValue `false`
+   */
+  fullPage?: boolean;
+  /**
+   * Hides default white background and allows capturing screenshots with transparency.
+   *
+   * @defaultValue `false`
+   */
+  omitBackground?: boolean;
   /**
    * The file path to save the image to. The screenshot type will be inferred
    * from file extension. If path is a relative path, then it is resolved
@@ -238,38 +265,29 @@ export interface ScreenshotOptions {
    */
   path?: string;
   /**
-   * When `true`, takes a screenshot of the full page.
-   * @defaultValue `false`
-   */
-  fullPage?: boolean;
-  /**
-   * An object which specifies the clipping region of the page.
+   * Specifies the region of the page to clip.
    */
   clip?: ScreenshotClip;
   /**
-   * Quality of the image, between 0-100. Not applicable to `png` images.
-   */
-  quality?: number;
-  /**
-   * Hides default white background and allows capturing screenshots with transparency.
-   * @defaultValue `false`
-   */
-  omitBackground?: boolean;
-  /**
    * Encoding of the image.
-   * @defaultValue `binary`
+   *
+   * @defaultValue `'binary'`
    */
   encoding?: 'base64' | 'binary';
   /**
    * Capture the screenshot beyond the viewport.
+   *
    * @defaultValue `true`
    */
   captureBeyondViewport?: boolean;
   /**
-   * Capture the screenshot from the surface, rather than the view.
-   * @defaultValue `true`
+   * TODO(jrandolf): Investigate whether viewport expansion is a better
+   * alternative for cross-browser screenshots as opposed to
+   * `captureBeyondViewport`.
+   *
+   * @internal
    */
-  fromSurface?: boolean;
+  allowViewportExpansion?: boolean;
 }
 
 /**
@@ -2243,61 +2261,195 @@ export abstract class Page extends EventEmitter<PageEvents> {
   }
 
   /**
-   * Captures screenshot of the current page.
+   * Captures a screenshot of this {@link Page | page}.
    *
-   * @remarks
-   * Options object which might have the following properties:
-   *
-   * - `path` : The file path to save the image to. The screenshot type
-   *   will be inferred from file extension. If `path` is a relative path, then
-   *   it is resolved relative to
-   *   {@link https://nodejs.org/api/process.html#process_process_cwd
-   *   | current working directory}.
-   *   If no path is provided, the image won't be saved to the disk.
-   *
-   * - `type` : Specify screenshot type, can be `jpeg`, `png` or `webp`.
-   *   Defaults to 'png'.
-   *
-   * - `quality` : The quality of the image, between 0-100. Not
-   *   applicable to `png` images.
-   *
-   * - `fullPage` : When true, takes a screenshot of the full
-   *   scrollable page. Defaults to `false`.
-   *
-   * - `clip` : An object which specifies clipping region of the page.
-   *   Should have the following fields:<br/>
-   * - `x` : x-coordinate of top-left corner of clip area.<br/>
-   * - `y` : y-coordinate of top-left corner of clip area.<br/>
-   * - `width` : width of clipping area.<br/>
-   * - `height` : height of clipping area.
-   *
-   * - `omitBackground` : Hides default white background and allows
-   *   capturing screenshots with transparency. Defaults to `false`.
-   *
-   * - `encoding` : The encoding of the image, can be either base64 or
-   *   binary. Defaults to `binary`.
-   *
-   * - `captureBeyondViewport` : When true, captures screenshot
-   *   {@link https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot
-   *   | beyond the viewport}. When false, falls back to old behaviour,
-   *   and cuts the screenshot by the viewport size. Defaults to `true`.
-   *
-   * - `fromSurface` : When true, captures screenshot
-   *   {@link https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot
-   *   | from the surface rather than the view}. When false, works only in
-   *   headful mode and ignores page viewport (but not browser window's
-   *   bounds). Defaults to `true`.
-   *
-   * @returns Promise which resolves to buffer or a base64 string (depending on
-   * the value of `encoding`) with captured screenshot.
+   * @param options - Configures screenshot behavior.
    */
-  abstract screenshot(
-    options: ScreenshotOptions & {encoding: 'base64'}
+  async screenshot(
+    options: Readonly<ScreenshotOptions> & {encoding: 'base64'}
   ): Promise<string>;
-  abstract screenshot(
-    options?: ScreenshotOptions & {encoding?: 'binary'}
-  ): Promise<Buffer>;
-  abstract screenshot(options?: ScreenshotOptions): Promise<Buffer | string>;
+  async screenshot(options?: Readonly<ScreenshotOptions>): Promise<Buffer>;
+  @guarded(function () {
+    return this.browser();
+  })
+  async screenshot(
+    userOptions: Readonly<ScreenshotOptions> = {}
+  ): Promise<Buffer | string> {
+    await this.bringToFront();
+
+    const options = structuredClone(userOptions) as ScreenshotOptions;
+    if (options.type === undefined && options.path !== undefined) {
+      const filePath = options.path;
+      // Note we cannot use Node.js here due to browser compatability.
+      const extension = filePath
+        .slice(filePath.lastIndexOf('.') + 1)
+        .toLowerCase();
+      switch (extension) {
+        case 'png':
+          options.type = 'png';
+          break;
+        case 'jpeg':
+        case 'jpg':
+          options.type = 'jpeg';
+          break;
+        case 'webp':
+          options.type = 'webp';
+          break;
+      }
+    }
+    if (options.quality) {
+      assert(
+        options.type === 'jpeg' || options.type === 'webp',
+        `options.quality is unsupported for the ${options.type} screenshots`
+      );
+      assert(
+        typeof options.quality === 'number',
+        `Expected options.quality to be a number but found ${typeof options.quality}`
+      );
+      assert(
+        Number.isInteger(options.quality),
+        'Expected options.quality to be an integer'
+      );
+      assert(
+        options.quality >= 0 && options.quality <= 100,
+        `Expected options.quality to be between 0 and 100 (inclusive), got ${options.quality}`
+      );
+    }
+    assert(
+      !options.clip || !options.fullPage,
+      'options.clip and options.fullPage are exclusive'
+    );
+    if (options.clip) {
+      assert(
+        typeof options.clip.x === 'number',
+        `Expected options.clip.x to be a number but found ${typeof options.clip
+          .x}`
+      );
+      assert(
+        typeof options.clip.y === 'number',
+        `Expected options.clip.y to be a number but found ${typeof options.clip
+          .y}`
+      );
+      assert(
+        typeof options.clip.width === 'number',
+        `Expected options.clip.width to be a number but found ${typeof options
+          .clip.width}`
+      );
+      assert(
+        typeof options.clip.height === 'number',
+        `Expected options.clip.height to be a number but found ${typeof options
+          .clip.height}`
+      );
+      assert(
+        options.clip.width !== 0,
+        'Expected options.clip.width not to be 0.'
+      );
+      assert(
+        options.clip.height !== 0,
+        'Expected options.clip.height not to be 0.'
+      );
+    }
+
+    options.captureBeyondViewport ??= true;
+    options.allowViewportExpansion ??= true;
+    options.clip = options.clip && roundClip(normalizeClip(options.clip));
+
+    await using stack = new AsyncDisposableStack();
+    if (options.allowViewportExpansion || options.captureBeyondViewport) {
+      if (options.fullPage) {
+        const dimensions = await this.mainFrame()
+          .isolatedRealm()
+          .evaluate(() => {
+            const {scrollHeight, scrollWidth} = document.documentElement;
+            const {height: viewportHeight, width: viewportWidth} =
+              window.visualViewport!;
+            return {
+              height: Math.max(scrollHeight, viewportHeight),
+              width: Math.max(scrollWidth, viewportWidth),
+            };
+          });
+        options.clip = {...dimensions, x: 0, y: 0};
+        stack.use(
+          await this._createTemporaryViewportContainingBox(options.clip)
+        );
+      } else if (options.clip && !options.captureBeyondViewport) {
+        stack.use(
+          options.clip &&
+            (await this._createTemporaryViewportContainingBox(options.clip))
+        );
+      } else if (!options.clip) {
+        options.captureBeyondViewport = false;
+      }
+    }
+
+    const data = await this._screenshot(options);
+    if (options.encoding === 'base64') {
+      return data;
+    }
+    const buffer = Buffer.from(data, 'base64');
+    await this._maybeWriteBufferToFile(options.path, buffer);
+    return buffer;
+  }
+
+  /**
+   * @internal
+   */
+  abstract _screenshot(options: Readonly<ScreenshotOptions>): Promise<string>;
+
+  /**
+   * @internal
+   */
+  async _createTemporaryViewportContainingBox(
+    clip: ScreenshotClip
+  ): Promise<AsyncDisposable> {
+    const viewport = await this.mainFrame()
+      .isolatedRealm()
+      .evaluate(() => {
+        return {
+          pageLeft: window.visualViewport!.pageLeft,
+          pageTop: window.visualViewport!.pageTop,
+          width: window.visualViewport!.width,
+          height: window.visualViewport!.height,
+        };
+      });
+    await using stack = new AsyncDisposableStack();
+    if (clip.x < viewport.pageLeft || clip.y < viewport.pageTop) {
+      await this.evaluate(
+        (left, top) => {
+          window.scroll({left, top, behavior: 'instant'});
+        },
+        Math.floor(clip.x),
+        Math.floor(clip.y)
+      );
+      stack.defer(async () => {
+        await this.evaluate(
+          (left, top) => {
+            window.scroll({left, top, behavior: 'instant'});
+          },
+          viewport.pageLeft,
+          viewport.pageTop
+        ).catch(debugError);
+      });
+    }
+    if (
+      clip.width + clip.x > viewport.width ||
+      clip.height + clip.y > viewport.height
+    ) {
+      const originalViewport = this.viewport() ?? {
+        width: 0,
+        height: 0,
+      };
+      // We add 1 for fractional x and y.
+      await this.setViewport({
+        width: Math.max(viewport.width, Math.ceil(clip.width + clip.x)),
+        height: Math.max(viewport.height, Math.ceil(clip.height + clip.y)),
+      });
+      stack.defer(async () => {
+        await this.setViewport(originalViewport).catch(debugError);
+      });
+    }
+    return stack.move();
+  }
 
   /**
    * @internal
@@ -2853,4 +3005,37 @@ function convertPrintParameterToInches(
     );
   }
   return pixels / unitToPixels[lengthUnit];
+}
+
+/** @see https://w3c.github.io/webdriver-bidi/#normalize-rect */
+function normalizeClip(clip: Readonly<ScreenshotClip>): ScreenshotClip {
+  return {
+    ...(clip.width < 0
+      ? {
+          x: clip.x + clip.width,
+          width: -clip.width,
+        }
+      : {
+          x: clip.x,
+          width: clip.width,
+        }),
+    ...(clip.height < 0
+      ? {
+          y: clip.y + clip.height,
+          height: -clip.height,
+        }
+      : {
+          y: clip.y,
+          height: clip.height,
+        }),
+    scale: clip.scale,
+  };
+}
+
+function roundClip(clip: Readonly<ScreenshotClip>): ScreenshotClip {
+  const x = Math.round(clip.x);
+  const y = Math.round(clip.y);
+  const width = Math.round(clip.width + clip.x - x);
+  const height = Math.round(clip.height + clip.y - y);
+  return {x, y, width, height, scale: clip.scale};
 }
