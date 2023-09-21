@@ -17,13 +17,11 @@
 import childProcess from 'child_process';
 import {accessSync} from 'fs';
 import os from 'os';
-import path from 'path';
 import readline from 'readline';
 
 import {
   type Browser,
   type BrowserPlatform,
-  executablePathByBrowser,
   resolveSystemExecutablePath,
   type ChromeReleaseChannel,
 } from './browser-data/browser-data.js';
@@ -64,21 +62,7 @@ export interface ComputeExecutablePathOptions {
 export function computeExecutablePath(
   options: ComputeExecutablePathOptions
 ): string {
-  options.platform ??= detectBrowserPlatform();
-  if (!options.platform) {
-    throw new Error(
-      `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`
-    );
-  }
-  const installationDir = new Cache(options.cacheDir).installationDir(
-    options.browser,
-    options.platform,
-    options.buildId
-  );
-  return path.join(
-    installationDir,
-    executablePathByBrowser[options.browser](options.platform, options.buildId)
-  );
+  return new Cache(options.cacheDir).computeExecutablePath(options);
 }
 
 /**
