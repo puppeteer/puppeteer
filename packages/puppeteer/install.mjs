@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /**
  * Copyright 2017 Google Inc. All rights reserved.
  *
@@ -24,20 +26,18 @@
  * necessary.
  */
 
-const fs = require('fs');
-const path = require('path');
-
-// Need to ensure TS is compiled before loading the installer
-if (!fs.existsSync(path.join(__dirname, 'lib'))) {
-  console.warn(
-    'Skipping browser installation because the Puppeteer build is not available. Run `npm install` again after you have re-built Puppeteer.'
-  );
-  process.exit(0);
-}
-
 try {
-  const {downloadBrowser} = require('puppeteer/internal/node/install.js');
+  const {downloadBrowser} = await (async () => {
+    try {
+      return await import('puppeteer/internal/node/install.js');
+    } catch {
+      console.warn(
+        'Skipping browser installation because the Puppeteer build is not available. Run `npm install` again after you have re-built Puppeteer.'
+      );
+      process.exit(0);
+    }
+  })();
   downloadBrowser();
-} catch (err) {
-  console.warn('Browser download failed', err);
+} catch (error) {
+  console.warn('Browser download failed', error);
 }
