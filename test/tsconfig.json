@@ -7,5 +7,5 @@
     "rootDir": "src"
   },
   "include": ["src"],
-  "references": [{"path": "../tools/mochaRunner/tsconfig.json"}]
+  "references": [{"path": "../tools/mocha-runner/tsconfig.json"}]
 }

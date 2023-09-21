@@ -110,7 +110,7 @@
       ]
     },
     "test": {
-      "command": "cross-env PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 node tools/mochaRunner/lib/main.js --min-tests 1003",
+      "command": "cross-env PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 node tools/mocha-runner/lib/main.js --min-tests 1003",
       "dependencies": [
         "./test:build"
       ]
