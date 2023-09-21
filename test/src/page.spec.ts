@@ -243,8 +243,8 @@ describe('Page', function () {
       await page.goto(server.EMPTY_PAGE);
       await page.setContent('<a target=_blank href="/one-style.html">yo</a>');
       const [popup] = await Promise.all([
-        waitEvent<Page>(page, 'popup'),
-        page.click('a'),
+        waitEvent(page, 'popup'),
+        page.locator('a').click(),
       ]);
       expect(
         await page.evaluate(() => {
@@ -265,8 +265,8 @@ describe('Page', function () {
         '<a target=_blank rel=opener href="/one-style.html">yo</a>'
       );
       const [popup] = await Promise.all([
-        waitEvent<Page>(page, 'popup'),
-        page.click('a'),
+        waitEvent(page, 'popup'),
+        page.locator('a').click(),
       ]);
       expect(
         await page.evaluate(() => {
@@ -287,10 +287,8 @@ describe('Page', function () {
         '<a target=_blank rel=noopener href="/one-style.html">yo</a>'
       );
       const [popup] = await Promise.all([
-        waitEvent<Page>(page, 'popup'),
-        page.$eval('a', a => {
-          return (a as HTMLAnchorElement).click();
-        }),
+        waitEvent(page, 'popup'),
+        page.locator('a').click(),
       ]);
       expect(
         await page.evaluate(() => {
@@ -311,8 +309,8 @@ describe('Page', function () {
         '<a target=_blank rel=noopener href="/one-style.html">yo</a>'
       );
       const [popup] = await Promise.all([
-        waitEvent<Page>(page, 'popup'),
-        page.click('a'),
+        waitEvent(page, 'popup'),
+        page.locator('a').click(),
       ]);
       expect(
         await page.evaluate(() => {
