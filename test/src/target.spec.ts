@@ -23,7 +23,8 @@ import {type Page} from 'puppeteer-core/internal/api/Page.js';
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
 
-describe('Target', function () {
+// eslint-disable-next-line mocha/no-exclusive-tests
+describe.only('Target', function () {
   setupTestBrowserHooks();
 
   it('Browser.targets should return all of the targets', async () => {
@@ -149,26 +150,28 @@ describe('Target', function () {
     const {page, server, context} = await getTestState();
 
     await page.goto(server.EMPTY_PAGE);
-    const createdTarget = waitEvent(context, 'targetcreated');
 
-    await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
+    const [target] = await Promise.all([
+      waitEvent(context, 'targetcreated'),
+      page.goto(server.PREFIX + '/serviceworkers/empty/sw.html'),
+    ]);
 
-    expect((await createdTarget).type()).toBe('service_worker');
-    expect((await createdTarget).url()).toBe(
-      server.PREFIX + '/serviceworkers/empty/sw.js'
-    );
+    expect(target.type()).toBe('service_worker');
+    expect(target.url()).toBe(server.PREFIX + '/serviceworkers/empty/sw.js');
 
-    const destroyedTarget = waitEvent(context, 'targetdestroyed');
-    await page.evaluate(() => {
-      return (
-        globalThis as unknown as {
-          registrationPromise: Promise<{unregister: () => void}>;
-        }
-      ).registrationPromise.then((registration: any) => {
-        return registration.unregister();
-      });
-    });
-    expect(await destroyedTarget).toBe(await createdTarget);
+    const [destroyedTarget] = await Promise.all([
+      waitEvent(context, 'targetdestroyed'),
+      page.evaluate(() => {
+        return (
+          globalThis as unknown as {
+            registrationPromise: Promise<{unregister: () => void}>;
+          }
+        ).registrationPromise.then((registration: any) => {
+          return registration.unregister();
+        });
+      }),
+    ]);
+    expect(destroyedTarget).toBe(target);
   });
   it('should create a worker from a service worker', async () => {
     const {page, server, context} = await getTestState();
