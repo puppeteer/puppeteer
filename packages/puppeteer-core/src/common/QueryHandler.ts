@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {ElementHandle} from '../api/ElementHandle.js';
+import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Frame} from '../api/Frame.js';
 import type {WaitForSelectorOptions} from '../api/Page.js';
 import type PuppeteerUtil from '../injected/injected.js';
@@ -132,6 +132,7 @@ export class QueryHandler {
         return context.puppeteerUtil;
       })
     );
+    const {ElementHandle} = await import('../api/ElementHandle.js');
     if (!(result instanceof ElementHandle)) {
       return null;
     }
@@ -150,6 +151,7 @@ export class QueryHandler {
     selector: string,
     options: WaitForSelectorOptions
   ): Promise<ElementHandle<Node> | null> {
+    const {ElementHandle} = await import('../api/ElementHandle.js');
     let frame!: Frame;
     using element = await (async () => {
       if (!(elementOrFrame instanceof ElementHandle)) {

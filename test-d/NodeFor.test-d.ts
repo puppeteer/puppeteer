@@ -1,5 +1,6 @@
-import type {NodeFor} from 'puppeteer';
 import {expectType, expectNotType} from 'tsd';
+
+import type {NodeFor} from 'puppeteer';
 
 declare const nodeFor: <Selector extends string>(
   selector: Selector

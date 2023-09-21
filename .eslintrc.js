@@ -12,7 +12,13 @@ module.exports = {
 
   plugins: ['mocha', '@typescript-eslint', 'import'],
 
-  extends: ['plugin:prettier/recommended'],
+  extends: ['plugin:prettier/recommended', 'plugin:import/typescript'],
+
+  settings: {
+    'import/resolver': {
+      typescript: true,
+    },
+  },
 
   rules: {
     // Brackets keep code readable.
@@ -111,8 +117,6 @@ module.exports = {
         ],
       },
     ],
-    'import/extensions': ['error', 'ignorePackages'],
-
     'import/order': [
       'error',
       {
@@ -120,6 +124,8 @@ module.exports = {
         alphabetize: {order: 'asc', caseInsensitive: true},
       },
     ],
+
+    'import/no-cycle': ['error', {maxDepth: Infinity}],
 
     'no-restricted-syntax': [
       'error',

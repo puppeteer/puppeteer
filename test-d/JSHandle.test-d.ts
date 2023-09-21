@@ -1,5 +1,6 @@
-import {type ElementHandle, type JSHandle} from 'puppeteer';
 import {expectNotAssignable, expectNotType, expectType} from 'tsd';
+
+import {type ElementHandle, type JSHandle} from 'puppeteer';
 
 declare const handle: JSHandle;
 
