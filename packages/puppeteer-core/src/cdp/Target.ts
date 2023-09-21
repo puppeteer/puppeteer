@@ -19,9 +19,8 @@ import {type Protocol} from 'devtools-protocol';
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {type CDPSession} from '../api/CDPSession.js';
-import {type Page, PageEvent} from '../api/Page.js';
+import {PageEvent, type Page} from '../api/Page.js';
 import {Target, TargetType} from '../api/Target.js';
-import {type TaskQueue} from '../common/TaskQueue.js';
 import {debugError} from '../common/util.js';
 import {type Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
@@ -189,7 +188,6 @@ export class CdpTarget extends Target {
 export class PageTarget extends CdpTarget {
   #defaultViewport?: Viewport;
   protected pagePromise?: Promise<Page>;
-  #screenshotTaskQueue: TaskQueue;
   #ignoreHTTPSErrors: boolean;
 
   constructor(
@@ -199,13 +197,11 @@ export class PageTarget extends CdpTarget {
     targetManager: TargetManager,
     sessionFactory: (isAutoAttachEmulated: boolean) => Promise<CDPSession>,
     ignoreHTTPSErrors: boolean,
-    defaultViewport: Viewport | null,
-    screenshotTaskQueue: TaskQueue
+    defaultViewport: Viewport | null
   ) {
     super(targetInfo, session, browserContext, targetManager, sessionFactory);
     this.#ignoreHTTPSErrors = ignoreHTTPSErrors;
     this.#defaultViewport = defaultViewport ?? undefined;
-    this.#screenshotTaskQueue = screenshotTaskQueue;
   }
 
   override _initialize(): void {
@@ -246,8 +242,7 @@ export class PageTarget extends CdpTarget {
           client,
           this,
           this.#ignoreHTTPSErrors,
-          this.#defaultViewport ?? null,
-          this.#screenshotTaskQueue
+          this.#defaultViewport ?? null
         );
       });
     }

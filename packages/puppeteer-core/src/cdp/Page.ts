@@ -16,13 +16,13 @@
 
 import type {Readable} from 'stream';
 
-import {Protocol} from 'devtools-protocol';
+import {type Protocol} from 'devtools-protocol';
 
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import {type ElementHandle} from '../api/ElementHandle.js';
-import {type WaitForOptions, type Frame} from '../api/Frame.js';
+import {type Frame, type WaitForOptions} from '../api/Frame.js';
 import {type HTTPRequest} from '../api/HTTPRequest.js';
 import {type HTTPResponse} from '../api/HTTPResponse.js';
 import {type JSHandle} from '../api/JSHandle.js';
@@ -33,7 +33,6 @@ import {
   type MediaFeature,
   type Metrics,
   type NewDocumentScriptEvaluation,
-  type ScreenshotClip,
   type ScreenshotOptions,
   type WaitTimeoutOptions,
 } from '../api/Page.js';
@@ -44,7 +43,6 @@ import {
 import {TargetCloseError} from '../common/Errors.js';
 import {FileChooser} from '../common/FileChooser.js';
 import {type PDFOptions} from '../common/PDFOptions.js';
-import {type TaskQueue} from '../common/TaskQueue.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import {type BindingPayload, type HandleFor} from '../common/types.js';
 import {
@@ -61,6 +59,7 @@ import {
   waitWithTimeout,
 } from '../common/util.js';
 import {type Viewport} from '../common/Viewport.js';
+import {AsyncDisposableStack} from '../puppeteer-core.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
@@ -96,15 +95,9 @@ export class CdpPage extends Page {
     client: CDPSession,
     target: CdpTarget,
     ignoreHTTPSErrors: boolean,
-    defaultViewport: Viewport | null,
-    screenshotTaskQueue: TaskQueue
+    defaultViewport: Viewport | null
   ): Promise<CdpPage> {
-    const page = new CdpPage(
-      client,
-      target,
-      ignoreHTTPSErrors,
-      screenshotTaskQueue
-    );
+    const page = new CdpPage(client, target, ignoreHTTPSErrors);
     await page.#initialize();
     if (defaultViewport) {
       try {
@@ -136,7 +129,6 @@ export class CdpPage extends Page {
   #exposedFunctions = new Map<string, string>();
   #coverage: Coverage;
   #viewport: Viewport | null;
-  #screenshotTaskQueue: TaskQueue;
   #workers = new Map<string, WebWorker>();
   #fileChooserDeferreds = new Set<Deferred<FileChooser>>();
   #sessionCloseDeferred = Deferred.create<TargetCloseError>();
@@ -231,8 +223,7 @@ export class CdpPage extends Page {
   constructor(
     client: CDPSession,
     target: CdpTarget,
-    ignoreHTTPSErrors: boolean,
-    screenshotTaskQueue: TaskQueue
+    ignoreHTTPSErrors: boolean
   ) {
     super();
     this.#client = client;
@@ -251,7 +242,6 @@ export class CdpPage extends Page {
     this.#emulationManager = new EmulationManager(client);
     this.#tracing = new Tracing(client);
     this.#coverage = new Coverage(client);
-    this.#screenshotTaskQueue = screenshotTaskQueue;
     this.#viewport = null;
 
     this.#setupEventListeners();
@@ -1048,188 +1038,37 @@ export class CdpPage extends Page {
     await this.#frameManager.networkManager.setCacheEnabled(enabled);
   }
 
-  override screenshot(
-    options: ScreenshotOptions & {encoding: 'base64'}
-  ): Promise<string>;
-  override screenshot(
-    options?: ScreenshotOptions & {encoding?: 'binary'}
-  ): Promise<Buffer>;
-  override async screenshot(
-    options: ScreenshotOptions = {}
-  ): Promise<Buffer | string> {
-    let screenshotType = Protocol.Page.CaptureScreenshotRequestFormat.Png;
-    // options.type takes precedence over inferring the type from options.path
-    // because it may be a 0-length file with no extension created beforehand
-    // (i.e. as a temp file).
-    if (options.type) {
-      screenshotType =
-        options.type as Protocol.Page.CaptureScreenshotRequestFormat;
-    } else if (options.path) {
-      const filePath = options.path;
-      const extension = filePath
-        .slice(filePath.lastIndexOf('.') + 1)
-        .toLowerCase();
-      switch (extension) {
-        case 'png':
-          screenshotType = Protocol.Page.CaptureScreenshotRequestFormat.Png;
-          break;
-        case 'jpeg':
-        case 'jpg':
-          screenshotType = Protocol.Page.CaptureScreenshotRequestFormat.Jpeg;
-          break;
-        case 'webp':
-          screenshotType = Protocol.Page.CaptureScreenshotRequestFormat.Webp;
-          break;
-        default:
-          throw new Error(
-            `Unsupported screenshot type for extension \`.${extension}\``
-          );
-      }
-    }
+  async _screenshot(options: Readonly<ScreenshotOptions>): Promise<string> {
+    const {
+      fromSurface,
+      omitBackground,
+      optimizeForSpeed,
+      quality,
+      clip,
+      type,
+      captureBeyondViewport,
+    } = options;
 
-    if (options.quality) {
-      assert(
-        screenshotType === Protocol.Page.CaptureScreenshotRequestFormat.Jpeg ||
-          screenshotType === Protocol.Page.CaptureScreenshotRequestFormat.Webp,
-        'options.quality is unsupported for the ' +
-          screenshotType +
-          ' screenshots'
-      );
-      assert(
-        typeof options.quality === 'number',
-        'Expected options.quality to be a number but found ' +
-          typeof options.quality
-      );
-      assert(
-        Number.isInteger(options.quality),
-        'Expected options.quality to be an integer'
-      );
-      assert(
-        options.quality >= 0 && options.quality <= 100,
-        'Expected options.quality to be between 0 and 100 (inclusive), got ' +
-          options.quality
-      );
-    }
-    assert(
-      !options.clip || !options.fullPage,
-      'options.clip and options.fullPage are exclusive'
-    );
-    if (options.clip) {
-      assert(
-        typeof options.clip.x === 'number',
-        'Expected options.clip.x to be a number but found ' +
-          typeof options.clip.x
-      );
-      assert(
-        typeof options.clip.y === 'number',
-        'Expected options.clip.y to be a number but found ' +
-          typeof options.clip.y
-      );
-      assert(
-        typeof options.clip.width === 'number',
-        'Expected options.clip.width to be a number but found ' +
-          typeof options.clip.width
-      );
-      assert(
-        typeof options.clip.height === 'number',
-        'Expected options.clip.height to be a number but found ' +
-          typeof options.clip.height
-      );
-      assert(
-        options.clip.width !== 0,
-        'Expected options.clip.width not to be 0.'
-      );
-      assert(
-        options.clip.height !== 0,
-        'Expected options.clip.height not to be 0.'
-      );
-    }
-    return await this.#screenshotTaskQueue.postTask(() => {
-      return this.#screenshotTask(screenshotType, options);
-    });
-  }
-
-  async #screenshotTask(
-    format: Protocol.Page.CaptureScreenshotRequestFormat,
-    options: ScreenshotOptions = {}
-  ): Promise<Buffer | string> {
-    await this.#client.send('Target.activateTarget', {
-      targetId: this.#target._targetId,
-    });
-    let clip = options.clip ? processClip(options.clip) : undefined;
-    let captureBeyondViewport = options.captureBeyondViewport ?? true;
-    const fromSurface = options.fromSurface;
-
-    if (options.fullPage) {
-      // Overwrite clip for full page.
-      clip = undefined;
-
-      if (!captureBeyondViewport) {
-        const metrics = await this.#client.send('Page.getLayoutMetrics');
-        // Fallback to `contentSize` in case of using Firefox.
-        const {width, height} = metrics.cssContentSize || metrics.contentSize;
-        const {
-          isMobile = false,
-          deviceScaleFactor = 1,
-          isLandscape = false,
-        } = this.#viewport || {};
-        const screenOrientation: Protocol.Emulation.ScreenOrientation =
-          isLandscape
-            ? {angle: 90, type: 'landscapePrimary'}
-            : {angle: 0, type: 'portraitPrimary'};
-        await this.#client.send('Emulation.setDeviceMetricsOverride', {
-          mobile: isMobile,
-          width,
-          height,
-          deviceScaleFactor,
-          screenOrientation,
-        });
-      }
-    } else if (!clip) {
-      captureBeyondViewport = false;
-    }
-
-    const shouldSetDefaultBackground =
-      options.omitBackground && (format === 'png' || format === 'webp');
-    if (shouldSetDefaultBackground) {
+    await using stack = new AsyncDisposableStack();
+    if (omitBackground && (type === 'png' || type === 'webp')) {
       await this.#emulationManager.setTransparentBackgroundColor();
+      stack.defer(async () => {
+        await this.#emulationManager.resetDefaultBackgroundColor();
+      });
     }
 
-    const result = await this.#client.send('Page.captureScreenshot', {
-      format,
-      optimizeForSpeed: options.optimizeForSpeed,
-      quality: options.quality,
+    const {data} = await this.#client.send('Page.captureScreenshot', {
+      format: type,
+      optimizeForSpeed,
+      quality,
       clip: clip && {
         ...clip,
         scale: clip.scale ?? 1,
       },
-      captureBeyondViewport,
       fromSurface,
+      captureBeyondViewport,
     });
-    if (shouldSetDefaultBackground) {
-      await this.#emulationManager.resetDefaultBackgroundColor();
-    }
-
-    if (options.fullPage && this.#viewport) {
-      await this.setViewport(this.#viewport);
-    }
-
-    if (options.encoding === 'base64') {
-      return result.data;
-    }
-
-    const buffer = Buffer.from(result.data, 'base64');
-    await this._maybeWriteBufferToFile(options.path, buffer);
-
-    return buffer;
-
-    function processClip(clip: ScreenshotClip): ScreenshotClip {
-      const x = Math.round(clip.x);
-      const y = Math.round(clip.y);
-      const width = Math.round(clip.width + clip.x - x);
-      const height = Math.round(clip.height + clip.y - y);
-      return {x, y, width, height, scale: clip.scale};
-    }
+    return data;
   }
 
   override async createPDFStream(options: PDFOptions = {}): Promise<Readable> {

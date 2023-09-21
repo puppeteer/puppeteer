@@ -20,19 +20,18 @@ import {type Protocol} from 'devtools-protocol';
 
 import {
   Browser as BrowserBase,
+  BrowserEvent,
+  WEB_PERMISSION_TO_PROTOCOL_PERMISSION,
   type BrowserCloseCallback,
   type BrowserContextOptions,
-  BrowserEvent,
   type IsPageTargetCallback,
   type Permission,
   type TargetFilterCallback,
-  WEB_PERMISSION_TO_PROTOCOL_PERMISSION,
 } from '../api/Browser.js';
 import {BrowserContext, BrowserContextEvent} from '../api/BrowserContext.js';
-import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
+import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import {type Page} from '../api/Page.js';
 import {type Target} from '../api/Target.js';
-import {TaskQueue} from '../common/TaskQueue.js';
 import {type Viewport} from '../common/Viewport.js';
 import {USE_TAB_TARGET} from '../environment.js';
 import {assert} from '../util/assert.js';
@@ -41,14 +40,14 @@ import {ChromeTargetManager} from './ChromeTargetManager.js';
 import {type Connection} from './Connection.js';
 import {FirefoxTargetManager} from './FirefoxTargetManager.js';
 import {
-  type CdpTarget,
   DevToolsTarget,
   InitializationStatus,
   OtherTarget,
   PageTarget,
   WorkerTarget,
+  type CdpTarget,
 } from './Target.js';
-import {type TargetManager, TargetManagerEvent} from './TargetManager.js';
+import {TargetManagerEvent, type TargetManager} from './TargetManager.js';
 
 /**
  * @internal
@@ -92,7 +91,6 @@ export class CdpBrowser extends BrowserBase {
   #isPageTargetCallback!: IsPageTargetCallback;
   #defaultContext: CdpBrowserContext;
   #contexts = new Map<string, CdpBrowserContext>();
-  #screenshotTaskQueue: TaskQueue;
   #targetManager: TargetManager;
 
   override get _targets(): Map<string, CdpTarget> {
@@ -117,7 +115,6 @@ export class CdpBrowser extends BrowserBase {
     this.#ignoreHTTPSErrors = ignoreHTTPSErrors;
     this.#defaultViewport = defaultViewport;
     this.#process = process;
-    this.#screenshotTaskQueue = new TaskQueue();
     this.#connection = connection;
     this.#closeCallback = closeCallback || function (): void {};
     this.#targetFilterCallback =
@@ -290,8 +287,7 @@ export class CdpBrowser extends BrowserBase {
         this.#targetManager,
         createSession,
         this.#ignoreHTTPSErrors,
-        this.#defaultViewport ?? null,
-        this.#screenshotTaskQueue
+        this.#defaultViewport ?? null
       );
     }
     if (this.#isPageTargetCallback(otherTarget)) {
@@ -302,8 +298,7 @@ export class CdpBrowser extends BrowserBase {
         this.#targetManager,
         createSession,
         this.#ignoreHTTPSErrors,
-        this.#defaultViewport ?? null,
-        this.#screenshotTaskQueue
+        this.#defaultViewport ?? null
       );
     }
     if (

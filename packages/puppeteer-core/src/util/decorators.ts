@@ -17,6 +17,7 @@
 import {type Disposed, type Moveable} from '../common/types.js';
 
 import {asyncDisposeSymbol, disposeSymbol} from './disposable.js';
+import {Mutex} from './Mutex.js';
 
 const instances = new WeakSet<object>();
 
@@ -110,5 +111,28 @@ export function invokeAtMostOnceForArguments(
       return;
     }
     return target.call(this, ...args);
+  };
+}
+
+export function guarded<T extends object>(
+  getKey = function (this: T): object {
+    return this;
+  }
+) {
+  return (
+    target: (this: T, ...args: any[]) => Promise<any>,
+    _: ClassMethodDecoratorContext<T>
+  ): typeof target => {
+    const mutexes = new WeakMap<object, Mutex>();
+    return async function (...args) {
+      const key = getKey.call(this);
+      let mutex = mutexes.get(key);
+      if (!mutex) {
+        mutex = new Mutex();
+        mutexes.set(key, mutex);
+      }
+      await using _ = await mutex.acquire();
+      return await target.call(this, ...args);
+    };
   };
 }
