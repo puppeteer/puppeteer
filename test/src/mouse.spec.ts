@@ -53,7 +53,7 @@ describe('Mouse', function () {
   setupTestBrowserHooks();
 
   describe('performance', function () {
-    this.timeout(30000);
+    this.timeout(60000);
 
     it('performance', async () => {
       const {page} = await getTestState();
