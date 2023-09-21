@@ -12,7 +12,7 @@ In the case of multiple pages in a single browser, each page can have its own vi
 
 ```typescript
 class Page {
-  setViewport(viewport: Viewport): Promise<void>;
+  abstract setViewport(viewport: Viewport): Promise<void>;
 }
 ```
 

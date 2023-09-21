@@ -8,7 +8,7 @@ sidebar_label: Page.waitForRequest
 
 ```typescript
 class Page {
-  waitForRequest(
+  abstract waitForRequest(
     urlOrPredicate: string | ((req: HTTPRequest) => boolean | Promise<boolean>),
     options?: {
       timeout?: number;

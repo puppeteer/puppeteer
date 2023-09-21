@@ -8,7 +8,7 @@ sidebar_label: Page.waitForNetworkIdle
 
 ```typescript
 class Page {
-  waitForNetworkIdle(options?: {
+  abstract waitForNetworkIdle(options?: {
     idleTime?: number;
     timeout?: number;
   }): Promise<void>;

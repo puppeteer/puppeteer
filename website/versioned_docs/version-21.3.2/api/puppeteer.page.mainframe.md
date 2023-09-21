@@ -10,7 +10,7 @@ The page's main frame.
 
 ```typescript
 class Page {
-  mainFrame(): Frame;
+  abstract mainFrame(): Frame;
 }
 ```
 

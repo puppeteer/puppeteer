@@ -16,7 +16,7 @@ The function is invoked after the document was created but before any of its scr
 
 ```typescript
 class Page {
-  evaluateOnNewDocument<
+  abstract evaluateOnNewDocument<
     Params extends unknown[],
     Func extends (...args: Params) => unknown = (...args: Params) => unknown,
   >(

@@ -10,7 +10,9 @@ Removes script that injected into page by Page.evaluateOnNewDocument.
 
 ```typescript
 class Page {
-  removeScriptToEvaluateOnNewDocument(identifier: string): Promise<void>;
+  abstract removeScriptToEvaluateOnNewDocument(
+    identifier: string
+  ): Promise<void>;
 }
 ```
 

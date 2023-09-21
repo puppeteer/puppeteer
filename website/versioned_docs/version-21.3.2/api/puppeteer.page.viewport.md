@@ -10,7 +10,7 @@ Current page viewport settings.
 
 ```typescript
 class Page {
-  viewport(): Viewport | null;
+  abstract viewport(): Viewport | null;
 }
 ```
 

@@ -8,7 +8,7 @@ sidebar_label: Page.close
 
 ```typescript
 class Page {
-  close(options?: {runBeforeUnload?: boolean}): Promise<void>;
+  abstract close(options?: {runBeforeUnload?: boolean}): Promise<void>;
 }
 ```
 

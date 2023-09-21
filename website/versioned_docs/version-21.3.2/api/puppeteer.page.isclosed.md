@@ -10,7 +10,7 @@ Indicates that the page has been closed.
 
 ```typescript
 class Page {
-  isClosed(): boolean;
+  abstract isClosed(): boolean;
 }
 ```
 

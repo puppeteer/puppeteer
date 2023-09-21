@@ -8,7 +8,7 @@ sidebar_label: Page.setUserAgent
 
 ```typescript
 class Page {
-  setUserAgent(
+  abstract setUserAgent(
     userAgent: string,
     userAgentMetadata?: Protocol.Emulation.UserAgentMetadata
   ): Promise<void>;
