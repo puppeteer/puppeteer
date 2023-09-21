@@ -1073,12 +1073,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @returns Promise which resolves to a handle to an array of objects with
    * this prototype.
    */
-  async queryObjects<Prototype>(
+  abstract queryObjects<Prototype>(
     prototypeHandle: JSHandle<Prototype>
   ): Promise<JSHandle<Prototype[]>>;
-  async queryObjects<Prototype>(): Promise<JSHandle<Prototype[]>> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * This method runs `document.querySelector` within the page and passes the

@@ -76,6 +76,7 @@ import {BidiFrame, lifeCycleToReadinessState} from './Frame.js';
 import {type BidiHTTPRequest} from './HTTPRequest.js';
 import {type BidiHTTPResponse} from './HTTPResponse.js';
 import {BidiKeyboard, BidiMouse, BidiTouchscreen} from './Input.js';
+import {type BidiJSHandle} from './JSHandle.js';
 import {BidiNetworkManager} from './NetworkManager.js';
 import {createBidiHandle} from './Realm.js';
 import {BidiSerializer} from './Serializer.js';
@@ -217,6 +218,26 @@ export class BidiPage extends Page {
   override async setBypassCSP(enabled: boolean): Promise<void> {
     // TODO: handle CDP-specific cases such as mprach.
     await this._client().send('Page.setBypassCSP', {enabled});
+  }
+
+  override async queryObjects<Prototype>(
+    prototypeHandle: BidiJSHandle<Prototype>
+  ): Promise<BidiJSHandle<Prototype[]>> {
+    assert(!prototypeHandle.disposed, 'Prototype JSHandle is disposed!');
+    assert(
+      prototypeHandle.id,
+      'Prototype JSHandle must not be referencing primitive value'
+    );
+    const response = await this.mainFrame().client.send(
+      'Runtime.queryObjects',
+      {
+        prototypeObjectId: prototypeHandle.id,
+      }
+    );
+    return createBidiHandle(this.mainFrame().mainRealm(), {
+      type: 'array',
+      handle: response.objects.objectId,
+    }) as BidiJSHandle<Prototype[]>;
   }
 
   _setBrowserContext(browserContext: BidiBrowserContext): void {

@@ -984,6 +984,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[page.spec] Page ExecutionContext.queryObjects *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.addScriptTag should throw when added with content to the CSP page",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -3414,6 +3420,12 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[page.spec] Page Page.setCacheEnabled should enable or disable the cache based on the state passed",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.setCacheEnabled should stay disabled when toggling request interception on/off",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -4084,11 +4096,5 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "new-headless", "tabTarget"],
     "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.setCacheEnabled should enable or disable the cache based on the state passed",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
   }
 ]
