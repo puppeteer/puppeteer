@@ -35,18 +35,6 @@ const QUERY_SEPARATORS = ['=', '/'];
 /**
  * @internal
  */
-export function getQueryHandlerByName(
-  name: string
-): typeof QueryHandler | undefined {
-  if (name in BUILTIN_QUERY_HANDLERS) {
-    return BUILTIN_QUERY_HANDLERS[name as keyof typeof BUILTIN_QUERY_HANDLERS];
-  }
-  return customQueryHandlers.get(name);
-}
-
-/**
- * @internal
- */
 export function getQueryHandlerAndSelector(selector: string): {
   updatedSelector: string;
   QueryHandler: typeof QueryHandler;
