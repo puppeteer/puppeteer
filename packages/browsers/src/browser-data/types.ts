@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import * as chrome from './chrome.js';
-import * as firefox from './firefox.js';
-
 /**
  * Supported browsers.
  *
@@ -43,12 +40,6 @@ export enum BrowserPlatform {
   WIN32 = 'win32',
   WIN64 = 'win64',
 }
-
-export const downloadUrls = {
-  [Browser.CHROME]: chrome.resolveDownloadUrl,
-  [Browser.CHROMIUM]: chrome.resolveDownloadUrl,
-  [Browser.FIREFOX]: firefox.resolveDownloadUrl,
-};
 
 /**
  * @public
