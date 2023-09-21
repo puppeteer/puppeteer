@@ -23,12 +23,14 @@ import type {QueryHandler} from './QueryHandler.js';
 import {TextQueryHandler} from './TextQueryHandler.js';
 import {XPathQueryHandler} from './XPathQueryHandler.js';
 
-const BUILTIN_QUERY_HANDLERS = {
-  aria: ARIAQueryHandler,
-  pierce: PierceQueryHandler,
-  xpath: XPathQueryHandler,
-  text: TextQueryHandler,
-} as const;
+function getBuiltInQueryHandlers() {
+  return {
+    aria: ARIAQueryHandler,
+    pierce: PierceQueryHandler,
+    xpath: XPathQueryHandler,
+    text: TextQueryHandler,
+  } as const;
+}
 
 const QUERY_SEPARATORS = ['=', '/'];
 
@@ -38,8 +40,9 @@ const QUERY_SEPARATORS = ['=', '/'];
 export function getQueryHandlerByName(
   name: string
 ): typeof QueryHandler | undefined {
-  if (name in BUILTIN_QUERY_HANDLERS) {
-    return BUILTIN_QUERY_HANDLERS[name as keyof typeof BUILTIN_QUERY_HANDLERS];
+  const handlers = getBuiltInQueryHandlers();
+  if (name in handlers) {
+    return handlers[name as keyof typeof handlers];
   }
   return customQueryHandlers.get(name);
 }
@@ -55,7 +58,7 @@ export function getQueryHandlerAndSelector(selector: string): {
     customQueryHandlers.names().map(name => {
       return [name, customQueryHandlers.get(name)!] as const;
     }),
-    Object.entries(BUILTIN_QUERY_HANDLERS),
+    Object.entries(getBuiltInQueryHandlers()),
   ]) {
     for (const [name, QueryHandler] of handlerMap) {
       for (const separator of QUERY_SEPARATORS) {
