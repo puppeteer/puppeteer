@@ -8,7 +8,7 @@ sidebar_label: Page.waitForResponse
 
 ```typescript
 class Page {
-  waitForResponse(
+  abstract waitForResponse(
     urlOrPredicate:
       | string
       | ((res: HTTPResponse) => boolean | Promise<boolean>),

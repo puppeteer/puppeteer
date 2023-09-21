@@ -682,16 +682,12 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * Get the browser the page belongs to.
    */
-  browser(): Browser {
-    throw new Error('Not implemented');
-  }
+  abstract browser(): Browser;
 
   /**
    * Get the browser context that the page belongs to.
    */
-  browserContext(): BrowserContext {
-    throw new Error('Not implemented');
-  }
+  abstract browserContext(): BrowserContext;
 
   /**
    * The page's main frame.
@@ -699,9 +695,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @remarks
    * Page is guaranteed to have a main frame which persists during navigations.
    */
-  mainFrame(): Frame {
-    throw new Error('Not implemented');
-  }
+  abstract mainFrame(): Frame;
 
   /**
    * Creates a Chrome Devtools Protocol session attached to the page.
@@ -713,9 +707,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * {@inheritDoc Keyboard}
    */
-  get keyboard(): Keyboard {
-    throw new Error('Not implemented');
-  }
+  abstract get keyboard(): Keyboard;
 
   /**
    * {@inheritDoc Touchscreen}
@@ -727,30 +719,22 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * {@inheritDoc Coverage}
    */
-  get coverage(): Coverage {
-    throw new Error('Not implemented');
-  }
+  abstract get coverage(): Coverage;
 
   /**
    * {@inheritDoc Tracing}
    */
-  get tracing(): Tracing {
-    throw new Error('Not implemented');
-  }
+  abstract get tracing(): Tracing;
 
   /**
    * {@inheritDoc Accessibility}
    */
-  get accessibility(): Accessibility {
-    throw new Error('Not implemented');
-  }
+  abstract get accessibility(): Accessibility;
 
   /**
    * An array of all frames attached to the page.
    */
-  frames(): Frame[] {
-    throw new Error('Not implemented');
-  }
+  abstract frames(): Frame[];
 
   /**
    * All of the dedicated {@link
@@ -890,25 +874,17 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * - {@link Page.waitForNavigation | page.waitForNavigation(options)}
    *   @param timeout - Maximum navigation time in milliseconds.
    */
-  setDefaultNavigationTimeout(timeout: number): void;
-  setDefaultNavigationTimeout(): void {
-    throw new Error('Not implemented');
-  }
+  abstract setDefaultNavigationTimeout(timeout: number): void;
 
   /**
    * @param timeout - Maximum time in milliseconds.
    */
-  setDefaultTimeout(timeout: number): void;
-  setDefaultTimeout(): void {
-    throw new Error('Not implemented');
-  }
+  abstract setDefaultTimeout(timeout: number): void;
 
   /**
    * Maximum time in milliseconds.
    */
-  getDefaultTimeout(): number {
-    throw new Error('Not implemented');
-  }
+  abstract getDefaultTimeout(): number;
 
   /**
    * Creates a locator for the provided selector. See {@link Locator} for
@@ -1579,10 +1555,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * multiple redirects, the navigation will resolve with the response of the
    * last redirect.
    */
-  async reload(options?: WaitForOptions): Promise<HTTPResponse | null>;
-  async reload(): Promise<HTTPResponse | null> {
-    throw new Error('Not implemented');
-  }
+  abstract reload(options?: WaitForOptions): Promise<HTTPResponse | null>;
 
   /**
    * Waits for the page to navigate to a new URL or to reload. It is useful when
@@ -1640,13 +1613,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *   `0` to disable the timeout. The default value can be changed by using the
    *   {@link Page.setDefaultTimeout} method.
    */
-  async waitForRequest(
+  abstract waitForRequest(
     urlOrPredicate: string | ((req: HTTPRequest) => boolean | Promise<boolean>),
     options?: {timeout?: number}
   ): Promise<HTTPRequest>;
-  async waitForRequest(): Promise<HTTPRequest> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * @param urlOrPredicate - A URL or predicate to wait for.
@@ -1675,27 +1645,21 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *   pass `0` to disable the timeout. The default value can be changed by using
    *   the {@link Page.setDefaultTimeout} method.
    */
-  async waitForResponse(
+  abstract waitForResponse(
     urlOrPredicate:
       | string
       | ((res: HTTPResponse) => boolean | Promise<boolean>),
     options?: {timeout?: number}
   ): Promise<HTTPResponse>;
-  async waitForResponse(): Promise<HTTPResponse> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * @param options - Optional waiting parameters
    * @returns Promise which resolves when network is idle
    */
-  async waitForNetworkIdle(options?: {
+  abstract waitForNetworkIdle(options?: {
     idleTime?: number;
     timeout?: number;
   }): Promise<void>;
-  async waitForNetworkIdle(): Promise<void> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * @internal
@@ -1841,9 +1805,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * Brings page to front (activates tab).
    */
-  async bringToFront(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract bringToFront(): Promise<void>;
 
   /**
    * Emulates a given device's metrics and user agent.
@@ -2121,10 +2083,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * NOTE: in certain cases, setting viewport will reload the page in order to
    * set the isMobile or hasTouch properties.
    */
-  async setViewport(viewport: Viewport): Promise<void>;
-  async setViewport(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract setViewport(viewport: Viewport): Promise<void>;
 
   /**
    * Current page viewport settings.
@@ -2147,9 +2106,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * - `isLandScape`: Specifies if viewport is in landscape mode. Defaults to
    *   `false`.
    */
-  viewport(): Viewport | null {
-    throw new Error('Not implemented');
-  }
+  abstract viewport(): Viewport | null;
 
   /**
    * Evaluates a function in the page's context and returns the result.
@@ -2244,26 +2201,22 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * await page.evaluateOnNewDocument(preloadFile);
    * ```
    */
-  async evaluateOnNewDocument<
+  abstract evaluateOnNewDocument<
     Params extends unknown[],
     Func extends (...args: Params) => unknown = (...args: Params) => unknown,
   >(
     pageFunction: Func | string,
     ...args: Params
   ): Promise<NewDocumentScriptEvaluation>;
-  async evaluateOnNewDocument(): Promise<NewDocumentScriptEvaluation> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * Removes script that injected into page by Page.evaluateOnNewDocument.
    *
    * @param identifier - script identifier
    */
-  async removeScriptToEvaluateOnNewDocument(identifier: string): Promise<void>;
-  async removeScriptToEvaluateOnNewDocument(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract removeScriptToEvaluateOnNewDocument(
+    identifier: string
+  ): Promise<void>;
 
   /**
    * Toggles ignoring cache for each request based on the enabled state. By
@@ -2338,16 +2291,13 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @returns Promise which resolves to buffer or a base64 string (depending on
    * the value of `encoding`) with captured screenshot.
    */
-  screenshot(
+  abstract screenshot(
     options: ScreenshotOptions & {encoding: 'base64'}
   ): Promise<string>;
-  screenshot(
+  abstract screenshot(
     options?: ScreenshotOptions & {encoding?: 'binary'}
   ): Promise<Buffer>;
-  async screenshot(options?: ScreenshotOptions): Promise<Buffer | string>;
-  async screenshot(): Promise<Buffer | string> {
-    throw new Error('Not implemented');
-  }
+  abstract screenshot(options?: ScreenshotOptions): Promise<Buffer | string>;
 
   /**
    * @internal
@@ -2427,10 +2377,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * {@inheritDoc Page.createPDFStream}
    */
-  async pdf(options?: PDFOptions): Promise<Buffer>;
-  async pdf(): Promise<Buffer> {
-    throw new Error('Not implemented');
-  }
+  abstract pdf(options?: PDFOptions): Promise<Buffer>;
 
   /**
    * The page's title
@@ -2442,25 +2389,18 @@ export abstract class Page extends EventEmitter<PageEvents> {
     return await this.mainFrame().title();
   }
 
-  async close(options?: {runBeforeUnload?: boolean}): Promise<void>;
-  async close(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract close(options?: {runBeforeUnload?: boolean}): Promise<void>;
 
   /**
    * Indicates that the page has been closed.
    * @returns
    */
-  isClosed(): boolean {
-    throw new Error('Not implemented');
-  }
+  abstract isClosed(): boolean;
 
   /**
    * {@inheritDoc Mouse}
    */
-  get mouse(): Mouse {
-    throw new Error('Not implemented');
-  }
+  abstract get mouse(): Mouse;
 
   /**
    * This method fetches an element with `selector`, scrolls it into view if

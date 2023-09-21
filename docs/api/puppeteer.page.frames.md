@@ -10,7 +10,7 @@ An array of all frames attached to the page.
 
 ```typescript
 class Page {
-  frames(): Frame[];
+  abstract frames(): Frame[];
 }
 ```
 

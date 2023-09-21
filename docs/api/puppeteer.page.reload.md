@@ -10,7 +10,7 @@ Reloads the page.
 
 ```typescript
 class Page {
-  reload(options?: WaitForOptions): Promise<HTTPResponse | null>;
+  abstract reload(options?: WaitForOptions): Promise<HTTPResponse | null>;
 }
 ```
 

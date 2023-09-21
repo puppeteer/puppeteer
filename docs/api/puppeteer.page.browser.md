@@ -10,7 +10,7 @@ Get the browser the page belongs to.
 
 ```typescript
 class Page {
-  browser(): Browser;
+  abstract browser(): Browser;
 }
 ```
 

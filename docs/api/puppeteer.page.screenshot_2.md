@@ -8,7 +8,7 @@ sidebar_label: Page.screenshot_2
 
 ```typescript
 class Page {
-  screenshot(options?: ScreenshotOptions): Promise<Buffer | string>;
+  abstract screenshot(options?: ScreenshotOptions): Promise<Buffer | string>;
 }
 ```
 

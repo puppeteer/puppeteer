@@ -76,12 +76,18 @@ interface JavascriptEnabledState {
   active: boolean;
 }
 
-interface ClientProvider {
+/**
+ * @internal
+ */
+export interface ClientProvider {
   clients(): CDPSession[];
   registerState(state: EmulatedState<any>): void;
 }
 
-class EmulatedState<T extends {active: boolean}> {
+/**
+ * @internal
+ */
+export class EmulatedState<T extends {active: boolean}> {
   #state: T;
   #clientProvider: ClientProvider;
   #updater: (client: CDPSession, state: T) => Promise<void>;

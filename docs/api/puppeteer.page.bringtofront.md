@@ -10,7 +10,7 @@ Brings page to front (activates tab).
 
 ```typescript
 class Page {
-  bringToFront(): Promise<void>;
+  abstract bringToFront(): Promise<void>;
 }
 ```
 

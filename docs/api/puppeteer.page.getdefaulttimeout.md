@@ -10,7 +10,7 @@ Maximum time in milliseconds.
 
 ```typescript
 class Page {
-  getDefaultTimeout(): number;
+  abstract getDefaultTimeout(): number;
 }
 ```
 

@@ -84,7 +84,7 @@ export class DisposableStack {
    *
    * @param value - The resource to add. `null` and `undefined` will not be added,
    * but will be returned.
-   * @returns The provided {@link value}.
+   * @returns The provided `value`.
    */
   use<T extends Disposable | null | undefined>(value: T): T {
     if (value) {
@@ -99,7 +99,7 @@ export class DisposableStack {
    * @param value - The value to add.
    * @param onDispose - The callback to use in place of a `[disposeSymbol]()`
    * method. Will be invoked with `value` as the first parameter.
-   * @returns The provided {@link value}.
+   * @returns The provided `value`.
    */
   adopt<T>(value: T, onDispose: (value: T) => void): T {
     this.#stack.push({
