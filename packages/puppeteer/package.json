@@ -37,7 +37,7 @@
     "build:docs": "wireit",
     "build": "wireit",
     "clean": "../../tools/clean.js",
-    "postinstall": "node install.js",
+    "postinstall": "node install.mjs",
     "prepack": "wireit"
   },
   "wireit": {
@@ -111,7 +111,7 @@
   "files": [
     "lib",
     "src",
-    "install.js",
+    "install.mjs",
     "!*.test.js",
     "!*.test.d.ts",
     "!*.test.js.map",
