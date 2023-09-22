@@ -20,6 +20,13 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.3.4](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.3.3...puppeteer-core-v21.3.4) (2023-09-22)
+
+
+### Bug Fixes
+
+* avoid structuredClone for Node 16 ([#11006](https://github.com/puppeteer/puppeteer/issues/11006)) ([25eca9a](https://github.com/puppeteer/puppeteer/commit/25eca9a747c122b3096b0f2d01b3323339d57dd9))
+
 ## [21.3.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.3.2...puppeteer-core-v21.3.3) (2023-09-22)
 
 
