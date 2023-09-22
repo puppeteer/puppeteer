@@ -20,11 +20,11 @@ import {type Point} from '../api/ElementHandle.js';
 import {
   Keyboard,
   Mouse,
+  MouseButton,
   Touchscreen,
   type KeyDownOptions,
   type KeyPressOptions,
   type KeyboardTypeOptions,
-  MouseButton,
   type MouseClickOptions,
   type MouseMoveOptions,
   type MouseOptions,
@@ -33,6 +33,7 @@ import {
 import {type KeyInput} from '../common/USKeyboardLayout.js';
 
 import {type BrowsingContext} from './BrowsingContext.js';
+import {type BidiPage} from './Page.js';
 
 const enum InputId {
   Mouse = '__puppeteer_mouse',
@@ -285,19 +286,19 @@ const getBidiKeyValue = (key: KeyInput) => {
  * @internal
  */
 export class BidiKeyboard extends Keyboard {
-  #context: BrowsingContext;
+  #page: BidiPage;
 
-  constructor(context: BrowsingContext) {
+  constructor(page: BidiPage) {
     super();
-    this.#context = context;
+    this.#page = page;
   }
 
   override async down(
     key: KeyInput,
     _options?: Readonly<KeyDownOptions>
   ): Promise<void> {
-    await this.#context.connection.send('input.performActions', {
-      context: this.#context.id,
+    await this.#page.connection.send('input.performActions', {
+      context: this.#page.mainFrame()._id,
       actions: [
         {
           type: SourceActionsType.Key,
@@ -314,8 +315,8 @@ export class BidiKeyboard extends Keyboard {
   }
 
   override async up(key: KeyInput): Promise<void> {
-    await this.#context.connection.send('input.performActions', {
-      context: this.#context.id,
+    await this.#page.connection.send('input.performActions', {
+      context: this.#page.mainFrame()._id,
       actions: [
         {
           type: SourceActionsType.Key,
@@ -352,8 +353,8 @@ export class BidiKeyboard extends Keyboard {
       type: ActionType.KeyUp,
       value: getBidiKeyValue(key),
     });
-    await this.#context.connection.send('input.performActions', {
-      context: this.#context.id,
+    await this.#page.connection.send('input.performActions', {
+      context: this.#page.mainFrame()._id,
       actions: [
         {
           type: SourceActionsType.Key,
@@ -404,8 +405,8 @@ export class BidiKeyboard extends Keyboard {
         );
       }
     }
-    await this.#context.connection.send('input.performActions', {
-      context: this.#context.id,
+    await this.#page.connection.send('input.performActions', {
+      context: this.#page.mainFrame()._id,
       actions: [
         {
           type: SourceActionsType.Key,
@@ -414,6 +415,17 @@ export class BidiKeyboard extends Keyboard {
         },
       ],
     });
+  }
+
+  override async sendCharacter(char: string): Promise<void> {
+    // Measures the number of code points rather than UTF-16 code units.
+    if ([...char].length > 1) {
+      throw new Error('Cannot send more than 1 character.');
+    }
+    const frame = await this.#page.focusedFrame();
+    await frame.isolatedRealm().evaluate(async char => {
+      document.execCommand('insertText', false, char);
+    }, char);
   }
 }
 

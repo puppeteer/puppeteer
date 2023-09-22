@@ -10,7 +10,10 @@ Dispatches a `keydown` event.
 
 ```typescript
 class Keyboard {
-  down(key: KeyInput, options?: Readonly<KeyDownOptions>): Promise<void>;
+  abstract down(
+    key: KeyInput,
+    options?: Readonly<KeyDownOptions>
+  ): Promise<void>;
 }
 ```
 

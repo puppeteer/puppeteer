@@ -87,7 +87,7 @@ export type KeyPressOptions = KeyDownOptions & KeyboardTypeOptions;
  *
  * @public
  */
-export class Keyboard {
+export abstract class Keyboard {
   /**
    * @internal
    */
@@ -120,10 +120,10 @@ export class Keyboard {
    * is the commands of keyboard shortcuts,
    * see {@link https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h | Chromium Source Code} for valid command names.
    */
-  async down(key: KeyInput, options?: Readonly<KeyDownOptions>): Promise<void>;
-  async down(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract down(
+    key: KeyInput,
+    options?: Readonly<KeyDownOptions>
+  ): Promise<void>;
 
   /**
    * Dispatches a `keyup` event.
@@ -132,10 +132,7 @@ export class Keyboard {
    * See {@link KeyInput | KeyInput}
    * for a list of all key names.
    */
-  async up(key: KeyInput): Promise<void>;
-  async up(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract up(key: KeyInput): Promise<void>;
 
   /**
    * Dispatches a `keypress` and `input` event.
@@ -153,10 +150,7 @@ export class Keyboard {
    *
    * @param char - Character to send into the page.
    */
-  async sendCharacter(char: string): Promise<void>;
-  async sendCharacter(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract sendCharacter(char: string): Promise<void>;
 
   /**
    * Sends a `keydown`, `keypress`/`input`,
@@ -181,13 +175,10 @@ export class Keyboard {
    * if specified, is the time to wait between `keydown` and `keyup` in milliseconds.
    * Defaults to 0.
    */
-  async type(
+  abstract type(
     text: string,
     options?: Readonly<KeyboardTypeOptions>
   ): Promise<void>;
-  async type(): Promise<void> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * Shortcut for {@link Keyboard.down}
@@ -211,13 +202,10 @@ export class Keyboard {
    * is the commands of keyboard shortcuts,
    * see {@link https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h | Chromium Source Code} for valid command names.
    */
-  async press(
+  abstract press(
     key: KeyInput,
     options?: Readonly<KeyPressOptions>
   ): Promise<void>;
-  async press(): Promise<void> {
-    throw new Error('Not implemented');
-  }
 }
 
 /**

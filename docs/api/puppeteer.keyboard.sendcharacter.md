@@ -10,7 +10,7 @@ Dispatches a `keypress` and `input` event. This does not send a `keydown` or `ke
 
 ```typescript
 class Keyboard {
-  sendCharacter(char: string): Promise<void>;
+  abstract sendCharacter(char: string): Promise<void>;
 }
 ```
 
