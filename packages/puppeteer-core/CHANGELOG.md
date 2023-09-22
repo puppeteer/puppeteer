@@ -20,6 +20,13 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.3.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.3.2...puppeteer-core-v21.3.3) (2023-09-22)
+
+
+### Bug Fixes
+
+* do not export bidi and fix import from the entrypoint ([#10998](https://github.com/puppeteer/puppeteer/issues/10998)) ([88c78de](https://github.com/puppeteer/puppeteer/commit/88c78dea41eb7690d67343298c150194fe145763))
+
 ## [21.3.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.3.1...puppeteer-core-v21.3.2) (2023-09-22)
 
 
