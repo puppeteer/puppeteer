@@ -120,6 +120,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[keyboard.spec] Keyboard *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -642,100 +648,10 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
-    "testIdPattern": "[keyboard.spec] Keyboard ElementHandle.press should not support |text| option",
+    "testIdPattern": "[keyboard.spec] Keyboard should send a character with sendCharacter",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should move with the arrow keys",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should not type canceled events",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should press the meta key",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should press the metaKey",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should send a character with ElementHandle.press",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should send proper codes while typing",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should send proper codes while typing with shift",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should specify location",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should specify repeat property",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should throw on unknown keys",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should trigger commands of keyboard shortcuts",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should type all kinds of characters",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should type emoji",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should type emoji into an iframe",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should type into a textarea",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.disconnect should reject navigation when browser closes",
@@ -2148,72 +2064,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[keyboard.spec] Keyboard ElementHandle.press should support |text| option",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should press the meta key",
-    "platforms": ["linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should press the meta key",
-    "platforms": ["linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should press the meta key",
-    "platforms": ["darwin"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should press the metaKey",
-    "platforms": ["linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should press the metaKey",
-    "platforms": ["linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should press the metaKey",
-    "platforms": ["darwin"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should report multiple modifiers",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should report shiftKey",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should report shiftKey",
-    "platforms": ["darwin"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should report shiftKey",
-    "platforms": ["linux"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
     "testIdPattern": "[keyboard.spec] Keyboard should send a character with sendCharacter",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -2236,12 +2086,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[keyboard.spec] Keyboard should type all kinds of characters",
-    "platforms": ["linux"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[keyboard.spec] Keyboard should type emoji",

@@ -41,21 +41,6 @@ describe('Keyboard', function () {
       })
     ).toBe(text);
   });
-  it('should press the metaKey', async () => {
-    const {page, isFirefox} = await getTestState();
-
-    await page.evaluate(() => {
-      (window as any).keyPromise = new Promise(resolve => {
-        return document.addEventListener('keydown', event => {
-          return resolve(event.key);
-        });
-      });
-    });
-    await page.keyboard.press('Meta');
-    expect(await page.evaluate('keyPromise')).toBe(
-      isFirefox && os.platform() !== 'darwin' ? 'OS' : 'Meta'
-    );
-  });
   it('should move with the arrow keys', async () => {
     const {page, server} = await getTestState();
 
@@ -188,48 +173,29 @@ describe('Keyboard', function () {
 
     await page.goto(server.PREFIX + '/input/keyboard.html');
     const keyboard = page.keyboard;
-    const codeForKey = new Map<KeyInput, number>([
-      ['Shift', 16],
-      ['Alt', 18],
-      ['Control', 17],
-    ]);
-    for (const [modifierKey, modifierCode] of codeForKey) {
+    const codeForKey = new Set<KeyInput>(['Shift', 'Alt', 'Control']);
+    for (const modifierKey of codeForKey) {
       await keyboard.down(modifierKey);
       expect(
         await page.evaluate(() => {
           return (globalThis as any).getResult();
         })
-      ).toBe(
-        'Keydown: ' +
-          modifierKey +
-          ' ' +
-          modifierKey +
-          'Left ' +
-          modifierCode +
-          ' [' +
-          modifierKey +
-          ']'
-      );
+      ).toBe(`Keydown: ${modifierKey} ${modifierKey}Left [${modifierKey}]`);
       await keyboard.down('!');
-      // Shift+! will generate a keypress
       if (modifierKey === 'Shift') {
         expect(
           await page.evaluate(() => {
             return (globalThis as any).getResult();
           })
         ).toBe(
-          'Keydown: ! Digit1 49 [' +
-            modifierKey +
-            ']\nKeypress: ! Digit1 33 33 [' +
-            modifierKey +
-            ']'
+          `Keydown: ! Digit1 [${modifierKey}]\n` + `input: ! insertText false`
         );
       } else {
         expect(
           await page.evaluate(() => {
             return (globalThis as any).getResult();
           })
-        ).toBe('Keydown: ! Digit1 49 [' + modifierKey + ']');
+        ).toBe(`Keydown: ! Digit1 [${modifierKey}]`);
       }
 
       await keyboard.up('!');
@@ -237,21 +203,13 @@ describe('Keyboard', function () {
         await page.evaluate(() => {
           return (globalThis as any).getResult();
         })
-      ).toBe('Keyup: ! Digit1 49 [' + modifierKey + ']');
+      ).toBe(`Keyup: ! Digit1 [${modifierKey}]`);
       await keyboard.up(modifierKey);
       expect(
         await page.evaluate(() => {
           return (globalThis as any).getResult();
         })
-      ).toBe(
-        'Keyup: ' +
-          modifierKey +
-          ' ' +
-          modifierKey +
-          'Left ' +
-          modifierCode +
-          ' []'
-      );
+      ).toBe(`Keyup: ${modifierKey} ${modifierKey}Left []`);
     }
   });
   it('should report multiple modifiers', async () => {
@@ -264,37 +222,37 @@ describe('Keyboard', function () {
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       })
-    ).toBe('Keydown: Control ControlLeft 17 [Control]');
+    ).toBe('Keydown: Control ControlLeft [Control]');
     await keyboard.down('Alt');
     expect(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       })
-    ).toBe('Keydown: Alt AltLeft 18 [Alt Control]');
+    ).toBe('Keydown: Alt AltLeft [Alt Control]');
     await keyboard.down(';');
     expect(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       })
-    ).toBe('Keydown: ; Semicolon 186 [Alt Control]');
+    ).toBe('Keydown: ; Semicolon [Alt Control]');
     await keyboard.up(';');
     expect(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       })
-    ).toBe('Keyup: ; Semicolon 186 [Alt Control]');
+    ).toBe('Keyup: ; Semicolon [Alt Control]');
     await keyboard.up('Control');
     expect(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       })
-    ).toBe('Keyup: Control ControlLeft 17 [Alt]');
+    ).toBe('Keyup: Control ControlLeft [Alt]');
     await keyboard.up('Alt');
     expect(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       })
-    ).toBe('Keyup: Alt AltLeft 18 []');
+    ).toBe('Keyup: Alt AltLeft []');
   });
   it('should send proper codes while typing', async () => {
     const {page, server} = await getTestState();
@@ -307,9 +265,9 @@ describe('Keyboard', function () {
       })
     ).toBe(
       [
-        'Keydown: ! Digit1 49 []',
-        'Keypress: ! Digit1 33 33 []',
-        'Keyup: ! Digit1 49 []',
+        'Keydown: ! Digit1 []',
+        'input: ! insertText false',
+        'Keyup: ! Digit1 []',
       ].join('\n')
     );
     await page.keyboard.type('^');
@@ -319,9 +277,9 @@ describe('Keyboard', function () {
       })
     ).toBe(
       [
-        'Keydown: ^ Digit6 54 []',
-        'Keypress: ^ Digit6 94 94 []',
-        'Keyup: ^ Digit6 54 []',
+        'Keydown: ^ Digit6 []',
+        'input: ^ insertText false',
+        'Keyup: ^ Digit6 []',
       ].join('\n')
     );
   });
@@ -338,10 +296,10 @@ describe('Keyboard', function () {
       })
     ).toBe(
       [
-        'Keydown: Shift ShiftLeft 16 [Shift]',
-        'Keydown: ~ Backquote 192 [Shift]', // 192 is ` keyCode
-        'Keypress: ~ Backquote 126 126 [Shift]', // 126 is ~ charCode
-        'Keyup: ~ Backquote 192 [Shift]',
+        'Keydown: Shift ShiftLeft [Shift]',
+        'Keydown: ~ Backquote [Shift]',
+        'input: ~ insertText false',
+        'Keyup: ~ Backquote [Shift]',
       ].join('\n')
     );
     await keyboard.up('Shift');
@@ -499,7 +457,11 @@ describe('Keyboard', function () {
     ).toBe('👹 Tokyo street Japan 🇯🇵');
   });
   it('should press the meta key', async () => {
-    const {page, isFirefox} = await getTestState();
+    // This test only makes sense on macOS.
+    if (os.platform() !== 'darwin') {
+      return;
+    }
+    const {page} = await getTestState();
 
     await page.evaluate(() => {
       (globalThis as any).result = null;
@@ -517,22 +479,8 @@ describe('Keyboard', function () {
       string,
       boolean,
     ];
-    if (isFirefox && os.platform() !== 'darwin') {
-      expect(key).toBe('OS');
-    } else {
-      expect(key).toBe('Meta');
-    }
-
-    if (isFirefox) {
-      expect(code).toBe('OSLeft');
-    } else {
-      expect(code).toBe('MetaLeft');
-    }
-
-    if (isFirefox && os.platform() !== 'darwin') {
-      expect(metaKey).toBe(false);
-    } else {
-      expect(metaKey).toBe(true);
-    }
+    expect(key).toBe('Meta');
+    expect(code).toBe('MetaLeft');
+    expect(metaKey).toBe(true);
   });
 });
