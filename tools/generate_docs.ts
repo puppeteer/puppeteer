@@ -92,7 +92,7 @@ function spliceIntoSection(
           );
         } else if (semver.gte(puppeteerVersion, '15.3.0')) {
           buffer.push(
-            `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://pptr.dev/${puppeteerVersion.slice(
+            `  * [Chrome for Testing](https://goo.gle/chrome-for-testing) ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://pptr.dev/${puppeteerVersion.slice(
               1
             )})`
           );
