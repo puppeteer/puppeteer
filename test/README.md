@@ -25,7 +25,7 @@ The best place to look is an existing test to see how they use the helpers.
 
 ## Skipping tests in specific conditions
 
-To skip tests edit the [TestExpectations](https://github.com/puppeteer/puppeteer/blob/main/test/TestExpectations.json) file. See [test runner documentation](https://github.com/puppeteer/puppeteer/tree/main/tools/mochaRunner) for more details.
+To skip tests edit the [TestExpectations](https://github.com/puppeteer/puppeteer/blob/main/test/TestExpectations.json) file. See [test runner documentation](https://github.com/puppeteer/puppeteer/tree/main/tools/mocha-runner) for more details.
 
 ## Running tests
 

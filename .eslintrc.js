@@ -239,7 +239,7 @@ module.exports = {
         {
           files: [
             'packages/puppeteer-core/src/**/*.test.ts',
-            'tools/mochaRunner/src/test.ts',
+            'tools/mocha-runner/src/test.ts',
           ],
           rules: {
             // With the Node.js test runner, `describe` and `it` are technically

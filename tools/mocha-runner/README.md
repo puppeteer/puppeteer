@@ -6,7 +6,7 @@ It uses `/test/TestSuites.json` and `/test/TestExpectations.json` files to run m
 ## Running tests for Mocha Runner itself.
 
 ```bash
-npm run build && npx c8 node tools/mochaRunner/lib/test.js
+npm run build && npx c8 node tools/mocha-runner/lib/test.js
 ```
 
 ## Running tests using Mocha Runner

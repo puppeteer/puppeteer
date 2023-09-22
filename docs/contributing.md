@@ -107,7 +107,7 @@ Puppeteer uses a custom test runner on top of Mocha that consults the
 [TestExpectations.json](https://github.com/puppeteer/puppeteer/blob/main/test/TestExpectations.json)
 to see if a given test result is expected or not. See more info about the test
 runner in
-[`tools/mochaRunner`](https://github.com/puppeteer/puppeteer/tree/main/tools/mochaRunner).
+[`tools/mocha-runner`](https://github.com/puppeteer/puppeteer/tree/main/tools/mocha-runner).
 
 ### Unit tests
 
@@ -155,7 +155,7 @@ The following is a description of the primary folders in Puppeteer:
 - `test-d` contains type tests using
   [`tsd`](https://github.com/SamVerschueren/tsd).
 - `tools` contains miscellaneous scripts that are used in building and etc.
-- `tools/mochaRunner` - contains the source code for our test runner.
+- `tools/mocha-runner` - contains the source code for our test runner.
 
 ## API guidelines
 
@@ -248,7 +248,7 @@ for details.
 If a test is expected to fail on certain configurations or became flaky, update
 [TestExpectations.json](https://github.com/puppeteer/puppeteer/blob/main/test/TestExpectations.json)
 to reflect that. See more info about TestExpectations.json in
-[`tools/mochaRunner`](https://github.com/puppeteer/puppeteer/tree/main/tools/mochaRunner).
+[`tools/mocha-runner`](https://github.com/puppeteer/puppeteer/tree/main/tools/mocha-runner).
 
 ## API Coverage
 

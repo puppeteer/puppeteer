@@ -59,7 +59,7 @@ export interface MochaResults {
   pending: MochaTestResult[];
   passes: MochaTestResult[];
   failures: MochaTestResult[];
-  // Added by mochaRunner.
+  // Added by mocha-runner.
   updates?: RecommendedExpectation[];
   parameters?: string[];
   platform?: string;
