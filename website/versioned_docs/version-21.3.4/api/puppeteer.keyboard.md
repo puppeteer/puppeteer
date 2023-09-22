@@ -9,7 +9,7 @@ Keyboard provides an api for managing a virtual keyboard. The high level api is 
 #### Signature:
 
 ```typescript
-export declare class Keyboard
+export declare abstract class Keyboard
 ```
 
 ## Remarks
