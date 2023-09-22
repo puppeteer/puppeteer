@@ -41,6 +41,8 @@ jobs:
         run: npm run validate-licenses
       - name: Build every package
         run: npm run build
+      - name: Tests types
+        run: npm run test-types
       - name: Lint code
         run: npm run lint
       - name: Generate documents
@@ -191,16 +193,11 @@ jobs:
         if: ${{ matrix.suite == 'chrome-bidi' }}
         id: browser
         run: node tools/download_chrome_bidi.mjs ~/.cache/puppeteer/chrome-canary
-      - name: Tests types
-        run: npm run test-types
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
         run: npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
-      - name: Install linux dependencies.
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: sudo apt-get install xvfb
       - name: Run all tests (for Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
@@ -269,14 +266,9 @@ jobs:
         env:
           PUPPETEER_PRODUCT: firefox
         run: npm run postinstall
-      - name: Tests types
-        run: npm run test-types
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
         run: npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
-      - name: Install linux dependencies.
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: sudo apt-get install xvfb
       - name: Run all tests (for Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
