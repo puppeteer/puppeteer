@@ -94,7 +94,7 @@ jobs:
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: false
       - name: Install dependencies Firefox
-        run: node ./node_modules/puppeteer/install.js
+        run: node ./node_modules/puppeteer/install.mjs
         env:
           PUPPETEER_PRODUCT: firefox
       - name: Verify issue
