@@ -22,6 +22,8 @@ import {spawn, type SpawnOptions} from 'node:child_process';
 import os from 'os';
 import path from 'path';
 
+import {globSync} from 'glob';
+
 import {
   zPlatform,
   zTestSuiteFile,
@@ -91,6 +93,12 @@ async function main() {
   let minTests = 0;
   if (minTestsIdx !== -1) {
     minTests = Number(process.argv[minTestsIdx + 1]);
+  }
+
+  const shardIdx = process.argv.indexOf('--shard');
+  let shard = null;
+  if (shardIdx !== -1) {
+    shard = String(process.argv[shardIdx + 1]);
   }
 
   const platform = zPlatform.parse(os.platform());
@@ -182,13 +190,41 @@ async function main() {
         args.push('--no-parallel');
       }
       if (process.argv.indexOf('--fullTrace')) {
-        args.push('--fullTrace');
+        args.push('--full-trace');
+      }
+      if (shard) {
+        const specs = globSync('test/build/**/*.spec.js').sort((a, b) => {
+          return a.localeCompare(b);
+        });
+        // Shard ID is 1-based.
+        const [shardId, shards] = shard.split('/').map(s => {
+          return Number(s);
+        }) as [number, number];
+        const argsLength = args.length;
+        for (let i = 0; i < specs.length; i++) {
+          if (i % shards === shardId - 1) {
+            args.push(specs[i]!);
+          }
+        }
+        if (argsLength === args.length) {
+          throw new Error('Shard did not result in any test files');
+        }
+        console.log(
+          `Running shard ${shardId}/${shards}. Picked ${
+            args.length - argsLength
+          } files out of ${specs.length}.`
+        );
       }
       const spawnArgs: SpawnOptions = {
         shell: true,
         cwd: process.cwd(),
         stdio: 'inherit',
-        env,
+        env: shard
+          ? {
+              ...env,
+              PUPPETEER_SHARD: 'true',
+            }
+          : env,
       };
       const handle = noCoverage
         ? spawn('npx', ['mocha', ...args], spawnArgs)
@@ -229,7 +265,7 @@ async function main() {
           results.updates = updates;
           writeJSON(tmpFilename, results);
         } else {
-          if (totalTests < minTests) {
+          if (!shard && totalTests < minTests) {
             fail = true;
             console.log(
               `Test run matches expectations but the number of discovered tests is too low (expected: ${minTests}, actual: ${totalTests}).`
