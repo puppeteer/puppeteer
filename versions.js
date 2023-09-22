@@ -17,7 +17,7 @@
 const versionsPerRelease = new Map([
   // This is a mapping from Chrome version => Puppeteer version.
   // In Chrome roll patches, use `NEXT` for the Puppeteer version.
-  ['117.0.5938.92', 'NEXT'],
+  ['117.0.5938.92', 'v21.3.1'],
   ['116.0.5845.96', 'v21.1.0'],
   ['115.0.5790.170', 'v21.0.2'],
   ['115.0.5790.102', 'v21.0.0'],
