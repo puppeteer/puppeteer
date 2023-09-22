@@ -1266,6 +1266,12 @@
     "expectations": ["FAIL", "SKIP"]
   },
   {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should clip clip bigger than the viewport without \"captureBeyondViewport\"",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL", "PASS"]
+  },
+  {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should get screenshot bigger than the viewport",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],

@@ -35,6 +35,7 @@ import {
   type NewDocumentScriptEvaluation,
   type ScreenshotOptions,
   type WaitTimeoutOptions,
+  type ScreenshotClip,
 } from '../api/Page.js';
 import {
   ConsoleMessage,
@@ -1044,7 +1045,7 @@ export class CdpPage extends Page {
       omitBackground,
       optimizeForSpeed,
       quality,
-      clip,
+      clip: userClip,
       type,
       captureBeyondViewport,
     } = options;
@@ -1055,6 +1056,22 @@ export class CdpPage extends Page {
       stack.defer(async () => {
         await this.#emulationManager.resetDefaultBackgroundColor();
       });
+    }
+
+    let clip = userClip;
+    if (clip && !captureBeyondViewport) {
+      const viewport = await this.mainFrame()
+        .isolatedRealm()
+        .evaluate(() => {
+          const {
+            height,
+            pageLeft: x,
+            pageTop: y,
+            width,
+          } = window.visualViewport!;
+          return {x, y, height, width};
+        });
+      clip = getIntersectionRect(clip, viewport);
     }
 
     const {data} = await this.#client.send('Page.captureScreenshot', {
@@ -1204,3 +1221,25 @@ const supportedMetrics = new Set<string>([
   'JSHeapUsedSize',
   'JSHeapTotalSize',
 ]);
+
+/** @see https://w3c.github.io/webdriver-bidi/#rectangle-intersection */
+function getIntersectionRect(
+  clip: Readonly<ScreenshotClip>,
+  viewport: Readonly<Protocol.DOM.Rect>
+): ScreenshotClip {
+  // Note these will already be normalized.
+  const x = Math.max(clip.x, viewport.x);
+  const y = Math.max(clip.y, viewport.y);
+  return {
+    x,
+    y,
+    width: Math.max(
+      Math.min(clip.x + clip.width, viewport.x + viewport.width) - x,
+      0
+    ),
+    height: Math.max(
+      Math.min(clip.y + clip.height, viewport.y + viewport.height) - y,
+      0
+    ),
+  };
+}

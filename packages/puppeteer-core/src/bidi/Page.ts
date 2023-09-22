@@ -627,7 +627,12 @@ export class BidiPage extends Page {
   override async screenshot(
     options: Readonly<ScreenshotOptions> = {}
   ): Promise<Buffer | string> {
-    const {clip, type, captureBeyondViewport} = options;
+    const {
+      clip,
+      type,
+      captureBeyondViewport,
+      allowViewportExpansion = true,
+    } = options;
     if (captureBeyondViewport) {
       throw new Error(`BiDi does not support 'captureBeyondViewport'.`);
     }
@@ -648,7 +653,11 @@ export class BidiPage extends Page {
     if (clip?.scale !== undefined) {
       throw new Error(`BiDi does not support 'scale' in 'clip'.`);
     }
-    return await super.screenshot({...options, captureBeyondViewport: false});
+    return await super.screenshot({
+      ...options,
+      captureBeyondViewport,
+      allowViewportExpansion: captureBeyondViewport ?? allowViewportExpansion,
+    });
   }
 
   override async _screenshot(
