@@ -60,9 +60,9 @@ import {
   waitWithTimeout,
 } from '../common/util.js';
 import {type Viewport} from '../common/Viewport.js';
-import {AsyncDisposableStack} from '../puppeteer-core.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
+import {AsyncDisposableStack} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {Accessibility} from './Accessibility.js';
