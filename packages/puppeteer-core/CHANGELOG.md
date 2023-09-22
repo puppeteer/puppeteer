@@ -20,6 +20,14 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.3.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.3.1...puppeteer-core-v21.3.2) (2023-09-22)
+
+
+### Bug Fixes
+
+* handle missing detach events for restored bfcache targets ([#10967](https://github.com/puppeteer/puppeteer/issues/10967)) ([7bcdfcb](https://github.com/puppeteer/puppeteer/commit/7bcdfcb7e9e75feca0a8de692926ea25ca8fbed0))
+* roll to Chrome 117.0.5938.92 (r1181205) ([#10989](https://github.com/puppeteer/puppeteer/issues/10989)) ([d048cd9](https://github.com/puppeteer/puppeteer/commit/d048cd965f0707dd9b2a3276f02c563b69f6fac4))
+
 ## [21.3.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.3.0...puppeteer-core-v21.3.1) (2023-09-19)
 
 
