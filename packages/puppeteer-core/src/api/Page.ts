@@ -2351,7 +2351,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
     }
 
     options.captureBeyondViewport ??= true;
-    options.allowViewportExpansion ??= true;
+    options.allowViewportExpansion ??= options.captureBeyondViewport;
     options.clip = options.clip && roundClip(normalizeClip(options.clip));
 
     await using stack = new AsyncDisposableStack();

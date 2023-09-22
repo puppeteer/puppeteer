@@ -1338,7 +1338,7 @@ export abstract class ElementHandle<
     const {
       scrollIntoView = true,
       captureBeyondViewport = true,
-      allowViewportExpansion = true,
+      allowViewportExpansion = captureBeyondViewport,
     } = options;
 
     let clip = await this.#nonEmptyVisibleBoundingBox();
@@ -1347,7 +1347,7 @@ export abstract class ElementHandle<
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     await using _ =
-      (captureBeyondViewport || allowViewportExpansion) && clip
+      allowViewportExpansion && clip
         ? await page._createTemporaryViewportContainingBox(clip)
         : null;
 
@@ -1373,7 +1373,6 @@ export abstract class ElementHandle<
     return await page.screenshot({
       ...options,
       captureBeyondViewport: false,
-      allowViewportExpansion: false,
       clip,
     });
   }

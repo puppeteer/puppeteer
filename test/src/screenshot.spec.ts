@@ -77,6 +77,21 @@ describe('Screenshots', function () {
       });
       expect(screenshot).toBeGolden('screenshot-offscreen-clip.png');
     });
+    it('should clip clip bigger than the viewport without "captureBeyondViewport"', async () => {
+      const {page, server} = await getTestState();
+      await page.setViewport({width: 50, height: 50});
+      await page.goto(server.PREFIX + '/grid.html');
+      const screenshot = await page.screenshot({
+        captureBeyondViewport: false,
+        clip: {
+          x: 25,
+          y: 25,
+          width: 100,
+          height: 100,
+        },
+      });
+      expect(screenshot).toBeGolden('screenshot-offscreen-clip-2.png');
+    });
     it('should run in parallel', async () => {
       const {page, server} = await getTestState();
 
