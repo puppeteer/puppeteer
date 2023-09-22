@@ -10,7 +10,10 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 
 ```typescript
 class Keyboard {
-  type(text: string, options?: Readonly<KeyboardTypeOptions>): Promise<void>;
+  abstract type(
+    text: string,
+    options?: Readonly<KeyboardTypeOptions>
+  ): Promise<void>;
 }
 ```
 

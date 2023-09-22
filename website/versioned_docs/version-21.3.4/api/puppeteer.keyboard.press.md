@@ -10,7 +10,10 @@ Shortcut for [Keyboard.down()](./puppeteer.keyboard.down.md) and [Keyboard.up()]
 
 ```typescript
 class Keyboard {
-  press(key: KeyInput, options?: Readonly<KeyPressOptions>): Promise<void>;
+  abstract press(
+    key: KeyInput,
+    options?: Readonly<KeyPressOptions>
+  ): Promise<void>;
 }
 ```
 
