@@ -71,6 +71,7 @@ import {
 } from './BrowsingContext.js';
 import {type BidiConnection} from './Connection.js';
 import {BidiDialog} from './Dialog.js';
+import {BidiElementHandle} from './ElementHandle.js';
 import {EmulationManager} from './EmulationManager.js';
 import {BidiFrame, lifeCycleToReadinessState} from './Frame.js';
 import {type BidiHTTPRequest} from './HTTPRequest.js';
@@ -201,7 +202,14 @@ export class BidiPage extends Page {
     this.#emulationManager = new EmulationManager(browsingContext);
     this.#mouse = new BidiMouse(this.mainFrame().context());
     this.#touchscreen = new BidiTouchscreen(this.mainFrame().context());
-    this.#keyboard = new BidiKeyboard(this.mainFrame().context());
+    this.#keyboard = new BidiKeyboard(this);
+  }
+
+  /**
+   * @internal
+   */
+  get connection(): BidiConnection {
+    return this.#connection;
   }
 
   override async setUserAgent(
@@ -280,6 +288,27 @@ export class BidiPage extends Page {
     const mainFrame = this.#frameTree.getMainFrame();
     assert(mainFrame, 'Requesting main frame too early!');
     return mainFrame;
+  }
+
+  /**
+   * @internal
+   */
+  async focusedFrame(): Promise<BidiFrame> {
+    using frame = await this.mainFrame()
+      .isolatedRealm()
+      .evaluateHandle(() => {
+        let frame: HTMLIFrameElement | undefined;
+        let win: Window | null = window;
+        while (win?.document.activeElement instanceof HTMLIFrameElement) {
+          frame = win.document.activeElement;
+          win = frame.contentWindow;
+        }
+        return frame;
+      });
+    if (!(frame instanceof BidiElementHandle)) {
+      return this.mainFrame();
+    }
+    return await frame.contentFrame();
   }
 
   override frames(): BidiFrame[] {

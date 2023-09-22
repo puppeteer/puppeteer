@@ -10,7 +10,7 @@ Dispatches a `keyup` event.
 
 ```typescript
 class Keyboard {
-  up(key: KeyInput): Promise<void>;
+  abstract up(key: KeyInput): Promise<void>;
 }
 ```
 

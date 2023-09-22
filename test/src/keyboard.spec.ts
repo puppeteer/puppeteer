@@ -146,27 +146,101 @@ describe('Keyboard', function () {
 
     await page.goto(server.PREFIX + '/input/textarea.html');
     await page.focus('textarea');
-    await page.keyboard.sendCharacter('嗨');
-    expect(
-      await page.evaluate(() => {
-        return document.querySelector('textarea')!.value;
-      })
-    ).toBe('嗨');
+
     await page.evaluate(() => {
-      return window.addEventListener(
+      (globalThis as any).inputCount = 0;
+      (globalThis as any).keyDownCount = 0;
+      window.addEventListener(
+        'input',
+        () => {
+          (globalThis as any).inputCount += 1;
+        },
+        true
+      );
+      window.addEventListener(
         'keydown',
-        e => {
-          return e.preventDefault();
+        () => {
+          (globalThis as any).keyDownCount += 1;
         },
         true
       );
     });
+
+    await page.keyboard.sendCharacter('嗨');
+    expect(
+      await page.$eval('textarea', textarea => {
+        return {
+          value: textarea.value,
+          inputs: (globalThis as any).inputCount,
+          keyDowns: (globalThis as any).keyDownCount,
+        };
+      })
+    ).toMatchObject({value: '嗨', inputs: 1, keyDowns: 0});
+
     await page.keyboard.sendCharacter('a');
     expect(
-      await page.evaluate(() => {
-        return document.querySelector('textarea')!.value;
+      await page.$eval('textarea', textarea => {
+        return {
+          value: textarea.value,
+          inputs: (globalThis as any).inputCount,
+          keyDowns: (globalThis as any).keyDownCount,
+        };
       })
-    ).toBe('嗨a');
+    ).toMatchObject({value: '嗨a', inputs: 2, keyDowns: 0});
+  });
+  it('should send a character with sendCharacter in iframe', async () => {
+    this.timeout(2000);
+
+    const {page} = await getTestState();
+
+    await page.setContent(`
+      <iframe srcdoc="<iframe name='test' srcdoc='<textarea></textarea>'></iframe>"</iframe>
+    `);
+    const frame = await page.waitForFrame(frame => {
+      return frame.name() === 'test';
+    });
+    await frame.focus('textarea');
+
+    await frame.evaluate(() => {
+      (globalThis as any).inputCount = 0;
+      (globalThis as any).keyDownCount = 0;
+      window.addEventListener(
+        'input',
+        () => {
+          (globalThis as any).inputCount += 1;
+        },
+        true
+      );
+      window.addEventListener(
+        'keydown',
+        () => {
+          (globalThis as any).keyDownCount += 1;
+        },
+        true
+      );
+    });
+
+    await page.keyboard.sendCharacter('嗨');
+    expect(
+      await frame.$eval('textarea', textarea => {
+        return {
+          value: textarea.value,
+          inputs: (globalThis as any).inputCount,
+          keyDowns: (globalThis as any).keyDownCount,
+        };
+      })
+    ).toMatchObject({value: '嗨', inputs: 1, keyDowns: 0});
+
+    await page.keyboard.sendCharacter('a');
+    expect(
+      await frame.$eval('textarea', textarea => {
+        return {
+          value: textarea.value,
+          inputs: (globalThis as any).inputCount,
+          keyDowns: (globalThis as any).keyDownCount,
+        };
+      })
+    ).toMatchObject({value: '嗨a', inputs: 2, keyDowns: 0});
   });
   it('should report shiftKey', async () => {
     const {page, server} = await getTestState();

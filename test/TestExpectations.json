@@ -648,10 +648,10 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
-    "testIdPattern": "[keyboard.spec] Keyboard should send a character with sendCharacter",
+    "testIdPattern": "[keyboard.spec] Keyboard should send a character with sendCharacter in iframe",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["TIMEOUT"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.disconnect should reject navigation when browser closes",
@@ -2065,6 +2065,12 @@
   },
   {
     "testIdPattern": "[keyboard.spec] Keyboard should send a character with sendCharacter",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should send a character with sendCharacter in iframe",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
