@@ -1482,12 +1482,6 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
-    "testIdPattern": "[click.spec] Page.click should click the button after navigation",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[click.spec] Page.click should click the button if window.Node is removed",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -1636,12 +1630,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[defaultbrowsercontext.spec] DefaultBrowserContext page.cookies() should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[defaultbrowsercontext.spec] DefaultBrowserContext page.deleteCookie() should work",
