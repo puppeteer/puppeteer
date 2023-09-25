@@ -231,6 +231,15 @@ export class WaitTask<T = unknown> {
         return;
       }
 
+      // Errors coming from WebDriver BiDi. TODO: Adjust messages after
+      // https://github.com/w3c/webdriver-bidi/issues/540 is resolved.
+      if (
+        error.message.includes('no such handle') ||
+        error.message.includes("Actor 'MessageHandlerFrame' destroyed")
+      ) {
+        return;
+      }
+
       return error;
     }
 
