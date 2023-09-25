@@ -22,10 +22,14 @@ module.exports = {
   reporter: 'dot',
   logLevel: 'debug',
   require: ['./test/build/mocha-utils.js', 'source-map-support/register'],
-  spec: 'test/build/**/*.spec.js',
   exit: !!process.env.CI,
   retries: process.env.CI ? 3 : 0,
   parallel: !!process.env.PARALLEL,
   timeout: timeout,
   reporter: process.env.CI ? 'spec' : 'dot',
+  ...(!process.env['PUPPETEER_SHARD']
+    ? {
+        spec: 'test/build/**/*.spec.js',
+      }
+    : {}),
 };

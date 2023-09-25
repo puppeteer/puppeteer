@@ -220,7 +220,7 @@ jobs:
       - run: 'exit 0'
 
   firefox-tests:
-    name: ${{ matrix.suite }} tests on ${{ matrix.os }}
+    name: ${{ matrix.suite }} tests on ${{ matrix.os }} (${{ matrix.shard }})
     runs-on: ${{ matrix.os }}
     needs: check-changes
     if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
@@ -234,6 +234,11 @@ jobs:
           - firefox-bidi
           - firefox-headful
           - firefox-headless
+        shard:
+          - 1/4
+          - 2/4
+          - 3/4
+          - 4/4
         exclude:
           - os: macos-latest
             suite: firefox-headful
@@ -268,10 +273,10 @@ jobs:
         run: npm run postinstall
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
-        run: npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
       - name: Run all tests (for Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
       - uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
         if: always()
         with:
