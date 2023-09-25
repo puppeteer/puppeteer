@@ -221,21 +221,16 @@ export class WaitTask<T = unknown> {
 
       // We could have tried to evaluate in a context which was already
       // destroyed.
-      if (
-        error.message.includes('Cannot find context with specified id') ||
-        // Firefox BiDi Error, update one https://github.com/w3c/webdriver-bidi/issues/540 is resolved
-        error.message.includes(
-          "destroyed before query 'MessageHandlerFrameParent:sendCommand'"
-        )
-      ) {
+      if (error.message.includes('Cannot find context with specified id')) {
         return;
       }
 
       // Errors coming from WebDriver BiDi. TODO: Adjust messages after
       // https://github.com/w3c/webdriver-bidi/issues/540 is resolved.
       if (
-        error.message.includes('no such handle') ||
-        error.message.includes("Actor 'MessageHandlerFrame' destroyed")
+        error.message.includes(
+          "AbortError: Actor 'MessageHandlerFrame' destroyed"
+        )
       ) {
         return;
       }
