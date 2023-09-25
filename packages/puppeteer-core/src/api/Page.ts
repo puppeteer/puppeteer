@@ -242,7 +242,7 @@ export interface ScreenshotOptions {
   /**
    * Capture the screenshot from the surface, rather than the view.
    *
-   * @defaultValue `false`
+   * @defaultValue `true`
    */
   fromSurface?: boolean;
   /**
@@ -493,6 +493,20 @@ export {
  */
 export interface NewDocumentScriptEvaluation {
   identifier: string;
+}
+
+/**
+ * @internal
+ */
+export function setDefaultScreenshotOptions(options: ScreenshotOptions): void {
+  options.optimizeForSpeed ??= false;
+  options.type ??= 'png';
+  options.fromSurface ??= true;
+  options.fullPage ??= false;
+  options.omitBackground ??= false;
+  options.encoding ??= 'binary';
+  options.captureBeyondViewport ??= true;
+  options.allowViewportExpansion ??= options.captureBeyondViewport;
 }
 
 /**
@@ -2285,7 +2299,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
             ...userOptions.clip,
           }
         : undefined,
-    } as ScreenshotOptions;
+    };
     if (options.type === undefined && options.path !== undefined) {
       const filePath = options.path;
       // Note we cannot use Node.js here due to browser compatability.
@@ -2358,8 +2372,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
       );
     }
 
-    options.captureBeyondViewport ??= true;
-    options.allowViewportExpansion ??= options.captureBeyondViewport;
+    setDefaultScreenshotOptions(options);
+
     options.clip = options.clip && roundClip(normalizeClip(options.clip));
 
     await using stack = new AsyncDisposableStack();
