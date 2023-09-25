@@ -14,9 +14,7 @@ This will look all open [browser contexts](./puppeteer.browsercontext.md).
 class BrowserContext {
   abstract waitForTarget(
     predicate: (x: Target) => boolean | Promise<boolean>,
-    options?: {
-      timeout?: number;
-    }
+    options?: WaitForTargetOptions
   ): Promise<Target>;
 }
 ```
@@ -26,7 +24,7 @@ class BrowserContext {
 | Parameter | Type                                                                         | Description  |
 | --------- | ---------------------------------------------------------------------------- | ------------ |
 | predicate | (x: [Target](./puppeteer.target.md)) =&gt; boolean \| Promise&lt;boolean&gt; |              |
-| options   | { timeout?: number; }                                                        | _(Optional)_ |
+| options   | [WaitForTargetOptions](./puppeteer.waitfortargetoptions.md)                  | _(Optional)_ |
 
 **Returns:**
 

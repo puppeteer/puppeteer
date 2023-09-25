@@ -19,6 +19,7 @@ import type {ServerResponse} from 'http';
 import expect from 'expect';
 import {type Frame, TimeoutError} from 'puppeteer';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
+import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
@@ -837,18 +838,27 @@ describe('navigation', function () {
       server.setRoute('/one-style.html', (_req, res) => {
         return serverResponses.push(res);
       });
-      const navigations = [];
+      const navigations: Array<Promise<HTTPResponse | null>> = [];
       for (let i = 0; i < 3; ++i) {
         navigations.push(frames[i]!.goto(server.PREFIX + '/one-style.html'));
         await server.waitForRequest('/one-style.html');
       }
       // Respond from server out-of-order.
       const serverResponseTexts = ['AAA', 'BBB', 'CCC'];
-      for (const i of [1, 2, 0]) {
-        serverResponses[i]!.end(serverResponseTexts[i]);
-        const response = (await navigations[i])!;
-        expect(response.frame()).toBe(frames[i]);
-        expect(await response.text()).toBe(serverResponseTexts[i]);
+      try {
+        for (const i of [1, 2, 0]) {
+          const response = await getResponse(i);
+          expect(response.frame()).toBe(frames[i]);
+          expect(await response.text()).toBe(serverResponseTexts[i]);
+        }
+      } catch (error) {
+        await Promise.all([getResponse(0), getResponse(1), getResponse(2)]);
+        throw error;
+      }
+
+      async function getResponse(index: number) {
+        serverResponses[index]!.end(serverResponseTexts[index]);
+        return (await navigations[index])!;
       }
     });
   });

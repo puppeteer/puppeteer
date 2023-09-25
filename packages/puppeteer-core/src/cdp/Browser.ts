@@ -27,6 +27,7 @@ import {
   type IsPageTargetCallback,
   type Permission,
   type TargetFilterCallback,
+  type WaitForTargetOptions,
 } from '../api/Browser.js';
 import {BrowserContext, BrowserContextEvent} from '../api/BrowserContext.js';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
@@ -453,7 +454,7 @@ export class CdpBrowserContext extends BrowserContext {
 
   override waitForTarget(
     predicate: (x: Target) => boolean | Promise<boolean>,
-    options: {timeout?: number} = {}
+    options: WaitForTargetOptions = {}
   ): Promise<Target> {
     return this.#browser.waitForTarget(target => {
       return target.browserContext() === this && predicate(target);

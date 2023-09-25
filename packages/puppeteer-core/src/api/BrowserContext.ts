@@ -18,7 +18,7 @@ import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
-import type {Browser, Permission} from './Browser.js';
+import type {Browser, Permission, WaitForTargetOptions} from './Browser.js';
 import type {Page} from './Page.js';
 import type {Target} from './Target.js';
 
@@ -128,7 +128,7 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    */
   abstract waitForTarget(
     predicate: (x: Target) => boolean | Promise<boolean>,
-    options?: {timeout?: number}
+    options?: WaitForTargetOptions
   ): Promise<Target>;
 
   /**
