@@ -18,7 +18,7 @@ import type {Readable} from 'stream';
 
 import {type Protocol} from 'devtools-protocol';
 
-import type {Browser} from '../api/Browser.js';
+import {type Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import {type ElementHandle} from '../api/ElementHandle.js';
@@ -33,9 +33,9 @@ import {
   type MediaFeature,
   type Metrics,
   type NewDocumentScriptEvaluation,
+  type ScreenshotClip,
   type ScreenshotOptions,
   type WaitTimeoutOptions,
-  type ScreenshotClip,
 } from '../api/Page.js';
 import {
   ConsoleMessage,
@@ -74,6 +74,7 @@ import {type DeviceRequestPrompt} from './DeviceRequestPrompt.js';
 import {CdpDialog} from './Dialog.js';
 import {EmulationManager} from './EmulationManager.js';
 import {createCdpHandle, releaseObject} from './ExecutionContext.js';
+import {FirefoxTargetManager} from './FirefoxTargetManager.js';
 import {type CdpFrame} from './Frame.js';
 import {FrameManager, FrameManagerEvent} from './FrameManager.js';
 import {CdpKeyboard, CdpMouse, CdpTouchscreen} from './Input.js';
@@ -1052,11 +1053,17 @@ export class CdpPage extends Page {
       captureBeyondViewport,
     } = options;
 
+    const isFirefox =
+      this.target()._targetManager() instanceof FirefoxTargetManager;
+
     await using stack = new AsyncDisposableStack();
-    if (omitBackground && (type === 'png' || type === 'webp')) {
+    // Firefox omits background by default; it's not configurable.
+    if (!isFirefox && omitBackground && (type === 'png' || type === 'webp')) {
       await this.#emulationManager.setTransparentBackgroundColor();
       stack.defer(async () => {
-        await this.#emulationManager.resetDefaultBackgroundColor();
+        await this.#emulationManager
+          .resetDefaultBackgroundColor()
+          .catch(debugError);
       });
     }
 
@@ -1076,15 +1083,16 @@ export class CdpPage extends Page {
       clip = getIntersectionRect(clip, viewport);
     }
 
+    // We need to do these spreads because Firefox doesn't allow unknown options.
     const {data} = await this.#client.send('Page.captureScreenshot', {
       format: type,
-      optimizeForSpeed,
-      quality,
+      ...(optimizeForSpeed ? {optimizeForSpeed} : {}),
+      ...(quality !== undefined ? {quality} : {}),
       clip: clip && {
         ...clip,
         scale: clip.scale ?? 1,
       },
-      fromSurface,
+      ...(!fromSurface ? {fromSurface} : {}),
       captureBeyondViewport,
     });
     return data;
