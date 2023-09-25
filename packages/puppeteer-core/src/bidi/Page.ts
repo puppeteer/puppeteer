@@ -647,52 +647,33 @@ export class BidiPage extends Page {
     }
   }
 
-  override async screenshot(
-    options: Readonly<ScreenshotOptions> & {encoding: 'base64'}
-  ): Promise<string>;
-  override async screenshot(
-    options?: Readonly<ScreenshotOptions>
-  ): Promise<Buffer>;
-  override async screenshot(
-    options: Readonly<ScreenshotOptions> = {}
-  ): Promise<Buffer | string> {
-    const {
-      clip,
-      type,
-      captureBeyondViewport,
-      allowViewportExpansion = true,
-    } = options;
-    if (captureBeyondViewport) {
-      throw new Error(`BiDi does not support 'captureBeyondViewport'.`);
-    }
-    const invalidOption = Object.keys(options).find(option => {
-      return [
-        'fromSurface',
-        'omitBackground',
-        'optimizeForSpeed',
-        'quality',
-      ].includes(option);
-    });
-    if (invalidOption !== undefined) {
-      throw new Error(`BiDi does not support ${invalidOption}.`);
-    }
-    if ((type ?? 'png') !== 'png') {
-      throw new Error(`BiDi only supports 'png' type.`);
-    }
-    if (clip?.scale !== undefined) {
-      throw new Error(`BiDi does not support 'scale' in 'clip'.`);
-    }
-    return await super.screenshot({
-      ...options,
-      captureBeyondViewport,
-      allowViewportExpansion: captureBeyondViewport ?? allowViewportExpansion,
-    });
-  }
-
   override async _screenshot(
     options: Readonly<ScreenshotOptions>
   ): Promise<string> {
-    const {clip} = options;
+    const {clip, type, captureBeyondViewport, allowViewportExpansion} = options;
+    if (captureBeyondViewport && !allowViewportExpansion) {
+      throw new Error(
+        `BiDi does not support 'captureBeyondViewport'. Use 'allowViewportExpansion'.`
+      );
+    }
+    if (options.omitBackground !== undefined && options.omitBackground) {
+      throw new Error(`BiDi does not support 'omitBackground'.`);
+    }
+    if (options.optimizeForSpeed !== undefined && options.optimizeForSpeed) {
+      throw new Error(`BiDi does not support 'optimizeForSpeed'.`);
+    }
+    if (options.fromSurface !== undefined && !options.fromSurface) {
+      throw new Error(`BiDi does not support 'fromSurface'.`);
+    }
+    if (options.quality !== undefined) {
+      throw new Error(`BiDi does not support 'quality'.`);
+    }
+    if (type === 'webp' || type === 'jpeg') {
+      throw new Error(`BiDi only supports 'png' type.`);
+    }
+    if (clip !== undefined && clip.scale !== undefined && clip.scale !== 1) {
+      throw new Error(`BiDi does not support 'scale' in 'clip'.`);
+    }
     const {
       result: {data},
     } = await this.#connection.send('browsingContext.captureScreenshot', {

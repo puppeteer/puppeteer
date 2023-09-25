@@ -1039,7 +1039,9 @@ export class CdpPage extends Page {
     await this.#frameManager.networkManager.setCacheEnabled(enabled);
   }
 
-  async _screenshot(options: Readonly<ScreenshotOptions>): Promise<string> {
+  override async _screenshot(
+    options: Readonly<ScreenshotOptions>
+  ): Promise<string> {
     const {
       fromSurface,
       omitBackground,
