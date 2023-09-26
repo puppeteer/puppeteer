@@ -40,11 +40,10 @@ import type {BidiNetworkManager} from '../bidi/NetworkManager.js';
 import type {Accessibility} from '../cdp/Accessibility.js';
 import type {Coverage} from '../cdp/Coverage.js';
 import type {DeviceRequestPrompt} from '../cdp/DeviceRequestPrompt.js';
-import {
-  NetworkManagerEvent,
-  type NetworkManager as CdpNetworkManager,
-  type Credentials,
-  type NetworkConditions,
+import type {
+  NetworkManager as CdpNetworkManager,
+  Credentials,
+  NetworkConditions,
 } from '../cdp/NetworkManager.js';
 import type {Tracing} from '../cdp/Tracing.js';
 import type {WebWorker} from '../cdp/WebWorker.js';
@@ -58,12 +57,14 @@ import {
   type Handler,
 } from '../common/EventEmitter.js';
 import type {FileChooser} from '../common/FileChooser.js';
+import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
 import {
   paperFormats,
   type LowerCasePaperFormat,
   type ParsedPDFOptions,
   type PDFOptions,
 } from '../common/PDFOptions.js';
+import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {
   Awaitable,
   EvaluateFunc,
@@ -603,6 +604,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @internal
    */
   _isDragging = false;
+  /**
+   * @internal
+   */
+  _timeoutSettings = new TimeoutSettings();
 
   #requestHandlers = new WeakMap<Handler<HTTPRequest>, Handler<HTTPRequest>>();
 

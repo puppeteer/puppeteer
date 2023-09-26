@@ -18,11 +18,11 @@ import type {Protocol} from 'devtools-protocol';
 
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {Frame} from '../api/Frame.js';
+import {EventEmitter, EventSubscription} from '../common/EventEmitter.js';
 import {
-  EventEmitter,
-  EventSubscription,
-  type EventType,
-} from '../common/EventEmitter.js';
+  NetworkManagerEvent,
+  type NetworkManagerEvents,
+} from '../common/NetworkManagerEvents.js';
 import {debugError, isString} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {DisposableStack} from '../util/disposable.js';
@@ -62,34 +62,6 @@ export interface InternalNetworkConditions extends NetworkConditions {
 }
 
 /**
- * We use symbols to prevent any external parties listening to these events.
- * They are internal to Puppeteer.
- *
- * @internal
- */
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace NetworkManagerEvent {
-  export const Request = Symbol('NetworkManager.Request');
-  export const RequestServedFromCache = Symbol(
-    'NetworkManager.RequestServedFromCache'
-  );
-  export const Response = Symbol('NetworkManager.Response');
-  export const RequestFailed = Symbol('NetworkManager.RequestFailed');
-  export const RequestFinished = Symbol('NetworkManager.RequestFinished');
-}
-
-/**
- * @internal
- */
-export interface CdpNetworkManagerEvents extends Record<EventType, unknown> {
-  [NetworkManagerEvent.Request]: CdpHTTPRequest;
-  [NetworkManagerEvent.RequestServedFromCache]: CdpHTTPRequest | undefined;
-  [NetworkManagerEvent.Response]: CdpHTTPResponse;
-  [NetworkManagerEvent.RequestFailed]: CdpHTTPRequest;
-  [NetworkManagerEvent.RequestFinished]: CdpHTTPRequest;
-}
-
-/**
  * @internal
  */
 export interface FrameProvider {
@@ -99,7 +71,7 @@ export interface FrameProvider {
 /**
  * @internal
  */
-export class NetworkManager extends EventEmitter<CdpNetworkManagerEvents> {
+export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   #ignoreHTTPSErrors: boolean;
   #frameManager: FrameProvider;
   #networkEventManager = new NetworkEventManager();
