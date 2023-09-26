@@ -7,6 +7,7 @@
   },
   "scripts": {
     "build": "wireit",
+    "build:fast": "wireit",
     "build:docs": "wireit",
     "check:pinned-deps": "tsx tools/ensure-pinned-deps",
     "check": "npm run check --workspaces --if-present && run-p check:*",
@@ -38,6 +39,7 @@
     "test:firefox:headless": "wireit",
     "test:firefox": "wireit",
     "test": "wireit",
+    "test:fast": "wireit",
     "validate-licenses": "tsx tools/third_party/validate-licenses.ts",
     "unit": "npm run unit --workspaces --if-present"
   },
@@ -51,6 +53,15 @@
         "./packages/testserver:build",
         "./test:build",
         "./test/installation:build"
+      ]
+    },
+    "build:fast": {
+      "dependencies": [
+        "./packages/browsers:build:fast",
+        "./packages/puppeteer-core:build:fast",
+        "./packages/puppeteer:build:fast",
+        "./packages/testserver:build:fast",
+        "./test:build:fast"
       ]
     },
     "build:docs": {
@@ -114,6 +125,13 @@
       "dependencies": [
         "./test:build",
         "./tools/mocha-runner:build"
+      ]
+    },
+    "test:fast": {
+      "command": "cross-env PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 npx ./tools/mocha-runner --min-tests 1003",
+      "dependencies": [
+        "./test:build:fast",
+        "./tools/mocha-runner:build:fast"
       ]
     }
   },

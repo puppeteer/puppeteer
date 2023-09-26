@@ -4,9 +4,24 @@
   "private": true,
   "scripts": {
     "build": "wireit",
+    "build:fast": "wireit",
     "clean": "../tools/clean.js"
   },
   "wireit": {
+    "build:fast": {
+      "command": "swc ./src -d build",
+      "files": [
+        "src/**",
+        ".swcrc"
+      ],
+      "output": [
+        "build/**"
+      ],
+      "dependencies": [
+        "../packages/puppeteer:build:fast",
+        "../packages/testserver:build:fast"
+      ]
+    },
     "build": {
       "command": "tsc -b",
       "clean": "if-file-deleted",

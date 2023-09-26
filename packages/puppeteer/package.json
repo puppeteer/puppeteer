@@ -50,6 +50,20 @@
         "README.md"
       ]
     },
+    "build:fast": {
+      "command": "swc ./src -d lib/cjs/puppeteer",
+      "files": [
+        "src/**",
+        ".swcrc"
+      ],
+      "output": [
+        "lib/cjs/puppeteer/**"
+      ],
+      "dependencies": [
+        "../puppeteer-core:build:fast",
+        "../browsers:build:fast"
+      ]
+    },
     "build": {
       "dependencies": [
         "build:tsc",

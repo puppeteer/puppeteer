@@ -5,9 +5,20 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "wireit",
+    "build:fast": "wireit",
     "clean": "../../tools/clean.js"
   },
   "wireit": {
+    "build:fast": {
+      "command": "swc ./src -d lib",
+      "files": [
+        "src/**",
+        ".swcrc"
+      ],
+      "output": [
+        "lib/**"
+      ]
+    },
     "build": {
       "command": "tsc -b",
       "clean": "if-file-deleted",

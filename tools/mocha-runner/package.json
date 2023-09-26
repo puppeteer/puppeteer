@@ -8,10 +8,21 @@
   "license": "Apache-2.0",
   "scripts": {
     "build": "wireit",
+    "build:fast": "wireit",
     "test": "wireit",
     "clean": "../clean.js"
   },
   "wireit": {
+    "build:fast": {
+      "command": "swc ./src -d bin && chmod +x ./bin/mocha-runner.js",
+      "files": [
+        "src/**",
+        ".swcrc"
+      ],
+      "output": [
+        "bin/**"
+      ]
+    },
     "build": {
       "command": "tsc -b && chmod +x ./bin/mocha-runner.js",
       "clean": "if-file-deleted",

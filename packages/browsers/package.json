@@ -4,6 +4,7 @@
   "description": "Download and launch browsers",
   "scripts": {
     "build:docs": "wireit",
+    "build:fast": "wireit",
     "build": "wireit",
     "clean": "../../tools/clean.js",
     "test": "wireit"
@@ -16,6 +17,16 @@
     "require": "./lib/cjs/main.js"
   },
   "wireit": {
+    "build:fast": {
+      "command": "swc ./src -d lib/cjs",
+      "files": [
+        "src/**",
+        ".swcrc"
+      ],
+      "output": [
+        "lib/cjs/**"
+      ]
+    },
     "build": {
       "command": "tsc -b && tsx ../../tools/chmod.ts 755 lib/cjs/main-cli.js lib/esm/main-cli.js",
       "files": [
