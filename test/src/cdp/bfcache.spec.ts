@@ -17,8 +17,8 @@
 import expect from 'expect';
 import {PageEvent} from 'puppeteer-core';
 
-import {launch} from './mocha-utils.js';
-import {waitEvent} from './utils.js';
+import {launch} from '../mocha-utils.js';
+import {waitEvent} from '../utils.js';
 
 describe('BFCache', function () {
   it('can navigate to a BFCached page', async () => {
