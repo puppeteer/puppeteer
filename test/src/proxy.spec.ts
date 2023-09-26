@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import type {IncomingMessage, Server, ServerResponse} from 'http';
 import http from 'http';
-import type {Server, IncomingMessage, ServerResponse} from 'http';
 import type {AddressInfo} from 'net';
 import os from 'os';
 
-import {type TestServer} from '@pptr/testserver';
+import type {TestServer} from '@pptr/testserver';
 import expect from 'expect';
 
 import {getTestState, launch} from './mocha-utils.js';

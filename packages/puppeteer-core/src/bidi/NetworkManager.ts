@@ -24,11 +24,11 @@ import {
 } from '../common/EventEmitter.js';
 import {DisposableStack} from '../util/disposable.js';
 
-import {type BidiConnection} from './Connection.js';
-import {type BidiFrame} from './Frame.js';
+import type {BidiConnection} from './Connection.js';
+import type {BidiFrame} from './Frame.js';
 import {BidiHTTPRequest} from './HTTPRequest.js';
 import {BidiHTTPResponse} from './HTTPResponse.js';
-import {type BidiPage} from './Page.js';
+import type {BidiPage} from './Page.js';
 
 /**
  * @internal

@@ -7,11 +7,11 @@ import {
   targetFromTargetString,
   type BuilderRun,
 } from '@angular-devkit/architect';
-import {type JsonObject} from '@angular-devkit/core';
+import type {JsonObject} from '@angular-devkit/core';
 
 import {TestRunner} from '../../schematics/utils/types.js';
 
-import {type PuppeteerBuilderOptions} from './types.js';
+import type {PuppeteerBuilderOptions} from './types.js';
 
 const terminalStyles = {
   cyan: '\u001b[36;1m',

@@ -16,13 +16,13 @@
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type Protocol from 'devtools-protocol';
 
-import {type Frame} from '../api/Frame.js';
+import type {Frame} from '../api/Frame.js';
 import {
   HTTPResponse as HTTPResponse,
   type RemoteAddress,
 } from '../api/HTTPResponse.js';
 
-import {type BidiHTTPRequest} from './HTTPRequest.js';
+import type {BidiHTTPRequest} from './HTTPRequest.js';
 
 /**
  * @internal

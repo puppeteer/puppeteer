@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
-import {type CDPSession} from '../api/CDPSession.js';
-import {type EventEmitter, type EventType} from '../common/EventEmitter.js';
+import type {CDPSession} from '../api/CDPSession.js';
+import type {EventEmitter, EventType} from '../common/EventEmitter.js';
 
-import {type CdpTarget} from './Target.js';
+import type {CdpTarget} from './Target.js';
 
 /**
  * @internal

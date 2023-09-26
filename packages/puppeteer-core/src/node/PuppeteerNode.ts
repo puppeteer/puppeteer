@@ -22,25 +22,25 @@ import {
   uninstall,
 } from '@puppeteer/browsers';
 
-import {type Browser} from '../api/Browser.js';
-import {type BrowserConnectOptions} from '../cdp/BrowserConnector.js';
+import type {Browser} from '../api/Browser.js';
+import type {BrowserConnectOptions} from '../cdp/BrowserConnector.js';
 import {
   type CommonPuppeteerSettings,
   type ConnectOptions,
   Puppeteer,
 } from '../cdp/Puppeteer.js';
-import {type Configuration} from '../common/Configuration.js';
-import {type Product} from '../common/Product.js';
+import type {Configuration} from '../common/Configuration.js';
+import type {Product} from '../common/Product.js';
 import {PUPPETEER_REVISIONS} from '../revisions.js';
 
 import {ChromeLauncher} from './ChromeLauncher.js';
 import {FirefoxLauncher} from './FirefoxLauncher.js';
-import {
-  type BrowserLaunchArgumentOptions,
-  type ChromeReleaseChannel,
-  type LaunchOptions,
+import type {
+  BrowserLaunchArgumentOptions,
+  ChromeReleaseChannel,
+  LaunchOptions,
 } from './LaunchOptions.js';
-import {type ProductLauncher} from './ProductLauncher.js';
+import type {ProductLauncher} from './ProductLauncher.js';
 
 /**
  * @public

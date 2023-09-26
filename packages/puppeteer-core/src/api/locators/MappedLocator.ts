@@ -19,7 +19,7 @@ import {
   from,
   mergeMap,
 } from '../../../third_party/rxjs/rxjs.js';
-import {type Awaitable, type HandleFor} from '../../common/types.js';
+import type {Awaitable, HandleFor} from '../../common/types.js';
 
 import {
   type ActionOptions,

@@ -18,7 +18,7 @@ import {describe, it} from 'node:test';
 
 import expect from 'expect';
 
-import {type ConnectionTransport} from '../common/ConnectionTransport.js';
+import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 
 import {BidiConnection} from './Connection.js';
 

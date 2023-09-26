@@ -23,7 +23,7 @@
 
 import * as path from 'path';
 
-import {type DocumenterConfig} from '@microsoft/api-documenter/lib/documenters/DocumenterConfig';
+import type {DocumenterConfig} from '@microsoft/api-documenter/lib/documenters/DocumenterConfig';
 import {CustomMarkdownEmitter} from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
 import {CustomDocNodes} from '@microsoft/api-documenter/lib/nodes/CustomDocNodeKind';
 import {DocEmphasisSpan} from '@microsoft/api-documenter/lib/nodes/DocEmphasisSpan';

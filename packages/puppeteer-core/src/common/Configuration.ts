@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {type Product} from './Product.js';
+import type {Product} from './Product.js';
 
 /**
  * Defines experiment options for Puppeteer.

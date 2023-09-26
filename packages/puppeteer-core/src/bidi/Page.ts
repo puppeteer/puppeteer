@@ -19,8 +19,8 @@ import type {Readable} from 'stream';
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type Protocol from 'devtools-protocol';
 
-import {type CDPSession} from '../api/CDPSession.js';
-import {type WaitForOptions} from '../api/Frame.js';
+import type {CDPSession} from '../api/CDPSession.js';
+import type {WaitForOptions} from '../api/Frame.js';
 import {
   Page,
   PageEvent,
@@ -44,10 +44,10 @@ import {
   TargetCloseError,
   TimeoutError,
 } from '../common/Errors.js';
-import {type Handler} from '../common/EventEmitter.js';
-import {type PDFOptions} from '../common/PDFOptions.js';
+import type {Handler} from '../common/EventEmitter.js';
+import type {PDFOptions} from '../common/PDFOptions.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
-import {type Awaitable} from '../common/types.js';
+import type {Awaitable} from '../common/types.js';
 import {
   debugError,
   evaluationString,
@@ -56,28 +56,28 @@ import {
   waitForEvent,
   waitWithTimeout,
 } from '../common/util.js';
-import {type Viewport} from '../common/Viewport.js';
+import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
 
-import {type BidiBrowser} from './Browser.js';
-import {type BidiBrowserContext} from './BrowserContext.js';
+import type {BidiBrowser} from './Browser.js';
+import type {BidiBrowserContext} from './BrowserContext.js';
 import {
   BrowsingContextEvent,
   CdpSessionWrapper,
   getWaitUntilSingle,
   type BrowsingContext,
 } from './BrowsingContext.js';
-import {type BidiConnection} from './Connection.js';
+import type {BidiConnection} from './Connection.js';
 import {BidiDialog} from './Dialog.js';
 import {BidiElementHandle} from './ElementHandle.js';
 import {EmulationManager} from './EmulationManager.js';
 import {BidiFrame, lifeCycleToReadinessState} from './Frame.js';
-import {type BidiHTTPRequest} from './HTTPRequest.js';
-import {type BidiHTTPResponse} from './HTTPResponse.js';
+import type {BidiHTTPRequest} from './HTTPRequest.js';
+import type {BidiHTTPResponse} from './HTTPResponse.js';
 import {BidiKeyboard, BidiMouse, BidiTouchscreen} from './Input.js';
-import {type BidiJSHandle} from './JSHandle.js';
+import type {BidiJSHandle} from './JSHandle.js';
 import {BidiNetworkManager} from './NetworkManager.js';
 import {createBidiHandle} from './Realm.js';
 import {BidiSerializer} from './Serializer.js';

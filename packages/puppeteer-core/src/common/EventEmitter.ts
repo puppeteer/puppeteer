@@ -21,7 +21,7 @@ import mitt, {
 } from '../../third_party/mitt/index.js';
 import {disposeSymbol} from '../util/disposable.js';
 
-export {
+export type {
   /**
    * @public
    */

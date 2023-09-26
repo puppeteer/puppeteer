@@ -15,8 +15,8 @@
  */
 
 import expect from 'expect';
-import {type BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
-import {type CdpTarget} from 'puppeteer-core/internal/cdp/Target.js';
+import type {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
+import type {CdpTarget} from 'puppeteer-core/internal/cdp/Target.js';
 
 import {describeWithDebugLogs, getTestState, launch} from './mocha-utils.js';
 import {attachFrame, detachFrame, navigateFrame} from './utils.js';

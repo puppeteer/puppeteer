@@ -16,10 +16,10 @@
 
 import type Protocol from 'devtools-protocol';
 
-import {type SecurityDetails} from '../common/SecurityDetails.js';
+import type {SecurityDetails} from '../common/SecurityDetails.js';
 
-import {type Frame} from './Frame.js';
-import {type HTTPRequest} from './HTTPRequest.js';
+import type {Frame} from './Frame.js';
+import type {HTTPRequest} from './HTTPRequest.js';
 
 /**
  * @public

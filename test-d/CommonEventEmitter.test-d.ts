@@ -3,11 +3,7 @@ import {EventEmitter as NodeEventEmitter} from 'node:events';
 
 import {expectAssignable} from 'tsd';
 
-import {
-  type CommonEventEmitter,
-  type EventEmitter,
-  type EventType,
-} from 'puppeteer';
+import type {CommonEventEmitter, EventEmitter, EventType} from 'puppeteer';
 
 declare const emitter: EventEmitter<Record<EventType, any>>;
 

@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
-import {type CDPSession} from '../api/CDPSession.js';
+import type {CDPSession} from '../api/CDPSession.js';
 import {Frame, FrameEvent, throwIfDetached} from '../api/Frame.js';
-import {type HTTPResponse} from '../api/HTTPResponse.js';
-import {type Page, type WaitTimeoutOptions} from '../api/Page.js';
+import type {HTTPResponse} from '../api/HTTPResponse.js';
+import type {Page, WaitTimeoutOptions} from '../api/Page.js';
 import {setPageContent} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
-import {
-  type DeviceRequestPrompt,
-  type DeviceRequestPromptManager,
+import type {
+  DeviceRequestPrompt,
+  DeviceRequestPromptManager,
 } from './DeviceRequestPrompt.js';
-import {type FrameManager} from './FrameManager.js';
+import type {FrameManager} from './FrameManager.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {

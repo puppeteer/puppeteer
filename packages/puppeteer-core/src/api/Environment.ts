@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {type CDPSession} from './CDPSession.js';
-import {type Realm} from './Realm.js';
+import type {CDPSession} from './CDPSession.js';
+import type {Realm} from './Realm.js';
 
 /**
  * @internal

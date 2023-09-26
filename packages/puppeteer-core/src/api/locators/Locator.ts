@@ -38,12 +38,12 @@ import {
   tap,
 } from '../../../third_party/rxjs/rxjs.js';
 import {EventEmitter, type EventType} from '../../common/EventEmitter.js';
-import {type HandleFor} from '../../common/types.js';
+import type {HandleFor} from '../../common/types.js';
 import {debugError, timeout} from '../../common/util.js';
-import {
-  type BoundingBox,
-  type ClickOptions,
-  type ElementHandle,
+import type {
+  BoundingBox,
+  ClickOptions,
+  ElementHandle,
 } from '../ElementHandle.js';
 
 import {
@@ -155,7 +155,7 @@ export interface LocatorEvents extends Record<EventType, unknown> {
   [LocatorEvent.Action]: undefined;
 }
 
-export {
+export type {
   /**
    * @deprecated Use {@link LocatorEvents}.
    */

@@ -22,10 +22,10 @@ import {
   mergeMap,
   throwIfEmpty,
 } from '../../../third_party/rxjs/rxjs.js';
-import {type Awaitable, type HandleFor} from '../../common/types.js';
+import type {Awaitable, HandleFor} from '../../common/types.js';
 
 import {DelegatedLocator} from './DelegatedLocator.js';
-import {type ActionOptions, type Locator} from './locators.js';
+import type {ActionOptions, Locator} from './locators.js';
 
 /**
  * @public

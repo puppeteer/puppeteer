@@ -18,20 +18,20 @@ import fs from 'fs';
 import path from 'path';
 
 import {TestServer} from '@pptr/testserver';
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 import expect from 'expect';
 import type * as Mocha from 'mocha';
 import puppeteer from 'puppeteer/lib/cjs/puppeteer/puppeteer.js';
-import {type Browser} from 'puppeteer-core/internal/api/Browser.js';
-import {type BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
-import {type Page} from 'puppeteer-core/internal/api/Page.js';
+import type {Browser} from 'puppeteer-core/internal/api/Browser.js';
+import type {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
+import type {Page} from 'puppeteer-core/internal/api/Page.js';
 import {
   setLogCapture,
   getCapturedLogs,
 } from 'puppeteer-core/internal/common/Debug.js';
-import {
-  type PuppeteerLaunchOptions,
-  type PuppeteerNode,
+import type {
+  PuppeteerLaunchOptions,
+  PuppeteerNode,
 } from 'puppeteer-core/internal/node/PuppeteerNode.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';

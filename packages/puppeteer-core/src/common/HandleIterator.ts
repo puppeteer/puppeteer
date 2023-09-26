@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import {type JSHandle} from '../api/JSHandle.js';
+import type {JSHandle} from '../api/JSHandle.js';
 import {DisposableStack, disposeSymbol} from '../util/disposable.js';
 
-import {type AwaitableIterable, type HandleFor} from './types.js';
+import type {AwaitableIterable, HandleFor} from './types.js';
 
 const DEFAULT_BATCH_SIZE = 20;
 

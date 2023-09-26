@@ -18,10 +18,10 @@ import * as BidiMapper from 'chromium-bidi/lib/cjs/bidiMapper/bidiMapper.js';
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
-import {type CDPEvents, type CDPSession} from '../api/CDPSession.js';
-import {type Connection as CdpConnection} from '../cdp/Connection.js';
+import type {CDPEvents, CDPSession} from '../api/CDPSession.js';
+import type {Connection as CdpConnection} from '../cdp/Connection.js';
 import {TargetCloseError} from '../common/Errors.js';
-import {type Handler} from '../common/EventEmitter.js';
+import type {Handler} from '../common/EventEmitter.js';
 
 import {BidiConnection} from './Connection.js';
 

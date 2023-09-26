@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
-import {type CDPSession} from '../api/CDPSession.js';
+import type {CDPSession} from '../api/CDPSession.js';
 import {EventSubscription} from '../common/EventEmitter.js';
 import {debugError, PuppeteerURL} from '../common/util.js';
 import {assert} from '../util/assert.js';

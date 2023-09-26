@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {type Disposed, type Moveable} from '../common/types.js';
+import type {Disposed, Moveable} from '../common/types.js';
 
 import {asyncDisposeSymbol, disposeSymbol} from './disposable.js';
 import {Mutex} from './Mutex.js';

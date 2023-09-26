@@ -1,7 +1,7 @@
 import https from 'https';
 import {join} from 'path';
 
-import {type JsonObject} from '@angular-devkit/core';
+import type {JsonObject} from '@angular-devkit/core';
 import {
   SchematicTestRunner,
   type UnitTestTree,

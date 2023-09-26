@@ -14,35 +14,39 @@
  * limitations under the License.
  */
 
+export type {
+  LaunchOptions,
+  ComputeExecutablePathOptions as Options,
+  SystemOptions,
+} from './launch.js';
 export {
   launch,
   computeExecutablePath,
   computeSystemExecutablePath,
   TimeoutError,
-  LaunchOptions,
-  ComputeExecutablePathOptions as Options,
-  SystemOptions,
   CDP_WEBSOCKET_ENDPOINT_REGEX,
   WEBDRIVER_BIDI_WEBSOCKET_ENDPOINT_REGEX,
   Process,
 } from './launch.js';
+export type {
+  InstallOptions,
+  GetInstalledBrowsersOptions,
+  UninstallOptions,
+} from './install.js';
 export {
   install,
   getInstalledBrowsers,
   canDownload,
   uninstall,
-  InstallOptions,
-  GetInstalledBrowsersOptions,
-  UninstallOptions,
 } from './install.js';
 export {detectBrowserPlatform} from './detectPlatform.js';
+export type {ProfileOptions} from './browser-data/browser-data.js';
 export {
   resolveBuildId,
   Browser,
   BrowserPlatform,
   ChromeReleaseChannel,
   createProfile,
-  ProfileOptions,
 } from './browser-data/browser-data.js';
 export {CLI, makeProgressCallback} from './CLI.js';
 export {Cache, InstalledBrowser} from './Cache.js';

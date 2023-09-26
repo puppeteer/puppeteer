@@ -227,13 +227,11 @@ module.exports = {
         // This is more performant; see https://v8.dev/blog/fast-async.
         '@typescript-eslint/return-await': ['error', 'always'],
         // This optimizes the dependency tracking for type-only files.
-        '@typescript-eslint/consistent-type-imports': [
-          'error',
-          {
-            disallowTypeAnnotations: false,
-            fixStyle: 'inline-type-imports',
-          },
-        ],
+        '@typescript-eslint/consistent-type-imports': 'error',
+        // So type-only exports get elided.
+        '@typescript-eslint/consistent-type-exports': 'error',
+        // Don't want to trigger unintended side-effects.
+        '@typescript-eslint/no-import-type-side-effects': 'error',
       },
       overrides: [
         {

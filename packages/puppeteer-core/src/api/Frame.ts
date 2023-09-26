@@ -16,26 +16,26 @@
 
 import type Protocol from 'devtools-protocol';
 
-import {type ClickOptions, type ElementHandle} from '../api/ElementHandle.js';
-import {type HTTPResponse} from '../api/HTTPResponse.js';
-import {
-  type Page,
-  type WaitForSelectorOptions,
-  type WaitTimeoutOptions,
+import type {ClickOptions, ElementHandle} from '../api/ElementHandle.js';
+import type {HTTPResponse} from '../api/HTTPResponse.js';
+import type {
+  Page,
+  WaitForSelectorOptions,
+  WaitTimeoutOptions,
 } from '../api/Page.js';
-import {type DeviceRequestPrompt} from '../cdp/DeviceRequestPrompt.js';
-import {type IsolatedWorldChart} from '../cdp/IsolatedWorld.js';
-import {type PuppeteerLifeCycleEvent} from '../cdp/LifecycleWatcher.js';
+import type {DeviceRequestPrompt} from '../cdp/DeviceRequestPrompt.js';
+import type {IsolatedWorldChart} from '../cdp/IsolatedWorld.js';
+import type {PuppeteerLifeCycleEvent} from '../cdp/LifecycleWatcher.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {transposeIterableHandle} from '../common/HandleIterator.js';
 import {LazyArg} from '../common/LazyArg.js';
-import {
-  type Awaitable,
-  type EvaluateFunc,
-  type EvaluateFuncWith,
-  type HandleFor,
-  type NodeFor,
+import type {
+  Awaitable,
+  EvaluateFunc,
+  EvaluateFuncWith,
+  HandleFor,
+  NodeFor,
 } from '../common/types.js';
 import {
   getPageContent,
@@ -45,14 +45,14 @@ import {
 import {assert} from '../util/assert.js';
 import {throwIfDisposed} from '../util/decorators.js';
 
-import {type CDPSession} from './CDPSession.js';
-import {type KeyboardTypeOptions} from './Input.js';
+import type {CDPSession} from './CDPSession.js';
+import type {KeyboardTypeOptions} from './Input.js';
 import {
   FunctionLocator,
   type Locator,
   NodeLocator,
 } from './locators/locators.js';
-import {type Realm} from './Realm.js';
+import type {Realm} from './Realm.js';
 
 /**
  * @public

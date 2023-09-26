@@ -26,9 +26,9 @@ import {
   retry,
   throwIfEmpty,
 } from '../../../third_party/rxjs/rxjs.js';
-import {type HandleFor, type NodeFor} from '../../common/types.js';
-import {type Frame} from '../Frame.js';
-import {type Page} from '../Page.js';
+import type {HandleFor, NodeFor} from '../../common/types.js';
+import type {Frame} from '../Frame.js';
+import type {Page} from '../Page.js';
 
 import {type ActionOptions, Locator, RETRY_DELAY} from './locators.js';
 

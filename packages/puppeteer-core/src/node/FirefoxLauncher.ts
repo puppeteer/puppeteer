@@ -30,12 +30,12 @@ import {
 import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 
-import {
-  type BrowserLaunchArgumentOptions,
-  type PuppeteerNodeLaunchOptions,
+import type {
+  BrowserLaunchArgumentOptions,
+  PuppeteerNodeLaunchOptions,
 } from './LaunchOptions.js';
 import {ProductLauncher, type ResolvedLaunchArgs} from './ProductLauncher.js';
-import {type PuppeteerNode} from './PuppeteerNode.js';
+import type {PuppeteerNode} from './PuppeteerNode.js';
 import {rm} from './util/fs.js';
 
 /**

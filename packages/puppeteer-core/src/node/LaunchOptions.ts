@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {type BrowserConnectOptions} from '../cdp/BrowserConnector.js';
-import {type Product} from '../common/Product.js';
+import type {BrowserConnectOptions} from '../cdp/BrowserConnector.js';
+import type {Product} from '../common/Product.js';
 
 /**
  * Launcher options that only apply to Chrome.

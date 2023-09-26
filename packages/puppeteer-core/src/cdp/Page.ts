@@ -16,16 +16,16 @@
 
 import type {Readable} from 'stream';
 
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
-import {type Browser} from '../api/Browser.js';
+import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
-import {type ElementHandle} from '../api/ElementHandle.js';
-import {type Frame, type WaitForOptions} from '../api/Frame.js';
-import {type HTTPRequest} from '../api/HTTPRequest.js';
-import {type HTTPResponse} from '../api/HTTPResponse.js';
-import {type JSHandle} from '../api/JSHandle.js';
+import type {ElementHandle} from '../api/ElementHandle.js';
+import type {Frame, WaitForOptions} from '../api/Frame.js';
+import type {HTTPRequest} from '../api/HTTPRequest.js';
+import type {HTTPResponse} from '../api/HTTPResponse.js';
+import type {JSHandle} from '../api/JSHandle.js';
 import {
   Page,
   PageEvent,
@@ -43,9 +43,9 @@ import {
 } from '../common/ConsoleMessage.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {FileChooser} from '../common/FileChooser.js';
-import {type PDFOptions} from '../common/PDFOptions.js';
+import type {PDFOptions} from '../common/PDFOptions.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
-import {type BindingPayload, type HandleFor} from '../common/types.js';
+import type {BindingPayload, HandleFor} from '../common/types.js';
 import {
   createClientError,
   debugError,
@@ -59,7 +59,7 @@ import {
   waitForEvent,
   waitWithTimeout,
 } from '../common/util.js';
-import {type Viewport} from '../common/Viewport.js';
+import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {AsyncDisposableStack} from '../util/disposable.js';
@@ -70,12 +70,12 @@ import {Binding} from './Binding.js';
 import {CdpCDPSession} from './CDPSession.js';
 import {isTargetClosedError} from './Connection.js';
 import {Coverage} from './Coverage.js';
-import {type DeviceRequestPrompt} from './DeviceRequestPrompt.js';
+import type {DeviceRequestPrompt} from './DeviceRequestPrompt.js';
 import {CdpDialog} from './Dialog.js';
 import {EmulationManager} from './EmulationManager.js';
 import {createCdpHandle, releaseObject} from './ExecutionContext.js';
 import {FirefoxTargetManager} from './FirefoxTargetManager.js';
-import {type CdpFrame} from './Frame.js';
+import type {CdpFrame} from './Frame.js';
 import {FrameManager, FrameManagerEvent} from './FrameManager.js';
 import {CdpKeyboard, CdpMouse, CdpTouchscreen} from './Input.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
@@ -84,7 +84,7 @@ import {
   type Credentials,
   type NetworkConditions,
 } from './NetworkManager.js';
-import {type CdpTarget} from './Target.js';
+import type {CdpTarget} from './Target.js';
 import {TargetManagerEvent} from './TargetManager.js';
 import {Tracing} from './Tracing.js';
 import {WebWorker} from './WebWorker.js';

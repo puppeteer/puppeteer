@@ -25,17 +25,17 @@ import {
   raceWith,
   switchMap,
 } from '../../third_party/rxjs/rxjs.js';
-import {type CDPSession} from '../api/CDPSession.js';
+import type {CDPSession} from '../api/CDPSession.js';
 import {
   Frame,
   type GoToOptions,
   type WaitForOptions,
   throwIfDetached,
 } from '../api/Frame.js';
-import {type PuppeteerLifeCycleEvent} from '../cdp/LifecycleWatcher.js';
+import type {PuppeteerLifeCycleEvent} from '../cdp/LifecycleWatcher.js';
 import {ProtocolError, TimeoutError} from '../common/Errors.js';
-import {type TimeoutSettings} from '../common/TimeoutSettings.js';
-import {type Awaitable} from '../common/types.js';
+import type {TimeoutSettings} from '../common/TimeoutSettings.js';
+import type {Awaitable} from '../common/types.js';
 import {
   UTILITY_WORLD_NAME,
   setPageContent,
@@ -51,8 +51,8 @@ import {
   type BrowsingContext,
 } from './BrowsingContext.js';
 import {ExposeableFunction} from './ExposedFunction.js';
-import {type BidiHTTPResponse} from './HTTPResponse.js';
-import {type BidiPage} from './Page.js';
+import type {BidiHTTPResponse} from './HTTPResponse.js';
+import type {BidiPage} from './Page.js';
 import {
   MAIN_SANDBOX,
   PUPPETEER_SANDBOX,

@@ -16,7 +16,7 @@
 
 import {get} from 'https';
 
-import {type Tree} from '@angular-devkit/schematics';
+import type {Tree} from '@angular-devkit/schematics';
 
 import {getNgCommandName} from './files.js';
 import {

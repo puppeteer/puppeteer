@@ -28,9 +28,9 @@ import {
   type Server as HttpsServer,
   type ServerOptions as HttpsServerOptions,
 } from 'https';
-import {type AddressInfo} from 'net';
+import type {AddressInfo} from 'net';
 import {join} from 'path';
-import {type Duplex} from 'stream';
+import type {Duplex} from 'stream';
 import {gzip} from 'zlib';
 
 import {getType as getMimeType} from 'mime';

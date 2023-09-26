@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
-import {type CDPSession} from '../api/CDPSession.js';
-import {type Point} from '../api/ElementHandle.js';
+import type {CDPSession} from '../api/CDPSession.js';
+import type {Point} from '../api/ElementHandle.js';
 import {
   Keyboard,
   type KeyDownOptions,

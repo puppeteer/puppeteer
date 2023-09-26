@@ -19,10 +19,10 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {type AutofillData, ElementHandle} from '../api/ElementHandle.js';
 import {throwIfDisposed} from '../util/decorators.js';
 
-import {type BidiFrame} from './Frame.js';
+import type {BidiFrame} from './Frame.js';
 import {BidiJSHandle} from './JSHandle.js';
-import {type BidiRealm} from './Realm.js';
-import {type Sandbox} from './Sandbox.js';
+import type {BidiRealm} from './Realm.js';
+import type {Sandbox} from './Sandbox.js';
 
 /**
  * @internal

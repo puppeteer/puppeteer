@@ -17,11 +17,11 @@
 import fs from 'fs';
 import path from 'path';
 
-import {
-  type MochaTestResult,
-  type TestExpectation,
-  type MochaResults,
-  type TestResult,
+import type {
+  MochaTestResult,
+  TestExpectation,
+  MochaResults,
+  TestResult,
 } from './types.js';
 
 export function extendProcessEnv(envs: object[]): NodeJS.ProcessEnv {

@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
 import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
-import {type GeolocationOptions, type MediaFeature} from '../api/Page.js';
+import type {GeolocationOptions, MediaFeature} from '../api/Page.js';
 import {debugError} from '../common/util.js';
-import {type Viewport} from '../common/Viewport.js';
+import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
 import {invokeAtMostOnceForArguments} from '../util/decorators.js';
 import {isErrorLike} from '../util/ErrorLike.js';
