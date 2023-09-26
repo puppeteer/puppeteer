@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import {type Protocol} from 'devtools-protocol';
-import {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
+import type {Protocol} from 'devtools-protocol';
+import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 import {
-  type CDPSession,
   CDPSessionEvent,
+  type CDPSession,
   type CDPSessionEvents,
 } from '../api/CDPSession.js';
-import {ConnectionTransport} from '../common/ConnectionTransport.js';
+import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {debug} from '../common/Debug.js';
 import {ProtocolError, TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -37,7 +37,7 @@ const debugProtocolReceive = debug('puppeteer:protocol:RECV ◀');
 /**
  * @public
  */
-export {ConnectionTransport, ProtocolMapping};
+export type {ConnectionTransport, ProtocolMapping};
 
 /**
  * @internal

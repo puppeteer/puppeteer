@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
 import {assert} from '../util/assert.js';
 

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {type Browser} from '../api/Browser.js';
-import {type ConnectionTransport} from '../common/ConnectionTransport.js';
+import type {Browser} from '../api/Browser.js';
+import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {
   type CustomQueryHandler,
   customQueryHandlers,

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {type ChildProcess} from 'child_process';
+import type {ChildProcess} from 'child_process';
 
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
 import {
   Browser as BrowserBase,
@@ -30,14 +30,14 @@ import {
 } from '../api/Browser.js';
 import {BrowserContext, BrowserContextEvent} from '../api/BrowserContext.js';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
-import {type Page} from '../api/Page.js';
-import {type Target} from '../api/Target.js';
-import {type Viewport} from '../common/Viewport.js';
+import type {Page} from '../api/Page.js';
+import type {Target} from '../api/Target.js';
+import type {Viewport} from '../common/Viewport.js';
 import {USE_TAB_TARGET} from '../environment.js';
 import {assert} from '../util/assert.js';
 
 import {ChromeTargetManager} from './ChromeTargetManager.js';
-import {type Connection} from './Connection.js';
+import type {Connection} from './Connection.js';
 import {FirefoxTargetManager} from './FirefoxTargetManager.js';
 import {
   DevToolsTarget,

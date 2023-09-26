@@ -17,7 +17,7 @@
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {CallbackRegistry} from '../cdp/Connection.js';
-import {type ConnectionTransport} from '../common/ConnectionTransport.js';
+import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {debug} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';

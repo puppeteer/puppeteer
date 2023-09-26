@@ -18,7 +18,7 @@ import {describe, it} from 'node:test';
 
 import expect from 'expect';
 
-import {type CDPSessionEvents} from '../api/CDPSession.js';
+import type {CDPSessionEvents} from '../api/CDPSession.js';
 import {TimeoutError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';

@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-import {type ChildProcess} from 'child_process';
+import type {ChildProcess} from 'child_process';
 
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {
   Browser,
+  BrowserEvent,
   type BrowserCloseCallback,
   type BrowserContextOptions,
-  BrowserEvent,
 } from '../api/Browser.js';
 import {BrowserContextEvent} from '../api/BrowserContext.js';
-import {type Page} from '../api/Page.js';
-import {type Target} from '../api/Target.js';
-import {type Handler} from '../common/EventEmitter.js';
+import type {Page} from '../api/Page.js';
+import type {Target} from '../api/Target.js';
+import type {Handler} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
-import {type Viewport} from '../common/Viewport.js';
+import type {Viewport} from '../common/Viewport.js';
 
 import {BidiBrowserContext} from './BrowserContext.js';
 import {BrowsingContext, BrowsingContextEvent} from './BrowsingContext.js';
-import {type BidiConnection} from './Connection.js';
+import type {BidiConnection} from './Connection.js';
 import {
   BiDiBrowserTarget,
   BiDiBrowsingContextTarget,

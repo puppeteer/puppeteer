@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {type NetworkConditions} from './NetworkManager.js';
+import type {NetworkConditions} from './NetworkManager.js';
 
 /**
  * A list of network conditions to be used with

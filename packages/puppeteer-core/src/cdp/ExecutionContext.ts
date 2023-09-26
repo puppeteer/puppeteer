@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
-import {type CDPSession} from '../api/CDPSession.js';
+import type {CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
-import {type JSHandle} from '../api/JSHandle.js';
+import type {JSHandle} from '../api/JSHandle.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
-import {type EvaluateFunc, type HandleFor} from '../common/types.js';
+import type {EvaluateFunc, HandleFor} from '../common/types.js';
 import {
   PuppeteerURL,
   SOURCE_URL_REGEX,
@@ -39,7 +39,7 @@ import {stringifyFunction} from '../util/Function.js';
 import {ARIAQueryHandler} from './AriaQueryHandler.js';
 import {Binding} from './Binding.js';
 import {CdpElementHandle} from './ElementHandle.js';
-import {type IsolatedWorld} from './IsolatedWorld.js';
+import type {IsolatedWorld} from './IsolatedWorld.js';
 import {CdpJSHandle} from './JSHandle.js';
 
 /**

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {type Frame} from '../api/Frame.js';
+import type {Frame} from '../api/Frame.js';
 import {Deferred} from '../util/Deferred.js';
 
 /**

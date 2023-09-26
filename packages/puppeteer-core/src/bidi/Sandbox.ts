@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import {type JSHandle} from '../api/JSHandle.js';
+import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
-import {type TimeoutSettings} from '../common/TimeoutSettings.js';
-import {type EvaluateFunc, type HandleFor} from '../common/types.js';
+import type {TimeoutSettings} from '../common/TimeoutSettings.js';
+import type {EvaluateFunc, HandleFor} from '../common/types.js';
 import {withSourcePuppeteerURLIfNone} from '../common/util.js';
 
-import {type BrowsingContext} from './BrowsingContext.js';
+import type {BrowsingContext} from './BrowsingContext.js';
 import {BidiElementHandle} from './ElementHandle.js';
-import {type BidiFrame} from './Frame.js';
-import {type BidiRealm as BidiRealm} from './Realm.js';
+import type {BidiFrame} from './Frame.js';
+import type {BidiRealm as BidiRealm} from './Realm.js';
 /**
  * A unique key for {@link SandboxChart} to denote the default world.
  * Realms are automatically created in the default sandbox.

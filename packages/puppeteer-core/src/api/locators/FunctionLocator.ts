@@ -20,9 +20,9 @@ import {
   from,
   throwIfEmpty,
 } from '../../../third_party/rxjs/rxjs.js';
-import {type Awaitable, type HandleFor} from '../../common/types.js';
-import {type Frame} from '../Frame.js';
-import {type Page} from '../Page.js';
+import type {Awaitable, HandleFor} from '../../common/types.js';
+import type {Frame} from '../Frame.js';
+import type {Page} from '../Page.js';
 
 import {type ActionOptions, Locator} from './locators.js';
 

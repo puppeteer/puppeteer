@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type Debug from 'debug';
+
 import {isNode} from '../environment.js';
 
 declare global {
@@ -24,11 +26,11 @@ declare global {
 /**
  * @internal
  */
-let debugModule: typeof import('debug') | null = null;
+let debugModule: typeof Debug | null = null;
 /**
  * @internal
  */
-export async function importDebug(): Promise<typeof import('debug')> {
+export async function importDebug(): Promise<typeof Debug> {
   if (!debugModule) {
     debugModule = (await import('debug')).default;
   }

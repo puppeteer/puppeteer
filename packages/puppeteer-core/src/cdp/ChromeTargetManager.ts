@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
-import {type TargetFilterCallback} from '../api/Browser.js';
+import type {TargetFilterCallback} from '../api/Browser.js';
 import {CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {TargetType} from '../api/Target.js';
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -24,8 +24,8 @@ import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
-import {type CdpCDPSession} from './CDPSession.js';
-import {type Connection} from './Connection.js';
+import type {CdpCDPSession} from './CDPSession.js';
+import type {Connection} from './Connection.js';
 import {CdpTarget, InitializationStatus} from './Target.js';
 import {
   type TargetFactory,

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type FS from 'fs/promises';
 import type {Readable} from 'stream';
 
 import type {Protocol} from 'devtools-protocol';
@@ -25,7 +26,7 @@ import {
   type Observable,
 } from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
-import {type Page} from '../api/Page.js';
+import type {Page} from '../api/Page.js';
 import {isNode} from '../environment.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
@@ -34,7 +35,7 @@ import {isErrorLike} from '../util/ErrorLike.js';
 import {debug} from './Debug.js';
 import {TimeoutError} from './Errors.js';
 import {EventSubscription} from './EventEmitter.js';
-import {type Awaitable} from './types.js';
+import type {Awaitable} from './types.js';
 
 /**
  * @internal
@@ -455,13 +456,11 @@ export async function waitWithTimeout<T>(
 /**
  * @internal
  */
-let fs: typeof import('fs/promises') | null = null;
+let fs: typeof FS | null = null;
 /**
  * @internal
  */
-export async function importFSPromises(): Promise<
-  typeof import('fs/promises')
-> {
+export async function importFSPromises(): Promise<typeof FS> {
   if (!fs) {
     try {
       fs = await import('fs/promises');

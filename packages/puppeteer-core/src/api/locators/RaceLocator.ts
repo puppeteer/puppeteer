@@ -15,7 +15,7 @@
  */
 
 import {type Observable, race} from '../../../third_party/rxjs/rxjs.js';
-import {type HandleFor} from '../../common/types.js';
+import type {HandleFor} from '../../common/types.js';
 
 import {type ActionOptions, Locator} from './locators.js';
 

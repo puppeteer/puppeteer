@@ -3,7 +3,7 @@ import {debugError} from '../common/util.js';
 import {DisposableStack} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
-import {type ExecutionContext} from './ExecutionContext.js';
+import type {ExecutionContext} from './ExecutionContext.js';
 
 /**
  * @internal

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {type ElementHandle} from '../api/ElementHandle.js';
-import {type JSHandle} from '../api/JSHandle.js';
-import {type Realm} from '../api/Realm.js';
+import type {ElementHandle} from '../api/ElementHandle.js';
+import type {JSHandle} from '../api/JSHandle.js';
+import type {Realm} from '../api/Realm.js';
 import type {Poller} from '../injected/Poller.js';
 import {Deferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
@@ -24,7 +24,7 @@ import {stringifyFunction} from '../util/Function.js';
 
 import {TimeoutError} from './Errors.js';
 import {LazyArg} from './LazyArg.js';
-import {type HandleFor} from './types.js';
+import type {HandleFor} from './types.js';
 
 /**
  * @internal

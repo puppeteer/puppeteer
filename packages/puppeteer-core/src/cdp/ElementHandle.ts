@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import {type Protocol} from 'devtools-protocol';
+import type Path from 'path';
 
-import {type CDPSession} from '../api/CDPSession.js';
+import type {Protocol} from 'devtools-protocol';
+
+import type {CDPSession} from '../api/CDPSession.js';
 import {ElementHandle, type AutofillData} from '../api/ElementHandle.js';
 import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {throwIfDisposed} from '../util/decorators.js';
 
-import {type CdpFrame} from './Frame.js';
-import {type FrameManager} from './FrameManager.js';
-import {type IsolatedWorld} from './IsolatedWorld.js';
+import type {CdpFrame} from './Frame.js';
+import type {FrameManager} from './FrameManager.js';
+import type {IsolatedWorld} from './IsolatedWorld.js';
 import {CdpJSHandle} from './JSHandle.js';
 
 /**
@@ -113,7 +115,7 @@ export class CdpElementHandle<
     );
 
     // Locate all files and confirm that they exist.
-    let path: typeof import('path');
+    let path: typeof Path;
     try {
       path = await import('path');
     } catch (error) {

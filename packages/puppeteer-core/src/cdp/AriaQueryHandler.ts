@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
-import {type CDPSession} from '../api/CDPSession.js';
-import {type ElementHandle} from '../api/ElementHandle.js';
+import type {CDPSession} from '../api/CDPSession.js';
+import type {ElementHandle} from '../api/ElementHandle.js';
 import {QueryHandler, type QuerySelector} from '../common/QueryHandler.js';
-import {type AwaitableIterable} from '../common/types.js';
+import type {AwaitableIterable} from '../common/types.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 

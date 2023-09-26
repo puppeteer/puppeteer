@@ -21,7 +21,7 @@ import {debugError, isDate, isPlainObject, isRegExp} from '../common/util.js';
 
 import {BidiElementHandle} from './ElementHandle.js';
 import {BidiJSHandle} from './JSHandle.js';
-import {type Sandbox} from './Sandbox.js';
+import type {Sandbox} from './Sandbox.js';
 
 /**
  * @internal

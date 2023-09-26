@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {type ChildProcess} from 'child_process';
+import type {ChildProcess} from 'child_process';
 
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {debugError, waitWithTimeout} from '../common/util.js';

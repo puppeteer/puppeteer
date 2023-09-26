@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
-import {type CDPSession} from '../api/CDPSession.js';
-import {type JSHandle} from '../api/JSHandle.js';
+import type {CDPSession} from '../api/CDPSession.js';
+import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
-import {type TimeoutSettings} from '../common/TimeoutSettings.js';
-import {
-  type BindingPayload,
-  type EvaluateFunc,
-  type HandleFor,
-} from '../common/types.js';
+import type {TimeoutSettings} from '../common/TimeoutSettings.js';
+import type {BindingPayload, EvaluateFunc, HandleFor} from '../common/types.js';
 import {
   addPageBinding,
   debugError,
@@ -34,11 +30,11 @@ import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
 import {Mutex} from '../util/Mutex.js';
 
-import {type Binding} from './Binding.js';
+import type {Binding} from './Binding.js';
 import {type ExecutionContext, createCdpHandle} from './ExecutionContext.js';
 import {CdpFrame} from './Frame.js';
-import {type MAIN_WORLD, type PUPPETEER_WORLD} from './IsolatedWorlds.js';
-import {type WebWorker} from './WebWorker.js';
+import type {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
+import type {WebWorker} from './WebWorker.js';
 
 /**
  * @internal

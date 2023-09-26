@@ -14,31 +14,31 @@
  * limitations under the License.
  */
 
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
-import {type Frame} from '../api/Frame.js';
+import type {Frame} from '../api/Frame.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {LazyArg} from '../common/LazyArg.js';
-import {
-  type ElementFor,
-  type EvaluateFuncWith,
-  type HandleFor,
-  type HandleOr,
-  type NodeFor,
+import type {
+  ElementFor,
+  EvaluateFuncWith,
+  HandleFor,
+  HandleOr,
+  NodeFor,
 } from '../common/types.js';
-import {type KeyInput} from '../common/USKeyboardLayout.js';
+import type {KeyInput} from '../common/USKeyboardLayout.js';
 import {isString, withSourcePuppeteerURLIfNone} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {throwIfDisposed} from '../util/decorators.js';
 
-import {
-  type KeyboardTypeOptions,
-  type KeyPressOptions,
-  type MouseClickOptions,
+import type {
+  KeyboardTypeOptions,
+  KeyPressOptions,
+  MouseClickOptions,
 } from './Input.js';
 import {JSHandle} from './JSHandle.js';
-import {type ScreenshotOptions, type WaitForSelectorOptions} from './Page.js';
+import type {ScreenshotOptions, WaitForSelectorOptions} from './Page.js';
 
 /**
  * @public

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
-import {type CDPSession} from '../api/CDPSession.js';
+import type {CDPSession} from '../api/CDPSession.js';
 import {Dialog} from '../api/Dialog.js';
 
 /**

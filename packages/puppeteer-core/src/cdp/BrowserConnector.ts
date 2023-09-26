@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  type IsPageTargetCallback,
-  type TargetFilterCallback,
+import type {
+  IsPageTargetCallback,
+  TargetFilterCallback,
 } from '../api/Browser.js';
-import {type ConnectionTransport} from '../common/ConnectionTransport.js';
+import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {getFetch} from '../common/fetch.js';
 import {debugError} from '../common/util.js';
-import {type Viewport} from '../common/Viewport.js';
+import type {Viewport} from '../common/Viewport.js';
 import {isNode} from '../environment.js';
 import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {type ServerResponse} from 'http';
+import type {ServerResponse} from 'http';
 
 import expect from 'expect';
 import {type Target, TimeoutError} from 'puppeteer';
-import {type Page} from 'puppeteer-core/internal/api/Page.js';
+import type {Page} from 'puppeteer-core/internal/api/Page.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';

@@ -15,8 +15,8 @@
  */
 
 import expect from 'expect';
-import {type ElementHandle} from 'puppeteer-core/internal/api/ElementHandle.js';
-import {type Page} from 'puppeteer-core/internal/api/Page.js';
+import type {ElementHandle} from 'puppeteer-core/internal/api/ElementHandle.js';
+import type {Page} from 'puppeteer-core/internal/api/Page.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 

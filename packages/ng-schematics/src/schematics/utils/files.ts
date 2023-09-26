@@ -28,7 +28,7 @@ import {
   url,
 } from '@angular-devkit/schematics';
 
-import {type AngularProject, type TestRunner} from './types.js';
+import type {AngularProject, TestRunner} from './types.js';
 
 export interface FilesOptions {
   options: {

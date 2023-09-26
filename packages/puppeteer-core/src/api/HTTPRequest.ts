@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
-import {type CDPSession} from './CDPSession.js';
-import {type Frame} from './Frame.js';
-import {type HTTPResponse} from './HTTPResponse.js';
+import type {CDPSession} from './CDPSession.js';
+import type {Frame} from './Frame.js';
+import type {HTTPResponse} from './HTTPResponse.js';
 
 /**
  * @public

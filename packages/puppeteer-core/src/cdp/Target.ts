@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
-import {type CDPSession} from '../api/CDPSession.js';
+import type {CDPSession} from '../api/CDPSession.js';
 import {PageEvent, type Page} from '../api/Page.js';
 import {Target, TargetType} from '../api/Target.js';
 import {debugError} from '../common/util.js';
-import {type Viewport} from '../common/Viewport.js';
+import type {Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
 
 import {CdpCDPSession} from './CDPSession.js';
 import {CdpPage} from './Page.js';
-import {type TargetManager} from './TargetManager.js';
+import type {TargetManager} from './TargetManager.js';
 import {WebWorker} from './WebWorker.js';
 
 /**

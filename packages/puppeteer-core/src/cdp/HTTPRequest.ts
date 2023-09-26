@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
-import {type CDPSession} from '../api/CDPSession.js';
-import {type Frame} from '../api/Frame.js';
+import type {CDPSession} from '../api/CDPSession.js';
+import type {Frame} from '../api/Frame.js';
 import {
   type ContinueRequestOverrides,
   type ErrorCode,
@@ -28,8 +28,8 @@ import {
   type ResponseForRequest,
   STATUS_TEXTS,
 } from '../api/HTTPRequest.js';
-import {type HTTPResponse} from '../api/HTTPResponse.js';
-import {type ProtocolError} from '../common/Errors.js';
+import type {HTTPResponse} from '../api/HTTPResponse.js';
+import type {ProtocolError} from '../common/Errors.js';
 import {debugError, isString} from '../common/util.js';
 import {assert} from '../util/assert.js';
 

@@ -26,22 +26,22 @@ import {
   computeExecutablePath,
 } from '@puppeteer/browsers';
 
-import {type Browser, type BrowserCloseCallback} from '../api/Browser.js';
+import type {Browser, BrowserCloseCallback} from '../api/Browser.js';
 import {CdpBrowser} from '../cdp/Browser.js';
 import {Connection} from '../cdp/Connection.js';
 import {TimeoutError} from '../common/Errors.js';
-import {type Product} from '../common/Product.js';
+import type {Product} from '../common/Product.js';
 import {debugError} from '../common/util.js';
-import {type Viewport} from '../common/Viewport.js';
+import type {Viewport} from '../common/Viewport.js';
 
-import {
-  type BrowserLaunchArgumentOptions,
-  type ChromeReleaseChannel,
-  type PuppeteerNodeLaunchOptions,
+import type {
+  BrowserLaunchArgumentOptions,
+  ChromeReleaseChannel,
+  PuppeteerNodeLaunchOptions,
 } from './LaunchOptions.js';
 import {NodeWebSocketTransport as WebSocketTransport} from './NodeWebSocketTransport.js';
 import {PipeTransport} from './PipeTransport.js';
-import {type PuppeteerNode} from './PuppeteerNode.js';
+import type {PuppeteerNode} from './PuppeteerNode.js';
 
 /**
  * @internal

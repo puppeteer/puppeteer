@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import {type TimeoutSettings} from '../common/TimeoutSettings.js';
-import {
-  type EvaluateFunc,
-  type HandleFor,
-  type InnerLazyParams,
+import type {TimeoutSettings} from '../common/TimeoutSettings.js';
+import type {
+  EvaluateFunc,
+  HandleFor,
+  InnerLazyParams,
 } from '../common/types.js';
 import {TaskManager, WaitTask} from '../common/WaitTask.js';
 import {disposeSymbol} from '../util/disposable.js';
 
-import {type ElementHandle} from './ElementHandle.js';
-import {type Environment} from './Environment.js';
-import {type JSHandle} from './JSHandle.js';
+import type {ElementHandle} from './ElementHandle.js';
+import type {Environment} from './Environment.js';
+import type {JSHandle} from './JSHandle.js';
 
 /**
  * @internal

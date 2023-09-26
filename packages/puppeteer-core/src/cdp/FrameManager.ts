@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
 import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {FrameEvent} from '../api/Frame.js';
-import {type Page} from '../api/Page.js';
+import type {Page} from '../api/Page.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
-import {type TimeoutSettings} from '../common/TimeoutSettings.js';
+import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import {debugError, PuppeteerURL, UTILITY_WORLD_NAME} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
@@ -33,10 +33,10 @@ import {DeviceRequestPromptManager} from './DeviceRequestPrompt.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {CdpFrame} from './Frame.js';
 import {FrameTree} from './FrameTree.js';
-import {type IsolatedWorld} from './IsolatedWorld.js';
+import type {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {NetworkManager} from './NetworkManager.js';
-import {type CdpTarget} from './Target.js';
+import type {CdpTarget} from './Target.js';
 
 /**
  * We use symbols to prevent external parties listening to these events.

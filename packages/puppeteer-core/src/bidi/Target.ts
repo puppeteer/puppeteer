@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {type CDPSession} from '../api/CDPSession.js';
+import type {CDPSession} from '../api/CDPSession.js';
 import {Target, TargetType} from '../api/Target.js';
 
-import {type BidiBrowser} from './Browser.js';
-import {type BidiBrowserContext} from './BrowserContext.js';
+import type {BidiBrowser} from './Browser.js';
+import type {BidiBrowserContext} from './BrowserContext.js';
 import {type BrowsingContext, CdpSessionWrapper} from './BrowsingContext.js';
 import {BidiPage} from './Page.js';
 

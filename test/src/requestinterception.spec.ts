@@ -18,8 +18,8 @@ import fs from 'fs';
 import path from 'path';
 
 import expect from 'expect';
-import {type HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
-import {type ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
+import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
+import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {isFavicon, waitEvent} from './utils.js';

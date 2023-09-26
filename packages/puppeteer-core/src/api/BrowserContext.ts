@@ -19,7 +19,7 @@ import {debugError} from '../common/util.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
 import type {Browser, Permission} from './Browser.js';
-import {type Page} from './Page.js';
+import type {Page} from './Page.js';
 import type {Target} from './Target.js';
 
 /**

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import {type TLSSocket} from 'tls';
+import type {TLSSocket} from 'tls';
 
 import expect from 'expect';
-import {type HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
+import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 
 import {launch} from './mocha-utils.js';
 

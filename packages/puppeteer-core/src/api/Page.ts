@@ -16,7 +16,7 @@
 
 import type {Readable} from 'stream';
 
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
 import {
   delay,
@@ -39,7 +39,7 @@ import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {BidiNetworkManager} from '../bidi/NetworkManager.js';
 import type {Accessibility} from '../cdp/Accessibility.js';
 import type {Coverage} from '../cdp/Coverage.js';
-import {type DeviceRequestPrompt} from '../cdp/DeviceRequestPrompt.js';
+import type {DeviceRequestPrompt} from '../cdp/DeviceRequestPrompt.js';
 import {
   NetworkManagerEvent,
   type NetworkManager as CdpNetworkManager,
@@ -49,7 +49,7 @@ import {
 import type {Tracing} from '../cdp/Tracing.js';
 import type {WebWorker} from '../cdp/WebWorker.js';
 import type {ConsoleMessage} from '../common/ConsoleMessage.js';
-import {type Device} from '../common/Device.js';
+import type {Device} from '../common/Device.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {
   EventEmitter,
@@ -82,7 +82,7 @@ import {
 import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
 import {guarded} from '../util/decorators.js';
-import {type Deferred} from '../util/Deferred.js';
+import type {Deferred} from '../util/Deferred.js';
 import {
   AsyncDisposableStack,
   asyncDisposeSymbol,
@@ -102,11 +102,11 @@ import type {
   GoToOptions,
   WaitForOptions,
 } from './Frame.js';
-import {
-  type Keyboard,
-  type KeyboardTypeOptions,
-  type Mouse,
-  type Touchscreen,
+import type {
+  Keyboard,
+  KeyboardTypeOptions,
+  Mouse,
+  Touchscreen,
 } from './Input.js';
 import type {JSHandle} from './JSHandle.js';
 import {
@@ -481,7 +481,7 @@ export interface PageEvents extends Record<EventType, unknown> {
   [PageEvent.WorkerDestroyed]: WebWorker;
 }
 
-export {
+export type {
   /**
    * @deprecated Use {@link PageEvents}.
    */

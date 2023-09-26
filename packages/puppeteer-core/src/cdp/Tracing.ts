@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {type CDPSession} from '../api/CDPSession.js';
+import type {CDPSession} from '../api/CDPSession.js';
 import {
   getReadableAsBuffer,
   getReadableFromProtocolStream,

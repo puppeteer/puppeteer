@@ -24,10 +24,10 @@ import {
   BrowserPlatform,
   BrowserTag,
   ChromeReleaseChannel,
-  ProfileOptions,
+  type ProfileOptions,
 } from './types.js';
 
-export {ProfileOptions};
+export type {ProfileOptions};
 
 export const downloadUrls = {
   [Browser.CHROMEDRIVER]: chromedriver.resolveDownloadUrl,

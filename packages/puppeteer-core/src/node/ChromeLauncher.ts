@@ -23,18 +23,18 @@ import {
   ChromeReleaseChannel as BrowsersChromeReleaseChannel,
 } from '@puppeteer/browsers';
 
-import {type Browser} from '../api/Browser.js';
+import type {Browser} from '../api/Browser.js';
 import {debugError} from '../common/util.js';
 import {USE_TAB_TARGET} from '../environment.js';
 import {assert} from '../util/assert.js';
 
-import {
-  type BrowserLaunchArgumentOptions,
-  type ChromeReleaseChannel,
-  type PuppeteerNodeLaunchOptions,
+import type {
+  BrowserLaunchArgumentOptions,
+  ChromeReleaseChannel,
+  PuppeteerNodeLaunchOptions,
 } from './LaunchOptions.js';
 import {ProductLauncher, type ResolvedLaunchArgs} from './ProductLauncher.js';
-import {type PuppeteerNode} from './PuppeteerNode.js';
+import type {PuppeteerNode} from './PuppeteerNode.js';
 import {rm} from './util/fs.js';
 
 /**
