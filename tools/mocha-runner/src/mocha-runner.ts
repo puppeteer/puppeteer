@@ -79,7 +79,7 @@ function getApplicableTestSuites(
 async function main() {
   const noCoverage = process.argv.indexOf('--no-coverage') !== -1;
   const noSuggestions = process.argv.indexOf('--no-suggestions') !== -1;
-  const excludeCDPOnly = process.argv.indexOf('--no-cdp-only') !== -1;
+  const excludeCDPOnly = process.argv.indexOf('--no-cdp-tests') !== -1;
 
   const statsFilenameIdx = process.argv.indexOf('--save-stats-to');
   let statsFilename = '';
