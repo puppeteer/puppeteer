@@ -134,7 +134,7 @@ jobs:
         run: npm run doctest
 
   chrome-tests:
-    name: ${{ matrix.suite }} tests on ${{ matrix.os }}
+    name: ${{ matrix.suite }} tests on ${{ matrix.os }} (${{ matrix.shard }})
     runs-on: ${{ matrix.os }}
     needs: check-changes
     if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
@@ -151,6 +151,9 @@ jobs:
           - chrome-new-headless
           - chrome-bidi
           - chrome-new-headless-tab
+        shard:
+          - 1/2
+          - 2/2
         exclude:
           - os: windows-latest
             suite: chrome-bidi
@@ -195,12 +198,12 @@ jobs:
         run: node tools/download_chrome_bidi.mjs ~/.cache/puppeteer/chrome-canary
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
-        run: npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
       - name: Run all tests (for Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
       - uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
