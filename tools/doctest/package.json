@@ -27,7 +27,7 @@
     "@swc/core": "1.3.86",
     "acorn": "8.10.0",
     "doctrine": "3.0.0",
-    "glob": "10.3.4",
+    "glob": "10.3.9",
     "pkg-dir": "7.0.0",
     "source-map": "0.7.4",
     "source-map-support": "0.5.21",
