@@ -79,6 +79,7 @@ function getApplicableTestSuites(
 async function main() {
   const noCoverage = process.argv.indexOf('--no-coverage') !== -1;
   const noSuggestions = process.argv.indexOf('--no-suggestions') !== -1;
+  const excludeCDPOnly = process.argv.indexOf('--no-cdp-tests') !== -1;
 
   const statsFilenameIdx = process.argv.indexOf('--save-stats-to');
   let statsFilename = '';
@@ -192,10 +193,14 @@ async function main() {
       if (process.argv.indexOf('--fullTrace')) {
         args.push('--full-trace');
       }
+
+      const specPattern = 'test/build/**/*.spec.js';
+      const specs = globSync(specPattern, {
+        ignore: excludeCDPOnly ? 'test/build/cdp/**/*.spec.js' : undefined,
+      }).sort((a, b) => {
+        return a.localeCompare(b);
+      });
       if (shard) {
-        const specs = globSync('test/build/**/*.spec.js').sort((a, b) => {
-          return a.localeCompare(b);
-        });
         // Shard ID is 1-based.
         const [shardId, shards] = shard.split('/').map(s => {
           return Number(s);
@@ -214,17 +219,14 @@ async function main() {
             args.length - argsLength
           } files out of ${specs.length}.`
         );
+      } else {
+        args.push(...specs);
       }
       const spawnArgs: SpawnOptions = {
         shell: true,
         cwd: process.cwd(),
         stdio: 'inherit',
-        env: shard
-          ? {
-              ...env,
-              PUPPETEER_SHARD: 'true',
-            }
-          : env,
+        env,
       };
       const handle = noCoverage
         ? spawn('npx', ['mocha', ...args], spawnArgs)

@@ -27,9 +27,4 @@ module.exports = {
   parallel: !!process.env.PARALLEL,
   timeout: timeout,
   reporter: process.env.CI ? 'spec' : 'dot',
-  ...(!process.env['PUPPETEER_SHARD']
-    ? {
-        spec: 'test/build/**/*.spec.js',
-      }
-    : {}),
 };

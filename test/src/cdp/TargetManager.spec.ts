@@ -17,8 +17,8 @@
 import expect from 'expect';
 import {type CdpBrowser} from 'puppeteer-core/internal/cdp/Browser.js';
 
-import {getTestState, launch} from './mocha-utils.js';
-import {attachFrame} from './utils.js';
+import {getTestState, launch} from '../mocha-utils.js';
+import {attachFrame} from '../utils.js';
 
 describe('TargetManager', () => {
   /* We use a special browser for this test as we need the --site-per-process flag */

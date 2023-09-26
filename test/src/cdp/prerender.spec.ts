@@ -16,7 +16,7 @@
 
 import expect from 'expect';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
 
 describe('Prerender', function () {
   setupTestBrowserHooks();

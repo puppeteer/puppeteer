@@ -17,8 +17,8 @@
 import expect from 'expect';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {waitEvent} from './utils.js';
+import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
+import {waitEvent} from '../utils.js';
 
 describe('Target.createCDPSession', function () {
   setupTestBrowserHooks();
