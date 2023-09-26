@@ -16,16 +16,10 @@
 
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import {debug} from '../common/Debug.js';
-import {PuppeteerURL} from '../common/util.js';
+import {PuppeteerURL, debugError} from '../common/util.js';
 
 import {type BidiRealm} from './Realm.js';
 import {BidiSerializer} from './Serializer.js';
-
-/**
- * @internal
- */
-export const debugError = debug('puppeteer:error');
 
 /**
  * @internal

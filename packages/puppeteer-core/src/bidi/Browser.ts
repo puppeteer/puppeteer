@@ -28,6 +28,7 @@ import {BrowserContextEvent} from '../api/BrowserContext.js';
 import {type Page} from '../api/Page.js';
 import {type Target} from '../api/Target.js';
 import {type Handler} from '../common/EventEmitter.js';
+import {debugError} from '../common/util.js';
 import {type Viewport} from '../common/Viewport.js';
 
 import {BidiBrowserContext} from './BrowserContext.js';
@@ -39,7 +40,6 @@ import {
   BiDiPageTarget,
   type BidiTarget,
 } from './Target.js';
-import {debugError} from './util.js';
 
 /**
  * @internal
