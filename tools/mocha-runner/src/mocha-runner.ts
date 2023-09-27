@@ -18,11 +18,13 @@
 
 import {randomUUID} from 'crypto';
 import fs from 'fs';
-import {spawn, type SpawnOptions} from 'node:child_process';
+import {spawn} from 'node:child_process';
 import os from 'os';
 import path from 'path';
 
 import {globSync} from 'glob';
+import yargs from 'yargs';
+import {hideBin} from 'yargs/helpers';
 
 import {
   zPlatform,
@@ -44,17 +46,63 @@ import {
   type RecommendedExpectation,
 } from './utils.js';
 
+const {
+  _: mochaArgs,
+  testSuite: testSuiteId,
+  saveStatsTo,
+  cdpTests: includeCdpTests,
+  suggestions: provideSuggestions,
+  coverage: useCoverage,
+  minTests,
+  shard,
+  reporter,
+} = yargs(hideBin(process.argv))
+  .parserConfiguration({'unknown-options-as-args': true})
+  .scriptName('@puppeteer/mocha-runner')
+  .option('coverage', {
+    boolean: true,
+    default: true,
+  })
+  .option('suggestions', {
+    boolean: true,
+    default: true,
+  })
+  .option('cdp-tests', {
+    boolean: true,
+    default: true,
+  })
+  .option('save-stats-to', {
+    string: true,
+    requiresArg: true,
+  })
+  .option('min-tests', {
+    number: true,
+    default: 0,
+    requiresArg: true,
+  })
+  .option('test-suite', {
+    string: true,
+    requiresArg: true,
+  })
+  .option('shard', {
+    string: true,
+    requiresArg: true,
+  })
+  .option('reporter', {
+    string: true,
+    requiresArg: true,
+  })
+  .parseSync();
+
 function getApplicableTestSuites(
   parsedSuitesFile: TestSuiteFile,
   platform: Platform
 ): TestSuite[] {
-  const testSuiteArgIdx = process.argv.indexOf('--test-suite');
   let applicableSuites: TestSuite[] = [];
 
-  if (testSuiteArgIdx === -1) {
+  if (!testSuiteId) {
     applicableSuites = filterByPlatform(parsedSuitesFile.testSuites, platform);
   } else {
-    const testSuiteId = process.argv[testSuiteArgIdx + 1];
     const testSuite = parsedSuitesFile.testSuites.find(suite => {
       return suite.id === testSuiteId;
     });
@@ -77,29 +125,9 @@ function getApplicableTestSuites(
 }
 
 async function main() {
-  const noCoverage = process.argv.indexOf('--no-coverage') !== -1;
-  const noSuggestions = process.argv.indexOf('--no-suggestions') !== -1;
-  const excludeCDPOnly = process.argv.indexOf('--no-cdp-tests') !== -1;
-
-  const statsFilenameIdx = process.argv.indexOf('--save-stats-to');
-  let statsFilename = '';
-  if (statsFilenameIdx !== -1) {
-    statsFilename = process.argv[statsFilenameIdx + 1] as string;
-    if (statsFilename.includes('INSERTID')) {
-      statsFilename = statsFilename.replace(/INSERTID/gi, randomUUID());
-    }
-  }
-
-  const minTestsIdx = process.argv.indexOf('--min-tests');
-  let minTests = 0;
-  if (minTestsIdx !== -1) {
-    minTests = Number(process.argv[minTestsIdx + 1]);
-  }
-
-  const shardIdx = process.argv.indexOf('--shard');
-  let shard = null;
-  if (shardIdx !== -1) {
-    shard = String(process.argv[shardIdx + 1]);
+  let statsPath = saveStatsTo;
+  if (statsPath && statsPath.includes('INSERTID')) {
+    statsPath = statsPath.replace(/INSERTID/gi, randomUUID());
   }
 
   const platform = zPlatform.parse(os.platform());
@@ -115,8 +143,8 @@ async function main() {
   const applicableSuites = getApplicableTestSuites(parsedSuitesFile, platform);
 
   console.log('Planning to run the following test suites', applicableSuites);
-  if (statsFilename) {
-    console.log('Test stats will be saved to', statsFilename);
+  if (statsPath) {
+    console.log('Test stats will be saved to', statsPath);
   }
 
   let fail = false;
@@ -164,39 +192,22 @@ async function main() {
       const tmpDir = fs.mkdtempSync(
         path.join(os.tmpdir(), 'puppeteer-test-runner-')
       );
-      const tmpFilename = statsFilename
-        ? statsFilename
+      const tmpFilename = statsPath
+        ? statsPath
         : path.join(tmpDir, 'output.json');
       console.log('Running', JSON.stringify(parameters), tmpFilename);
-      const reporterArgumentIndex = process.argv.indexOf('--reporter');
       const args = [
         '-u',
         path.join(__dirname, 'interface.js'),
         '-R',
-        reporterArgumentIndex === -1
-          ? path.join(__dirname, 'reporter.js')
-          : process.argv[reporterArgumentIndex + 1] || '',
+        !reporter ? path.join(__dirname, 'reporter.js') : reporter,
         '-O',
-        'output=' + tmpFilename,
+        `output=${tmpFilename}`,
       ];
-      const retriesArgumentIndex = process.argv.indexOf('--retries');
-      const timeoutArgumentIndex = process.argv.indexOf('--timeout');
-      if (retriesArgumentIndex > -1) {
-        args.push('--retries', process.argv[retriesArgumentIndex + 1] || '');
-      }
-      if (timeoutArgumentIndex > -1) {
-        args.push('--timeout', process.argv[timeoutArgumentIndex + 1] || '');
-      }
-      if (process.argv.indexOf('--no-parallel')) {
-        args.push('--no-parallel');
-      }
-      if (process.argv.indexOf('--fullTrace')) {
-        args.push('--full-trace');
-      }
 
       const specPattern = 'test/build/**/*.spec.js';
       const specs = globSync(specPattern, {
-        ignore: excludeCDPOnly ? 'test/build/cdp/**/*.spec.js' : undefined,
+        ignore: !includeCdpTests ? 'test/build/cdp/**/*.spec.js' : undefined,
       }).sort((a, b) => {
         return a.localeCompare(b);
       });
@@ -222,26 +233,29 @@ async function main() {
       } else {
         args.push(...specs);
       }
-      const spawnArgs: SpawnOptions = {
-        shell: true,
-        cwd: process.cwd(),
-        stdio: 'inherit',
-        env,
-      };
-      const handle = noCoverage
-        ? spawn('npx', ['mocha', ...args], spawnArgs)
-        : spawn(
-            'npx',
-            [
-              'c8',
-              '--check-coverage',
-              '--lines',
-              String(suite.expectedLineCoverage),
-              'npx mocha',
-              ...args,
-            ],
-            spawnArgs
-          );
+      const handle = spawn(
+        'npx',
+        [
+          ...(useCoverage
+            ? [
+                'c8',
+                '--check-coverage',
+                '--lines',
+                String(suite.expectedLineCoverage),
+                'npx',
+              ]
+            : []),
+          'mocha',
+          ...mochaArgs.map(String),
+          ...args,
+        ],
+        {
+          shell: true,
+          cwd: process.cwd(),
+          stdio: 'inherit',
+          env,
+        }
+      );
       await new Promise<void>((resolve, reject) => {
         handle.on('error', err => {
           reject(err);
@@ -288,7 +302,7 @@ async function main() {
     fail = true;
     console.error(err);
   } finally {
-    if (!noSuggestions) {
+    if (!!provideSuggestions) {
       printSuggestions(
         recommendations,
         'add',
