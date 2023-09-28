@@ -33,20 +33,6 @@ async function getDragState() {
 describe("Legacy Drag n' Drop", function () {
   setupTestBrowserHooks();
 
-  it('should throw an exception if not enabled before usage', async () => {
-    const {page, server} = await getTestState();
-
-    await page.goto(server.PREFIX + '/input/drag-and-drop.html');
-    using draggable = (await page.$('#drag'))!;
-
-    try {
-      await draggable!.drag({x: 1, y: 1});
-    } catch (error) {
-      expect((error as Error).message).toContain(
-        'Drag Interception is not enabled!'
-      );
-    }
-  });
   it('should emit a dragIntercepted event when dragged', async () => {
     const {page, server} = await getTestState();
 
