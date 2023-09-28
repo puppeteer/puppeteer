@@ -3,7 +3,7 @@
     "testIdPattern": "*",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP", "TIMEOUT"]
+    "expectations": ["PASS", "FAIL", "TIMEOUT"]
   },
   {
     "testIdPattern": "[autofill.spec] *",
