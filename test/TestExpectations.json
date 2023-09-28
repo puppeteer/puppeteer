@@ -1020,6 +1020,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[page.spec] Page Page.select should not throw when select causes navigation",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.select should respect event bubbling",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -3174,12 +3180,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.select should not throw when select causes navigation",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
     "testIdPattern": "[page.spec] Page Page.select should work when re-defining top-level Event class",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -3862,11 +3862,5 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headless"],
     "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage resetOnNavigation should report scripts across navigations when disabled",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome", "new-headless", "tabTarget"],
-    "expectations": ["FAIL"]
   }
 ]
