@@ -249,10 +249,6 @@ if (
   );
 }
 
-process.on('unhandledRejection', reason => {
-  throw reason;
-});
-
 const browserNotClosedError = new Error(
   'A manually launched browser was not closed!'
 );

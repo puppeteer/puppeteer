@@ -690,7 +690,7 @@ describe('ElementHandle specs', function () {
         Puppeteer.customQueryHandlerNames();
       expect(handlerNamesAfterUnregistering.includes('getById')).toBeFalsy();
     });
-    it('should throw with invalid query names', () => {
+    it('should throw with invalid query names', async () => {
       try {
         Puppeteer.registerCustomQueryHandler('1/2/3', {
           queryOne: () => {
