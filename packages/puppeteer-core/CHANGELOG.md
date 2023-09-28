@@ -20,6 +20,13 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.3.6](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.3.5...puppeteer-core-v21.3.6) (2023-09-28)
+
+
+### Bug Fixes
+
+* remove the flag disabling bfcache ([#11047](https://github.com/puppeteer/puppeteer/issues/11047)) ([b0d7375](https://github.com/puppeteer/puppeteer/commit/b0d73755193e7c60deb70df120859b5db87e7817))
+
 ## [21.3.5](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.3.4...puppeteer-core-v21.3.5) (2023-09-26)
 
 
