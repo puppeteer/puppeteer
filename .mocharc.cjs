@@ -27,4 +27,9 @@ module.exports = {
   parallel: !!process.env.PARALLEL,
   timeout: timeout,
   reporter: process.env.CI ? 'spec' : 'dot',
+  // This should make mocha crash on uncaught errors.
+  // See https://github.com/mochajs/mocha/blob/master/docs/index.md#--allow-uncaught.
+  allowUncaught: true,
+  // See https://github.com/mochajs/mocha/blob/master/docs/index.md#--async-only--a.
+  asyncOnly: true,
 };
