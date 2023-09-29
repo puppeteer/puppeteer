@@ -906,7 +906,7 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[page.spec] Page ExecutionContext.queryObjects *",
+    "testIdPattern": "[queryObjects.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
@@ -2934,16 +2934,28 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page ExecutionContext.queryObjects should work",
+    "testIdPattern": "[queryObjects.spec] page.queryObjects should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page ExecutionContext.queryObjects should work for non-trivial page",
+    "testIdPattern": "[queryObjects.spec] page.queryObjects should work for non-trivial page",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[queryObjects.spec] page.queryObjects should fail for disposed handles",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[queryObjects.spec] page.queryObjects should fail primitive values as prototypes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.addScriptTag should throw when added with content to the CSP page",
