@@ -87,11 +87,16 @@ export class FileChooser {
   /**
    * Closes the file chooser without selecting any files.
    */
-  cancel(): void {
+  async cancel(): Promise<void> {
     assert(
       !this.#handled,
       'Cannot cancel FileChooser which is already handled!'
     );
     this.#handled = true;
+    // XXX: These events should converted to trusted events. Perhaps do this
+    // in `DOM.setFileInputFiles`?
+    await this.#element.evaluate(element => {
+      element.dispatchEvent(new Event('cancel', {bubbles: true}));
+    });
   }
 }
