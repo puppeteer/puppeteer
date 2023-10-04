@@ -4,7 +4,9 @@ sidebar_label: FileChooser.isMultiple
 
 # FileChooser.isMultiple() method
 
-Whether file chooser allow for [multiple](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#attr-multiple) file selection.
+> Warning: This API is now obsolete.
+>
+> Use [FileChooser.multiple](./puppeteer.filechooser.multiple.md).
 
 #### Signature:
 

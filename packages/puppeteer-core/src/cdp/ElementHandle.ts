@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import type Path from 'path';
-
 import type {Protocol} from 'devtools-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
 import {ElementHandle, type AutofillData} from '../api/ElementHandle.js';
 import {debugError} from '../common/util.js';
-import {assert} from '../util/assert.js';
 import {throwIfDisposed} from '../util/decorators.js';
 
 import type {CdpFrame} from './Frame.js';
@@ -98,72 +95,6 @@ export class CdpElementHandle<
       // Fallback to Element.scrollIntoView if DOM.scrollIntoViewIfNeeded is not supported
       await super.scrollIntoView();
     }
-  }
-
-  @throwIfDisposed()
-  @ElementHandle.bindIsolatedHandle
-  override async uploadFile(
-    this: CdpElementHandle<HTMLInputElement>,
-    ...filePaths: string[]
-  ): Promise<void> {
-    const isMultiple = await this.evaluate(element => {
-      return element.multiple;
-    });
-    assert(
-      filePaths.length <= 1 || isMultiple,
-      'Multiple file uploads only work with <input type=file multiple>'
-    );
-
-    // Locate all files and confirm that they exist.
-    let path: typeof Path;
-    try {
-      path = await import('path');
-    } catch (error) {
-      if (error instanceof TypeError) {
-        throw new Error(
-          `JSHandle#uploadFile can only be used in Node-like environments.`
-        );
-      }
-      throw error;
-    }
-    const files = filePaths.map(filePath => {
-      if (path.win32.isAbsolute(filePath) || path.posix.isAbsolute(filePath)) {
-        return filePath;
-      } else {
-        return path.resolve(filePath);
-      }
-    });
-
-    /**
-     * The zero-length array is a special case, it seems that
-     * DOM.setFileInputFiles does not actually update the files in that case, so
-     * the solution is to eval the element value to a new FileList directly.
-     */
-    if (files.length === 0) {
-      // XXX: These events should converted to trusted events. Perhaps do this
-      // in `DOM.setFileInputFiles`?
-      await this.evaluate(element => {
-        element.files = new DataTransfer().files;
-
-        // Dispatch events for this case because it should behave akin to a user action.
-        element.dispatchEvent(
-          new Event('input', {bubbles: true, composed: true})
-        );
-        element.dispatchEvent(new Event('change', {bubbles: true}));
-      });
-      return;
-    }
-
-    const {
-      node: {backendNodeId},
-    } = await this.client.send('DOM.describeNode', {
-      objectId: this.id,
-    });
-    await this.client.send('DOM.setFileInputFiles', {
-      objectId: this.id,
-      files,
-      backendNodeId,
-    });
   }
 
   @throwIfDisposed()

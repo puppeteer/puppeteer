@@ -21,7 +21,6 @@ import type {Protocol} from 'devtools-protocol';
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
-import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Frame, WaitForOptions} from '../api/Frame.js';
 import type {HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
@@ -42,7 +41,6 @@ import {
   type ConsoleMessageType,
 } from '../common/ConsoleMessage.js';
 import {TargetCloseError} from '../common/Errors.js';
-import {FileChooser} from '../common/FileChooser.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {BindingPayload, HandleFor} from '../common/types.js';
@@ -72,13 +70,14 @@ import {isTargetClosedError} from './Connection.js';
 import {Coverage} from './Coverage.js';
 import type {DeviceRequestPrompt} from './DeviceRequestPrompt.js';
 import {CdpDialog} from './Dialog.js';
+import type {CdpElementHandle} from './ElementHandle.js';
 import {EmulationManager} from './EmulationManager.js';
 import {createCdpHandle, releaseObject} from './ExecutionContext.js';
+import {CdpFileChooser} from './FileChooser.js';
 import {FirefoxTargetManager} from './FirefoxTargetManager.js';
 import type {CdpFrame} from './Frame.js';
 import {FrameManager, FrameManagerEvent} from './FrameManager.js';
 import {CdpKeyboard, CdpMouse, CdpTouchscreen} from './Input.js';
-import {MAIN_WORLD} from './IsolatedWorlds.js';
 import {
   NetworkManagerEvent,
   type Credentials,
@@ -132,7 +131,7 @@ export class CdpPage extends Page {
   #coverage: Coverage;
   #viewport: Viewport | null;
   #workers = new Map<string, WebWorker>();
-  #fileChooserDeferreds = new Set<Deferred<FileChooser>>();
+  #fileChoosers = new Set<Deferred<CdpFileChooser>>();
   #sessionCloseDeferred = Deferred.create<TargetCloseError>();
   #serviceWorkerBypassed = false;
   #userDragInterceptionEnabled = false;
@@ -359,7 +358,7 @@ export class CdpPage extends Page {
   async #onFileChooser(
     event: Protocol.Page.FileChooserOpenedEvent
   ): Promise<void> {
-    if (!this.#fileChooserDeferreds.size) {
+    if (!this.#fileChoosers.size) {
       return;
     }
 
@@ -367,15 +366,17 @@ export class CdpPage extends Page {
     assert(frame, 'This should never happen.');
 
     // This is guaranteed to be an HTMLInputElement handle by the event.
-    using handle = (await frame.worlds[MAIN_WORLD].adoptBackendNode(
-      event.backendNodeId
-    )) as ElementHandle<HTMLInputElement>;
+    using handle = (await frame
+      .isolatedRealm()
+      .adoptBackendNode(
+        event.backendNodeId
+      )) as CdpElementHandle<HTMLInputElement>;
 
-    const fileChooser = new FileChooser(handle.move(), event);
-    for (const promise of this.#fileChooserDeferreds) {
+    const fileChooser = new CdpFileChooser(handle.move(), event);
+    for (const promise of this.#fileChoosers) {
       promise.resolve(fileChooser);
     }
-    this.#fileChooserDeferreds.clear();
+    this.#fileChoosers.clear();
   }
 
   _client(): CDPSession {
@@ -396,29 +397,29 @@ export class CdpPage extends Page {
 
   override async waitForFileChooser(
     options: WaitTimeoutOptions = {}
-  ): Promise<FileChooser> {
-    const needsEnable = this.#fileChooserDeferreds.size === 0;
+  ): Promise<CdpFileChooser> {
     const {timeout = this.#timeoutSettings.timeout()} = options;
-    const deferred = Deferred.create<FileChooser>({
+
+    const fileChooser = Deferred.create<CdpFileChooser>({
       message: `Waiting for \`FileChooser\` failed: ${timeout}ms exceeded`,
       timeout,
     });
-    this.#fileChooserDeferreds.add(deferred);
-    let enablePromise: Promise<void> | undefined;
-    if (needsEnable) {
-      enablePromise = this.#client.send('Page.setInterceptFileChooserDialog', {
-        enabled: true,
-      });
+    this.#fileChoosers.add(fileChooser);
+    if (this.#fileChoosers.size === 1) {
+      void this.#client
+        .send('Page.setInterceptFileChooserDialog', {enabled: true})
+        .catch(debugError);
     }
+
     try {
-      const [result] = await Promise.all([
-        deferred.valueOrThrow(),
-        enablePromise,
-      ]);
-      return result;
-    } catch (error) {
-      this.#fileChooserDeferreds.delete(deferred);
-      throw error;
+      return await fileChooser.valueOrThrow();
+    } finally {
+      this.#fileChoosers.delete(fileChooser);
+      if (this.#fileChoosers.size === 0) {
+        void this.#client
+          .send('Page.setInterceptFileChooserDialog', {enabled: false})
+          .catch(debugError);
+      }
     }
   }
 

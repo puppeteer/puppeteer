@@ -57,7 +57,6 @@ import {
   type EventType,
   type Handler,
 } from '../common/EventEmitter.js';
-import type {FileChooser} from '../common/FileChooser.js';
 import {
   paperFormats,
   type LowerCasePaperFormat,
@@ -94,6 +93,7 @@ import type {BrowserContext} from './BrowserContext.js';
 import type {CDPSession} from './CDPSession.js';
 import type {Dialog} from './Dialog.js';
 import type {ClickOptions, ElementHandle} from './ElementHandle.js';
+import type {FileChooser} from './FileChooser.js';
 import type {
   Frame,
   FrameAddScriptTagOptions,

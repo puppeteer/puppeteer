@@ -956,12 +956,19 @@ export abstract class ElementHandle<
    * For locals script connecting to remote chrome environments, paths must be
    * absolute.
    */
+  @throwIfDisposed()
+  @ElementHandle.bindIsolatedHandle
   async uploadFile(
     this: ElementHandle<HTMLInputElement>,
     ...paths: string[]
-  ): Promise<void>;
-  async uploadFile(this: ElementHandle<HTMLInputElement>): Promise<void> {
-    throw new Error('Not implemented');
+  ): Promise<void> {
+    const [chooser] = await Promise.all([
+      this.frame.page().waitForFileChooser(),
+      this.evaluate(element => {
+        element.showPicker();
+      }),
+    ]);
+    await chooser.accept(paths);
   }
 
   /**

@@ -19,6 +19,7 @@ export * from './BrowserContext.js';
 export * from './Dialog.js';
 export * from './ElementHandle.js';
 export * from './Environment.js';
+export * from './FileChooser.js';
 export * from './Frame.js';
 export * from './HTTPRequest.js';
 export * from './HTTPResponse.js';

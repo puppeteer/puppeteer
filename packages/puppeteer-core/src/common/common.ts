@@ -23,7 +23,6 @@ export * from './Debug.js';
 export * from './Device.js';
 export * from './Errors.js';
 export * from './EventEmitter.js';
-export * from './FileChooser.js';
 export * from './GetQueryHandler.js';
 export * from './HandleIterator.js';
 export * from './LazyArg.js';
