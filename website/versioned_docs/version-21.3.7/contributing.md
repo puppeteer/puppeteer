@@ -234,7 +234,7 @@ A barrier for introducing new installation dependencies is especially high:
 
 There are additional considerations for dependencies that are environment
 agonistic. See the
-[`third_party/README.md`](https://github.com/puppeteer/puppeteer/blob/main/third_party/README.md)
+[`third_party/README.md`](https://github.com/puppeteer/puppeteer/blob/main/packages/puppeteer-core/third_party/README.md)
 for details.
 
 ## Testing tips
