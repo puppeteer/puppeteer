@@ -2046,12 +2046,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[jshandle.spec] JSHandle JSHandle.toString should work with different subtypes",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[keyboard.spec] Keyboard ElementHandle.press should not support |text| option",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
