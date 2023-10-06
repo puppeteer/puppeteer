@@ -7,15 +7,13 @@ sidebar_label: ScreenshotClip
 #### Signature:
 
 ```typescript
-export interface ScreenshotClip
+export interface ScreenshotClip extends BoundingBox
 ```
+
+**Extends:** [BoundingBox](./puppeteer.boundingbox.md)
 
 ## Properties
 
 | Property | Modifiers             | Type   | Description | Default        |
 | -------- | --------------------- | ------ | ----------- | -------------- |
-| height   |                       | number |             |                |
 | scale    | <code>optional</code> | number |             | <code>1</code> |
-| width    |                       | number |             |                |
-| x        |                       | number |             |                |
-| y        |                       | number |             |                |

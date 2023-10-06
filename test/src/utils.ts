@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import {rm} from 'fs/promises';
+import {tmpdir} from 'os';
 import path from 'path';
 
 import expect from 'expect';
@@ -157,3 +159,23 @@ export const waitEvent = async <T = any>(
     emitter.off(eventName, handler);
   }
 };
+
+export interface FilePlaceholder {
+  filename: `${string}.webm`;
+  [Symbol.dispose](): void;
+}
+
+export function getUniqueVideoFilePlaceholder(): FilePlaceholder {
+  return {
+    filename: `${tmpdir()}/test-video-${Math.round(
+      Math.random() * 10000
+    )}.webm`,
+    [Symbol.dispose]() {
+      void rmIfExists(this.filename);
+    },
+  };
+}
+
+export function rmIfExists(file: string): Promise<void> {
+  return rm(file).catch(() => {});
+}
