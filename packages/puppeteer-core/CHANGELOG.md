@@ -20,6 +20,14 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.3.8](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.3.7...puppeteer-core-v21.3.8) (2023-10-06)
+
+
+### Bug Fixes
+
+* avoid double subscription to frame manager in Page ([#11091](https://github.com/puppeteer/puppeteer/issues/11091)) ([5887649](https://github.com/puppeteer/puppeteer/commit/5887649891ea9cf1d7b3afbcf7196620ceb20ab2))
+* update file chooser events ([#11057](https://github.com/puppeteer/puppeteer/issues/11057)) ([317f820](https://github.com/puppeteer/puppeteer/commit/317f82055b2f4dd68db136a3d52c5712425fa339))
+
 ## [21.3.7](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.3.6...puppeteer-core-v21.3.7) (2023-10-05)
 
 
