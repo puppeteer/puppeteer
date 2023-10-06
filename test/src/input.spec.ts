@@ -358,7 +358,7 @@ describe('input tests', function () {
       let error!: Error;
 
       try {
-        fileChooser.cancel();
+        await fileChooser.cancel();
       } catch (error_) {
         error = error_ as Error;
       }
