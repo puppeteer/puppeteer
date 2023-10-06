@@ -15,61 +15,75 @@
  */
 
 import expect from 'expect';
-import {KnownDevices, type BoundingBox} from 'puppeteer';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 
-describe('Touchscreen', function () {
+declare const allEvents: Array<{type: string}>;
+
+describe('Touchscreen', () => {
   setupTestBrowserHooks();
 
-  it('should tap the button', async () => {
-    const {page, server} = await getTestState();
-    const iPhone = KnownDevices['iPhone 6']!;
-    await page.emulate(iPhone);
-    await page.goto(server.PREFIX + '/input/button.html');
-    await page.tap('button');
-    expect(
-      await page.evaluate(() => {
-        return (globalThis as any).result;
-      })
-    ).toBe('Clicked');
+  describe('Touchscreen.prototype.tap', () => {
+    it('should work', async () => {
+      const {page, server, isHeadless} = await getTestState();
+      await page.goto(server.PREFIX + '/input/touchscreen.html');
+
+      await page.tap('button');
+      expect(
+        (
+          await page.evaluate(() => {
+            return allEvents;
+          })
+        ).filter(({type}) => {
+          return type !== 'pointermove' || isHeadless;
+        })
+      ).toMatchObject([
+        {height: 1, type: 'pointerdown', width: 1, x: 5, y: 5},
+        {touches: [[5, 5, 0.5, 0.5]], type: 'touchstart'},
+        {height: 1, type: 'pointerup', width: 1, x: 5, y: 5},
+        {touches: [[5, 5, 0.5, 0.5]], type: 'touchend'},
+        {height: 1, type: 'click', width: 1, x: 5, y: 5},
+      ]);
+    });
   });
 
-  it('should report touches', async () => {
-    const {page, server} = await getTestState();
-    const iPhone = KnownDevices['iPhone 6']!;
-    await page.emulate(iPhone);
-    await page.goto(server.PREFIX + '/input/touches.html');
-    using button = (await page.$('button'))!;
-    await button.tap();
-    expect(
-      await page.evaluate(() => {
-        return (globalThis as any).getResult();
-      })
-    ).toEqual(['Touchstart: 0', 'Touchend: 0']);
-  });
+  describe('Touchscreen.prototype.touchMove', () => {
+    it('should work', async () => {
+      const {page, server, isHeadless} = await getTestState();
+      await page.goto(server.PREFIX + '/input/touchscreen.html');
 
-  it('should report touchMove', async () => {
-    const {page, server} = await getTestState();
-    const iPhone = KnownDevices['iPhone 6']!;
-    await page.emulate(iPhone);
-    await page.goto(server.PREFIX + '/input/touches-move.html');
-    using touch = (await page.$('#touch'))!;
-    const touchObj = (await touch.boundingBox()) as BoundingBox;
-    await page.touchscreen.touchStart(touchObj.x, touchObj.y);
-    const movePosx = 100;
-    const movePosy = 100;
-    await page.touchscreen.touchMove(movePosx, movePosy);
-    await page.touchscreen.touchEnd();
-    expect(
-      await page.evaluate(() => {
-        return (globalThis as any).touchX;
-      })
-    ).toBe(movePosx);
-    expect(
-      await page.evaluate(() => {
-        return (globalThis as any).touchY;
-      })
-    ).toBe(movePosy);
+      await page.touchscreen.touchStart(0, 0);
+      await page.touchscreen.touchMove(10, 10);
+      await page.touchscreen.touchMove(15.5, 15);
+      await page.touchscreen.touchMove(20, 20.4);
+      await page.touchscreen.touchMove(40, 30);
+      await page.touchscreen.touchEnd();
+      expect(
+        (
+          await page.evaluate(() => {
+            return allEvents;
+          })
+        ).filter(({type}) => {
+          return type !== 'pointermove' || isHeadless;
+        })
+      ).toMatchObject(
+        [
+          {type: 'pointerdown', x: 0, y: 0, width: 1, height: 1},
+          {type: 'touchstart', touches: [[0, 0, 0.5, 0.5]]},
+          {type: 'pointermove', x: 10, y: 10, width: 1, height: 1},
+          {type: 'touchmove', touches: [[10, 10, 0.5, 0.5]]},
+          {type: 'pointermove', x: 16, y: 15, width: 1, height: 1},
+          {type: 'touchmove', touches: [[16, 15, 0.5, 0.5]]},
+          {type: 'pointermove', x: 20, y: 20, width: 1, height: 1},
+          {type: 'touchmove', touches: [[20, 20, 0.5, 0.5]]},
+          {type: 'pointermove', x: 40, y: 30, width: 1, height: 1},
+          {type: 'touchmove', touches: [[40, 30, 0.5, 0.5]]},
+          {type: 'pointerup', x: 40, y: 30, width: 1, height: 1},
+          {type: 'touchend', touches: [[40, 30, 0.5, 0.5]]},
+        ].filter(({type}) => {
+          return type !== 'pointermove' || isHeadless;
+        })
+      );
+    });
   });
 });

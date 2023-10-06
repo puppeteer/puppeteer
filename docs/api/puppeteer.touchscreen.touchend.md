@@ -10,7 +10,7 @@ Dispatches a `touchend` event.
 
 ```typescript
 class Touchscreen {
-  touchEnd(): Promise<void>;
+  abstract touchEnd(): Promise<void>;
 }
 ```
 

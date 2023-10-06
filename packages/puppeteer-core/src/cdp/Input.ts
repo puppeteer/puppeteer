@@ -574,25 +574,32 @@ export class CdpTouchscreen extends Touchscreen {
     this.#client = client;
   }
 
-  override async tap(x: number, y: number): Promise<void> {
-    await this.touchStart(x, y);
-    await this.touchEnd();
-  }
-
   override async touchStart(x: number, y: number): Promise<void> {
-    const touchPoints = [{x: Math.round(x), y: Math.round(y)}];
     await this.#client.send('Input.dispatchTouchEvent', {
       type: 'touchStart',
-      touchPoints,
+      touchPoints: [
+        {
+          x: Math.round(x),
+          y: Math.round(y),
+          radiusX: 0.5,
+          radiusY: 0.5,
+        },
+      ],
       modifiers: this.#keyboard._modifiers,
     });
   }
 
   override async touchMove(x: number, y: number): Promise<void> {
-    const movePoints = [{x: Math.round(x), y: Math.round(y)}];
     await this.#client.send('Input.dispatchTouchEvent', {
       type: 'touchMove',
-      touchPoints: movePoints,
+      touchPoints: [
+        {
+          x: Math.round(x),
+          y: Math.round(y),
+          radiusX: 0.5,
+          radiusY: 0.5,
+        },
+      ],
       modifiers: this.#keyboard._modifiers,
     });
   }
