@@ -10,10 +10,10 @@ Closes the file chooser without selecting any files.
 
 ```typescript
 class FileChooser {
-  cancel(): void;
+  cancel(): Promise<void>;
 }
 ```
 
 **Returns:**
 
-void
+Promise&lt;void&gt;

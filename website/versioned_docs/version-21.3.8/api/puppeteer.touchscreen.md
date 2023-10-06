@@ -9,7 +9,7 @@ The Touchscreen class exposes touchscreen events.
 #### Signature:
 
 ```typescript
-export declare class Touchscreen
+export declare abstract class Touchscreen
 ```
 
 ## Remarks
