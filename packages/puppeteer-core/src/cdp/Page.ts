@@ -246,7 +246,16 @@ export class CdpPage extends Page {
     this.#coverage = new Coverage(client);
     this.#viewport = null;
 
-    this.#setupEventListeners();
+    for (const [eventName, handler] of this.#frameManagerHandlers) {
+      this.#frameManager.on(eventName, handler);
+    }
+
+    for (const [eventName, handler] of this.#networkManagerHandlers) {
+      // TODO: Remove any.
+      this.#frameManager.networkManager.on(eventName, handler as any);
+    }
+
+    this.#setupPrimaryTargetListeners();
 
     this.#tabSession?.on(CDPSessionEvent.Swapped, async newSession => {
       this.#client = newSession;
@@ -264,7 +273,7 @@ export class CdpPage extends Page {
       this.#tracing.updateClient(newSession);
       this.#coverage.updateClient(newSession);
       await this.#frameManager.swapFrameTree(newSession);
-      this.#setupEventListeners();
+      this.#setupPrimaryTargetListeners();
     });
     this.#tabSession?.on(CDPSessionEvent.Ready, session => {
       assert(session instanceof CdpCDPSession);
@@ -278,26 +287,21 @@ export class CdpPage extends Page {
     });
   }
 
-  #setupEventListeners() {
+  /**
+   * Sets up listeners for the primary target. The primary target can change
+   * during a navigation to a prerended page.
+   */
+  #setupPrimaryTargetListeners() {
     this.#client.on(CDPSessionEvent.Ready, this.#onAttachedToTarget);
-
-    this.#target
-      ._targetManager()
-      .on(TargetManagerEvent.TargetGone, this.#onDetachedFromTarget);
-
-    for (const [eventName, handler] of this.#frameManagerHandlers) {
-      this.#frameManager.on(eventName, handler);
-    }
-
-    for (const [eventName, handler] of this.#networkManagerHandlers) {
-      // TODO: Remove any.
-      this.#frameManager.networkManager.on(eventName, handler as any);
-    }
 
     for (const [eventName, handler] of this.#sessionHandlers) {
       // TODO: Remove any.
       this.#client.on(eventName, handler as any);
     }
+
+    this.#target
+      ._targetManager()
+      .on(TargetManagerEvent.TargetGone, this.#onDetachedFromTarget);
 
     this.#target._isClosedDeferred
       .valueOrThrow()
