@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 export {
-  bufferCount,
   catchError,
-  concatMap,
   defaultIfEmpty,
   defer,
   delay,
@@ -41,6 +39,7 @@ export {
   race,
   raceWith,
   retry,
+  scan,
   startWith,
   switchMap,
   takeUntil,

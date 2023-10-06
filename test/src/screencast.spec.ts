@@ -21,7 +21,7 @@ import expect from 'expect';
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {getUniqueVideoFilePlaceholder} from './utils.js';
 
-describe('Screencasts', function () {
+describe.only('Screencasts', function () {
   setupTestBrowserHooks();
 
   describe('Page.screencast', function () {
@@ -39,7 +39,7 @@ describe('Screencasts', function () {
 
       await page.goto('data:text/html,<input>');
       using input = await page.locator('input').waitHandle();
-      await input.type('ab', {delay: 100});
+      await input.type('abcdefg', {delay: 100});
 
       await recorder.stop();
 
@@ -57,10 +57,10 @@ describe('Screencasts', function () {
       await page.goto('data:text/html,<input>');
       using input = await page.locator('input').waitHandle();
 
-      await input.type('ab', {delay: 100});
+      await input.type('abcdefghijk', {delay: 100});
       await recorder.stop();
 
-      await input.type('ab', {delay: 100});
+      await input.type('abcdefghijk', {delay: 100});
       await recorder2.stop();
 
       // Since file2 spent about double the time of file1 recording, so file2
@@ -99,10 +99,6 @@ describe('Screencasts', function () {
       ).rejects.toBeDefined();
       await expect(
         page.screencast({crop: {x: 0, y: 0, height: 1, width: 10000}})
-      ).rejects.toBeDefined();
-
-      await expect(
-        page.screencast({ffmpegPath: 'non-existent-path'})
       ).rejects.toBeDefined();
     });
   });

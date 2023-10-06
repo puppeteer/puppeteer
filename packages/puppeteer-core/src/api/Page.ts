@@ -80,7 +80,10 @@ import {
   withSourcePuppeteerURLIfNone,
 } from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
-import type {ScreenRecorder} from '../node/ScreenRecorder.js';
+import type {
+  ScreenRecorder,
+  ScreenRecorderOptions,
+} from '../node/ScreenRecorder.js';
 import {assert} from '../util/assert.js';
 import {guarded} from '../util/decorators.js';
 import type {Deferred} from '../util/Deferred.js';
@@ -295,39 +298,11 @@ export interface ScreenshotOptions {
 /**
  * @experimental
  */
-export interface ScreencastOptions {
+export interface ScreencastOptions extends ScreenRecorderOptions {
   /**
    * File path to save the screencast to.
    */
   path?: `${string}.webm`;
-  /**
-   * Specifies the region of the viewport to crop.
-   */
-  crop?: BoundingBox;
-  /**
-   * Scales the output video.
-   *
-   * For example, `0.5` will shrink the width and height of the output video by
-   * half. `2` will double the width and height of the output video.
-   *
-   * @defaultValue `1`
-   */
-  scale?: number;
-  /**
-   * Specifies the speed to record at.
-   *
-   * For example, `0.5` will slowdown the output video by 50%. `2` will double the
-   * speed of the output video.
-   *
-   * @defaultValue `1`
-   */
-  speed?: number;
-  /**
-   * Path to the [ffmpeg](https://ffmpeg.org/).
-   *
-   * Required if `ffmpeg` is not in your PATH.
-   */
-  ffmpegPath?: string;
 }
 
 /**
@@ -2409,9 +2384,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
       throw new Error(`\`scale\` must be greater than 0.`);
     }
 
-    const recorder = new ScreenRecorder(this, width, height, {
+    const rendererPage = await this.browser().newPage();
+    await this.bringToFront();
+
+    const recorder = new ScreenRecorder(rendererPage, this, width, height, {
       ...options,
-      path: options.ffmpegPath,
       crop,
     });
     try {

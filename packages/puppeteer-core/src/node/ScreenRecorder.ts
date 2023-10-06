@@ -14,49 +14,61 @@
  * limitations under the License.
  */
 
-import type {ChildProcessWithoutNullStreams} from 'child_process';
-import {spawn, spawnSync} from 'child_process';
 import {PassThrough} from 'stream';
 
-import debug from 'debug';
 import type Protocol from 'devtools-protocol';
 
-import type {
-  Observable,
-  OperatorFunction,
-} from '../../third_party/rxjs/rxjs.js';
+import type {Observable} from '../../third_party/rxjs/rxjs.js';
 import {
-  bufferCount,
-  concatMap,
   filter,
-  from,
   fromEvent,
   lastValueFrom,
   map,
+  scan,
   takeUntil,
   tap,
 } from '../../third_party/rxjs/rxjs.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
+import type {JSHandle} from '../api/JSHandle.js';
 import type {Page} from '../api/Page.js';
 import {debugError} from '../common/util.js';
 import {guarded} from '../util/decorators.js';
 import {asyncDisposeSymbol} from '../util/disposable.js';
 
-const CRF_VALUE = 30;
 const DEFAULT_FPS = 30;
 
-const debugFfmpeg = debug('puppeteer:ffmpeg');
-
 /**
- * @internal
+ * @public
  */
 export interface ScreenRecorderOptions {
-  speed?: number;
+  /**
+   * Specifies the region of the viewport to crop.
+   */
   crop?: BoundingBox;
-  format?: 'gif' | 'webm';
+  /**
+   * Scales the output video.
+   *
+   * For example, `0.5` will shrink the width and height of the output video by
+   * half. `2` will double the width and height of the output video.
+   *
+   * @defaultValue `1`
+   */
   scale?: number;
-  path?: string;
+  /**
+   * Specifies the speed to record at.
+   *
+   * For example, `0.5` will slowdown the output video by 50%. `2` will double
+   * the speed of the output video.
+   *
+   * @defaultValue `1`
+   */
+  speed?: number;
+}
+
+interface FrameRenderer {
+  queue(frame: readonly [frame: string, duration: number]): void;
+  flush(): Promise<void>;
 }
 
 /**
@@ -65,81 +77,227 @@ export interface ScreenRecorderOptions {
 export class ScreenRecorder extends PassThrough {
   #page: Page;
 
-  #process: ChildProcessWithoutNullStreams;
+  #renderer: Promise<JSHandle<FrameRenderer>>;
 
   #controller = new AbortController();
-  #lastFrame: Promise<readonly [Buffer, number]>;
+  #lastFrame: Promise<readonly [string, number]>;
 
   /**
    * @internal
    */
   constructor(
-    page: Page,
+    renderer: Page,
+    target: Page,
     width: number,
     height: number,
-    {speed, scale, crop, format, path}: ScreenRecorderOptions = {}
+    options: ScreenRecorderOptions = {}
   ) {
-    super({allowHalfOpen: false});
+    super();
 
-    path ??= 'ffmpeg';
+    this.#page = target;
+    void this.#page.bringToFront();
 
-    // Tests if `ffmpeg` exists.
-    const {error} = spawnSync(path);
-    if (error) {
-      throw error;
-    }
-
-    this.#process = spawn(
-      path,
-      // See https://trac.ffmpeg.org/wiki/Encode/VP9 for more information on flags.
-      [
-        ['-loglevel', 'error'],
-        // Reduces general buffering.
-        ['-avioflags', 'direct'],
-        // Reduces initial buffering while analyzing input fps and other stats.
-        [
-          '-fpsprobesize',
-          `${0}`,
-          '-probesize',
-          `${32}`,
-          '-analyzeduration',
-          `${0}`,
-          '-fflags',
-          'nobuffer',
-        ],
-        // Forces input to be read from standard input, and forces png input
-        // image format.
-        ['-f', 'image2pipe', '-c:v', 'png', '-i', 'pipe:0'],
-        // Overwrite output and no audio.
-        ['-y', '-an'],
-        // This drastically reduces stalling when cpu is overbooked. By default
-        // VP9 tries to use all available threads?
-        ['-threads', '1'],
-        // Specifies the frame rate we are giving ffmpeg.
-        ['-framerate', `${DEFAULT_FPS}`],
-        // Specifies the encoding and format we are using.
-        this.#getFormatArgs(format ?? 'webm'),
-        // Disable bitrate.
-        ['-b:v', `${0}`],
-        // Filters to ensure the images are piped correctly.
-        [
-          '-vf',
-          `${
-            speed ? `setpts=${1 / speed}*PTS,` : ''
-          }crop='min(${width},iw):min(${height},ih):${0}:${0}',pad=${width}:${height}:${0}:${0}${
-            crop ? `,crop=${crop.width}:${crop.height}:${crop.x}:${crop.y}` : ''
-          }${scale ? `,scale=iw*${scale}:-1` : ''}`,
-        ],
-        'pipe:1',
-      ].flat(),
-      {stdio: ['pipe', 'pipe', 'pipe']}
-    );
-    this.#process.stdout.pipe(this);
-    this.#process.stderr.on('data', (data: Buffer) => {
-      debugFfmpeg(data.toString('utf8'));
+    void renderer.exposeFunction('sendChunk', (chunk: string) => {
+      this.write(chunk, 'base64');
     });
+    this.#renderer = renderer.evaluateHandle(
+      async (width, height, options) => {
+        type WorkerMessage =
+          | {type: 'success'; id: number; image: ImageBitmap}
+          | {type: 'failure'; id: number};
 
-    this.#page = page;
+        class Renderer implements FrameRenderer {
+          readonly #rendered: Array<
+            Promise<[bitmap: ImageBitmap, duration: number] | undefined>
+          > = [];
+          readonly #promises = new Map<
+            number,
+            (bitmap: ImageBitmap | undefined) => void
+          >();
+          readonly #controller = new AbortController();
+          readonly #loop: Promise<void>;
+          readonly #canvas: HTMLCanvasElement;
+          readonly #recorder: MediaRecorder;
+          readonly #worker: Worker;
+
+          constructor(mimeType: string) {
+            this.#canvas = document.body.appendChild(
+              document.createElement('canvas')
+            );
+            this.#canvas.width = width;
+            this.#canvas.height = height;
+            if (options.crop) {
+              this.#canvas.width = options.crop.width;
+              this.#canvas.height = options.crop.height;
+            }
+            if (options.scale) {
+              this.#canvas.width *= options.scale;
+              this.#canvas.height *= options.scale;
+            }
+
+            this.#recorder = new MediaRecorder(this.#canvas.captureStream(0), {
+              mimeType,
+            });
+
+            // This will send our renderings back to Puppeteer.
+            this.#recorder.addEventListener('dataavailable', async event => {
+              if (event.data.size === 0) {
+                return;
+              }
+              let binary = '';
+              const buffer = await event.data.arrayBuffer();
+              const view = new Uint8Array(buffer);
+              for (const byte of view) {
+                binary += String.fromCharCode(byte);
+              }
+              await (window as any).sendChunk(btoa(binary));
+            });
+
+            this.#recorder.start(1000);
+            this.#recorder.pause();
+
+            this.#worker = new Worker(
+              URL.createObjectURL(
+                new Blob(
+                  [
+                    `(${String(
+                      (x: number, y: number, width: number, height: number) => {
+                        self.addEventListener('message', async event => {
+                          const {id, data} = event.data;
+                          try {
+                            const binary = atob(data);
+                            const buffer = new ArrayBuffer(binary.length);
+                            const view = new Uint8Array(buffer);
+                            for (let i = 0; i < view.length; ++i) {
+                              view[i] = binary.charCodeAt(i);
+                            }
+                            const image = await self.createImageBitmap(
+                              new Blob([buffer], {type: 'image/png'}),
+                              x,
+                              y,
+                              width,
+                              height
+                            );
+                            self.postMessage(
+                              {
+                                type: 'success',
+                                id,
+                                image,
+                              } satisfies WorkerMessage,
+                              {transfer: [image]}
+                            );
+                          } catch {
+                            self.postMessage({
+                              type: 'failure',
+                              id,
+                            } satisfies WorkerMessage);
+                          }
+                        });
+                      }
+                    )})(${options.crop?.x ?? 0},${options.crop?.y ?? 0},${
+                      this.#canvas.width / (options.scale ?? 1)
+                    },${this.#canvas.height / (options.scale ?? 1)})`,
+                  ],
+                  {type: 'application/javascript'}
+                )
+              )
+            );
+            this.#worker.addEventListener(
+              'message',
+              (event: MessageEvent<WorkerMessage>) => {
+                const {type, id} = event.data;
+                const resolve = this.#promises.get(id)!;
+                switch (type) {
+                  case 'success':
+                    resolve(event.data.image);
+                    break;
+                  case 'failure':
+                    resolve(undefined);
+                    break;
+                }
+                this.#promises.delete(id);
+              }
+            );
+
+            // This loop renders the frames to video.
+            this.#loop = this.#run();
+          }
+
+          async #run() {
+            const track =
+              this.#recorder.stream.getTracks()[0] as CanvasCaptureMediaStreamTrack;
+            const context = this.#canvas.getContext('2d')!;
+            while (
+              this.#rendered.length > 0 ||
+              !this.#controller.signal.aborted
+            ) {
+              const rendered = await this.#rendered.shift();
+              if (!rendered) {
+                await new Promise(resolve => {
+                  window.setTimeout(resolve, 10);
+                });
+                continue;
+              }
+              const [bitmap, duration] = rendered;
+
+              // Scaling is done automatically here.
+              context.drawImage(
+                bitmap,
+                0,
+                0,
+                this.#canvas.width,
+                this.#canvas.height
+              );
+
+              this.#recorder.resume();
+              track.requestFrame();
+              await new Promise(resolve => {
+                setTimeout(
+                  resolve,
+                  duration * 1000 * (1 / (options.speed ?? 1))
+                );
+              });
+              this.#recorder.pause();
+            }
+          }
+
+          #i = 0;
+          queue([base64, duration]: readonly [
+            frame: string,
+            duration: number,
+          ]) {
+            try {
+              const id = this.#i++;
+              this.#worker.postMessage({id, data: base64});
+              this.#rendered.push(
+                new Promise(resolve => {
+                  this.#promises.set(id, (bitmap: ImageBitmap | undefined) => {
+                    resolve(bitmap && [bitmap, duration]);
+                  });
+                })
+              );
+            } catch {}
+          }
+
+          async flush() {
+            this.#controller.abort();
+            await this.#loop;
+            const stopped = new Promise(resolve => {
+              this.#recorder.addEventListener('stop', resolve, {
+                once: true,
+              });
+            });
+            this.#recorder.stop();
+            this.#worker.terminate();
+            await stopped;
+          }
+        }
+        return new Renderer('video/webm;codecs=vp9');
+      },
+      width,
+      height,
+      options
+    );
 
     const {client} = this.#page.mainFrame();
     client.once(CDPSessionEvent.Disconnected, () => {
@@ -163,69 +321,55 @@ export class ScreenRecorder extends PassThrough {
         }),
         map(event => {
           return {
-            buffer: Buffer.from(event.data, 'base64'),
+            frame: event.data,
             timestamp: event.metadata.timestamp!,
           };
         }),
-        bufferCount(2, 1) as OperatorFunction<
-          {buffer: Buffer; timestamp: number},
-          [
-            {buffer: Buffer; timestamp: number},
-            {buffer: Buffer; timestamp: number},
-          ]
-        >,
-        concatMap(([{timestamp: previousTimestamp, buffer}, {timestamp}]) => {
-          return from(
-            Array<Buffer>(
-              Math.round(DEFAULT_FPS * (timestamp - previousTimestamp))
-            ).fill(buffer)
-          );
+        scan(
+          (
+            {frame, timestamp, duration, next},
+            {frame: nextFrame, timestamp: nextTimestamp}
+          ) => {
+            if (timestamp === 0) {
+              timestamp = nextTimestamp;
+            }
+            if (next) {
+              frame = nextFrame;
+              duration = 0;
+            }
+            const nextDuration = duration + (nextTimestamp - timestamp);
+            return {
+              frame,
+              duration: nextDuration,
+              timestamp: nextTimestamp,
+              next: nextDuration >= 1 / DEFAULT_FPS,
+            };
+          },
+          {frame: '', timestamp: 0, duration: 0, next: true}
+        ),
+        filter(({next}) => {
+          return next;
         }),
-        map(buffer => {
-          void this.#writeFrame(buffer);
-          return [buffer, performance.now()] as const;
+        map(({frame, duration}) => {
+          return [frame, duration] as const;
         }),
-        takeUntil(fromEvent(this.#controller.signal, 'abort'))
+        takeUntil(fromEvent(this.#controller.signal, 'abort')),
+        map(frame => {
+          void this.#writeFrame(frame);
+          return [frame, performance.now()] as const;
+        })
       ),
-      {defaultValue: [Buffer.from([]), performance.now()] as const}
-    );
-  }
-
-  #getFormatArgs(format: 'webm' | 'gif') {
-    switch (format) {
-      case 'webm':
-        return [
-          // Sets the codec to use.
-          ['-c:v', 'vp9'],
-          // Sets the format
-          ['-f', 'webm'],
-          // Sets the quality. Lower the better.
-          ['-crf', `${CRF_VALUE}`],
-          // Sets the quality and how efficient the compression will be.
-          ['-deadline', 'realtime', '-cpu-used', `${8}`],
-        ].flat();
-      case 'gif':
-        return [
-          // Sets the frame rate and uses a custom palette generated from the
-          // input.
-          [
-            '-vf',
-            'fps=5,split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse',
-          ],
-          // Sets the format
-          ['-f', 'gif'],
-        ].flat();
-    }
+      {defaultValue: ['', performance.now()] as const}
+    ) as Promise<readonly [string, number]>;
   }
 
   @guarded()
-  async #writeFrame(buffer: Buffer) {
-    const error = await new Promise<Error | null | undefined>(resolve => {
-      this.#process.stdin.write(buffer, resolve);
-    });
-    if (error) {
-      console.log(`ffmpeg failed to write: ${error.message}.`);
-    }
+  async #writeFrame(frame: readonly [frame: string, duration: number]) {
+    await (
+      await this.#renderer
+    ).evaluate((renderer, frame) => {
+      renderer.queue(frame);
+    }, frame);
   }
 
   /**
@@ -245,21 +389,15 @@ export class ScreenRecorder extends PassThrough {
 
     // Repeat the last frame for the remaining frames.
     const [buffer, timestamp] = await this.#lastFrame;
-    await Promise.all(
-      Array<Buffer>(
-        Math.max(
-          1,
-          Math.round((DEFAULT_FPS * (performance.now() - timestamp)) / 1000)
-        )
-      )
-        .fill(buffer)
-        .map(this.#writeFrame.bind(this))
-    );
+    await this.#writeFrame([buffer, (performance.now() - timestamp) / 1000]);
 
-    // Close stdin to notify FFmpeg we are done.
-    this.#process.stdin.end();
+    await (
+      await this.#renderer
+    ).evaluate(renderer => {
+      return renderer.flush();
+    });
     await new Promise(resolve => {
-      this.#process.once('close', resolve);
+      return this.end(resolve);
     });
   }
 
