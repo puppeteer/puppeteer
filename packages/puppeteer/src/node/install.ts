@@ -54,18 +54,35 @@ export async function downloadBrowser(): Promise<void> {
   const cacheDir = configuration.downloadPath ?? configuration.cacheDirectory!;
 
   try {
-    const result = await install({
-      browser,
-      cacheDir,
-      platform,
-      buildId,
-      downloadProgressCallback: makeProgressCallback(browser, buildId),
-      baseUrl: downloadBaseUrl,
-    });
+    {
+      const result = await install({
+        browser,
+        cacheDir,
+        platform,
+        buildId,
+        downloadProgressCallback: makeProgressCallback(browser, buildId),
+        baseUrl: downloadBaseUrl,
+      });
 
-    logPolitely(
-      `${supportedProducts[product]} (${result.buildId}) downloaded to ${result.path}`
-    );
+      logPolitely(
+        `${supportedProducts[product]} (${result.buildId}) downloaded to ${result.path}`
+      );
+    }
+
+    if (browser === Browser.CHROME) {
+      const result = await install({
+        browser: Browser.CHROMEHEADLESSSHELL,
+        cacheDir,
+        platform,
+        buildId,
+        downloadProgressCallback: makeProgressCallback(browser, buildId),
+        baseUrl: downloadBaseUrl,
+      });
+
+      logPolitely(
+        `${Browser.CHROMEHEADLESSSHELL} (${result.buildId}) downloaded to ${result.path}`
+      );
+    }
   } catch (error) {
     console.error(
       `ERROR: Failed to set up ${supportedProducts[product]} r${buildId}! Set "PUPPETEER_SKIP_DOWNLOAD" env variable to skip download.`
