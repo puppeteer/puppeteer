@@ -1260,6 +1260,12 @@
     "expectations": ["FAIL", "SKIP"]
   },
   {
+    "testIdPattern": "[touchscreen.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[tracing.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
@@ -3558,43 +3564,13 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[target.spec] Target should report when a target url changes",
+    "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[touchscreen.spec] Touchscreen should report touches",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
+    "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[touchscreen.spec] Touchscreen should report touchMove",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[touchscreen.spec] Touchscreen should report touchMove",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[touchscreen.spec] Touchscreen should tap the button",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[touchscreen.spec] Touchscreen should tap the button",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[tracing.spec] Tracing should throw if tracing on two pages",
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should survive cross-process navigation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
@@ -3604,12 +3580,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should survive cross-process navigation",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should survive navigations",
@@ -3620,14 +3590,20 @@
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work when resolved right before execution context disposal",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["SKIP"]
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work when resolved right before execution context disposal",
     "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work with strict CSP policy",
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work with strict CSP policy",
@@ -3636,7 +3612,7 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work with strict CSP policy",
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector Page.waitForSelector is shortcut for main frame",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
@@ -3648,7 +3624,7 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector Page.waitForSelector is shortcut for main frame",
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should run in specified frame",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
@@ -3658,42 +3634,36 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should run in specified frame",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should survive cross-process navigation",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should survive cross-process navigation",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should survive cross-process navigation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL", "TIMEOUT"]
+    "expectations": ["TIMEOUT"]
   },
   {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should throw when frame is detached",
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should survive cross-process navigation",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should survive cross-process navigation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should throw when frame is detached",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should throw when frame is detached",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should work with removed MutationObserver",
@@ -3712,12 +3682,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForXPath should throw when frame is detached",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS", "TIMEOUT"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForXPath should throw when frame is detached",

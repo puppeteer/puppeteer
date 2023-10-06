@@ -640,15 +640,6 @@ export class BidiTouchscreen extends Touchscreen {
     this.#context = context;
   }
 
-  override async tap(
-    x: number,
-    y: number,
-    options: BidiTouchMoveOptions = {}
-  ): Promise<void> {
-    await this.touchStart(x, y, options);
-    await this.touchEnd();
-  }
-
   override async touchStart(
     x: number,
     y: number,

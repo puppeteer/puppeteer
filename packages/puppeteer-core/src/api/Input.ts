@@ -510,7 +510,7 @@ export class Mouse {
  * The Touchscreen class exposes touchscreen events.
  * @public
  */
-export class Touchscreen {
+export abstract class Touchscreen {
   /**
    * @internal
    */
@@ -521,9 +521,9 @@ export class Touchscreen {
    * @param x - Horizontal position of the tap.
    * @param y - Vertical position of the tap.
    */
-  async tap(x: number, y: number): Promise<void>;
-  async tap(): Promise<void> {
-    throw new Error('Not implemented');
+  async tap(x: number, y: number): Promise<void> {
+    await this.touchStart(x, y);
+    await this.touchEnd();
   }
 
   /**
@@ -531,10 +531,7 @@ export class Touchscreen {
    * @param x - Horizontal position of the tap.
    * @param y - Vertical position of the tap.
    */
-  async touchStart(x: number, y: number): Promise<void>;
-  async touchStart(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract touchStart(x: number, y: number): Promise<void>;
 
   /**
    * Dispatches a `touchMove` event.
@@ -548,16 +545,10 @@ export class Touchscreen {
    * {@link https://developer.chrome.com/blog/a-more-compatible-smoother-touch/#chromes-new-model-the-throttled-async-touchmove-model | throttles}
    * touch move events.
    */
-  async touchMove(x: number, y: number): Promise<void>;
-  async touchMove(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract touchMove(x: number, y: number): Promise<void>;
 
   /**
    * Dispatches a `touchend` event.
    */
-  async touchEnd(): Promise<void>;
-  async touchEnd(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract touchEnd(): Promise<void>;
 }

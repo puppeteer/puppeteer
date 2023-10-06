@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Touch test</title>
+  </head>
+
+  <body>
+    <style>
+      button {
+        box-sizing: border-box;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 10px;
+        height: 10px;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+    <button>Click target</button>
+    <script>
+      var allEvents = [];
+      globalThis.addEventListener(
+        "touchstart",
+        (event) => {
+          allEvents.push({
+            type: "touchstart",
+            touches: [...event.changedTouches].map((touch) => [
+              touch.clientX,
+              touch.clientY,
+              touch.radiusX,
+              touch.radiusY,
+            ]),
+          });
+        },
+        true,
+      );
+      globalThis.addEventListener(
+        "touchmove",
+        (event) => {
+          allEvents.push({
+            type: "touchmove",
+            touches: [...event.changedTouches].map((touch) => [
+              touch.clientX,
+              touch.clientY,
+              touch.radiusX,
+              touch.radiusY,
+            ]),
+          });
+        },
+        true,
+      );
+      globalThis.addEventListener(
+        "touchend",
+        (event) => {
+          allEvents.push({
+            type: "touchend",
+            touches: [...event.changedTouches].map((touch) => [
+              touch.clientX,
+              touch.clientY,
+              touch.radiusX,
+              touch.radiusY,
+            ])
+          });
+        },
+        true,
+      );
+      globalThis.addEventListener(
+        "pointerdown",
+        (event) => {
+          allEvents.push({
+            type: "pointerdown",
+            x: event.x,
+            y: event.y,
+            width: event.width,
+            height: event.height,
+          });
+        },
+        true,
+      );
+      globalThis.addEventListener(
+        "pointermove",
+        (event) => {
+          allEvents.push({
+            type: "pointermove",
+            x: event.x,
+            y: event.y,
+            width: event.width,
+            height: event.height,
+          });
+        },
+        true,
+      );
+      globalThis.addEventListener(
+        "pointerup",
+        (event) => {
+          allEvents.push({
+            type: "pointerup",
+            x: event.x,
+            y: event.y,
+            width: event.width,
+            height: event.height,
+          });
+        },
+        true,
+      );
+      globalThis.addEventListener(
+        "click",
+        (event) => {
+          allEvents.push({
+            type: "click",
+            x: event.x,
+            y: event.y,
+            width: event.width,
+            height: event.height,
+          });
+        },
+        true,
+      );
+    </script>
+  </body>
+</html>

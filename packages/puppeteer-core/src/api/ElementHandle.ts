@@ -974,8 +974,7 @@ export abstract class ElementHandle<
   async tap(this: ElementHandle<Element>): Promise<void> {
     await this.scrollIntoViewIfNeeded();
     const {x, y} = await this.clickablePoint();
-    await this.frame.page().touchscreen.touchStart(x, y);
-    await this.frame.page().touchscreen.touchEnd();
+    await this.frame.page().touchscreen.tap(x, y);
   }
 
   @throwIfDisposed()
@@ -1326,7 +1325,7 @@ export abstract class ElementHandle<
 
   /**
    * This method scrolls element into view if needed, and then uses
-   * {@link Page.(screenshot:3) } to take a screenshot of the element.
+   * {@link Page.(screenshot:2) } to take a screenshot of the element.
    * If the element is detached from DOM, the method throws an error.
    */
   @throwIfDisposed()
