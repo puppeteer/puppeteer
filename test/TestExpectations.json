@@ -324,6 +324,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[screencast.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[screenshot.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1110,6 +1116,18 @@
     "expectations": ["FAIL", "PASS", "TIMEOUT"]
   },
   {
+    "testIdPattern": "[prerender.spec] Prerender can screencast",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[prerender.spec] Prerender can screencast",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["new-headless"],
+    "expectations": ["FAIL", "PASS"]
+  },
+  {
     "testIdPattern": "[proxy.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -1186,6 +1204,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL", "SKIP"]
+  },
+  {
+    "testIdPattern": "[screencast.spec] Screencasts Page.screencast should validate options",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should clip clip bigger than the viewport without \"captureBeyondViewport\"",
@@ -3298,6 +3322,12 @@
     "platforms": ["linux"],
     "parameters": ["firefox", "headful"],
     "expectations": ["PASS", "TIMEOUT"]
+  },
+  {
+    "testIdPattern": "[prerender.spec] Prerender can screencast",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["TIMEOUT"]
   },
   {
     "testIdPattern": "[proxy.spec] request proxy in incognito browser context should proxy requests when configured at browser level",

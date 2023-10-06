@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import {statSync} from 'fs';
+
 import expect from 'expect';
 
 import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
+import {getUniqueVideoFilePlaceholder} from '../utils.js';
 
 describe('Prerender', function () {
   setupTestBrowserHooks();
@@ -88,6 +91,33 @@ describe('Prerender', function () {
       ).toBe('target');
       expect(mainFrame).toBe(page.mainFrame());
     });
+  });
+
+  it('can screencast', async () => {
+    using file = getUniqueVideoFilePlaceholder();
+
+    const {page, server} = await getTestState();
+
+    const recorder = await page.screencast({
+      path: file.filename,
+      scale: 0.5,
+      crop: {width: 100, height: 100, x: 0, y: 0},
+      speed: 0.5,
+    });
+
+    await page.goto(server.PREFIX + '/prerender/index.html');
+
+    using button = await page.waitForSelector('button');
+    await button?.click();
+
+    using link = await page.locator('a').waitHandle();
+    await Promise.all([page.waitForNavigation(), link.click()]);
+    using input = await page.locator('input').waitHandle();
+    await input.type('ab', {delay: 100});
+
+    await recorder.stop();
+
+    expect(statSync(file.filename).size).toBeGreaterThan(0);
   });
 
   describe('with network requests', () => {
