@@ -2317,12 +2317,15 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * Captures a screencast of this {@link Page | page}.
    *
-   * @remarks All recordings will be [WebM](https://www.webmproject.org/) format using
-   * the [VP9](https://www.webmproject.org/vp9/) video codec. The FPS is 30.
+   * @remarks
    *
-   * You must have [ffmpeg](https://ffmpeg.org/) installed on your system.
+   * All recordings will be {@link https://www.webmproject.org/ | WebM} format using
+   * the {@link https://www.webmproject.org/vp9/ | VP9} video codec. The FPS is 30.
    *
-   * @example Recording a {@link Page | page}:
+   * You must have {@link https://ffmpeg.org/ | ffmpeg} installed on your system.
+   *
+   * @example
+   * Recording a {@link Page | page}:
    *
    * ```
    * import puppeteer from 'puppeteer';
