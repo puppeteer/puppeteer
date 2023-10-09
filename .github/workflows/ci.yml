@@ -150,7 +150,6 @@ jobs:
           - chrome-headful
           - chrome-new-headless
           - chrome-bidi
-          - chrome-new-headless-tab
         shard:
           - 1/2
           - 2/2
@@ -159,10 +158,6 @@ jobs:
             suite: chrome-bidi
           - os: macos-latest
             suite: chrome-headful
-          - os: windows-latest
-            suite: chrome-new-headless-tab
-          - os: macos-latest
-            suite: chrome-new-headless-tab
     steps:
       - name: Check out repository
         uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
