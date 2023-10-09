@@ -25,7 +25,6 @@ import {
 
 import type {Browser} from '../api/Browser.js';
 import {debugError} from '../common/util.js';
-import {USE_TAB_TARGET} from '../environment.js';
 import {assert} from '../util/assert.js';
 
 import type {
@@ -174,10 +173,6 @@ export class ChromeLauncher extends ProductLauncher {
       'MediaRouter',
       'OptimizationHints',
     ];
-
-    if (!USE_TAB_TARGET) {
-      disabledFeatures.push('Prerender2');
-    }
 
     const chromeArguments = [
       '--allow-pre-commit-input',

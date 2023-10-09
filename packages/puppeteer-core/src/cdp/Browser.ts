@@ -33,7 +33,6 @@ import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {Viewport} from '../common/Viewport.js';
-import {USE_TAB_TARGET} from '../environment.js';
 import {assert} from '../util/assert.js';
 
 import {ChromeTargetManager} from './ChromeTargetManager.js';
@@ -63,8 +62,7 @@ export class CdpBrowser extends BrowserBase {
     closeCallback?: BrowserCloseCallback,
     targetFilterCallback?: TargetFilterCallback,
     isPageTargetCallback?: IsPageTargetCallback,
-    waitForInitiallyDiscoveredTargets = true,
-    useTabTarget = USE_TAB_TARGET
+    waitForInitiallyDiscoveredTargets = true
   ): Promise<CdpBrowser> {
     const browser = new CdpBrowser(
       product,
@@ -76,8 +74,7 @@ export class CdpBrowser extends BrowserBase {
       closeCallback,
       targetFilterCallback,
       isPageTargetCallback,
-      waitForInitiallyDiscoveredTargets,
-      useTabTarget
+      waitForInitiallyDiscoveredTargets
     );
     await browser._attach();
     return browser;
@@ -107,8 +104,7 @@ export class CdpBrowser extends BrowserBase {
     closeCallback?: BrowserCloseCallback,
     targetFilterCallback?: TargetFilterCallback,
     isPageTargetCallback?: IsPageTargetCallback,
-    waitForInitiallyDiscoveredTargets = true,
-    useTabTarget = USE_TAB_TARGET
+    waitForInitiallyDiscoveredTargets = true
   ) {
     super();
     product = product || 'chrome';
@@ -134,8 +130,7 @@ export class CdpBrowser extends BrowserBase {
         connection,
         this.#createTarget,
         this.#targetFilterCallback,
-        waitForInitiallyDiscoveredTargets,
-        useTabTarget
+        waitForInitiallyDiscoveredTargets
       );
     }
     this.#defaultContext = new CdpBrowserContext(this.#connection, this);

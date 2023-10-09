@@ -99,21 +99,16 @@ export class ChromeTargetManager
   #waitForInitiallyDiscoveredTargets = true;
 
   // TODO: remove the flag once the testing/rollout is done.
-  #tabMode: boolean;
   #discoveryFilter: Protocol.Target.FilterEntry[];
 
   constructor(
     connection: Connection,
     targetFactory: TargetFactory,
     targetFilterCallback?: TargetFilterCallback,
-    waitForInitiallyDiscoveredTargets = true,
-    useTabTarget = false
+    waitForInitiallyDiscoveredTargets = true
   ) {
     super();
-    this.#tabMode = useTabTarget;
-    this.#discoveryFilter = this.#tabMode
-      ? [{}]
-      : [{type: 'tab', exclude: true}, {}];
+    this.#discoveryFilter = [{}];
     this.#connection = connection;
     this.#targetFilterCallback = targetFilterCallback;
     this.#targetFactory = targetFactory;
@@ -166,15 +161,13 @@ export class ChromeTargetManager
       waitForDebuggerOnStart: true,
       flatten: true,
       autoAttach: true,
-      filter: this.#tabMode
-        ? [
-            {
-              type: 'page',
-              exclude: true,
-            },
-            ...this.#discoveryFilter,
-          ]
-        : this.#discoveryFilter,
+      filter: [
+        {
+          type: 'page',
+          exclude: true,
+        },
+        ...this.#discoveryFilter,
+      ],
     });
     this.#finishInitializationIfReady();
     await this.#initializeDeferred.valueOrThrow();

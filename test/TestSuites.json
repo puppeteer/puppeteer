@@ -19,12 +19,6 @@
       "expectedLineCoverage": 93
     },
     {
-      "id": "chrome-new-headless-tab",
-      "platforms": ["linux"],
-      "parameters": ["chrome", "new-headless", "cdp", "tabTarget"],
-      "expectedLineCoverage": 93
-    },
-    {
       "id": "firefox-headless",
       "platforms": ["linux", "darwin"],
       "parameters": ["firefox", "headless", "cdp"],
@@ -69,9 +63,6 @@
     "webDriverBiDi": {
       "PUPPETEER_PROTOCOL": "webDriverBiDi"
     },
-    "cdp": {},
-    "tabTarget": {
-      "PUPPETEER_INTERNAL_TAB_TARGET": "true"
-    }
+    "cdp": {}
   }
 }
