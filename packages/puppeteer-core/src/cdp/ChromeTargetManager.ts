@@ -98,8 +98,7 @@ export class ChromeTargetManager
   #targetsIdsForInit = new Set<string>();
   #waitForInitiallyDiscoveredTargets = true;
 
-  // TODO: remove the flag once the testing/rollout is done.
-  #discoveryFilter: Protocol.Target.FilterEntry[];
+  #discoveryFilter: Protocol.Target.FilterEntry[] = [{}];
 
   constructor(
     connection: Connection,
@@ -108,7 +107,6 @@ export class ChromeTargetManager
     waitForInitiallyDiscoveredTargets = true
   ) {
     super();
-    this.#discoveryFilter = [{}];
     this.#connection = connection;
     this.#targetFilterCallback = targetFilterCallback;
     this.#targetFactory = targetFactory;
