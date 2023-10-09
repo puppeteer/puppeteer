@@ -127,14 +127,6 @@ export class ChromeTargetManager
       this.#onSessionDetached
     );
     this.#setupAttachmentListeners(this.#connection);
-
-    this.#connection
-      .send('Target.setDiscoverTargets', {
-        discover: true,
-        filter: this.#discoveryFilter,
-      })
-      .then(this.#storeExistingTargetsForInit)
-      .catch(debugError);
   }
 
   #storeExistingTargetsForInit = () => {
@@ -163,6 +155,13 @@ export class ChromeTargetManager
   };
 
   async initialize(): Promise<void> {
+    await this.#connection.send('Target.setDiscoverTargets', {
+      discover: true,
+      filter: this.#discoveryFilter,
+    });
+
+    this.#storeExistingTargetsForInit();
+
     await this.#connection.send('Target.setAutoAttach', {
       waitForDebuggerOnStart: true,
       flatten: true,
