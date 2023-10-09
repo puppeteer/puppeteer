@@ -51,6 +51,19 @@ function spliceIntoSection(
   return lines.join('\n');
 }
 
+/**
+ * This logic should match docusaurus.config.ts.
+ */
+function getUrl(version: string): string {
+  if (semver.gte(version, '19.3.0')) {
+    return `https://github.com/puppeteer/puppeteer/blob/puppeteer-${version}/docs/api/index.md`;
+  } else if (semver.gte(version, '15.3.0')) {
+    return `https://github.com/puppeteer/puppeteer/blob/${version}/docs/api/index.md`;
+  } else {
+    return `https://github.com/puppeteer/puppeteer/blob/${version}/docs/api.md`;
+  }
+}
+
 (async () => {
   const copyMain = job('Copy main page', async ({inputs, outputs}) => {
     await copyFile(inputs[0]!, outputs[0]!);
@@ -66,7 +79,6 @@ function spliceIntoSection(
       let content = await readFile(inputs[2]!, {encoding: 'utf8'});
       const versionModulePath = join('..', inputs[0]!);
       const {versionsPerRelease} = await import(versionModulePath);
-      const versionsArchived = JSON.parse(await readFile(inputs[1]!, 'utf8'));
 
       // Generate versions
       const buffer: string[] = [];
@@ -74,31 +86,17 @@ function spliceIntoSection(
         if (puppeteerVersion === 'NEXT') {
           continue;
         }
-        if (versionsArchived.includes(puppeteerVersion.substring(1))) {
-          if (semver.gte(puppeteerVersion, '20.0.0')) {
-            buffer.push(
-              `  * [Chrome for Testing](https://goo.gle/chrome-for-testing) ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://pptr.dev/${puppeteerVersion.slice(
-                1
-              )})`
-            );
-          } else {
-            buffer.push(
-              `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://github.com/puppeteer/puppeteer/blob/${puppeteerVersion}/docs/api/index.md)`
-            );
-          }
-        } else if (semver.lt(puppeteerVersion, '15.0.0')) {
+        if (semver.gte(puppeteerVersion, '20.0.0')) {
           buffer.push(
-            `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://github.com/puppeteer/puppeteer/blob/${puppeteerVersion}/docs/api.md)`
-          );
-        } else if (semver.gte(puppeteerVersion, '15.3.0')) {
-          buffer.push(
-            `  * [Chrome for Testing](https://goo.gle/chrome-for-testing) ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://pptr.dev/${puppeteerVersion.slice(
-              1
+            `  * [Chrome for Testing](https://goo.gle/chrome-for-testing) ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](${getUrl(
+              puppeteerVersion
             )})`
           );
         } else {
           buffer.push(
-            `  * Chromium ${chromiumVersion} - Puppeteer ${puppeteerVersion}`
+            `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](${getUrl(
+              puppeteerVersion
+            )})`
           );
         }
       }

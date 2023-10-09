@@ -21,11 +21,23 @@ const assert = require('assert');
 
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const lightCodeTheme = require('prism-react-renderer/themes/github');
+const semver = require('semver');
 
 const archivedVersions = require('./versionsArchived.json');
 
 const DOC_ROUTE_BASE_PATH = '/';
 const DOC_PATH = '../docs';
+
+/**
+ * This logic should match generate_docs.ts.
+ */
+function getUrl(version) {
+  if (semver.gte(version, '19.3.0')) {
+    return `https://github.com/puppeteer/puppeteer/blob/puppeteer-${version}/docs/api/index.md`;
+  } else {
+    return `https://github.com/puppeteer/puppeteer/blob/${version}/docs/api/index.md`;
+  }
+}
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -283,18 +295,9 @@ const config = {
                   value: '<b>Archived versions</b>',
                 },
                 ...archivedVersions.map(version => {
-                  const parts = version.split('.').map(item => {
-                    return Number(item);
-                  });
-                  if (parts[0] <= 19 && parts[1] <= 2 && parts[2] <= 2) {
-                    return {
-                      label: version,
-                      href: `https://github.com/puppeteer/puppeteer/blob/v${version}/docs/api/index.md`,
-                    };
-                  }
                   return {
                     label: version,
-                    href: `https://github.com/puppeteer/puppeteer/blob/puppeteer-v${version}/docs/api/index.md`,
+                    href: getUrl(`v${version}`),
                   };
                 }),
               ],
