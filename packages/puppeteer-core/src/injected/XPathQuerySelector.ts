@@ -19,7 +19,8 @@
  */
 export const xpathQuerySelectorAll = function* (
   root: Node,
-  selector: string
+  selector: string,
+  maxResults = -1
 ): Iterable<Node> {
   const doc = root.ownerDocument || document;
   const iterator = doc.evaluate(
@@ -28,8 +29,21 @@ export const xpathQuerySelectorAll = function* (
     null,
     XPathResult.ORDERED_NODE_ITERATOR_TYPE
   );
+  const items = [];
   let item;
+
+  // Read all results upfront to avoid
+  // https://stackoverflow.com/questions/48235278/xpath-error-the-document-has-mutated-since-the-result-was-returned.
   while ((item = iterator.iterateNext())) {
-    yield item;
+    items.push(item);
+    if (maxResults && items.length === maxResults) {
+      break;
+    }
+  }
+
+  for (let i = 0; i < items.length; i++) {
+    item = items[i];
+    yield item as Node;
+    delete items[i];
   }
 };
