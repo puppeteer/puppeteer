@@ -98,6 +98,8 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     DeviceRequestPromptManager
   >();
 
+  #frameTreeHandled?: Deferred<void>;
+
   get timeoutSettings(): TimeoutSettings {
     return this.#timeoutSettings;
   }
@@ -193,52 +195,69 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
   }
 
   private setupEventListeners(session: CDPSession) {
-    session.on('Page.frameAttached', event => {
+    session.on('Page.frameAttached', async event => {
+      await this.#frameTreeHandled?.valueOrThrow();
       this.#onFrameAttached(session, event.frameId, event.parentFrameId);
     });
-    session.on('Page.frameNavigated', event => {
+    session.on('Page.frameNavigated', async event => {
       this.#frameNavigatedReceived.add(event.frame.id);
+      await this.#frameTreeHandled?.valueOrThrow();
       void this.#onFrameNavigated(event.frame, event.type);
     });
-    session.on('Page.navigatedWithinDocument', event => {
+    session.on('Page.navigatedWithinDocument', async event => {
+      await this.#frameTreeHandled?.valueOrThrow();
       this.#onFrameNavigatedWithinDocument(event.frameId, event.url);
     });
     session.on(
       'Page.frameDetached',
-      (event: Protocol.Page.FrameDetachedEvent) => {
+      async (event: Protocol.Page.FrameDetachedEvent) => {
+        await this.#frameTreeHandled?.valueOrThrow();
         this.#onFrameDetached(
           event.frameId,
           event.reason as Protocol.Page.FrameDetachedEventReason
         );
       }
     );
-    session.on('Page.frameStartedLoading', event => {
+    session.on('Page.frameStartedLoading', async event => {
+      await this.#frameTreeHandled?.valueOrThrow();
       this.#onFrameStartedLoading(event.frameId);
     });
-    session.on('Page.frameStoppedLoading', event => {
+    session.on('Page.frameStoppedLoading', async event => {
+      await this.#frameTreeHandled?.valueOrThrow();
       this.#onFrameStoppedLoading(event.frameId);
     });
-    session.on('Runtime.executionContextCreated', event => {
+    session.on('Runtime.executionContextCreated', async event => {
+      await this.#frameTreeHandled?.valueOrThrow();
       this.#onExecutionContextCreated(event.context, session);
     });
-    session.on('Runtime.executionContextDestroyed', event => {
+    session.on('Runtime.executionContextDestroyed', async event => {
+      await this.#frameTreeHandled?.valueOrThrow();
       this.#onExecutionContextDestroyed(event.executionContextId, session);
     });
-    session.on('Runtime.executionContextsCleared', () => {
+    session.on('Runtime.executionContextsCleared', async () => {
+      await this.#frameTreeHandled?.valueOrThrow();
       this.#onExecutionContextsCleared(session);
     });
-    session.on('Page.lifecycleEvent', event => {
+    session.on('Page.lifecycleEvent', async event => {
+      await this.#frameTreeHandled?.valueOrThrow();
       this.#onLifecycleEvent(event);
     });
   }
 
   async initialize(client: CDPSession): Promise<void> {
     try {
+      this.#frameTreeHandled?.resolve();
+      this.#frameTreeHandled = Deferred.create();
+      // We need to schedule all these commands while the target is paused,
+      // therefore, it needs to happen synchroniously. At the same time we
+      // should not start processing execution context and frame events before
+      // we received the initial information about the frame tree.
       await Promise.all([
         this.#networkManager.addClient(client),
         client.send('Page.enable'),
         client.send('Page.getFrameTree').then(({frameTree}) => {
           this.#handleFrameTree(client, frameTree);
+          this.#frameTreeHandled?.resolve();
         }),
         client.send('Page.setLifecycleEventsEnabled', {enabled: true}),
         client.send('Runtime.enable').then(() => {
@@ -246,6 +265,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
         }),
       ]);
     } catch (error) {
+      this.#frameTreeHandled?.resolve();
       // The target might have been closed before the initialization finished.
       if (isErrorLike(error) && isTargetClosedError(error)) {
         return;
