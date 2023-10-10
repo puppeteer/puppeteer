@@ -80,7 +80,7 @@ class CdpConnectionAdapter {
   getCdpClient(id: string) {
     const session = this.#cdp.session(id);
     if (!session) {
-      throw new Error('Unknown CDP session with id' + id);
+      throw new Error(`Unknown CDP session with id ${id}`);
     }
     if (!this.#adapters.has(session)) {
       const adapter = new CDPClientAdapter(session, id, this.#browser);

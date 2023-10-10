@@ -133,7 +133,7 @@ export class CdpPage extends Page {
   #viewport: Viewport | null;
   #workers = new Map<string, WebWorker>();
   #fileChooserDeferreds = new Set<Deferred<FileChooser>>();
-  #sessionCloseDeferred = Deferred.create<TargetCloseError>();
+  #sessionCloseDeferred = Deferred.create<never, TargetCloseError>();
   #serviceWorkerBypassed = false;
   #userDragInterceptionEnabled = false;
 
@@ -195,7 +195,7 @@ export class CdpPage extends Page {
     [
       CDPSessionEvent.Disconnected,
       () => {
-        this.#sessionCloseDeferred.resolve(
+        this.#sessionCloseDeferred.reject(
           new TargetCloseError('Target closed')
         );
       },
