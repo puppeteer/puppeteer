@@ -170,7 +170,6 @@
     "prettier": "3.0.3",
     "puppeteer": "file:packages/puppeteer",
     "rollup": "3.29.2",
-    "rollup-plugin-polyfill-node": "0.12.0",
     "semver": "7.5.4",
     "sinon": "16.1.0",
     "source-map-support": "0.5.21",
