@@ -92,7 +92,7 @@ export class BidiPage extends Page {
   #frameTree = new FrameTree<BidiFrame>();
   #networkManager: BidiNetworkManager;
   #viewport: Viewport | null = null;
-  #closedDeferred = Deferred.create<TargetCloseError>();
+  #closedDeferred = Deferred.create<never, TargetCloseError>();
   #subscribedEvents = new Map<Bidi.Event['method'], Handler<any>>([
     ['log.entryAdded', this.#onLogEntryAdded.bind(this)],
     ['browsingContext.load', this.#onFrameLoaded.bind(this)],
@@ -474,7 +474,7 @@ export class BidiPage extends Page {
       return;
     }
 
-    this.#closedDeferred.resolve(new TargetCloseError('Page closed!'));
+    this.#closedDeferred.reject(new TargetCloseError('Page closed!'));
     this.#networkManager.dispose();
 
     await this.#connection.send('browsingContext.close', {
