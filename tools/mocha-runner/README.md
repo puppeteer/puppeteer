@@ -71,3 +71,33 @@ Examples:
 Currently, expectations are updated manually. The test runner outputs the
 suggested changes to the expectation file if the test run does not match
 expectations.
+
+## Debugging flaky test
+
+### Utility functions:
+
+| Utility                  | Params                          | Description                                                                       |
+| ------------------------ | ------------------------------- | --------------------------------------------------------------------------------- |
+| `describe.withDebugLogs` | `(title, <DescribeBody>)`       | Capture and print debug logs for each test that failed                            |
+| `it.deflake`             | `(repeat, title, <itFunction>)` | Reruns the test N number of times and print the debug logs if for the failed runs |
+| `it.deflakeOnly`         | `(repeat, title, <itFunction>)` | Same as `it.deflake` but runs only this specific test                             |
+
+### With Environment variable
+
+Run the test with the following environment variable to wrap it around `describe.withDebugLogs`. Example:
+
+```bash
+PUPPETEER_DEFLAKE_TESTS="[navigation.spec] navigation Page.goto should navigate to empty page with networkidle0" npm run test:chrome:headless
+```
+
+It also works with [patterns](#1--this-is-my-header) just like `TestExpectations.json`
+
+```bash
+PUPPETEER_DEFLAKE_TESTS="[navigation.spec] *" npm run test:chrome:headless
+```
+
+By default the test is rerun 100 times, but you can control this as well:
+
+```bash
+PUPPETEER_DEFLAKE_RETRIES=1000 PUPPETEER_DEFLAKE_TESTS="[navigation.spec] *" npm run test:chrome:headless
+```

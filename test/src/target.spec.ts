@@ -246,6 +246,7 @@ describe('Target', function () {
     expect(targetChanged).toBe(false);
     context.off('targetchanged', listener);
   });
+
   it('should not crash while redirecting if original request was missed', async () => {
     const {page, server, context} = await getTestState();
 
@@ -268,11 +269,12 @@ describe('Target', function () {
       {timeout: 3000}
     );
     const newPage = (await target.page())!;
+    const loadEvent = waitEvent(newPage, 'load');
     // Issue a redirect.
     serverResponse.writeHead(302, {location: '/injectedstyle.css'});
     serverResponse.end();
     // Wait for the new page to load.
-    await waitEvent(newPage, 'load');
+    await loadEvent;
     // Cleanup.
     await newPage.close();
   });

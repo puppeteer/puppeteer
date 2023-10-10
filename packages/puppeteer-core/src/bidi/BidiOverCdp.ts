@@ -20,10 +20,15 @@ import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js'
 
 import type {CDPEvents, CDPSession} from '../api/CDPSession.js';
 import type {Connection as CdpConnection} from '../cdp/Connection.js';
+import {debug} from '../common/Debug.js';
 import {TargetCloseError} from '../common/Errors.js';
 import type {Handler} from '../common/EventEmitter.js';
 
 import {BidiConnection} from './Connection.js';
+
+const bidiServerLogger = (prefix: string, ...args: unknown[]): void => {
+  debug(`bidi:${prefix}`)(args);
+};
 
 /**
  * @internal
@@ -54,7 +59,9 @@ export async function connectBidiOverCdp(
   const bidiServer = await BidiMapper.BidiServer.createAndStart(
     transportBiDi,
     cdpConnectionAdapter,
-    ''
+    '',
+    undefined,
+    bidiServerLogger
   );
   return pptrBiDiConnection;
 }

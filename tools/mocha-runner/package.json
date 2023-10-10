@@ -29,5 +29,8 @@
         "build"
       ]
     }
+  },
+  "dependencies": {
+    "puppeteer-core": "file:../../packages/puppeteer-core"
   }
 }

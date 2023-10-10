@@ -20,15 +20,11 @@ import path from 'path';
 import {TestServer} from '@pptr/testserver';
 import type {Protocol} from 'devtools-protocol';
 import expect from 'expect';
-import type * as Mocha from 'mocha';
+import type * as MochaBase from 'mocha';
 import puppeteer from 'puppeteer/lib/cjs/puppeteer/puppeteer.js';
 import type {Browser} from 'puppeteer-core/internal/api/Browser.js';
 import type {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
-import {
-  setLogCapture,
-  getCapturedLogs,
-} from 'puppeteer-core/internal/common/Debug.js';
 import type {
   PuppeteerLaunchOptions,
   PuppeteerNode,
@@ -40,10 +36,44 @@ import sinon from 'sinon';
 
 import {extendExpectWithToBeGolden} from './utils.js';
 
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Mocha {
+    export interface SuiteFunction {
+      /**
+       * Use it if you want to capture debug logs for a specitic test suite in CI.
+       * This describe function enables capturing of debug logs and would print them
+       * only if a test fails to reduce the amount of output.
+       */
+      withDebugLogs: (
+        description: string,
+        body: (this: MochaBase.Suite) => void
+      ) => void;
+    }
+    export interface TestFunction {
+      /*
+       * Use to rerun the test and capture logs for the failed attempts
+       * that way we don't push all the logs making it easier to read.
+       */
+      deflake: (
+        repeats: number,
+        title: string,
+        fn: MochaBase.AsyncFunc
+      ) => void;
+      /*
+       * Use to rerun a single test and capture logs for the failed attempts
+       */
+      deflakeOnly: (
+        repeats: number,
+        title: string,
+        fn: MochaBase.AsyncFunc
+      ) => void;
+    }
+  }
+}
+
 const product =
   process.env['PRODUCT'] || process.env['PUPPETEER_PRODUCT'] || 'chrome';
-
-const alternativeInstall = process.env['PUPPETEER_ALT_INSTALL'] || false;
 
 const headless = (process.env['HEADLESS'] || 'true').trim().toLowerCase() as
   | 'true'
@@ -95,7 +125,6 @@ if (defaultBrowserOptions.executablePath) {
 
 const processVariables: {
   product: string;
-  alternativeInstall: string | boolean;
   headless: 'true' | 'false' | 'new';
   isHeadless: boolean;
   isFirefox: boolean;
@@ -104,7 +133,6 @@ const processVariables: {
   defaultBrowserOptions: PuppeteerLaunchOptions;
 } = {
   product,
-  alternativeInstall,
   headless,
   isHeadless,
   isFirefox,
@@ -216,17 +244,6 @@ export interface PuppeteerTestState {
   puppeteerPath: string;
 }
 const state: Partial<PuppeteerTestState> = {};
-
-export const itOnlyRegularInstall = (
-  description: string,
-  body: Mocha.AsyncFunc
-): Mocha.Test => {
-  if (processVariables.alternativeInstall || process.env['BINARY']) {
-    return it.skip(description, body);
-  } else {
-    return it(description, body);
-  }
-};
 
 if (
   process.env['MOCHA_WORKER_ID'] === undefined ||
@@ -374,34 +391,6 @@ export const expectCookieEquals = async (
   for (let i = 0; i < cookies.length; i++) {
     expect(cookies[i]).toMatchObject(expectedCookies[i]!);
   }
-};
-
-/**
- * Use it if you want to capture debug logs for a specitic test suite in CI.
- * This describe function enables capturing of debug logs and would print them
- * only if a test fails to reduce the amount of output.
- */
-export const describeWithDebugLogs = (
-  description: string,
-  body: (this: Mocha.Suite) => void
-): Mocha.Suite | void => {
-  describe(description + '-debug', () => {
-    beforeEach(() => {
-      setLogCapture(true);
-    });
-
-    afterEach(function () {
-      if (this.currentTest?.state === 'failed') {
-        console.log(
-          `\n"${this.currentTest.fullTitle()}" failed. Here is a debug log:`
-        );
-        console.log(getCapturedLogs().join('\n') + '\n');
-      }
-      setLogCapture(false);
-    });
-
-    describe(description, body);
-  });
 };
 
 export const shortWaitForArrayToHaveAtLeastNElements = async (

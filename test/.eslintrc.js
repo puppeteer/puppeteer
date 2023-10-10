@@ -26,6 +26,11 @@ module.exports = {
             selector:
               'MemberExpression[object.name="puppeteer"][property.name="launch"]',
           },
+          {
+            message: 'Unexpected debugging mocha test.',
+            selector:
+              'CallExpression[callee.object.name="it"] > MemberExpression > Identifier[name="deflake"], CallExpression[callee.object.name="it"] > MemberExpression > Identifier[name="deflakeOnly"]',
+          },
         ],
       },
     },
