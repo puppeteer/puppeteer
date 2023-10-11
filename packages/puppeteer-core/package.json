@@ -69,13 +69,12 @@
       ]
     },
     "build:tsc": {
-      "command": "hereby build:tsc",
+      "command": "hereby build",
       "clean": "if-file-deleted",
       "dependencies": [
         "../browsers:build"
       ],
       "files": [
-        "rollup.third_party.config.mjs",
         "{src,third_party}/**",
         "../../versions.js",
         "!src/generated"

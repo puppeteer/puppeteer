@@ -38,8 +38,7 @@ export const generateInjectedTask = task({
       entryPoints: ['src/injected/injected.ts'],
       bundle: true,
       format: 'cjs',
-      platform: 'browser',
-      target: 'ES2022',
+      target: 'chrome117',
       minify: true,
       write: false,
     });
@@ -52,9 +51,21 @@ export const generateInjectedTask = task({
   },
 });
 
+export const generatePackageJsonTask = task({
+  name: 'generate:package-json',
+  run: async () => {
+    await mkdir('lib/esm', {recursive: true});
+    await writeFile('lib/esm/package.json', JSON.stringify({type: 'module'}));
+  },
+});
+
 export const generateTask = task({
   name: 'generate',
-  dependencies: [generateVersionTask, generateInjectedTask],
+  dependencies: [
+    generateVersionTask,
+    generateInjectedTask,
+    generatePackageJsonTask,
+  ],
 });
 
 export const buildTscTask = task({
@@ -62,7 +73,32 @@ export const buildTscTask = task({
   dependencies: [generateTask],
   run: async () => {
     await execa('tsc', ['-b']);
-    await execa('rollup', ['-c', 'rollup.third_party.config.mjs']);
-    await writeFile('lib/esm/package.json', JSON.stringify({type: 'module'}));
+  },
+});
+
+export const buildTask = task({
+  name: 'build',
+  dependencies: [buildTscTask],
+  run: async () => {
+    const packages = ['mitt', 'rxjs'];
+    const formats = ['esm', 'cjs'];
+    const builders = [];
+    for (const name of packages) {
+      for (const format of formats) {
+        const filePath = `lib/${format}/third_party/${name}/${name}.js`;
+        builders.push(
+          await esbuild.build({
+            entryPoints: [filePath],
+            outfile: filePath,
+            bundle: true,
+            allowOverwrite: true,
+            format,
+            target: 'node16',
+            minify: true,
+          })
+        );
+      }
+    }
+    await Promise.all(builders);
   },
 });
