@@ -26,12 +26,7 @@ import type {Page} from 'puppeteer-core/internal/api/Page.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 import sinon from 'sinon';
 
-import {
-  getTestState,
-  isHeadless,
-  itOnlyRegularInstall,
-  launch,
-} from './mocha-utils.js';
+import {getTestState, isHeadless, launch} from './mocha-utils.js';
 import {dumpFrames, waitEvent} from './utils.js';
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
@@ -601,7 +596,7 @@ describe('Launcher specs', function () {
     });
 
     describe('Puppeteer.launch', function () {
-      itOnlyRegularInstall('should be able to launch Chrome', async () => {
+      it('should be able to launch Chrome', async () => {
         const {browser, close} = await launch({product: 'chrome'});
         try {
           const userAgent = await browser.userAgent();
@@ -875,7 +870,7 @@ describe('Launcher specs', function () {
       });
     });
     describe('Puppeteer.executablePath', function () {
-      itOnlyRegularInstall('should work', async () => {
+      it('should work', async () => {
         const {puppeteer} = await getTestState({
           skipLaunch: true,
         });

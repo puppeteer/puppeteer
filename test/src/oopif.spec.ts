@@ -18,10 +18,10 @@ import expect from 'expect';
 import type {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
 import type {CdpTarget} from 'puppeteer-core/internal/cdp/Target.js';
 
-import {describeWithDebugLogs, getTestState, launch} from './mocha-utils.js';
+import {getTestState, launch} from './mocha-utils.js';
 import {attachFrame, detachFrame, navigateFrame} from './utils.js';
 
-describeWithDebugLogs('OOPIF', function () {
+describe('OOPIF', function () {
   /* We use a special browser for this test as we need the --site-per-process flag */
   let state: Awaited<ReturnType<typeof launch>>;
 

@@ -24,6 +24,7 @@
     }
   },
   "dependencies": {
+    "puppeteer-core": "file:../packages/puppeteer-core",
     "puppeteer": "file:../packages/puppeteer"
   }
 }
