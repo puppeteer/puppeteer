@@ -26,16 +26,15 @@ export class Deferred<T, V extends Error = Error> {
     this.#resolver = resolve;
   });
   #timeoutId: ReturnType<typeof setTimeout> | undefined;
-  #timeoutError: TimeoutError;
+  #timeoutError: TimeoutError | undefined;
 
   constructor(opts?: DeferredOptions) {
-    this.#timeoutError = new TimeoutError(opts && opts.message);
-    this.#timeoutId =
-      opts && opts.timeout > 0
-        ? setTimeout(() => {
-            this.reject(this.#timeoutError);
-          }, opts.timeout)
-        : undefined;
+    if (opts && opts.timeout > 0) {
+      this.#timeoutError = new TimeoutError(opts.message);
+      this.#timeoutId = setTimeout(() => {
+        this.reject(this.#timeoutError!);
+      }, opts.timeout);
+    }
   }
 
   #finish(value: T | V | TimeoutError) {
