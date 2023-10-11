@@ -8,6 +8,7 @@ updates:
       timezone: Europe/Berlin
     ignore:
       - dependency-name: devtools-protocol
+      - dependency-name: '@types/node'
     groups:
       dependencies:
         dependency-type: production
