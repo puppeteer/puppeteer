@@ -650,7 +650,8 @@ export class BidiPage extends Page {
   override async _screenshot(
     options: Readonly<ScreenshotOptions>
   ): Promise<string> {
-    const {clip, type, captureBeyondViewport, allowViewportExpansion} = options;
+    const {clip, type, captureBeyondViewport, allowViewportExpansion, quality} =
+      options;
     if (captureBeyondViewport && !allowViewportExpansion) {
       throw new Error(
         `BiDi does not support 'captureBeyondViewport'. Use 'allowViewportExpansion'.`
@@ -665,12 +666,6 @@ export class BidiPage extends Page {
     if (options.fromSurface !== undefined && !options.fromSurface) {
       throw new Error(`BiDi does not support 'fromSurface'.`);
     }
-    if (options.quality !== undefined) {
-      throw new Error(`BiDi does not support 'quality'.`);
-    }
-    if (type === 'webp' || type === 'jpeg') {
-      throw new Error(`BiDi only supports 'png' type.`);
-    }
     if (clip !== undefined && clip.scale !== undefined && clip.scale !== 1) {
       throw new Error(`BiDi does not support 'scale' in 'clip'.`);
     }
@@ -678,6 +673,10 @@ export class BidiPage extends Page {
       result: {data},
     } = await this.#connection.send('browsingContext.captureScreenshot', {
       context: this.mainFrame()._id,
+      format: {
+        type: `image/${type}`,
+        ...(quality === undefined ? {} : {quality: quality / 100}),
+      },
       clip: clip && {
         type: 'viewport',
         ...clip,
