@@ -19,11 +19,12 @@ import {writeFile, readFile} from 'fs/promises';
 import {promisify} from 'util';
 
 import actions from '@actions/core';
-import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
 import {SemVer} from 'semver';
 
 import packageJson from '../packages/puppeteer-core/package.json' assert {type: 'json'};
 import {versionsPerRelease, lastMaintainedChromeVersion} from '../versions.js';
+
+import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
 
 const execAsync = promisify(exec);
 
