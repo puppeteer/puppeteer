@@ -17,8 +17,10 @@ import commonjs from '@rollup/plugin-commonjs';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
 import {globSync} from 'glob';
-import nodePolyfills from 'rollup-plugin-polyfill-node';
 
+/**
+ * @type {import('rollup').InputOptions[]}
+ */
 const configs = [];
 
 // Note we don't use path.join here. We cannot since `glob` does not support
@@ -39,9 +41,6 @@ for (const file of globSync(`lib/esm/third_party/**/*.js`)) {
     plugins: [
       terser(),
       nodeResolve(),
-      // This is used internally within the polyfill. It gets ignored for the
-      // most part via this plugin.
-      nodePolyfills({include: ['util']}),
       commonjs({
         transformMixedEsModules: true,
       }),
