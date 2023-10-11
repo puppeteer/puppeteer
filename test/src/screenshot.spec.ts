@@ -357,6 +357,17 @@ describe('Screenshots', function () {
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-fractional-offset.png');
     });
+    it('should work with webp', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setViewport({width: 100, height: 100});
+      await page.goto(server.PREFIX + '/grid.html');
+      const screenshot = await page.screenshot({
+        type: 'webp',
+      });
+
+      expect(screenshot).toBeInstanceOf(Buffer);
+    });
   });
 
   describe('Cdp', () => {
@@ -378,17 +389,6 @@ describe('Screenshots', function () {
         type: 'jpeg',
       });
       expect(screenshot).toBeGolden('white.jpg');
-    });
-    it('should work with webp', async () => {
-      const {page, server} = await getTestState();
-
-      await page.setViewport({width: 100, height: 100});
-      await page.goto(server.PREFIX + '/grid.html');
-      const screenshot = await page.screenshot({
-        type: 'webp',
-      });
-
-      expect(screenshot).toBeInstanceOf(Buffer);
     });
     it('should work in "fromSurface: false" mode', async () => {
       const {page, server} = await getTestState();

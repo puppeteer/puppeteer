@@ -2535,57 +2535,32 @@ export abstract class Page extends EventEmitter<PageEvents> {
           break;
       }
     }
-    if (options.quality) {
-      assert(
-        options.type === 'jpeg' || options.type === 'webp',
-        `options.quality is unsupported for the ${options.type} screenshots`
-      );
-      assert(
-        typeof options.quality === 'number',
-        `Expected options.quality to be a number but found ${typeof options.quality}`
-      );
-      assert(
-        Number.isInteger(options.quality),
-        'Expected options.quality to be an integer'
-      );
-      assert(
-        options.quality >= 0 && options.quality <= 100,
-        `Expected options.quality to be between 0 and 100 (inclusive), got ${options.quality}`
-      );
+    if (options.quality !== undefined) {
+      if (options.quality < 0 && options.quality > 100) {
+        throw new Error(
+          `Expected 'quality' (${options.quality}) to be between 0 and 100, inclusive.`
+        );
+      }
+      if (
+        options.type === undefined ||
+        !['jpeg', 'webp'].includes(options.type)
+      ) {
+        throw new Error(
+          `${options.type ?? 'png'} screenshots do not support 'quality'.`
+        );
+      }
     }
     assert(
       !options.clip || !options.fullPage,
-      'options.clip and options.fullPage are exclusive'
+      "'clip' and 'fullPage' are exclusive"
     );
     if (options.clip) {
-      assert(
-        typeof options.clip.x === 'number',
-        `Expected options.clip.x to be a number but found ${typeof options.clip
-          .x}`
-      );
-      assert(
-        typeof options.clip.y === 'number',
-        `Expected options.clip.y to be a number but found ${typeof options.clip
-          .y}`
-      );
-      assert(
-        typeof options.clip.width === 'number',
-        `Expected options.clip.width to be a number but found ${typeof options
-          .clip.width}`
-      );
-      assert(
-        typeof options.clip.height === 'number',
-        `Expected options.clip.height to be a number but found ${typeof options
-          .clip.height}`
-      );
-      assert(
-        options.clip.width !== 0,
-        'Expected options.clip.width not to be 0.'
-      );
-      assert(
-        options.clip.height !== 0,
-        'Expected options.clip.height not to be 0.'
-      );
+      if (options.clip.width <= 0) {
+        throw new Error("'width' in 'clip' must be positive.");
+      }
+      if (options.clip.height <= 0) {
+        throw new Error("'height' in 'clip' must be positive.");
+      }
     }
 
     setDefaultScreenshotOptions(options);

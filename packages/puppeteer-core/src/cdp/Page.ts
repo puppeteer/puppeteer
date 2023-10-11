@@ -1091,7 +1091,7 @@ export class CdpPage extends Page {
     const {data} = await this.#client.send('Page.captureScreenshot', {
       format: type,
       ...(optimizeForSpeed ? {optimizeForSpeed} : {}),
-      ...(quality !== undefined ? {quality} : {}),
+      ...(quality !== undefined ? {quality: Math.round(quality)} : {}),
       clip: clip && {
         ...clip,
         scale: clip.scale ?? 1,
