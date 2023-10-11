@@ -57,27 +57,6 @@
         "build:types"
       ]
     },
-    "generate:sources": {
-      "command": "tsx tools/generate_sources.ts",
-      "clean": "if-file-deleted",
-      "files": [
-        "../../versions.js",
-        "src/{injected,templates}/**",
-        "tools/generate_sources.ts"
-      ],
-      "output": [
-        "src/generated/*.ts"
-      ]
-    },
-    "generate:package-json": {
-      "command": "tsx ../../tools/generate_module_package_json.ts lib/esm/package.json",
-      "files": [
-        "../../tools/generate_module_package_json.ts"
-      ],
-      "output": [
-        "lib/esm/package.json"
-      ]
-    },
     "build:docs": {
       "command": "api-extractor run --local --config \"./api-extractor.docs.json\"",
       "files": [
@@ -90,20 +69,19 @@
       ]
     },
     "build:tsc": {
-      "command": "tsc -b && rollup --config rollup.third_party.config.mjs",
+      "command": "hereby build:tsc",
       "clean": "if-file-deleted",
       "dependencies": [
-        "generate:package-json",
-        "generate:sources",
         "../browsers:build"
       ],
       "files": [
-        "{compat,src,third_party}/**",
-        "rollup.third_party.config.mjs"
+        "rollup.third_party.config.mjs",
+        "{src,third_party}/**",
+        "../../versions.js",
+        "!src/generated"
       ],
       "output": [
-        "lib/{cjs,esm}/**",
-        "!lib/esm/package.json"
+        "lib/{cjs,esm}/**"
       ]
     },
     "build:types": {
@@ -148,9 +126,11 @@
     "ws": "8.14.2"
   },
   "devDependencies": {
+    "@types/node": "18.17.15",
+    "execa": "8.0.1",
+    "hereby": "1.8.7",
     "mitt": "3.0.1",
     "parsel-js": "1.1.2",
-    "rxjs": "7.8.1",
-    "@types/node": "18.17.15"
+    "rxjs": "7.8.1"
   }
 }
