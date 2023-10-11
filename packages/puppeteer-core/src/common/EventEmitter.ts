@@ -18,7 +18,7 @@ import mitt, {
   type Emitter,
   type EventHandlerMap,
   type EventType,
-} from '../../third_party/mitt/index.js';
+} from '../../third_party/mitt/mitt.js';
 import {disposeSymbol} from '../util/disposable.js';
 
 export type {
@@ -26,7 +26,7 @@ export type {
    * @public
    */
   EventType,
-} from '../../third_party/mitt/index.js';
+} from '../../third_party/mitt/mitt.js';
 
 /**
  * @public
