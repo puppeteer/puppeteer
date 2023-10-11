@@ -44,14 +44,18 @@ jobs:
               - 'tools/mocha-runner/**'
               - '.mocharc.cjs'
               - 'tools/doctest/**'
+              - 'package-lock.json'
             website:
               - '.github/workflows/ci.yml'
               - 'docs/**'
               - 'website/**'
               - 'README.md'
+              - 'package-lock.json'
             ng-schematics:
               - '.github/workflows/ci.yml'
               - 'packages/ng-schematics/**'
+              - 'package-lock.json'
             browsers:
               - '.github/workflows/ci.yml'
               - 'packages/browsers/**'
+              - 'package-lock.json'
