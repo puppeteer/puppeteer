@@ -1,0 +1,144 @@
+name: Deflake Puppeteer test
+
+# Declare default permissions as read only.
+permissions: read-all
+
+concurrency:
+  group: deflake-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+    inputs:
+      tests:
+        description: Tests to deflake (e.g. '[network.spec] *')
+        required: true
+        type: string
+      suite:
+        description: Which suite to run?
+        required: true
+        type: choice
+        options:
+          - chrome-headless
+          - chrome-headful
+          - chrome-new-headless
+          - chrome-bidi
+          - firefox-headful
+          - firefox-headless
+          - firefox-bidi
+      os:
+        description: On which OS to run?
+        required: true
+        type: choice
+        options:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+      retries:
+        description: Number of retries per test
+        required: false
+        type: number
+
+jobs:
+  chrome-deflake:
+    name: Deflake test with pattern ${{ inputs.tests }} on ${{ inputs.os }}
+    runs-on: ${{ inputs.os }}
+    if: ${{ contains(inputs.suite, 'chrome') }}
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+      - name: Set up Node.js
+        uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d # v3.8.1
+        with:
+          cache: npm
+          node-version: lts/*
+      - name: Set up FFmpeg
+        uses: FedericoCarboni/setup-ffmpeg@5058c9851b649ced05c3e73a4fb5ef2995a89127 # v2.0.0
+      - name: Install dependencies
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
+      # Set up GitHub Actions caching for Wireit.
+      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
+      - name: Build packages
+        run: npm run build --workspace @puppeteer-test/test
+      - name: Setup cache for Chrome binary
+        if: ${{ inputs.suite != 'chrome-bidi' }}
+        uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        with:
+          path: ~/.cache/puppeteer/chrome
+          key: ${{ runner.os }}-Chrome-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
+      - name: Install Chrome
+        if: ${{ inputs.suite != 'chrome-bidi' }}
+        run: npm run postinstall
+      - name: Setup cache for Chrome Canary binary
+        if: ${{ inputs.suite == 'chrome-bidi' }}
+        uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        with:
+          path: ~/.cache/puppeteer/chrome-canary
+          key: ${{ runner.os }}-Chrome-Canary-${{ hashFiles('package.json') }}
+      - name: Install Chrome Canary
+        if: ${{ inputs.suite == 'chrome-bidi' }}
+        id: browser
+        run: node tools/download_chrome_bidi.mjs ~/.cache/puppeteer/chrome-canary
+      - name: Run all tests (for non-Linux)
+        if: ${{ inputs.os != 'ubuntu-latest' }}
+        run: npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        env:
+          PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
+          PUPPETEER_DEFLAKE_TESTS: ${{ inputs.tests }}
+      - name: Run all tests (for Linux)
+        if: ${{ inputs.os == 'ubuntu-latest' }}
+        run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        env:
+          PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
+          PUPPETEER_DEFLAKE_TESTS: ${{ inputs.tests }}
+          PUPPETEER_DEFLAKE_RETRIES: ${{ inputs.retries }}
+
+  firefox-tests:
+    name: Deflake test with pattern ${{ inputs.tests }} on ${{ inputs.os }}
+    runs-on: ${{ inputs.os }}
+    if: ${{ contains(inputs.suite, 'firefox') }}
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+      - name: Set up Node.js
+        uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d # v3.8.1
+        with:
+          cache: npm
+          node-version: lts/*
+      - name: Set up FFmpeg
+        uses: FedericoCarboni/setup-ffmpeg@5058c9851b649ced05c3e73a4fb5ef2995a89127 # v2.0.0
+      - name: Install dependencies
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
+      # Set up GitHub Actions caching for Wireit.
+      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
+      - name: Build packages
+        run: npm run build --workspace @puppeteer-test/test
+      - name: Setup cache for Firefox binary
+        uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        with:
+          path: ~/.cache/puppeteer/firefox
+          key: ${{ runner.os }}-firefox-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
+      - name: Install Firefox
+        env:
+          PUPPETEER_PRODUCT: firefox
+        run: npm run postinstall
+      - name: Run all tests (for non-Linux)
+        if: ${{ inputs.os != 'ubuntu-latest' }}
+        run: npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        env:
+          PUPPETEER_DEFLAKE_TESTS: ${{ inputs.tests }}
+          PUPPETEER_DEFLAKE_RETRIES: ${{ inputs.retries }}
+      - name: Run all tests (for Linux)
+        if: ${{ inputs.os == 'ubuntu-latest' }}
+        run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        env:
+          PUPPETEER_DEFLAKE_TESTS: ${{ inputs.tests }}
+          PUPPETEER_DEFLAKE_RETRIES: ${{ inputs.retries }}
