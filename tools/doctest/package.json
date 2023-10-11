@@ -34,7 +34,7 @@
     "yargs": "17.7.2"
   },
   "devDependencies": {
-    "@types/doctrine": "0.0.6",
-    "@types/source-map-support": "0.5.7"
+    "@types/doctrine": "0.0.7",
+    "@types/source-map-support": "0.5.8"
   }
 }
