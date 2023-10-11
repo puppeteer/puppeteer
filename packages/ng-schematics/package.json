@@ -53,9 +53,9 @@
     "@angular-devkit/schematics": "^16.2.6"
   },
   "devDependencies": {
-    "@types/node": "^16.11.7",
-    "@schematics/angular": "^16.2.0",
-    "@angular/cli": "^16.2.0",
+    "@types/node": "^20.8.4",
+    "@schematics/angular": "^16.2.6",
+    "@angular/cli": "^16.2.6",
     "rxjs": "7.8.1"
   },
   "files": [

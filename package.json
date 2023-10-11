@@ -169,7 +169,7 @@
     "pngjs": "7.0.0",
     "prettier": "3.0.3",
     "puppeteer": "file:packages/puppeteer",
-    "rollup": "3.29.2",
+    "rollup": "4.0.2",
     "semver": "7.5.4",
     "sinon": "16.1.0",
     "source-map-support": "0.5.21",
