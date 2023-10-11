@@ -163,7 +163,11 @@ export class CdpTarget extends Target {
     if (!openerId) {
       return;
     }
-    return this.browser()._targets.get(openerId);
+    return this.browser()
+      .targets()
+      .find(target => {
+        return (target as CdpTarget)._targetId === openerId;
+      });
   }
 
   _targetInfoChanged(targetInfo: Protocol.Target.TargetInfo): void {
@@ -173,6 +177,10 @@ export class CdpTarget extends Target {
 
   _initialize(): void {
     this._initializedDeferred.resolve(InitializationStatus.SUCCESS);
+  }
+
+  _isTargetExposed(): boolean {
+    return this.type() !== TargetType.TAB && !this._subtype();
   }
 
   protected _checkIfInitialized(): void {

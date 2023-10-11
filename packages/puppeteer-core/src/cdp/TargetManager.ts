@@ -69,7 +69,7 @@ export interface TargetManagerEvents extends Record<EventType, unknown> {
  * @internal
  */
 export interface TargetManager extends EventEmitter<TargetManagerEvents> {
-  getAvailableTargets(): Map<string, CdpTarget>;
+  getAvailableTargets(): ReadonlyMap<string, CdpTarget>;
   initialize(): Promise<void>;
   dispose(): void;
 }

@@ -18,7 +18,6 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {TargetFilterCallback} from '../api/Browser.js';
 import {CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
-import {TargetType} from '../api/Target.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
@@ -33,10 +32,6 @@ import {
   TargetManagerEvent,
   type TargetManagerEvents,
 } from './TargetManager.js';
-
-function isTargetExposed(target: CdpTarget): boolean {
-  return target.type() !== TargetType.TAB && !target._subtype();
-}
 
 function isPageTargetBecomingPrimary(
   target: CdpTarget,
@@ -183,14 +178,8 @@ export class ChromeTargetManager
     this.#removeAttachmentListeners(this.#connection);
   }
 
-  getAvailableTargets(): Map<string, CdpTarget> {
-    const result = new Map<string, CdpTarget>();
-    for (const [id, target] of this.#attachedTargetsByTargetId.entries()) {
-      if (isTargetExposed(target)) {
-        result.set(id, target);
-      }
-    }
-    return result;
+  getAvailableTargets(): ReadonlyMap<string, CdpTarget> {
+    return this.#attachedTargetsByTargetId;
   }
 
   #setupAttachmentListeners(session: CDPSession | Connection): void {
@@ -402,7 +391,7 @@ export class ChromeTargetManager
     }
 
     this.#targetsIdsForInit.delete(target._targetId);
-    if (!isExistingTarget && isTargetExposed(target)) {
+    if (!isExistingTarget) {
       this.emit(TargetManagerEvent.TargetAvailable, target);
     }
     this.#finishInitializationIfReady();
@@ -440,8 +429,6 @@ export class ChromeTargetManager
     }
 
     this.#attachedTargetsByTargetId.delete(target._targetId);
-    if (isTargetExposed(target)) {
-      this.emit(TargetManagerEvent.TargetGone, target);
-    }
+    this.emit(TargetManagerEvent.TargetGone, target);
   };
 }
