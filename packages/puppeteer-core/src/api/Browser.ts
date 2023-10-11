@@ -18,15 +18,23 @@ import type {ChildProcess} from 'child_process';
 
 import type {Protocol} from 'devtools-protocol';
 
+import {
+  firstValueFrom,
+  from,
+  merge,
+  raceWith,
+  filterAsync,
+  fromEvent,
+  type Observable,
+} from '../../third_party/rxjs/rxjs.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
-import {debugError, waitWithTimeout} from '../common/util.js';
-import {Deferred} from '../util/Deferred.js';
+import {debugError} from '../common/util.js';
+import {timeout} from '../common/util.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
 import type {BrowserContext} from './BrowserContext.js';
 import type {Page} from './Page.js';
 import type {Target} from './Target.js';
-
 /**
  * @public
  */
@@ -387,31 +395,14 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
     predicate: (x: Target) => boolean | Promise<boolean>,
     options: WaitForTargetOptions = {}
   ): Promise<Target> {
-    const {timeout = 30000} = options;
-    const targetDeferred = Deferred.create<Target | PromiseLike<Target>>();
-
-    this.on(BrowserEvent.TargetCreated, check);
-    this.on(BrowserEvent.TargetChanged, check);
-    try {
-      this.targets().forEach(check);
-      if (!timeout) {
-        return await targetDeferred.valueOrThrow();
-      }
-      return await waitWithTimeout(
-        targetDeferred.valueOrThrow(),
-        'target',
-        timeout
-      );
-    } finally {
-      this.off(BrowserEvent.TargetCreated, check);
-      this.off(BrowserEvent.TargetChanged, check);
-    }
-
-    async function check(target: Target): Promise<void> {
-      if ((await predicate(target)) && !targetDeferred.resolved()) {
-        targetDeferred.resolve(target);
-      }
-    }
+    const {timeout: ms = 30000} = options;
+    return await firstValueFrom(
+      merge(
+        fromEvent(this, BrowserEvent.TargetCreated) as Observable<Target>,
+        fromEvent(this, BrowserEvent.TargetChanged) as Observable<Target>,
+        from(this.targets())
+      ).pipe(filterAsync(predicate), raceWith(timeout(ms)))
+    );
   }
 
   /**
