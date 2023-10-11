@@ -1,20 +1,29 @@
 version: 2
 updates:
   - package-ecosystem: npm
-    directory: '/'
+    directory: /
     schedule:
       interval: daily
-      time: '08:00'
-      timezone: 'Europe/Berlin'
-    open-pull-requests-limit: 2
-    allow:
-      - dependency-type: 'production'
+      time: '06:00'
+      timezone: Europe/Berlin
     ignore:
-      - dependency-name: 'devtools-protocol'
-  - package-ecosystem: 'github-actions' # Necessary to update action hash
-    directory: '/'
+      - dependency-name: devtools-protocol
+    groups:
+      dependencies:
+        dependency-type: production
+        patterns:
+          - '*'
+      dev-dependencies:
+        dependency-type: development
+        patterns:
+          - '*'
+  - package-ecosystem: github-actions
+    directory: /
     schedule:
-      interval: weekly
-      time: '08:00'
-      timezone: 'Europe/Berlin'
-    open-pull-requests-limit: 2
+      interval: daily
+      time: '06:00'
+      timezone: Europe/Berlin
+    groups:
+      all:
+        patterns:
+          - '*'
