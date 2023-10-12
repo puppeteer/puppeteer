@@ -1,4 +1,4 @@
-import {copyFile, mkdir, readFile, writeFile} from 'fs/promises';
+import {copyFile, readFile, writeFile} from 'fs/promises';
 
 import {execa} from 'execa';
 import {task} from 'hereby';
@@ -18,6 +18,19 @@ export const docsNgSchematicsTask = task({
   },
 });
 
+/**
+ * This logic should match the one in `website/docusaurus.config.js`.
+ */
+function getApiUrl(version) {
+  if (semver.gte(version, '19.3.0')) {
+    return `https://github.com/puppeteer/puppeteer/blob/puppeteer-${version}/docs/api/index.md`;
+  } else if (semver.gte(version, '15.3.0')) {
+    return `https://github.com/puppeteer/puppeteer/blob/${version}/docs/api/index.md`;
+  } else {
+    return `https://github.com/puppeteer/puppeteer/blob/${version}/docs/api.md`;
+  }
+}
+
 export const docsChromiumSupportTask = task({
   name: 'docs:chromium-support',
   run: async () => {
@@ -25,39 +38,22 @@ export const docsChromiumSupportTask = task({
       encoding: 'utf8',
     });
     const {versionsPerRelease} = await import('./versions.js');
-    const versionsArchived = JSON.parse(
-      await readFile('website/versionsArchived.json', 'utf8')
-    );
     const buffer = [];
     for (const [chromiumVersion, puppeteerVersion] of versionsPerRelease) {
       if (puppeteerVersion === 'NEXT') {
         continue;
       }
-      if (versionsArchived.includes(puppeteerVersion.substring(1))) {
-        if (semver.gte(puppeteerVersion, '20.0.0')) {
-          buffer.push(
-            `  * [Chrome for Testing](https://goo.gle/chrome-for-testing) ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://pptr.dev/${puppeteerVersion.slice(
-              1
-            )})`
-          );
-        } else {
-          buffer.push(
-            `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://github.com/puppeteer/puppeteer/blob/${puppeteerVersion}/docs/api/index.md)`
-          );
-        }
-      } else if (semver.lt(puppeteerVersion, '15.0.0')) {
+      if (semver.gte(puppeteerVersion, '20.0.0')) {
         buffer.push(
-          `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://github.com/puppeteer/puppeteer/blob/${puppeteerVersion}/docs/api.md)`
-        );
-      } else if (semver.gte(puppeteerVersion, '15.3.0')) {
-        buffer.push(
-          `  * [Chrome for Testing](https://goo.gle/chrome-for-testing) ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://pptr.dev/${puppeteerVersion.slice(
-            1
+          `  * [Chrome for Testing](https://goo.gle/chrome-for-testing) ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](${getApiUrl(
+            puppeteerVersion
           )})`
         );
       } else {
         buffer.push(
-          `  * Chromium ${chromiumVersion} - Puppeteer ${puppeteerVersion}`
+          `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](${getApiUrl(
+            puppeteerVersion
+          )})`
         );
       }
     }
@@ -76,22 +72,19 @@ export const docsTask = task({
     await copyFile('README.md', 'docs/index.md');
 
     // Generate documentation
-    await Promise.all(
-      [
-        ['browsers', 'browsers-api'],
-        ['puppeteer', 'api'],
-      ].map(async ([name, folder]) => {
-        return await docgen(`docs/${name}.api.json`, `docs/${folder}`);
-      })
-    );
+    for (const [name, folder] of [
+      ['browsers', 'browsers-api'],
+      ['puppeteer', 'api'],
+    ]) {
+      docgen(`docs/${name}.api.json`, `docs/${folder}`);
+    }
 
     // Update main @puppeteer/browsers page.
-    await mkdir('docs/browsers-api', {recursive: true});
     const readme = await readFile('packages/browsers/README.md', 'utf-8');
     const index = await readFile('docs/browsers-api/index.md', 'utf-8');
     await writeFile(
       'docs/browsers-api/index.md',
-      index.replace('# API Reference\n', readme)
+      index.replace('# API Reference', readme)
     );
 
     // Format everything.
