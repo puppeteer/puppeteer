@@ -172,6 +172,8 @@ export class ChromeLauncher extends ProductLauncher {
       'AcceptCHFrame',
       'MediaRouter',
       'OptimizationHints',
+      // https://crbug.com/1492053
+      'ProcessPerSiteUpToMainFrameThreshold',
     ];
 
     const chromeArguments = [
