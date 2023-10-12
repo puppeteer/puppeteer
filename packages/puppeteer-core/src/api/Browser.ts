@@ -260,13 +260,6 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
   }
 
   /**
-   * @internal
-   */
-  get _targets(): Map<string, Target> {
-    throw new Error('Not implemented');
-  }
-
-  /**
    * Gets the associated
    * {@link https://nodejs.org/api/child_process.html#class-childprocess | ChildProcess}.
    *

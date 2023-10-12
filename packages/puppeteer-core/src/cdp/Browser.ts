@@ -91,10 +91,6 @@ export class CdpBrowser extends BrowserBase {
   #contexts = new Map<string, CdpBrowserContext>();
   #targetManager: TargetManager;
 
-  override get _targets(): Map<string, CdpTarget> {
-    return this.#targetManager.getAvailableTargets();
-  }
-
   constructor(
     product: 'chrome' | 'firefox' | undefined,
     connection: Connection,
@@ -314,8 +310,9 @@ export class CdpBrowser extends BrowserBase {
 
   #onAttachedToTarget = async (target: CdpTarget) => {
     if (
+      target._isTargetExposed() &&
       (await target._initializedDeferred.valueOrThrow()) ===
-      InitializationStatus.SUCCESS
+        InitializationStatus.SUCCESS
     ) {
       this.emit(BrowserEvent.TargetCreated, target);
       target.browserContext().emit(BrowserContextEvent.TargetCreated, target);
@@ -326,8 +323,9 @@ export class CdpBrowser extends BrowserBase {
     target._initializedDeferred.resolve(InitializationStatus.ABORTED);
     target._isClosedDeferred.resolve();
     if (
+      target._isTargetExposed() &&
       (await target._initializedDeferred.valueOrThrow()) ===
-      InitializationStatus.SUCCESS
+        InitializationStatus.SUCCESS
     ) {
       this.emit(BrowserEvent.TargetDestroyed, target);
       target.browserContext().emit(BrowserContextEvent.TargetDestroyed, target);
@@ -382,6 +380,7 @@ export class CdpBrowser extends BrowserBase {
       this.#targetManager.getAvailableTargets().values()
     ).filter(target => {
       return (
+        target._isTargetExposed() &&
         target._initializedDeferred.value() === InitializationStatus.SUCCESS
       );
     });

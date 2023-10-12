@@ -131,7 +131,7 @@ export class FirefoxTargetManager
     }
   }
 
-  getAvailableTargets(): Map<string, CdpTarget> {
+  getAvailableTargets(): ReadonlyMap<string, CdpTarget> {
     return this.#availableTargetsByTargetId;
   }
 
