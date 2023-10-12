@@ -34,6 +34,9 @@ const allDeps = {...devDependencies};
 const invalidDeps = new Map<string, string>();
 
 for (const [depKey, depValue] of Object.entries(allDeps)) {
+  if (depValue.startsWith('file:')) {
+    continue;
+  }
   if (LOCAL_PACKAGE_NAMES.includes(depKey)) {
     continue;
   }

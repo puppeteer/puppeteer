@@ -1,0 +1,32 @@
+{
+  "name": "@puppeteer/docgen",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "main": "./lib/docgen.js",
+  "description": "Documentation generator for Puppeteer",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "wireit",
+    "clean": "../clean.js"
+  },
+  "wireit": {
+    "build": {
+      "command": "tsc -b",
+      "clean": "if-file-deleted",
+      "files": [
+        "src/**"
+      ],
+      "output": [
+        "lib/**",
+        "tsconfig.tsbuildinfo"
+      ]
+    }
+  },
+  "dependencies": {
+    "@microsoft/api-documenter": "7.23.9",
+    "@microsoft/api-extractor-model": "7.28.2",
+    "@microsoft/tsdoc": "0.14.2",
+    "@rushstack/node-core-library": "3.61.0"
+  }
+}

@@ -31,6 +31,7 @@ import {readFile} from 'node:fs/promises';
 import {createRequire} from 'node:module';
 
 import actions from '@actions/core';
+
 import {computeExecutablePath, install} from '@puppeteer/browsers';
 
 const require = createRequire(import.meta.url);

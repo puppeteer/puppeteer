@@ -5,9 +5,11 @@
 
 import {writeFile, mkdir, copyFile} from 'fs/promises';
 import {dirname, join} from 'path';
-import semver from 'semver';
 import {fileURLToPath} from 'url';
+
 import core from '@actions/core';
+import semver from 'semver';
+
 import packageJson from '../packages/puppeteer-core/package.json' assert {type: 'json'};
 
 const codifyAndJoinValues = values => {
@@ -79,7 +81,6 @@ This issue has an invalid Puppeteer version: \`${value}\`. Versions must follow 
 
 (async () => {
   let input = '';
-  // @ts-expect-error: `iterator` is new and experimental.
   for await (const chunk of process.stdin.iterator({
     destroyOnReturn: false,
   })) {

@@ -1,4 +1,5 @@
-import {mkdir, readFile, writeFile} from 'fs/promises';
+import {mkdir, readFile, readdir, writeFile} from 'fs/promises';
+import {join} from 'path/posix';
 
 import esbuild from 'esbuild';
 import {execa} from 'execa';
@@ -38,7 +39,7 @@ export const generateInjectedTask = task({
       entryPoints: ['src/injected/injected.ts'],
       bundle: true,
       format: 'cjs',
-      target: 'chrome117',
+      target: ['chrome117', 'firefox118'],
       minify: true,
       write: false,
     });
@@ -80,16 +81,23 @@ export const buildTask = task({
   name: 'build',
   dependencies: [buildTscTask],
   run: async () => {
-    const packages = ['mitt', 'rxjs'];
     const formats = ['esm', 'cjs'];
+    const packages = (await readdir('third_party', {withFileTypes: true}))
+      .filter(dirent => {
+        return dirent.isDirectory();
+      })
+      .map(({name}) => {
+        return name;
+      });
     const builders = [];
-    for (const name of packages) {
-      for (const format of formats) {
-        const filePath = `lib/${format}/third_party/${name}/${name}.js`;
+    for (const format of formats) {
+      const folder = join('lib', format, 'third_party');
+      for (const name of packages) {
+        const path = join(folder, name, `${name}.js`);
         builders.push(
           await esbuild.build({
-            entryPoints: [filePath],
-            outfile: filePath,
+            entryPoints: [path],
+            outfile: path,
             bundle: true,
             allowOverwrite: true,
             format,
