@@ -88,13 +88,13 @@ jobs:
         run: npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
-          PUPPETEER_DEFLAKE_TESTS: ${{ inputs.tests }}
+          PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
       - name: Run all tests (for Linux)
         if: ${{ inputs.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
-          PUPPETEER_DEFLAKE_TESTS: ${{ inputs.tests }}
+          PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
           PUPPETEER_DEFLAKE_RETRIES: ${{ inputs.retries }}
 
   firefox-tests:
@@ -134,11 +134,11 @@ jobs:
         if: ${{ inputs.os != 'ubuntu-latest' }}
         run: npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
-          PUPPETEER_DEFLAKE_TESTS: ${{ inputs.tests }}
+          PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
           PUPPETEER_DEFLAKE_RETRIES: ${{ inputs.retries }}
       - name: Run all tests (for Linux)
         if: ${{ inputs.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
-          PUPPETEER_DEFLAKE_TESTS: ${{ inputs.tests }}
+          PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
           PUPPETEER_DEFLAKE_RETRIES: ${{ inputs.retries }}
