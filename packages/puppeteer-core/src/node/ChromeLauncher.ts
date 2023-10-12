@@ -176,6 +176,8 @@ export class ChromeLauncher extends ProductLauncher {
       'ProcessPerSiteUpToMainFrameThreshold',
     ];
 
+    const enabledFeatures = ['NetworkServiceInProcess2'];
+
     const chromeArguments = [
       '--allow-pre-commit-input',
       '--disable-background-networking',
@@ -200,7 +202,7 @@ export class ChromeLauncher extends ProductLauncher {
       // TODO(sadym): remove '--enable-blink-features=IdleDetection' once
       // IdleDetection is turned on by default.
       '--enable-blink-features=IdleDetection',
-      '--enable-features=NetworkServiceInProcess2',
+      `--enable-features=${enabledFeatures.join(',')}`,
       '--export-tagged-pdf',
       '--force-color-profile=srgb',
       '--metrics-recording-only',
