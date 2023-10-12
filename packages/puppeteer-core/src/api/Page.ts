@@ -91,7 +91,7 @@ import {
   disposeSymbol,
 } from '../util/disposable.js';
 
-import type {Browser} from './Browser.js';
+import type {Browser, WaitForTargetOptions} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';
 import type {CDPSession} from './CDPSession.js';
 import type {Dialog} from './Dialog.js';
@@ -1810,6 +1810,20 @@ export abstract class Page extends EventEmitter<PageEvents> {
         )
       )
     );
+  }
+
+  /**
+   * Gets a worker with the given URL.
+   *
+   * @param url - The URL associated with the desired worker.
+   * @param options - Configures waiting behavior.
+   * @throws An error if waiting times out.
+   *
+   * @experimental
+   */
+  worker(url: string, options?: WaitForTargetOptions): Promise<WebWorker>;
+  worker(): Promise<WebWorker> {
+    throw new Error('Not implemented');
   }
 
   /**

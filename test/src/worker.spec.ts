@@ -43,6 +43,25 @@ describe('Workers', function () {
     await page.goto(server.EMPTY_PAGE);
     expect(page.workers()).toHaveLength(0);
   });
+
+  it('Page.worker', async () => {
+    const {page, server} = await getTestState();
+
+    const [worker] = await Promise.all([
+      page.worker(server.PREFIX + '/worker/worker.js'),
+      page.goto(server.PREFIX + '/worker/worker.html'),
+    ]);
+
+    expect(
+      await worker.evaluate(() => {
+        return (globalThis as any).workerFunction();
+      })
+    ).toBe('worker function result');
+
+    await page.goto(server.EMPTY_PAGE);
+    expect(page.workers()).toHaveLength(0);
+  });
+
   it('should emit created and destroyed events', async () => {
     const {page} = await getTestState();
 

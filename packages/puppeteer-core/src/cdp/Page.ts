@@ -18,7 +18,16 @@ import type {Readable} from 'stream';
 
 import type {Protocol} from 'devtools-protocol';
 
-import type {Browser} from '../api/Browser.js';
+import type {Observable} from '../../third_party/rxjs/rxjs.js';
+import {
+  filter,
+  firstValueFrom,
+  from,
+  fromEvent,
+  merge,
+  raceWith,
+} from '../../third_party/rxjs/rxjs.js';
+import type {Browser, WaitForTargetOptions} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
@@ -26,6 +35,7 @@ import type {Frame, WaitForOptions} from '../api/Frame.js';
 import type {HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {JSHandle} from '../api/JSHandle.js';
+import type {PageEvents} from '../api/Page.js';
 import {
   Page,
   PageEvent,
@@ -54,6 +64,7 @@ import {
   getReadableFromProtocolStream,
   isString,
   pageBindingInitString,
+  timeout,
   validateDialogType,
   valueFromRemoteObject,
   waitForEvent,
@@ -319,27 +330,42 @@ export class CdpPage extends Page {
   }
 
   #onDetachedFromTarget = (target: CdpTarget) => {
-    const sessionId = target._session()?.id();
-    const worker = this.#workers.get(sessionId!);
-    if (!worker) {
-      return;
+    const info = target._getTargetInfo();
+    switch (info.type) {
+      case 'worker': {
+        const sessionId = target._session()?.id();
+        if (!sessionId) {
+          return;
+        }
+        const worker = this.#workers.get(sessionId);
+        if (!worker) {
+          return;
+        }
+        worker.terminated = false;
+        this.#workers.delete(sessionId);
+        this.emit(PageEvent.WorkerDestroyed, worker);
+        break;
+      }
     }
-    this.#workers.delete(sessionId!);
-    this.emit(PageEvent.WorkerDestroyed, worker);
   };
 
   #onAttachedToTarget = (session: CDPSession) => {
     assert(session instanceof CdpCDPSession);
-    this.#frameManager.onAttachedToTarget(session._target());
-    if (session._target()._getTargetInfo().type === 'worker') {
-      const worker = new WebWorker(
-        session,
-        session._target().url(),
-        this.#addConsoleMessage.bind(this),
-        this.#handleException.bind(this)
-      );
-      this.#workers.set(session.id(), worker);
-      this.emit(PageEvent.WorkerCreated, worker);
+    const target = session._target();
+    this.#frameManager.onAttachedToTarget(target);
+    const info = target._getTargetInfo();
+    switch (info.type) {
+      case 'worker': {
+        const worker = new WebWorker(
+          session,
+          target.url(),
+          this.#addConsoleMessage.bind(this),
+          this.#handleException.bind(this)
+        );
+        this.#workers.set(session.id(), worker);
+        this.emit(PageEvent.WorkerCreated, worker);
+        break;
+      }
     }
     session.on(CDPSessionEvent.Ready, this.#onAttachedToTarget);
   };
@@ -1217,6 +1243,26 @@ export class CdpPage extends Page {
     options: WaitTimeoutOptions = {}
   ): Promise<DeviceRequestPrompt> {
     return await this.mainFrame().waitForDevicePrompt(options);
+  }
+
+  override async worker(
+    url: string,
+    options: WaitForTargetOptions = {}
+  ): Promise<WebWorker> {
+    const {timeout: ms = 30_000} = options;
+    return await firstValueFrom(
+      merge(
+        from(this.workers()),
+        fromEvent(this, PageEvent.WorkerCreated) as Observable<
+          PageEvents[PageEvent.WorkerCreated]
+        >
+      ).pipe(
+        filter(worker => {
+          return worker.url() === url;
+        }),
+        raceWith(timeout(ms))
+      )
+    );
   }
 }
 

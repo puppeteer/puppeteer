@@ -78,6 +78,7 @@ export class WebWorker extends EventEmitter<Record<EventType, unknown>> {
   #world: IsolatedWorld;
   #client: CDPSession;
   #url: string;
+  #terminated = false;
 
   /**
    * @internal
@@ -115,6 +116,21 @@ export class WebWorker extends EventEmitter<Record<EventType, unknown>> {
 
     // This might fail if the target is closed before we receive all execution contexts.
     this.#client.send('Runtime.enable').catch(debugError);
+  }
+
+  /**
+   * @internal
+   */
+  set terminated(value: boolean) {
+    this.#terminated = value;
+  }
+
+  /**
+   * Whether the {@link WebWorker}
+   * {@link https://developer.mozilla.org/en-US/docs/Web/API/Worker/terminate | terminated}.
+   */
+  get terminated(): boolean {
+    return this.#terminated;
   }
 
   /**
