@@ -23,6 +23,8 @@ import type {AwaitableIterable} from '../common/types.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 
+const NON_ELEMENT_NODE_ROLES = new Set(['StaticText', 'InlineTextBox']);
+
 const queryAXTree = async (
   client: CDPSession,
   element: ElementHandle<Node>,
@@ -35,7 +37,7 @@ const queryAXTree = async (
     role,
   });
   return nodes.filter((node: Protocol.Accessibility.AXNode) => {
-    return !node.role || node.role.value !== 'StaticText';
+    return !node.role || !NON_ELEMENT_NODE_ROLES.has(node.role.value);
   });
 };
 
