@@ -25,7 +25,7 @@ import type {
 } from './types.js';
 
 export function extendProcessEnv(envs: object[]): NodeJS.ProcessEnv {
-  return envs.reduce(
+  const env = envs.reduce(
     (acc: object, item: object) => {
       Object.assign(acc, item);
       return acc;
@@ -33,7 +33,28 @@ export function extendProcessEnv(envs: object[]): NodeJS.ProcessEnv {
     {
       ...process.env,
     }
-  ) as NodeJS.ProcessEnv;
+  );
+
+  if (process.env['CI']) {
+    const puppeteerEnv = Object.entries(env).reduce(
+      (acc, [key, value]) => {
+        if (key.startsWith('PUPPETEER_')) {
+          acc[key] = value;
+        }
+
+        return acc;
+      },
+      {} as Record<string, unknown>
+    );
+
+    console.log(
+      'PUPPETEER env:\n',
+      JSON.stringify(puppeteerEnv, null, 2),
+      '\n'
+    );
+  }
+
+  return env as NodeJS.ProcessEnv;
 }
 
 export function getFilename(file: string): string {

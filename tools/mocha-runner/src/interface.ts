@@ -32,7 +32,11 @@ const skippedTests: Array<{testIdPattern: string; skip: true}> = process.env[
   ? JSON.parse(process.env['PUPPETEER_SKIPPED_TEST_CONFIG'])
   : [];
 
-const deflakeRetries = Number(process.env['PUPPETEER_DEFLAKE_RETRIES'] ?? 100);
+const deflakeRetries = Number(
+  process.env['PUPPETEER_DEFLAKE_RETRIES']
+    ? process.env['PUPPETEER_DEFLAKE_RETRIES']
+    : 100
+);
 const deflakeTestPattern: string | undefined =
   process.env['PUPPETEER_DEFLAKE_TESTS'];
 
@@ -136,10 +140,7 @@ function customBDDInterface(suite: Mocha.Suite) {
         );
         if (shouldDeflakeTest(test)) {
           const deflakeSuit = Mocha.Suite.create(suite, 'with Debug Logs');
-          test.parent = deflakeSuit;
-          deflakeSuit.file = file;
-          deflakeSuit.parent = suite;
-
+          test.file = file;
           deflakeSuit.beforeEach(function () {
             setLogCapture(true);
           });
@@ -147,7 +148,6 @@ function customBDDInterface(suite: Mocha.Suite) {
           for (let i = 0; i < deflakeRetries; i++) {
             deflakeSuit.addTest(test.clone());
           }
-
           return test;
         } else if (!(itOnly || describeOnly) && shouldSkipTest(test)) {
           const test = new Mocha.Test(title);
