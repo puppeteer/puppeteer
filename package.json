@@ -121,7 +121,7 @@
     "@puppeteer/docgen": "file:tools/docgen",
     "@prettier/sync": "0.3.0",
     "@types/debug": "4.1.9",
-    "@types/diff": "5.0.5",
+    "@types/diff": "5.0.6",
     "@types/mime": "3.0.2",
     "@types/mocha": "10.0.2",
     "@types/node": "20.8.4",
