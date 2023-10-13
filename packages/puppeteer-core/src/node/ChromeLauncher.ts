@@ -166,6 +166,7 @@ export class ChromeLauncher extends ProductLauncher {
   override defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
     // See https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md
 
+    // Merge default disabled features with user-provided ones, if any.
     const disabledFeatures = [
       'Translate',
       // AcceptCHFrame disabled because of crbug.com/1348106.
@@ -174,9 +175,14 @@ export class ChromeLauncher extends ProductLauncher {
       'OptimizationHints',
       // https://crbug.com/1492053
       'ProcessPerSiteUpToMainFrameThreshold',
+      ...getFeatures('--disable-features', options.args),
     ];
 
-    const enabledFeatures = ['NetworkServiceInProcess2'];
+    // Merge default enabled features with user-provided ones, if any.
+    const enabledFeatures = [
+      'NetworkServiceInProcess2',
+      ...getFeatures('--enable-features', options.args),
+    ];
 
     const chromeArguments = [
       '--allow-pre-commit-input',
@@ -265,4 +271,24 @@ function convertPuppeteerChannelToBrowsersChannel(
     case 'chrome-canary':
       return BrowsersChromeReleaseChannel.CANARY;
   }
+}
+
+/**
+ * Extracts all features from the given command-line flag.
+ *
+ * Example input:
+ * ["--enable-features=NetworkService,NetworkServiceInProcess", "--enable-features=Foo"]
+ *
+ * Example output:
+ * ["NetworkService", "NetworkServiceInProcess", "Foo"]
+ */
+export function getFeatures(flag: string, options: string[] = []): string[] {
+  const opts = options
+    .filter(s => {
+      return s.startsWith(flag);
+    })
+    .map(s => {
+      return s.split(new RegExp(`${flag}` + '[=\\s]*'))[1]!.trim();
+    });
+  return opts.length === 0 ? [] : opts.join(',').split(',');
 }
