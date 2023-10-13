@@ -18,7 +18,6 @@ import type {Protocol} from 'devtools-protocol';
 
 import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {FrameEvent} from '../api/Frame.js';
-import type {Page} from '../api/Page.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import {debugError, PuppeteerURL, UTILITY_WORLD_NAME} from '../common/util.js';
@@ -36,6 +35,7 @@ import {FrameTree} from './FrameTree.js';
 import type {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {NetworkManager} from './NetworkManager.js';
+import type {CdpPage} from './Page.js';
 import type {CdpTarget} from './Target.js';
 
 /**
@@ -77,7 +77,7 @@ const TIME_FOR_WAITING_FOR_SWAP = 100; // ms.
  * @internal
  */
 export class FrameManager extends EventEmitter<FrameManagerEvents> {
-  #page: Page;
+  #page: CdpPage;
   #networkManager: NetworkManager;
   #timeoutSettings: TimeoutSettings;
   #contextIdToContext = new Map<string, ExecutionContext>();
@@ -114,7 +114,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
 
   constructor(
     client: CDPSession,
-    page: Page,
+    page: CdpPage,
     ignoreHTTPSErrors: boolean,
     timeoutSettings: TimeoutSettings
   ) {
@@ -291,7 +291,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     return this.#contextIdToContext.get(`${session.id()}:${contextId}`);
   }
 
-  page(): Page {
+  page(): CdpPage {
     return this.#page;
   }
 
