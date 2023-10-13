@@ -24,6 +24,11 @@ import {
   NEVER,
   timer,
   type Observable,
+  firstValueFrom,
+  fromEvent,
+  filterAsync,
+  from,
+  raceWith,
 } from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {Page} from '../api/Page.js';
@@ -34,8 +39,8 @@ import {isErrorLike} from '../util/ErrorLike.js';
 
 import {debug} from './Debug.js';
 import {TimeoutError} from './Errors.js';
-import {EventSubscription} from './EventEmitter.js';
-import type {Awaitable} from './types.js';
+import type {EventEmitter, EventType} from './EventEmitter.js';
+import type {NetworkManagerEvents} from './NetworkManagerEvents.js';
 
 /**
  * @internal
@@ -329,39 +334,6 @@ export const isDate = (obj: unknown): obj is Date => {
 /**
  * @internal
  */
-export async function waitForEvent<T>(
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  emitter: any,
-  eventName: string | symbol,
-  predicate: (event: T) => Awaitable<boolean>,
-  timeout: number,
-  abortPromise: Promise<Error> | Deferred<Error>
-): Promise<T> {
-  const deferred = Deferred.create<T>({
-    message: `Timeout exceeded while waiting for event ${String(eventName)}`,
-    timeout,
-  });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  using _ = new EventSubscription(emitter, eventName, async (event: any) => {
-    if (await predicate(event)) {
-      deferred.resolve(event);
-    }
-  });
-
-  try {
-    const response = await Deferred.race<T | Error>([deferred, abortPromise]);
-    if (isErrorLike(response)) {
-      throw response;
-    }
-    return response;
-  } catch (error) {
-    throw error;
-  }
-}
-
-/**
- * @internal
- */
 export function evaluationString(
   fun: Function | string,
   ...args: unknown[]
@@ -631,4 +603,33 @@ export const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
  */
 export function getSourceUrlComment(url: string): string {
   return `//# sourceURL=${url}`;
+}
+
+/**
+ * @internal
+ */
+export async function waitForHTTP<T extends {url(): string}>(
+  networkManager: EventEmitter<NetworkManagerEvents>,
+  eventName: EventType,
+  urlOrPredicate: string | ((res: T) => boolean | Promise<boolean>),
+  /** Time after the function will timeout */
+  ms: number,
+  cancelation: Deferred<never>
+): Promise<T> {
+  return await firstValueFrom(
+    (
+      fromEvent(networkManager, eventName as unknown as string) as Observable<T>
+    ).pipe(
+      filterAsync(async http => {
+        if (isString(urlOrPredicate)) {
+          return urlOrPredicate === http.url();
+        }
+        if (typeof urlOrPredicate === 'function') {
+          return !!(await urlOrPredicate(http));
+        }
+        return false;
+      }),
+      raceWith(timeout(ms), from(cancelation.valueOrThrow()))
+    )
+  );
 }

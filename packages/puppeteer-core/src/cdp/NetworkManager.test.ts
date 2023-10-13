@@ -22,9 +22,10 @@ import type {CDPSessionEvents} from '../api/CDPSession.js';
 import type {HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import {EventEmitter} from '../common/EventEmitter.js';
+import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
 
 import type {CdpFrame} from './Frame.js';
-import {NetworkManager, NetworkManagerEvent} from './NetworkManager.js';
+import {NetworkManager} from './NetworkManager.js';
 
 // TODO: develop a helper to generate fake network events for attributes that
 // are not relevant for the network manager to make tests shorter.

@@ -43,8 +43,8 @@ import {
 } from '../common/ConsoleMessage.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {FileChooser} from '../common/FileChooser.js';
+import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
-import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {BindingPayload, HandleFor} from '../common/types.js';
 import {
   createClientError,
@@ -52,11 +52,10 @@ import {
   evaluationString,
   getReadableAsBuffer,
   getReadableFromProtocolStream,
-  isString,
   pageBindingInitString,
   validateDialogType,
   valueFromRemoteObject,
-  waitForEvent,
+  waitForHTTP,
   waitWithTimeout,
 } from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -79,11 +78,7 @@ import type {CdpFrame} from './Frame.js';
 import {FrameManager, FrameManagerEvent} from './FrameManager.js';
 import {CdpKeyboard, CdpMouse, CdpTouchscreen} from './Input.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
-import {
-  NetworkManagerEvent,
-  type Credentials,
-  type NetworkConditions,
-} from './NetworkManager.js';
+import type {Credentials, NetworkConditions} from './NetworkManager.js';
 import type {CdpTarget} from './Target.js';
 import {TargetManagerEvent} from './TargetManager.js';
 import {Tracing} from './Tracing.js';
@@ -121,7 +116,6 @@ export class CdpPage extends Page {
   #target: CdpTarget;
   #keyboard: CdpKeyboard;
   #mouse: CdpMouse;
-  #timeoutSettings = new TimeoutSettings();
   #touchscreen: CdpTouchscreen;
   #accessibility: Accessibility;
   #frameManager: FrameManager;
@@ -239,7 +233,7 @@ export class CdpPage extends Page {
       client,
       this,
       ignoreHTTPSErrors,
-      this.#timeoutSettings
+      this._timeoutSettings
     );
     this.#emulationManager = new EmulationManager(client);
     this.#tracing = new Tracing(client);
@@ -402,7 +396,7 @@ export class CdpPage extends Page {
     options: WaitTimeoutOptions = {}
   ): Promise<FileChooser> {
     const needsEnable = this.#fileChooserDeferreds.size === 0;
-    const {timeout = this.#timeoutSettings.timeout()} = options;
+    const {timeout = this._timeoutSettings.timeout()} = options;
     const deferred = Deferred.create<FileChooser>({
       message: `Waiting for \`FileChooser\` failed: ${timeout}ms exceeded`,
       timeout,
@@ -522,15 +516,15 @@ export class CdpPage extends Page {
   }
 
   override setDefaultNavigationTimeout(timeout: number): void {
-    this.#timeoutSettings.setDefaultNavigationTimeout(timeout);
+    this._timeoutSettings.setDefaultNavigationTimeout(timeout);
   }
 
   override setDefaultTimeout(timeout: number): void {
-    this.#timeoutSettings.setDefaultTimeout(timeout);
+    this._timeoutSettings.setDefaultTimeout(timeout);
   }
 
   override getDefaultTimeout(): number {
-    return this.#timeoutSettings.timeout();
+    return this._timeoutSettings.timeout();
   }
 
   override async queryObjects<Prototype>(
@@ -876,21 +870,13 @@ export class CdpPage extends Page {
     urlOrPredicate: string | ((req: HTTPRequest) => boolean | Promise<boolean>),
     options: {timeout?: number} = {}
   ): Promise<HTTPRequest> {
-    const {timeout = this.#timeoutSettings.timeout()} = options;
-    return await waitForEvent(
+    const {timeout = this._timeoutSettings.timeout()} = options;
+    return await waitForHTTP(
       this.#frameManager.networkManager,
       NetworkManagerEvent.Request,
-      async request => {
-        if (isString(urlOrPredicate)) {
-          return urlOrPredicate === request.url();
-        }
-        if (typeof urlOrPredicate === 'function') {
-          return !!(await urlOrPredicate(request));
-        }
-        return false;
-      },
+      urlOrPredicate,
       timeout,
-      this.#sessionCloseDeferred.valueOrThrow()
+      this.#sessionCloseDeferred
     );
   }
 
@@ -900,28 +886,20 @@ export class CdpPage extends Page {
       | ((res: HTTPResponse) => boolean | Promise<boolean>),
     options: {timeout?: number} = {}
   ): Promise<HTTPResponse> {
-    const {timeout = this.#timeoutSettings.timeout()} = options;
-    return await waitForEvent(
+    const {timeout = this._timeoutSettings.timeout()} = options;
+    return await waitForHTTP(
       this.#frameManager.networkManager,
       NetworkManagerEvent.Response,
-      async response => {
-        if (isString(urlOrPredicate)) {
-          return urlOrPredicate === response.url();
-        }
-        if (typeof urlOrPredicate === 'function') {
-          return !!(await urlOrPredicate(response));
-        }
-        return false;
-      },
+      urlOrPredicate,
       timeout,
-      this.#sessionCloseDeferred.valueOrThrow()
+      this.#sessionCloseDeferred
     );
   }
 
   override async waitForNetworkIdle(
     options: {idleTime?: number; timeout?: number} = {}
   ): Promise<void> {
-    const {idleTime = 500, timeout = this.#timeoutSettings.timeout()} = options;
+    const {idleTime = 500, timeout = this._timeoutSettings.timeout()} = options;
 
     await this._waitForNetworkIdle(
       this.#frameManager.networkManager,

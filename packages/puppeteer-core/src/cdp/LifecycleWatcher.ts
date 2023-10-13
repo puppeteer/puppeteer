@@ -17,17 +17,18 @@
 import type Protocol from 'devtools-protocol';
 
 import {type Frame, FrameEvent} from '../api/Frame.js';
+import type {HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {TimeoutError} from '../common/Errors.js';
 import {EventSubscription} from '../common/EventEmitter.js';
+import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {DisposableStack} from '../util/disposable.js';
 
 import type {CdpFrame} from './Frame.js';
 import {FrameManagerEvent} from './FrameManager.js';
-import type {CdpHTTPRequest} from './HTTPRequest.js';
-import {type NetworkManager, NetworkManagerEvent} from './NetworkManager.js';
+import type {NetworkManager} from './NetworkManager.js';
 
 /**
  * @public
@@ -78,7 +79,7 @@ export class LifecycleWatcher {
   #expectedLifecycle: ProtocolLifeCycleEvent[];
   #frame: CdpFrame;
   #timeout: number;
-  #navigationRequest: CdpHTTPRequest | null = null;
+  #navigationRequest: HTTPRequest | null = null;
   #subscriptions = new DisposableStack();
   #initialLoaderId: string;
 
@@ -184,7 +185,7 @@ export class LifecycleWatcher {
     this.#checkLifecycleComplete();
   }
 
-  #onRequest(request: CdpHTTPRequest): void {
+  #onRequest(request: HTTPRequest): void {
     if (request.frame() !== this.#frame || !request.isNavigationRequest()) {
       return;
     }
@@ -199,7 +200,7 @@ export class LifecycleWatcher {
     }
   }
 
-  #onRequestFailed(request: CdpHTTPRequest): void {
+  #onRequestFailed(request: HTTPRequest): void {
     if (this.#navigationRequest?._requestId !== request._requestId) {
       return;
     }

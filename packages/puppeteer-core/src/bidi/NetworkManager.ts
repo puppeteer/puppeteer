@@ -16,12 +16,11 @@
 
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import {NetworkManagerEvent} from '../cdp/NetworkManager.js';
+import {EventEmitter, EventSubscription} from '../common/EventEmitter.js';
 import {
-  EventEmitter,
-  EventSubscription,
-  type EventType,
-} from '../common/EventEmitter.js';
+  NetworkManagerEvent,
+  type NetworkManagerEvents,
+} from '../common/NetworkManagerEvents.js';
 import {DisposableStack} from '../util/disposable.js';
 
 import type {BidiConnection} from './Connection.js';
@@ -33,18 +32,7 @@ import type {BidiPage} from './Page.js';
 /**
  * @internal
  */
-export interface BidiNetworkManagerEvents extends Record<EventType, unknown> {
-  [NetworkManagerEvent.Request]: BidiHTTPRequest;
-  [NetworkManagerEvent.RequestServedFromCache]: BidiHTTPRequest;
-  [NetworkManagerEvent.Response]: BidiHTTPResponse;
-  [NetworkManagerEvent.RequestFailed]: BidiHTTPRequest;
-  [NetworkManagerEvent.RequestFinished]: BidiHTTPRequest;
-}
-
-/**
- * @internal
- */
-export class BidiNetworkManager extends EventEmitter<BidiNetworkManagerEvents> {
+export class BidiNetworkManager extends EventEmitter<NetworkManagerEvents> {
   #connection: BidiConnection;
   #page: BidiPage;
   #subscriptions = new DisposableStack();

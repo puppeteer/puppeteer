@@ -28,16 +28,18 @@ import {
   type ResponseForRequest,
   STATUS_TEXTS,
 } from '../api/HTTPRequest.js';
-import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {ProtocolError} from '../common/Errors.js';
 import {debugError, isString} from '../common/util.js';
 import {assert} from '../util/assert.js';
+
+import type {CdpHTTPResponse} from './HTTPResponse.js';
 
 /**
  * @internal
  */
 export class CdpHTTPRequest extends HTTPRequest {
   declare _redirectChain: CdpHTTPRequest[];
+  declare _response: CdpHTTPResponse | null;
 
   #client: CDPSession;
   #isNavigationRequest: boolean;
@@ -191,7 +193,7 @@ export class CdpHTTPRequest extends HTTPRequest {
     return this.#headers;
   }
 
-  override response(): HTTPResponse | null {
+  override response(): CdpHTTPResponse | null {
     return this._response;
   }
 

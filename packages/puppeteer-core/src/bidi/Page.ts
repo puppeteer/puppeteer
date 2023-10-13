@@ -33,7 +33,6 @@ import {Accessibility} from '../cdp/Accessibility.js';
 import {Coverage} from '../cdp/Coverage.js';
 import {EmulationManager as CdpEmulationManager} from '../cdp/EmulationManager.js';
 import {FrameTree} from '../cdp/FrameTree.js';
-import {NetworkManagerEvent} from '../cdp/NetworkManager.js';
 import {Tracing} from '../cdp/Tracing.js';
 import {
   ConsoleMessage,
@@ -45,15 +44,14 @@ import {
   TimeoutError,
 } from '../common/Errors.js';
 import type {Handler} from '../common/EventEmitter.js';
+import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
-import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {Awaitable} from '../common/types.js';
 import {
   debugError,
   evaluationString,
-  isString,
   validateDialogType,
-  waitForEvent,
+  waitForHTTP,
   waitWithTimeout,
 } from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -87,7 +85,6 @@ import {BidiSerializer} from './Serializer.js';
  */
 export class BidiPage extends Page {
   #accessibility: Accessibility;
-  #timeoutSettings = new TimeoutSettings();
   #connection: BidiConnection;
   #frameTree = new FrameTree<BidiFrame>();
   #networkManager: BidiNetworkManager;
@@ -184,7 +181,7 @@ export class BidiPage extends Page {
     const frame = new BidiFrame(
       this,
       this.#browsingContext,
-      this.#timeoutSettings,
+      this._timeoutSettings,
       this.#browsingContext.parent
     );
     this.#frameTree.addFrame(frame);
@@ -356,7 +353,7 @@ export class BidiPage extends Page {
       const frame = new BidiFrame(
         this,
         context,
-        this.#timeoutSettings,
+        this._timeoutSettings,
         context.parent
       );
       this.#frameTree.addFrame(frame);
@@ -490,7 +487,7 @@ export class BidiPage extends Page {
   ): Promise<BidiHTTPResponse | null> {
     const {
       waitUntil = 'load',
-      timeout = this.#timeoutSettings.navigationTimeout(),
+      timeout = this._timeoutSettings.navigationTimeout(),
     } = options;
 
     const readinessState = lifeCycleToReadinessState.get(
@@ -519,15 +516,15 @@ export class BidiPage extends Page {
   }
 
   override setDefaultNavigationTimeout(timeout: number): void {
-    this.#timeoutSettings.setDefaultNavigationTimeout(timeout);
+    this._timeoutSettings.setDefaultNavigationTimeout(timeout);
   }
 
   override setDefaultTimeout(timeout: number): void {
-    this.#timeoutSettings.setDefaultTimeout(timeout);
+    this._timeoutSettings.setDefaultTimeout(timeout);
   }
 
   override getDefaultTimeout(): number {
-    return this.#timeoutSettings.timeout();
+    return this._timeoutSettings.timeout();
   }
 
   override isJavaScriptEnabled(): boolean {
@@ -691,21 +688,13 @@ export class BidiPage extends Page {
       | ((req: BidiHTTPRequest) => boolean | Promise<boolean>),
     options: {timeout?: number} = {}
   ): Promise<BidiHTTPRequest> {
-    const {timeout = this.#timeoutSettings.timeout()} = options;
-    return await waitForEvent(
+    const {timeout = this._timeoutSettings.timeout()} = options;
+    return await waitForHTTP(
       this.#networkManager,
       NetworkManagerEvent.Request,
-      async request => {
-        if (isString(urlOrPredicate)) {
-          return urlOrPredicate === request.url();
-        }
-        if (typeof urlOrPredicate === 'function') {
-          return !!(await urlOrPredicate(request));
-        }
-        return false;
-      },
+      urlOrPredicate,
       timeout,
-      this.#closedDeferred.valueOrThrow()
+      this.#closedDeferred
     );
   }
 
@@ -715,28 +704,20 @@ export class BidiPage extends Page {
       | ((res: BidiHTTPResponse) => boolean | Promise<boolean>),
     options: {timeout?: number} = {}
   ): Promise<BidiHTTPResponse> {
-    const {timeout = this.#timeoutSettings.timeout()} = options;
-    return await waitForEvent(
+    const {timeout = this._timeoutSettings.timeout()} = options;
+    return await waitForHTTP(
       this.#networkManager,
       NetworkManagerEvent.Response,
-      async response => {
-        if (isString(urlOrPredicate)) {
-          return urlOrPredicate === response.url();
-        }
-        if (typeof urlOrPredicate === 'function') {
-          return !!(await urlOrPredicate(response));
-        }
-        return false;
-      },
+      urlOrPredicate,
       timeout,
-      this.#closedDeferred.valueOrThrow()
+      this.#closedDeferred
     );
   }
 
   override async waitForNetworkIdle(
     options: {idleTime?: number; timeout?: number} = {}
   ): Promise<void> {
-    const {idleTime = 500, timeout = this.#timeoutSettings.timeout()} = options;
+    const {idleTime = 500, timeout = this._timeoutSettings.timeout()} = options;
 
     await this._waitForNetworkIdle(
       this.#networkManager,
