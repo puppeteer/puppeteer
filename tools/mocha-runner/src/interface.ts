@@ -136,18 +136,19 @@ function customBDDInterface(suite: Mocha.Suite) {
         );
         if (shouldDeflakeTest(test)) {
           const deflakeSuit = Mocha.Suite.create(suite, 'with Debug Logs');
-          test.parent = deflakeSuit;
-          deflakeSuit.file = file;
-          deflakeSuit.parent = suite;
+          test.file = file;
 
+          console.log('Created Deflake suit with parent', suite.fullTitle());
           deflakeSuit.beforeEach(function () {
             setLogCapture(true);
           });
           deflakeSuit.afterEach(dumpLogsIfFail);
           for (let i = 0; i < deflakeRetries; i++) {
+            console.log('Added Test');
             deflakeSuit.addTest(test.clone());
           }
 
+          console.log(deflakeSuit);
           return test;
         } else if (!(itOnly || describeOnly) && shouldSkipTest(test)) {
           const test = new Mocha.Test(title);

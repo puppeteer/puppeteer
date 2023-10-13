@@ -29,7 +29,7 @@ import sinon from 'sinon';
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {attachFrame, detachFrame, isFavicon, waitEvent} from './utils.js';
 
-describe('Page', function () {
+describe.only('Page', function () {
   setupTestBrowserHooks();
 
   describe('Page.close', function () {

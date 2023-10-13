@@ -85,20 +85,16 @@ jobs:
         run: node tools/download_chrome_bidi.mjs ~/.cache/puppeteer/chrome-canary
       - name: Run all tests (for non-Linux)
         if: ${{ inputs.os != 'ubuntu-latest' }}
-        run: |
-          export PUPPETEER_DEFLAKE_TESTS="${{ inputs.tests }}"
-          npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
-          PUPPETEER_DEFLAKE_RETRIES: ${{ inputs.retries }}
-
+          PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
       - name: Run all tests (for Linux)
         if: ${{ inputs.os == 'ubuntu-latest' }}
-        run: |
-          export PUPPETEER_DEFLAKE_TESTS="${{ inputs.tests }}" 
-          xvfb-run --auto-servernum npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
+          PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
           PUPPETEER_DEFLAKE_RETRIES: ${{ inputs.retries }}
 
   firefox-tests:
@@ -136,15 +132,13 @@ jobs:
         run: npm run postinstall
       - name: Run all tests (for non-Linux)
         if: ${{ inputs.os != 'ubuntu-latest' }}
-        run: |
-          export PUPPETEER_DEFLAKE_TESTS="${{ inputs.tests }}"
-          npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
+          PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
           PUPPETEER_DEFLAKE_RETRIES: ${{ inputs.retries }}
       - name: Run all tests (for Linux)
         if: ${{ inputs.os == 'ubuntu-latest' }}
-        run: |
-          export PUPPETEER_DEFLAKE_TESTS="${{ inputs.tests }}"
-          xvfb-run --auto-servernum npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
+          PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
           PUPPETEER_DEFLAKE_RETRIES: ${{ inputs.retries }}
