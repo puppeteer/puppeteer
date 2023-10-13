@@ -7,35 +7,35 @@
   },
   "scripts": {
     "build": "wireit",
-    "check:pinned-deps": "tsx tools/ensure-pinned-deps",
     "check": "npm run check --workspaces --if-present && run-p check:*",
+    "check:pinned-deps": "tsx tools/ensure-pinned-deps",
     "clean": "npm run clean --workspaces --if-present",
     "debug": "mocha --inspect-brk",
     "docs": "wireit",
-    "format:eslint": "eslint --ext js --ext ts --fix .",
-    "format:prettier": "prettier --write .",
-    "format:expectations": "node tools/sort-test-expectations.js",
+    "doctest": "wireit",
     "format": "run-s format:*",
+    "format:eslint": "eslint --ext js --ext ts --fix .",
+    "format:expectations": "node tools/sort-test-expectations.js",
+    "format:prettier": "prettier --write .",
     "generate:markdown": "tsx tools/generate_docs.ts",
+    "lint": "run-s lint:*",
     "lint:eslint": "([ \"$CI\" = true ] && eslint --ext js --ext ts --quiet -f codeframe . || eslint --ext js --ext ts .)",
     "lint:prettier": "prettier --check .",
-    "lint": "run-s lint:prettier lint:eslint",
     "postinstall": "npm run postinstall --workspaces --if-present",
     "prepare": "npm run prepare --workspaces --if-present",
-    "doctest": "wireit",
+    "test": "wireit",
     "test-install": "npm run test --workspace @puppeteer-test/installation",
     "test-types": "tsd -t packages/puppeteer",
-    "test:chrome:headful": "wireit",
-    "test:chrome:new-headless": "wireit",
-    "test:chrome:headless": "wireit",
+    "test:chrome": "wireit",
     "test:chrome:bidi": "wireit",
     "test:chrome:bidi-local": "wireit",
-    "test:chrome": "wireit",
+    "test:chrome:headful": "wireit",
+    "test:chrome:headless": "wireit",
+    "test:chrome:new-headless": "wireit",
+    "test:firefox": "wireit",
     "test:firefox:bidi": "wireit",
     "test:firefox:headful": "wireit",
     "test:firefox:headless": "wireit",
-    "test:firefox": "wireit",
-    "test": "wireit",
     "validate-licenses": "tsx tools/third_party/validate-licenses.ts",
     "unit": "npm run unit --workspaces --if-present"
   },
@@ -67,6 +67,20 @@
         "./tools/doctest:build"
       ]
     },
+    "test:chrome": {
+      "dependencies": [
+        "test:chrome:bidi",
+        "test:chrome:headful",
+        "test:chrome:headless",
+        "test:chrome:new-headless"
+      ]
+    },
+    "test:chrome:bidi": {
+      "command": "npm test -- --test-suite chrome-bidi"
+    },
+    "test:chrome:bidi-local": {
+      "command": "PUPPETEER_EXECUTABLE_PATH=$(node tools/download_chrome_bidi.mjs ~/.cache/puppeteer/chrome-canary --shell) npm test -- --test-suite chrome-bidi"
+    },
     "test:chrome:headful": {
       "command": "npm test -- --test-suite chrome-headful"
     },
@@ -76,11 +90,8 @@
     "test:chrome:new-headless": {
       "command": "npm test -- --test-suite chrome-new-headless"
     },
-    "test:chrome:bidi": {
-      "command": "npm test -- --test-suite chrome-bidi"
-    },
-    "test:chrome:bidi-local": {
-      "command": "PUPPETEER_EXECUTABLE_PATH=$(node tools/download_chrome_bidi.mjs ~/.cache/puppeteer/chrome-canary --shell) npm test -- --test-suite chrome-bidi"
+    "test:firefox:bidi": {
+      "command": "npm test -- --test-suite firefox-bidi"
     },
     "test:firefox:headful": {
       "command": "npm test -- --test-suite firefox-headful"
@@ -88,22 +99,11 @@
     "test:firefox:headless": {
       "command": "npm test -- --test-suite firefox-headless"
     },
-    "test:firefox:bidi": {
-      "command": "npm test -- --test-suite firefox-bidi"
-    },
-    "test:chrome": {
-      "dependencies": [
-        "test:chrome:headful",
-        "test:chrome:headless",
-        "test:chrome:new-headless",
-        "test:chrome:bidi"
-      ]
-    },
     "test:firefox": {
       "dependencies": [
+        "test:firefox:bidi",
         "test:firefox:headful",
-        "test:firefox:headless",
-        "test:firefox:bidi"
+        "test:firefox:headless"
       ]
     },
     "test": {
