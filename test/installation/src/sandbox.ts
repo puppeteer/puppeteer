@@ -72,6 +72,7 @@ declare module 'mocha' {
  */
 export const configureSandbox = (options: SandboxOptions): void => {
   before(async function (): Promise<void> {
+    console.time('before');
     const sandbox = await mkdtemp(join(tmpdir(), 'puppeteer-'));
     const dependencies = (options.dependencies ?? []).map(module => {
       switch (module) {
@@ -125,13 +126,16 @@ export const configureSandbox = (options: SandboxOptions): void => {
       await writeFile(script, content);
       await execFile('node', [script], {cwd: sandbox, env});
     };
+    console.timeEnd('before');
   });
 
   after(async function () {
+    console.time('after');
     if (!process.env['KEEP_SANDBOX']) {
       await rm(this.sandbox, {recursive: true, force: true, maxRetries: 5});
     } else {
       console.log('sandbox saved in', this.sandbox);
     }
+    console.timeEnd('after');
   });
 };
