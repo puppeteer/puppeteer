@@ -1206,7 +1206,7 @@ export class CdpPage extends Page {
       await connection.send('Target.closeTarget', {
         targetId: this.#primaryTarget._targetId,
       });
-      await this.#primaryTarget._isClosedDeferred.valueOrThrow();
+      await this.#tabTarget._isClosedDeferred.valueOrThrow();
     }
   }
 
