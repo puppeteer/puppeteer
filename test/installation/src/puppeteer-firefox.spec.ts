@@ -16,8 +16,8 @@
 
 import assert from 'assert';
 import {readdir} from 'fs/promises';
-import {join} from 'path';
 import {platform} from 'os';
+import {join} from 'path';
 
 import {configureSandbox} from './sandbox.js';
 import {readAsset} from './util.js';

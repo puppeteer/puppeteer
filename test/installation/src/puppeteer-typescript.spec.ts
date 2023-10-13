@@ -15,8 +15,8 @@
  */
 
 import {readFile, writeFile} from 'fs/promises';
-import {join} from 'path';
 import {platform} from 'os';
+import {join} from 'path';
 
 import {configureSandbox} from './sandbox.js';
 import {execFile, readAsset} from './util.js';
