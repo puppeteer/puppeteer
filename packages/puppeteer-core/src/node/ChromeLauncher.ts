@@ -282,6 +282,8 @@ function convertPuppeteerChannelToBrowsersChannel(
  *
  * Example output:
  * ["NetworkService", "NetworkServiceInProcess", "Foo"]
+ *
+ * @internal
  */
 export function getFeatures(flag: string, options: string[] = []): string[] {
   const opts = options
