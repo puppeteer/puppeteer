@@ -68,7 +68,8 @@ export class CdpCDPSession extends CDPSession {
 
   override parentSession(): CDPSession | undefined {
     if (!this.#parentSessionId) {
-      return;
+      // To make it work in Firefox that does not have parent (tab) sessions.
+      return this;
     }
     const parent = this.#connection?.session(this.#parentSessionId);
     return parent ?? undefined;
