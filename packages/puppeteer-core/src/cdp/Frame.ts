@@ -21,7 +21,6 @@ import {Frame, FrameEvent, throwIfDetached} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {WaitTimeoutOptions} from '../api/Page.js';
 import {setPageContent} from '../common/util.js';
-import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
@@ -293,12 +292,12 @@ export class CdpFrame extends Frame {
   }
 
   #deviceRequestPromptManager(): DeviceRequestPromptManager {
-    if (this.isOOPFrame()) {
-      return this._frameManager._deviceRequestPromptManager(this.#client);
-    }
     const parentFrame = this.parentFrame();
-    assert(parentFrame !== null);
-    return parentFrame.#deviceRequestPromptManager();
+    if (this.isOOPFrame() || parentFrame === null) {
+      return this._frameManager._deviceRequestPromptManager(this.#client);
+    } else {
+      return parentFrame.#deviceRequestPromptManager();
+    }
   }
 
   @throwIfDetached
