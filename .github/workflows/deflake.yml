@@ -37,6 +37,7 @@ on:
       retries:
         description: Number of retries per test
         required: false
+        default: 100
         type: number
 
 jobs:
