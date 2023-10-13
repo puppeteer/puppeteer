@@ -132,6 +132,14 @@ export class BidiFrame extends Frame {
     return this.#page.frame(this._parentId ?? '');
   }
 
+  override rootFrame(): BidiFrame | null {
+    if (this.parentFrame() === null) {
+      return this;
+    } else {
+      return this.parentFrame()!.rootFrame();
+    }
+  }
+
   override childFrames(): BidiFrame[] {
     return this.#page.childFrames(this.#context.id);
   }

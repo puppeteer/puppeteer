@@ -831,6 +831,11 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   abstract parentFrame(): Frame | null;
 
   /**
+   * The root of this frame, if any.
+   */
+  abstract rootFrame(): Frame | null;
+
+  /**
    * An array of child frames.
    */
   abstract childFrames(): Frame[];

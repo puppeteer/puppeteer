@@ -304,4 +304,21 @@ describe('Frame specs', function () {
       expect(page.mainFrame().client).toBeInstanceOf(CDPSession);
     });
   });
+
+  it('rootFrame', async () => {
+    const {page, server} = await getTestState();
+    /**
+     * - main frame
+     *   - frame1
+     *   - frame2
+     *     - frame3
+     */
+    const frame1 = await attachFrame(page, 'frame1', server.EMPTY_PAGE);
+    const frame2 = await attachFrame(page, 'frame2', server.EMPTY_PAGE);
+    const frame3 = await attachFrame(frame2!, 'frame3', server.EMPTY_PAGE);
+    expect(frame1!.rootFrame()).toBe(page.mainFrame());
+    expect(frame2!.rootFrame()).toBe(page.mainFrame());
+    expect(frame3!.rootFrame()).toBe(page.mainFrame());
+    expect(page.mainFrame().rootFrame()).toBe(page.mainFrame());
+  });
 });

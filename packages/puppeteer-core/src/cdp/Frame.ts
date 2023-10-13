@@ -287,6 +287,14 @@ export class CdpFrame extends Frame {
     return this._frameManager._frameTree.parentFrame(this._id) || null;
   }
 
+  override rootFrame(): CdpFrame | null {
+    if (this.parentFrame() === null) {
+      return this;
+    } else {
+      return this.parentFrame()!.rootFrame();
+    }
+  }
+
   override childFrames(): CdpFrame[] {
     return this._frameManager._frameTree.childFrames(this._id);
   }
@@ -295,9 +303,9 @@ export class CdpFrame extends Frame {
     if (this.isOOPFrame()) {
       return this._frameManager._deviceRequestPromptManager(this.#client);
     }
-    const parentFrame = this.parentFrame();
-    assert(parentFrame !== null);
-    return parentFrame.#deviceRequestPromptManager();
+    const rootFrame = this.rootFrame();
+    assert(rootFrame !== null);
+    return rootFrame._frameManager._deviceRequestPromptManager(this.#client);
   }
 
   @throwIfDetached
