@@ -286,12 +286,14 @@ function convertPuppeteerChannelToBrowsersChannel(
  * @internal
  */
 export function getFeatures(flag: string, options: string[] = []): string[] {
-  const opts = options
+  return options
     .filter(s => {
       return s.startsWith(flag.endsWith('=') ? flag : `${flag}=`);
     })
     .map(s => {
       return s.split(new RegExp(`${flag}` + '=\\s*'))[1]?.trim();
-    });
-  return opts.length === 0 ? [] : opts.join(',').split(',');
+    })
+    .filter(s => {
+      return s;
+    }) as string[];
 }
