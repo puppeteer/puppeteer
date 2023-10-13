@@ -274,7 +274,8 @@ function convertPuppeteerChannelToBrowsersChannel(
 }
 
 /**
- * Extracts all features from the given command-line flag.
+ * Extracts all features from the given command-line flag
+ * (e.g. `--enable-features`, `--enable-features=`).
  *
  * Example input:
  * ["--enable-features=NetworkService,NetworkServiceInProcess", "--enable-features=Foo"]
@@ -285,10 +286,10 @@ function convertPuppeteerChannelToBrowsersChannel(
 export function getFeatures(flag: string, options: string[] = []): string[] {
   const opts = options
     .filter(s => {
-      return s.startsWith(flag);
+      return s.startsWith(flag.endsWith('=') ? flag : `${flag}=`);
     })
     .map(s => {
-      return s.split(new RegExp(`${flag}` + '[=\\s]*'))[1]!.trim();
+      return s.split(new RegExp(`${flag}` + '=\\s*'))[1]?.trim();
     });
   return opts.length === 0 ? [] : opts.join(',').split(',');
 }

@@ -35,9 +35,9 @@ describe('getFeatures', () => {
     expect(result).toEqual(['bar', 'baz']);
   });
 
-  it('handles whitespace around the flag and value', () => {
+  it('does not handle whitespace', () => {
     const result = getFeatures('--foo', ['--foo bar', '--foo baz ']);
-    expect(result).toEqual(['bar', 'baz']);
+    expect(result).toEqual([]);
   });
 
   it('handles equals sign around the flag and value', () => {
