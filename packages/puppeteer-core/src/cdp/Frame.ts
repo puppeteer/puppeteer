@@ -292,11 +292,11 @@ export class CdpFrame extends Frame {
   }
 
   #deviceRequestPromptManager(): DeviceRequestPromptManager {
-    const parentFrame = this.parentFrame();
-    if (this.isOOPFrame() || parentFrame === null) {
+    const rootFrame = this.page().mainFrame();
+    if (this.isOOPFrame() || rootFrame === null) {
       return this._frameManager._deviceRequestPromptManager(this.#client);
     } else {
-      return parentFrame.#deviceRequestPromptManager();
+      return rootFrame._frameManager._deviceRequestPromptManager(this.#client);
     }
   }
 
