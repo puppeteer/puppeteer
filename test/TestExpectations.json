@@ -3333,7 +3333,7 @@
     "testIdPattern": "[prerender.spec] Prerender can screencast",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["TIMEOUT"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[proxy.spec] request proxy in incognito browser context should proxy requests when configured at browser level",
