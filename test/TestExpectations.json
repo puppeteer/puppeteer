@@ -156,18 +156,6 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[navigation.spec] navigation Frame.goto *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Frame.waitForNavigation *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
     "testIdPattern": "[navigation.spec] navigation Page.goBack *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -195,7 +183,7 @@
     "testIdPattern": "[network.spec] network Page.setBypassServiceWorker *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL", "TIMEOUT"]
   },
   {
     "testIdPattern": "[network.spec] network Page.setBypassServiceWorker *",
@@ -792,33 +780,9 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[navigation.spec] navigation Frame.goto should reject when frame detaches",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
     "testIdPattern": "[navigation.spec] navigation Page.goto should fail when navigating to bad SSL",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Page.goto should navigate to empty page with networkidle0",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Page.goto should navigate to empty page with networkidle2",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Page.goto should navigate to page with iframe and networkidle0",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
@@ -826,18 +790,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Page.goto should wait for network idle to succeed navigation",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[network.spec] network Network Events Page.Events.RequestFinished",
@@ -2332,12 +2284,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Frame.goto should navigate subframes",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.goto should reject when frame detaches",

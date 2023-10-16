@@ -122,7 +122,7 @@ export class BidiNetworkManager extends EventEmitter<NetworkManagerEvents> {
     this.#requestMap.delete(event.request.request);
   }
 
-  getNavigationResponse(navigationId: string | null): BidiHTTPResponse | null {
+  getNavigationResponse(navigationId?: string | null): BidiHTTPResponse | null {
     if (!navigationId) {
       return null;
     }

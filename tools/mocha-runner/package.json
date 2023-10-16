@@ -21,6 +21,9 @@
       "output": [
         "bin/**",
         "tsconfig.tsbuildinfo"
+      ],
+      "dependencies": [
+        "../../packages/puppeteer-core:build"
       ]
     },
     "test": {
