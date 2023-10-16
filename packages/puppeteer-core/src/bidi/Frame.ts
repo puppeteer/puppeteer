@@ -24,6 +24,8 @@ import {
   merge,
   raceWith,
   switchMap,
+  forkJoin,
+  first,
 } from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import {
@@ -179,25 +181,19 @@ export class BidiFrame extends Frame {
   ): Promise<void> {
     const {
       waitUntil = 'load',
-      timeout = this.#timeoutSettings.navigationTimeout(),
+      timeout: ms = this.#timeoutSettings.navigationTimeout(),
     } = options;
 
     const waitUntilEvent = lifeCycleToSubscribedEvent.get(
       getWaitUntilSingle(waitUntil)
     ) as string;
 
-    await Promise.all([
-      setPageContent(this, html),
-      waitWithTimeout(
-        new Promise<void>(resolve => {
-          this.#context.once(waitUntilEvent, () => {
-            resolve();
-          });
-        }),
-        waitUntilEvent,
-        timeout
-      ),
-    ]);
+    await firstValueFrom(
+      forkJoin([
+        fromEvent(this.#context, waitUntilEvent).pipe(first()),
+        from(setPageContent(this, html)),
+      ]).pipe(raceWith(timeout(ms)))
+    );
   }
 
   context(): BrowsingContext {

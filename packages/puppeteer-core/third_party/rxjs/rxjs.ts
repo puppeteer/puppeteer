@@ -47,6 +47,7 @@ export {
   tap,
   throwIfEmpty,
   timer,
+  forkJoin,
 } from 'rxjs';
 
 import {filter, from, map, mergeMap, type Observable} from 'rxjs';

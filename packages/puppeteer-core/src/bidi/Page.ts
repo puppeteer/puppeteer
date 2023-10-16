@@ -18,6 +18,7 @@ import type {Readable} from 'stream';
 
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type Protocol from 'devtools-protocol';
+import {firstValueFrom, from, raceWith} from 'rxjs';
 
 import type {CDPSession} from '../api/CDPSession.js';
 import type {WaitForOptions} from '../api/Frame.js';
@@ -50,6 +51,7 @@ import type {Awaitable} from '../common/types.js';
 import {
   debugError,
   evaluationString,
+  timeout,
   validateDialogType,
   waitForHTTP,
   waitWithTimeout,
@@ -599,25 +601,25 @@ export class BidiPage extends Page {
       pageRanges: ranges,
       scale,
       preferCSSPageSize,
-      timeout,
+      timeout: ms,
     } = this._getPDFOptions(options, 'cm');
     const pageRanges = ranges ? ranges.split(', ') : [];
-    const {result} = await waitWithTimeout(
-      this.#connection.send('browsingContext.print', {
-        context: this.mainFrame()._id,
-        background,
-        margin,
-        orientation: landscape ? 'landscape' : 'portrait',
-        page: {
-          width,
-          height,
-        },
-        pageRanges,
-        scale,
-        shrinkToFit: !preferCSSPageSize,
-      }),
-      'browsingContext.print',
-      timeout
+    const {result} = await firstValueFrom(
+      from(
+        this.#connection.send('browsingContext.print', {
+          context: this.mainFrame()._id,
+          background,
+          margin,
+          orientation: landscape ? 'landscape' : 'portrait',
+          page: {
+            width,
+            height,
+          },
+          pageRanges,
+          scale,
+          shrinkToFit: !preferCSSPageSize,
+        })
+      ).pipe(raceWith(timeout(ms)))
     );
 
     const buffer = Buffer.from(result.data, 'base64');

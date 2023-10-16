@@ -18,6 +18,7 @@ import type {Readable} from 'stream';
 
 import type {Protocol} from 'devtools-protocol';
 
+import {firstValueFrom, from, raceWith} from '../../third_party/rxjs/rxjs.js';
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
@@ -53,10 +54,10 @@ import {
   getReadableAsBuffer,
   getReadableFromProtocolStream,
   pageBindingInitString,
+  timeout,
   validateDialogType,
   valueFromRemoteObject,
   waitForHTTP,
-  waitWithTimeout,
 } from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
@@ -1138,7 +1139,7 @@ export class CdpPage extends Page {
       pageRanges,
       preferCSSPageSize,
       omitBackground,
-      timeout,
+      timeout: ms,
     } = this._getPDFOptions(options);
 
     if (omitBackground) {
@@ -1166,10 +1167,8 @@ export class CdpPage extends Page {
       }
     );
 
-    const result = await waitWithTimeout(
-      printCommandPromise,
-      'Page.printToPDF',
-      timeout
+    const result = await firstValueFrom(
+      from(printCommandPromise).pipe(raceWith(timeout(ms)))
     );
 
     if (omitBackground) {
