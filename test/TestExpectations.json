@@ -1206,6 +1206,12 @@
     "expectations": ["FAIL", "SKIP"]
   },
   {
+    "testIdPattern": "[screencast.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[screencast.spec] Screencasts Page.screencast should validate options",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
