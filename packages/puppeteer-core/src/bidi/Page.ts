@@ -677,7 +677,7 @@ export class BidiPage extends Page {
         ...(quality === undefined ? {} : {quality: quality / 100}),
       },
       clip: clip && {
-        type: 'viewport',
+        type: 'box',
         ...clip,
       },
     });
@@ -755,7 +755,7 @@ export class BidiPage extends Page {
     const expression = evaluationExpression(pageFunction, ...args);
     const {result} = await this.#connection.send('script.addPreloadScript', {
       functionDeclaration: expression,
-      // TODO: should change spec to accept browsingContext
+      // TODO : should change spec to accept browsingContext
     });
 
     return {identifier: result.script};
@@ -786,7 +786,7 @@ export class BidiPage extends Page {
   }
 
   override async setCacheEnabled(enabled?: boolean): Promise<void> {
-    // TODO: handle CDP-specific cases such as mprach.
+    // TODO : handle CDP-specific cases such as mprach.
     await this._client().send('Network.setCacheDisabled', {
       cacheDisabled: !enabled,
     });
