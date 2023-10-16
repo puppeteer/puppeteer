@@ -372,6 +372,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler queryOne (Chromium web test) *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler waitForSelector (aria) should have an error message specifically for awaiting an element to be hidden",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
