@@ -22,6 +22,7 @@ import {EventEmitter} from '../common/EventEmitter.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
+import type {CdpCDPSession} from './CDPSession.js';
 import type {Connection} from './Connection.js';
 import type {CdpTarget} from './Target.js';
 import {
@@ -205,6 +206,7 @@ export class FirefoxTargetManager
 
     assert(target, `Target ${targetInfo.targetId} is missing`);
 
+    (session as CdpCDPSession)._setTarget(target);
     this.setupAttachmentListeners(session);
 
     this.#availableTargetsBySessionId.set(
