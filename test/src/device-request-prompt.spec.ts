@@ -54,7 +54,7 @@ describe('device request prompt', function () {
 
     await expect(
       page.waitForDevicePrompt({
-        timeout: 1,
+        timeout: 10,
       })
     ).rejects.toThrow(TimeoutError);
   }).timeout(1_000);
