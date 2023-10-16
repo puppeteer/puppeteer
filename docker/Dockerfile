@@ -1,4 +1,4 @@
-FROM node:18
+FROM node:18@sha256:cd7fa8f136023f7500490e410ba70dd3982ccca21805264f2a260a3a97be7376
 
 # Install latest chrome dev package and fonts to support major charsets (Chinese, Japanese, Arabic, Hebrew, Thai and a few others)
 # Note: this installs the necessary libs to make the bundled version of Chrome that Puppeteer
