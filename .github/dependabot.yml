@@ -34,3 +34,7 @@ updates:
       interval: daily
       time: '06:00'
       timezone: Europe/Berlin
+    groups:
+      all:
+        patterns:
+          - '*'
