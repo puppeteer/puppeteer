@@ -28,3 +28,9 @@ updates:
       all:
         patterns:
           - '*'
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: daily
+      time: '06:00'
+      timezone: Europe/Berlin
