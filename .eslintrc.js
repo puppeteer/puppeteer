@@ -1,5 +1,24 @@
+const {readdirSync} = require('fs');
+const {join} = require('path');
+
 const rulesDirPlugin = require('eslint-plugin-rulesdir');
+
 rulesDirPlugin.RULES_DIR = 'tools/eslint/lib';
+
+function getThirdPartyPackages() {
+  return readdirSync(join(__dirname, 'packages/puppeteer-core/third_party'), {
+    withFileTypes: true,
+  })
+    .filter(dirent => {
+      return dirent.isDirectory();
+    })
+    .map(({name}) => {
+      return {
+        name,
+        message: `Import \`${name}\` from the vendored location: third_party/${name}/index.js`,
+      };
+    });
+}
 
 module.exports = {
   root: true,
@@ -104,19 +123,6 @@ module.exports = {
     // ensure we don't have any it.only or describe.only in prod
     'mocha/no-exclusive-tests': 'error',
 
-    'no-restricted-imports': [
-      'error',
-      {
-        patterns: ['*Events', '*.test.js'],
-        paths: [
-          {
-            name: 'mitt',
-            message:
-              'Import `mitt` from the vendored location: third_party/mitt/index.js',
-          },
-        ],
-      },
-    ],
     'import/order': [
       'error',
       {
@@ -234,6 +240,18 @@ module.exports = {
         '@typescript-eslint/no-import-type-side-effects': 'error',
       },
       overrides: [
+        {
+          files: 'packages/puppeteer-core/src/**/*.ts',
+          rules: {
+            'no-restricted-imports': [
+              'error',
+              {
+                patterns: ['*Events', '*.test.js'],
+                paths: [...getThirdPartyPackages()],
+              },
+            ],
+          },
+        },
         {
           files: [
             'packages/puppeteer-core/src/**/*.test.ts',
