@@ -1206,6 +1206,12 @@
     "expectations": ["FAIL", "SKIP"]
   },
   {
+    "testIdPattern": "[screencast.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[screencast.spec] Screencasts Page.screencast should validate options",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -3327,7 +3333,7 @@
     "testIdPattern": "[prerender.spec] Prerender can screencast",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["TIMEOUT"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[proxy.spec] request proxy in incognito browser context should proxy requests when configured at browser level",

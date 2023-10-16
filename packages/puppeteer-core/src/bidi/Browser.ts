@@ -73,6 +73,7 @@ export class BidiBrowser extends Browser {
     // TODO: subscribe to all CDP events in the future.
     'cdp.Network.requestWillBeSent',
     'cdp.Debugger.scriptParsed',
+    'cdp.Page.screencastFrame',
   ];
 
   static async create(opts: BidiBrowserOptions): Promise<BidiBrowser> {
