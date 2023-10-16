@@ -19,23 +19,38 @@ import {TimeoutError} from 'puppeteer';
 import {launch} from './mocha-utils.js';
 
 describe('device request prompt', function () {
-  let testState: Awaited<ReturnType<typeof launch>>;
+  let state: Awaited<ReturnType<typeof launch>>;
+
+  before(async () => {
+    state = await launch(
+      {
+        args: ['--enable-features=WebBluetoothNewPermissionsBackend'],
+        ignoreHTTPSErrors: true,
+      },
+      {
+        after: 'all',
+      }
+    );
+  });
+
+  after(async () => {
+    await state.close();
+  });
 
   beforeEach(async () => {
-    testState = await launch({
-      args: ['--enable-features=WebBluetoothNewPermissionsBackend'],
-    });
+    state.context = await state.browser.createIncognitoBrowserContext();
+    state.page = await state.context.newPage();
   });
 
   afterEach(async () => {
-    await testState.close();
+    await state.context.close();
   });
 
   // Bug: #11072
   it('does not crash', async () => {
-    const {page, server} = testState;
+    const {page, httpsServer} = state;
 
-    await page.goto(server.EMPTY_PAGE);
+    await page.goto(httpsServer.EMPTY_PAGE);
 
     await expect(
       page.waitForDevicePrompt({
