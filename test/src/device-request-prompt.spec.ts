@@ -47,7 +47,9 @@ describe('device request prompt', function () {
   });
 
   // Bug: #11072
-  it('does not crash', async () => {
+  it('does not crash', async function () {
+    this.timeout(1_000);
+
     const {page, httpsServer} = state;
 
     await page.goto(httpsServer.EMPTY_PAGE);
@@ -57,5 +59,5 @@ describe('device request prompt', function () {
         timeout: 10,
       })
     ).rejects.toThrow(TimeoutError);
-  }).timeout(1_000);
+  });
 });
