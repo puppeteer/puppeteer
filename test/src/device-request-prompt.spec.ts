@@ -57,5 +57,5 @@ describe('device request prompt', function () {
         timeout: 1,
       })
     ).rejects.toThrow(TimeoutError);
-  });
+  }).timeout(1_000);
 });
