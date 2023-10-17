@@ -2677,7 +2677,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
     options: PDFOptions = {},
     lengthUnit: 'in' | 'cm' = 'in'
   ): ParsedPDFOptions {
-    const defaults = {
+    const defaults: Omit<ParsedPDFOptions, 'width' | 'height' | 'margin'> = {
       scale: 1,
       displayHeaderFooter: false,
       headerTemplate: '',
@@ -2688,6 +2688,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       preferCSSPageSize: false,
       omitBackground: false,
       timeout: 30000,
+      tagged: false,
     };
 
     let width = 8.5;
@@ -2714,15 +2715,13 @@ export abstract class Page extends EventEmitter<PageEvents> {
         convertPrintParameterToInches(options.margin?.right, lengthUnit) || 0,
     };
 
-    const output = {
+    return {
       ...defaults,
       ...options,
       width,
       height,
       margin,
     };
-
-    return output;
   }
 
   /**

@@ -1989,8 +1989,30 @@ describe('Page', function () {
       const outputFile = __dirname + '/../assets/output.pdf';
       await page.goto(server.PREFIX + '/pdf.html');
       await page.pdf({path: outputFile});
-      expect(fs.readFileSync(outputFile).byteLength).toBeGreaterThan(0);
-      fs.unlinkSync(outputFile);
+      try {
+        expect(fs.readFileSync(outputFile).byteLength).toBeGreaterThan(0);
+      } finally {
+        fs.unlinkSync(outputFile);
+      }
+    });
+
+    it('can print to PDF with accessible', async () => {
+      const {page, server} = await getTestState();
+
+      const outputFile = __dirname + '/../assets/output.pdf';
+      const outputFileAccessible =
+        __dirname + '/../assets/output-accessible.pdf';
+      await page.goto(server.PREFIX + '/pdf.html');
+      await page.pdf({path: outputFile});
+      await page.pdf({path: outputFileAccessible, tagged: true});
+      try {
+        expect(
+          fs.readFileSync(outputFileAccessible).byteLength
+        ).toBeGreaterThan(fs.readFileSync(outputFile).byteLength);
+      } finally {
+        fs.unlinkSync(outputFileAccessible);
+        fs.unlinkSync(outputFile);
+      }
     });
 
     it('can print to PDF and stream the result', async () => {
@@ -2009,9 +2031,8 @@ describe('Page', function () {
 
       await page.goto(server.PREFIX + '/pdf.html');
 
-      let error!: Error;
-      await page.pdf({timeout: 1}).catch(_error => {
-        return (error = _error);
+      const error = await page.pdf({timeout: 1}).catch(err => {
+        return err;
       });
       expect(error).toBeInstanceOf(TimeoutError);
     });
