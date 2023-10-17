@@ -167,6 +167,11 @@ export interface PDFOptions {
    */
   omitBackground?: boolean;
   /**
+   * Generate tagged (accessible) PDF.
+   * @defaultValue `false`
+   */
+  tagged?: boolean;
+  /**
    * Timeout in milliseconds. Pass `0` to disable timeout.
    * @defaultValue `30_000`
    */
