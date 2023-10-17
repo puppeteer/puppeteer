@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as BidiMapper from 'chromium-bidi/lib/cjs/bidiMapper/bidiMapper.js';
+import * as BidiMapper from 'chromium-bidi/lib/cjs/bidiMapper/BidiMapper.js';
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
