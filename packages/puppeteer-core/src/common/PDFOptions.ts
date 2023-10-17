@@ -169,6 +169,7 @@ export interface PDFOptions {
   /**
    * Generate tagged (accessible) PDF.
    * @defaultValue `false`
+   * @experimental
    */
   tagged?: boolean;
   /**
