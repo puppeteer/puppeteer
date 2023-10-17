@@ -60,4 +60,50 @@ describe('device request prompt', function () {
       })
     ).rejects.toThrow(TimeoutError);
   });
+
+  it('can be opened', async function () {
+    this.timeout(1_000);
+
+    const {page, httpsServer} = state;
+
+    await page.goto(httpsServer.PREFIX + '/device-request.html');
+
+    await expect(
+      Promise.all([
+        page.waitForDevicePrompt({timeout: 100}),
+        page.click('#bluetooth'),
+      ])
+    ).resolves.toBeTruthy();
+  });
+
+  it('can be cancelled', async function () {
+    this.timeout(1_000);
+
+    const {page, httpsServer} = state;
+
+    await page.goto(httpsServer.PREFIX + '/device-request.html');
+
+    const [devicePrompt] = await Promise.all([
+      page.waitForDevicePrompt({timeout: 100}),
+      page.click('#bluetooth'),
+    ]);
+    expect(devicePrompt).toBeTruthy();
+    await expect(devicePrompt.cancel()).resolves.not.toThrow();
+  });
+
+  it('waitForDevice does not crash', async function () {
+    this.timeout(1_000);
+
+    const {page, httpsServer} = state;
+
+    await page.goto(httpsServer.PREFIX + '/device-request.html');
+
+    const [devicePrompt] = await Promise.all([
+      page.waitForDevicePrompt({timeout: 100}),
+      page.click('#bluetooth'),
+    ]);
+    await expect(
+      devicePrompt.waitForDevice(() => false, {timeout: 10})
+    ).rejects.toThrow(TimeoutError);
+  });
 });

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Device request test</title>
+  </head>
+  <body>
+    <button onclick="clicked();" id="bluetooth">Device Request</button>
+    <script>
+      function clicked() {
+        navigator.bluetooth.requestDevice({acceptAllDevices: true})
+      }
+    </script>
+  </body>
+</html>
