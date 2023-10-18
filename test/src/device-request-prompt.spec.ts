@@ -19,6 +19,7 @@ import {TimeoutError} from 'puppeteer';
 import {launch} from './mocha-utils.js';
 
 describe('device request prompt', function () {
+  this.timeout(1_000);
   let state: Awaited<ReturnType<typeof launch>>;
 
   before(async () => {
@@ -48,8 +49,6 @@ describe('device request prompt', function () {
 
   // Bug: #11072
   it('does not crash', async function () {
-    this.timeout(1_000);
-
     const {page, httpsServer} = state;
 
     await page.goto(httpsServer.EMPTY_PAGE);
@@ -62,8 +61,6 @@ describe('device request prompt', function () {
   });
 
   it('can be opened', async function () {
-    this.timeout(1_000);
-
     const {page, httpsServer} = state;
 
     await page.goto(httpsServer.PREFIX + '/device-request.html');
@@ -77,8 +74,6 @@ describe('device request prompt', function () {
   });
 
   it('can be cancelled', async function () {
-    this.timeout(1_000);
-
     const {page, httpsServer} = state;
 
     await page.goto(httpsServer.PREFIX + '/device-request.html');
@@ -91,19 +86,19 @@ describe('device request prompt', function () {
     await expect(devicePrompt.cancel()).resolves.not.toThrow();
   });
 
-  it('waitForDevice does not crash', async function () {
-    this.timeout(1_000);
+  describe('waitForDevice', function () {
+    it('does not crash', async function () {
+      const {page, httpsServer} = state;
 
-    const {page, httpsServer} = state;
+      await page.goto(httpsServer.PREFIX + '/device-request.html');
 
-    await page.goto(httpsServer.PREFIX + '/device-request.html');
-
-    const [devicePrompt] = await Promise.all([
-      page.waitForDevicePrompt({timeout: 100}),
-      page.click('#bluetooth'),
-    ]);
-    await expect(
-      devicePrompt.waitForDevice(() => false, {timeout: 10})
-    ).rejects.toThrow(TimeoutError);
+      const [devicePrompt] = await Promise.all([
+        page.waitForDevicePrompt({timeout: 100}),
+        page.click('#bluetooth'),
+      ]);
+      await expect(
+        devicePrompt.waitForDevice(() => false, {timeout: 10})
+      ).rejects.toThrow(TimeoutError);
+    });
   });
 });
