@@ -221,7 +221,13 @@ export class WaitTask<T = unknown> {
 
       // We could have tried to evaluate in a context which was already
       // destroyed.
-      if (error.message.includes('Cannot find context with specified id')) {
+      if (
+        error.message.includes('Cannot find context with specified id') ||
+        // Firefox BiDi Error, update one https://github.com/w3c/webdriver-bidi/issues/540 is resolved
+        error.message.includes(
+          "destroyed before query 'MessageHandlerFrameParent:sendCommand'"
+        )
+      ) {
         return;
       }
 
