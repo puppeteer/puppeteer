@@ -280,6 +280,12 @@ export class TestServer {
     }
 
     readFile(filePath, (err, data) => {
+      // This can happen if the request is not awaited but started
+      // in the test and get clean via `reset()`
+      if (response.writableEnded) {
+        return;
+      }
+
       if (err) {
         response.statusCode = 404;
         response.end(`File not found: ${filePath}`);
