@@ -1646,19 +1646,19 @@
   {
     "testIdPattern": "[device-request-prompt.spec] device request prompt can be opened",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "headless", "cdp"],
+    "parameters": ["chrome", "headless"],
     "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[device-request-prompt.spec] device request prompt can be cancelled",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "headless", "cdp"],
+    "parameters": ["chrome", "headless"],
     "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[device-request-prompt.spec] device request prompt waitForDevice does not crash",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "headless", "cdp"],
+    "parameters": ["chrome", "headless"],
     "expectations": ["FAIL"]
   },
   {
