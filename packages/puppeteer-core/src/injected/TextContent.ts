@@ -146,6 +146,7 @@ export const createTextContent = (root: Node): TextContent => {
       textChangeObserver.observe(root, {
         childList: true,
         characterData: true,
+        subtree: true,
       });
       observedNodes.add(root);
     }
