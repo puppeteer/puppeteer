@@ -97,7 +97,12 @@ describe('device request prompt', function () {
         page.click('#bluetooth'),
       ]);
       await expect(
-        devicePrompt.waitForDevice(() => false, {timeout: 10})
+        devicePrompt.waitForDevice(
+          () => {
+            return false;
+          },
+          {timeout: 10}
+        )
       ).rejects.toThrow(TimeoutError);
     });
   });
