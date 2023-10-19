@@ -127,7 +127,7 @@
     "@types/node": "20.8.4",
     "@types/pixelmatch": "5.2.4",
     "@types/pngjs": "6.0.2",
-    "@types/progress": "2.0.5",
+    "@types/progress": "2.0.6",
     "@types/semver": "7.5.3",
     "@types/sinon": "10.0.19",
     "@types/tar-fs": "2.0.2",
