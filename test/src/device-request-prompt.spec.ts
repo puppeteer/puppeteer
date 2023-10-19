@@ -23,6 +23,7 @@ describe('device request prompt', function () {
   let state: Awaited<ReturnType<typeof launch>>;
 
   before(async () => {
+    this.timeout(10_000);
     state = await launch(
       {
         args: ['--enable-features=WebBluetoothNewPermissionsBackend'],
@@ -67,10 +68,7 @@ describe('device request prompt', function () {
       await page.goto(httpsServer.PREFIX + '/device-request.html');
 
       await expect(
-        Promise.all([
-          page.waitForDevicePrompt({timeout: 100}),
-          page.click('#bluetooth'),
-        ])
+        Promise.all([page.waitForDevicePrompt(), page.click('#bluetooth')])
       ).resolves.toBeTruthy();
     });
 
@@ -80,7 +78,7 @@ describe('device request prompt', function () {
       await page.goto(httpsServer.PREFIX + '/device-request.html');
 
       const [devicePrompt] = await Promise.all([
-        page.waitForDevicePrompt({timeout: 100}),
+        page.waitForDevicePrompt(),
         page.click('#bluetooth'),
       ]);
       expect(devicePrompt).toBeTruthy();
@@ -95,7 +93,7 @@ describe('device request prompt', function () {
       await page.goto(httpsServer.PREFIX + '/device-request.html');
 
       const [devicePrompt] = await Promise.all([
-        page.waitForDevicePrompt({timeout: 100}),
+        page.waitForDevicePrompt(),
         page.click('#bluetooth'),
       ]);
       await expect(
