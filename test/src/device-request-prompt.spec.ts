@@ -47,43 +47,45 @@ describe('device request prompt', function () {
     await state.context.close();
   });
 
-  // Bug: #11072
-  it('does not crash', async function () {
-    const {page, httpsServer} = state;
+  describe('waitForDevicePrompt', async function () {
+    // Bug: #11072
+    it('does not crash', async function () {
+      const {page, httpsServer} = state;
 
-    await page.goto(httpsServer.EMPTY_PAGE);
+      await page.goto(httpsServer.EMPTY_PAGE);
 
-    await expect(
-      page.waitForDevicePrompt({
-        timeout: 10,
-      })
-    ).rejects.toThrow(TimeoutError);
-  });
+      await expect(
+        page.waitForDevicePrompt({
+          timeout: 10,
+        })
+      ).rejects.toThrow(TimeoutError);
+    });
 
-  it('can be opened', async function () {
-    const {page, httpsServer} = state;
+    it('can be opened', async function () {
+      const {page, httpsServer} = state;
 
-    await page.goto(httpsServer.PREFIX + '/device-request.html');
+      await page.goto(httpsServer.PREFIX + '/device-request.html');
 
-    await expect(
-      Promise.all([
+      await expect(
+        Promise.all([
+          page.waitForDevicePrompt({timeout: 100}),
+          page.click('#bluetooth'),
+        ])
+      ).resolves.toBeTruthy();
+    });
+
+    it('can be cancelled', async function () {
+      const {page, httpsServer} = state;
+
+      await page.goto(httpsServer.PREFIX + '/device-request.html');
+
+      const [devicePrompt] = await Promise.all([
         page.waitForDevicePrompt({timeout: 100}),
         page.click('#bluetooth'),
-      ])
-    ).resolves.toBeTruthy();
-  });
-
-  it('can be cancelled', async function () {
-    const {page, httpsServer} = state;
-
-    await page.goto(httpsServer.PREFIX + '/device-request.html');
-
-    const [devicePrompt] = await Promise.all([
-      page.waitForDevicePrompt({timeout: 100}),
-      page.click('#bluetooth'),
-    ]);
-    expect(devicePrompt).toBeTruthy();
-    await expect(devicePrompt.cancel()).resolves.not.toThrow();
+      ]);
+      expect(devicePrompt).toBeTruthy();
+      await expect(devicePrompt.cancel()).resolves.not.toThrow();
+    });
   });
 
   describe('waitForDevice', function () {
