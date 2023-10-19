@@ -126,7 +126,7 @@
     "@types/mocha": "10.0.2",
     "@types/node": "20.8.4",
     "@types/pixelmatch": "5.2.4",
-    "@types/pngjs": "6.0.2",
+    "@types/pngjs": "6.0.3",
     "@types/progress": "2.0.5",
     "@types/semver": "7.5.3",
     "@types/sinon": "10.0.19",
