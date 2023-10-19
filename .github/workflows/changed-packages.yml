@@ -38,6 +38,7 @@ jobs:
               - 'packages/browsers/src/browser-data/firefox.ts'
               - 'packages/puppeteer/**'
               - 'packages/puppeteer-core/**'
+              - 'packages/testserver/**'
               - 'docker/**'
               - 'test/**'
               - 'test-d/**'

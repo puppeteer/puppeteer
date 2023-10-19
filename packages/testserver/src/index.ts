@@ -66,6 +66,7 @@ export class TestServer {
   #csp = new Map<string, string>();
   #gzipRoutes = new Set<string>();
   #requestSubscribers = new Map<string, Subscriber>();
+  #requests = new Set<ServerResponse>();
 
   static async create(dirPath: string): Promise<TestServer> {
     let res!: (value: unknown) => void;
@@ -192,12 +193,20 @@ export class TestServer {
       subscriber.reject.call(undefined, error);
     }
     this.#requestSubscribers.clear();
+    for (const request of this.#requests.values()) {
+      if (!request.writableEnded) {
+        request.end();
+      }
+    }
+    this.#requests.clear();
   }
 
   #onRequest: RequestListener = (
     request: TestIncomingMessage,
     response
   ): void => {
+    this.#requests.add(response);
+
     request.on('error', (error: {code: string}) => {
       if (error.code === 'ECONNRESET') {
         response.end();
@@ -271,6 +280,12 @@ export class TestServer {
     }
 
     readFile(filePath, (err, data) => {
+      // This can happen if the request is not awaited but started
+      // in the test and get clean via `reset()`
+      if (response.writableEnded) {
+        return;
+      }
+
       if (err) {
         response.statusCode = 404;
         response.end(`File not found: ${filePath}`);
