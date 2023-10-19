@@ -303,7 +303,12 @@ class AXNode {
 
   #isTextOnlyObject(): boolean {
     const role = this.#role;
-    return role === 'LineBreak' || role === 'text' || role === 'InlineTextBox';
+    return (
+      role === 'LineBreak' ||
+      role === 'text' ||
+      role === 'InlineTextBox' ||
+      role === 'StaticText'
+    );
   }
 
   #hasFocusableChild(): boolean {

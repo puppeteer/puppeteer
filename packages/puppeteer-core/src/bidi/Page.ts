@@ -677,7 +677,7 @@ export class BidiPage extends Page {
         ...(quality === undefined ? {} : {quality: quality / 100}),
       },
       clip: clip && {
-        type: 'viewport',
+        type: 'box',
         ...clip,
       },
     });
