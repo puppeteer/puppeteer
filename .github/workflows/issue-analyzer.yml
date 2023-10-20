@@ -136,7 +136,7 @@ jobs:
           issue-number: ${{ github.event.issue.number }}
           comment-author: 'github-actions[bot]'
       - name: Upsert comment
-        uses: peter-evans/create-or-update-comment@c6c9a1a66007646a28c153e2a8580a5bad27bcfa # v3.0.2
+        uses: peter-evans/create-or-update-comment@23ff15729ef2fc348714a3bb66d2f655ca9066f2 # v3.1.0
         with:
           comment-id: ${{ steps.find-comment-id.outputs.comment-id }}
           issue-number: ${{ github.event.issue.number }}
@@ -173,7 +173,7 @@ jobs:
           issue-number: ${{ github.event.issue.number }}
           comment-author: 'github-actions[bot]'
       - name: Upsert comment
-        uses: peter-evans/create-or-update-comment@c6c9a1a66007646a28c153e2a8580a5bad27bcfa # v3.0.2
+        uses: peter-evans/create-or-update-comment@23ff15729ef2fc348714a3bb66d2f655ca9066f2 # v3.1.0
         with:
           comment-id: ${{ steps.find-comment-id.outputs.comment-id }}
           issue-number: ${{ github.event.issue.number }}
@@ -209,7 +209,7 @@ jobs:
           issue-number: ${{ github.event.issue.number }}
           comment-author: 'github-actions[bot]'
       - name: Upsert comment
-        uses: peter-evans/create-or-update-comment@c6c9a1a66007646a28c153e2a8580a5bad27bcfa # v3.0.2
+        uses: peter-evans/create-or-update-comment@23ff15729ef2fc348714a3bb66d2f655ca9066f2 # v3.1.0
         with:
           comment-id: ${{ steps.find-comment-id.outputs.comment-id }}
           issue-number: ${{ github.event.issue.number }}
