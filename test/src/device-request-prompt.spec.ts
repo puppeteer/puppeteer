@@ -22,7 +22,7 @@ describe('device request prompt', function () {
   this.timeout(1_000);
   let state: Awaited<ReturnType<typeof launch>>;
 
-  before(async () => {
+  before(async function () {
     this.timeout(10_000);
     state = await launch(
       {
