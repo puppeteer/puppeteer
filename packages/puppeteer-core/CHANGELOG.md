@@ -20,6 +20,35 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.4.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.3.8...puppeteer-core-v21.4.0) (2023-10-20)
+
+
+### Features
+
+* added tagged (accessible) PDFs option ([#11182](https://github.com/puppeteer/puppeteer/issues/11182)) ([0316863](https://github.com/puppeteer/puppeteer/commit/031686339136873c555a19ffb871f7140a2c39d9))
+* enable tab targets ([#11099](https://github.com/puppeteer/puppeteer/issues/11099)) ([8324c16](https://github.com/puppeteer/puppeteer/commit/8324c1634883d97ed83f32a1e62acc9b5e64e0bd))
+* implement screencasting ([#11084](https://github.com/puppeteer/puppeteer/issues/11084)) ([f060d46](https://github.com/puppeteer/puppeteer/commit/f060d467c00457e6be6878e0789d0df2ac4aae50))
+* merge user-provided --{disable,enable}-features in args ([#11152](https://github.com/puppeteer/puppeteer/issues/11152)) ([2b578e4](https://github.com/puppeteer/puppeteer/commit/2b578e4a096aa94d792cc2da2da41fee061a77b8)), closes [#11072](https://github.com/puppeteer/puppeteer/issues/11072)
+* roll to Chrome 118.0.5993.70 (r1192594) ([#11123](https://github.com/puppeteer/puppeteer/issues/11123)) ([91d14c8](https://github.com/puppeteer/puppeteer/commit/91d14c8c86f5be48c8e0937fd209bea643d60b45))
+
+
+### Bug Fixes
+
+* `Page.waitForDevicePrompt` crash ([#11153](https://github.com/puppeteer/puppeteer/issues/11153)) ([257be15](https://github.com/puppeteer/puppeteer/commit/257be15d83a46038a65d47977d4d847c54506517))
+* add InlineTextBox as a non-element a11y role ([#11142](https://github.com/puppeteer/puppeteer/issues/11142)) ([8aa6cb3](https://github.com/puppeteer/puppeteer/commit/8aa6cb37d2443ff7fe2a1fd5d5adafdde4e9d165))
+* disable ProcessPerSiteUpToMainFrameThreshold in Chrome ([#11139](https://github.com/puppeteer/puppeteer/issues/11139)) ([9347aae](https://github.com/puppeteer/puppeteer/commit/9347aae12e996604cea871acc9d007cbf338542e))
+* make sure discovery happens before auto-attach ([#11100](https://github.com/puppeteer/puppeteer/issues/11100)) ([9ce204e](https://github.com/puppeteer/puppeteer/commit/9ce204e27ed091bde5aa5bc9f82da41c80534bde))
+* synchronize frame tree with the events processing ([#11112](https://github.com/puppeteer/puppeteer/issues/11112)) ([d63f0cf](https://github.com/puppeteer/puppeteer/commit/d63f0cfc61e8ba2233eee8b2f3b99d8619a0acaf))
+* update TextQuerySelector cache on subtree update ([#11200](https://github.com/puppeteer/puppeteer/issues/11200)) ([4206e76](https://github.com/puppeteer/puppeteer/commit/4206e76c3e4647ea6290f16127764d1a2f337dcf))
+* xpath queries should be atomic ([#11101](https://github.com/puppeteer/puppeteer/issues/11101)) ([6098bab](https://github.com/puppeteer/puppeteer/commit/6098bab2ba68276c85a974e17c9fe3bdac8c4c58))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 1.7.1 to 1.8.0
+
 ## [21.3.8](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.3.7...puppeteer-core-v21.3.8) (2023-10-06)
 
 
