@@ -906,7 +906,7 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF should support lazy OOP frames",
+    "testIdPattern": "[oopif.spec] OOPIF should support lazy OOP frames",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
     "expectations": ["FAIL", "PASS"]
@@ -2868,55 +2868,55 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF clickablePoint, boundingBox, boxModel should work for elements inside OOPIFs",
+    "testIdPattern": "[oopif.spec] OOPIF clickablePoint, boundingBox, boxModel should work for elements inside OOPIFs",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF should provide access to elements",
+    "testIdPattern": "[oopif.spec] OOPIF should provide access to elements",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF should support evaluating in oop iframes",
+    "testIdPattern": "[oopif.spec] OOPIF should support evaluating in oop iframes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF should support frames within OOP frames",
+    "testIdPattern": "[oopif.spec] OOPIF should support frames within OOP frames",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF should support frames within OOP iframes",
+    "testIdPattern": "[oopif.spec] OOPIF should support frames within OOP iframes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF should support wait for navigation for transitions from local to OOPIF",
+    "testIdPattern": "[oopif.spec] OOPIF should support wait for navigation for transitions from local to OOPIF",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["PASS", "TIMEOUT"]
   },
   {
-    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF should track navigations within OOP iframes",
+    "testIdPattern": "[oopif.spec] OOPIF should track navigations within OOP iframes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF should treat OOP iframes and normal iframes the same",
+    "testIdPattern": "[oopif.spec] OOPIF should treat OOP iframes and normal iframes the same",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF waitForFrame should resolve immediately if the frame already exists",
+    "testIdPattern": "[oopif.spec] OOPIF waitForFrame should resolve immediately if the frame already exists",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
@@ -3864,7 +3864,7 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
-    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF should support lazy OOP frames",
+    "testIdPattern": "[oopif.spec] OOPIF should support lazy OOP frames",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "headless", "webDriverBiDi"],
     "expectations": ["PASS"]
