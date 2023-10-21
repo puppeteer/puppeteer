@@ -2378,7 +2378,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       } = roundRectangle(normalizeRectangle(options.crop));
       if (x < 0 || y < 0) {
         throw new Error(
-          `\`crop.x\` and \`crop.x\` must be greater than or equal to 0.`
+          `\`crop.x\` and \`crop.y\` must be greater than or equal to 0.`
         );
       }
       if (cropWidth <= 0 || cropHeight <= 0) {
