@@ -27,7 +27,7 @@ import {Deferred} from '../util/Deferred.js';
 import {DisposableStack} from '../util/disposable.js';
 
 import type {CdpFrame} from './Frame.js';
-import {FrameManagerEvent} from './FrameManager.js';
+import {FrameManagerEvent} from './FrameManagerEvents.js';
 import type {NetworkManager} from './NetworkManager.js';
 
 /**
