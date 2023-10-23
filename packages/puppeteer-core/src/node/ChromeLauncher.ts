@@ -170,8 +170,8 @@ export class ChromeLauncher extends ProductLauncher {
       '--disable-features',
       options.args
     );
-    if (userDisabledFeatures.length > 0) {
-      removeMatching(options.args ?? [], /^--disable-features=.*/);
+    if (options.args && userDisabledFeatures.length > 0) {
+      removeMatching(options.args, /^--disable-features=.*/);
     }
 
     // Merge default disabled features with user-provided ones, if any.
@@ -187,8 +187,8 @@ export class ChromeLauncher extends ProductLauncher {
     ];
 
     const userEnabledFeatures = getFeatures('--enable-features', options.args);
-    if (userEnabledFeatures.length > 0) {
-      removeMatching(options.args ?? [], /^--enable-features=.*/);
+    if (options.args && userEnabledFeatures.length > 0) {
+      removeMatching(options.args, /^--enable-features=.*/);
     }
 
     // Merge default enabled features with user-provided ones, if any.
