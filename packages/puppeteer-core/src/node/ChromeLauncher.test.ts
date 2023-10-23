@@ -17,7 +17,7 @@ import {describe, it} from 'node:test';
 
 import expect from 'expect';
 
-import {getFeatures, removeMatching} from './ChromeLauncher.js';
+import {getFeatures, removeMatchingFlags} from './ChromeLauncher.js';
 
 describe('getFeatures', () => {
   it('returns an empty array when no options are provided', () => {
@@ -46,24 +46,24 @@ describe('getFeatures', () => {
   });
 });
 
-describe('removeMatching', () => {
+describe('removeMatchingFlags', () => {
   it('empty', () => {
     const a: string[] = [];
-    expect(removeMatching(a, /foo/)).toEqual([]);
+    expect(removeMatchingFlags(a, '--foo')).toEqual([]);
   });
 
   it('with one match', () => {
-    const a: string[] = ['foo', 'bar'];
-    expect(removeMatching(a, /foo/)).toEqual(['bar']);
+    const a: string[] = ['--foo=1', '--bar=baz'];
+    expect(removeMatchingFlags(a, '--foo')).toEqual(['--bar=baz']);
   });
 
   it('with multiple matches', () => {
-    const a: string[] = ['foo', 'fooz', 'bar'];
-    expect(removeMatching(a, /^foo/)).toEqual(['bar']);
+    const a: string[] = ['--foo=1', '--foo=2', '--bar=baz'];
+    expect(removeMatchingFlags(a, '--foo')).toEqual(['--bar=baz']);
   });
 
   it('with no matches', () => {
-    const a: string[] = ['foo', 'bar'];
-    expect(removeMatching(a, /baz/)).toEqual(['foo', 'bar']);
+    const a: string[] = ['--foo=1', '--bar=baz'];
+    expect(removeMatchingFlags(a, '--baz')).toEqual(['--foo=1', '--bar=baz']);
   });
 });

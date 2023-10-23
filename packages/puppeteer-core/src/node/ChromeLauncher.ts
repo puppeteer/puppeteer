@@ -171,7 +171,7 @@ export class ChromeLauncher extends ProductLauncher {
       options.args
     );
     if (options.args && userDisabledFeatures.length > 0) {
-      removeMatching(options.args, /^--disable-features=.*/);
+      removeMatchingFlags(options.args, '--disable-features');
     }
 
     // Merge default disabled features with user-provided ones, if any.
@@ -188,7 +188,7 @@ export class ChromeLauncher extends ProductLauncher {
 
     const userEnabledFeatures = getFeatures('--enable-features', options.args);
     if (options.args && userEnabledFeatures.length > 0) {
-      removeMatching(options.args, /^--enable-features=.*/);
+      removeMatchingFlags(options.args, '--enable-features');
     }
 
     // Merge default enabled features with user-provided ones, if any.
@@ -312,12 +312,13 @@ export function getFeatures(flag: string, options: string[] = []): string[] {
 }
 
 /**
- * Removes all elements in-place from the given array that match the given
- * regular expression.
+ * Removes all elements in-place from the given string array
+ * that match the given command-line flag.
  *
  * @internal
  */
-export function removeMatching(array: string[], regex: RegExp): string[] {
+export function removeMatchingFlags(array: string[], flag: string): string[] {
+  const regex = new RegExp(`^${flag}=.*`);
   let i = 0;
   while (i < array.length) {
     if (regex.test(array[i]!)) {
