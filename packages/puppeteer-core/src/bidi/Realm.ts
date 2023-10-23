@@ -15,6 +15,7 @@ import {disposeSymbol} from '../util/disposable.js';
 import {stringifyFunction} from '../util/Function.js';
 
 import type {BidiConnection} from './Connection.js';
+import {BidiDeserializer} from './Deserializer.js';
 import {BidiElementHandle} from './ElementHandle.js';
 import {BidiJSHandle} from './JSHandle.js';
 import type {Sandbox} from './Sandbox.js';
@@ -195,7 +196,7 @@ export class BidiRealm extends EventEmitter<Record<EventType, any>> {
     }
 
     return returnByValue
-      ? BidiSerializer.deserialize(result.result)
+      ? BidiDeserializer.deserialize(result.result)
       : createBidiHandle(sandbox, result.result);
   }
 
