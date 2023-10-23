@@ -108,6 +108,7 @@
   "files": [
     "lib",
     "src",
+    "!*.test.ts",
     "!*.test.js",
     "!*.test.d.ts",
     "!*.test.js.map",

@@ -112,6 +112,7 @@
     "lib",
     "src",
     "install.mjs",
+    "!*.test.ts",
     "!*.test.js",
     "!*.test.d.ts",
     "!*.test.js.map",
