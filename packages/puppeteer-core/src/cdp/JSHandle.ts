@@ -18,10 +18,9 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
 import {JSHandle} from '../api/JSHandle.js';
-import {valueFromRemoteObject} from '../common/util.js';
+import {debugError, valueFromRemoteObject} from '../common/util.js';
 
 import type {CdpElementHandle} from './ElementHandle.js';
-import {releaseObject} from './ExecutionContext.js';
 import type {IsolatedWorld} from './IsolatedWorld.js';
 
 /**
@@ -97,4 +96,23 @@ export class CdpJSHandle<T = unknown> extends JSHandle<T> {
   override remoteObject(): Protocol.Runtime.RemoteObject {
     return this.#remoteObject;
   }
+}
+
+/**
+ * @internal
+ */
+export async function releaseObject(
+  client: CDPSession,
+  remoteObject: Protocol.Runtime.RemoteObject
+): Promise<void> {
+  if (!remoteObject.objectId) {
+    return;
+  }
+  await client
+    .send('Runtime.releaseObject', {objectId: remoteObject.objectId})
+    .catch(error => {
+      // Exceptions might happen in case of a page been navigated or closed.
+      // Swallow these since they are harmless and we don't leak anything in this case.
+      debugError(error);
+    });
 }
