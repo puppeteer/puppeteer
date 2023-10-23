@@ -166,6 +166,14 @@ export class ChromeLauncher extends ProductLauncher {
   override defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
     // See https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md
 
+    const userDisabledFeatures = getFeatures(
+      '--disable-features',
+      options.args
+    );
+    if (options.args && userDisabledFeatures.length > 0) {
+      removeMatchingFlags(options.args, '--disable-features');
+    }
+
     // Merge default disabled features with user-provided ones, if any.
     const disabledFeatures = [
       'Translate',
@@ -175,13 +183,18 @@ export class ChromeLauncher extends ProductLauncher {
       'OptimizationHints',
       // https://crbug.com/1492053
       'ProcessPerSiteUpToMainFrameThreshold',
-      ...getFeatures('--disable-features', options.args),
+      ...userDisabledFeatures,
     ];
+
+    const userEnabledFeatures = getFeatures('--enable-features', options.args);
+    if (options.args && userEnabledFeatures.length > 0) {
+      removeMatchingFlags(options.args, '--enable-features');
+    }
 
     // Merge default enabled features with user-provided ones, if any.
     const enabledFeatures = [
       'NetworkServiceInProcess2',
-      ...getFeatures('--enable-features', options.args),
+      ...userEnabledFeatures,
     ];
 
     const chromeArguments = [
@@ -296,4 +309,23 @@ export function getFeatures(flag: string, options: string[] = []): string[] {
     .filter(s => {
       return s;
     }) as string[];
+}
+
+/**
+ * Removes all elements in-place from the given string array
+ * that match the given command-line flag.
+ *
+ * @internal
+ */
+export function removeMatchingFlags(array: string[], flag: string): string[] {
+  const regex = new RegExp(`^${flag}=.*`);
+  let i = 0;
+  while (i < array.length) {
+    if (regex.test(array[i]!)) {
+      array.splice(i, 1);
+    } else {
+      i++;
+    }
+  }
+  return array;
 }
