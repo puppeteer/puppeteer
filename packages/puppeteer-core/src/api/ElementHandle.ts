@@ -32,6 +32,7 @@ import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {throwIfDisposed} from '../util/decorators.js';
 
+import {_isElementHandle} from './ElementHandleSymbol.js';
 import type {
   KeyboardTypeOptions,
   KeyPressOptions,
@@ -150,6 +151,11 @@ export abstract class ElementHandle<
   ElementType extends Node = Element,
 > extends JSHandle<ElementType> {
   /**
+   * @internal
+   */
+  declare [_isElementHandle]: boolean;
+
+  /**
    * A given method will have it's `this` replaced with an isolated version of
    * `this` when decorated with this decorator.
    *
@@ -212,6 +218,7 @@ export abstract class ElementHandle<
   constructor(handle: JSHandle<ElementType>) {
     super();
     this.handle = handle;
+    this[_isElementHandle] = true;
   }
 
   /**

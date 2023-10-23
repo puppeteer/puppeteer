@@ -131,10 +131,7 @@ module.exports = {
       },
     ],
 
-    'import/no-cycle': [
-      'error',
-      {maxDepth: Infinity, allowUnsafeDynamicCyclicDependency: true},
-    ],
+    'import/no-cycle': ['error', {maxDepth: Infinity}],
 
     'no-restricted-syntax': [
       'error',
