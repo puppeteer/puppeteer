@@ -132,7 +132,7 @@ module.exports = {
     ],
 
     'import/no-cycle': [
-      'warn',
+      'error',
       {maxDepth: Infinity, allowUnsafeDynamicCyclicDependency: true},
     ],
 
