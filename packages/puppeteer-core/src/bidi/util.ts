@@ -18,8 +18,8 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {PuppeteerURL, debugError} from '../common/util.js';
 
+import {BidiDeserializer} from './Deserializer.js';
 import type {BidiRealm} from './Realm.js';
-import {BidiSerializer} from './Serializer.js';
 
 /**
  * @internal
@@ -50,7 +50,7 @@ export function createEvaluationError(
   details: Bidi.Script.ExceptionDetails
 ): unknown {
   if (details.exception.type !== 'error') {
-    return BidiSerializer.deserialize(details.exception);
+    return BidiDeserializer.deserialize(details.exception);
   }
   const [name = '', ...parts] = details.text.split(': ');
   const message = parts.join(': ');

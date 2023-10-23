@@ -70,6 +70,7 @@ import {
   type BrowsingContext,
 } from './BrowsingContext.js';
 import type {BidiConnection} from './Connection.js';
+import {BidiDeserializer} from './Deserializer.js';
 import {BidiDialog} from './Dialog.js';
 import {BidiElementHandle} from './ElementHandle.js';
 import {EmulationManager} from './EmulationManager.js';
@@ -80,7 +81,6 @@ import {BidiKeyboard, BidiMouse, BidiTouchscreen} from './Input.js';
 import type {BidiJSHandle} from './JSHandle.js';
 import {BidiNetworkManager} from './NetworkManager.js';
 import {createBidiHandle} from './Realm.js';
-import {BidiSerializer} from './Serializer.js';
 
 /**
  * @internal
@@ -399,7 +399,7 @@ export class BidiPage extends Page {
       const text = args
         .reduce((value, arg) => {
           const parsedValue = arg.isPrimitiveValue
-            ? BidiSerializer.deserialize(arg.remoteValue())
+            ? BidiDeserializer.deserialize(arg.remoteValue())
             : arg.toString();
           return `${value} ${parsedValue}`;
         }, '')
