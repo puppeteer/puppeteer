@@ -15,6 +15,7 @@
  */
 
 import type {ElementHandle} from '../api/ElementHandle.js';
+import {_isElementHandle} from '../api/ElementHandleSymbol.js';
 import type {Frame} from '../api/Frame.js';
 import type {WaitForSelectorOptions} from '../api/Page.js';
 import type PuppeteerUtil from '../injected/injected.js';
@@ -132,8 +133,7 @@ export class QueryHandler {
         return context.puppeteerUtil;
       })
     );
-    const {ElementHandle} = await import('../api/ElementHandle.js');
-    if (!(result instanceof ElementHandle)) {
+    if (!(_isElementHandle in result)) {
       return null;
     }
     return result.move();
@@ -151,10 +151,9 @@ export class QueryHandler {
     selector: string,
     options: WaitForSelectorOptions
   ): Promise<ElementHandle<Node> | null> {
-    const {ElementHandle} = await import('../api/ElementHandle.js');
     let frame!: Frame;
     using element = await (async () => {
-      if (!(elementOrFrame instanceof ElementHandle)) {
+      if (!(_isElementHandle in elementOrFrame)) {
         frame = elementOrFrame;
         return;
       }
@@ -198,7 +197,7 @@ export class QueryHandler {
         throw signal.reason;
       }
 
-      if (!(handle instanceof ElementHandle)) {
+      if (!(_isElementHandle in handle)) {
         return null;
       }
       return await frame.mainRealm().transferHandle(handle);
