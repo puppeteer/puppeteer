@@ -32,7 +32,7 @@ import {Mutex} from '../util/Mutex.js';
 
 import type {Binding} from './Binding.js';
 import {type ExecutionContext, createCdpHandle} from './ExecutionContext.js';
-import {CdpFrame} from './Frame.js';
+import type {CdpFrame} from './Frame.js';
 import type {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import type {WebWorker} from './WebWorker.js';
 
@@ -94,7 +94,7 @@ export class IsolatedWorld extends Realm {
 
   clearContext(): void {
     this.#context = Deferred.create();
-    if (this.#frameOrWorker instanceof CdpFrame) {
+    if ('clearDocumentHandle' in this.#frameOrWorker) {
       this.#frameOrWorker.clearDocumentHandle();
     }
   }
