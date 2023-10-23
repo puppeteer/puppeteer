@@ -26,7 +26,6 @@ import {
   PuppeteerURL,
   SOURCE_URL_REGEX,
   createEvaluationError,
-  debugError,
   getSourcePuppeteerURLIfAvailable,
   getSourceUrlComment,
   isString,
@@ -399,23 +398,4 @@ export function createCdpHandle(
     return new CdpElementHandle(realm, remoteObject);
   }
   return new CdpJSHandle(realm, remoteObject);
-}
-
-/**
- * @internal
- */
-export async function releaseObject(
-  client: CDPSession,
-  remoteObject: Protocol.Runtime.RemoteObject
-): Promise<void> {
-  if (!remoteObject.objectId) {
-    return;
-  }
-  await client
-    .send('Runtime.releaseObject', {objectId: remoteObject.objectId})
-    .catch(error => {
-      // Exceptions might happen in case of a page been navigated or closed.
-      // Swallow these since they are harmless and we don't leak anything in this case.
-      debugError(error);
-    });
 }
