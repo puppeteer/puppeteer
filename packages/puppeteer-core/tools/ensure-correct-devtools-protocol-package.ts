@@ -36,7 +36,7 @@
 // eslint-disable-next-line import/extensions
 import {execSync} from 'child_process';
 
-import packageJson from '../package.json';
+import packageJson from '../package.json' assert {type: 'json'};
 import {PUPPETEER_REVISIONS} from '../src/revisions.js';
 
 async function main() {
@@ -56,12 +56,12 @@ async function main() {
   const chromeVersion = PUPPETEER_REVISIONS.chrome;
   // find the right revision for our Chrome version.
   const req = await fetch(
-    `https://chromiumdash.appspot.com/fetch_releases?channel=stable`
+    `https://googlechromelabs.github.io/chrome-for-testing/known-good-versions.json`
   );
-  const stableReleases = await req.json();
-  const chromeRevision = stableReleases.find(release => {
+  const releases = await req.json();
+  const chromeRevision = releases.versions.find(release => {
     return release.version === chromeVersion;
-  }).chromium_main_branch_position;
+  }).revision;
   console.log(`Revisions for ${chromeVersion}: ${chromeRevision}`);
 
   const command = `npm view "devtools-protocol@<=0.0.${chromeRevision}" version | tail -1`;
