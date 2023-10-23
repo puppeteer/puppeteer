@@ -18,7 +18,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {FrameEvent} from '../api/Frame.js';
-import {EventEmitter, type EventType} from '../common/EventEmitter.js';
+import {EventEmitter} from '../common/EventEmitter.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import {debugError, PuppeteerURL, UTILITY_WORLD_NAME} from '../common/util.js';
 import {assert} from '../util/assert.js';
@@ -31,43 +31,14 @@ import {isTargetClosedError} from './Connection.js';
 import {DeviceRequestPromptManager} from './DeviceRequestPrompt.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {CdpFrame} from './Frame.js';
+import type {FrameManagerEvents} from './FrameManagerEvents.js';
+import {FrameManagerEvent} from './FrameManagerEvents.js';
 import {FrameTree} from './FrameTree.js';
 import type {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {NetworkManager} from './NetworkManager.js';
 import type {CdpPage} from './Page.js';
 import type {CdpTarget} from './Target.js';
-
-/**
- * We use symbols to prevent external parties listening to these events.
- * They are internal to Puppeteer.
- *
- * @internal
- */
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace FrameManagerEvent {
-  export const FrameAttached = Symbol('FrameManager.FrameAttached');
-  export const FrameNavigated = Symbol('FrameManager.FrameNavigated');
-  export const FrameDetached = Symbol('FrameManager.FrameDetached');
-  export const FrameSwapped = Symbol('FrameManager.FrameSwapped');
-  export const LifecycleEvent = Symbol('FrameManager.LifecycleEvent');
-  export const FrameNavigatedWithinDocument = Symbol(
-    'FrameManager.FrameNavigatedWithinDocument'
-  );
-}
-
-/**
- * @internal
- */
-
-export interface FrameManagerEvents extends Record<EventType, unknown> {
-  [FrameManagerEvent.FrameAttached]: CdpFrame;
-  [FrameManagerEvent.FrameNavigated]: CdpFrame;
-  [FrameManagerEvent.FrameDetached]: CdpFrame;
-  [FrameManagerEvent.FrameSwapped]: CdpFrame;
-  [FrameManagerEvent.LifecycleEvent]: CdpFrame;
-  [FrameManagerEvent.FrameNavigatedWithinDocument]: CdpFrame;
-}
 
 const TIME_FOR_WAITING_FOR_SWAP = 100; // ms.
 
