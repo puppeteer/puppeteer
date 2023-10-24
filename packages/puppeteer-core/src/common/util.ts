@@ -34,7 +34,7 @@ import type {CDPSession} from '../api/CDPSession.js';
 import type {Page} from '../api/Page.js';
 import {isNode} from '../environment.js';
 import {assert} from '../util/assert.js';
-import {Deferred} from '../util/Deferred.js';
+import type {Deferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {debug} from './Debug.js';
@@ -412,22 +412,6 @@ export function pageBindingInitString(type: string, name: string): string {
 /**
  * @internal
  */
-export async function waitWithTimeout<T>(
-  promise: Promise<T>,
-  taskName: string,
-  timeout: number
-): Promise<T> {
-  const deferred = Deferred.create<never>({
-    message: `waiting for ${taskName} failed: timeout ${timeout}ms exceeded`,
-    timeout,
-  });
-
-  return await Deferred.race([promise, deferred]);
-}
-
-/**
- * @internal
- */
 let fs: typeof FS | null = null;
 /**
  * @internal
@@ -633,3 +617,8 @@ export async function waitForHTTP<T extends {url(): string}>(
     )
   );
 }
+
+/**
+ * @internal
+ */
+export const NETWORK_IDLE_TIME = 500;

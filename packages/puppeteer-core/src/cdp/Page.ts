@@ -53,6 +53,7 @@ import {
   evaluationString,
   getReadableAsBuffer,
   getReadableFromProtocolStream,
+  NETWORK_IDLE_TIME,
   pageBindingInitString,
   timeout,
   validateDialogType,
@@ -936,13 +937,18 @@ export class CdpPage extends Page {
   override async waitForNetworkIdle(
     options: {idleTime?: number; timeout?: number} = {}
   ): Promise<void> {
-    const {idleTime = 500, timeout = this._timeoutSettings.timeout()} = options;
+    const {
+      idleTime = NETWORK_IDLE_TIME,
+      timeout: ms = this._timeoutSettings.timeout(),
+    } = options;
 
-    await this._waitForNetworkIdle(
-      this.#frameManager.networkManager,
-      idleTime,
-      timeout,
-      this.#sessionCloseDeferred
+    await firstValueFrom(
+      this._waitForNetworkIdle(
+        this.#frameManager.networkManager,
+        idleTime
+      ).pipe(
+        raceWith(timeout(ms), from(this.#sessionCloseDeferred.valueOrThrow()))
+      )
     );
   }
 

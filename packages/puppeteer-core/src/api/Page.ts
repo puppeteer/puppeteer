@@ -84,7 +84,6 @@ import type {Viewport} from '../common/Viewport.js';
 import type {ScreenRecorder} from '../node/ScreenRecorder.js';
 import {assert} from '../util/assert.js';
 import {guarded} from '../util/decorators.js';
-import type {Deferred} from '../util/Deferred.js';
 import {
   AsyncDisposableStack,
   asyncDisposeSymbol,
@@ -1741,36 +1740,32 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * @internal
    */
-  protected async _waitForNetworkIdle(
+  _waitForNetworkIdle(
     networkManager: BidiNetworkManager | CdpNetworkManager,
     idleTime: number,
-    ms: number,
-    closedDeferred: Deferred<TargetCloseError>
-  ): Promise<void> {
-    await firstValueFrom(
-      merge(
-        fromEvent(
-          networkManager,
-          NetworkManagerEvent.Request as unknown as string
-        ),
-        fromEvent(
-          networkManager,
-          NetworkManagerEvent.Response as unknown as string
-        ),
-        fromEvent(
-          networkManager,
-          NetworkManagerEvent.RequestFailed as unknown as string
-        )
-      ).pipe(
-        startWith(null),
-        filter(() => {
-          return networkManager.inFlightRequestsCount() === 0;
-        }),
-        switchMap(v => {
-          return of(v).pipe(delay(idleTime));
-        }),
-        raceWith(timeout(ms), from(closedDeferred.valueOrThrow()))
-      )
+    requestsInFlight = 0
+  ): Observable<void> {
+    return merge(
+      fromEvent(
+        networkManager,
+        NetworkManagerEvent.Request as unknown as string
+      ) as Observable<void>,
+      fromEvent(
+        networkManager,
+        NetworkManagerEvent.Response as unknown as string
+      ) as Observable<void>,
+      fromEvent(
+        networkManager,
+        NetworkManagerEvent.RequestFailed as unknown as string
+      ) as Observable<void>
+    ).pipe(
+      startWith(undefined),
+      filter(() => {
+        return networkManager.inFlightRequestsCount() <= requestsInFlight;
+      }),
+      switchMap(v => {
+        return of(v).pipe(delay(idleTime));
+      })
     );
   }
 

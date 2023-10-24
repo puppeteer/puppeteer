@@ -3,26 +3,13 @@ import type ProtocolMapping from 'devtools-protocol/types/protocol-mapping.js';
 
 import {CDPSession} from '../api/CDPSession.js';
 import type {Connection as CdpConnection} from '../cdp/Connection.js';
-import type {PuppeteerLifeCycleEvent} from '../cdp/LifecycleWatcher.js';
 import {TargetCloseError} from '../common/Errors.js';
 import type {EventType} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
-import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
 import type {BidiConnection} from './Connection.js';
 import {BidiRealm} from './Realm.js';
-
-/**
- * @internal
- */
-export const lifeCycleToSubscribedEvent = new Map<
-  PuppeteerLifeCycleEvent,
-  string
->([
-  ['load', 'browsingContext.load'],
-  ['domcontentloaded', 'browsingContext.domContentLoaded'],
-]);
 
 /**
  * @internal
@@ -197,31 +184,4 @@ export class BrowsingContext extends BidiRealm {
     this.connection.unregisterBrowsingContexts(this.#id);
     void this.#cdpSession.detach().catch(debugError);
   }
-}
-
-/**
- * @internal
- */
-export function getWaitUntilSingle(
-  event: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[]
-): Extract<PuppeteerLifeCycleEvent, 'load' | 'domcontentloaded'> {
-  if (Array.isArray(event) && event.length > 1) {
-    throw new Error('BiDi support only single `waitUntil` argument');
-  }
-  const waitUntilSingle = Array.isArray(event)
-    ? (event.find(lifecycle => {
-        return lifecycle === 'domcontentloaded' || lifecycle === 'load';
-      }) as PuppeteerLifeCycleEvent)
-    : event;
-
-  if (
-    waitUntilSingle === 'networkidle0' ||
-    waitUntilSingle === 'networkidle2'
-  ) {
-    throw new Error(`BiDi does not support 'waitUntil' ${waitUntilSingle}`);
-  }
-
-  assert(waitUntilSingle, `Invalid waitUntil option ${waitUntilSingle}`);
-
-  return waitUntilSingle;
 }

@@ -817,6 +817,7 @@ describe('navigation', function () {
       const error = await navigationPromise;
       expect(error.message).atLeastOneToContain([
         'Navigating frame was detached',
+        'Frame detached',
         'Error: NS_BINDING_ABORTED',
         'net::ERR_ABORTED',
       ]);
