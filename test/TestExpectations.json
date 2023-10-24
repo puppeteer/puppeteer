@@ -36,6 +36,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[device-request-prompt.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[dialog.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
