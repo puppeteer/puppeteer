@@ -45,7 +45,7 @@ The programmatic API allows installing and launching browsers from your code. Se
 | Enumeration                                                | Description                                                                                                                    |
 | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | [Browser](./browsers.browser.md)                           | Supported browsers.                                                                                                            |
-| [BrowserPlatform](./browsers.browserplatform.md)           | Platform names used to identify a OS platfrom x architecture combination in the way that is relevant for the browser download. |
+| [BrowserPlatform](./browsers.browserplatform.md)           | Platform names used to identify a OS platform x architecture combination in the way that is relevant for the browser download. |
 | [ChromeReleaseChannel](./browsers.chromereleasechannel.md) |                                                                                                                                |
 
 ## Functions

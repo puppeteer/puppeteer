@@ -20,6 +20,19 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.4.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.4.0...puppeteer-core-v21.4.1) (2023-10-23)
+
+
+### Bug Fixes
+
+* do not pass --{enable,disable}-features twice when user-provided ([#11230](https://github.com/puppeteer/puppeteer/issues/11230)) ([edec7d5](https://github.com/puppeteer/puppeteer/commit/edec7d53f8190381ade7db145ad7e7d6dba2ee13))
+* remove circular import in IsolatedWorld ([#11228](https://github.com/puppeteer/puppeteer/issues/11228)) ([3edce3a](https://github.com/puppeteer/puppeteer/commit/3edce3aee9521654d7a285f4068a5e60bfb52245))
+* remove import cycle ([#11227](https://github.com/puppeteer/puppeteer/issues/11227)) ([525f13c](https://github.com/puppeteer/puppeteer/commit/525f13cd18b39cc951a84aa51b2d852758e6f0d2))
+* remove import cycle in connection ([#11225](https://github.com/puppeteer/puppeteer/issues/11225)) ([60f1b78](https://github.com/puppeteer/puppeteer/commit/60f1b788a6304504f504b0be9f02cb768e2803f8))
+* remove import cycle in query handlers ([#11234](https://github.com/puppeteer/puppeteer/issues/11234)) ([954c75f](https://github.com/puppeteer/puppeteer/commit/954c75f9a9879e2e68935c17d7eb777b1f9f808a))
+* remove more import cycles ([#11231](https://github.com/puppeteer/puppeteer/issues/11231)) ([b9ce89e](https://github.com/puppeteer/puppeteer/commit/b9ce89e460702ad85314685c600a4e5267f4db9b))
+* typo in screencast error message ([#11213](https://github.com/puppeteer/puppeteer/issues/11213)) ([25b90b2](https://github.com/puppeteer/puppeteer/commit/25b90b2b542c4693150b67dc0c690b99f4ccfc95))
+
 ## [21.4.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.3.8...puppeteer-core-v21.4.0) (2023-10-20)
 
 
