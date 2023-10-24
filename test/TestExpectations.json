@@ -3904,5 +3904,17 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headless"],
     "expectations": ["FAIL", "PASS"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.exposeFunction should be callable from-inside evaluateOnNewDocument",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[target.spec] Target should report when a target url changes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
   }
 ]
