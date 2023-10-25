@@ -23,7 +23,7 @@ import {
   PUPPETEER_PACKAGE_PATH,
   PUPPETEER_BROWSERS_PACKAGE_PATH,
 } from './constants.js';
-import {execFile} from './util.js';
+import {spawnProcess} from './util.js';
 
 const PKG_MANAGER = process.env['PKG_MANAGER'] || 'npm';
 
@@ -100,17 +100,11 @@ export const configureSandbox = (options: SandboxOptions): void => {
     const env = {...process.env, ...getEnv(sandbox)};
 
     await options.before?.(sandbox);
-    if (dependencies.length > 0) {
-      await execFile(PKG_MANAGER, [ADD_PKG_SUBCOMMAND, ...dependencies], {
-        cwd: sandbox,
-        env,
-        shell: true,
-      });
-    }
-    if (devDependencies.length > 0) {
-      await execFile(
+    console.timeLog('before');
+    if (dependencies.length > 0 || devDependencies.length > 0) {
+      await spawnProcess(
         PKG_MANAGER,
-        [ADD_PKG_SUBCOMMAND, '-D', ...devDependencies],
+        [ADD_PKG_SUBCOMMAND, ...dependencies, ...devDependencies],
         {
           cwd: sandbox,
           env,
@@ -124,7 +118,7 @@ export const configureSandbox = (options: SandboxOptions): void => {
     this.runScript = async (content: string, type: 'cjs' | 'mjs') => {
       const script = join(sandbox, `script-${crypto.randomUUID()}.${type}`);
       await writeFile(script, content);
-      await execFile('node', [script], {cwd: sandbox, env});
+      await spawnProcess('node', [script], {cwd: sandbox, env});
     };
     console.timeEnd('before');
   });
