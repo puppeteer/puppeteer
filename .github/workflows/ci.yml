@@ -352,8 +352,6 @@ jobs:
         uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
         with:
           node-version: ${{ matrix.node }}
-      - name: Set up ${{ matrix.pkg_manager }}
-        run: npm install -g ${{ matrix.pkg_manager }}@latest
       - name: Install dependencies
         run: ${{ matrix.pkg_manager }} install
       - name: Test
