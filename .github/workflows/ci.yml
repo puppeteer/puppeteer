@@ -330,6 +330,8 @@ jobs:
     needs: installation-test-build
     if: ${{ !startsWith(github.ref_name, 'release-please') }}
     runs-on: ${{ matrix.os }}
+    env:
+      NO_UPDATE_NOTIFIER: true
     strategy:
       fail-fast: false
       matrix:
