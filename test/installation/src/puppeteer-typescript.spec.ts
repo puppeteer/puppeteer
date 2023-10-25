@@ -19,7 +19,7 @@ import {platform} from 'os';
 import {join} from 'path';
 
 import {configureSandbox} from './sandbox.js';
-import {execFile, readAsset} from './util.js';
+import {spawnProcess, readAsset} from './util.js';
 
 // Skipping this test on Windows as windows runners are much slower.
 (platform() === 'win32' ? describe.skip : describe)(
@@ -49,7 +49,7 @@ import {execFile, readAsset} from './util.js';
       );
 
       // Compile.
-      await execFile('npx', ['tsc'], {cwd: this.sandbox, shell: true});
+      await spawnProcess('npx', ['tsc'], {cwd: this.sandbox, shell: true});
 
       const script = await readFile(join(this.sandbox, 'index.js'), 'utf-8');
 
