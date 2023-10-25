@@ -28,6 +28,7 @@ describe('`@puppeteer/browsers`', () => {
     const result = spawnSync('npx', ['@puppeteer/browsers', '--help'], {
       // npx is not found without the shell flag on Windows.
       shell: process.platform === 'win32',
+      cwd: this.sandbox,
     });
     assert.strictEqual(result.status, 0);
     assert.ok(
