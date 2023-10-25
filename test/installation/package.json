@@ -6,8 +6,8 @@
   "scripts": {
     "build": "wireit",
     "clean": "../../tools/clean.js",
-    "test:ci": "mocha",
-    "test": "wireit"
+    "test": "mocha",
+    "test:local": "wireit"
   },
   "wireit": {
     "build": {
@@ -37,7 +37,7 @@
         "puppeteer-*.tgz"
       ]
     },
-    "test": {
+    "test:local": {
       "command": "mocha",
       "dependencies": [
         "build"

@@ -359,7 +359,7 @@ jobs:
       - name: Test
         env:
           PKG_MANAGER: ${{ matrix.pkg_manager }}
-        run: ${{ matrix.pkg_manager }} test:ci
+        run: ${{ matrix.pkg_manager }} test
 
   installation-test-required:
     name: '[Required] Installation tests'
