@@ -284,9 +284,6 @@ export class ChromeTargetManager
       target._initializedDeferred.value() === InitializationStatus.SUCCESS;
 
     if (isPageTargetBecomingPrimary(target, event.targetInfo)) {
-      const target = this.#attachedTargetsByTargetId.get(
-        event.targetInfo.targetId
-      );
       const session = target?._session();
       assert(
         session,
