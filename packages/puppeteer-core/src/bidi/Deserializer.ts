@@ -79,7 +79,7 @@ export class BidiDeserializer {
     }
 
     debugError(`Deserialization of type ${result.type} not supported.`);
-    return {};
+    return undefined;
   }
 
   static deserializeTuple([serializedKey, serializedValue]: [
