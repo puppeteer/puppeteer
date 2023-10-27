@@ -53,6 +53,7 @@ export class WaitTask<T = unknown> {
 
   #poller?: JSHandle<Poller<T>>;
   #signal?: AbortSignal;
+  #reruns: AbortController[] = [];
 
   constructor(
     world: Realm,
@@ -102,6 +103,12 @@ export class WaitTask<T = unknown> {
   }
 
   async rerun(): Promise<void> {
+    for (const prev of this.#reruns) {
+      prev.abort();
+    }
+    this.#reruns.length = 0;
+    const controller = new AbortController();
+    this.#reruns.push(controller);
     try {
       switch (this.#polling) {
         case 'raf':
@@ -164,6 +171,9 @@ export class WaitTask<T = unknown> {
 
       await this.terminate();
     } catch (error) {
+      if (controller.signal.aborted) {
+        return;
+      }
       const badError = this.getBadError(error);
       if (badError) {
         await this.terminate(badError);
