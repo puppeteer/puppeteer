@@ -107,14 +107,14 @@ describe('Evaluation specs', function () {
       await page.goto(server.PREFIX + '/global-var.html');
       expect(await page.evaluate('globalVar')).toBe(123);
     });
-    it('should return undefined for objects with symbols', async () => {
+    it('should replace symbols with undefined', async () => {
       const {page} = await getTestState();
 
       expect(
         await page.evaluate(() => {
-          return [Symbol('foo4')];
+          return [Symbol('foo4'), 'foo'];
         })
-      ).toBe(undefined);
+      ).toEqual([undefined, 'foo']);
     });
     it('should work with function shorthands', async () => {
       const {page} = await getTestState();
@@ -456,7 +456,7 @@ describe('Evaluation specs', function () {
       expect(error.message).toContain('Error in promise');
     });
 
-    it('should return properly serialize objects with unknown fields', async () => {
+    it('should return properly serialize objects with unknown type fields', async () => {
       const {page} = await getTestState();
       await page.setContent(
         "<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='>"
@@ -474,7 +474,7 @@ describe('Evaluation specs', function () {
 
       expect(result).toEqual({
         a: 'foo',
-        b: {},
+        b: undefined,
       });
     });
   });
