@@ -455,6 +455,28 @@ describe('Evaluation specs', function () {
         });
       expect(error.message).toContain('Error in promise');
     });
+
+    it('should return properly serialize objects with unknown fields', async () => {
+      const {page} = await getTestState();
+      await page.setContent(
+        "<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='>"
+      );
+
+      const result = await page.evaluate(async () => {
+        const image = document.querySelector('img')!;
+        const imageBitmap = await createImageBitmap(image);
+
+        return {
+          a: 'foo',
+          b: imageBitmap,
+        };
+      });
+
+      expect(result).toEqual({
+        a: 'foo',
+        b: {},
+      });
+    });
   });
 
   describe('Page.evaluateOnNewDocument', function () {
