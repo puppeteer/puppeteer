@@ -900,6 +900,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[page.spec] Page Page.close should not be visible in browser.pages",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.close should reject all promises when page is closed",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -931,6 +937,12 @@
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Close should work with page.close",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.Events.Close should work with window.close",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
@@ -1659,7 +1671,7 @@
     "testIdPattern": "[dialog.spec] Page.Events.Dialog should allow accepting prompts",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[dialog.spec] Page.Events.Dialog should allow accepting prompts",
@@ -1899,7 +1911,7 @@
     "testIdPattern": "[frame.spec] Frame specs Frame Management should detach child frames on navigation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should report different frame instance when frame re-attaches",
@@ -1953,7 +1965,7 @@
     "testIdPattern": "[frame.spec] Frame specs Frame Management should support framesets",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should support lazy frames",
@@ -2319,7 +2331,7 @@
     "testIdPattern": "[navigation.spec] navigation Frame.waitForNavigation should fail when frame detaches",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["TIMEOUT"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.waitForNavigation should work",
@@ -2964,12 +2976,6 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.close should not be visible in browser.pages",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
     "testIdPattern": "[page.spec] Page Page.close should run beforeunload if asked for",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -2986,12 +2992,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Close should work with window.close",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should have location and stack trace for console API calls",
@@ -3106,6 +3106,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.exposeFunction should be callable from-inside evaluateOnNewDocument",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should fallback to default export when passed a module object",
@@ -3660,6 +3666,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[target.spec] Target should report when a target url changes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
@@ -3904,17 +3916,5 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headless"],
     "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.exposeFunction should be callable from-inside evaluateOnNewDocument",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[target.spec] Target should report when a target url changes",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
   }
 ]
