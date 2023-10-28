@@ -98,7 +98,7 @@ const three = await page.evaluate(
 );
 ```
 
-The arguments can primitive values or `JSHandle`s.
+The arguments can be primitive values or `JSHandle`s.
 
 :::note
 
