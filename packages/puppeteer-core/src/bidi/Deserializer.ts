@@ -21,11 +21,6 @@ import {debugError} from '../common/util.js';
 /**
  * @internal
  */
-class UnsupportedTypeError extends Error {}
-
-/**
- * @internal
- */
 export class BidiDeserializer {
   static deserializeNumber(value: Bidi.Script.SpecialNumber | number): number {
     switch (value) {
@@ -45,43 +40,30 @@ export class BidiDeserializer {
   static deserializeLocalValue(result: Bidi.Script.RemoteValue): unknown {
     switch (result.type) {
       case 'array':
-        if (result.value) {
-          return result.value.map(value => {
-            return BidiDeserializer.deserializeLocalValue(value);
-          });
-        }
-        break;
+        return result.value?.map(value => {
+          return BidiDeserializer.deserializeLocalValue(value);
+        });
       case 'set':
-        if (result.value) {
-          return result.value.reduce((acc: Set<unknown>, value) => {
-            return acc.add(BidiDeserializer.deserializeLocalValue(value));
-          }, new Set());
-        }
-        break;
+        return result.value?.reduce((acc: Set<unknown>, value) => {
+          return acc.add(BidiDeserializer.deserializeLocalValue(value));
+        }, new Set());
       case 'object':
-        if (result.value) {
-          return result.value.reduce((acc: Record<any, unknown>, tuple) => {
-            const {key, value} = BidiDeserializer.deserializeTuple(tuple);
-            acc[key as any] = value;
-            return acc;
-          }, {});
-        }
-        break;
+        return result.value?.reduce((acc: Record<any, unknown>, tuple) => {
+          const {key, value} = BidiDeserializer.deserializeTuple(tuple);
+          acc[key as any] = value;
+          return acc;
+        }, {});
       case 'map':
-        if (result.value) {
-          return result.value?.reduce((acc: Map<unknown, unknown>, tuple) => {
-            const {key, value} = BidiDeserializer.deserializeTuple(tuple);
-            return acc.set(key, value);
-          }, new Map());
-        }
-        break;
+        return result.value?.reduce((acc: Map<unknown, unknown>, tuple) => {
+          const {key, value} = BidiDeserializer.deserializeTuple(tuple);
+          return acc.set(key, value);
+        }, new Map());
       case 'promise':
         return {};
       case 'regexp':
         return new RegExp(result.value.pattern, result.value.flags);
       case 'date':
         return new Date(result.value);
-
       case 'undefined':
         return undefined;
       case 'null':
@@ -96,9 +78,8 @@ export class BidiDeserializer {
         return result.value;
     }
 
-    throw new UnsupportedTypeError(
-      `Deserialization of type ${result.type} not supported.`
-    );
+    debugError(`Deserialization of type ${result.type} not supported.`);
+    return undefined;
   }
 
   static deserializeTuple([serializedKey, serializedValue]: [
@@ -120,14 +101,6 @@ export class BidiDeserializer {
       return undefined;
     }
 
-    try {
-      return BidiDeserializer.deserializeLocalValue(result);
-    } catch (error) {
-      if (error instanceof UnsupportedTypeError) {
-        debugError(error.message);
-        return undefined;
-      }
-      throw error;
-    }
+    return BidiDeserializer.deserializeLocalValue(result);
   }
 }
