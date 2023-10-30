@@ -9,5 +9,6 @@
  */
 export const PUPPETEER_REVISIONS = Object.freeze({
   chrome: '121.0.6167.85',
+  chromeHeadlessShell: '121.0.6167.85',
   firefox: 'latest',
 });
