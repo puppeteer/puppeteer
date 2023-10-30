@@ -11,19 +11,19 @@ This method scrolls element into view if needed, and then uses [Page.screenshot(
 ```typescript
 class ElementHandle {
   screenshot(
-    this: ElementHandle<Element>,
-    options?: Readonly<ElementScreenshotOptions>
-  ): Promise<string | Buffer>;
+    options: Readonly<ScreenshotOptions> & {
+      encoding: 'base64';
+    }
+  ): Promise<string>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                | Description  |
-| --------- | ----------------------------------------------------------------------------------- | ------------ |
-| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt;                        |              |
-| options   | Readonly&lt;[ElementScreenshotOptions](./puppeteer.elementscreenshotoptions.md)&gt; | _(Optional)_ |
+| Parameter | Type                                                                                                | Description |
+| --------- | --------------------------------------------------------------------------------------------------- | ----------- |
+| options   | Readonly&lt;[ScreenshotOptions](./puppeteer.screenshotoptions.md)&gt; &amp; { encoding: 'base64'; } |             |
 
 **Returns:**
 
-Promise&lt;string \| Buffer&gt;
+Promise&lt;string&gt;
