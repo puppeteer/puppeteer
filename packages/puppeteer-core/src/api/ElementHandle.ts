@@ -1335,6 +1335,10 @@ export abstract class ElementHandle<
    * {@link Page.(screenshot:2) } to take a screenshot of the element.
    * If the element is detached from DOM, the method throws an error.
    */
+  async screenshot(
+    options: Readonly<ScreenshotOptions> & {encoding: 'base64'}
+  ): Promise<string>;
+  async screenshot(options?: Readonly<ScreenshotOptions>): Promise<Buffer>;
   @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async screenshot(
