@@ -53,6 +53,7 @@ export class WaitTask<T = unknown> {
 
   #poller?: JSHandle<Poller<T>>;
   #signal?: AbortSignal;
+  #reruns: AbortController[] = [];
 
   constructor(
     world: Realm,
@@ -102,6 +103,12 @@ export class WaitTask<T = unknown> {
   }
 
   async rerun(): Promise<void> {
+    for (const prev of this.#reruns) {
+      prev.abort();
+    }
+    this.#reruns.length = 0;
+    const controller = new AbortController();
+    this.#reruns.push(controller);
     try {
       switch (this.#polling) {
         case 'raf':
@@ -164,6 +171,9 @@ export class WaitTask<T = unknown> {
 
       await this.terminate();
     } catch (error) {
+      if (controller.signal.aborted) {
+        return;
+      }
       const badError = this.getBadError(error);
       if (badError) {
         await this.terminate(badError);
@@ -221,11 +231,15 @@ export class WaitTask<T = unknown> {
 
       // We could have tried to evaluate in a context which was already
       // destroyed.
+      if (error.message.includes('Cannot find context with specified id')) {
+        return;
+      }
+
+      // Errors coming from WebDriver BiDi. TODO: Adjust messages after
+      // https://github.com/w3c/webdriver-bidi/issues/540 is resolved.
       if (
-        error.message.includes('Cannot find context with specified id') ||
-        // Firefox BiDi Error, update one https://github.com/w3c/webdriver-bidi/issues/540 is resolved
         error.message.includes(
-          "destroyed before query 'MessageHandlerFrameParent:sendCommand'"
+          "AbortError: Actor 'MessageHandlerFrame' destroyed"
         )
       ) {
         return;
