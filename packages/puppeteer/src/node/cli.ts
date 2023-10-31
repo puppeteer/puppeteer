@@ -27,5 +27,6 @@ void new CLI({
   pinnedBrowsers: {
     [Browser.CHROME]: PUPPETEER_REVISIONS.chrome,
     [Browser.FIREFOX]: PUPPETEER_REVISIONS.firefox,
+    [Browser.CHROMEHEADLESSSHELL]: PUPPETEER_REVISIONS['chrome-headless-shell'],
   },
 }).run(process.argv);
