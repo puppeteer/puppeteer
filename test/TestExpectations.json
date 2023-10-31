@@ -2766,6 +2766,12 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
+    "testIdPattern": "[network.spec] network Response.fromCache should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[network.spec] network Response.fromServiceWorker Response.fromServiceWorker",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
