@@ -177,7 +177,9 @@ export class ScreenRecorder extends PassThrough {
         concatMap(([{timestamp: previousTimestamp, buffer}, {timestamp}]) => {
           return from(
             Array<Buffer>(
-              Math.round(DEFAULT_FPS * (timestamp - previousTimestamp))
+              Math.round(
+                DEFAULT_FPS * Math.max(timestamp - previousTimestamp, 0)
+              )
             ).fill(buffer)
           );
         }),
