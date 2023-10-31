@@ -55,6 +55,8 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
     Map<number, RemotePromiseCallbacks>
   >();
 
+  #preloadScriptId?: Bidi.Script.PreloadScript;
+
   constructor(
     frame: BidiFrame,
     name: string,
@@ -121,17 +123,26 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
       )
     );
 
-    await connection.send('script.addPreloadScript', {
+    const {result} = await connection.send('script.addPreloadScript', {
       functionDeclaration,
       arguments: channelArguments,
+      contexts: [this.#frame.page().mainFrame()._id],
     });
+    this.#preloadScriptId = result.script;
 
-    await connection.send('script.callFunction', {
-      functionDeclaration,
-      arguments: channelArguments,
-      awaitPromise: false,
-      target: this.#frame.mainRealm().realm.target,
-    });
+    await Promise.all(
+      this.#frame
+        .page()
+        .frames()
+        .map(async frame => {
+          return await connection.send('script.callFunction', {
+            functionDeclaration,
+            arguments: channelArguments,
+            awaitPromise: false,
+            target: frame.mainRealm().realm.target,
+          });
+        })
+    );
   }
 
   #handleArgumentsMessage = async (params: Bidi.Script.MessageParameters) => {
@@ -276,5 +287,17 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
       bindingMap.set(callerId, callbacks);
     }
     return {callbacks, remoteValue: data};
+  }
+
+  [Symbol.dispose](): void {
+    void this[Symbol.asyncDispose]().catch(debugError);
+  }
+
+  async [Symbol.asyncDispose](): Promise<void> {
+    if (this.#preloadScriptId) {
+      await this.#connection.send('script.removePreloadScript', {
+        script: this.#preloadScriptId,
+      });
+    }
   }
 }

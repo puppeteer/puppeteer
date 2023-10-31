@@ -746,7 +746,7 @@ export class BidiPage extends Page {
     const expression = evaluationExpression(pageFunction, ...args);
     const {result} = await this.#connection.send('script.addPreloadScript', {
       functionDeclaration: expression,
-      // TODO: should change spec to accept browsingContext
+      contexts: [this.mainFrame()._id],
     });
 
     return {identifier: result.script};

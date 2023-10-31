@@ -59,6 +59,8 @@ export async function connectBidiOverCdp(
   const bidiServer = await BidiMapper.BidiServer.createAndStart(
     transportBiDi,
     cdpConnectionAdapter,
+    // TODO: most likely need a little bit of refactoring
+    cdpConnectionAdapter.browserClient(),
     '',
     undefined,
     bidiServerLogger
