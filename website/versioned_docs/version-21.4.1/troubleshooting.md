@@ -10,7 +10,7 @@ binaries for
 
 ## `Cannot find module 'puppeteer-core/internal/...'`
 
-This can occur is your Node.js version is lower than 14 or you are using a
+This can occur if your Node.js version is lower than 14 or you are using a
 custom resolver (such as
 [`jest-resolve`](https://www.npmjs.com/package/jest-resolve)). For the former,
 we do not support deprecated versions of Node.js. For the latter, usually
