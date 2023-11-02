@@ -70,7 +70,7 @@ const versionsPerRelease = new Map([
 ]);
 
 // Should not be more than 2 major versions behind Chrome Stable (https://chromestatus.com/roadmap).
-const lastMaintainedChromeVersion = '115.0.5790.102';
+const lastMaintainedChromeVersion = '117.0.5938.149';
 
 if (!versionsPerRelease.has(lastMaintainedChromeVersion)) {
   throw new Error(

@@ -42,7 +42,7 @@ function checkIfNeedsUpdate(oldVersion, newVersion, newRevision) {
   if (newSemVer.compare(oldSemVer) <= 0) {
     // Exit the process without setting up version
     console.warn(
-      `Version ${newVersion} is older then the current ${oldVersion}`
+      `Version ${newVersion} is older or the same as the current ${oldVersion}`
     );
     process.exit(0);
   } else if (newSemVer.compareMain(oldSemVer) === 0) {
@@ -134,8 +134,12 @@ async function updateVersionFileLastMaintained(oldVersion, newVersion) {
   const newSemVer = new SemVer(newVersion, true);
 
   if (newSemVer.compareMain(oldSemVer) !== 0) {
-    const lastMaintainedIndex = versions.indexOf(lastMaintainedChromeVersion);
-    const nextMaintainedVersion = versions[lastMaintainedIndex - 1];
+    const lastMaintainedSemVer = new SemVer(lastMaintainedChromeVersion, true);
+    const newLastMaintainedMajor = lastMaintainedSemVer.major + 1;
+
+    const nextMaintainedVersion = versions.find(version => {
+      return new SemVer(version, true).major === newLastMaintainedMajor;
+    });
 
     await replaceInFile(
       './versions.js',
