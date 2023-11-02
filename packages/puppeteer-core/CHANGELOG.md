@@ -20,6 +20,19 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.5.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.4.1...puppeteer-core-v21.5.0) (2023-11-02)
+
+
+### Features
+
+* roll to Chrome 119.0.6045.105 (r1204232) ([#11287](https://github.com/puppeteer/puppeteer/issues/11287)) ([325fa8b](https://github.com/puppeteer/puppeteer/commit/325fa8b1b16a9dafd5bb320e49984d24044fa3d7))
+
+
+### Bug Fixes
+
+* ignore unordered frames ([#11283](https://github.com/puppeteer/puppeteer/issues/11283)) ([ce4e485](https://github.com/puppeteer/puppeteer/commit/ce4e485d1b1e9d4e223890ee0fc2475a1ad71bc3))
+* Type for ElementHandle.screenshot  ([#11274](https://github.com/puppeteer/puppeteer/issues/11274)) ([22aeff1](https://github.com/puppeteer/puppeteer/commit/22aeff1eac9d22048330a16aa3c41293133911e4))
+
 ## [21.4.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.4.0...puppeteer-core-v21.4.1) (2023-10-23)
 
 
