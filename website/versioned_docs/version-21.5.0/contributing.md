@@ -57,7 +57,7 @@ npm run build --workspace <package> # e.g. puppeteer
 ```
 
 This will build all dependent packages automatically, so specifying a single
-packages is sufficient. This is all possible due to
+package is sufficient. This is all possible due to
 [wireit](https://github.com/google/wireit) which behaves similar to
 [GNU Make](https://www.gnu.org/software/make/).
 

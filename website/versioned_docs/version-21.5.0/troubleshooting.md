@@ -10,7 +10,7 @@ binaries for
 
 ## `Cannot find module 'puppeteer-core/internal/...'`
 
-This can occur if your Node.js version is lower than 14 or you are using a
+This can occur if your Node.js version is lower than 14 or if you are using a
 custom resolver (such as
 [`jest-resolve`](https://www.npmjs.com/package/jest-resolve)). For the former,
 we do not support deprecated versions of Node.js. For the latter, usually
@@ -456,7 +456,7 @@ Error: Failed to launch chrome! spawn /usr/bin/chromium-browser ENOENT
 You need to patch two places:
 
 1. Your `gitlab-ci.yml` config
-2. Arguments' list when launching pupepeteer
+2. Arguments' list when launching puppeteer
 
 In `gitlab-ci.yml` we need to install some packages to make it possible to
 launch headless Chrome in your docker env:
