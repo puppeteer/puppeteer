@@ -122,7 +122,7 @@
     "chromium-bidi": "0.4.33",
     "cross-fetch": "4.0.0",
     "debug": "4.3.4",
-    "devtools-protocol": "0.0.1191157",
+    "devtools-protocol": "0.0.1203626",
     "ws": "8.14.2"
   },
   "devDependencies": {
