@@ -54,8 +54,8 @@
   },
   "devDependencies": {
     "@types/node": "^16.11.7",
-    "@schematics/angular": "^16.2.8",
-    "@angular/cli": "^16.2.8",
+    "@schematics/angular": "^16.2.9",
+    "@angular/cli": "^16.2.9",
     "rxjs": "7.8.1"
   },
   "files": [

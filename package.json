@@ -116,7 +116,7 @@
   },
   "devDependencies": {
     "@actions/core": "1.10.1",
-    "@microsoft/api-extractor": "7.38.1",
+    "@microsoft/api-extractor": "7.38.2",
     "@pptr/testserver": "file:packages/testserver",
     "@puppeteer/docgen": "file:tools/docgen",
     "@prettier/sync": "0.3.0",
@@ -169,7 +169,7 @@
     "prettier": "3.0.3",
     "puppeteer": "file:packages/puppeteer",
     "semver": "7.5.4",
-    "sinon": "17.0.0",
+    "sinon": "17.0.1",
     "source-map-support": "0.5.21",
     "spdx-satisfies": "5.0.1",
     "text-diff": "1.0.1",
