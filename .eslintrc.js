@@ -157,6 +157,8 @@ module.exports = {
         'rulesdir/prettier-comments': 'error',
         // Enforces clean up of used resources.
         'rulesdir/use-using': 'error',
+        // Enforces consistent file extension
+        'rulesdir/extensions': 'error',
         // Brackets keep code readable.
         curly: ['error', 'all'],
         // Brackets keep code readable and `return` intentions clear.

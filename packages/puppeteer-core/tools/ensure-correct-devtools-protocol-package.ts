@@ -33,7 +33,6 @@
  * find the one closest to our Chrome revision.
  */
 
-// eslint-disable-next-line import/extensions
 import {execSync} from 'child_process';
 
 import packageJson from '../package.json' assert {type: 'json'};
