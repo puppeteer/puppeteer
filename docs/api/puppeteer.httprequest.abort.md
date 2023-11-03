@@ -10,7 +10,7 @@ Aborts a request.
 
 ```typescript
 class HTTPRequest {
-  abort(errorCode?: ErrorCode, priority?: number): Promise<void>;
+  abstract abort(errorCode?: ErrorCode, priority?: number): Promise<void>;
 }
 ```
 

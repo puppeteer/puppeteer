@@ -153,7 +153,7 @@ export class CdpHTTPRequest extends HTTPRequest {
     return this.#interceptionHandled;
   }
 
-  override enqueueInterceptAction(
+  enqueueInterceptAction(
     pendingHandler: () => void | PromiseLike<unknown>
   ): void {
     this.#interceptHandlers.push(pendingHandler);

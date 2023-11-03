@@ -10,7 +10,7 @@ The request's post body, if any.
 
 ```typescript
 class HTTPRequest {
-  postData(): string | undefined;
+  abstract postData(): string | undefined;
 }
 ```
 

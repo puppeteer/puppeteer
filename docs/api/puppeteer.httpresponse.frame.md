@@ -10,7 +10,7 @@ A [Frame](./puppeteer.frame.md) that initiated this response, or `null` if navig
 
 ```typescript
 class HTTPResponse {
-  frame(): Frame | null;
+  abstract frame(): Frame | null;
 }
 ```
 

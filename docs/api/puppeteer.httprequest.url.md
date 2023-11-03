@@ -10,7 +10,7 @@ The URL of the request
 
 ```typescript
 class HTTPRequest {
-  url(): string;
+  abstract url(): string;
 }
 ```
 

@@ -10,7 +10,7 @@ True if the response was served from either the browser's disk cache or memory c
 
 ```typescript
 class HTTPResponse {
-  fromCache(): boolean;
+  abstract fromCache(): boolean;
 }
 ```
 

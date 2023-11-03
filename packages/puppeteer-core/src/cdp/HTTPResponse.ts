@@ -31,7 +31,7 @@ export class CdpHTTPResponse extends HTTPResponse {
   #client: CDPSession;
   #request: CdpHTTPRequest;
   #contentPromise: Promise<Buffer> | null = null;
-  #bodyLoadedDeferred = Deferred.create<Error | void>();
+  #bodyLoadedDeferred = Deferred.create<void, Error>();
   #remoteAddress: RemoteAddress;
   #status: number;
   #statusText: string;
@@ -96,9 +96,9 @@ export class CdpHTTPResponse extends HTTPResponse {
     return statusText;
   }
 
-  override _resolveBody(err: Error | null): void {
+  _resolveBody(err?: Error): void {
     if (err) {
-      return this.#bodyLoadedDeferred.resolve(err);
+      return this.#bodyLoadedDeferred.reject(err);
     }
     return this.#bodyLoadedDeferred.resolve();
   }
@@ -135,10 +135,7 @@ export class CdpHTTPResponse extends HTTPResponse {
     if (!this.#contentPromise) {
       this.#contentPromise = this.#bodyLoadedDeferred
         .valueOrThrow()
-        .then(async error => {
-          if (error) {
-            throw error;
-          }
+        .then(async () => {
           try {
             const response = await this.#client.send(
               'Network.getResponseBody',

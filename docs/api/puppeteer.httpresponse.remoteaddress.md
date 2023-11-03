@@ -10,7 +10,7 @@ The IP address and port number used to connect to the remote server.
 
 ```typescript
 class HTTPResponse {
-  remoteAddress(): RemoteAddress;
+  abstract remoteAddress(): RemoteAddress;
 }
 ```
 

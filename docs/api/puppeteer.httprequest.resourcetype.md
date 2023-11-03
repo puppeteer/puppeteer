@@ -10,7 +10,7 @@ Contains the request's resource type as it was perceived by the rendering engine
 
 ```typescript
 class HTTPRequest {
-  resourceType(): ResourceType;
+  abstract resourceType(): ResourceType;
 }
 ```
 

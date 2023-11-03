@@ -9,7 +9,7 @@ The HTTPResponse class represents responses which are received by the [Page](./p
 #### Signature:
 
 ```typescript
-export declare class HTTPResponse
+export declare abstract class HTTPResponse
 ```
 
 ## Remarks

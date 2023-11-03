@@ -10,7 +10,7 @@ The initiator of the request.
 
 ```typescript
 class HTTPRequest {
-  initiator(): Protocol.Network.Initiator | undefined;
+  abstract initiator(): Protocol.Network.Initiator | undefined;
 }
 ```
 

@@ -10,7 +10,7 @@ An object with HTTP headers associated with the response. All header names are l
 
 ```typescript
 class HTTPResponse {
-  headers(): Record<string, string>;
+  abstract headers(): Record<string, string>;
 }
 ```
 

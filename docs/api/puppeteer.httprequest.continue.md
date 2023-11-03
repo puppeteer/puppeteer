@@ -10,7 +10,7 @@ Continues request with optional request overrides.
 
 ```typescript
 class HTTPRequest {
-  continue(
+  abstract continue(
     overrides?: ContinueRequestOverrides,
     priority?: number
   ): Promise<void>;
