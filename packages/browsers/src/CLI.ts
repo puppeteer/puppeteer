@@ -58,6 +58,16 @@ interface LaunchArgs {
   system: boolean;
 }
 
+interface PathArgs {
+  browser: {
+    name: Browser;
+    buildId: string;
+  };
+  path?: string;
+  platform?: BrowserPlatform;
+  system: boolean;
+}
+
 interface ClearArgs {
   path?: string;
 }
@@ -268,6 +278,37 @@ export class CLI {
             executablePath,
             detached: args.detached,
           });
+        }
+      )
+      .command(
+        'path',
+        'Print the path to the executable',
+        yargs => {
+          this.#defineBrowserParameter(yargs);
+          this.#definePlatformParameter(yargs);
+          this.#definePathParameter(yargs);
+          yargs.option('system', {
+            type: 'boolean',
+            desc: 'Search for a browser installed on the system instead of the cache folder.',
+            default: false,
+          });
+        },
+        async argv => {
+          const args = argv as unknown as PathArgs;
+          const executablePath = args.system
+            ? computeSystemExecutablePath({
+                browser: args.browser.name,
+                // TODO: throw an error if not a ChromeReleaseChannel is provided.
+                channel: args.browser.buildId as ChromeReleaseChannel,
+                platform: args.platform,
+              })
+            : computeExecutablePath({
+                browser: args.browser.name,
+                buildId: args.browser.buildId,
+                cacheDir: args.path ?? this.#cachePath,
+                platform: args.platform,
+              });
+          console.log(executablePath);
         }
       )
       .command(
