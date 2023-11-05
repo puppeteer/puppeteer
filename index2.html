@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Product Page</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			margin: 0;
+			padding: 0;
+			background-color: #f2f2f2;
+		}
+		.product {
+			max-width: 800px;
+			margin: 50px auto;
+			padding: 20px;
+			background-color: #fff;
+			border-radius: 10px;
+			box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			align-items: center;
+		}
+		.product-image {
+    flex-basis: 40%;
+    margin-right: 20px;
+    position: relative;
+    background-color: #ccc;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+		.product-info {
+			flex-basis: 60%;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: flex-start;
+		}
+		.product-title {
+			font-size: 24px;
+			font-weight: bold;
+			color: #333;
+			margin-bottom: 10px;
+		}
+		.product-description {
+			font-size: 16px;
+			color: #666;
+			margin-bottom: 20px;
+		}
+		.review-info {
+			display: flex;
+			flex-direction: column;
+			margin-bottom: 20px;
+		}
+		.review-header {
+			font-size: 20px;
+			font-weight: bold;
+			color: #333;
+			margin-bottom: 10px;
+		}
+		.review-adjectives {
+			font-size: 16px;
+			color: #666;
+			margin-bottom: 10px;
+		}
+		.negative-reviews {
+			font-size: 16px;
+			color: #ff0000;
+			margin-bottom: 10px;
+		}
+	</style>
+</head>
+<body>
+    <title>Product Page</title>
+	<div class="product">
+		<div class="product-image">
+			<img src="img.jpg" alt="Product Image">
+		</div>
+		<div class="product-info">
+			<h1 class="product-title">Hot Wheels '16 Centenario Roadster 170/250, White
+            </h1>
+			<p class="product- review description">Very Happy,Fast car.The MRP of the product has been erased by the sellerI thought it would be better quality because it was $8 but it’s the same quality as the $1 hot wheels.Waste of money, not worth to price I am not sure if the seller is charging more than the actual value.</p>
+			<div class="review-info">
+				<h2 class="review-header">Review Information</h2>
+				<p class="review-adjectives">Positive Adjectives: super fast,
+                    good,
+                    exact,
+                    overpriced,
+                    not worth,
+                    costly,
+                    waste of money,
+                    quick delivery,
+                    expensive,
+                    same quality,
+                    all good,
+                    positive</p>
+				<p class="negative-reviews">Percentage of Negative Reviews: 25%</p>
+                <p class="negative-reviews">Percentage of Moderate Reviews: 23%</p>
+                <p class="negative-reviews">Percentage of Positive Reviews: 52%</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
