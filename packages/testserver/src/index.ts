@@ -105,6 +105,9 @@ export class TestServer {
       this.#server = createHttpServer(this.#onRequest);
     }
     this.#server.on('connection', this.#onServerConnection);
+    // Disable this as sometimes the socket will timeout
+    // We rely on the fact that we will close the server at the end
+    this.#server.keepAliveTimeout = 0;
     this.#wsServer = new WebSocketServer({server: this.#server});
     this.#wsServer.on('connection', this.#onWebSocketConnection);
   }
