@@ -29,5 +29,8 @@
   "dependencies": {
     "mime": "3.0.0",
     "ws": "8.14.2"
+  },
+  "devDependencies": {
+    "@types/mime": "3.0.3"
   }
 }
