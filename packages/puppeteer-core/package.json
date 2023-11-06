@@ -126,7 +126,9 @@
     "ws": "8.14.2"
   },
   "devDependencies": {
+    "@types/debug": "4.1.10",
     "@types/node": "18.17.15",
+    "@types/ws": "8.5.8",
     "mitt": "3.0.1",
     "parsel-js": "1.1.2",
     "rxjs": "7.8.1"
