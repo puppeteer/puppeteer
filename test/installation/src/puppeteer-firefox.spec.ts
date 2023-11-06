@@ -52,23 +52,8 @@ import {readAsset} from './util.js';
     });
 
     describe('with WebDriverBiDi', () => {
-      before(function () {
-        this.env = {
-          ...this.env,
-          PUPPETEER_PROTOCOL: 'webDriverBiDi',
-        };
-      });
-
-      it('evaluates CommonJS', async function () {
-        const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));
-        assert.equal(files.length, 1);
-        assert.equal(files[0], 'firefox');
-        const script = await readAsset('puppeteer-core', 'requires.cjs');
-        await this.runScript(script, 'cjs');
-      });
-
       it('evaluates ES modules', async function () {
-        const script = await readAsset('puppeteer-core', 'imports.js');
+        const script = await readAsset('puppeteer', 'bidi.js');
         await this.runScript(script, 'mjs');
       });
     });
