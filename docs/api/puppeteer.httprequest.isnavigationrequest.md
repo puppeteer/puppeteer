@@ -10,7 +10,7 @@ True if the request is the driver of the current frame's navigation.
 
 ```typescript
 class HTTPRequest {
-  isNavigationRequest(): boolean;
+  abstract isNavigationRequest(): boolean;
 }
 ```
 

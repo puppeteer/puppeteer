@@ -10,7 +10,7 @@ Access information about the request's failure.
 
 ```typescript
 class HTTPRequest {
-  failure(): {
+  abstract failure(): {
     errorText: string;
   } | null;
 }

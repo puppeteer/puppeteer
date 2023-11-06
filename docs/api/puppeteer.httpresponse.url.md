@@ -10,7 +10,7 @@ The URL of the response.
 
 ```typescript
 class HTTPResponse {
-  url(): string;
+  abstract url(): string;
 }
 ```
 

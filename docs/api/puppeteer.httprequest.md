@@ -9,7 +9,7 @@ Represents an HTTP request sent by a page.
 #### Signature:
 
 ```typescript
-export declare class HTTPRequest
+export declare abstract class HTTPRequest
 ```
 
 ## Remarks

@@ -10,7 +10,7 @@ The frame that initiated the request, or null if navigating to error pages.
 
 ```typescript
 class HTTPRequest {
-  frame(): Frame | null;
+  abstract frame(): Frame | null;
 }
 ```
 

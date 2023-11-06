@@ -10,7 +10,7 @@ Timing information related to the response.
 
 ```typescript
 class HTTPResponse {
-  timing(): Protocol.Network.ResourceTiming | null;
+  abstract timing(): Protocol.Network.ResourceTiming | null;
 }
 ```
 

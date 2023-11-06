@@ -10,7 +10,7 @@ The method used (`GET`, `POST`, etc.)
 
 ```typescript
 class HTTPRequest {
-  method(): string;
+  abstract method(): string;
 }
 ```
 

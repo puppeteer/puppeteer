@@ -10,7 +10,7 @@ Adds an async request handler to the processing queue. Deferred handlers are not
 
 ```typescript
 class HTTPRequest {
-  enqueueInterceptAction(
+  abstract enqueueInterceptAction(
     pendingHandler: () => void | PromiseLike<unknown>
   ): void;
 }

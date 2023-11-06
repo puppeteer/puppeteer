@@ -10,7 +10,7 @@ A matching [HTTPRequest](./puppeteer.httprequest.md) object.
 
 ```typescript
 class HTTPResponse {
-  request(): HTTPRequest;
+  abstract request(): HTTPRequest;
 }
 ```
 

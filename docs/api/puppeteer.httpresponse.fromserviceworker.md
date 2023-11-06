@@ -10,7 +10,7 @@ True if the response was served by a service worker.
 
 ```typescript
 class HTTPResponse {
-  fromServiceWorker(): boolean;
+  abstract fromServiceWorker(): boolean;
 }
 ```
 

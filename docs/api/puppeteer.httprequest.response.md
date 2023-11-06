@@ -10,7 +10,7 @@ A matching `HTTPResponse` object, or null if the response has not been received 
 
 ```typescript
 class HTTPRequest {
-  response(): HTTPResponse | null;
+  abstract response(): HTTPResponse | null;
 }
 ```
 

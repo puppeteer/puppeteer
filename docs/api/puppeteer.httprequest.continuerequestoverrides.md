@@ -10,7 +10,7 @@ The `ContinueRequestOverrides` that will be used if the interception is allowed 
 
 ```typescript
 class HTTPRequest {
-  continueRequestOverrides(): ContinueRequestOverrides;
+  abstract continueRequestOverrides(): ContinueRequestOverrides;
 }
 ```
 

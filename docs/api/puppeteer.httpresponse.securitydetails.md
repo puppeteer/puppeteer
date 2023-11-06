@@ -10,7 +10,7 @@ sidebar_label: HTTPResponse.securityDetails
 
 ```typescript
 class HTTPResponse {
-  securityDetails(): SecurityDetails | null;
+  abstract securityDetails(): SecurityDetails | null;
 }
 ```
 

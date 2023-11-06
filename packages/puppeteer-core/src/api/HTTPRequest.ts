@@ -100,7 +100,7 @@ export const DEFAULT_INTERCEPT_RESOLUTION_PRIORITY = 0;
  *
  * @public
  */
-export class HTTPRequest {
+export abstract class HTTPRequest {
   /**
    * @internal
    */
@@ -131,9 +131,7 @@ export class HTTPRequest {
    *
    * @experimental
    */
-  get client(): CDPSession {
-    throw new Error('Not implemented');
-  }
+  abstract get client(): CDPSession;
 
   /**
    * @internal
@@ -143,33 +141,25 @@ export class HTTPRequest {
   /**
    * The URL of the request
    */
-  url(): string {
-    throw new Error('Not implemented');
-  }
+  abstract url(): string;
 
   /**
    * The `ContinueRequestOverrides` that will be used
    * if the interception is allowed to continue (ie, `abort()` and
    * `respond()` aren't called).
    */
-  continueRequestOverrides(): ContinueRequestOverrides {
-    throw new Error('Not implemented');
-  }
+  abstract continueRequestOverrides(): ContinueRequestOverrides;
 
   /**
    * The `ResponseForRequest` that gets used if the
    * interception is allowed to respond (ie, `abort()` is not called).
    */
-  responseForRequest(): Partial<ResponseForRequest> | null {
-    throw new Error('Not implemented');
-  }
+  abstract responseForRequest(): Partial<ResponseForRequest> | null;
 
   /**
    * The most recent reason for aborting the request
    */
-  abortErrorReason(): Protocol.Network.ErrorReason | null {
-    throw new Error('Not implemented');
-  }
+  abstract abortErrorReason(): Protocol.Network.ErrorReason | null;
 
   /**
    * An InterceptResolutionState object describing the current resolution
@@ -182,17 +172,13 @@ export class HTTPRequest {
    * InterceptResolutionAction is one of: `abort`, `respond`, `continue`,
    * `disabled`, `none`, or `already-handled`.
    */
-  interceptResolutionState(): InterceptResolutionState {
-    throw new Error('Not implemented');
-  }
+  abstract interceptResolutionState(): InterceptResolutionState;
 
   /**
    * Is `true` if the intercept resolution has already been handled,
    * `false` otherwise.
    */
-  isInterceptResolutionHandled(): boolean {
-    throw new Error('Not implemented');
-  }
+  abstract isInterceptResolutionHandled(): boolean;
 
   /**
    * Adds an async request handler to the processing queue.
@@ -200,80 +186,59 @@ export class HTTPRequest {
    * but they are guaranteed to resolve before the request interception
    * is finalized.
    */
-  enqueueInterceptAction(
+  abstract enqueueInterceptAction(
     pendingHandler: () => void | PromiseLike<unknown>
   ): void;
-  enqueueInterceptAction(): void {
-    throw new Error('Not implemented');
-  }
 
   /**
    * Awaits pending interception handlers and then decides how to fulfill
    * the request interception.
    */
-  async finalizeInterceptions(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract finalizeInterceptions(): Promise<void>;
 
   /**
    * Contains the request's resource type as it was perceived by the rendering
    * engine.
    */
-  resourceType(): ResourceType {
-    throw new Error('Not implemented');
-  }
+  abstract resourceType(): ResourceType;
 
   /**
    * The method used (`GET`, `POST`, etc.)
    */
-  method(): string {
-    throw new Error('Not implemented');
-  }
+  abstract method(): string;
 
   /**
    * The request's post body, if any.
    */
-  postData(): string | undefined {
-    throw new Error('Not implemented');
-  }
+  abstract postData(): string | undefined;
 
   /**
    * An object with HTTP headers associated with the request. All
    * header names are lower-case.
    */
-  headers(): Record<string, string> {
-    throw new Error('Not implemented');
-  }
+  abstract headers(): Record<string, string>;
 
   /**
    * A matching `HTTPResponse` object, or null if the response has not
    * been received yet.
    */
-  response(): HTTPResponse | null {
-    throw new Error('Not implemented');
-  }
+  abstract response(): HTTPResponse | null;
 
   /**
    * The frame that initiated the request, or null if navigating to
    * error pages.
    */
-  frame(): Frame | null {
-    throw new Error('Not implemented');
-  }
+  abstract frame(): Frame | null;
 
   /**
    * True if the request is the driver of the current frame's navigation.
    */
-  isNavigationRequest(): boolean {
-    throw new Error('Not implemented');
-  }
+  abstract isNavigationRequest(): boolean;
 
   /**
    * The initiator of the request.
    */
-  initiator(): Protocol.Network.Initiator | undefined {
-    throw new Error('Not implemented');
-  }
+  abstract initiator(): Protocol.Network.Initiator | undefined;
 
   /**
    * A `redirectChain` is a chain of requests initiated to fetch a resource.
@@ -302,9 +267,7 @@ export class HTTPRequest {
    * @returns the chain of requests - if a server responds with at least a
    * single redirect, this chain will contain all requests that were redirected.
    */
-  redirectChain(): HTTPRequest[] {
-    throw new Error('Not implemented');
-  }
+  abstract redirectChain(): HTTPRequest[];
 
   /**
    * Access information about the request's failure.
@@ -326,9 +289,7 @@ export class HTTPRequest {
    * message, e.g. `net::ERR_FAILED`. It is not guaranteed that there will be
    * failure text if the request fails.
    */
-  failure(): {errorText: string} | null {
-    throw new Error('Not implemented');
-  }
+  abstract failure(): {errorText: string} | null;
 
   /**
    * Continues request with optional request overrides.
@@ -359,13 +320,10 @@ export class HTTPRequest {
    * cooperative handling rules. Otherwise, intercept is resolved
    * immediately.
    */
-  async continue(
+  abstract continue(
     overrides?: ContinueRequestOverrides,
     priority?: number
   ): Promise<void>;
-  async continue(): Promise<void> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * Fulfills a request with the given response.
@@ -399,13 +357,10 @@ export class HTTPRequest {
    * cooperative handling rules. Otherwise, intercept is resolved
    * immediately.
    */
-  async respond(
+  abstract respond(
     response: Partial<ResponseForRequest>,
     priority?: number
   ): Promise<void>;
-  async respond(): Promise<void> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * Aborts a request.
@@ -420,10 +375,7 @@ export class HTTPRequest {
    * cooperative handling rules. Otherwise, intercept is resolved
    * immediately.
    */
-  async abort(errorCode?: ErrorCode, priority?: number): Promise<void>;
-  async abort(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract abort(errorCode?: ErrorCode, priority?: number): Promise<void>;
 }
 
 /**
@@ -499,7 +451,7 @@ export function headersArray(
  * List taken from {@link https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml}
  * with extra 306 and 418 codes.
  */
-export const STATUS_TEXTS: Record<string, string | undefined> = {
+export const STATUS_TEXTS: Record<string, string> = {
   '100': 'Continue',
   '101': 'Switching Protocols',
   '102': 'Processing',

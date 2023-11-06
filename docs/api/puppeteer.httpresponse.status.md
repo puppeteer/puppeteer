@@ -10,7 +10,7 @@ The status code of the response (e.g., 200 for a success).
 
 ```typescript
 class HTTPResponse {
-  status(): number;
+  abstract status(): number;
 }
 ```
 

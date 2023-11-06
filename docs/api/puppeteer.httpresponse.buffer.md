@@ -10,7 +10,7 @@ Promise which resolves to a buffer with response body.
 
 ```typescript
 class HTTPResponse {
-  buffer(): Promise<Buffer>;
+  abstract buffer(): Promise<Buffer>;
 }
 ```
 

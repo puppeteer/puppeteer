@@ -10,7 +10,7 @@ Awaits pending interception handlers and then decides how to fulfill the request
 
 ```typescript
 class HTTPRequest {
-  finalizeInterceptions(): Promise<void>;
+  abstract finalizeInterceptions(): Promise<void>;
 }
 ```
 
