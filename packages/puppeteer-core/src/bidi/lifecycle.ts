@@ -19,10 +19,10 @@ import type {
   ObservableInput,
   ObservedValueOf,
   OperatorFunction,
-} from '../../third_party/rxjs/rxjs';
-import {catchError} from '../../third_party/rxjs/rxjs';
-import type {PuppeteerLifeCycleEvent} from '../cdp/LifecycleWatcher';
-import {ProtocolError, TimeoutError} from '../common/Errors';
+} from '../../third_party/rxjs/rxjs.js';
+import {catchError} from '../../third_party/rxjs/rxjs.js';
+import type {PuppeteerLifeCycleEvent} from '../cdp/LifecycleWatcher.js';
+import {ProtocolError, TimeoutError} from '../common/Errors.js';
 
 export type BiDiNetworkIdle = Extract<
   PuppeteerLifeCycleEvent,
