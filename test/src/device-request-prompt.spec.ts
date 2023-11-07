@@ -26,7 +26,9 @@ describe('device request prompt', function () {
     this.timeout(10_000);
     state = await launch(
       {
-        args: ['--enable-features=WebBluetoothNewPermissionsBackend'],
+        args: [
+          '--enable-features=WebBluetoothNewPermissionsBackend,WebBluetooth',
+        ],
         ignoreHTTPSErrors: true,
       },
       {
