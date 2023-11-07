@@ -36,17 +36,26 @@ import {readAsset} from './util.js';
       },
     });
 
-    it('evaluates CommonJS', async function () {
-      const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));
-      assert.equal(files.length, 1);
-      assert.equal(files[0], 'firefox');
-      const script = await readAsset('puppeteer-core', 'requires.cjs');
-      await this.runScript(script, 'cjs');
+    describe('with CDP', () => {
+      it('evaluates CommonJS', async function () {
+        const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));
+        assert.equal(files.length, 1);
+        assert.equal(files[0], 'firefox');
+        const script = await readAsset('puppeteer-core', 'requires.cjs');
+        await this.runScript(script, 'cjs');
+      });
+
+      it('evaluates ES modules', async function () {
+        const script = await readAsset('puppeteer-core', 'imports.js');
+        await this.runScript(script, 'mjs');
+      });
     });
 
-    it('evaluates ES modules', async function () {
-      const script = await readAsset('puppeteer-core', 'imports.js');
-      await this.runScript(script, 'mjs');
+    describe('with WebDriverBiDi', () => {
+      it('evaluates ES modules', async function () {
+        const script = await readAsset('puppeteer', 'bidi.js');
+        await this.runScript(script, 'mjs');
+      });
     });
   }
 );
