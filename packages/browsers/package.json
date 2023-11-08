@@ -104,9 +104,9 @@
   },
   "devDependencies": {
     "@types/debug": "4.1.11",
-    "@types/progress": "2.0.6",
-    "@types/tar-fs": "2.0.3",
-    "@types/unbzip2-stream": "1.4.2",
-    "@types/yargs": "17.0.30"
+    "@types/progress": "2.0.7",
+    "@types/tar-fs": "2.0.4",
+    "@types/unbzip2-stream": "1.4.3",
+    "@types/yargs": "17.0.31"
   }
 }

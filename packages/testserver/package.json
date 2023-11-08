@@ -31,6 +31,6 @@
     "ws": "8.14.2"
   },
   "devDependencies": {
-    "@types/mime": "3.0.3"
+    "@types/mime": "3.0.4"
   }
 }
