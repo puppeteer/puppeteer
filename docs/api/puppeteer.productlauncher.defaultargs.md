@@ -8,7 +8,7 @@ sidebar_label: ProductLauncher.defaultArgs
 
 ```typescript
 class ProductLauncher {
-  defaultArgs(object: BrowserLaunchArgumentOptions): string[];
+  abstract defaultArgs(object: BrowserLaunchArgumentOptions): string[];
 }
 ```
 
