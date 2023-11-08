@@ -18,6 +18,7 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import type {ElementHandle} from '../api/ElementHandle.js';
 import {JSHandle} from '../api/JSHandle.js';
+import {UnsupportedOperation} from '../common/Errors.js';
 
 import {BidiDeserializer} from './Deserializer.js';
 import type {BidiRealm} from './Realm.js';
@@ -105,6 +106,6 @@ export class BidiJSHandle<T = unknown> extends JSHandle<T> {
   }
 
   override remoteObject(): never {
-    throw new Error('Not available in WebDriver BiDi');
+    throw new UnsupportedOperation('Not available in WebDriver BiDi');
   }
 }

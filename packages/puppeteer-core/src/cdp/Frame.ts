@@ -20,6 +20,7 @@ import type {CDPSession} from '../api/CDPSession.js';
 import {Frame, FrameEvent, throwIfDetached} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {WaitTimeoutOptions} from '../api/Page.js';
+import {UnsupportedOperation} from '../common/Errors.js';
 import {setPageContent} from '../common/util.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
@@ -346,5 +347,9 @@ export class CdpFrame extends Frame {
     this.#detached = true;
     this.worlds[MAIN_WORLD][disposeSymbol]();
     this.worlds[PUPPETEER_WORLD][disposeSymbol]();
+  }
+
+  exposeFunction(): Promise<void> {
+    throw new UnsupportedOperation();
   }
 }

@@ -355,7 +355,7 @@ export type MouseButton = (typeof MouseButton)[keyof typeof MouseButton];
  *
  * @public
  */
-export class Mouse {
+export abstract class Mouse {
   /**
    * @internal
    */
@@ -365,9 +365,7 @@ export class Mouse {
    * Resets the mouse to the default state: No buttons pressed; position at
    * (0,0).
    */
-  async reset(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract reset(): Promise<void>;
 
   /**
    * Moves the mouse to the given coordinate.
@@ -376,34 +374,25 @@ export class Mouse {
    * @param y - Vertical position of the mouse.
    * @param options - Options to configure behavior.
    */
-  async move(
+  abstract move(
     x: number,
     y: number,
     options?: Readonly<MouseMoveOptions>
   ): Promise<void>;
-  async move(): Promise<void> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * Presses the mouse.
    *
    * @param options - Options to configure behavior.
    */
-  async down(options?: Readonly<MouseOptions>): Promise<void>;
-  async down(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract down(options?: Readonly<MouseOptions>): Promise<void>;
 
   /**
    * Releases the mouse.
    *
    * @param options - Options to configure behavior.
    */
-  async up(options?: Readonly<MouseOptions>): Promise<void>;
-  async up(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract up(options?: Readonly<MouseOptions>): Promise<void>;
 
   /**
    * Shortcut for `mouse.move`, `mouse.down` and `mouse.up`.
@@ -412,14 +401,11 @@ export class Mouse {
    * @param y - Vertical position of the mouse.
    * @param options - Options to configure behavior.
    */
-  async click(
+  abstract click(
     x: number,
     y: number,
     options?: Readonly<MouseClickOptions>
   ): Promise<void>;
-  async click(): Promise<void> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * Dispatches a `mousewheel` event.
@@ -443,50 +429,41 @@ export class Mouse {
    * await page.mouse.wheel({deltaY: -100});
    * ```
    */
-  async wheel(options?: Readonly<MouseWheelOptions>): Promise<void>;
-  async wheel(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract wheel(options?: Readonly<MouseWheelOptions>): Promise<void>;
 
   /**
    * Dispatches a `drag` event.
    * @param start - starting point for drag
    * @param target - point to drag to
    */
-  async drag(start: Point, target: Point): Promise<Protocol.Input.DragData>;
-  async drag(): Promise<Protocol.Input.DragData> {
-    throw new Error('Not implemented');
-  }
+  abstract drag(start: Point, target: Point): Promise<Protocol.Input.DragData>;
 
   /**
    * Dispatches a `dragenter` event.
    * @param target - point for emitting `dragenter` event
    * @param data - drag data containing items and operations mask
    */
-  async dragEnter(target: Point, data: Protocol.Input.DragData): Promise<void>;
-  async dragEnter(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract dragEnter(
+    target: Point,
+    data: Protocol.Input.DragData
+  ): Promise<void>;
 
   /**
    * Dispatches a `dragover` event.
    * @param target - point for emitting `dragover` event
    * @param data - drag data containing items and operations mask
    */
-  async dragOver(target: Point, data: Protocol.Input.DragData): Promise<void>;
-  async dragOver(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract dragOver(
+    target: Point,
+    data: Protocol.Input.DragData
+  ): Promise<void>;
 
   /**
    * Performs a dragenter, dragover, and drop in sequence.
    * @param target - point to drop on
    * @param data - drag data containing items and operations mask
    */
-  async drop(target: Point, data: Protocol.Input.DragData): Promise<void>;
-  async drop(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract drop(target: Point, data: Protocol.Input.DragData): Promise<void>;
 
   /**
    * Performs a drag, dragenter, dragover, and drop in sequence.
@@ -496,14 +473,11 @@ export class Mouse {
    * if specified, is the time to wait between `dragover` and `drop` in milliseconds.
    * Defaults to 0.
    */
-  async dragAndDrop(
+  abstract dragAndDrop(
     start: Point,
     target: Point,
     options?: {delay?: number}
   ): Promise<void>;
-  async dragAndDrop(): Promise<void> {
-    throw new Error('Not implemented');
-  }
 }
 
 /**

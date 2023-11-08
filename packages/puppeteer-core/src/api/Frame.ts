@@ -312,9 +312,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * Is `true` if the frame is an out-of-process (OOP) frame. Otherwise,
    * `false`.
    */
-  isOOPFrame(): boolean {
-    throw new Error('Not implemented');
-  }
+  abstract isOOPFrame(): boolean;
 
   /**
    * Navigates the frame to the given `url`.
@@ -1197,26 +1195,10 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    *   await devicePrompt.waitForDevice(({name}) => name.includes('My Device'))
    * );
    * ```
+   *
+   * @internal
    */
-  waitForDevicePrompt(
+  abstract waitForDevicePrompt(
     options?: WaitTimeoutOptions
   ): Promise<DeviceRequestPrompt>;
-
-  /**
-   * @internal
-   */
-  waitForDevicePrompt(): Promise<DeviceRequestPrompt> {
-    throw new Error('Not implemented');
-  }
-
-  /**
-   * @internal
-   */
-  exposeFunction<Args extends unknown[], Ret>(
-    name: string,
-    fn: (...args: Args) => Awaitable<Ret>
-  ): Promise<void>;
-  exposeFunction(): Promise<void> {
-    throw new Error('Not implemented');
-  }
 }

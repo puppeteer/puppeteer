@@ -30,6 +30,7 @@ import {
 } from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {WaitForOptions} from '../api/Frame.js';
+import type {Metrics} from '../api/Page.js';
 import {
   Page,
   PageEvent,
@@ -38,17 +39,20 @@ import {
   type NewDocumentScriptEvaluation,
   type ScreenshotOptions,
 } from '../api/Page.js';
+import type {Target} from '../api/Target.js';
 import {Accessibility} from '../cdp/Accessibility.js';
 import {Coverage} from '../cdp/Coverage.js';
 import {EmulationManager as CdpEmulationManager} from '../cdp/EmulationManager.js';
 import {FrameTree} from '../cdp/FrameTree.js';
 import {Tracing} from '../cdp/Tracing.js';
+import type {WebWorker} from '../cdp/WebWorker.js';
 import {
   ConsoleMessage,
   type ConsoleMessageLocation,
 } from '../common/ConsoleMessage.js';
-import {TargetCloseError} from '../common/Errors.js';
+import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
 import type {Handler} from '../common/EventEmitter.js';
+import type {FileChooser} from '../common/FileChooser.js';
 import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
 import type {Awaitable} from '../common/types.js';
@@ -61,6 +65,7 @@ import {
   waitForHTTP,
 } from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
+import type {DeviceRequestPrompt, HTTPResponse} from '../puppeteer-core.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
@@ -649,34 +654,41 @@ export class BidiPage extends Page {
     const {clip, type, captureBeyondViewport, allowViewportExpansion, quality} =
       options;
     if (captureBeyondViewport && !allowViewportExpansion) {
-      throw new Error(
+      throw new UnsupportedOperation(
         `BiDi does not support 'captureBeyondViewport'. Use 'allowViewportExpansion'.`
       );
     }
     if (options.omitBackground !== undefined && options.omitBackground) {
-      throw new Error(`BiDi does not support 'omitBackground'.`);
+      throw new UnsupportedOperation(`BiDi does not support 'omitBackground'.`);
     }
     if (options.optimizeForSpeed !== undefined && options.optimizeForSpeed) {
-      throw new Error(`BiDi does not support 'optimizeForSpeed'.`);
+      throw new UnsupportedOperation(
+        `BiDi does not support 'optimizeForSpeed'.`
+      );
     }
     if (options.fromSurface !== undefined && !options.fromSurface) {
-      throw new Error(`BiDi does not support 'fromSurface'.`);
+      throw new UnsupportedOperation(`BiDi does not support 'fromSurface'.`);
     }
     if (clip !== undefined && clip.scale !== undefined && clip.scale !== 1) {
-      throw new Error(`BiDi does not support 'scale' in 'clip'.`);
+      throw new UnsupportedOperation(
+        `BiDi does not support 'scale' in 'clip'.`
+      );
     }
+
     const {
       result: {data},
     } = await this.#connection.send('browsingContext.captureScreenshot', {
       context: this.mainFrame()._id,
       format: {
         type: `image/${type}`,
-        ...(quality === undefined ? {} : {quality: quality / 100}),
+        quality: quality ? quality / 100 : undefined,
       },
-      clip: clip && {
-        type: 'box',
-        ...clip,
-      },
+      clip: clip
+        ? {
+            type: 'box',
+            ...clip,
+          }
+        : undefined,
     });
     return data;
   }
@@ -816,6 +828,84 @@ export class BidiPage extends Page {
     await this._client().send('Network.setCacheDisabled', {
       cacheDisabled: !enabled,
     });
+  }
+
+  override isServiceWorkerBypassed(): boolean {
+    throw new UnsupportedOperation();
+  }
+
+  override target(): Target {
+    // TODO: Quick win?
+    throw new UnsupportedOperation();
+  }
+
+  override waitForFileChooser(): Promise<FileChooser> {
+    throw new UnsupportedOperation();
+  }
+
+  override workers(): WebWorker[] {
+    throw new UnsupportedOperation();
+  }
+
+  override setRequestInterception(): Promise<void> {
+    throw new UnsupportedOperation();
+  }
+
+  override setDragInterception(): Promise<void> {
+    throw new UnsupportedOperation();
+  }
+
+  override setBypassServiceWorker(): Promise<void> {
+    throw new UnsupportedOperation();
+  }
+
+  override setOfflineMode(): Promise<void> {
+    throw new UnsupportedOperation();
+  }
+
+  override emulateNetworkConditions(): Promise<void> {
+    throw new UnsupportedOperation();
+  }
+
+  override cookies(): Promise<Protocol.Network.Cookie[]> {
+    throw new UnsupportedOperation();
+  }
+
+  override setCookie(): Promise<void> {
+    throw new UnsupportedOperation();
+  }
+
+  override deleteCookie(): Promise<void> {
+    throw new UnsupportedOperation();
+  }
+
+  override removeExposedFunction(): Promise<void> {
+    // TODO: Quick win?
+    throw new UnsupportedOperation();
+  }
+
+  override authenticate(): Promise<void> {
+    throw new UnsupportedOperation();
+  }
+
+  override setExtraHTTPHeaders(): Promise<void> {
+    throw new UnsupportedOperation();
+  }
+
+  override metrics(): Promise<Metrics> {
+    throw new UnsupportedOperation();
+  }
+
+  override goBack(): Promise<HTTPResponse | null> {
+    throw new UnsupportedOperation();
+  }
+
+  override goForward(): Promise<HTTPResponse | null> {
+    throw new UnsupportedOperation();
+  }
+
+  override waitForDevicePrompt(): Promise<DeviceRequestPrompt> {
+    throw new UnsupportedOperation();
   }
 }
 

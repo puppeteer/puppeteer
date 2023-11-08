@@ -16,6 +16,7 @@
 
 import type {CDPSession} from '../api/CDPSession.js';
 import {Target, TargetType} from '../api/Target.js';
+import {UnsupportedOperation} from '../common/Errors.js';
 
 import type {BidiBrowser} from './Browser.js';
 import type {BidiBrowserContext} from './BrowserContext.js';
@@ -33,6 +34,10 @@ export class BidiTarget extends Target {
     this._browserContext = browserContext;
   }
 
+  _setBrowserContext(browserContext: BidiBrowserContext): void {
+    this._browserContext = browserContext;
+  }
+
   override async worker(): Promise<null> {
     return null;
   }
@@ -46,11 +51,19 @@ export class BidiTarget extends Target {
   }
 
   override opener(): Target | undefined {
-    throw new Error('Not implemented');
+    throw new UnsupportedOperation();
   }
 
-  _setBrowserContext(browserContext: BidiBrowserContext): void {
-    this._browserContext = browserContext;
+  override url(): string {
+    throw new UnsupportedOperation();
+  }
+
+  override createCDPSession(): Promise<CDPSession> {
+    throw new UnsupportedOperation();
+  }
+
+  override type(): TargetType {
+    throw new UnsupportedOperation();
   }
 }
 

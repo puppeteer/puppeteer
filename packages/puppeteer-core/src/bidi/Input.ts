@@ -15,6 +15,7 @@
  */
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type Protocol from 'devtools-protocol';
 
 import type {Point} from '../api/ElementHandle.js';
 import {
@@ -30,6 +31,7 @@ import {
   type MouseOptions,
   type MouseWheelOptions,
 } from '../api/Input.js';
+import {UnsupportedOperation} from '../common/Errors.js';
 import type {KeyInput} from '../common/USKeyboardLayout.js';
 
 import type {BrowsingContext} from './BrowsingContext.js';
@@ -626,6 +628,26 @@ export class BidiMouse extends Mouse {
         },
       ],
     });
+  }
+
+  override drag(): Promise<Protocol.Input.DragData> {
+    throw new UnsupportedOperation();
+  }
+
+  override dragOver(): Promise<void> {
+    throw new UnsupportedOperation();
+  }
+
+  override dragEnter(): Promise<void> {
+    throw new UnsupportedOperation();
+  }
+
+  override drop(): Promise<void> {
+    throw new UnsupportedOperation();
+  }
+
+  override dragAndDrop(): Promise<void> {
+    throw new UnsupportedOperation();
   }
 }
 

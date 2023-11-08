@@ -27,6 +27,7 @@ import {
 import {BrowserContextEvent} from '../api/BrowserContext.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
+import {UnsupportedOperation} from '../common/Errors.js';
 import type {Handler} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -163,6 +164,10 @@ export class BidiBrowser extends Browser {
     for (const [eventName, handler] of this.#connectionEventHandlers) {
       this.#connection.on(eventName, handler);
     }
+  }
+
+  override userAgent(): Promise<string> {
+    throw new UnsupportedOperation();
   }
 
   #onContextDomLoaded(event: Bidi.BrowsingContext.Info) {
@@ -314,5 +319,9 @@ export class BidiBrowser extends Browser {
 
   override target(): Target {
     return this.#browserTarget;
+  }
+
+  override disconnect(): void {
+    this;
   }
 }
