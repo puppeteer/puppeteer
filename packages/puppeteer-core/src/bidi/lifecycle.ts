@@ -24,6 +24,9 @@ import {catchError} from '../../third_party/rxjs/rxjs.js';
 import type {PuppeteerLifeCycleEvent} from '../cdp/LifecycleWatcher.js';
 import {ProtocolError, TimeoutError} from '../common/Errors.js';
 
+/**
+ * @internal
+ */
 export type BiDiNetworkIdle = Extract<
   PuppeteerLifeCycleEvent,
   'networkidle0' | 'networkidle2'
@@ -94,6 +97,9 @@ export const lifeCycleToSubscribedEvent = new Map<
   ['domcontentloaded', 'browsingContext.domContentLoaded'],
 ]);
 
+/**
+ * @internal
+ */
 export function getBiDiLifecycleEvent(
   event: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[]
 ): [
@@ -105,6 +111,9 @@ export function getBiDiLifecycleEvent(
   return [bidiEvent, lifeCycles[1]];
 }
 
+/**
+ * @internal
+ */
 export function rewriteNavigationError<T, R extends ObservableInput<T>>(
   message: string,
   ms: number

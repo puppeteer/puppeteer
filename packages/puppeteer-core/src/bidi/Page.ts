@@ -93,7 +93,7 @@ import {BidiNetworkManager} from './NetworkManager.js';
 import {createBidiHandle} from './Realm.js';
 
 /**
- * @internal
+ * @public
  */
 export class BidiPage extends Page {
   #accessibility: Accessibility;
@@ -539,8 +539,9 @@ export class BidiPage extends Page {
     return await this.#cdpEmulationManager.setGeolocation(options);
   }
 
-  override async setJavaScriptEnabled(enabled: boolean): Promise<void> {
-    return await this.#cdpEmulationManager.setJavaScriptEnabled(enabled);
+  override async setJavaScriptEnabled(): Promise<never> {
+    throw new Error();
+    // return await this.#cdpEmulationManager.setJavaScriptEnabled(enabled);
   }
 
   override async emulateMediaType(type?: string): Promise<void> {
