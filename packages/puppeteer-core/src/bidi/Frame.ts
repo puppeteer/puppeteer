@@ -16,7 +16,6 @@
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import type {ObservableInput} from '../../third_party/rxjs/rxjs.js';
 import {
   type Observable,
   from,
@@ -37,19 +36,13 @@ import {
 } from '../api/Frame.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {Awaitable} from '../common/types.js';
-import {
-  NETWORK_IDLE_TIME,
-  UTILITY_WORLD_NAME,
-  setPageContent,
-  timeout,
-} from '../common/util.js';
+import {UTILITY_WORLD_NAME, setPageContent, timeout} from '../common/util.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
 
 import type {BrowsingContext} from './BrowsingContext.js';
 import {ExposeableFunction} from './ExposedFunction.js';
 import type {BidiHTTPResponse} from './HTTPResponse.js';
-import type {BiDiNetworkIdle} from './lifecycle.js';
 import {
   getBiDiLifecycleEvent,
   getBiDiReadinessState,
@@ -141,14 +134,15 @@ export class BidiFrame extends Frame {
     const [readiness, networkIdle] = getBiDiReadinessState(waitUntil);
 
     const response = await firstValueFrom(
-      this._waitWithNetworkIdle(
-        this.#context.connection.send('browsingContext.navigate', {
-          context: this.#context.id,
-          url,
-          wait: readiness,
-        }),
-        networkIdle
-      )
+      this.#page
+        ._waitWithNetworkIdle(
+          this.#context.connection.send('browsingContext.navigate', {
+            context: this.#context.id,
+            url,
+            wait: readiness,
+          }),
+          networkIdle
+        )
         .pipe(raceWith(timeout(ms), from(this.#abortDeferred.valueOrThrow())))
         .pipe(rewriteNavigationError(url, ms))
     );
@@ -169,17 +163,18 @@ export class BidiFrame extends Frame {
     const [waitEvent, networkIdle] = getBiDiLifecycleEvent(waitUntil);
 
     await firstValueFrom(
-      this._waitWithNetworkIdle(
-        forkJoin([
-          fromEvent(this.#context, waitEvent).pipe(first()),
-          from(setPageContent(this, html)),
-        ]).pipe(
-          map(() => {
-            return null;
-          })
-        ),
-        networkIdle
-      )
+      this.#page
+        ._waitWithNetworkIdle(
+          forkJoin([
+            fromEvent(this.#context, waitEvent).pipe(first()),
+            from(setPageContent(this, html)),
+          ]).pipe(
+            map(() => {
+              return null;
+            })
+          ),
+          networkIdle
+        )
         .pipe(raceWith(timeout(ms), from(this.#abortDeferred.valueOrThrow())))
         .pipe(rewriteNavigationError('setContent', ms))
     );
@@ -224,9 +219,9 @@ export class BidiFrame extends Frame {
     );
 
     const response = await firstValueFrom(
-      this._waitWithNetworkIdle(navigatedObservable, networkIdle).pipe(
-        raceWith(timeout(ms), from(this.#abortDeferred.valueOrThrow()))
-      )
+      this.#page
+        ._waitWithNetworkIdle(navigatedObservable, networkIdle)
+        .pipe(raceWith(timeout(ms), from(this.#abortDeferred.valueOrThrow())))
     );
 
     return this.#page.getNavigationResponse(response?.result.navigation);
@@ -265,32 +260,5 @@ export class BidiFrame extends Frame {
       this.#exposedFunctions.delete(name);
       throw error;
     }
-  }
-
-  /** @internal */
-  _waitWithNetworkIdle(
-    observableInput: ObservableInput<{
-      result: Bidi.BrowsingContext.NavigateResult;
-    } | null>,
-    networkIdle: BiDiNetworkIdle
-  ): Observable<{
-    result: Bidi.BrowsingContext.NavigateResult;
-  } | null> {
-    const delay = networkIdle
-      ? this.#page._waitForNetworkIdle(
-          this.#page._networkManager,
-          NETWORK_IDLE_TIME,
-          networkIdle === 'networkidle0' ? 0 : 2
-        )
-      : from(Promise.resolve());
-
-    return forkJoin([
-      from(observableInput).pipe(first()),
-      delay.pipe(first()),
-    ]).pipe(
-      map(([response]) => {
-        return response;
-      })
-    );
   }
 }

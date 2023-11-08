@@ -19,7 +19,15 @@ import type {Readable} from 'stream';
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type Protocol from 'devtools-protocol';
 
-import {firstValueFrom, from, raceWith} from '../../third_party/rxjs/rxjs.js';
+import type {Observable, ObservableInput} from '../../third_party/rxjs/rxjs.js';
+import {
+  first,
+  firstValueFrom,
+  forkJoin,
+  from,
+  map,
+  raceWith,
+} from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {WaitForOptions} from '../api/Frame.js';
 import {
@@ -74,6 +82,7 @@ import type {BidiHTTPRequest} from './HTTPRequest.js';
 import type {BidiHTTPResponse} from './HTTPResponse.js';
 import {BidiKeyboard, BidiMouse, BidiTouchscreen} from './Input.js';
 import type {BidiJSHandle} from './JSHandle.js';
+import type {BiDiNetworkIdle} from './lifecycle.js';
 import {getBiDiReadinessState, rewriteNavigationError} from './lifecycle.js';
 import {BidiNetworkManager} from './NetworkManager.js';
 import {createBidiHandle} from './Realm.js';
@@ -491,14 +500,13 @@ export class BidiPage extends Page {
     const [readiness, networkIdle] = getBiDiReadinessState(waitUntil);
 
     const response = await firstValueFrom(
-      this.mainFrame()
-        ._waitWithNetworkIdle(
-          this.#connection.send('browsingContext.reload', {
-            context: this.mainFrame()._id,
-            wait: readiness,
-          }),
-          networkIdle
-        )
+      this._waitWithNetworkIdle(
+        this.#connection.send('browsingContext.reload', {
+          context: this.mainFrame()._id,
+          wait: readiness,
+        }),
+        networkIdle
+      )
         .pipe(raceWith(timeout(ms), from(this.#closedDeferred.valueOrThrow())))
         .pipe(rewriteNavigationError(this.url(), ms))
     );
@@ -717,6 +725,33 @@ export class BidiPage extends Page {
       this._waitForNetworkIdle(this._networkManager, idleTime).pipe(
         raceWith(timeout(ms), from(this.#closedDeferred.valueOrThrow()))
       )
+    );
+  }
+
+  /** @internal */
+  _waitWithNetworkIdle(
+    observableInput: ObservableInput<{
+      result: Bidi.BrowsingContext.NavigateResult;
+    } | null>,
+    networkIdle: BiDiNetworkIdle
+  ): Observable<{
+    result: Bidi.BrowsingContext.NavigateResult;
+  } | null> {
+    const delay = networkIdle
+      ? this._waitForNetworkIdle(
+          this._networkManager,
+          NETWORK_IDLE_TIME,
+          networkIdle === 'networkidle0' ? 0 : 2
+        )
+      : from(Promise.resolve());
+
+    return forkJoin([
+      from(observableInput).pipe(first()),
+      delay.pipe(first()),
+    ]).pipe(
+      map(([response]) => {
+        return response;
+      })
     );
   }
 
