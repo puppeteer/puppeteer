@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type {Viewport} from '../common/Viewport.js';
 
 import type {BrowsingContext} from './BrowsingContext.js';
 
@@ -27,12 +27,19 @@ export class EmulationManager {
     this.#browsingContext = browsingContext;
   }
 
-  async emulateViewport(
-    viewport: Bidi.BrowsingContext.Viewport
-  ): Promise<void> {
+  async emulateViewport(viewport: Viewport): Promise<void> {
     await this.#browsingContext.connection.send('browsingContext.setViewport', {
       context: this.#browsingContext.id,
-      viewport,
+      viewport:
+        viewport.width && viewport.height
+          ? {
+              width: viewport.width,
+              height: viewport.height,
+            }
+          : null,
+      devicePixelRatio: viewport.deviceScaleFactor
+        ? viewport.deviceScaleFactor
+        : null,
     });
   }
 }
