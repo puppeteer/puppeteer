@@ -9,7 +9,7 @@ Describes a launcher - a class that is able to create and launch a browser insta
 #### Signature:
 
 ```typescript
-export declare class ProductLauncher
+export declare abstract class ProductLauncher
 ```
 
 ## Remarks

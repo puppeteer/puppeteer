@@ -8,7 +8,7 @@ sidebar_label: ProductLauncher.executablePath
 
 ```typescript
 class ProductLauncher {
-  executablePath(channel?: ChromeReleaseChannel): string;
+  abstract executablePath(channel?: ChromeReleaseChannel): string;
 }
 ```
 

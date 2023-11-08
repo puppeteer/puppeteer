@@ -58,7 +58,7 @@ export interface ResolvedLaunchArgs {
  *
  * @public
  */
-export class ProductLauncher {
+export abstract class ProductLauncher {
   #product: Product;
 
   /**
@@ -201,15 +201,9 @@ export class ProductLauncher {
     return browser;
   }
 
-  executablePath(channel?: ChromeReleaseChannel): string;
-  executablePath(): string {
-    throw new Error('Not implemented');
-  }
+  abstract executablePath(channel?: ChromeReleaseChannel): string;
 
-  defaultArgs(object: BrowserLaunchArgumentOptions): string[];
-  defaultArgs(): string[] {
-    throw new Error('Not implemented');
-  }
+  abstract defaultArgs(object: BrowserLaunchArgumentOptions): string[];
 
   /**
    * Set only for Firefox, after the launcher resolves the `latest` revision to
@@ -223,23 +217,17 @@ export class ProductLauncher {
   /**
    * @internal
    */
-  protected async computeLaunchArguments(
+  protected abstract computeLaunchArguments(
     options: PuppeteerNodeLaunchOptions
   ): Promise<ResolvedLaunchArgs>;
-  protected async computeLaunchArguments(): Promise<ResolvedLaunchArgs> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * @internal
    */
-  protected async cleanUserDataDir(
+  protected abstract cleanUserDataDir(
     path: string,
     opts: {isTemp: boolean}
   ): Promise<void>;
-  protected async cleanUserDataDir(): Promise<void> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * @internal
