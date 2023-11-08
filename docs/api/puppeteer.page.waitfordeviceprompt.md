@@ -16,7 +16,7 @@ This must be called before the device request is made. It will not return a curr
 
 ```typescript
 class Page {
-  waitForDevicePrompt(
+  abstract waitForDevicePrompt(
     options?: WaitTimeoutOptions
   ): Promise<DeviceRequestPrompt>;
 }

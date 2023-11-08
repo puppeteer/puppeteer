@@ -8,7 +8,7 @@ sidebar_label: CDPSession.connection
 
 ```typescript
 class CDPSession {
-  connection(): Connection | undefined;
+  abstract connection(): Connection | undefined;
 }
 ```
 

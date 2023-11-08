@@ -10,7 +10,7 @@ Simulates the given vision deficiency on the page.
 
 ```typescript
 class Page {
-  emulateVisionDeficiency(
+  abstract emulateVisionDeficiency(
     type?: Protocol.Emulation.SetEmulatedVisionDeficiencyRequest['type']
   ): Promise<void>;
 }

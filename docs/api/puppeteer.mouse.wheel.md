@@ -10,7 +10,7 @@ Dispatches a `mousewheel` event.
 
 ```typescript
 class Mouse {
-  wheel(options?: Readonly<MouseWheelOptions>): Promise<void>;
+  abstract wheel(options?: Readonly<MouseWheelOptions>): Promise<void>;
 }
 ```
 

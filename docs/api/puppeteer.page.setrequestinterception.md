@@ -14,7 +14,7 @@ See the [Request interception guide](https://pptr.dev/next/guides/request-interc
 
 ```typescript
 class Page {
-  setRequestInterception(value: boolean): Promise<void>;
+  abstract setRequestInterception(value: boolean): Promise<void>;
 }
 ```
 

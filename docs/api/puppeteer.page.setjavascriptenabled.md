@@ -8,7 +8,7 @@ sidebar_label: Page.setJavaScriptEnabled
 
 ```typescript
 class Page {
-  setJavaScriptEnabled(enabled: boolean): Promise<void>;
+  abstract setJavaScriptEnabled(enabled: boolean): Promise<void>;
 }
 ```
 

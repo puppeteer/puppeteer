@@ -10,7 +10,7 @@ Gets the associated [ChildProcess](https://nodejs.org/api/child_process.html#cla
 
 ```typescript
 class Browser {
-  process(): ChildProcess | null;
+  abstract process(): ChildProcess | null;
 }
 ```
 

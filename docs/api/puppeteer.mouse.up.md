@@ -10,7 +10,7 @@ Releases the mouse.
 
 ```typescript
 class Mouse {
-  up(options?: Readonly<MouseOptions>): Promise<void>;
+  abstract up(options?: Readonly<MouseOptions>): Promise<void>;
 }
 ```
 

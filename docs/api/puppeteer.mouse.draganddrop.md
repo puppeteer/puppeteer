@@ -10,7 +10,7 @@ Performs a drag, dragenter, dragover, and drop in sequence.
 
 ```typescript
 class Mouse {
-  dragAndDrop(
+  abstract dragAndDrop(
     start: Point,
     target: Point,
     options?: {

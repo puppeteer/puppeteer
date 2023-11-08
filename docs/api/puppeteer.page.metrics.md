@@ -10,7 +10,7 @@ Object containing metrics as key/value pairs.
 
 ```typescript
 class Page {
-  metrics(): Promise<Metrics>;
+  abstract metrics(): Promise<Metrics>;
 }
 ```
 

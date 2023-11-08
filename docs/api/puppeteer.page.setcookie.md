@@ -8,7 +8,7 @@ sidebar_label: Page.setCookie
 
 ```typescript
 class Page {
-  setCookie(...cookies: Protocol.Network.CookieParam[]): Promise<void>;
+  abstract setCookie(...cookies: Protocol.Network.CookieParam[]): Promise<void>;
 }
 ```
 

@@ -10,7 +10,7 @@ Performs a dragenter, dragover, and drop in sequence.
 
 ```typescript
 class Mouse {
-  drop(target: Point, data: Protocol.Input.DragData): Promise<void>;
+  abstract drop(target: Point, data: Protocol.Input.DragData): Promise<void>;
 }
 ```
 

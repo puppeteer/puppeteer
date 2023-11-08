@@ -12,7 +12,7 @@ Gets this [browser's](./puppeteer.browser.md) original user agent.
 
 ```typescript
 class Browser {
-  userAgent(): Promise<string>;
+  abstract userAgent(): Promise<string>;
 }
 ```
 

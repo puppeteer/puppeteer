@@ -10,7 +10,7 @@ All of the dedicated [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/A
 
 ```typescript
 class Page {
-  workers(): WebWorker[];
+  abstract workers(): WebWorker[];
 }
 ```
 

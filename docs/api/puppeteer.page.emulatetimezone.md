@@ -8,7 +8,7 @@ sidebar_label: Page.emulateTimezone
 
 ```typescript
 class Page {
-  emulateTimezone(timezoneId?: string): Promise<void>;
+  abstract emulateTimezone(timezoneId?: string): Promise<void>;
 }
 ```
 

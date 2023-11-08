@@ -10,7 +10,7 @@ Identifies what kind of target this is.
 
 ```typescript
 class Target {
-  type(): TargetType;
+  abstract type(): TargetType;
 }
 ```
 

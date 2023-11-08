@@ -10,7 +10,7 @@ Detaches the cdpSession from the target. Once detached, the cdpSession object wo
 
 ```typescript
 class CDPSession {
-  detach(): Promise<void>;
+  abstract detach(): Promise<void>;
 }
 ```
 

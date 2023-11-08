@@ -10,7 +10,7 @@ Resets the mouse to the default state: No buttons pressed; position at (0,0).
 
 ```typescript
 class Mouse {
-  reset(): Promise<void>;
+  abstract reset(): Promise<void>;
 }
 ```
 

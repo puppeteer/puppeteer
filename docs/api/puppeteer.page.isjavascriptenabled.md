@@ -10,7 +10,7 @@ sidebar_label: Page.isJavaScriptEnabled
 
 ```typescript
 class Page {
-  isJavaScriptEnabled(): boolean;
+  abstract isJavaScriptEnabled(): boolean;
 }
 ```
 

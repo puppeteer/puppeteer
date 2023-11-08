@@ -22,7 +22,7 @@ page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing
 
 ```typescript
 class Page {
-  setExtraHTTPHeaders(headers: Record<string, string>): Promise<void>;
+  abstract setExtraHTTPHeaders(headers: Record<string, string>): Promise<void>;
 }
 ```
 

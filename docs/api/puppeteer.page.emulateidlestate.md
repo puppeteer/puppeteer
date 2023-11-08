@@ -10,7 +10,7 @@ Emulates the idle state. If no arguments set, clears idle state emulation.
 
 ```typescript
 class Page {
-  emulateIdleState(overrides?: {
+  abstract emulateIdleState(overrides?: {
     isUserActive: boolean;
     isScreenUnlocked: boolean;
   }): Promise<void>;

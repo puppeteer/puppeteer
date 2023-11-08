@@ -8,7 +8,7 @@ sidebar_label: Page.deleteCookie
 
 ```typescript
 class Page {
-  deleteCookie(
+  abstract deleteCookie(
     ...cookies: Protocol.Network.DeleteCookiesRequest[]
   ): Promise<void>;
 }

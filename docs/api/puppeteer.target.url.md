@@ -8,7 +8,7 @@ sidebar_label: Target.url
 
 ```typescript
 class Target {
-  url(): string;
+  abstract url(): string;
 }
 ```
 

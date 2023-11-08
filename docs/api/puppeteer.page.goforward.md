@@ -10,7 +10,7 @@ This method navigate to the next page in history.
 
 ```typescript
 class Page {
-  goForward(options?: WaitForOptions): Promise<HTTPResponse | null>;
+  abstract goForward(options?: WaitForOptions): Promise<HTTPResponse | null>;
 }
 ```
 

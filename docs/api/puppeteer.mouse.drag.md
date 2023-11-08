@@ -10,7 +10,7 @@ Dispatches a `drag` event.
 
 ```typescript
 class Mouse {
-  drag(start: Point, target: Point): Promise<Protocol.Input.DragData>;
+  abstract drag(start: Point, target: Point): Promise<Protocol.Input.DragData>;
 }
 ```
 

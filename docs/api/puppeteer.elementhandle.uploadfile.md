@@ -10,7 +10,7 @@ Sets the value of an [input element](https://developer.mozilla.org/en-US/docs/We
 
 ```typescript
 class ElementHandle {
-  uploadFile(
+  abstract uploadFile(
     this: ElementHandle<HTMLInputElement>,
     ...paths: string[]
   ): Promise<void>;

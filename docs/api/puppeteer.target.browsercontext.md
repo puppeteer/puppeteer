@@ -10,7 +10,7 @@ Get the browser context the target belongs to.
 
 ```typescript
 class Target {
-  browserContext(): BrowserContext;
+  abstract browserContext(): BrowserContext;
 }
 ```
 

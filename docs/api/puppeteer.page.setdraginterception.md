@@ -12,7 +12,7 @@ sidebar_label: Page.setDragInterception
 
 ```typescript
 class Page {
-  setDragInterception(enabled: boolean): Promise<void>;
+  abstract setDragInterception(enabled: boolean): Promise<void>;
 }
 ```
 
