@@ -1156,7 +1156,7 @@ export abstract class ElementHandle<
 
   /**
    * This method returns the bounding box of the element (relative to the main frame),
-   * or `null` if the element is not visible.
+   * or `null` if the element has no effect on layout (example: `display: none`).
    */
   @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
@@ -1188,7 +1188,8 @@ export abstract class ElementHandle<
   }
 
   /**
-   * This method returns boxes of the element, or `null` if the element is not visible.
+   * This method returns boxes of the element, 
+or `null` if the element has no effect on layout (example: `display: none`).
    *
    * @remarks
    *
