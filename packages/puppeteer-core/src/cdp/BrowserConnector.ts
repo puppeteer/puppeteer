@@ -28,7 +28,7 @@ import {isErrorLike} from '../util/ErrorLike.js';
 
 import {CdpBrowser} from './Browser.js';
 import {Connection} from './Connection.js';
-import type {ConnectOptions} from './Puppeteer.js';
+import type {ConnectOptions} from './ConnectOptions.js';
 /**
  * Generic browser options that can be passed when launching any browser or when
  * connecting to an existing browser instance.

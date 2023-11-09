@@ -15,16 +15,13 @@
  */
 
 import type {Browser} from '../api/Browser.js';
-import type {ConnectionTransport} from '../common/ConnectionTransport.js';
+import {_connectToCdpBrowser} from '../cdp/BrowserConnector.js';
+import type {ConnectOptions} from '../cdp/ConnectOptions.js';
+
 import {
   type CustomQueryHandler,
   customQueryHandlers,
-} from '../common/CustomQueryHandler.js';
-
-import {
-  type BrowserConnectOptions,
-  _connectToCdpBrowser,
-} from './BrowserConnector.js';
+} from './CustomQueryHandler.js';
 
 /**
  * Settings that are common to the Puppeteer class, regardless of environment.
@@ -33,20 +30,6 @@ import {
  */
 export interface CommonPuppeteerSettings {
   isPuppeteerCore: boolean;
-}
-/**
- * @public
- */
-export interface ConnectOptions extends BrowserConnectOptions {
-  browserWSEndpoint?: string;
-  browserURL?: string;
-  transport?: ConnectionTransport;
-  /**
-   * Headers to use for the web socket connection.
-   * @remarks
-   * Only works in the Node.js environment.
-   */
-  headers?: Record<string, string>;
 }
 
 /**
