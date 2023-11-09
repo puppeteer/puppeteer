@@ -1188,8 +1188,8 @@ export abstract class ElementHandle<
   }
 
   /**
-   * This method returns boxes of the element, 
-or `null` if the element has no effect on layout (example: `display: none`).
+   * This method returns boxes of the element,
+   * or `null` if the element has no effect on layout (example: `display: none`).
    *
    * @remarks
    *
