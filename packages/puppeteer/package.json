@@ -9,6 +9,7 @@
     "automation"
   ],
   "type": "commonjs",
+  "bin": "./lib/esm/puppeteer/node/cli.js",
   "main": "./lib/cjs/puppeteer/puppeteer.js",
   "types": "./lib/types.d.ts",
   "exports": {
@@ -77,7 +78,7 @@
       ]
     },
     "build:tsc": {
-      "command": "tsc -b",
+      "command": "tsc -b && tsx ../../tools/chmod.ts 755 lib/cjs/puppeteer/node/cli.js lib/esm/puppeteer/node/cli.js",
       "clean": "if-file-deleted",
       "dependencies": [
         "../puppeteer-core:build",
