@@ -10,7 +10,7 @@ Provide credentials for `HTTP authentication`.
 
 ```typescript
 class Page {
-  authenticate(credentials: Credentials): Promise<void>;
+  abstract authenticate(credentials: Credentials): Promise<void>;
 }
 ```
 

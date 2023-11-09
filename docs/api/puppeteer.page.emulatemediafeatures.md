@@ -8,7 +8,7 @@ sidebar_label: Page.emulateMediaFeatures
 
 ```typescript
 class Page {
-  emulateMediaFeatures(features?: MediaFeature[]): Promise<void>;
+  abstract emulateMediaFeatures(features?: MediaFeature[]): Promise<void>;
 }
 ```
 

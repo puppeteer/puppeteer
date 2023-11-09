@@ -10,7 +10,7 @@ Presses the mouse.
 
 ```typescript
 class Mouse {
-  down(options?: Readonly<MouseOptions>): Promise<void>;
+  abstract down(options?: Readonly<MouseOptions>): Promise<void>;
 }
 ```
 

@@ -10,7 +10,7 @@ Shortcut for `mouse.move`, `mouse.down` and `mouse.up`.
 
 ```typescript
 class Mouse {
-  click(
+  abstract click(
     x: number,
     y: number,
     options?: Readonly<MouseClickOptions>

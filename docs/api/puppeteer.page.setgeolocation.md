@@ -10,7 +10,7 @@ Sets the page's geolocation.
 
 ```typescript
 class Page {
-  setGeolocation(options: GeolocationOptions): Promise<void>;
+  abstract setGeolocation(options: GeolocationOptions): Promise<void>;
 }
 ```
 

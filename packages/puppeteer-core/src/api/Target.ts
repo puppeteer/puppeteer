@@ -45,7 +45,7 @@ export enum TargetType {
  * worker.
  * @public
  */
-export class Target {
+export abstract class Target {
   /**
    * @internal
    */
@@ -66,16 +66,12 @@ export class Target {
     return null;
   }
 
-  url(): string {
-    throw new Error('not implemented');
-  }
+  abstract url(): string;
 
   /**
    * Creates a Chrome Devtools Protocol session attached to the target.
    */
-  createCDPSession(): Promise<CDPSession> {
-    throw new Error('not implemented');
-  }
+  abstract createCDPSession(): Promise<CDPSession>;
 
   /**
    * Identifies what kind of target this is.
@@ -84,28 +80,20 @@ export class Target {
    *
    * See {@link https://developer.chrome.com/extensions/background_pages | docs} for more info about background pages.
    */
-  type(): TargetType {
-    throw new Error('not implemented');
-  }
+  abstract type(): TargetType;
 
   /**
    * Get the browser the target belongs to.
    */
-  browser(): Browser {
-    throw new Error('not implemented');
-  }
+  abstract browser(): Browser;
 
   /**
    * Get the browser context the target belongs to.
    */
-  browserContext(): BrowserContext {
-    throw new Error('not implemented');
-  }
+  abstract browserContext(): BrowserContext;
 
   /**
    * Get the target that opened this target. Top-level targets return `null`.
    */
-  opener(): Target | undefined {
-    throw new Error('not implemented');
-  }
+  abstract opener(): Target | undefined;
 }

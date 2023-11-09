@@ -3,7 +3,7 @@ import type ProtocolMapping from 'devtools-protocol/types/protocol-mapping.js';
 
 import {CDPSession} from '../api/CDPSession.js';
 import type {Connection as CdpConnection} from '../cdp/Connection.js';
-import {TargetCloseError} from '../common/Errors.js';
+import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
 import type {EventType} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import {Deferred} from '../util/Deferred.js';
@@ -57,7 +57,7 @@ export class CdpSessionWrapper extends CDPSession {
     ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
     if (!this.#context.supportsCdp()) {
-      throw new Error(
+      throw new UnsupportedOperation(
         'CDP support is required for this feature. The current browser does not support CDP.'
       );
     }

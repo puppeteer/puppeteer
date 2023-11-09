@@ -10,7 +10,7 @@ Get the browser the target belongs to.
 
 ```typescript
 class Target {
-  browser(): Browser;
+  abstract browser(): Browser;
 }
 ```
 

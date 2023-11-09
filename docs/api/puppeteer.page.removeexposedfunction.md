@@ -10,7 +10,7 @@ The method removes a previously added function via $[Page.exposeFunction()](./pu
 
 ```typescript
 class Page {
-  removeExposedFunction(name: string): Promise<void>;
+  abstract removeExposedFunction(name: string): Promise<void>;
 }
 ```
 

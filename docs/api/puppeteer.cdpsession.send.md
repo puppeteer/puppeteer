@@ -8,7 +8,7 @@ sidebar_label: CDPSession.send
 
 ```typescript
 class CDPSession {
-  send<T extends keyof ProtocolMapping.Commands>(
+  abstract send<T extends keyof ProtocolMapping.Commands>(
     method: T,
     ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
   ): Promise<ProtocolMapping.Commands[T]['returnType']>;

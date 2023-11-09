@@ -10,7 +10,7 @@ sidebar_label: Page.isServiceWorkerBypassed
 
 ```typescript
 class Page {
-  isServiceWorkerBypassed(): boolean;
+  abstract isServiceWorkerBypassed(): boolean;
 }
 ```
 

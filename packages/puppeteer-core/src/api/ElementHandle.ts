@@ -962,14 +962,12 @@ export abstract class ElementHandle<
    * {@link https://nodejs.org/api/process.html#process_process_cwd | current working directory}.
    * For locals script connecting to remote chrome environments, paths must be
    * absolute.
+   *
    */
-  async uploadFile(
+  abstract uploadFile(
     this: ElementHandle<HTMLInputElement>,
     ...paths: string[]
   ): Promise<void>;
-  async uploadFile(this: ElementHandle<HTMLInputElement>): Promise<void> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * This method scrolls element into view if needed, and then uses

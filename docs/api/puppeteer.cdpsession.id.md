@@ -10,7 +10,7 @@ Returns the session's id.
 
 ```typescript
 class CDPSession {
-  id(): string;
+  abstract id(): string;
 }
 ```
 

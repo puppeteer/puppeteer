@@ -10,7 +10,7 @@ Toggles ignoring of service worker for each request.
 
 ```typescript
 class Page {
-  setBypassServiceWorker(bypass: boolean): Promise<void>;
+  abstract setBypassServiceWorker(bypass: boolean): Promise<void>;
 }
 ```
 

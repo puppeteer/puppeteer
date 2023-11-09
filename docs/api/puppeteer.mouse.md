@@ -9,7 +9,7 @@ The Mouse class operates in main-frame CSS pixels relative to the top-left corne
 #### Signature:
 
 ```typescript
-export declare class Mouse
+export declare abstract class Mouse
 ```
 
 ## Remarks

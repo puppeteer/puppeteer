@@ -10,7 +10,7 @@ Moves the mouse to the given coordinate.
 
 ```typescript
 class Mouse {
-  move(
+  abstract move(
     x: number,
     y: number,
     options?: Readonly<MouseMoveOptions>

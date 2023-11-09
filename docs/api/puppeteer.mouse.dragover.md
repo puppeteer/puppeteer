@@ -10,7 +10,10 @@ Dispatches a `dragover` event.
 
 ```typescript
 class Mouse {
-  dragOver(target: Point, data: Protocol.Input.DragData): Promise<void>;
+  abstract dragOver(
+    target: Point,
+    data: Protocol.Input.DragData
+  ): Promise<void>;
 }
 ```
 

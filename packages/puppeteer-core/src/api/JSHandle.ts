@@ -67,9 +67,7 @@ export abstract class JSHandle<T = unknown> {
   /**
    * @internal
    */
-  get disposed(): boolean {
-    throw new Error('Not implemented');
-  }
+  abstract get disposed(): boolean;
 
   /**
    * Evaluates the given function with the current handle as its first argument.

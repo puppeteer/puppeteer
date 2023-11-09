@@ -10,7 +10,7 @@ Creates a Chrome Devtools Protocol session attached to the page.
 
 ```typescript
 class Page {
-  createCDPSession(): Promise<CDPSession>;
+  abstract createCDPSession(): Promise<CDPSession>;
 }
 ```
 

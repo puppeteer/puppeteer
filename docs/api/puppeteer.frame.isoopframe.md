@@ -10,7 +10,7 @@ Is `true` if the frame is an out-of-process (OOP) frame. Otherwise, `false`.
 
 ```typescript
 class Frame {
-  isOOPFrame(): boolean;
+  abstract isOOPFrame(): boolean;
 }
 ```
 

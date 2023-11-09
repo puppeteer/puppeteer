@@ -84,9 +84,7 @@ export abstract class CDPSession extends EventEmitter<CDPSessionEvents> {
     super();
   }
 
-  connection(): Connection | undefined {
-    throw new Error('Not implemented');
-  }
+  abstract connection(): Connection | undefined;
 
   /**
    * Parent session in terms of CDP's auto-attach mechanism.
@@ -97,28 +95,19 @@ export abstract class CDPSession extends EventEmitter<CDPSessionEvents> {
     return undefined;
   }
 
-  send<T extends keyof ProtocolMapping.Commands>(
+  abstract send<T extends keyof ProtocolMapping.Commands>(
     method: T,
     ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
   ): Promise<ProtocolMapping.Commands[T]['returnType']>;
-  send<T extends keyof ProtocolMapping.Commands>(): Promise<
-    ProtocolMapping.Commands[T]['returnType']
-  > {
-    throw new Error('Not implemented');
-  }
 
   /**
    * Detaches the cdpSession from the target. Once detached, the cdpSession object
    * won't emit any events and can't be used to send messages.
    */
-  async detach(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract detach(): Promise<void>;
 
   /**
    * Returns the session's id.
    */
-  id(): string {
-    throw new Error('Not implemented');
-  }
+  abstract id(): string;
 }

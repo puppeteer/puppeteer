@@ -10,7 +10,7 @@ Get the target that opened this target. Top-level targets return `null`.
 
 ```typescript
 class Target {
-  opener(): Target | undefined;
+  abstract opener(): Target | undefined;
 }
 ```
 

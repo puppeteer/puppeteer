@@ -8,7 +8,7 @@ sidebar_label: Page.emulateMediaType
 
 ```typescript
 class Page {
-  emulateMediaType(type?: string): Promise<void>;
+  abstract emulateMediaType(type?: string): Promise<void>;
 }
 ```
 

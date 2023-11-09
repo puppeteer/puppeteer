@@ -10,7 +10,7 @@ Enables CPU throttling to emulate slow CPUs.
 
 ```typescript
 class Page {
-  emulateCPUThrottling(factor: number | null): Promise<void>;
+  abstract emulateCPUThrottling(factor: number | null): Promise<void>;
 }
 ```
 

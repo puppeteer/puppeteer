@@ -14,7 +14,7 @@ sidebar_label: Page.isDragInterceptionEnabled
 
 ```typescript
 class Page {
-  isDragInterceptionEnabled(): boolean;
+  abstract isDragInterceptionEnabled(): boolean;
 }
 ```
 

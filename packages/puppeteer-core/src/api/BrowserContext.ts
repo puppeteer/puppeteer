@@ -107,9 +107,7 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * Gets all active {@link Target | targets} inside this
    * {@link BrowserContext | browser context}.
    */
-  targets(): Target[] {
-    throw new Error('Not implemented');
-  }
+  abstract targets(): Target[];
 
   /**
    * Waits until a {@link Target | target} matching the given `predicate`
@@ -167,10 +165,10 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * @param permissions - An array of permissions to grant. All permissions that
    * are not listed here will be automatically denied.
    */
-  overridePermissions(origin: string, permissions: Permission[]): Promise<void>;
-  overridePermissions(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract overridePermissions(
+    origin: string,
+    permissions: Permission[]
+  ): Promise<void>;
 
   /**
    * Clears all permission overrides for this
@@ -186,9 +184,7 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * context.clearPermissionOverrides();
    * ```
    */
-  clearPermissionOverrides(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract clearPermissionOverrides(): Promise<void>;
 
   /**
    * Creates a new {@link Page | page} in this

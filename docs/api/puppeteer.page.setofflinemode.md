@@ -12,7 +12,7 @@ It does not change the parameters used in [Page.emulateNetworkConditions()](./pu
 
 ```typescript
 class Page {
-  setOfflineMode(enabled: boolean): Promise<void>;
+  abstract setOfflineMode(enabled: boolean): Promise<void>;
 }
 ```
 

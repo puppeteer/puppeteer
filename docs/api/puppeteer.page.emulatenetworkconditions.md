@@ -12,7 +12,7 @@ A list of predefined network conditions can be used by importing [PredefinedNetw
 
 ```typescript
 class Page {
-  emulateNetworkConditions(
+  abstract emulateNetworkConditions(
     networkConditions: NetworkConditions | null
   ): Promise<void>;
 }

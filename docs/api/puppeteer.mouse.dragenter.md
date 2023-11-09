@@ -10,7 +10,10 @@ Dispatches a `dragenter` event.
 
 ```typescript
 class Mouse {
-  dragEnter(target: Point, data: Protocol.Input.DragData): Promise<void>;
+  abstract dragEnter(
+    target: Point,
+    data: Protocol.Input.DragData
+  ): Promise<void>;
 }
 ```
 

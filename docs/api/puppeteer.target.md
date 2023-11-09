@@ -9,7 +9,7 @@ Target represents a [CDP target](https://chromedevtools.github.io/devtools-proto
 #### Signature:
 
 ```typescript
-export declare class Target
+export declare abstract class Target
 ```
 
 ## Remarks

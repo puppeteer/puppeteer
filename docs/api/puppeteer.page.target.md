@@ -10,7 +10,7 @@ A target this page was created from.
 
 ```typescript
 class Page {
-  target(): Target;
+  abstract target(): Target;
 }
 ```
 

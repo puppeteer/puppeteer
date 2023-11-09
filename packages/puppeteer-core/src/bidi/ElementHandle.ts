@@ -17,6 +17,7 @@
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {type AutofillData, ElementHandle} from '../api/ElementHandle.js';
+import {UnsupportedOperation} from '../common/Errors.js';
 import {throwIfDisposed} from '../util/decorators.js';
 
 import type {BidiFrame} from './Frame.js';
@@ -88,5 +89,9 @@ export class BidiElementHandle<
       return this.frame.page().frame(value.value.context);
     }
     return null;
+  }
+
+  override uploadFile(this: ElementHandle<HTMLInputElement>): Promise<void> {
+    throw new UnsupportedOperation();
   }
 }
