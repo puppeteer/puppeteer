@@ -34,6 +34,7 @@ export * from './PDFOptions.js';
 export * from './PierceQueryHandler.js';
 export * from './PQueryHandler.js';
 export * from './Product.js';
+export * from './Puppeteer.js';
 export * from './QueryHandler.js';
 export * from './ScriptInjector.js';
 export * from './SecurityDetails.js';
