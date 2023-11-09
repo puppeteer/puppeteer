@@ -833,7 +833,6 @@ export class BidiPage extends Page {
   }
 
   override target(): Target {
-    return this.#browserContext.targets;
     throw new UnsupportedOperation();
   }
 
