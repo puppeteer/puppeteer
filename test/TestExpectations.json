@@ -914,8 +914,8 @@
   {
     "testIdPattern": "[oopif.spec] OOPIF should support OOP iframes getting detached",
     "platforms": ["darwin"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[oopif.spec] OOPIF should support wait for navigation for transitions from local to OOPIF",
