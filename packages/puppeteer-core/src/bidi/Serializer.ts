@@ -157,8 +157,7 @@ export class BidiSerializer {
     if (objectHandle) {
       if (
         objectHandle.realm.environment.context() !==
-          sandbox.environment.context() &&
-        !('sharedId' in objectHandle.remoteValue())
+        sandbox.environment.context()
       ) {
         throw new Error(
           'JSHandles can be evaluated only in the context they were created!'
