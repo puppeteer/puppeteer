@@ -28,7 +28,7 @@ import {isErrorLike} from '../util/ErrorLike.js';
 
 import {CdpBrowser} from './Browser.js';
 import {Connection} from './Connection.js';
-import type {ConnectOptions} from './Puppeteer.js';
+import type {ConnectOptions} from './ConnectOptions.js';
 /**
  * Generic browser options that can be passed when launching any browser or when
  * connecting to an existing browser instance.
@@ -139,7 +139,7 @@ export async function _connectToCdpBrowser(
   const {browserContextIds} = await connection.send(
     'Target.getBrowserContexts'
   );
-  const browser = await CdpBrowser._create(
+  return await CdpBrowser._create(
     product || 'chrome',
     connection,
     browserContextIds,
@@ -152,7 +152,6 @@ export async function _connectToCdpBrowser(
     targetFilter,
     isPageTarget
   );
-  return browser;
 }
 
 async function getWSEndpoint(browserURL: string): Promise<string> {
