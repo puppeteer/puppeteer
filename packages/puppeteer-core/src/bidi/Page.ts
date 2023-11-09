@@ -93,7 +93,7 @@ import {BidiNetworkManager} from './NetworkManager.js';
 import {createBidiHandle} from './Realm.js';
 
 /**
- * @public
+ * @internal
  */
 export class BidiPage extends Page {
   #accessibility: Accessibility;
@@ -539,9 +539,8 @@ export class BidiPage extends Page {
     return await this.#cdpEmulationManager.setGeolocation(options);
   }
 
-  override async setJavaScriptEnabled(): Promise<never> {
-    throw new Error();
-    // return await this.#cdpEmulationManager.setJavaScriptEnabled(enabled);
+  override async setJavaScriptEnabled(enabled: boolean): Promise<void> {
+    return await this.#cdpEmulationManager.setJavaScriptEnabled(enabled);
   }
 
   override async emulateMediaType(type?: string): Promise<void> {
@@ -684,12 +683,10 @@ export class BidiPage extends Page {
         type: `image/${type}`,
         quality: quality ? quality / 100 : undefined,
       },
-      clip: clip
-        ? {
-            type: 'box',
-            ...clip,
-          }
-        : undefined,
+      clip: clip && {
+        type: 'box',
+        ...clip,
+      },
     });
     return data;
   }
@@ -836,7 +833,7 @@ export class BidiPage extends Page {
   }
 
   override target(): Target {
-    // TODO: Quick win?
+    return this.#browserContext.targets;
     throw new UnsupportedOperation();
   }
 
