@@ -20,6 +20,13 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.5.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.5.0...puppeteer-core-v21.5.1) (2023-11-09)
+
+
+### Bug Fixes
+
+* better debugging for WaitTask ([#11330](https://github.com/puppeteer/puppeteer/issues/11330)) ([d2480b0](https://github.com/puppeteer/puppeteer/commit/d2480b022d74b7071b515408a31c6e82448e3c9e))
+
 ## [21.5.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.4.1...puppeteer-core-v21.5.0) (2023-11-02)
 
 
