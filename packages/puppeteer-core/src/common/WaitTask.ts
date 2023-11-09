@@ -48,6 +48,7 @@ export class WaitTask<T = unknown> {
   #args: unknown[];
 
   #timeout?: NodeJS.Timeout;
+  #timeoutError?: TimeoutError;
 
   #result = Deferred.create<HandleFor<T>>();
 
@@ -88,10 +89,11 @@ export class WaitTask<T = unknown> {
     this.#world.taskManager.add(this);
 
     if (options.timeout) {
+      this.#timeoutError = new TimeoutError(
+        `Waiting failed: ${options.timeout}ms exceeded`
+      );
       this.#timeout = setTimeout(() => {
-        void this.terminate(
-          new TimeoutError(`Waiting failed: ${options.timeout}ms exceeded`)
-        );
+        void this.terminate(this.#timeoutError);
       }, options.timeout);
     }
 
@@ -184,9 +186,7 @@ export class WaitTask<T = unknown> {
   async terminate(error?: Error): Promise<void> {
     this.#world.taskManager.delete(this);
 
-    if (this.#timeout) {
-      clearTimeout(this.#timeout);
-    }
+    clearTimeout(this.#timeout);
 
     if (error && !this.#result.finished()) {
       this.#result.reject(error);
