@@ -26,6 +26,7 @@ import type {Browser} from '../api/Browser.js';
 import type {BrowserConnectOptions} from '../cdp/BrowserConnector.js';
 import {
   type CommonPuppeteerSettings,
+  type ConnectOptions,
   Puppeteer,
 } from '../cdp/Puppeteer.js';
 import type {Configuration} from '../common/Configuration.js';
@@ -40,7 +41,6 @@ import type {
   LaunchOptions,
 } from './LaunchOptions.js';
 import type {ProductLauncher} from './ProductLauncher.js';
-import {ConnectOptions} from '../cdp/ConnectOptions.js';
 
 /**
  * @public
