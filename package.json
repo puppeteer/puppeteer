@@ -24,7 +24,7 @@
     "prepare": "npm run prepare --workspaces --if-present",
     "test": "wireit",
     "test-install": "npm run test --workspace @puppeteer-test/installation",
-    "test-types": "tsd -t packages/puppeteer",
+    "test-types": "wireit",
     "test:chrome": "wireit",
     "test:chrome:bidi": "wireit",
     "test:chrome:bidi-local": "wireit",
@@ -110,6 +110,12 @@
       "dependencies": [
         "./test:build",
         "./tools/mocha-runner:build"
+      ]
+    },
+    "test-types": {
+      "command": "tsd -t packages/puppeteer",
+      "dependencies": [
+        "./packages/puppeteer:build"
       ]
     }
   },

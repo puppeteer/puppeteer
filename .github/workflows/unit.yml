@@ -34,6 +34,8 @@ jobs:
         with:
           cache: npm
           node-version: lts/*
+      # Set up GitHub Actions caching for Wireit.
+      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
       - name: Install dependencies
         run: npm ci
         env:
