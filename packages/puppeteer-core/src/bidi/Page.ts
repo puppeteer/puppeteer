@@ -99,7 +99,7 @@ export class BidiPage extends Page {
   #accessibility: Accessibility;
   #connection: BidiConnection;
   #frameTree = new FrameTree<BidiFrame>();
-  _networkManager: BidiNetworkManager;
+  #networkManager: BidiNetworkManager;
   #viewport: Viewport | null = null;
   #closedDeferred = Deferred.create<never, TargetCloseError>();
   #subscribedEvents = new Map<Bidi.Event['method'], Handler<any>>([
@@ -179,7 +179,7 @@ export class BidiPage extends Page {
       this.#browsingContext.on(event, subscriber);
     }
 
-    this._networkManager = new BidiNetworkManager(this.#connection, this);
+    this.#networkManager = new BidiNetworkManager(this.#connection, this);
 
     for (const [event, subscriber] of this.#subscribedEvents) {
       this.#connection.on(event, subscriber);
@@ -187,7 +187,7 @@ export class BidiPage extends Page {
 
     for (const [event, subscriber] of this.#networkManagerEvents) {
       // TODO: remove any
-      this._networkManager.on(event, subscriber as any);
+      this.#networkManager.on(event, subscriber as any);
     }
 
     const frame = new BidiFrame(
@@ -391,7 +391,7 @@ export class BidiPage extends Page {
       this.#removeFramesRecursively(child);
     }
     frame[disposeSymbol]();
-    this._networkManager.clearMapAfterFrameDispose(frame);
+    this.#networkManager.clearMapAfterFrameDispose(frame);
     this.#frameTree.removeFrame(frame);
     this.emit(PageEvent.FrameDetached, frame);
   }
@@ -471,7 +471,7 @@ export class BidiPage extends Page {
   }
 
   getNavigationResponse(id?: string | null): BidiHTTPResponse | null {
-    return this._networkManager.getNavigationResponse(id);
+    return this.#networkManager.getNavigationResponse(id);
   }
 
   override isClosed(): boolean {
@@ -484,7 +484,7 @@ export class BidiPage extends Page {
     }
 
     this.#closedDeferred.reject(new TargetCloseError('Page closed!'));
-    this._networkManager.dispose();
+    this.#networkManager.dispose();
 
     await this.#connection.send('browsingContext.close', {
       context: this.mainFrame()._id,
@@ -699,7 +699,7 @@ export class BidiPage extends Page {
   ): Promise<BidiHTTPRequest> {
     const {timeout = this._timeoutSettings.timeout()} = options;
     return await waitForHTTP(
-      this._networkManager,
+      this.#networkManager,
       NetworkManagerEvent.Request,
       urlOrPredicate,
       timeout,
@@ -715,7 +715,7 @@ export class BidiPage extends Page {
   ): Promise<BidiHTTPResponse> {
     const {timeout = this._timeoutSettings.timeout()} = options;
     return await waitForHTTP(
-      this._networkManager,
+      this.#networkManager,
       NetworkManagerEvent.Response,
       urlOrPredicate,
       timeout,
@@ -732,7 +732,7 @@ export class BidiPage extends Page {
     } = options;
 
     await firstValueFrom(
-      this._waitForNetworkIdle(this._networkManager, idleTime).pipe(
+      this._waitForNetworkIdle(this.#networkManager, idleTime).pipe(
         raceWith(timeout(ms), from(this.#closedDeferred.valueOrThrow()))
       )
     );
@@ -749,7 +749,7 @@ export class BidiPage extends Page {
   } | null> {
     const delay = networkIdle
       ? this._waitForNetworkIdle(
-          this._networkManager,
+          this.#networkManager,
           NETWORK_IDLE_TIME,
           networkIdle === 'networkidle0' ? 0 : 2
         )
