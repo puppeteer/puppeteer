@@ -18,6 +18,8 @@ concurrency:
 jobs:
   check-changes:
     uses: ./.github/workflows/changed-packages.yml
+    with:
+      check-mergeable-state: true
 
   chrome-tests:
     name: ${{ matrix.suite }} tests on ${{ matrix.os }} (${{ matrix.shard }})
