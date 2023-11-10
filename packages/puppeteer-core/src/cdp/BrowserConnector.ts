@@ -98,8 +98,8 @@ export async function _connectToCdpBrowser(
   } = options;
 
   const connection = await getCdpConnection(options);
-  const version = await connection.send('Browser.getVersion');
 
+  const version = await connection.send('Browser.getVersion');
   const product = version.product.toLowerCase().includes('firefox')
     ? 'firefox'
     : 'chrome';
@@ -136,6 +136,12 @@ export async function _connectToBiDiOverCdpBrowser(
     options;
 
   const connection = await getCdpConnection(options);
+
+  const version = await connection.send('Browser.getVersion');
+  if (version.product.toLowerCase().includes('firefox')) {
+    throw new Error('Firefox is not supported in BiDi over CDP mode.');
+  }
+
   // TODO: use other options too.
   const BiDi = await import(/* webpackIgnore: true */ '../bidi/bidi.js');
   const bidiConnection = await BiDi.connectBidiOverCdp(connection);
