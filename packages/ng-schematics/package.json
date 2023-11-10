@@ -45,7 +45,7 @@
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=16.3.0"
+    "node": ">=16.13.2"
   },
   "dependencies": {
     "@angular-devkit/architect": "^0.1602.6",
@@ -53,7 +53,7 @@
     "@angular-devkit/schematics": "^16.2.6"
   },
   "devDependencies": {
-    "@types/node": "^16.11.7",
+    "@types/node": "^16.18.61",
     "@schematics/angular": "^16.2.9",
     "@angular/cli": "^16.2.9",
     "rxjs": "7.8.1"

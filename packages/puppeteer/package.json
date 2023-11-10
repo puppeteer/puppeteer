@@ -31,7 +31,7 @@
     "url": "https://github.com/puppeteer/puppeteer/tree/main/packages/puppeteer"
   },
   "engines": {
-    "node": ">=16.3.0"
+    "node": ">=16.13.2"
   },
   "scripts": {
     "build:docs": "wireit",
