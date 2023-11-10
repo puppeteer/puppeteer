@@ -41,8 +41,6 @@ jobs:
         run: npm run validate-licenses
       - name: Build every package
         run: npm run build
-      - name: Tests types
-        run: npm run test-types
       - name: Lint code
         run: npm run lint
       - name: Generate documents

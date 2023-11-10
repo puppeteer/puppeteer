@@ -63,7 +63,7 @@ jobs:
       # Set up GitHub Actions caching for Wireit.
       - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
       - name: Build packages
-        run: npm run build --workspace @puppeteer-test/test
+        run: npm run build -w @puppeteer-test/test
       - name: Setup cache for Chrome binary
         if: ${{ matrix.suite != 'chrome-bidi' }}
         uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2

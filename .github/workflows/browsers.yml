@@ -46,7 +46,7 @@ jobs:
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
       - name: Run tests
-        run: npm run test --workspace @puppeteer/browsers
+        run: npm run test -w @puppeteer/browsers
 
   browsers-tests-required:
     name: '[Required] Test the browsers packages'

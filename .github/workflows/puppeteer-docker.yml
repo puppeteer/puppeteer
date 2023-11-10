@@ -22,7 +22,7 @@ jobs:
       check-mergeable-state: true
 
   docker-tests:
-    name: '[Required] Test Docker image'
+    name: '[Required] Docker image'
     runs-on: ubuntu-latest
     needs: check-changes
     if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
@@ -41,7 +41,7 @@ jobs:
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
       - name: Build packages
-        run: npm run build --workspace puppeteer
+        run: npm run build -w puppeteer
       - name: Pack packages
         run: docker/pack.sh
       - name: Build docker image
