@@ -53,6 +53,8 @@ import {TargetManagerEvent, type TargetManager} from './TargetManager.js';
  * @internal
  */
 export class CdpBrowser extends BrowserBase {
+  readonly protocol = 'cdp';
+
   static async _create(
     product: 'firefox' | 'chrome' | undefined,
     connection: Connection,
@@ -345,8 +347,8 @@ export class CdpBrowser extends BrowserBase {
     return this.#connection.url();
   }
 
-  override async newPage(): Promise<Page> {
-    return await this.#defaultContext.newPage();
+  override newPage(): Promise<Page> {
+    return this.#defaultContext.newPage();
   }
 
   async _createPageInContext(contextId?: string): Promise<Page> {
