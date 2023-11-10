@@ -347,8 +347,8 @@ export class CdpBrowser extends BrowserBase {
     return this.#connection.url();
   }
 
-  override newPage(): Promise<Page> {
-    return this.#defaultContext.newPage();
+  override async newPage(): Promise<Page> {
+    return await this.#defaultContext.newPage();
   }
 
   async _createPageInContext(contextId?: string): Promise<Page> {
