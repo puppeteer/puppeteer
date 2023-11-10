@@ -29,6 +29,7 @@ import {isErrorLike} from '../util/ErrorLike.js';
 import {CdpBrowser} from './Browser.js';
 import {Connection} from './Connection.js';
 import type {ConnectOptions} from './ConnectOptions.js';
+import {BidiBrowser} from '../bidi/Browser';
 
 /**
  * Generic browser options that can be passed when launching any browser or when
@@ -80,7 +81,7 @@ const getWebSocketTransportClass = async () => {
 
 /**
  * Users should never call this directly; it's called when calling
- * `puppeteer.connect`.
+ * `puppeteer.connect` with `protocol: 'cdp'`.
  *
  * @internal
  */
@@ -120,7 +121,13 @@ export async function _connectToCdpBrowser(
   return browser;
 }
 
-export async function _connectToBiDiOverCdpBrowser(): Promise<CdpBrowser> {
+/**
+ * Users should never call this directly; it's called when calling
+ * `puppeteer.connect` with `protocol: 'webDriverBiDi'`.
+ *
+ * @internal
+ */
+export async function _connectToBiDiOverCdpBrowser(): Promise<BidiBrowser> {
   throw new Error('Not implemented');
 }
 
