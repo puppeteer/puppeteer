@@ -1413,13 +1413,19 @@
     "testIdPattern": "[click.spec] Page.click should click the button inside an iframe",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[click.spec] Page.click should click the button with deviceScaleFactor set",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[click.spec] Page.click should click the button with fixed position inside an iframe",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[click.spec] Page.click should click the button with fixed position inside an iframe",
@@ -1599,7 +1605,7 @@
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boxModel should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.click should return Point data",
@@ -1623,13 +1629,13 @@
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.clickablePoint should work for iframes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.contentFrame should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.isIntersectingViewport should work",
@@ -1749,7 +1755,7 @@
     "testIdPattern": "[evaluation.spec] Evaluation specs Frame.evaluate should have different execution contexts",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should await promise",
@@ -1767,7 +1773,7 @@
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw if elementHandles are from other frames",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw if elementHandles are from other frames",
@@ -1815,7 +1821,7 @@
     "testIdPattern": "[frame.spec] Frame specs Frame Management should report different frame instance when frame re-attaches",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should report frame from-inside shadow DOM",
@@ -1833,7 +1839,7 @@
     "testIdPattern": "[frame.spec] Frame specs Frame Management should report frame.parent()",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should report frame.parent()",
@@ -1851,7 +1857,7 @@
     "testIdPattern": "[frame.spec] Frame specs Frame Management should send events when frames are manipulated dynamically",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should support framesets",
@@ -1881,7 +1887,7 @@
     "testIdPattern": "[frame.spec] Frame specs Frame.evaluate should throw for detached frames",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame.executionContext should work",
@@ -2001,7 +2007,7 @@
     "testIdPattern": "[keyboard.spec] Keyboard should type emoji into an iframe",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[keyboard.spec] Keyboard should type emoji into an iframe",
@@ -2163,7 +2169,7 @@
     "testIdPattern": "[locator.spec] Locator Locator.click should work with a OOPIF",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "TIMEOUT"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[locator.spec] Locator Locator.race races multiple locators",
@@ -2511,7 +2517,7 @@
     "testIdPattern": "[network.spec] network Page.Events.Request should fire for iframes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[network.spec] network Page.setExtraHTTPHeaders should work",
@@ -3537,7 +3543,7 @@
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector Page.waitForSelector is shortcut for main frame",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector Page.waitForSelector is shortcut for main frame",
@@ -3549,7 +3555,7 @@
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should run in specified frame",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should run in specified frame",
@@ -3579,7 +3585,7 @@
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should throw when frame is detached",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should throw when frame is detached",
@@ -3597,7 +3603,7 @@
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForXPath should run in specified frame",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForXPath should run in specified frame",
@@ -3609,7 +3615,7 @@
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForXPath should throw when frame is detached",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForXPath should throw when frame is detached",
