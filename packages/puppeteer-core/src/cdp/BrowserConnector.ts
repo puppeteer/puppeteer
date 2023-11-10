@@ -18,6 +18,7 @@ import type {
   IsPageTargetCallback,
   TargetFilterCallback,
 } from '../api/Browser.js';
+import type {BidiBrowser} from '../bidi/Browser.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {getFetch} from '../common/fetch.js';
 import {debugError} from '../common/util.js';
@@ -29,7 +30,6 @@ import {isErrorLike} from '../util/ErrorLike.js';
 import {CdpBrowser} from './Browser.js';
 import {Connection} from './Connection.js';
 import type {ConnectOptions} from './ConnectOptions.js';
-import {BidiBrowser} from '../bidi/Browser';
 
 /**
  * Generic browser options that can be passed when launching any browser or when
