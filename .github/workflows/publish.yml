@@ -30,7 +30,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN_RELEASE}}
         run: |
           npm config set '//wombat-dressing-room.appspot.com/:_authToken' $NODE_AUTH_TOKEN
-          npm publish --workspace packages/${GITHUB_REF_NAME%-v*}
+          npm publish -w packages/${GITHUB_REF_NAME%-v*}
       - name: Deprecate old Puppeteer versions
         if: ${{ startsWith(github.ref_name, 'puppeteer-v') }}
         env:

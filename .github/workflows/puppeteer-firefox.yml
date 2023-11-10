@@ -1,0 +1,100 @@
+name: Puppeteer Firefox
+
+# Declare default permissions as read only.
+permissions: read-all
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '**'
+
+concurrency:
+  group: puppeteer-firefox-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  check-changes:
+    uses: ./.github/workflows/changed-packages.yml
+    with:
+      check-mergeable-state: true
+
+  firefox-tests:
+    name: ${{ matrix.suite }} tests on ${{ matrix.os }} (${{ matrix.shard }})
+    runs-on: ${{ matrix.os }}
+    needs: check-changes
+    if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+        suite:
+          - firefox-bidi
+          - firefox-headful
+          - firefox-headless
+        shard:
+          - 1/4
+          - 2/4
+          - 3/4
+          - 4/4
+        exclude:
+          - os: macos-latest
+            suite: firefox-headful
+          - os: macos-latest
+            suite: firefox-headless
+          # Disabled due to https://bugzilla.mozilla.org/show_bug.cgi?id=1843550
+          # The first time the browsers launches it crashes.
+          - os: macos-latest
+            suite: firefox-bidi
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - name: Set up Node.js
+        uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
+        with:
+          cache: npm
+          node-version: lts/*
+      - name: Set up FFmpeg
+        uses: FedericoCarboni/setup-ffmpeg@5058c9851b649ced05c3e73a4fb5ef2995a89127 # v2.0.0
+      - name: Install dependencies
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
+      # Set up GitHub Actions caching for Wireit.
+      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
+      - name: Build packages
+        run: npm run build -w @puppeteer-test/test
+      - name: Setup cache for Firefox binary
+        uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        with:
+          path: ~/.cache/puppeteer/firefox
+          key: ${{ runner.os }}-firefox-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
+      - name: Install Firefox
+        env:
+          PUPPETEER_PRODUCT: firefox
+        run: npm run postinstall
+      - name: Run all tests (for non-Linux)
+        if: ${{ matrix.os != 'ubuntu-latest' }}
+        run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+      - name: Run all tests (for Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+      - uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
+        if: always()
+        with:
+          name: test-results
+          path: /tmp/artifacts/*.json
+
+  firefox-tests-required:
+    name: '[Required] Firefox tests'
+    needs: [check-changes, firefox-tests]
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - if: ${{ needs.firefox-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+        run: 'exit 1'
+      - run: 'exit 0'
