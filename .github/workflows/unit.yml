@@ -40,7 +40,7 @@ jobs:
           PUPPETEER_SKIP_DOWNLOAD: true
       - name: Run unit tests
         run: |
-          npm run unit --w puppeteer-core -w puppeteer --if-present
+          npm run unit -w puppeteer-core -w puppeteer --if-present
 
   ng-schematics-tests:
     name: '[Required] Test Angular Schematics'
