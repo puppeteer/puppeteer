@@ -1,4 +1,4 @@
-name: Intstallation Tests
+name: Installation Tests
 
 # Declare default permissions as read only.
 permissions: read-all
