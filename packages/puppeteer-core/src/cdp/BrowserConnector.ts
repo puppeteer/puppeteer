@@ -148,8 +148,7 @@ export async function _connectToBiDiOverCdpBrowser(
   const bidiBrowser = await BiDi.BidiBrowser.create({
     connection: bidiConnection,
     closeCallback: () => {
-      // TODO: implement proper closing.
-      throw new Error('Not implemented yet');
+      return connection.send('Browser.close').catch(debugError);
     },
     process: undefined,
     defaultViewport: defaultViewport,
