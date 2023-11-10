@@ -1,0 +1,59 @@
+name: '@puppeteer/browsers tests'
+
+# Declare default permissions as read only.
+permissions: read-all
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '**'
+
+concurrency:
+  group: puppeteer-browsers-tests-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  check-changes:
+    uses: ./.github/workflows/changed-packages.yml
+    with:
+      check-mergeable-state: true
+
+  browsers-tests:
+    name: Browsers tests on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: check-changes
+    if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'browsers') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - name: Set up Node.js
+        uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
+        with:
+          cache: npm
+          node-version: lts/*
+      - name: Install dependencies
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
+      - name: Run tests
+        run: npm run test --workspace @puppeteer/browsers
+
+  browsers-tests-required:
+    name: '[Required] Test the browsers packages'
+    needs: [check-changes, browsers-tests]
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - if: ${{ needs.browsers-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'browsers') }}
+        run: 'exit 1'
+      - run: 'exit 0'

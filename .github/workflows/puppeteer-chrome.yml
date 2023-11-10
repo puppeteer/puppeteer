@@ -1,0 +1,110 @@
+name: Puppeteer Chrome
+
+# Declare default permissions as read only.
+permissions: read-all
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '**'
+
+concurrency:
+  group: puppeteer-chrome-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  check-changes:
+    uses: ./.github/workflows/changed-packages.yml
+    with:
+      check-mergeable-state: true
+
+  chrome-tests:
+    name: ${{ matrix.suite }} tests on ${{ matrix.os }} (${{ matrix.shard }})
+    runs-on: ${{ matrix.os }}
+    needs: check-changes
+    if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+        suite:
+          - chrome-headless
+          - chrome-headful
+          - chrome-new-headless
+          - chrome-bidi
+        shard:
+          - 1/2
+          - 2/2
+        exclude:
+          - os: windows-latest
+            suite: chrome-bidi
+          - os: macos-latest
+            suite: chrome-headful
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - name: Set up Node.js
+        uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
+        with:
+          cache: npm
+          node-version: lts/*
+      - name: Set up FFmpeg
+        uses: FedericoCarboni/setup-ffmpeg@5058c9851b649ced05c3e73a4fb5ef2995a89127 # v2.0.0
+      - name: Install dependencies
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
+      # Set up GitHub Actions caching for Wireit.
+      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
+      - name: Build packages
+        run: npm run build --workspace @puppeteer-test/test
+      - name: Setup cache for Chrome binary
+        if: ${{ matrix.suite != 'chrome-bidi' }}
+        uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        with:
+          path: ~/.cache/puppeteer/chrome
+          key: ${{ runner.os }}-Chrome-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
+      - name: Install Chrome
+        if: ${{ matrix.suite != 'chrome-bidi' }}
+        run: npm run postinstall
+      - name: Setup cache for Chrome Canary binary
+        if: ${{ matrix.suite == 'chrome-bidi' }}
+        uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        with:
+          path: ~/.cache/puppeteer/chrome-canary
+          key: ${{ runner.os }}-Chrome-Canary-${{ hashFiles('package.json') }}
+      - name: Install Chrome Canary
+        if: ${{ matrix.suite == 'chrome-bidi' }}
+        id: browser
+        run: node tools/download_chrome_bidi.mjs ~/.cache/puppeteer/chrome-canary
+      - name: Run all tests (for non-Linux)
+        if: ${{ matrix.os != 'ubuntu-latest' }}
+        run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        env:
+          PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
+      - name: Run all tests (for Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        env:
+          PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
+      - uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
+        if: always()
+        with:
+          name: test-results
+          path: /tmp/artifacts/*.json
+
+  chrome-tests-required:
+    name: '[Required] Chrome tests'
+    needs: [check-changes, chrome-tests]
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - if: ${{ needs.chrome-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+        run: 'exit 1'
+      - run: 'exit 0'
