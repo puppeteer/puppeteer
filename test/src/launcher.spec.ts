@@ -43,6 +43,7 @@ describe('Launcher specs', function () {
         try {
           const remote = await puppeteer.connect({
             browserWSEndpoint: browser.wsEndpoint(),
+            protocol: browser.protocol,
           });
           const page = await remote.newPage();
           const navigationPromise = page
@@ -69,6 +70,7 @@ describe('Launcher specs', function () {
         try {
           const remote = await puppeteer.connect({
             browserWSEndpoint: browser.wsEndpoint(),
+            protocol: browser.protocol,
           });
           const page = await remote.newPage();
           const watchdog = page
@@ -90,6 +92,7 @@ describe('Launcher specs', function () {
         try {
           const remote = await puppeteer.connect({
             browserWSEndpoint: browser.wsEndpoint(),
+            protocol: browser.protocol,
           });
           const newPage = await remote.newPage();
           const results = await Promise.all([
@@ -624,6 +627,7 @@ describe('Launcher specs', function () {
         try {
           const otherBrowser = await puppeteer.connect({
             browserWSEndpoint: browser.wsEndpoint(),
+            protocol: browser.protocol,
           });
           const page = await otherBrowser.newPage();
           expect(
@@ -648,6 +652,7 @@ describe('Launcher specs', function () {
         try {
           const remoteBrowser = await puppeteer.connect({
             browserWSEndpoint: browser.wsEndpoint(),
+            protocol: browser.protocol,
           });
           await Promise.all([
             waitEvent(browser, 'disconnected'),
@@ -669,6 +674,7 @@ describe('Launcher specs', function () {
           );
           const remoteBrowser = await puppeteer.connect({
             browserWSEndpoint: browser.wsEndpoint(),
+            protocol: browser.protocol,
           });
           await Promise.all([
             waitEvent(browser, 'disconnected'),
@@ -691,6 +697,7 @@ describe('Launcher specs', function () {
           const remoteBrowser = await puppeteer.connect({
             browserWSEndpoint,
             ignoreHTTPSErrors: true,
+            protocol: browser.protocol,
           });
           const page = await remoteBrowser.newPage();
           let error!: Error;
@@ -758,6 +765,7 @@ describe('Launcher specs', function () {
             targetFilter: target => {
               return !target.url().includes('should-be-ignored');
             },
+            protocol: browser.protocol,
           });
 
           const pages = await remoteBrowser.pages();
@@ -786,7 +794,10 @@ describe('Launcher specs', function () {
           await page.goto(server.PREFIX + '/frames/nested-frames.html');
           browser.disconnect();
 
-          const remoteBrowser = await puppeteer.connect({browserWSEndpoint});
+          const remoteBrowser = await puppeteer.connect({
+            browserWSEndpoint,
+            protocol: browser.protocol,
+          });
           const pages = await remoteBrowser.pages();
           const restoredPage = pages.find(page => {
             return page.url() === server.PREFIX + '/frames/nested-frames.html';
@@ -815,6 +826,7 @@ describe('Launcher specs', function () {
         try {
           const browserTwo = await puppeteer.connect({
             browserWSEndpoint: browserOne.wsEndpoint(),
+            protocol: browserOne.protocol,
           });
           const [page1, page2] = await Promise.all([
             new Promise<Page | null>(x => {
@@ -854,6 +866,7 @@ describe('Launcher specs', function () {
 
           const browserTwo = await puppeteer.connect({
             browserWSEndpoint,
+            protocol: browserOne.protocol,
           });
           const pages = await browserTwo.pages();
           const pageTwo = pages.find(page => {
@@ -951,9 +964,11 @@ describe('Launcher specs', function () {
         const browserWSEndpoint = browser.wsEndpoint();
         const remoteBrowser1 = await puppeteer.connect({
           browserWSEndpoint,
+          protocol: browser.protocol,
         });
         const remoteBrowser2 = await puppeteer.connect({
           browserWSEndpoint,
+          protocol: browser.protocol,
         });
 
         let disconnectedOriginal = 0;

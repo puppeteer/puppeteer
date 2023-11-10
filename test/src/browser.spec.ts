@@ -67,6 +67,7 @@ describe('Browser specs', function () {
       const browserWSEndpoint = browser.wsEndpoint();
       const remoteBrowser = await puppeteer.connect({
         browserWSEndpoint,
+        protocol: browser.protocol,
       });
       expect(remoteBrowser.process()).toBe(null);
       remoteBrowser.disconnect();
@@ -80,6 +81,7 @@ describe('Browser specs', function () {
       const browserWSEndpoint = browser.wsEndpoint();
       const newBrowser = await puppeteer.connect({
         browserWSEndpoint,
+        protocol: browser.protocol,
       });
       expect(newBrowser.isConnected()).toBe(true);
       newBrowser.disconnect();

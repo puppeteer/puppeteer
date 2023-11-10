@@ -53,6 +53,8 @@ import {TargetManagerEvent, type TargetManager} from './TargetManager.js';
  * @internal
  */
 export class CdpBrowser extends BrowserBase {
+  readonly protocol = 'cdp';
+
   static async _create(
     product: 'firefox' | 'chrome' | undefined,
     connection: Connection,

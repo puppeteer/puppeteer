@@ -437,4 +437,9 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
   [asyncDisposeSymbol](): Promise<void> {
     return this.close();
   }
+
+  /**
+   * @internal
+   */
+  abstract get protocol(): 'cdp' | 'webDriverBiDi';
 }
