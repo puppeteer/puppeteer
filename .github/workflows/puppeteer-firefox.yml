@@ -1,4 +1,4 @@
-name: CI
+name: Puppeteer Firefox
 
 # Declare default permissions as read only.
 permissions: read-all
