@@ -60,4 +60,4 @@ jobs:
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
       - name: Run tests
-        run: npm run test --workspace @puppeteer/ng-schematics
+        run: npm run test -w @puppeteer/ng-schematics
