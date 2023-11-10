@@ -18,6 +18,7 @@ import type {
   IsPageTargetCallback,
   TargetFilterCallback,
 } from '../api/Browser.js';
+import type {BidiBrowser} from '../bidi/Browser.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {getFetch} from '../common/fetch.js';
 import {debugError} from '../common/util.js';
@@ -29,6 +30,7 @@ import {isErrorLike} from '../util/ErrorLike.js';
 import {CdpBrowser} from './Browser.js';
 import {Connection} from './Connection.js';
 import type {ConnectOptions} from './ConnectOptions.js';
+
 /**
  * Generic browser options that can be passed when launching any browser or when
  * connecting to an existing browser instance.
@@ -79,7 +81,7 @@ const getWebSocketTransportClass = async () => {
 
 /**
  * Users should never call this directly; it's called when calling
- * `puppeteer.connect`.
+ * `puppeteer.connect` with `protocol: 'cdp'`.
  *
  * @internal
  */
@@ -87,49 +89,13 @@ export async function _connectToCdpBrowser(
   options: BrowserConnectOptions & ConnectOptions
 ): Promise<CdpBrowser> {
   const {
-    browserWSEndpoint,
-    browserURL,
     ignoreHTTPSErrors = false,
     defaultViewport = {width: 800, height: 600},
-    transport,
-    headers = {},
-    slowMo = 0,
     targetFilter,
     _isPageTarget: isPageTarget,
-    protocolTimeout,
   } = options;
 
-  assert(
-    Number(!!browserWSEndpoint) + Number(!!browserURL) + Number(!!transport) ===
-      1,
-    'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect'
-  );
-
-  let connection!: Connection;
-  if (transport) {
-    connection = new Connection('', transport, slowMo, protocolTimeout);
-  } else if (browserWSEndpoint) {
-    const WebSocketClass = await getWebSocketTransportClass();
-    const connectionTransport: ConnectionTransport =
-      await WebSocketClass.create(browserWSEndpoint, headers);
-    connection = new Connection(
-      browserWSEndpoint,
-      connectionTransport,
-      slowMo,
-      protocolTimeout
-    );
-  } else if (browserURL) {
-    const connectionURL = await getWSEndpoint(browserURL);
-    const WebSocketClass = await getWebSocketTransportClass();
-    const connectionTransport: ConnectionTransport =
-      await WebSocketClass.create(connectionURL);
-    connection = new Connection(
-      connectionURL,
-      connectionTransport,
-      slowMo,
-      protocolTimeout
-    );
-  }
+  const connection = await getCdpConnection(options);
   const version = await connection.send('Browser.getVersion');
 
   const product = version.product.toLowerCase().includes('firefox')
@@ -155,6 +121,16 @@ export async function _connectToCdpBrowser(
   return browser;
 }
 
+/**
+ * Users should never call this directly; it's called when calling
+ * `puppeteer.connect` with `protocol: 'webDriverBiDi'`.
+ *
+ * @internal
+ */
+export async function _connectToBiDiOverCdpBrowser(): Promise<BidiBrowser> {
+  throw new Error('Not implemented');
+}
+
 async function getWSEndpoint(browserURL: string): Promise<string> {
   const endpointURL = new URL('/json/version', browserURL);
 
@@ -176,4 +152,52 @@ async function getWSEndpoint(browserURL: string): Promise<string> {
     }
     throw error;
   }
+}
+
+/**
+ * Returns a CDP connection for the given options.
+ */
+async function getCdpConnection(
+  options: BrowserConnectOptions & ConnectOptions
+): Promise<Connection> {
+  const {
+    browserWSEndpoint,
+    browserURL,
+    transport,
+    headers = {},
+    slowMo = 0,
+    protocolTimeout,
+  } = options;
+
+  assert(
+    Number(!!browserWSEndpoint) + Number(!!browserURL) + Number(!!transport) ===
+      1,
+    'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect'
+  );
+
+  if (transport) {
+    return new Connection('', transport, slowMo, protocolTimeout);
+  } else if (browserWSEndpoint) {
+    const WebSocketClass = await getWebSocketTransportClass();
+    const connectionTransport: ConnectionTransport =
+      await WebSocketClass.create(browserWSEndpoint, headers);
+    return new Connection(
+      browserWSEndpoint,
+      connectionTransport,
+      slowMo,
+      protocolTimeout
+    );
+  } else if (browserURL) {
+    const connectionURL = await getWSEndpoint(browserURL);
+    const WebSocketClass = await getWebSocketTransportClass();
+    const connectionTransport: ConnectionTransport =
+      await WebSocketClass.create(connectionURL);
+    return new Connection(
+      connectionURL,
+      connectionTransport,
+      slowMo,
+      protocolTimeout
+    );
+  }
+  throw new Error('Invalid connection options');
 }
