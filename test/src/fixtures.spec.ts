@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/no-var-requires */
-
 import {spawn, execSync} from 'child_process';
 import path from 'path';
 
@@ -27,7 +25,7 @@ import {waitEvent} from './utils.js';
 describe('Fixtures', function () {
   setupTestBrowserHooks();
 
-  it.only('dumpio option should work with pipe option', async () => {
+  it('dumpio option should work with pipe option', async () => {
     const {defaultBrowserOptions, puppeteerPath, headless} =
       await getTestState();
     if (headless !== 'true') {
@@ -53,7 +51,7 @@ describe('Fixtures', function () {
     });
     expect(dumpioData).toContain('message from dumpio');
   });
-  it.only('should dump browser process stderr', async () => {
+  it('should dump browser process stderr', async () => {
     const {defaultBrowserOptions, puppeteerPath} = await getTestState();
 
     let dumpioData = '';
