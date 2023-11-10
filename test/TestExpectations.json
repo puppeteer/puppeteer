@@ -384,12 +384,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[browser.spec] Browser specs Browser.process should not return child_process for remote browser",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[browser.spec] Browser specs Browser.process should return child_process instance",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
