@@ -42,7 +42,7 @@ jobs:
         run: |
           npm run unit -w puppeteer-core -w puppeteer --if-present
 
-  ng-schematics-tests:
+  ng-schematics:
     name: '[Required] Test Angular Schematics'
     runs-on: ubuntu-latest
     needs: check-changes
