@@ -31,6 +31,8 @@ import {CdpBrowser} from './Browser.js';
 import {Connection} from './Connection.js';
 import type {ConnectOptions} from './ConnectOptions.js';
 
+const DEFAULT_VIEWPORT = Object.freeze({width: 800, height: 600});
+
 /**
  * Generic browser options that can be passed when launching any browser or when
  * connecting to an existing browser instance.
@@ -90,7 +92,7 @@ export async function _connectToCdpBrowser(
 ): Promise<CdpBrowser> {
   const {
     ignoreHTTPSErrors = false,
-    defaultViewport = {width: 800, height: 600},
+    defaultViewport = DEFAULT_VIEWPORT,
     targetFilter,
     _isPageTarget: isPageTarget,
   } = options;
@@ -127,8 +129,27 @@ export async function _connectToCdpBrowser(
  *
  * @internal
  */
-export async function _connectToBiDiOverCdpBrowser(): Promise<BidiBrowser> {
-  throw new Error('Not implemented');
+export async function _connectToBiDiOverCdpBrowser(
+  options: BrowserConnectOptions & ConnectOptions
+): Promise<BidiBrowser> {
+  const {ignoreHTTPSErrors = false, defaultViewport = DEFAULT_VIEWPORT} =
+    options;
+
+  const connection = await getCdpConnection(options);
+  // TODO: use other options too.
+  const BiDi = await import(/* webpackIgnore: true */ '../bidi/bidi.js');
+  const bidiConnection = await BiDi.connectBidiOverCdp(connection);
+  const bidiBrowser = await BiDi.BidiBrowser.create({
+    connection: bidiConnection,
+    closeCallback: () => {
+      // TODO: implement proper closing.
+      throw new Error('Not implemented yet');
+    },
+    process: undefined,
+    defaultViewport: defaultViewport,
+    ignoreHTTPSErrors: ignoreHTTPSErrors,
+  });
+  return bidiBrowser;
 }
 
 async function getWSEndpoint(browserURL: string): Promise<string> {

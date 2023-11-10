@@ -132,7 +132,7 @@ export class Puppeteer {
    */
   connect(options: ConnectOptions): Promise<Browser> {
     if (options.protocol === 'webDriverBiDi') {
-      return _connectToBiDiOverCdpBrowser();
+      return _connectToBiDiOverCdpBrowser(options);
     } else {
       return _connectToCdpBrowser(options);
     }
