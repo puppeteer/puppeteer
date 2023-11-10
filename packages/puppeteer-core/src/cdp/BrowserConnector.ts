@@ -29,6 +29,9 @@ import {isErrorLike} from '../util/ErrorLike.js';
 import {CdpBrowser} from './Browser.js';
 import {Connection} from './Connection.js';
 import type {ConnectOptions} from './ConnectOptions.js';
+import {BidiBrowser} from '../bidi/Browser.js';
+
+const DEFAULT_VIEWPORT = Object.freeze({ width: 800, height: 600 });
 
 /**
  * Generic browser options that can be passed when launching any browser or when
@@ -75,7 +78,7 @@ const getWebSocketTransportClass = async () => {
   return isNode
     ? (await import('../node/NodeWebSocketTransport.js')).NodeWebSocketTransport
     : (await import('../common/BrowserWebSocketTransport.js'))
-        .BrowserWebSocketTransport;
+      .BrowserWebSocketTransport;
 };
 
 /**
@@ -89,7 +92,7 @@ export async function _connectToCdpBrowser(
 ): Promise<CdpBrowser> {
   const {
     ignoreHTTPSErrors = false,
-    defaultViewport = {width: 800, height: 600},
+    defaultViewport = DEFAULT_VIEWPORT,
     targetFilter,
     _isPageTarget: isPageTarget,
   } = options;
@@ -101,7 +104,7 @@ export async function _connectToCdpBrowser(
     ? 'firefox'
     : 'chrome';
 
-  const {browserContextIds} = await connection.send(
+  const { browserContextIds } = await connection.send(
     'Target.getBrowserContexts'
   );
   const browser = await CdpBrowser._create(
@@ -120,8 +123,28 @@ export async function _connectToCdpBrowser(
   return browser;
 }
 
-export async function _connectToBiDiOverCdpBrowser(): Promise<CdpBrowser> {
-  throw new Error('Not implemented');
+export async function _connectToBiDiOverCdpBrowser(
+  options: BrowserConnectOptions & ConnectOptions
+): Promise<BidiBrowser> {
+  const {
+    ignoreHTTPSErrors = false,
+    defaultViewport = DEFAULT_VIEWPORT,
+  } = options;
+
+  const connection = await getCdpConnection(options);
+  // TODO: use other options too.
+  const BiDi = await import(/* webpackIgnore: true */ '../bidi/bidi.js');
+  const bidiConnection = await BiDi.connectBidiOverCdp(connection);
+  return await BiDi.BidiBrowser.create({
+    connection: bidiConnection,
+    closeCallback: () => {
+      // TODO: implement proper closing.
+      throw new Error("Not implemented yet");
+    },
+    process: undefined,
+    defaultViewport: defaultViewport,
+    ignoreHTTPSErrors: ignoreHTTPSErrors,
+  });
 }
 
 async function getWSEndpoint(browserURL: string): Promise<string> {
@@ -164,7 +187,7 @@ async function getCdpConnection(
 
   assert(
     Number(!!browserWSEndpoint) + Number(!!browserURL) + Number(!!transport) ===
-      1,
+    1,
     'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect'
   );
 
