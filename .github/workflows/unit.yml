@@ -21,7 +21,7 @@ jobs:
     with:
       check-mergeable-state: true
 
-  unit-tests:
+  puppeteer:
     name: '[Required] Unit tests'
     runs-on: ubuntu-latest
     needs: check-changes
