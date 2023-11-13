@@ -12,3 +12,5 @@ export type EventsWithWildcard<Events extends Record<EventType, unknown>> =
     '*': Events[keyof Events];
   };
 ```
+
+**References:** [EventType](./puppeteer.eventtype.md)

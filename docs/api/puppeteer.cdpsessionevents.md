@@ -10,7 +10,7 @@ sidebar_label: CDPSessionEvents
 export interface CDPSessionEvents extends CDPEvents, Record<EventType, unknown>
 ```
 
-**Extends:** [CDPEvents](./puppeteer.cdpevents.md), Record&lt;EventType, unknown&gt;
+**Extends:** [CDPEvents](./puppeteer.cdpevents.md), Record&lt;[EventType](./puppeteer.eventtype.md), unknown&gt;
 
 ## Properties
 
