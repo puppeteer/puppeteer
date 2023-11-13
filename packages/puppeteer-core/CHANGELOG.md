@@ -20,6 +20,18 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.6.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.5.1...puppeteer-core-v21.6.0) (2023-11-13)
+
+
+### Features
+
+* implement `Puppeteer.connect` for BiDi over CDP browser ([#11350](https://github.com/puppeteer/puppeteer/issues/11350)) ([26ff6c9](https://github.com/puppeteer/puppeteer/commit/26ff6c9ea824211615ec274394f52571c4eae271))
+
+
+### Bug Fixes
+
+* add --disable-field-trial-config ([#11352](https://github.com/puppeteer/puppeteer/issues/11352)) ([cbc33be](https://github.com/puppeteer/puppeteer/commit/cbc33bea40b8801b8eeb3277fc15d04900715795))
+
 ## [21.5.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.5.0...puppeteer-core-v21.5.1) (2023-11-09)
 
 
