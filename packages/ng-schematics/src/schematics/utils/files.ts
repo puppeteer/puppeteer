@@ -111,10 +111,21 @@ function getProjectBaseUrl(project: any, port: number): string {
 }
 
 function getTsConfigPath(project: AngularProject): string {
+  const filename = 'tsconfig.json';
+
   if (!project.root) {
-    return '../tsconfig.json';
+    return `../${filename}`;
   }
-  return `../tsconfig.app.json`;
+
+  const nested = project.root
+    .split('/')
+    .map(() => {
+      return '../';
+    })
+    .join('');
+
+  // Prepend a single `../` as we put the test inside `e2e` folder
+  return `../${nested}${filename}`;
 }
 
 export function addCommonFiles(
