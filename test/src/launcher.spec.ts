@@ -700,20 +700,16 @@ describe('Launcher specs', function () {
             protocol: browser.protocol,
           });
           const page = await remoteBrowser.newPage();
-          let error!: Error;
           const [serverRequest, response] = await Promise.all([
             httpsServer.waitForRequest('/empty.html'),
-            page.goto(httpsServer.EMPTY_PAGE).catch(error_ => {
-              return (error = error_);
-            }),
+            page.goto(httpsServer.EMPTY_PAGE),
           ]);
-          expect(error).toBeUndefined();
-          expect(response.ok()).toBe(true);
-          expect(response.securityDetails()).toBeTruthy();
+          expect(response!.ok()).toBe(true);
+          expect(response!.securityDetails()).toBeTruthy();
           const protocol = (serverRequest.socket as TLSSocket)
             .getProtocol()!
             .replace('v', ' ');
-          expect(response.securityDetails().protocol()).toBe(protocol);
+          expect(response!.securityDetails()!.protocol()).toBe(protocol);
           await page.close();
           await remoteBrowser.close();
         } finally {
