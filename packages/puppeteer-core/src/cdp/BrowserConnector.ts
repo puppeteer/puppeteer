@@ -18,6 +18,7 @@ import type {
   IsPageTargetCallback,
   TargetFilterCallback,
 } from '../api/Browser.js';
+import type {BidiBrowser} from '../bidi/Browser.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {getFetch} from '../common/fetch.js';
 import {debugError} from '../common/util.js';
@@ -29,6 +30,9 @@ import {isErrorLike} from '../util/ErrorLike.js';
 import {CdpBrowser} from './Browser.js';
 import {Connection} from './Connection.js';
 import type {ConnectOptions} from './ConnectOptions.js';
+
+const DEFAULT_VIEWPORT = Object.freeze({width: 800, height: 600});
+
 /**
  * Generic browser options that can be passed when launching any browser or when
  * connecting to an existing browser instance.
@@ -79,7 +83,7 @@ const getWebSocketTransportClass = async () => {
 
 /**
  * Users should never call this directly; it's called when calling
- * `puppeteer.connect`.
+ * `puppeteer.connect` with `protocol: 'cdp'`.
  *
  * @internal
  */
@@ -87,51 +91,15 @@ export async function _connectToCdpBrowser(
   options: BrowserConnectOptions & ConnectOptions
 ): Promise<CdpBrowser> {
   const {
-    browserWSEndpoint,
-    browserURL,
     ignoreHTTPSErrors = false,
-    defaultViewport = {width: 800, height: 600},
-    transport,
-    headers = {},
-    slowMo = 0,
+    defaultViewport = DEFAULT_VIEWPORT,
     targetFilter,
     _isPageTarget: isPageTarget,
-    protocolTimeout,
   } = options;
 
-  assert(
-    Number(!!browserWSEndpoint) + Number(!!browserURL) + Number(!!transport) ===
-      1,
-    'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect'
-  );
+  const connection = await getCdpConnection(options);
 
-  let connection!: Connection;
-  if (transport) {
-    connection = new Connection('', transport, slowMo, protocolTimeout);
-  } else if (browserWSEndpoint) {
-    const WebSocketClass = await getWebSocketTransportClass();
-    const connectionTransport: ConnectionTransport =
-      await WebSocketClass.create(browserWSEndpoint, headers);
-    connection = new Connection(
-      browserWSEndpoint,
-      connectionTransport,
-      slowMo,
-      protocolTimeout
-    );
-  } else if (browserURL) {
-    const connectionURL = await getWSEndpoint(browserURL);
-    const WebSocketClass = await getWebSocketTransportClass();
-    const connectionTransport: ConnectionTransport =
-      await WebSocketClass.create(connectionURL);
-    connection = new Connection(
-      connectionURL,
-      connectionTransport,
-      slowMo,
-      protocolTimeout
-    );
-  }
   const version = await connection.send('Browser.getVersion');
-
   const product = version.product.toLowerCase().includes('firefox')
     ? 'firefox'
     : 'chrome';
@@ -155,6 +123,40 @@ export async function _connectToCdpBrowser(
   return browser;
 }
 
+/**
+ * Users should never call this directly; it's called when calling
+ * `puppeteer.connect` with `protocol: 'webDriverBiDi'`.
+ *
+ * @internal
+ */
+export async function _connectToBiDiOverCdpBrowser(
+  options: BrowserConnectOptions & ConnectOptions
+): Promise<BidiBrowser> {
+  const {ignoreHTTPSErrors = false, defaultViewport = DEFAULT_VIEWPORT} =
+    options;
+
+  const connection = await getCdpConnection(options);
+
+  const version = await connection.send('Browser.getVersion');
+  if (version.product.toLowerCase().includes('firefox')) {
+    throw new Error('Firefox is not supported in BiDi over CDP mode.');
+  }
+
+  // TODO: use other options too.
+  const BiDi = await import(/* webpackIgnore: true */ '../bidi/bidi.js');
+  const bidiConnection = await BiDi.connectBidiOverCdp(connection);
+  const bidiBrowser = await BiDi.BidiBrowser.create({
+    connection: bidiConnection,
+    closeCallback: () => {
+      return connection.send('Browser.close').catch(debugError);
+    },
+    process: undefined,
+    defaultViewport: defaultViewport,
+    ignoreHTTPSErrors: ignoreHTTPSErrors,
+  });
+  return bidiBrowser;
+}
+
 async function getWSEndpoint(browserURL: string): Promise<string> {
   const endpointURL = new URL('/json/version', browserURL);
 
@@ -176,4 +178,52 @@ async function getWSEndpoint(browserURL: string): Promise<string> {
     }
     throw error;
   }
+}
+
+/**
+ * Returns a CDP connection for the given options.
+ */
+async function getCdpConnection(
+  options: BrowserConnectOptions & ConnectOptions
+): Promise<Connection> {
+  const {
+    browserWSEndpoint,
+    browserURL,
+    transport,
+    headers = {},
+    slowMo = 0,
+    protocolTimeout,
+  } = options;
+
+  assert(
+    Number(!!browserWSEndpoint) + Number(!!browserURL) + Number(!!transport) ===
+      1,
+    'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect'
+  );
+
+  if (transport) {
+    return new Connection('', transport, slowMo, protocolTimeout);
+  } else if (browserWSEndpoint) {
+    const WebSocketClass = await getWebSocketTransportClass();
+    const connectionTransport: ConnectionTransport =
+      await WebSocketClass.create(browserWSEndpoint, headers);
+    return new Connection(
+      browserWSEndpoint,
+      connectionTransport,
+      slowMo,
+      protocolTimeout
+    );
+  } else if (browserURL) {
+    const connectionURL = await getWSEndpoint(browserURL);
+    const WebSocketClass = await getWebSocketTransportClass();
+    const connectionTransport: ConnectionTransport =
+      await WebSocketClass.create(connectionURL);
+    return new Connection(
+      connectionURL,
+      connectionTransport,
+      slowMo,
+      protocolTimeout
+    );
+  }
+  throw new Error('Invalid connection options');
 }

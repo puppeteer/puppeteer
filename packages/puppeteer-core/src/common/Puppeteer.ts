@@ -15,7 +15,10 @@
  */
 
 import type {Browser} from '../api/Browser.js';
-import {_connectToCdpBrowser} from '../cdp/BrowserConnector.js';
+import {
+  _connectToBiDiOverCdpBrowser,
+  _connectToCdpBrowser,
+} from '../cdp/BrowserConnector.js';
 import type {ConnectOptions} from '../cdp/ConnectOptions.js';
 
 import {
@@ -129,7 +132,7 @@ export class Puppeteer {
    */
   connect(options: ConnectOptions): Promise<Browser> {
     if (options.protocol === 'webDriverBiDi') {
-      throw new Error('Not implemented');
+      return _connectToBiDiOverCdpBrowser(options);
     } else {
       return _connectToCdpBrowser(options);
     }
