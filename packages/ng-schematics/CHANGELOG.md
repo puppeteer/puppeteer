@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.1](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.5.0...ng-schematics-v0.5.1) (2023-11-13)
+
+
+### Bug Fixes
+
+* multi-app project extend root `tsconfig.json` ([#11374](https://github.com/puppeteer/puppeteer/issues/11374)) ([1b2d920](https://github.com/puppeteer/puppeteer/commit/1b2d920fe638f3aad704ab8f21d1e4f4099b6d44))
+* support Angular 17 new template ([#11375](https://github.com/puppeteer/puppeteer/issues/11375)) ([64f7bf0](https://github.com/puppeteer/puppeteer/commit/64f7bf0af442369a07352b11555ec3f612eb62b8))
+
 ## [0.5.0](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.4.0...ng-schematics-v0.5.0) (2023-08-22)
 
 
