@@ -20,6 +20,7 @@
     "lint": "run-s lint:*",
     "lint:eslint": "([ \"$CI\" = true ] && eslint --ext js --ext ts --quiet . || eslint --ext js --ext ts .)",
     "lint:prettier": "prettier --check .",
+    "lint:expectations": "node tools/sort-test-expectations.js --lint",
     "postinstall": "npm run postinstall --workspaces --if-present",
     "prepare": "npm run prepare --workspaces --if-present",
     "test": "wireit",
