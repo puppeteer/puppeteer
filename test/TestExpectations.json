@@ -2133,7 +2133,7 @@
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support ignoreHTTPSErrors option",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option",
