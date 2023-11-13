@@ -12,7 +12,7 @@ This class represents a [WebWorker](https://developer.mozilla.org/en-US/docs/Web
 export declare class WebWorker extends EventEmitter<Record<EventType, unknown>>
 ```
 
-**Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;Record&lt;EventType, unknown&gt;&gt;
+**Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;Record&lt;[EventType](./puppeteer.eventtype.md), unknown&gt;&gt;
 
 ## Remarks
 

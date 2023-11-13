@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {EventType} from '../../../third_party/mitt/mitt.js';
 import type {
   Observable,
   OperatorFunction,
@@ -41,6 +40,7 @@ import {
   raceWith,
   tap,
 } from '../../../third_party/rxjs/rxjs.js';
+import type {EventType} from '../../common/EventEmitter.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 import type {Awaitable, HandleFor, NodeFor} from '../../common/types.js';
 import {debugError, timeout} from '../../common/util.js';

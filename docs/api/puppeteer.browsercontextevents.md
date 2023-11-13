@@ -10,7 +10,7 @@ sidebar_label: BrowserContextEvents
 export interface BrowserContextEvents extends Record<EventType, unknown>
 ```
 
-**Extends:** Record&lt;EventType, unknown&gt;
+**Extends:** Record&lt;[EventType](./puppeteer.eventtype.md), unknown&gt;
 
 ## Properties
 

@@ -10,4 +10,4 @@ sidebar_label: FrameEvents
 export interface FrameEvents extends Record<EventType, unknown>
 ```
 
-**Extends:** Record&lt;EventType, unknown&gt;
+**Extends:** Record&lt;[EventType](./puppeteer.eventtype.md), unknown&gt;
