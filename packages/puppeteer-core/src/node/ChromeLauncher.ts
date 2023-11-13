@@ -211,6 +211,7 @@ export class ChromeLauncher extends ProductLauncher {
       '--disable-extensions',
       '--disable-field-trial-config', // https://source.chromium.org/chromium/chromium/src/+/main:testing/variations/README.md
       '--disable-hang-monitor',
+      '--disable-infobars',
       '--disable-ipc-flooding-protection',
       '--disable-popup-blocking',
       '--disable-prompt-on-repost',
