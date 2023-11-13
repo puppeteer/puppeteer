@@ -12,6 +12,6 @@ export type ElementFor<
 > = TagName extends keyof HTMLElementTagNameMap
   ? HTMLElementTagNameMap[TagName]
   : TagName extends keyof SVGElementTagNameMap
-  ? SVGElementTagNameMap[TagName]
-  : never;
+    ? SVGElementTagNameMap[TagName]
+    : never;
 ```
