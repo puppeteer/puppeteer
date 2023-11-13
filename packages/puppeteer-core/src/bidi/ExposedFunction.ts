@@ -67,15 +67,9 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
     this.#apply = apply;
 
     this.#channels = {
-      args: `__puppeteer__${this.#frame._id}_page_exposeFunction_${
-        this.name
-      }_args`,
-      resolve: `__puppeteer__${this.#frame._id}_page_exposeFunction_${
-        this.name
-      }_resolve`,
-      reject: `__puppeteer__${this.#frame._id}_page_exposeFunction_${
-        this.name
-      }_reject`,
+      args: `__puppeteer__${this.#frame._id}_page_exposeFunction_${this.name}_args`,
+      resolve: `__puppeteer__${this.#frame._id}_page_exposeFunction_${this.name}_resolve`,
+      reject: `__puppeteer__${this.#frame._id}_page_exposeFunction_${this.name}_reject`,
     };
   }
 
