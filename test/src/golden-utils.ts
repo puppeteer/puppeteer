@@ -97,8 +97,8 @@ const compareText = (
       text += change.added
         ? `<span class='ins'>${change.value}</span>`
         : change.removed
-        ? `<span class='del'>${change.value}</span>`
-        : change.value;
+          ? `<span class='del'>${change.value}</span>`
+          : change.value;
       return text;
     },
     `<link rel="stylesheet" href="file://${path.join(
