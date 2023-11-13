@@ -25,6 +25,8 @@ const source = 'test/TestExpectations.json';
 
 const testExpectations = JSON.parse(fs.readFileSync(source, 'utf-8'));
 
+const commitedExpectations = structuredClone(testExpectations);
+
 function getSpecificity(item) {
   return (
     item.parameters.length +
@@ -50,10 +52,21 @@ testExpectations.forEach(item => {
   item.platforms.sort();
 });
 
-fs.writeFileSync(
-  source,
-  prettier.format(JSON.stringify(testExpectations), {
-    ...require(path.join(__dirname, '..', '.prettierrc.cjs')),
-    parser: 'json',
-  })
-);
+if (process.argv.includes('--lint')) {
+  if (
+    JSON.stringify(commitedExpectations) !== JSON.stringify(testExpectations)
+  ) {
+    console.error(
+      `${source} is not formatted properly. Run 'npm run format:expectations'.`
+    );
+    process.exit(1);
+  }
+} else {
+  fs.writeFileSync(
+    source,
+    prettier.format(JSON.stringify(testExpectations), {
+      ...require(path.join(__dirname, '..', '.prettierrc.cjs')),
+      parser: 'json',
+    })
+  );
+}
