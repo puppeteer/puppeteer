@@ -93,6 +93,19 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       expect(tree.files).toContain('/e2e/tests/app.test.ts');
       expect(options['testRunner']).toBe('node');
     });
+    it('should create TypeScript files', async () => {
+      const tree = await buildTestingTree('ng-add', 'single');
+      const tsConfigPath = '/e2e/tsconfig.json';
+      const tsConfig = tree.readJson(tsConfigPath);
+
+      expect(tree.files).toContain(tsConfigPath);
+      expect(tsConfig).toMatchObject({
+        extends: '../tsconfig.json',
+        compilerOptions: {
+          module: 'CommonJS',
+        },
+      });
+    });
     it('should not create port value', async () => {
       const tree = await buildTestingTree('ng-add');
 
@@ -192,6 +205,19 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
         getMultiApplicationFile('e2e/tests/app.test.ts')
       );
       expect(options['testRunner']).toBe('node');
+    });
+    it('should create TypeScript files', async () => {
+      const tree = await buildTestingTree('ng-add', 'multi');
+      const tsConfigPath = getMultiApplicationFile('e2e/tsconfig.json');
+      const tsConfig = tree.readJson(tsConfigPath);
+
+      expect(tree.files).toContain(tsConfigPath);
+      expect(tsConfig).toMatchObject({
+        extends: '../../../tsconfig.json',
+        compilerOptions: {
+          module: 'CommonJS',
+        },
+      });
     });
     it('should not create port value', async () => {
       const tree = await buildTestingTree('ng-add');
