@@ -3,7 +3,7 @@
 :::caution
 
 Chromium currently does not provide arm64 binaries for Linux. There are only
-binaries for MacOS ARM.
+binaries for Mac ARM.
 
 :::
 
