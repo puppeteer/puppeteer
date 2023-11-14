@@ -3,8 +3,7 @@
 :::caution
 
 Chromium currently does not provide arm64 binaries for Linux. There are only
-binaries for
-[Mac ARM with experimental support from Puppeteer](https://pptr.dev/contributing#macos-arm-and-custom-executables).
+binaries for MacOS ARM.
 
 :::
 

@@ -5,7 +5,7 @@ continued, responded or aborted.
 
 An example of a naïve request interceptor that aborts all image requests:
 
-```js
+```ts
 import puppeteer from 'puppeteer';
 
 (async () => {
@@ -47,7 +47,7 @@ block. Always execute `request.isInterceptResolutionHandled` and
 
 This example demonstrates two synchronous handlers working together:
 
-```js
+```ts
 /*
 This first handler will succeed in calling request.continue because the request interception has never been resolved.
 */
@@ -68,7 +68,7 @@ page.on('request', interceptedRequest => {
 
 This example demonstrates asynchronous handlers working together:
 
-```js
+```ts
 /*
 This first handler will succeed in calling request.continue because the request interception has never been resolved.
 */
@@ -110,7 +110,7 @@ synchronously before using `abort/continue/respond`.
 
 Here is the example above rewritten using `request.interceptResolutionState`
 
-```js
+```ts
 /*
 This first handler will succeed in calling request.continue because the request interception has never been resolved.
 */
