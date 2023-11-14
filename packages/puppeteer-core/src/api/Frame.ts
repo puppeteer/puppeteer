@@ -604,7 +604,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    *
    * @example
    *
-   * ```js
+   * ```ts
    * const divsCounts = await frame.$$eval('div', divs => divs.length);
    * ```
    *
