@@ -23,9 +23,11 @@ import {
 } from '@puppeteer/browsers';
 
 import type {Browser} from '../api/Browser.js';
-import type {BrowserConnectOptions} from '../cdp/BrowserConnector.js';
-import type {ConnectOptions} from '../cdp/ConnectOptions.js';
 import type {Configuration} from '../common/Configuration.js';
+import type {
+  ConnectOptions,
+  BrowserConnectOptions,
+} from '../common/ConnectOptions.js';
 import type {Product} from '../common/Product.js';
 import {type CommonPuppeteerSettings, Puppeteer} from '../common/Puppeteer.js';
 import {PUPPETEER_REVISIONS} from '../revisions.js';

@@ -22,7 +22,6 @@ export * from './BrowserConnector.js';
 export * from './CDPSession.js';
 export * from './ChromeTargetManager.js';
 export * from './Connection.js';
-export * from './ConnectOptions.js';
 export * from './Coverage.js';
 export * from './DeviceRequestPrompt.js';
 export * from './Dialog.js';

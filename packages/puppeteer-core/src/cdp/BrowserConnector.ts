@@ -14,65 +14,23 @@
  * limitations under the License.
  */
 
-import type {
-  IsPageTargetCallback,
-  TargetFilterCallback,
-} from '../api/Browser.js';
 import type {BidiBrowser} from '../bidi/Browser.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
+import type {
+  BrowserConnectOptions,
+  ConnectOptions,
+} from '../common/ConnectOptions.js';
+import {UnsupportedOperation} from '../common/Errors.js';
 import {getFetch} from '../common/fetch.js';
 import {debugError} from '../common/util.js';
-import type {Viewport} from '../common/Viewport.js';
 import {isNode} from '../environment.js';
 import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {CdpBrowser} from './Browser.js';
 import {Connection} from './Connection.js';
-import type {ConnectOptions} from './ConnectOptions.js';
 
 const DEFAULT_VIEWPORT = Object.freeze({width: 800, height: 600});
-
-/**
- * Generic browser options that can be passed when launching any browser or when
- * connecting to an existing browser instance.
- * @public
- */
-export interface BrowserConnectOptions {
-  /**
-   * Whether to ignore HTTPS errors during navigation.
-   * @defaultValue `false`
-   */
-  ignoreHTTPSErrors?: boolean;
-  /**
-   * Sets the viewport for each page.
-   */
-  defaultViewport?: Viewport | null;
-  /**
-   * Slows down Puppeteer operations by the specified amount of milliseconds to
-   * aid debugging.
-   */
-  slowMo?: number;
-  /**
-   * Callback to decide if Puppeteer should connect to a given target or not.
-   */
-  targetFilter?: TargetFilterCallback;
-  /**
-   * @internal
-   */
-  _isPageTarget?: IsPageTargetCallback;
-  /**
-   * @defaultValue 'cdp'
-   * @internal
-   */
-  protocol?: 'cdp' | 'webDriverBiDi';
-  /**
-   * Timeout setting for individual protocol (CDP) calls.
-   *
-   * @defaultValue `180_000`
-   */
-  protocolTimeout?: number;
-}
 
 const getWebSocketTransportClass = async () => {
   return isNode
@@ -139,7 +97,9 @@ export async function _connectToBiDiOverCdpBrowser(
 
   const version = await connection.send('Browser.getVersion');
   if (version.product.toLowerCase().includes('firefox')) {
-    throw new Error('Firefox is not supported in BiDi over CDP mode.');
+    throw new UnsupportedOperation(
+      'Firefox is not supported in BiDi over CDP mode.'
+    );
   }
 
   // TODO: use other options too.
