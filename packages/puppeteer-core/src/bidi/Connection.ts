@@ -221,6 +221,12 @@ export class BidiConnection extends EventEmitter<BidiEvents> {
           );
           return;
         case 'event':
+          if (isCdpEvent(object)) {
+            cdpSessions
+              .get(object.params.session)
+              ?.emit(object.params.event, object.params.params);
+            return;
+          }
           this.#maybeEmitOnContext(object);
           // SAFETY: We know the method and parameter still match here.
           this.emit(
@@ -244,10 +250,6 @@ export class BidiConnection extends EventEmitter<BidiEvents> {
       event.params.source.context !== undefined
     ) {
       context = this.#browsingContexts.get(event.params.source.context);
-    } else if (isCdpEvent(event)) {
-      cdpSessions
-        .get(event.params.session)
-        ?.emit(event.params.event, event.params.params);
     }
     context?.emit(event.method, event.params);
   }
