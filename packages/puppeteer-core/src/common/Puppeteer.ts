@@ -19,8 +19,8 @@ import {
   _connectToBiDiOverCdpBrowser,
   _connectToCdpBrowser,
 } from '../cdp/BrowserConnector.js';
-import type {ConnectOptions} from '../cdp/ConnectOptions.js';
 
+import type {ConnectOptions} from './ConnectOptions.js';
 import {
   type CustomQueryHandler,
   customQueryHandlers,

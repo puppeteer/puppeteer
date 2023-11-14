@@ -15,9 +15,9 @@
  */
 
 export * from './BrowserWebSocketTransport.js';
-export * from './common.js';
 export * from './Configuration.js';
 export * from './ConnectionTransport.js';
+export * from './ConnectOptions.js';
 export * from './ConsoleMessage.js';
 export * from './CustomQueryHandler.js';
 export * from './Debug.js';
