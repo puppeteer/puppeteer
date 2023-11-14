@@ -43,6 +43,6 @@ A promise to the result of the function.
 
 ## Example
 
-```js
+```ts
 const divsCounts = await frame.$$eval('div', divs => divs.length);
 ```
