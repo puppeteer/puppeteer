@@ -180,9 +180,19 @@ export class Process {
       dumpio: opts.dumpio,
     });
 
+    const env = opts.env || {};
+
     debugLaunch(`Launching ${this.#executablePath} ${this.#args.join(' ')}`, {
       detached: opts.detached,
-      env: opts.env,
+      env: Object.keys(env).reduce<Record<string, string | undefined>>(
+        (res, key) => {
+          if (key.toLowerCase().startsWith('puppeteer_')) {
+            res[key] = env[key];
+          }
+          return res;
+        },
+        {}
+      ),
       stdio,
     });
 
@@ -191,7 +201,7 @@ export class Process {
       this.#args,
       {
         detached: opts.detached,
-        env: opts.env,
+        env,
         stdio,
       }
     );
