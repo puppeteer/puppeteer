@@ -349,7 +349,7 @@ export class CdpFrame extends Frame {
     this.worlds[PUPPETEER_WORLD][disposeSymbol]();
   }
 
-  exposeFunction(): Promise<void> {
+  exposeFunction(): never {
     throw new UnsupportedOperation();
   }
 }

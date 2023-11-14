@@ -22,7 +22,6 @@ import {
   type RemoteAddress,
 } from '../api/HTTPResponse.js';
 import {UnsupportedOperation} from '../common/Errors.js';
-import type {SecurityDetails} from '../common/SecurityDetails.js';
 
 import type {BidiHTTPRequest} from './HTTPRequest.js';
 
@@ -108,11 +107,11 @@ export class BidiHTTPResponse extends HTTPResponse {
     return false;
   }
 
-  override securityDetails(): SecurityDetails | null {
+  override securityDetails(): never {
     throw new UnsupportedOperation();
   }
 
-  override buffer(): Promise<Buffer> {
+  override buffer(): never {
     throw new UnsupportedOperation();
   }
 }

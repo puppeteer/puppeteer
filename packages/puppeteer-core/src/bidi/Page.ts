@@ -30,7 +30,6 @@ import {
 } from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {WaitForOptions} from '../api/Frame.js';
-import type {Metrics} from '../api/Page.js';
 import {
   Page,
   PageEvent,
@@ -39,20 +38,17 @@ import {
   type NewDocumentScriptEvaluation,
   type ScreenshotOptions,
 } from '../api/Page.js';
-import type {Target} from '../api/Target.js';
 import {Accessibility} from '../cdp/Accessibility.js';
 import {Coverage} from '../cdp/Coverage.js';
 import {EmulationManager as CdpEmulationManager} from '../cdp/EmulationManager.js';
 import {FrameTree} from '../cdp/FrameTree.js';
 import {Tracing} from '../cdp/Tracing.js';
-import type {WebWorker} from '../cdp/WebWorker.js';
 import {
   ConsoleMessage,
   type ConsoleMessageLocation,
 } from '../common/ConsoleMessage.js';
 import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
 import type {Handler} from '../common/EventEmitter.js';
-import type {FileChooser} from '../common/FileChooser.js';
 import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
 import type {Awaitable} from '../common/types.js';
@@ -65,7 +61,6 @@ import {
   waitForHTTP,
 } from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
-import type {DeviceRequestPrompt, HTTPResponse} from '../puppeteer-core.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
@@ -828,80 +823,80 @@ export class BidiPage extends Page {
     });
   }
 
-  override isServiceWorkerBypassed(): boolean {
+  override isServiceWorkerBypassed(): never {
     throw new UnsupportedOperation();
   }
 
-  override target(): Target {
+  override target(): never {
     throw new UnsupportedOperation();
   }
 
-  override waitForFileChooser(): Promise<FileChooser> {
+  override waitForFileChooser(): never {
     throw new UnsupportedOperation();
   }
 
-  override workers(): WebWorker[] {
+  override workers(): never {
     throw new UnsupportedOperation();
   }
 
-  override setRequestInterception(): Promise<void> {
+  override setRequestInterception(): never {
     throw new UnsupportedOperation();
   }
 
-  override setDragInterception(): Promise<void> {
+  override setDragInterception(): never {
     throw new UnsupportedOperation();
   }
 
-  override setBypassServiceWorker(): Promise<void> {
+  override setBypassServiceWorker(): never {
     throw new UnsupportedOperation();
   }
 
-  override setOfflineMode(): Promise<void> {
+  override setOfflineMode(): never {
     throw new UnsupportedOperation();
   }
 
-  override emulateNetworkConditions(): Promise<void> {
+  override emulateNetworkConditions(): never {
     throw new UnsupportedOperation();
   }
 
-  override cookies(): Promise<Protocol.Network.Cookie[]> {
+  override cookies(): never {
     throw new UnsupportedOperation();
   }
 
-  override setCookie(): Promise<void> {
+  override setCookie(): never {
     throw new UnsupportedOperation();
   }
 
-  override deleteCookie(): Promise<void> {
+  override deleteCookie(): never {
     throw new UnsupportedOperation();
   }
 
-  override removeExposedFunction(): Promise<void> {
+  override removeExposedFunction(): never {
     // TODO: Quick win?
     throw new UnsupportedOperation();
   }
 
-  override authenticate(): Promise<void> {
+  override authenticate(): never {
     throw new UnsupportedOperation();
   }
 
-  override setExtraHTTPHeaders(): Promise<void> {
+  override setExtraHTTPHeaders(): never {
     throw new UnsupportedOperation();
   }
 
-  override metrics(): Promise<Metrics> {
+  override metrics(): never {
     throw new UnsupportedOperation();
   }
 
-  override goBack(): Promise<HTTPResponse | null> {
+  override goBack(): never {
     throw new UnsupportedOperation();
   }
 
-  override goForward(): Promise<HTTPResponse | null> {
+  override goForward(): never {
     throw new UnsupportedOperation();
   }
 
-  override waitForDevicePrompt(): Promise<DeviceRequestPrompt> {
+  override waitForDevicePrompt(): never {
     throw new UnsupportedOperation();
   }
 }

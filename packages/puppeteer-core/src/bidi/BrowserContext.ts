@@ -126,11 +126,11 @@ export class BidiBrowserContext extends BrowserContext {
     return !this.#isDefault;
   }
 
-  override overridePermissions(): Promise<void> {
+  override overridePermissions(): never {
     throw new UnsupportedOperation();
   }
 
-  override clearPermissionOverrides(): Promise<void> {
+  override clearPermissionOverrides(): never {
     throw new UnsupportedOperation();
   }
 }
