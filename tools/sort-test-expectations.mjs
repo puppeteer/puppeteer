@@ -15,17 +15,20 @@
  */
 
 // TODO: this could be an eslint rule probably.
+import fs from 'fs';
+import path from 'path';
+import url from 'url';
 
-const fs = require('fs');
-const path = require('path');
+import prettier from 'prettier';
 
-const prettier = require('@prettier/sync');
-
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const source = 'test/TestExpectations.json';
-
 const testExpectations = JSON.parse(fs.readFileSync(source, 'utf-8'));
+const committedExpectations = structuredClone(testExpectations);
 
-const commitedExpectations = structuredClone(testExpectations);
+const prettierConfig = await import(
+  path.join(__dirname, '..', '.prettierrc.cjs')
+);
 
 function getSpecificity(item) {
   return (
@@ -54,7 +57,7 @@ testExpectations.forEach(item => {
 
 if (process.argv.includes('--lint')) {
   if (
-    JSON.stringify(commitedExpectations) !== JSON.stringify(testExpectations)
+    JSON.stringify(committedExpectations) !== JSON.stringify(testExpectations)
   ) {
     console.error(
       `${source} is not formatted properly. Run 'npm run format:expectations'.`
@@ -64,8 +67,8 @@ if (process.argv.includes('--lint')) {
 } else {
   fs.writeFileSync(
     source,
-    prettier.format(JSON.stringify(testExpectations), {
-      ...require(path.join(__dirname, '..', '.prettierrc.cjs')),
+    await prettier.format(JSON.stringify(testExpectations), {
+      ...prettierConfig,
       parser: 'json',
     })
   );
