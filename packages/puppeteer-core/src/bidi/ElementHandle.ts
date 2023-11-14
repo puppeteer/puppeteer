@@ -91,7 +91,7 @@ export class BidiElementHandle<
     return null;
   }
 
-  override uploadFile(this: ElementHandle<HTMLInputElement>): Promise<void> {
+  override uploadFile(this: ElementHandle<HTMLInputElement>): never {
     throw new UnsupportedOperation();
   }
 }

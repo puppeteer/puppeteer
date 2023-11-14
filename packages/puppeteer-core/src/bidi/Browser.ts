@@ -168,7 +168,7 @@ export class BidiBrowser extends Browser {
     }
   }
 
-  override userAgent(): Promise<string> {
+  override userAgent(): never {
     throw new UnsupportedOperation();
   }
 

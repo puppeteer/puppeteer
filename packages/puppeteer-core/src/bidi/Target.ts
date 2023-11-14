@@ -26,7 +26,7 @@ import {BidiPage} from './Page.js';
 /**
  * @internal
  */
-export class BidiTarget extends Target {
+export abstract class BidiTarget extends Target {
   protected _browserContext: BidiBrowserContext;
 
   constructor(browserContext: BidiBrowserContext) {
@@ -50,19 +50,11 @@ export class BidiTarget extends Target {
     return this._browserContext;
   }
 
-  override opener(): Target | undefined {
-    throw new UnsupportedOperation();
-  }
-
-  override url(): string {
+  override opener(): never {
     throw new UnsupportedOperation();
   }
 
   override createCDPSession(): Promise<CDPSession> {
-    throw new UnsupportedOperation();
-  }
-
-  override type(): TargetType {
     throw new UnsupportedOperation();
   }
 }

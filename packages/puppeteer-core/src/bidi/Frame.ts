@@ -38,7 +38,6 @@ import {UnsupportedOperation} from '../common/Errors.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {Awaitable} from '../common/types.js';
 import {UTILITY_WORLD_NAME, setPageContent, timeout} from '../common/util.js';
-import type {DeviceRequestPrompt} from '../puppeteer-core.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
 
@@ -111,7 +110,7 @@ export class BidiFrame extends Frame {
     return this.#page;
   }
 
-  override isOOPFrame(): boolean {
+  override isOOPFrame(): never {
     throw new UnsupportedOperation();
   }
 
@@ -233,7 +232,7 @@ export class BidiFrame extends Frame {
     return this.#page.getNavigationResponse(response?.result.navigation);
   }
 
-  override waitForDevicePrompt(): Promise<DeviceRequestPrompt> {
+  override waitForDevicePrompt(): never {
     throw new UnsupportedOperation();
   }
 
