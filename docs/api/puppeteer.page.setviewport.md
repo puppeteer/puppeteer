@@ -40,7 +40,7 @@ Argument viewport have following properties:
 
 - `hasTouch`: Specifies if viewport supports touch events. Defaults to `false`
 
-- `isLandScape`: Specifies if viewport is in landscape mode. Defaults to false.
+- `isLandscape`: Specifies if viewport is in landscape mode. Defaults to false.
 
 NOTE: in certain cases, setting viewport will reload the page in order to set the isMobile or hasTouch properties.
 
