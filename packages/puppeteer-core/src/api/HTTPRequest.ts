@@ -130,6 +130,9 @@ export abstract class HTTPRequest {
    * Warning! Using this client can break Puppeteer. Use with caution.
    *
    * @experimental
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract get client(): CDPSession;
 
@@ -147,17 +150,26 @@ export abstract class HTTPRequest {
    * The `ContinueRequestOverrides` that will be used
    * if the interception is allowed to continue (ie, `abort()` and
    * `respond()` aren't called).
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract continueRequestOverrides(): ContinueRequestOverrides;
 
   /**
    * The `ResponseForRequest` that gets used if the
    * interception is allowed to respond (ie, `abort()` is not called).
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract responseForRequest(): Partial<ResponseForRequest> | null;
 
   /**
    * The most recent reason for aborting the request
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract abortErrorReason(): Protocol.Network.ErrorReason | null;
 
@@ -171,12 +183,18 @@ export abstract class HTTPRequest {
    *
    * InterceptResolutionAction is one of: `abort`, `respond`, `continue`,
    * `disabled`, `none`, or `already-handled`.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract interceptResolutionState(): InterceptResolutionState;
 
   /**
    * Is `true` if the intercept resolution has already been handled,
    * `false` otherwise.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract isInterceptResolutionHandled(): boolean;
 
@@ -193,6 +211,9 @@ export abstract class HTTPRequest {
   /**
    * Awaits pending interception handlers and then decides how to fulfill
    * the request interception.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract finalizeInterceptions(): Promise<void>;
 
@@ -288,6 +309,9 @@ export abstract class HTTPRequest {
    * return an object with `errorText` containing a human-readable error
    * message, e.g. `net::ERR_FAILED`. It is not guaranteed that there will be
    * failure text if the request fails.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract failure(): {errorText: string} | null;
 
@@ -319,6 +343,9 @@ export abstract class HTTPRequest {
    * @param priority - If provided, intercept is resolved using
    * cooperative handling rules. Otherwise, intercept is resolved
    * immediately.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract continue(
     overrides?: ContinueRequestOverrides,
@@ -356,6 +383,9 @@ export abstract class HTTPRequest {
    * @param priority - If provided, intercept is resolved using
    * cooperative handling rules. Otherwise, intercept is resolved
    * immediately.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract respond(
     response: Partial<ResponseForRequest>,
@@ -374,6 +404,9 @@ export abstract class HTTPRequest {
    * @param priority - If provided, intercept is resolved using
    * cooperative handling rules. Otherwise, intercept is resolved
    * immediately.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract abort(errorCode?: ErrorCode, priority?: number): Promise<void>;
 }

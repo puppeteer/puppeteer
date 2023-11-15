@@ -70,6 +70,9 @@ export abstract class Target {
 
   /**
    * Creates a Chrome Devtools Protocol session attached to the target.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract createCDPSession(): Promise<CDPSession>;
 
@@ -94,6 +97,9 @@ export abstract class Target {
 
   /**
    * Get the target that opened this target. Top-level targets return `null`.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract opener(): Target | undefined;
 }

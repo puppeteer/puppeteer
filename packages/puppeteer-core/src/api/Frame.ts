@@ -311,6 +311,9 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   /**
    * Is `true` if the frame is an out-of-process (OOP) frame. Otherwise,
    * `false`.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract isOOPFrame(): boolean;
 
@@ -1195,6 +1198,9 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    *   await devicePrompt.waitForDevice(({name}) => name.includes('My Device'))
    * );
    * ```
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    *
    * @internal
    */

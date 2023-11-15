@@ -81,6 +81,9 @@ export abstract class HTTPResponse {
   /**
    * {@link SecurityDetails} if the response was received over the
    * secure connection, or `null` otherwise.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract securityDetails(): SecurityDetails | null;
 
@@ -91,6 +94,9 @@ export abstract class HTTPResponse {
 
   /**
    * Promise which resolves to a buffer with response body.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract buffer(): Promise<Buffer>;
 

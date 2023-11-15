@@ -429,6 +429,9 @@ export const enum PageEvent {
    *   page.evaluate(() => window.open('https://example.com')),
    * ]);
    * ```
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   Popup = 'popup',
   /**
@@ -472,12 +475,18 @@ export const enum PageEvent {
    * Emitted when a dedicated
    * {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API | WebWorker}
    * is spawned by the page.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   WorkerCreated = 'workercreated',
   /**
    * Emitted when a dedicated
    * {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API | WebWorker}
    * is destroyed by the page.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   WorkerDestroyed = 'workerdestroyed',
 }
@@ -718,6 +727,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ]);
    * await fileChooser.accept(['/tmp/myfile.pdf']);
    * ```
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract waitForFileChooser(
     options?: WaitTimeoutOptions
@@ -2785,9 +2797,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | Selector}
    * to search for element to tap. If there are multiple elements satisfying the
    * selector, the first will be tapped.
-   * @returns
    * @remarks
    * Shortcut for {@link Frame.tap | page.mainFrame().tap(selector)}.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   tap(selector: string): Promise<void> {
     return this.mainFrame().tap(selector);
