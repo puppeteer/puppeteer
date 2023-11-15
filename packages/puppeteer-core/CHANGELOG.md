@@ -20,6 +20,15 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.5.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.5.1...puppeteer-core-v21.5.2) (2023-11-15)
+
+
+### Bug Fixes
+
+* add --disable-field-trial-config ([#11352](https://github.com/puppeteer/puppeteer/issues/11352)) ([cbc33be](https://github.com/puppeteer/puppeteer/commit/cbc33bea40b8801b8eeb3277fc15d04900715795))
+* add --disable-infobars ([#11377](https://github.com/puppeteer/puppeteer/issues/11377)) ([0a41f8d](https://github.com/puppeteer/puppeteer/commit/0a41f8d01e85ff732fdd2e50468bc746d7bc6475))
+* mitt types should not be exported ([#11371](https://github.com/puppeteer/puppeteer/issues/11371)) ([4bf2a09](https://github.com/puppeteer/puppeteer/commit/4bf2a09a13450c530b24288d65791fd5c4d4dce7))
+
 ## [21.5.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.5.0...puppeteer-core-v21.5.1) (2023-11-09)
 
 
