@@ -473,7 +473,7 @@ export class BidiPage extends Page {
     return this.#closedDeferred.finished();
   }
 
-  override async close(): Promise<void> {
+  override async close(options?: {runBeforeUnload?: boolean}): Promise<void> {
     if (this.#closedDeferred.finished()) {
       return;
     }
@@ -483,6 +483,7 @@ export class BidiPage extends Page {
 
     await this.#connection.send('browsingContext.close', {
       context: this.mainFrame()._id,
+      promptUnload: options?.runBeforeUnload ?? false,
     });
 
     this.emit(PageEvent.Close, undefined);
