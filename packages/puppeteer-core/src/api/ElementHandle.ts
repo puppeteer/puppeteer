@@ -1356,7 +1356,6 @@ export abstract class ElementHandle<
 
     const page = this.frame.page();
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     await using _ =
       allowViewportExpansion && clip
         ? await page._createTemporaryViewportContainingBox(clip)
