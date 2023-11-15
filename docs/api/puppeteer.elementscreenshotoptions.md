@@ -14,6 +14,6 @@ export interface ElementScreenshotOptions extends ScreenshotOptions
 
 ## Properties
 
-| Property       | Modifiers             | Type    | Description | Default |
-| -------------- | --------------------- | ------- | ----------- | ------- |
-| scrollIntoView | <code>optional</code> | boolean |             | true    |
+| Property       | Modifiers             | Type    | Description | Default           |
+| -------------- | --------------------- | ------- | ----------- | ----------------- |
+| scrollIntoView | <code>optional</code> | boolean |             | <code>true</code> |
