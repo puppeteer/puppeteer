@@ -25,7 +25,7 @@ import type {Viewport} from './Viewport.js';
 /**
  * @internal
  */
-export type AutomationProtocol = 'cdp' | 'webDriverBiDi';
+export type ProtocolType = 'cdp' | 'webDriverBiDi';
 
 /**
  * Generic browser options that can be passed when launching any browser or when
@@ -59,7 +59,7 @@ export interface BrowserConnectOptions {
    * @defaultValue 'cdp'
    * @internal
    */
-  protocol?: AutomationProtocol;
+  protocol?: ProtocolType;
   /**
    * Timeout setting for individual protocol (CDP) calls.
    *

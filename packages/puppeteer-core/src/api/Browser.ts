@@ -27,7 +27,7 @@ import {
   fromEvent,
   type Observable,
 } from '../../third_party/rxjs/rxjs.js';
-import type {AutomationProtocol} from '../common/ConnectOptions.js';
+import type {ProtocolType} from '../common/ConnectOptions.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import {timeout} from '../common/util.js';
@@ -445,5 +445,5 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
   /**
    * @internal
    */
-  abstract get protocol(): AutomationProtocol;
+  abstract get protocol(): ProtocolType;
 }
