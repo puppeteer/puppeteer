@@ -53,3 +53,4 @@ versioned_*/
 # Ng-schematics
 /packages/ng-schematics/files/
 /packages/ng-schematics/sandbox/
+/packages/ng-schematics/multi/
