@@ -74,7 +74,12 @@ function addDependencies(options: SchematicsOptions): Rule {
       map(packages => {
         context.logger.debug('Updating dependencies...');
         addPackageJsonDependencies(tree, packages, DependencyType.Dev);
-        context.addTask(new NodePackageInstallTask());
+        context.addTask(
+          new NodePackageInstallTask({
+            // Trigger Post-Install hooks to download the browser
+            allowScripts: true,
+          })
+        );
 
         return tree;
       })
