@@ -930,6 +930,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[page.spec] Page Page.close should *not* run beforeunload by default",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.close should not be visible in browser.pages",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1330,6 +1336,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.process should not return child_process for remote browser",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[browser.spec] Browser specs Browser.target should return browser target",
