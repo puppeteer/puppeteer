@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.2](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.5.1...ng-schematics-v0.5.2) (2023-11-16)
+
+
+### Bug Fixes
+
+* run post-install hooks ([#11403](https://github.com/puppeteer/puppeteer/issues/11403)) ([3f6ca24](https://github.com/puppeteer/puppeteer/commit/3f6ca249ed898eee25015a6fd0ce7cf774ad31b2))
+
 ## [0.5.1](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.5.0...ng-schematics-v0.5.1) (2023-11-13)
 
 
