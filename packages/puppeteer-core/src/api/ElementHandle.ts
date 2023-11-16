@@ -963,6 +963,8 @@ export abstract class ElementHandle<
    * For locals script connecting to remote chrome environments, paths must be
    * absolute.
    *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract uploadFile(
     this: ElementHandle<HTMLInputElement>,

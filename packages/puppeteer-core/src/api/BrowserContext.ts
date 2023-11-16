@@ -164,6 +164,9 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * "https://example.com".
    * @param permissions - An array of permissions to grant. All permissions that
    * are not listed here will be automatically denied.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract overridePermissions(
     origin: string,
@@ -183,6 +186,9 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * // do stuff ..
    * context.clearPermissionOverrides();
    * ```
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract clearPermissionOverrides(): Promise<void>;
 
