@@ -964,7 +964,9 @@ export abstract class ElementHandle<
    * absolute.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract uploadFile(
     this: ElementHandle<HTMLInputElement>,

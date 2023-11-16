@@ -166,7 +166,9 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * are not listed here will be automatically denied.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract overridePermissions(
     origin: string,
@@ -188,7 +190,9 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * ```
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract clearPermissionOverrides(): Promise<void>;
 

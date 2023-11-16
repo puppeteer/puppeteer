@@ -46,8 +46,11 @@ export interface TracingOptions {
  * ```
  *
  * @privateRemarks BiDi
- * Not supported when using protocol `webDriverBiDi`
- * Support for BiDi+
+ * {@link http://example.com | CDP}: Supported
+ *
+ * {@link http://example.com | BiDi}: Unsupported
+ *
+ * {@link http://example.com | BiDi+}: Supported
  *
  * @public
  */

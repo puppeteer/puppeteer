@@ -313,7 +313,9 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * `false`.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract isOOPFrame(): boolean;
 
@@ -352,7 +354,9 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * calling {@link HTTPResponse.status}.
    *
    * @privateRemarks BiDi
-   * Partial support
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Partial support
    *
    * - `referer` not supported
    * - `referrerPolicy` not supported
@@ -1206,7 +1210,9 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * ```
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    *
    * @internal
    */
