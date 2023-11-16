@@ -1049,6 +1049,15 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param selector - A `selector` to query page for
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
    * to query page for.
+   *
+   * @privateRemarks BiDi
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Partial support
+   *
+   * - ARIA selector not supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   async $<Selector extends string>(
     selector: Selector
@@ -1062,6 +1071,15 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @remarks
    * Shortcut for {@link Frame.$$ | Page.mainFrame().$$(selector) }.
    * @param selector - A `selector` to query page for
+   *
+   * @privateRemarks BiDi
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Partial support
+   *
+   * - ARIA selector not supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   async $$<Selector extends string>(
     selector: Selector
@@ -1235,6 +1253,15 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @returns The result of calling `pageFunction`. If it returns an element it
    * is wrapped in an {@link ElementHandle}, else the raw value itself is
    * returned.
+   *
+   * @privateRemarks BiDi
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Partial support
+   *
+   * - ARIA selector not supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   async $eval<
     Selector extends string,
@@ -1313,6 +1340,15 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @returns The result of calling `pageFunction`. If it returns an element it
    * is wrapped in an {@link ElementHandle}, else the raw value itself is
    * returned.
+   *
+   * @privateRemarks BiDi
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Partial support
+   *
+   * - ARIA selector not supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   async $$eval<
     Selector extends string,
