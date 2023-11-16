@@ -1311,14 +1311,14 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * If no URLs are specified, this method returns cookies for the current page
    * URL. If URLs are specified, only cookies for those URLs are returned.
    *
-   * - @privateRemarks BiDi
-   *   Not supported when using protocol `webDriverBiDi`
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract cookies(...urls: string[]): Promise<Protocol.Network.Cookie[]>;
 
   /**
-   * - @privateRemarks BiDi
-   *   Not supported when using protocol `webDriverBiDi`
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract deleteCookie(
     ...cookies: Protocol.Network.DeleteCookiesRequest[]
