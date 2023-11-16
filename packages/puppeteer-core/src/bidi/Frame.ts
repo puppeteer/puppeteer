@@ -28,15 +28,17 @@ import {
   raceWith,
 } from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
+import type {ElementHandle} from '../api/ElementHandle.js';
 import {
   Frame,
   type GoToOptions,
   type WaitForOptions,
   throwIfDetached,
 } from '../api/Frame.js';
+import type {WaitForSelectorOptions} from '../api/Page.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
-import type {Awaitable} from '../common/types.js';
+import type {Awaitable, NodeFor} from '../common/types.js';
 import {UTILITY_WORLD_NAME, setPageContent, timeout} from '../common/util.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
@@ -269,5 +271,18 @@ export class BidiFrame extends Frame {
       this.#exposedFunctions.delete(name);
       throw error;
     }
+  }
+
+  override waitForSelector<Selector extends string>(
+    selector: Selector,
+    options?: WaitForSelectorOptions
+  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
+    if (selector.startsWith('aria')) {
+      throw new UnsupportedOperation(
+        'ARIA selector is not supported for BiDi!'
+      );
+    }
+
+    return super.waitForSelector(selector, options);
   }
 }
