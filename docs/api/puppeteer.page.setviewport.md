@@ -28,20 +28,6 @@ Promise&lt;void&gt;
 
 ## Remarks
 
-Argument viewport have following properties:
-
-- `width`: page width in pixels. required
-
-- `height`: page height in pixels. required
-
-- `deviceScaleFactor`: Specify device scale factor (can be thought of as DPR). Defaults to `1`.
-
-- `isMobile`: Whether the meta viewport tag is taken into account. Defaults to `false`.
-
-- `hasTouch`: Specifies if viewport supports touch events. Defaults to `false`
-
-- `isLandScape`: Specifies if viewport is in landscape mode. Defaults to false.
-
 NOTE: in certain cases, setting viewport will reload the page in order to set the isMobile or hasTouch properties.
 
 ## Example

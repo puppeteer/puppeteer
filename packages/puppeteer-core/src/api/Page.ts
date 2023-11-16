@@ -2058,22 +2058,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @param viewport -
    * @remarks
-   * Argument viewport have following properties:
-   *
-   * - `width`: page width in pixels. required
-   *
-   * - `height`: page height in pixels. required
-   *
-   * - `deviceScaleFactor`: Specify device scale factor (can be thought of as
-   *   DPR). Defaults to `1`.
-   *
-   * - `isMobile`: Whether the meta viewport tag is taken into account. Defaults
-   *   to `false`.
-   *
-   * - `hasTouch`: Specifies if viewport supports touch events. Defaults to `false`
-   *
-   * - `isLandScape`: Specifies if viewport is in landscape mode. Defaults to false.
-   *
    * NOTE: in certain cases, setting viewport will reload the page in order to
    * set the isMobile or hasTouch properties.
    */
@@ -2081,24 +2065,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
   /**
    * Current page viewport settings.
-   *
-   * @returns
-   *
-   * - `width`: page's width in pixels
-   *
-   * - `height`: page's height in pixels
-   *
-   * - `deviceScaleFactor`: Specify device scale factor (can be though of as
-   *   dpr). Defaults to `1`.
-   *
-   * - `isMobile`: Whether the meta viewport tag is taken into account. Defaults
-   *   to `false`.
-   *
-   * - `hasTouch`: Specifies if viewport supports touch events. Defaults to
-   *   `false`.
-   *
-   * - `isLandScape`: Specifies if viewport is in landscape mode. Defaults to
-   *   `false`.
    */
   abstract viewport(): Viewport | null;
 
