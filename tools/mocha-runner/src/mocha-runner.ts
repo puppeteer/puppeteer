@@ -203,6 +203,8 @@ async function main() {
         !reporter ? path.join(__dirname, 'reporter.js') : reporter,
         '-O',
         `output=${tmpFilename}`,
+        '-n',
+        'trace-warnings',
       ];
 
       const specPattern = 'test/build/**/*.spec.js';
