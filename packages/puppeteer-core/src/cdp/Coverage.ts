@@ -123,6 +123,10 @@ export interface CSSCoverageOptions {
  * console.log(`Bytes used: ${(usedBytes / totalBytes) * 100}%`);
  * ```
  *
+ * @privateRemarks BiDi
+ * Not supported when using protocol `webDriverBiDi`
+ * Support for BiDi+
+ *
  * @public
  */
 export class Coverage {

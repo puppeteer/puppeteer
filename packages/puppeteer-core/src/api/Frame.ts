@@ -350,6 +350,12 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * returned by the remote server, including 404 "Not Found" and 500 "Internal
    * Server Error". The status code for such responses can be retrieved by
    * calling {@link HTTPResponse.status}.
+   *
+   * @privateRemarks BiDi
+   * Partial support
+   *
+   * - `referer` not supported
+   * - `referrerPolicy` not supported
    */
   abstract goto(
     url: string,

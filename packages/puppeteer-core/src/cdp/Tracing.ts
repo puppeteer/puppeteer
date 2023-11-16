@@ -45,6 +45,10 @@ export interface TracingOptions {
  * await page.tracing.stop();
  * ```
  *
+ * @privateRemarks BiDi
+ * Not supported when using protocol `webDriverBiDi`
+ * Support for BiDi+
+ *
  * @public
  */
 export class Tracing {
