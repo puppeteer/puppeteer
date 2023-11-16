@@ -46,11 +46,11 @@ export interface TracingOptions {
  * ```
  *
  * @privateRemarks BiDi
- * {@link http://example.com | CDP}: Supported
+ * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
  *
- * {@link http://example.com | BiDi}: Unsupported
+ * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
  *
- * {@link http://example.com | BiDi+}: Supported
+ * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
  *
  * @public
  */
