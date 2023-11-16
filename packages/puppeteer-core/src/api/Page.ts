@@ -618,6 +618,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
   /**
    * `true` if the service worker are being bypassed, `false` otherwise.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract isServiceWorkerBypassed(): boolean;
 
@@ -627,11 +630,18 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @deprecated We no longer support intercepting drag payloads. Use the new
    * drag APIs found on {@link ElementHandle} to drag (or just use the
    * {@link Page.mouse}).
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract isDragInterceptionEnabled(): boolean;
 
   /**
    * `true` if the page has JavaScript enabled, `false` otherwise.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
+   * Support for BiDi+
    */
   abstract isJavaScriptEnabled(): boolean;
 
@@ -737,6 +747,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```ts
    * await page.setGeolocation({latitude: 59.95, longitude: 30.31667});
    * ```
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract setGeolocation(options: GeolocationOptions): Promise<void>;
 
@@ -765,6 +778,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
   /**
    * Creates a Chrome Devtools Protocol session attached to the page.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
+   * Supported By BiDi+
    */
   abstract createCDPSession(): Promise<CDPSession>;
 
@@ -805,6 +822,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @remarks
    * This does not contain ServiceWorkers
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract workers(): WebWorker[];
 
@@ -843,6 +863,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```
    *
    * @param value - Whether to enable request interception.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract setRequestInterception(value: boolean): Promise<void>;
 
@@ -850,6 +873,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * Toggles ignoring of service worker for each request.
    *
    * @param bypass - Whether to bypass service worker and load from network.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract setBypassServiceWorker(bypass: boolean): Promise<void>;
 
@@ -859,6 +885,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @deprecated We no longer support intercepting drag payloads. Use the new
    * drag APIs found on {@link ElementHandle} to drag (or just use the
    * {@link Page.mouse}).
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract setDragInterception(enabled: boolean): Promise<void>;
 
@@ -868,6 +897,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * It does not change the parameters used in {@link Page.emulateNetworkConditions}
    *
    * @param enabled - When `true`, enables offline mode for the page.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract setOfflineMode(enabled: boolean): Promise<void>;
 
@@ -897,6 +929,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @param networkConditions - Passing `null` disables network condition
    * emulation.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract emulateNetworkConditions(
     networkConditions: NetworkConditions | null
@@ -1093,6 +1128,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param prototypeHandle - a handle to the object prototype.
    * @returns Promise which resolves to a handle to an array of objects with
    * this prototype.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
+   * Supported with BiDi+
    */
   abstract queryObjects<Prototype>(
     prototypeHandle: JSHandle<Prototype>
@@ -1271,9 +1310,16 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * If no URLs are specified, this method returns cookies for the current page
    * URL. If URLs are specified, only cookies for those URLs are returned.
+   *
+   * - @privateRemarks BiDi
+   *   Not supported when using protocol `webDriverBiDi`
    */
   abstract cookies(...urls: string[]): Promise<Protocol.Network.Cookie[]>;
 
+  /**
+   * - @privateRemarks BiDi
+   *   Not supported when using protocol `webDriverBiDi`
+   */
   abstract deleteCookie(
     ...cookies: Protocol.Network.DeleteCookiesRequest[]
   ): Promise<void>;
@@ -1284,6 +1330,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```ts
    * await page.setCookie(cookieObject1, cookieObject2);
    * ```
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract setCookie(...cookies: Protocol.Network.CookieParam[]): Promise<void>;
 
@@ -1412,6 +1461,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @remarks
    * To disable authentication, pass `null`.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract authenticate(credentials: Credentials): Promise<void>;
 
@@ -1434,6 +1486,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @param headers - An object containing additional HTTP headers to be sent
    * with every request. All header values must be strings.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract setExtraHTTPHeaders(headers: Record<string, string>): Promise<void>;
 
@@ -1442,6 +1497,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param userAgentData - Specific user agent client hint data to use in this
    * page
    * @returns Promise which resolves when the user agent is set.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract setUserAgent(
     userAgent: string,
@@ -1483,6 +1541,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @remarks
    * All timestamps are in monotonic time: monotonically increasing time
    * in seconds since an arbitrary point in the past.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract metrics(): Promise<Metrics>;
 
@@ -1786,6 +1847,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *   more than 0 network connections for at least `500` ms.<br/>
    * - `networkidle2` : consider navigation to be finished when there are no
    *   more than 2 network connections for at least `500` ms.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract goBack(options?: WaitForOptions): Promise<HTTPResponse | null>;
 
@@ -1814,6 +1878,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *   more than 0 network connections for at least `500` ms.<br/>
    * - `networkidle2` : consider navigation to be finished when there are no
    *   more than 2 network connections for at least `500` ms.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract goForward(options?: WaitForOptions): Promise<HTTPResponse | null>;
 
@@ -1851,6 +1918,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *   await browser.close();
    * })();
    * ```
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   async emulate(device: Device): Promise<void> {
     await Promise.all([
@@ -1864,6 +1934,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @remarks
    * NOTE: changing this value won't affect scripts that have already been run.
    * It will take full effect on the next navigation.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
+   * Supported Bidi+
    */
   abstract setJavaScriptEnabled(enabled: boolean): Promise<void>;
 
@@ -1874,6 +1948,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * NOTE: CSP bypassing happens at the moment of CSP initialization rather than
    * evaluation. Usually, this means that `page.setBypassCSP` should be called
    * before navigating to the domain.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
+   * Supported by BiDi+
    */
   abstract setBypassCSP(enabled: boolean): Promise<void>;
 
@@ -1901,12 +1979,20 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * await page.evaluate(() => matchMedia('print').matches);
    * // → false
    * ```
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
+   * Supported by BiDi+
    */
   abstract emulateMediaType(type?: string): Promise<void>;
 
   /**
    * Enables CPU throttling to emulate slow CPUs.
    * @param factor - slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
+   * Supported By BiDi+
    */
   abstract emulateCPUThrottling(factor: number | null): Promise<void>;
 
@@ -1970,6 +2056,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * await page.evaluate(() => matchMedia('(color-gamut: rec2020)').matches);
    * // → false
    * ```
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
+   * Supported By BiDi+
    */
   abstract emulateMediaFeatures(features?: MediaFeature[]): Promise<void>;
 
@@ -1978,6 +2068,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * {@link https://source.chromium.org/chromium/chromium/deps/icu.git/+/faee8bc70570192d82d2978a71e2a615788597d1:source/data/misc/metaZones.txt | ICU’s metaZones.txt}
    * for a list of supported timezone IDs. Passing
    * `null` disables timezone emulation.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
+   * Supported by BiDi+
    */
   abstract emulateTimezone(timezoneId?: string): Promise<void>;
 
@@ -1999,6 +2093,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```
    *
    * @param overrides - Mock idle state. If not set, clears idle overrides
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
+   * Supported by BiDi+
    */
   abstract emulateIdleState(overrides?: {
     isUserActive: boolean;
@@ -2032,6 +2130,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```
    *
    * @param type - the type of deficiency to simulate, or `'none'` to reset.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
+   * Supported by BiDi+
    */
   abstract emulateVisionDeficiency(
     type?: Protocol.Emulation.SetEmulatedVisionDeficiencyRequest['type']
@@ -2060,6 +2162,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @remarks
    * NOTE: in certain cases, setting viewport will reload the page in order to
    * set the isMobile or hasTouch properties.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
+   * Full support by BiDi+
+   * Partial support by BiDi
    */
   abstract setViewport(viewport: Viewport): Promise<void>;
 
@@ -2183,6 +2290,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * default, caching is enabled.
    * @param enabled - sets the `enabled` state of cache
    * @defaultValue `true`
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
+   * Supported by BiDi+
    */
   abstract setCacheEnabled(enabled?: boolean): Promise<void>;
 
@@ -2241,6 +2352,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param options - Configures screencast behavior.
    *
    * @experimental
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
+   * Supported by BiDi+
    */
   async screencast(
     options: Readonly<ScreencastOptions> = {}
@@ -2382,6 +2497,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * Captures a screenshot of this {@link Page | page}.
    *
    * @param options - Configures screenshot behavior.
+   *
+   * @privateRemarks BiDi
+   * Partial support by BiDi
    */
   async screenshot(
     options: Readonly<ScreenshotOptions> & {encoding: 'base64'}
@@ -2545,6 +2663,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * property to force rendering of exact colors.
    *
    * @param options - options for generating the PDF.
+   *
+   * @privateRemarks BiDi
+   * Partial support by BiDi
    */
   abstract createPDFStream(options?: PDFOptions): Promise<Readable>;
 
@@ -2793,6 +2914,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * - `timeout`: maximum time to wait for in milliseconds. Defaults to `30000`
    *   (30 seconds). Pass `0` to disable timeout. The default value can be changed
    *   by using the {@link Page.setDefaultTimeout} method.
+   *
+   * @privateRemarks BiDi
+   * Partial support -
+   * ARIA selector not supported
    */
   async waitForSelector<Selector extends string>(
     selector: Selector,
@@ -2949,6 +3074,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *   await devicePrompt.waitForDevice(({name}) => name.includes('My Device'))
    * );
    * ```
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract waitForDevicePrompt(
     options?: WaitTimeoutOptions

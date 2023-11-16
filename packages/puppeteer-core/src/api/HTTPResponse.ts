@@ -134,6 +134,9 @@ export abstract class HTTPResponse {
 
   /**
    * True if the response was served by a service worker.
+   *
+   * @privateRemarks BiDi
+   * Not supported when using protocol `webDriverBiDi`
    */
   abstract fromServiceWorker(): boolean;
 

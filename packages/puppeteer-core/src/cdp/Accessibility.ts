@@ -128,6 +128,10 @@ export interface SnapshotOptions {
  * By default, Puppeteer tries to approximate this filtering, exposing only
  * the "interesting" nodes of the tree.
  *
+ * @privateRemarks BiDi
+ * Not supported when using protocol `webDriverBiDi`
+ * Support for BiDi+
+ *
  * @public
  */
 export class Accessibility {
