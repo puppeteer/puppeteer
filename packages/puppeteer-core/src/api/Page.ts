@@ -85,7 +85,6 @@ import type {ScreenRecorder} from '../node/ScreenRecorder.js';
 import {assert} from '../util/assert.js';
 import {guarded} from '../util/decorators.js';
 import {
-  AsyncDisposableStack,
   asyncDisposeSymbol,
   DisposableStack,
   disposeSymbol,
@@ -279,17 +278,9 @@ export interface ScreenshotOptions {
   /**
    * Capture the screenshot beyond the viewport.
    *
-   * @defaultValue `true`
+   * @defaultValue `false` if there is no `clip`. `true` otherwise.
    */
   captureBeyondViewport?: boolean;
-  /**
-   * TODO(jrandolf): Investigate whether viewport expansion is a better
-   * alternative for cross-browser screenshots as opposed to
-   * `captureBeyondViewport`.
-   *
-   * @internal
-   */
-  allowViewportExpansion?: boolean;
 }
 
 /**
@@ -555,7 +546,6 @@ export function setDefaultScreenshotOptions(options: ScreenshotOptions): void {
   options.omitBackground ??= false;
   options.encoding ??= 'binary';
   options.captureBeyondViewport ??= true;
-  options.allowViewportExpansion ??= options.captureBeyondViewport;
 }
 
 /**
@@ -2439,7 +2429,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
   ): Promise<Buffer | string> {
     await this.bringToFront();
 
-    // TODO: use structuredClone after Node 16 support is dropped.«
+    // TODO: use structuredClone after Node 16 support is dropped.
     const options = {
       ...userOptions,
       clip: userOptions.clip
@@ -2482,10 +2472,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
         );
       }
     }
-    assert(
-      !options.clip || !options.fullPage,
-      "'clip' and 'fullPage' are exclusive"
-    );
     if (options.clip) {
       if (options.clip.width <= 0) {
         throw new Error("'width' in 'clip' must be positive.");
@@ -2500,32 +2486,15 @@ export abstract class Page extends EventEmitter<PageEvents> {
     options.clip =
       options.clip && roundRectangle(normalizeRectangle(options.clip));
 
-    await using stack = new AsyncDisposableStack();
-    if (options.allowViewportExpansion || options.captureBeyondViewport) {
-      if (options.fullPage) {
-        const dimensions = await this.mainFrame()
-          .isolatedRealm()
-          .evaluate(() => {
-            const {scrollHeight, scrollWidth} = document.documentElement;
-            const {height: viewportHeight, width: viewportWidth} =
-              window.visualViewport!;
-            return {
-              height: Math.max(scrollHeight, viewportHeight),
-              width: Math.max(scrollWidth, viewportWidth),
-            };
-          });
-        options.clip = {...dimensions, x: 0, y: 0};
-        stack.use(
-          await this._createTemporaryViewportContainingBox(options.clip)
-        );
-      } else if (options.clip && !options.captureBeyondViewport) {
-        stack.use(
-          options.clip &&
-            (await this._createTemporaryViewportContainingBox(options.clip))
-        );
-      } else if (!options.clip) {
-        options.captureBeyondViewport = false;
+    if (options.fullPage) {
+      if (options.clip) {
+        throw new Error("'clip' and 'fullPage' are exclusive");
       }
+    } else if (
+      !options.clip &&
+      userOptions.captureBeyondViewport === undefined
+    ) {
+      options.captureBeyondViewport = false;
     }
 
     const data = await this._screenshot(options);
@@ -2541,61 +2510,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @internal
    */
   abstract _screenshot(options: Readonly<ScreenshotOptions>): Promise<string>;
-
-  /**
-   * @internal
-   */
-  async _createTemporaryViewportContainingBox(
-    clip: ScreenshotClip
-  ): Promise<AsyncDisposable> {
-    const viewport = await this.mainFrame()
-      .isolatedRealm()
-      .evaluate(() => {
-        return {
-          pageLeft: window.visualViewport!.pageLeft,
-          pageTop: window.visualViewport!.pageTop,
-          width: window.visualViewport!.width,
-          height: window.visualViewport!.height,
-        };
-      });
-    await using stack = new AsyncDisposableStack();
-    if (clip.x < viewport.pageLeft || clip.y < viewport.pageTop) {
-      await this.evaluate(
-        (left, top) => {
-          window.scroll({left, top, behavior: 'instant'});
-        },
-        Math.floor(clip.x),
-        Math.floor(clip.y)
-      );
-      stack.defer(async () => {
-        await this.evaluate(
-          (left, top) => {
-            window.scroll({left, top, behavior: 'instant'});
-          },
-          viewport.pageLeft,
-          viewport.pageTop
-        ).catch(debugError);
-      });
-    }
-    if (
-      clip.width + clip.x > viewport.width ||
-      clip.height + clip.y > viewport.height
-    ) {
-      const originalViewport = this.viewport() ?? {
-        width: 0,
-        height: 0,
-      };
-      // We add 1 for fractional x and y.
-      await this.setViewport({
-        width: Math.max(viewport.width, Math.ceil(clip.width + clip.x)),
-        height: Math.max(viewport.height, Math.ceil(clip.height + clip.y)),
-      });
-      stack.defer(async () => {
-        await this.setViewport(originalViewport).catch(debugError);
-      });
-    }
-    return stack.move();
-  }
 
   /**
    * @internal

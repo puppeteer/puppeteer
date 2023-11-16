@@ -109,7 +109,7 @@ export interface Point {
  */
 export interface ElementScreenshotOptions extends ScreenshotOptions {
   /**
-   * @defaultValue true
+   * @defaultValue `true`
    */
   scrollIntoView?: boolean;
 }
@@ -1348,20 +1348,11 @@ export abstract class ElementHandle<
     this: ElementHandle<Element>,
     options: Readonly<ElementScreenshotOptions> = {}
   ): Promise<string | Buffer> {
-    const {
-      scrollIntoView = true,
-      captureBeyondViewport = true,
-      allowViewportExpansion = captureBeyondViewport,
-    } = options;
+    const {scrollIntoView = true} = options;
 
     let clip = await this.#nonEmptyVisibleBoundingBox();
 
     const page = this.frame.page();
-
-    await using _ =
-      allowViewportExpansion && clip
-        ? await page._createTemporaryViewportContainingBox(clip)
-        : null;
 
     if (scrollIntoView) {
       await this.scrollIntoViewIfNeeded();
@@ -1382,11 +1373,7 @@ export abstract class ElementHandle<
     clip.x += pageLeft;
     clip.y += pageTop;
 
-    return await page.screenshot({
-      ...options,
-      captureBeyondViewport: false,
-      clip,
-    });
+    return await page.screenshot({...options, clip});
   }
 
   async #nonEmptyVisibleBoundingBox() {

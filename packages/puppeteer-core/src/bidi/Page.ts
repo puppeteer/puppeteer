@@ -29,6 +29,7 @@ import {
   raceWith,
 } from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
+import type {BoundingBox} from '../api/ElementHandle.js';
 import type {WaitForOptions} from '../api/Frame.js';
 import {
   Page,
@@ -647,13 +648,7 @@ export class BidiPage extends Page {
   override async _screenshot(
     options: Readonly<ScreenshotOptions>
   ): Promise<string> {
-    const {clip, type, captureBeyondViewport, allowViewportExpansion, quality} =
-      options;
-    if (captureBeyondViewport && !allowViewportExpansion) {
-      throw new UnsupportedOperation(
-        `BiDi does not support 'captureBeyondViewport'. Use 'allowViewportExpansion'.`
-      );
-    }
+    const {clip, type, captureBeyondViewport, quality} = options;
     if (options.omitBackground !== undefined && options.omitBackground) {
       throw new UnsupportedOperation(`BiDi does not support 'omitBackground'.`);
     }
@@ -665,6 +660,29 @@ export class BidiPage extends Page {
     if (options.fromSurface !== undefined && !options.fromSurface) {
       throw new UnsupportedOperation(`BiDi does not support 'fromSurface'.`);
     }
+
+    let box: BoundingBox | undefined;
+    if (clip) {
+      if (captureBeyondViewport) {
+        box = clip;
+      } else {
+        const [pageLeft, pageTop] = await this.evaluate(() => {
+          if (!window.visualViewport) {
+            throw new Error('window.visualViewport is not supported.');
+          }
+          return [
+            window.visualViewport.pageLeft,
+            window.visualViewport.pageTop,
+          ] as const;
+        });
+        box = {
+          ...clip,
+          x: clip.x - pageLeft,
+          y: clip.y - pageTop,
+        };
+      }
+    }
+
     if (clip !== undefined && clip.scale !== undefined && clip.scale !== 1) {
       throw new UnsupportedOperation(
         `BiDi does not support 'scale' in 'clip'.`
@@ -675,14 +693,12 @@ export class BidiPage extends Page {
       result: {data},
     } = await this.#connection.send('browsingContext.captureScreenshot', {
       context: this.mainFrame()._id,
+      origin: captureBeyondViewport ? 'document' : 'viewport',
       format: {
         type: `image/${type}`,
-        quality: quality ? quality / 100 : undefined,
+        ...(quality !== undefined ? {quality: quality / 100} : {}),
       },
-      clip: clip && {
-        type: 'box',
-        ...clip,
-      },
+      ...(box ? {clip: {type: 'box', ...box}} : {}),
     });
     return data;
   }
