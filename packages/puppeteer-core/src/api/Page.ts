@@ -422,7 +422,9 @@ export const enum PageEvent {
    * ```
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   Popup = 'popup',
   /**
@@ -468,7 +470,9 @@ export const enum PageEvent {
    * is spawned by the page.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   WorkerCreated = 'workercreated',
   /**
@@ -477,7 +481,9 @@ export const enum PageEvent {
    * is destroyed by the page.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   WorkerDestroyed = 'workerdestroyed',
 }
@@ -620,7 +626,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * `true` if the service worker are being bypassed, `false` otherwise.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract isServiceWorkerBypassed(): boolean;
 
@@ -632,7 +640,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * {@link Page.mouse}).
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract isDragInterceptionEnabled(): boolean;
 
@@ -640,8 +650,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * `true` if the page has JavaScript enabled, `false` otherwise.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
-   * Support for BiDi+
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   abstract isJavaScriptEnabled(): boolean;
 
@@ -729,7 +742,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract waitForFileChooser(
     options?: WaitTimeoutOptions
@@ -749,7 +764,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   abstract setGeolocation(options: GeolocationOptions): Promise<void>;
 
@@ -780,8 +799,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * Creates a Chrome Devtools Protocol session attached to the page.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
-   * Supported By BiDi+
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   abstract createCDPSession(): Promise<CDPSession>;
 
@@ -824,7 +846,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * This does not contain ServiceWorkers
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract workers(): WebWorker[];
 
@@ -865,7 +889,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param value - Whether to enable request interception.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract setRequestInterception(value: boolean): Promise<void>;
 
@@ -875,7 +901,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param bypass - Whether to bypass service worker and load from network.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract setBypassServiceWorker(bypass: boolean): Promise<void>;
 
@@ -887,7 +915,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * {@link Page.mouse}).
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract setDragInterception(enabled: boolean): Promise<void>;
 
@@ -899,7 +929,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param enabled - When `true`, enables offline mode for the page.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract setOfflineMode(enabled: boolean): Promise<void>;
 
@@ -931,7 +963,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * emulation.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract emulateNetworkConditions(
     networkConditions: NetworkConditions | null
@@ -1015,6 +1049,15 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param selector - A `selector` to query page for
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
    * to query page for.
+   *
+   * @privateRemarks BiDi
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Partial support
+   *
+   * - ARIA selector not supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   async $<Selector extends string>(
     selector: Selector
@@ -1028,6 +1071,15 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @remarks
    * Shortcut for {@link Frame.$$ | Page.mainFrame().$$(selector) }.
    * @param selector - A `selector` to query page for
+   *
+   * @privateRemarks BiDi
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Partial support
+   *
+   * - ARIA selector not supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   async $$<Selector extends string>(
     selector: Selector
@@ -1130,8 +1182,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * this prototype.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
-   * Supported with BiDi+
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   abstract queryObjects<Prototype>(
     prototypeHandle: JSHandle<Prototype>
@@ -1198,6 +1253,15 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @returns The result of calling `pageFunction`. If it returns an element it
    * is wrapped in an {@link ElementHandle}, else the raw value itself is
    * returned.
+   *
+   * @privateRemarks BiDi
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Partial support
+   *
+   * - ARIA selector not supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   async $eval<
     Selector extends string,
@@ -1276,6 +1340,15 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @returns The result of calling `pageFunction`. If it returns an element it
    * is wrapped in an {@link ElementHandle}, else the raw value itself is
    * returned.
+   *
+   * @privateRemarks BiDi
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Partial support
+   *
+   * - ARIA selector not supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   async $$eval<
     Selector extends string,
@@ -1312,13 +1385,17 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * URL. If URLs are specified, only cookies for those URLs are returned.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract cookies(...urls: string[]): Promise<Protocol.Network.Cookie[]>;
 
   /**
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract deleteCookie(
     ...cookies: Protocol.Network.DeleteCookiesRequest[]
@@ -1332,7 +1409,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract setCookie(...cookies: Protocol.Network.CookieParam[]): Promise<void>;
 
@@ -1463,7 +1542,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * To disable authentication, pass `null`.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract authenticate(credentials: Credentials): Promise<void>;
 
@@ -1488,7 +1569,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * with every request. All header values must be strings.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract setExtraHTTPHeaders(headers: Record<string, string>): Promise<void>;
 
@@ -1499,7 +1582,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @returns Promise which resolves when the user agent is set.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract setUserAgent(
     userAgent: string,
@@ -1543,7 +1628,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * in seconds since an arbitrary point in the past.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract metrics(): Promise<Metrics>;
 
@@ -1849,7 +1936,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *   more than 2 network connections for at least `500` ms.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract goBack(options?: WaitForOptions): Promise<HTTPResponse | null>;
 
@@ -1880,7 +1969,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *   more than 2 network connections for at least `500` ms.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract goForward(options?: WaitForOptions): Promise<HTTPResponse | null>;
 
@@ -1920,7 +2011,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   async emulate(device: Device): Promise<void> {
     await Promise.all([
@@ -1936,8 +2029,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * It will take full effect on the next navigation.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
-   * Supported Bidi+
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   abstract setJavaScriptEnabled(enabled: boolean): Promise<void>;
 
@@ -1950,8 +2046,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * before navigating to the domain.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
-   * Supported by BiDi+
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   abstract setBypassCSP(enabled: boolean): Promise<void>;
 
@@ -1981,8 +2080,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
-   * Supported by BiDi+
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   abstract emulateMediaType(type?: string): Promise<void>;
 
@@ -1991,8 +2093,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param factor - slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
-   * Supported By BiDi+
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   abstract emulateCPUThrottling(factor: number | null): Promise<void>;
 
@@ -2058,8 +2163,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
-   * Supported By BiDi+
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   abstract emulateMediaFeatures(features?: MediaFeature[]): Promise<void>;
 
@@ -2070,8 +2178,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * `null` disables timezone emulation.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
-   * Supported by BiDi+
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   abstract emulateTimezone(timezoneId?: string): Promise<void>;
 
@@ -2095,8 +2206,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param overrides - Mock idle state. If not set, clears idle overrides
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
-   * Supported by BiDi+
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   abstract emulateIdleState(overrides?: {
     isUserActive: boolean;
@@ -2132,8 +2246,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param type - the type of deficiency to simulate, or `'none'` to reset.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
-   * Supported by BiDi+
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   abstract emulateVisionDeficiency(
     type?: Protocol.Emulation.SetEmulatedVisionDeficiencyRequest['type']
@@ -2164,9 +2281,13 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * set the isMobile or hasTouch properties.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
-   * Full support by BiDi+
-   * Partial support by BiDi
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Partial support
+   *
+   * #TODO: List unsupported?
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   abstract setViewport(viewport: Viewport): Promise<void>;
 
@@ -2292,8 +2413,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @defaultValue `true`
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
-   * Supported by BiDi+
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   abstract setCacheEnabled(enabled?: boolean): Promise<void>;
 
@@ -2354,8 +2478,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @experimental
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
-   * Supported by BiDi+
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   async screencast(
     options: Readonly<ScreencastOptions> = {}
@@ -2499,7 +2626,13 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param options - Configures screenshot behavior.
    *
    * @privateRemarks BiDi
-   * Partial support by BiDi
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Partial support
+   *
+   * #TODO: List unsupported?
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   async screenshot(
     options: Readonly<ScreenshotOptions> & {encoding: 'base64'}
@@ -2665,7 +2798,13 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param options - options for generating the PDF.
    *
    * @privateRemarks BiDi
-   * Partial support by BiDi
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Partial support
+   *
+   * #TODO: List unsupported?
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
    */
   abstract createPDFStream(options?: PDFOptions): Promise<Readable>;
 
@@ -2802,7 +2941,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * Shortcut for {@link Frame.tap | page.mainFrame().tap(selector)}.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   tap(selector: string): Promise<void> {
     return this.mainFrame().tap(selector);
@@ -2916,8 +3057,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *   by using the {@link Page.setDefaultTimeout} method.
    *
    * @privateRemarks BiDi
-   * Partial support -
-   * ARIA selector not supported
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Partial support
+   *
+   * - ARIA selector not supported
    */
   async waitForSelector<Selector extends string>(
     selector: Selector,
@@ -3076,7 +3220,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract waitForDevicePrompt(
     options?: WaitTimeoutOptions

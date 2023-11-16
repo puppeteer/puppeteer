@@ -437,7 +437,9 @@ export abstract class Mouse {
    * @param target - point to drag to
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract drag(start: Point, target: Point): Promise<Protocol.Input.DragData>;
 
@@ -447,7 +449,9 @@ export abstract class Mouse {
    * @param data - drag data containing items and operations mask
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract dragEnter(
     target: Point,
@@ -460,7 +464,9 @@ export abstract class Mouse {
    * @param data - drag data containing items and operations mask
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract dragOver(
     target: Point,
@@ -473,7 +479,9 @@ export abstract class Mouse {
    * @param data - drag data containing items and operations mask
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract drop(target: Point, data: Protocol.Input.DragData): Promise<void>;
 
@@ -486,7 +494,9 @@ export abstract class Mouse {
    * Defaults to 0.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract dragAndDrop(
     start: Point,

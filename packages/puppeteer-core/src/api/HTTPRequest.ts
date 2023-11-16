@@ -132,7 +132,9 @@ export abstract class HTTPRequest {
    * @experimental
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract get client(): CDPSession;
 
@@ -152,7 +154,9 @@ export abstract class HTTPRequest {
    * `respond()` aren't called).
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract continueRequestOverrides(): ContinueRequestOverrides;
 
@@ -161,7 +165,9 @@ export abstract class HTTPRequest {
    * interception is allowed to respond (ie, `abort()` is not called).
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract responseForRequest(): Partial<ResponseForRequest> | null;
 
@@ -169,7 +175,9 @@ export abstract class HTTPRequest {
    * The most recent reason for aborting the request
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract abortErrorReason(): Protocol.Network.ErrorReason | null;
 
@@ -185,7 +193,9 @@ export abstract class HTTPRequest {
    * `disabled`, `none`, or `already-handled`.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract interceptResolutionState(): InterceptResolutionState;
 
@@ -194,7 +204,9 @@ export abstract class HTTPRequest {
    * `false` otherwise.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract isInterceptResolutionHandled(): boolean;
 
@@ -213,7 +225,9 @@ export abstract class HTTPRequest {
    * the request interception.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract finalizeInterceptions(): Promise<void>;
 
@@ -311,7 +325,9 @@ export abstract class HTTPRequest {
    * failure text if the request fails.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract failure(): {errorText: string} | null;
 
@@ -345,7 +361,9 @@ export abstract class HTTPRequest {
    * immediately.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract continue(
     overrides?: ContinueRequestOverrides,
@@ -385,7 +403,9 @@ export abstract class HTTPRequest {
    * immediately.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract respond(
     response: Partial<ResponseForRequest>,
@@ -406,7 +426,9 @@ export abstract class HTTPRequest {
    * immediately.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract abort(errorCode?: ErrorCode, priority?: number): Promise<void>;
 }

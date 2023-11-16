@@ -402,7 +402,9 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * {@link Page.setUserAgent}.
    *
    * @privateRemarks BiDi
-   * Not supported when using protocol `webDriverBiDi`
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   *
+   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract userAgent(): Promise<string>;
 

@@ -129,8 +129,11 @@ export interface SnapshotOptions {
  * the "interesting" nodes of the tree.
  *
  * @privateRemarks BiDi
- * Not supported when using protocol `webDriverBiDi`
- * Support for BiDi+
+ * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+ *
+ * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+ *
+ * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
  *
  * @public
  */
