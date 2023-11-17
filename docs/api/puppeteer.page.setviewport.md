@@ -30,6 +30,8 @@ Promise&lt;void&gt;
 
 NOTE: in certain cases, setting viewport will reload the page in order to set the isMobile or hasTouch properties.
 
+Partially supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).
+
 ## Example
 
 ```ts

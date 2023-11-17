@@ -30,6 +30,8 @@ All recordings will be [WebM](https://www.webmproject.org/) format using the [VP
 
 You must have [ffmpeg](https://ffmpeg.org/) installed on your system.
 
+Not supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).
+
 ## Example
 
 Recording a [page](./puppeteer.page.md):

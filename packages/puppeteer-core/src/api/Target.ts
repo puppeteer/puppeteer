@@ -71,10 +71,7 @@ export abstract class Target {
   /**
    * Creates a Chrome Devtools Protocol session attached to the target.
    *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   * @remarks
    */
   abstract createCDPSession(): Promise<CDPSession>;
 
@@ -100,10 +97,7 @@ export abstract class Target {
   /**
    * Get the target that opened this target. Top-level targets return `null`.
    *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract opener(): Target | undefined;
 }

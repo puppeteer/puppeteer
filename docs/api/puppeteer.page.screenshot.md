@@ -27,3 +27,7 @@ class Page {
 **Returns:**
 
 Promise&lt;string&gt;
+
+## Remarks
+
+Partially supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).

@@ -22,6 +22,8 @@ class HTTPRequest {
 
 `null` unless the request failed. If the request fails this can return an object with `errorText` containing a human-readable error message, e.g. `net::ERR_FAILED`. It is not guaranteed that there will be failure text if the request fails.
 
+Not supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).
+
 ## Remarks
 
 ## Example

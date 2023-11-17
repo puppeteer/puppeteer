@@ -40,6 +40,10 @@ The optional Parameter in Arguments `options` are:
 
 - `timeout`: maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The default value can be changed by using the [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) method.
 
+Partially supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).
+
+- ARIA selector not supported
+
 ## Example
 
 This method works across navigations:

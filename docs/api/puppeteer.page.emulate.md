@@ -28,6 +28,8 @@ Promise&lt;void&gt;
 
 ## Remarks
 
+This method is a shortcut for calling two methods: [Page.setUserAgent()](./puppeteer.page.setuseragent.md) and [Page.setViewport()](./puppeteer.page.setviewport.md).
+
 This method will resize the page. A lot of websites don't expect phones to change size, so you should emulate before navigating to the page.
 
 ## Example
@@ -45,3 +47,5 @@ const iPhone = KnownDevices['iPhone 6'];
   await browser.close();
 })();
 ```
+
+Not supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).

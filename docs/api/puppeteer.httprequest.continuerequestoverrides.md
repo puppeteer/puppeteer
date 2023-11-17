@@ -17,3 +17,7 @@ class HTTPRequest {
 **Returns:**
 
 [ContinueRequestOverrides](./puppeteer.continuerequestoverrides.md)
+
+## Remarks
+
+Not supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).

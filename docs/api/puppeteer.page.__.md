@@ -29,3 +29,5 @@ Promise&lt;Array&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;[NodeFor](.
 ## Remarks
 
 Shortcut for [Page.mainFrame().$$(selector)](./puppeteer.frame.__.md).
+
+Partially supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).

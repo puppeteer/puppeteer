@@ -34,6 +34,8 @@ To use this, request interception should be enabled with [Page.setRequestInterce
 
 Exception is immediately thrown if the request interception is not enabled.
 
+Not supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).
+
 ## Example
 
 An example of fulfilling all requests with 404 responses:

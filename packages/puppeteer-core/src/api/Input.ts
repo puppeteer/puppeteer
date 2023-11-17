@@ -436,10 +436,8 @@ export abstract class Mouse {
    * @param start - starting point for drag
    * @param target - point to drag to
    *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   * @remarks
+   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract drag(start: Point, target: Point): Promise<Protocol.Input.DragData>;
 
@@ -448,10 +446,8 @@ export abstract class Mouse {
    * @param target - point for emitting `dragenter` event
    * @param data - drag data containing items and operations mask
    *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   * @remarks
+   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract dragEnter(
     target: Point,
@@ -463,10 +459,8 @@ export abstract class Mouse {
    * @param target - point for emitting `dragover` event
    * @param data - drag data containing items and operations mask
    *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   * @remarks
+   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract dragOver(
     target: Point,
@@ -478,10 +472,8 @@ export abstract class Mouse {
    * @param target - point to drop on
    * @param data - drag data containing items and operations mask
    *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   * @remarks
+   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract drop(target: Point, data: Protocol.Input.DragData): Promise<void>;
 
@@ -493,10 +485,8 @@ export abstract class Mouse {
    * if specified, is the time to wait between `dragover` and `drop` in milliseconds.
    * Defaults to 0.
    *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   * @remarks
+   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract dragAndDrop(
     start: Point,

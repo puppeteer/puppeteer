@@ -963,10 +963,7 @@ export abstract class ElementHandle<
    * For locals script connecting to remote chrome environments, paths must be
    * absolute.
    *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract uploadFile(
     this: ElementHandle<HTMLInputElement>,

@@ -165,10 +165,8 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * @param permissions - An array of permissions to grant. All permissions that
    * are not listed here will be automatically denied.
    *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   * @remarks
+   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract overridePermissions(
     origin: string,
@@ -189,10 +187,8 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * context.clearPermissionOverrides();
    * ```
    *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   * @remarks
+   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract clearPermissionOverrides(): Promise<void>;
 

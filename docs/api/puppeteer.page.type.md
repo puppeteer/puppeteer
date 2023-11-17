@@ -32,8 +32,6 @@ class Page {
 
 Promise&lt;void&gt;
 
-## Remarks
-
 ## Example
 
 ```ts

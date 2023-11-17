@@ -33,3 +33,5 @@ Consider using [BrowserContext.overridePermissions()](./puppeteer.browsercontext
 ```ts
 await page.setGeolocation({latitude: 59.95, longitude: 30.31667});
 ```
+
+Not supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).
