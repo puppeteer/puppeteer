@@ -515,7 +515,7 @@ The Node.js runtime of the
 comes with all system packages needed to run Headless Chrome.
 
 To use `puppeteer`, specify the module as a dependency in your `package.json`
-and then override the puppeteer cache directory by including a file named 
+and then override the puppeteer cache directory by including a file named
 `.puppeteerrc.cjs` at the root of your application with the contents:
 
 ```ts
@@ -530,10 +530,10 @@ module.exports = {
 ```
 
 > [!NOTE]  
-> Google App Engine caches your `node_modules` between builds. 
-> Specifying the Puppeteer cache as subdirectory of `node_modules` 
+> Google App Engine caches your `node_modules` between builds.
+> Specifying the Puppeteer cache as subdirectory of `node_modules`
 > mitigates an issue in which Puppeteer can't find the browser executable
-> due to `postinstall` not being run. 
+> due to `postinstall` not being run.
 
 ### Running Puppeteer on Google Cloud Functions
 
@@ -542,7 +542,7 @@ The Node.js runtime of
 comes with all system packages needed to run Headless Chrome.
 
 To use `puppeteer`, specify the module as a dependency in your `package.json`
-and then override the puppeteer cache directory by including a file named 
+and then override the puppeteer cache directory by including a file named
 `.puppeteerrc.cjs` at the root of your application with the contents:
 
 ```ts
