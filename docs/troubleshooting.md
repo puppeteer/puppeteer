@@ -530,9 +530,10 @@ module.exports = {
 ```
 
 > [!NOTE]  
-> Google App Engine caches your `node_modules` between builds. Specifying the
-> puppeteer cache as subdirectory of `node_modules` mitigates an issue in which the
-> puppeteer install process does not run when the cache is hit.
+> Google App Engine caches your `node_modules` between builds. 
+> Specifying the Puppeteer cache as subdirectory of `node_modules` 
+> mitigates an issue in which Puppeteer can't find the browser executable
+> due to `postinstall` not being run. 
 
 ### Running Puppeteer on Google Cloud Functions
 
