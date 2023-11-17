@@ -514,22 +514,52 @@ The Node.js runtime of the
 [App Engine standard environment](https://cloud.google.com/appengine/docs/standard/nodejs/)
 comes with all system packages needed to run Headless Chrome.
 
-To use `puppeteer`, simply list the module as a dependency in your
-`package.json` and deploy to Google App Engine. Read more about using
-`puppeteer` on App Engine by following
-[the official tutorial](https://cloud.google.com/appengine/docs/standard/nodejs/using-headless-chrome-with-puppeteer).
+To use `puppeteer`, specify the module as a dependency in your `package.json`
+and then override the puppeteer cache directory by including a file named
+`.puppeteerrc.cjs` at the root of your application with the contents:
+
+```ts
+const {join} = require('path');
+
+/**
+ * @type {import("puppeteer").Configuration}
+ */
+module.exports = {
+  cacheDirectory: join(__dirname, 'node_modules', '.puppeteer_cache'),
+};
+```
+
+> [!NOTE]  
+> Google App Engine caches your `node_modules` between builds.
+> Specifying the Puppeteer cache as subdirectory of `node_modules`
+> mitigates an issue in which Puppeteer can't find the browser executable
+> due to `postinstall` not being run.
 
 ### Running Puppeteer on Google Cloud Functions
 
-You can try running Puppeteer on
-[Google Cloud Functions](https://cloud.google.com/functions/docs/) but we have
-been getting reports that newest runtimes don't have all dependencies to run
-Chromium.
+The Node.js runtime of
+[Google Cloud Functions](https://cloud.google.com/functions/docs/)
+comes with all system packages needed to run Headless Chrome.
 
-If you encounter problems due to missing Chromium dependencies, consider using
-Google Cloud Run instead where you can provide a custom Dockerfile with all
-dependencies. Also, see our
-[official Docker image](https://github.com/puppeteer/puppeteer/pkgs/container/puppeteer).
+To use `puppeteer`, specify the module as a dependency in your `package.json`
+and then override the puppeteer cache directory by including a file named
+`.puppeteerrc.cjs` at the root of your application with the contents:
+
+```ts
+const {join} = require('path');
+
+/**
+ * @type {import("puppeteer").Configuration}
+ */
+module.exports = {
+  cacheDirectory: join(__dirname, 'node_modules', '.puppeteer_cache'),
+};
+```
+
+> [!NOTE]  
+> Google Cloud Functions caches your `node_modules` between builds. Specifying the
+> puppeteer cache as subdirectory of `node_modules` mitigates an issue in which the
+> puppeteer install process does not run when the cache is hit.
 
 ### Running Puppeteer on Google Cloud Run
 
