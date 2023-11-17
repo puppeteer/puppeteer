@@ -16,9 +16,10 @@
 
 const {
   versionsPerRelease,
-  lastMaintainedChromiumVersion,
+  lastMaintainedChromeVersion,
 } = require('../versions.js');
-const version = versionsPerRelease.get(lastMaintainedChromiumVersion);
+
+const version = versionsPerRelease.get(lastMaintainedChromeVersion);
 if (version.toLowerCase() === 'next') {
   console.error('Unexpected NEXT Puppeteer version in versions.js');
   process.exit(1);
