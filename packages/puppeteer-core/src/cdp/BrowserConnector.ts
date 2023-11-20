@@ -104,7 +104,9 @@ export async function _connectToBiDiOverCdpBrowser(
 
   // TODO: use other options too.
   const BiDi = await import(/* webpackIgnore: true */ '../bidi/bidi.js');
-  const bidiConnection = await BiDi.connectBidiOverCdp(connection);
+  const bidiConnection = await BiDi.connectBidiOverCdp(connection, {
+    acceptInsecureCerts: ignoreHTTPSErrors,
+  });
   const bidiBrowser = await BiDi.BidiBrowser.create({
     connection: bidiConnection,
     closeCallback: () => {
