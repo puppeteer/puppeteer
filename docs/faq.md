@@ -38,6 +38,28 @@ does not support all of the Puppeteer features. Refer to the
 [API documentation](https://pptr.dev/api/puppeteer.puppeteernode) to learn if a
 particular feature is supported with WebDriver BiDi.
 
+## Q: Does Puppeteer support WebDriver BiDi?
+
+Puppeteer has experimental support for WebDriver BiDi with Firefox. You can
+track the implementation progress
+[here](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/).
+
+To launch Firefox with WebDriver BiDi protocol on, use the `protocol` parameter:
+
+```ts
+import puppeteer from 'puppeteer';
+
+const browser = await puppeteer.launch({
+  product: 'firefox',
+  protocol: 'webDriverBiDi',
+});
+const page = await browser.newPage();
+...
+await browser.close();
+```
+
+WebDriver BiDi support for Chrome is still under development.
+
 ## Q: What are Puppeteer’s goals and principles?
 
 The goals of the project are:
