@@ -23,7 +23,7 @@ import type {ConnectionTransport} from './ConnectionTransport.js';
 import type {Viewport} from './Viewport.js';
 
 /**
- * @internal
+ * @public
  */
 export type ProtocolType = 'cdp' | 'webDriverBiDi';
 
@@ -61,7 +61,7 @@ export interface BrowserConnectOptions {
    * @defaultValue 'cdp'
    * @internal
    */
-  protocol?: ProtocolType;
+  protocol_?: ProtocolType;
   /**
    * Timeout setting for individual protocol (CDP) calls.
    *
