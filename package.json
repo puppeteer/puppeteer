@@ -129,7 +129,7 @@
     "@types/node": "20.8.4",
     "@types/semver": "7.5.5",
     "@types/sinon": "17.0.1",
-    "@typescript-eslint/eslint-plugin": "6.11.0",
+    "@typescript-eslint/eslint-plugin": "6.12.0",
     "@typescript-eslint/parser": "6.11.0",
     "cross-env": "7.0.3",
     "esbuild": "0.19.5",
