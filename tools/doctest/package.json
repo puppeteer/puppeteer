@@ -24,7 +24,7 @@
     }
   },
   "dependencies": {
-    "@swc/core": "1.3.96",
+    "@swc/core": "1.3.99",
     "acorn": "8.11.2",
     "doctrine": "3.0.0",
     "glob": "10.3.10",
