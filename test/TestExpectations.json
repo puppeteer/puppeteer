@@ -492,6 +492,12 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
+    "testIdPattern": "[device-request-prompt.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "headless"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[drag-and-drop.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -1642,12 +1648,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[device-request-prompt.spec] *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "headless"],
-    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[dialog.spec] Page.Events.Dialog should allow accepting prompts",
