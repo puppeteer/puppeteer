@@ -45,7 +45,7 @@ describe('Puppeteer CLI', () => {
     );
   });
 
-  it('can dowload a browser', async function () {
+  it('can download a browser', async function () {
     assert.ok(!existsSync(join(this.sandbox, '.cache', 'puppeteer')));
     const result = spawnSync(
       'npx',
