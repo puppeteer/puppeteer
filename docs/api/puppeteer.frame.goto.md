@@ -27,7 +27,7 @@ class Frame {
 | Parameter | Type                                                                                                                                                                                                                     | Description                                                                             |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
 | url       | string                                                                                                                                                                                                                   | URL to navigate the frame to. The URL should include scheme, e.g. <code>https://</code> |
-| options   | { referer?: string; referrerPolicy?: string; timeout?: number; waitUntil?: [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) \| [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)\[\]; } | _(Optional)_ Options to configure waiting behavior.                                     |
+| options   | \{ referer?: string; referrerPolicy?: string; timeout?: number; waitUntil?: [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) \| [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)\[\]; \} | _(Optional)_ Options to configure waiting behavior.                                     |
 
 **Returns:**
 

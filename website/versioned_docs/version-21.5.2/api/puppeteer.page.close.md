@@ -16,7 +16,7 @@ class Page {
 
 | Parameter | Type                           | Description  |
 | --------- | ------------------------------ | ------------ |
-| options   | { runBeforeUnload?: boolean; } | _(Optional)_ |
+| options   | \{ runBeforeUnload?: boolean; \} | _(Optional)_ |
 
 **Returns:**
 

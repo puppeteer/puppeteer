@@ -34,5 +34,5 @@ class CLI {
 
 | Parameter | Type                                                                                                                                                                                                                                      | Description  |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| opts      | string \| { cachePath?: string; scriptName?: string; prefixCommand?: { cmd: string; description: string; }; allowCachePathOverride?: boolean; pinnedBrowsers?: Partial&lt;{ \[key in [Browser](./browsers.browser.md)\]: string; }&gt;; } | _(Optional)_ |
+| opts      | string \| \{ cachePath?: string; scriptName?: string; prefixCommand?: \{ cmd: string; description: string; \}; allowCachePathOverride?: boolean; pinnedBrowsers?: Partial&lt;\{ \[key in [Browser](./browsers.browser.md)\]: string; \}&gt;; \} | _(Optional)_ |
 | rl        | readline.Interface                                                                                                                                                                                                                        | _(Optional)_ |

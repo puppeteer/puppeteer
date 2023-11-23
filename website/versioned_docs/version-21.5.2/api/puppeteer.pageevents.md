@@ -29,7 +29,7 @@ export interface PageEvents extends Record<EventType, unknown>
 | framedetached          |           | [Frame](./puppeteer.frame.md)                                  |             |         |
 | framenavigated         |           | [Frame](./puppeteer.frame.md)                                  |             |         |
 | load                   |           | undefined                                                      |             |         |
-| metrics                |           | { title: string; metrics: [Metrics](./puppeteer.metrics.md); } |             |         |
+| metrics                |           | \{ title: string; metrics: [Metrics](./puppeteer.metrics.md); \} |             |         |
 | pageerror              |           | Error                                                          |             |         |
 | popup                  |           | [Page](./puppeteer.page.md) \| null                            |             |         |
 | request                |           | [HTTPRequest](./puppeteer.httprequest.md)                      |             |         |

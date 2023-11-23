@@ -22,7 +22,7 @@ class ElementHandle {
 
 | Parameter | Type                                                                                                | Description |
 | --------- | --------------------------------------------------------------------------------------------------- | ----------- |
-| options   | Readonly&lt;[ScreenshotOptions](./puppeteer.screenshotoptions.md)&gt; &amp; { encoding: 'base64'; } |             |
+| options   | Readonly&lt;[ScreenshotOptions](./puppeteer.screenshotoptions.md)&gt; &amp; \{ encoding: 'base64'; \} |             |
 
 **Returns:**
 

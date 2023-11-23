@@ -19,7 +19,7 @@ class Page {
 
 | Parameter | Type                                     | Description                              |
 | --------- | ---------------------------------------- | ---------------------------------------- |
-| options   | { idleTime?: number; timeout?: number; } | _(Optional)_ Optional waiting parameters |
+| options   | \{ idleTime?: number; timeout?: number; \} | _(Optional)_ Optional waiting parameters |
 
 **Returns:**
 

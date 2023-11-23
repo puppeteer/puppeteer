@@ -22,7 +22,7 @@ class Page {
 
 | Parameter | Type                                                                                                | Description                     |
 | --------- | --------------------------------------------------------------------------------------------------- | ------------------------------- |
-| options   | Readonly&lt;[ScreenshotOptions](./puppeteer.screenshotoptions.md)&gt; &amp; { encoding: 'base64'; } | Configures screenshot behavior. |
+| options   | Readonly&lt;[ScreenshotOptions](./puppeteer.screenshotoptions.md)&gt; &amp; \{ encoding: 'base64'; \} | Configures screenshot behavior. |
 
 **Returns:**
 
