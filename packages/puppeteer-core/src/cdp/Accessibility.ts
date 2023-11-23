@@ -128,10 +128,6 @@ export interface SnapshotOptions {
  * By default, Puppeteer tries to approximate this filtering, exposing only
  * the "interesting" nodes of the tree.
  *
- * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
- *
- * @privateRemarks BiDi not supported, BiDi+ supported.
- *
  * @public
  */
 export class Accessibility {

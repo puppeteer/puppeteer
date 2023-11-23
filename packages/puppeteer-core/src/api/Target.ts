@@ -96,10 +96,6 @@ export abstract class Target {
 
   /**
    * Get the target that opened this target. Top-level targets return `null`.
-   *
-   * @remarks
-   *
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract opener(): Target | undefined;
 }

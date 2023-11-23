@@ -28,10 +28,6 @@ Promise&lt;[ScreenRecorder](./puppeteer.screenrecorder.md)&gt;
 
 All recordings will be [WebM](https://www.webmproject.org/) format using the [VP9](https://www.webmproject.org/vp9/) video codec. The FPS is 30.
 
-You must have [ffmpeg](https://ffmpeg.org/) installed on your system.
-
-Not supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).
-
 ## Example
 
 Recording a [page](./puppeteer.page.md):

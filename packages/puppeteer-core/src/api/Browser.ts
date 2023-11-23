@@ -401,8 +401,6 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * {@link Page | Pages} can override the user agent with
    * {@link Page.setUserAgent}.
    *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract userAgent(): Promise<string>;
 

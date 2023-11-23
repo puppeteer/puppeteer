@@ -435,9 +435,6 @@ export abstract class Mouse {
    * Dispatches a `drag` event.
    * @param start - starting point for drag
    * @param target - point to drag to
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract drag(start: Point, target: Point): Promise<Protocol.Input.DragData>;
 
@@ -445,9 +442,6 @@ export abstract class Mouse {
    * Dispatches a `dragenter` event.
    * @param target - point for emitting `dragenter` event
    * @param data - drag data containing items and operations mask
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract dragEnter(
     target: Point,
@@ -458,9 +452,6 @@ export abstract class Mouse {
    * Dispatches a `dragover` event.
    * @param target - point for emitting `dragover` event
    * @param data - drag data containing items and operations mask
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract dragOver(
     target: Point,
@@ -471,9 +462,6 @@ export abstract class Mouse {
    * Performs a dragenter, dragover, and drop in sequence.
    * @param target - point to drop on
    * @param data - drag data containing items and operations mask
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract drop(target: Point, data: Protocol.Input.DragData): Promise<void>;
 
@@ -484,9 +472,6 @@ export abstract class Mouse {
    * @param options - An object of options. Accepts delay which,
    * if specified, is the time to wait between `dragover` and `drop` in milliseconds.
    * Defaults to 0.
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract dragAndDrop(
     start: Point,

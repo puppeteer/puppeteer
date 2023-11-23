@@ -420,9 +420,6 @@ export const enum PageEvent {
    *   page.evaluate(() => window.open('https://example.com')),
    * ]);
    * ```
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   Popup = 'popup',
   /**
@@ -466,18 +463,12 @@ export const enum PageEvent {
    * Emitted when a dedicated
    * {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API | WebWorker}
    * is spawned by the page.
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   WorkerCreated = 'workercreated',
   /**
    * Emitted when a dedicated
    * {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API | WebWorker}
    * is destroyed by the page.
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   WorkerDestroyed = 'workerdestroyed',
 }
@@ -618,9 +609,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
   /**
    * `true` if the service worker are being bypassed, `false` otherwise.
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract isServiceWorkerBypassed(): boolean;
 
@@ -630,19 +618,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @deprecated We no longer support intercepting drag payloads. Use the new
    * drag APIs found on {@link ElementHandle} to drag (or just use the
    * {@link Page.mouse}).
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract isDragInterceptionEnabled(): boolean;
 
   /**
    * `true` if the page has JavaScript enabled, `false` otherwise.
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * @privateRemarks Supported with BiDi+.
    */
   abstract isJavaScriptEnabled(): boolean;
 
@@ -728,8 +708,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ]);
    * await fileChooser.accept(['/tmp/myfile.pdf']);
    * ```
-   *
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract waitForFileChooser(
     options?: WaitTimeoutOptions
@@ -747,10 +725,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```ts
    * await page.setGeolocation({latitude: 59.95, longitude: 30.31667});
    * ```
-   *
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * @privateRemarks Supported with BiDi+.
    */
   abstract setGeolocation(options: GeolocationOptions): Promise<void>;
 
@@ -779,11 +753,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
   /**
    * Creates a Chrome Devtools Protocol session attached to the page.
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * @privateRemarks Supported with BiDi+.
    */
   abstract createCDPSession(): Promise<CDPSession>;
 
@@ -824,8 +793,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @remarks
    * This does not contain ServiceWorkers
-   *
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract workers(): WebWorker[];
 
@@ -864,9 +831,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```
    *
    * @param value - Whether to enable request interception.
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract setRequestInterception(value: boolean): Promise<void>;
 
@@ -874,9 +838,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * Toggles ignoring of service worker for each request.
    *
    * @param bypass - Whether to bypass service worker and load from network.
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract setBypassServiceWorker(bypass: boolean): Promise<void>;
 
@@ -886,9 +847,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @deprecated We no longer support intercepting drag payloads. Use the new
    * drag APIs found on {@link ElementHandle} to drag (or just use the
    * {@link Page.mouse}).
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract setDragInterception(enabled: boolean): Promise<void>;
 
@@ -898,9 +856,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * It does not change the parameters used in {@link Page.emulateNetworkConditions}
    *
    * @param enabled - When `true`, enables offline mode for the page.
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract setOfflineMode(enabled: boolean): Promise<void>;
 
@@ -930,9 +885,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @param networkConditions - Passing `null` disables network condition
    * emulation.
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract emulateNetworkConditions(
     networkConditions: NetworkConditions | null
@@ -1016,11 +968,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param selector - A `selector` to query page for
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
    * to query page for.
-   *
-   * @remarks
-   * Partially supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * @privateRemarks BiDi partially supported, BiDi+ supported.
    */
   async $<Selector extends string>(
     selector: Selector
@@ -1037,12 +984,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @remarks
    *
    * Shortcut for {@link Frame.$$ | Page.mainFrame().$$(selector) }.
-   *
-   * Partially supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * @privateRemarks BiDi partially supported, BiDi+ supported.
-   *
-   * - ARIA selector not supported
    */
   async $$<Selector extends string>(
     selector: Selector
@@ -1143,11 +1084,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param prototypeHandle - a handle to the object prototype.
    * @returns Promise which resolves to a handle to an array of objects with
    * this prototype.
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * @privateRemarks Supported with BiDi+.
    */
   abstract queryObjects<Prototype>(
     prototypeHandle: JSHandle<Prototype>
@@ -1214,12 +1150,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @returns The result of calling `pageFunction`. If it returns an element it
    * is wrapped in an {@link ElementHandle}, else the raw value itself is
    * returned.
-   *
-   * Partially supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * @privateRemarks BiDi partially supported, BiDi+ supported.
-   *
-   * - ARIA selector not supported
    */
   async $eval<
     Selector extends string,
@@ -1298,12 +1228,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @returns The result of calling `pageFunction`. If it returns an element it
    * is wrapped in an {@link ElementHandle}, else the raw value itself is
    * returned.
-   *
-   * Partially supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * @privateRemarks BiDi partially supported, BiDi+ supported.
-   *
-   * - ARIA selector not supported
    */
   async $$eval<
     Selector extends string,
@@ -1338,16 +1262,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * If no URLs are specified, this method returns cookies for the current page
    * URL. If URLs are specified, only cookies for those URLs are returned.
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract cookies(...urls: string[]): Promise<Protocol.Network.Cookie[]>;
 
-  /**
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   */
   abstract deleteCookie(
     ...cookies: Protocol.Network.DeleteCookiesRequest[]
   ): Promise<void>;
@@ -1358,9 +1275,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```ts
    * await page.setCookie(cookieObject1, cookieObject2);
    * ```
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract setCookie(...cookies: Protocol.Network.CookieParam[]): Promise<void>;
 
@@ -1489,8 +1403,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @remarks
    * To disable authentication, pass `null`.
-   *
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract authenticate(credentials: Credentials): Promise<void>;
 
@@ -1513,9 +1425,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @param headers - An object containing additional HTTP headers to be sent
    * with every request. All header values must be strings.
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract setExtraHTTPHeaders(headers: Record<string, string>): Promise<void>;
 
@@ -1524,9 +1433,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param userAgentData - Specific user agent client hint data to use in this
    * page
    * @returns Promise which resolves when the user agent is set.
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract setUserAgent(
     userAgent: string,
@@ -1568,8 +1474,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @remarks
    * All timestamps are in monotonic time: monotonically increasing time
    * in seconds since an arbitrary point in the past.
-   *
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract metrics(): Promise<Metrics>;
 
@@ -1879,8 +1783,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *   more than 0 network connections for at least `500` ms.<br/>
    * - `networkidle2` : consider navigation to be finished when there are no
    *   more than 2 network connections for at least `500` ms.
-   *
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract goBack(options?: WaitForOptions): Promise<HTTPResponse | null>;
 
@@ -1909,8 +1811,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *   more than 0 network connections for at least `500` ms.<br/>
    * - `networkidle2` : consider navigation to be finished when there are no
    *   more than 2 network connections for at least `500` ms.
-   *
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract goForward(options?: WaitForOptions): Promise<HTTPResponse | null>;
 
@@ -1947,8 +1847,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *   await browser.close();
    * })();
    * ```
-   *
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   async emulate(device: Device): Promise<void> {
     await Promise.all([
@@ -1962,10 +1860,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @remarks
    * NOTE: changing this value won't affect scripts that have already been run.
    * It will take full effect on the next navigation.
-   *
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * @privateRemarks Supported with BiDi+.
    */
   abstract setJavaScriptEnabled(enabled: boolean): Promise<void>;
 
@@ -1976,10 +1870,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * NOTE: CSP bypassing happens at the moment of CSP initialization rather than
    * evaluation. Usually, this means that `page.setBypassCSP` should be called
    * before navigating to the domain.
-   *
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * @privateRemarks Supported with BiDi+.
    */
   abstract setBypassCSP(enabled: boolean): Promise<void>;
 
@@ -2007,22 +1897,12 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * await page.evaluate(() => matchMedia('print').matches);
    * // → false
    * ```
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * @privateRemarks Supported with BiDi+.
    */
   abstract emulateMediaType(type?: string): Promise<void>;
 
   /**
    * Enables CPU throttling to emulate slow CPUs.
    * @param factor - slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * @privateRemarks Supported with BiDi+.
    */
   abstract emulateCPUThrottling(factor: number | null): Promise<void>;
 
@@ -2086,11 +1966,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * await page.evaluate(() => matchMedia('(color-gamut: rec2020)').matches);
    * // → false
    * ```
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * @privateRemarks Supported with BiDi+.
    */
   abstract emulateMediaFeatures(features?: MediaFeature[]): Promise<void>;
 
@@ -2099,11 +1974,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * {@link https://source.chromium.org/chromium/chromium/deps/icu.git/+/faee8bc70570192d82d2978a71e2a615788597d1:source/data/misc/metaZones.txt | ICU’s metaZones.txt}
    * for a list of supported timezone IDs. Passing
    * `null` disables timezone emulation.
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * @privateRemarks Supported with BiDi+.
    */
   abstract emulateTimezone(timezoneId?: string): Promise<void>;
 
@@ -2125,11 +1995,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```
    *
    * @param overrides - Mock idle state. If not set, clears idle overrides
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * @privateRemarks Supported with BiDi+.
    */
   abstract emulateIdleState(overrides?: {
     isUserActive: boolean;
@@ -2163,11 +2028,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```
    *
    * @param type - the type of deficiency to simulate, or `'none'` to reset.
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * @privateRemarks Supported with BiDi+.
    */
   abstract emulateVisionDeficiency(
     type?: Protocol.Emulation.SetEmulatedVisionDeficiencyRequest['type']
@@ -2196,12 +2056,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @remarks
    * NOTE: in certain cases, setting viewport will reload the page in order to
    * set the isMobile or hasTouch properties.
-   *
-   * Partially supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * @privateRemarks BiDi partially supported, BiDi+ supported.
-   *
-   * #TODO: List unsupported?
    */
   abstract setViewport(viewport: Viewport): Promise<void>;
 
@@ -2330,11 +2184,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * default, caching is enabled.
    * @param enabled - sets the `enabled` state of cache
    * @defaultValue `true`
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * @privateRemarks Supported with BiDi+.
    */
   abstract setCacheEnabled(enabled?: boolean): Promise<void>;
 
@@ -2391,12 +2240,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * All recordings will be {@link https://www.webmproject.org/ | WebM} format using
    * the {@link https://www.webmproject.org/vp9/ | VP9} video codec. The FPS is 30.
-   *
-   * You must have {@link https://ffmpeg.org/ | ffmpeg} installed on your system.
-   *
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * @privateRemarks Supported with BiDi+.
    */
   async screencast(
     options: Readonly<ScreencastOptions> = {}
@@ -2538,13 +2381,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * Captures a screenshot of this {@link Page | page}.
    *
    * @param options - Configures screenshot behavior.
-   *
-   * @remarks
-   * Partially supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * @privateRemarks BiDi partially supported, BiDi+ supported.
-   *
-   * #TODO: List unsupported?
    */
   async screenshot(
     options: Readonly<ScreenshotOptions> & {encoding: 'base64'}
@@ -2709,8 +2545,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * Use the
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-print-color-adjust | `-webkit-print-color-adjust`}
    * property to force rendering of exact colors.
-   *
-   * Partially supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract createPDFStream(options?: PDFOptions): Promise<Readable>;
 
@@ -2856,8 +2690,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @remarks
    *
    * Shortcut for {@link Frame.tap | page.mainFrame().tap(selector)}.
-   *
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   tap(selector: string): Promise<void> {
     return this.mainFrame().tap(selector);
@@ -2970,10 +2802,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * - `timeout`: maximum time to wait for in milliseconds. Defaults to `30000`
    *   (30 seconds). Pass `0` to disable timeout. The default value can be changed
    *   by using the {@link Page.setDefaultTimeout} method.
-   *
-   * Partially supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * - ARIA selector not supported
    */
   async waitForSelector<Selector extends string>(
     selector: Selector,
@@ -3130,9 +2958,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *   await devicePrompt.waitForDevice(({name}) => name.includes('My Device'))
    * );
    * ```
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract waitForDevicePrompt(
     options?: WaitTimeoutOptions

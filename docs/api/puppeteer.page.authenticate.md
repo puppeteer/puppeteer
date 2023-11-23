@@ -27,5 +27,3 @@ Promise&lt;void&gt;
 ## Remarks
 
 To disable authentication, pass `null`.
-
-Not supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).

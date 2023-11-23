@@ -311,9 +311,6 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   /**
    * Is `true` if the frame is an out-of-process (OOP) frame. Otherwise,
    * `false`.
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract isOOPFrame(): boolean;
 
@@ -323,11 +320,6 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * @remarks
    * Navigation to `about:blank` or navigation to the same URL with a different
    * hash will succeed and return `null`.
-   *
-   * Partially supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
-   *
-   * - `referer` not supported
-   * - `referrerPolicy` not supported
    *
    * :::warning
    *
@@ -1203,9 +1195,6 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    *   await devicePrompt.waitForDevice(({name}) => name.includes('My Device'))
    * );
    * ```
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    *
    * @internal
    */

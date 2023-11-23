@@ -123,10 +123,6 @@ export interface CSSCoverageOptions {
  * console.log(`Bytes used: ${(usedBytes / totalBytes) * 100}%`);
  * ```
  *
- * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
- *
- * @privateRemarks BiDi+ supported.
- *
  * @public
  */
 export class Coverage {

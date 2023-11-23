@@ -45,11 +45,6 @@ export interface TracingOptions {
  * await page.tracing.stop();
  * ```
  *
- * @remarks
- * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
- *
- * @privateRemarks BiDi not supported, BiDi+ supported.
- *
  * @public
  */
 export class Tracing {

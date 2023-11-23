@@ -48,5 +48,3 @@ const [fileChooser] = await Promise.all([
 ]);
 await fileChooser.accept(['/tmp/myfile.pdf']);
 ```
-
-Not supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).

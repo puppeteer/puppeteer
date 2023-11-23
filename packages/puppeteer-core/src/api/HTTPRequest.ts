@@ -130,9 +130,6 @@ export abstract class HTTPRequest {
    * Warning! Using this client can break Puppeteer. Use with caution.
    *
    * @experimental
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract get client(): CDPSession;
 
@@ -150,26 +147,17 @@ export abstract class HTTPRequest {
    * The `ContinueRequestOverrides` that will be used
    * if the interception is allowed to continue (ie, `abort()` and
    * `respond()` aren't called).
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract continueRequestOverrides(): ContinueRequestOverrides;
 
   /**
    * The `ResponseForRequest` that gets used if the
    * interception is allowed to respond (ie, `abort()` is not called).
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract responseForRequest(): Partial<ResponseForRequest> | null;
 
   /**
    * The most recent reason for aborting the request
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract abortErrorReason(): Protocol.Network.ErrorReason | null;
 
@@ -183,18 +171,12 @@ export abstract class HTTPRequest {
    *
    * InterceptResolutionAction is one of: `abort`, `respond`, `continue`,
    * `disabled`, `none`, or `already-handled`.
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract interceptResolutionState(): InterceptResolutionState;
 
   /**
    * Is `true` if the intercept resolution has already been handled,
    * `false` otherwise.
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract isInterceptResolutionHandled(): boolean;
 
@@ -211,9 +193,6 @@ export abstract class HTTPRequest {
   /**
    * Awaits pending interception handlers and then decides how to fulfill
    * the request interception.
-   *
-   * @remarks
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract finalizeInterceptions(): Promise<void>;
 
@@ -309,8 +288,6 @@ export abstract class HTTPRequest {
    * return an object with `errorText` containing a human-readable error
    * message, e.g. `net::ERR_FAILED`. It is not guaranteed that there will be
    * failure text if the request fails.
-   *
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract failure(): {errorText: string} | null;
 
@@ -341,9 +318,6 @@ export abstract class HTTPRequest {
    * {@link Page.setRequestInterception}.
    *
    * Exception is immediately thrown if the request interception is not enabled.
-   *
-   * Not supported with
-   * {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract continue(
     overrides?: ContinueRequestOverrides,
@@ -381,8 +355,6 @@ export abstract class HTTPRequest {
    * interception should be enabled with {@link Page.setRequestInterception}.
    *
    * Exception is immediately thrown if the request interception is not enabled.
-   *
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract respond(
     response: Partial<ResponseForRequest>,
@@ -402,8 +374,6 @@ export abstract class HTTPRequest {
    * To use this, request interception should be enabled with
    * {@link Page.setRequestInterception}. If it is not enabled, this method will
    * throw an exception immediately.
-   *
-   * Not supported with {@link https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support | WebDriver BiDi}.
    */
   abstract abort(errorCode?: ErrorCode, priority?: number): Promise<void>;
 }

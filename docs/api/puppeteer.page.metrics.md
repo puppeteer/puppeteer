@@ -47,5 +47,3 @@ Promise&lt;[Metrics](./puppeteer.metrics.md)&gt;
 ## Remarks
 
 All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
-
-Not supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).

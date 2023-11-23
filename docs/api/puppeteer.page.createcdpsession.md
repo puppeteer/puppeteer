@@ -17,7 +17,3 @@ class Page {
 **Returns:**
 
 Promise&lt;[CDPSession](./puppeteer.cdpsession.md)&gt;
-
-## Remarks
-
-Not supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).

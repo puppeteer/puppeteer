@@ -39,8 +39,6 @@ Promise&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;
 
 The result of calling `pageFunction`. If it returns an element it is wrapped in an [ElementHandle](./puppeteer.elementhandle.md), else the raw value itself is returned.
 
-Partially supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).
-
 ## Remarks
 
 If no element is found matching `selector`, the method will throw an error.

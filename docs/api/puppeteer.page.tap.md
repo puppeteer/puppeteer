@@ -27,5 +27,3 @@ Promise&lt;void&gt;
 ## Remarks
 
 Shortcut for [page.mainFrame().tap(selector)](./puppeteer.frame.tap.md).
-
-Not supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).

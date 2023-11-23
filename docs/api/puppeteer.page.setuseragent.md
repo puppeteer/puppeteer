@@ -27,7 +27,3 @@ class Page {
 Promise&lt;void&gt;
 
 Promise which resolves when the user agent is set.
-
-## Remarks
-
-Not supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).

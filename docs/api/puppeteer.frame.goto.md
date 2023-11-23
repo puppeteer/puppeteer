@@ -47,10 +47,6 @@ This method will not throw an error when any valid HTTP status code is returned 
 
 Navigation to `about:blank` or navigation to the same URL with a different hash will succeed and return `null`.
 
-Partially supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).
-
-- `referer` not supported - `referrerPolicy` not supported
-
 :::warning
 
 Headless mode doesn't support navigation to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).

@@ -25,5 +25,3 @@ Promise&lt;void&gt;
 ## Remarks
 
 NOTE: changing this value won't affect scripts that have already been run. It will take full effect on the next navigation.
-
-Not supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).

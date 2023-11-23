@@ -28,10 +28,6 @@ Promise&lt;[JSHandle](./puppeteer.jshandle.md)&lt;Prototype\[\]&gt;&gt;
 
 Promise which resolves to a handle to an array of objects with this prototype.
 
-## Remarks
-
-Not supported with [WebDriver BiDi](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support).
-
 ## Example
 
 ```ts
