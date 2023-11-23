@@ -68,10 +68,37 @@ interface ClearArgs {
 export class CLI {
   #cachePath;
   #rl?: readline.Interface;
+  #scriptName = '';
+  #allowCachePathOverride = true;
+  #pinnedBrowsers?: Partial<{[key in Browser]: string}>;
+  #prefixCommand?: {cmd: string; description: string};
 
-  constructor(cachePath = process.cwd(), rl?: readline.Interface) {
-    this.#cachePath = cachePath;
+  constructor(
+    opts?:
+      | string
+      | {
+          cachePath?: string;
+          scriptName?: string;
+          prefixCommand?: {cmd: string; description: string};
+          allowCachePathOverride?: boolean;
+          pinnedBrowsers?: Partial<{[key in Browser]: string}>;
+        },
+    rl?: readline.Interface
+  ) {
+    if (!opts) {
+      opts = {};
+    }
+    if (typeof opts === 'string') {
+      opts = {
+        cachePath: opts,
+      };
+    }
+    this.#cachePath = opts.cachePath ?? process.cwd();
     this.#rl = rl;
+    this.#scriptName = opts.scriptName ?? '@puppeteer/browsers';
+    this.#allowCachePathOverride = opts.allowCachePathOverride ?? true;
+    this.#pinnedBrowsers = opts.pinnedBrowsers;
+    this.#prefixCommand = opts.prefixCommand;
   }
 
   #defineBrowserParameter(yargs: Yargs.Argv<unknown>): void {
@@ -98,6 +125,9 @@ export class CLI {
   }
 
   #definePathParameter(yargs: Yargs.Argv<unknown>, required = false): void {
+    if (!this.#allowCachePathOverride) {
+      return;
+    }
     yargs.option('path', {
       type: 'string',
       desc: 'Path to the root folder for the browser downloads and installation. The installation folder structure is compatible with the cache structure used by Puppeteer.',
@@ -111,8 +141,28 @@ export class CLI {
 
   async run(argv: string[]): Promise<void> {
     const yargsInstance = yargs(hideBin(argv));
-    await yargsInstance
-      .scriptName('@puppeteer/browsers')
+    let target = yargsInstance.scriptName(this.#scriptName);
+    if (this.#prefixCommand) {
+      target = target.command(
+        this.#prefixCommand.cmd,
+        this.#prefixCommand.description,
+        yargs => {
+          return this.#build(yargs);
+        }
+      );
+    } else {
+      target = this.#build(target);
+    }
+    await target
+      .demandCommand(1)
+      .help()
+      .wrap(Math.min(120, yargsInstance.terminalWidth()))
+      .parse();
+  }
+
+  #build(yargs: Yargs.Argv<unknown>): Yargs.Argv<unknown> {
+    const latestOrPinned = this.#pinnedBrowsers ? 'pinned' : 'latest';
+    return yargs
       .command(
         'install <browser>',
         'Download and install the specified browser. If successful, the command outputs the actual browser buildId that was installed and the absolute path to the browser executable (format: <browser>@<buildID> <path>).',
@@ -126,7 +176,7 @@ export class CLI {
           });
           yargs.example(
             '$0 install chrome',
-            'Install the latest available build of the Chrome browser.'
+            `Install the ${latestOrPinned} available build of the Chrome browser.`
           );
           yargs.example(
             '$0 install chrome@latest',
@@ -176,16 +226,27 @@ export class CLI {
             '$0 install firefox --platform mac',
             'Install the latest Mac (Intel) build of the Firefox browser.'
           );
-          yargs.example(
-            '$0 install firefox --path /tmp/my-browser-cache',
-            'Install to the specified cache directory.'
-          );
+          if (this.#allowCachePathOverride) {
+            yargs.example(
+              '$0 install firefox --path /tmp/my-browser-cache',
+              'Install to the specified cache directory.'
+            );
+          }
         },
         async argv => {
           const args = argv as unknown as InstallArgs;
           args.platform ??= detectBrowserPlatform();
           if (!args.platform) {
             throw new Error(`Could not resolve the current platform`);
+          }
+          if (args.browser.buildId === 'pinned') {
+            const pinnedVersion = this.#pinnedBrowsers?.[args.browser.name];
+            if (!pinnedVersion) {
+              throw new Error(
+                `No pinned version found for ${args.browser.name}`
+              );
+            }
+            args.browser.buildId = pinnedVersion;
           }
           args.browser.buildId = await resolveBuildId(
             args.browser.name,
@@ -272,7 +333,9 @@ export class CLI {
       )
       .command(
         'clear',
-        'Removes all installed browsers from the specified cache directory',
+        this.#allowCachePathOverride
+          ? 'Removes all installed browsers from the specified cache directory'
+          : `Removes all installed browsers from ${this.#cachePath}`,
         yargs => {
           this.#definePathParameter(yargs, true);
         },
@@ -296,9 +359,7 @@ export class CLI {
         }
       )
       .demandCommand(1)
-      .help()
-      .wrap(Math.min(120, yargsInstance.terminalWidth()))
-      .parse();
+      .help();
   }
 
   #parseBrowser(version: string): Browser {
@@ -307,7 +368,11 @@ export class CLI {
 
   #parseBuildId(version: string): string {
     const parts = version.split('@');
-    return parts.length === 2 ? parts[1]! : 'latest';
+    return parts.length === 2
+      ? parts[1]!
+      : this.#pinnedBrowsers
+        ? 'pinned'
+        : 'latest';
   }
 }
 

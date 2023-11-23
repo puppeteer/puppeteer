@@ -117,6 +117,12 @@ To fetch Firefox Nightly as part of Puppeteer installation:
 PUPPETEER_PRODUCT=firefox npm i puppeteer
 ```
 
+To download Firefox Nightly into an existing Puppeteer project:
+
+```bash
+npx puppeteer browsers install firefox
+```
+
 #### Q: What’s considered a “Navigation”?
 
 From Puppeteer’s standpoint, **“navigation” is anything that changes a page’s
