@@ -19,8 +19,9 @@
 
 const assert = require('assert');
 
-const darkCodeTheme = require('prism-react-renderer/themes/dracula');
-const lightCodeTheme = require('prism-react-renderer/themes/github');
+const {themes} = require('prism-react-renderer');
+const darkCodeTheme = themes.dracula;
+const lightCodeTheme = themes.github;
 const semver = require('semver');
 
 const archivedVersions = require('./versionsArchived.json');
@@ -340,6 +341,7 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
+        additionalLanguages: ['bash', 'diff', 'json'],
       },
     },
 };
