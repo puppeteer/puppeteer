@@ -57,11 +57,12 @@ export interface BrowserConnectOptions {
    * @internal
    */
   _isPageTarget?: IsPageTargetCallback;
+
   /**
    * @defaultValue 'cdp'
-   * @internal
+   * @public
    */
-  protocol_?: ProtocolType;
+  protocol?: ProtocolType;
   /**
    * Timeout setting for individual protocol (CDP) calls.
    *

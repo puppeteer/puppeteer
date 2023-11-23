@@ -44,17 +44,13 @@ import type {ProductLauncher} from './ProductLauncher.js';
 /**
  * @public
  */
-export interface ExtraPreferences {
+export interface PuppeteerLaunchOptions
+  extends LaunchOptions,
+    BrowserLaunchArgumentOptions,
+    BrowserConnectOptions {
+  product?: Product;
   extraPrefsFirefox?: Record<string, unknown>;
 }
-
-/**
- * @public
- */
-export type PuppeteerLaunchOptions = LaunchOptions &
-  BrowserLaunchArgumentOptions &
-  BrowserConnectOptions &
-  ExtraPreferences;
 
 /**
  * Extends the main {@link Puppeteer} class with Node specific behaviour for

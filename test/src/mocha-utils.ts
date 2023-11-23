@@ -105,7 +105,7 @@ const defaultBrowserOptions = Object.assign(
     executablePath: process.env['BINARY'],
     headless: headless === 'new' ? ('new' as const) : isHeadless,
     dumpio: !!process.env['DUMPIO'],
-    protocol_: protocol,
+    protocol,
   },
   extraLaunchOptions
 );
@@ -129,7 +129,7 @@ const processVariables: {
   isHeadless: boolean;
   isFirefox: boolean;
   isChrome: boolean;
-  protocol_: 'cdp' | 'webDriverBiDi';
+  protocol: 'cdp' | 'webDriverBiDi';
   defaultBrowserOptions: PuppeteerLaunchOptions;
 } = {
   product,
@@ -137,7 +137,7 @@ const processVariables: {
   isHeadless,
   isFirefox,
   isChrome,
-  protocol_: protocol,
+  protocol,
   defaultBrowserOptions,
 };
 

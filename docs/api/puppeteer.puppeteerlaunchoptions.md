@@ -2,15 +2,19 @@
 sidebar_label: PuppeteerLaunchOptions
 ---
 
-# PuppeteerLaunchOptions type
+# PuppeteerLaunchOptions interface
 
 #### Signature:
 
 ```typescript
-export type PuppeteerLaunchOptions = LaunchOptions &
-  BrowserLaunchArgumentOptions &
-  BrowserConnectOptions &
-  ExtraPreferences;
+export interface PuppeteerLaunchOptions extends LaunchOptions, BrowserLaunchArgumentOptions, BrowserConnectOptions
 ```
 
-**References:** [LaunchOptions](./puppeteer.launchoptions.md), [BrowserLaunchArgumentOptions](./puppeteer.browserlaunchargumentoptions.md), [BrowserConnectOptions](./puppeteer.browserconnectoptions.md), [ExtraPreferences](./puppeteer.extrapreferences.md)
+**Extends:** [LaunchOptions](./puppeteer.launchoptions.md), [BrowserLaunchArgumentOptions](./puppeteer.browserlaunchargumentoptions.md), [BrowserConnectOptions](./puppeteer.browserconnectoptions.md)
+
+## Properties
+
+| Property          | Modifiers             | Type                              | Description | Default |
+| ----------------- | --------------------- | --------------------------------- | ----------- | ------- |
+| extraPrefsFirefox | <code>optional</code> | Record&lt;string, unknown&gt;     |             |         |
+| product           | <code>optional</code> | [Product](./puppeteer.product.md) |             |         |

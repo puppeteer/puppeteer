@@ -29,7 +29,6 @@ import {
 import type {Browser, BrowserCloseCallback} from '../api/Browser.js';
 import {CdpBrowser} from '../cdp/Browser.js';
 import {Connection} from '../cdp/Connection.js';
-import type {ProtocolType} from '../common/ConnectOptions.js';
 import {TimeoutError} from '../common/Errors.js';
 import type {Product} from '../common/Product.js';
 import {debugError} from '../common/util.js';
@@ -96,18 +95,9 @@ export abstract class ProductLauncher {
       slowMo = 0,
       timeout = 30000,
       waitForInitialPage = true,
-      protocol_: protocol_,
       protocolTimeout,
+      protocol,
     } = options;
-
-    let protocol = protocol_;
-
-    if (
-      this.#product === 'firefox' &&
-      (options as {protocol?: ProtocolType}).protocol
-    ) {
-      protocol = (options as {protocol?: ProtocolType}).protocol;
-    }
 
     const launchArgs = await this.computeLaunchArguments(options);
 

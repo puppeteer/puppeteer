@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import type {
-  BrowserConnectOptions,
-  ProtocolType,
-} from '../common/ConnectOptions.js';
+import type {BrowserConnectOptions} from '../common/ConnectOptions.js';
+import type {Product} from '../common/Product.js';
 
 /**
  * Launcher options that only apply to Chrome.
@@ -70,7 +68,7 @@ export type ChromeReleaseChannel =
  * Generic launch options that can be passed when launching any browser.
  * @public
  */
-export interface BaseLaunchOptions {
+export interface LaunchOptions {
   /**
    * Chrome Release Channel
    */
@@ -126,6 +124,11 @@ export interface BaseLaunchOptions {
    */
   pipe?: boolean;
   /**
+   * Which browser to launch.
+   * @defaultValue `chrome`
+   */
+  product?: Product;
+  /**
    * {@link https://searchfox.org/mozilla-release/source/modules/libpref/init/all.js | Additional preferences } that can be passed when launching with Firefox.
    */
   extraPrefsFirefox?: Record<string, unknown>;
@@ -136,28 +139,6 @@ export interface BaseLaunchOptions {
    */
   waitForInitialPage?: boolean;
 }
-
-/**
- * @public
- */
-export type LaunchOptions = BaseLaunchOptions &
-  (
-    | {
-        /**
-         * Which browser to launch.
-         * @defaultValue `chrome`
-         */
-        product?: 'chrome';
-      }
-    | {
-        /**
-         * Which browser to launch.
-         * @defaultValue `chrome`
-         */
-        product: 'firefox';
-        protocol?: ProtocolType;
-      }
-  );
 
 /**
  * Utility type exposed to enable users to define options that can be passed to
