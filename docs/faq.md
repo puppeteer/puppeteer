@@ -27,38 +27,15 @@ support to browsers such as Safari. This effort includes exploration of a
 standard for executing cross-browser commands (instead of relying on the
 non-standard DevTools Protocol used by Chrome).
 
-Update 2023-11-17: Puppeteer offers experimental support for
-[WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) with Firefox.
-From Puppeteer vX.X.X. onwards you can specify
-[`puppeteer.launch({product:'firefox', protocol: 'webDriverBiDi'})`](./api/puppeteer.puppeteernode.launch)
-to run your Puppeteer scripts in Firefox Nightly, using WebDriver BiDi.
-WebDriver BiDi is a new browser automation standard, an extension to the
-WebDriver protocol. Just like CDP implementation in Firefox, the WebDriver BiDi
-does not support all of the Puppeteer features. Refer to the
-[API documentation](https://pptr.dev/api/puppeteer.puppeteernode) to learn if a
-particular feature is supported with WebDriver BiDi.
+Update 2023-11-17: Puppeteer has experimental support for the new
+[WebDriverBiDi](https://w3c.github.io/webdriver-bidi/) protocol that can be used
+to automate Firefox. The WebDriver BiDi implementation in Firefox will replace
+the current CDP implementation in Firefox in the future. See
+https://pptr.dev/webdriver-bidi for more details.
 
 ## Q: Does Puppeteer support WebDriver BiDi?
 
-Puppeteer has experimental support for WebDriver BiDi with Firefox. You can
-track the implementation progress
-[here](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/).
-
-To launch Firefox with WebDriver BiDi protocol on, use the `protocol` parameter:
-
-```ts
-import puppeteer from 'puppeteer';
-
-const browser = await puppeteer.launch({
-  product: 'firefox',
-  protocol: 'webDriverBiDi',
-});
-const page = await browser.newPage();
-...
-await browser.close();
-```
-
-WebDriver BiDi support for Chrome is still under development.
+Puppeteer has experimental support for WebDriver BiDi. See https://pptr.dev/webdriver-bidi.
 
 ## Q: What are Puppeteer’s goals and principles?
 
