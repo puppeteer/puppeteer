@@ -2292,7 +2292,12 @@ export abstract class Page extends EventEmitter<PageEvents> {
   abstract setViewport(viewport: Viewport): Promise<void>;
 
   /**
-   * Current page viewport settings.
+   * Returns the current page viewport settings without checking the actual page
+   * viewport.
+   *
+   * This is either the viewport set with the previous {@link Page.setViewport}
+   * call or the default viewport set via
+   * {@link BrowserConnectOptions.defaultViewport}.
    */
   abstract viewport(): Viewport | null;
 
