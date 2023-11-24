@@ -1,7 +1,14 @@
 # Experimental WebDriver BiDi Support
 
 [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) is a new cross-browser
-automation protocol that extends WebDriver with events. Puppeteer aims at
+automation protocol that extends WebDriver with events. Here are the resources if you want to learn more about WebDriver BiDi:
+
+- [WebDriver BiDi - The future of cross-browser automation](https://developer.chrome.com/articles/webdriver-bidi/)
+- [WebDriver BiDi: 2023 status update](https://developer.chrome.com/blog/webdriver-bidi-2023/)
+
+
+## Automate with Chrome and Firefox
+
 supporting WebDriver BiDi whenever possible and currently has experimental
 support for automating Firefox and Chrome over WebDriver BiDi with Firefox
 support almost reaching feature parity with the previous CDP-based
