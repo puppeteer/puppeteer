@@ -9,9 +9,7 @@ The page's title
 #### Signature:
 
 ```typescript
-class Page {
-  title(): Promise<string>;
-}
+class Page &#123;title(): Promise<string>;&#125;
 ```
 
 **Returns:**

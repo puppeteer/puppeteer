@@ -9,9 +9,7 @@ The frame's `name` attribute as specified in the tag.
 #### Signature:
 
 ```typescript
-class Frame {
-  name(): string;
-}
+class Frame &#123;name(): string;&#125;
 ```
 
 **Returns:**

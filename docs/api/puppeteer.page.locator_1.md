@@ -9,9 +9,7 @@ Creates a locator for the provided function. See [Locator](./puppeteer.locator.m
 #### Signature:
 
 ```typescript
-class Page {
-  locator<Ret>(func: () => Awaitable<Ret>): Locator<Ret>;
-}
+class Page &#123;locator<Ret>(func: () => Awaitable<Ret>): Locator<Ret>;&#125;
 ```
 
 ## Parameters

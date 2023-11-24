@@ -9,9 +9,7 @@ Enables CPU throttling to emulate slow CPUs.
 #### Signature:
 
 ```typescript
-class Page {
-  abstract emulateCPUThrottling(factor: number | null): Promise<void>;
-}
+class Page &#123;abstract emulateCPUThrottling(factor: number | null): Promise<void>;&#125;
 ```
 
 ## Parameters

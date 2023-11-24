@@ -9,11 +9,7 @@ Runs `document.querySelector` within the page. If no element matches the selecto
 #### Signature:
 
 ```typescript
-class Page {
-  $<Selector extends string>(
-    selector: Selector
-  ): Promise<ElementHandle<NodeFor<Selector>> | null>;
-}
+class Page &#123;$<Selector extends string>(selector: Selector): Promise<ElementHandle<NodeFor<Selector>> | null>;&#125;
 ```
 
 ## Parameters

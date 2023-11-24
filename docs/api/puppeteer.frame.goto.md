@@ -9,25 +9,20 @@ Navigates the frame to the given `url`.
 #### Signature:
 
 ```typescript
-class Frame {
-  abstract goto(
-    url: string,
-    options?: {
-      referer?: string;
-      referrerPolicy?: string;
-      timeout?: number;
-      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    }
-  ): Promise<HTTPResponse | null>;
-}
+class Frame &#123;abstract goto(url: string, options?: &#123;
+        referer?: string;
+        referrerPolicy?: string;
+        timeout?: number;
+        waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
+    &#125;): Promise<HTTPResponse | null>;&#125;
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                                                                                                                                                     | Description                                                                             |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
-| url       | string                                                                                                                                                                                                                   | URL to navigate the frame to. The URL should include scheme, e.g. <code>https://</code> |
-| options   | \{ referer?: string; referrerPolicy?: string; timeout?: number; waitUntil?: [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) \| [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)\[\]; \} | _(Optional)_ Options to configure waiting behavior.                                     |
+| Parameter | Type                                                                                                                                                                                                                               | Description                                                                             |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| url       | string                                                                                                                                                                                                                             | URL to navigate the frame to. The URL should include scheme, e.g. <code>https://</code> |
+| options   | &#123; referer?: string; referrerPolicy?: string; timeout?: number; waitUntil?: [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) \| [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)\[\]; &#125; | _(Optional)_ Options to configure waiting behavior.                                     |
 
 **Returns:**
 

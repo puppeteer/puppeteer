@@ -9,9 +9,7 @@ Disconnects Puppeteer from this [browser](./puppeteer.browser.md), but leaves th
 #### Signature:
 
 ```typescript
-class Browser {
-  abstract disconnect(): void;
-}
+class Browser &#123;abstract disconnect(): void;&#125;
 ```
 
 **Returns:**

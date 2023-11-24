@@ -9,9 +9,7 @@ Creates a new [page](./puppeteer.page.md) in this [browser context](./puppeteer.
 #### Signature:
 
 ```typescript
-class BrowserContext {
-  abstract newPage(): Promise<Page>;
-}
+class BrowserContext &#123;abstract newPage(): Promise<Page>;&#125;
 ```
 
 **Returns:**

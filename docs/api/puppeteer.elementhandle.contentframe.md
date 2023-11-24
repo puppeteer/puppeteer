@@ -9,9 +9,7 @@ Resolves the frame associated with the element, if any. Always exists for HTMLIF
 #### Signature:
 
 ```typescript
-class ElementHandle {
-  abstract contentFrame(this: ElementHandle<HTMLIFrameElement>): Promise<Frame>;
-}
+class ElementHandle &#123;abstract contentFrame(this: ElementHandle<HTMLIFrameElement>): Promise<Frame>;&#125;
 ```
 
 ## Parameters

@@ -7,9 +7,7 @@ sidebar_label: ElementHandle.contentFrame_1
 #### Signature:
 
 ```typescript
-class ElementHandle {
-  abstract contentFrame(): Promise<Frame | null>;
-}
+class ElementHandle &#123;abstract contentFrame(): Promise<Frame | null>;&#125;
 ```
 
 **Returns:**

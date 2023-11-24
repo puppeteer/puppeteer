@@ -9,9 +9,7 @@ Stops the recorder.
 #### Signature:
 
 ```typescript
-class ScreenRecorder {
-  stop(): Promise<void>;
-}
+class ScreenRecorder &#123;stop(): Promise<void>;&#125;
 ```
 
 **Returns:**

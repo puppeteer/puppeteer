@@ -9,9 +9,7 @@ This method scrolls element into view if needed, and then uses [Touchscreen.tap(
 #### Signature:
 
 ```typescript
-class ElementHandle {
-  tap(this: ElementHandle<Element>): Promise<void>;
-}
+class ElementHandle &#123;tap(this: ElementHandle<Element>): Promise<void>;&#125;
 ```
 
 ## Parameters

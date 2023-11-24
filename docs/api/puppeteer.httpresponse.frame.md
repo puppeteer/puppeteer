@@ -9,9 +9,7 @@ A [Frame](./puppeteer.frame.md) that initiated this response, or `null` if navig
 #### Signature:
 
 ```typescript
-class HTTPResponse {
-  abstract frame(): Frame | null;
-}
+class HTTPResponse &#123;abstract frame(): Frame | null;&#125;
 ```
 
 **Returns:**

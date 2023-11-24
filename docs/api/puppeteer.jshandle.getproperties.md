@@ -9,9 +9,7 @@ Gets a map of handles representing the properties of the current handle.
 #### Signature:
 
 ```typescript
-class JSHandle {
-  getProperties(): Promise<Map<string, JSHandle>>;
-}
+class JSHandle &#123;getProperties(): Promise<Map<string, JSHandle>>;&#125;
 ```
 
 **Returns:**
@@ -24,11 +22,11 @@ Promise&lt;Map&lt;string, [JSHandle](./puppeteer.jshandle.md)&gt;&gt;
 const listHandle = await page.evaluateHandle(() => document.body.children);
 const properties = await listHandle.getProperties();
 const children = [];
-for (const property of properties.values()) {
+for (const property of properties.values()) &#123;
   const element = property.asElement();
-  if (element) {
+  if (element) &#123;
     children.push(element);
-  }
-}
+  &#125;
+&#125;
 children; // holds elementHandles to all children of document.body
 ```

@@ -9,12 +9,7 @@ This method scrolls element into view if needed, and then uses [Page.mouse](./pu
 #### Signature:
 
 ```typescript
-class ElementHandle {
-  click(
-    this: ElementHandle<Element>,
-    options?: Readonly<ClickOptions>
-  ): Promise<void>;
-}
+class ElementHandle &#123;click(this: ElementHandle<Element>, options?: Readonly<ClickOptions>): Promise<void>;&#125;
 ```
 
 ## Parameters

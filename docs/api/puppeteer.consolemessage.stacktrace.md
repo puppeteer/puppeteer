@@ -9,9 +9,7 @@ The array of locations on the stack of the console message.
 #### Signature:
 
 ```typescript
-class ConsoleMessage {
-  stackTrace(): ConsoleMessageLocation[];
-}
+class ConsoleMessage &#123;stackTrace(): ConsoleMessageLocation[];&#125;
 ```
 
 **Returns:**

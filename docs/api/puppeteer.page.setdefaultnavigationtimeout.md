@@ -21,9 +21,7 @@ This setting will change the default maximum navigation time for the following m
 #### Signature:
 
 ```typescript
-class Page {
-  abstract setDefaultNavigationTimeout(timeout: number): void;
-}
+class Page &#123;abstract setDefaultNavigationTimeout(timeout: number): void;&#125;
 ```
 
 ## Parameters

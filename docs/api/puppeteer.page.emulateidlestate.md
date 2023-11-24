@@ -9,19 +9,17 @@ Emulates the idle state. If no arguments set, clears idle state emulation.
 #### Signature:
 
 ```typescript
-class Page {
-  abstract emulateIdleState(overrides?: {
-    isUserActive: boolean;
-    isScreenUnlocked: boolean;
-  }): Promise<void>;
-}
+class Page &#123;abstract emulateIdleState(overrides?: &#123;
+        isUserActive: boolean;
+        isScreenUnlocked: boolean;
+    &#125;): Promise<void>;&#125;
 ```
 
 ## Parameters
 
-| Parameter | Type                                                  | Description                                                     |
-| --------- | ----------------------------------------------------- | --------------------------------------------------------------- |
-| overrides | \{ isUserActive: boolean; isScreenUnlocked: boolean; \} | _(Optional)_ Mock idle state. If not set, clears idle overrides |
+| Parameter | Type                                                            | Description                                                     |
+| --------- | --------------------------------------------------------------- | --------------------------------------------------------------- |
+| overrides | &#123; isUserActive: boolean; isScreenUnlocked: boolean; &#125; | _(Optional)_ Mock idle state. If not set, clears idle overrides |
 
 **Returns:**
 
@@ -31,7 +29,7 @@ Promise&lt;void&gt;
 
 ```ts
 // set idle emulation
-await page.emulateIdleState({isUserActive: true, isScreenUnlocked: false});
+await page.emulateIdleState(&#123;isUserActive: true, isScreenUnlocked: false&#125;);
 
 // do some checks here
 ...

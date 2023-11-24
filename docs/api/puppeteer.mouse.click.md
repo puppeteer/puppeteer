@@ -9,13 +9,7 @@ Shortcut for `mouse.move`, `mouse.down` and `mouse.up`.
 #### Signature:
 
 ```typescript
-class Mouse {
-  abstract click(
-    x: number,
-    y: number,
-    options?: Readonly<MouseClickOptions>
-  ): Promise<void>;
-}
+class Mouse &#123;abstract click(x: number, y: number, options?: Readonly<MouseClickOptions>): Promise<void>;&#125;
 ```
 
 ## Parameters

@@ -19,12 +19,7 @@ sidebar_label: Frame.waitForXPath
 #### Signature:
 
 ```typescript
-class Frame {
-  waitForXPath(
-    xpath: string,
-    options?: WaitForSelectorOptions
-  ): Promise<ElementHandle<Node> | null>;
-}
+class Frame &#123;waitForXPath(xpath: string, options?: WaitForSelectorOptions): Promise<ElementHandle<Node> | null>;&#125;
 ```
 
 ## Parameters

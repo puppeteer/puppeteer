@@ -7,9 +7,7 @@ sidebar_label: Target.url
 #### Signature:
 
 ```typescript
-class Target {
-  abstract url(): string;
-}
+class Target &#123;abstract url(): string;&#125;
 ```
 
 **Returns:**

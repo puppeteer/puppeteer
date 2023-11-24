@@ -7,16 +7,16 @@ sidebar_label: CSSCoverage.start
 #### Signature:
 
 ```typescript
-class CSSCoverage {
-  start(options?: {resetOnNavigation?: boolean}): Promise<void>;
-}
+class CSSCoverage &#123;start(options?: &#123;
+        resetOnNavigation?: boolean;
+    &#125;): Promise<void>;&#125;
 ```
 
 ## Parameters
 
-| Parameter | Type                             | Description  |
-| --------- | -------------------------------- | ------------ |
-| options   | \{ resetOnNavigation?: boolean; \} | _(Optional)_ |
+| Parameter | Type                                       | Description  |
+| --------- | ------------------------------------------ | ------------ |
+| options   | &#123; resetOnNavigation?: boolean; &#125; | _(Optional)_ |
 
 **Returns:**
 

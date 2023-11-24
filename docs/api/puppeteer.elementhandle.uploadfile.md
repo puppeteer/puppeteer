@@ -9,12 +9,7 @@ Sets the value of an [input element](https://developer.mozilla.org/en-US/docs/We
 #### Signature:
 
 ```typescript
-class ElementHandle {
-  abstract uploadFile(
-    this: ElementHandle<HTMLInputElement>,
-    ...paths: string[]
-  ): Promise<void>;
-}
+class ElementHandle &#123;abstract uploadFile(this: ElementHandle<HTMLInputElement>, ...paths: string[]): Promise<void>;&#125;
 ```
 
 ## Parameters

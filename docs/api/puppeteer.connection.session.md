@@ -7,9 +7,7 @@ sidebar_label: Connection.session
 #### Signature:
 
 ```typescript
-class Connection {
-  session(sessionId: string): CDPSession | null;
-}
+class Connection &#123;session(sessionId: string): CDPSession | null;&#125;
 ```
 
 ## Parameters

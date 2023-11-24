@@ -9,9 +9,7 @@ The `ResponseForRequest` that gets used if the interception is allowed to respon
 #### Signature:
 
 ```typescript
-class HTTPRequest {
-  abstract responseForRequest(): Partial<ResponseForRequest> | null;
-}
+class HTTPRequest &#123;abstract responseForRequest(): Partial<ResponseForRequest> | null;&#125;
 ```
 
 **Returns:**

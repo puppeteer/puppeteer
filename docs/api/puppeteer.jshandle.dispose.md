@@ -9,9 +9,7 @@ Releases the object referenced by the handle for garbage collection.
 #### Signature:
 
 ```typescript
-class JSHandle {
-  abstract dispose(): Promise<void>;
-}
+class JSHandle &#123;abstract dispose(): Promise<void>;&#125;
 ```
 
 **Returns:**

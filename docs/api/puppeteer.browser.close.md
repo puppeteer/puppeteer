@@ -9,9 +9,7 @@ Closes this [browser](./puppeteer.browser.md) and all associated [pages](./puppe
 #### Signature:
 
 ```typescript
-class Browser {
-  abstract close(): Promise<void>;
-}
+class Browser &#123;abstract close(): Promise<void>;&#125;
 ```
 
 **Returns:**

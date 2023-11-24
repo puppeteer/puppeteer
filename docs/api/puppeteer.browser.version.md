@@ -13,9 +13,7 @@ The format of [Browser.version()](./puppeteer.browser.version.md) might change w
 #### Signature:
 
 ```typescript
-class Browser {
-  abstract version(): Promise<string>;
-}
+class Browser &#123;abstract version(): Promise<string>;&#125;
 ```
 
 **Returns:**

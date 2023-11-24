@@ -11,9 +11,7 @@ sidebar_label: Page.setDragInterception
 #### Signature:
 
 ```typescript
-class Page {
-  abstract setDragInterception(enabled: boolean): Promise<void>;
-}
+class Page &#123;abstract setDragInterception(enabled: boolean): Promise<void>;&#125;
 ```
 
 ## Parameters

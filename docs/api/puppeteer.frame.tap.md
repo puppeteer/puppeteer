@@ -9,9 +9,7 @@ Taps the first element that matches the `selector`.
 #### Signature:
 
 ```typescript
-class Frame {
-  tap(selector: string): Promise<void>;
-}
+class Frame &#123;tap(selector: string): Promise<void>;&#125;
 ```
 
 ## Parameters

@@ -18,24 +18,24 @@ export interface PageEvents extends Record<EventType, unknown>
 
 ## Properties
 
-| Property               | Modifiers | Type                                                           | Description | Default |
-| ---------------------- | --------- | -------------------------------------------------------------- | ----------- | ------- |
-| close                  |           | undefined                                                      |             |         |
-| console                |           | [ConsoleMessage](./puppeteer.consolemessage.md)                |             |         |
-| dialog                 |           | [Dialog](./puppeteer.dialog.md)                                |             |         |
-| domcontentloaded       |           | undefined                                                      |             |         |
-| error                  |           | Error                                                          |             |         |
-| frameattached          |           | [Frame](./puppeteer.frame.md)                                  |             |         |
-| framedetached          |           | [Frame](./puppeteer.frame.md)                                  |             |         |
-| framenavigated         |           | [Frame](./puppeteer.frame.md)                                  |             |         |
-| load                   |           | undefined                                                      |             |         |
-| metrics                |           | \{ title: string; metrics: [Metrics](./puppeteer.metrics.md); \} |             |         |
-| pageerror              |           | Error                                                          |             |         |
-| popup                  |           | [Page](./puppeteer.page.md) \| null                            |             |         |
-| request                |           | [HTTPRequest](./puppeteer.httprequest.md)                      |             |         |
-| requestfailed          |           | [HTTPRequest](./puppeteer.httprequest.md)                      |             |         |
-| requestfinished        |           | [HTTPRequest](./puppeteer.httprequest.md)                      |             |         |
-| requestservedfromcache |           | [HTTPRequest](./puppeteer.httprequest.md)                      |             |         |
-| response               |           | [HTTPResponse](./puppeteer.httpresponse.md)                    |             |         |
-| workercreated          |           | [WebWorker](./puppeteer.webworker.md)                          |             |         |
-| workerdestroyed        |           | [WebWorker](./puppeteer.webworker.md)                          |             |         |
+| Property               | Modifiers | Type                                                                     | Description | Default |
+| ---------------------- | --------- | ------------------------------------------------------------------------ | ----------- | ------- |
+| close                  |           | undefined                                                                |             |         |
+| console                |           | [ConsoleMessage](./puppeteer.consolemessage.md)                          |             |         |
+| dialog                 |           | [Dialog](./puppeteer.dialog.md)                                          |             |         |
+| domcontentloaded       |           | undefined                                                                |             |         |
+| error                  |           | Error                                                                    |             |         |
+| frameattached          |           | [Frame](./puppeteer.frame.md)                                            |             |         |
+| framedetached          |           | [Frame](./puppeteer.frame.md)                                            |             |         |
+| framenavigated         |           | [Frame](./puppeteer.frame.md)                                            |             |         |
+| load                   |           | undefined                                                                |             |         |
+| metrics                |           | &#123; title: string; metrics: [Metrics](./puppeteer.metrics.md); &#125; |             |         |
+| pageerror              |           | Error                                                                    |             |         |
+| popup                  |           | [Page](./puppeteer.page.md) \| null                                      |             |         |
+| request                |           | [HTTPRequest](./puppeteer.httprequest.md)                                |             |         |
+| requestfailed          |           | [HTTPRequest](./puppeteer.httprequest.md)                                |             |         |
+| requestfinished        |           | [HTTPRequest](./puppeteer.httprequest.md)                                |             |         |
+| requestservedfromcache |           | [HTTPRequest](./puppeteer.httprequest.md)                                |             |         |
+| response               |           | [HTTPResponse](./puppeteer.httpresponse.md)                              |             |         |
+| workercreated          |           | [WebWorker](./puppeteer.webworker.md)                                    |             |         |
+| workerdestroyed        |           | [WebWorker](./puppeteer.webworker.md)                                    |             |         |

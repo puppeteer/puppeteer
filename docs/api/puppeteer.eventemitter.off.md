@@ -9,12 +9,7 @@ Remove an event listener from firing.
 #### Signature:
 
 ```typescript
-class EventEmitter {
-  off<Key extends keyof EventsWithWildcard<Events>>(
-    type: Key,
-    handler?: Handler<EventsWithWildcard<Events>[Key]>
-  ): this;
-}
+class EventEmitter &#123;off<Key extends keyof EventsWithWildcard<Events>>(type: Key, handler?: Handler<EventsWithWildcard<Events>[Key]>): this;&#125;
 ```
 
 ## Parameters

@@ -9,9 +9,7 @@ The status code of the response (e.g., 200 for a success).
 #### Signature:
 
 ```typescript
-class HTTPResponse {
-  abstract status(): number;
-}
+class HTTPResponse &#123;abstract status(): number;&#125;
 ```
 
 **Returns:**

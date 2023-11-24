@@ -134,15 +134,15 @@ KnownDevices: Readonly<
 ## Example
 
 ```ts
-import {KnownDevices} from 'puppeteer';
+import &#123;KnownDevices&#125; from 'puppeteer';
 const iPhone = KnownDevices['iPhone 6'];
 
-(async () => {
+(async () => &#123;
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.emulate(iPhone);
   await page.goto('https://www.google.com');
   // other actions...
   await browser.close();
-})();
+&#125;)();
 ```

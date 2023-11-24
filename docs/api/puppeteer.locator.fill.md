@@ -9,13 +9,7 @@ Fills out the input identified by the locator using the provided value. The type
 #### Signature:
 
 ```typescript
-class Locator {
-  fill<ElementType extends Element>(
-    this: Locator<ElementType>,
-    value: string,
-    options?: Readonly<ActionOptions>
-  ): Promise<void>;
-}
+class Locator &#123;fill<ElementType extends Element>(this: Locator<ElementType>, value: string, options?: Readonly<ActionOptions>): Promise<void>;&#125;
 ```
 
 ## Parameters

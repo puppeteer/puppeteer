@@ -9,9 +9,7 @@ sidebar_label: Page.isServiceWorkerBypassed
 #### Signature:
 
 ```typescript
-class Page {
-  abstract isServiceWorkerBypassed(): boolean;
-}
+class Page &#123;abstract isServiceWorkerBypassed(): boolean;&#125;
 ```
 
 **Returns:**

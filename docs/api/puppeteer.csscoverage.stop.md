@@ -7,9 +7,7 @@ sidebar_label: CSSCoverage.stop
 #### Signature:
 
 ```typescript
-class CSSCoverage {
-  stop(): Promise<CoverageEntry[]>;
-}
+class CSSCoverage &#123;stop(): Promise<CoverageEntry[]>;&#125;
 ```
 
 **Returns:**

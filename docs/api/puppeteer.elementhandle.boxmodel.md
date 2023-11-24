@@ -9,9 +9,7 @@ This method returns boxes of the element, or `null` if the element is [not part 
 #### Signature:
 
 ```typescript
-class ElementHandle {
-  boxModel(): Promise<BoxModel | null>;
-}
+class ElementHandle &#123;boxModel(): Promise<BoxModel | null>;&#125;
 ```
 
 **Returns:**
@@ -20,4 +18,4 @@ Promise&lt;[BoxModel](./puppeteer.boxmodel.md) \| null&gt;
 
 ## Remarks
 
-Boxes are represented as an array of points; Each Point is an object `{x, y}`. Box points are sorted clock-wise.
+Boxes are represented as an array of points; Each Point is an object `&#123;x, y&#125;`. Box points are sorted clock-wise.

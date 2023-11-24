@@ -9,9 +9,7 @@ The text of the console message.
 #### Signature:
 
 ```typescript
-class ConsoleMessage {
-  text(): string;
-}
+class ConsoleMessage &#123;text(): string;&#125;
 ```
 
 **Returns:**

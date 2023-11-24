@@ -9,9 +9,7 @@ The name of the issuer of the certificate.
 #### Signature:
 
 ```typescript
-class SecurityDetails {
-  issuer(): string;
-}
+class SecurityDetails &#123;issuer(): string;&#125;
 ```
 
 **Returns:**

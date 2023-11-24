@@ -9,9 +9,7 @@ Presses the mouse.
 #### Signature:
 
 ```typescript
-class Mouse {
-  abstract down(options?: Readonly<MouseOptions>): Promise<void>;
-}
+class Mouse &#123;abstract down(options?: Readonly<MouseOptions>): Promise<void>;&#125;
 ```
 
 ## Parameters

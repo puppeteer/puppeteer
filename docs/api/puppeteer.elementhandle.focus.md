@@ -9,9 +9,7 @@ Calls [focus](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus
 #### Signature:
 
 ```typescript
-class ElementHandle {
-  focus(): Promise<void>;
-}
+class ElementHandle &#123;focus(): Promise<void>;&#125;
 ```
 
 **Returns:**

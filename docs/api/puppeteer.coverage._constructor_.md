@@ -9,9 +9,7 @@ Constructs a new instance of the `Coverage` class
 #### Signature:
 
 ```typescript
-class Coverage {
-  constructor(client: CDPSession);
-}
+class Coverage &#123;constructor(client: CDPSession);&#125;
 ```
 
 ## Parameters

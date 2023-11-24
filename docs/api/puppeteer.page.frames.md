@@ -9,9 +9,7 @@ An array of all frames attached to the page.
 #### Signature:
 
 ```typescript
-class Page {
-  abstract frames(): Frame[];
-}
+class Page &#123;abstract frames(): Frame[];&#125;
 ```
 
 **Returns:**

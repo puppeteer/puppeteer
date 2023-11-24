@@ -9,9 +9,7 @@ Clones the locator.
 #### Signature:
 
 ```typescript
-class Locator {
-  clone(): Locator<T>;
-}
+class Locator &#123;clone(): Locator<T>;&#125;
 ```
 
 **Returns:**

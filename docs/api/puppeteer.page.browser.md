@@ -9,9 +9,7 @@ Get the browser the page belongs to.
 #### Signature:
 
 ```typescript
-class Page {
-  abstract browser(): Browser;
-}
+class Page &#123;abstract browser(): Browser;&#125;
 ```
 
 **Returns:**

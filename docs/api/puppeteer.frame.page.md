@@ -9,9 +9,7 @@ The page associated with the frame.
 #### Signature:
 
 ```typescript
-class Frame {
-  abstract page(): Page;
-}
+class Frame &#123;abstract page(): Page;&#125;
 ```
 
 **Returns:**

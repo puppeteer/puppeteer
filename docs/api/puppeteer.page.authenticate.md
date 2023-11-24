@@ -9,9 +9,7 @@ Provide credentials for `HTTP authentication`.
 #### Signature:
 
 ```typescript
-class Page {
-  abstract authenticate(credentials: Credentials): Promise<void>;
-}
+class Page &#123;abstract authenticate(credentials: Credentials): Promise<void>;&#125;
 ```
 
 ## Parameters

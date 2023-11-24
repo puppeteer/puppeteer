@@ -9,9 +9,7 @@ If the target is not of type `"service_worker"` or `"shared_worker"`, returns `n
 #### Signature:
 
 ```typescript
-class Target {
-  worker(): Promise<WebWorker | null>;
-}
+class Target &#123;worker(): Promise<WebWorker | null>;&#125;
 ```
 
 **Returns:**

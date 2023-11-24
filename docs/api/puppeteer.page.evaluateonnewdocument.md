@@ -15,15 +15,7 @@ The function is invoked after the document was created but before any of its scr
 #### Signature:
 
 ```typescript
-class Page {
-  abstract evaluateOnNewDocument<
-    Params extends unknown[],
-    Func extends (...args: Params) => unknown = (...args: Params) => unknown,
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<NewDocumentScriptEvaluation>;
-}
+class Page &#123;abstract evaluateOnNewDocument<Params extends unknown[], Func extends (...args: Params) => unknown = (...args: Params) => unknown>(pageFunction: Func | string, ...args: Params): Promise<NewDocumentScriptEvaluation>;&#125;
 ```
 
 ## Parameters
@@ -45,11 +37,11 @@ An example of overriding the navigator.languages property before the page loads:
 // preload.js
 
 // overwrite the `languages` property to use a custom getter
-Object.defineProperty(navigator, 'languages', {
-  get: function () {
+Object.defineProperty(navigator, 'languages', &#123;
+  get: function () &#123;
     return ['en-US', 'en', 'bn'];
-  },
-});
+  &#125;,
+&#125;);
 
 // In your puppeteer script, assuming the preload.js file is
 // in same folder of our script.

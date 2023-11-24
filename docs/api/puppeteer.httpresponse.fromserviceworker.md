@@ -9,9 +9,7 @@ True if the response was served by a service worker.
 #### Signature:
 
 ```typescript
-class HTTPResponse {
-  abstract fromServiceWorker(): boolean;
-}
+class HTTPResponse &#123;abstract fromServiceWorker(): boolean;&#125;
 ```
 
 **Returns:**

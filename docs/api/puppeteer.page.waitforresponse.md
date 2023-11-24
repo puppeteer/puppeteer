@@ -7,16 +7,9 @@ sidebar_label: Page.waitForResponse
 #### Signature:
 
 ```typescript
-class Page {
-  abstract waitForResponse(
-    urlOrPredicate:
-      | string
-      | ((res: HTTPResponse) => boolean | Promise<boolean>),
-    options?: {
-      timeout?: number;
-    }
-  ): Promise<HTTPResponse>;
-}
+class Page &#123;abstract waitForResponse(urlOrPredicate: string | ((res: HTTPResponse) => boolean | Promise<boolean>), options?: &#123;
+        timeout?: number;
+    &#125;): Promise<HTTPResponse>;&#125;
 ```
 
 ## Parameters
@@ -24,7 +17,7 @@ class Page {
 | Parameter      | Type                                                                                                   | Description                              |
 | -------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------- |
 | urlOrPredicate | string \| ((res: [HTTPResponse](./puppeteer.httpresponse.md)) =&gt; boolean \| Promise&lt;boolean&gt;) | A URL or predicate to wait for.          |
-| options        | \{ timeout?: number; \}                                                                                  | _(Optional)_ Optional waiting parameters |
+| options        | &#123; timeout?: number; &#125;                                                                        | _(Optional)_ Optional waiting parameters |
 
 **Returns:**
 
@@ -48,8 +41,8 @@ const finalResponse = await page.waitForResponse(
   response =>
     response.url() === 'https://example.com' && response.status() === 200
 );
-const finalResponse = await page.waitForResponse(async response => {
+const finalResponse = await page.waitForResponse(async response => &#123;
   return (await response.text()).includes('<html>');
-});
+&#125;);
 return finalResponse.ok();
 ```

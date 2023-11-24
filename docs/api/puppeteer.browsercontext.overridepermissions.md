@@ -9,12 +9,7 @@ Grants this [browser context](./puppeteer.browsercontext.md) the given `permissi
 #### Signature:
 
 ```typescript
-class BrowserContext {
-  abstract overridePermissions(
-    origin: string,
-    permissions: Permission[]
-  ): Promise<void>;
-}
+class BrowserContext &#123;abstract overridePermissions(origin: string, permissions: Permission[]): Promise<void>;&#125;
 ```
 
 ## Parameters

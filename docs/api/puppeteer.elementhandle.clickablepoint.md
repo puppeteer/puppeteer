@@ -9,9 +9,7 @@ Returns the middle point within an element unless a specific offset is provided.
 #### Signature:
 
 ```typescript
-class ElementHandle {
-  clickablePoint(offset?: Offset): Promise<Point>;
-}
+class ElementHandle &#123;clickablePoint(offset?: Offset): Promise<Point>;&#125;
 ```
 
 ## Parameters

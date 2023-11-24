@@ -9,9 +9,7 @@ True if the response was served from either the browser's disk cache or memory c
 #### Signature:
 
 ```typescript
-class HTTPResponse {
-  abstract fromCache(): boolean;
-}
+class HTTPResponse &#123;abstract fromCache(): boolean;&#125;
 ```
 
 **Returns:**

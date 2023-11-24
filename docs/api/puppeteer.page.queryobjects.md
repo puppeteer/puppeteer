@@ -9,11 +9,7 @@ This method iterates the JavaScript heap and finds all objects with the given pr
 #### Signature:
 
 ```typescript
-class Page {
-  abstract queryObjects<Prototype>(
-    prototypeHandle: JSHandle<Prototype>
-  ): Promise<JSHandle<Prototype[]>>;
-}
+class Page &#123;abstract queryObjects<Prototype>(prototypeHandle: JSHandle<Prototype>): Promise<JSHandle<Prototype[]>>;&#125;
 ```
 
 ## Parameters

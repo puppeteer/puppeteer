@@ -9,9 +9,7 @@ The name of the subject to which the certificate was issued.
 #### Signature:
 
 ```typescript
-class SecurityDetails {
-  subjectName(): string;
-}
+class SecurityDetails &#123;subjectName(): string;&#125;
 ```
 
 **Returns:**

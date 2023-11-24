@@ -9,9 +9,7 @@ The most recent reason for aborting the request
 #### Signature:
 
 ```typescript
-class HTTPRequest {
-  abstract abortErrorReason(): Protocol.Network.ErrorReason | null;
-}
+class HTTPRequest &#123;abstract abortErrorReason(): Protocol.Network.ErrorReason | null;&#125;
 ```
 
 **Returns:**

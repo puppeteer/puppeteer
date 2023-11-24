@@ -7,16 +7,7 @@ sidebar_label: Frame.waitForFunction
 #### Signature:
 
 ```typescript
-class Frame {
-  waitForFunction<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(
-    pageFunction: Func | string,
-    options?: FrameWaitForFunctionOptions,
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
-}
+class Frame &#123;waitForFunction<Params extends unknown[], Func extends EvaluateFunc<Params> = EvaluateFunc<Params>>(pageFunction: Func | string, options?: FrameWaitForFunctionOptions, ...args: Params): Promise<HandleFor<Awaited<ReturnType<Func>>>>;&#125;
 ```
 
 ## Parameters
@@ -40,14 +31,14 @@ The `waitForFunction` can be used to observe viewport size change:
 ```ts
 import puppeteer from 'puppeteer';
 
-(async () => {
+(async () => &#123;
 .  const browser = await puppeteer.launch();
 .  const page = await browser.newPage();
 .  const watchDog = page.mainFrame().waitForFunction('window.innerWidth < 100');
-.  page.setViewport({width: 50, height: 50});
+.  page.setViewport(&#123;width: 50, height: 50&#125;);
 .  await watchDog;
 .  await browser.close();
-})();
+&#125;)();
 ```
 
 To pass arguments from Node.js to the predicate of `page.waitForFunction` function:
@@ -56,7 +47,7 @@ To pass arguments from Node.js to the predicate of `page.waitForFunction` functi
 const selector = '.foo';
 await frame.waitForFunction(
   selector => !!document.querySelector(selector),
-  {}, // empty options object
+  &#123;&#125;, // empty options object
   selector
 );
 ```

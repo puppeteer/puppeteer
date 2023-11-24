@@ -7,9 +7,7 @@ sidebar_label: Page.setCookie
 #### Signature:
 
 ```typescript
-class Page {
-  abstract setCookie(...cookies: Protocol.Network.CookieParam[]): Promise<void>;
-}
+class Page &#123;abstract setCookie(...cookies: Protocol.Network.CookieParam[]): Promise<void>;&#125;
 ```
 
 ## Parameters

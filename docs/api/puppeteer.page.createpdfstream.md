@@ -9,9 +9,7 @@ Generates a PDF of the page with the `print` CSS media type.
 #### Signature:
 
 ```typescript
-class Page {
-  abstract createPDFStream(options?: PDFOptions): Promise<Readable>;
-}
+class Page &#123;abstract createPDFStream(options?: PDFOptions): Promise<Readable>;&#125;
 ```
 
 ## Parameters

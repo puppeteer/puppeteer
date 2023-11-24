@@ -9,9 +9,7 @@ The method evaluates the XPath expression relative to the page document as its c
 #### Signature:
 
 ```typescript
-class Page {
-  $x(expression: string): Promise<Array<ElementHandle<Node>>>;
-}
+class Page &#123;$x(expression: string): Promise<Array<ElementHandle<Node>>>;&#125;
 ```
 
 ## Parameters

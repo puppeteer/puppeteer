@@ -9,9 +9,7 @@ Selects a set of value on the first `<select>` element that matches the `selecto
 #### Signature:
 
 ```typescript
-class Frame {
-  select(selector: string, ...values: string[]): Promise<string[]>;
-}
+class Frame &#123;select(selector: string, ...values: string[]): Promise<string[]>;&#125;
 ```
 
 ## Parameters

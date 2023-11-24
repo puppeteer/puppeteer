@@ -9,9 +9,7 @@ Removes all non-current Firefox and Chrome binaries in the cache directory ident
 #### Signature:
 
 ```typescript
-class PuppeteerNode {
-  trimCache(): Promise<void>;
-}
+class PuppeteerNode &#123;trimCache(): Promise<void>;&#125;
 ```
 
 **Returns:**

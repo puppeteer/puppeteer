@@ -9,15 +9,7 @@ Evaluates the given function with the current handle as its first argument.
 #### Signature:
 
 ```typescript
-class JSHandle {
-  evaluateHandle<
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<T, Params> = EvaluateFuncWith<T, Params>,
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
-}
+class JSHandle &#123;evaluateHandle<Params extends unknown[], Func extends EvaluateFuncWith<T, Params> = EvaluateFuncWith<T, Params>>(pageFunction: Func | string, ...args: Params): Promise<HandleFor<Awaited<ReturnType<Func>>>>;&#125;
 ```
 
 ## Parameters

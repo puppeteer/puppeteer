@@ -9,9 +9,7 @@ A matching `HTTPResponse` object, or null if the response has not been received 
 #### Signature:
 
 ```typescript
-class HTTPRequest {
-  abstract response(): HTTPResponse | null;
-}
+class HTTPRequest &#123;abstract response(): HTTPResponse | null;&#125;
 ```
 
 **Returns:**

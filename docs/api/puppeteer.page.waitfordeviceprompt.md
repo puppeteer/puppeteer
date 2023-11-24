@@ -15,11 +15,7 @@ This must be called before the device request is made. It will not return a curr
 #### Signature:
 
 ```typescript
-class Page {
-  abstract waitForDevicePrompt(
-    options?: WaitTimeoutOptions
-  ): Promise<DeviceRequestPrompt>;
-}
+class Page &#123;abstract waitForDevicePrompt(options?: WaitTimeoutOptions): Promise<DeviceRequestPrompt>;&#125;
 ```
 
 ## Parameters
@@ -40,6 +36,6 @@ const [devicePrompt] = Promise.all([
   page.click('#connect-bluetooth'),
 ]);
 await devicePrompt.select(
-  await devicePrompt.waitForDevice(({name}) => name.includes('My Device'))
+  await devicePrompt.waitForDevice((&#123;name&#125;) => name.includes('My Device'))
 );
 ```

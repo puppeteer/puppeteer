@@ -11,9 +11,7 @@ If there ar multiple [browser contexts](./puppeteer.browsercontext.md), this ret
 #### Signature:
 
 ```typescript
-class Browser {
-  pages(): Promise<Page[]>;
-}
+class Browser &#123;pages(): Promise<Page[]>;&#125;
 ```
 
 **Returns:**

@@ -15,11 +15,7 @@ This must be called before the file chooser is launched. It will not return a cu
 #### Signature:
 
 ```typescript
-class Page {
-  abstract waitForFileChooser(
-    options?: WaitTimeoutOptions
-  ): Promise<FileChooser>;
-}
+class Page &#123;abstract waitForFileChooser(options?: WaitTimeoutOptions): Promise<FileChooser>;&#125;
 ```
 
 ## Parameters

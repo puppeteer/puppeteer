@@ -9,9 +9,7 @@ Unregisters all custom query handlers.
 #### Signature:
 
 ```typescript
-class Puppeteer {
-  static clearCustomQueryHandlers(): void;
-}
+class Puppeteer &#123;static clearCustomQueryHandlers(): void;&#125;
 ```
 
 **Returns:**

@@ -7,12 +7,7 @@ sidebar_label: Locator.hover
 #### Signature:
 
 ```typescript
-class Locator {
-  hover<ElementType extends Element>(
-    this: Locator<ElementType>,
-    options?: Readonly<ActionOptions>
-  ): Promise<void>;
-}
+class Locator &#123;hover<ElementType extends Element>(this: Locator<ElementType>, options?: Readonly<ActionOptions>): Promise<void>;&#125;
 ```
 
 ## Parameters

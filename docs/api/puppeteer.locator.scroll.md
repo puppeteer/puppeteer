@@ -7,12 +7,7 @@ sidebar_label: Locator.scroll
 #### Signature:
 
 ```typescript
-class Locator {
-  scroll<ElementType extends Element>(
-    this: Locator<ElementType>,
-    options?: Readonly<LocatorScrollOptions>
-  ): Promise<void>;
-}
+class Locator &#123;scroll<ElementType extends Element>(this: Locator<ElementType>, options?: Readonly<LocatorScrollOptions>): Promise<void>;&#125;
 ```
 
 ## Parameters

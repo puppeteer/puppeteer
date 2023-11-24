@@ -7,12 +7,7 @@ sidebar_label: Page.setUserAgent
 #### Signature:
 
 ```typescript
-class Page {
-  abstract setUserAgent(
-    userAgent: string,
-    userAgentMetadata?: Protocol.Emulation.UserAgentMetadata
-  ): Promise<void>;
-}
+class Page &#123;abstract setUserAgent(userAgent: string, userAgentMetadata?: Protocol.Emulation.UserAgentMetadata): Promise<void>;&#125;
 ```
 
 ## Parameters

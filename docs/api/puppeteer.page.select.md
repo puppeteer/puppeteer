@@ -9,9 +9,7 @@ Triggers a `change` and `input` event once all the provided options have been se
 #### Signature:
 
 ```typescript
-class Page {
-  select(selector: string, ...values: string[]): Promise<string[]>;
-}
+class Page &#123;select(selector: string, ...values: string[]): Promise<string[]>;&#125;
 ```
 
 ## Parameters

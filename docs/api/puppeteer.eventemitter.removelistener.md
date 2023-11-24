@@ -13,12 +13,7 @@ Remove an event listener.
 #### Signature:
 
 ```typescript
-class EventEmitter {
-  removeListener<Key extends keyof EventsWithWildcard<Events>>(
-    type: Key,
-    handler: Handler<EventsWithWildcard<Events>[Key]>
-  ): this;
-}
+class EventEmitter &#123;removeListener<Key extends keyof EventsWithWildcard<Events>>(type: Key, handler: Handler<EventsWithWildcard<Events>[Key]>): this;&#125;
 ```
 
 ## Parameters

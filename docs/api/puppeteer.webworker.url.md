@@ -9,9 +9,7 @@ The URL of this web worker.
 #### Signature:
 
 ```typescript
-class WebWorker {
-  url(): string;
-}
+class WebWorker &#123;url(): string;&#125;
 ```
 
 **Returns:**

@@ -11,12 +11,7 @@ This will look all open [browser contexts](./puppeteer.browsercontext.md).
 #### Signature:
 
 ```typescript
-class Browser {
-  waitForTarget(
-    predicate: (x: Target) => boolean | Promise<boolean>,
-    options?: WaitForTargetOptions
-  ): Promise<Target>;
-}
+class Browser &#123;waitForTarget(predicate: (x: Target) => boolean | Promise<boolean>, options?: WaitForTargetOptions): Promise<Target>;&#125;
 ```
 
 ## Parameters

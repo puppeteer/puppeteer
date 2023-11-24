@@ -13,9 +13,7 @@ Is`true` if the frame has been detached. Otherwise, `false`.
 #### Signature:
 
 ```typescript
-class Frame {
-  isDetached(): boolean;
-}
+class Frame &#123;isDetached(): boolean;&#125;
 ```
 
 **Returns:**

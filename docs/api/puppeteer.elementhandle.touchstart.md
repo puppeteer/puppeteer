@@ -7,9 +7,7 @@ sidebar_label: ElementHandle.touchStart
 #### Signature:
 
 ```typescript
-class ElementHandle {
-  touchStart(this: ElementHandle<Element>): Promise<void>;
-}
+class ElementHandle &#123;touchStart(this: ElementHandle<Element>): Promise<void>;&#125;
 ```
 
 ## Parameters

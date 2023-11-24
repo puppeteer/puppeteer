@@ -9,9 +9,7 @@ This method fetches an element with `selector`, scrolls it into view if needed, 
 #### Signature:
 
 ```typescript
-class Page {
-  hover(selector: string): Promise<void>;
-}
+class Page &#123;hover(selector: string): Promise<void>;&#125;
 ```
 
 ## Parameters

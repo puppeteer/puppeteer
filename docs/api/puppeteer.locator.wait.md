@@ -11,9 +11,7 @@ Note this requires the value to be JSON-serializable.
 #### Signature:
 
 ```typescript
-class Locator {
-  wait(options?: Readonly<ActionOptions>): Promise<T>;
-}
+class Locator &#123;wait(options?: Readonly<ActionOptions>): Promise<T>;&#125;
 ```
 
 ## Parameters

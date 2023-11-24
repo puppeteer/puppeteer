@@ -9,9 +9,7 @@ Get the browser context the target belongs to.
 #### Signature:
 
 ```typescript
-class Target {
-  abstract browserContext(): BrowserContext;
-}
+class Target &#123;abstract browserContext(): BrowserContext;&#125;
 ```
 
 **Returns:**

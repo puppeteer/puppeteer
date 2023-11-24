@@ -7,12 +7,7 @@ sidebar_label: Locator.setWaitForStableBoundingBox
 #### Signature:
 
 ```typescript
-class Locator {
-  setWaitForStableBoundingBox<ElementType extends Element>(
-    this: Locator<ElementType>,
-    value: boolean
-  ): Locator<ElementType>;
-}
+class Locator &#123;setWaitForStableBoundingBox<ElementType extends Element>(this: Locator<ElementType>, value: boolean): Locator<ElementType>;&#125;
 ```
 
 ## Parameters

@@ -26,7 +26,7 @@ const [deviceRequest] = Promise.all([
   page.click('#connect-bluetooth'),
 ]);
 await devicePrompt.select(
-  await devicePrompt.waitForDevice(({name}) => name.includes('My Device'))
+  await devicePrompt.waitForDevice((&#123;name&#125;) => name.includes('My Device'))
 );
 ```
 

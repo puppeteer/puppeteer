@@ -7,9 +7,7 @@ sidebar_label: Process.hasClosed
 #### Signature:
 
 ```typescript
-class Process {
-  hasClosed(): Promise<void>;
-}
+class Process &#123;hasClosed(): Promise<void>;&#125;
 ```
 
 **Returns:**

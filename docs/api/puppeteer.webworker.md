@@ -31,9 +31,9 @@ page.on('workerdestroyed', worker =>
 );
 
 console.log('Current workers:');
-for (const worker of page.workers()) {
+for (const worker of page.workers()) &#123;
   console.log('  ' + worker.url());
-}
+&#125;
 ```
 
 ## Properties

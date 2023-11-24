@@ -7,9 +7,7 @@ sidebar_label: CommonEventEmitter.listenerCount
 #### Signature:
 
 ```typescript
-interface CommonEventEmitter {
-  listenerCount(event: keyof Events): number;
-}
+interface CommonEventEmitter &#123;listenerCount(event: keyof Events): number;&#125;
 ```
 
 ## Parameters

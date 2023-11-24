@@ -9,14 +9,7 @@ Constructs a new instance of the `ConsoleMessage` class
 #### Signature:
 
 ```typescript
-class ConsoleMessage {
-  constructor(
-    type: ConsoleMessageType,
-    text: string,
-    args: JSHandle[],
-    stackTraceLocations: ConsoleMessageLocation[]
-  );
-}
+class ConsoleMessage &#123;constructor(type: ConsoleMessageType, text: string, args: JSHandle[], stackTraceLocations: ConsoleMessageLocation[]);&#125;
 ```
 
 ## Parameters

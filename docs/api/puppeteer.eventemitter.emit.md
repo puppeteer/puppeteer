@@ -9,12 +9,7 @@ Emit an event and call any associated listeners.
 #### Signature:
 
 ```typescript
-class EventEmitter {
-  emit<Key extends keyof EventsWithWildcard<Events>>(
-    type: Key,
-    event: EventsWithWildcard<Events>[Key]
-  ): boolean;
-}
+class EventEmitter &#123;emit<Key extends keyof EventsWithWildcard<Events>>(type: Key, event: EventsWithWildcard<Events>[Key]): boolean;&#125;
 ```
 
 ## Parameters

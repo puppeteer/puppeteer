@@ -9,11 +9,7 @@ Converts the current handle to the given element type.
 #### Signature:
 
 ```typescript
-class ElementHandle {
-  toElement<K extends keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap>(
-    tagName: K
-  ): Promise<HandleFor<ElementFor<K>>>;
-}
+class ElementHandle &#123;toElement<K extends keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap>(tagName: K): Promise<HandleFor<ElementFor<K>>>;&#125;
 ```
 
 ## Parameters

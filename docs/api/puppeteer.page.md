@@ -31,13 +31,13 @@ This example creates a page, navigates it to a URL, and then saves a screenshot:
 ```ts
 import puppeteer from 'puppeteer';
 
-(async () => {
+(async () => &#123;
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto('https://example.com');
-  await page.screenshot({path: 'screenshot.png'});
+  await page.screenshot(&#123;path: 'screenshot.png'&#125;);
   await browser.close();
-})();
+&#125;)();
 ```
 
 The Page class extends from Puppeteer's [EventEmitter](./puppeteer.eventemitter.md) class and will emit various events which are documented in the [PageEvent](./puppeteer.pageevent.md) enum.
@@ -53,9 +53,9 @@ page.once('load', () => console.log('Page loaded!'));
 To unsubscribe from events use the [EventEmitter.off()](./puppeteer.eventemitter.off.md) method:
 
 ```ts
-function logRequest(interceptedRequest) {
+function logRequest(interceptedRequest) &#123;
   console.log('A request was made:', interceptedRequest.url());
-}
+&#125;
 page.on('request', logRequest);
 // Sometime later...
 page.off('request', logRequest);

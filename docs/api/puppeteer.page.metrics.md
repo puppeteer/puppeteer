@@ -9,9 +9,7 @@ Object containing metrics as key/value pairs.
 #### Signature:
 
 ```typescript
-class Page {
-  abstract metrics(): Promise<Metrics>;
-}
+class Page &#123;abstract metrics(): Promise<Metrics>;&#125;
 ```
 
 **Returns:**

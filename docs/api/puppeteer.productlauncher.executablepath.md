@@ -7,9 +7,7 @@ sidebar_label: ProductLauncher.executablePath
 #### Signature:
 
 ```typescript
-class ProductLauncher {
-  abstract executablePath(channel?: ChromeReleaseChannel): string;
-}
+class ProductLauncher &#123;abstract executablePath(channel?: ChromeReleaseChannel): string;&#125;
 ```
 
 ## Parameters

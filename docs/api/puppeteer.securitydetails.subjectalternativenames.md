@@ -9,9 +9,7 @@ The list of [subject alternative names (SANs)](https://en.wikipedia.org/wiki/Sub
 #### Signature:
 
 ```typescript
-class SecurityDetails {
-  subjectAlternativeNames(): string[];
-}
+class SecurityDetails &#123;subjectAlternativeNames(): string[];&#125;
 ```
 
 **Returns:**

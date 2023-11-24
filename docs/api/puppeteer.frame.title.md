@@ -9,9 +9,7 @@ The frame's title.
 #### Signature:
 
 ```typescript
-class Frame {
-  title(): Promise<string>;
-}
+class Frame &#123;title(): Promise<string>;&#125;
 ```
 
 **Returns:**

@@ -9,12 +9,7 @@ Bind an event listener to fire when an event occurs.
 #### Signature:
 
 ```typescript
-class EventEmitter {
-  on<Key extends keyof EventsWithWildcard<Events>>(
-    type: Key,
-    handler: Handler<EventsWithWildcard<Events>[Key]>
-  ): this;
-}
+class EventEmitter &#123;on<Key extends keyof EventsWithWildcard<Events>>(type: Key, handler: Handler<EventsWithWildcard<Events>[Key]>): this;&#125;
 ```
 
 ## Parameters

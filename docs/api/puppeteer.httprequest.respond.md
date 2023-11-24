@@ -9,12 +9,7 @@ Fulfills a request with the given response.
 #### Signature:
 
 ```typescript
-class HTTPRequest {
-  abstract respond(
-    response: Partial<ResponseForRequest>,
-    priority?: number
-  ): Promise<void>;
-}
+class HTTPRequest &#123;abstract respond(response: Partial<ResponseForRequest>, priority?: number): Promise<void>;&#125;
 ```
 
 ## Parameters
@@ -40,13 +35,13 @@ An example of fulfilling all requests with 404 responses:
 
 ```ts
 await page.setRequestInterception(true);
-page.on('request', request => {
-  request.respond({
+page.on('request', request => &#123;
+  request.respond(&#123;
     status: 404,
     contentType: 'text/plain',
     body: 'Not Found!',
-  });
-});
+  &#125;);
+&#125;);
 ```
 
 NOTE: Mocking responses for dataURL requests is not supported. Calling `request.respond` for a dataURL request is a noop.

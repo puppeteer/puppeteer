@@ -9,15 +9,7 @@ The only difference between `worker.evaluate` and `worker.evaluateHandle` is tha
 #### Signature:
 
 ```typescript
-class WebWorker {
-  evaluateHandle<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
-}
+class WebWorker &#123;evaluateHandle<Params extends unknown[], Func extends EvaluateFunc<Params> = EvaluateFunc<Params>>(pageFunction: Func | string, ...args: Params): Promise<HandleFor<Awaited<ReturnType<Func>>>>;&#125;
 ```
 
 ## Parameters

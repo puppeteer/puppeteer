@@ -7,9 +7,7 @@ sidebar_label: Page.setDefaultTimeout
 #### Signature:
 
 ```typescript
-class Page {
-  abstract setDefaultTimeout(timeout: number): void;
-}
+class Page &#123;abstract setDefaultTimeout(timeout: number): void;&#125;
 ```
 
 ## Parameters

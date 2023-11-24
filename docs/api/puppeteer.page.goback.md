@@ -9,9 +9,7 @@ This method navigate to the previous page in history.
 #### Signature:
 
 ```typescript
-class Page {
-  abstract goBack(options?: WaitForOptions): Promise<HTTPResponse | null>;
-}
+class Page &#123;abstract goBack(options?: WaitForOptions): Promise<HTTPResponse | null>;&#125;
 ```
 
 ## Parameters

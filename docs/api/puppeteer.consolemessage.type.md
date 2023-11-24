@@ -9,9 +9,7 @@ The type of the console message.
 #### Signature:
 
 ```typescript
-class ConsoleMessage {
-  type(): ConsoleMessageType;
-}
+class ConsoleMessage &#123;type(): ConsoleMessageType;&#125;
 ```
 
 **Returns:**

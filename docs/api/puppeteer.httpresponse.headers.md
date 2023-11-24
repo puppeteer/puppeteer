@@ -9,9 +9,7 @@ An object with HTTP headers associated with the response. All header names are l
 #### Signature:
 
 ```typescript
-class HTTPResponse {
-  abstract headers(): Record<string, string>;
-}
+class HTTPResponse &#123;abstract headers(): Record<string, string>;&#125;
 ```
 
 **Returns:**

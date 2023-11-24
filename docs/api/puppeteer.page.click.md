@@ -9,9 +9,7 @@ This method fetches an element with `selector`, scrolls it into view if needed, 
 #### Signature:
 
 ```typescript
-class Page {
-  click(selector: string, options?: Readonly<ClickOptions>): Promise<void>;
-}
+class Page &#123;click(selector: string, options?: Readonly<ClickOptions>): Promise<void>;&#125;
 ```
 
 ## Parameters

@@ -9,9 +9,7 @@ Gets the [browser](./puppeteer.browser.md) associated with this [browser context
 #### Signature:
 
 ```typescript
-class BrowserContext {
-  abstract browser(): Browser;
-}
+class BrowserContext &#123;abstract browser(): Browser;&#125;
 ```
 
 **Returns:**

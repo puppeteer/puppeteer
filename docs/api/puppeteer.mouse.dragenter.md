@@ -9,12 +9,7 @@ Dispatches a `dragenter` event.
 #### Signature:
 
 ```typescript
-class Mouse {
-  abstract dragEnter(
-    target: Point,
-    data: Protocol.Input.DragData
-  ): Promise<void>;
-}
+class Mouse &#123;abstract dragEnter(target: Point, data: Protocol.Input.DragData): Promise<void>;&#125;
 ```
 
 ## Parameters

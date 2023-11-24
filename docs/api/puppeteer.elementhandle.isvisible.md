@@ -9,9 +9,7 @@ Checks if an element is visible using the same mechanism as [ElementHandle.waitF
 #### Signature:
 
 ```typescript
-class ElementHandle {
-  isVisible(): Promise<boolean>;
-}
+class ElementHandle &#123;isVisible(): Promise<boolean>;&#125;
 ```
 
 **Returns:**

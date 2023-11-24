@@ -11,11 +11,7 @@ Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/Hist
 #### Signature:
 
 ```typescript
-class Frame {
-  abstract waitForNavigation(
-    options?: WaitForOptions
-  ): Promise<HTTPResponse | null>;
-}
+class Frame &#123;abstract waitForNavigation(options?: WaitForOptions): Promise<HTTPResponse | null>;&#125;
 ```
 
 ## Parameters
