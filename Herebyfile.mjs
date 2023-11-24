@@ -45,7 +45,7 @@ export const docsChromiumSupportTask = task({
       }
       if (semver.gte(puppeteerVersion, '20.0.0')) {
         buffer.push(
-          `  * [Chrome for Testing](https://goo.gle/chrome-for-testing) ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](${getApiUrl(
+          `  * [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](${getApiUrl(
             puppeteerVersion
           )})`
         );
