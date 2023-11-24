@@ -46,7 +46,7 @@ pnpm i puppeteer
 ```
 
 When you install Puppeteer, it automatically downloads a recent version of
-[Chrome for Testing](https://goo.gle/chrome-for-testing) (~170MB macOS, ~282MB Linux, ~280MB Windows) that is [guaranteed to
+[Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) (~170MB macOS, ~282MB Linux, ~280MB Windows) that is [guaranteed to
 work](https://pptr.dev/faq#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy)
 with Puppeteer. The browser is downloaded to the `$HOME/.cache/puppeteer` folder
 by default (starting with Puppeteer v19.0.0).

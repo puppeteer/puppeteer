@@ -2,7 +2,7 @@
 
 ## Q: Who maintains Puppeteer?
 
-The Chrome DevTools team maintains the library, but we'd love your help and
+The Chrome Browser Automation team maintains the library, but we'd love your help and
 expertise on the project! See our
 [contributing guide](https://pptr.dev/contributing).
 
@@ -31,12 +31,11 @@ non-standard DevTools Protocol used by Chrome).
 
 The goals of the project are:
 
-- Provide a slim, canonical library that highlights the capabilities of the
-  [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
-- Provide a reference implementation for similar testing libraries. Eventually,
-  these other frameworks could adopt Puppeteer as their foundational layer.
-- Grow the adoption of headless/automated browser testing.
-- Help dogfood new DevTools Protocol features...and catch bugs!
+- Provide a reference implementation that highlights the capabilities of the
+  [Chrome DevTools](https://chromedevtools.github.io/devtools-protocol/)
+  and [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) protocols.
+- Grow the adoption of automated cross-browser testing.
+- Help dogfood new DevTools Protocol and WebDriver BiDi features...and catch bugs!
 - Learn more about the pain points of automated browser testing and help fill
   those gaps.
 
@@ -46,36 +45,34 @@ help us drive product decisions:
 
 - **Speed**: Puppeteer has almost zero performance overhead over an automated
   page.
-- **Security**: Puppeteer operates off-process with respect to Chromium, making
+- **Security**: Puppeteer operates off-process with respect to the browser, making
   it safe to automate potentially malicious pages.
 - **Stability**: Puppeteer should not be flaky and should not leak memory.
 - **Simplicity**: Puppeteer provides a high-level API that’s easy to use,
   understand, and debug.
 
-## Q: Is Puppeteer replacing Selenium/WebDriver?
+## Q: Is Puppeteer a replacement for Selenium WebDriver?
 
 **No**. Both projects are valuable for very different reasons:
 
-- Selenium/WebDriver focuses on cross-browser automation; its value proposition
-  is a single standard API that works across all major browsers.
+- Selenium WebDriver focuses on cross-browser automation and provides bindings for
+  multiple languages; Puppeteer is only for JavaScript.
 - Puppeteer focuses on Chromium; its value proposition is richer functionality
-  and higher reliability.
+  for Chromium-based browsers.
 
 That said, you **can** use Puppeteer to run tests against Chromium, e.g. using
 the community-driven
-[jest-puppeteer](https://github.com/smooth-code/jest-puppeteer). While this
+[jest-puppeteer](https://github.com/smooth-code/jest-puppeteer) or
+[Puppeteer's Angular integration](https://pptr.dev/integrations/ng-schematics). While this
 probably shouldn’t be your only testing solution, it does have a few good points
-compared to WebDriver:
+compared to WebDriver classic:
 
-- Puppeteer requires zero setup and comes bundled with the Chromium version it
+- Puppeteer requires zero setup and comes bundled with the Chrome version it
   works best with, making it
   [very easy to start with](https://github.com/puppeteer/puppeteer/#getting-started).
-  At the end of the day, it’s better to have a few tests running chromium-only,
-  than no tests at all.
 - Puppeteer has event-driven architecture, which removes a lot of potential
-  flakiness. There’s no need for evil “sleep(1000)” calls in puppeteer scripts.
-- Puppeteer runs headless by default, which makes it fast to run. Puppeteer
-  v1.5.0 also exposes browser contexts, making it possible to efficiently
+  flakiness. There’s no need for “sleep(1000)” calls in puppeteer scripts.
+- Puppeteer exposes browser contexts, making it possible to efficiently
   parallelize test execution.
 - Puppeteer shines when it comes to debugging: flip the “headless” bit to false,
   add “slowMo”, and you’ll see what the browser is doing. You can even open
@@ -123,7 +120,7 @@ To download Firefox Nightly into an existing Puppeteer project:
 npx puppeteer browsers install firefox
 ```
 
-#### Q: What’s considered a “Navigation”?
+## Q: What’s considered a “Navigation”?
 
 From Puppeteer’s standpoint, **“navigation” is anything that changes a page’s
 URL**. Aside from regular navigation where the browser hits the network to fetch
@@ -135,7 +132,7 @@ usage.
 With this definition of “navigation,” **Puppeteer works seamlessly with
 single-page applications.**
 
-#### Q: What’s the difference between a “trusted" and "untrusted" input event?
+## Q: What’s the difference between a “trusted" and "untrusted" input event?
 
 In browsers, input events could be divided into two big groups: trusted vs.
 untrusted.
@@ -165,38 +162,23 @@ await page.evaluate(() => {
 });
 ```
 
-#### Q: What features does Puppeteer not support?
+## Q: Does Puppeteer support media and audio playback?
 
-You may find that Puppeteer does not behave as expected when controlling pages
-that incorporate audio and video. (For example,
-[video playback/screenshots is likely to fail](https://github.com/puppeteer/puppeteer/issues/291).)
-There are two reasons for this:
+Puppeteer uses [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) binaries
+by default which ship with properietary codecs support starting from
+[M120](https://chromiumdash.appspot.com/commit/12d607016c31ea13579e897740c765be189ed6eb).
 
-- Puppeteer is bundled with [Chrome for Testing](https://goo.gle/chrome-for-testing) — not the regular Chrome — and so by default, it
-  inherits all of
-  [Chromium's media-related limitations](https://www.chromium.org/audio-video).
-  This means that Puppeteer does not support licensed formats such as AAC or
-  H.264. (However, it is possible to force Puppeteer to use a
-  separately-installed version Chrome instead of Chromium via the
-  [`executablePath` option to `puppeteer.launch`](./api/puppeteer.launchoptions).
-  You should only use this configuration if you need an official release of
-  Chrome that supports these media formats.)
-- Since Puppeteer (in all configurations) controls a desktop version of
-  Chromium/Chrome, features that are only supported by the mobile version of
-  Chrome are not supported. This means that Puppeteer
-  [does not support HTTP Live Streaming (HLS)](https://caniuse.com/#feat=http-live-streaming).
-
-#### Q: I am having trouble installing / running Puppeteer in my test environment. Where should I look for help?
+## Q: I am having trouble installing / running Puppeteer in my test environment. Where should I look for help?
 
 We have a
 [troubleshooting](https://pptr.dev/troubleshooting)
 guide for various operating systems that lists the required dependencies.
 
-#### Q: I have more questions! Where do I ask?
+## Q: I have more questions! Where do I ask?
 
 There are many ways to get help on Puppeteer:
 
-- [bugtracker](https://github.com/puppeteer/puppeteer/issues)
-- [Stack Overflow](https://stackoverflow.com/questions/tagged/puppeteer)
+- For questions: [Stack Overflow](https://stackoverflow.com/questions/tagged/puppeteer)
+- For bug reports: [GitHub Issues](https://github.com/puppeteer/puppeteer/issues)
 
 Make sure to search these channels before posting your question.
