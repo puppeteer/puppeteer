@@ -10,7 +10,7 @@ automation protocol that extends WebDriver with events. Here are the resources i
 ## Automate with Chrome and Firefox
 
 supporting WebDriver BiDi whenever possible and currently has experimental
-support for automating Firefox and Chrome over WebDriver BiDi with Firefox
+Puppeteer aims at support for automating Firefox and Chrome over WebDriver BiDi. Firefox
 support almost reaching feature parity with the previous CDP-based
 implementation.
 
