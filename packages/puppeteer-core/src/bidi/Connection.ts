@@ -97,6 +97,10 @@ export interface Commands {
     params: Bidi.BrowsingContext.SetViewportParameters;
     returnType: Bidi.EmptyResult;
   };
+  'browsingContext.traverseHistory': {
+    params: Bidi.BrowsingContext.TraverseHistoryParameters;
+    returnType: Bidi.EmptyResult;
+  };
 
   'input.performActions': {
     params: Bidi.Input.PerformActionsParameters;

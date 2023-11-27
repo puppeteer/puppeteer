@@ -31,6 +31,7 @@ import {
 import type {CDPSession} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
 import type {WaitForOptions} from '../api/Frame.js';
+import type {HTTPResponse} from '../api/HTTPResponse.js';
 import {
   Page,
   PageEvent,
@@ -65,6 +66,7 @@ import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
+import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {BidiBrowser} from './Browser.js';
 import type {BidiBrowserContext} from './BrowserContext.js';
@@ -905,12 +907,40 @@ export class BidiPage extends Page {
     throw new UnsupportedOperation();
   }
 
-  override goBack(): never {
-    throw new UnsupportedOperation();
+  override async goBack(
+    options: WaitForOptions = {}
+  ): Promise<HTTPResponse | null> {
+    return await this.#go(-1, options);
   }
 
-  override goForward(): never {
-    throw new UnsupportedOperation();
+  override async goForward(
+    options: WaitForOptions = {}
+  ): Promise<HTTPResponse | null> {
+    return await this.#go(+1, options);
+  }
+
+  async #go(
+    delta: number,
+    options: WaitForOptions
+  ): Promise<HTTPResponse | null> {
+    try {
+      const result = await Promise.all([
+        this.waitForNavigation(options),
+        this.#connection.send('browsingContext.traverseHistory', {
+          delta,
+          context: this.mainFrame()._id,
+        }),
+      ]);
+      return result[0];
+    } catch (err) {
+      // TODO: waitForNavigation should be cancelled if an error happens.
+      if (isErrorLike(err)) {
+        if (err.message.includes('no such history entry')) {
+          return null;
+        }
+      }
+      throw err;
+    }
   }
 
   override waitForDevicePrompt(): never {
