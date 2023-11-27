@@ -40,6 +40,8 @@ export interface BrowserConnectOptions {
   ignoreHTTPSErrors?: boolean;
   /**
    * Sets the viewport for each page.
+   *
+   * @defaultValue '\{width: 800, height: 600\}'
    */
   defaultViewport?: Viewport | null;
   /**
