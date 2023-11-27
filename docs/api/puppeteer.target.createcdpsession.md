@@ -17,5 +17,3 @@ class Target {
 **Returns:**
 
 Promise&lt;[CDPSession](./puppeteer.cdpsession.md)&gt;
-
-## Remarks

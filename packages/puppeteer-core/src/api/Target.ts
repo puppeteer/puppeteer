@@ -70,8 +70,6 @@ export abstract class Target {
 
   /**
    * Creates a Chrome Devtools Protocol session attached to the target.
-   *
-   * @remarks
    */
   abstract createCDPSession(): Promise<CDPSession>;
 

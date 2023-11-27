@@ -2240,6 +2240,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * All recordings will be {@link https://www.webmproject.org/ | WebM} format using
    * the {@link https://www.webmproject.org/vp9/ | VP9} video codec. The FPS is 30.
+   *
+   * You must have {@link https://ffmpeg.org/ | ffmpeg} installed on your system.
    */
   async screencast(
     options: Readonly<ScreencastOptions> = {}

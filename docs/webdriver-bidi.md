@@ -12,9 +12,11 @@ resources if you want to learn more about WebDriver BiDi:
 Firefox support has almost reaching feature parity with the previous CDP-based
 implementation. To see which features are fully supported with WebDriver BiDi we
 used the [Puppeteer test suite](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/). Currently,
-we still have [60](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/firefox-delta.json) tests
-that are failing with Firefox and WebDriver BiDi compared to the previous CDP
-implementation in Firefox but we also have [82](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/firefox-delta.json)
+we still have fewer than
+[60](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/firefox-delta.json)
+tests that are failing with Firefox and WebDriver BiDi compared to the previous
+CDP implementation in Firefox but we also have more than
+[82](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/firefox-delta.json)
 new tests that work with WebDriver BiDi and that didn't work with CDP.
 
 For Chrome, around 68% of the tests are currently passing with WebDriver BiDi so
@@ -54,28 +56,28 @@ await browser.close();
 
 - Browser and page automation
 
-  - Puppeteer.launch
   - Browser.close
+  - Frame.goto() (except `referer` and `referrerPolicy`)
   - Page.bringToFront
-  - Page.goto
+  - Page.goto (except `referer` and `referrerPolicy`)
   - Page.reload (except for `ignoreCache` parameter)
   - Page.setViewport (`width`, `height`, `deviceScaleFactor` only)
+  - Puppeteer.launch
 
 - [Script evaluation](https://pptr.dev/guides/evaluate-javascript):
 
-  - Page.evaluate
-  - Page.exposeFunction
   - JSHandle.evaluate
   - JSHandle.evaluateHandle
+  - Page.evaluate
+  - Page.exposeFunction
 
 - [Selectors](https://pptr.dev/guides/query-selectors) and [locators](https://pptr.dev/guides/locators) except for ARIA:
 
-  - Page.$ (ARIA selectors only supported in Chrome)
-  - Page.$$ (ARIA selectors only supported in Chrome)
-  - Page.$eval (ARIA selectors only supported in Chrome)
-  - Page.$$eval (ARIA selectors only supported in Chrome)
-  - Frame.goto() (except `referer` and `referrerPolicy`)
-  - Page.waitForSelector (ARIA selectors only supported in Chrome)
+  - Page.$ (ARIA selectors supported in Chrome)
+  - Page.$$ (ARIA selectors supported in Chrome)
+  - Page.$$eval (ARIA selectors supported in Chrome)
+  - Page.$eval (ARIA selectors supported in Chrome)
+  - Page.waitForSelector (ARIA selectors supported in Chrome)
 
 - Input
 
@@ -86,8 +88,8 @@ await browser.close();
   - Keyboard.type
   - Keyboard.up
   - Mouse events (except for dedicated drag'n'drop API methods)
-  - TouchScreen.\*
   - Page.tap
+  - TouchScreen.\*
 
 - JavaScript dialog interception
 
@@ -107,37 +109,37 @@ await browser.close();
 
 - [Request interception](https://pptr.dev/guides/request-interception)
 
-  - HTTPRequest.client()
-  - HTTPRequest.continueRequestOverrides()
-  - HTTPRequest.responseForRequest()
+  - HTTPRequest.abort()
   - HTTPRequest.abortErrorReason()
+  - HTTPRequest.client()
+  - HTTPRequest.continue()
+  - HTTPRequest.continueRequestOverrides()
+  - HTTPRequest.failure()
+  - HTTPRequest.finalizeInterceptions()
   - HTTPRequest.interceptResolutionState()
   - HTTPRequest.isInterceptResolutionHandled()
-  - HTTPRequest.finalizeInterceptions()
-  - HTTPRequest.failure()
-  - HTTPRequest.continue()
   - HTTPRequest.respond()
-  - HTTPRequest.abort()
+  - HTTPRequest.responseForRequest()
   - Page.setRequestInterception()
 
 - Permissions
 
-  - BrowserContext.overridePermissions()
   - BrowserContext.clearPermissionOverrides()
+  - BrowserContext.overridePermissions()
 
-- Various emulations (most are only supported with Chrome)
+- Various emulations (most are supported with Chrome)
 
   - Page.emulate() (supported only in Chrome)
-  - Page.setJavaScriptEnabled() (supported only in Chrome)
-  - Page.setBypassCSP() (supported only in Chrome)
-  - Page.emulateMediaType() (supported only in Chrome)
   - Page.emulateCPUThrottling() (supported only in Chrome)
-  - Page.emulateMediaFeatures() (supported only in Chrome)
-  - Page.emulateTimezone() (supported only in Chrome)
   - Page.emulateIdleState() (supported only in Chrome)
+  - Page.emulateMediaFeatures() (supported only in Chrome)
+  - Page.emulateMediaType() (supported only in Chrome)
+  - Page.emulateTimezone() (supported only in Chrome)
   - Page.emulateVisionDeficiency() (supported only in Chrome)
+  - Page.setBypassCSP() (supported only in Chrome)
   - Page.setCacheEnabled() (supported only in Chrome)
   - Page.setGeolocation() (supported only in Chrome)
+  - Page.setJavaScriptEnabled() (supported only in Chrome)
 
 - CDP-specific features
 
@@ -153,35 +155,35 @@ await browser.close();
   - ElementHandle.uploadFile()
   - Frame.isOOPFrame()
   - Frame.waitForDevicePrompt()
-  - Target.opener()
-  - HTTPResponse.securityDetails()
   - HTTPResponse.buffer()
   - HTTPResponse.fromServiceWorker()
+  - HTTPResponse.securityDetails()
   - Input.drag()
+  - Input.dragAndDrop()
   - Input.dragOver()
   - Input.drop()
-  - Input.dragAndDrop()
+  - Page.authenticate()
+  - Page.cookies()
+  - Page.deleteCookie()
+  - Page.emulateNetworkConditions()
+  - Page.goBack()
+  - Page.goForward()
+  - Page.isDragInterceptionEnabled()
+  - Page.isJavaScriptEnabled() (supported only in Chrome)
+  - Page.isServiceWorkerBypassed()
+  - Page.metrics()
+  - Page.queryObjects() (supported only in Chrome)
+  - Page.screencast() (supported only in Chrome)
+  - Page.setBypassServiceWorker()
+  - Page.setCookie()
+  - Page.setDragInterception()
+  - Page.setExtraHTTPHeaders()
+  - Page.setOfflineMode()
+  - Page.setUserAgent()
+  - Page.waitForDevicePrompt()
+  - Page.waitForFileChooser()
+  - Page.workers()
   - PageEvent.popup
   - PageEvent.WorkerCreated
   - PageEvent.WorkerDestroyed
-  - Page.isServiceWorkerBypassed()
-  - Page.isDragInterceptionEnabled()
-  - Page.isJavaScriptEnabled() (supported only in Chrome)
-  - Page.waitForFileChooser()
-  - Page.workers()
-  - Page.setBypassServiceWorker()
-  - Page.setDragInterception()
-  - Page.setOfflineMode()
-  - Page.emulateNetworkConditions()
-  - Page.queryObjects() (supported only in Chrome)
-  - Page.cookies()
-  - Page.deleteCookie()
-  - Page.setCookie()
-  - Page.authenticate()
-  - Page.setExtraHTTPHeaders()
-  - Page.setUserAgent()
-  - Page.metrics()
-  - Page.goBack()
-  - Page.goForward()
-  - Page.screencast() (supported only in Chrome)
-  - Page.waitForDevicePrompt()
+  - Target.opener()
