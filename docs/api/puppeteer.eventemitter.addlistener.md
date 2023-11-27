@@ -13,7 +13,7 @@ Add an event listener.
 #### Signature:
 
 ```typescript
-class EventEmitter &#123;addListener<Key extends keyof EventsWithWildcard<Events>>(type: Key, handler: Handler<EventsWithWildcard<Events>[Key]>): this;&#125;
+class EventEmitter \{addListener<Key extends keyof EventsWithWildcard<Events>>(type: Key, handler: Handler<EventsWithWildcard<Events>[Key]>): this;\}
 ```
 
 ## Parameters

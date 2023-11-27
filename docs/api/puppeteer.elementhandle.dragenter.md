@@ -11,7 +11,7 @@ sidebar_label: ElementHandle.dragEnter
 #### Signature:
 
 ```typescript
-class ElementHandle &#123;dragEnter(this: ElementHandle<Element>, data?: Protocol.Input.DragData): Promise<void>;&#125;
+class ElementHandle \{dragEnter(this: ElementHandle<Element>, data?: Protocol.Input.DragData): Promise<void>;\}
 ```
 
 ## Parameters

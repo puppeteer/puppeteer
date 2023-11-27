@@ -9,7 +9,7 @@ Promise that resolves to the array of coverage reports for all stylesheets.
 #### Signature:
 
 ```typescript
-class Coverage &#123;stopCSSCoverage(): Promise<CoverageEntry[]>;&#125;
+class Coverage \{stopCSSCoverage(): Promise<CoverageEntry[]>;\}
 ```
 
 **Returns:**

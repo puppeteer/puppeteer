@@ -9,7 +9,7 @@ The page's URL.
 #### Signature:
 
 ```typescript
-class Page &#123;url(): string;&#125;
+class Page \{url(): string;\}
 ```
 
 **Returns:**

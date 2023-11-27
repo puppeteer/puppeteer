@@ -9,7 +9,7 @@ Toggles ignoring cache for each request based on the enabled state. By default, 
 #### Signature:
 
 ```typescript
-class Page &#123;abstract setCacheEnabled(enabled?: boolean): Promise<void>;&#125;
+class Page \{abstract setCacheEnabled(enabled?: boolean): Promise<void>;\}
 ```
 
 ## Parameters

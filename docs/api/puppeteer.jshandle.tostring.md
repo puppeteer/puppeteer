@@ -9,7 +9,7 @@ Returns a string representation of the JSHandle.
 #### Signature:
 
 ```typescript
-class JSHandle &#123;abstract toString(): string;&#125;
+class JSHandle \{abstract toString(): string;\}
 ```
 
 **Returns:**

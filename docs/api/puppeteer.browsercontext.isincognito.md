@@ -11,7 +11,7 @@ The [default browser context](./puppeteer.browser.defaultbrowsercontext.md) is t
 #### Signature:
 
 ```typescript
-class BrowserContext &#123;abstract isIncognito(): boolean;&#125;
+class BrowserContext \{abstract isIncognito(): boolean;\}
 ```
 
 **Returns:**

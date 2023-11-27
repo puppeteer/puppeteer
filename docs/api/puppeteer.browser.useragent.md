@@ -11,7 +11,7 @@ Gets this [browser's](./puppeteer.browser.md) original user agent.
 #### Signature:
 
 ```typescript
-class Browser &#123;abstract userAgent(): Promise<string>;&#125;
+class Browser \{abstract userAgent(): Promise<string>;\}
 ```
 
 **Returns:**

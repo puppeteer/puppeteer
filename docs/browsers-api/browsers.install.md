@@ -7,16 +7,16 @@ sidebar_label: install
 #### Signature:
 
 ```typescript
-export declare function install(options: InstallOptions & &#123;
+export declare function install(options: InstallOptions & \{
     unpack?: true;
-&#125;): Promise<InstalledBrowser>;
+\}): Promise<InstalledBrowser>;
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                              | Description |
-| --------- | --------------------------------------------------------------------------------- | ----------- |
-| options   | [InstallOptions](./browsers.installoptions.md) &amp; &#123; unpack?: true; &#125; |             |
+| Parameter | Type                                                                      | Description |
+| --------- | ------------------------------------------------------------------------- | ----------- |
+| options   | [InstallOptions](./browsers.installoptions.md) &amp; \{ unpack?: true; \} |             |
 
 **Returns:**
 

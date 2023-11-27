@@ -9,7 +9,7 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 #### Signature:
 
 ```typescript
-class Keyboard &#123;abstract type(text: string, options?: Readonly<KeyboardTypeOptions>): Promise<void>;&#125;
+class Keyboard \{abstract type(text: string, options?: Readonly<KeyboardTypeOptions>): Promise<void>;\}
 ```
 
 ## Parameters
@@ -33,5 +33,5 @@ Modifier keys DO NOT effect `keyboard.type`. Holding down `Shift` will not type 
 
 ```ts
 await page.keyboard.type('Hello'); // Types instantly
-await page.keyboard.type('World', &#123;delay: 100&#125;); // Types slower, like a user
+await page.keyboard.type('World', \{delay: 100\}); // Types slower, like a user
 ```

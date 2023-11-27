@@ -388,8 +388,8 @@ export class MarkdownDocumenter {
     pageContent = pageContent.replace(/<!-- -->/g, '');
     pageContent = pageContent.replace(/\\\*\\\*/g, '**');
     pageContent = pageContent.replace(/<b>|<\/b>/g, '**');
-    pageContent = pageContent.replace(/\{/g, '&#123;');
-    pageContent = pageContent.replace(/\}/g, '&#125;');
+    pageContent = pageContent.replace(/\{/g, '\\{');
+    pageContent = pageContent.replace(/\}/g, '\\}');
     FileSystem.writeFile(filename, pageContent, {
       convertLineEndings: this._documenterConfig
         ? this._documenterConfig.newlineKind

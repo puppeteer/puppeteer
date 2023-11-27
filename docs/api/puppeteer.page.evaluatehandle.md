@@ -7,7 +7,7 @@ sidebar_label: Page.evaluateHandle
 #### Signature:
 
 ```typescript
-class Page &#123;evaluateHandle<Params extends unknown[], Func extends EvaluateFunc<Params> = EvaluateFunc<Params>>(pageFunction: Func | string, ...args: Params): Promise<HandleFor<Awaited<ReturnType<Func>>>>;&#125;
+class Page \{evaluateHandle<Params extends unknown[], Func extends EvaluateFunc<Params> = EvaluateFunc<Params>>(pageFunction: Func | string, ...args: Params): Promise<HandleFor<Awaited<ReturnType<Func>>>>;\}
 ```
 
 ## Parameters

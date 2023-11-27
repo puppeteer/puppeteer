@@ -9,7 +9,7 @@ Gets the [target](./puppeteer.target.md) associated with the [default browser co
 #### Signature:
 
 ```typescript
-class Browser &#123;abstract target(): Target;&#125;
+class Browser \{abstract target(): Target;\}
 ```
 
 **Returns:**

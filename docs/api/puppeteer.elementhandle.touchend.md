@@ -7,7 +7,7 @@ sidebar_label: ElementHandle.touchEnd
 #### Signature:
 
 ```typescript
-class ElementHandle &#123;touchEnd(this: ElementHandle<Element>): Promise<void>;&#125;
+class ElementHandle \{touchEnd(this: ElementHandle<Element>): Promise<void>;\}
 ```
 
 ## Parameters

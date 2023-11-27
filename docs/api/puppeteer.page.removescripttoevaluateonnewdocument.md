@@ -9,7 +9,7 @@ Removes script that injected into page by Page.evaluateOnNewDocument.
 #### Signature:
 
 ```typescript
-class Page &#123;abstract removeScriptToEvaluateOnNewDocument(identifier: string): Promise<void>;&#125;
+class Page \{abstract removeScriptToEvaluateOnNewDocument(identifier: string): Promise<void>;\}
 ```
 
 ## Parameters

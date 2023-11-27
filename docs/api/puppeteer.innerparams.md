@@ -7,9 +7,9 @@ sidebar_label: InnerParams
 #### Signature:
 
 ```typescript
-export type InnerParams<T extends unknown[]> = &#123;
+export type InnerParams<T extends unknown[]> = \{
     [K in keyof T]: FlattenHandle<T[K]>;
-&#125;;
+\};
 ```
 
 **References:** [FlattenHandle](./puppeteer.flattenhandle.md)

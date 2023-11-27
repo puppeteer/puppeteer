@@ -9,7 +9,7 @@ The parent frame, if any. Detached and main frames return `null`.
 #### Signature:
 
 ```typescript
-class Frame &#123;abstract parentFrame(): Frame | null;&#125;
+class Frame \{abstract parentFrame(): Frame | null;\}
 ```
 
 **Returns:**

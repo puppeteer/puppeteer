@@ -11,7 +11,7 @@ In a newly-created [browser](./puppeteer.browser.md), this will return a single 
 #### Signature:
 
 ```typescript
-class Browser &#123;abstract browserContexts(): BrowserContext[];&#125;
+class Browser \{abstract browserContexts(): BrowserContext[];\}
 ```
 
 **Returns:**

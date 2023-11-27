@@ -11,7 +11,7 @@ This is either the viewport set with the previous [Page.setViewport()](./puppete
 #### Signature:
 
 ```typescript
-class Page &#123;abstract viewport(): Viewport | null;&#125;
+class Page \{abstract viewport(): Viewport | null;\}
 ```
 
 **Returns:**

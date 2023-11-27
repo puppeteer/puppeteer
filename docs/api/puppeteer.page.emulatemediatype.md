@@ -7,7 +7,7 @@ sidebar_label: Page.emulateMediaType
 #### Signature:
 
 ```typescript
-class Page &#123;abstract emulateMediaType(type?: string): Promise<void>;&#125;
+class Page \{abstract emulateMediaType(type?: string): Promise<void>;\}
 ```
 
 ## Parameters

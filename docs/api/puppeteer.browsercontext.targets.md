@@ -9,7 +9,7 @@ Gets all active [targets](./puppeteer.target.md) inside this [browser context](.
 #### Signature:
 
 ```typescript
-class BrowserContext &#123;abstract targets(): Target[];&#125;
+class BrowserContext \{abstract targets(): Target[];\}
 ```
 
 **Returns:**

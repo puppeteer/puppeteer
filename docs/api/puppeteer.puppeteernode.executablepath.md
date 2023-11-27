@@ -9,7 +9,7 @@ The default executable path.
 #### Signature:
 
 ```typescript
-class PuppeteerNode &#123;executablePath(channel?: ChromeReleaseChannel): string;&#125;
+class PuppeteerNode \{executablePath(channel?: ChromeReleaseChannel): string;\}
 ```
 
 ## Parameters

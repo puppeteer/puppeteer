@@ -19,19 +19,19 @@ sidebar_label: ElementHandle.waitForXPath
 #### Signature:
 
 ```typescript
-class ElementHandle &#123;waitForXPath(xpath: string, options?: &#123;
+class ElementHandle \{waitForXPath(xpath: string, options?: \{
         visible?: boolean;
         hidden?: boolean;
         timeout?: number;
-    &#125;): Promise<ElementHandle<Node> | null>;&#125;
+    \}): Promise<ElementHandle<Node> | null>;\}
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                 | Description                                                                             |
-| --------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| xpath     | string                                                               | A [xpath](https://developer.mozilla.org/en-US/docs/Web/XPath) of an element to wait for |
-| options   | &#123; visible?: boolean; hidden?: boolean; timeout?: number; &#125; | _(Optional)_ Optional waiting parameters                                                |
+| Parameter | Type                                                         | Description                                                                             |
+| --------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| xpath     | string                                                       | A [xpath](https://developer.mozilla.org/en-US/docs/Web/XPath) of an element to wait for |
+| options   | \{ visible?: boolean; hidden?: boolean; timeout?: number; \} | _(Optional)_ Optional waiting parameters                                                |
 
 **Returns:**
 
@@ -55,7 +55,7 @@ This method works across navigation.
 
 ```ts
 import puppeteer from 'puppeteer';
-(async () => &#123;
+(async () => \{
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   let currentURL;
@@ -66,9 +66,9 @@ import puppeteer from 'puppeteer';
     'https://example.com',
     'https://google.com',
     'https://bbc.com',
-  ]) &#123;
+  ]) \{
     await page.goto(currentURL);
-  &#125;
+  \}
   await browser.close();
-&#125;)();
+\})();
 ```

@@ -7,7 +7,7 @@ sidebar_label: ConnectionTransport.send
 #### Signature:
 
 ```typescript
-interface ConnectionTransport &#123;send(message: string): void;&#125;
+interface ConnectionTransport \{send(message: string): void;\}
 ```
 
 ## Parameters

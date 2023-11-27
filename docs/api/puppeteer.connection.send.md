@@ -7,7 +7,7 @@ sidebar_label: Connection.send
 #### Signature:
 
 ```typescript
-class Connection &#123;send<T extends keyof ProtocolMapping.Commands>(method: T, ...paramArgs: ProtocolMapping.Commands[T]['paramsType']): Promise<ProtocolMapping.Commands[T]['returnType']>;&#125;
+class Connection \{send<T extends keyof ProtocolMapping.Commands>(method: T, ...paramArgs: ProtocolMapping.Commands[T]['paramsType']): Promise<ProtocolMapping.Commands[T]['returnType']>;\}
 ```
 
 ## Parameters

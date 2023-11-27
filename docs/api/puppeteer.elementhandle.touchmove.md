@@ -7,7 +7,7 @@ sidebar_label: ElementHandle.touchMove
 #### Signature:
 
 ```typescript
-class ElementHandle &#123;touchMove(this: ElementHandle<Element>): Promise<void>;&#125;
+class ElementHandle \{touchMove(this: ElementHandle<Element>): Promise<void>;\}
 ```
 
 ## Parameters

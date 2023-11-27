@@ -7,7 +7,7 @@ sidebar_label: Process.kill
 #### Signature:
 
 ```typescript
-class Process &#123;kill(): void;&#125;
+class Process \{kill(): void;\}
 ```
 
 **Returns:**

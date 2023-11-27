@@ -15,7 +15,7 @@ sidebar_label: Frame.$x
 #### Signature:
 
 ```typescript
-class Frame &#123;$x(expression: string): Promise<Array<ElementHandle<Node>>>;&#125;
+class Frame \{$x(expression: string): Promise<Array<ElementHandle<Node>>>;\}
 ```
 
 ## Parameters

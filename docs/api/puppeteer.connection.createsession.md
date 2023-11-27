@@ -7,7 +7,7 @@ sidebar_label: Connection.createSession
 #### Signature:
 
 ```typescript
-class Connection &#123;createSession(targetInfo: Protocol.Target.TargetInfo): Promise<CDPSession>;&#125;
+class Connection \{createSession(targetInfo: Protocol.Target.TargetInfo): Promise<CDPSession>;\}
 ```
 
 ## Parameters

@@ -9,7 +9,7 @@ Captures a screencast of this [page](./puppeteer.page.md).
 #### Signature:
 
 ```typescript
-class Page &#123;screencast(options?: Readonly<ScreencastOptions>): Promise<ScreenRecorder>;&#125;
+class Page \{screencast(options?: Readonly<ScreencastOptions>): Promise<ScreenRecorder>;\}
 ```
 
 ## Parameters
@@ -45,7 +45,7 @@ const page = await browser.newPage();
 await page.goto("https://www.example.com");
 
 // Start recording.
-const recorder = await page.screencast(&#123;path: 'recording.webm'&#125;);
+const recorder = await page.screencast(\{path: 'recording.webm'\});
 
 // Do something.
 

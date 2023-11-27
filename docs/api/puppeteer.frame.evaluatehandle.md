@@ -9,7 +9,7 @@ Behaves identically to [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.m
 #### Signature:
 
 ```typescript
-class Frame &#123;evaluateHandle<Params extends unknown[], Func extends EvaluateFunc<Params> = EvaluateFunc<Params>>(pageFunction: Func | string, ...args: Params): Promise<HandleFor<Awaited<ReturnType<Func>>>>;&#125;
+class Frame \{evaluateHandle<Params extends unknown[], Func extends EvaluateFunc<Params> = EvaluateFunc<Params>>(pageFunction: Func | string, ...args: Params): Promise<HandleFor<Awaited<ReturnType<Func>>>>;\}
 ```
 
 ## Parameters

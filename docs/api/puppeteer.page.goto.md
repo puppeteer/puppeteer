@@ -9,7 +9,7 @@ Navigates the page to the given `url`.
 #### Signature:
 
 ```typescript
-class Page &#123;goto(url: string, options?: GoToOptions): Promise<HTTPResponse | null>;&#125;
+class Page \{goto(url: string, options?: GoToOptions): Promise<HTTPResponse | null>;\}
 ```
 
 ## Parameters

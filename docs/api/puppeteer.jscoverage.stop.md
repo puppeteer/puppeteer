@@ -7,7 +7,7 @@ sidebar_label: JSCoverage.stop
 #### Signature:
 
 ```typescript
-class JSCoverage &#123;stop(): Promise<JSCoverageEntry[]>;&#125;
+class JSCoverage \{stop(): Promise<JSCoverageEntry[]>;\}
 ```
 
 **Returns:**

@@ -9,7 +9,7 @@ Awaits pending interception handlers and then decides how to fulfill the request
 #### Signature:
 
 ```typescript
-class HTTPRequest &#123;abstract finalizeInterceptions(): Promise<void>;&#125;
+class HTTPRequest \{abstract finalizeInterceptions(): Promise<void>;\}
 ```
 
 **Returns:**

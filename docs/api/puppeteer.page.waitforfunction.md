@@ -9,7 +9,7 @@ Waits for a function to finish evaluating in the page's context.
 #### Signature:
 
 ```typescript
-class Page &#123;waitForFunction<Params extends unknown[], Func extends EvaluateFunc<Params> = EvaluateFunc<Params>>(pageFunction: Func | string, options?: FrameWaitForFunctionOptions, ...args: Params): Promise<HandleFor<Awaited<ReturnType<Func>>>>;&#125;
+class Page \{waitForFunction<Params extends unknown[], Func extends EvaluateFunc<Params> = EvaluateFunc<Params>>(pageFunction: Func | string, options?: FrameWaitForFunctionOptions, ...args: Params): Promise<HandleFor<Awaited<ReturnType<Func>>>>;\}
 ```
 
 ## Parameters
@@ -30,14 +30,14 @@ The [Page.waitForFunction()](./puppeteer.page.waitforfunction.md) can be used to
 
 ```ts
 import puppeteer from 'puppeteer';
-(async () => &#123;
+(async () => \{
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   const watchDog = page.waitForFunction('window.innerWidth < 100');
-  await page.setViewport(&#123;width: 50, height: 50&#125;);
+  await page.setViewport(\{width: 50, height: 50\});
   await watchDog;
   await browser.close();
-&#125;)();
+\})();
 ```
 
 ## Example 2
@@ -48,7 +48,7 @@ To pass arguments from node.js to the predicate of [Page.waitForFunction()](./pu
 const selector = '.foo';
 await page.waitForFunction(
   selector => !!document.querySelector(selector),
-  &#123;&#125;,
+  \{\},
   selector
 );
 ```
@@ -60,9 +60,9 @@ The predicate of [Page.waitForFunction()](./puppeteer.page.waitforfunction.md) c
 ```ts
 const username = 'github-username';
 await page.waitForFunction(
-  async username => &#123;
+  async username => \{
     const githubResponse = await fetch(
-      `https://api.github.com/users/$&#123;username&#125;`
+      `https://api.github.com/users/$\{username\}`
     );
     const githubUser = await githubResponse.json();
     // show the avatar
@@ -71,8 +71,8 @@ await page.waitForFunction(
     // wait 3 seconds
     await new Promise((resolve, reject) => setTimeout(resolve, 3000));
     img.remove();
-  &#125;,
-  &#123;&#125;,
+  \},
+  \{\},
   username
 );
 ```

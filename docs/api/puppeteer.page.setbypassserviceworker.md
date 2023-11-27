@@ -9,7 +9,7 @@ Toggles ignoring of service worker for each request.
 #### Signature:
 
 ```typescript
-class Page &#123;abstract setBypassServiceWorker(bypass: boolean): Promise<void>;&#125;
+class Page \{abstract setBypassServiceWorker(bypass: boolean): Promise<void>;\}
 ```
 
 ## Parameters

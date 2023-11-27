@@ -9,7 +9,7 @@ A vanilla object representing the serializable portions of the referenced object
 #### Signature:
 
 ```typescript
-class JSHandle &#123;abstract jsonValue(): Promise<T>;&#125;
+class JSHandle \{abstract jsonValue(): Promise<T>;\}
 ```
 
 **Returns:**

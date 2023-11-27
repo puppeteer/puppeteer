@@ -7,19 +7,19 @@ sidebar_label: JSCoverage.start
 #### Signature:
 
 ```typescript
-class JSCoverage &#123;start(options?: &#123;
+class JSCoverage \{start(options?: \{
         resetOnNavigation?: boolean;
         reportAnonymousScripts?: boolean;
         includeRawScriptCoverage?: boolean;
         useBlockCoverage?: boolean;
-    &#125;): Promise<void>;&#125;
+    \}): Promise<void>;\}
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                                                                         | Description  |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| options   | &#123; resetOnNavigation?: boolean; reportAnonymousScripts?: boolean; includeRawScriptCoverage?: boolean; useBlockCoverage?: boolean; &#125; | _(Optional)_ |
+| Parameter | Type                                                                                                                                 | Description  |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| options   | \{ resetOnNavigation?: boolean; reportAnonymousScripts?: boolean; includeRawScriptCoverage?: boolean; useBlockCoverage?: boolean; \} | _(Optional)_ |
 
 **Returns:**
 

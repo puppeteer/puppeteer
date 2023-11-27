@@ -11,7 +11,7 @@ A list of predefined network conditions can be used by importing [PredefinedNetw
 #### Signature:
 
 ```typescript
-class Page &#123;abstract emulateNetworkConditions(networkConditions: NetworkConditions | null): Promise<void>;&#125;
+class Page \{abstract emulateNetworkConditions(networkConditions: NetworkConditions | null): Promise<void>;\}
 ```
 
 ## Parameters
@@ -27,15 +27,15 @@ Promise&lt;void&gt;
 ## Example
 
 ```ts
-import &#123;PredefinedNetworkConditions&#125; from 'puppeteer';
+import \{PredefinedNetworkConditions\} from 'puppeteer';
 const slow3G = PredefinedNetworkConditions['Slow 3G'];
 
-(async () => &#123;
+(async () => \{
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.emulateNetworkConditions(slow3G);
   await page.goto('https://www.google.com');
   // other actions...
   await browser.close();
-&#125;)();
+\})();
 ```

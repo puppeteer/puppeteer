@@ -11,7 +11,7 @@ If the function passed to `page.evaluate` returns a Promise, the function will w
 #### Signature:
 
 ```typescript
-class Page &#123;evaluate<Params extends unknown[], Func extends EvaluateFunc<Params> = EvaluateFunc<Params>>(pageFunction: Func | string, ...args: Params): Promise<Awaited<ReturnType<Func>>>;&#125;
+class Page \{evaluate<Params extends unknown[], Func extends EvaluateFunc<Params> = EvaluateFunc<Params>>(pageFunction: Func | string, ...args: Params): Promise<Awaited<ReturnType<Func>>>;\}
 ```
 
 ## Parameters
@@ -30,9 +30,9 @@ the return value of `pageFunction`.
 ## Example 1
 
 ```ts
-const result = await frame.evaluate(() => &#123;
+const result = await frame.evaluate(() => \{
   return Promise.resolve(8 * 7);
-&#125;);
+\});
 console.log(result); // prints "56"
 ```
 

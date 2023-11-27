@@ -7,16 +7,16 @@ sidebar_label: Page.close
 #### Signature:
 
 ```typescript
-class Page &#123;abstract close(options?: &#123;
+class Page \{abstract close(options?: \{
         runBeforeUnload?: boolean;
-    &#125;): Promise<void>;&#125;
+    \}): Promise<void>;\}
 ```
 
 ## Parameters
 
-| Parameter | Type                                     | Description  |
-| --------- | ---------------------------------------- | ------------ |
-| options   | &#123; runBeforeUnload?: boolean; &#125; | _(Optional)_ |
+| Parameter | Type                             | Description  |
+| --------- | -------------------------------- | ------------ |
+| options   | \{ runBeforeUnload?: boolean; \} | _(Optional)_ |
 
 **Returns:**
 

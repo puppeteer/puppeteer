@@ -9,7 +9,7 @@ Queries the current element for all elements matching the given selector.
 #### Signature:
 
 ```typescript
-class ElementHandle &#123;$$<Selector extends string>(selector: Selector): Promise<Array<ElementHandle<NodeFor<Selector>>>>;&#125;
+class ElementHandle \{$$<Selector extends string>(selector: Selector): Promise<Array<ElementHandle<NodeFor<Selector>>>>;\}
 ```
 
 ## Parameters

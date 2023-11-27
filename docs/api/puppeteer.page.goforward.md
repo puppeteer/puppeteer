@@ -9,7 +9,7 @@ This method navigate to the next page in history.
 #### Signature:
 
 ```typescript
-class Page &#123;abstract goForward(options?: WaitForOptions): Promise<HTTPResponse | null>;&#125;
+class Page \{abstract goForward(options?: WaitForOptions): Promise<HTTPResponse | null>;\}
 ```
 
 ## Parameters

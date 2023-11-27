@@ -9,7 +9,7 @@ An object with HTTP headers associated with the request. All header names are lo
 #### Signature:
 
 ```typescript
-class HTTPRequest &#123;abstract headers(): Record<string, string>;&#125;
+class HTTPRequest \{abstract headers(): Record<string, string>;\}
 ```
 
 **Returns:**

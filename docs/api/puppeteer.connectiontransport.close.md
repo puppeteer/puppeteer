@@ -7,7 +7,7 @@ sidebar_label: ConnectionTransport.close
 #### Signature:
 
 ```typescript
-interface ConnectionTransport &#123;close(): void;&#125;
+interface ConnectionTransport \{close(): void;\}
 ```
 
 **Returns:**

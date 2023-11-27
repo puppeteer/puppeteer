@@ -9,7 +9,7 @@ The security protocol being used, e.g. "TLS 1.2".
 #### Signature:
 
 ```typescript
-class SecurityDetails &#123;protocol(): string;&#125;
+class SecurityDetails \{protocol(): string;\}
 ```
 
 **Returns:**

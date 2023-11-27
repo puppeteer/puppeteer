@@ -11,7 +11,7 @@ In case of multiple [browser contexts](./puppeteer.browsercontext.md), this retu
 #### Signature:
 
 ```typescript
-class Browser &#123;abstract targets(): Target[];&#125;
+class Browser \{abstract targets(): Target[];\}
 ```
 
 **Returns:**

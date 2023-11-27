@@ -9,7 +9,7 @@ Wait for the `xpath` to appear in page. If at the moment of calling the method t
 #### Signature:
 
 ```typescript
-class Page &#123;waitForXPath(xpath: string, options?: WaitForSelectorOptions): Promise<ElementHandle<Node> | null>;&#125;
+class Page \{waitForXPath(xpath: string, options?: WaitForSelectorOptions): Promise<ElementHandle<Node> | null>;\}
 ```
 
 ## Parameters
@@ -41,7 +41,7 @@ This method works across navigation
 
 ```ts
 import puppeteer from 'puppeteer';
-(async () => &#123;
+(async () => \{
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   let currentURL;
@@ -52,9 +52,9 @@ import puppeteer from 'puppeteer';
     'https://example.com',
     'https://google.com',
     'https://bbc.com',
-  ]) &#123;
+  ]) \{
     await page.goto(currentURL);
-  &#125;
+  \}
   await browser.close();
-&#125;)();
+\})();
 ```

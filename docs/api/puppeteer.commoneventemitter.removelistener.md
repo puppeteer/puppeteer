@@ -7,7 +7,7 @@ sidebar_label: CommonEventEmitter.removeListener
 #### Signature:
 
 ```typescript
-interface CommonEventEmitter &#123;removeListener<Key extends keyof Events>(type: Key, handler: Handler<Events[Key]>): this;&#125;
+interface CommonEventEmitter \{removeListener<Key extends keyof Events>(type: Key, handler: Handler<Events[Key]>): this;\}
 ```
 
 ## Parameters

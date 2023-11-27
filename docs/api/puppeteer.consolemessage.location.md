@@ -9,7 +9,7 @@ The location of the console message.
 #### Signature:
 
 ```typescript
-class ConsoleMessage &#123;location(): ConsoleMessageLocation;&#125;
+class ConsoleMessage \{location(): ConsoleMessageLocation;\}
 ```
 
 **Returns:**

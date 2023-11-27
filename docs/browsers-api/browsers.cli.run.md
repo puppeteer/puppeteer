@@ -7,7 +7,7 @@ sidebar_label: CLI.run
 #### Signature:
 
 ```typescript
-class CLI &#123;run(argv: string[]): Promise<void>;&#125;
+class CLI \{run(argv: string[]): Promise<void>;\}
 ```
 
 ## Parameters

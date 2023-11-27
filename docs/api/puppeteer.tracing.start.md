@@ -9,7 +9,7 @@ Starts a trace for the current page.
 #### Signature:
 
 ```typescript
-class Tracing &#123;start(options?: TracingOptions): Promise<void>;&#125;
+class Tracing \{start(options?: TracingOptions): Promise<void>;\}
 ```
 
 ## Parameters

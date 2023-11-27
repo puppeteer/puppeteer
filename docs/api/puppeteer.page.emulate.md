@@ -11,7 +11,7 @@ To aid emulation, Puppeteer provides a list of known devices that can be via [Kn
 #### Signature:
 
 ```typescript
-class Page &#123;emulate(device: Device): Promise<void>;&#125;
+class Page \{emulate(device: Device): Promise<void>;\}
 ```
 
 ## Parameters
@@ -33,15 +33,15 @@ This method will resize the page. A lot of websites don't expect phones to chang
 ## Example
 
 ```ts
-import &#123;KnownDevices&#125; from 'puppeteer';
+import \{KnownDevices\} from 'puppeteer';
 const iPhone = KnownDevices['iPhone 6'];
 
-(async () => &#123;
+(async () => \{
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.emulate(iPhone);
   await page.goto('https://www.google.com');
   // other actions...
   await browser.close();
-&#125;)();
+\})();
 ```

@@ -9,7 +9,7 @@ The URL of the response.
 #### Signature:
 
 ```typescript
-class HTTPResponse &#123;abstract url(): string;&#125;
+class HTTPResponse \{abstract url(): string;\}
 ```
 
 **Returns:**

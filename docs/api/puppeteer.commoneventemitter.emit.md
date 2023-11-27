@@ -7,7 +7,7 @@ sidebar_label: CommonEventEmitter.emit
 #### Signature:
 
 ```typescript
-interface CommonEventEmitter &#123;emit<Key extends keyof Events>(type: Key, event: Events[Key]): boolean;&#125;
+interface CommonEventEmitter \{emit<Key extends keyof Events>(type: Key, event: Events[Key]): boolean;\}
 ```
 
 ## Parameters

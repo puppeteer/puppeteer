@@ -9,7 +9,7 @@ If no URLs are specified, this method returns cookies for the current page URL. 
 #### Signature:
 
 ```typescript
-class Page &#123;abstract cookies(...urls: string[]): Promise<Protocol.Network.Cookie[]>;&#125;
+class Page \{abstract cookies(...urls: string[]): Promise<Protocol.Network.Cookie[]>;\}
 ```
 
 ## Parameters

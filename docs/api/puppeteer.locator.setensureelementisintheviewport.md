@@ -7,7 +7,7 @@ sidebar_label: Locator.setEnsureElementIsInTheViewport
 #### Signature:
 
 ```typescript
-class Locator &#123;setEnsureElementIsInTheViewport<ElementType extends Element>(this: Locator<ElementType>, value: boolean): Locator<ElementType>;&#125;
+class Locator \{setEnsureElementIsInTheViewport<ElementType extends Element>(this: Locator<ElementType>, value: boolean): Locator<ElementType>;\}
 ```
 
 ## Parameters

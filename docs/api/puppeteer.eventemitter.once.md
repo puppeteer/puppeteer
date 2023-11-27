@@ -9,7 +9,7 @@ Like `on` but the listener will only be fired once and then it will be removed.
 #### Signature:
 
 ```typescript
-class EventEmitter &#123;once<Key extends keyof EventsWithWildcard<Events>>(type: Key, handler: Handler<EventsWithWildcard<Events>[Key]>): this;&#125;
+class EventEmitter \{once<Key extends keyof EventsWithWildcard<Events>>(type: Key, handler: Handler<EventsWithWildcard<Events>[Key]>): this;\}
 ```
 
 ## Parameters

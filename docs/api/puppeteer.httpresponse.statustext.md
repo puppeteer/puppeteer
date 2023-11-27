@@ -9,7 +9,7 @@ The status text of the response (e.g. usually an "OK" for a success).
 #### Signature:
 
 ```typescript
-class HTTPResponse &#123;abstract statusText(): string;&#125;
+class HTTPResponse \{abstract statusText(): string;\}
 ```
 
 **Returns:**

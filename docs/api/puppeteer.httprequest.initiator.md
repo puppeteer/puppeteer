@@ -9,7 +9,7 @@ The initiator of the request.
 #### Signature:
 
 ```typescript
-class HTTPRequest &#123;abstract initiator(): Protocol.Network.Initiator | undefined;&#125;
+class HTTPRequest \{abstract initiator(): Protocol.Network.Initiator | undefined;\}
 ```
 
 **Returns:**

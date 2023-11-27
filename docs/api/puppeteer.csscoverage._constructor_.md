@@ -9,7 +9,7 @@ Constructs a new instance of the `CSSCoverage` class
 #### Signature:
 
 ```typescript
-class CSSCoverage &#123;constructor(client: CDPSession);&#125;
+class CSSCoverage \{constructor(client: CDPSession);\}
 ```
 
 ## Parameters

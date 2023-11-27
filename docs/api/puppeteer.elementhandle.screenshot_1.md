@@ -7,7 +7,7 @@ sidebar_label: ElementHandle.screenshot_1
 #### Signature:
 
 ```typescript
-class ElementHandle &#123;screenshot(options?: Readonly<ScreenshotOptions>): Promise<Buffer>;&#125;
+class ElementHandle \{screenshot(options?: Readonly<ScreenshotOptions>): Promise<Buffer>;\}
 ```
 
 ## Parameters

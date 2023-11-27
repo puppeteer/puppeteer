@@ -9,7 +9,7 @@ Dispatches a `mousewheel` event.
 #### Signature:
 
 ```typescript
-class Mouse &#123;abstract wheel(options?: Readonly<MouseWheelOptions>): Promise<void>;&#125;
+class Mouse \{abstract wheel(options?: Readonly<MouseWheelOptions>): Promise<void>;\}
 ```
 
 ## Parameters
@@ -38,5 +38,5 @@ await page.mouse.move(
   boundingBox.y + boundingBox.height / 2
 );
 
-await page.mouse.wheel(&#123;deltaY: -100&#125;);
+await page.mouse.wheel(\{deltaY: -100\});
 ```

@@ -9,7 +9,7 @@ The IP address and port number used to connect to the remote server.
 #### Signature:
 
 ```typescript
-class HTTPResponse &#123;abstract remoteAddress(): RemoteAddress;&#125;
+class HTTPResponse \{abstract remoteAddress(): RemoteAddress;\}
 ```
 
 **Returns:**

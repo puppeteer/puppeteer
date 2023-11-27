@@ -9,7 +9,7 @@ Adds a `<script>` tag into the page with the desired url or content.
 #### Signature:
 
 ```typescript
-class Frame &#123;addScriptTag(options: FrameAddScriptTagOptions): Promise<ElementHandle<HTMLScriptElement>>;&#125;
+class Frame \{addScriptTag(options: FrameAddScriptTagOptions): Promise<ElementHandle<HTMLScriptElement>>;\}
 ```
 
 ## Parameters

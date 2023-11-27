@@ -9,7 +9,7 @@ Dispatches a `drag` event.
 #### Signature:
 
 ```typescript
-class Mouse &#123;abstract drag(start: Point, target: Point): Promise<Protocol.Input.DragData>;&#125;
+class Mouse \{abstract drag(start: Point, target: Point): Promise<Protocol.Input.DragData>;\}
 ```
 
 ## Parameters

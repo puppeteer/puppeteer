@@ -7,7 +7,7 @@ sidebar_label: Process.waitForLineOutput
 #### Signature:
 
 ```typescript
-class Process &#123;waitForLineOutput(regex: RegExp, timeout?: number): Promise<string>;&#125;
+class Process \{waitForLineOutput(regex: RegExp, timeout?: number): Promise<string>;\}
 ```
 
 ## Parameters

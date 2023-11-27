@@ -9,7 +9,7 @@ Accept the file chooser request with the given file paths.
 #### Signature:
 
 ```typescript
-class FileChooser &#123;accept(paths: string[]): Promise<void>;&#125;
+class FileChooser \{accept(paths: string[]): Promise<void>;\}
 ```
 
 ## Parameters

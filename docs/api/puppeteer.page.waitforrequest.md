@@ -7,9 +7,9 @@ sidebar_label: Page.waitForRequest
 #### Signature:
 
 ```typescript
-class Page &#123;abstract waitForRequest(urlOrPredicate: string | ((req: HTTPRequest) => boolean | Promise<boolean>), options?: &#123;
+class Page \{abstract waitForRequest(urlOrPredicate: string | ((req: HTTPRequest) => boolean | Promise<boolean>), options?: \{
         timeout?: number;
-    &#125;): Promise<HTTPRequest>;&#125;
+    \}): Promise<HTTPRequest>;\}
 ```
 
 ## Parameters
@@ -17,7 +17,7 @@ class Page &#123;abstract waitForRequest(urlOrPredicate: string | ((req: HTTPReq
 | Parameter      | Type                                                                                                 | Description                              |
 | -------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------- |
 | urlOrPredicate | string \| ((req: [HTTPRequest](./puppeteer.httprequest.md)) =&gt; boolean \| Promise&lt;boolean&gt;) | A URL or predicate to wait for           |
-| options        | &#123; timeout?: number; &#125;                                                                      | _(Optional)_ Optional waiting parameters |
+| options        | \{ timeout?: number; \}                                                                              | _(Optional)_ Optional waiting parameters |
 
 **Returns:**
 

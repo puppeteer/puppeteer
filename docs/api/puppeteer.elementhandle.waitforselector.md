@@ -11,7 +11,7 @@ Unlike [Frame.waitForSelector()](./puppeteer.frame.waitforselector.md), this met
 #### Signature:
 
 ```typescript
-class ElementHandle &#123;waitForSelector<Selector extends string>(selector: Selector, options?: WaitForSelectorOptions): Promise<ElementHandle<NodeFor<Selector>> | null>;&#125;
+class ElementHandle \{waitForSelector<Selector extends string>(selector: Selector, options?: WaitForSelectorOptions): Promise<ElementHandle<NodeFor<Selector>> | null>;\}
 ```
 
 ## Parameters
@@ -36,7 +36,7 @@ Throws if an element matching the given selector doesn't appear.
 ```ts
 import puppeteer from 'puppeteer';
 
-(async () => &#123;
+(async () => \{
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   let currentURL;
@@ -49,9 +49,9 @@ import puppeteer from 'puppeteer';
     'https://example.com',
     'https://google.com',
     'https://bbc.com',
-  ]) &#123;
+  ]) \{
     await page.goto(currentURL);
-  &#125;
+  \}
   await browser.close();
-&#125;)();
+\})();
 ```

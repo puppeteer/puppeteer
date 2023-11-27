@@ -9,7 +9,7 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 #### Signature:
 
 ```typescript
-class Frame &#123;type(selector: string, text: string, options?: Readonly<KeyboardTypeOptions>): Promise<void>;&#125;
+class Frame \{type(selector: string, text: string, options?: Readonly<KeyboardTypeOptions>): Promise<void>;\}
 ```
 
 ## Parameters
@@ -32,5 +32,5 @@ To press a special key, like `Control` or `ArrowDown`, use [Keyboard.press()](./
 
 ```ts
 await frame.type('#mytextarea', 'Hello'); // Types instantly
-await frame.type('#mytextarea', 'World', &#123;delay: 100&#125;); // Types slower, like a user
+await frame.type('#mytextarea', 'World', \{delay: 100\}); // Types slower, like a user
 ```

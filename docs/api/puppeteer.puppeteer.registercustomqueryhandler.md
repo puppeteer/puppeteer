@@ -9,7 +9,7 @@ Registers a [custom query handler](./puppeteer.customqueryhandler.md).
 #### Signature:
 
 ```typescript
-class Puppeteer &#123;static registerCustomQueryHandler(name: string, queryHandler: CustomQueryHandler): void;&#125;
+class Puppeteer \{static registerCustomQueryHandler(name: string, queryHandler: CustomQueryHandler): void;\}
 ```
 
 ## Parameters
@@ -30,6 +30,6 @@ After registration, the handler can be used everywhere where a selector is expec
 ## Example
 
 ```
-puppeteer.registerCustomQueryHandler('text', &#123; … &#125;);
+puppeteer.registerCustomQueryHandler('text', \{ … \});
 const aHandle = await page.$('text/…');
 ```

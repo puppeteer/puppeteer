@@ -9,7 +9,7 @@ Indicates that the page has been closed.
 #### Signature:
 
 ```typescript
-class Page &#123;abstract isClosed(): boolean;&#125;
+class Page \{abstract isClosed(): boolean;\}
 ```
 
 **Returns:**

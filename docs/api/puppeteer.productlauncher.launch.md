@@ -7,7 +7,7 @@ sidebar_label: ProductLauncher.launch
 #### Signature:
 
 ```typescript
-class ProductLauncher &#123;launch(options?: PuppeteerNodeLaunchOptions): Promise<Browser>;&#125;
+class ProductLauncher \{launch(options?: PuppeteerNodeLaunchOptions): Promise<Browser>;\}
 ```
 
 ## Parameters

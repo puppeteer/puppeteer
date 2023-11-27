@@ -7,7 +7,7 @@ sidebar_label: Page.emulateTimezone
 #### Signature:
 
 ```typescript
-class Page &#123;abstract emulateTimezone(timezoneId?: string): Promise<void>;&#125;
+class Page \{abstract emulateTimezone(timezoneId?: string): Promise<void>;\}
 ```
 
 ## Parameters

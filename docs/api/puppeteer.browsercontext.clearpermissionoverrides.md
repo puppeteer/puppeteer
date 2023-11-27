@@ -9,7 +9,7 @@ Clears all permission overrides for this [browser context](./puppeteer.browserco
 #### Signature:
 
 ```typescript
-class BrowserContext &#123;abstract clearPermissionOverrides(): Promise<void>;&#125;
+class BrowserContext \{abstract clearPermissionOverrides(): Promise<void>;\}
 ```
 
 **Returns:**

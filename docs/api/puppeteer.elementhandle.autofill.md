@@ -9,7 +9,7 @@ If the element is a form input, you can use [ElementHandle.autofill()](./puppete
 #### Signature:
 
 ```typescript
-class ElementHandle &#123;abstract autofill(data: AutofillData): Promise<void>;&#125;
+class ElementHandle \{abstract autofill(data: AutofillData): Promise<void>;\}
 ```
 
 ## Parameters
@@ -30,13 +30,13 @@ Currently, Puppeteer supports auto-filling credit card information only and in C
 // Select an input on the credit card form.
 const name = await page.waitForSelector('form #name');
 // Trigger autofill with the desired data.
-await name.autofill(&#123;
-  creditCard: &#123;
+await name.autofill(\{
+  creditCard: \{
     number: '4444444444444444',
     name: 'John Smith',
     expiryMonth: '01',
     expiryYear: '2030',
     cvc: '123',
-  &#125;,
-&#125;);
+  \},
+\});
 ```

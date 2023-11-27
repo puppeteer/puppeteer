@@ -13,7 +13,7 @@ Whether Puppeteer is connected to this [browser](./puppeteer.browser.md).
 #### Signature:
 
 ```typescript
-class Browser &#123;isConnected(): boolean;&#125;
+class Browser \{isConnected(): boolean;\}
 ```
 
 **Returns:**

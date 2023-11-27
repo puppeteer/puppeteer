@@ -9,9 +9,9 @@ Resolves to true if the element is visible in the current viewport. If an elemen
 #### Signature:
 
 ```typescript
-class ElementHandle &#123;isIntersectingViewport(this: ElementHandle<Element>, options?: &#123;
+class ElementHandle \{isIntersectingViewport(this: ElementHandle<Element>, options?: \{
         threshold?: number;
-    &#125;): Promise<boolean>;&#125;
+    \}): Promise<boolean>;\}
 ```
 
 ## Parameters
@@ -19,7 +19,7 @@ class ElementHandle &#123;isIntersectingViewport(this: ElementHandle<Element>, o
 | Parameter | Type                                                         | Description                                                                                                       |
 | --------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
 | this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |                                                                                                                   |
-| options   | &#123; threshold?: number; &#125;                            | _(Optional)_ Threshold for the intersection between 0 (no intersection) and 1 (full intersection). Defaults to 1. |
+| options   | \{ threshold?: number; \}                                    | _(Optional)_ Threshold for the intersection between 0 (no intersection) and 1 (full intersection). Defaults to 1. |
 
 **Returns:**
 

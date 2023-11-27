@@ -9,7 +9,7 @@ Adds a `HTMLLinkElement` into the frame with the desired URL
 #### Signature:
 
 ```typescript
-class Frame &#123;addStyleTag(options: FrameAddStyleTagOptions): Promise<ElementHandle<HTMLLinkElement>>;&#125;
+class Frame \{addStyleTag(options: FrameAddStyleTagOptions): Promise<ElementHandle<HTMLLinkElement>>;\}
 ```
 
 ## Parameters

@@ -7,7 +7,7 @@ sidebar_label: Page.screenshot_1
 #### Signature:
 
 ```typescript
-class Page &#123;screenshot(options?: Readonly<ScreenshotOptions>): Promise<Buffer>;&#125;
+class Page \{screenshot(options?: Readonly<ScreenshotOptions>): Promise<Buffer>;\}
 ```
 
 ## Parameters

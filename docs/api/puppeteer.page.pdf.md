@@ -9,7 +9,7 @@ Generates a PDF of the page with the `print` CSS media type.
 #### Signature:
 
 ```typescript
-class Page &#123;abstract pdf(options?: PDFOptions): Promise<Buffer>;&#125;
+class Page \{abstract pdf(options?: PDFOptions): Promise<Buffer>;\}
 ```
 
 ## Parameters

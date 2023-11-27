@@ -9,7 +9,7 @@ Sets the page's geolocation.
 #### Signature:
 
 ```typescript
-class Page &#123;abstract setGeolocation(options: GeolocationOptions): Promise<void>;&#125;
+class Page \{abstract setGeolocation(options: GeolocationOptions): Promise<void>;\}
 ```
 
 ## Parameters
@@ -29,5 +29,5 @@ Consider using [BrowserContext.overridePermissions()](./puppeteer.browsercontext
 ## Example
 
 ```ts
-await page.setGeolocation(&#123;latitude: 59.95, longitude: 30.31667&#125;);
+await page.setGeolocation(\{latitude: 59.95, longitude: 30.31667\});
 ```

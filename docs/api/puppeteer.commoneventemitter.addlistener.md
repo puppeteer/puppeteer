@@ -7,7 +7,7 @@ sidebar_label: CommonEventEmitter.addListener
 #### Signature:
 
 ```typescript
-interface CommonEventEmitter &#123;addListener<Key extends keyof Events>(type: Key, handler: Handler<Events[Key]>): this;&#125;
+interface CommonEventEmitter \{addListener<Key extends keyof Events>(type: Key, handler: Handler<Events[Key]>): this;\}
 ```
 
 ## Parameters

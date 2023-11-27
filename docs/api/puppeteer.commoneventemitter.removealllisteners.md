@@ -7,7 +7,7 @@ sidebar_label: CommonEventEmitter.removeAllListeners
 #### Signature:
 
 ```typescript
-interface CommonEventEmitter &#123;removeAllListeners(event?: keyof Events): this;&#125;
+interface CommonEventEmitter \{removeAllListeners(event?: keyof Events): this;\}
 ```
 
 ## Parameters

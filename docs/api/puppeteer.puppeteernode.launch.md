@@ -11,7 +11,7 @@ When using with `puppeteer-core`, [options.executablePath](./puppeteer.launchopt
 #### Signature:
 
 ```typescript
-class PuppeteerNode &#123;launch(options?: PuppeteerLaunchOptions): Promise<Browser>;&#125;
+class PuppeteerNode \{launch(options?: PuppeteerLaunchOptions): Promise<Browser>;\}
 ```
 
 ## Parameters
@@ -33,7 +33,7 @@ Puppeteer can also be used to control the Chrome browser, but it works best with
 You can use [options.ignoreDefaultArgs](./puppeteer.launchoptions.md) to filter out `--mute-audio` from default arguments:
 
 ```ts
-const browser = await puppeteer.launch(&#123;
+const browser = await puppeteer.launch(\{
   ignoreDefaultArgs: ['--mute-audio'],
-&#125;);
+\});
 ```

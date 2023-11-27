@@ -9,7 +9,7 @@ Identifies what kind of target this is.
 #### Signature:
 
 ```typescript
-class Target &#123;abstract type(): TargetType;&#125;
+class Target \{abstract type(): TargetType;\}
 ```
 
 **Returns:**

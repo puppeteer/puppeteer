@@ -9,7 +9,7 @@ Stops a trace started with the `start` method.
 #### Signature:
 
 ```typescript
-class Tracing &#123;stop(): Promise<Buffer | undefined>;&#125;
+class Tracing \{stop(): Promise<Buffer | undefined>;\}
 ```
 
 **Returns:**

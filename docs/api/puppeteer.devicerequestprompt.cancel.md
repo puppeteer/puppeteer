@@ -9,7 +9,7 @@ Cancel the prompt.
 #### Signature:
 
 ```typescript
-class DeviceRequestPrompt &#123;cancel(): Promise<void>;&#125;
+class DeviceRequestPrompt \{cancel(): Promise<void>;\}
 ```
 
 **Returns:**

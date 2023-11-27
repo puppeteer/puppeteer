@@ -7,7 +7,7 @@ sidebar_label: CDPEvents
 #### Signature:
 
 ```typescript
-export type CDPEvents = &#123;
+export type CDPEvents = \{
     [Property in keyof ProtocolMapping.Events]: ProtocolMapping.Events[Property][0];
-&#125;;
+\};
 ```

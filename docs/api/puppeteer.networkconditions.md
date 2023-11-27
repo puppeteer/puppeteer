@@ -11,8 +11,8 @@ sidebar_label: networkConditions
 #### Signature:
 
 ```typescript
-networkConditions: Readonly<&#123;
+networkConditions: Readonly<\{
     'Slow 3G': NetworkConditions;
     'Fast 3G': NetworkConditions;
-&#125;>
+\}>
 ```

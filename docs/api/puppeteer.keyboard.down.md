@@ -9,7 +9,7 @@ Dispatches a `keydown` event.
 #### Signature:
 
 ```typescript
-class Keyboard &#123;abstract down(key: KeyInput, options?: Readonly<KeyDownOptions>): Promise<void>;&#125;
+class Keyboard \{abstract down(key: KeyInput, options?: Readonly<KeyDownOptions>): Promise<void>;\}
 ```
 
 ## Parameters

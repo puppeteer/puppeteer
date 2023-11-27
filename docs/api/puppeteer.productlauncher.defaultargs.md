@@ -7,7 +7,7 @@ sidebar_label: ProductLauncher.defaultArgs
 #### Signature:
 
 ```typescript
-class ProductLauncher &#123;abstract defaultArgs(object: BrowserLaunchArgumentOptions): string[];&#125;
+class ProductLauncher \{abstract defaultArgs(object: BrowserLaunchArgumentOptions): string[];\}
 ```
 
 ## Parameters

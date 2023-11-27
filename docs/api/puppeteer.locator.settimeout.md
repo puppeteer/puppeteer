@@ -7,7 +7,7 @@ sidebar_label: Locator.setTimeout
 #### Signature:
 
 ```typescript
-class Locator &#123;setTimeout(timeout: number): Locator<T>;&#125;
+class Locator \{setTimeout(timeout: number): Locator<T>;\}
 ```
 
 ## Parameters

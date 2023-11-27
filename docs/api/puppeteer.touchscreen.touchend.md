@@ -9,7 +9,7 @@ Dispatches a `touchend` event.
 #### Signature:
 
 ```typescript
-class Touchscreen &#123;abstract touchEnd(): Promise<void>;&#125;
+class Touchscreen \{abstract touchEnd(): Promise<void>;\}
 ```
 
 **Returns:**

@@ -9,7 +9,7 @@ Releases the mouse.
 #### Signature:
 
 ```typescript
-class Mouse &#123;abstract up(options?: Readonly<MouseOptions>): Promise<void>;&#125;
+class Mouse \{abstract up(options?: Readonly<MouseOptions>): Promise<void>;\}
 ```
 
 ## Parameters

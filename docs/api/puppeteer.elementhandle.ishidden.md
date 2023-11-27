@@ -9,7 +9,7 @@ Checks if an element is hidden using the same mechanism as [ElementHandle.waitFo
 #### Signature:
 
 ```typescript
-class ElementHandle &#123;isHidden(): Promise<boolean>;&#125;
+class ElementHandle \{isHidden(): Promise<boolean>;\}
 ```
 
 **Returns:**

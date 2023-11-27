@@ -9,7 +9,7 @@ A target this page was created from.
 #### Signature:
 
 ```typescript
-class Page &#123;abstract target(): Target;&#125;
+class Page \{abstract target(): Target;\}
 ```
 
 **Returns:**

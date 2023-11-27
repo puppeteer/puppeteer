@@ -9,7 +9,7 @@ An array of child frames.
 #### Signature:
 
 ```typescript
-class Frame &#123;abstract childFrames(): Frame[];&#125;
+class Frame \{abstract childFrames(): Frame[];\}
 ```
 
 **Returns:**

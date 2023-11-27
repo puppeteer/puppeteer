@@ -9,7 +9,7 @@ A matching [HTTPRequest](./puppeteer.httprequest.md) object.
 #### Signature:
 
 ```typescript
-class HTTPResponse &#123;abstract request(): HTTPRequest;&#125;
+class HTTPResponse \{abstract request(): HTTPRequest;\}
 ```
 
 **Returns:**

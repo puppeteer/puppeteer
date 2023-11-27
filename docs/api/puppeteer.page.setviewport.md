@@ -11,7 +11,7 @@ In the case of multiple pages in a single browser, each page can have its own vi
 #### Signature:
 
 ```typescript
-class Page &#123;abstract setViewport(viewport: Viewport): Promise<void>;&#125;
+class Page \{abstract setViewport(viewport: Viewport): Promise<void>;\}
 ```
 
 ## Parameters
@@ -32,10 +32,10 @@ NOTE: in certain cases, setting viewport will reload the page in order to set th
 
 ```ts
 const page = await browser.newPage();
-await page.setViewport(&#123;
+await page.setViewport(\{
   width: 640,
   height: 480,
   deviceScaleFactor: 1,
-&#125;);
+\});
 await page.goto('https://example.com');
 ```

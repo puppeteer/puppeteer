@@ -9,7 +9,7 @@ This method fetches an element with `selector` and focuses it. If there's no ele
 #### Signature:
 
 ```typescript
-class Page &#123;focus(selector: string): Promise<void>;&#125;
+class Page \{focus(selector: string): Promise<void>;\}
 ```
 
 ## Parameters

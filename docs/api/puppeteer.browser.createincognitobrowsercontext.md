@@ -11,7 +11,7 @@ This won't share cookies/cache with other [browser contexts](./puppeteer.browser
 #### Signature:
 
 ```typescript
-class Browser &#123;abstract createIncognitoBrowserContext(options?: BrowserContextOptions): Promise<BrowserContext>;&#125;
+class Browser \{abstract createIncognitoBrowserContext(options?: BrowserContextOptions): Promise<BrowserContext>;\}
 ```
 
 ## Parameters

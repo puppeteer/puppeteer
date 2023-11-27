@@ -7,7 +7,7 @@ sidebar_label: CommonEventEmitter.once
 #### Signature:
 
 ```typescript
-interface CommonEventEmitter &#123;once<Key extends keyof Events>(type: Key, handler: Handler<Events[Key]>): this;&#125;
+interface CommonEventEmitter \{once<Key extends keyof Events>(type: Key, handler: Handler<Events[Key]>): this;\}
 ```
 
 ## Parameters

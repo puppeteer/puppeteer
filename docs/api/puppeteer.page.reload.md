@@ -9,7 +9,7 @@ Reloads the page.
 #### Signature:
 
 ```typescript
-class Page &#123;abstract reload(options?: WaitForOptions): Promise<HTTPResponse | null>;&#125;
+class Page \{abstract reload(options?: WaitForOptions): Promise<HTTPResponse | null>;\}
 ```
 
 ## Parameters

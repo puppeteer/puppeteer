@@ -9,7 +9,7 @@ Simulates the given vision deficiency on the page.
 #### Signature:
 
 ```typescript
-class Page &#123;abstract emulateVisionDeficiency(type?: Protocol.Emulation.SetEmulatedVisionDeficiencyRequest['type']): Promise<void>;&#125;
+class Page \{abstract emulateVisionDeficiency(type?: Protocol.Emulation.SetEmulatedVisionDeficiencyRequest['type']): Promise<void>;\}
 ```
 
 ## Parameters
@@ -27,20 +27,20 @@ Promise&lt;void&gt;
 ```ts
 import puppeteer from 'puppeteer';
 
-(async () => &#123;
+(async () => \{
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto('https://v8.dev/blog/10-years');
 
   await page.emulateVisionDeficiency('achromatopsia');
-  await page.screenshot(&#123;path: 'achromatopsia.png'&#125;);
+  await page.screenshot(\{path: 'achromatopsia.png'\});
 
   await page.emulateVisionDeficiency('deuteranopia');
-  await page.screenshot(&#123;path: 'deuteranopia.png'&#125;);
+  await page.screenshot(\{path: 'deuteranopia.png'\});
 
   await page.emulateVisionDeficiency('blurredVision');
-  await page.screenshot(&#123;path: 'blurred-vision.png'&#125;);
+  await page.screenshot(\{path: 'blurred-vision.png'\});
 
   await browser.close();
-&#125;)();
+\})();
 ```

@@ -9,7 +9,7 @@ The default value of the prompt, or an empty string if the dialog is not a `prom
 #### Signature:
 
 ```typescript
-class Dialog &#123;defaultValue(): string;&#125;
+class Dialog \{defaultValue(): string;\}
 ```
 
 **Returns:**

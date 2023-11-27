@@ -7,7 +7,7 @@ sidebar_label: PuppeteerNode.defaultArgs
 #### Signature:
 
 ```typescript
-class PuppeteerNode &#123;defaultArgs(options?: BrowserLaunchArgumentOptions): string[];&#125;
+class PuppeteerNode \{defaultArgs(options?: BrowserLaunchArgumentOptions): string[];\}
 ```
 
 ## Parameters

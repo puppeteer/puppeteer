@@ -9,7 +9,7 @@ If the target is not of type `"page"`, `"webview"` or `"background_page"`, retur
 #### Signature:
 
 ```typescript
-class Target &#123;page(): Promise<Page | null>;&#125;
+class Target \{page(): Promise<Page | null>;\}
 ```
 
 **Returns:**

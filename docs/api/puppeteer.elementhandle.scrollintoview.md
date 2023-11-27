@@ -9,7 +9,7 @@ Scrolls the element into view using either the automation protocol client or by 
 #### Signature:
 
 ```typescript
-class ElementHandle &#123;scrollIntoView(this: ElementHandle<Element>): Promise<void>;&#125;
+class ElementHandle \{scrollIntoView(this: ElementHandle<Element>): Promise<void>;\}
 ```
 
 ## Parameters

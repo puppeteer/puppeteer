@@ -9,7 +9,7 @@ Captures the current state of the accessibility tree. The returned object repres
 #### Signature:
 
 ```typescript
-class Accessibility &#123;snapshot(options?: SnapshotOptions): Promise<SerializedAXNode | null>;&#125;
+class Accessibility \{snapshot(options?: SnapshotOptions): Promise<SerializedAXNode | null>;\}
 ```
 
 ## Parameters
@@ -46,12 +46,12 @@ const snapshot = await page.accessibility.snapshot();
 const node = findFocusedNode(snapshot);
 console.log(node && node.name);
 
-function findFocusedNode(node) &#123;
+function findFocusedNode(node) \{
   if (node.focused) return node;
-  for (const child of node.children || []) &#123;
+  for (const child of node.children || []) \{
     const foundNode = findFocusedNode(child);
     return foundNode;
-  &#125;
+  \}
   return null;
-&#125;
+\}
 ```

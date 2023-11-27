@@ -11,7 +11,7 @@ To press a special key, like `Control` or `ArrowDown`, use [ElementHandle.press(
 #### Signature:
 
 ```typescript
-class ElementHandle &#123;type(text: string, options?: Readonly<KeyboardTypeOptions>): Promise<void>;&#125;
+class ElementHandle \{type(text: string, options?: Readonly<KeyboardTypeOptions>): Promise<void>;\}
 ```
 
 ## Parameters
@@ -29,7 +29,7 @@ Promise&lt;void&gt;
 
 ```ts
 await elementHandle.type('Hello'); // Types instantly
-await elementHandle.type('World', &#123;delay: 100&#125;); // Types slower, like a user
+await elementHandle.type('World', \{delay: 100\}); // Types slower, like a user
 ```
 
 ## Example 2

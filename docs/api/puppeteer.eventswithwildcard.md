@@ -7,9 +7,9 @@ sidebar_label: EventsWithWildcard
 #### Signature:
 
 ```typescript
-export type EventsWithWildcard<Events extends Record<EventType, unknown>> = Events & &#123;
+export type EventsWithWildcard<Events extends Record<EventType, unknown>> = Events & \{
     '*': Events[keyof Events];
-&#125;;
+\};
 ```
 
 **References:** [EventType](./puppeteer.eventtype.md)

@@ -9,7 +9,7 @@ The type of the dialog.
 #### Signature:
 
 ```typescript
-class Dialog &#123;type(): Protocol.Page.DialogType;&#125;
+class Dialog \{type(): Protocol.Page.DialogType;\}
 ```
 
 **Returns:**
