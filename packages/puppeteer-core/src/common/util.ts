@@ -507,22 +507,6 @@ export async function getReadableFromProtocolStream(
 /**
  * @internal
  */
-export async function setPageContent(
-  page: Pick<Page, 'evaluate'>,
-  content: string
-): Promise<void> {
-  // We rely upon the fact that document.open() will reset frame lifecycle with "init"
-  // lifecycle event. @see https://crrev.com/608658
-  return await page.evaluate(html => {
-    document.open();
-    document.write(html);
-    document.close();
-  }, content);
-}
-
-/**
- * @internal
- */
 export function getPageContent(): string {
   let content = '';
   for (const node of document.childNodes) {
