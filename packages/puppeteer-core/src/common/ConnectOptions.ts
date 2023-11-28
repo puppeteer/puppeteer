@@ -23,7 +23,7 @@ import type {ConnectionTransport} from './ConnectionTransport.js';
 import type {Viewport} from './Viewport.js';
 
 /**
- * @internal
+ * @public
  */
 export type ProtocolType = 'cdp' | 'webDriverBiDi';
 
@@ -57,9 +57,10 @@ export interface BrowserConnectOptions {
    * @internal
    */
   _isPageTarget?: IsPageTargetCallback;
+
   /**
    * @defaultValue 'cdp'
-   * @internal
+   * @public
    */
   protocol?: ProtocolType;
   /**

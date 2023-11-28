@@ -123,13 +123,6 @@ export interface CSSCoverageOptions {
  * console.log(`Bytes used: ${(usedBytes / totalBytes) * 100}%`);
  * ```
  *
- * @privateRemarks BiDi
- * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
- *
- * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
- *
- * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
- *
  * @public
  */
 export class Coverage {

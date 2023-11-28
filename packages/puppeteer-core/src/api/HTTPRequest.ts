@@ -130,11 +130,6 @@ export abstract class HTTPRequest {
    * Warning! Using this client can break Puppeteer. Use with caution.
    *
    * @experimental
-   *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract get client(): CDPSession;
 
@@ -152,32 +147,17 @@ export abstract class HTTPRequest {
    * The `ContinueRequestOverrides` that will be used
    * if the interception is allowed to continue (ie, `abort()` and
    * `respond()` aren't called).
-   *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract continueRequestOverrides(): ContinueRequestOverrides;
 
   /**
    * The `ResponseForRequest` that gets used if the
    * interception is allowed to respond (ie, `abort()` is not called).
-   *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract responseForRequest(): Partial<ResponseForRequest> | null;
 
   /**
    * The most recent reason for aborting the request
-   *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract abortErrorReason(): Protocol.Network.ErrorReason | null;
 
@@ -191,22 +171,12 @@ export abstract class HTTPRequest {
    *
    * InterceptResolutionAction is one of: `abort`, `respond`, `continue`,
    * `disabled`, `none`, or `already-handled`.
-   *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract interceptResolutionState(): InterceptResolutionState;
 
   /**
    * Is `true` if the intercept resolution has already been handled,
    * `false` otherwise.
-   *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract isInterceptResolutionHandled(): boolean;
 
@@ -223,11 +193,6 @@ export abstract class HTTPRequest {
   /**
    * Awaits pending interception handlers and then decides how to fulfill
    * the request interception.
-   *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract finalizeInterceptions(): Promise<void>;
 
@@ -323,23 +288,11 @@ export abstract class HTTPRequest {
    * return an object with `errorText` containing a human-readable error
    * message, e.g. `net::ERR_FAILED`. It is not guaranteed that there will be
    * failure text if the request fails.
-   *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract failure(): {errorText: string} | null;
 
   /**
    * Continues request with optional request overrides.
-   *
-   * @remarks
-   *
-   * To use this, request
-   * interception should be enabled with {@link Page.setRequestInterception}.
-   *
-   * Exception is immediately thrown if the request interception is not enabled.
    *
    * @example
    *
@@ -356,14 +309,15 @@ export abstract class HTTPRequest {
    * ```
    *
    * @param overrides - optional overrides to apply to the request.
-   * @param priority - If provided, intercept is resolved using
-   * cooperative handling rules. Otherwise, intercept is resolved
-   * immediately.
+   * @param priority - If provided, intercept is resolved using cooperative
+   * handling rules. Otherwise, intercept is resolved immediately.
    *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   * @remarks
    *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   * To use this, request interception should be enabled with
+   * {@link Page.setRequestInterception}.
+   *
+   * Exception is immediately thrown if the request interception is not enabled.
    */
   abstract continue(
     overrides?: ContinueRequestOverrides,
@@ -372,13 +326,6 @@ export abstract class HTTPRequest {
 
   /**
    * Fulfills a request with the given response.
-   *
-   * @remarks
-   *
-   * To use this, request
-   * interception should be enabled with {@link Page.setRequestInterception}.
-   *
-   * Exception is immediately thrown if the request interception is not enabled.
    *
    * @example
    * An example of fulfilling all requests with 404 responses:
@@ -402,10 +349,12 @@ export abstract class HTTPRequest {
    * cooperative handling rules. Otherwise, intercept is resolved
    * immediately.
    *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   * @remarks
    *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   * To use this, request
+   * interception should be enabled with {@link Page.setRequestInterception}.
+   *
+   * Exception is immediately thrown if the request interception is not enabled.
    */
   abstract respond(
     response: Partial<ResponseForRequest>,
@@ -415,20 +364,16 @@ export abstract class HTTPRequest {
   /**
    * Aborts a request.
    *
-   * @remarks
-   * To use this, request interception should be enabled with
-   * {@link Page.setRequestInterception}. If it is not enabled, this method will
-   * throw an exception immediately.
-   *
    * @param errorCode - optional error code to provide.
    * @param priority - If provided, intercept is resolved using
    * cooperative handling rules. Otherwise, intercept is resolved
    * immediately.
    *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
+   * @remarks
    *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
+   * To use this, request interception should be enabled with
+   * {@link Page.setRequestInterception}. If it is not enabled, this method will
+   * throw an exception immediately.
    */
   abstract abort(errorCode?: ErrorCode, priority?: number): Promise<void>;
 }

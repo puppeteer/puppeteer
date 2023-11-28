@@ -164,11 +164,6 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * "https://example.com".
    * @param permissions - An array of permissions to grant. All permissions that
    * are not listed here will be automatically denied.
-   *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract overridePermissions(
     origin: string,
@@ -188,11 +183,6 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * // do stuff ..
    * context.clearPermissionOverrides();
    * ```
-   *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract clearPermissionOverrides(): Promise<void>;
 

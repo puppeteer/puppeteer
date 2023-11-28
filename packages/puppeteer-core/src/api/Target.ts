@@ -70,11 +70,6 @@ export abstract class Target {
 
   /**
    * Creates a Chrome Devtools Protocol session attached to the target.
-   *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract createCDPSession(): Promise<CDPSession>;
 
@@ -99,11 +94,6 @@ export abstract class Target {
 
   /**
    * Get the target that opened this target. Top-level targets return `null`.
-   *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract opener(): Target | undefined;
 }

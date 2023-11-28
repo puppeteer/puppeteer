@@ -32,7 +32,8 @@ non-standard DevTools Protocol used by Chrome).
 The goals of the project are:
 
 - Provide a slim, canonical library that highlights the capabilities of the
-  [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
+  [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/) and
+  [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/).
 - Provide a reference implementation for similar testing libraries. Eventually,
   these other frameworks could adopt Puppeteer as their foundational layer.
 - Grow the adoption of headless/automated browser testing.

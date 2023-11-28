@@ -962,11 +962,6 @@ export abstract class ElementHandle<
    * {@link https://nodejs.org/api/process.html#process_process_cwd | current working directory}.
    * For locals script connecting to remote chrome environments, paths must be
    * absolute.
-   *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract uploadFile(
     this: ElementHandle<HTMLInputElement>,

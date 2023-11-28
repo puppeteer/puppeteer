@@ -311,11 +311,6 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   /**
    * Is `true` if the frame is an out-of-process (OOP) frame. Otherwise,
    * `false`.
-   *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract isOOPFrame(): boolean;
 
@@ -352,14 +347,6 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * returned by the remote server, including 404 "Not Found" and 500 "Internal
    * Server Error". The status code for such responses can be retrieved by
    * calling {@link HTTPResponse.status}.
-   *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Partial support
-   *
-   * - `referer` not supported
-   * - `referrerPolicy` not supported
    */
   abstract goto(
     url: string,
@@ -1208,11 +1195,6 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    *   await devicePrompt.waitForDevice(({name}) => name.includes('My Device'))
    * );
    * ```
-   *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    *
    * @internal
    */

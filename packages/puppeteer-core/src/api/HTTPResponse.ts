@@ -81,11 +81,6 @@ export abstract class HTTPResponse {
   /**
    * {@link SecurityDetails} if the response was received over the
    * secure connection, or `null` otherwise.
-   *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract securityDetails(): SecurityDetails | null;
 
@@ -96,11 +91,6 @@ export abstract class HTTPResponse {
 
   /**
    * Promise which resolves to a buffer with response body.
-   *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract buffer(): Promise<Buffer>;
 
@@ -138,11 +128,6 @@ export abstract class HTTPResponse {
 
   /**
    * True if the response was served by a service worker.
-   *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract fromServiceWorker(): boolean;
 

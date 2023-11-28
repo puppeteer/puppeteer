@@ -95,8 +95,8 @@ export abstract class ProductLauncher {
       slowMo = 0,
       timeout = 30000,
       waitForInitialPage = true,
-      protocol,
       protocolTimeout,
+      protocol,
     } = options;
 
     const launchArgs = await this.computeLaunchArguments(options);

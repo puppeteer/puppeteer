@@ -128,13 +128,6 @@ export interface SnapshotOptions {
  * By default, Puppeteer tries to approximate this filtering, exposing only
  * the "interesting" nodes of the tree.
  *
- * @privateRemarks BiDi
- * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
- *
- * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
- *
- * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi+}: Supported
- *
  * @public
  */
 export class Accessibility {

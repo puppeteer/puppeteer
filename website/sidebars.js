@@ -39,6 +39,7 @@ module.exports = {
         },
       ],
     },
+    'webdriver-bidi',
     'chromium-support',
     'troubleshooting',
     'contributing',

@@ -401,10 +401,6 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * {@link Page | Pages} can override the user agent with
    * {@link Page.setUserAgent}.
    *
-   * @privateRemarks BiDi
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | CDP}: Supported
-   *
-   * {@link PROTOCOL_GET_STARTED_LINK_TEMPLATE | BiDi}: Unsupported
    */
   abstract userAgent(): Promise<string>;
 
