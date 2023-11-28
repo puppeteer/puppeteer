@@ -261,6 +261,8 @@ export class CdpFrame extends Frame {
       timeout = this._frameManager.timeoutSettings.navigationTimeout(),
     } = options;
 
+    // We rely upon the fact that document.open() will reset frame lifecycle with "init"
+    // lifecycle event. @see https://crrev.com/608658
     await this.setFrameContent(html);
 
     const watcher = new LifecycleWatcher(

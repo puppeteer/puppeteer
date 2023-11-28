@@ -808,8 +808,6 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * @internal
    */
   async setFrameContent(content: string): Promise<void> {
-    // We rely upon the fact that document.open() will reset frame lifecycle with "init"
-    // lifecycle event. @see https://crrev.com/608658
     return await this.evaluate(html => {
       document.open();
       document.write(html);
