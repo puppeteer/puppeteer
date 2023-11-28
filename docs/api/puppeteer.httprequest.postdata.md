@@ -9,7 +9,9 @@ The request's post body, if any.
 #### Signature:
 
 ```typescript
-class HTTPRequest \{abstract postData(): string | undefined;\}
+class HTTPRequest {
+  abstract postData(): string | undefined;
+}
 ```
 
 **Returns:**

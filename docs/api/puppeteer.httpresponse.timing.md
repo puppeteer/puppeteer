@@ -9,7 +9,9 @@ Timing information related to the response.
 #### Signature:
 
 ```typescript
-class HTTPResponse \{abstract timing(): Protocol.Network.ResourceTiming | null;\}
+class HTTPResponse {
+  abstract timing(): Protocol.Network.ResourceTiming | null;
+}
 ```
 
 **Returns:**

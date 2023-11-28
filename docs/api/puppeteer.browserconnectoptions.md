@@ -14,11 +14,11 @@ export interface BrowserConnectOptions
 
 ## Properties
 
-| Property          | Modifiers             | Type                                                        | Description                                                                               | Default                       |
-| ----------------- | --------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------- |
-| defaultViewport   | <code>optional</code> | [Viewport](./puppeteer.viewport.md) \| null                 | Sets the viewport for each page.                                                          | '\{width: 800, height: 600\}' |
-| ignoreHTTPSErrors | <code>optional</code> | boolean                                                     | Whether to ignore HTTPS errors during navigation.                                         | <code>false</code>            |
-| protocol          | <code>optional</code> | [ProtocolType](./puppeteer.protocoltype.md)                 |                                                                                           | 'cdp'                         |
-| protocolTimeout   | <code>optional</code> | number                                                      | Timeout setting for individual protocol (CDP) calls.                                      | <code>180_000</code>          |
-| slowMo            | <code>optional</code> | number                                                      | Slows down Puppeteer operations by the specified amount of milliseconds to aid debugging. |                               |
-| targetFilter      | <code>optional</code> | [TargetFilterCallback](./puppeteer.targetfiltercallback.md) | Callback to decide if Puppeteer should connect to a given target or not.                  |                               |
+| Property          | Modifiers             | Type                                                        | Description                                                                               | Default                               |
+| ----------------- | --------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------- |
+| defaultViewport   | <code>optional</code> | [Viewport](./puppeteer.viewport.md) \| null                 | Sets the viewport for each page.                                                          | '&#123;width: 800, height: 600&#125;' |
+| ignoreHTTPSErrors | <code>optional</code> | boolean                                                     | Whether to ignore HTTPS errors during navigation.                                         | <code>false</code>                    |
+| protocol          | <code>optional</code> | [ProtocolType](./puppeteer.protocoltype.md)                 |                                                                                           | 'cdp'                                 |
+| protocolTimeout   | <code>optional</code> | number                                                      | Timeout setting for individual protocol (CDP) calls.                                      | <code>180_000</code>                  |
+| slowMo            | <code>optional</code> | number                                                      | Slows down Puppeteer operations by the specified amount of milliseconds to aid debugging. |                                       |
+| targetFilter      | <code>optional</code> | [TargetFilterCallback](./puppeteer.targetfiltercallback.md) | Callback to decide if Puppeteer should connect to a given target or not.                  |                                       |

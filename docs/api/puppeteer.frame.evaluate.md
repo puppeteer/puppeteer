@@ -9,7 +9,15 @@ Behaves identically to [Page.evaluate()](./puppeteer.page.evaluate.md) except it
 #### Signature:
 
 ```typescript
-class Frame \{evaluate<Params extends unknown[], Func extends EvaluateFunc<Params> = EvaluateFunc<Params>>(pageFunction: Func | string, ...args: Params): Promise<Awaited<ReturnType<Func>>>;\}
+class Frame {
+  evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
+  >(
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<Awaited<ReturnType<Func>>>;
+}
 ```
 
 ## Parameters

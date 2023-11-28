@@ -9,7 +9,9 @@ Get the target that opened this target. Top-level targets return `null`.
 #### Signature:
 
 ```typescript
-class Target \{abstract opener(): Target | undefined;\}
+class Target {
+  abstract opener(): Target | undefined;
+}
 ```
 
 **Returns:**

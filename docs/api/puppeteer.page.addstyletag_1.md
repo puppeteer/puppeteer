@@ -7,7 +7,11 @@ sidebar_label: Page.addStyleTag_1
 #### Signature:
 
 ```typescript
-class Page \{addStyleTag(options: FrameAddStyleTagOptions): Promise<ElementHandle<HTMLLinkElement>>;\}
+class Page {
+  addStyleTag(
+    options: FrameAddStyleTagOptions
+  ): Promise<ElementHandle<HTMLLinkElement>>;
+}
 ```
 
 ## Parameters

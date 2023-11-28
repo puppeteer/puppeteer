@@ -9,7 +9,9 @@ The frame's URL.
 #### Signature:
 
 ```typescript
-class Frame \{abstract url(): string;\}
+class Frame {
+  abstract url(): string;
+}
 ```
 
 **Returns:**

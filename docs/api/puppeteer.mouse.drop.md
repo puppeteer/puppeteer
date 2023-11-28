@@ -9,7 +9,9 @@ Performs a dragenter, dragover, and drop in sequence.
 #### Signature:
 
 ```typescript
-class Mouse \{abstract drop(target: Point, data: Protocol.Input.DragData): Promise<void>;\}
+class Mouse {
+  abstract drop(target: Point, data: Protocol.Input.DragData): Promise<void>;
+}
 ```
 
 ## Parameters

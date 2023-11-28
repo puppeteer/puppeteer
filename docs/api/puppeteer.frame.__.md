@@ -9,7 +9,11 @@ Queries the frame for all elements matching the given selector.
 #### Signature:
 
 ```typescript
-class Frame \{$$<Selector extends string>(selector: Selector): Promise<Array<ElementHandle<NodeFor<Selector>>>>;\}
+class Frame {
+  $$<Selector extends string>(
+    selector: Selector
+  ): Promise<Array<ElementHandle<NodeFor<Selector>>>>;
+}
 ```
 
 ## Parameters

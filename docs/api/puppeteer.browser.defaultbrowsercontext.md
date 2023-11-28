@@ -9,7 +9,9 @@ Gets the default [browser context](./puppeteer.browsercontext.md).
 #### Signature:
 
 ```typescript
-class Browser \{abstract defaultBrowserContext(): BrowserContext;\}
+class Browser {
+  abstract defaultBrowserContext(): BrowserContext;
+}
 ```
 
 **Returns:**

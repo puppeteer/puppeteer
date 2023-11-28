@@ -9,7 +9,12 @@ Waits for a frame matching the given conditions to appear.
 #### Signature:
 
 ```typescript
-class Page \{waitForFrame(urlOrPredicate: string | ((frame: Frame) => Awaitable<boolean>), options?: WaitTimeoutOptions): Promise<Frame>;\}
+class Page {
+  waitForFrame(
+    urlOrPredicate: string | ((frame: Frame) => Awaitable<boolean>),
+    options?: WaitTimeoutOptions
+  ): Promise<Frame>;
+}
 ```
 
 ## Parameters
@@ -26,7 +31,7 @@ Promise&lt;[Frame](./puppeteer.frame.md)&gt;
 ## Example
 
 ```ts
-const frame = await page.waitForFrame(async frame => \{
+const frame = await page.waitForFrame(async frame => {
   return frame.name() === 'Test';
-\});
+});
 ```

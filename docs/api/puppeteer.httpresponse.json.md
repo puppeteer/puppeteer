@@ -9,7 +9,9 @@ Promise which resolves to a JSON representation of response body.
 #### Signature:
 
 ```typescript
-class HTTPResponse \{json(): Promise<any>;\}
+class HTTPResponse {
+  json(): Promise<any>;
+}
 ```
 
 **Returns:**

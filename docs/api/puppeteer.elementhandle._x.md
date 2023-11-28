@@ -17,7 +17,9 @@ sidebar_label: ElementHandle.$x
 #### Signature:
 
 ```typescript
-class ElementHandle \{$x(expression: string): Promise<Array<ElementHandle<Node>>>;\}
+class ElementHandle {
+  $x(expression: string): Promise<Array<ElementHandle<Node>>>;
+}
 ```
 
 ## Parameters

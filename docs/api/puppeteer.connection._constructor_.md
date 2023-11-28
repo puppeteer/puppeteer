@@ -9,7 +9,14 @@ Constructs a new instance of the `Connection` class
 #### Signature:
 
 ```typescript
-class Connection \{constructor(url: string, transport: ConnectionTransport, delay?: number, timeout?: number);\}
+class Connection {
+  constructor(
+    url: string,
+    transport: ConnectionTransport,
+    delay?: number,
+    timeout?: number
+  );
+}
 ```
 
 ## Parameters

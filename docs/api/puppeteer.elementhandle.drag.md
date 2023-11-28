@@ -9,7 +9,12 @@ Drags an element over the given element or point.
 #### Signature:
 
 ```typescript
-class ElementHandle \{drag(this: ElementHandle<Element>, target: Point | ElementHandle<Element>): Promise<Protocol.Input.DragData | void>;\}
+class ElementHandle {
+  drag(
+    this: ElementHandle<Element>,
+    target: Point | ElementHandle<Element>
+  ): Promise<Protocol.Input.DragData | void>;
+}
 ```
 
 ## Parameters

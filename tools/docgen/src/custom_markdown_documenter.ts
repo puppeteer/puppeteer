@@ -24,7 +24,7 @@
 import * as path from 'path';
 
 import type {DocumenterConfig} from '@microsoft/api-documenter/lib/documenters/DocumenterConfig.js';
-import {CustomMarkdownEmitter} from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter.js';
+import {CustomMarkdownEmitter as ApiFormatterMarkdownEmitter} from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter.js';
 import {CustomDocNodes} from '@microsoft/api-documenter/lib/nodes/CustomDocNodeKind.js';
 import {DocEmphasisSpan} from '@microsoft/api-documenter/lib/nodes/DocEmphasisSpan.js';
 import {DocHeading} from '@microsoft/api-documenter/lib/nodes/DocHeading.js';
@@ -91,6 +91,32 @@ export interface IMarkdownDocumenterOptions {
   apiModel: ApiModel;
   documenterConfig: DocumenterConfig | undefined;
   outputFolder: string;
+}
+
+export class CustomMarkdownEmitter extends ApiFormatterMarkdownEmitter {
+  protected override getEscapedText(text: string): string {
+    const textWithBackslashes: string = text
+      .replace(/\\/g, '\\\\') // first replace the escape character
+      .replace(/[*#[\]_|`~]/g, x => {
+        return '\\' + x;
+      }) // then escape any special characters
+      .replace(/---/g, '\\-\\-\\-') // hyphens only if it's 3 or more
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\{/g, '&#123;')
+      .replace(/\}/g, '&#125;');
+    return textWithBackslashes;
+  }
+
+  protected override getTableEscapedText(text: string): string {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\|/g, '&#124;');
+  }
 }
 
 /**
@@ -388,8 +414,6 @@ export class MarkdownDocumenter {
     pageContent = pageContent.replace(/<!-- -->/g, '');
     pageContent = pageContent.replace(/\\\*\\\*/g, '**');
     pageContent = pageContent.replace(/<b>|<\/b>/g, '**');
-    pageContent = pageContent.replace(/\{/g, '\\{');
-    pageContent = pageContent.replace(/\}/g, '\\}');
     FileSystem.writeFile(filename, pageContent, {
       convertLineEndings: this._documenterConfig
         ? this._documenterConfig.newlineKind

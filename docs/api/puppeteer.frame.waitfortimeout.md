@@ -13,7 +13,9 @@ sidebar_label: Frame.waitForTimeout
 #### Signature:
 
 ```typescript
-class Frame \{waitForTimeout(milliseconds: number): Promise<void>;\}
+class Frame {
+  waitForTimeout(milliseconds: number): Promise<void>;
+}
 ```
 
 ## Parameters

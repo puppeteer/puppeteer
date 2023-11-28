@@ -7,7 +7,9 @@ sidebar_label: Page.emulateMediaFeatures
 #### Signature:
 
 ```typescript
-class Page \{abstract emulateMediaFeatures(features?: MediaFeature[]): Promise<void>;\}
+class Page {
+  abstract emulateMediaFeatures(features?: MediaFeature[]): Promise<void>;
+}
 ```
 
 ## Parameters
@@ -24,19 +26,15 @@ Promise&lt;void&gt;
 
 ```ts
 await page.emulateMediaFeatures([
-  \{name: 'prefers-color-scheme', value: 'dark'\},
+  {name: 'prefers-color-scheme', value: 'dark'},
 ]);
-await page.evaluate(
-  () => matchMedia('(prefers-color-scheme: dark)').matches
-);
+await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches);
 // → true
-await page.evaluate(
-  () => matchMedia('(prefers-color-scheme: light)').matches
-);
+await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches);
 // → false
 
 await page.emulateMediaFeatures([
-  \{name: 'prefers-reduced-motion', value: 'reduce'\},
+  {name: 'prefers-reduced-motion', value: 'reduce'},
 ]);
 await page.evaluate(
   () => matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -48,16 +46,12 @@ await page.evaluate(
 // → false
 
 await page.emulateMediaFeatures([
-  \{name: 'prefers-color-scheme', value: 'dark'\},
-  \{name: 'prefers-reduced-motion', value: 'reduce'\},
+  {name: 'prefers-color-scheme', value: 'dark'},
+  {name: 'prefers-reduced-motion', value: 'reduce'},
 ]);
-await page.evaluate(
-  () => matchMedia('(prefers-color-scheme: dark)').matches
-);
+await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches);
 // → true
-await page.evaluate(
-  () => matchMedia('(prefers-color-scheme: light)').matches
-);
+await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches);
 // → false
 await page.evaluate(
   () => matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -68,7 +62,7 @@ await page.evaluate(
 );
 // → false
 
-await page.emulateMediaFeatures([\{name: 'color-gamut', value: 'p3'\}]);
+await page.emulateMediaFeatures([{name: 'color-gamut', value: 'p3'}]);
 await page.evaluate(() => matchMedia('(color-gamut: srgb)').matches);
 // → true
 await page.evaluate(() => matchMedia('(color-gamut: p3)').matches);

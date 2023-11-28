@@ -9,7 +9,9 @@ Waits for the locator to get a handle from the page.
 #### Signature:
 
 ```typescript
-class Locator \{waitHandle(options?: Readonly<ActionOptions>): Promise<HandleFor<T>>;\}
+class Locator {
+  waitHandle(options?: Readonly<ActionOptions>): Promise<HandleFor<T>>;
+}
 ```
 
 ## Parameters

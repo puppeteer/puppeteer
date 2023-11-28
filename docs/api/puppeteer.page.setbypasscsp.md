@@ -9,7 +9,9 @@ Toggles bypassing page's Content-Security-Policy.
 #### Signature:
 
 ```typescript
-class Page \{abstract setBypassCSP(enabled: boolean): Promise<void>;\}
+class Page {
+  abstract setBypassCSP(enabled: boolean): Promise<void>;
+}
 ```
 
 ## Parameters

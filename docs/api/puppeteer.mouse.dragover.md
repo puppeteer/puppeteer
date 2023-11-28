@@ -9,7 +9,12 @@ Dispatches a `dragover` event.
 #### Signature:
 
 ```typescript
-class Mouse \{abstract dragOver(target: Point, data: Protocol.Input.DragData): Promise<void>;\}
+class Mouse {
+  abstract dragOver(
+    target: Point,
+    data: Protocol.Input.DragData
+  ): Promise<void>;
+}
 ```
 
 ## Parameters

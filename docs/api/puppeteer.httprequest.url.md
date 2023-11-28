@@ -9,7 +9,9 @@ The URL of the request
 #### Signature:
 
 ```typescript
-class HTTPRequest \{abstract url(): string;\}
+class HTTPRequest {
+  abstract url(): string;
+}
 ```
 
 **Returns:**

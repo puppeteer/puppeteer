@@ -9,7 +9,15 @@ If the function passed to the `worker.evaluate` returns a Promise, then `worker.
 #### Signature:
 
 ```typescript
-class WebWorker \{evaluate<Params extends unknown[], Func extends EvaluateFunc<Params> = EvaluateFunc<Params>>(pageFunction: Func | string, ...args: Params): Promise<Awaited<ReturnType<Func>>>;\}
+class WebWorker {
+  evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
+  >(
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<Awaited<ReturnType<Func>>>;
+}
 ```
 
 ## Parameters

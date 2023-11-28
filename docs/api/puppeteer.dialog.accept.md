@@ -9,7 +9,9 @@ A promise that resolves when the dialog has been accepted.
 #### Signature:
 
 ```typescript
-class Dialog \{accept(promptText?: string): Promise<void>;\}
+class Dialog {
+  accept(promptText?: string): Promise<void>;
+}
 ```
 
 ## Parameters

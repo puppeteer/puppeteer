@@ -9,7 +9,9 @@ Set the content of the page.
 #### Signature:
 
 ```typescript
-class Page \{setContent(html: string, options?: WaitForOptions): Promise<void>;\}
+class Page {
+  setContent(html: string, options?: WaitForOptions): Promise<void>;
+}
 ```
 
 ## Parameters

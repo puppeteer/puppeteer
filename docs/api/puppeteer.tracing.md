@@ -21,7 +21,7 @@ The constructor for this class is marked as internal. Third-party code should no
 ## Example
 
 ```ts
-await page.tracing.start(\{path: 'trace.json'\});
+await page.tracing.start({path: 'trace.json'});
 await page.goto('https://www.google.com');
 await page.tracing.stop();
 ```

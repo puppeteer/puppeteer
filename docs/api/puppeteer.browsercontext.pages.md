@@ -9,7 +9,9 @@ Gets a list of all open [pages](./puppeteer.page.md) inside this [browser contex
 #### Signature:
 
 ```typescript
-class BrowserContext \{abstract pages(): Promise<Page[]>;\}
+class BrowserContext {
+  abstract pages(): Promise<Page[]>;
+}
 ```
 
 **Returns:**

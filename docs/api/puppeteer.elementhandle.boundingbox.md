@@ -9,7 +9,9 @@ This method returns the bounding box of the element (relative to the main frame)
 #### Signature:
 
 ```typescript
-class ElementHandle \{boundingBox(): Promise<BoundingBox | null>;\}
+class ElementHandle {
+  boundingBox(): Promise<BoundingBox | null>;
+}
 ```
 
 **Returns:**

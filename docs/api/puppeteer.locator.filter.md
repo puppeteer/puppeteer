@@ -11,7 +11,9 @@ If the expectations do not match, then the locator will retry.
 #### Signature:
 
 ```typescript
-class Locator \{filter<S extends T>(predicate: Predicate<T, S>): Locator<S>;\}
+class Locator {
+  filter<S extends T>(predicate: Predicate<T, S>): Locator<S>;
+}
 ```
 
 ## Parameters

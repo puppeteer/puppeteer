@@ -9,7 +9,9 @@ The full HTML contents of the page, including the DOCTYPE.
 #### Signature:
 
 ```typescript
-class Page \{content(): Promise<string>;\}
+class Page {
+  content(): Promise<string>;
+}
 ```
 
 **Returns:**

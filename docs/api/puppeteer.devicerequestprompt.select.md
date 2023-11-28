@@ -9,7 +9,9 @@ Select a device in the prompt's list.
 #### Signature:
 
 ```typescript
-class DeviceRequestPrompt \{select(device: DeviceRequestPromptDevice): Promise<void>;\}
+class DeviceRequestPrompt {
+  select(device: DeviceRequestPromptDevice): Promise<void>;
+}
 ```
 
 ## Parameters

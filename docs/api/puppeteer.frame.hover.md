@@ -9,7 +9,9 @@ Hovers the pointer over the center of the first element that matches the `select
 #### Signature:
 
 ```typescript
-class Frame \{hover(selector: string): Promise<void>;\}
+class Frame {
+  hover(selector: string): Promise<void>;
+}
 ```
 
 ## Parameters

@@ -9,7 +9,9 @@ sidebar_label: SecurityDetails.validFrom
 #### Signature:
 
 ```typescript
-class SecurityDetails \{validFrom(): number;\}
+class SecurityDetails {
+  validFrom(): number;
+}
 ```
 
 **Returns:**

@@ -7,7 +7,12 @@ sidebar_label: Locator.setWaitForEnabled
 #### Signature:
 
 ```typescript
-class Locator \{setWaitForEnabled<NodeType extends Node>(this: Locator<NodeType>, value: boolean): Locator<NodeType>;\}
+class Locator {
+  setWaitForEnabled<NodeType extends Node>(
+    this: Locator<NodeType>,
+    value: boolean
+  ): Locator<NodeType>;
+}
 ```
 
 ## Parameters

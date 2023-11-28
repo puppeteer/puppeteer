@@ -7,7 +7,12 @@ sidebar_label: CommonEventEmitter.off
 #### Signature:
 
 ```typescript
-interface CommonEventEmitter \{off<Key extends keyof Events>(type: Key, handler?: Handler<Events[Key]>): this;\}
+interface CommonEventEmitter {
+  off<Key extends keyof Events>(
+    type: Key,
+    handler?: Handler<Events[Key]>
+  ): this;
+}
 ```
 
 ## Parameters

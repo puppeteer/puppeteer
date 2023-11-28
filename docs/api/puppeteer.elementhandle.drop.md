@@ -9,7 +9,12 @@ Drops the given element onto the current one.
 #### Signature:
 
 ```typescript
-class ElementHandle \{drop(this: ElementHandle<Element>, element: ElementHandle<Element>): Promise<void>;\}
+class ElementHandle {
+  drop(
+    this: ElementHandle<Element>,
+    element: ElementHandle<Element>
+  ): Promise<void>;
+}
 ```
 
 ## Parameters

@@ -9,7 +9,9 @@ Constructs a new instance of the `Process` class
 #### Signature:
 
 ```typescript
-class Process \{constructor(opts: LaunchOptions);\}
+class Process {
+  constructor(opts: LaunchOptions);
+}
 ```
 
 ## Parameters

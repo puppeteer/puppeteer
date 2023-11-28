@@ -7,7 +7,9 @@ sidebar_label: Coverage.startJSCoverage
 #### Signature:
 
 ```typescript
-class Coverage \{startJSCoverage(options?: JSCoverageOptions): Promise<void>;\}
+class Coverage {
+  startJSCoverage(options?: JSCoverageOptions): Promise<void>;
+}
 ```
 
 ## Parameters

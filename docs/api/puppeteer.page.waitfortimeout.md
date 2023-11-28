@@ -13,7 +13,9 @@ sidebar_label: Page.waitForTimeout
 #### Signature:
 
 ```typescript
-class Page \{waitForTimeout(milliseconds: number): Promise<void>;\}
+class Page {
+  waitForTimeout(milliseconds: number): Promise<void>;
+}
 ```
 
 ## Parameters

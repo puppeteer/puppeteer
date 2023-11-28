@@ -11,7 +11,11 @@ Shortcut for [page.mainFrame().addStyleTag(options)](./puppeteer.frame.addstylet
 #### Signature:
 
 ```typescript
-class Page \{addStyleTag(options: Omit<FrameAddStyleTagOptions, 'url'>): Promise<ElementHandle<HTMLStyleElement>>;\}
+class Page {
+  addStyleTag(
+    options: Omit<FrameAddStyleTagOptions, 'url'>
+  ): Promise<ElementHandle<HTMLStyleElement>>;
+}
 ```
 
 ## Parameters

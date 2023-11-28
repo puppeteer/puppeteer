@@ -9,7 +9,9 @@ Dispatches a `touchstart` event.
 #### Signature:
 
 ```typescript
-class Touchscreen \{abstract touchStart(x: number, y: number): Promise<void>;\}
+class Touchscreen {
+  abstract touchStart(x: number, y: number): Promise<void>;
+}
 ```
 
 ## Parameters

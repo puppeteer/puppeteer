@@ -7,7 +7,12 @@ sidebar_label: CDPSession.send
 #### Signature:
 
 ```typescript
-class CDPSession \{abstract send<T extends keyof ProtocolMapping.Commands>(method: T, ...paramArgs: ProtocolMapping.Commands[T]['paramsType']): Promise<ProtocolMapping.Commands[T]['returnType']>;\}
+class CDPSession {
+  abstract send<T extends keyof ProtocolMapping.Commands>(
+    method: T,
+    ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
+  ): Promise<ProtocolMapping.Commands[T]['returnType']>;
+}
 ```
 
 ## Parameters

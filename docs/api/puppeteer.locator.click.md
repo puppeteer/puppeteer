@@ -7,7 +7,12 @@ sidebar_label: Locator.click
 #### Signature:
 
 ```typescript
-class Locator \{click<ElementType extends Element>(this: Locator<ElementType>, options?: Readonly<LocatorClickOptions>): Promise<void>;\}
+class Locator {
+  click<ElementType extends Element>(
+    this: Locator<ElementType>,
+    options?: Readonly<LocatorClickOptions>
+  ): Promise<void>;
+}
 ```
 
 ## Parameters

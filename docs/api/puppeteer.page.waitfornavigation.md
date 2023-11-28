@@ -9,7 +9,9 @@ Waits for the page to navigate to a new URL or to reload. It is useful when you 
 #### Signature:
 
 ```typescript
-class Page \{waitForNavigation(options?: WaitForOptions): Promise<HTTPResponse | null>;\}
+class Page {
+  waitForNavigation(options?: WaitForOptions): Promise<HTTPResponse | null>;
+}
 ```
 
 ## Parameters

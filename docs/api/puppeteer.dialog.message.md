@@ -9,7 +9,9 @@ The message displayed in the dialog.
 #### Signature:
 
 ```typescript
-class Dialog \{message(): string;\}
+class Dialog {
+  message(): string;
+}
 ```
 
 **Returns:**

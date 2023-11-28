@@ -9,7 +9,9 @@ Dispatches a `touchstart` and `touchend` event.
 #### Signature:
 
 ```typescript
-class Touchscreen \{tap(x: number, y: number): Promise<void>;\}
+class Touchscreen {
+  tap(x: number, y: number): Promise<void>;
+}
 ```
 
 ## Parameters

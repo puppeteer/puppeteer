@@ -9,7 +9,9 @@ Dispatches a `touchMove` event.
 #### Signature:
 
 ```typescript
-class Touchscreen \{abstract touchMove(x: number, y: number): Promise<void>;\}
+class Touchscreen {
+  abstract touchMove(x: number, y: number): Promise<void>;
+}
 ```
 
 ## Parameters

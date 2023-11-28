@@ -7,7 +7,9 @@ sidebar_label: JSHandle.getProperty_1
 #### Signature:
 
 ```typescript
-class JSHandle \{getProperty(propertyName: string): Promise<JSHandle<unknown>>;\}
+class JSHandle {
+  getProperty(propertyName: string): Promise<JSHandle<unknown>>;
+}
 ```
 
 ## Parameters

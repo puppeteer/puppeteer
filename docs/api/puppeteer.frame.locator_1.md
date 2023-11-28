@@ -9,7 +9,9 @@ Creates a locator for the provided function. See [Locator](./puppeteer.locator.m
 #### Signature:
 
 ```typescript
-class Frame \{locator<Ret>(func: () => Awaitable<Ret>): Locator<Ret>;\}
+class Frame {
+  locator<Ret>(func: () => Awaitable<Ret>): Locator<Ret>;
+}
 ```
 
 ## Parameters

@@ -9,7 +9,9 @@ Provides access to the [Protocol.Runtime.RemoteObject](https://chromedevtools.gi
 #### Signature:
 
 ```typescript
-class JSHandle \{abstract remoteObject(): Protocol.Runtime.RemoteObject;\}
+class JSHandle {
+  abstract remoteObject(): Protocol.Runtime.RemoteObject;
+}
 ```
 
 **Returns:**

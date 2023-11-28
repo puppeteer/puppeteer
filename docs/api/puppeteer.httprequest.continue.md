@@ -9,7 +9,12 @@ Continues request with optional request overrides.
 #### Signature:
 
 ```typescript
-class HTTPRequest \{abstract continue(overrides?: ContinueRequestOverrides, priority?: number): Promise<void>;\}
+class HTTPRequest {
+  abstract continue(
+    overrides?: ContinueRequestOverrides,
+    priority?: number
+  ): Promise<void>;
+}
 ```
 
 ## Parameters
@@ -33,12 +38,12 @@ Exception is immediately thrown if the request interception is not enabled.
 
 ```ts
 await page.setRequestInterception(true);
-page.on('request', request => \{
+page.on('request', request => {
   // Override headers
-  const headers = Object.assign(\{\}, request.headers(), \{
+  const headers = Object.assign({}, request.headers(), {
     foo: 'bar', // set "foo" header
     origin: undefined, // remove "origin" header
-  \});
-  request.continue(\{headers\});
-\});
+  });
+  request.continue({headers});
+});
 ```

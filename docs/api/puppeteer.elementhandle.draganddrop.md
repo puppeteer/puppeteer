@@ -11,9 +11,15 @@ sidebar_label: ElementHandle.dragAndDrop
 #### Signature:
 
 ```typescript
-class ElementHandle \{dragAndDrop(this: ElementHandle<Element>, target: ElementHandle<Node>, options?: \{
-        delay: number;
-    \}): Promise<void>;\}
+class ElementHandle {
+  dragAndDrop(
+    this: ElementHandle<Element>,
+    target: ElementHandle<Node>,
+    options?: {
+      delay: number;
+    }
+  ): Promise<void>;
+}
 ```
 
 ## Parameters
@@ -22,7 +28,7 @@ class ElementHandle \{dragAndDrop(this: ElementHandle<Element>, target: ElementH
 | --------- | ------------------------------------------------------------ | ------------ |
 | this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |              |
 | target    | [ElementHandle](./puppeteer.elementhandle.md)&lt;Node&gt;    |              |
-| options   | \{ delay: number; \}                                         | _(Optional)_ |
+| options   | &#123; delay: number; &#125;                                 | _(Optional)_ |
 
 **Returns:**
 

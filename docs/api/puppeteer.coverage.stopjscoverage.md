@@ -9,7 +9,9 @@ Promise that resolves to the array of coverage reports for all scripts.
 #### Signature:
 
 ```typescript
-class Coverage \{stopJSCoverage(): Promise<JSCoverageEntry[]>;\}
+class Coverage {
+  stopJSCoverage(): Promise<JSCoverageEntry[]>;
+}
 ```
 
 **Returns:**

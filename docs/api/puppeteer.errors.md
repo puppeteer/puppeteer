@@ -23,11 +23,11 @@ errors: PuppeteerErrors;
 An example of handling a timeout error:
 
 ```ts
-try \{
+try {
   await page.waitForSelector('.foo');
-\} catch (e) \{
-  if (e instanceof TimeoutError) \{
+} catch (e) {
+  if (e instanceof TimeoutError) {
     // Do something if this is a timeout.
-  \}
-\}
+  }
+}
 ```

@@ -9,7 +9,11 @@ Creates a locator for the provided selector. See [Locator](./puppeteer.locator.m
 #### Signature:
 
 ```typescript
-class Frame \{locator<Selector extends string>(selector: Selector): Locator<NodeFor<Selector>>;\}
+class Frame {
+  locator<Selector extends string>(
+    selector: Selector
+  ): Locator<NodeFor<Selector>>;
+}
 ```
 
 ## Parameters

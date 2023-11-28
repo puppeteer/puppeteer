@@ -9,7 +9,9 @@ This method fetches an element with `selector`, scrolls it into view if needed, 
 #### Signature:
 
 ```typescript
-class Page \{tap(selector: string): Promise<void>;\}
+class Page {
+  tap(selector: string): Promise<void>;
+}
 ```
 
 ## Parameters

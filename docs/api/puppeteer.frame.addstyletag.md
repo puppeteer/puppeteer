@@ -9,7 +9,11 @@ Adds a `HTMLStyleElement` into the frame with the desired URL
 #### Signature:
 
 ```typescript
-class Frame \{addStyleTag(options: Omit<FrameAddStyleTagOptions, 'url'>): Promise<ElementHandle<HTMLStyleElement>>;\}
+class Frame {
+  addStyleTag(
+    options: Omit<FrameAddStyleTagOptions, 'url'>
+  ): Promise<ElementHandle<HTMLStyleElement>>;
+}
 ```
 
 ## Parameters

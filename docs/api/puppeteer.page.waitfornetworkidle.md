@@ -7,17 +7,19 @@ sidebar_label: Page.waitForNetworkIdle
 #### Signature:
 
 ```typescript
-class Page \{abstract waitForNetworkIdle(options?: \{
-        idleTime?: number;
-        timeout?: number;
-    \}): Promise<void>;\}
+class Page {
+  abstract waitForNetworkIdle(options?: {
+    idleTime?: number;
+    timeout?: number;
+  }): Promise<void>;
+}
 ```
 
 ## Parameters
 
-| Parameter | Type                                       | Description                              |
-| --------- | ------------------------------------------ | ---------------------------------------- |
-| options   | \{ idleTime?: number; timeout?: number; \} | _(Optional)_ Optional waiting parameters |
+| Parameter | Type                                               | Description                              |
+| --------- | -------------------------------------------------- | ---------------------------------------- |
+| options   | &#123; idleTime?: number; timeout?: number; &#125; | _(Optional)_ Optional waiting parameters |
 
 **Returns:**
 

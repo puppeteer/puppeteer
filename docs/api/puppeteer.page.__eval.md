@@ -9,7 +9,20 @@ This method runs `Array.from(document.querySelectorAll(selector))` within the pa
 #### Signature:
 
 ```typescript
-class Page \{$$eval<Selector extends string, Params extends unknown[], Func extends EvaluateFuncWith<Array<NodeFor<Selector>>, Params> = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>>(selector: Selector, pageFunction: Func | string, ...args: Params): Promise<Awaited<ReturnType<Func>>>;\}
+class Page {
+  $$eval<
+    Selector extends string,
+    Params extends unknown[],
+    Func extends EvaluateFuncWith<
+      Array<NodeFor<Selector>>,
+      Params
+    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>,
+  >(
+    selector: Selector,
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<Awaited<ReturnType<Func>>>;
+}
 ```
 
 ## Parameters
@@ -37,9 +50,9 @@ If `pageFunction` returns a promise `$$eval` will wait for the promise to resolv
 const divCount = await page.$$eval('div', divs => divs.length);
 
 // get the text content of all the `.options` elements:
-const options = await page.$$eval('div > span.options', options => \{
+const options = await page.$$eval('div > span.options', options => {
   return options.map(option => option.textContent);
-\});
+});
 ```
 
 If you are using TypeScript, you may have to provide an explicit type to the first argument of the `pageFunction`. By default it is typed as `Element[]`, but you may need to provide a more specific sub-type:
@@ -49,9 +62,9 @@ If you are using TypeScript, you may have to provide an explicit type to the fir
 ```ts
 // if you don't provide HTMLInputElement here, TS will error
 // as `value` is not on `Element`
-await page.$$eval('input', (elements: HTMLInputElement[]) => \{
+await page.$$eval('input', (elements: HTMLInputElement[]) => {
   return elements.map(e => e.value);
-\});
+});
 ```
 
 The compiler should be able to infer the return type from the `pageFunction` you provide. If it is unable to, you can use the generic type to tell the compiler what return type you expect from `$$eval`:

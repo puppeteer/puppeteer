@@ -7,7 +7,9 @@ sidebar_label: Connection.url
 #### Signature:
 
 ```typescript
-class Connection \{url(): string;\}
+class Connection {
+  url(): string;
+}
 ```
 
 **Returns:**

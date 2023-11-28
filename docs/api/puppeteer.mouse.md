@@ -41,14 +41,14 @@ For example, if you want to select all content between nodes:
 
 ```ts
 await page.evaluate(
-  (from, to) => \{
+  (from, to) => {
     const selection = from.getRootNode().getSelection();
     const range = document.createRange();
     range.setStartBefore(from);
     range.setEndAfter(to);
     selection.removeAllRanges();
     selection.addRange(range);
-  \},
+  },
   fromJSHandle,
   toJSHandle
 );
@@ -59,12 +59,12 @@ If you then would want to copy-paste your selection, you can use the clipboard a
 ```ts
 // The clipboard api does not allow you to copy, unless the tab is focused.
 await page.bringToFront();
-await page.evaluate(() => \{
+await page.evaluate(() => {
   // Copy the selected content to the clipboard
   document.execCommand('copy');
   // Obtain the content of the clipboard as a string
   return navigator.clipboard.readText();
-\});
+});
 ```
 
 **Note**: If you want access to the clipboard API, you have to give it permission to do so:

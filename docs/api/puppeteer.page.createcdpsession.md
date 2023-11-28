@@ -9,7 +9,9 @@ Creates a Chrome Devtools Protocol session attached to the page.
 #### Signature:
 
 ```typescript
-class Page \{abstract createCDPSession(): Promise<CDPSession>;\}
+class Page {
+  abstract createCDPSession(): Promise<CDPSession>;
+}
 ```
 
 **Returns:**

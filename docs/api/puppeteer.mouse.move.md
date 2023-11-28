@@ -9,7 +9,13 @@ Moves the mouse to the given coordinate.
 #### Signature:
 
 ```typescript
-class Mouse \{abstract move(x: number, y: number, options?: Readonly<MouseMoveOptions>): Promise<void>;\}
+class Mouse {
+  abstract move(
+    x: number,
+    y: number,
+    options?: Readonly<MouseMoveOptions>
+  ): Promise<void>;
+}
 ```
 
 ## Parameters

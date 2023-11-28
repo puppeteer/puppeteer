@@ -9,7 +9,9 @@ Closes this [browser context](./puppeteer.browsercontext.md) and all associated 
 #### Signature:
 
 ```typescript
-class BrowserContext \{abstract close(): Promise<void>;\}
+class BrowserContext {
+  abstract close(): Promise<void>;
+}
 ```
 
 **Returns:**

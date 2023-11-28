@@ -7,7 +7,9 @@ sidebar_label: Page.setJavaScriptEnabled
 #### Signature:
 
 ```typescript
-class Page \{abstract setJavaScriptEnabled(enabled: boolean): Promise<void>;\}
+class Page {
+  abstract setJavaScriptEnabled(enabled: boolean): Promise<void>;
+}
 ```
 
 ## Parameters

@@ -9,7 +9,20 @@ This method runs `document.querySelector` within the page and passes the result 
 #### Signature:
 
 ```typescript
-class Page \{$eval<Selector extends string, Params extends unknown[], Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<NodeFor<Selector>, Params>>(selector: Selector, pageFunction: Func | string, ...args: Params): Promise<Awaited<ReturnType<Func>>>;\}
+class Page {
+  $eval<
+    Selector extends string,
+    Params extends unknown[],
+    Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
+      NodeFor<Selector>,
+      Params
+    >,
+  >(
+    selector: Selector,
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<Awaited<ReturnType<Func>>>;
+}
 ```
 
 ## Parameters

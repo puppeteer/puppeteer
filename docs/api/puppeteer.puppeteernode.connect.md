@@ -9,7 +9,9 @@ This method attaches Puppeteer to an existing browser instance.
 #### Signature:
 
 ```typescript
-class PuppeteerNode \{connect(options: ConnectOptions): Promise<Browser>;\}
+class PuppeteerNode {
+  connect(options: ConnectOptions): Promise<Browser>;
+}
 ```
 
 ## Parameters

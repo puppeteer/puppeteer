@@ -7,7 +7,11 @@ sidebar_label: Page.deleteCookie
 #### Signature:
 
 ```typescript
-class Page \{abstract deleteCookie(...cookies: Protocol.Network.DeleteCookiesRequest[]): Promise<void>;\}
+class Page {
+  abstract deleteCookie(
+    ...cookies: Protocol.Network.DeleteCookiesRequest[]
+  ): Promise<void>;
+}
 ```
 
 ## Parameters

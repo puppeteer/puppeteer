@@ -21,14 +21,14 @@ ElementHandles can be created with the [Page.$()](./puppeteer.page._.md) method.
 ```ts
 import puppeteer from 'puppeteer';
 
-(async () => \{
+(async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto('https://example.com');
   const hrefElement = await page.$('a');
   await hrefElement.click();
   // ...
-\})();
+})();
 ```
 
 ElementHandle prevents the DOM element from being garbage-collected unless the handle is [disposed](./puppeteer.jshandle.dispose.md). ElementHandles are auto-disposed when their origin frame gets navigated.

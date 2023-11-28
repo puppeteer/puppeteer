@@ -9,7 +9,9 @@ The method used (`GET`, `POST`, etc.)
 #### Signature:
 
 ```typescript
-class HTTPRequest \{abstract method(): string;\}
+class HTTPRequest {
+  abstract method(): string;
+}
 ```
 
 **Returns:**

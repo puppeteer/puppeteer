@@ -9,7 +9,9 @@ An array of arguments passed to the console.
 #### Signature:
 
 ```typescript
-class ConsoleMessage \{args(): JSHandle[];\}
+class ConsoleMessage {
+  args(): JSHandle[];
+}
 ```
 
 **Returns:**

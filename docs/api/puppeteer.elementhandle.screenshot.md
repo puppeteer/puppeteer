@@ -9,16 +9,20 @@ This method scrolls element into view if needed, and then uses [Page.screenshot(
 #### Signature:
 
 ```typescript
-class ElementHandle \{screenshot(options: Readonly<ScreenshotOptions> & \{
-        encoding: 'base64';
-    \}): Promise<string>;\}
+class ElementHandle {
+  screenshot(
+    options: Readonly<ScreenshotOptions> & {
+      encoding: 'base64';
+    }
+  ): Promise<string>;
+}
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                                  | Description |
-| --------- | ----------------------------------------------------------------------------------------------------- | ----------- |
-| options   | Readonly&lt;[ScreenshotOptions](./puppeteer.screenshotoptions.md)&gt; &amp; \{ encoding: 'base64'; \} |             |
+| Parameter | Type                                                                                                          | Description |
+| --------- | ------------------------------------------------------------------------------------------------------------- | ----------- |
+| options   | Readonly&lt;[ScreenshotOptions](./puppeteer.screenshotoptions.md)&gt; &amp; &#123; encoding: 'base64'; &#125; |             |
 
 **Returns:**
 

@@ -9,7 +9,9 @@ Whether file chooser allow for [multiple](https://developer.mozilla.org/en-US/do
 #### Signature:
 
 ```typescript
-class FileChooser \{isMultiple(): boolean;\}
+class FileChooser {
+  isMultiple(): boolean;
+}
 ```
 
 **Returns:**

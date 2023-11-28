@@ -9,7 +9,9 @@ Is `true` if the intercept resolution has already been handled, `false` otherwis
 #### Signature:
 
 ```typescript
-class HTTPRequest \{abstract isInterceptResolutionHandled(): boolean;\}
+class HTTPRequest {
+  abstract isInterceptResolutionHandled(): boolean;
+}
 ```
 
 **Returns:**

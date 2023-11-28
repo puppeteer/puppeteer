@@ -9,7 +9,9 @@ A promise which will resolve once the dialog has been dismissed
 #### Signature:
 
 ```typescript
-class Dialog \{dismiss(): Promise<void>;\}
+class Dialog {
+  dismiss(): Promise<void>;
+}
 ```
 
 **Returns:**

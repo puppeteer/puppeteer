@@ -9,7 +9,9 @@ The page's main frame.
 #### Signature:
 
 ```typescript
-class Page \{abstract mainFrame(): Frame;\}
+class Page {
+  abstract mainFrame(): Frame;
+}
 ```
 
 **Returns:**

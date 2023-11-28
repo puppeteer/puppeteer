@@ -9,7 +9,9 @@ Dispatches a `keypress` and `input` event. This does not send a `keydown` or `ke
 #### Signature:
 
 ```typescript
-class Keyboard \{abstract sendCharacter(char: string): Promise<void>;\}
+class Keyboard {
+  abstract sendCharacter(char: string): Promise<void>;
+}
 ```
 
 ## Parameters

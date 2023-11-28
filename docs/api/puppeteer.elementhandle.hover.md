@@ -9,7 +9,9 @@ This method scrolls element into view if needed, and then uses [Page](./puppetee
 #### Signature:
 
 ```typescript
-class ElementHandle \{hover(this: ElementHandle<Element>): Promise<void>;\}
+class ElementHandle {
+  hover(this: ElementHandle<Element>): Promise<void>;
+}
 ```
 
 ## Parameters

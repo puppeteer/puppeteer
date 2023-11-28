@@ -9,7 +9,9 @@ Promise which resolves to a buffer with response body.
 #### Signature:
 
 ```typescript
-class HTTPResponse \{abstract buffer(): Promise<Buffer>;\}
+class HTTPResponse {
+  abstract buffer(): Promise<Buffer>;
+}
 ```
 
 **Returns:**

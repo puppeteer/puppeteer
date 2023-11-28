@@ -9,7 +9,9 @@ Unregisters a custom query handler for a given name.
 #### Signature:
 
 ```typescript
-class Puppeteer \{static unregisterCustomQueryHandler(name: string): void;\}
+class Puppeteer {
+  static unregisterCustomQueryHandler(name: string): void;
+}
 ```
 
 ## Parameters

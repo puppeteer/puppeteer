@@ -9,7 +9,9 @@ A `redirectChain` is a chain of requests initiated to fetch a resource.
 #### Signature:
 
 ```typescript
-class HTTPRequest \{abstract redirectChain(): HTTPRequest[];\}
+class HTTPRequest {
+  abstract redirectChain(): HTTPRequest[];
+}
 ```
 
 **Returns:**

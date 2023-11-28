@@ -9,7 +9,9 @@ Get the browser the target belongs to.
 #### Signature:
 
 ```typescript
-class Target \{abstract browser(): Browser;\}
+class Target {
+  abstract browser(): Browser;
+}
 ```
 
 **Returns:**

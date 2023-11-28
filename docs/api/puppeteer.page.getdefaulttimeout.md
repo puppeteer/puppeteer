@@ -9,7 +9,9 @@ Maximum time in milliseconds.
 #### Signature:
 
 ```typescript
-class Page \{abstract getDefaultTimeout(): number;\}
+class Page {
+  abstract getDefaultTimeout(): number;
+}
 ```
 
 **Returns:**

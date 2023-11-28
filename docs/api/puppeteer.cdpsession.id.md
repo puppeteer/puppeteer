@@ -9,7 +9,9 @@ Returns the session's id.
 #### Signature:
 
 ```typescript
-class CDPSession \{abstract id(): string;\}
+class CDPSession {
+  abstract id(): string;
+}
 ```
 
 **Returns:**

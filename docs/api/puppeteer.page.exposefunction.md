@@ -17,17 +17,24 @@ Functions installed via `page.exposeFunction` survive navigations.
 #### Signature:
 
 ```typescript
-class Page \{abstract exposeFunction(name: string, pptrFunction: Function | \{
-        default: Function;
-    \}): Promise<void>;\}
+class Page {
+  abstract exposeFunction(
+    name: string,
+    pptrFunction:
+      | Function
+      | {
+          default: Function;
+        }
+  ): Promise<void>;
+}
 ```
 
 ## Parameters
 
-| Parameter    | Type                                 | Description                                                    |
-| ------------ | ------------------------------------ | -------------------------------------------------------------- |
-| name         | string                               | Name of the function on the window object                      |
-| pptrFunction | Function \| \{ default: Function; \} | Callback function which will be called in Puppeteer's context. |
+| Parameter    | Type                                         | Description                                                    |
+| ------------ | -------------------------------------------- | -------------------------------------------------------------- |
+| name         | string                                       | Name of the function on the window object                      |
+| pptrFunction | Function \| &#123; default: Function; &#125; | Callback function which will be called in Puppeteer's context. |
 
 **Returns:**
 
@@ -41,21 +48,21 @@ An example of adding an `md5` function into the page:
 import puppeteer from 'puppeteer';
 import crypto from 'crypto';
 
-(async () => \{
+(async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   page.on('console', msg => console.log(msg.text()));
   await page.exposeFunction('md5', text =>
     crypto.createHash('md5').update(text).digest('hex')
   );
-  await page.evaluate(async () => \{
+  await page.evaluate(async () => {
     // use window.md5 to compute hashes
     const myString = 'PUPPETEER';
     const myHash = await window.md5(myString);
-    console.log(`md5 of $\{myString\} is $\{myHash\}`);
-  \});
+    console.log(`md5 of ${myString} is ${myHash}`);
+  });
   await browser.close();
-\})();
+})();
 ```
 
 ## Example 2
@@ -66,23 +73,23 @@ An example of adding a `window.readfile` function into the page:
 import puppeteer from 'puppeteer';
 import fs from 'fs';
 
-(async () => \{
+(async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   page.on('console', msg => console.log(msg.text()));
-  await page.exposeFunction('readfile', async filePath => \{
-    return new Promise((resolve, reject) => \{
-      fs.readFile(filePath, 'utf8', (err, text) => \{
+  await page.exposeFunction('readfile', async filePath => {
+    return new Promise((resolve, reject) => {
+      fs.readFile(filePath, 'utf8', (err, text) => {
         if (err) reject(err);
         else resolve(text);
-      \});
-    \});
-  \});
-  await page.evaluate(async () => \{
+      });
+    });
+  });
+  await page.evaluate(async () => {
     // use window.readfile to read contents of a file
     const content = await window.readfile('/etc/hosts');
     console.log(content);
-  \});
+  });
   await browser.close();
-\})();
+})();
 ```

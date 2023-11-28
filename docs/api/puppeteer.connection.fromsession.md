@@ -7,7 +7,9 @@ sidebar_label: Connection.fromSession
 #### Signature:
 
 ```typescript
-class Connection \{static fromSession(session: CDPSession): Connection | undefined;\}
+class Connection {
+  static fromSession(session: CDPSession): Connection | undefined;
+}
 ```
 
 ## Parameters

@@ -11,7 +11,13 @@ To press a special key, like `Control` or `ArrowDown`, use [Keyboard.press()](./
 #### Signature:
 
 ```typescript
-class Page \{type(selector: string, text: string, options?: Readonly<KeyboardTypeOptions>): Promise<void>;\}
+class Page {
+  type(
+    selector: string,
+    text: string,
+    options?: Readonly<KeyboardTypeOptions>
+  ): Promise<void>;
+}
 ```
 
 ## Parameters
@@ -31,6 +37,6 @@ Promise&lt;void&gt;
 ```ts
 await page.type('#mytextarea', 'Hello');
 // Types instantly
-await page.type('#mytextarea', 'World', \{delay: 100\});
+await page.type('#mytextarea', 'World', {delay: 100});
 // Types slower, like a user
 ```

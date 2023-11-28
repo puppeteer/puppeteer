@@ -9,7 +9,9 @@ Detaches the cdpSession from the target. Once detached, the cdpSession object wo
 #### Signature:
 
 ```typescript
-class CDPSession \{abstract detach(): Promise<void>;\}
+class CDPSession {
+  abstract detach(): Promise<void>;
+}
 ```
 
 **Returns:**

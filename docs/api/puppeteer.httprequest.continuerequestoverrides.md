@@ -9,7 +9,9 @@ The `ContinueRequestOverrides` that will be used if the interception is allowed 
 #### Signature:
 
 ```typescript
-class HTTPRequest \{abstract continueRequestOverrides(): ContinueRequestOverrides;\}
+class HTTPRequest {
+  abstract continueRequestOverrides(): ContinueRequestOverrides;
+}
 ```
 
 **Returns:**

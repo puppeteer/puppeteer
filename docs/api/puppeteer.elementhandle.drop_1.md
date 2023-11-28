@@ -11,7 +11,12 @@ sidebar_label: ElementHandle.drop_1
 #### Signature:
 
 ```typescript
-class ElementHandle \{drop(this: ElementHandle<Element>, data?: Protocol.Input.DragData): Promise<void>;\}
+class ElementHandle {
+  drop(
+    this: ElementHandle<Element>,
+    data?: Protocol.Input.DragData
+  ): Promise<void>;
+}
 ```
 
 ## Parameters

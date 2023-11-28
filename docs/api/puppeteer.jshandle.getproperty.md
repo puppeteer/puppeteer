@@ -9,7 +9,11 @@ Fetches a single property from the referenced object.
 #### Signature:
 
 ```typescript
-class JSHandle \{getProperty<K extends keyof T>(propertyName: HandleOr<K>): Promise<HandleFor<T[K]>>;\}
+class JSHandle {
+  getProperty<K extends keyof T>(
+    propertyName: HandleOr<K>
+  ): Promise<HandleFor<T[K]>>;
+}
 ```
 
 ## Parameters

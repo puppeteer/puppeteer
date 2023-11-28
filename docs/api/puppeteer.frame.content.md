@@ -9,7 +9,9 @@ The full HTML contents of the frame, including the DOCTYPE.
 #### Signature:
 
 ```typescript
-class Frame \{content(): Promise<string>;\}
+class Frame {
+  content(): Promise<string>;
+}
 ```
 
 **Returns:**

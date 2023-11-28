@@ -7,7 +7,12 @@ sidebar_label: Locator.setVisibility
 #### Signature:
 
 ```typescript
-class Locator \{setVisibility<NodeType extends Node>(this: Locator<NodeType>, visibility: VisibilityOption): Locator<NodeType>;\}
+class Locator {
+  setVisibility<NodeType extends Node>(
+    this: Locator<NodeType>,
+    visibility: VisibilityOption
+  ): Locator<NodeType>;
+}
 ```
 
 ## Parameters

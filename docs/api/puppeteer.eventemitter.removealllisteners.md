@@ -9,7 +9,9 @@ Removes all listeners. If given an event argument, it will remove only listeners
 #### Signature:
 
 ```typescript
-class EventEmitter \{removeAllListeners(type?: keyof EventsWithWildcard<Events>): this;\}
+class EventEmitter {
+  removeAllListeners(type?: keyof EventsWithWildcard<Events>): this;
+}
 ```
 
 ## Parameters

@@ -9,7 +9,9 @@ All of the dedicated [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/A
 #### Signature:
 
 ```typescript
-class Page \{abstract workers(): WebWorker[];\}
+class Page {
+  abstract workers(): WebWorker[];
+}
 ```
 
 **Returns:**

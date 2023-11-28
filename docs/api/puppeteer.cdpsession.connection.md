@@ -7,7 +7,9 @@ sidebar_label: CDPSession.connection
 #### Signature:
 
 ```typescript
-class CDPSession \{abstract connection(): Connection | undefined;\}
+class CDPSession {
+  abstract connection(): Connection | undefined;
+}
 ```
 
 **Returns:**

@@ -9,7 +9,11 @@ Creates a race between multiple locators but ensures that only a single one acts
 #### Signature:
 
 ```typescript
-class Locator \{static race<Locators extends readonly unknown[] | []>(locators: Locators): Locator<AwaitedLocator<Locators[number]>>;\}
+class Locator {
+  static race<Locators extends readonly unknown[] | []>(
+    locators: Locators
+  ): Locator<AwaitedLocator<Locators[number]>>;
+}
 ```
 
 ## Parameters

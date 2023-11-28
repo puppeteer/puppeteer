@@ -9,7 +9,9 @@ Aborts a request.
 #### Signature:
 
 ```typescript
-class HTTPRequest \{abstract abort(errorCode?: ErrorCode, priority?: number): Promise<void>;\}
+class HTTPRequest {
+  abstract abort(errorCode?: ErrorCode, priority?: number): Promise<void>;
+}
 ```
 
 ## Parameters

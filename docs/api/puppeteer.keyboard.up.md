@@ -9,7 +9,9 @@ Dispatches a `keyup` event.
 #### Signature:
 
 ```typescript
-class Keyboard \{abstract up(key: KeyInput): Promise<void>;\}
+class Keyboard {
+  abstract up(key: KeyInput): Promise<void>;
+}
 ```
 
 ## Parameters

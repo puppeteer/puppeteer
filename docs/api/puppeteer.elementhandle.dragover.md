@@ -11,7 +11,12 @@ sidebar_label: ElementHandle.dragOver
 #### Signature:
 
 ```typescript
-class ElementHandle \{dragOver(this: ElementHandle<Element>, data?: Protocol.Input.DragData): Promise<void>;\}
+class ElementHandle {
+  dragOver(
+    this: ElementHandle<Element>,
+    data?: Protocol.Input.DragData
+  ): Promise<void>;
+}
 ```
 
 ## Parameters

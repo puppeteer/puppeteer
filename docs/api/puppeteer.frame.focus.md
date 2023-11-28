@@ -9,7 +9,9 @@ Focuses the first element that matches the `selector`.
 #### Signature:
 
 ```typescript
-class Frame \{focus(selector: string): Promise<void>;\}
+class Frame {
+  focus(selector: string): Promise<void>;
+}
 ```
 
 ## Parameters

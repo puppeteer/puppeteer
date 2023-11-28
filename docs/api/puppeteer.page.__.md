@@ -9,7 +9,11 @@ The method runs `document.querySelectorAll` within the page. If no elements matc
 #### Signature:
 
 ```typescript
-class Page \{$$<Selector extends string>(selector: Selector): Promise<Array<ElementHandle<NodeFor<Selector>>>>;\}
+class Page {
+  $$<Selector extends string>(
+    selector: Selector
+  ): Promise<Array<ElementHandle<NodeFor<Selector>>>>;
+}
 ```
 
 ## Parameters

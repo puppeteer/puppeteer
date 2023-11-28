@@ -11,7 +11,9 @@ It does not change the parameters used in [Page.emulateNetworkConditions()](./pu
 #### Signature:
 
 ```typescript
-class Page \{abstract setOfflineMode(enabled: boolean): Promise<void>;\}
+class Page {
+  abstract setOfflineMode(enabled: boolean): Promise<void>;
+}
 ```
 
 ## Parameters

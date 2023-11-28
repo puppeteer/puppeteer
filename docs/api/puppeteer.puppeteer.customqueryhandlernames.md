@@ -9,7 +9,9 @@ Gets the names of all custom query handlers.
 #### Signature:
 
 ```typescript
-class Puppeteer \{static customQueryHandlerNames(): string[];\}
+class Puppeteer {
+  static customQueryHandlerNames(): string[];
+}
 ```
 
 **Returns:**

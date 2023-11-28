@@ -9,7 +9,9 @@ Gets the associated [ChildProcess](https://nodejs.org/api/child_process.html#cla
 #### Signature:
 
 ```typescript
-class Browser \{abstract process(): ChildProcess | null;\}
+class Browser {
+  abstract process(): ChildProcess | null;
+}
 ```
 
 **Returns:**

@@ -9,7 +9,9 @@ Maps the locator using the provided mapper.
 #### Signature:
 
 ```typescript
-class Locator \{map<To>(mapper: Mapper<T, To>): Locator<To>;\}
+class Locator {
+  map<To>(mapper: Mapper<T, To>): Locator<To>;
+}
 ```
 
 ## Parameters

@@ -7,7 +7,9 @@ sidebar_label: Connection.dispose
 #### Signature:
 
 ```typescript
-class Connection \{dispose(): void;\}
+class Connection {
+  dispose(): void;
+}
 ```
 
 **Returns:**

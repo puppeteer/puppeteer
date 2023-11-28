@@ -9,7 +9,9 @@ sidebar_label: HTTPResponse.securityDetails
 #### Signature:
 
 ```typescript
-class HTTPResponse \{abstract securityDetails(): SecurityDetails | null;\}
+class HTTPResponse {
+  abstract securityDetails(): SecurityDetails | null;
+}
 ```
 
 **Returns:**

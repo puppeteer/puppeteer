@@ -21,7 +21,9 @@ page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing
 #### Signature:
 
 ```typescript
-class Page \{abstract setExtraHTTPHeaders(headers: Record<string, string>): Promise<void>;\}
+class Page {
+  abstract setExtraHTTPHeaders(headers: Record<string, string>): Promise<void>;
+}
 ```
 
 ## Parameters

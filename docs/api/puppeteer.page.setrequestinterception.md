@@ -13,7 +13,9 @@ See the [Request interception guide](https://pptr.dev/next/guides/request-interc
 #### Signature:
 
 ```typescript
-class Page \{abstract setRequestInterception(value: boolean): Promise<void>;\}
+class Page {
+  abstract setRequestInterception(value: boolean): Promise<void>;
+}
 ```
 
 ## Parameters
@@ -32,19 +34,19 @@ An example of a naïve request interceptor that aborts all image requests:
 
 ```ts
 import puppeteer from 'puppeteer';
-(async () => \{
+(async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.setRequestInterception(true);
-  page.on('request', interceptedRequest => \{
+  page.on('request', interceptedRequest => {
     if (
       interceptedRequest.url().endsWith('.png') ||
       interceptedRequest.url().endsWith('.jpg')
     )
       interceptedRequest.abort();
     else interceptedRequest.continue();
-  \});
+  });
   await page.goto('https://example.com');
   await browser.close();
-\})();
+})();
 ```

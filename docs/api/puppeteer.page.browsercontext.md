@@ -9,7 +9,9 @@ Get the browser context that the page belongs to.
 #### Signature:
 
 ```typescript
-class Page \{abstract browserContext(): BrowserContext;\}
+class Page {
+  abstract browserContext(): BrowserContext;
+}
 ```
 
 **Returns:**

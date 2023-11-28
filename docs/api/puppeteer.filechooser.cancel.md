@@ -9,7 +9,9 @@ Closes the file chooser without selecting any files.
 #### Signature:
 
 ```typescript
-class FileChooser \{cancel(): Promise<void>;\}
+class FileChooser {
+  cancel(): Promise<void>;
+}
 ```
 
 **Returns:**

@@ -9,7 +9,9 @@ Gets the number of listeners for a given event.
 #### Signature:
 
 ```typescript
-class EventEmitter \{listenerCount(type: keyof EventsWithWildcard<Events>): number;\}
+class EventEmitter {
+  listenerCount(type: keyof EventsWithWildcard<Events>): number;
+}
 ```
 
 ## Parameters

@@ -9,7 +9,9 @@ Either `null` or the handle itself if the handle is an instance of [ElementHandl
 #### Signature:
 
 ```typescript
-class JSHandle \{abstract asElement(): ElementHandle<Node> | null;\}
+class JSHandle {
+  abstract asElement(): ElementHandle<Node> | null;
+}
 ```
 
 **Returns:**

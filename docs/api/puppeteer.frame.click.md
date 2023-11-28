@@ -9,7 +9,9 @@ Clicks the first element found that matches `selector`.
 #### Signature:
 
 ```typescript
-class Frame \{click(selector: string, options?: Readonly<ClickOptions>): Promise<void>;\}
+class Frame {
+  click(selector: string, options?: Readonly<ClickOptions>): Promise<void>;
+}
 ```
 
 ## Parameters

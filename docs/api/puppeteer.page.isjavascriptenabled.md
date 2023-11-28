@@ -9,7 +9,9 @@ sidebar_label: Page.isJavaScriptEnabled
 #### Signature:
 
 ```typescript
-class Page \{abstract isJavaScriptEnabled(): boolean;\}
+class Page {
+  abstract isJavaScriptEnabled(): boolean;
+}
 ```
 
 **Returns:**
