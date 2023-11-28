@@ -39,7 +39,7 @@ import type {WaitForSelectorOptions} from '../api/Page.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {Awaitable, NodeFor} from '../common/types.js';
-import {UTILITY_WORLD_NAME, setPageContent, timeout} from '../common/util.js';
+import {UTILITY_WORLD_NAME, timeout} from '../common/util.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
 
@@ -174,7 +174,7 @@ export class BidiFrame extends Frame {
         ._waitWithNetworkIdle(
           forkJoin([
             fromEvent(this.#context, waitEvent).pipe(first()),
-            from(setPageContent(this, html)),
+            from(this.setFrameContent(html)),
           ]).pipe(
             map(() => {
               return null;
