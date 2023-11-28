@@ -59,6 +59,8 @@ await browser.close();
   - Browser.close
   - Frame.goto() (except `referer` and `referrerPolicy`)
   - Page.bringToFront
+  - Page.goBack()
+  - Page.goForward()
   - Page.goto (except `referer` and `referrerPolicy`)
   - Page.reload (except for `ignoreCache` parameter)
   - Page.setViewport (`width`, `height`, `deviceScaleFactor` only)
@@ -166,8 +168,6 @@ await browser.close();
   - Page.cookies()
   - Page.deleteCookie()
   - Page.emulateNetworkConditions()
-  - Page.goBack()
-  - Page.goForward()
   - Page.isDragInterceptionEnabled()
   - Page.isJavaScriptEnabled() (supported only in Chrome)
   - Page.isServiceWorkerBypassed()
