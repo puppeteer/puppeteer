@@ -149,7 +149,6 @@ export class MarkdownDocumenter {
           outputFolder: this._outputFolder,
           documenter: new MarkdownDocumenterAccessor({
             getLinkForApiItem: (apiItem: ApiItem) => {
-              console.log(apiItem);
               return this._getLinkFilenameForApiItem(apiItem);
             },
           }),
@@ -157,7 +156,6 @@ export class MarkdownDocumenter {
       });
     }
 
-    console.log();
     this._deleteOldOutputFiles();
 
     this._writeApiItemPage(this._apiModel.members[0]!);

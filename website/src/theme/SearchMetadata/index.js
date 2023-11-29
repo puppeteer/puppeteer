@@ -10,7 +10,6 @@ class MonotonicCountMap {
   #map = new Map();
 
   get(key) {
-    console.log(key);
     let counter = this.#map.get(key);
     if (!counter) {
       counter = ++this.#counter;
