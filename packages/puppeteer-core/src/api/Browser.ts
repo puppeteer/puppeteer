@@ -300,13 +300,13 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * This is usually used with {@link Puppeteer.connect}.
    *
    * You can find the debugger URL (`webSocketDebuggerUrl`) from
-   * `http://${host}:${port}/json/version`.
+   * `http://HOST:PORT/json/version`.
    *
    * See {@link
    * https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target
    * | browser endpoint} for more information.
    *
-   * @remarks The format is always `ws://${host}:${port}/devtools/browser/<id>`.
+   * @remarks The format is always `ws://HOST:PORT/devtools/browser/<id>`.
    */
   abstract wsEndpoint(): string;
 
