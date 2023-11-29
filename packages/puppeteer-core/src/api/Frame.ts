@@ -805,6 +805,17 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   ): Promise<void>;
 
   /**
+   * @internal
+   */
+  async setFrameContent(content: string): Promise<void> {
+    return await this.evaluate(html => {
+      document.open();
+      document.write(html);
+      document.close();
+    }, content);
+  }
+
+  /**
    * The frame's `name` attribute as specified in the tag.
    *
    * @remarks

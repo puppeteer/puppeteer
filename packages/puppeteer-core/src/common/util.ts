@@ -31,7 +31,6 @@ import {
   raceWith,
 } from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
-import type {Page} from '../api/Page.js';
 import {isNode} from '../environment.js';
 import {assert} from '../util/assert.js';
 import type {Deferred} from '../util/Deferred.js';
@@ -502,22 +501,6 @@ export async function getReadableFromProtocolStream(
       }
     },
   });
-}
-
-/**
- * @internal
- */
-export async function setPageContent(
-  page: Pick<Page, 'evaluate'>,
-  content: string
-): Promise<void> {
-  // We rely upon the fact that document.open() will reset frame lifecycle with "init"
-  // lifecycle event. @see https://crrev.com/608658
-  return await page.evaluate(html => {
-    document.open();
-    document.write(html);
-    document.close();
-  }, content);
 }
 
 /**
