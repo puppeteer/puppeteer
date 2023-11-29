@@ -14,9 +14,9 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                           | Description  |
-| --------- | ------------------------------ | ------------ |
-| options   | { runBeforeUnload?: boolean; } | _(Optional)_ |
+| Parameter | Type                                     | Description  |
+| --------- | ---------------------------------------- | ------------ |
+| options   | &#123; runBeforeUnload?: boolean; &#125; | _(Optional)_ |
 
 **Returns:**
 

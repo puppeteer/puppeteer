@@ -16,9 +16,9 @@ export declare function install(
 
 ## Parameters
 
-| Parameter | Type                                                                    | Description |
-| --------- | ----------------------------------------------------------------------- | ----------- |
-| options   | [InstallOptions](./browsers.installoptions.md) &amp; { unpack?: true; } |             |
+| Parameter | Type                                                                              | Description |
+| --------- | --------------------------------------------------------------------------------- | ----------- |
+| options   | [InstallOptions](./browsers.installoptions.md) &amp; &#123; unpack?: true; &#125; |             |
 
 **Returns:**
 

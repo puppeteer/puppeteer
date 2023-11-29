@@ -14,4 +14,4 @@ export interface AutofillData
 
 | Property   | Modifiers | Type                                                                                    | Description | Default |
 | ---------- | --------- | --------------------------------------------------------------------------------------- | ----------- | ------- |
-| creditCard |           | { number: string; name: string; expiryMonth: string; expiryYear: string; cvc: string; } |             |         |
+| creditCard |           | \{ number: string; name: string; expiryMonth: string; expiryYear: string; cvc: string; \} |             |         |

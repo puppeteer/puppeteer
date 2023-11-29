@@ -24,7 +24,7 @@ class Page {
 | Parameter      | Type                                                                                                   | Description                              |
 | -------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------- |
 | urlOrPredicate | string \| ((res: [HTTPResponse](./puppeteer.httpresponse.md)) =&gt; boolean \| Promise&lt;boolean&gt;) | A URL or predicate to wait for.          |
-| options        | { timeout?: number; }                                                                                  | _(Optional)_ Optional waiting parameters |
+| options        | &#123; timeout?: number; &#125;                                                                        | _(Optional)_ Optional waiting parameters |
 
 **Returns:**
 

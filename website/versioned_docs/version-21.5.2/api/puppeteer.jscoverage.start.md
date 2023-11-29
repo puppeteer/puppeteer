@@ -21,7 +21,7 @@ class JSCoverage {
 
 | Parameter | Type                                                                                                                               | Description  |
 | --------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| options   | { resetOnNavigation?: boolean; reportAnonymousScripts?: boolean; includeRawScriptCoverage?: boolean; useBlockCoverage?: boolean; } | _(Optional)_ |
+| options   | \{ resetOnNavigation?: boolean; reportAnonymousScripts?: boolean; includeRawScriptCoverage?: boolean; useBlockCoverage?: boolean; \} | _(Optional)_ |
 
 **Returns:**
 

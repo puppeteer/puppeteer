@@ -28,7 +28,7 @@ class ElementHandle {
 | --------- | ------------------------------------------------------------ | ------------ |
 | this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |              |
 | target    | [ElementHandle](./puppeteer.elementhandle.md)&lt;Node&gt;    |              |
-| options   | { delay: number; }                                           | _(Optional)_ |
+| options   | &#123; delay: number; &#125;                                 | _(Optional)_ |
 
 **Returns:**
 

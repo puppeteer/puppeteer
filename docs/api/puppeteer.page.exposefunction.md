@@ -31,10 +31,10 @@ class Page {
 
 ## Parameters
 
-| Parameter    | Type                               | Description                                                    |
-| ------------ | ---------------------------------- | -------------------------------------------------------------- |
-| name         | string                             | Name of the function on the window object                      |
-| pptrFunction | Function \| { default: Function; } | Callback function which will be called in Puppeteer's context. |
+| Parameter    | Type                                         | Description                                                    |
+| ------------ | -------------------------------------------- | -------------------------------------------------------------- |
+| name         | string                                       | Name of the function on the window object                      |
+| pptrFunction | Function \| &#123; default: Function; &#125; | Callback function which will be called in Puppeteer's context. |
 
 **Returns:**
 

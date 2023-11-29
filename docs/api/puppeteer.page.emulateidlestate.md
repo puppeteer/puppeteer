@@ -19,9 +19,9 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                                  | Description                                                     |
-| --------- | ----------------------------------------------------- | --------------------------------------------------------------- |
-| overrides | { isUserActive: boolean; isScreenUnlocked: boolean; } | _(Optional)_ Mock idle state. If not set, clears idle overrides |
+| Parameter | Type                                                            | Description                                                     |
+| --------- | --------------------------------------------------------------- | --------------------------------------------------------------- |
+| overrides | &#123; isUserActive: boolean; isScreenUnlocked: boolean; &#125; | _(Optional)_ Mock idle state. If not set, clears idle overrides |
 
 **Returns:**
 
