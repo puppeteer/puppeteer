@@ -10,10 +10,10 @@ Disconnects Puppeteer from this [browser](./puppeteer.browser.md), but leaves th
 
 ```typescript
 class Browser {
-  abstract disconnect(): void;
+  abstract disconnect(): Promise<void>;
 }
 ```
 
 **Returns:**
 
-void
+Promise&lt;void&gt;
