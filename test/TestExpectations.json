@@ -2133,7 +2133,7 @@
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to reconnect to a disconnected browser",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support ignoreHTTPSErrors option",
