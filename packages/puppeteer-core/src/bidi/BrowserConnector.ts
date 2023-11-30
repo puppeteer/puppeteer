@@ -91,7 +91,7 @@ async function getBiDiConnection(
       return {
         bidiConnection: pureBidiConnection,
         closeCallback: async () => {
-          await bidiConnection.send('browser.close', {}).catch(debugError);
+          await pureBidiConnection.send('browser.close', {}).catch(debugError);
         },
       };
     }
@@ -120,11 +120,11 @@ async function getBiDiConnection(
   }
 
   // TODO: use other options too.
-  const bidiConnection = await BiDi.connectBidiOverCdp(cdpConnection, {
+  const bidiOverCdpConnection = await BiDi.connectBidiOverCdp(cdpConnection, {
     acceptInsecureCerts: ignoreHTTPSErrors,
   });
   return {
-    bidiConnection,
+    bidiConnection: bidiOverCdpConnection,
     closeCallback: async () => {
       // In case of BiDi over CDP, we need to close browser via CDP.
       await cdpConnection.send('Browser.close').catch(debugError);
