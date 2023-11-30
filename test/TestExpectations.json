@@ -3656,7 +3656,7 @@
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to reconnect",
     "platforms": ["darwin"],
-    "parameters": ["firefox", "headless", "webDriverBiDi"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
