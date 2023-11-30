@@ -15,11 +15,8 @@
  */
 
 import type {Browser} from '../api/Browser.js';
-import {
-  _connectToBiDiOverCdpBrowser,
-  _connectToCdpBrowser,
-} from '../cdp/BrowserConnector.js';
 
+import {_connectToBrowser} from './BrowserConnector.js';
 import type {ConnectOptions} from './ConnectOptions.js';
 import {
   type CustomQueryHandler,
@@ -131,10 +128,6 @@ export class Puppeteer {
    * @returns Promise which resolves to browser instance.
    */
   connect(options: ConnectOptions): Promise<Browser> {
-    if (options.protocol === 'webDriverBiDi') {
-      return _connectToBiDiOverCdpBrowser(options);
-    } else {
-      return _connectToCdpBrowser(options);
-    }
+    return _connectToBrowser(options);
   }
 }

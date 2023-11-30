@@ -49,6 +49,11 @@ export const debugError = debug('puppeteer:error');
 /**
  * @internal
  */
+export const DEFAULT_VIEWPORT = Object.freeze({width: 800, height: 600});
+
+/**
+ * @internal
+ */
 export function createEvaluationError(
   details: Protocol.Runtime.ExceptionDetails
 ): unknown {
