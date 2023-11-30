@@ -21,6 +21,7 @@ import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {debug} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
+import {assert} from '../util/assert.js';
 
 import {type BrowsingContext, cdpSessions} from './BrowsingContext.js';
 
@@ -191,9 +192,8 @@ export class BidiConnection extends EventEmitter<BidiEvents> {
     method: T,
     params: Commands[T]['params']
   ): Promise<{result: Commands[T]['returnType']}> {
-    if (this.#closed) {
-      throw new Error('Connection cannot be used, as it is closed');
-    }
+    assert(!this.#closed, 'Protocol error: Connection closed.');
+
     return this.#callbacks.create(method, this.#timeout, id => {
       const stringifiedMessage = JSON.stringify({
         id,
