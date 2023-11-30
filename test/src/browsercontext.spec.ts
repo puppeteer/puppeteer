@@ -230,7 +230,7 @@ describe('BrowserContext', function () {
     });
     const contexts = remoteBrowser.browserContexts();
     expect(contexts).toHaveLength(2);
-    remoteBrowser.disconnect();
+    await remoteBrowser.disconnect();
     await context.close();
   });
 

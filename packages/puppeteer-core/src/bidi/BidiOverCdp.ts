@@ -49,6 +49,7 @@ export async function connectBidiOverCdp(
     close(): void {
       bidiServer.close();
       cdpConnectionAdapter.close();
+      cdp.dispose();
     },
     onmessage(_message: string): void {
       // The method is overridden by the Connection.
