@@ -316,9 +316,7 @@ export class BidiConnection extends EventEmitter<BidiEvents> {
     this.#transport.onmessage = undefined;
     this.#transport.onclose = undefined;
 
-    this.#callbacks.clear();
     this.#browsingContexts.clear();
-
     this.#callbacks.clear();
   }
 
