@@ -316,8 +316,8 @@ export class BidiConnection extends EventEmitter<BidiEvents> {
     }
     this.#closed = true;
     // Both may still be invoked and produce errors
-    this.#transport.onmessage = ()=>{};
-    this.#transport.onclose = ()=>{};
+    this.#transport.onmessage = () => {};
+    this.#transport.onclose = () => {};
 
     this.#browsingContexts.clear();
     this.#callbacks.clear();
