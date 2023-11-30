@@ -3649,6 +3649,12 @@
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.disconnect should reject navigation when browser closes",
+    "platforms": ["linux"],
+    "parameters": ["cdp", "firefox", "headless"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.disconnect should reject navigation when browser closes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox", "headful"],
     "expectations": ["FAIL", "PASS"]
