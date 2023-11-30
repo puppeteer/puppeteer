@@ -228,7 +228,7 @@ export interface BrowserEvents extends Record<EventType, unknown> {
  * // Store the endpoint to be able to reconnect to the browser.
  * const browserWSEndpoint = browser.wsEndpoint();
  * // Disconnect puppeteer from the browser.
- * await browser.disconnect();
+ * browser.disconnect();
  *
  * // Use the endpoint to reestablish a connection
  * const browser2 = await puppeteer.connect({browserWSEndpoint});
@@ -414,7 +414,7 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * Disconnects Puppeteer from this {@link Browser | browser}, but leaves the
    * process running.
    */
-  abstract disconnect(): Promise<void>;
+  abstract disconnect(): void;
 
   /**
    * Whether Puppeteer is connected to this {@link Browser | browser}.

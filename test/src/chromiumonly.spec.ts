@@ -38,7 +38,7 @@ describe('Chromium-Specific Launcher tests', function () {
             return 7 * 8;
           })
         ).toBe(56);
-        await browser1.disconnect();
+        browser1.disconnect();
 
         const browser2 = await puppeteer.connect({
           browserURL: browserURL + '/',
@@ -49,7 +49,7 @@ describe('Chromium-Specific Launcher tests', function () {
             return 8 * 7;
           })
         ).toBe(56);
-        await browser2.disconnect();
+        browser2.disconnect();
       } finally {
         await close();
       }

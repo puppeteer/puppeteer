@@ -46,7 +46,7 @@ const browser = await puppeteer.launch();
 // Store the endpoint to be able to reconnect to the browser.
 const browserWSEndpoint = browser.wsEndpoint();
 // Disconnect puppeteer from the browser.
-await browser.disconnect();
+browser.disconnect();
 
 // Use the endpoint to reestablish a connection
 const browser2 = await puppeteer.connect({browserWSEndpoint});

@@ -418,7 +418,7 @@ describe('OOPIF', function () {
       return target.url().endsWith('dynamic-oopif.html');
     });
     await target.page();
-    await browser1.disconnect();
+    browser1.disconnect();
   });
 
   it('should support lazy OOP frames', async () => {

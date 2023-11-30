@@ -323,13 +323,7 @@ export class BidiBrowser extends Browser {
     return this.#browserTarget;
   }
 
-  override async disconnect(): Promise<void> {
-    try {
-      // Fail silently if the session cannot be ended.
-      await this.#connection.send('session.end', {});
-    } catch (e) {
-      debugError(e);
-    }
-    this.#connection.dispose();
+  override disconnect(): void {
+    this;
   }
 }

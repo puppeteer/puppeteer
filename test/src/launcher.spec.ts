@@ -52,7 +52,7 @@ describe('Launcher specs', function () {
               return error_;
             });
           await server.waitForRequest('/one-style.css');
-          await remote.disconnect();
+          remote.disconnect();
           const error = await navigationPromise;
           expect(
             [
@@ -78,7 +78,7 @@ describe('Launcher specs', function () {
             .catch(error_ => {
               return error_;
             });
-          await remote.disconnect();
+          remote.disconnect();
           const error = await watchdog;
           expect(error.message).toContain('Session closed.');
         } finally {
@@ -635,7 +635,7 @@ describe('Launcher specs', function () {
               return 7 * 8;
             })
           ).toBe(56);
-          await otherBrowser.disconnect();
+          otherBrowser.disconnect();
 
           const secondPage = await browser.newPage();
           expect(
@@ -776,7 +776,7 @@ describe('Launcher specs', function () {
 
           await page2.close();
           await page1.close();
-          await remoteBrowser.disconnect();
+          remoteBrowser.disconnect();
           await browser.close();
         } finally {
           await close();
@@ -788,7 +788,7 @@ describe('Launcher specs', function () {
           const browserWSEndpoint = browser.wsEndpoint();
           const page = await browser.newPage();
           await page.goto(server.PREFIX + '/frames/nested-frames.html');
-          await browser.disconnect();
+          browser.disconnect();
 
           const remoteBrowser = await puppeteer.connect({
             browserWSEndpoint,
@@ -858,7 +858,7 @@ describe('Launcher specs', function () {
           const browserWSEndpoint = browserOne.wsEndpoint();
           const pageOne = await browserOne.newPage();
           await pageOne.goto(server.EMPTY_PAGE);
-          await browserOne.disconnect();
+          browserOne.disconnect();
 
           const browserTwo = await puppeteer.connect({
             browserWSEndpoint,

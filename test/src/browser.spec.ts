@@ -70,7 +70,7 @@ describe('Browser specs', function () {
         protocol: browser.protocol,
       });
       expect(remoteBrowser.process()).toBe(null);
-      await remoteBrowser.disconnect();
+      remoteBrowser.disconnect();
     });
   });
 
@@ -84,7 +84,7 @@ describe('Browser specs', function () {
         protocol: browser.protocol,
       });
       expect(newBrowser.isConnected()).toBe(true);
-      await newBrowser.disconnect();
+      newBrowser.disconnect();
       expect(newBrowser.isConnected()).toBe(false);
     });
   });

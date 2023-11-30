@@ -111,10 +111,6 @@ export interface Commands {
     returnType: Bidi.EmptyResult;
   };
 
-  'session.end': {
-    params: Bidi.EmptyParams;
-    returnType: Bidi.EmptyResult;
-  };
   'session.new': {
     params: Bidi.Session.NewParameters;
     returnType: Bidi.Session.NewResult;
