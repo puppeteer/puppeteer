@@ -113,7 +113,18 @@ export class FirefoxLauncher extends ProductLauncher {
 
     await createProfile(SupportedBrowsers.FIREFOX, {
       path: userDataDir,
-      preferences: extraPrefsFirefox,
+      preferences: {
+        ...extraPrefsFirefox,
+        ...(options.protocol === 'cdp'
+          ? {
+              // Temporarily force disable BFCache in parent (https://bit.ly/bug-1732263)
+              'fission.bfcacheInParent': false,
+
+              // Force all web content to use a single content process
+              'fission.webContentIsolationStrategy': 0,
+            }
+          : {}),
+      },
     });
 
     let firefoxExecutable: string;
