@@ -410,13 +410,14 @@ export class CdpBrowser extends BrowserBase {
 
   override async close(): Promise<void> {
     await this.#closeCallback.call(null);
-    this.disconnect();
+    await this.disconnect();
   }
 
-  override disconnect(): void {
+  override disconnect(): Promise<void> {
     this.#targetManager.dispose();
     this.#connection.dispose();
     this._detach();
+    return Promise.resolve();
   }
 
   override get connected(): boolean {
