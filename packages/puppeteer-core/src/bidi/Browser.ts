@@ -254,8 +254,8 @@ export class BidiBrowser extends Browser {
       return;
     }
     await this.#connection.send('browser.close', {});
-    this.#connection.dispose();
     await this.#closeCallback?.call(null);
+    this.#connection.dispose();
   }
 
   override get connected(): boolean {
@@ -324,6 +324,6 @@ export class BidiBrowser extends Browser {
   }
 
   override disconnect(): void {
-    this;
+    this.#connection.dispose();
   }
 }
