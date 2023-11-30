@@ -15,6 +15,7 @@
  */
 
 import {mkdtemp} from 'fs/promises';
+import os from 'os';
 import path from 'path';
 
 import {
@@ -62,6 +63,26 @@ export class ChromeLauncher extends ProductLauncher {
           '  If you encounter any bugs, please report them to https://github.com/puppeteer/puppeteer/issues/new/choose.\x1B[0m\n',
         ].join('\n  ')
       );
+    }
+
+    if (
+      this.puppeteer.configuration.logLevel === 'warn' &&
+      process.platform === 'darwin' &&
+      process.arch === 'x64'
+    ) {
+      const cpus = os.cpus();
+      if (cpus[0]?.model.includes('Apple')) {
+        console.warn(
+          [
+            '\x1B[1m\x1B[43m\x1B[30m',
+            'Degraded performance warning:\x1B[0m\x1B[33m',
+            'Launching Chrome on Mac Silicon (arm64) from an x64 Node installation results in',
+            'Rosetta translating the Chrome binary, even if Chrome is already arm64. This would',
+            'result in huge performance issues. To resolve this, you must run Puppeteer with',
+            'a version of Node built for arm64.',
+          ].join('\n  ')
+        );
+      }
     }
 
     return super.launch(options);
