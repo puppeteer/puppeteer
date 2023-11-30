@@ -1527,7 +1527,7 @@
     "testIdPattern": "[click.spec] Page.click should double click the button",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[click.spec] Page.click should scroll and click with disabled javascript",
@@ -1551,7 +1551,7 @@
     "testIdPattern": "[click.spec] Page.click should select the text by triple clicking",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.cookies should get cookies from multiple urls",
