@@ -27,7 +27,7 @@
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "dependencies": {
-    "mime": "3.0.0",
+    "mime": "4.0.0",
     "ws": "8.14.2"
   },
   "devDependencies": {
