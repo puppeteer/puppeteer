@@ -191,6 +191,9 @@ export class BidiConnection extends EventEmitter<BidiEvents> {
     method: T,
     params: Commands[T]['params']
   ): Promise<{result: Commands[T]['returnType']}> {
+    if (this.#closed) {
+      throw new Error('Connection cannot be used, as it is closed');
+    }
     return this.#callbacks.create(method, this.#timeout, id => {
       const stringifiedMessage = JSON.stringify({
         id,
@@ -313,8 +316,8 @@ export class BidiConnection extends EventEmitter<BidiEvents> {
     }
     this.#closed = true;
     // Both may still be invoked and produce errors
-    this.#transport.onmessage = undefined;
-    this.#transport.onclose = undefined;
+    this.#transport.onmessage = ()=>{};
+    this.#transport.onclose = ()=>{};
 
     this.#browsingContexts.clear();
     this.#callbacks.clear();
