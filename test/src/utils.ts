@@ -30,7 +30,7 @@ const PROJECT_ROOT = path.join(__dirname, '..', '..');
 
 declare module 'expect' {
   interface Matchers<R> {
-    toBeGolden(pathOrBuffer: string | Buffer): R;
+    toBeGolden(pathOrBuffer: string | Buffer): Promise<R>;
   }
 }
 
@@ -39,8 +39,8 @@ export const extendExpectWithToBeGolden = (
   outputDir: string
 ): void => {
   expect.extend({
-    toBeGolden: (testScreenshot: string | Buffer, goldenFilePath: string) => {
-      const result = compare(
+    async toBeGolden(testScreenshot: string | Buffer, goldenFilePath: string) {
+      const result = await compare(
         goldenDir,
         outputDir,
         testScreenshot,

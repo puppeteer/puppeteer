@@ -33,7 +33,6 @@ import {join} from 'path';
 import type {Duplex} from 'stream';
 import {gzip} from 'zlib';
 
-import {getType as getMimeType} from 'mime';
 import {Server as WebSocketServer, type WebSocket} from 'ws';
 
 interface Subscriber {
@@ -43,6 +42,20 @@ interface Subscriber {
 }
 
 type TestIncomingMessage = IncomingMessage & {postBody?: Promise<string>};
+
+interface Mime {
+  getType(file: string): string | null;
+}
+
+let mime: Mime | undefined;
+async function getMime(): Promise<Mime> {
+  if (mime) {
+    return mime;
+  }
+
+  const Mime = await import('mime');
+  return Mime.default;
+}
 
 export class TestServer {
   PORT!: number;
@@ -56,6 +69,7 @@ export class TestServer {
 
   #startTime = new Date();
   #cachedPathPrefix?: string;
+  #mime: Mime;
 
   #connections = new Set<Duplex>();
   #routes = new Map<
@@ -69,11 +83,12 @@ export class TestServer {
   #requests = new Set<ServerResponse>();
 
   static async create(dirPath: string): Promise<TestServer> {
+    const mime = await getMime();
     let res!: (value: unknown) => void;
     const promise = new Promise(resolve => {
       res = resolve;
     });
-    const server = new TestServer(dirPath);
+    const server = new TestServer(dirPath, mime);
     server.#server.once('listening', res);
     server.#server.listen(0);
     await promise;
@@ -81,11 +96,12 @@ export class TestServer {
   }
 
   static async createHTTPS(dirPath: string): Promise<TestServer> {
+    const mime = await getMime();
     let res!: (value: unknown) => void;
     const promise = new Promise(resolve => {
       res = resolve;
     });
-    const server = new TestServer(dirPath, {
+    const server = new TestServer(dirPath, mime, {
       key: readFileSync(join(__dirname, '..', 'key.pem')),
       cert: readFileSync(join(__dirname, '..', 'cert.pem')),
       passphrase: 'aaaa',
@@ -96,8 +112,9 @@ export class TestServer {
     return server;
   }
 
-  constructor(dirPath: string, sslOptions?: HttpsServerOptions) {
+  constructor(dirPath: string, mime: Mime, sslOptions?: HttpsServerOptions) {
     this.#dirPath = dirPath;
+    this.#mime = mime;
 
     if (sslOptions) {
       this.#server = createHttpsServer(sslOptions, this.#onRequest);
@@ -294,7 +311,7 @@ export class TestServer {
         response.end(`File not found: ${filePath}`);
         return;
       }
-      const mimeType = getMimeType(filePath);
+      const mimeType = this.#mime.getType(filePath);
       if (mimeType) {
         const isTextEncoding = /^text\/|^application\/(javascript|json)/.test(
           mimeType

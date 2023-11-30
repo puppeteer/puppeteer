@@ -19,13 +19,26 @@ import path from 'path';
 
 import {diffLines} from 'diff';
 import jpeg from 'jpeg-js';
-import mime from 'mime';
 import pixelmatch from 'pixelmatch';
 import {PNG} from 'pngjs';
 
 interface DiffFile {
   diff: string | Buffer;
   ext?: string;
+}
+
+interface Mime {
+  getType(file: string): string | null;
+}
+
+let mime: Mime | undefined;
+async function getMime(): Promise<Mime> {
+  if (mime) {
+    return mime;
+  }
+
+  const Mime = await import('mime');
+  return Mime.default;
 }
 
 const GoldenComparators = new Map<
@@ -116,12 +129,14 @@ GoldenComparators.set('image/png', compareImages);
 GoldenComparators.set('image/jpeg', compareImages);
 GoldenComparators.set('text/plain', compareText);
 
-export const compare = (
+export const compare = async (
   goldenPath: string,
   outputPath: string,
   actual: string | Buffer,
   goldenName: string
-): {pass: true} | {pass: false; message: string} => {
+): Promise<{pass: true} | {pass: false; message: string}> => {
+  const mime = await getMime();
+
   goldenPath = path.normalize(goldenPath);
   outputPath = path.normalize(outputPath);
   const expectedPath = path.join(goldenPath, goldenName);

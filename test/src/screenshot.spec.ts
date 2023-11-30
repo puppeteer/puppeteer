@@ -30,7 +30,7 @@ describe('Screenshots', function () {
       await page.setViewport({width: 500, height: 500});
       await page.goto(server.PREFIX + '/grid.html');
       const screenshot = await page.screenshot();
-      expect(screenshot).toBeGolden('screenshot-sanity.png');
+      await expect(screenshot).toBeGolden('screenshot-sanity.png');
     });
     it('should clip rect', async () => {
       const {page, server} = await getTestState();
@@ -45,7 +45,7 @@ describe('Screenshots', function () {
           height: 100,
         },
       });
-      expect(screenshot).toBeGolden('screenshot-clip-rect.png');
+      await expect(screenshot).toBeGolden('screenshot-clip-rect.png');
     });
     it('should use scale for clip', async () => {
       const {page, server} = await getTestState();
@@ -61,7 +61,7 @@ describe('Screenshots', function () {
           scale: 2,
         },
       });
-      expect(screenshot).toBeGolden('screenshot-clip-rect-scale2.png');
+      await expect(screenshot).toBeGolden('screenshot-clip-rect-scale2.png');
     });
     it('should get screenshot bigger than the viewport', async () => {
       const {page, server} = await getTestState();
@@ -75,7 +75,7 @@ describe('Screenshots', function () {
           height: 100,
         },
       });
-      expect(screenshot).toBeGolden('screenshot-offscreen-clip.png');
+      await expect(screenshot).toBeGolden('screenshot-offscreen-clip.png');
     });
     it('should clip clip bigger than the viewport without "captureBeyondViewport"', async () => {
       const {page, server} = await getTestState();
@@ -90,7 +90,7 @@ describe('Screenshots', function () {
           height: 100,
         },
       });
-      expect(screenshot).toBeGolden('screenshot-offscreen-clip-2.png');
+      await expect(screenshot).toBeGolden('screenshot-offscreen-clip-2.png');
     });
     it('should run in parallel', async () => {
       const {page, server} = await getTestState();
@@ -111,7 +111,7 @@ describe('Screenshots', function () {
         );
       }
       const screenshots = await Promise.all(promises);
-      expect(screenshots[1]).toBeGolden('grid-cell-1.png');
+      await expect(screenshots[1]).toBeGolden('grid-cell-1.png');
     });
     it('should take fullPage screenshots', async () => {
       const {page, server} = await getTestState();
@@ -121,7 +121,7 @@ describe('Screenshots', function () {
       const screenshot = await page.screenshot({
         fullPage: true,
       });
-      expect(screenshot).toBeGolden('screenshot-grid-fullpage.png');
+      await expect(screenshot).toBeGolden('screenshot-grid-fullpage.png');
     });
     it('should run in parallel in multiple pages', async () => {
       const {server, context} = await getTestState();
@@ -145,9 +145,12 @@ describe('Screenshots', function () {
         );
       }
       const screenshots = await Promise.all(promises);
-      for (let i = 0; i < N; ++i) {
-        expect(screenshots[i]).toBeGolden(`grid-cell-${i}.png`);
-      }
+      await Promise.all([
+        new Array(N).map((_, i) => {
+          return expect(screenshots[i]).toBeGolden(`grid-cell-${i}.png`);
+        }),
+      ]);
+
       await Promise.all(
         pages.map(page => {
           return page.close();
@@ -165,7 +168,7 @@ describe('Screenshots', function () {
           height: 11,
         },
       });
-      expect(screenshot).toBeGolden('screenshot-clip-odd-size.png');
+      await expect(screenshot).toBeGolden('screenshot-clip-odd-size.png');
     });
     it('should return base64', async () => {
       const {page, server} = await getTestState();
@@ -175,7 +178,7 @@ describe('Screenshots', function () {
       const screenshot = await page.screenshot({
         encoding: 'base64',
       });
-      expect(Buffer.from(screenshot, 'base64')).toBeGolden(
+      await expect(Buffer.from(screenshot, 'base64')).toBeGolden(
         'screenshot-sanity.png'
       );
     });
@@ -192,7 +195,9 @@ describe('Screenshots', function () {
       });
       using elementHandle = (await page.$('.box:nth-of-type(3)'))!;
       const screenshot = await elementHandle.screenshot();
-      expect(screenshot).toBeGolden('screenshot-element-bounding-box.png');
+      await expect(screenshot).toBeGolden(
+        'screenshot-element-bounding-box.png'
+      );
     });
     it('should work with a null viewport', async () => {
       const {server} = await getTestState({
@@ -233,7 +238,9 @@ describe('Screenshots', function () {
       `);
       using elementHandle = (await page.$('div'))!;
       const screenshot = await elementHandle.screenshot();
-      expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
+      await expect(screenshot).toBeGolden(
+        'screenshot-element-padding-border.png'
+      );
     });
     it('should capture full element when larger than viewport', async () => {
       const {page} = await getTestState();
@@ -257,7 +264,7 @@ describe('Screenshots', function () {
         `);
       using elementHandle = (await page.$('div.to-screenshot'))!;
       const screenshot = await elementHandle.screenshot();
-      expect(screenshot).toBeGolden(
+      await expect(screenshot).toBeGolden(
         'screenshot-element-larger-than-viewport.png'
       );
 
@@ -293,7 +300,7 @@ describe('Screenshots', function () {
       `);
       using elementHandle = (await page.$('div.to-screenshot'))!;
       const screenshot = await elementHandle.screenshot();
-      expect(screenshot).toBeGolden(
+      await expect(screenshot).toBeGolden(
         'screenshot-element-scrolled-into-view.png'
       );
     });
@@ -310,7 +317,7 @@ describe('Screenshots', function () {
                                         transform: rotateZ(200deg);">&nbsp;</div>`);
       using elementHandle = (await page.$('div'))!;
       const screenshot = await elementHandle.screenshot();
-      expect(screenshot).toBeGolden('screenshot-element-rotate.png');
+      await expect(screenshot).toBeGolden('screenshot-element-rotate.png');
     });
     it('should fail to screenshot a detached element', async () => {
       const {page} = await getTestState();
@@ -345,7 +352,7 @@ describe('Screenshots', function () {
       );
       using elementHandle = (await page.$('div'))!;
       const screenshot = await elementHandle.screenshot();
-      expect(screenshot).toBeGolden('screenshot-element-fractional.png');
+      await expect(screenshot).toBeGolden('screenshot-element-fractional.png');
     });
     it('should work for an element with an offset', async () => {
       const {page} = await getTestState();
@@ -355,7 +362,9 @@ describe('Screenshots', function () {
       );
       using elementHandle = (await page.$('div'))!;
       const screenshot = await elementHandle.screenshot();
-      expect(screenshot).toBeGolden('screenshot-element-fractional-offset.png');
+      await expect(screenshot).toBeGolden(
+        'screenshot-element-fractional-offset.png'
+      );
     });
     it('should work with webp', async () => {
       const {page, server} = await getTestState();
@@ -377,7 +386,7 @@ describe('Screenshots', function () {
       await page.setViewport({width: 100, height: 100});
       await page.goto(server.EMPTY_PAGE);
       const screenshot = await page.screenshot({omitBackground: true});
-      expect(screenshot).toBeGolden('transparent.png');
+      await expect(screenshot).toBeGolden('transparent.png');
     });
     it('should render white background on jpeg file', async () => {
       const {page, server} = await getTestState();
@@ -388,7 +397,7 @@ describe('Screenshots', function () {
         omitBackground: true,
         type: 'jpeg',
       });
-      expect(screenshot).toBeGolden('white.jpg');
+      await expect(screenshot).toBeGolden('white.jpg');
     });
     it('should work in "fromSurface: false" mode', async () => {
       const {page, server} = await getTestState();
