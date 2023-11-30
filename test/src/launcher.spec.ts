@@ -874,7 +874,8 @@ describe('Launcher specs', function () {
           });
           await browserTwo.close();
         } finally {
-          await close();
+          // If browser is not closed, close it.
+          await close().catch(console.warn);
         }
       });
     });
