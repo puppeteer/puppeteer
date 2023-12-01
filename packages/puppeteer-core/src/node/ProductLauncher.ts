@@ -31,7 +31,7 @@ import {CdpBrowser} from '../cdp/Browser.js';
 import {Connection} from '../cdp/Connection.js';
 import {TimeoutError} from '../common/Errors.js';
 import type {Product} from '../common/Product.js';
-import {debugError} from '../common/util.js';
+import {debugError, DEFAULT_VIEWPORT} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 
 import type {
@@ -91,7 +91,7 @@ export abstract class ProductLauncher {
       handleSIGTERM = true,
       handleSIGHUP = true,
       ignoreHTTPSErrors = false,
-      defaultViewport = {width: 800, height: 600},
+      defaultViewport = DEFAULT_VIEWPORT,
       slowMo = 0,
       timeout = 30000,
       waitForInitialPage = true,
@@ -122,15 +122,15 @@ export abstract class ProductLauncher {
     });
 
     let browser: Browser;
-    let connection: Connection;
+    let cdpConnection: Connection;
     let closing = false;
 
-    const browserCloseCallback = async () => {
+    const browserCloseCallback: BrowserCloseCallback = async () => {
       if (closing) {
         return;
       }
       closing = true;
-      await this.closeBrowser(browserProcess, connection);
+      await this.closeBrowser(browserProcess, cdpConnection);
     };
 
     try {
@@ -148,13 +148,13 @@ export abstract class ProductLauncher {
         );
       } else {
         if (usePipe) {
-          connection = await this.createCdpPipeConnection(browserProcess, {
+          cdpConnection = await this.createCdpPipeConnection(browserProcess, {
             timeout,
             protocolTimeout,
             slowMo,
           });
         } else {
-          connection = await this.createCdpSocketConnection(browserProcess, {
+          cdpConnection = await this.createCdpSocketConnection(browserProcess, {
             timeout,
             protocolTimeout,
             slowMo,
@@ -163,7 +163,7 @@ export abstract class ProductLauncher {
         if (protocol === 'webDriverBiDi') {
           browser = await this.createBiDiOverCdpBrowser(
             browserProcess,
-            connection,
+            cdpConnection,
             browserCloseCallback,
             {
               timeout,
@@ -176,7 +176,7 @@ export abstract class ProductLauncher {
         } else {
           browser = await CdpBrowser._create(
             this.product,
-            connection,
+            cdpConnection,
             [],
             ignoreHTTPSErrors,
             defaultViewport,
@@ -234,12 +234,12 @@ export abstract class ProductLauncher {
    */
   protected async closeBrowser(
     browserProcess: ReturnType<typeof launch>,
-    connection?: Connection
+    cdpConnection?: Connection
   ): Promise<void> {
-    if (connection) {
+    if (cdpConnection) {
       // Attempt to close the browser gracefully
       try {
-        await connection.closeBrowser();
+        await cdpConnection.closeBrowser();
         await browserProcess.hasClosed();
       } catch (error) {
         debugError(error);

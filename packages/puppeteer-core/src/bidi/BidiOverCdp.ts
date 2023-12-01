@@ -80,15 +80,15 @@ export async function connectBidiOverCdp(
 class CdpConnectionAdapter {
   #cdp: CdpConnection;
   #adapters = new Map<CDPSession, CDPClientAdapter<CDPSession>>();
-  #browser: CDPClientAdapter<CdpConnection>;
+  #browserCdpConnection: CDPClientAdapter<CdpConnection>;
 
   constructor(cdp: CdpConnection) {
     this.#cdp = cdp;
-    this.#browser = new CDPClientAdapter(cdp);
+    this.#browserCdpConnection = new CDPClientAdapter(cdp);
   }
 
   browserClient(): CDPClientAdapter<CdpConnection> {
-    return this.#browser;
+    return this.#browserCdpConnection;
   }
 
   getCdpClient(id: string) {
@@ -97,7 +97,11 @@ class CdpConnectionAdapter {
       throw new Error(`Unknown CDP session with id ${id}`);
     }
     if (!this.#adapters.has(session)) {
-      const adapter = new CDPClientAdapter(session, id, this.#browser);
+      const adapter = new CDPClientAdapter(
+        session,
+        id,
+        this.#browserCdpConnection
+      );
       this.#adapters.set(session, adapter);
       return adapter;
     }
@@ -105,7 +109,7 @@ class CdpConnectionAdapter {
   }
 
   close() {
-    this.#browser.close();
+    this.#browserCdpConnection.close();
     for (const adapter of this.#adapters.values()) {
       adapter.close();
     }

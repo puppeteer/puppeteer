@@ -21,6 +21,7 @@ import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {debug} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
+import {assert} from '../util/assert.js';
 
 import {type BrowsingContext, cdpSessions} from './BrowsingContext.js';
 
@@ -176,7 +177,7 @@ export class BidiConnection extends EventEmitter<BidiEvents> {
 
     this.#transport = transport;
     this.#transport.onmessage = this.onMessage.bind(this);
-    this.#transport.onclose = this.#onClose.bind(this);
+    this.#transport.onclose = this.unbind.bind(this);
   }
 
   get closed(): boolean {
@@ -191,6 +192,8 @@ export class BidiConnection extends EventEmitter<BidiEvents> {
     method: T,
     params: Commands[T]['params']
   ): Promise<{result: Commands[T]['returnType']}> {
+    assert(!this.#closed, 'Protocol error: Connection closed.');
+
     return this.#callbacks.create(method, this.#timeout, id => {
       const stringifiedMessage = JSON.stringify({
         id,
@@ -244,6 +247,15 @@ export class BidiConnection extends EventEmitter<BidiEvents> {
           return;
       }
     }
+    // Even if the response in not in BiDi protocol format but `id` is provided, reject
+    // the callback. This can happen if the endpoint supports CDP instead of BiDi.
+    if ('id' in object) {
+      this.#callbacks.reject(
+        (object as {id: number}).id,
+        `Protocol Error. Message is not in BiDi protocol format: '${message}'`,
+        object.message
+      );
+    }
     debugError(object);
   }
 
@@ -293,7 +305,12 @@ export class BidiConnection extends EventEmitter<BidiEvents> {
     this.#browsingContexts.delete(id);
   }
 
-  #onClose(): void {
+  /**
+   * Unbinds the connection, but keeps the transport open. Useful when the transport will
+   * be reused by other connection e.g. with different protocol.
+   * @internal
+   */
+  unbind(): void {
     if (this.#closed) {
       return;
     }
@@ -302,11 +319,15 @@ export class BidiConnection extends EventEmitter<BidiEvents> {
     this.#transport.onmessage = () => {};
     this.#transport.onclose = () => {};
 
+    this.#browsingContexts.clear();
     this.#callbacks.clear();
   }
 
+  /**
+   * Unbinds the connection and closes the transport.
+   */
   dispose(): void {
-    this.#onClose();
+    this.unbind();
     this.#transport.close();
   }
 }
