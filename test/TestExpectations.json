@@ -984,6 +984,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[page.spec] Page Page.Events.Console should not throw when there are console messages in detached iframes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.Events.Console should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],

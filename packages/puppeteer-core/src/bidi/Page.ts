@@ -89,6 +89,7 @@ import type {BiDiNetworkIdle} from './lifecycle.js';
 import {getBiDiReadinessState, rewriteNavigationError} from './lifecycle.js';
 import {BidiNetworkManager} from './NetworkManager.js';
 import {createBidiHandle} from './Realm.js';
+import type {BiDiPageTarget} from './Target.js';
 
 /**
  * @internal
@@ -159,6 +160,7 @@ export class BidiPage extends Page {
   #keyboard: BidiKeyboard;
   #browsingContext: BrowsingContext;
   #browserContext: BidiBrowserContext;
+  #target: BiDiPageTarget;
 
   _client(): CDPSession {
     return this.mainFrame().context().cdpSession;
@@ -166,11 +168,13 @@ export class BidiPage extends Page {
 
   constructor(
     browsingContext: BrowsingContext,
-    browserContext: BidiBrowserContext
+    browserContext: BidiBrowserContext,
+    target: BiDiPageTarget
   ) {
     super();
     this.#browsingContext = browsingContext;
     this.#browserContext = browserContext;
+    this.#target = target;
     this.#connection = browsingContext.connection;
 
     for (const [event, subscriber] of this.#browsingContextEvents) {
@@ -846,8 +850,8 @@ export class BidiPage extends Page {
     throw new UnsupportedOperation();
   }
 
-  override target(): never {
-    throw new UnsupportedOperation();
+  override target(): BiDiPageTarget {
+    return this.#target;
   }
 
   override waitForFileChooser(): never {
