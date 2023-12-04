@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.3](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.5.2...ng-schematics-v0.5.3) (2023-12-04)
+
+
+### Bug Fixes
+
+* ng-schematics install Windows ([#11487](https://github.com/puppeteer/puppeteer/issues/11487)) ([02af748](https://github.com/puppeteer/puppeteer/commit/02af7482d9bf2163b90dfe623b0af18c513d5a3b))
+
 ## [0.5.2](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.5.1...ng-schematics-v0.5.2) (2023-11-16)
 
 
