@@ -10,7 +10,7 @@
     "sandbox:test": "node tools/sandbox.js --test",
     "sandbox": "node tools/sandbox.js",
     "test": "wireit",
-    "test:smoke": "node ./tools/smoke.mjs"
+    "test:smoke": "wireit"
   },
   "wireit": {
     "build": {
@@ -29,6 +29,12 @@
     },
     "test": {
       "command": "mocha",
+      "dependencies": [
+        "build"
+      ]
+    },
+    "test:smoke": {
+      "command": "node ./tools/smoke.mjs",
       "dependencies": [
         "build"
       ]
