@@ -1,4 +1,5 @@
 import {spawn} from 'child_process';
+import {normalize, join} from 'path';
 
 import {
   createBuilder,
@@ -69,7 +70,7 @@ function updateExecutablePath(command: string, root?: string) {
     path = `./${path}${command}`;
   }
 
-  return path;
+  return normalize(path);
 }
 
 async function executeCommand(context: BuilderContext, command: string[]) {
@@ -84,12 +85,13 @@ async function executeCommand(context: BuilderContext, command: string[]) {
     const {executable, args, debugError, error} = getExecutable(command);
     let path = context.workspaceRoot;
     if (context.target) {
-      path = `${path}/${project['root']}`;
+      path = join(path, (project['root'] as string | undefined) ?? '');
     }
 
     const child = spawn(executable, args, {
       cwd: path,
       stdio: 'inherit',
+      shell: true,
     });
 
     child.on('error', message => {
