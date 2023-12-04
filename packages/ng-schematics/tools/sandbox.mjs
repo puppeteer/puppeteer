@@ -19,11 +19,6 @@ import {readFile, writeFile} from 'fs/promises';
 import {join} from 'path';
 import {cwd} from 'process';
 
-const isInit = process.argv.indexOf('--init') !== -1;
-const isMulti = process.argv.indexOf('--multi') !== -1;
-const isBuild = process.argv.indexOf('--build') !== -1;
-const isE2E = process.argv.indexOf('--e2e') !== -1;
-const isConfig = process.argv.indexOf('--config') !== -1;
 const commands = {
   build: ['npm run build'],
   createSandbox: ['npx ng new sandbox --defaults'],
@@ -44,30 +39,55 @@ const commands = {
       },
     },
   ],
-  runSchematics: [
-    {
-      command: 'npm run schematics',
-      options: {
-        cwd: join(cwd(), '/sandbox/'),
+  /**
+   * @param {Boolean} isMulti
+   */
+  runSchematics: isMulti => {
+    return [
+      {
+        command: 'npm run schematics',
+        options: {
+          cwd: join(cwd(), isMulti ? '/multi/' : '/sandbox/'),
+        },
       },
-    },
-  ],
-  runSchematicsE2E: [
-    {
-      command: 'npm run schematics:e2e',
-      options: {
-        cwd: join(cwd(), '/sandbox/'),
+    ];
+  },
+  /**
+   * @param {Boolean} isMulti
+   */
+  runSchematicsE2E: isMulti => {
+    return [
+      {
+        command: 'npm run schematics:e2e',
+        options: {
+          cwd: join(cwd(), isMulti ? '/multi/' : '/sandbox/'),
+        },
       },
-    },
-  ],
-  runSchematicsConfig: [
-    {
-      command: 'npm run schematics:config',
-      options: {
-        cwd: join(cwd(), '/sandbox/'),
+    ];
+  },
+  /**
+   * @param {Boolean} isMulti
+   */
+  runSchematicsConfig: isMulti => {
+    return [
+      {
+        command: 'npm run schematics:config',
+        options: {
+          cwd: join(cwd(), isMulti ? '/multi/' : '/sandbox/'),
+        },
       },
-    },
-  ],
+    ];
+  },
+  runSchematicsSmoke: isMulti => {
+    return [
+      {
+        command: 'npm run schematics:smoke',
+        options: {
+          cwd: join(cwd(), isMulti ? '/multi/' : '/sandbox/'),
+        },
+      },
+    ];
+  },
 };
 const scripts = {
   // Builds the ng-schematics before running them
@@ -76,12 +96,11 @@ const scripts = {
   'delete:file':
     'rm -f .puppeteerrc.cjs && rm -f tsconfig.e2e.json && rm -R -f e2e/',
   // Runs the Puppeteer Ng-Schematics against the sandbox
-  schematics:
-    'npm run delete:file && npm run build:schematics && schematics ../:ng-add --dry-run=false',
-  'schematics:e2e':
-    'npm run build:schematics && schematics ../:e2e --dry-run=false',
-  'schematics:config':
-    'npm run build:schematics && schematics ../:config --dry-run=false',
+  schematics: 'schematics ../:ng-add --dry-run=false',
+  'schematics:e2e': 'schematics ../:e2e --dry-run=false',
+  'schematics:config': 'schematics ../:config --dry-run=false',
+  'schematics:smoke':
+    'schematics ../:ng-add --dry-run=false --test-runner="node" && ng e2e',
 };
 /**
  *
@@ -123,7 +142,18 @@ async function executeCommand(commands) {
   }
 }
 
-async function main() {
+/**
+ *
+ * @param {*} param0
+ */
+export async function runNgSchematicsSandbox({
+  isInit,
+  isMulti,
+  isBuild,
+  isE2E,
+  isConfig,
+  isSmoke,
+}) {
   if (isInit) {
     if (isMulti) {
       await executeCommand(commands.createMultiWorkspace);
@@ -133,7 +163,6 @@ async function main() {
     }
 
     const directory = isMulti ? 'multi' : 'sandbox';
-
     const packageJsonFile = join(cwd(), `/${directory}/package.json`);
     const packageJson = JSON.parse(await readFile(packageJsonFile));
     packageJson['scripts'] = {
@@ -146,16 +175,35 @@ async function main() {
       await executeCommand(commands.build);
     }
     if (isE2E) {
-      await executeCommand(commands.runSchematicsE2E);
+      await executeCommand(commands.runSchematicsE2E(isMulti));
     } else if (isConfig) {
-      await executeCommand(commands.runSchematicsConfig);
+      await executeCommand(commands.runSchematicsConfig(isMulti));
+    } else if (isSmoke) {
+      await executeCommand(commands.runSchematicsSmoke(isMulti));
     } else {
-      await executeCommand(commands.runSchematics);
+      await executeCommand(commands.runSchematics(isMulti));
     }
   }
 }
 
-main().catch(error => {
-  console.log('Something went wrong');
-  console.error(error);
-});
+async function main() {
+  const options = {
+    isInit: process.argv.indexOf('--init') !== -1,
+    isMulti: process.argv.indexOf('--multi') !== -1,
+    isBuild: process.argv.indexOf('--build') !== -1,
+    isE2E: process.argv.indexOf('--e2e') !== -1,
+    isConfig: process.argv.indexOf('--config') !== -1,
+  };
+  const isShell = Object.values(options).some(value => {
+    return value;
+  });
+
+  if (isShell) {
+    await runNgSchematicsSandbox(getOptions()).catch(error => {
+      console.log('Something went wrong');
+      console.error(error);
+    });
+  }
+}
+
+main();
