@@ -476,7 +476,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:
-      - if: ${{ needs.browsers-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'browsers') }}
+      - if: ${{ needs.ng-schematics-smoke-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'ng-schematics') }}
         run: 'exit 1'
       - run: 'exit 0'
 
