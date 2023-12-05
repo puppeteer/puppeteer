@@ -199,7 +199,7 @@ async function main() {
   });
 
   if (isShell) {
-    await runNgSchematicsSandbox(getOptions()).catch(error => {
+    await runNgSchematicsSandbox(options).catch(error => {
       console.log('Something went wrong');
       console.error(error);
     });
