@@ -119,11 +119,14 @@ export class FirefoxLauncher extends ProductLauncher {
           ? {
               // Temporarily force disable BFCache in parent (https://bit.ly/bug-1732263)
               'fission.bfcacheInParent': false,
-
-              // Force all web content to use a single content process
-              'fission.webContentIsolationStrategy': 0,
             }
           : {}),
+        // Force all web content to use a single content process. TODO: remove
+        // this once Firefox supports mouse event dispatch from the main frame
+        // context. Once this happens, webContentIsolationStrategy should only
+        // be set for CDP. See
+        // https://bugzilla.mozilla.org/show_bug.cgi?id=1773393
+        'fission.webContentIsolationStrategy': 0,
       },
     });
 
