@@ -31,9 +31,9 @@ ng e2e
 
 When adding schematics to your project you can to provide following options:
 
-| Option         | Description                                            | Value                                      | Required |
-| -------------- | ------------------------------------------------------ | ------------------------------------------ | -------- |
-| `--testRunner` | The testing framework to install along side Puppeteer. | `"jasmine"`, `"jest"`, `"mocha"`, `"node"` | `true`   |
+| Option          | Description                                            | Value                                      | Required |
+| --------------- | ------------------------------------------------------ | ------------------------------------------ | -------- |
+| `--test-runner` | The testing framework to install along side Puppeteer. | `"jasmine"`, `"jest"`, `"mocha"`, `"node"` | `true`   |
 
 ## Creating a single test file
 
