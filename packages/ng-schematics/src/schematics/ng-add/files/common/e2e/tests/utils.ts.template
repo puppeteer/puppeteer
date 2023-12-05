@@ -3,7 +3,7 @@ import {before, beforeEach, after, afterEach} from 'node:test';
 <% } %>
 import * as puppeteer from 'puppeteer';
 
-const baseUrl = '<%= baseUrl %>';
+const baseUrl = process.env['baseUrl'] ?? '<%= baseUrl %>';
 let browser: puppeteer.Browser;
 let page: puppeteer.Page;
 

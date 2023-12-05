@@ -8,7 +8,7 @@
     "dev:test": "npm run test --watch",
     "dev": "npm run build --watch",
     "sandbox:test": "node tools/sandbox.js --test",
-    "sandbox": "node tools/sandbox.js",
+    "sandbox": "node tools/sandbox.mjs",
     "test": "wireit",
     "test:smoke": "wireit"
   },
@@ -24,7 +24,8 @@
       ],
       "output": [
         "lib/**",
-        "test/build/**"
+        "test/build/**",
+        "*.tsbuildinfo"
       ]
     },
     "test": {
