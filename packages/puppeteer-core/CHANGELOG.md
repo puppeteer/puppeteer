@@ -20,6 +20,29 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.6.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.5.2...puppeteer-core-v21.6.0) (2023-12-05)
+
+
+### Features
+
+* BiDi implementation of `Puppeteer.connect` for Firefox ([#11451](https://github.com/puppeteer/puppeteer/issues/11451)) ([be081ba](https://github.com/puppeteer/puppeteer/commit/be081ba17a9bbac70c13cafa81f1038f0ecfda70))
+* experimental WebDriver BiDi support with Firefox ([#11412](https://github.com/puppeteer/puppeteer/issues/11412)) ([8aba033](https://github.com/puppeteer/puppeteer/commit/8aba033dde1a306e37f6033d6f6ff36387e1aac3))
+* implement the Puppeteer CLI ([#11344](https://github.com/puppeteer/puppeteer/issues/11344)) ([53fb69b](https://github.com/puppeteer/puppeteer/commit/53fb69bf7f2bf06fa4fd7bb6d3cf21382386f6e7))
+
+
+### Bug Fixes
+
+* end WebDriver BiDi session on disconnect ([#11470](https://github.com/puppeteer/puppeteer/issues/11470)) ([a66d029](https://github.com/puppeteer/puppeteer/commit/a66d0296077a82179a2182281a5040fd96d3843c))
+* remove CDP-specific preferences from defaults for Firefox ([#11477](https://github.com/puppeteer/puppeteer/issues/11477)) ([f8c9469](https://github.com/puppeteer/puppeteer/commit/f8c94699c7f5b15c7bb96f299c2c8217d74230cd))
+* warn about launch Chrome using Node x64 on arm64 Macs ([#11471](https://github.com/puppeteer/puppeteer/issues/11471)) ([957a829](https://github.com/puppeteer/puppeteer/commit/957a8293bb1444fd51fd5673002a7781e8127c9d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 1.8.0 to 1.9.0
+
 ## [21.5.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.5.1...puppeteer-core-v21.5.2) (2023-11-15)
 
 
