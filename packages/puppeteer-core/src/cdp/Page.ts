@@ -1149,6 +1149,7 @@ export class CdpPage extends Page {
       omitBackground,
       timeout: ms,
       tagged: generateTaggedPDF,
+      outline: generateDocumentOutline,
     } = this._getPDFOptions(options);
 
     if (omitBackground) {
@@ -1174,6 +1175,7 @@ export class CdpPage extends Page {
         pageRanges,
         preferCSSPageSize,
         generateTaggedPDF,
+        generateDocumentOutline,
       }
     );
 

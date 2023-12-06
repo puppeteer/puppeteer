@@ -2015,6 +2015,25 @@ describe('Page', function () {
       }
     });
 
+    it('can print to PDF with outline', async () => {
+      const {page, server} = await getTestState();
+
+      const outputFileAccessible =
+        __dirname + '/../assets/output-accessible.pdf';
+      const outputFileOutline = __dirname + '/../assets/output-outline.pdf';
+      await page.goto(server.PREFIX + '/pdf.html');
+      await page.pdf({path: outputFileAccessible, tagged: true});
+      await page.pdf({path: outputFileOutline, tagged: true, outline: true});
+      try {
+        expect(
+          fs.readFileSync(outputFileOutline).byteLength
+        ).toBeGreaterThan(fs.readFileSync(outputFileAccessible).byteLength);
+      } finally {
+        fs.unlinkSync(outputFileOutline);
+        fs.unlinkSync(outputFileAccessible);
+      }
+    });
+
     it('can print to PDF and stream the result', async () => {
       const {page} = await getTestState();
 

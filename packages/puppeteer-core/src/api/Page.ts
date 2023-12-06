@@ -2497,6 +2497,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       omitBackground: false,
       timeout: 30000,
       tagged: false,
+      outline: false,
     };
 
     let width = 8.5;

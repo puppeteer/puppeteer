@@ -173,6 +173,12 @@ export interface PDFOptions {
    */
   tagged?: boolean;
   /**
+   * Generate document outline.
+   * @defaultValue `false`
+   * @experimental
+   */
+  outline?: boolean;
+  /**
    * Timeout in milliseconds. Pass `0` to disable timeout.
    * @defaultValue `30_000`
    */
