@@ -33,7 +33,7 @@
     "puppeteer": "file:../packages/puppeteer"
   },
   "devDependencies": {
-    "@types/diff": "5.0.8",
+    "@types/diff": "5.0.9",
     "@types/pixelmatch": "5.2.6",
     "@types/pngjs": "6.0.4"
   }
