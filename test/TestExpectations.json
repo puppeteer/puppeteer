@@ -3402,6 +3402,12 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should return base64",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["FAIL", "PASS"]
+  },
+  {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -3414,10 +3420,22 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["FAIL", "PASS"]
+  },
+  {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work with odd clip size on Retina displays",
@@ -3658,6 +3676,12 @@
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome", "new-headless"],
     "expectations": ["FAIL", "PASS"]
+  },
+  {
+    "testIdPattern": "[chromiumonly.spec] Chromium-Specific Launcher tests Puppeteer.launch |pipe| option should fire \"disconnected\" when closing with pipe",
+    "platforms": ["darwin"],
+    "parameters": ["cdp", "chrome", "new-headless"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[headful.spec] headful tests HEADFUL OOPIF: should expose events within OOPIFs",
