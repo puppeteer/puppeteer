@@ -53,12 +53,6 @@ export async function downloadBrowser(): Promise<void> {
     PUPPETEER_REVISIONS['chrome-headless-shell'] ||
     'latest';
 
-  const shellBuildId =
-    browser === Browser.CHROME
-      ? await resolveBuildId(browser, platform, unresolvedShellBuildId)
-      : '';
-
-  const buildId = await resolveBuildId(browser, platform, unresolvedBuildId);
   // TODO: deprecate downloadPath in favour of cacheDirectory.
   const cacheDir = configuration.downloadPath ?? configuration.cacheDirectory!;
 
@@ -68,6 +62,11 @@ export async function downloadBrowser(): Promise<void> {
     if (configuration.skipChromeDownload) {
       logPolitely('**INFO** Skipping Chrome download as instructed.');
     } else {
+      const buildId = await resolveBuildId(
+        browser,
+        platform,
+        unresolvedBuildId
+      );
       installationJobs.push(
         install({
           browser,
@@ -76,11 +75,20 @@ export async function downloadBrowser(): Promise<void> {
           buildId,
           downloadProgressCallback: makeProgressCallback(browser, buildId),
           baseUrl: downloadBaseUrl,
-        }).then(result => {
-          logPolitely(
-            `${supportedProducts[product]} (${result.buildId}) downloaded to ${result.path}`
-          );
         })
+          .then(result => {
+            logPolitely(
+              `${supportedProducts[product]} (${result.buildId}) downloaded to ${result.path}`
+            );
+          })
+          .catch(error => {
+            throw new Error(
+              `ERROR: Failed to set up ${supportedProducts[product]} v${buildId}! Set "PUPPETEER_SKIP_DOWNLOAD" env variable to skip download.`,
+              {
+                cause: error,
+              }
+            );
+          })
       );
     }
 
@@ -88,28 +96,43 @@ export async function downloadBrowser(): Promise<void> {
       if (configuration.skipChromeHeadlessShellDownload) {
         logPolitely('**INFO** Skipping Chrome download as instructed.');
       } else {
+        const shellBuildId = await resolveBuildId(
+          browser,
+          platform,
+          unresolvedShellBuildId
+        );
+
         installationJobs.push(
           install({
             browser: Browser.CHROMEHEADLESSSHELL,
             cacheDir,
             platform,
             buildId: shellBuildId,
-            downloadProgressCallback: makeProgressCallback(browser, buildId),
+            downloadProgressCallback: makeProgressCallback(
+              browser,
+              shellBuildId
+            ),
             baseUrl: downloadBaseUrl,
-          }).then(result => {
-            logPolitely(
-              `${Browser.CHROMEHEADLESSSHELL} (${result.buildId}) downloaded to ${result.path}`
-            );
           })
+            .then(result => {
+              logPolitely(
+                `${Browser.CHROMEHEADLESSSHELL} (${result.buildId}) downloaded to ${result.path}`
+              );
+            })
+            .catch(error => {
+              throw new Error(
+                `ERROR: Failed to set up ${Browser.CHROMEHEADLESSSHELL} v${shellBuildId}! Set "PUPPETEER_SKIP_DOWNLOAD" env variable to skip download.`,
+                {
+                  cause: error,
+                }
+              );
+            })
         );
       }
     }
 
     await Promise.all(installationJobs);
   } catch (error) {
-    console.error(
-      `ERROR: Failed to set up ${supportedProducts[product]} r${buildId}! Set "PUPPETEER_SKIP_DOWNLOAD" env variable to skip download.`
-    );
     console.error(error);
     process.exit(1);
   }
