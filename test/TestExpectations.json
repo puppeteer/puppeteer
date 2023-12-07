@@ -3684,6 +3684,12 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[emulation.spec] Emulation Page.emulateVisionDeficiency should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome", "new-headless"],
+    "expectations": ["FAIL", "PASS"]
+  },
+  {
     "testIdPattern": "[headful.spec] headful tests HEADFUL OOPIF: should expose events within OOPIFs",
     "platforms": ["linux"],
     "parameters": ["cdp", "chrome", "headless"],
