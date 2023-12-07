@@ -72,6 +72,24 @@ export const getConfiguration = (): Configuration => {
       configuration.skipDownload
   );
 
+  // Set skipChromeDownload explicitly or from default
+  configuration.skipChromeDownload = Boolean(
+    process.env['PUPPETEER_SKIP_CHROME_DOWNLOAD'] ??
+      process.env['npm_config_puppeteer_skip_chrome_download'] ??
+      process.env['npm_package_config_puppeteer_skip_chrome_download'] ??
+      configuration.skipChromeDownload
+  );
+
+  // Set skipChromeDownload explicitly or from default
+  configuration.skipChromeHeadlessShellDownload = Boolean(
+    process.env['PUPPETEER_SKIP_CHROME_HEADLESS_SHELL_DOWNLOAD'] ??
+      process.env['npm_config_puppeteer_skip_chrome_headless_shell_download'] ??
+      process.env[
+        'npm_package_config_puppeteer_skip_chrome_headless_shell_download'
+      ] ??
+      configuration.skipChromeHeadlessShellDownload
+  );
+
   // Prepare variables used in browser downloading
   if (!configuration.skipDownload) {
     configuration.browserRevision =

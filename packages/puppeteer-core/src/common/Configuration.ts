@@ -106,6 +106,18 @@ export interface Configuration {
    */
   skipDownload?: boolean;
   /**
+   * Tells Puppeteer to not Chrome download during installation.
+   *
+   * Can be overridden by `PUPPETEER_SKIP_CHROME_DOWNLOAD`.
+   */
+  skipChromeDownload?: boolean;
+  /**
+   * Tells Puppeteer to not chrome-headless-shell download during installation.
+   *
+   * Can be overridden by `PUPPETEER_SKIP_CHROME_HEADLESSS_HELL_DOWNLOAD`.
+   */
+  skipChromeHeadlessShellDownload?: boolean;
+  /**
    * Tells Puppeteer to log at the given level.
    *
    * @defaultValue `warn`
