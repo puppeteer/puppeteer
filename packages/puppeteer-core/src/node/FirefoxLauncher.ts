@@ -45,6 +45,28 @@ export class FirefoxLauncher extends ProductLauncher {
   constructor(puppeteer: PuppeteerNode) {
     super(puppeteer, 'firefox');
   }
+
+  static getPreferences(
+    extraPrefsFirefox?: Record<string, unknown>,
+    protocol?: 'cdp' | 'webDriverBiDi'
+  ): Record<string, unknown> {
+    return {
+      ...extraPrefsFirefox,
+      ...(protocol === 'webDriverBiDi'
+        ? {}
+        : {
+            // Temporarily force disable BFCache in parent (https://bit.ly/bug-1732263)
+            'fission.bfcacheInParent': false,
+          }),
+      // Force all web content to use a single content process. TODO: remove
+      // this once Firefox supports mouse event dispatch from the main frame
+      // context. Once this happens, webContentIsolationStrategy should only
+      // be set for CDP. See
+      // https://bugzilla.mozilla.org/show_bug.cgi?id=1773393
+      'fission.webContentIsolationStrategy': 0,
+    };
+  }
+
   /**
    * @internal
    */
@@ -113,21 +135,10 @@ export class FirefoxLauncher extends ProductLauncher {
 
     await createProfile(SupportedBrowsers.FIREFOX, {
       path: userDataDir,
-      preferences: {
-        ...extraPrefsFirefox,
-        ...(options.protocol === 'cdp'
-          ? {
-              // Temporarily force disable BFCache in parent (https://bit.ly/bug-1732263)
-              'fission.bfcacheInParent': false,
-            }
-          : {}),
-        // Force all web content to use a single content process. TODO: remove
-        // this once Firefox supports mouse event dispatch from the main frame
-        // context. Once this happens, webContentIsolationStrategy should only
-        // be set for CDP. See
-        // https://bugzilla.mozilla.org/show_bug.cgi?id=1773393
-        'fission.webContentIsolationStrategy': 0,
-      },
+      preferences: FirefoxLauncher.getPreferences(
+        extraPrefsFirefox,
+        options.protocol
+      ),
     });
 
     let firefoxExecutable: string;
