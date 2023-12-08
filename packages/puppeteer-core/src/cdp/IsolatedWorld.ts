@@ -31,7 +31,7 @@ import {disposeSymbol} from '../util/disposable.js';
 import {Mutex} from '../util/Mutex.js';
 
 import type {Binding} from './Binding.js';
-import {type ExecutionContext, createCdpHandle} from './ExecutionContext.js';
+import {ExecutionContext, createCdpHandle} from './ExecutionContext.js';
 import type {CdpFrame} from './Frame.js';
 import type {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import type {WebWorker} from './WebWorker.js';
@@ -147,7 +147,10 @@ export class IsolatedWorld extends Realm {
       this.evaluate.name,
       pageFunction
     );
-    const context = await this.#executionContext();
+    let context = this.#context.value();
+    if (!context || !(context instanceof ExecutionContext)) {
+      context = await this.#executionContext();
+    }
     return await context.evaluate(pageFunction, ...args);
   }
 

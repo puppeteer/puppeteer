@@ -458,4 +458,25 @@ describe('Mouse', function () {
       },
     ]);
   });
+
+  it('should evaluate before mouse event', async () => {
+    const {page, server} = await getTestState();
+
+    await page.goto(server.EMPTY_PAGE);
+    await page.goto(server.CROSS_PROCESS_PREFIX + '/input/button.html');
+
+    using button = await page.waitForSelector('button');
+
+    const point = await button!.clickablePoint();
+
+    const result = page.evaluate(() => {
+      return new Promise(resolve => {
+        document
+          .querySelector('button')
+          ?.addEventListener('click', resolve, {once: true});
+      });
+    });
+    await page.mouse.click(point?.x, point?.y);
+    await result;
+  });
 });

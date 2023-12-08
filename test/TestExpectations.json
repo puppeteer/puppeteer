@@ -2874,6 +2874,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[page.spec] Page Page.close should reject all promises when page is closed",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.close should run beforeunload if asked for",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],

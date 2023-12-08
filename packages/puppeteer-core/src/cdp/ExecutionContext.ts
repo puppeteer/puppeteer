@@ -293,7 +293,9 @@ export class ExecutionContext {
       callFunctionOnPromise = this._client.send('Runtime.callFunctionOn', {
         functionDeclaration: functionDeclarationWithSourceUrl,
         executionContextId: this._contextId,
-        arguments: await Promise.all(args.map(convertArgument.bind(this))),
+        arguments: args.length
+          ? await Promise.all(args.map(convertArgument.bind(this)))
+          : [],
         returnByValue,
         awaitPromise: true,
         userGesture: true,
