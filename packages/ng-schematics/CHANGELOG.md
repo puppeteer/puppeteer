@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.4](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.5.3...ng-schematics-v0.5.4) (2023-12-08)
+
+
+### Bug Fixes
+
+* get port from created server ([#11495](https://github.com/puppeteer/puppeteer/issues/11495)) ([d2f4b9c](https://github.com/puppeteer/puppeteer/commit/d2f4b9ca53642ac9ccae9a22fd3138698990387b))
+
 ## [0.5.4](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.5.3...ng-schematics-v0.5.4) (2023-12-06)
 
 
