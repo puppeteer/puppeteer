@@ -107,7 +107,7 @@ function getProjectBaseUrl(project: any, port: number): string {
     options.protocol = projectOptions.ssl ? 'https' : 'http';
   }
 
-  return `${options.protocol}://${options.host}:${options.port}`;
+  return `${options.protocol}://${options.host}:${options.port}/`;
 }
 
 function getTsConfigPath(project: AngularProject): string {

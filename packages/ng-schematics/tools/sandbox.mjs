@@ -15,27 +15,29 @@
  */
 
 import {spawn} from 'child_process';
+import {randomUUID} from 'crypto';
 import {readFile, writeFile} from 'fs/promises';
 import {join} from 'path';
 import {cwd} from 'process';
 
+let singleApplicationName = 'single';
+let multiApplicationName = 'multi';
+
 const commands = {
   build: ['npm run build'],
-  createSandbox: ['npx ng new sandbox --defaults'],
-  createMultiWorkspace: [
-    'ng new sandbox --create-application=false --directory=multi',
-  ],
+  createSandbox: `npx ng new ${singleApplicationName} --defaults`,
+  createMultiWorkspace: `ng new ${multiApplicationName} --create-application=false --directory=${multiApplicationName}`,
   createMultiProjects: [
     {
       command: 'ng generate application core --style=css --routing=true',
       options: {
-        cwd: join(cwd(), '/multi/'),
+        cwd: join(cwd(), `/${multiApplicationName}/`),
       },
     },
     {
       command: 'ng generate application admin --style=css --routing=false',
       options: {
-        cwd: join(cwd(), '/multi/'),
+        cwd: join(cwd(), `/${multiApplicationName}/`),
       },
     },
   ],
@@ -47,7 +49,10 @@ const commands = {
       {
         command: 'npm run schematics',
         options: {
-          cwd: join(cwd(), isMulti ? '/multi/' : '/sandbox/'),
+          cwd: join(
+            cwd(),
+            isMulti ? `/${multiApplicationName}/` : `/${singleApplicationName}/`
+          ),
         },
       },
     ];
@@ -60,7 +65,10 @@ const commands = {
       {
         command: 'npm run schematics:e2e',
         options: {
-          cwd: join(cwd(), isMulti ? '/multi/' : '/sandbox/'),
+          cwd: join(
+            cwd(),
+            isMulti ? `/${multiApplicationName}/` : `/${singleApplicationName}/`
+          ),
         },
       },
     ];
@@ -73,7 +81,10 @@ const commands = {
       {
         command: 'npm run schematics:config',
         options: {
-          cwd: join(cwd(), isMulti ? '/multi/' : '/sandbox/'),
+          cwd: join(
+            cwd(),
+            isMulti ? `/${multiApplicationName}/` : `/${singleApplicationName}/`
+          ),
         },
       },
     ];
@@ -83,7 +94,10 @@ const commands = {
       {
         command: 'npm run schematics:smoke',
         options: {
-          cwd: join(cwd(), isMulti ? '/multi/' : '/sandbox/'),
+          cwd: join(
+            cwd(),
+            isMulti ? `/${multiApplicationName}/` : `/${singleApplicationName}/`
+          ),
         },
       },
     ];
@@ -153,16 +167,23 @@ export async function runNgSchematicsSandbox({
   isE2E,
   isConfig,
   isSmoke,
+  randomName,
 }) {
   if (isInit) {
     if (isMulti) {
+      if (randomName) {
+        multiApplicationName = randomUUID();
+      }
       await executeCommand(commands.createMultiWorkspace);
       await executeCommand(commands.createMultiProjects);
     } else {
+      if (randomName) {
+        singleApplicationName = randomUUID();
+      }
       await executeCommand(commands.createSandbox);
     }
 
-    const directory = isMulti ? 'multi' : 'sandbox';
+    const directory = isMulti ? multiApplicationName : singleApplicationName;
     const packageJsonFile = join(cwd(), `/${directory}/package.json`);
     const packageJson = JSON.parse(await readFile(packageJsonFile));
     packageJson['scripts'] = {
@@ -199,7 +220,7 @@ async function main() {
   });
 
   if (isShell) {
-    await runNgSchematicsSandbox(options).catch(error => {
+    await runNgSchematicsSandbox({options, randomName: false}).catch(error => {
       console.log('Something went wrong');
       console.error(error);
     });

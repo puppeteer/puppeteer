@@ -116,23 +116,21 @@ npm run test
 Puppeteer has its own [`browser`](https://pptr.dev/api/puppeteer.browser) that exposes different API compared to the one exposed by Protractor.
 
 ```ts
-import puppeteer from 'puppeteer';
+// Testing framework specific imports
 
-(async () => {
-  const browser = await puppeteer.launch();
+import {setupBrowserHooks, getBrowserState} from './utils';
 
-  it('should work', () => {
-    const page = await browser.newPage();
-
+describe('<Test Name>', function () {
+  setupBrowserHooks();
+  it('is running', async function () {
+    const {page} = getBrowserState();
     // Query elements
-    const element = await page.$('my-component');
-
-    // Do actions
-    await element.click();
+    await page
+      .locator('my-component')
+      // Click on the element
+      .click();
   });
-
-  await browser.close();
-})();
+});
 ```
 
 ### Query Selectors
