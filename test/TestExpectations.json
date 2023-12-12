@@ -1158,21 +1158,9 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should clip clip bigger than the viewport without \"captureBeyondViewport\"",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should get screenshot bigger than the viewport",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should use scale for clip",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
@@ -3374,19 +3362,7 @@
   {
     "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should work for an element with an offset",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should work for an element with an offset",
-    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should work with a rotated element",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
   },
   {
@@ -3409,6 +3385,7 @@
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should return base64",
+    "comment": "Bisected to https://chromium.googlesource.com/chromium/src/+log/b8b95f5715b4bd2348e537b740048e4b6aa281b1..8026f46b0e73174f33834a26748107d1089a83bf",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL", "PASS"]
@@ -3421,12 +3398,20 @@
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots",
+    "comment": "Bisected to https://chromium.googlesource.com/chromium/src/+log/b8b95f5715b4bd2348e537b740048e4b6aa281b1..8026f46b0e73174f33834a26748107d1089a83bf",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["FAIL", "PASS"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots without captureBeyondViewport",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots",
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots without captureBeyondViewport",
+    "comment": "Bisected to https://chromium.googlesource.com/chromium/src/+log/b8b95f5715b4bd2348e537b740048e4b6aa281b1..8026f46b0e73174f33834a26748107d1089a83bf",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL", "PASS"]
@@ -3439,6 +3424,7 @@
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work",
+    "comment": "Bisected to https://chromium.googlesource.com/chromium/src/+log/b8b95f5715b4bd2348e537b740048e4b6aa281b1..8026f46b0e73174f33834a26748107d1089a83bf",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL", "PASS"]
@@ -3762,15 +3748,39 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
-    "testIdPattern": "[screenshot.spec] Screenshots Cdp should work in \"fromSurface: false\" mode",
-    "platforms": ["darwin", "win32"],
-    "parameters": ["cdp", "chrome", "headless"],
+    "testIdPattern": "[screenshot.spec] Screenshots Cdp should use scale for clip",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox", "headless"],
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[screenshot.spec] Screenshots Cdp should work in \"fromSurface: false\" mode",
-    "platforms": ["darwin"],
-    "parameters": ["cdp", "chrome", "new-headless"],
+    "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should work for an element with an offset",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox", "headful"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should work for an element with an offset",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox", "headless"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should work with a rotated element",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox", "headful"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should work with a rotated element",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox", "headless"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should clip clip bigger than the viewport without \"captureBeyondViewport\"",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox", "headless"],
     "expectations": ["FAIL"]
   },
   {
@@ -3786,7 +3796,19 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should use scale for clip",
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox", "headful"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox", "headless"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots without captureBeyondViewport",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox", "headless"],
     "expectations": ["FAIL"]

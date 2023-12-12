@@ -666,12 +666,20 @@ export class BidiPage extends Page {
     if (options.fromSurface !== undefined && !options.fromSurface) {
       throw new UnsupportedOperation(`BiDi does not support 'fromSurface'.`);
     }
+    if (clip !== undefined && clip.scale !== undefined && clip.scale !== 1) {
+      throw new UnsupportedOperation(
+        `BiDi does not support 'scale' in 'clip'.`
+      );
+    }
 
     let box: BoundingBox | undefined;
     if (clip) {
       if (captureBeyondViewport) {
         box = clip;
       } else {
+        // The clip is always with respect to the document coordinates, so we
+        // need to convert this to viewport coordinates when we aren't capturing
+        // beyond the viewport.
         const [pageLeft, pageTop] = await this.evaluate(() => {
           if (!window.visualViewport) {
             throw new Error('window.visualViewport is not supported.');
@@ -687,12 +695,6 @@ export class BidiPage extends Page {
           y: clip.y - pageTop,
         };
       }
-    }
-
-    if (clip !== undefined && clip.scale !== undefined && clip.scale !== 1) {
-      throw new UnsupportedOperation(
-        `BiDi does not support 'scale' in 'clip'.`
-      );
     }
 
     const {

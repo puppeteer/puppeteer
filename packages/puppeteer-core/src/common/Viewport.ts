@@ -19,11 +19,17 @@
  */
 export interface Viewport {
   /**
-   * The page width in pixels.
+   * The page width in CSS pixels.
+   *
+   * @remarks
+   * Setting this value to `0` will reset this value to the system default.
    */
   width: number;
   /**
-   * The page height in pixels.
+   * The page height in CSS pixels.
+   *
+   * @remarks
+   * Setting this value to `0` will reset this value to the system default.
    */
   height: number;
   /**
@@ -31,7 +37,7 @@ export interface Viewport {
    * See {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio | devicePixelRatio} for more info.
    *
    * @remarks
-   * Setting this value to `0` will set the deviceScaleFactor to the system default.
+   * Setting this value to `0` will reset this value to the system default.
    *
    * @defaultValue `1`
    */

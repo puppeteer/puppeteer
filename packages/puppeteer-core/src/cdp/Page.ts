@@ -1122,10 +1122,7 @@ export class CdpPage extends Page {
         format: type,
         ...(optimizeForSpeed ? {optimizeForSpeed} : {}),
         ...(quality !== undefined ? {quality: Math.round(quality)} : {}),
-        clip: clip && {
-          ...clip,
-          scale: clip.scale ?? 1,
-        },
+        ...(clip ? {clip: {...clip, scale: clip.scale ?? 1}} : {}),
         ...(!fromSurface ? {fromSurface} : {}),
         captureBeyondViewport,
       }
