@@ -774,6 +774,51 @@ export class BidiPage extends Page {
     });
   }
 
+  override async cookies(): Promise<Protocol.Network.Cookie[]> {
+    const bidiCookies = await this.#connection.send('storage.getCookies', {
+      partition: this.mainFrame()._id,
+    });
+    return bidiCookies.result.cookies.map(c => {
+      return {
+        name: c.name,
+        // Present binary value as base64 string.
+        value: c.value.value,
+        domain: c.domain,
+        path: c.path,
+        size: c.size,
+        httpOnly: c.httpOnly,
+        secure: c.secure,
+        sameSite: this.#convertCookiesSameSite(c.sameSite),
+        // TODO: check default `expiry` value.
+        expires: c.expiry ?? -1,
+        // TODO: add proper value.
+        session: c.expiry === undefined || c.expiry <= 0,
+        // TODO: add proper value.
+        priority: 'Medium',
+        // TODO: add proper value.
+        sameParty: false,
+        // TODO: add proper value.
+        sourceScheme: 'NonSecure',
+        // TODO: add proper value.
+        sourcePort: -1,
+        // TODO: respect other `PartitionKey` values.
+        partitionKey: bidiCookies.result.partitionKey.sourceOrigin,
+        // TODO: add proper value.
+        partitionKeyOpaque: false,
+      };
+    });
+  }
+
+  #convertCookiesSameSite(
+    sameSite: Bidi.Network.SameSite | undefined
+  ): Protocol.Network.CookieSameSite {
+    return sameSite === 'strict'
+      ? 'Strict'
+      : sameSite === 'lax'
+        ? 'Lax'
+        : 'None';
+  }
+
   override isServiceWorkerBypassed(): never {
     throw new UnsupportedOperation();
   }
@@ -807,10 +852,6 @@ export class BidiPage extends Page {
   }
 
   override emulateNetworkConditions(): never {
-    throw new UnsupportedOperation();
-  }
-
-  override cookies(): never {
     throw new UnsupportedOperation();
   }
 

@@ -17,159 +17,190 @@ describe('Cookie specs', () => {
 
   describe('Page.cookies', function () {
     it('should return no cookies in pristine browser context', async () => {
-      const {page, server} = await getTestState();
-      await page.goto(server.EMPTY_PAGE);
-      await expectCookieEquals(await page.cookies(), []);
+      const {page, server, close} = await launch({});
+      try {
+        await page.goto(server.EMPTY_PAGE);
+        await expectCookieEquals(await page.cookies(), []);
+      } finally {
+        await close();
+      }
     });
     it('should get a cookie', async () => {
-      const {page, server} = await getTestState();
-      await page.goto(server.EMPTY_PAGE);
-      await page.evaluate(() => {
-        document.cookie = 'username=John Doe';
-      });
+      const {page, server, close} = await launch({});
+      try {
+        await page.goto(server.EMPTY_PAGE);
+        await page.evaluate(() => {
+          document.cookie = 'username=John Doe';
+        });
 
-      await expectCookieEquals(await page.cookies(), [
-        {
-          name: 'username',
-          value: 'John Doe',
-          domain: 'localhost',
-          path: '/',
-          sameParty: false,
-          expires: -1,
-          size: 16,
-          httpOnly: false,
-          secure: false,
-          session: true,
-          sourceScheme: 'NonSecure',
-        },
-      ]);
+        await expectCookieEquals(await page.cookies(), [
+          {
+            name: 'username',
+            value: 'John Doe',
+            domain: 'localhost',
+            path: '/',
+            sameParty: false,
+            expires: -1,
+            size: 16,
+            httpOnly: false,
+            secure: false,
+            session: true,
+            sourceScheme: 'NonSecure',
+          },
+        ]);
+      } finally {
+        await close();
+      }
     });
     it('should properly report httpOnly cookie', async () => {
-      const {page, server} = await getTestState();
-      server.setRoute('/empty.html', (_req, res) => {
-        res.setHeader('Set-Cookie', 'a=b; HttpOnly; Path=/');
-        res.end();
-      });
-      await page.goto(server.EMPTY_PAGE);
-      const cookies = await page.cookies();
-      expect(cookies).toHaveLength(1);
-      expect(cookies[0]!.httpOnly).toBe(true);
+      const {page, server, close} = await launch({});
+      try {
+        server.setRoute('/empty.html', (_req, res) => {
+          res.setHeader('Set-Cookie', 'a=b; HttpOnly; Path=/');
+          res.end();
+        });
+        await page.goto(server.EMPTY_PAGE);
+        const cookies = await page.cookies();
+        expect(cookies).toHaveLength(1);
+        expect(cookies[0]!.httpOnly).toBe(true);
+      } finally {
+        await close();
+      }
     });
     it('should properly report "Strict" sameSite cookie', async () => {
-      const {page, server} = await getTestState();
-      server.setRoute('/empty.html', (_req, res) => {
-        res.setHeader('Set-Cookie', 'a=b; SameSite=Strict');
-        res.end();
-      });
-      await page.goto(server.EMPTY_PAGE);
-      const cookies = await page.cookies();
-      expect(cookies).toHaveLength(1);
-      expect(cookies[0]!.sameSite).toBe('Strict');
+      const {page, server, close} = await launch({});
+      try {
+        server.setRoute('/empty.html', (_req, res) => {
+          res.setHeader('Set-Cookie', 'a=b; SameSite=Strict');
+          res.end();
+        });
+        await page.goto(server.EMPTY_PAGE);
+        const cookies = await page.cookies();
+        expect(cookies).toHaveLength(1);
+        expect(cookies[0]!.sameSite).toBe('Strict');
+      } finally {
+        await close();
+      }
     });
     it('should properly report "Lax" sameSite cookie', async () => {
-      const {page, server} = await getTestState();
-      server.setRoute('/empty.html', (_req, res) => {
-        res.setHeader('Set-Cookie', 'a=b; SameSite=Lax');
-        res.end();
-      });
-      await page.goto(server.EMPTY_PAGE);
-      const cookies = await page.cookies();
-      expect(cookies).toHaveLength(1);
-      expect(cookies[0]!.sameSite).toBe('Lax');
+      const {page, server, close} = await launch({});
+      try {
+        server.setRoute('/empty.html', (_req, res) => {
+          res.setHeader('Set-Cookie', 'a=b; SameSite=Lax');
+          res.end();
+        });
+        await page.goto(server.EMPTY_PAGE);
+        const cookies = await page.cookies();
+        expect(cookies).toHaveLength(1);
+        expect(cookies[0]!.sameSite).toBe('Lax');
+      } finally {
+        await close();
+      }
     });
     it('should get multiple cookies', async () => {
-      const {page, server} = await getTestState();
-      await page.goto(server.EMPTY_PAGE);
-      await page.evaluate(() => {
-        document.cookie = 'username=John Doe';
-        document.cookie = 'password=1234';
-      });
-      const cookies = await page.cookies();
-      cookies.sort((a, b) => {
-        return a.name.localeCompare(b.name);
-      });
-      await expectCookieEquals(cookies, [
-        {
-          name: 'password',
-          value: '1234',
-          domain: 'localhost',
-          path: '/',
-          sameParty: false,
-          expires: -1,
-          size: 12,
-          httpOnly: false,
-          secure: false,
-          session: true,
-          sourceScheme: 'NonSecure',
-        },
-        {
-          name: 'username',
-          value: 'John Doe',
-          domain: 'localhost',
-          path: '/',
-          sameParty: false,
-          expires: -1,
-          size: 16,
-          httpOnly: false,
-          secure: false,
-          session: true,
-          sourceScheme: 'NonSecure',
-        },
-      ]);
+      const {page, server, close} = await launch({});
+      try {
+        await page.goto(server.EMPTY_PAGE);
+        await page.evaluate(() => {
+          document.cookie = 'username=John Doe';
+          document.cookie = 'password=1234';
+        });
+        const cookies = await page.cookies();
+        cookies.sort((a, b) => {
+          return a.name.localeCompare(b.name);
+        });
+        await expectCookieEquals(cookies, [
+          {
+            name: 'password',
+            value: '1234',
+            domain: 'localhost',
+            path: '/',
+            sameParty: false,
+            expires: -1,
+            size: 12,
+            httpOnly: false,
+            secure: false,
+            session: true,
+            sourceScheme: 'NonSecure',
+          },
+          {
+            name: 'username',
+            value: 'John Doe',
+            domain: 'localhost',
+            path: '/',
+            sameParty: false,
+            expires: -1,
+            size: 16,
+            httpOnly: false,
+            secure: false,
+            session: true,
+            sourceScheme: 'NonSecure',
+          },
+        ]);
+      } finally {
+        await close();
+      }
     });
     it('should get cookies from multiple urls', async () => {
-      const {page} = await getTestState();
-      await page.setCookie(
-        {
-          url: 'https://foo.com',
-          name: 'doggo',
-          value: 'woofs',
-        },
-        {
-          url: 'https://bar.com',
-          name: 'catto',
-          value: 'purrs',
-        },
-        {
-          url: 'https://baz.com',
-          name: 'birdo',
-          value: 'tweets',
-        }
-      );
-      const cookies = await page.cookies('https://foo.com', 'https://baz.com');
-      cookies.sort((a, b) => {
-        return a.name.localeCompare(b.name);
-      });
-      await expectCookieEquals(cookies, [
-        {
-          name: 'birdo',
-          value: 'tweets',
-          domain: 'baz.com',
-          path: '/',
-          sameParty: false,
-          expires: -1,
-          size: 11,
-          httpOnly: false,
-          secure: true,
-          session: true,
-          sourcePort: 443,
-          sourceScheme: 'Secure',
-        },
-        {
-          name: 'doggo',
-          value: 'woofs',
-          domain: 'foo.com',
-          path: '/',
-          sameParty: false,
-          expires: -1,
-          size: 10,
-          httpOnly: false,
-          secure: true,
-          session: true,
-          sourcePort: 443,
-          sourceScheme: 'Secure',
-        },
-      ]);
+      const {page, close} = await launch({});
+      try {
+        await page.setCookie(
+          {
+            url: 'https://foo.com',
+            name: 'doggo',
+            value: 'woofs',
+          },
+          {
+            url: 'https://bar.com',
+            name: 'catto',
+            value: 'purrs',
+          },
+          {
+            url: 'https://baz.com',
+            name: 'birdo',
+            value: 'tweets',
+          }
+        );
+        const cookies = await page.cookies(
+          'https://foo.com',
+          'https://baz.com'
+        );
+        cookies.sort((a, b) => {
+          return a.name.localeCompare(b.name);
+        });
+        await expectCookieEquals(cookies, [
+          {
+            name: 'birdo',
+            value: 'tweets',
+            domain: 'baz.com',
+            path: '/',
+            sameParty: false,
+            expires: -1,
+            size: 11,
+            httpOnly: false,
+            secure: true,
+            session: true,
+            sourcePort: 443,
+            sourceScheme: 'Secure',
+          },
+          {
+            name: 'doggo',
+            value: 'woofs',
+            domain: 'foo.com',
+            path: '/',
+            sameParty: false,
+            expires: -1,
+            size: 10,
+            httpOnly: false,
+            secure: true,
+            session: true,
+            sourcePort: 443,
+            sourceScheme: 'Secure',
+          },
+        ]);
+      } finally {
+        await close();
+      }
     });
   });
   describe('Page.setCookie', function () {
