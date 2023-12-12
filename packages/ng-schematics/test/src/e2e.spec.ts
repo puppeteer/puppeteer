@@ -35,7 +35,7 @@ describe('@puppeteer/ng-schematics: e2e', () => {
       });
       expect(tree.files).toContain('/e2e/tests/my-test.e2e.ts');
       expect(tree.readContent('/e2e/tests/my-test.e2e.ts')).toContain(
-        `setupBrowserHooks('/${route}');`
+        `setupBrowserHooks('${route}');`
       );
     });
 
@@ -47,7 +47,7 @@ describe('@puppeteer/ng-schematics: e2e', () => {
       });
       expect(tree.files).toContain('/e2e/tests/my-test.e2e.ts');
       expect(tree.readContent('/e2e/tests/my-test.e2e.ts')).toContain(
-        `setupBrowserHooks('${route}');`
+        `setupBrowserHooks('home');`
       );
     });
   });
@@ -89,7 +89,7 @@ describe('@puppeteer/ng-schematics: e2e', () => {
       );
       expect(
         tree.readContent(getMultiApplicationFile('e2e/tests/my-test.e2e.ts'))
-      ).toContain(`setupBrowserHooks('/${route}');`);
+      ).toContain(`setupBrowserHooks('${route}');`);
     });
 
     it('should create with route with starting slash', async () => {
@@ -103,7 +103,7 @@ describe('@puppeteer/ng-schematics: e2e', () => {
       );
       expect(
         tree.readContent(getMultiApplicationFile('e2e/tests/my-test.e2e.ts'))
-      ).toContain(`setupBrowserHooks('${route}');`);
+      ).toContain(`setupBrowserHooks('home');`);
     });
   });
 });
