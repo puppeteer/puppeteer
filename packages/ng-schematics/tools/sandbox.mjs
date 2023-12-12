@@ -96,18 +96,17 @@ export async function createMultiSandbox(name) {
     'ng',
     `new ${name} --create-application=false --directory=sandbox/${name} --skip-git`
   );
-  await Promise.all([
-    executeCommand(
-      'ng',
-      `generate application core --style=css --routing=true`,
-      options
-    ),
-    executeCommand(
-      'ng',
-      `generate application admin --style=css --routing=false`,
-      options
-    ),
-  ]);
+
+  await executeCommand(
+    'ng',
+    `generate application core --style=css --routing=true`,
+    options
+  );
+  await executeCommand(
+    'ng',
+    `generate application admin --style=css --routing=false`,
+    options
+  );
 
   await updatePackageJson(name);
 
