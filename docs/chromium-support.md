@@ -1,6 +1,6 @@
 # Chromium Support
 
-The following versions of Chromium are supported, mapped to Puppeteer version:
+The following versions of Chromium are supported, mapped to Puppeteer version. This list is automatically updated when the version of Chromium changes in a given release of Puppeteer. If an exact matching version of Puppeteer isn't listed, the supported version of Chromium is that for the immediately prior version of Puppeteer:
 
 <!-- version-start -->
 
