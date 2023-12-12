@@ -73,32 +73,12 @@ const baseUrl = 'http://localhost:8080';
 
 Check out our [contributing guide](https://pptr.dev/contributing) to get an overview of what you need to develop in the Puppeteer repo.
 
-### Sandbox
+### Sandbox smoke tests
 
-For easier development we provide a script to auto-generate the Angular project to test against. Simply run:
-
-```bash
-npm run sandbox -- --init
-```
-
-After that to run `@puppeteer/ng-schematics` against the Sandbox Angular project run:
+To make integration easier smoke test can be run with a single command, that will create a fresh install of Angular (single application and a milti application projects). Then it will install the schematics inside them and run the initial e2e tests:
 
 ```bash
-npm run sandbox
-# or to auto-build and then run schematics
-npm run sandbox -- --build
-```
-
-To run the creating of single test schematic:
-
-```bash
-npm run sandbox:test
-```
-
-To create a multi project workspace use the following command
-
-```bash
-npm run sandbox -- --init --multi
+node tools/smoke.mjs
 ```
 
 ### Unit Testing
