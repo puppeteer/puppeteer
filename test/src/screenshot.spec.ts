@@ -18,7 +18,12 @@ import assert from 'assert';
 
 import expect from 'expect';
 
-import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
+import {
+  getTestState,
+  isHeadless,
+  launch,
+  setupTestBrowserHooks,
+} from './mocha-utils.js';
 
 describe('Screenshots', function () {
   setupTestBrowserHooks();
@@ -46,22 +51,6 @@ describe('Screenshots', function () {
         },
       });
       expect(screenshot).toBeGolden('screenshot-clip-rect.png');
-    });
-    it('should use scale for clip', async () => {
-      const {page, server} = await getTestState();
-
-      await page.setViewport({width: 500, height: 500});
-      await page.goto(server.PREFIX + '/grid.html');
-      const screenshot = await page.screenshot({
-        clip: {
-          x: 50,
-          y: 100,
-          width: 150,
-          height: 100,
-          scale: 2,
-        },
-      });
-      expect(screenshot).toBeGolden('screenshot-clip-rect-scale2.png');
     });
     it('should get screenshot bigger than the viewport', async () => {
       const {page, server} = await getTestState();
@@ -122,6 +111,18 @@ describe('Screenshots', function () {
         fullPage: true,
       });
       expect(screenshot).toBeGolden('screenshot-grid-fullpage.png');
+    });
+    it('should take fullPage screenshots without captureBeyondViewport', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(server.PREFIX + '/grid.html');
+      const screenshot = await page.screenshot({
+        fullPage: true,
+        captureBeyondViewport: false,
+      });
+      expect(screenshot).toBeGolden('screenshot-grid-fullpage-2.png');
+      expect(page.viewport()).toMatchObject({width: 500, height: 500});
     });
     it('should run in parallel in multiple pages', async () => {
       const {server, context} = await getTestState();
@@ -371,6 +372,22 @@ describe('Screenshots', function () {
   });
 
   describe('Cdp', () => {
+    it('should use scale for clip', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(server.PREFIX + '/grid.html');
+      const screenshot = await page.screenshot({
+        clip: {
+          x: 50,
+          y: 100,
+          width: 150,
+          height: 100,
+          scale: 2,
+        },
+      });
+      expect(screenshot).toBeGolden('screenshot-clip-rect-scale2.png');
+    });
     it('should allow transparency', async () => {
       const {page, server} = await getTestState();
 
@@ -390,15 +407,18 @@ describe('Screenshots', function () {
       });
       expect(screenshot).toBeGolden('white.jpg');
     });
-    it('should work in "fromSurface: false" mode', async () => {
-      const {page, server} = await getTestState();
+    (!isHeadless ? it : it.skip)(
+      'should work in "fromSurface: false" mode',
+      async () => {
+        const {page, server} = await getTestState();
 
-      await page.setViewport({width: 500, height: 500});
-      await page.goto(server.PREFIX + '/grid.html');
-      const screenshot = await page.screenshot({
-        fromSurface: false,
-      });
-      expect(screenshot).toBeDefined(); // toBeGolden('screenshot-fromsurface-false.png');
-    });
+        await page.setViewport({width: 500, height: 500});
+        await page.goto(server.PREFIX + '/grid.html');
+        const screenshot = await page.screenshot({
+          fromSurface: false,
+        });
+        expect(screenshot).toBeDefined(); // toBeGolden('screenshot-fromsurface-false.png');
+      }
+    );
   });
 });

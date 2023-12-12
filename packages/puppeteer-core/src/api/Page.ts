@@ -85,6 +85,7 @@ import type {ScreenRecorder} from '../node/ScreenRecorder.js';
 import {assert} from '../util/assert.js';
 import {guarded} from '../util/decorators.js';
 import {
+  AsyncDisposableStack,
   asyncDisposeSymbol,
   DisposableStack,
   disposeSymbol,
@@ -2450,18 +2451,47 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
     setDefaultScreenshotOptions(options);
 
-    options.clip =
-      options.clip && roundRectangle(normalizeRectangle(options.clip));
-
-    if (options.fullPage) {
-      if (options.clip) {
-        throw new Error("'clip' and 'fullPage' are exclusive");
+    await using stack = new AsyncDisposableStack();
+    if (options.clip) {
+      if (options.fullPage) {
+        throw new Error("'clip' and 'fullPage' are mutually exclusive");
       }
-    } else if (
-      !options.clip &&
-      userOptions.captureBeyondViewport === undefined
-    ) {
-      options.captureBeyondViewport = false;
+
+      options.clip = roundRectangle(normalizeRectangle(options.clip));
+    } else {
+      if (options.fullPage) {
+        // If `captureBeyondViewport` is `false`, then we set the viewport to
+        // capture the full page. Note this may be affected by on-page CSS and
+        // JavaScript.
+        if (!options.captureBeyondViewport) {
+          const scrollDimensions = await this.mainFrame()
+            .isolatedRealm()
+            .evaluate(() => {
+              const element = document.documentElement;
+              return {
+                width: element.scrollWidth,
+                height: element.scrollHeight,
+              };
+            });
+          const viewport = this.viewport();
+          await this.setViewport({
+            ...viewport,
+            ...scrollDimensions,
+          });
+          stack.defer(async () => {
+            if (viewport) {
+              await this.setViewport(viewport).catch(debugError);
+            } else {
+              await this.setViewport({
+                width: 0,
+                height: 0,
+              }).catch(debugError);
+            }
+          });
+        }
+      } else {
+        options.captureBeyondViewport = false;
+      }
     }
 
     const data = await this._screenshot(options);
