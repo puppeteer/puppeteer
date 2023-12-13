@@ -40,7 +40,7 @@ When adding schematics to your project you can to provide following options:
 Puppeteer Angular Schematic exposes a method to create a single test file.
 
 ```bash
-ng generate @puppeteer/ng-schematics:test "<TestName>"
+ng generate @puppeteer/ng-schematics:e2e "<TestName>"
 ```
 
 ### Running test server and dev server at the same time
@@ -73,32 +73,12 @@ const baseUrl = 'http://localhost:8080';
 
 Check out our [contributing guide](https://pptr.dev/contributing) to get an overview of what you need to develop in the Puppeteer repo.
 
-### Sandbox
+### Sandbox smoke tests
 
-For easier development we provide a script to auto-generate the Angular project to test against. Simply run:
-
-```bash
-npm run sandbox -- --init
-```
-
-After that to run `@puppeteer/ng-schematics` against the Sandbox Angular project run:
+To make integration easier smoke test can be run with a single command, that will create a fresh install of Angular (single application and a milti application projects). Then it will install the schematics inside them and run the initial e2e tests:
 
 ```bash
-npm run sandbox
-# or to auto-build and then run schematics
-npm run sandbox -- --build
-```
-
-To run the creating of single test schematic:
-
-```bash
-npm run sandbox:test
-```
-
-To create a multi project workspace use the following command
-
-```bash
-npm run sandbox -- --init --multi
+node tools/smoke.mjs
 ```
 
 ### Unit Testing
@@ -111,28 +91,52 @@ npm run test
 
 ## Migrating from Protractor
 
-### Browser
+### Entry point
 
-Puppeteer has its own [`browser`](https://pptr.dev/api/puppeteer.browser) that exposes different API compared to the one exposed by Protractor.
+Puppeteer has its own [`browser`](https://pptr.dev/api/puppeteer.browser) that exposes the browser process.
+A more closes comparison for Protractor's `browser` would be Puppeteer's [`page`](https://pptr.dev/api/puppeteer.page).
 
 ```ts
-import puppeteer from 'puppeteer';
+// Testing framework specific imports
 
-(async () => {
-  const browser = await puppeteer.launch();
+import {setupBrowserHooks, getBrowserState} from './utils';
 
-  it('should work', () => {
-    const page = await browser.newPage();
-
+describe('<Test Name>', function () {
+  setupBrowserHooks();
+  it('is running', async function () {
+    const {page} = getBrowserState();
     // Query elements
-    const element = await page.$('my-component');
-
-    // Do actions
-    await element.click();
+    await page
+      .locator('my-component')
+      // Click on the element once found
+      .click();
   });
+});
+```
 
-  await browser.close();
-})();
+### Getting element properties
+
+You can easily get any property of the element.
+
+```ts
+// Testing framework specific imports
+
+import {setupBrowserHooks, getBrowserState} from './utils';
+
+describe('<Test Name>', function () {
+  setupBrowserHooks();
+  it('is running', async function () {
+    const {page} = getBrowserState();
+    // Query elements
+    const elementText = await page
+      .locator('.my-component')
+      .map(button => button.innerText)
+      // Wait for element to show up
+      .wait();
+
+    // Assert via assertion library
+  });
+});
 ```
 
 ### Query Selectors
@@ -154,3 +158,73 @@ The following table shows Puppeteer's equivalents to [Protractor By](https://www
 | JS                | `$(by.js('document.querySelector("<CSS>")'))` | `page.evaluateHandle(() => document.querySelector('<CSS>'))` |
 
 > For advanced use cases such as Protractor's `by.addLocator` you can check Puppeteer's [Custom selectors](https://pptr.dev/guides/query-selectors#custom-selectors).
+
+### Actions Selectors
+
+Puppeteer allows you to all necessary actions to allow test your application.
+
+```ts
+// Click on the element.
+element(locator).click();
+// Puppeteer equivalent
+await page.locator(locator).click();
+
+// Send keys to the element (usually an input).
+element(locator).sendKeys('my text');
+// Puppeteer equivalent
+await page.locator(locator).fill('my text');
+
+// Clear the text in an element (usually an input).
+element(locator).clear();
+// Puppeteer equivalent
+await page.locator(locator).fill('');
+
+// Get the value of an attribute, for example, get the value of an input.
+element(locator).getAttribute('value');
+// Puppeteer equivalent
+const element = await page.locator(locator).waitHandle();
+const value = await element.getProperty('value');
+```
+
+### Example
+
+Sample Protractor test:
+
+```ts
+describe('Protractor Demo', function () {
+  it('should add one and two', function () {
+    browser.get('http://juliemr.github.io/protractor-demo/');
+    element(by.model('first')).sendKeys(1);
+    element(by.model('second')).sendKeys(2);
+
+    element(by.id('gobutton')).click();
+
+    expect(element(by.binding('latest')).getText()).toEqual('3');
+  });
+});
+```
+
+Sample Puppeteer migration:
+
+```ts
+import {setupBrowserHooks, getBrowserState} from './utils';
+
+describe('Puppeteer Demo', function () {
+  setupBrowserHooks();
+  it('should add one and two', function () {
+    const {page} = getBrowserState();
+    await page.goto('http://juliemr.github.io/protractor-demo/');
+
+    await page.locator('.form-inline > input:nth-child(1)').fill('1');
+    await page.locator('.form-inline > input:nth-child(2)').fill('2');
+    await page.locator('#gobutton').fill('2');
+
+    const result = await page
+      .locator('.table tbody td:last-of-type')
+      .map(header => header.innerText)
+      .wait();
+
+    expect(result).toEqual('3');
+  });
+});
+```

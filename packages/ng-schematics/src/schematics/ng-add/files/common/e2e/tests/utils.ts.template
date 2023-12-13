@@ -7,7 +7,7 @@ const baseUrl = process.env['baseUrl'] ?? '<%= baseUrl %>';
 let browser: puppeteer.Browser;
 let page: puppeteer.Page;
 
-export function setupBrowserHooks(path = '/'): void {
+export function setupBrowserHooks(path = ''): void {
 <% if(testRunner == 'jasmine' || testRunner == 'jest') { %>
   beforeAll(async () => {
     browser = await puppeteer.launch({

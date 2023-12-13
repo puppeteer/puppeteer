@@ -9,15 +9,17 @@ if (process.env.CI) {
 
 await Promise.all([
   runNgSchematicsSandbox({
+    isMulti: false,
     isInit: true,
   }),
   runNgSchematicsSandbox({
-    isInit: true,
     isMulti: true,
+    isInit: true,
   }),
 ]);
 
 await runNgSchematicsSandbox({
+  isMulti: false,
   isSmoke: true,
 });
 
