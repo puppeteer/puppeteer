@@ -10,7 +10,9 @@ resources if you want to learn more about WebDriver BiDi:
 ## Automate with Chrome and Firefox
 
 Firefox support has almost reaching feature parity with the previous CDP-based
-implementation. To see which features are fully supported with WebDriver BiDi we
+implementation. Check out [Firefox announcement](https://hacks.mozilla.org/2023/12/puppeteer-webdriver-bidi/) for more information. 
+
+To see which features are fully supported with WebDriver BiDi we
 used the [Puppeteer test suite](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/). Currently,
 we still have fewer than
 [60](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/firefox-delta.json)
