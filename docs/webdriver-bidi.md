@@ -1,7 +1,9 @@
 # Experimental WebDriver BiDi support
 
 [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) is a new cross-browser
-automation protocol currently under development, aiming to combine the best of both WebDriver “Classic” and CDP. WebDriver BiDi promises bi-directional communication, making it fast by default, and it comes packed with low-level control. Dive deeper with these resources:
+automation protocol currently under development, aiming to combine the best of both WebDriver “Classic” and CDP. WebDriver BiDi promises bi-directional communication, making it fast by default, and it comes packed with low-level control.
+
+See also:
 
 - [WebDriver BiDi - The future of cross-browser automation](https://developer.chrome.com/articles/webdriver-bidi/)
 - [WebDriver BiDi: 2023 status update](https://developer.chrome.com/blog/webdriver-bidi-2023/)
