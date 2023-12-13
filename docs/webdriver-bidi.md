@@ -1,31 +1,36 @@
 # Experimental WebDriver BiDi Support
 
 [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) is a new cross-browser
-automation protocol that adds browser-driven events to WebDriver. Here are the
-resources if you want to learn more about WebDriver BiDi:
+automation protocol currently under development, aiming to combine the best of both WebDriver “Classic” and CDP. WebDriver BiDi promises bi-directional communication, making it fast by default, and it comes packed with low-level control. Dive deeper with these resources:
 
 - [WebDriver BiDi - The future of cross-browser automation](https://developer.chrome.com/articles/webdriver-bidi/)
 - [WebDriver BiDi: 2023 status update](https://developer.chrome.com/blog/webdriver-bidi-2023/)
 
+
 ## Automate with Chrome and Firefox
 
-Firefox support has almost reached feature parity with the previous CDP-based
-implementation. To see which features are fully supported with WebDriver BiDi we
-used the [Puppeteer test suite](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/). Currently,
-we still have fewer than
-[60](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/firefox-delta.json)
-tests that are failing with Firefox and WebDriver BiDi compared to the previous
-CDP implementation in Firefox but we also have more than
-[82](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/firefox-delta.json)
-new tests that work with WebDriver BiDi and that didn't work with CDP.
+Puppeteer supports WebDriver BiDi automation with Chrome and Firefox.
 
-Example of launching Firefox with WebDriver BiDi:
+Firefox integration is nearing feature parity with its previous CDP-based approach. Learn more in the [dedicated announcement](https://hacks.mozilla.org/2023/12/puppeteer-webdriver-bidi/).
+
+
+## Measuring progress
+
+To gauge the capabilities of WebDriver BiDi, we utilized the comprehensive [Puppeteer test suite](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/)
+
+- For Firefox, there are currently under [60](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/firefox-delta.json) failing tests compared to the CDP implementation, while over [82](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/firefox-delta.json) new tests successfully utilize WebDriver BiDi, demonstrating its growing potential.
+- For Chrome, around 68% of tests pass with WebDriver BiDi, indicating room for improvement compared to the CDP-based approach.
+
+
+## Get started
+
+Below is an example of launching Firefox or Chrome with WebDriver BiDi:
 
 ```ts
 import puppeteer from 'puppeteer';
 
 const browser = await puppeteer.launch({
-  product: 'firefox',
+  product: 'firefox', // or 'chrome'
   protocol: 'webDriverBiDi',
 });
 const page = await browser.newPage();
@@ -33,24 +38,8 @@ const page = await browser.newPage();
 await browser.close();
 ```
 
-For Chrome, around 68% of the tests are currently passing with WebDriver BiDi so
-the CDP-based implementation remains more powerful. Some of the Puppeteer
-functionality is relying on CDP even with WebDriver BiDi enabled. Therefore, the
-test pass rate is currently higher than that one of Firefox.
+This is an exciting step towards a more unified and efficient cross-browser automation experience. We encourage you to explore WebDriver BiDi with Puppeteer and join us in shaping the future of browser automation.
 
-Example of launching Chrome with WebDriver BiDi:
-
-```ts
-import puppeteer from 'puppeteer';
-
-const browser = await puppeteer.launch({
-  product: 'chrome',
-  protocol: 'webDriverBiDi',
-});
-const page = await browser.newPage();
-...
-await browser.close();
-```
 
 ## Puppeteer features supported over WebDriver BiDi
 
