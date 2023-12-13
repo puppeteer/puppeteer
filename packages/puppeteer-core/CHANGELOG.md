@@ -20,6 +20,26 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.7.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.6.0...puppeteer-core-v21.7.0) (2023-12-13)
+
+
+### Features
+
+* download chrome-headless-shell by default and use it for the old headless mode ([#11093](https://github.com/puppeteer/puppeteer/issues/11093)) ([75ba27b](https://github.com/puppeteer/puppeteer/commit/75ba27bca2a5d78037cd324f879d009e61f19fde))
+* roll to Chrome 120.0.6099.62 (r1217362) ([#11501](https://github.com/puppeteer/puppeteer/issues/11501)) ([b38f637](https://github.com/puppeteer/puppeteer/commit/b38f637adf47609c0f0d6b2eb8ff2f80cc9224a7))
+
+
+### Bug Fixes
+
+* emulate if captureBeyondViewport is false ([#11525](https://github.com/puppeteer/puppeteer/issues/11525)) ([b6d1163](https://github.com/puppeteer/puppeteer/commit/b6d1163f7f33d80fd43fa4915789d3689ea2369f))
+* ensure fission.bfcacheInParent is disabled for cdp in Firefox ([#11522](https://github.com/puppeteer/puppeteer/issues/11522)) ([b4a6524](https://github.com/puppeteer/puppeteer/commit/b4a65245b0ad01b2b634473ebb4d8bb2d7e420f7))
+* roll to Chrome 120.0.6099.71 (r1217362) ([#11513](https://github.com/puppeteer/puppeteer/issues/11513)) ([fc0b079](https://github.com/puppeteer/puppeteer/commit/fc0b0796be98a1a2dfa9c4a3ade92a8d4a243619))
+
+
+### Reverts
+
+* "feat: download chrome-headless-shell by default and use it for the old headless mode" ([#11545](https://github.com/puppeteer/puppeteer/issues/11545)) ([2bcf1e6](https://github.com/puppeteer/puppeteer/commit/2bcf1e62d8027f129729413767fd3ede3da67590))
+
 ## [21.6.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.5.2...puppeteer-core-v21.6.0) (2023-12-05)
 
 
