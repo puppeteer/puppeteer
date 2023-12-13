@@ -3384,24 +3384,10 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should return base64",
-    "comment": "Bisected to https://chromium.googlesource.com/chromium/src/+log/b8b95f5715b4bd2348e537b740048e4b6aa281b1..8026f46b0e73174f33834a26748107d1089a83bf",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots",
-    "comment": "Bisected to https://chromium.googlesource.com/chromium/src/+log/b8b95f5715b4bd2348e537b740048e4b6aa281b1..8026f46b0e73174f33834a26748107d1089a83bf",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots without captureBeyondViewport",
@@ -3410,24 +3396,10 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots without captureBeyondViewport",
-    "comment": "Bisected to https://chromium.googlesource.com/chromium/src/+log/b8b95f5715b4bd2348e537b740048e4b6aa281b1..8026f46b0e73174f33834a26748107d1089a83bf",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work",
-    "comment": "Bisected to https://chromium.googlesource.com/chromium/src/+log/b8b95f5715b4bd2348e537b740048e4b6aa281b1..8026f46b0e73174f33834a26748107d1089a83bf",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work with odd clip size on Retina displays",
@@ -3666,18 +3638,6 @@
   {
     "testIdPattern": "[CDPSession.spec] Target.createCDPSession should send events",
     "platforms": ["win32"],
-    "parameters": ["cdp", "chrome", "new-headless"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[chromiumonly.spec] Chromium-Specific Launcher tests Puppeteer.launch |pipe| option should fire \"disconnected\" when closing with pipe",
-    "platforms": ["darwin"],
-    "parameters": ["cdp", "chrome", "new-headless"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[emulation.spec] Emulation Page.emulateVisionDeficiency should work",
-    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "new-headless"],
     "expectations": ["FAIL", "PASS"]
   },
