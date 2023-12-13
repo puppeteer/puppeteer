@@ -72,7 +72,7 @@ async function formatUpdateFiles() {
 
 async function replaceInFile(filePath, search, replace) {
   const buffer = await readFile(filePath);
-  const update = buffer.toString().replaceAll(search, replace);
+  const update = buffer.toString().replace(search, replace);
 
   await writeFile(filePath, update);
 

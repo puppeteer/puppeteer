@@ -156,7 +156,7 @@ export class ChromeLauncher extends ProductLauncher {
         channel || !this.puppeteer._isPuppeteerCore,
         `An \`executablePath\` or \`channel\` must be specified for \`puppeteer-core\``
       );
-      chromeExecutable = this.executablePath(channel, options.headless ?? true);
+      chromeExecutable = this.executablePath(channel);
     }
 
     return {
@@ -279,17 +279,14 @@ export class ChromeLauncher extends ProductLauncher {
     return chromeArguments;
   }
 
-  override executablePath(
-    channel?: ChromeReleaseChannel,
-    headless?: boolean | 'new'
-  ): string {
+  override executablePath(channel?: ChromeReleaseChannel): string {
     if (channel) {
       return computeSystemExecutablePath({
         browser: SupportedBrowsers.CHROME,
         channel: convertPuppeteerChannelToBrowsersChannel(channel),
       });
     } else {
-      return this.resolveExecutablePath(headless);
+      return this.resolveExecutablePath();
     }
   }
 }
