@@ -15,124 +15,195 @@
  */
 
 import {spawn} from 'child_process';
-import {randomUUID} from 'crypto';
 import {readFile, writeFile} from 'fs/promises';
 import {join} from 'path';
 import {cwd} from 'process';
 
+const commands = {
+  build: ['npm run build'],
+  createSandbox: ['npx ng new sandbox --defaults'],
+  createMultiWorkspace: [
+    'ng new sandbox --create-application=false --directory=multi',
+  ],
+  createMultiProjects: [
+    {
+      command: 'ng generate application core --style=css --routing=true',
+      options: {
+        cwd: join(cwd(), '/multi/'),
+      },
+    },
+    {
+      command: 'ng generate application admin --style=css --routing=false',
+      options: {
+        cwd: join(cwd(), '/multi/'),
+      },
+    },
+  ],
+  /**
+   * @param {Boolean} isMulti
+   */
+  runSchematics: isMulti => {
+    return [
+      {
+        command: 'npm run schematics',
+        options: {
+          cwd: join(cwd(), isMulti ? '/multi/' : '/sandbox/'),
+        },
+      },
+    ];
+  },
+  /**
+   * @param {Boolean} isMulti
+   */
+  runSchematicsE2E: isMulti => {
+    return [
+      {
+        command: 'npm run schematics:e2e',
+        options: {
+          cwd: join(cwd(), isMulti ? '/multi/' : '/sandbox/'),
+        },
+      },
+    ];
+  },
+  /**
+   * @param {Boolean} isMulti
+   */
+  runSchematicsConfig: isMulti => {
+    return [
+      {
+        command: 'npm run schematics:config',
+        options: {
+          cwd: join(cwd(), isMulti ? '/multi/' : '/sandbox/'),
+        },
+      },
+    ];
+  },
+  runSchematicsSmoke: isMulti => {
+    return [
+      {
+        command: 'npm run schematics:smoke',
+        options: {
+          cwd: join(cwd(), isMulti ? '/multi/' : '/sandbox/'),
+        },
+      },
+    ];
+  },
+};
+const scripts = {
+  // Builds the ng-schematics before running them
+  'build:schematics': 'npm run --prefix ../ build',
+  // Deletes all files created by Puppeteer Ng-Schematics to avoid errors
+  'delete:file':
+    'rm -f .puppeteerrc.cjs && rm -f tsconfig.e2e.json && rm -R -f e2e/',
+  // Runs the Puppeteer Ng-Schematics against the sandbox
+  schematics: 'schematics ../:ng-add --dry-run=false',
+  'schematics:e2e': 'schematics ../:e2e --dry-run=false',
+  'schematics:config': 'schematics ../:config --dry-run=false',
+  'schematics:smoke':
+    'schematics ../:ng-add --dry-run=false --test-runner="node" && ng e2e',
+};
 /**
  *
  * @param {string | object} toExecute
  * @returns {Promise<boolean>}
  */
-async function executeCommand(executable, args, options) {
-  args = args.split(' ');
-  await new Promise((resolve, reject) => {
-    const createProcess = spawn(executable, args, {
-      stdio: 'inherit',
-      shell: true,
-      ...options,
-    });
+async function executeCommand(commands) {
+  for (const toExecute of commands) {
+    let executable;
+    let args;
+    let options = {};
+    if (typeof toExecute === 'string') {
+      [executable, ...args] = toExecute.split(' ');
+    } else {
+      [executable, ...args] = toExecute.command.split(' ');
+      options = toExecute.options ?? {};
+    }
 
-    createProcess.on('error', message => {
-      console.error(
-        `Running ${executable} ${args.join(' ')} exited with error:`,
-        message
-      );
-      reject(message);
-    });
+    await new Promise((resolve, reject) => {
+      const createProcess = spawn(executable, args, {
+        stdio: 'inherit',
+        shell: true,
+        ...options,
+      });
 
-    createProcess.on('exit', code => {
-      if (code === 0) {
-        resolve(true);
-      } else {
-        reject();
-      }
+      createProcess.on('error', message => {
+        console.error(`Running ${toExecute} exited with error:`, message);
+        reject(message);
+      });
+
+      createProcess.on('exit', code => {
+        if (code === 0) {
+          resolve(true);
+        } else {
+          reject();
+        }
+      });
     });
+  }
+}
+
+/**
+ *
+ * @param {*} param0
+ */
+export async function runNgSchematicsSandbox({
+  isInit,
+  isMulti,
+  isBuild,
+  isE2E,
+  isConfig,
+  isSmoke,
+}) {
+  if (isInit) {
+    if (isMulti) {
+      await executeCommand(commands.createMultiWorkspace);
+      await executeCommand(commands.createMultiProjects);
+    } else {
+      await executeCommand(commands.createSandbox);
+    }
+
+    const directory = isMulti ? 'multi' : 'sandbox';
+    const packageJsonFile = join(cwd(), `/${directory}/package.json`);
+    const packageJson = JSON.parse(await readFile(packageJsonFile));
+    packageJson['scripts'] = {
+      ...packageJson['scripts'],
+      ...scripts,
+    };
+    await writeFile(packageJsonFile, JSON.stringify(packageJson, null, 2));
+  } else {
+    if (isBuild) {
+      await executeCommand(commands.build);
+    }
+    if (isE2E) {
+      await executeCommand(commands.runSchematicsE2E(isMulti));
+    } else if (isConfig) {
+      await executeCommand(commands.runSchematicsConfig(isMulti));
+    } else if (isSmoke) {
+      await executeCommand(commands.runSchematicsSmoke(isMulti));
+    } else {
+      await executeCommand(commands.runSchematics(isMulti));
+    }
+  }
+}
+
+async function main() {
+  const options = {
+    isInit: process.argv.indexOf('--init') !== -1,
+    isMulti: process.argv.indexOf('--multi') !== -1,
+    isBuild: process.argv.indexOf('--build') !== -1,
+    isE2E: process.argv.indexOf('--e2e') !== -1,
+    isConfig: process.argv.indexOf('--config') !== -1,
+  };
+  const isShell = Object.values(options).some(value => {
+    return value;
   });
+
+  if (isShell) {
+    await runNgSchematicsSandbox(options).catch(error => {
+      console.log('Something went wrong');
+      console.error(error);
+    });
+  }
 }
 
-async function updatePackageJson(name) {
-  const scripts = {
-    // Builds the ng-schematics before running them
-    'build:schematics': 'npm run --prefix ../../ build',
-    // Deletes all files created by Puppeteer Ng-Schematics to avoid errors
-    'delete:file':
-      'rm -f .puppeteerrc.cjs && rm -f tsconfig.e2e.json && rm -R -f e2e/',
-    // Runs the Puppeteer Ng-Schematics against the sandbox
-    schematics: 'schematics ../../:ng-add --dry-run=false',
-    'schematics:e2e': 'schematics ../../:e2e --dry-run=false',
-    'schematics:config': 'schematics ../../:config --dry-run=false',
-    'schematics:smoke':
-      'schematics ../../:ng-add --dry-run=false --test-runner="node" && ng e2e',
-  };
-  const packageJsonFile = join(cwd(), `/sandbox/${name}/package.json`);
-  const packageJson = JSON.parse(await readFile(packageJsonFile));
-  packageJson['scripts'] = {
-    ...packageJson['scripts'],
-    ...scripts,
-  };
-  await writeFile(packageJsonFile, JSON.stringify(packageJson, null, 2));
-}
-
-export async function createSingleSandbox(name) {
-  name ??= randomUUID();
-  await executeCommand(
-    'npx',
-    `ng new ${name} --directory=sandbox/${name} --defaults --skip-git`
-  );
-  await updatePackageJson(name);
-
-  return name;
-}
-
-export async function createMultiSandbox(name) {
-  name ??= randomUUID();
-  const options = {
-    cwd: join(cwd(), `/sandbox/${name}/`),
-  };
-
-  await executeCommand(
-    'ng',
-    `new ${name} --create-application=false --directory=sandbox/${name} --skip-git`
-  );
-
-  await executeCommand(
-    'ng',
-    `generate application core --style=css --routing=true`,
-    options
-  );
-  await executeCommand(
-    'ng',
-    `generate application admin --style=css --routing=false`,
-    options
-  );
-
-  await updatePackageJson(name);
-
-  return name;
-}
-
-async function runNpmScripts(name, command) {
-  const options = {
-    cwd: join(cwd(), `/sandbox/${name}/`),
-  };
-
-  await executeCommand('npm', `run ${command}`, options);
-}
-
-export async function runSchematics(name) {
-  await runNpmScripts(name, 'schematics');
-}
-
-export async function runSchematicsE2E(name) {
-  await runNpmScripts(name, 'schematics:e2e');
-}
-
-export async function runSchematicsConfig(name) {
-  await runNpmScripts(name, 'schematics:config');
-}
-
-export async function runSchematicsSmoke(name) {
-  await runNpmScripts(name, 'schematics:smoke');
-}
+main();
