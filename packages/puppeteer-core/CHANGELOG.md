@@ -20,6 +20,14 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.6.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.6.0...puppeteer-core-v21.6.1) (2023-12-13)
+
+
+### Bug Fixes
+
+* emulate if captureBeyondViewport is false ([#11525](https://github.com/puppeteer/puppeteer/issues/11525)) ([b6d1163](https://github.com/puppeteer/puppeteer/commit/b6d1163f7f33d80fd43fa4915789d3689ea2369f))
+* ensure fission.bfcacheInParent is disabled for cdp in Firefox ([#11522](https://github.com/puppeteer/puppeteer/issues/11522)) ([b4a6524](https://github.com/puppeteer/puppeteer/commit/b4a65245b0ad01b2b634473ebb4d8bb2d7e420f7))
+
 ## [21.6.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.5.2...puppeteer-core-v21.6.0) (2023-12-05)
 
 
