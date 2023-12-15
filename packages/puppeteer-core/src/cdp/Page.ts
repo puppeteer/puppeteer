@@ -87,7 +87,7 @@ import type {CdpTarget} from './Target.js';
 import type {TargetManager} from './TargetManager.js';
 import {TargetManagerEvent} from './TargetManager.js';
 import {Tracing} from './Tracing.js';
-import {WebWorker} from './WebWorker.js';
+import {CdpWebWorker} from './WebWorker.js';
 
 /**
  * @internal
@@ -133,7 +133,7 @@ export class CdpPage extends Page {
   #exposedFunctions = new Map<string, string>();
   #coverage: Coverage;
   #viewport: Viewport | null;
-  #workers = new Map<string, WebWorker>();
+  #workers = new Map<string, CdpWebWorker>();
   #fileChooserDeferreds = new Set<Deferred<FileChooser>>();
   #sessionCloseDeferred = Deferred.create<never, TargetCloseError>();
   #serviceWorkerBypassed = false;
@@ -352,7 +352,7 @@ export class CdpPage extends Page {
     assert(session instanceof CdpCDPSession);
     this.#frameManager.onAttachedToTarget(session._target());
     if (session._target()._getTargetInfo().type === 'worker') {
-      const worker = new WebWorker(
+      const worker = new CdpWebWorker(
         session,
         session._target().url(),
         this.#addConsoleMessage.bind(this),
@@ -512,7 +512,7 @@ export class CdpPage extends Page {
     return this.#frameManager.frames();
   }
 
-  override workers(): WebWorker[] {
+  override workers(): CdpWebWorker[] {
     return Array.from(this.#workers.values());
   }
 

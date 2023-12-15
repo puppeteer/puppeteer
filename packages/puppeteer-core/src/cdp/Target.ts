@@ -28,7 +28,7 @@ import {Deferred} from '../util/Deferred.js';
 import {CdpCDPSession} from './CDPSession.js';
 import {CdpPage} from './Page.js';
 import type {TargetManager} from './TargetManager.js';
-import {WebWorker} from './WebWorker.js';
+import {CdpWebWorker} from './WebWorker.js';
 
 /**
  * @internal
@@ -276,9 +276,9 @@ export class DevToolsTarget extends PageTarget {}
  * @internal
  */
 export class WorkerTarget extends CdpTarget {
-  #workerPromise?: Promise<WebWorker>;
+  #workerPromise?: Promise<CdpWebWorker>;
 
-  override async worker(): Promise<WebWorker | null> {
+  override async worker(): Promise<CdpWebWorker | null> {
     if (!this.#workerPromise) {
       const session = this._session();
       // TODO(einbinder): Make workers send their console logs.
@@ -287,7 +287,7 @@ export class WorkerTarget extends CdpTarget {
           ? Promise.resolve(session)
           : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
       ).then(client => {
-        return new WebWorker(
+        return new CdpWebWorker(
           client,
           this._getTargetInfo().url,
           () => {} /* consoleAPICalled */,
