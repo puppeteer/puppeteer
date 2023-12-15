@@ -15,7 +15,7 @@
  */
 
 import expect from 'expect';
-import type {CdpWebWorker} from 'puppeteer-core/internal/cdp/WebWorker.js';
+import type {WebWorker} from 'puppeteer-core/internal/api/WebWorker.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
@@ -46,7 +46,7 @@ describe('Workers', function () {
   it('should emit created and destroyed events', async () => {
     const {page} = await getTestState();
 
-    const workerCreatedPromise = waitEvent<CdpWebWorker>(page, 'workercreated');
+    const workerCreatedPromise = waitEvent<WebWorker>(page, 'workercreated');
     using workerObj = await page.evaluateHandle(() => {
       return new Worker('data:text/javascript,1');
     });
@@ -97,7 +97,7 @@ describe('Workers', function () {
   it('should have an execution context', async () => {
     const {page} = await getTestState();
 
-    const workerCreatedPromise = waitEvent<CdpWebWorker>(page, 'workercreated');
+    const workerCreatedPromise = waitEvent<WebWorker>(page, 'workercreated');
     await page.evaluate(() => {
       return new Worker(`data:text/javascript,console.log(1)`);
     });

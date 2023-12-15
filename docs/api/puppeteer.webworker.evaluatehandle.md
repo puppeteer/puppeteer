@@ -14,7 +14,7 @@ class WebWorker {
     Params extends unknown[],
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
-    pageFunction: Func | string,
+    func: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
 }
@@ -22,10 +22,10 @@ class WebWorker {
 
 ## Parameters
 
-| Parameter    | Type           | Description                               |
-| ------------ | -------------- | ----------------------------------------- |
-| pageFunction | Func \| string |                                           |
-| args         | Params         | Arguments to pass into <code>func</code>. |
+| Parameter | Type           | Description                               |
+| --------- | -------------- | ----------------------------------------- |
+| func      | Func \| string | Function to be evaluated.                 |
+| args      | Params         | Arguments to pass into <code>func</code>. |
 
 **Returns:**
 

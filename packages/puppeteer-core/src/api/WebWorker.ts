@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import type {CDPSession} from '../api/CDPSession.js';
-import type {Realm} from '../api/Realm.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {EvaluateFunc, HandleFor} from '../common/types.js';
 import {withSourcePuppeteerURLIfNone} from '../common/util.js';
+
+import type {CDPSession} from './CDPSession.js';
+import type {Realm} from './Realm.js';
 
 /**
  * This class represents a
@@ -134,13 +135,10 @@ export abstract class WebWorker extends EventEmitter<
     Params extends unknown[],
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
-    pageFunction: Func | string,
+    func: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(
-      this.evaluateHandle.name,
-      pageFunction
-    );
-    return await this.mainRealm().evaluateHandle(pageFunction, ...args);
+    func = withSourcePuppeteerURLIfNone(this.evaluateHandle.name, func);
+    return await this.mainRealm().evaluateHandle(func, ...args);
   }
 }
