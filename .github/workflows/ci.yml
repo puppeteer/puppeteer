@@ -150,8 +150,8 @@ jobs:
           - chrome-new-headless
           - chrome-bidi
         shard:
-          - 1/2
-          - 2/2
+          - 1-2
+          - 2-2
         exclude:
           - os: windows-latest
             suite: chrome-bidi
@@ -236,10 +236,10 @@ jobs:
           - firefox-headful
           - firefox-headless
         shard:
-          - 1/4
-          - 2/4
-          - 3/4
-          - 4/4
+          - 1-4
+          - 2-4
+          - 3-4
+          - 4-4
         exclude:
           - os: macos-latest
             suite: firefox-headful

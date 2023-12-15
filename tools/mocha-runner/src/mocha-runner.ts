@@ -215,7 +215,7 @@ async function main() {
       });
       if (shard) {
         // Shard ID is 1-based.
-        const [shardId, shards] = shard.split('/').map(s => {
+        const [shardId, shards] = shard.split('-').map(s => {
           return Number(s);
         }) as [number, number];
         const argsLength = args.length;
@@ -228,7 +228,7 @@ async function main() {
           throw new Error('Shard did not result in any test files');
         }
         console.log(
-          `Running shard ${shardId}/${shards}. Picked ${
+          `Running shard ${shardId}-${shards}. Picked ${
             args.length - argsLength
           } files out of ${specs.length}.`
         );
