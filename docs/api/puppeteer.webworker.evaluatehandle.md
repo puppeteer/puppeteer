@@ -4,7 +4,7 @@ sidebar_label: WebWorker.evaluateHandle
 
 # WebWorker.evaluateHandle() method
 
-The only difference between `worker.evaluate` and `worker.evaluateHandle` is that `worker.evaluateHandle` returns in-page object (JSHandle). If the function passed to the `worker.evaluateHandle` returns a `Promise`, then `worker.evaluateHandle` would wait for the promise to resolve and return its value. Shortcut for `await worker.executionContext()).evaluateHandle(pageFunction, ...args)`
+Evaluates a given function in the [worker](./puppeteer.webworker.md).
 
 #### Signature:
 
@@ -14,7 +14,7 @@ class WebWorker {
     Params extends unknown[],
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
-    pageFunction: Func | string,
+    func: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
 }
@@ -22,13 +22,19 @@ class WebWorker {
 
 ## Parameters
 
-| Parameter    | Type           | Description                                     |
-| ------------ | -------------- | ----------------------------------------------- |
-| pageFunction | Func \| string | Function to be evaluated in the page context.   |
-| args         | Params         | Arguments to pass to <code>pageFunction</code>. |
+| Parameter | Type           | Description                               |
+| --------- | -------------- | ----------------------------------------- |
+| func      | Func \| string | Function to be evaluated.                 |
+| args      | Params         | Arguments to pass into <code>func</code>. |
 
 **Returns:**
 
 Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;&gt;
 
-Promise which resolves to the return value of `pageFunction`.
+A [handle](./puppeteer.jshandle.md) to the return value of `func`.
+
+## Remarks
+
+If the given function returns a promise, [evaluate](./puppeteer.webworker.evaluate.md) will wait for the promise to resolve.
+
+In general, you should use [evaluateHandle](./puppeteer.webworker.evaluatehandle.md) if [evaluate](./puppeteer.webworker.evaluate.md) cannot serialize the return value properly or you need a mutable [handle](./puppeteer.jshandle.md) to the return object.

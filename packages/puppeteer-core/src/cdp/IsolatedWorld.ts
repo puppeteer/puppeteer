@@ -34,7 +34,7 @@ import type {Binding} from './Binding.js';
 import {ExecutionContext, createCdpHandle} from './ExecutionContext.js';
 import type {CdpFrame} from './Frame.js';
 import type {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
-import type {WebWorker} from './WebWorker.js';
+import type {CdpWebWorker} from './WebWorker.js';
 
 /**
  * @internal
@@ -69,10 +69,10 @@ export class IsolatedWorld extends Realm {
     return this.#bindings;
   }
 
-  readonly #frameOrWorker: CdpFrame | WebWorker;
+  readonly #frameOrWorker: CdpFrame | CdpWebWorker;
 
   constructor(
-    frameOrWorker: CdpFrame | WebWorker,
+    frameOrWorker: CdpFrame | CdpWebWorker,
     timeoutSettings: TimeoutSettings
   ) {
     super(timeoutSettings);
@@ -80,7 +80,7 @@ export class IsolatedWorld extends Realm {
     this.frameUpdated();
   }
 
-  get environment(): CdpFrame | WebWorker {
+  get environment(): CdpFrame | CdpWebWorker {
     return this.#frameOrWorker;
   }
 

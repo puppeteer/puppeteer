@@ -15,7 +15,7 @@
  */
 
 import expect from 'expect';
-import type {WebWorker} from 'puppeteer-core/internal/cdp/WebWorker.js';
+import type {WebWorker} from 'puppeteer-core/internal/api/WebWorker.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';

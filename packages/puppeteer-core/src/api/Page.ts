@@ -46,7 +46,6 @@ import type {
   NetworkConditions,
 } from '../cdp/NetworkManager.js';
 import type {Tracing} from '../cdp/Tracing.js';
-import type {WebWorker} from '../cdp/WebWorker.js';
 import type {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {Device} from '../common/Device.js';
 import {TargetCloseError} from '../common/Errors.js';
@@ -122,6 +121,7 @@ import {
   type AwaitedLocator,
 } from './locators/locators.js';
 import type {Target} from './Target.js';
+import type {WebWorker} from './WebWorker.js';
 
 /**
  * @public
