@@ -6,7 +6,7 @@
 
 import type {Readable} from 'stream';
 
-import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type Protocol from 'devtools-protocol';
 
 import {
@@ -776,7 +776,10 @@ export class BidiPage extends Page {
 
   override async cookies(): Promise<Protocol.Network.Cookie[]> {
     const bidiCookies = await this.#connection.send('storage.getCookies', {
-      partition: this.mainFrame()._id,
+      partition: {
+        type: 'context',
+        context: this.mainFrame()._id,
+      },
     });
     return bidiCookies.result.cookies.map(c => {
       return {
@@ -788,7 +791,7 @@ export class BidiPage extends Page {
         size: c.size,
         httpOnly: c.httpOnly,
         secure: c.secure,
-        sameSite: this.#convertCookiesSameSite(c.sameSite),
+        sameSite: this.#convertCookiesSameSiteBiDiToCdp(c.sameSite),
         // TODO: check default `expiry` value.
         expires: c.expiry ?? -1,
         // TODO: add proper value.
@@ -809,7 +812,7 @@ export class BidiPage extends Page {
     });
   }
 
-  #convertCookiesSameSite(
+  #convertCookiesSameSiteBiDiToCdp(
     sameSite: Bidi.Network.SameSite | undefined
   ): Protocol.Network.CookieSameSite {
     return sameSite === 'strict'
@@ -817,6 +820,16 @@ export class BidiPage extends Page {
       : sameSite === 'lax'
         ? 'Lax'
         : 'None';
+  }
+
+  #convertCookiesSameSiteCdpToBiDi(
+    sameSite: Protocol.Network.CookieSameSite | undefined
+  ): Bidi.Network.SameSite {
+    return sameSite === 'Strict'
+      ? Bidi.Network.SameSite.Strict
+      : sameSite === 'Lax'
+        ? Bidi.Network.SameSite.Lax
+        : Bidi.Network.SameSite.None;
   }
 
   override isServiceWorkerBypassed(): never {
@@ -855,8 +868,57 @@ export class BidiPage extends Page {
     throw new UnsupportedOperation();
   }
 
-  override setCookie(): never {
-    throw new UnsupportedOperation();
+  override async setCookie(
+    ...cookies: Protocol.Network.CookieParam[]
+  ): Promise<void> {
+    for (const cookie of cookies) {
+      // TODO: add support of:
+      // * secure?: boolean;
+      // * priority?: CookiePriority;
+      // * sameParty?: boolean;
+      // * sourceScheme?: CookieSourceScheme;
+      // * sourcePort?: integer;
+
+      const url = new URL(cookie.url ?? this.url());
+      const domain = cookie.domain ?? url.hostname;
+      const path = cookie.path ?? '/';
+
+      const bidiCookie: Bidi.Storage.PartialCookie = {
+        path: path,
+        domain: domain,
+        name: cookie.name,
+        // For whatever reason the `secure: false` value is not accepted by CDP.
+        // > ProtocolError: Protocol error (Storage.setCookies): Invalid cookie fields.
+        secure: true,
+        value: {
+          type: 'string',
+          value: cookie.value,
+        },
+        ...(cookie.httpOnly !== undefined ? {httpOnly: cookie.httpOnly} : {}),
+        ...(cookie.secure !== undefined ? {secure: cookie.secure} : {}),
+        ...(cookie.sameSite !== undefined
+          ? {sameSite: this.#convertCookiesSameSiteCdpToBiDi(cookie.sameSite)}
+          : {}),
+        ...(cookie.expires !== undefined ? {expiry: cookie.expires} : {}),
+      };
+
+      const partition: Bidi.Storage.PartitionDescriptor =
+        cookie.partitionKey !== undefined
+          ? {
+              type: 'storageKey',
+              sourceOrigin: cookie.partitionKey,
+              userContext: 'IGNORED_VALUE',
+            }
+          : {
+              type: 'context',
+              context: this.mainFrame()._id,
+            };
+
+      await this.#connection.send('storage.setCookie', {
+        cookie: bidiCookie,
+        partition,
+      });
+    }
   }
 
   override deleteCookie(): never {
