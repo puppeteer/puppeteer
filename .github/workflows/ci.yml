@@ -466,8 +466,17 @@ jobs:
         run: npm ci
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
+      - name: Setup cache for Chrome binary
+        uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        with:
+          path: ~/.cache/puppeteer/chrome
+          key: ${{ runner.os }}-Chrome-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
+      - name: Install Chrome
+        run: npm run postinstall
+      - name: Build Schematics
+        run: npm run build -w @puppeteer/ng-schematics
       - name: Run tests
-        run: npm run test:smoke
+        run: node tools/smoke.mjs
         working-directory: ./packages/ng-schematics
 
   ng-schematics-smoke-tests-required:
