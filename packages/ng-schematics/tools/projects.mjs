@@ -85,6 +85,7 @@ class AngularProject {
 
   get commandOptions() {
     return {
+      ...process.env,
       cwd: join(cwd(), `/sandbox/${this.#name}/`),
     };
   }

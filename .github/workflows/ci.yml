@@ -466,8 +466,10 @@ jobs:
         run: npm ci
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
+      - name: Build Schematics
+        run: npm run build -w @puppeteer/ng-schematics
       - name: Run tests
-        run: npm run test:smoke
+        run: node tools/smoke.mjs
         working-directory: ./packages/ng-schematics
 
   ng-schematics-smoke-tests-required:
