@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Copyright 2023 Google Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import {execSync} from 'child_process';
 
 import {AngularProjectMulti, AngularProjectSingle} from './projects.mjs';
