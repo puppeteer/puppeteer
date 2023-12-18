@@ -11,6 +11,20 @@ import {join} from 'path';
 import {cwd} from 'process';
 
 class AngularProject {
+  static ports = new Set();
+  static randomPort() {
+    const min = 4000;
+    const max = 9876;
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+  static port() {
+    const port = AngularProject.randomPort();
+    if (AngularProject.ports.has(port)) {
+      return AngularProject.port();
+    }
+    return port;
+  }
+
   static #scripts = {
     // Builds the ng-schematics before running them
     'build:schematics': 'npm run --prefix ../../ build',
@@ -97,8 +111,9 @@ class AngularProject {
   }
 
   async runSmoke() {
-    const port = Math.floor(Math.random() * 6789);
-    await this.runNpmScripts(`schematics:smoke -- --port=${port}`);
+    await this.runNpmScripts(
+      `schematics:smoke -- --port=${AngularProject.port()}`
+    );
   }
 }
 
