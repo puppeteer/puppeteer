@@ -150,8 +150,8 @@ jobs:
           - chrome-new-headless
           - chrome-bidi
         shard:
-          - 1/2
-          - 2/2
+          - 1-2
+          - 2-2
         exclude:
           - os: windows-latest
             suite: chrome-bidi
@@ -204,10 +204,10 @@ jobs:
         run: xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
-      - uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
+      - uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
         if: always()
         with:
-          name: test-results
+          name: test-results-${{ matrix.os }}-${{ matrix.suite }}-${{ matrix.shard }}
           path: /tmp/artifacts/*.json
 
   chrome-tests-required:
@@ -236,10 +236,10 @@ jobs:
           - firefox-headful
           - firefox-headless
         shard:
-          - 1/4
-          - 2/4
-          - 3/4
-          - 4/4
+          - 1-4
+          - 2-4
+          - 3-4
+          - 4-4
         exclude:
           - os: macos-latest
             suite: firefox-headful
@@ -282,10 +282,10 @@ jobs:
       - name: Run all tests (for Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
-      - uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
+      - uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
         if: always()
         with:
-          name: test-results
+          name: test-results-${{ matrix.os }}-${{ matrix.suite }}-${{ matrix.shard }}
           path: /tmp/artifacts/*.json
 
   firefox-tests-required:
@@ -320,7 +320,7 @@ jobs:
       - name: Pack installation test
         run: npm pack --workspace @puppeteer-test/installation
       - name: Upload installation test
-        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
+        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
         with:
           name: installation-test
           path: puppeteer-test-installation-latest.tgz
@@ -343,7 +343,7 @@ jobs:
           - npm
     steps:
       - name: Download installation test
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+        uses: actions/download-artifact@7a1cd3216ca9260cd8022db641d960b1db4d1be4 # v4.0.0
         with:
           name: installation-test
       - name: Unpack installation test
