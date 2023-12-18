@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2017 Google LLC
+ * Copyright 2017 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
 import expect from 'expect';

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018 Google LLC
+ * Copyright 2018 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
 import type {Protocol} from 'devtools-protocol';

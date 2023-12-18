@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2019 Google LLC
+ * Copyright 2019 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
 import type {IncomingMessage} from 'http';

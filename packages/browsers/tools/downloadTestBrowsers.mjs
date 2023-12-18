@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2023 Google LLC
+ * Copyright 2023 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -12,10 +12,10 @@
 import {existsSync, mkdirSync, copyFileSync, rmSync} from 'fs';
 import {normalize, join, dirname} from 'path';
 
-import {BrowserPlatform, install} from '@puppeteer/browsers';
-
 import {downloadPaths} from '../lib/esm/browser-data/browser-data.js';
 import * as versions from '../test/build/versions.js';
+
+import {BrowserPlatform, install} from '@puppeteer/browsers';
 
 function getBrowser(str) {
   const regex = /test(.+)BuildId/;
