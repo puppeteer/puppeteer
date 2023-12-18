@@ -56,14 +56,14 @@
     "node": ">=16.13.2"
   },
   "dependencies": {
-    "@angular-devkit/architect": "^0.1700.6",
-    "@angular-devkit/core": "^17.0.6",
-    "@angular-devkit/schematics": "^17.0.6"
+    "@angular-devkit/architect": "^0.1700.7",
+    "@angular-devkit/core": "^17.0.7",
+    "@angular-devkit/schematics": "^17.0.7"
   },
   "devDependencies": {
     "@types/node": "^16.18.61",
-    "@schematics/angular": "^17.0.6",
-    "@angular/cli": "^17.0.6",
+    "@schematics/angular": "^17.0.7",
+    "@angular/cli": "^17.0.7",
     "rxjs": "7.8.1"
   },
   "files": [
