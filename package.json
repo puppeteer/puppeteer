@@ -141,7 +141,7 @@
     "eslint-plugin-rulesdir": "0.2.2",
     "eslint-plugin-tsdoc": "0.2.17",
     "eslint-plugin-unused-imports": "3.0.0",
-    "eslint": "8.55.0",
+    "eslint": "8.56.0",
     "execa": "8.0.1",
     "expect": "29.7.0",
     "gts": "5.2.0",
@@ -155,7 +155,7 @@
     "sinon": "17.0.1",
     "source-map-support": "0.5.21",
     "spdx-satisfies": "5.0.1",
-    "tsd": "0.29.0",
+    "tsd": "0.30.0",
     "tsx": "4.6.2",
     "typescript": "5.2.2",
     "wireit": "0.14.1"
