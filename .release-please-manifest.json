@@ -2,6 +2,6 @@
   "packages/puppeteer": "21.6.1",
   "packages/puppeteer-core": "21.6.1",
   "packages/testserver": "0.6.0",
-  "packages/ng-schematics": "0.5.4",
+  "packages/ng-schematics": "0.5.5",
   "packages/browsers": "1.9.0"
 }
