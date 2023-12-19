@@ -7,7 +7,7 @@
     "clean": "../../tools/clean.js",
     "dev:test": "npm run test --watch",
     "dev": "npm run build --watch",
-    "test": "wireit"
+    "unit": "wireit"
   },
   "wireit": {
     "build": {
@@ -25,8 +25,8 @@
         "*.tsbuildinfo"
       ]
     },
-    "test": {
-      "command": "mocha",
+    "unit": {
+      "command": "node --test --test-reporter spec test/build",
       "dependencies": [
         "build"
       ]
@@ -52,7 +52,6 @@
     "@angular-devkit/schematics": "^17.0.7"
   },
   "devDependencies": {
-    "@types/node": "^16.18.61",
     "@schematics/angular": "^17.0.7",
     "@angular/cli": "^17.0.7",
     "rxjs": "7.8.1"
