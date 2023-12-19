@@ -62,7 +62,7 @@ export function rewriteError(
 export function createProtocolErrorMessage(object: {
   error: {message: string; data: any; code: number};
 }): string {
-  let message = `${object.error.message}`;
+  let message = object.error.message;
   // TODO: remove the type checks when we stop connecting to BiDi with a CDP
   // client.
   if (

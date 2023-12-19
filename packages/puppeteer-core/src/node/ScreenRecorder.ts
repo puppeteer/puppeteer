@@ -99,11 +99,11 @@ export class ScreenRecorder extends PassThrough {
         // Reduces initial buffering while analyzing input fps and other stats.
         [
           '-fpsprobesize',
-          `${0}`,
+          '0',
           '-probesize',
-          `${32}`,
+          '32',
           '-analyzeduration',
-          `${0}`,
+          '0',
           '-fflags',
           'nobuffer',
         ],
@@ -120,13 +120,13 @@ export class ScreenRecorder extends PassThrough {
         // Specifies the encoding and format we are using.
         this.#getFormatArgs(format ?? 'webm'),
         // Disable bitrate.
-        ['-b:v', `${0}`],
+        ['-b:v', '0'],
         // Filters to ensure the images are piped correctly.
         [
           '-vf',
           `${
             speed ? `setpts=${1 / speed}*PTS,` : ''
-          }crop='min(${width},iw):min(${height},ih):${0}:${0}',pad=${width}:${height}:${0}:${0}${
+          }crop='min(${width},iw):min(${height},ih):0:0',pad=${width}:${height}:0:0${
             crop ? `,crop=${crop.width}:${crop.height}:${crop.x}:${crop.y}` : ''
           }${scale ? `,scale=iw*${scale}:-1` : ''}`,
         ],
@@ -204,7 +204,7 @@ export class ScreenRecorder extends PassThrough {
           // Sets the quality. Lower the better.
           ['-crf', `${CRF_VALUE}`],
           // Sets the quality and how efficient the compression will be.
-          ['-deadline', 'realtime', '-cpu-used', `${8}`],
+          ['-deadline', 'realtime', '-cpu-used', '8'],
         ].flat();
       case 'gif':
         return [

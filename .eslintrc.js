@@ -185,6 +185,7 @@ module.exports = {
         '@typescript-eslint/explicit-function-return-type': 'off',
         // We allow non-null assertions if the value was asserted using `assert` API.
         '@typescript-eslint/no-non-null-assertion': 'off',
+        '@typescript-eslint/no-useless-template-literals': 'error',
         /**
          * This is the default options (as per
          * https://github.com/typescript-eslint/typescript-eslint/blob/HEAD/packages/eslint-plugin/docs/rules/ban-types.md),

@@ -324,7 +324,7 @@ export function getFeatures(flag: string, options: string[] = []): string[] {
       return s.startsWith(flag.endsWith('=') ? flag : `${flag}=`);
     })
     .map(s => {
-      return s.split(new RegExp(`${flag}` + '=\\s*'))[1]?.trim();
+      return s.split(new RegExp(`${flag}=\\s*`))[1]?.trim();
     })
     .filter(s => {
       return s;
