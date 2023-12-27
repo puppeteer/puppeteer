@@ -2901,10 +2901,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
   }
 
   /**
-   * Waits for a function to finish evaluating in the page's context.
+   * Waits for the provided function, `pageFunction`, to return a truthy value when
+   * evaluated in the page's context.
    *
    * @example
-   * The {@link Page.waitForFunction} can be used to observe viewport size change:
+   * {@link Page.waitForFunction} can be used to observe a viewport size change:
    *
    * ```ts
    * import puppeteer from 'puppeteer';
@@ -2919,8 +2920,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```
    *
    * @example
-   * To pass arguments from node.js to the predicate of
-   * {@link Page.waitForFunction} function:
+   * Arguments can be passed from Node.js to `pageFunction`:
    *
    * ```ts
    * const selector = '.foo';
@@ -2932,7 +2932,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```
    *
    * @example
-   * The predicate of {@link Page.waitForFunction} can be asynchronous too:
+   * The provided `pageFunction` can be asynchronous:
    *
    * ```ts
    * const username = 'github-username';
@@ -2954,7 +2954,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * );
    * ```
    *
-   * @param pageFunction - Function to be evaluated in browser context
+   * @param pageFunction - Function to be evaluated in browser context until it returns a
+   * truthy value.
    * @param options - Options for configuring waiting behavior.
    */
   waitForFunction<
