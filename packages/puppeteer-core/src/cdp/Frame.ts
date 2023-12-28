@@ -96,6 +96,11 @@ export class CdpFrame extends Frame {
   updateClient(client: CDPSession, keepWorlds = false): void {
     this.#client = client;
     if (!keepWorlds) {
+      // Clear the current contexts on previous world instances.
+      if (this.worlds) {
+        this.worlds[MAIN_WORLD].clearContext();
+        this.worlds[PUPPETEER_WORLD].clearContext();
+      }
       this.worlds = {
         [MAIN_WORLD]: new IsolatedWorld(
           this,
