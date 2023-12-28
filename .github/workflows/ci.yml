@@ -231,6 +231,7 @@ jobs:
         os:
           - ubuntu-latest
           - macos-latest
+          - windows-latest
         suite:
           - firefox-bidi
           - firefox-headful
@@ -249,6 +250,10 @@ jobs:
           # The first time the browsers launches it crashes.
           - os: macos-latest
             suite: firefox-bidi
+          - os: windows-latest
+            suite: firefox-headful
+          - os: windows-latest
+            suite: firefox-headless
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
