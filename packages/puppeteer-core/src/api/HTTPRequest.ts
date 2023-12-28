@@ -213,6 +213,19 @@ export abstract class HTTPRequest {
   abstract postData(): string | undefined;
 
   /**
+   * True when the request has POST data. Note that {@link HTTPRequest.postData}
+   * might still be undefined when this flag is true when the data is too long
+   * or not readily available in the decoded form. In that case, use
+   * {@link HTTPRequest.fetchPostData}.
+   */
+  abstract hasPostData(): boolean;
+
+  /**
+   * Fetches the POST data for the request from the browser.
+   */
+  abstract fetchPostData(): Promise<string | undefined>;
+
+  /**
    * An object with HTTP headers associated with the request. All
    * header names are lower-case.
    */
