@@ -127,6 +127,26 @@ describe('Target.createCDPSession', function () {
     }
   });
 
+  it('should respect custom timeout', async () => {
+    const {page} = await getTestState();
+
+    const client = await page.createCDPSession();
+    await expect(
+      client.send(
+        'Runtime.evaluate',
+        {
+          expression: 'new Promise(resolve => {})',
+          awaitPromise: true,
+        },
+        {
+          timeout: 50,
+        }
+      )
+    ).rejects.toThrowError(
+      `Runtime.evaluate timed out. Increase the 'protocolTimeout' setting in launch/connect calls for a higher timeout if needed.`
+    );
+  });
+
   it('should expose the underlying connection', async () => {
     const {page} = await getTestState();
 

@@ -1446,6 +1446,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[CDPSession.spec] Target.createCDPSession should respect custom timeout",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[CDPSession.spec] Target.createCDPSession should send events",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
