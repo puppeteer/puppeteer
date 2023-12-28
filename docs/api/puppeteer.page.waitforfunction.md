@@ -4,7 +4,7 @@ sidebar_label: Page.waitForFunction
 
 # Page.waitForFunction() method
 
-Waits for a function to finish evaluating in the page's context.
+Waits for the provided function, `pageFunction`, to return a truthy value when evaluated in the page's context.
 
 #### Signature:
 
@@ -23,11 +23,11 @@ class Page {
 
 ## Parameters
 
-| Parameter    | Type                                                                      | Description                                            |
-| ------------ | ------------------------------------------------------------------------- | ------------------------------------------------------ |
-| pageFunction | Func \| string                                                            | Function to be evaluated in browser context            |
-| options      | [FrameWaitForFunctionOptions](./puppeteer.framewaitforfunctionoptions.md) | _(Optional)_ Options for configuring waiting behavior. |
-| args         | Params                                                                    |                                                        |
+| Parameter    | Type                                                                      | Description                                                                  |
+| ------------ | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| pageFunction | Func \| string                                                            | Function to be evaluated in browser context until it returns a truthy value. |
+| options      | [FrameWaitForFunctionOptions](./puppeteer.framewaitforfunctionoptions.md) | _(Optional)_ Options for configuring waiting behavior.                       |
+| args         | Params                                                                    |                                                                              |
 
 **Returns:**
 
@@ -35,7 +35,7 @@ Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;Awaited&lt;ReturnType&lt;Fun
 
 ## Example 1
 
-The [Page.waitForFunction()](./puppeteer.page.waitforfunction.md) can be used to observe viewport size change:
+[Page.waitForFunction()](./puppeteer.page.waitforfunction.md) can be used to observe a viewport size change:
 
 ```ts
 import puppeteer from 'puppeteer';
@@ -51,7 +51,7 @@ import puppeteer from 'puppeteer';
 
 ## Example 2
 
-To pass arguments from node.js to the predicate of [Page.waitForFunction()](./puppeteer.page.waitforfunction.md) function:
+Arguments can be passed from Node.js to `pageFunction`:
 
 ```ts
 const selector = '.foo';
@@ -64,7 +64,7 @@ await page.waitForFunction(
 
 ## Example 3
 
-The predicate of [Page.waitForFunction()](./puppeteer.page.waitforfunction.md) can be asynchronous too:
+The provided `pageFunction` can be asynchronous:
 
 ```ts
 const username = 'github-username';
