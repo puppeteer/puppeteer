@@ -246,10 +246,6 @@ jobs:
             suite: firefox-headful
           - os: macos-latest
             suite: firefox-headless
-          # Disabled due to https://bugzilla.mozilla.org/show_bug.cgi?id=1843550
-          # The first time the browsers launches it crashes.
-          - os: macos-latest
-            suite: firefox-bidi
           - os: windows-latest
             suite: firefox-headful
           - os: windows-latest
