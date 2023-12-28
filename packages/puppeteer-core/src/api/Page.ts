@@ -2273,7 +2273,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       }
 
       const viewportWidth = width / devicePixelRatio;
-      const viewportHeight = width / devicePixelRatio;
+      const viewportHeight = height / devicePixelRatio;
       if (x + cropWidth > viewportWidth) {
         throw new Error(
           `\`crop.width\` cannot be larger than the viewport width (${viewportWidth}).`
