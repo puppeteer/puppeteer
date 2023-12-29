@@ -187,6 +187,26 @@ const serviceWorkerExtensionPath = path.join(
       ).toBe(6);
       expect(await browser.pages()).toContainEqual(page);
     });
+    it('target.page() should return a DevTools page if asPage is used', async function () {
+      const {puppeteer} = await getTestState({skipLaunch: true});
+      const originalBrowser = await launchBrowser(devtoolsOptions);
+
+      const browserWSEndpoint = originalBrowser.wsEndpoint();
+
+      const browser = await puppeteer.connect({
+        browserWSEndpoint,
+      });
+      const devtoolsPageTarget = await browser.waitForTarget(target => {
+        return target.type() === 'other';
+      });
+      const page = (await devtoolsPageTarget.asPage())!;
+      expect(
+        await page.evaluate(() => {
+          return 2 * 3;
+        })
+      ).toBe(6);
+      expect(await browser.pages()).toContainEqual(page);
+    });
     it('should have default url when launching browser', async function () {
       const browser = await launchBrowser(extensionOptions);
       const pages = (await browser.pages()).map((page: {url: () => any}) => {

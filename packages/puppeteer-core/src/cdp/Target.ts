@@ -80,6 +80,16 @@ export class CdpTarget extends Target {
     }
   }
 
+  override async asPage(): Promise<Page> {
+    const session = this._session();
+    if (!session) {
+      return await this.createCDPSession().then(client => {
+        return CdpPage._create(client, this, false, null);
+      });
+    }
+    return await CdpPage._create(session, this, false, null);
+  }
+
   _subtype(): string | undefined {
     return this.#targetInfo.subtype;
   }
