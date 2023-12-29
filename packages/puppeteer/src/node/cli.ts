@@ -11,10 +11,7 @@ import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
 
 import puppeteer from '../puppeteer.js';
 
-// TODO: deprecate downloadPath in favour of cacheDirectory.
-const cacheDir =
-  puppeteer.configuration.downloadPath ??
-  puppeteer.configuration.cacheDirectory!;
+const cacheDir = puppeteer.configuration.cacheDirectory!;
 
 void new CLI({
   cachePath: cacheDir,

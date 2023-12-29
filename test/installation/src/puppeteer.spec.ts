@@ -41,31 +41,6 @@ describe('`puppeteer`', () => {
 
 // Skipping this test on Windows as windows runners are much slower.
 (platform() === 'win32' ? describe.skip : describe)(
-  '`puppeteer` with PUPPETEER_DOWNLOAD_PATH',
-  () => {
-    configureSandbox({
-      dependencies: ['@puppeteer/browsers', 'puppeteer-core', 'puppeteer'],
-      env: cwd => {
-        return {
-          PUPPETEER_DOWNLOAD_PATH: join(cwd, '.cache', 'puppeteer'),
-        };
-      },
-    });
-
-    it('evaluates', async function () {
-      const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));
-      assert.equal(files.length, 2);
-      assert(files.includes('chrome'));
-      assert(files.includes('chrome-headless-shell'));
-
-      const script = await readAsset('puppeteer', 'basic.js');
-      await this.runScript(script, 'mjs');
-    });
-  }
-);
-
-// Skipping this test on Windows as windows runners are much slower.
-(platform() === 'win32' ? describe.skip : describe)(
   '`puppeteer` clears cache',
   () => {
     configureSandbox({

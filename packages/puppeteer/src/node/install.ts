@@ -53,8 +53,7 @@ export async function downloadBrowser(): Promise<void> {
     PUPPETEER_REVISIONS['chrome-headless-shell'] ||
     'latest';
 
-  // TODO: deprecate downloadPath in favour of cacheDirectory.
-  const cacheDir = configuration.downloadPath ?? configuration.cacheDirectory!;
+  const cacheDir = configuration.cacheDirectory!;
 
   try {
     const installationJobs = [];
