@@ -21,6 +21,7 @@ import path from 'path';
 import expect from 'expect';
 import {KnownDevices, TimeoutError} from 'puppeteer';
 import {CDPSession} from 'puppeteer-core/internal/api/CDPSession.js';
+import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {Metrics, Page} from 'puppeteer-core/internal/api/Page.js';
 import type {CdpPage} from 'puppeteer-core/internal/cdp/Page.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
@@ -1171,6 +1172,50 @@ describe('Page', function () {
       });
 
       await page.goto(server.PREFIX + '/frames/nested-frames.html');
+      const frame = page.frames()[1]!;
+      const result = await frame.evaluate(async function () {
+        return (globalThis as any).compute(3, 5);
+      });
+      expect(result).toBe(15);
+    });
+    it('should work with loading frames', async () => {
+      // Tries to reproduce the scenario from
+      // https://github.com/puppeteer/puppeteer/issues/8106
+      const {page, server} = await getTestState();
+
+      await page.setRequestInterception(true);
+      let saveRequest: (value: HTTPRequest | PromiseLike<HTTPRequest>) => void;
+      const iframeRequest = new Promise<HTTPRequest>(resolve => {
+        saveRequest = resolve;
+      });
+      page.on('request', async req => {
+        if (req.url().endsWith('/frames/frame.html')) {
+          saveRequest(req);
+        } else {
+          await req.continue();
+        }
+      });
+
+      let error: Error | undefined;
+      const navPromise = page
+        .goto(server.PREFIX + '/frames/one-frame.html', {
+          waitUntil: 'networkidle0',
+        })
+        .catch(err => {
+          error = err;
+        });
+      const req = await iframeRequest;
+      // Expose function while the frame is being loaded. Loading process is
+      // controlled by interception.
+      const exposePromise = page.exposeFunction(
+        'compute',
+        function (a: number, b: number) {
+          return Promise.resolve(a * b);
+        }
+      );
+      await Promise.all([req.continue(), exposePromise]);
+      await navPromise;
+      expect(error).toBeUndefined();
       const frame = page.frames()[1]!;
       const result = await frame.evaluate(async function () {
         return (globalThis as any).compute(3, 5);

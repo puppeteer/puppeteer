@@ -365,6 +365,13 @@ export function addPageBinding(type: string, name: string): void {
   // @ts-expect-error: In a different context.
   const callCdp = globalThis[name];
 
+  // Depending on the frame loading state either Runtime.evaluate or
+  // Page.addScriptToEvaluateOnNewDocument might succeed. Let's check that we
+  // don't re-wrap Puppeteer's binding.
+  if (callCdp[Symbol.toStringTag] === 'PuppeteerBinding') {
+    return;
+  }
+
   // We replace the CDP binding with a Puppeteer binding.
   Object.assign(globalThis, {
     [name](...args: unknown[]): Promise<unknown> {
@@ -404,6 +411,8 @@ export function addPageBinding(type: string, name: string): void {
       });
     },
   });
+  // @ts-expect-error: In a different context.
+  globalThis[name][Symbol.toStringTag] = 'PuppeteerBinding';
 }
 
 /**
