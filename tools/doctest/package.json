@@ -24,8 +24,8 @@
     }
   },
   "dependencies": {
-    "@swc/core": "1.3.101",
-    "acorn": "8.11.2",
+    "@swc/core": "1.3.102",
+    "acorn": "8.11.3",
     "doctrine": "3.0.0",
     "glob": "10.3.10",
     "pkg-dir": "8.0.0",
