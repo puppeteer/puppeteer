@@ -15,6 +15,7 @@
  */
 
 export * from './BrowserWebSocketTransport.js';
+export * from './CallbackRegistry.js';
 export * from './Configuration.js';
 export * from './ConnectionTransport.js';
 export * from './ConnectOptions.js';

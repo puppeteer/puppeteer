@@ -31,6 +31,7 @@ export * from './ExecutionContext.js';
 export * from './FirefoxTargetManager.js';
 export * from './Frame.js';
 export * from './FrameManager.js';
+export * from './FrameManagerEvents.js';
 export * from './FrameTree.js';
 export * from './HTTPRequest.js';
 export * from './HTTPResponse.js';

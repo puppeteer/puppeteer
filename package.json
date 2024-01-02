@@ -155,9 +155,9 @@
     "sinon": "17.0.1",
     "source-map-support": "0.5.21",
     "spdx-satisfies": "5.0.1",
-    "tsd": "0.30.1",
+    "tsd": "0.30.2",
     "tsx": "4.7.0",
-    "typescript": "5.2.2",
+    "typescript": "5.3.3",
     "wireit": "0.14.1"
   },
   "overrides": {
