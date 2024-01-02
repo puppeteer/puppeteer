@@ -1,0 +1,71 @@
+name: CI
+
+# Declare default permissions as read only.
+permissions: read-all
+
+on:
+  schedule:
+    # Run everyday at: https://crontab.guru/#0_8_*_*_*.
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+jobs:
+  canary-chrome-tests:
+    name: ${{ matrix.suite }} tests on ${{ matrix.os }} (${{ matrix.shard }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+        suite:
+          - chrome-headless
+          - chrome-headful
+          - chrome-new-headless
+          - chrome-bidi
+        shard:
+          - 1-2
+          - 2-2
+        exclude:
+          - os: windows-latest
+            suite: chrome-bidi
+          - os: macos-latest
+            suite: chrome-headful
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - name: Set up Node.js
+        uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
+        with:
+          cache: npm
+          node-version: lts/*
+      - name: Set up FFmpeg
+        uses: FedericoCarboni/setup-ffmpeg@5058c9851b649ced05c3e73a4fb5ef2995a89127 # v2.0.0
+      - name: Install dependencies
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
+      # Set up GitHub Actions caching for Wireit.
+      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
+      - name: Build packages
+        run: npm run build --workspace @puppeteer-test/test
+      - name: Install Chrome Canary
+        id: browser
+        run: node tools/download_chrome_bidi.mjs ~/.cache/puppeteer/chrome-canary
+      - name: Run all tests (for non-Linux)
+        if: ${{ matrix.os != 'ubuntu-latest' }}
+        run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        env:
+          PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
+      - name: Run all tests (for Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        env:
+          PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
+      - uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+        if: always()
+        with:
+          name: test-results-${{ matrix.os }}-${{ matrix.suite }}-${{ matrix.shard }}
+          path: /tmp/artifacts/*.json
