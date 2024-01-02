@@ -31,6 +31,6 @@ export declare class Connection extends EventEmitter<CDPSessionEvents>
 | [createSession(targetInfo)](./puppeteer.connection.createsession.md) |                     |             |
 | [dispose()](./puppeteer.connection.dispose.md)                       |                     |             |
 | [fromSession(session)](./puppeteer.connection.fromsession.md)        | <code>static</code> |             |
-| [send(method, paramArgs)](./puppeteer.connection.send.md)            |                     |             |
+| [send(method, params, options)](./puppeteer.connection.send.md)      |                     |             |
 | [session(sessionId)](./puppeteer.connection.session.md)              |                     |             |
 | [url()](./puppeteer.connection.url.md)                               |                     |             |

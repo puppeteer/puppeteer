@@ -17,6 +17,7 @@
 import type {Protocol} from 'devtools-protocol';
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
+import type {CommandOptions} from '../api/CDPSession.js';
 import {
   CDPSessionEvent,
   type CDPSession,
@@ -104,7 +105,8 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
 
   send<T extends keyof ProtocolMapping.Commands>(
     method: T,
-    ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
+    params?: ProtocolMapping.Commands[T]['paramsType'][0],
+    options?: CommandOptions
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
     // There is only ever 1 param arg passed, but the Protocol defines it as an
     // array of 0 or 1 items See this comment:
@@ -112,8 +114,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     // which explains why the protocol defines the params this way for better
     // type-inference.
     // So now we check if there are any params or not and deal with them accordingly.
-    const params = paramArgs.length ? paramArgs[0] : undefined;
-    return this._rawSend(this.#callbacks, method, params);
+    return this._rawSend(this.#callbacks, method, params, undefined, options);
   }
 
   /**
@@ -123,9 +124,10 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     callbacks: CallbackRegistry,
     method: T,
     params: ProtocolMapping.Commands[T]['paramsType'][0],
-    sessionId?: string
+    sessionId?: string,
+    options?: CommandOptions
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
-    return callbacks.create(method, this.#timeout, id => {
+    return callbacks.create(method, options?.timeout ?? this.#timeout, id => {
       const stringifiedMessage = JSON.stringify({
         method,
         params,

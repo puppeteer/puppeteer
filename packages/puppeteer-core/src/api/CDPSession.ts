@@ -49,6 +49,13 @@ export interface CDPSessionEvents
 }
 
 /**
+ * @public
+ */
+export interface CommandOptions {
+  timeout: number;
+}
+
+/**
  * The `CDPSession` instances are used to talk raw Chrome Devtools Protocol.
  *
  * @remarks
@@ -97,7 +104,8 @@ export abstract class CDPSession extends EventEmitter<CDPSessionEvents> {
 
   abstract send<T extends keyof ProtocolMapping.Commands>(
     method: T,
-    ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
+    params?: ProtocolMapping.Commands[T]['paramsType'][0],
+    options?: CommandOptions
   ): Promise<ProtocolMapping.Commands[T]['returnType']>;
 
   /**
