@@ -1,4 +1,4 @@
-name: CI
+name: Puppeteer Canary CI
 
 # Declare default permissions as read only.
 permissions: read-all
