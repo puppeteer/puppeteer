@@ -11,11 +11,11 @@
   },
   "wireit": {
     "build": {
-      "command": "tsc -b && node tools/copySchemaFiles.js",
+      "command": "tsc -b && node tools/copySchemaFiles.mjs",
       "clean": "if-file-deleted",
       "files": [
         "tsconfig.json",
-        "tsconfig.spec.json",
+        "tsconfig.test.json",
         "src/**",
         "test/src/**"
       ],

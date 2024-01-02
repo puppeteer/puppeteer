@@ -14,5 +14,5 @@
   },
   "include": ["src/**/*"],
   "exclude": ["src/**/files/**/*"],
-  "references": [{"path": "./tsconfig.spec.json"}]
+  "references": [{"path": "./tsconfig.test.json"}]
 }
