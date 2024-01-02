@@ -15,6 +15,7 @@
  */
 
 import type {CDPSession} from '../api/CDPSession.js';
+import type {Page} from '../api/Page.js';
 import {Target, TargetType} from '../api/Target.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 
@@ -38,8 +39,8 @@ export abstract class BidiTarget extends Target {
     this._browserContext = browserContext;
   }
 
-  override async worker(): Promise<null> {
-    return null;
+  override asPage(): Promise<Page> {
+    throw new UnsupportedOperation();
   }
 
   override browser(): BidiBrowser {
