@@ -53,8 +53,7 @@
   },
   "devDependencies": {
     "@schematics/angular": "^17.0.7",
-    "@angular/cli": "^17.0.7",
-    "rxjs": "7.8.1"
+    "@angular/cli": "^17.0.7"
   },
   "files": [
     "lib",
