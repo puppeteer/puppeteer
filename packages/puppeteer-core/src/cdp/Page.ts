@@ -673,6 +673,9 @@ export class CdpPage extends Page {
 
     const expression = pageBindingInitString('exposedFun', name);
     await this.#primaryTargetClient.send('Runtime.addBinding', {name});
+    // TODO: investigate this as it appears to only apply to the main frame and
+    // local subframes instead of the entire frame tree (including future
+    // frame).
     const {identifier} = await this.#primaryTargetClient.send(
       'Page.addScriptToEvaluateOnNewDocument',
       {
@@ -684,6 +687,11 @@ export class CdpPage extends Page {
 
     await Promise.all(
       this.frames().map(frame => {
+        // If a frame has not started loading, it might never start. Rely on
+        // addScriptToEvaluateOnNewDocument in that case.
+        if (frame !== this.mainFrame() && !frame._hasStartedLoading) {
+          return;
+        }
         return frame.evaluate(expression).catch(debugError);
       })
     );
@@ -702,6 +710,11 @@ export class CdpPage extends Page {
 
     await Promise.all(
       this.frames().map(frame => {
+        // If a frame has not started loading, it might never start. Rely on
+        // addScriptToEvaluateOnNewDocument in that case.
+        if (frame !== this.mainFrame() && !frame._hasStartedLoading) {
+          return;
+        }
         return frame
           .evaluate(name => {
             // Removes the dangling Puppeteer binding wrapper.

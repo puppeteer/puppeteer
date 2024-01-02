@@ -93,6 +93,8 @@ export class IsolatedWorld extends Realm {
   }
 
   clearContext(): void {
+    // The message has to match the CDP message expected by the WaitTask class.
+    this.#context?.reject(new Error('Execution context was destroyed'));
     this.#context = Deferred.create();
     if ('clearDocumentHandle' in this.#frameOrWorker) {
       this.#frameOrWorker.clearDocumentHandle();
