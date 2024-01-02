@@ -1,5 +1,5 @@
 name: Bug report
-description: File a bug report
+description: File a bug report for puppeteer or puppeteer-core
 title: '[Bug]: '
 labels: [bug]
 body:
@@ -11,6 +11,9 @@ body:
         **Before filling out this report**, please check our
         [Troubleshooting](https://pptr.dev/troubleshooting) guide for solutions
         to common issues.
+
+        If your issue is not about `puppeteer` or `puppeteer-core` packages, check out
+        other issue templates at https://github.com/puppeteer/puppeteer/issues/new/choose.
   - id: mvce
     type: textarea
     attributes:

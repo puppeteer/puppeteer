@@ -1,0 +1,42 @@
+name: Bug for @puppeteer/ng-schematics
+description: File a bug report specifically about the `@puppeteer/ng-schematics` package.
+title: '[Bug]: '
+labels: [bug, '@puppeteer/ng-schematics']
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Steps to reproduce
+      description: Please describe steps to reproduce the issue.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected results
+      description: What is the behaviour you expect.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual results
+      description: What is the observed behaviour.
+    validations:
+      required: true
+  - id: ng-schematics-version
+    type: input
+    attributes:
+      label: '@puppeteer/ng-schematics version'
+      description: >
+        For example, `0.5.5`
+    validations:
+      required: true
+  - id: ng-version
+    type: textarea
+    attributes:
+      label: Angular CLI version
+      description: >
+        Paste the output of `ng version` here.
+    validations:
+      required: true
