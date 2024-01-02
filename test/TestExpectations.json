@@ -852,6 +852,13 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[network.spec] network Request.postData should work with blobs",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "Not implemented for BiDi yet."
+  },
+  {
     "testIdPattern": "[network.spec] network Response.fromServiceWorker Response.fromServiceWorker",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -2710,6 +2717,13 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Request.postData should work with blobs",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"],
+    "comment": "Blobs have no POST data in Firefox's CDP implementation."
   },
   {
     "testIdPattern": "[network.spec] network Response.buffer should throw if the response does not have a body",

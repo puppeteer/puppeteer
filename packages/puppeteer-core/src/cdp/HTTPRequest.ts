@@ -49,6 +49,7 @@ export class CdpHTTPRequest extends HTTPRequest {
   #resourceType: ResourceType;
 
   #method: string;
+  #hasPostData = false;
   #postData?: string;
   #headers: Record<string, string> = {};
   #frame: Frame | null;
@@ -109,6 +110,7 @@ export class CdpHTTPRequest extends HTTPRequest {
     this.#resourceType = (data.type || 'other').toLowerCase() as ResourceType;
     this.#method = data.request.method;
     this.#postData = data.request.postData;
+    this.#hasPostData = data.request.hasPostData ?? false;
     this.#frame = frame;
     this._redirectChain = redirectChain;
     this.#continueRequestOverrides = {};
@@ -187,6 +189,22 @@ export class CdpHTTPRequest extends HTTPRequest {
 
   override postData(): string | undefined {
     return this.#postData;
+  }
+
+  override hasPostData(): boolean {
+    return this.#hasPostData;
+  }
+
+  override async fetchPostData(): Promise<string | undefined> {
+    try {
+      const result = await this.#client.send('Network.getRequestPostData', {
+        requestId: this._requestId,
+      });
+      return result.postData;
+    } catch (err) {
+      debugError(err);
+      return;
+    }
   }
 
   override headers(): Record<string, string> {

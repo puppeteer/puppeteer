@@ -267,11 +267,40 @@ describe('network', function () {
       expect(request).toBeTruthy();
       expect(request.postData()).toBe('{"foo":"bar"}');
     });
+
     it('should be |undefined| when there is no post data', async () => {
       const {page, server} = await getTestState();
 
       const response = (await page.goto(server.EMPTY_PAGE))!;
       expect(response.request().postData()).toBe(undefined);
+    });
+
+    it('should work with blobs', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      server.setRoute('/post', (_req, res) => {
+        return res.end();
+      });
+
+      const [request] = await Promise.all([
+        waitEvent<HTTPRequest>(page, 'request', r => {
+          return !isFavicon(r);
+        }),
+        page.evaluate(() => {
+          return fetch('./post', {
+            method: 'POST',
+            body: new Blob([JSON.stringify({foo: 'bar'})], {
+              type: 'application/json',
+            }),
+          });
+        }),
+      ]);
+
+      expect(request).toBeTruthy();
+      expect(request.postData()).toBe(undefined);
+      expect(request.hasPostData()).toBe(true);
+      expect(await request.fetchPostData()).toBe('{"foo":"bar"}');
     });
   });
 

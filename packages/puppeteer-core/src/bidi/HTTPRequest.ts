@@ -89,6 +89,14 @@ export class BidiHTTPRequest extends HTTPRequest {
     return this.#postData;
   }
 
+  override hasPostData(): boolean {
+    return this.#postData !== undefined;
+  }
+
+  override async fetchPostData(): Promise<string | undefined> {
+    return this.#postData;
+  }
+
   override headers(): Record<string, string> {
     return this.#headers;
   }
