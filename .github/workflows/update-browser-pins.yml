@@ -35,7 +35,7 @@ jobs:
         uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38 # v5.0.2
         with:
           token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN }}
-          branch: browser-automation-bot/update-browser-version
+          branch: browser-automation-bot/update-browser-version-chrome
           delete-branch: true
           committer: Browser Automation Bot <browser-automation-bot@google.com>
           author: Browser Automation Bot <browser-automation-bot@google.com>
@@ -67,7 +67,7 @@ jobs:
         uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38 # v5.0.2
         with:
           token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN }}
-          branch: browser-automation-bot/update-browser-version
+          branch: browser-automation-bot/update-browser-version-firefox
           delete-branch: true
           committer: Browser Automation Bot <browser-automation-bot@google.com>
           author: Browser Automation Bot <browser-automation-bot@google.com>
