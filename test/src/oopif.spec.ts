@@ -5,9 +5,8 @@
  */
 
 import expect from 'expect';
-
-import {CDPSessionEvent} from 'puppeteer-core/internal/api/CDPSession.js';
 import type {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
+import {CDPSessionEvent} from 'puppeteer-core/internal/api/CDPSession.js';
 import type {CdpTarget} from 'puppeteer-core/internal/cdp/Target.js';
 
 import {getTestState, launch} from './mocha-utils.js';

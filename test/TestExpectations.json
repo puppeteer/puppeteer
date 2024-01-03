@@ -498,6 +498,30 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
+    "testIdPattern": "[devtools.spec] DevTools should expose DevTools as a page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[devtools.spec] DevTools should open devtools when \"devtools: true\" option is given",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[devtools.spec] DevTools target.page() should return a DevTools page if asPage is used",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[devtools.spec] DevTools target.page() should return a DevTools page if custom isPageTarget is provided",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[drag-and-drop.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -1904,6 +1928,24 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[extensions.spec] extensions background_page target type should be available",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[extensions.spec] extensions service_worker target type should be available",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[extensions.spec] extensions target.page() should return a background_page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[fixtures.spec] Fixtures should close the browser when the node process closes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -1998,42 +2040,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[headful.spec] headful tests HEADFUL headless should be able to read cookies written by headful",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["headful", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[headful.spec] headful tests HEADFUL should close browser with beforeunload page",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["headful", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[headful.spec] headful tests HEADFUL should have default url when launching browser",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["headful", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[headful.spec] headful tests HEADFUL target.page() should return a background_page",
-    "platforms": ["darwin", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[headful.spec] headful tests HEADFUL target.page() should return a DevTools page if custom isPageTarget is provided",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[headful.spec] headful tests Page.bringToFront should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[ignorehttpserrors.spec] ignoreHTTPSErrors Response.securityDetails Network redirects should report SecurityDetails",
@@ -2244,6 +2250,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "headless"],
     "expectations": ["FAIL", "PASS"]
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should close browser with beforeunload page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should filter out ignored default argument in Firefox",
@@ -2932,6 +2944,12 @@
   },
   {
     "testIdPattern": "[page.spec] Page Page.addScriptTag should throw when added with content to the CSP page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.bringToFront should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
@@ -3771,16 +3789,52 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
-    "testIdPattern": "[headful.spec] headful tests HEADFUL OOPIF: should expose events within OOPIFs",
-    "platforms": ["linux"],
+    "testIdPattern": "[devtools.spec] DevTools should expose DevTools as a page",
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headless"],
-    "expectations": ["FAIL", "PASS"]
+    "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[headful.spec] headful tests HEADFUL target.page() should return a DevTools page if custom isPageTarget is provided",
+    "testIdPattern": "[devtools.spec] DevTools should open devtools when \"devtools: true\" option is given",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "headful", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "parameters": ["cdp", "chrome", "headless"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[devtools.spec] DevTools target.page() should return a DevTools page if asPage is used",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome", "headless"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[devtools.spec] DevTools target.page() should return a DevTools page if custom isPageTarget is provided",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome", "headless"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[extensions.spec] extensions background_page target type should be available",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome", "headless"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[extensions.spec] extensions service_worker target type should be available",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome", "headless"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[extensions.spec] extensions target.page() should return a background_page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome", "headless"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[extensions.spec] extensions target.page() should return a background_page",
+    "platforms": ["win32"],
+    "parameters": ["cdp", "chrome", "headful"],
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch userDataDir option restores preferences",
@@ -3817,6 +3871,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headful"],
     "expectations": ["FAIL", "PASS"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.bringToFront should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome", "headless"],
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should be abortable",
