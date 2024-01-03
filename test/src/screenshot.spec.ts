@@ -359,6 +359,42 @@ describe('Screenshots', function () {
 
       expect(screenshot).toBeInstanceOf(Buffer);
     });
+
+    it('should run in parallel in multiple pages', async () => {
+      const {browser, server} = await getTestState();
+
+      const context = await browser.createIncognitoBrowserContext();
+
+      const N = 2;
+      const pages = await Promise.all(
+        Array(N)
+          .fill(0)
+          .map(async () => {
+            const page = await context.newPage();
+            await page.goto(server.PREFIX + '/grid.html');
+            return page;
+          })
+      );
+      const promises = [];
+      for (let i = 0; i < N; ++i) {
+        promises.push(
+          pages[i]!.screenshot({
+            clip: {x: 50 * i, y: 0, width: 50, height: 50},
+          })
+        );
+      }
+      const screenshots = await Promise.all(promises);
+      for (let i = 0; i < N; ++i) {
+        expect(screenshots[i]).toBeGolden(`grid-cell-${i}.png`);
+      }
+      await Promise.all(
+        pages.map(page => {
+          return page.close();
+        })
+      );
+
+      await context.close();
+    });
   });
 
   describe('Cdp', () => {
