@@ -473,7 +473,7 @@ export class CdpPage extends Page {
     const {level, text, args, source, url, lineNumber} = event.entry;
     if (args) {
       args.map(arg => {
-        return releaseObject(this.#primaryTargetClient, arg);
+        void releaseObject(this.#primaryTargetClient, arg);
       });
     }
     if (source !== 'worker') {
