@@ -285,6 +285,7 @@ export interface ScreenshotOptions {
 }
 
 /**
+ * @public
  * @experimental
  */
 export interface ScreencastOptions {
