@@ -122,7 +122,7 @@
   },
   "devDependencies": {
     "@actions/core": "1.10.1",
-    "@microsoft/api-extractor": "7.39.0",
+    "@microsoft/api-extractor": "7.39.1",
     "@pptr/testserver": "file:packages/testserver",
     "@puppeteer/docgen": "file:tools/docgen",
     "@types/mocha": "10.0.6",
