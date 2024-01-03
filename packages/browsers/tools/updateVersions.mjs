@@ -6,6 +6,10 @@
 
 import fs from 'node:fs/promises';
 
+import actions from '@actions/core';
+
+import {testFirefoxBuildId} from '../test/build/versions.js';
+
 const filePath = './test/src/versions.ts';
 
 const getVersion = async () => {
@@ -28,6 +32,12 @@ const patch = (input, version) => {
 
 const version = await getVersion();
 
-const contents = await fs.readFile(filePath, 'utf8');
-const patched = patch(contents, version);
-fs.writeFile(filePath, patched);
+if (testFirefoxBuildId !== version) {
+  actions.setOutput(
+    'commit',
+    `chore: update Firefox testing pin to ${version}`
+  );
+  const contents = await fs.readFile(filePath, 'utf8');
+  const patched = patch(contents, version);
+  fs.writeFile(filePath, patched);
+}

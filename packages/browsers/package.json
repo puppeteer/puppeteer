@@ -5,6 +5,7 @@
   "scripts": {
     "build:docs": "wireit",
     "build": "wireit",
+    "build:test": "wireit",
     "clean": "../../tools/clean.js",
     "test": "wireit"
   },
