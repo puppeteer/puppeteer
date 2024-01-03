@@ -1,3 +1,5 @@
+import {describe, it} from 'node:test';
+
 import expect from 'expect';
 
 import {
@@ -6,11 +8,11 @@ import {
   setupHttpHooks,
 } from './utils.js';
 
-describe('@puppeteer/ng-schematics: e2e', () => {
+void describe('@puppeteer/ng-schematics: e2e', () => {
   setupHttpHooks();
 
-  describe('Single Project', () => {
-    it('should create default file', async () => {
+  void describe('Single Project', () => {
+    void it('should create default file', async () => {
       const tree = await buildTestingTree('e2e', 'single', {
         name: 'myTest',
       });
@@ -18,7 +20,7 @@ describe('@puppeteer/ng-schematics: e2e', () => {
       expect(tree.files).not.toContain('/e2e/tests/my-test.test.ts');
     });
 
-    it('should create Node file', async () => {
+    void it('should create Node file', async () => {
       const tree = await buildTestingTree('e2e', 'single', {
         name: 'myTest',
         testRunner: 'node',
@@ -27,7 +29,7 @@ describe('@puppeteer/ng-schematics: e2e', () => {
       expect(tree.files).toContain('/e2e/tests/my-test.test.ts');
     });
 
-    it('should create file with route', async () => {
+    void it('should create file with route', async () => {
       const route = 'home';
       const tree = await buildTestingTree('e2e', 'single', {
         name: 'myTest',
@@ -39,7 +41,7 @@ describe('@puppeteer/ng-schematics: e2e', () => {
       );
     });
 
-    it('should create with route with starting slash', async () => {
+    void it('should create with route with starting slash', async () => {
       const route = '/home';
       const tree = await buildTestingTree('e2e', 'single', {
         name: 'myTest',
@@ -52,8 +54,8 @@ describe('@puppeteer/ng-schematics: e2e', () => {
     });
   });
 
-  describe('Multi projects', () => {
-    it('should create default file', async () => {
+  void describe('Multi projects', () => {
+    void it('should create default file', async () => {
       const tree = await buildTestingTree('e2e', 'multi', {
         name: 'myTest',
       });
@@ -65,7 +67,7 @@ describe('@puppeteer/ng-schematics: e2e', () => {
       );
     });
 
-    it('should create Node file', async () => {
+    void it('should create Node file', async () => {
       const tree = await buildTestingTree('e2e', 'multi', {
         name: 'myTest',
         testRunner: 'node',
@@ -78,7 +80,7 @@ describe('@puppeteer/ng-schematics: e2e', () => {
       );
     });
 
-    it('should create file with route', async () => {
+    void it('should create file with route', async () => {
       const route = 'home';
       const tree = await buildTestingTree('e2e', 'multi', {
         name: 'myTest',
@@ -92,7 +94,7 @@ describe('@puppeteer/ng-schematics: e2e', () => {
       ).toContain(`setupBrowserHooks('${route}');`);
     });
 
-    it('should create with route with starting slash', async () => {
+    void it('should create with route with starting slash', async () => {
       const route = '/home';
       const tree = await buildTestingTree('e2e', 'multi', {
         name: 'myTest',

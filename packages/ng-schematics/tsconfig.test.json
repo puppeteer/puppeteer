@@ -3,7 +3,7 @@
   "compilerOptions": {
     "rootDir": "test/src/",
     "outDir": "test/build/",
-    "types": ["node", "mocha"]
+    "types": ["node"]
   },
   "include": ["test/src/**/*"],
   "exclude": ["test/build/**/*"]

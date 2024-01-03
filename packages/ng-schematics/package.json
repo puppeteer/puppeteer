@@ -7,15 +7,15 @@
     "clean": "../../tools/clean.js",
     "dev:test": "npm run test --watch",
     "dev": "npm run build --watch",
-    "test": "wireit"
+    "unit": "wireit"
   },
   "wireit": {
     "build": {
-      "command": "tsc -b && node tools/copySchemaFiles.js",
+      "command": "tsc -b && node tools/copySchemaFiles.mjs",
       "clean": "if-file-deleted",
       "files": [
         "tsconfig.json",
-        "tsconfig.spec.json",
+        "tsconfig.test.json",
         "src/**",
         "test/src/**"
       ],
@@ -25,8 +25,8 @@
         "*.tsbuildinfo"
       ]
     },
-    "test": {
-      "command": "mocha",
+    "unit": {
+      "command": "node --test --test-reporter spec test/build",
       "dependencies": [
         "build"
       ]
@@ -52,10 +52,8 @@
     "@angular-devkit/schematics": "^17.0.7"
   },
   "devDependencies": {
-    "@types/node": "^16.18.61",
     "@schematics/angular": "^17.0.7",
-    "@angular/cli": "^17.0.7",
-    "rxjs": "7.8.1"
+    "@angular/cli": "^17.0.7"
   },
   "files": [
     "lib",
