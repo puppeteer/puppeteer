@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Copyright 2023 Google Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 const {readdirSync} = require('fs');
 const {join} = require('path');
 
@@ -164,7 +170,7 @@ module.exports = {
         // Brackets keep code readable and `return` intentions clear.
         'arrow-body-style': ['error', 'always'],
         // Error if comments do not adhere to `tsdoc`.
-        'tsdoc/syntax': 'warn',
+        'tsdoc/syntax': 'error',
         // Keeps array types simple only when they are simple for readability.
         '@typescript-eslint/array-type': ['error', {default: 'array-simple'}],
         'no-unused-vars': 'off',
