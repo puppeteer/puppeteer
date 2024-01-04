@@ -609,7 +609,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @deprecated We no longer support intercepting drag payloads. Use the new
    * drag APIs found on {@link ElementHandle} to drag (or just use the
-   * {@link Page.mouse}).
+   * {@link Page | Page.mouse}).
    */
   abstract isDragInterceptionEnabled(): boolean;
 
@@ -838,7 +838,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @deprecated We no longer support intercepting drag payloads. Use the new
    * drag APIs found on {@link ElementHandle} to drag (or just use the
-   * {@link Page.mouse}).
+   * {@link Page | Page.mouse}).
    */
   abstract setDragInterception(enabled: boolean): Promise<void>;
 
@@ -2057,7 +2057,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * This is either the viewport set with the previous {@link Page.setViewport}
    * call or the default viewport set via
-   * {@link BrowserConnectOptions.defaultViewport}.
+   * {@link BrowserConnectOptions | BrowserConnectOptions.defaultViewport}.
    */
   abstract viewport(): Viewport | null;
 

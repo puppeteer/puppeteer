@@ -6,7 +6,7 @@ sidebar_label: Browser.isConnected
 
 > Warning: This API is now obsolete.
 >
-> Use [Browser.connected](./puppeteer.browser.connected.md).
+> Use [Browser.connected](./puppeteer.browser.md).
 
 Whether Puppeteer is connected to this [browser](./puppeteer.browser.md).
 

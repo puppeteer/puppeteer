@@ -6,7 +6,7 @@ sidebar_label: Page.viewport
 
 Returns the current page viewport settings without checking the actual page viewport.
 
-This is either the viewport set with the previous [Page.setViewport()](./puppeteer.page.setviewport.md) call or the default viewport set via [BrowserConnectOptions.defaultViewport](./puppeteer.browserconnectoptions.defaultviewport.md).
+This is either the viewport set with the previous [Page.setViewport()](./puppeteer.page.setviewport.md) call or the default viewport set via [BrowserConnectOptions.defaultViewport](./puppeteer.browserconnectoptions.md).
 
 #### Signature:
 
