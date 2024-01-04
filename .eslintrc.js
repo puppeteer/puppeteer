@@ -35,7 +35,7 @@ module.exports = {
 
   parser: '@typescript-eslint/parser',
 
-  plugins: ['mocha', '@typescript-eslint', 'import'],
+  plugins: ['mocha', '@typescript-eslint', 'import', 'rulesdir'],
 
   extends: ['plugin:prettier/recommended', 'plugin:import/typescript'],
 
@@ -144,6 +144,11 @@ module.exports = {
       // Don't allow underscored declarations on camelCased variables/properties.
       // ...RESTRICTED_UNDERSCORED_IDENTIFIERS,
     ],
+
+    // Keeps comments formatted.
+    'rulesdir/prettier-comments': 'error',
+    // Enforces consistent file extension
+    'rulesdir/extensions': 'error',
   },
   overrides: [
     {
@@ -157,14 +162,10 @@ module.exports = {
         'plugin:@typescript-eslint/recommended',
         'plugin:@typescript-eslint/stylistic',
       ],
-      plugins: ['eslint-plugin-tsdoc', 'rulesdir'],
+      plugins: ['eslint-plugin-tsdoc'],
       rules: {
-        // Keeps comments formatted.
-        'rulesdir/prettier-comments': 'error',
         // Enforces clean up of used resources.
         'rulesdir/use-using': 'error',
-        // Enforces consistent file extension
-        'rulesdir/extensions': 'error',
         // Brackets keep code readable.
         curly: ['error', 'all'],
         // Brackets keep code readable and `return` intentions clear.
