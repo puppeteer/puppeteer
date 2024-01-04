@@ -7,6 +7,7 @@
   },
   "scripts": {
     "build": "wireit",
+    "build:tools": "wireit",
     "check": "npm run check --workspaces --if-present && run-p check:*",
     "check:pinned-deps": "tsx tools/ensure-pinned-deps",
     "clean": "npm run clean --workspaces --if-present",
@@ -49,6 +50,15 @@
         "./packages/testserver:build",
         "./test:build",
         "./test/installation:build"
+      ]
+    },
+    "build:tools": {
+      "dependencies": [
+        "./tools/docgen:build",
+        "./tools/doctest:build",
+        "./tools/mocha-runner:build",
+        "./tools/eslint:build",
+        "./packages/testserver:build"
       ]
     },
     "docs": {
@@ -123,8 +133,6 @@
   "devDependencies": {
     "@actions/core": "1.10.1",
     "@microsoft/api-extractor": "7.39.1",
-    "@pptr/testserver": "file:packages/testserver",
-    "@puppeteer/docgen": "file:tools/docgen",
     "@types/mocha": "10.0.6",
     "@types/node": "20.8.4",
     "@types/semver": "7.5.6",
@@ -150,7 +158,6 @@
     "mocha": "10.2.0",
     "npm-run-all": "4.1.5",
     "prettier": "3.1.1",
-    "puppeteer": "file:packages/puppeteer",
     "semver": "7.5.4",
     "sinon": "17.0.1",
     "source-map-support": "0.5.21",
