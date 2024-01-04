@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.1](https://github.com/puppeteer/puppeteer/compare/browsers-v1.9.0...browsers-v1.9.1) (2024-01-04)
+
+
+### Bug Fixes
+
+* disable GFX sanity window for Firefox and enable WebDriver BiDi CI jobs for Windows ([#11578](https://github.com/puppeteer/puppeteer/issues/11578)) ([e41a265](https://github.com/puppeteer/puppeteer/commit/e41a2656d9e1f3f037b298457fbd6c6e08f5a371))
+
 ## [1.9.0](https://github.com/puppeteer/puppeteer/compare/browsers-v1.8.0...browsers-v1.9.0) (2023-12-05)
 
 
