@@ -20,6 +20,29 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.7.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.6.1...puppeteer-core-v21.7.0) (2024-01-04)
+
+
+### Features
+
+* allow converting other targets to pages ([#11604](https://github.com/puppeteer/puppeteer/issues/11604)) ([66aa770](https://github.com/puppeteer/puppeteer/commit/66aa77003880a1458e14b47a3ed87856fd3a1933))
+* support fetching request POST data ([#11598](https://github.com/puppeteer/puppeteer/issues/11598)) ([80143de](https://github.com/puppeteer/puppeteer/commit/80143def9606ec5f2018dde618c00784442c5c1d))
+* support timeouts per CDP command ([#11595](https://github.com/puppeteer/puppeteer/issues/11595)) ([c660d40](https://github.com/puppeteer/puppeteer/commit/c660d4001d610854399d7ecb551c4eb56a7f840a))
+
+
+### Bug Fixes
+
+* change viewportHeight in screencast ([#11583](https://github.com/puppeteer/puppeteer/issues/11583)) ([107b833](https://github.com/puppeteer/puppeteer/commit/107b8337e5eebc5e31a57663ba1345be81fb486e))
+* disable GFX sanity window for Firefox and enable WebDriver BiDi CI jobs for Windows ([#11578](https://github.com/puppeteer/puppeteer/issues/11578)) ([e41a265](https://github.com/puppeteer/puppeteer/commit/e41a2656d9e1f3f037b298457fbd6c6e08f5a371))
+* improve reliability of exposeFunction ([#11600](https://github.com/puppeteer/puppeteer/issues/11600)) ([b0c5392](https://github.com/puppeteer/puppeteer/commit/b0c5392cb36eed2ed4ae4864587885b6059f4cfb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 1.9.0 to 1.9.1
+
 ## [21.6.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.6.0...puppeteer-core-v21.6.1) (2023-12-13)
 
 

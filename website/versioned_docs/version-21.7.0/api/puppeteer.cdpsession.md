@@ -39,9 +39,9 @@ await client.send('Animation.setPlaybackRate', {
 
 ## Methods
 
-| Method                                                    | Modifiers | Description                                                                                                                             |
-| --------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| [connection()](./puppeteer.cdpsession.connection.md)      |           |                                                                                                                                         |
-| [detach()](./puppeteer.cdpsession.detach.md)              |           | Detaches the cdpSession from the target. Once detached, the cdpSession object won't emit any events and can't be used to send messages. |
-| [id()](./puppeteer.cdpsession.id.md)                      |           | Returns the session's id.                                                                                                               |
-| [send(method, paramArgs)](./puppeteer.cdpsession.send.md) |           |                                                                                                                                         |
+| Method                                                          | Modifiers | Description                                                                                                                             |
+| --------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| [connection()](./puppeteer.cdpsession.connection.md)            |           |                                                                                                                                         |
+| [detach()](./puppeteer.cdpsession.detach.md)                    |           | Detaches the cdpSession from the target. Once detached, the cdpSession object won't emit any events and can't be used to send messages. |
+| [id()](./puppeteer.cdpsession.id.md)                            |           | Returns the session's id.                                                                                                               |
+| [send(method, params, options)](./puppeteer.cdpsession.send.md) |           |                                                                                                                                         |
