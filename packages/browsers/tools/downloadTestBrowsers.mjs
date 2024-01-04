@@ -5,7 +5,7 @@
  */
 
 /**
- * Downloads test browser binaries to test/cache/server folder that
+ * Downloads test browser binaries to test/.cache/server folder that
  * mirrors the structure of the download server.
  */
 

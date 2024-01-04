@@ -3,16 +3,14 @@ const puppeteer = require('puppeteer');
 /**
  * To have Puppeteer fetch a Firefox binary for you, first run:
  *
- *  PUPPETEER_PRODUCT=firefox npm install
+ * PUPPETEER_PRODUCT=firefox npm install
  *
  * To get additional logging about which browser binary is executed,
  * run this example as:
  *
- *   DEBUG=puppeteer:launcher NODE_PATH=../ node examples/cross-browser.js
+ * DEBUG=puppeteer:launcher NODE_PATH=../ node examples/cross-browser.js
  *
  * You can set a custom binary with the `executablePath` launcher option.
- *
- *
  */
 
 const firefoxOptions = {

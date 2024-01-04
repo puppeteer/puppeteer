@@ -33,7 +33,7 @@ export function createMockedReadlineInterface(
 }
 
 const startServer = async () => {
-  const assetsPath = path.join(__dirname, '..', 'cache', 'server');
+  const assetsPath = path.join(__dirname, '..', '.cache', 'server');
   return await TestServer.create(assetsPath);
 };
 

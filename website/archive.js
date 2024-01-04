@@ -1,5 +1,6 @@
 /**
  * "Archives" older versions of the website docs to reduce the build time:
+ *
  * - keeps one latest version + next
  * - moves older versions to versionsArchived.json
  */

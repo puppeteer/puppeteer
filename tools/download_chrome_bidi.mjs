@@ -13,8 +13,9 @@
  * param for GitHub actions.
  *
  * Examples:
- *  - `node install-browser.mjs`
- *  - `node install-browser.mjs /tmp/cache`
+ *
+ * - `node install-browser.mjs`
+ * - `node install-browser.mjs /tmp/cache`
  */
 import {readFile} from 'node:fs/promises';
 import {createRequire} from 'node:module';
