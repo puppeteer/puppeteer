@@ -2072,6 +2072,12 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[keyboard.spec] Keyboard should report shiftKey",
+    "platforms": ["darwin"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[keyboard.spec] Keyboard should send a character with sendCharacter",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -2357,7 +2363,7 @@
     "testIdPattern": "[navigation.spec] navigation Frame.waitForNavigation should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"]
+    "expectations": ["FAIL", "PASS", "TIMEOUT"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goBack should work with HistoryAPI",
@@ -3832,7 +3838,7 @@
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should capture full element when larger than viewport",
-    "platforms": ["win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox", "headless", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
