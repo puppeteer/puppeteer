@@ -27,9 +27,9 @@ describe('Firefox', () => {
         browser: Browser.FIREFOX,
         platform: BrowserPlatform.LINUX,
         buildId: '123',
-        cacheDir: 'cache',
+        cacheDir: '.cache',
       }),
-      path.join('cache', 'firefox', 'linux-123', 'firefox', 'firefox')
+      path.join('.cache', 'firefox', 'linux-123', 'firefox', 'firefox')
     );
   });
 

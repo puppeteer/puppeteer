@@ -32,7 +32,7 @@ function getBrowser(str) {
   }
 }
 
-const cacheDir = normalize(join('.', 'test', 'cache'));
+const cacheDir = normalize(join('.', 'test', '.cache'));
 
 for (const version of Object.keys(versions)) {
   const browser = getBrowser(version);

@@ -27,9 +27,9 @@ describe('Chrome', () => {
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
         buildId: '123',
-        cacheDir: 'cache',
+        cacheDir: '.cache',
       }),
-      path.join('cache', 'chrome', 'linux-123', 'chrome-linux64', 'chrome')
+      path.join('.cache', 'chrome', 'linux-123', 'chrome-linux64', 'chrome')
     );
   });
 
