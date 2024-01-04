@@ -729,7 +729,7 @@
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should have custom URL when launching browser",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should launch Chrome properly with --no-startup-window and waitForInitialPage=false",
