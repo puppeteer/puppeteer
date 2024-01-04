@@ -6,6 +6,7 @@
 
 import expect from 'expect';
 import type {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
+import {CDPSessionEvent} from 'puppeteer-core/internal/api/CDPSession.js';
 import type {CdpTarget} from 'puppeteer-core/internal/cdp/Target.js';
 
 import {getTestState, launch} from './mocha-utils.js';
@@ -439,6 +440,92 @@ describe('OOPIF', function () {
         return frame.url().endsWith('/empty.html');
       });
     });
+  });
+
+  it('should report google.com frame', async () => {
+    const {server, page} = state;
+    await page.goto(server.EMPTY_PAGE);
+    await page.setRequestInterception(true);
+    page.on('request', (r: {respond: (arg0: {body: string}) => any}) => {
+      return r.respond({body: 'YO, GOOGLE.COM'});
+    });
+    await page.evaluate(() => {
+      const frame = document.createElement('iframe');
+      frame.setAttribute('src', 'https://google.com/');
+      document.body.appendChild(frame);
+      return new Promise(x => {
+        return (frame.onload = x);
+      });
+    });
+    await page.waitForSelector('iframe[src="https://google.com/"]');
+    const urls = page
+      .frames()
+      .map((frame: {url: () => any}) => {
+        return frame.url();
+      })
+      .sort();
+    expect(urls).toEqual([server.EMPTY_PAGE, 'https://google.com/']);
+  });
+
+  it('should expose events within OOPIFs', async () => {
+    const {server, page} = state;
+
+    // Setup our session listeners to observe OOPIF activity.
+    const session = await page.target().createCDPSession();
+    const networkEvents: any[] = [];
+    const otherSessions: any[] = [];
+    await session.send('Target.setAutoAttach', {
+      autoAttach: true,
+      flatten: true,
+      waitForDebuggerOnStart: true,
+    });
+    // TODO: Remove any.
+    (session as any).on(
+      CDPSessionEvent.SessionAttached,
+      async (session: {
+        on: (arg0: string, arg1: (params: any) => number) => void;
+        send: (arg0: string) => any;
+      }) => {
+        otherSessions.push(session);
+
+        session.on('Network.requestWillBeSent', (params: any) => {
+          return networkEvents.push(params);
+        });
+        await session.send('Network.enable');
+        await session.send('Runtime.runIfWaitingForDebugger');
+      }
+    );
+
+    // Navigate to the empty page and add an OOPIF iframe with at least one request.
+    await page.goto(server.EMPTY_PAGE);
+    await page.evaluate(
+      (frameUrl: string) => {
+        const frame = document.createElement('iframe');
+        frame.setAttribute('src', frameUrl);
+        document.body.appendChild(frame);
+        return new Promise((x, y) => {
+          frame.onload = x;
+          frame.onerror = y;
+        });
+      },
+      server.PREFIX.replace('localhost', 'oopifdomain') + '/one-style.html'
+    );
+    await page.waitForSelector('iframe');
+
+    // Ensure we found the iframe session.
+    expect(otherSessions).toHaveLength(1);
+
+    // Resume the iframe and trigger another request.
+    const iframeSession = otherSessions[0]!;
+    await iframeSession.send('Runtime.evaluate', {
+      expression: `fetch('/fetch')`,
+      awaitPromise: true,
+    });
+
+    const requests = networkEvents.map(event => {
+      return event.request.url;
+    });
+    expect(requests).toContain(`http://oopifdomain:${server.PORT}/fetch`);
   });
 });
 

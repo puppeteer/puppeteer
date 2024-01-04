@@ -2340,4 +2340,39 @@ describe('Page', function () {
       expect((page as CdpPage)._client()).toBeInstanceOf(CDPSession);
     });
   });
+
+  describe('Page.bringToFront', function () {
+    it('should work', async () => {
+      const {browser} = await getTestState();
+      const page1 = await browser.newPage();
+      const page2 = await browser.newPage();
+
+      await page1.bringToFront();
+      expect(
+        await page1.evaluate(() => {
+          return document.visibilityState;
+        })
+      ).toBe('visible');
+      expect(
+        await page2.evaluate(() => {
+          return document.visibilityState;
+        })
+      ).toBe('hidden');
+
+      await page2.bringToFront();
+      expect(
+        await page1.evaluate(() => {
+          return document.visibilityState;
+        })
+      ).toBe('hidden');
+      expect(
+        await page2.evaluate(() => {
+          return document.visibilityState;
+        })
+      ).toBe('visible');
+
+      await page1.close();
+      await page2.close();
+    });
+  });
 });
