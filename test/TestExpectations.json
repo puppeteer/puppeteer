@@ -1946,6 +1946,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[extensions.spec] extensions target.page() should return a background_page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["FAIL", "PASS"]
+  },
+  {
     "testIdPattern": "[fixtures.spec] Fixtures should close the browser when the node process closes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -3823,12 +3829,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headless"],
     "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[extensions.spec] extensions target.page() should return a background_page",
-    "platforms": ["win32"],
-    "parameters": ["cdp", "chrome", "headful"],
-    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch userDataDir option restores preferences",
