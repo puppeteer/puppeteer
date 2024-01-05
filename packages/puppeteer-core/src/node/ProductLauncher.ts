@@ -16,6 +16,13 @@ import {
   computeExecutablePath,
 } from '@puppeteer/browsers';
 
+import {
+  firstValueFrom,
+  from,
+  map,
+  race,
+  timer,
+} from '../../third_party/rxjs/rxjs.js';
 import type {Browser, BrowserCloseCallback} from '../api/Browser.js';
 import {CdpBrowser} from '../cdp/Browser.js';
 import {Connection} from '../cdp/Connection.js';
@@ -236,7 +243,17 @@ export abstract class ProductLauncher {
         await browserProcess.close();
       }
     } else {
-      await browserProcess.close();
+      // Wait for a possible graceful shutdown.
+      await firstValueFrom(
+        race(
+          from(browserProcess.hasClosed()),
+          timer(5000).pipe(
+            map(() => {
+              return from(browserProcess.close());
+            })
+          )
+        )
+      );
     }
   }
 
