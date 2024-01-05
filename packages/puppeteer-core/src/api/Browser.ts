@@ -409,7 +409,7 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
   /**
    * Whether Puppeteer is connected to this {@link Browser | browser}.
    *
-   * @deprecated Use {@link Browser.connected}.
+   * @deprecated Use {@link Browser | Browser.connected}.
    */
   isConnected(): boolean {
     return this.connected;

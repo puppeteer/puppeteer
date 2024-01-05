@@ -54,8 +54,8 @@ const browser = await puppeteer.launch({
 ### Capture `console.*` output
 
 Since client code runs in the browser, doing `console.*` in client code will not
-directly log to Node.js. However, you can [listen](../api/puppeteer.page.on) for
-the [`console`](../api/puppeteer.pageeventobject) event which returns a
+directly log to Node.js. However, you can [listen (page.on)](../api/puppeteer.page) for
+the [`console`](../api/puppeteer.pageevents) event which returns a
 payload with the logged text.
 
 ```ts
