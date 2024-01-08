@@ -45,6 +45,7 @@ import {
   getReadableFromProtocolStream,
   NETWORK_IDLE_TIME,
   pageBindingInitString,
+  parsePDFOptions,
   timeout,
   validateDialogType,
   valueFromRemoteObject,
@@ -1134,6 +1135,7 @@ export class CdpPage extends Page {
   }
 
   override async createPDFStream(options: PDFOptions = {}): Promise<Readable> {
+    const {timeout: ms = this._timeoutSettings.timeout()} = options;
     const {
       landscape,
       displayHeaderFooter,
@@ -1147,9 +1149,8 @@ export class CdpPage extends Page {
       pageRanges,
       preferCSSPageSize,
       omitBackground,
-      timeout: ms,
       tagged: generateTaggedPDF,
-    } = this._getPDFOptions(options);
+    } = parsePDFOptions(options);
 
     if (omitBackground) {
       await this.#emulationManager.setTransparentBackgroundColor();

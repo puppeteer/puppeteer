@@ -195,7 +195,7 @@ export interface ParsedPDFOptionsInterface {
  * @internal
  */
 export type ParsedPDFOptions = Required<
-  Omit<PDFOptions, 'path' | 'format'> & ParsedPDFOptionsInterface
+  Omit<PDFOptions, 'path' | 'format' | 'timeout'> & ParsedPDFOptionsInterface
 >;
 
 /**

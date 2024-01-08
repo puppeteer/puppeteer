@@ -9,11 +9,11 @@ import type {Readable} from 'stream';
 
 import type {Protocol} from 'devtools-protocol';
 
+import type {Observable} from '../../third_party/rxjs/rxjs.js';
 import {
   map,
   NEVER,
   timer,
-  type Observable,
   firstValueFrom,
   fromEvent,
   filterAsync,
@@ -30,6 +30,12 @@ import {debug} from './Debug.js';
 import {TimeoutError} from './Errors.js';
 import type {EventEmitter, EventType} from './EventEmitter.js';
 import type {NetworkManagerEvents} from './NetworkManagerEvents.js';
+import type {
+  LowerCasePaperFormat,
+  ParsedPDFOptions,
+  PDFOptions,
+} from './PDFOptions.js';
+import {paperFormats} from './PDFOptions.js';
 
 /**
  * @internal
@@ -609,3 +615,99 @@ export async function waitForHTTP<T extends {url(): string}>(
  * @internal
  */
 export const NETWORK_IDLE_TIME = 500;
+
+/**
+ * @internal
+ */
+export function parsePDFOptions(
+  options: PDFOptions = {},
+  lengthUnit: 'in' | 'cm' = 'in'
+): ParsedPDFOptions {
+  const defaults: Omit<ParsedPDFOptions, 'width' | 'height' | 'margin'> = {
+    scale: 1,
+    displayHeaderFooter: false,
+    headerTemplate: '',
+    footerTemplate: '',
+    printBackground: false,
+    landscape: false,
+    pageRanges: '',
+    preferCSSPageSize: false,
+    omitBackground: false,
+    tagged: false,
+  };
+
+  let width = 8.5;
+  let height = 11;
+  if (options.format) {
+    const format =
+      paperFormats[options.format.toLowerCase() as LowerCasePaperFormat];
+    assert(format, 'Unknown paper format: ' + options.format);
+    width = format.width;
+    height = format.height;
+  } else {
+    width = convertPrintParameterToInches(options.width, lengthUnit) ?? width;
+    height =
+      convertPrintParameterToInches(options.height, lengthUnit) ?? height;
+  }
+
+  const margin = {
+    top: convertPrintParameterToInches(options.margin?.top, lengthUnit) || 0,
+    left: convertPrintParameterToInches(options.margin?.left, lengthUnit) || 0,
+    bottom:
+      convertPrintParameterToInches(options.margin?.bottom, lengthUnit) || 0,
+    right:
+      convertPrintParameterToInches(options.margin?.right, lengthUnit) || 0,
+  };
+
+  return {
+    ...defaults,
+    ...options,
+    width,
+    height,
+    margin,
+  };
+}
+
+/**
+ * @internal
+ */
+export const unitToPixels = {
+  px: 1,
+  in: 96,
+  cm: 37.8,
+  mm: 3.78,
+};
+
+function convertPrintParameterToInches(
+  parameter?: string | number,
+  lengthUnit: 'in' | 'cm' = 'in'
+): number | undefined {
+  if (typeof parameter === 'undefined') {
+    return undefined;
+  }
+  let pixels;
+  if (isNumber(parameter)) {
+    // Treat numbers as pixel values to be aligned with phantom's paperSize.
+    pixels = parameter;
+  } else if (isString(parameter)) {
+    const text = parameter;
+    let unit = text.substring(text.length - 2).toLowerCase();
+    let valueText = '';
+    if (unit in unitToPixels) {
+      valueText = text.substring(0, text.length - 2);
+    } else {
+      // In case of unknown unit try to parse the whole parameter as number of pixels.
+      // This is consistent with phantom's paperSize behavior.
+      unit = 'px';
+      valueText = text;
+    }
+    const value = Number(valueText);
+    assert(!isNaN(value), 'Failed to parse parameter value: ' + text);
+    pixels = value * unitToPixels[unit as keyof typeof unitToPixels];
+  } else {
+    throw new Error(
+      'page.pdf() Cannot handle parameter type: ' + typeof parameter
+    );
+  }
+  return pixels / unitToPixels[lengthUnit];
+}
