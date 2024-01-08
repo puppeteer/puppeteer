@@ -48,6 +48,7 @@ import {
   debugError,
   evaluationString,
   NETWORK_IDLE_TIME,
+  parsePDFOptions,
   timeout,
   validateDialogType,
   waitForHTTP,
@@ -586,7 +587,8 @@ export class BidiPage extends Page {
   }
 
   override async pdf(options: PDFOptions = {}): Promise<Buffer> {
-    const {path = undefined} = options;
+    const {timeout: ms = this._timeoutSettings.timeout(), path = undefined} =
+      options;
     const {
       printBackground: background,
       margin,
@@ -596,8 +598,7 @@ export class BidiPage extends Page {
       pageRanges: ranges,
       scale,
       preferCSSPageSize,
-      timeout: ms,
-    } = this._getPDFOptions(options, 'cm');
+    } = parsePDFOptions(options, 'cm');
     const pageRanges = ranges ? ranges.split(', ') : [];
     const {result} = await firstValueFrom(
       from(
