@@ -798,7 +798,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * @internal
    */
   async setFrameContent(content: string): Promise<void> {
-    return await this.evaluate(html => {
+    return await this.isolatedRealm().evaluate(html => {
       document.open();
       document.write(html);
       document.close();
