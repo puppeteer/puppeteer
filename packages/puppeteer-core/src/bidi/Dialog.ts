@@ -32,7 +32,7 @@ export class BidiDialog extends Dialog {
   /**
    * @internal
    */
-  override async sendCommand(options: {
+  override async handle(options: {
     accept: boolean;
     text?: string;
   }): Promise<void> {
