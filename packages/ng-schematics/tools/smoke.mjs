@@ -4,14 +4,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {execSync} from 'child_process';
+import {execSync} from 'node:child_process';
 
 import {AngularProjectMulti, AngularProjectSingle} from './projects.mjs';
 
 if (process.env.CI) {
   // Need to install in CI
-  execSync('npm install -g @angular/cli@latest');
-  execSync('npm install -g @angular-devkit/schematics-cli');
+  execSync('npm install -g @angular/cli@latest @angular-devkit/schematics-cli');
 }
 
 const single = new AngularProjectSingle();
