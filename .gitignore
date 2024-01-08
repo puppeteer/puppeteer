@@ -18,7 +18,7 @@ test/output-*/
 coverage/
 generated/
 .eslintcache
-/.cache/
+.cache/
 
 # IDE Artifacts
 .vscode/*

@@ -5,7 +5,7 @@
  */
 
 /**
- * Downloads test browser binaries to test/cache/server folder that
+ * Downloads test browser binaries to test/.cache/server folder that
  * mirrors the structure of the download server.
  */
 
@@ -32,7 +32,7 @@ function getBrowser(str) {
   }
 }
 
-const cacheDir = normalize(join('.', 'test', 'cache'));
+const cacheDir = normalize(join('.', 'test', '.cache'));
 
 for (const version of Object.keys(versions)) {
   const browser = getBrowser(version);

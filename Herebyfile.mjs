@@ -1,10 +1,9 @@
 import {copyFile, readFile, writeFile} from 'fs/promises';
 
+import {docgen, spliceIntoSection} from '@puppeteer/docgen';
 import {execa} from 'execa';
 import {task} from 'hereby';
 import semver from 'semver';
-
-import {docgen, spliceIntoSection} from '@puppeteer/docgen';
 
 export const docsNgSchematicsTask = task({
   name: 'docs:ng-schematics',
