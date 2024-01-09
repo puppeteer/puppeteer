@@ -328,7 +328,7 @@ describe('Evaluation specs', function () {
       const {page} = await getTestState();
 
       const result = await page.evaluate(() => {
-        const a: Record<string, any> = {};
+        const a: Record<string, unknown> = {};
         const b = {a};
         a['b'] = b;
         return a;

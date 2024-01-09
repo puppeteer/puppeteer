@@ -87,7 +87,7 @@ export function addFilesSingle(
   );
 }
 
-function getProjectBaseUrl(project: any, port: number): string {
+function getProjectBaseUrl(project: AngularProject, port: number): string {
   let options = {protocol: 'http', port, host: 'localhost'};
 
   if (project.architect?.serve?.options) {

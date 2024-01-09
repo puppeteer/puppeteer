@@ -21,7 +21,7 @@ export function getJsonFileAsObject(
   }
 }
 
-export function getObjectAsJson(object: Record<string, any>): string {
+export function getObjectAsJson(object: Record<string, unknown>): string {
   return JSON.stringify(object, null, 2);
 }
 

@@ -76,7 +76,7 @@ function updateExecutablePath(command: string, root?: string) {
 async function executeCommand(
   context: BuilderContext,
   command: string[],
-  env: Record<string, any> = {}
+  env: NodeJS.ProcessEnv = {}
 ) {
   let project: JsonObject;
   if (context.target) {

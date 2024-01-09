@@ -167,7 +167,7 @@ describe('Page.click', function () {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/offscreenbuttons.html');
-    const messages: any[] = [];
+    const messages: string[] = [];
     page.on('console', msg => {
       if (msg.type() === 'log') {
         return messages.push(msg.text());

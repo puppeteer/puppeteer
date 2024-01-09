@@ -28,6 +28,12 @@ export interface AngularProject {
   architect: {
     e2e?: PuppeteerSchematicsConfig;
     puppeteer?: PuppeteerSchematicsConfig;
+    serve: {
+      options: {
+        ssl: string;
+        port: number;
+      };
+    };
   };
 }
 export interface AngularJson {

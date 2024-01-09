@@ -39,7 +39,7 @@ export function getPackageLatestNpmVersion(name: string): Promise<NodePackage> {
     return get(`https://registry.npmjs.org/${name}`, res => {
       let data = '';
 
-      res.on('data', (chunk: any) => {
+      res.on('data', chunk => {
         data += chunk;
       });
       res.on('end', () => {
@@ -66,7 +66,7 @@ export function getPackageLatestNpmVersion(name: string): Promise<NodePackage> {
 function updateJsonValues(
   json: Record<string, any>,
   target: string,
-  updates: Array<{name: string; value: any}>,
+  updates: Array<{name: string; value: unknown}>,
   overwrite = false
 ) {
   updates.forEach(({name, value}) => {

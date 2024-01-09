@@ -556,7 +556,7 @@ describe('Page', function () {
     it('should work for different console API calls with logging functions', async () => {
       const {page} = await getTestState();
 
-      const messages: any[] = [];
+      const messages: ConsoleMessage[] = [];
       page.on('console', msg => {
         return messages.push(msg);
       });
@@ -1260,7 +1260,7 @@ describe('Page', function () {
 
       await page.exposeFunction(
         'complexObject',
-        function (a: {x: any}, b: {x: any}) {
+        function (a: {x: number}, b: {x: number}) {
           return {x: a.x + b.x};
         }
       );

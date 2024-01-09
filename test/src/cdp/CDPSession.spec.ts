@@ -5,6 +5,7 @@
  */
 
 import expect from 'expect';
+import type {Target} from 'puppeteer-core/internal/api/Target.js';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 
 import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
@@ -31,7 +32,7 @@ describe('Target.createCDPSession', function () {
   it('should not report created targets for custom CDP sessions', async () => {
     const {browser} = await getTestState();
     let called = 0;
-    const handler = async (target: any) => {
+    const handler = async (target: Target) => {
       called++;
       if (called > 1) {
         throw new Error('Too many targets created');

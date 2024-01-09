@@ -6,7 +6,7 @@
 import assert from 'node:assert/strict';
 import {describe, it} from 'node:test';
 
-import type {Platform, TestExpectation} from './types.js';
+import type {Platform, TestExpectation, MochaTestResult} from './types.js';
 import {
   filterByParameters,
   getTestResultForFailure,
@@ -110,7 +110,7 @@ describe('testIdMatchesExpectationPattern', () => {
       fullTitle() {
         return 'Page Page.setContent should work';
       },
-    } as any;
+    } satisfies Pick<Mocha.Test, 'title' | 'file' | 'fullTitle'> as Mocha.Test;
 
     for (const [pattern, expected] of expectations) {
       assert.equal(
@@ -122,11 +122,11 @@ describe('testIdMatchesExpectationPattern', () => {
   });
 
   it('with MochaTestResult', () => {
-    const test = {
+    const test: MochaTestResult = {
       title: 'should work',
       file: 'page.spec.ts',
       fullTitle: 'Page Page.setContent should work',
-    } as any;
+    };
 
     for (const [pattern, expected] of expectations) {
       assert.equal(

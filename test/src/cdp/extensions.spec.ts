@@ -51,7 +51,7 @@ describe('extensions', function () {
     });
   });
 
-  async function launchBrowser(options: any) {
+  async function launchBrowser(options: typeof extensionOptions) {
     const {browser, close} = await launch(options, {createContext: false});
     browsers.push(close);
     return browser;
