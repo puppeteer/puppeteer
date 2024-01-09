@@ -66,7 +66,6 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
   async expose(): Promise<void> {
     const connection = this.#connection;
     const channelArguments = this.#channelArguments;
-    const {name} = this;
 
     // TODO(jrandolf): Implement cleanup with removePreloadScript.
     connection.on(
@@ -103,7 +102,7 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
             },
           });
         },
-        {name: JSON.stringify(name)}
+        {name: JSON.stringify(this.name)}
       )
     );
 
@@ -148,7 +147,9 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
           BidiSerializer.serializeRemoteValue(result),
         ],
         awaitPromise: false,
-        target: params.source,
+        target: {
+          realm: params.source.realm,
+        },
       });
     } catch (error) {
       try {
@@ -156,7 +157,7 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
           await connection.send('script.callFunction', {
             functionDeclaration: stringifyFunction(
               (
-                [_, reject]: any,
+                [_, reject]: [unknown, (error: Error) => void],
                 name: string,
                 message: string,
                 stack?: string
@@ -176,12 +177,17 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
               BidiSerializer.serializeRemoteValue(error.stack),
             ],
             awaitPromise: false,
-            target: params.source,
+            target: {
+              realm: params.source.realm,
+            },
           });
         } else {
           await connection.send('script.callFunction', {
             functionDeclaration: stringifyFunction(
-              ([_, reject]: any, error: unknown) => {
+              (
+                [_, reject]: [unknown, (error: unknown) => void],
+                error: unknown
+              ) => {
                 reject(error);
               }
             ),
@@ -190,7 +196,9 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
               BidiSerializer.serializeRemoteValue(error),
             ],
             awaitPromise: false,
-            target: params.source,
+            target: {
+              realm: params.source.realm,
+            },
           });
         }
       } catch (error) {
