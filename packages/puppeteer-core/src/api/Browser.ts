@@ -9,18 +9,15 @@ import type {ChildProcess} from 'child_process';
 import type {Protocol} from 'devtools-protocol';
 
 import {
+  filterAsync,
   firstValueFrom,
   from,
   merge,
   raceWith,
-  filterAsync,
-  fromEvent,
-  type Observable,
 } from '../../third_party/rxjs/rxjs.js';
 import type {ProtocolType} from '../common/ConnectOptions.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
-import {debugError} from '../common/util.js';
-import {timeout} from '../common/util.js';
+import {debugError, fromEmitterEvent, timeout} from '../common/util.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
 import type {BrowserContext} from './BrowserContext.js';
@@ -343,8 +340,8 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
     const {timeout: ms = 30000} = options;
     return await firstValueFrom(
       merge(
-        fromEvent(this, BrowserEvent.TargetCreated) as Observable<Target>,
-        fromEvent(this, BrowserEvent.TargetChanged) as Observable<Target>,
+        fromEmitterEvent(this, BrowserEvent.TargetCreated),
+        fromEmitterEvent(this, BrowserEvent.TargetChanged),
         from(this.targets())
       ).pipe(filterAsync(predicate), raceWith(timeout(ms)))
     );

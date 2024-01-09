@@ -9,16 +9,15 @@ import type {Readable} from 'stream';
 
 import type {Protocol} from 'devtools-protocol';
 
-import type {Observable} from '../../third_party/rxjs/rxjs.js';
 import {
+  filterAsync,
+  firstValueFrom,
+  from,
   map,
   NEVER,
-  timer,
-  firstValueFrom,
-  fromEvent,
-  filterAsync,
-  from,
+  Observable,
   raceWith,
+  timer,
 } from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import {isNode} from '../environment.js';
@@ -594,9 +593,7 @@ export async function waitForHTTP<T extends {url(): string}>(
   cancelation: Deferred<never>
 ): Promise<T> {
   return await firstValueFrom(
-    (
-      fromEvent(networkManager, eventName as unknown as string) as Observable<T>
-    ).pipe(
+    (fromEmitterEvent(networkManager, eventName) as Observable<T>).pipe(
       filterAsync(async http => {
         if (isString(urlOrPredicate)) {
           return urlOrPredicate === http.url();
@@ -710,4 +707,22 @@ function convertPrintParameterToInches(
     );
   }
   return pixels / unitToPixels[lengthUnit];
+}
+
+/**
+ * @internal
+ */
+export function fromEmitterEvent<
+  Events extends Record<EventType, unknown>,
+  Event extends keyof Events,
+>(emitter: EventEmitter<Events>, eventName: Event): Observable<Events[Event]> {
+  return new Observable(subscriber => {
+    const listener = (event: Events[Event]) => {
+      subscriber.next(event);
+    };
+    emitter.on(eventName, listener);
+    return () => {
+      emitter.off(eventName, listener);
+    };
+  });
 }

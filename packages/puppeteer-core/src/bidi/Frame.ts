@@ -7,29 +7,27 @@
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {
-  type Observable,
-  from,
-  fromEvent,
-  merge,
-  map,
-  forkJoin,
   first,
   firstValueFrom,
+  forkJoin,
+  from,
+  map,
+  merge,
   raceWith,
 } from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import {
   Frame,
+  throwIfDetached,
   type GoToOptions,
   type WaitForOptions,
-  throwIfDetached,
 } from '../api/Frame.js';
 import type {WaitForSelectorOptions} from '../api/Page.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {Awaitable, NodeFor} from '../common/types.js';
-import {UTILITY_WORLD_NAME, timeout} from '../common/util.js';
+import {fromEmitterEvent, timeout, UTILITY_WORLD_NAME} from '../common/util.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
 
@@ -163,7 +161,7 @@ export class BidiFrame extends Frame {
       this.#page
         ._waitWithNetworkIdle(
           forkJoin([
-            fromEvent(this.#context, waitEvent).pipe(first()),
+            fromEmitterEvent(this.#context, waitEvent).pipe(first()),
             from(this.setFrameContent(html)),
           ]).pipe(
             map(() => {
@@ -194,18 +192,16 @@ export class BidiFrame extends Frame {
 
     const navigatedObservable = merge(
       forkJoin([
-        fromEvent(
+        fromEmitterEvent(
           this.#context,
           Bidi.ChromiumBidi.BrowsingContext.EventNames.NavigationStarted
         ).pipe(first()),
-        fromEvent(this.#context, waitUntilEvent).pipe(
-          first()
-        ) as Observable<Bidi.BrowsingContext.NavigationInfo>,
+        fromEmitterEvent(this.#context, waitUntilEvent).pipe(first()),
       ]),
-      fromEvent(
+      fromEmitterEvent(
         this.#context,
         Bidi.ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated
-      ) as Observable<Bidi.BrowsingContext.NavigationInfo>
+      )
     ).pipe(
       map(result => {
         if (Array.isArray(result)) {
