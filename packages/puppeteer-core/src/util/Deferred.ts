@@ -18,12 +18,47 @@ export interface DeferredOptions {
  * @internal
  */
 export class Deferred<T, V extends Error = Error> {
+  static create<R, X extends Error = Error>(
+    opts?: DeferredOptions
+  ): Deferred<R, X> {
+    return new Deferred<R, X>(opts);
+  }
+
+  static async race<R>(
+    awaitables: Array<Promise<R> | Deferred<R>>
+  ): Promise<R> {
+    const deferredWithTimeout = new Set<Deferred<R>>();
+    try {
+      const promises = awaitables.map(value => {
+        if (value instanceof Deferred) {
+          if (value.#timeoutId) {
+            deferredWithTimeout.add(value);
+          }
+
+          return value.valueOrThrow();
+        }
+
+        return value;
+      });
+      // eslint-disable-next-line no-restricted-syntax
+      return await Promise.race(promises);
+    } finally {
+      for (const deferred of deferredWithTimeout) {
+        // We need to stop the timeout else
+        // Node.JS will keep running the event loop till the
+        // timer executes
+        deferred.reject(new Error('Timeout cleared'));
+      }
+    }
+  }
+
   #isResolved = false;
   #isRejected = false;
   #value: T | V | TimeoutError | undefined;
-  #resolver: (value: void) => void = () => {};
+  // SAFETY: This is ensured by #taskPromise.
+  #resolve!: (value: void) => void;
   #taskPromise = new Promise<void>(resolve => {
-    this.#resolver = resolve;
+    this.#resolve = resolve;
   });
   #timeoutId: ReturnType<typeof setTimeout> | undefined;
   #timeoutError: TimeoutError | undefined;
@@ -40,7 +75,7 @@ export class Deferred<T, V extends Error = Error> {
   #finish(value: T | V | TimeoutError) {
     clearTimeout(this.#timeoutId);
     this.#value = value;
-    this.#resolver();
+    this.#resolve();
   }
 
   resolve(value: T): void {
@@ -71,45 +106,17 @@ export class Deferred<T, V extends Error = Error> {
     return this.#value;
   }
 
-  async valueOrThrow(): Promise<T> {
-    await this.#taskPromise;
-    if (this.#isRejected) {
-      throw this.#value;
-    }
-    return this.#value as T;
-  }
-
-  static create<R, X extends Error = Error>(
-    opts?: DeferredOptions
-  ): Deferred<R> {
-    return new Deferred<R, X>(opts);
-  }
-
-  static async race<R>(
-    awaitables: Array<Promise<R> | Deferred<R>>
-  ): Promise<R> {
-    const deferredWithTimeout = new Set<Deferred<R>>();
-    try {
-      const promises = awaitables.map(value => {
-        if (value instanceof Deferred) {
-          if (value.#timeoutId) {
-            deferredWithTimeout.add(value);
-          }
-
-          return value.valueOrThrow();
+  #promise: Promise<T> | undefined;
+  valueOrThrow(): Promise<T> {
+    if (!this.#promise) {
+      this.#promise = (async () => {
+        await this.#taskPromise;
+        if (this.#isRejected) {
+          throw this.#value;
         }
-
-        return value;
-      });
-      // eslint-disable-next-line no-restricted-syntax
-      return await Promise.race(promises);
-    } finally {
-      for (const deferred of deferredWithTimeout) {
-        // We need to stop the timeout else
-        // Node.JS will keep running the event loop till the
-        // timer executes
-        deferred.reject(new Error('Timeout cleared'));
-      }
+        return this.#value as T;
+      })();
     }
+    return this.#promise;
   }
 }
