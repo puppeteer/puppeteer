@@ -9,12 +9,8 @@ import {spawn, spawnSync} from 'child_process';
 import {PassThrough} from 'stream';
 
 import debug from 'debug';
-import type Protocol from 'devtools-protocol';
 
-import type {
-  Observable,
-  OperatorFunction,
-} from '../../third_party/rxjs/rxjs.js';
+import type {OperatorFunction} from '../../third_party/rxjs/rxjs.js';
 import {
   bufferCount,
   concatMap,
@@ -29,7 +25,7 @@ import {
 import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
 import type {Page} from '../api/Page.js';
-import {debugError} from '../common/util.js';
+import {debugError, fromEmitterEvent} from '../common/util.js';
 import {guarded} from '../util/decorators.js';
 import {asyncDisposeSymbol} from '../util/disposable.js';
 
@@ -137,12 +133,7 @@ export class ScreenRecorder extends PassThrough {
     });
 
     this.#lastFrame = lastValueFrom(
-      (
-        fromEvent(
-          client,
-          'Page.screencastFrame'
-        ) as Observable<Protocol.Page.ScreencastFrameEvent>
-      ).pipe(
+      fromEmitterEvent(client, 'Page.screencastFrame').pipe(
         tap(event => {
           void client.send('Page.screencastFrameAck', {
             sessionId: event.sessionId,

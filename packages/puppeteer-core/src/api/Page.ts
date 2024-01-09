@@ -15,7 +15,6 @@ import {
   first,
   firstValueFrom,
   from,
-  fromEvent,
   map,
   merge,
   of,
@@ -58,6 +57,7 @@ import type {
 } from '../common/types.js';
 import {
   debugError,
+  fromEmitterEvent,
   importFSPromises,
   isString,
   timeout,
@@ -1677,25 +1677,16 @@ export abstract class Page extends EventEmitter<PageEvents> {
     requestsInFlight = 0
   ): Observable<void> {
     return merge(
-      fromEvent(
-        networkManager,
-        NetworkManagerEvent.Request as unknown as string
-      ) as Observable<void>,
-      fromEvent(
-        networkManager,
-        NetworkManagerEvent.Response as unknown as string
-      ) as Observable<void>,
-      fromEvent(
-        networkManager,
-        NetworkManagerEvent.RequestFailed as unknown as string
-      ) as Observable<void>
+      fromEmitterEvent(networkManager, NetworkManagerEvent.Request),
+      fromEmitterEvent(networkManager, NetworkManagerEvent.Response),
+      fromEmitterEvent(networkManager, NetworkManagerEvent.RequestFailed)
     ).pipe(
       startWith(undefined),
       filter(() => {
         return networkManager.inFlightRequestsCount() <= requestsInFlight;
       }),
-      switchMap(v => {
-        return of(v).pipe(delay(idleTime));
+      switchMap(() => {
+        return of(undefined).pipe(delay(idleTime));
       })
     );
   }
@@ -1725,15 +1716,15 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
     return await firstValueFrom(
       merge(
-        fromEvent(this, PageEvent.FrameAttached) as Observable<Frame>,
-        fromEvent(this, PageEvent.FrameNavigated) as Observable<Frame>,
+        fromEmitterEvent(this, PageEvent.FrameAttached),
+        fromEmitterEvent(this, PageEvent.FrameNavigated),
         from(this.frames())
       ).pipe(
         filterAsync(urlOrPredicate),
         first(),
         raceWith(
           timeout(ms),
-          fromEvent(this, PageEvent.Close).pipe(
+          fromEmitterEvent(this, PageEvent.Close).pipe(
             map(() => {
               throw new TargetCloseError('Page closed.');
             })

@@ -25,6 +25,7 @@ export {
   mergeMap,
   NEVER,
   noop,
+  Observable,
   of,
   pipe,
   race,
