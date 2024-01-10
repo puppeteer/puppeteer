@@ -133,7 +133,7 @@ jobs:
         run: npm run doctest
 
   chrome-tests:
-    name: ${{ matrix.suite }} tests on ${{ matrix.os }} (${{ matrix.shard }})
+    name: ${{ matrix.suite }} (${{ matrix.shard }}) on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     needs: check-changes
     if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
@@ -221,7 +221,7 @@ jobs:
       - run: 'exit 0'
 
   firefox-tests:
-    name: ${{ matrix.suite }} tests on ${{ matrix.os }} (${{ matrix.shard }})
+    name: ${{ matrix.suite }} (${{ matrix.shard }}) on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     needs: check-changes
     if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
@@ -327,7 +327,7 @@ jobs:
           path: puppeteer-test-installation-latest.tgz
 
   installation-test:
-    name: Test ${{ matrix.pkg_manager }} installation on ${{ matrix.os }} (${{ matrix.node }})
+    name: ${{ matrix.pkg_manager }} installation on ${{ matrix.os }} (${{ matrix.node }})
     needs: installation-test-build
     if: ${{ !startsWith(github.ref_name, 'release-please') }}
     runs-on: ${{ matrix.os }}
