@@ -35,7 +35,13 @@ module.exports = {
 
   parser: '@typescript-eslint/parser',
 
-  plugins: ['mocha', '@typescript-eslint', 'import', 'rulesdir'],
+  plugins: [
+    'mocha',
+    '@typescript-eslint',
+    'import',
+    'rulesdir',
+    'sort-class-members',
+  ],
 
   extends: ['plugin:prettier/recommended', 'plugin:import/typescript'],
 
@@ -149,6 +155,145 @@ module.exports = {
     'rulesdir/prettier-comments': 'error',
     // Enforces consistent file extension
     'rulesdir/extensions': 'error',
+    // Enforces class members are reasonably sorted.
+    'sort-class-members/sort-class-members': [
+      2,
+      {
+        order: [
+          'static-properties',
+          'static-accessor-pairs',
+          'static-getters',
+          'static-setters',
+          'static-methods',
+          'properties',
+          'constructor',
+          'accessor-pairs',
+          'getters',
+          'setters',
+          'methods',
+        ].flatMap(type => {
+          if (type === 'constructor') {
+            return type;
+          }
+          return ['abstract', 'readonly', 'override', '', 'private'].map(
+            keyword => {
+              return keyword ? `[${keyword}-${type}]` : `[${type}]`;
+            }
+          );
+        }),
+        groups: Object.fromEntries(
+          [
+            'static-properties',
+            'static-accessor-pairs',
+            'static-getters',
+            'static-setters',
+            'static-methods',
+            'properties',
+            'constructor',
+            'accessor-pairs',
+            'getters',
+            'setters',
+            'methods',
+          ].flatMap(type => {
+            if (type === 'constructor') {
+              return [[type, [{name: 'constructor', type: 'method'}]]];
+            }
+            const typeProperties = (() => {
+              switch (type) {
+                case 'static-properties':
+                  return {
+                    type: 'property',
+                    static: true,
+                    sort: 'alphabetical',
+                    groupByDecorator: true,
+                  };
+                case 'static-accessor-pairs':
+                  return {
+                    accessorPair: true,
+                    static: true,
+                    sort: 'alphabetical',
+                    groupByDecorator: true,
+                  };
+                case 'static-getters':
+                  return {
+                    kind: 'get',
+                    static: true,
+                    sort: 'alphabetical',
+                    groupByDecorator: true,
+                  };
+                case 'static-setters':
+                  return {
+                    kind: 'set',
+                    static: true,
+                    sort: 'alphabetical',
+                    groupByDecorator: true,
+                  };
+                case 'static-methods':
+                  return {
+                    type: 'method',
+                    static: true,
+                    sort: 'alphabetical',
+                    groupByDecorator: true,
+                  };
+                case 'properties':
+                  return {
+                    type: 'property',
+                    sort: 'alphabetical',
+                    groupByDecorator: true,
+                  };
+                case 'accessor-pairs':
+                  return {
+                    accessorPair: true,
+                    sort: 'alphabetical',
+                    groupByDecorator: true,
+                  };
+                case 'getters':
+                  return {
+                    kind: 'get',
+                    sort: 'alphabetical',
+                    groupByDecorator: true,
+                  };
+                case 'setters':
+                  return {
+                    kind: 'set',
+                    sort: 'alphabetical',
+                    groupByDecorator: true,
+                  };
+                case 'methods':
+                  return {
+                    type: 'method',
+                    sort: 'alphabetical',
+                    groupByDecorator: true,
+                  };
+              }
+            })();
+            return ['abstract', 'readonly', 'override', '', 'private'].map(
+              keyword => {
+                const keywordProperties = (() => {
+                  switch (keyword) {
+                    case 'abstract':
+                      return {abstract: true};
+                    case 'readonly':
+                      return {readonly: true};
+                    case 'override':
+                      return {override: true};
+                    case 'private':
+                      return {private: true};
+                    case '':
+                      return {};
+                  }
+                })();
+                return [
+                  keyword ? `${keyword}-${type}` : type,
+                  [{...typeProperties, ...keywordProperties}],
+                ];
+              }
+            );
+          })
+        ),
+        accessorPairPositioning: 'getThenSet',
+      },
+    ],
   },
   overrides: [
     {

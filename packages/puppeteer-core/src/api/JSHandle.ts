@@ -103,18 +103,6 @@ export abstract class JSHandle<T = unknown> {
   getProperty(propertyName: string): Promise<JSHandle<unknown>>;
 
   /**
-   * @internal
-   */
-  @throwIfDisposed()
-  async getProperty<K extends keyof T>(
-    propertyName: HandleOr<K>
-  ): Promise<HandleFor<T[K]>> {
-    return await this.evaluateHandle((object, propertyName) => {
-      return object[propertyName as K];
-    }, propertyName);
-  }
-
-  /**
    * Gets a map of handles representing the properties of the current handle.
    *
    * @example
@@ -157,6 +145,17 @@ export abstract class JSHandle<T = unknown> {
       }
     }
     return map;
+  }
+  /**
+   * @internal
+   */
+  @throwIfDisposed()
+  async getProperty<K extends keyof T>(
+    propertyName: HandleOr<K>
+  ): Promise<HandleFor<T[K]>> {
+    return await this.evaluateHandle((object, propertyName) => {
+      return object[propertyName as K];
+    }, propertyName);
   }
 
   /**

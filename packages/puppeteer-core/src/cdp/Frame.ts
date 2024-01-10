@@ -200,6 +200,46 @@ export class CdpFrame extends Frame {
   }
 
   @throwIfDetached
+  override async setContent(
+    html: string,
+    options: {
+      timeout?: number;
+      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
+    } = {}
+  ): Promise<void> {
+    const {
+      waitUntil = ['load'],
+      timeout = this._frameManager.timeoutSettings.navigationTimeout(),
+    } = options;
+
+    // We rely upon the fact that document.open() will reset frame lifecycle with "init"
+    // lifecycle event. @see https://crrev.com/608658
+    await this.setFrameContent(html);
+
+    const watcher = new LifecycleWatcher(
+      this._frameManager.networkManager,
+      this,
+      waitUntil,
+      timeout
+    );
+    const error = await Deferred.race<void | Error | undefined>([
+      watcher.terminationPromise(),
+      watcher.lifecyclePromise(),
+    ]);
+    watcher.dispose();
+    if (error) {
+      throw error;
+    }
+  }
+  @throwIfDetached
+  override async waitForDevicePrompt(
+    options: WaitTimeoutOptions = {}
+  ): Promise<DeviceRequestPrompt> {
+    return await this.#deviceRequestPromptManager().waitForDevicePrompt(
+      options
+    );
+  }
+  @throwIfDetached
   override async waitForNavigation(
     options: {
       timeout?: number;
@@ -243,39 +283,6 @@ export class CdpFrame extends Frame {
     return this.worlds[PUPPETEER_WORLD];
   }
 
-  @throwIfDetached
-  override async setContent(
-    html: string,
-    options: {
-      timeout?: number;
-      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    } = {}
-  ): Promise<void> {
-    const {
-      waitUntil = ['load'],
-      timeout = this._frameManager.timeoutSettings.navigationTimeout(),
-    } = options;
-
-    // We rely upon the fact that document.open() will reset frame lifecycle with "init"
-    // lifecycle event. @see https://crrev.com/608658
-    await this.setFrameContent(html);
-
-    const watcher = new LifecycleWatcher(
-      this._frameManager.networkManager,
-      this,
-      waitUntil,
-      timeout
-    );
-    const error = await Deferred.race<void | Error | undefined>([
-      watcher.terminationPromise(),
-      watcher.lifecyclePromise(),
-    ]);
-    watcher.dispose();
-    if (error) {
-      throw error;
-    }
-  }
-
   override url(): string {
     return this.#url;
   }
@@ -295,15 +302,6 @@ export class CdpFrame extends Frame {
     } else {
       return rootFrame._frameManager._deviceRequestPromptManager(this.#client);
     }
-  }
-
-  @throwIfDetached
-  override async waitForDevicePrompt(
-    options: WaitTimeoutOptions = {}
-  ): Promise<DeviceRequestPrompt> {
-    return await this.#deviceRequestPromptManager().waitForDevicePrompt(
-      options
-    );
   }
 
   _navigated(framePayload: Protocol.Page.Frame): void {

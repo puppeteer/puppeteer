@@ -291,6 +291,18 @@ export class EmulationManager {
   }
 
   @invokeAtMostOnceForArguments
+  async #emulateCpuThrottling(
+    client: CDPSession,
+    state: CpuThrottlingState
+  ): Promise<void> {
+    if (!state.active) {
+      return;
+    }
+    await client.send('Emulation.setCPUThrottlingRate', {
+      rate: state.factor ?? 1,
+    });
+  }
+  @invokeAtMostOnceForArguments
   async #emulateIdleState(
     client: CDPSession,
     idleStateState: IdleOverridesState
@@ -308,6 +320,30 @@ export class EmulationManager {
     }
   }
 
+  @invokeAtMostOnceForArguments
+  async #emulateMediaFeatures(
+    client: CDPSession,
+    state: MediaFeaturesState
+  ): Promise<void> {
+    if (!state.active) {
+      return;
+    }
+    await client.send('Emulation.setEmulatedMedia', {
+      features: state.mediaFeatures,
+    });
+  }
+  @invokeAtMostOnceForArguments
+  async #emulateMediaType(
+    client: CDPSession,
+    state: MediaTypeState
+  ): Promise<void> {
+    if (!state.active) {
+      return;
+    }
+    await client.send('Emulation.setEmulatedMedia', {
+      media: state.type || '',
+    });
+  }
   @invokeAtMostOnceForArguments
   async #emulateTimezone(
     client: CDPSession,
@@ -371,19 +407,6 @@ export class EmulationManager {
     });
   }
 
-  @invokeAtMostOnceForArguments
-  async #emulateCpuThrottling(
-    client: CDPSession,
-    state: CpuThrottlingState
-  ): Promise<void> {
-    if (!state.active) {
-      return;
-    }
-    await client.send('Emulation.setCPUThrottlingRate', {
-      rate: state.factor ?? 1,
-    });
-  }
-
   async emulateCPUThrottling(factor: number | null): Promise<void> {
     assert(
       factor === null || factor >= 1,
@@ -392,19 +415,6 @@ export class EmulationManager {
     await this.#cpuThrottlingState.setState({
       active: true,
       factor: factor ?? undefined,
-    });
-  }
-
-  @invokeAtMostOnceForArguments
-  async #emulateMediaFeatures(
-    client: CDPSession,
-    state: MediaFeaturesState
-  ): Promise<void> {
-    if (!state.active) {
-      return;
-    }
-    await client.send('Emulation.setEmulatedMedia', {
-      features: state.mediaFeatures,
     });
   }
 
@@ -426,19 +436,6 @@ export class EmulationManager {
     });
   }
 
-  @invokeAtMostOnceForArguments
-  async #emulateMediaType(
-    client: CDPSession,
-    state: MediaTypeState
-  ): Promise<void> {
-    if (!state.active) {
-      return;
-    }
-    await client.send('Emulation.setEmulatedMedia', {
-      media: state.type || '',
-    });
-  }
-
   async emulateMediaType(type?: string): Promise<void> {
     assert(
       type === 'screen' ||
@@ -452,6 +449,18 @@ export class EmulationManager {
     });
   }
 
+  @invokeAtMostOnceForArguments
+  async #setDefaultBackgroundColor(
+    client: CDPSession,
+    state: DefaultBackgroundColorState
+  ): Promise<void> {
+    if (!state.active) {
+      return;
+    }
+    await client.send('Emulation.setDefaultBackgroundColorOverride', {
+      color: state.color,
+    });
+  }
   @invokeAtMostOnceForArguments
   async #setGeolocation(
     client: CDPSession,
@@ -496,19 +505,6 @@ export class EmulationManager {
         latitude,
         accuracy,
       },
-    });
-  }
-
-  @invokeAtMostOnceForArguments
-  async #setDefaultBackgroundColor(
-    client: CDPSession,
-    state: DefaultBackgroundColorState
-  ): Promise<void> {
-    if (!state.active) {
-      return;
-    }
-    await client.send('Emulation.setDefaultBackgroundColorOverride', {
-      color: state.color,
     });
   }
 

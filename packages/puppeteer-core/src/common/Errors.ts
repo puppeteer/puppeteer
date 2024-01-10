@@ -47,9 +47,6 @@ export class ProtocolError extends CustomError {
   #code?: number;
   #originalMessage = '';
 
-  set code(code: number | undefined) {
-    this.#code = code;
-  }
   /**
    * @readonly
    * @public
@@ -57,16 +54,19 @@ export class ProtocolError extends CustomError {
   get code(): number | undefined {
     return this.#code;
   }
-
-  set originalMessage(originalMessage: string) {
-    this.#originalMessage = originalMessage;
+  set code(code: number | undefined) {
+    this.#code = code;
   }
+
   /**
    * @readonly
    * @public
    */
   get originalMessage(): string {
     return this.#originalMessage;
+  }
+  set originalMessage(originalMessage: string) {
+    this.#originalMessage = originalMessage;
   }
 }
 

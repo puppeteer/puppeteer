@@ -201,16 +201,6 @@ export class ScreenRecorder extends PassThrough {
     }
   }
 
-  @guarded()
-  async #writeFrame(buffer: Buffer) {
-    const error = await new Promise<Error | null | undefined>(resolve => {
-      this.#process.stdin.write(buffer, resolve);
-    });
-    if (error) {
-      console.log(`ffmpeg failed to write: ${error.message}.`);
-    }
-  }
-
   /**
    * Stops the recorder.
    *
@@ -244,6 +234,15 @@ export class ScreenRecorder extends PassThrough {
     await new Promise(resolve => {
       this.#process.once('close', resolve);
     });
+  }
+  @guarded()
+  async #writeFrame(buffer: Buffer) {
+    const error = await new Promise<Error | null | undefined>(resolve => {
+      this.#process.stdin.write(buffer, resolve);
+    });
+    if (error) {
+      console.log(`ffmpeg failed to write: ${error.message}.`);
+    }
   }
 
   /**

@@ -417,104 +417,6 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   }
 
   /**
-   * @internal
-   */
-  @throwIfDetached
-  async frameElement(): Promise<HandleFor<HTMLIFrameElement> | null> {
-    const parentFrame = this.parentFrame();
-    if (!parentFrame) {
-      return null;
-    }
-    using list = await parentFrame.isolatedRealm().evaluateHandle(() => {
-      return document.querySelectorAll('iframe');
-    });
-    for await (using iframe of transposeIterableHandle(list)) {
-      const frame = await iframe.contentFrame();
-      if (frame._id === this._id) {
-        return iframe.move();
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Behaves identically to {@link Page.evaluateHandle} except it's run within
-   * the context of this frame.
-   *
-   * @see {@link Page.evaluateHandle} for details.
-   */
-  @throwIfDetached
-  async evaluateHandle<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(
-      this.evaluateHandle.name,
-      pageFunction
-    );
-    return await this.mainRealm().evaluateHandle(pageFunction, ...args);
-  }
-
-  /**
-   * Behaves identically to {@link Page.evaluate} except it's run within the
-   * the context of this frame.
-   *
-   * @see {@link Page.evaluate} for details.
-   */
-  @throwIfDetached
-  async evaluate<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(
-      this.evaluate.name,
-      pageFunction
-    );
-    return await this.mainRealm().evaluate(pageFunction, ...args);
-  }
-
-  /**
-   * Creates a locator for the provided selector. See {@link Locator} for
-   * details and supported actions.
-   *
-   * @remarks
-   * Locators API is experimental and we will not follow semver for breaking
-   * change in the Locators API.
-   */
-  locator<Selector extends string>(
-    selector: Selector
-  ): Locator<NodeFor<Selector>>;
-
-  /**
-   * Creates a locator for the provided function. See {@link Locator} for
-   * details and supported actions.
-   *
-   * @remarks
-   * Locators API is experimental and we will not follow semver for breaking
-   * change in the Locators API.
-   */
-  locator<Ret>(func: () => Awaitable<Ret>): Locator<Ret>;
-
-  /**
-   * @internal
-   */
-  @throwIfDetached
-  locator<Selector extends string, Ret>(
-    selectorOrFunc: Selector | (() => Awaitable<Ret>)
-  ): Locator<NodeFor<Selector>> | Locator<Ret> {
-    if (typeof selectorOrFunc === 'string') {
-      return NodeLocator.create(this, selectorOrFunc);
-    } else {
-      return FunctionLocator.create(this, selectorOrFunc);
-    }
-  }
-  /**
    * Queries the frame for an element matching the given selector.
    *
    * @param selector - The selector to query for.
@@ -529,7 +431,6 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
     const document = await this.#document();
     return await document.$(selector);
   }
-
   /**
    * Queries the frame for all elements matching the given selector.
    *
@@ -545,46 +446,6 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
     const document = await this.#document();
     return await document.$$(selector);
   }
-
-  /**
-   * Runs the given function on the first element matching the given selector in
-   * the frame.
-   *
-   * If the given function returns a promise, then this method will wait till
-   * the promise resolves.
-   *
-   * @example
-   *
-   * ```ts
-   * const searchValue = await frame.$eval('#search', el => el.value);
-   * ```
-   *
-   * @param selector - The selector to query for.
-   * @param pageFunction - The function to be evaluated in the frame's context.
-   * The first element matching the selector will be passed to the function as
-   * its first argument.
-   * @param args - Additional arguments to pass to `pageFunction`.
-   * @returns A promise to the result of the function.
-   */
-  @throwIfDetached
-  async $eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
-      NodeFor<Selector>,
-      Params
-    >,
-  >(
-    selector: Selector,
-    pageFunction: string | Func,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
-    // eslint-disable-next-line rulesdir/use-using -- This is cached.
-    const document = await this.#document();
-    return await document.$eval(selector, pageFunction, ...args);
-  }
-
   /**
    * Runs the given function on an array of elements matching the given selector
    * in the frame.
@@ -623,6 +484,64 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
     const document = await this.#document();
     return await document.$$eval(selector, pageFunction, ...args);
   }
+  /**
+   * Runs the given function on the first element matching the given selector in
+   * the frame.
+   *
+   * If the given function returns a promise, then this method will wait till
+   * the promise resolves.
+   *
+   * @example
+   *
+   * ```ts
+   * const searchValue = await frame.$eval('#search', el => el.value);
+   * ```
+   *
+   * @param selector - The selector to query for.
+   * @param pageFunction - The function to be evaluated in the frame's context.
+   * The first element matching the selector will be passed to the function as
+   * its first argument.
+   * @param args - Additional arguments to pass to `pageFunction`.
+   * @returns A promise to the result of the function.
+   */
+  @throwIfDetached
+  async $eval<
+    Selector extends string,
+    Params extends unknown[],
+    Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
+      NodeFor<Selector>,
+      Params
+    >,
+  >(
+    selector: Selector,
+    pageFunction: string | Func,
+    ...args: Params
+  ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
+    // eslint-disable-next-line rulesdir/use-using -- This is cached.
+    const document = await this.#document();
+    return await document.$eval(selector, pageFunction, ...args);
+  }
+  /**
+   * Behaves identically to {@link Page.evaluate} except it's run within the
+   * the context of this frame.
+   *
+   * @see {@link Page.evaluate} for details.
+   */
+  @throwIfDetached
+  async evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
+  >(
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluate.name,
+      pageFunction
+    );
+    return await this.mainRealm().evaluate(pageFunction, ...args);
+  }
 
   /**
    * @deprecated Use {@link Frame.$$} with the `xpath` prefix.
@@ -634,12 +553,337 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * automatically.
    * @param expression - the XPath expression to evaluate.
    */
-  @throwIfDetached
+@throwIfDetached
   async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
     // eslint-disable-next-line rulesdir/use-using -- This is cached.
     const document = await this.#document();
     return await document.$x(expression);
   }
+/**
+   * Behaves identically to {@link Page.evaluateHandle} except it's run within
+   * the context of this frame.
+   *
+   * @see {@link Page.evaluateHandle} for details.
+   */
+  @throwIfDetached
+  async evaluateHandle<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
+  >(
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluateHandle.name,
+      pageFunction
+    );
+    return await this.mainRealm().evaluateHandle(pageFunction, ...args);
+  }
+
+  
+
+  /**
+   * @internal
+   */
+  @throwIfDetached
+  async frameElement(): Promise<HandleFor<HTMLIFrameElement> | null> {
+    const parentFrame = this.parentFrame();
+    if (!parentFrame) {
+      return null;
+    }
+    using list = await parentFrame.isolatedRealm().evaluateHandle(() => {
+      return document.querySelectorAll('iframe');
+    });
+    for await (using iframe of transposeIterableHandle(list)) {
+      const frame = await iframe.contentFrame();
+      if (frame._id === this._id) {
+        return iframe.move();
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Creates a locator for the provided selector. See {@link Locator} for
+   * details and supported actions.
+   *
+   * @remarks
+   * Locators API is experimental and we will not follow semver for breaking
+   * change in the Locators API.
+   */
+  locator<Selector extends string>(
+    selector: Selector
+  ): Locator<NodeFor<Selector>>;
+
+  /**
+   * Creates a locator for the provided function. See {@link Locator} for
+   * details and supported actions.
+   *
+   * @remarks
+   * Locators API is experimental and we will not follow semver for breaking
+   * change in the Locators API.
+   */
+  locator<Ret>(func: () => Awaitable<Ret>): Locator<Ret>;
+
+  /**
+   * @internal
+   */
+  @throwIfDetached
+  locator<Selector extends string, Ret>(
+    selectorOrFunc: Selector | (() => Awaitable<Ret>)
+  ): Locator<NodeFor<Selector>> | Locator<Ret> {
+    if (typeof selectorOrFunc === 'string') {
+      return NodeLocator.create(this, selectorOrFunc);
+    } else {
+      return FunctionLocator.create(this, selectorOrFunc);
+    }
+  }
+
+  /**
+   * Adds a `<script>` tag into the page with the desired url or content.
+   *
+   * @param options - Options for the script.
+   * @returns An {@link ElementHandle | element handle} to the injected
+   * `<script>` element.
+   */
+  @throwIfDetached
+  async addScriptTag(
+    options: FrameAddScriptTagOptions
+  ): Promise<ElementHandle<HTMLScriptElement>> {
+    let {content = '', type} = options;
+    const {path} = options;
+    if (+!!options.url + +!!path + +!!content !== 1) {
+      throw new Error(
+        'Exactly one of `url`, `path`, or `content` must be specified.'
+      );
+    }
+
+    if (path) {
+      const fs = await importFSPromises();
+      content = await fs.readFile(path, 'utf8');
+      content += `//# sourceURL=${path.replace(/\n/g, '')}`;
+    }
+
+    type = type ?? 'text/javascript';
+
+    return await this.mainRealm().transferHandle(
+      await this.isolatedRealm().evaluateHandle(
+        async ({Deferred}, {url, id, type, content}) => {
+          const deferred = Deferred.create<void>();
+          const script = document.createElement('script');
+          script.type = type;
+          script.text = content;
+          if (url) {
+            script.src = url;
+            script.addEventListener(
+              'load',
+              () => {
+                return deferred.resolve();
+              },
+              {once: true}
+            );
+            script.addEventListener(
+              'error',
+              event => {
+                deferred.reject(
+                  new Error(event.message ?? 'Could not load script')
+                );
+              },
+              {once: true}
+            );
+          } else {
+            deferred.resolve();
+          }
+          if (id) {
+            script.id = id;
+          }
+          document.head.appendChild(script);
+          await deferred.valueOrThrow();
+          return script;
+        },
+        LazyArg.create(context => {
+          return context.puppeteerUtil;
+        }),
+        {...options, type, content}
+      )
+    );
+  }
+  /**
+   * @internal
+   */
+  @throwIfDetached
+  async addStyleTag(
+    options: FrameAddStyleTagOptions
+  ): Promise<ElementHandle<HTMLStyleElement | HTMLLinkElement>> {
+    let {content = ''} = options;
+    const {path} = options;
+    if (+!!options.url + +!!path + +!!content !== 1) {
+      throw new Error(
+        'Exactly one of `url`, `path`, or `content` must be specified.'
+      );
+    }
+
+    if (path) {
+      const fs = await importFSPromises();
+
+      content = await fs.readFile(path, 'utf8');
+      content += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
+      options.content = content;
+    }
+
+    return await this.mainRealm().transferHandle(
+      await this.isolatedRealm().evaluateHandle(
+        async ({Deferred}, {url, content}) => {
+          const deferred = Deferred.create<void>();
+          let element: HTMLStyleElement | HTMLLinkElement;
+          if (!url) {
+            element = document.createElement('style');
+            element.appendChild(document.createTextNode(content!));
+          } else {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = url;
+            element = link;
+          }
+          element.addEventListener(
+            'load',
+            () => {
+              deferred.resolve();
+            },
+            {once: true}
+          );
+          element.addEventListener(
+            'error',
+            event => {
+              deferred.reject(
+                new Error(
+                  (event as ErrorEvent).message ?? 'Could not load style'
+                )
+              );
+            },
+            {once: true}
+          );
+          document.head.appendChild(element);
+          await deferred.valueOrThrow();
+          return element;
+        },
+        LazyArg.create(context => {
+          return context.puppeteerUtil;
+        }),
+        options
+      )
+    );
+  }
+  /**
+   * Clicks the first element found that matches `selector`.
+   *
+   * @remarks
+   * If `click()` triggers a navigation event and there's a separate
+   * `page.waitForNavigation()` promise to be resolved, you may end up with a
+   * race condition that yields unexpected results. The correct pattern for
+   * click and wait for navigation is the following:
+   *
+   * ```ts
+   * const [response] = await Promise.all([
+   *   page.waitForNavigation(waitOptions),
+   *   frame.click(selector, clickOptions),
+   * ]);
+   * ```
+   *
+   * @param selector - The selector to query for.
+   */
+  @throwIfDetached
+  async click(
+    selector: string,
+    options: Readonly<ClickOptions> = {}
+  ): Promise<void> {
+    using handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.click(options);
+    await handle.dispose();
+  }
+  /**
+   * The full HTML contents of the frame, including the DOCTYPE.
+   */
+  @throwIfDetached
+  async content(): Promise<string> {
+    return await this.evaluate(getPageContent);
+  }
+  /**
+   * Focuses the first element that matches the `selector`.
+   *
+   * @param selector - The selector to query for.
+   * @throws Throws if there's no element matching `selector`.
+   */
+  @throwIfDetached
+  async focus(selector: string): Promise<void> {
+    using handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.focus();
+  }
+  /**
+   * Hovers the pointer over the center of the first element that matches the
+   * `selector`.
+   *
+   * @param selector - The selector to query for.
+   * @throws Throws if there's no element matching `selector`.
+   */
+@throwIfDetached
+  async hover(selector: string): Promise<void> {
+    using handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.hover();
+  }
+/**
+   * @example
+   * The `waitForFunction` can be used to observe viewport size change:
+   *
+   * ```ts
+   * import puppeteer from 'puppeteer';
+   *
+   * (async () => {
+   * .  const browser = await puppeteer.launch();
+   * .  const page = await browser.newPage();
+   * .  const watchDog = page.mainFrame().waitForFunction('window.innerWidth < 100');
+   * .  page.setViewport({width: 50, height: 50});
+   * .  await watchDog;
+   * .  await browser.close();
+   * })();
+   * ```
+   *
+   * To pass arguments from Node.js to the predicate of `page.waitForFunction` function:
+   *
+   * ```ts
+   * const selector = '.foo';
+   * await frame.waitForFunction(
+   *   selector => !!document.querySelector(selector),
+   *   {}, // empty options object
+   *   selector
+   * );
+   * ```
+   *
+   * @param pageFunction - the function to evaluate in the frame context.
+   * @param options - options to configure the polling method and timeout.
+   * @param args - arguments to pass to the `pageFunction`.
+   * @returns the promise which resolve when the `pageFunction` returns a truthy value.
+   */
+  @throwIfDetached
+  async waitForFunction<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
+  >(
+    pageFunction: Func | string,
+    options: FrameWaitForFunctionOptions = {},
+    ...args: Params
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    return await (this.mainRealm().waitForFunction(
+      pageFunction,
+      options,
+      ...args
+    ) as Promise<HandleFor<Awaited<ReturnType<Func>>>>);
+  }
+
+  
 
   /**
    * Waits for an element matching the given selector to appear in the frame.
@@ -691,6 +935,30 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   }
 
   /**
+   * Selects a set of value on the first `<select>` element that matches the
+   * `selector`.
+   *
+   * @example
+   *
+   * ```ts
+   * frame.select('select#colors', 'blue'); // single selection
+   * frame.select('select#colors', 'red', 'green', 'blue'); // multiple selections
+   * ```
+   *
+   * @param selector - The selector to query for.
+   * @param values - The array of values to select. If the `<select>` has the
+   * `multiple` attribute, all values are considered, otherwise only the first
+   * one is taken into account.
+   * @returns the list of values that were successfully selected.
+   * @throws Throws if there's no `<select>` matching `selector`.
+   */
+@throwIfDetached
+  async select(selector: string, ...values: string[]): Promise<string[]> {
+    using handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    return await handle.select(...values);
+  }
+/**
    * @deprecated Use {@link Frame.waitForSelector} with the `xpath` prefix.
    *
    * Example: `await frame.waitForSelector('xpath/' + xpathExpression)`
@@ -721,62 +989,6 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
       xpath = `.${xpath}`;
     }
     return await this.waitForSelector(`xpath/${xpath}`, options);
-  }
-
-  /**
-   * @example
-   * The `waitForFunction` can be used to observe viewport size change:
-   *
-   * ```ts
-   * import puppeteer from 'puppeteer';
-   *
-   * (async () => {
-   * .  const browser = await puppeteer.launch();
-   * .  const page = await browser.newPage();
-   * .  const watchDog = page.mainFrame().waitForFunction('window.innerWidth < 100');
-   * .  page.setViewport({width: 50, height: 50});
-   * .  await watchDog;
-   * .  await browser.close();
-   * })();
-   * ```
-   *
-   * To pass arguments from Node.js to the predicate of `page.waitForFunction` function:
-   *
-   * ```ts
-   * const selector = '.foo';
-   * await frame.waitForFunction(
-   *   selector => !!document.querySelector(selector),
-   *   {}, // empty options object
-   *   selector
-   * );
-   * ```
-   *
-   * @param pageFunction - the function to evaluate in the frame context.
-   * @param options - options to configure the polling method and timeout.
-   * @param args - arguments to pass to the `pageFunction`.
-   * @returns the promise which resolve when the `pageFunction` returns a truthy value.
-   */
-  @throwIfDetached
-  async waitForFunction<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(
-    pageFunction: Func | string,
-    options: FrameWaitForFunctionOptions = {},
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    return await (this.mainRealm().waitForFunction(
-      pageFunction,
-      options,
-      ...args
-    ) as Promise<HandleFor<Awaited<ReturnType<Func>>>>);
-  }
-  /**
-   * The full HTML contents of the frame, including the DOCTYPE.
-   */
-  @throwIfDetached
-  async content(): Promise<string> {
-    return await this.evaluate(getPageContent);
   }
 
   /**
@@ -856,76 +1068,6 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   }
 
   /**
-   * Adds a `<script>` tag into the page with the desired url or content.
-   *
-   * @param options - Options for the script.
-   * @returns An {@link ElementHandle | element handle} to the injected
-   * `<script>` element.
-   */
-  @throwIfDetached
-  async addScriptTag(
-    options: FrameAddScriptTagOptions
-  ): Promise<ElementHandle<HTMLScriptElement>> {
-    let {content = '', type} = options;
-    const {path} = options;
-    if (+!!options.url + +!!path + +!!content !== 1) {
-      throw new Error(
-        'Exactly one of `url`, `path`, or `content` must be specified.'
-      );
-    }
-
-    if (path) {
-      const fs = await importFSPromises();
-      content = await fs.readFile(path, 'utf8');
-      content += `//# sourceURL=${path.replace(/\n/g, '')}`;
-    }
-
-    type = type ?? 'text/javascript';
-
-    return await this.mainRealm().transferHandle(
-      await this.isolatedRealm().evaluateHandle(
-        async ({Deferred}, {url, id, type, content}) => {
-          const deferred = Deferred.create<void>();
-          const script = document.createElement('script');
-          script.type = type;
-          script.text = content;
-          if (url) {
-            script.src = url;
-            script.addEventListener(
-              'load',
-              () => {
-                return deferred.resolve();
-              },
-              {once: true}
-            );
-            script.addEventListener(
-              'error',
-              event => {
-                deferred.reject(
-                  new Error(event.message ?? 'Could not load script')
-                );
-              },
-              {once: true}
-            );
-          } else {
-            deferred.resolve();
-          }
-          if (id) {
-            script.id = id;
-          }
-          document.head.appendChild(script);
-          await deferred.valueOrThrow();
-          return script;
-        },
-        LazyArg.create(context => {
-          return context.puppeteerUtil;
-        }),
-        {...options, type, content}
-      )
-    );
-  }
-
-  /**
    * Adds a `HTMLStyleElement` into the frame with the desired URL
    *
    * @returns An {@link ElementHandle | element handle} to the loaded `<style>`
@@ -945,153 +1087,11 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
     options: FrameAddStyleTagOptions
   ): Promise<ElementHandle<HTMLLinkElement>>;
 
-  /**
-   * @internal
-   */
-  @throwIfDetached
-  async addStyleTag(
-    options: FrameAddStyleTagOptions
-  ): Promise<ElementHandle<HTMLStyleElement | HTMLLinkElement>> {
-    let {content = ''} = options;
-    const {path} = options;
-    if (+!!options.url + +!!path + +!!content !== 1) {
-      throw new Error(
-        'Exactly one of `url`, `path`, or `content` must be specified.'
-      );
-    }
+  
+  
 
-    if (path) {
-      const fs = await importFSPromises();
-
-      content = await fs.readFile(path, 'utf8');
-      content += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
-      options.content = content;
-    }
-
-    return await this.mainRealm().transferHandle(
-      await this.isolatedRealm().evaluateHandle(
-        async ({Deferred}, {url, content}) => {
-          const deferred = Deferred.create<void>();
-          let element: HTMLStyleElement | HTMLLinkElement;
-          if (!url) {
-            element = document.createElement('style');
-            element.appendChild(document.createTextNode(content!));
-          } else {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = url;
-            element = link;
-          }
-          element.addEventListener(
-            'load',
-            () => {
-              deferred.resolve();
-            },
-            {once: true}
-          );
-          element.addEventListener(
-            'error',
-            event => {
-              deferred.reject(
-                new Error(
-                  (event as ErrorEvent).message ?? 'Could not load style'
-                )
-              );
-            },
-            {once: true}
-          );
-          document.head.appendChild(element);
-          await deferred.valueOrThrow();
-          return element;
-        },
-        LazyArg.create(context => {
-          return context.puppeteerUtil;
-        }),
-        options
-      )
-    );
-  }
-
-  /**
-   * Clicks the first element found that matches `selector`.
-   *
-   * @remarks
-   * If `click()` triggers a navigation event and there's a separate
-   * `page.waitForNavigation()` promise to be resolved, you may end up with a
-   * race condition that yields unexpected results. The correct pattern for
-   * click and wait for navigation is the following:
-   *
-   * ```ts
-   * const [response] = await Promise.all([
-   *   page.waitForNavigation(waitOptions),
-   *   frame.click(selector, clickOptions),
-   * ]);
-   * ```
-   *
-   * @param selector - The selector to query for.
-   */
-  @throwIfDetached
-  async click(
-    selector: string,
-    options: Readonly<ClickOptions> = {}
-  ): Promise<void> {
-    using handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    await handle.click(options);
-    await handle.dispose();
-  }
-
-  /**
-   * Focuses the first element that matches the `selector`.
-   *
-   * @param selector - The selector to query for.
-   * @throws Throws if there's no element matching `selector`.
-   */
-  @throwIfDetached
-  async focus(selector: string): Promise<void> {
-    using handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    await handle.focus();
-  }
-
-  /**
-   * Hovers the pointer over the center of the first element that matches the
-   * `selector`.
-   *
-   * @param selector - The selector to query for.
-   * @throws Throws if there's no element matching `selector`.
-   */
-  @throwIfDetached
-  async hover(selector: string): Promise<void> {
-    using handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    await handle.hover();
-  }
-
-  /**
-   * Selects a set of value on the first `<select>` element that matches the
-   * `selector`.
-   *
-   * @example
-   *
-   * ```ts
-   * frame.select('select#colors', 'blue'); // single selection
-   * frame.select('select#colors', 'red', 'green', 'blue'); // multiple selections
-   * ```
-   *
-   * @param selector - The selector to query for.
-   * @param values - The array of values to select. If the `<select>` has the
-   * `multiple` attribute, all values are considered, otherwise only the first
-   * one is taken into account.
-   * @returns the list of values that were successfully selected.
-   * @throws Throws if there's no `<select>` matching `selector`.
-   */
-  @throwIfDetached
-  async select(selector: string, ...values: string[]): Promise<string[]> {
-    using handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    return await handle.select(...values);
-  }
+  
+  
 
   /**
    * Taps the first element that matches the `selector`.
@@ -1106,6 +1106,15 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
     await handle.tap();
   }
 
+  /**
+   * The frame's title.
+   */
+  @throwIfDetached
+  async title(): Promise<string> {
+    return await this.isolatedRealm().evaluate(() => {
+      return document.title;
+    });
+  }
   /**
    * Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character
    * in the text.
@@ -1161,16 +1170,6 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   async waitForTimeout(milliseconds: number): Promise<void> {
     return await new Promise(resolve => {
       setTimeout(resolve, milliseconds);
-    });
-  }
-
-  /**
-   * The frame's title.
-   */
-  @throwIfDetached
-  async title(): Promise<string> {
-    return await this.isolatedRealm().evaluate(() => {
-      return document.title;
     });
   }
 

@@ -63,6 +63,19 @@ export class CdpElementHandle<
   ): Promise<CdpFrame>;
 
   @throwIfDisposed()
+  override async autofill(data: AutofillData): Promise<void> {
+    const nodeInfo = await this.client.send('DOM.describeNode', {
+      objectId: this.handle.id,
+    });
+    const fieldId = nodeInfo.node.backendNodeId;
+    const frameId = this.frame._id;
+    await this.client.send('Autofill.trigger', {
+      fieldId,
+      frameId,
+      card: data.creditCard,
+    });
+  }
+  @throwIfDisposed()
   override async contentFrame(): Promise<CdpFrame | null> {
     const nodeInfo = await this.client.send('DOM.describeNode', {
       objectId: this.id,
@@ -153,20 +166,6 @@ export class CdpElementHandle<
       objectId: this.id,
       files,
       backendNodeId,
-    });
-  }
-
-  @throwIfDisposed()
-  override async autofill(data: AutofillData): Promise<void> {
-    const nodeInfo = await this.client.send('DOM.describeNode', {
-      objectId: this.handle.id,
-    });
-    const fieldId = nodeInfo.node.backendNodeId;
-    const frameId = this.frame._id;
-    await this.client.send('Autofill.trigger', {
-      fieldId,
-      frameId,
-      card: data.creditCard,
     });
   }
 }

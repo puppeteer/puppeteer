@@ -52,13 +52,15 @@ import {
  * @internal
  */
 export class BidiFrame extends Frame {
-  #page: BidiPage;
-  #context: BrowsingContext;
-  #timeoutSettings: TimeoutSettings;
-  #abortDeferred = Deferred.create<never>();
-  #disposed = false;
-  sandboxes: SandboxChart;
   override _id: string;
+  sandboxes: SandboxChart;
+  #abortDeferred = Deferred.create<never>();
+  #context: BrowsingContext;
+  #disposed = false;
+  #exposedFunctions = new Map<string, ExposeableFunction<never[], unknown>>();
+  #page: BidiPage;
+
+  #timeoutSettings: TimeoutSettings;
 
   constructor(
     page: BidiPage,
@@ -88,34 +90,12 @@ export class BidiFrame extends Frame {
     return this.context().cdpSession;
   }
 
-  override mainRealm(): Sandbox {
-    return this.sandboxes[MAIN_SANDBOX];
-  }
-
-  override isolatedRealm(): Sandbox {
-    return this.sandboxes[PUPPETEER_SANDBOX];
-  }
-
-  override page(): BidiPage {
-    return this.#page;
-  }
-
-  override isOOPFrame(): never {
-    throw new UnsupportedOperation();
-  }
-
-  override url(): string {
-    return this.#context.url;
-  }
-
-  override parentFrame(): BidiFrame | null {
-    return this.#page.frame(this._parentId ?? '');
-  }
-
   override childFrames(): BidiFrame[] {
     return this.#page.childFrames(this.#context.id);
   }
-
+  override get detached(): boolean {
+    return this.#disposed;
+  }
   @throwIfDetached
   override async goto(
     url: string,
@@ -144,7 +124,23 @@ export class BidiFrame extends Frame {
 
     return this.#page.getNavigationResponse(response?.result.navigation);
   }
+  override isolatedRealm(): Sandbox {
+    return this.sandboxes[PUPPETEER_SANDBOX];
+  }
+  override isOOPFrame(): never {
+    throw new UnsupportedOperation();
+  }
+  override mainRealm(): Sandbox {
+    return this.sandboxes[MAIN_SANDBOX];
+  }
 
+  override page(): BidiPage {
+    return this.#page;
+  }
+
+  override parentFrame(): BidiFrame | null {
+    return this.#page.frame(this._parentId ?? '');
+  }
   @throwIfDetached
   override async setContent(
     html: string,
@@ -174,11 +170,13 @@ export class BidiFrame extends Frame {
         .pipe(rewriteNavigationError('setContent', ms))
     );
   }
-
-  context(): BrowsingContext {
-    return this.#context;
+  override url(): string {
+    return this.#context.url;
   }
 
+  override waitForDevicePrompt(): never {
+    throw new UnsupportedOperation();
+  }
   @throwIfDetached
   override async waitForNavigation(
     options: WaitForOptions = {}
@@ -219,15 +217,18 @@ export class BidiFrame extends Frame {
 
     return this.#page.getNavigationResponse(response?.result.navigation);
   }
+  override waitForSelector<Selector extends string>(
+    selector: Selector,
+    options?: WaitForSelectorOptions
+  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
+    if (selector.startsWith('aria')) {
+      throw new UnsupportedOperation(
+        'ARIA selector is not supported for BiDi!'
+      );
+    }
 
-  override waitForDevicePrompt(): never {
-    throw new UnsupportedOperation();
+    return super.waitForSelector(selector, options);
   }
-
-  override get detached(): boolean {
-    return this.#disposed;
-  }
-
   [disposeSymbol](): void {
     if (this.#disposed) {
       return;
@@ -238,8 +239,10 @@ export class BidiFrame extends Frame {
     this.sandboxes[MAIN_SANDBOX][disposeSymbol]();
     this.sandboxes[PUPPETEER_SANDBOX][disposeSymbol]();
   }
+  context(): BrowsingContext {
+    return this.#context;
+  }
 
-  #exposedFunctions = new Map<string, ExposeableFunction<never[], unknown>>();
   async exposeFunction<Args extends unknown[], Ret>(
     name: string,
     apply: (...args: Args) => Awaitable<Ret>
@@ -257,18 +260,5 @@ export class BidiFrame extends Frame {
       this.#exposedFunctions.delete(name);
       throw error;
     }
-  }
-
-  override waitForSelector<Selector extends string>(
-    selector: Selector,
-    options?: WaitForSelectorOptions
-  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    if (selector.startsWith('aria')) {
-      throw new UnsupportedOperation(
-        'ARIA selector is not supported for BiDi!'
-      );
-    }
-
-    return super.waitForSelector(selector, options);
   }
 }

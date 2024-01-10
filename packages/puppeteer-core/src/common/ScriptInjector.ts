@@ -4,8 +4,8 @@ import {source as injectedSource} from '../generated/injected.js';
  * @internal
  */
 export class ScriptInjector {
-  #updated = false;
   #amendments = new Set<string>();
+  #updated = false;
 
   // Appends a statement of the form `(PuppeteerUtil) => {...}`.
   append(statement: string): void {
@@ -13,25 +13,17 @@ export class ScriptInjector {
       this.#amendments.add(statement);
     });
   }
-
-  pop(statement: string): void {
-    this.#update(() => {
-      this.#amendments.delete(statement);
-    });
-  }
-
   inject(inject: (script: string) => void, force = false): void {
     if (this.#updated || force) {
       inject(this.#get());
     }
     this.#updated = false;
   }
-
-  #update(callback: () => void): void {
-    callback();
-    this.#updated = true;
+  pop(statement: string): void {
+    this.#update(() => {
+      this.#amendments.delete(statement);
+    });
   }
-
   #get(): string {
     return `(() => {
       const module = {};
@@ -43,6 +35,11 @@ export class ScriptInjector {
         .join('')}
       return module.exports.default;
     })()`;
+  }
+
+  #update(callback: () => void): void {
+    callback();
+    this.#updated = true;
   }
 }
 
