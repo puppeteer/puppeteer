@@ -210,88 +210,22 @@
     "expectations": ["FAIL", "TIMEOUT"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.addScriptTag *",
+    "testIdPattern": "[page.spec] Page *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.addStyleTag *",
+    "testIdPattern": "[page.spec] Page BrowserContext.overridePermissions *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.browser *",
+    "testIdPattern": "[page.spec] Page Page.Events.Popup *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.browserContext *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.DOMContentLoaded *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Load *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.PageError *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.pdf *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.select *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.setContent *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.waitForNetworkIdle *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.waitForRequest *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.waitForResponse *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page removing and adding event handlers *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[prerender.spec] *",
@@ -780,24 +714,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[navigation.spec] navigation \"after each\" hook for \"should work with both domcontentloaded and load\"",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation \"after each\" hook in \"navigation\"",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation \"after each\" hook in \"navigation\"",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[navigation.spec] navigation Frame.goto should return matching responses",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -967,10 +883,10 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.client should return the client instance",
+    "testIdPattern": "[page.spec] Page Page.bringToFront should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.close should *not* run beforeunload by default",
@@ -981,92 +897,38 @@
   {
     "testIdPattern": "[page.spec] Page Page.close should *not* run beforeunload by default",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["TIMEOUT"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.close should not be visible in browser.pages",
+    "testIdPattern": "[page.spec] Page Page.Events.Console should have location when fetch fails",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.close should reject all promises when page is closed",
+    "testIdPattern": "[page.spec] Page Page.Events.Console should trigger correct Log",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.close should set the page close state",
+    "testIdPattern": "[page.spec] Page Page.Events.Console should work for different console API calls with logging functions",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.close should set the page close state",
+    "testIdPattern": "[page.spec] Page Page.Events.error should throw when page crashes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.close should terminate network waiters",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.close should terminate network waiters",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Close should work with page.close",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Close should work with window.close",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Console should not fail for window object",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Console should not throw when there are console messages in detached iframes",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Console should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Console should work for different console API calls with timing functions",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Console should work on script call right after navigation",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction *",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should work with loading frames",
@@ -1074,6 +936,18 @@
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "Missing request interception"
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.metrics metrics event fired on console.timeStamp",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.metrics should get metrics from a page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.pdf can print to PDF with accessible",
@@ -1088,28 +962,46 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.setGeolocation should throw when invalid longitude",
+    "testIdPattern": "[page.spec] Page Page.removeExposedFunction should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL", "TIMEOUT"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.setBypassCSP *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.setCacheEnabled should stay disabled when toggling request interception on/off",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.setGeolocation should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.setOfflineMode should emulate navigator.onLine",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.setOfflineMode should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setUserAgent *",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.title should return the page title",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.url should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.waitForNetworkIdle should work with aborted requests",
@@ -1380,6 +1272,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.isConnected should set the browser connected state",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[browser.spec] Browser specs Browser.process should not return child_process for remote browser",
@@ -1874,12 +1772,6 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[evaluation.spec] Evaluation specs \"after each\" hook for \"should transfer 100Mb of data from page to node.js\"",
-    "platforms": ["darwin"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["PASS", "TIMEOUT"]
-  },
-  {
     "testIdPattern": "[evaluation.spec] Evaluation specs Frame.evaluate should have different execution contexts",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -1918,14 +1810,14 @@
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work from-inside an exposed function",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "TIMEOUT"]
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work from-inside an exposed function",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["SKIP"]
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL", "TIMEOUT"]
   },
   {
     "testIdPattern": "[extensions.spec] extensions background_page target type should be available",
@@ -2066,9 +1958,21 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[ignorehttpserrors.spec] ignoreHTTPSErrors should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[ignorehttpserrors.spec] ignoreHTTPSErrors should work with mixed content",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[ignorehttpserrors.spec] ignoreHTTPSErrors should work with mixed content",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
@@ -2148,6 +2052,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.close should terminate network waiters",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.disconnect should reject navigation when browser closes",
@@ -2546,18 +2456,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[network.spec] network \"after all\" hook in \"network\"",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[network.spec] network \"after each\" hook for \"should wait until response completes\"",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
     "testIdPattern": "[network.spec] network Network Events Page.Events.Request",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -2871,34 +2769,16 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
+    "testIdPattern": "[oopif.spec] OOPIF should support lazy OOP frames",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[oopif.spec] OOPIF should support wait for navigation for transitions from local to OOPIF",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["PASS", "TIMEOUT"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page \"after all\" hook in \"Page\"",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page \"before each\" hook for \"should include sourcemap when path is provided\"",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page \"before each\" hook for \"should return the page title\"",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page \"before each\" hook for \"should throw an error if loading from url fail\"",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[page.spec] Page BrowserContext.overridePermissions should deny permission when not listed",
@@ -2979,6 +2859,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[page.spec] Page Page.close should run beforeunload if asked for",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.close should terminate network waiters",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -2994,6 +2880,12 @@
     "testIdPattern": "[page.spec] Page Page.Events.Console should have location and stack trace for console API calls",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.Events.Console should have location and stack trace for console API calls",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
@@ -3251,20 +3143,14 @@
   {
     "testIdPattern": "[page.spec] Page Page.setCacheEnabled should enable or disable the cache based on the state passed",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setCacheEnabled should stay disabled when toggling request interception on/off",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.setContent should respect default navigation timeout",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setGeolocation should work",
@@ -3285,6 +3171,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[page.spec] Page Page.setJavaScriptEnabled should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.setOfflineMode should emulate navigator.onLine",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -3301,24 +3193,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.title should return the page title",
-    "platforms": ["linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.waitForNetworkIdle should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.waitForNetworkIdle should work with aborted requests",
-    "platforms": ["linux"],
-    "parameters": ["firefox", "headful"],
-    "expectations": ["PASS", "TIMEOUT"]
   },
   {
     "testIdPattern": "[prerender.spec] Prerender can navigate to a prerendered page via Puppeteer",
@@ -3777,9 +3651,21 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[worker.spec] Workers should report console logs",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[worker.spec] Workers should report errors",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[worker.spec] Workers should report errors",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
@@ -3835,24 +3721,6 @@
     "platforms": ["win32"],
     "parameters": ["firefox", "headless", "webDriverBiDi"],
     "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation \"after all\" hook in \"navigation\"",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "headless", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[network.spec] network \"after each\" hook for \"Same-origin set-cookie subresource\"",
-    "platforms": ["win32"],
-    "parameters": ["cdp", "chrome", "new-headless"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[network.spec] network \"after each\" hook for \"Same-origin set-cookie subresource\"",
-    "platforms": ["win32"],
-    "parameters": ["cdp", "chrome", "new-headless"],
-    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[network.spec] network Network Events Page.Events.Request",
