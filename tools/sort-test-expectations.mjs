@@ -13,7 +13,7 @@ import prettier from 'prettier';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const source = 'test/TestExpectations.json';
-const testExpectations = JSON.parse(fs.readFileSync(source, 'utf-8'));
+let testExpectations = JSON.parse(fs.readFileSync(source, 'utf-8'));
 const committedExpectations = structuredClone(testExpectations);
 
 const prettierConfig = await import(
@@ -43,6 +43,16 @@ testExpectations.forEach(item => {
   item.parameters.sort();
   item.expectations.sort();
   item.platforms.sort();
+});
+
+testExpectations = [
+  ...new Set(
+    testExpectations.map(test => {
+      return JSON.stringify(test);
+    })
+  ),
+].map(test => {
+  return JSON.parse(test);
 });
 
 if (process.argv.includes('--lint')) {
