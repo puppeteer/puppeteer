@@ -2997,6 +2997,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[page.spec] Page Page.exposeFunction should be callable from-inside evaluateOnNewDocument",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.metrics metrics event fired on console.timeStamp",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
