@@ -13,6 +13,5 @@
     "types": ["node"]
   },
   "include": ["src/**/*"],
-  "exclude": ["src/**/files/**/*"],
-  "references": [{"path": "./tsconfig.test.json"}]
+  "exclude": ["src/**/files/**/*"]
 }

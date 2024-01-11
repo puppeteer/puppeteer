@@ -29,7 +29,7 @@ describe('DevTools', function () {
     });
   });
 
-  async function launchBrowser(options: any) {
+  async function launchBrowser(options: typeof launchOptions) {
     const {browser, close} = await launch(options, {createContext: false});
     browsers.push(close);
     return browser;

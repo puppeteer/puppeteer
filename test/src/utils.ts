@@ -103,7 +103,7 @@ export async function navigateFrame(
 ): Promise<void> {
   await pageOrFrame.evaluate(navigateFrame, frameId, url);
 
-  function navigateFrame(frameId: string, url: any) {
+  function navigateFrame(frameId: string, url: string) {
     const frame = document.getElementById(frameId) as HTMLIFrameElement;
     frame.src = url;
     return new Promise(x => {

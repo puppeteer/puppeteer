@@ -11,7 +11,7 @@ import type {AngularJson, AngularProject} from './types.js';
 export function getJsonFileAsObject(
   tree: Tree,
   path: string
-): Record<string, any> {
+): Record<string, unknown> {
   try {
     const buffer = tree.read(path) as Buffer;
     const content = buffer.toString();
@@ -21,12 +21,12 @@ export function getJsonFileAsObject(
   }
 }
 
-export function getObjectAsJson(object: Record<string, any>): string {
+export function getObjectAsJson(object: Record<string, unknown>): string {
   return JSON.stringify(object, null, 2);
 }
 
 export function getAngularConfig(tree: Tree): AngularJson {
-  return getJsonFileAsObject(tree, './angular.json') as AngularJson;
+  return getJsonFileAsObject(tree, './angular.json') as unknown as AngularJson;
 }
 
 export function getApplicationProjects(

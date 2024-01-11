@@ -102,7 +102,7 @@ function addCommonFiles(options: SchematicsOptions): Rule {
     context.logger.debug('Adding Puppeteer base files.');
     const projects = getApplicationProjects(tree);
 
-    return addCommonFilesHelper(tree, context, projects, {
+    return addCommonFilesHelper(projects, {
       options: {
         ...options,
         port: DEFAULT_PORT,
@@ -117,7 +117,7 @@ function addOtherFiles(options: SchematicsOptions): Rule {
     context.logger.debug('Adding Puppeteer additional files.');
     const projects = getApplicationProjects(tree);
 
-    return addFrameworkFiles(tree, context, projects, {
+    return addFrameworkFiles(projects, {
       options: {
         ...options,
         port: DEFAULT_PORT,

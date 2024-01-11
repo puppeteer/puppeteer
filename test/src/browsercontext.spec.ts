@@ -70,7 +70,7 @@ describe('BrowserContext', function () {
   it('should fire target events', async () => {
     const {server, context} = await getTestState();
 
-    const events: any[] = [];
+    const events: string[] = [];
     context.on('targetcreated', target => {
       events.push('CREATED: ' + target.url());
     });
