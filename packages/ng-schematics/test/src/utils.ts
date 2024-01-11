@@ -9,8 +9,6 @@ import {
 } from '@angular-devkit/schematics/testing';
 import sinon from 'sinon';
 
-import type {AngularJson} from '../../src/schematics/utils/types.js';
-
 const WORKSPACE_OPTIONS = {
   name: 'workspace',
   newProjectRoot: 'projects',
