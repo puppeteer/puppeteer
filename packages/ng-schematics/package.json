@@ -25,10 +25,14 @@
         "*.tsbuildinfo"
       ]
     },
+    "build:test": {
+      "command": "tsc -b test/tsconfig.json"
+    },
     "unit": {
       "command": "node --test --test-reporter spec test/build",
       "dependencies": [
-        "build"
+        "build",
+        "build:test"
       ]
     }
   },

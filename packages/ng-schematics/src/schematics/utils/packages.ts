@@ -66,7 +66,7 @@ export function getPackageLatestNpmVersion(name: string): Promise<NodePackage> {
 function updateJsonValues(
   json: Record<string, any>,
   target: string,
-  updates: Array<{name: string; value: unknown}>,
+  updates: Array<{name: string; value: any}>,
   overwrite = false
 ) {
   updates.forEach(({name, value}) => {
@@ -183,7 +183,7 @@ export function updateAngularJsonScripts(
     );
   });
 
-  tree.overwrite('./angular.json', getObjectAsJson(angularJson));
+  tree.overwrite('./angular.json', getObjectAsJson(angularJson as any));
 
   return tree;
 }

@@ -9,6 +9,8 @@ import {
 } from '@angular-devkit/schematics/testing';
 import sinon from 'sinon';
 
+import type {AngularJson} from '../../src/schematics/utils/types.js';
+
 const WORKSPACE_OPTIONS = {
   name: 'workspace',
   newProjectRoot: 'projects',
@@ -35,7 +37,7 @@ export function setupHttpHooks(): void {
   before(() => {
     const httpsGetStub = sinon.stub(https, 'get');
     httpsGetStub.returns({
-      on: (_: any, callback: () => void) => {
+      on: (_: string, callback: () => void) => {
         callback();
       },
     } as any);
@@ -83,7 +85,7 @@ export function getMultiLibraryFile(file: string): string {
 export async function buildTestingTree(
   command: 'ng-add' | 'e2e' | 'config',
   type: 'single' | 'multi' = 'single',
-  userOptions?: Record<string, any>
+  userOptions?: Record<string, unknown>
 ): Promise<UnitTestTree> {
   const runner = new SchematicTestRunner(
     'schematics',

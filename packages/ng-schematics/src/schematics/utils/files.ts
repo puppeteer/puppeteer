@@ -7,9 +7,8 @@
 import {relative, resolve} from 'path';
 
 import {getSystemPath, normalize, strings} from '@angular-devkit/core';
+import type {Rule} from '@angular-devkit/schematics';
 import {
-  type SchematicContext,
-  type Tree,
   apply,
   applyTemplates,
   chain,
@@ -35,31 +34,21 @@ export interface FilesOptions {
 }
 
 export function addFilesToProjects(
-  tree: Tree,
-  context: SchematicContext,
   projects: Record<string, AngularProject>,
   options: FilesOptions
-): any {
+): Rule {
   return chain(
     Object.keys(projects).map(name => {
-      return addFilesSingle(
-        tree,
-        context,
-        name,
-        projects[name] as AngularProject,
-        options
-      );
+      return addFilesSingle(name, projects[name] as AngularProject, options);
     })
-  )(tree, context);
+  );
 }
 
 export function addFilesSingle(
-  _tree: Tree,
-  _context: SchematicContext,
   name: string,
   project: AngularProject,
   {options, applyPath, movePath, relativeToWorkspacePath}: FilesOptions
-): any {
+): Rule {
   const projectPath = resolve(getSystemPath(normalize(project.root)));
   const workspacePath = resolve(getSystemPath(normalize('')));
 
@@ -119,26 +108,22 @@ function getTsConfigPath(project: AngularProject): string {
 }
 
 export function addCommonFiles(
-  tree: Tree,
-  context: SchematicContext,
   projects: Record<string, AngularProject>,
   filesOptions: Omit<FilesOptions, 'applyPath' | 'relativeToWorkspacePath'>
-): any {
+): Rule {
   const options: FilesOptions = {
     ...filesOptions,
     applyPath: './files/common',
     relativeToWorkspacePath: `/`,
   };
 
-  return addFilesToProjects(tree, context, projects, options);
+  return addFilesToProjects(projects, options);
 }
 
 export function addFrameworkFiles(
-  tree: Tree,
-  context: SchematicContext,
   projects: Record<string, AngularProject>,
   filesOptions: Omit<FilesOptions, 'applyPath' | 'relativeToWorkspacePath'>
-): any {
+): Rule {
   const testRunner = filesOptions.options.testRunner;
   const options: FilesOptions = {
     ...filesOptions,
@@ -146,7 +131,7 @@ export function addFrameworkFiles(
     relativeToWorkspacePath: `/`,
   };
 
-  return addFilesToProjects(tree, context, projects, options);
+  return addFilesToProjects(projects, options);
 }
 
 export function hasE2ETester(
