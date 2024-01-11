@@ -1154,6 +1154,19 @@ describe('Page', function () {
       });
       expect(result).toBe(15);
     });
+    it('should await returned if called from function', async () => {
+      const {page} = await getTestState();
+
+      await page.exposeFunction('compute', function (a: number, b: number) {
+        return Promise.resolve(a * b);
+      });
+
+      const result = await page.evaluate(async function () {
+        const result = await (globalThis as any).compute(3, 5);
+        return result;
+      });
+      expect(result).toBe(15);
+    });
     it('should work on frames', async () => {
       const {page, server} = await getTestState();
 
