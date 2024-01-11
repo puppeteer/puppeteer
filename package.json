@@ -136,7 +136,7 @@
     "@types/mocha": "10.0.6",
     "@types/node": "20.8.4",
     "@types/semver": "7.5.6",
-    "@types/sinon": "17.0.2",
+    "@types/sinon": "17.0.3",
     "@typescript-eslint/eslint-plugin": "6.18.1",
     "@typescript-eslint/parser": "6.18.1",
     "cross-env": "7.0.3",
@@ -165,7 +165,7 @@
     "tsd": "0.30.3",
     "tsx": "4.7.0",
     "typescript": "5.3.3",
-    "wireit": "0.14.1"
+    "wireit": "0.14.3"
   },
   "overrides": {
     "@microsoft/api-extractor": {
