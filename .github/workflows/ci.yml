@@ -145,13 +145,13 @@ jobs:
           - chrome-headful
           - chrome-new-headless
           - chrome-bidi
-        shard:
-          - 1-2
-          - 2-2
         os:
           - ubuntu-latest
           - windows-latest
           - macos-latest
+        shard:
+          - 1-2
+          - 2-2
         exclude:
           - os: windows-latest
             suite: chrome-bidi
@@ -232,15 +232,15 @@ jobs:
           - firefox-bidi
           - firefox-headful
           - firefox-headless
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
         shard:
           - 1-4
           - 2-4
           - 3-4
           - 4-4
-        os:
-          - ubuntu-latest
-          - macos-latest
-          - windows-latest
         exclude:
           - os: macos-latest
             suite: firefox-headful

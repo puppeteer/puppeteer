@@ -21,13 +21,13 @@ jobs:
           - chrome-headful
           - chrome-new-headless
           - chrome-bidi
-        shard:
-          - 1-2
-          - 2-2
         os:
           - ubuntu-latest
           - windows-latest
           - macos-latest
+        shard:
+          - 1-2
+          - 2-2
         exclude:
           - os: windows-latest
             suite: chrome-bidi
