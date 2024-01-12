@@ -3369,12 +3369,6 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work with odd clip size on Retina displays",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[stacktrace.spec] Stack trace should work for none error objects",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
