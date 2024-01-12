@@ -42,11 +42,15 @@ class AngularProject {
   /** Folder name */
   #name;
   /** E2E test runner to use */
-  #testRunner;
+  #runner;
 
-  constructor(testRunner, name) {
-    this.#testRunner = testRunner ?? 'node';
+  constructor(runner, name) {
+    this.#runner = runner ?? 'node';
     this.#name = name ?? randomUUID();
+  }
+
+  get runner() {
+    return this.#runner;
   }
 
   get name() {

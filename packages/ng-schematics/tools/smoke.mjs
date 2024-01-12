@@ -29,15 +29,17 @@ if (process.env.CI) {
   // Need to install in CI
   execSync('npm install -g @angular/cli@latest @angular-devkit/schematics-cli');
   const runners = ['node', 'jest', 'jasmine', 'mocha'];
-  const projects = [];
+  const groups = [];
 
   for (const runner of runners) {
-    projects.push(new AngularProjectSingle(runner));
-    projects.push(new AngularProjectMulti(runner));
+    groups.push([
+      new AngularProjectSingle(runner),
+      new AngularProjectMulti(runner),
+    ]);
   }
 
   const angularProjects = await Promise.allSettled(
-    projects.map(async project => {
+    groups.flat().map(async project => {
       return await project.create();
     })
   );
@@ -47,6 +49,20 @@ if (process.env.CI) {
     }),
     'Building of 1 or more projects failed!'
   );
+
+  for await (const runnerGroup of object) {
+    const smokeResults = await Promise.allSettled(
+      runnerGroup.map(async project => {
+        return await project.runSmoke();
+      })
+    );
+    ok(
+      smokeResults.every(project => {
+        return project.status === 'fulfilled';
+      }),
+      `Smoke test for ${runnerGroup[0].runner} failed!`
+    );
+  }
 
   const smokeResults = await Promise.allSettled(
     projects.map(async project => {
