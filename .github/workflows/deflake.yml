@@ -67,7 +67,7 @@ jobs:
         run: npm run build -w @puppeteer-test/test
       - name: Setup cache for Chrome binary
         if: ${{ inputs.suite != 'chrome-bidi' }}
-        uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        uses: actions/cache@e12d46a63a90f2fae62d114769bbf2a179198b5c # v3.3.3
         with:
           path: ~/.cache/puppeteer/chrome
           key: ${{ runner.os }}-Chrome-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
@@ -76,7 +76,7 @@ jobs:
         run: npm run postinstall
       - name: Setup cache for Chrome Canary binary
         if: ${{ inputs.suite == 'chrome-bidi' }}
-        uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        uses: actions/cache@e12d46a63a90f2fae62d114769bbf2a179198b5c # v3.3.3
         with:
           path: ~/.cache/puppeteer/chrome-canary
           key: ${{ runner.os }}-Chrome-Canary-${{ hashFiles('package.json') }}
@@ -123,7 +123,7 @@ jobs:
       - name: Build packages
         run: npm run build -w @puppeteer-test/test
       - name: Setup cache for Firefox binary
-        uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        uses: actions/cache@e12d46a63a90f2fae62d114769bbf2a179198b5c # v3.3.3
         with:
           path: ~/.cache/puppeteer/firefox
           key: ${{ runner.os }}-firefox-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
