@@ -57,9 +57,16 @@ class AngularProject {
     const [executable, ...args] = command.split(' ');
     await new Promise((resolve, reject) => {
       const createProcess = spawn(executable, args, {
-        stdio: 'inherit',
         shell: true,
         ...options,
+      });
+
+      createProcess.stdout.on('data', data => {
+        data = data
+          .toString()
+          // Replace new lines with a prefix including the test runner
+          .replace(/(?:\r\n?|\n)(?=.*[\r\n])/g, `\n${this.#testRunner} - `);
+        console.log(`${this.#testRunner} - ${data}`);
       });
 
       createProcess.on('error', message => {
