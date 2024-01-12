@@ -69,8 +69,8 @@ class AngularProject {
         data = data
           .toString()
           // Replace new lines with a prefix including the test runner
-          .replace(/(?:\r\n?|\n)(?=.*[\r\n])/g, `\n${this.#testRunner} - `);
-        console.log(`${this.#testRunner} - ${data}`);
+          .replace(/(?:\r\n?|\n)(?=.*[\r\n])/g, `\n${this.#runner} - `);
+        console.log(`${this.#runner} - ${data}`);
       });
 
       createProcess.on('error', message => {
@@ -98,7 +98,7 @@ class AngularProject {
     const packageJson = JSON.parse(await readFile(packageJsonFile));
     packageJson['scripts'] = {
       ...packageJson['scripts'],
-      ...AngularProject.#scripts(this.#testRunner),
+      ...AngularProject.#scripts(this.#runner),
     };
     await writeFile(packageJsonFile, JSON.stringify(packageJson, null, 2));
   }
