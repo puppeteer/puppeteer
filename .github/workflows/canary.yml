@@ -16,10 +16,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
         suite:
           - chrome-headless
           - chrome-headful
@@ -28,6 +24,10 @@ jobs:
         shard:
           - 1-2
           - 2-2
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
         exclude:
           - os: windows-latest
             suite: chrome-bidi
