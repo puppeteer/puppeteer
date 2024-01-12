@@ -25,22 +25,27 @@ class AngularProject {
     return port;
   }
 
-  static #scripts = {
-    // Builds the ng-schematics before running them
-    'build:schematics': 'npm run --prefix ../../ build',
-    // Deletes all files created by Puppeteer Ng-Schematics to avoid errors
-    'delete:file':
-      'rm -f .puppeteerrc.cjs && rm -f tsconfig.e2e.json && rm -R -f e2e/',
-    // Runs the Puppeteer Ng-Schematics against the sandbox
-    schematics: 'schematics ../../:ng-add --dry-run=false',
-    'schematics:e2e': 'schematics ../../:e2e --dry-run=false',
-    'schematics:config': 'schematics ../../:config --dry-run=false',
-    'schematics:smoke':
-      'schematics ../../:ng-add --dry-run=false --test-runner="node" && ng e2e',
+  static #scripts = testRunner => {
+    return {
+      // Builds the ng-schematics before running them
+      'build:schematics': 'npm run --prefix ../../ build',
+      // Deletes all files created by Puppeteer Ng-Schematics to avoid errors
+      'delete:file':
+        'rm -f .puppeteerrc.cjs && rm -f tsconfig.e2e.json && rm -R -f e2e/',
+      // Runs the Puppeteer Ng-Schematics against the sandbox
+      schematics: 'schematics ../../:ng-add --dry-run=false',
+      'schematics:e2e': 'schematics ../../:e2e --dry-run=false',
+      'schematics:config': 'schematics ../../:config --dry-run=false',
+      'schematics:smoke': `schematics ../../:ng-add --dry-run=false --test-runner="${testRunner}" && ng e2e`,
+    };
   };
+  /** Folder name */
   #name;
+  /** E2E test runner to use */
+  #testRunner;
 
-  constructor(name) {
+  constructor(testRunner, name) {
+    this.#testRunner = testRunner ?? 'node';
     this.#name = name ?? randomUUID();
   }
 
@@ -82,7 +87,7 @@ class AngularProject {
     const packageJson = JSON.parse(await readFile(packageJsonFile));
     packageJson['scripts'] = {
       ...packageJson['scripts'],
-      ...AngularProject.#scripts,
+      ...AngularProject.#scripts(this.#testRunner),
     };
     await writeFile(packageJsonFile, JSON.stringify(packageJson, null, 2));
   }
@@ -128,7 +133,7 @@ export class AngularProjectSingle extends AngularProject {
 export class AngularProjectMulti extends AngularProject {
   async createProject() {
     await this.executeCommand(
-      `ng new ${this.name} --create-application=false --directory=sandbox/${this.name} --skip-git`
+      `ng new ${this.name} --create-application=false --directory=sandbox/${this.name} --defaults --skip-git`
     );
 
     await this.executeCommand(
