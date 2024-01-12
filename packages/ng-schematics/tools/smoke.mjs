@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {ok} from 'node:assert';
 import {execSync} from 'node:child_process';
 import {parseArgs} from 'node:util';
 
@@ -35,15 +36,28 @@ if (process.env.CI) {
     projects.push(new AngularProjectMulti(runner));
   }
 
-  await Promise.all(
+  const angularProjects = await Promise.allSettled(
     projects.map(async project => {
       return await project.create();
     })
   );
-  await Promise.all(
+  ok(
+    angularProjects.every(project => {
+      return project.status === 'fulfilled';
+    }),
+    'Building of 1 or more projects failed!'
+  );
+
+  const smokeResults = await Promise.allSettled(
     projects.map(async project => {
       return await project.runSmoke();
     })
+  );
+  ok(
+    smokeResults.every(project => {
+      return project.status === 'fulfilled';
+    }),
+    'Smoke test of 1 or more projects failed!'
   );
 } else {
   const single = new AngularProjectSingle(args.testRunner, args.name);
