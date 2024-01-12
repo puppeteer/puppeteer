@@ -28,7 +28,7 @@ const {values: args} = parseArgs({
 if (process.env.CI) {
   // Need to install in CI
   execSync('npm install -g @angular/cli@latest @angular-devkit/schematics-cli');
-  const runners = ['jasmine', 'jest', 'mocha', 'node'];
+  const runners = ['node', 'jest', 'jasmine', 'mocha'];
   const projects = [];
 
   for (const runner of runners) {
