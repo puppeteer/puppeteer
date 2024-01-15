@@ -50,7 +50,7 @@ if (process.env.CI) {
     'Building of 1 or more projects failed!'
   );
 
-  for await (const runnerGroup of object) {
+  for await (const runnerGroup of groups) {
     const smokeResults = await Promise.allSettled(
       runnerGroup.map(async project => {
         return await project.runSmoke();
