@@ -24,26 +24,6 @@ export default class Session extends EventEmitter<{
    */
   ended: {reason: string};
 }> {
-  // TODO: Update generator to include fully module
-  static readonly subscribeModules: string[] = [
-    'browsingContext',
-    'network',
-    'log',
-    'script',
-  ];
-  static readonly subscribeCdpEvents: Bidi.Cdp.EventNames[] = [
-    // Coverage
-    'cdp.Debugger.scriptParsed',
-    'cdp.CSS.styleSheetAdded',
-    'cdp.Runtime.executionContextsCleared',
-    // Tracing
-    'cdp.Tracing.tracingComplete',
-    // TODO: subscribe to all CDP events in the future.
-    'cdp.Network.requestWillBeSent',
-    'cdp.Debugger.scriptParsed',
-    'cdp.Page.screencastFrame',
-  ];
-
   static async from(
     connection: Connection,
     capabilities: Bidi.Session.CapabilitiesRequest
@@ -113,14 +93,6 @@ export default class Session extends EventEmitter<{
     // SAFETY: We use `any` to allow assignment of the readonly property.
     (this as any).browser = await Browser.from(this);
 
-    await this.connection.send('session.subscribe', {
-      events: this.capabilities.browserName
-        .toLocaleLowerCase()
-        .includes('firefox')
-        ? Session.subscribeModules
-        : [...Session.subscribeModules, ...Session.subscribeCdpEvents],
-    });
-
     // //////////////////
     // Child listeners //
     // //////////////////
@@ -141,6 +113,16 @@ export default class Session extends EventEmitter<{
 
   get capabilities(): Bidi.Session.NewResult['capabilities'] {
     return this.#info.capabilities;
+  }
+
+  @throwIfDisposed((session: Session) => {
+    // SAFETY: By definition of `disposed`, `#reason` is defined.
+    return session.#reason!;
+  })
+  async subscribe(events: string[]): Promise<void> {
+    await this.connection.send('session.subscribe', {
+      events,
+    });
   }
 
   @throwIfDisposed((session: Session) => {
