@@ -135,4 +135,7 @@ env DEBUG="puppeteer:*" env DEBUG_MAX_STRING_LENGTH=null node script.js
 
 # Protocol traffic can be rather noisy. This example filters out all Network domain messages
 env DEBUG="puppeteer:*" env DEBUG_COLORS=true node script.js 2>&1 | grep -v '"Network'
+
+# Filter out all protocol messages but keep all other logging
+env DEBUG="puppeteer:*,-puppeteer:protocol:*" node script.js
 ```
