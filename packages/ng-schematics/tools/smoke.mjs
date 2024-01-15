@@ -63,18 +63,6 @@ if (process.env.CI) {
       `Smoke test for ${runnerGroup[0].runner} failed!`
     );
   }
-
-  const smokeResults = await Promise.allSettled(
-    projects.map(async project => {
-      return await project.runSmoke();
-    })
-  );
-  ok(
-    smokeResults.every(project => {
-      return project.status === 'fulfilled';
-    }),
-    'Smoke test of 1 or more projects failed!'
-  );
 } else {
   const single = new AngularProjectSingle(args.testRunner, args.name);
   const multi = new AngularProjectMulti(args.testRunner, args.name);
