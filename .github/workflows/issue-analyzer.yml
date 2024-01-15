@@ -64,7 +64,7 @@ jobs:
       - name: Analyze issue
         id: issue-analysis
         run: echo $ISSUE_BODY | ./tools/analyze_issue.mjs >> $GITHUB_OUTPUT
-      - uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+      - uses: actions/upload-artifact@1eb3cb2b3e0f29609092a73eb033bb759a334595 # v4.1.0
         with:
           name: issue-files
           path: out/
@@ -102,7 +102,7 @@ jobs:
         run: ${{ env.PACKAGE_MANAGER }} run verify
         env:
           DEBUG: 'puppeteer:*'
-      - uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+      - uses: actions/upload-artifact@1eb3cb2b3e0f29609092a73eb033bb759a334595 # v4.1.0
         if: success() || failure()
         with:
           name: runtime-output
