@@ -12,6 +12,9 @@ import {assert} from '../../util/assert.js';
 import type Browser from './Browser.js';
 import BrowsingContext from './BrowsingContext.js';
 
+/**
+ * @internal
+ */
 export type CreateBrowsingContextOptions = Omit<
   Bidi.BrowsingContext.CreateParameters,
   'type' | 'referenceContext'
@@ -19,6 +22,9 @@ export type CreateBrowsingContextOptions = Omit<
   referenceContext?: BrowsingContext;
 };
 
+/**
+ * @internal
+ */
 export default class UserContext extends EventEmitter<{
   /**
    * Emitted when a new browsing context is created.

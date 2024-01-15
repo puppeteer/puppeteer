@@ -11,16 +11,25 @@ import {EventEmitter} from '../../common/EventEmitter.js';
 import type BrowsingContext from './BrowsingContext.js';
 import type Connection from './Connection.js';
 
+/**
+ * @internal
+ */
 export type CallFunctionOptions = Omit<
   Bidi.Script.CallFunctionParameters,
   'functionDeclaration' | 'awaitPromise' | 'target'
 >;
 
+/**
+ * @internal
+ */
 export type EvaluateOptions = Omit<
   Bidi.Script.EvaluateParameters,
   'expression' | 'awaitPromise' | 'target'
 >;
 
+/**
+ * @internal
+ */
 export default abstract class Realm extends EventEmitter<{
   /** Emitted when the realm is destroyed. */
   destroyed: void;

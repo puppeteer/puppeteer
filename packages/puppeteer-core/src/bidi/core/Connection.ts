@@ -8,6 +8,9 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import type {EventEmitter} from '../../common/EventEmitter.js';
 
+/**
+ * @internal
+ */
 export interface Commands {
   'script.evaluate': {
     params: Bidi.Script.EvaluateParameters;
@@ -111,6 +114,9 @@ export interface Commands {
   };
 }
 
+/**
+ * @internal
+ */
 export type BidiEvents = {
   [K in Bidi.ChromiumBidi.Event['method']]: Extract<
     Bidi.ChromiumBidi.Event,
@@ -118,6 +124,9 @@ export type BidiEvents = {
   >['params'];
 };
 
+/**
+ * @internal
+ */
 export default interface Connection extends EventEmitter<BidiEvents> {
   send<T extends keyof Commands>(
     method: T,

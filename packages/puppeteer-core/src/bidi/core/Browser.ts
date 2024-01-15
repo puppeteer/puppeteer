@@ -14,6 +14,9 @@ import type {SharedWorkerRealm} from './Realm.js';
 import type Session from './Session.js';
 import UserContext from './UserContext.js';
 
+/**
+ * @internal
+ */
 export type AddPreloadScriptOptions = Omit<
   Bidi.Script.AddPreloadScriptParameters,
   'functionDeclaration' | 'contexts'
@@ -21,6 +24,9 @@ export type AddPreloadScriptOptions = Omit<
   contexts?: [BrowsingContext, ...BrowsingContext[]];
 };
 
+/**
+ * @internal
+ */
 export default class Browser extends EventEmitter<{
   /** Emitted after the browser closes. */
   closed: {

@@ -13,6 +13,11 @@ import {throwIfDisposed} from '../../util/decorators.js';
 import Browser from './Browser.js';
 import type Connection from './Connection.js';
 
+const MAX_RETRIES = 5;
+
+/**
+ * @internal
+ */
 export default class Session extends EventEmitter<{
   /**
    * Emitted when the session has ended.
@@ -44,11 +49,19 @@ export default class Session extends EventEmitter<{
     capabilities: Bidi.Session.CapabilitiesRequest
   ): Promise<Session> {
     // Wait until the connection is ready.
-    while (true) {
-      const {result: ready} = await connection.send('session.status', {});
-      if (ready) {
+    let status = {message: '', ready: false};
+    for (let i = 0; i < MAX_RETRIES; ++i) {
+      status = (await connection.send('session.status', {})).result;
+      if (status.ready) {
         break;
       }
+      // Backoff a little bit each time.
+      await new Promise(resolve => {
+        return setTimeout(resolve, (1 << i) * 100);
+      });
+    }
+    if (!status.ready) {
+      throw new Error(status.message);
     }
 
     let result;

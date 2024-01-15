@@ -10,6 +10,9 @@ import {EventEmitter} from '../../common/EventEmitter.js';
 
 import type BrowsingContext from './BrowsingContext.js';
 
+/**
+ * @internal
+ */
 export default class Request extends EventEmitter<{
   // Emitted whenever a redirect is received.
   redirect: Request;

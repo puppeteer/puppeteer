@@ -16,26 +16,41 @@ import Request from './Request.js';
 import type UserContext from './UserContext.js';
 import UserPrompt from './UserPrompt.js';
 
+/**
+ * @internal
+ */
 export type CaptureScreenshotOptions = Omit<
   Bidi.BrowsingContext.CaptureScreenshotParameters,
   'context'
 >;
 
+/**
+ * @internal
+ */
 export type ReloadOptions = Omit<
   Bidi.BrowsingContext.ReloadParameters,
   'context'
 >;
 
+/**
+ * @internal
+ */
 export type PrintOptions = Omit<
   Bidi.BrowsingContext.PrintParameters,
   'context'
 >;
 
+/**
+ * @internal
+ */
 export type HandleUserPromptOptions = Omit<
   Bidi.BrowsingContext.HandleUserPromptParameters,
   'context'
 >;
 
+/**
+ * @internal
+ */
 export type SetViewportOptions = Omit<
   Bidi.BrowsingContext.SetViewportParameters,
   'context'

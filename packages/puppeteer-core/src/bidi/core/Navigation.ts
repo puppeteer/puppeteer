@@ -23,7 +23,6 @@ export interface NavigationInfo {
 /**
  * @internal
  */
-
 export default class Navigation extends EventEmitter<{
   fragment: NavigationInfo;
   failed: NavigationInfo;
