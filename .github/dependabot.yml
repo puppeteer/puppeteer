@@ -4,7 +4,7 @@ updates:
     directory: /
     schedule:
       interval: daily
-      time: '06:00'
+      time: '02:00'
       timezone: Europe/Berlin
     ignore:
       - dependency-name: devtools-protocol
@@ -22,7 +22,7 @@ updates:
     directory: /
     schedule:
       interval: daily
-      time: '06:00'
+      time: '03:00'
       timezone: Europe/Berlin
     groups:
       all:
@@ -32,7 +32,7 @@ updates:
     directory: /
     schedule:
       interval: daily
-      time: '06:00'
+      time: '04:00'
       timezone: Europe/Berlin
     groups:
       all:
