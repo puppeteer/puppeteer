@@ -2,11 +2,11 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
 
-import type {BrowsingContext} from './BrowsingContext.js';
+import type BrowsingContext from './BrowsingContext.js';
 
-export class BidiRequest extends EventEmitter<{
+export default class Request extends EventEmitter<{
   // Emitted whenever a redirect is received.
-  redirect: BidiRequest;
+  redirect: Request;
   // Emitted when when the request succeeds.
   success: Bidi.Network.ResponseData;
   // Emitted when when the request errors.
@@ -16,7 +16,7 @@ export class BidiRequest extends EventEmitter<{
   readonly #event: Bidi.Network.BeforeRequestSentParameters;
 
   #response?: Bidi.Network.ResponseData;
-  #redirect?: BidiRequest;
+  #redirect?: Request;
   #error?: string;
 
   constructor(
@@ -27,27 +27,7 @@ export class BidiRequest extends EventEmitter<{
     this.#context = context;
     this.#event = event;
 
-    const connection = this.#context.userContext.browser.session.connection;
-    connection.on('network.responseCompleted', event => {
-      if (event.context !== this.#context.id) {
-        return;
-      }
-      if (event.request.request !== this.id) {
-        return;
-      }
-      this.#response = event.response;
-      this.emit('success', this.#response);
-    });
-    connection.on('network.fetchError', event => {
-      if (event.context !== this.#context.id) {
-        return;
-      }
-      if (event.request.request !== this.id) {
-        return;
-      }
-      this.#error = event.errorText;
-      this.emit('error', this.#error);
-    });
+    const connection = this.#connection;
     connection.on('network.beforeRequestSent', event => {
       if (event.context !== this.id) {
         return;
@@ -60,9 +40,33 @@ export class BidiRequest extends EventEmitter<{
         this.emit('redirect', this.#redirect);
         return;
       }
-      this.#redirect = new BidiRequest(this.#context, event);
+      this.#redirect = new Request(this.#context, event);
       this.emit('redirect', this.#redirect);
     });
+    connection.on('network.fetchError', event => {
+      if (event.context !== this.#context.id) {
+        return;
+      }
+      if (event.request.request !== this.id) {
+        return;
+      }
+      this.#error = event.errorText;
+      this.emit('error', this.#error);
+    });
+    connection.on('network.responseCompleted', event => {
+      if (event.context !== this.#context.id) {
+        return;
+      }
+      if (event.request.request !== this.id) {
+        return;
+      }
+      this.#response = event.response;
+      this.emit('success', this.#response);
+    });
+  }
+
+  get #connection() {
+    return this.#context.userContext.browser.session.connection;
   }
 
   get id(): string {
@@ -89,7 +93,7 @@ export class BidiRequest extends EventEmitter<{
     return this.#event.navigation ?? undefined;
   }
 
-  get redirect(): BidiRequest | undefined {
+  get redirect(): Request | undefined {
     return this.redirect;
   }
 

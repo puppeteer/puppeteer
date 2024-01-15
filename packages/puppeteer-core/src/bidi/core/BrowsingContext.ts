@@ -4,11 +4,11 @@ import {EventEmitter} from '../../common/EventEmitter.js';
 import {throwIfDisposed} from '../../util/decorators.js';
 
 import type {AddPreloadScriptOptions} from './Browser.js';
-import {Navigation} from './Navigation.js';
+import Navigation from './Navigation.js';
 import {WindowRealm} from './Realm.js';
-import {BidiRequest} from './Request.js';
-import type {UserContext} from './UserContext.js';
-import {UserPrompt} from './UserPrompt.js';
+import Request from './Request.js';
+import type UserContext from './UserContext.js';
+import UserPrompt from './UserPrompt.js';
 
 export type CaptureScreenshotOptions = Omit<
   Bidi.BrowsingContext.CaptureScreenshotParameters,
@@ -38,7 +38,7 @@ export type SetViewportOptions = Omit<
 /**
  * @internal
  */
-export class BrowsingContext extends EventEmitter<{
+export default class BrowsingContext extends EventEmitter<{
   /** Emitted when this context is destroyed. */
   destroyed: void;
   /** Emitted when a child browsing context is created. */
@@ -54,7 +54,7 @@ export class BrowsingContext extends EventEmitter<{
   /** Emitted whenever a request is made. */
   request: {
     /** The request that was made. */
-    request: BidiRequest;
+    request: Request;
   };
   /** Emitted whenever a log entry is added. */
   log: {
@@ -87,7 +87,7 @@ export class BrowsingContext extends EventEmitter<{
   #url: string;
   readonly #children = new Map<string, BrowsingContext>();
   readonly #realms = new Map<string, WindowRealm>();
-  readonly #requests = new Map<string, BidiRequest>();
+  readonly #requests = new Map<string, Request>();
   readonly defaultRealm: WindowRealm;
   readonly id: string;
   readonly parent: BrowsingContext | undefined;
@@ -185,7 +185,7 @@ export class BrowsingContext extends EventEmitter<{
         return;
       }
 
-      const request = new BidiRequest(this, event);
+      const request = new Request(this, event);
       this.#requests.set(request.id, request);
       this.emit('request', {request});
     });

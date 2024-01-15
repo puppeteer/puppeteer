@@ -18,7 +18,7 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
 
-import type {BrowsingContext} from './BrowsingContext.js';
+import type BrowsingContext from './BrowsingContext.js';
 
 export type HandleOptions = Omit<
   Bidi.BrowsingContext.HandleUserPromptParameters,
@@ -33,7 +33,7 @@ export type UserPromptResult = Omit<
 /**
  * @internal
  */
-export class UserPrompt extends EventEmitter<{
+export default class UserPrompt extends EventEmitter<{
   handled: UserPromptResult;
 }> {
   static from(

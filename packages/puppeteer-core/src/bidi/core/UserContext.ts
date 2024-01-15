@@ -3,8 +3,8 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {assert} from '../../util/assert.js';
 
-import type {Browser} from './Browser.js';
-import {BrowsingContext} from './BrowsingContext.js';
+import type Browser from './Browser.js';
+import BrowsingContext from './BrowsingContext.js';
 
 export type CreateBrowsingContextOptions = Omit<
   Bidi.BrowsingContext.CreateParameters,
@@ -13,7 +13,7 @@ export type CreateBrowsingContextOptions = Omit<
   referenceContext?: BrowsingContext;
 };
 
-export class UserContext extends EventEmitter<{
+export default class UserContext extends EventEmitter<{
   /**
    * Emitted when a new browsing context is created.
    */
@@ -93,7 +93,7 @@ export class UserContext extends EventEmitter<{
       referenceContext: options.referenceContext?.id,
     });
 
-    const browsingContext = this.#browsingContexts.get(contextId)!;
+    const browsingContext = this.#browsingContexts.get(contextId);
     assert(
       browsingContext,
       'The WebDriver BiDi implementation is failing to create a browsing context correctly.'

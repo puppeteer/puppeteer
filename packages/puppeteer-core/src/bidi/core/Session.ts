@@ -4,10 +4,10 @@ import {EventEmitter} from '../../common/EventEmitter.js';
 import {debugError} from '../../common/util.js';
 import {throwIfDisposed} from '../../util/decorators.js';
 
-import {Browser} from './Browser.js';
-import type {Connection} from './Connection.js';
+import Browser from './Browser.js';
+import type Connection from './Connection.js';
 
-export class Session extends EventEmitter<{
+export default class Session extends EventEmitter<{
   /**
    * Emitted when the session has ended.
    */

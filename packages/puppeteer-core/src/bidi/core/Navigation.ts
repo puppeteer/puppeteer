@@ -3,8 +3,8 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {Deferred} from '../../util/Deferred.js';
 
-import type {BrowsingContext} from './BrowsingContext.js';
-import type {BidiRequest} from './Request.js';
+import type BrowsingContext from './BrowsingContext.js';
+import type Request from './Request.js';
 
 /**
  * @internal
@@ -18,7 +18,7 @@ export interface NavigationInfo {
  * @internal
  */
 
-export class Navigation extends EventEmitter<{
+export default class Navigation extends EventEmitter<{
   fragment: NavigationInfo;
   failed: NavigationInfo;
   aborted: NavigationInfo;
@@ -32,7 +32,7 @@ export class Navigation extends EventEmitter<{
   // keep-sorted start
   #context: BrowsingContext;
   #id = new Deferred<string>();
-  #request: BidiRequest | undefined;
+  #request: Request | undefined;
   #url: string;
   // keep-sorted end
 
@@ -94,7 +94,7 @@ export class Navigation extends EventEmitter<{
     return this.#url;
   }
 
-  request(): BidiRequest | undefined {
+  request(): Request | undefined {
     return this.#request;
   }
 }

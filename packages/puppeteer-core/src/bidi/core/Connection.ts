@@ -112,7 +112,7 @@ export type BidiEvents = {
   >['params'];
 };
 
-export interface Connection extends EventEmitter<BidiEvents> {
+export default interface Connection extends EventEmitter<BidiEvents> {
   send<T extends keyof Commands>(
     method: T,
     params: Commands[T]['params']

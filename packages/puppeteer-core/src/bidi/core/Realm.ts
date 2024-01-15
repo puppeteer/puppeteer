@@ -2,8 +2,8 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
 
-import type {BrowsingContext} from './BrowsingContext.js';
-import type {Connection} from './Connection.js';
+import type BrowsingContext from './BrowsingContext.js';
+import type Connection from './Connection.js';
 
 export type CallFunctionOptions = Omit<
   Bidi.Script.CallFunctionParameters,
@@ -15,7 +15,7 @@ export type EvaluateOptions = Omit<
   'expression' | 'awaitPromise' | 'target'
 >;
 
-export abstract class Realm extends EventEmitter<{
+export default abstract class Realm extends EventEmitter<{
   /** Emitted when the realm is destroyed. */
   destroyed: void;
   /** Emitted when a dedicated worker is created in the realm. */
