@@ -28,16 +28,16 @@ export function setupBrowserHooks(path = ''): void {
   });
 
   afterEach(async () => {
-    await page.close();
+    await page?.close();
   });
 
 <% if(testRunner == 'jasmine' || testRunner == 'jest') { %>
   afterAll(async () => {
-    await browser.close();
+    await browser?.close();
   });
 <% } %><% if(testRunner == 'mocha' || testRunner == 'node') { %>
   after(async () => {
-    await browser.close();
+    await browser?.close();
   });
 <% } %>
 }
