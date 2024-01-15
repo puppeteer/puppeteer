@@ -157,7 +157,7 @@
     "license-checker": "25.0.1",
     "mocha": "10.2.0",
     "npm-run-all": "4.1.5",
-    "prettier": "3.1.1",
+    "prettier": "3.2.2",
     "semver": "7.5.4",
     "sinon": "17.0.1",
     "source-map-support": "0.5.21",
