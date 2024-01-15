@@ -352,7 +352,6 @@ export class CdpPage extends Page {
       this.#workers.set(session.id(), worker);
       this.emit(PageEvent.WorkerCreated, worker);
     }
-    session.on(CDPSessionEvent.Ready, this.#onAttachedToTarget);
   };
 
   async #initialize(): Promise<void> {
