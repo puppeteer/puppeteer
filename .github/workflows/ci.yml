@@ -140,15 +140,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
         suite:
           - chrome-headless
           - chrome-headful
           - chrome-new-headless
           - chrome-bidi
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
         shard:
           - 1-2
           - 2-2
@@ -228,14 +228,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - ubuntu-latest
-          - macos-latest
-          - windows-latest
         suite:
           - firefox-bidi
           - firefox-headful
           - firefox-headless
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
         shard:
           - 1-4
           - 2-4
@@ -334,14 +334,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - ubuntu-latest
-          - macos-latest
-          - windows-latest
         node:
           - 18
         pkg_manager:
           - npm
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
     steps:
       - name: Download installation test
         uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
