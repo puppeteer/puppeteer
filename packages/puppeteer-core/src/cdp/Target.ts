@@ -146,14 +146,14 @@ export class CdpTarget extends Target {
 
   override browser(): Browser {
     if (!this.#browserContext) {
-      throw new Error('browserContext is not initialised');
+      throw new Error('browserContext is not initialized');
     }
     return this.#browserContext.browser();
   }
 
   override browserContext(): BrowserContext {
     if (!this.#browserContext) {
-      throw new Error('browserContext is not initialised');
+      throw new Error('browserContext is not initialized');
     }
     return this.#browserContext;
   }
