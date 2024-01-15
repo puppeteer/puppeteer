@@ -45,7 +45,6 @@ export default class Session
     }
 
     let result;
-    // TODO: await until the session is established.
     try {
       result = (
         await connection.send('session.new', {

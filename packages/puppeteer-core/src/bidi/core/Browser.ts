@@ -89,15 +89,32 @@ export default class Browser extends EventEmitter<{
     // //////////////////////////////
     // Asynchronous initialization //
     // //////////////////////////////
+    // In case contexts are created or destroyed during `getTree`, we use this
+    // set to detect them.
+    const contextIds = new Set<string>();
+    const created = (info: {context: string}) => {
+      contextIds.add(info.context);
+    };
+    const destroyed = (info: {context: string}) => {
+      contextIds.delete(info.context);
+    };
+    session.on('browsingContext.contextCreated', created);
+    session.on('browsingContext.contextDestroyed', destroyed);
+
     const {
       result: {contexts},
     } = await session.send('browsingContext.getTree', {});
 
+    session.off('browsingContext.contextDestroyed', destroyed);
+    session.off('browsingContext.contextCreated', created);
+
     // Simulating events so contexts are created naturally.
-    for (const context of contexts) {
-      session.emit('browsingContext.contextCreated', context);
-      if (context.children) {
-        contexts.push(...context.children);
+    for (const info of contexts) {
+      if (contextIds.has(info.context)) {
+        session.emit('browsingContext.contextCreated', info);
+      }
+      if (info.children) {
+        contexts.push(...info.children);
       }
     }
   }
