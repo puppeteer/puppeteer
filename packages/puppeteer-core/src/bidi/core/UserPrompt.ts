@@ -61,9 +61,9 @@ export default class UserPrompt extends EventEmitter<{
 
   #initialize() {
     // ///////////////////////
-    // Connection listeners //
+    // Session listeners //
     // ///////////////////////
-    this.#connection.on('browsingContext.userPromptClosed', parameters => {
+    this.#session.on('browsingContext.userPromptClosed', parameters => {
       if (parameters.context !== this.browsingContext.id) {
         return;
       }
@@ -74,8 +74,8 @@ export default class UserPrompt extends EventEmitter<{
   }
 
   // keep-sorted start block=yes
-  get #connection() {
-    return this.browsingContext.userContext.browser.session.connection;
+  get #session() {
+    return this.browsingContext.userContext.browser.session;
   }
   get result(): UserPromptResult | undefined {
     return this.#result;
@@ -83,7 +83,7 @@ export default class UserPrompt extends EventEmitter<{
   // keep-sorted end
 
   async handle(options: HandleOptions = {}): Promise<UserPromptResult> {
-    await this.#connection.send('browsingContext.handleUserPrompt', {
+    await this.#session.send('browsingContext.handleUserPrompt', {
       ...options,
       context: this.info.context,
     });

@@ -68,10 +68,10 @@ export default class Browser extends EventEmitter<{
 
   async #initialize() {
     // ///////////////////////
-    // Connection listeners //
+    // Session listeners //
     // ///////////////////////
-    const connection = this.#connection;
-    connection.on('script.realmCreated', info => {
+    const session = this.#session;
+    session.on('script.realmCreated', info => {
       if (info.type === 'shared-worker') {
         // TODO: Create a SharedWorkerRealm.
       }
@@ -91,19 +91,19 @@ export default class Browser extends EventEmitter<{
     // //////////////////////////////
     const {
       result: {contexts},
-    } = await connection.send('browsingContext.getTree', {});
+    } = await session.send('browsingContext.getTree', {});
 
     // Simulating events so contexts are created naturally.
     for (const context of contexts) {
-      connection.emit('browsingContext.contextCreated', context);
+      session.emit('browsingContext.contextCreated', context);
       if (context.children) {
         contexts.push(...context.children);
       }
     }
   }
 
-  get #connection() {
-    return this.session.connection;
+  get #session() {
+    return this.session;
   }
 
   get disposed(): boolean {
@@ -124,7 +124,7 @@ export default class Browser extends EventEmitter<{
     return browser.#reason!;
   })
   async close(): Promise<void> {
-    await this.#connection.send('browser.close', {});
+    await this.#session.send('browser.close', {});
     this.#reason = `Browser has already closed.`;
     this.emit('closed', {reason: this.#reason});
     this.removeAllListeners();
@@ -140,7 +140,7 @@ export default class Browser extends EventEmitter<{
   ): Promise<string> {
     const {
       result: {script},
-    } = await this.#connection.send('script.addPreloadScript', {
+    } = await this.#session.send('script.addPreloadScript', {
       functionDeclaration,
       ...options,
       contexts: options.contexts?.map(context => {
@@ -155,7 +155,7 @@ export default class Browser extends EventEmitter<{
     return browser.#reason!;
   })
   async removePreloadScript(script: string): Promise<void> {
-    await this.#connection.send('script.removePreloadScript', {
+    await this.#session.send('script.removePreloadScript', {
       script,
     });
   }

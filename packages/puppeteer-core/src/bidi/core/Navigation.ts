@@ -52,15 +52,15 @@ export default class Navigation extends EventEmitter<{
 
   #initialize() {
     // ///////////////////////
-    // Connection listeners //
+    // Session listeners //
     // ///////////////////////
-    const connection = this.#connection;
+    const session = this.#session;
     for (const [bidiEvent, event] of [
       ['browsingContext.fragmentNavigated', 'fragment'],
       ['browsingContext.navigationFailed', 'failed'],
       ['browsingContext.navigationAborted', 'aborted'],
     ] as const) {
-      connection.on(bidiEvent, (info: Bidi.BrowsingContext.NavigationInfo) => {
+      session.on(bidiEvent, (info: Bidi.BrowsingContext.NavigationInfo) => {
         if (info.context !== this.#context.id) {
           return;
         }
@@ -91,8 +91,8 @@ export default class Navigation extends EventEmitter<{
     });
   }
 
-  get #connection() {
-    return this.#context.userContext.browser.session.connection;
+  get #session() {
+    return this.#context.userContext.browser.session;
   }
 
   get url(): string {

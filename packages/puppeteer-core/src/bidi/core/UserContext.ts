@@ -60,10 +60,10 @@ export default class UserContext extends EventEmitter<{
 
   #initialize() {
     // ///////////////////////
-    // Connection listeners //
+    // Session listeners //
     // ///////////////////////
-    const connection = this.#connection;
-    connection.on('browsingContext.contextCreated', info => {
+    const session = this.#session;
+    session.on('browsingContext.contextCreated', info => {
       if (info.parent) {
         return;
       }
@@ -85,8 +85,8 @@ export default class UserContext extends EventEmitter<{
   }
 
   // keep-sorted start block=yes
-  get #connection() {
-    return this.browser.session.connection;
+  get #session() {
+    return this.browser.session;
   }
   get browsingContexts(): Iterable<BrowsingContext> {
     return this.#browsingContexts.values();
@@ -99,7 +99,7 @@ export default class UserContext extends EventEmitter<{
   ): Promise<BrowsingContext> {
     const {
       result: {context: contextId},
-    } = await this.#connection.send('browsingContext.create', {
+    } = await this.#session.send('browsingContext.create', {
       type,
       ...options,
       referenceContext: options.referenceContext?.id,

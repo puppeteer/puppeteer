@@ -9,7 +9,7 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 
 import type BrowsingContext from './BrowsingContext.js';
-import type Connection from './Connection.js';
+import type Session from './Session.js';
 
 /**
  * @internal
@@ -47,21 +47,21 @@ export default abstract class Realm extends EventEmitter<{
   }
 
   protected initialize(): void {
-    this.connection.on('script.realmDestroyed', info => {
+    this.session.on('script.realmDestroyed', info => {
       if (info.realm === this.id) {
         this.emit('destroyed', undefined);
       }
     });
   }
 
-  protected abstract get connection(): Connection;
+  protected abstract get session(): Session;
 
   protected get target(): Bidi.Script.Target {
     return {realm: this.id};
   }
 
   async disown(handles: string[]): Promise<void> {
-    await this.connection.send('script.disown', {
+    await this.session.send('script.disown', {
       target: this.target,
       handles,
     });
@@ -72,7 +72,7 @@ export default abstract class Realm extends EventEmitter<{
     awaitPromise: boolean,
     options: CallFunctionOptions = {}
   ): Promise<Bidi.Script.EvaluateResult> {
-    const {result} = await this.connection.send('script.callFunction', {
+    const {result} = await this.session.send('script.callFunction', {
       functionDeclaration,
       awaitPromise,
       target: this.target,
@@ -86,7 +86,7 @@ export default abstract class Realm extends EventEmitter<{
     awaitPromise: boolean,
     options: EvaluateOptions = {}
   ): Promise<Bidi.Script.EvaluateResult> {
-    const {result} = await this.connection.send('script.evaluate', {
+    const {result} = await this.session.send('script.evaluate', {
       expression,
       awaitPromise,
       target: this.target,
@@ -124,9 +124,9 @@ export class WindowRealm extends Realm {
     super.initialize();
 
     // ///////////////////////
-    // Connection listeners //
+    // Session listeners //
     // ///////////////////////
-    this.connection.on('script.realmCreated', info => {
+    this.session.on('script.realmCreated', info => {
       if (info.type === 'window') {
         // SAFETY: This is the only time we allow mutations.
         (this as any).id = info.realm;
@@ -160,8 +160,8 @@ export class WindowRealm extends Realm {
     });
   }
 
-  override get connection(): Connection {
-    return this.browsingContext.userContext.browser.session.connection;
+  override get session(): Session {
+    return this.browsingContext.userContext.browser.session;
   }
 
   override get target(): Bidi.Script.Target {
@@ -198,9 +198,9 @@ export class DedicatedWorkerRealm extends Realm {
     super.initialize();
 
     // ///////////////////////
-    // Connection listeners //
+    // Session listeners //
     // ///////////////////////
-    this.connection.on('script.realmCreated', info => {
+    this.session.on('script.realmCreated', info => {
       if (info.type === 'dedicated-worker') {
         const realm = DedicatedWorkerRealm.from(this, info.realm, info.origin);
         realm.on('destroyed', () => {
@@ -214,9 +214,9 @@ export class DedicatedWorkerRealm extends Realm {
     });
   }
 
-  override get connection(): Connection {
+  override get session(): Session {
     // SAFETY: At least one owner will exist.
-    return this.owners.values().next().value.connection;
+    return this.owners.values().next().value.session;
   }
 }
 
@@ -248,9 +248,9 @@ export class SharedWorkerRealm extends Realm {
     super.initialize();
 
     // ///////////////////////
-    // Connection listeners //
+    // Session listeners //
     // ///////////////////////
-    this.connection.on('script.realmCreated', info => {
+    this.session.on('script.realmCreated', info => {
       if (info.type === 'dedicated-worker') {
         const realm = DedicatedWorkerRealm.from(this, info.realm, info.origin);
         realm.on('destroyed', () => {
@@ -264,8 +264,8 @@ export class SharedWorkerRealm extends Realm {
     });
   }
 
-  override get connection(): Connection {
+  override get session(): Session {
     // SAFETY: At least one owner will exist.
-    return this.owners.values().next().value.connection;
+    return this.owners.values().next().value.session;
   }
 }

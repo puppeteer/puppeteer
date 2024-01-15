@@ -136,10 +136,10 @@ export default class BrowsingContext extends EventEmitter<{
 
   #initialize() {
     // ///////////////////////
-    // Connection listeners //
+    // Session listeners //
     // ///////////////////////
-    const connection = this.#connection;
-    connection.on('browsingContext.contextCreated', info => {
+    const session = this.#session;
+    session.on('browsingContext.contextCreated', info => {
       if (info.parent !== this.id) {
         return;
       }
@@ -158,7 +158,7 @@ export default class BrowsingContext extends EventEmitter<{
 
       this.emit('browsingcontext', {browsingContext});
     });
-    connection.on('browsingContext.contextDestroyed', info => {
+    session.on('browsingContext.contextDestroyed', info => {
       if (info.context !== this.id) {
         return;
       }
@@ -167,7 +167,7 @@ export default class BrowsingContext extends EventEmitter<{
       this.removeAllListeners();
     });
 
-    connection.on('browsingContext.domContentLoaded', info => {
+    session.on('browsingContext.domContentLoaded', info => {
       if (info.context !== this.id) {
         return;
       }
@@ -175,7 +175,7 @@ export default class BrowsingContext extends EventEmitter<{
       this.emit('DOMContentLoaded', undefined);
     });
 
-    connection.on('browsingContext.load', info => {
+    session.on('browsingContext.load', info => {
       if (info.context !== this.id) {
         return;
       }
@@ -183,7 +183,7 @@ export default class BrowsingContext extends EventEmitter<{
       this.emit('load', undefined);
     });
 
-    connection.on('browsingContext.navigationStarted', info => {
+    session.on('browsingContext.navigationStarted', info => {
       if (info.context !== this.id) {
         return;
       }
@@ -198,7 +198,7 @@ export default class BrowsingContext extends EventEmitter<{
 
       this.emit('navigation', {navigation: this.#navigation});
     });
-    connection.on('network.beforeRequestSent', event => {
+    session.on('network.beforeRequestSent', event => {
       if (event.context !== this.id) {
         return;
       }
@@ -211,7 +211,7 @@ export default class BrowsingContext extends EventEmitter<{
       this.emit('request', {request});
     });
 
-    connection.on('log.entryAdded', entry => {
+    session.on('log.entryAdded', entry => {
       if (entry.source.context !== this.id) {
         return;
       }
@@ -219,7 +219,7 @@ export default class BrowsingContext extends EventEmitter<{
       this.emit('log', {entry});
     });
 
-    connection.on('browsingContext.userPromptOpened', info => {
+    session.on('browsingContext.userPromptOpened', info => {
       if (info.context !== this.id) {
         return;
       }
@@ -230,8 +230,8 @@ export default class BrowsingContext extends EventEmitter<{
   }
 
   // keep-sorted start block=yes
-  get #connection() {
-    return this.userContext.browser.session.connection;
+  get #session() {
+    return this.userContext.browser.session;
   }
   get children(): Iterable<BrowsingContext> {
     return this.#children.values();
@@ -253,7 +253,7 @@ export default class BrowsingContext extends EventEmitter<{
 
   @throwIfDisposed()
   async activate(): Promise<void> {
-    await this.#connection.send('browsingContext.activate', {
+    await this.#session.send('browsingContext.activate', {
       context: this.id,
     });
   }
@@ -264,7 +264,7 @@ export default class BrowsingContext extends EventEmitter<{
   ): Promise<string> {
     const {
       result: {data},
-    } = await this.#connection.send('browsingContext.captureScreenshot', {
+    } = await this.#session.send('browsingContext.captureScreenshot', {
       context: this.id,
       ...options,
     });
@@ -278,7 +278,7 @@ export default class BrowsingContext extends EventEmitter<{
         await child.close(promptUnload);
       })
     );
-    await this.#connection.send('browsingContext.close', {
+    await this.#session.send('browsingContext.close', {
       context: this.id,
       promptUnload,
     });
@@ -286,7 +286,7 @@ export default class BrowsingContext extends EventEmitter<{
 
   @throwIfDisposed()
   async traverseHistory(delta: number): Promise<void> {
-    await this.#connection.send('browsingContext.traverseHistory', {
+    await this.#session.send('browsingContext.traverseHistory', {
       context: this.id,
       delta,
     });
@@ -297,7 +297,7 @@ export default class BrowsingContext extends EventEmitter<{
     url: string,
     wait?: Bidi.BrowsingContext.ReadinessState
   ): Promise<Navigation> {
-    await this.#connection.send('browsingContext.navigate', {
+    await this.#session.send('browsingContext.navigate', {
       context: this.id,
       url,
       wait,
@@ -311,7 +311,7 @@ export default class BrowsingContext extends EventEmitter<{
 
   @throwIfDisposed()
   async reload(options: ReloadOptions = {}): Promise<Navigation> {
-    await this.#connection.send('browsingContext.reload', {
+    await this.#session.send('browsingContext.reload', {
       context: this.id,
       ...options,
     });
@@ -326,7 +326,7 @@ export default class BrowsingContext extends EventEmitter<{
   async print(options: PrintOptions = {}): Promise<string> {
     const {
       result: {data},
-    } = await this.#connection.send('browsingContext.print', {
+    } = await this.#session.send('browsingContext.print', {
       context: this.id,
       ...options,
     });
@@ -335,7 +335,7 @@ export default class BrowsingContext extends EventEmitter<{
 
   @throwIfDisposed()
   async handleUserPrompt(options: HandleUserPromptOptions = {}): Promise<void> {
-    await this.#connection.send('browsingContext.handleUserPrompt', {
+    await this.#session.send('browsingContext.handleUserPrompt', {
       context: this.id,
       ...options,
     });
@@ -343,7 +343,7 @@ export default class BrowsingContext extends EventEmitter<{
 
   @throwIfDisposed()
   async setViewport(options: SetViewportOptions = {}): Promise<void> {
-    await this.#connection.send('browsingContext.setViewport', {
+    await this.#session.send('browsingContext.setViewport', {
       context: this.id,
       ...options,
     });
@@ -351,7 +351,7 @@ export default class BrowsingContext extends EventEmitter<{
 
   @throwIfDisposed()
   async performActions(actions: Bidi.Input.SourceActions[]): Promise<void> {
-    await this.#connection.send('input.performActions', {
+    await this.#session.send('input.performActions', {
       context: this.id,
       actions,
     });
@@ -359,7 +359,7 @@ export default class BrowsingContext extends EventEmitter<{
 
   @throwIfDisposed()
   async releaseActions(): Promise<void> {
-    await this.#connection.send('input.releaseActions', {
+    await this.#session.send('input.releaseActions', {
       context: this.id,
     });
   }

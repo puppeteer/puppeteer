@@ -36,8 +36,8 @@ export default class Request extends EventEmitter<{
     this.#context = context;
     this.#event = event;
 
-    const connection = this.#connection;
-    connection.on('network.beforeRequestSent', event => {
+    const session = this.#session;
+    session.on('network.beforeRequestSent', event => {
       if (event.context !== this.id) {
         return;
       }
@@ -52,7 +52,7 @@ export default class Request extends EventEmitter<{
       this.#redirect = new Request(this.#context, event);
       this.emit('redirect', this.#redirect);
     });
-    connection.on('network.fetchError', event => {
+    session.on('network.fetchError', event => {
       if (event.context !== this.#context.id) {
         return;
       }
@@ -62,7 +62,7 @@ export default class Request extends EventEmitter<{
       this.#error = event.errorText;
       this.emit('error', this.#error);
     });
-    connection.on('network.responseCompleted', event => {
+    session.on('network.responseCompleted', event => {
       if (event.context !== this.#context.id) {
         return;
       }
@@ -74,8 +74,8 @@ export default class Request extends EventEmitter<{
     });
   }
 
-  get #connection() {
-    return this.#context.userContext.browser.session.connection;
+  get #session() {
+    return this.#context.userContext.browser.session;
   }
 
   get id(): string {

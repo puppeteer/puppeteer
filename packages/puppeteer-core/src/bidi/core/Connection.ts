@@ -127,9 +127,13 @@ export type BidiEvents = {
 /**
  * @internal
  */
-export default interface Connection extends EventEmitter<BidiEvents> {
+export default interface Connection<Events extends BidiEvents = BidiEvents>
+  extends EventEmitter<Events> {
   send<T extends keyof Commands>(
     method: T,
     params: Commands[T]['params']
   ): Promise<{result: Commands[T]['returnType']}>;
+
+  // This will pipe events into the provided emitter.
+  pipeTo<Events extends BidiEvents>(emitter: EventEmitter<Events>): void;
 }
