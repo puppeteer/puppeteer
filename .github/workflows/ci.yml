@@ -204,7 +204,7 @@ jobs:
         run: xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
-      - uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+      - uses: actions/upload-artifact@1eb3cb2b3e0f29609092a73eb033bb759a334595 # v4.1.0
         if: always()
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.suite }}-${{ matrix.shard }}
@@ -283,7 +283,7 @@ jobs:
       - name: Run all tests (for Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
-      - uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+      - uses: actions/upload-artifact@1eb3cb2b3e0f29609092a73eb033bb759a334595 # v4.1.0
         if: always()
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.suite }}-${{ matrix.shard }}
@@ -321,7 +321,7 @@ jobs:
       - name: Pack installation test
         run: npm pack --workspace @puppeteer-test/installation
       - name: Upload installation test
-        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+        uses: actions/upload-artifact@1eb3cb2b3e0f29609092a73eb033bb759a334595 # v4.1.0
         with:
           name: installation-test
           path: puppeteer-test-installation-latest.tgz
