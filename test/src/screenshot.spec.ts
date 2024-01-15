@@ -148,6 +148,9 @@ describe('Screenshots', function () {
     it('should work with odd clip size on Retina displays', async () => {
       const {page} = await getTestState();
 
+      // Make sure documentElement height is at least 11px.
+      await page.setContent(`<div style="width: 11px; height: 11px;">`);
+
       const screenshot = await page.screenshot({
         clip: {
           x: 0,
