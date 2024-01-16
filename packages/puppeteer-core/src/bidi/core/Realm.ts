@@ -133,6 +133,10 @@ export class WindowRealm extends Realm {
         return;
       }
       if (info.type === 'dedicated-worker') {
+        if (!info.owners.includes(this.id)) {
+          return;
+        }
+
         const realm = DedicatedWorkerRealm.from(this, info.realm, info.origin);
         realm.on('destroyed', () => {
           this.#workers.dedicated.delete(realm.id);
@@ -202,6 +206,10 @@ export class DedicatedWorkerRealm extends Realm {
     // ///////////////////////
     this.session.on('script.realmCreated', info => {
       if (info.type === 'dedicated-worker') {
+        if (!info.owners.includes(this.id)) {
+          return;
+        }
+
         const realm = DedicatedWorkerRealm.from(this, info.realm, info.origin);
         realm.on('destroyed', () => {
           this.#workers.delete(realm.id);
@@ -252,6 +260,10 @@ export class SharedWorkerRealm extends Realm {
     // ///////////////////////
     this.session.on('script.realmCreated', info => {
       if (info.type === 'dedicated-worker') {
+        if (!info.owners.includes(this.id)) {
+          return;
+        }
+
         const realm = DedicatedWorkerRealm.from(this, info.realm, info.origin);
         realm.on('destroyed', () => {
           this.#workers.delete(realm.id);
