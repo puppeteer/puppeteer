@@ -45,8 +45,6 @@ export default class Request extends EventEmitter<{
         return;
       }
       if (this.#redirect) {
-        // XXX: Separate descendant redirect events?.
-        this.emit('redirect', this.#redirect);
         return;
       }
       this.#redirect = new Request(this.#context, event);
