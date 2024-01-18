@@ -9,11 +9,17 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {CallbackRegistry} from '../common/CallbackRegistry.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {debug} from '../common/Debug.js';
+import type {EventsWithWildcard} from '../common/EventEmitter.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 
-import {type BrowsingContext, cdpSessions} from './BrowsingContext.js';
+import {cdpSessions, type BrowsingContext} from './BrowsingContext.js';
+import type {
+  BidiEvents,
+  Commands as BidiCommands,
+  Connection,
+} from './core/Connection.js';
 
 const debugProtocolSend = debug('puppeteer:webDriverBiDi:SEND ►');
 const debugProtocolReceive = debug('puppeteer:webDriverBiDi:RECV ◀');
@@ -21,107 +27,7 @@ const debugProtocolReceive = debug('puppeteer:webDriverBiDi:RECV ◀');
 /**
  * @internal
  */
-export interface Commands {
-  'script.evaluate': {
-    params: Bidi.Script.EvaluateParameters;
-    returnType: Bidi.Script.EvaluateResult;
-  };
-  'script.callFunction': {
-    params: Bidi.Script.CallFunctionParameters;
-    returnType: Bidi.Script.EvaluateResult;
-  };
-  'script.disown': {
-    params: Bidi.Script.DisownParameters;
-    returnType: Bidi.EmptyResult;
-  };
-  'script.addPreloadScript': {
-    params: Bidi.Script.AddPreloadScriptParameters;
-    returnType: Bidi.Script.AddPreloadScriptResult;
-  };
-  'script.removePreloadScript': {
-    params: Bidi.Script.RemovePreloadScriptParameters;
-    returnType: Bidi.EmptyResult;
-  };
-
-  'browser.close': {
-    params: Bidi.EmptyParams;
-    returnType: Bidi.EmptyResult;
-  };
-
-  'browsingContext.activate': {
-    params: Bidi.BrowsingContext.ActivateParameters;
-    returnType: Bidi.EmptyResult;
-  };
-  'browsingContext.create': {
-    params: Bidi.BrowsingContext.CreateParameters;
-    returnType: Bidi.BrowsingContext.CreateResult;
-  };
-  'browsingContext.close': {
-    params: Bidi.BrowsingContext.CloseParameters;
-    returnType: Bidi.EmptyResult;
-  };
-  'browsingContext.getTree': {
-    params: Bidi.BrowsingContext.GetTreeParameters;
-    returnType: Bidi.BrowsingContext.GetTreeResult;
-  };
-  'browsingContext.navigate': {
-    params: Bidi.BrowsingContext.NavigateParameters;
-    returnType: Bidi.BrowsingContext.NavigateResult;
-  };
-  'browsingContext.reload': {
-    params: Bidi.BrowsingContext.ReloadParameters;
-    returnType: Bidi.BrowsingContext.NavigateResult;
-  };
-  'browsingContext.print': {
-    params: Bidi.BrowsingContext.PrintParameters;
-    returnType: Bidi.BrowsingContext.PrintResult;
-  };
-  'browsingContext.captureScreenshot': {
-    params: Bidi.BrowsingContext.CaptureScreenshotParameters;
-    returnType: Bidi.BrowsingContext.CaptureScreenshotResult;
-  };
-  'browsingContext.handleUserPrompt': {
-    params: Bidi.BrowsingContext.HandleUserPromptParameters;
-    returnType: Bidi.EmptyResult;
-  };
-  'browsingContext.setViewport': {
-    params: Bidi.BrowsingContext.SetViewportParameters;
-    returnType: Bidi.EmptyResult;
-  };
-  'browsingContext.traverseHistory': {
-    params: Bidi.BrowsingContext.TraverseHistoryParameters;
-    returnType: Bidi.EmptyResult;
-  };
-
-  'input.performActions': {
-    params: Bidi.Input.PerformActionsParameters;
-    returnType: Bidi.EmptyResult;
-  };
-  'input.releaseActions': {
-    params: Bidi.Input.ReleaseActionsParameters;
-    returnType: Bidi.EmptyResult;
-  };
-
-  'session.end': {
-    params: Bidi.EmptyParams;
-    returnType: Bidi.EmptyResult;
-  };
-  'session.new': {
-    params: Bidi.Session.NewParameters;
-    returnType: Bidi.Session.NewResult;
-  };
-  'session.status': {
-    params: object;
-    returnType: Bidi.Session.StatusResult;
-  };
-  'session.subscribe': {
-    params: Bidi.Session.SubscriptionRequest;
-    returnType: Bidi.EmptyResult;
-  };
-  'session.unsubscribe': {
-    params: Bidi.Session.SubscriptionRequest;
-    returnType: Bidi.EmptyResult;
-  };
+export interface Commands extends BidiCommands {
   'cdp.sendCommand': {
     params: Bidi.Cdp.SendCommandParameters;
     returnType: Bidi.Cdp.SendCommandResult;
@@ -135,17 +41,10 @@ export interface Commands {
 /**
  * @internal
  */
-export type BidiEvents = {
-  [K in Bidi.ChromiumBidi.Event['method']]: Extract<
-    Bidi.ChromiumBidi.Event,
-    {method: K}
-  >['params'];
-};
-
-/**
- * @internal
- */
-export class BidiConnection extends EventEmitter<BidiEvents> {
+export class BidiConnection
+  extends EventEmitter<BidiEvents>
+  implements Connection
+{
   #url: string;
   #transport: ConnectionTransport;
   #delay: number;
@@ -153,6 +52,7 @@ export class BidiConnection extends EventEmitter<BidiEvents> {
   #closed = false;
   #callbacks = new CallbackRegistry();
   #browsingContexts = new Map<string, BrowsingContext>();
+  #emitters: Array<EventEmitter<any>> = [];
 
   constructor(
     url: string,
@@ -176,6 +76,20 @@ export class BidiConnection extends EventEmitter<BidiEvents> {
 
   get url(): string {
     return this.#url;
+  }
+
+  pipeTo<Events extends BidiEvents>(emitter: EventEmitter<Events>): void {
+    this.#emitters.push(emitter);
+  }
+
+  override emit<Key extends keyof EventsWithWildcard<BidiEvents>>(
+    type: Key,
+    event: EventsWithWildcard<BidiEvents>[Key]
+  ): boolean {
+    for (const emitter of this.#emitters) {
+      emitter.emit(type, event);
+    }
+    return super.emit(type, event);
   }
 
   send<T extends keyof Commands>(

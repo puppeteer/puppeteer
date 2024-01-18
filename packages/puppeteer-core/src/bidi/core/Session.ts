@@ -9,11 +9,11 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {debugError} from '../../common/util.js';
 import {throwIfDisposed} from '../../util/decorators.js';
-import type {BidiEvents} from '../Connection.js';
 
 import {Browser} from './Browser.js';
 import type {Connection} from './Connection.js';
 import type {Commands} from './Connection.js';
+import type {BidiEvents} from './Connection.js';
 
 const MAX_RETRIES = 5;
 
