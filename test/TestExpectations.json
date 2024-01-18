@@ -756,18 +756,6 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
-    "testIdPattern": "[network.spec] network Request.headers should define Chrome as user agent header",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[network.spec] network Request.headers should define Firefox as user agent header",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome"],
-    "expectations": ["SKIP"]
-  },
-  {
     "testIdPattern": "[network.spec] network Request.initiator should return the initiator",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -2628,12 +2616,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[network.spec] network Request.headers should define Firefox as user agent header",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[network.spec] network Request.initiator should return the initiator",
