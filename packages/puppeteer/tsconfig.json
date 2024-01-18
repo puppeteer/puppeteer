@@ -6,11 +6,11 @@
     // just stick with ol'fashion path resolution.
     "baseUrl": ".",
     "paths": {
-      "puppeteer-core/internal/*": ["../puppeteer-core/lib/esm/puppeteer/*"]
-    }
+      "puppeteer-core/internal/*": ["../puppeteer-core/lib/esm/puppeteer/*"],
+    },
   },
   "references": [
     {"path": "src/tsconfig.esm.json"},
-    {"path": "src/tsconfig.cjs.json"}
-  ]
+    {"path": "src/tsconfig.cjs.json"},
+  ],
 }

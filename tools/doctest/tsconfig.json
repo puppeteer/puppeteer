@@ -6,6 +6,6 @@
     "sourceMap": true,
     "declaration": false,
     "declarationMap": false,
-    "composite": false
-  }
+    "composite": false,
+  },
 }
