@@ -272,7 +272,7 @@ export function getTestId(file: string, fullTitle?: string): string {
 }
 
 export function testIdMatchesExpectationPattern(
-  test: MochaTestResult | Mocha.Test,
+  test: MochaTestResult | Pick<Mocha.Test, 'title' | 'file' | 'fullTitle'>,
   pattern: string
 ): boolean {
   const patternRegExString = pattern

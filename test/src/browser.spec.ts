@@ -22,7 +22,7 @@ describe('Browser specs', function () {
   });
 
   describe('Browser.userAgent', function () {
-    it('should include WebKit', async () => {
+    it('should include Browser engine', async () => {
       const {browser, isChrome} = await getTestState();
 
       const userAgent = await browser.userAgent();

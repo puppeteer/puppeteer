@@ -98,17 +98,16 @@ describe('network', function () {
   });
 
   describe('Request.headers', function () {
-    it('should define Chrome as user agent header', async () => {
-      const {page, server} = await getTestState();
+    it('should define Browser in user agent header', async () => {
+      const {page, server, isChrome} = await getTestState();
       const response = (await page.goto(server.EMPTY_PAGE))!;
-      expect(response.request().headers()['user-agent']).toContain('Chrome');
-    });
+      const userAgent = response.request().headers()['user-agent'];
 
-    it('should define Firefox as user agent header', async () => {
-      const {page, server} = await getTestState();
-
-      const response = (await page.goto(server.EMPTY_PAGE))!;
-      expect(response.request().headers()['user-agent']).toContain('Firefox');
+      if (isChrome) {
+        expect(userAgent).toContain('Chrome');
+      } else {
+        expect(userAgent).toContain('Firefox');
+      }
     });
   });
 

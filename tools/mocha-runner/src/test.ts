@@ -110,7 +110,7 @@ describe('testIdMatchesExpectationPattern', () => {
       fullTitle() {
         return 'Page Page.setContent should work';
       },
-    } satisfies Pick<Mocha.Test, 'title' | 'file' | 'fullTitle'> as Mocha.Test;
+    };
 
     for (const [pattern, expected] of expectations) {
       assert.equal(
