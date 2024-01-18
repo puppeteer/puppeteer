@@ -8,8 +8,8 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
 
-import type BrowsingContext from './BrowsingContext.js';
-import type Session from './Session.js';
+import type {BrowsingContext} from './BrowsingContext.js';
+import type {Session} from './Session.js';
 
 /**
  * @internal
@@ -30,7 +30,7 @@ export type EvaluateOptions = Omit<
 /**
  * @internal
  */
-export default abstract class Realm extends EventEmitter<{
+export abstract class Realm extends EventEmitter<{
   /** Emitted when the realm is destroyed. */
   destroyed: void;
   /** Emitted when a dedicated worker is created in the realm. */

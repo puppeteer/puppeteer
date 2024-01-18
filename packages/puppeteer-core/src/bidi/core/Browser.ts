@@ -9,10 +9,10 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {throwIfDisposed} from '../../util/decorators.js';
 
-import type BrowsingContext from './BrowsingContext.js';
+import type {BrowsingContext} from './BrowsingContext.js';
 import type {SharedWorkerRealm} from './Realm.js';
-import type Session from './Session.js';
-import UserContext from './UserContext.js';
+import type {Session} from './Session.js';
+import {UserContext} from './UserContext.js';
 
 /**
  * @internal
@@ -27,7 +27,7 @@ export type AddPreloadScriptOptions = Omit<
 /**
  * @internal
  */
-export default class Browser extends EventEmitter<{
+export class Browser extends EventEmitter<{
   /** Emitted after the browser closes. */
   closed: {
     /** The reason for closing the browser. */

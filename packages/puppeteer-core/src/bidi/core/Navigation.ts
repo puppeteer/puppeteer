@@ -9,8 +9,8 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {Deferred} from '../../util/Deferred.js';
 
-import type BrowsingContext from './BrowsingContext.js';
-import type Request from './Request.js';
+import type {BrowsingContext} from './BrowsingContext.js';
+import type {Request} from './Request.js';
 
 /**
  * @internal
@@ -23,7 +23,7 @@ export interface NavigationInfo {
 /**
  * @internal
  */
-export default class Navigation extends EventEmitter<{
+export class Navigation extends EventEmitter<{
   fragment: NavigationInfo;
   failed: NavigationInfo;
   aborted: NavigationInfo;

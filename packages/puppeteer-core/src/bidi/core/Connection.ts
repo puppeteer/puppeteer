@@ -127,7 +127,7 @@ export type BidiEvents = {
 /**
  * @internal
  */
-export default interface Connection<Events extends BidiEvents = BidiEvents>
+export interface Connection<Events extends BidiEvents = BidiEvents>
   extends EventEmitter<Events> {
   send<T extends keyof Commands>(
     method: T,

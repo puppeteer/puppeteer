@@ -11,8 +11,8 @@ import {debugError} from '../../common/util.js';
 import {throwIfDisposed} from '../../util/decorators.js';
 import type {BidiEvents} from '../Connection.js';
 
-import Browser from './Browser.js';
-import type Connection from './Connection.js';
+import {Browser} from './Browser.js';
+import type {Connection} from './Connection.js';
 import type {Commands} from './Connection.js';
 
 const MAX_RETRIES = 5;
@@ -20,7 +20,7 @@ const MAX_RETRIES = 5;
 /**
  * @internal
  */
-export default class Session
+export class Session
   extends EventEmitter<BidiEvents & {ended: {reason: string}}>
   implements Connection<BidiEvents & {ended: {reason: string}}>
 {

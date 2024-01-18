@@ -9,8 +9,8 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {assert} from '../../util/assert.js';
 
-import type Browser from './Browser.js';
-import BrowsingContext from './BrowsingContext.js';
+import type {Browser} from './Browser.js';
+import {BrowsingContext} from './BrowsingContext.js';
 
 /**
  * @internal
@@ -25,7 +25,7 @@ export type CreateBrowsingContextOptions = Omit<
 /**
  * @internal
  */
-export default class UserContext extends EventEmitter<{
+export class UserContext extends EventEmitter<{
   /**
    * Emitted when a new browsing context is created.
    */

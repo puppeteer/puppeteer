@@ -8,12 +8,12 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
 
-import type BrowsingContext from './BrowsingContext.js';
+import type {BrowsingContext} from './BrowsingContext.js';
 
 /**
  * @internal
  */
-export default class Request extends EventEmitter<{
+export class Request extends EventEmitter<{
   // Emitted whenever a redirect is received.
   redirect: Request;
   // Emitted when when the request succeeds.

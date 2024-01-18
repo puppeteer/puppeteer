@@ -10,11 +10,11 @@ import {EventEmitter} from '../../common/EventEmitter.js';
 import {throwIfDisposed} from '../../util/decorators.js';
 
 import type {AddPreloadScriptOptions} from './Browser.js';
-import Navigation from './Navigation.js';
+import {Navigation} from './Navigation.js';
 import {WindowRealm} from './Realm.js';
-import Request from './Request.js';
-import type UserContext from './UserContext.js';
-import UserPrompt from './UserPrompt.js';
+import {Request} from './Request.js';
+import type {UserContext} from './UserContext.js';
+import {UserPrompt} from './UserPrompt.js';
 
 /**
  * @internal
@@ -59,7 +59,7 @@ export type SetViewportOptions = Omit<
 /**
  * @internal
  */
-export default class BrowsingContext extends EventEmitter<{
+export class BrowsingContext extends EventEmitter<{
   /** Emitted when this context is destroyed. */
   destroyed: void;
   /** Emitted when a child browsing context is created. */
