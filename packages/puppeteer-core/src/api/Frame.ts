@@ -28,7 +28,6 @@ import type {
   NodeFor,
 } from '../common/types.js';
 import {
-  getPageContent,
   importFSPromises,
   withSourcePuppeteerURLIfNone,
 } from '../common/util.js';
