@@ -11,11 +11,7 @@ import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {BindingPayload, EvaluateFunc, HandleFor} from '../common/types.js';
-import {
-  addPageBinding,
-  debugError,
-  withSourcePuppeteerURLIfNone,
-} from '../common/util.js';
+import {debugError, withSourcePuppeteerURLIfNone} from '../common/util.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
 import {Mutex} from '../util/Mutex.js';
@@ -24,6 +20,7 @@ import type {Binding} from './Binding.js';
 import {ExecutionContext, createCdpHandle} from './ExecutionContext.js';
 import type {CdpFrame} from './Frame.js';
 import type {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
+import {addPageBinding} from './utils.js';
 import type {CdpWebWorker} from './WebWorker.js';
 
 /**

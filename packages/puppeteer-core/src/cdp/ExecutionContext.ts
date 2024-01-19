@@ -15,11 +15,9 @@ import type {EvaluateFunc, HandleFor} from '../common/types.js';
 import {
   PuppeteerURL,
   SOURCE_URL_REGEX,
-  createEvaluationError,
   getSourcePuppeteerURLIfAvailable,
   getSourceUrlComment,
   isString,
-  valueFromRemoteObject,
 } from '../common/util.js';
 import type PuppeteerUtil from '../injected/injected.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
@@ -30,6 +28,7 @@ import {Binding} from './Binding.js';
 import {CdpElementHandle} from './ElementHandle.js';
 import type {IsolatedWorld} from './IsolatedWorld.js';
 import {CdpJSHandle} from './JSHandle.js';
+import {createEvaluationError, valueFromRemoteObject} from './utils.js';
 
 /**
  * @internal

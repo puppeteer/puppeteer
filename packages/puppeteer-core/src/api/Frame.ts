@@ -776,7 +776,21 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    */
   @throwIfDetached
   async content(): Promise<string> {
-    return await this.evaluate(getPageContent);
+    return await this.evaluate(() => {
+      let content = '';
+      for (const node of document.childNodes) {
+        switch (node) {
+          case document.documentElement:
+            content += document.documentElement.outerHTML;
+            break;
+          default:
+            content += new XMLSerializer().serializeToString(node);
+            break;
+        }
+      }
+
+      return content;
+    });
   }
 
   /**
