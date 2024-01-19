@@ -38,17 +38,14 @@ import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
 import type {BindingPayload, HandleFor} from '../common/types.js';
 import {
-  createClientError,
   debugError,
   evaluationString,
   getReadableAsBuffer,
   getReadableFromProtocolStream,
   NETWORK_IDLE_TIME,
-  pageBindingInitString,
   parsePDFOptions,
   timeout,
   validateDialogType,
-  valueFromRemoteObject,
   waitForHTTP,
 } from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -78,6 +75,11 @@ import type {CdpTarget} from './Target.js';
 import type {TargetManager} from './TargetManager.js';
 import {TargetManagerEvent} from './TargetManager.js';
 import {Tracing} from './Tracing.js';
+import {
+  createClientError,
+  pageBindingInitString,
+  valueFromRemoteObject,
+} from './utils.js';
 import {CdpWebWorker} from './WebWorker.js';
 
 /**

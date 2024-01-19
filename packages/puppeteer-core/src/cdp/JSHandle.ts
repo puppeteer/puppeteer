@@ -8,10 +8,11 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
 import {JSHandle} from '../api/JSHandle.js';
-import {debugError, valueFromRemoteObject} from '../common/util.js';
+import {debugError} from '../common/util.js';
 
 import type {CdpElementHandle} from './ElementHandle.js';
 import type {IsolatedWorld} from './IsolatedWorld.js';
+import {valueFromRemoteObject} from './utils.js';
 
 /**
  * @internal
