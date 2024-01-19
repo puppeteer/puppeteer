@@ -117,7 +117,7 @@
       ]
     },
     "test": {
-      "command": "cross-env PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 npx ./tools/mocha-runner --min-tests 1003",
+      "command": "npx ./tools/mocha-runner --min-tests 1003",
       "dependencies": [
         "./test:build",
         "./tools/mocha-runner:build"
@@ -139,7 +139,6 @@
     "@types/sinon": "17.0.3",
     "@typescript-eslint/eslint-plugin": "6.19.0",
     "@typescript-eslint/parser": "6.19.0",
-    "cross-env": "7.0.3",
     "esbuild": "0.19.11",
     "eslint-config-prettier": "9.1.0",
     "eslint-import-resolver-typescript": "3.6.1",
