@@ -11,11 +11,10 @@ import {debugError} from '../../common/util.js';
 import {throwIfDisposed} from '../../util/decorators.js';
 
 import {Browser} from './Browser.js';
-import type {Connection} from './Connection.js';
-import type {Commands} from './Connection.js';
-import type {BidiEvents} from './Connection.js';
+import type {BidiEvents, Commands, Connection} from './Connection.js';
 
-const MAX_RETRIES = 5;
+// TODO: Once Chrome supports session.status properly, uncomment this block.
+// const MAX_RETRIES = 5;
 
 /**
  * @internal
@@ -29,20 +28,24 @@ export class Session
     capabilities: Bidi.Session.CapabilitiesRequest
   ): Promise<Session> {
     // Wait until the session is ready.
-    let status = {message: '', ready: false};
-    for (let i = 0; i < MAX_RETRIES; ++i) {
-      status = (await connection.send('session.status', {})).result;
-      if (status.ready) {
-        break;
-      }
-      // Backoff a little bit each time.
-      await new Promise(resolve => {
-        return setTimeout(resolve, (1 << i) * 100);
-      });
-    }
-    if (!status.ready) {
-      throw new Error(status.message);
-    }
+    //
+    // TODO: Once Chrome supports session.status properly, uncomment this block
+    // and remove `getBiDiConnection` in BrowserConnector.
+
+    // let status = {message: '', ready: false};
+    // for (let i = 0; i < MAX_RETRIES; ++i) {
+    //   status = (await connection.send('session.status', {})).result;
+    //   if (status.ready) {
+    //     break;
+    //   }
+    //   // Backoff a little bit each time.
+    //   await new Promise(resolve => {
+    //     return setTimeout(resolve, (1 << i) * 100);
+    //   });
+    // }
+    // if (!status.ready) {
+    //   throw new Error(status.message);
+    // }
 
     let result;
     try {
@@ -58,7 +61,7 @@ export class Session
         sessionId: '',
         capabilities: {
           acceptInsecureCerts: false,
-          browserName: 'chrome',
+          browserName: '',
           browserVersion: '',
           platformName: '',
           setWindowRect: false,
@@ -72,7 +75,7 @@ export class Session
     return session;
   }
 
-  readonly #connection: Connection;
+  readonly connection: Connection;
 
   readonly #info: Bidi.Session.NewResult;
   readonly browser!: Browser;
@@ -81,7 +84,7 @@ export class Session
 
   private constructor(connection: Connection, info: Bidi.Session.NewResult) {
     super();
-    this.#connection = connection;
+    this.connection = connection;
     this.#info = info;
   }
 
@@ -89,7 +92,7 @@ export class Session
     // ///////////////////////
     // Connection listeners //
     // ///////////////////////
-    this.#connection.pipeTo(this);
+    this.connection.pipeTo(this);
 
     // //////////////////////////////
     // Asynchronous initialization //
@@ -101,9 +104,7 @@ export class Session
     // Child listeners //
     // //////////////////
     this.browser.once('closed', ({reason}) => {
-      this.#reason = reason;
-      this.emit('ended', {reason});
-      this.removeAllListeners();
+      this.dispose(reason);
     });
   }
 
@@ -119,8 +120,17 @@ export class Session
     return this.#info.capabilities;
   }
 
+  dispose(reason?: string): void {
+    if (this.disposed) {
+      return;
+    }
+    this.#reason = reason ?? 'Session was disposed.';
+    this.emit('ended', {reason: this.#reason});
+    this.removeAllListeners();
+  }
+
   pipeTo<Events extends BidiEvents>(emitter: EventEmitter<Events>): void {
-    this.#connection.pipeTo(emitter);
+    this.connection.pipeTo(emitter);
   }
 
   /**
@@ -138,7 +148,7 @@ export class Session
     method: T,
     params: Commands[T]['params']
   ): Promise<{result: Commands[T]['returnType']}> {
-    return await this.#connection.send(method, params);
+    return await this.connection.send(method, params);
   }
 
   @throwIfDisposed((session: Session) => {
@@ -156,9 +166,10 @@ export class Session
     return session.#reason!;
   })
   async end(): Promise<void> {
-    await this.send('session.end', {});
-    this.#reason = `Session (${this.id}) has already ended.`;
-    this.emit('ended', {reason: this.#reason});
-    this.removeAllListeners();
+    try {
+      await this.send('session.end', {});
+    } finally {
+      this.dispose(`Session (${this.id}) has already ended.`);
+    }
   }
 }
