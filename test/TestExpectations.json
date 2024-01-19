@@ -498,9 +498,9 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should fail for circular object",
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work for circular object",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
+    "parameters": ["cdp"],
     "expectations": ["FAIL"]
   },
   {
