@@ -34,7 +34,7 @@ export class Browser extends EventEmitter<{
     reason: string;
   };
   /** Emitted after the browser disconnects. */
-  disconnected: {
+  disconnect: {
     /** The reason for disconnecting the browser. */
     reason: string;
   };
@@ -81,9 +81,7 @@ export class Browser extends EventEmitter<{
     // Parent listeners //
     // ///////////////////
     this.session.once('ended', ({reason}) => {
-      this.#reason = reason;
-      this.emit('disconnected', {reason});
-      this.removeAllListeners();
+      this.dispose(reason);
     });
 
     // //////////////////////////////
@@ -136,15 +134,28 @@ export class Browser extends EventEmitter<{
     return this.#userContexts.values();
   }
 
+  dispose(reason?: string, close?: boolean): void {
+    if (this.disposed) {
+      return;
+    }
+    this.#reason = reason ?? `Browser was disposed.`;
+    if (close) {
+      this.emit('closed', {reason: this.#reason});
+    }
+    this.emit('disconnect', {reason: this.#reason});
+    this.removeAllListeners();
+  }
+
   @throwIfDisposed((browser: Browser) => {
     // SAFETY: By definition of `disposed`, `#reason` is defined.
     return browser.#reason!;
   })
   async close(): Promise<void> {
-    await this.#session.send('browser.close', {});
-    this.#reason = `Browser has already closed.`;
-    this.emit('closed', {reason: this.#reason});
-    this.removeAllListeners();
+    try {
+      await this.#session.send('browser.close', {});
+    } finally {
+      this.dispose(`Browser was closed.`, true);
+    }
   }
 
   @throwIfDisposed((browser: Browser) => {

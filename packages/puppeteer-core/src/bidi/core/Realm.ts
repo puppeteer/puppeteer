@@ -96,6 +96,9 @@ export abstract class Realm extends EventEmitter<{
   }
 }
 
+/**
+ * @internal
+ */
 export class WindowRealm extends Realm {
   static from(context: BrowsingContext, sandbox?: string): WindowRealm {
     const realm = new WindowRealm(context, sandbox);
@@ -173,11 +176,17 @@ export class WindowRealm extends Realm {
   }
 }
 
+/**
+ * @internal
+ */
 export type DedicatedWorkerOwnerRealm =
   | DedicatedWorkerRealm
   | SharedWorkerRealm
   | WindowRealm;
 
+/**
+ * @internal
+ */
 export class DedicatedWorkerRealm extends Realm {
   static from(
     owner: DedicatedWorkerOwnerRealm,
@@ -228,6 +237,9 @@ export class DedicatedWorkerRealm extends Realm {
   }
 }
 
+/**
+ * @internal
+ */
 export class SharedWorkerRealm extends Realm {
   static from(
     owners: [WindowRealm, ...WindowRealm[]],
