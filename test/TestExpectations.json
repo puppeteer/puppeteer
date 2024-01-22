@@ -498,12 +498,6 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work for circular object",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should replace symbols with undefined",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp"],
@@ -511,6 +505,12 @@
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should return properly serialize objects with unknown type fields",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work for circular object",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp"],
     "expectations": ["FAIL"]
