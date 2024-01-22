@@ -9,6 +9,6 @@
     "declarationMap": false,
     "sourceMap": false,
     "composite": false,
-    "removeComments": true
-  }
+    "removeComments": true,
+  },
 }

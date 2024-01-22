@@ -10,8 +10,8 @@
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "sourceMap": true,
-    "types": ["node"]
+    "types": ["node"],
   },
   "include": ["src/**/*"],
-  "exclude": ["src/**/files/**/*"]
+  "exclude": ["src/**/files/**/*"],
 }
