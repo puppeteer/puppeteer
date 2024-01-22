@@ -52,7 +52,7 @@ export class Browser extends EventEmitter<{
 
   // keep-sorted start
   #reason: string | undefined;
-  readonly #userContexts = new Map();
+  readonly #userContexts = new Map<string, UserContext>();
   readonly session: Session;
   // keep-sorted end
 
@@ -63,7 +63,10 @@ export class Browser extends EventEmitter<{
     this.session = session;
     // keep-sorted end
 
-    this.#userContexts.set('', UserContext.create(this, ''));
+    this.#userContexts.set(
+      UserContext.DEFAULT,
+      UserContext.create(this, UserContext.DEFAULT)
+    );
   }
 
   async #initialize() {
@@ -127,7 +130,7 @@ export class Browser extends EventEmitter<{
 
   get defaultUserContext(): UserContext {
     // SAFETY: A UserContext is always created for the default context.
-    return this.#userContexts.get('')!;
+    return this.#userContexts.get(UserContext.DEFAULT)!;
   }
 
   get userContexts(): Iterable<UserContext> {
@@ -187,4 +190,21 @@ export class Browser extends EventEmitter<{
       script,
     });
   }
+
+  async createUserContext(): Promise<UserContext> {
+    // TODO: implement incognito context https://github.com/w3c/webdriver-bidi/issues/289.
+    // TODO: Call `createUserContext` once available.
+    // Generating a monotonically increasing context id.
+    const context = `${++id}`;
+
+    const userContext = UserContext.create(this, context);
+    userContext.once('destroyed', () => {
+      this.#userContexts.delete(context);
+    });
+
+    this.#userContexts.set(userContext.id, userContext);
+    return userContext;
+  }
 }
+
+let id = 0;
