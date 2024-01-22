@@ -149,6 +149,8 @@ module.exports = {
     'rulesdir/prettier-comments': 'error',
     // Enforces consistent file extension
     'rulesdir/extensions': 'error',
+    // Enforces license headers on files (.ts,.mjs,.cjs)
+    'rulesdir/check-license': 'error',
   },
   overrides: [
     {
