@@ -3,7 +3,8 @@ updates:
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
+      day: 'sunday'
       time: '02:00'
       timezone: Europe/Berlin
     ignore:
@@ -21,7 +22,8 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
+      day: 'sunday'
       time: '03:00'
       timezone: Europe/Berlin
     groups:
@@ -31,7 +33,8 @@ updates:
   - package-ecosystem: docker
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
+      day: 'sunday'
       time: '04:00'
       timezone: Europe/Berlin
     groups:
