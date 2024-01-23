@@ -32,6 +32,6 @@
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "dependencies": {
-    "@prettier/sync": "0.3.0"
+    "@prettier/sync": "0.4.0"
   }
 }
