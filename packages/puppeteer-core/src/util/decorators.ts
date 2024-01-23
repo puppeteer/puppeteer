@@ -63,6 +63,18 @@ export function throwIfDisposed<This extends Disposed>(
   };
 }
 
+export function inertIfDisposed<This extends Disposed>(
+  target: (this: This, ...args: any[]) => any,
+  _: unknown
+) {
+  return function (this: This, ...args: any[]): any {
+    if (this.disposed) {
+      return;
+    }
+    return target.call(this, ...args);
+  };
+}
+
 /**
  * The decorator only invokes the target if the target has not been invoked with
  * the same arguments before. The decorated method throws an error if it's

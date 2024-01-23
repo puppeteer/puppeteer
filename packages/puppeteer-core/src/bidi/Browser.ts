@@ -126,11 +126,11 @@ export class BidiBrowser extends Browser {
   }
 
   #initialize() {
-    this.#browserCore.once('disconnect', () => {
+    this.#browserCore.once('disconnected', () => {
       this.emit(BrowserEvent.Disconnected, undefined);
     });
-    this.#process?.once('close', () => {
-      this.#browserCore.dispose('Browser process closed.', true);
+    this.#process?.once('close', async () => {
+      this.#browserCore.dispose('Browser process exited.', true);
       this.connection.dispose();
     });
 

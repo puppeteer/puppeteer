@@ -8,7 +8,8 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {debugError} from '../../common/util.js';
-import {throwIfDisposed} from '../../util/decorators.js';
+import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
+import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 
 import {Browser} from './Browser.js';
 import type {BidiEvents, Commands, Connection} from './Connection.js';
@@ -75,58 +76,53 @@ export class Session
     return session;
   }
 
-  readonly connection: Connection;
-
+  // keep-sorted start
+  #reason: string | undefined;
+  readonly #disposables = new DisposableStack();
   readonly #info: Bidi.Session.NewResult;
   readonly browser!: Browser;
-
-  #reason: string | undefined;
+  readonly connection: Connection;
+  // keep-sorted end
 
   private constructor(connection: Connection, info: Bidi.Session.NewResult) {
     super();
-    this.connection = connection;
+    // keep-sorted start
     this.#info = info;
+    this.connection = connection;
+    // keep-sorted end
   }
 
   async #initialize(): Promise<void> {
-    // ///////////////////////
-    // Connection listeners //
-    // ///////////////////////
     this.connection.pipeTo(this);
 
-    // //////////////////////////////
-    // Asynchronous initialization //
-    // //////////////////////////////
     // SAFETY: We use `any` to allow assignment of the readonly property.
     (this as any).browser = await Browser.from(this);
 
-    // //////////////////
-    // Child listeners //
-    // //////////////////
-    this.browser.once('closed', ({reason}) => {
+    const browserEmitter = this.#disposables.use(this.browser);
+    browserEmitter.once('closed', ({reason}) => {
       this.dispose(reason);
     });
   }
 
-  get disposed(): boolean {
-    return this.#reason !== undefined;
-  }
-
-  get id(): string {
-    return this.#info.sessionId;
-  }
-
+  // keep-sorted start block=yes
   get capabilities(): Bidi.Session.NewResult['capabilities'] {
     return this.#info.capabilities;
   }
+  get disposed(): boolean {
+    return this.ended;
+  }
+  get ended(): boolean {
+    return this.#reason !== undefined;
+  }
+  get id(): string {
+    return this.#info.sessionId;
+  }
+  // keep-sorted end
 
-  dispose(reason?: string): void {
-    if (this.disposed) {
-      return;
-    }
-    this.#reason = reason ?? 'Session was disposed.';
-    this.emit('ended', {reason: this.#reason});
-    this.removeAllListeners();
+  @inertIfDisposed
+  private dispose(reason?: string): void {
+    this.#reason = reason;
+    this[disposeSymbol]();
   }
 
   pipeTo<Events extends BidiEvents>(emitter: EventEmitter<Events>): void {
@@ -140,7 +136,7 @@ export class Session
    * object is used, so we implement this method here, although it's not defined
    * in the spec.
    */
-  @throwIfDisposed((session: Session) => {
+  @throwIfDisposed<Session>(session => {
     // SAFETY: By definition of `disposed`, `#reason` is defined.
     return session.#reason!;
   })
@@ -151,7 +147,7 @@ export class Session
     return await this.connection.send(method, params);
   }
 
-  @throwIfDisposed((session: Session) => {
+  @throwIfDisposed<Session>(session => {
     // SAFETY: By definition of `disposed`, `#reason` is defined.
     return session.#reason!;
   })
@@ -161,7 +157,7 @@ export class Session
     });
   }
 
-  @throwIfDisposed((session: Session) => {
+  @throwIfDisposed<Session>(session => {
     // SAFETY: By definition of `disposed`, `#reason` is defined.
     return session.#reason!;
   })
@@ -169,7 +165,16 @@ export class Session
     try {
       await this.send('session.end', {});
     } finally {
-      this.dispose(`Session (${this.id}) has already ended.`);
+      this.dispose(`Session already ended.`);
     }
+  }
+
+  [disposeSymbol](): void {
+    this.#reason ??=
+      'Session already destroyed, probably because the connection broke.';
+    this.emit('ended', {reason: this.#reason});
+
+    this.#disposables.dispose();
+    super[disposeSymbol]();
   }
 }

@@ -7,7 +7,8 @@
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
-import {throwIfDisposed} from '../../util/decorators.js';
+import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
+import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 
 import type {AddPreloadScriptOptions} from './Browser.js';
 import {Navigation} from './Navigation.js';
@@ -60,8 +61,11 @@ export type SetViewportOptions = Omit<
  * @internal
  */
 export class BrowsingContext extends EventEmitter<{
-  /** Emitted when this context is destroyed. */
-  destroyed: void;
+  /** Emitted when this context is closed. */
+  closed: {
+    /** The reason the browsing context was closed */
+    reason: string;
+  };
   /** Emitted when a child browsing context is created. */
   browsingcontext: {
     /** The newly created child browsing context. */
@@ -105,15 +109,16 @@ export class BrowsingContext extends EventEmitter<{
 
   // keep-sorted start
   #navigation: Navigation | undefined;
+  #reason?: string;
   #url: string;
   readonly #children = new Map<string, BrowsingContext>();
+  readonly #disposables = new DisposableStack();
   readonly #realms = new Map<string, WindowRealm>();
   readonly #requests = new Map<string, Request>();
   readonly defaultRealm: WindowRealm;
   readonly id: string;
   readonly parent: BrowsingContext | undefined;
   readonly userContext: UserContext;
-  disposed = false;
   // keep-sorted end
 
   private constructor(
@@ -123,7 +128,6 @@ export class BrowsingContext extends EventEmitter<{
     url: string
   ) {
     super();
-
     // keep-sorted start
     this.#url = url;
     this.id = id;
@@ -135,11 +139,17 @@ export class BrowsingContext extends EventEmitter<{
   }
 
   #initialize() {
-    // ///////////////////////
-    // Session listeners //
-    // ///////////////////////
-    const session = this.#session;
-    session.on('browsingContext.contextCreated', info => {
+    const userContextEmitter = this.#disposables.use(
+      new EventEmitter(this.userContext)
+    );
+    userContextEmitter.once('closed', ({reason}) => {
+      this.dispose(`Browsing context already closed: ${reason}`);
+    });
+
+    const sessionEmitter = this.#disposables.use(
+      new EventEmitter(this.#session)
+    );
+    sessionEmitter.on('browsingContext.contextCreated', info => {
       if (info.parent !== this.id) {
         return;
       }
@@ -150,24 +160,27 @@ export class BrowsingContext extends EventEmitter<{
         info.context,
         info.url
       );
-      browsingContext.on('destroyed', () => {
+      this.#children.set(info.context, browsingContext);
+
+      const browsingContextEmitter = this.#disposables.use(
+        new EventEmitter(browsingContext)
+      );
+      browsingContextEmitter.once('closed', () => {
+        browsingContextEmitter.removeAllListeners();
+
         this.#children.delete(browsingContext.id);
       });
 
-      this.#children.set(info.context, browsingContext);
-
       this.emit('browsingcontext', {browsingContext});
     });
-    session.on('browsingContext.contextDestroyed', info => {
+    sessionEmitter.on('browsingContext.contextDestroyed', info => {
       if (info.context !== this.id) {
         return;
       }
-      this.disposed = true;
-      this.emit('destroyed', undefined);
-      this.removeAllListeners();
+      this.dispose('Browsing context already closed.');
     });
 
-    session.on('browsingContext.domContentLoaded', info => {
+    sessionEmitter.on('browsingContext.domContentLoaded', info => {
       if (info.context !== this.id) {
         return;
       }
@@ -175,7 +188,7 @@ export class BrowsingContext extends EventEmitter<{
       this.emit('DOMContentLoaded', undefined);
     });
 
-    session.on('browsingContext.load', info => {
+    sessionEmitter.on('browsingContext.load', info => {
       if (info.context !== this.id) {
         return;
       }
@@ -183,22 +196,31 @@ export class BrowsingContext extends EventEmitter<{
       this.emit('load', undefined);
     });
 
-    session.on('browsingContext.navigationStarted', info => {
+    sessionEmitter.on('browsingContext.navigationStarted', info => {
       if (info.context !== this.id) {
         return;
       }
+      this.#url = info.url;
 
       this.#requests.clear();
 
       // Note the navigation ID is null for this event.
-      this.#navigation = Navigation.from(this, info.url);
-      this.#navigation.on('fragment', ({url}) => {
-        this.#url = url;
-      });
+      this.#navigation = Navigation.from(this);
+
+      const navigationEmitter = this.#disposables.use(
+        new EventEmitter(this.#navigation)
+      );
+      for (const eventName of ['fragment', 'failed', 'aborted'] as const) {
+        navigationEmitter.once(eventName, ({url}) => {
+          navigationEmitter[disposeSymbol]();
+
+          this.#url = url;
+        });
+      }
 
       this.emit('navigation', {navigation: this.#navigation});
     });
-    session.on('network.beforeRequestSent', event => {
+    sessionEmitter.on('network.beforeRequestSent', event => {
       if (event.context !== this.id) {
         return;
       }
@@ -206,12 +228,12 @@ export class BrowsingContext extends EventEmitter<{
         return;
       }
 
-      const request = new Request(this, event);
+      const request = Request.from(this, event);
       this.#requests.set(request.id, request);
       this.emit('request', {request});
     });
 
-    session.on('log.entryAdded', entry => {
+    sessionEmitter.on('log.entryAdded', entry => {
       if (entry.source.context !== this.id) {
         return;
       }
@@ -219,7 +241,7 @@ export class BrowsingContext extends EventEmitter<{
       this.emit('log', {entry});
     });
 
-    session.on('browsingContext.userPromptOpened', info => {
+    sessionEmitter.on('browsingContext.userPromptOpened', info => {
       if (info.context !== this.id) {
         return;
       }
@@ -236,6 +258,12 @@ export class BrowsingContext extends EventEmitter<{
   get children(): Iterable<BrowsingContext> {
     return this.#children.values();
   }
+  get closed(): boolean {
+    return this.#reason !== undefined;
+  }
+  get disposed(): boolean {
+    return this.closed;
+  }
   get realms(): Iterable<WindowRealm> {
     return this.#realms.values();
   }
@@ -251,14 +279,26 @@ export class BrowsingContext extends EventEmitter<{
   }
   // keep-sorted end
 
-  @throwIfDisposed()
+  @inertIfDisposed
+  private dispose(reason?: string): void {
+    this.#reason = reason;
+    this[disposeSymbol]();
+  }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
   async activate(): Promise<void> {
     await this.#session.send('browsingContext.activate', {
       context: this.id,
     });
   }
 
-  @throwIfDisposed()
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
   async captureScreenshot(
     options: CaptureScreenshotOptions = {}
   ): Promise<string> {
@@ -271,7 +311,10 @@ export class BrowsingContext extends EventEmitter<{
     return data;
   }
 
-  @throwIfDisposed()
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
   async close(promptUnload?: boolean): Promise<void> {
     await Promise.all(
       [...this.#children.values()].map(async child => {
@@ -284,7 +327,10 @@ export class BrowsingContext extends EventEmitter<{
     });
   }
 
-  @throwIfDisposed()
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
   async traverseHistory(delta: number): Promise<void> {
     await this.#session.send('browsingContext.traverseHistory', {
       context: this.id,
@@ -292,7 +338,10 @@ export class BrowsingContext extends EventEmitter<{
     });
   }
 
-  @throwIfDisposed()
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
   async navigate(
     url: string,
     wait?: Bidi.BrowsingContext.ReadinessState
@@ -309,7 +358,10 @@ export class BrowsingContext extends EventEmitter<{
     });
   }
 
-  @throwIfDisposed()
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
   async reload(options: ReloadOptions = {}): Promise<Navigation> {
     await this.#session.send('browsingContext.reload', {
       context: this.id,
@@ -322,7 +374,10 @@ export class BrowsingContext extends EventEmitter<{
     });
   }
 
-  @throwIfDisposed()
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
   async print(options: PrintOptions = {}): Promise<string> {
     const {
       result: {data},
@@ -333,7 +388,10 @@ export class BrowsingContext extends EventEmitter<{
     return data;
   }
 
-  @throwIfDisposed()
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
   async handleUserPrompt(options: HandleUserPromptOptions = {}): Promise<void> {
     await this.#session.send('browsingContext.handleUserPrompt', {
       context: this.id,
@@ -341,7 +399,10 @@ export class BrowsingContext extends EventEmitter<{
     });
   }
 
-  @throwIfDisposed()
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
   async setViewport(options: SetViewportOptions = {}): Promise<void> {
     await this.#session.send('browsingContext.setViewport', {
       context: this.id,
@@ -349,7 +410,10 @@ export class BrowsingContext extends EventEmitter<{
     });
   }
 
-  @throwIfDisposed()
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
   async performActions(actions: Bidi.Input.SourceActions[]): Promise<void> {
     await this.#session.send('input.performActions', {
       context: this.id,
@@ -357,19 +421,28 @@ export class BrowsingContext extends EventEmitter<{
     });
   }
 
-  @throwIfDisposed()
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
   async releaseActions(): Promise<void> {
     await this.#session.send('input.releaseActions', {
       context: this.id,
     });
   }
 
-  @throwIfDisposed()
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
   createWindowRealm(sandbox: string): WindowRealm {
     return WindowRealm.from(this, sandbox);
   }
 
-  @throwIfDisposed()
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
   async addPreloadScript(
     functionDeclaration: string,
     options: AddPreloadScriptOptions = {}
@@ -383,8 +456,20 @@ export class BrowsingContext extends EventEmitter<{
     );
   }
 
-  @throwIfDisposed()
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
   async removePreloadScript(script: string): Promise<void> {
     await this.userContext.browser.removePreloadScript(script);
+  }
+
+  [disposeSymbol](): void {
+    this.#reason ??=
+      'Browsing context already closed, probably because the user context closed.';
+    this.emit('closed', {reason: this.#reason});
+
+    this.#disposables.dispose();
+    super[disposeSymbol]();
   }
 }

@@ -8,7 +8,7 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {assert} from '../../util/assert.js';
-import {throwIfDisposed} from '../../util/decorators.js';
+import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 
 import type {Browser} from './Browser.js';
@@ -35,6 +35,13 @@ export class UserContext extends EventEmitter<{
     /** The new browsing context. */
     browsingContext: BrowsingContext;
   };
+  /**
+   * Emitted when the user context is closed.
+   */
+  closed: {
+    /** The reason the user context was closed. */
+    reason: string;
+  };
 }> {
   static create(browser: Browser, id: string): UserContext {
     const context = new UserContext(browser, id);
@@ -46,16 +53,15 @@ export class UserContext extends EventEmitter<{
   #reason?: string;
   // Note these are only top-level contexts.
   readonly #browsingContexts = new Map<string, BrowsingContext>();
+  readonly #disposables = new DisposableStack();
   // @ts-expect-error -- TODO: This will be used once the WebDriver BiDi
   // protocol supports it.
   readonly #id: string;
-  readonly #disposables = new DisposableStack();
   readonly browser: Browser;
   // keep-sorted end
 
   private constructor(browser: Browser, id: string) {
     super();
-
     // keep-sorted start
     this.#id = id;
     this.browser = browser;
@@ -63,9 +69,13 @@ export class UserContext extends EventEmitter<{
   }
 
   #initialize() {
-    // ////////////////////
-    // Session listeners //
-    // ////////////////////
+    const browserEmitter = this.#disposables.use(
+      new EventEmitter(this.browser)
+    );
+    browserEmitter.once('closed', ({reason}) => {
+      this.dispose(`User context already closed: ${reason}`);
+    });
+
     const sessionEmitter = this.#disposables.use(
       new EventEmitter(this.#session)
     );
@@ -85,7 +95,9 @@ export class UserContext extends EventEmitter<{
       const browsingContextEmitter = this.#disposables.use(
         new EventEmitter(browsingContext)
       );
-      browsingContextEmitter.on('destroyed', () => {
+      browsingContextEmitter.on('closed', () => {
+        browsingContextEmitter.removeAllListeners();
+
         this.#browsingContexts.delete(browsingContext.id);
       });
 
@@ -100,12 +112,16 @@ export class UserContext extends EventEmitter<{
   get browsingContexts(): Iterable<BrowsingContext> {
     return this.#browsingContexts.values();
   }
+  get closed(): boolean {
+    return this.#reason !== undefined;
+  }
   get disposed(): boolean {
-    return Boolean(this.#reason);
+    return this.closed;
   }
   // keep-sorted end
 
-  dispose(reason?: string): void {
+  @inertIfDisposed
+  private dispose(reason?: string): void {
     this.#reason = reason;
     this[disposeSymbol]();
   }
@@ -136,23 +152,28 @@ export class UserContext extends EventEmitter<{
     return browsingContext;
   }
 
+  @throwIfDisposed<UserContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
   async close(): Promise<void> {
-    const promises = [];
-    for (const browsingContext of this.#browsingContexts.values()) {
-      promises.push(browsingContext.close());
+    try {
+      const promises = [];
+      for (const browsingContext of this.#browsingContexts.values()) {
+        promises.push(browsingContext.close());
+      }
+      await Promise.all(promises);
+    } finally {
+      this.dispose('User context already closed.');
     }
-    await Promise.all(promises);
-    this.dispose('User context was closed.');
   }
 
   [disposeSymbol](): void {
-    super[disposeSymbol]();
-
-    if (this.#reason === undefined) {
-      this.#reason =
-        'User context was destroyed, probably because browser disconnected/closed.';
-    }
+    this.#reason ??=
+      'User context already closed, probably because the browser disconnected/closed.';
+    this.emit('closed', {reason: this.#reason});
 
     this.#disposables.dispose();
+    super[disposeSymbol]();
   }
 }
