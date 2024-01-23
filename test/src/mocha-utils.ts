@@ -169,6 +169,21 @@ export const setupTestBrowserHooks = (): void => {
       // if browser is not found
     }
   });
+
+  after(() => {
+    if (typeof gc !== 'undefined') {
+      gc();
+      const memory = process.memoryUsage();
+      console.log('Memory stats:');
+      for (const key of Object.keys(memory)) {
+        console.log(
+          key,
+          // @ts-expect-error TS cannot the key type.
+          `${Math.round(((memory[key] / 1024 / 1024) * 100) / 100)} MB`
+        );
+      }
+    }
+  });
 };
 
 export const getTestState = async (
