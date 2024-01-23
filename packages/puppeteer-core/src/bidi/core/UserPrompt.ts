@@ -7,6 +7,8 @@
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
+import {throwIfDisposed} from '../../util/decorators.js';
+import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 
 import type {BrowsingContext} from './BrowsingContext.js';
 
@@ -42,9 +44,11 @@ export class UserPrompt extends EventEmitter<{
   }
 
   // keep-sorted start
+  #reason?: string;
   #result?: UserPromptResult;
-  readonly info: Bidi.BrowsingContext.UserPromptOpenedParameters;
+  readonly #disposables = new DisposableStack();
   readonly browsingContext: BrowsingContext;
+  readonly info: Bidi.BrowsingContext.UserPromptOpenedParameters;
   // keep-sorted end
 
   private constructor(
@@ -63,13 +67,14 @@ export class UserPrompt extends EventEmitter<{
     // ///////////////////////
     // Session listeners //
     // ///////////////////////
-    this.#session.on('browsingContext.userPromptClosed', parameters => {
+    const session = this.#disposables.use(new EventEmitter(this.#session));
+    session.on('browsingContext.userPromptClosed', parameters => {
       if (parameters.context !== this.browsingContext.id) {
         return;
       }
       this.#result = parameters;
       this.emit('handled', parameters);
-      this.removeAllListeners();
+      this.dispose('User prompt was handled.');
     });
   }
 
@@ -77,11 +82,23 @@ export class UserPrompt extends EventEmitter<{
   get #session() {
     return this.browsingContext.userContext.browser.session;
   }
+  get disposed(): boolean {
+    return Boolean(this.#reason);
+  }
   get result(): UserPromptResult | undefined {
     return this.#result;
   }
   // keep-sorted end
 
+  dispose(reason?: string): void {
+    this.#reason = reason;
+    this[disposeSymbol]();
+  }
+
+  @throwIfDisposed((prompt: UserPrompt) => {
+    // SAFETY: Disposal implies this exists.
+    return prompt.#reason!;
+  })
   async handle(options: HandleOptions = {}): Promise<UserPromptResult> {
     await this.#session.send('browsingContext.handleUserPrompt', {
       ...options,
@@ -89,5 +106,16 @@ export class UserPrompt extends EventEmitter<{
     });
     // SAFETY: `handled` is triggered before the above promise resolved.
     return this.#result!;
+  }
+
+  [disposeSymbol](): void {
+    super[disposeSymbol]();
+
+    if (this.#reason === undefined) {
+      this.#reason =
+        'User prompt was destroyed, probably because the associated browsing context was destroyed.';
+    }
+
+    this.#disposables.dispose();
   }
 }
