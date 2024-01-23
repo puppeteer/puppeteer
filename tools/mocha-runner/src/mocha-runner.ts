@@ -46,6 +46,7 @@ const {
   minTests,
   shard,
   reporter,
+  printMemory,
 } = yargs(hideBin(process.argv))
   .parserConfiguration({'unknown-options-as-args': true})
   .scriptName('@puppeteer/mocha-runner')
@@ -81,6 +82,10 @@ const {
   .option('reporter', {
     string: true,
     requiresArg: true,
+  })
+  .option('print-memory', {
+    boolean: true,
+    default: false,
   })
   .parseSync();
 
@@ -196,6 +201,10 @@ async function main() {
         '-n',
         'trace-warnings',
       ];
+
+      if (printMemory) {
+        args.push('-n', 'expose-gc');
+      }
 
       const specPattern = 'test/build/**/*.spec.js';
       const specs = globSync(specPattern, {
