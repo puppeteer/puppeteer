@@ -64,11 +64,13 @@ export class UserPrompt extends EventEmitter<{
   }
 
   #initialize() {
-    // ///////////////////////
+    // ////////////////////
     // Session listeners //
-    // ///////////////////////
-    const session = this.#disposables.use(new EventEmitter(this.#session));
-    session.on('browsingContext.userPromptClosed', parameters => {
+    // ////////////////////
+    const sessionEmitter = this.#disposables.use(
+      new EventEmitter(this.#session)
+    );
+    sessionEmitter.on('browsingContext.userPromptClosed', parameters => {
       if (parameters.context !== this.browsingContext.id) {
         return;
       }
