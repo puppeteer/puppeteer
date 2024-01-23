@@ -4,6 +4,7 @@ updates:
     directory: /
     schedule:
       interval: weekly
+      day: 'sunday'
       time: '02:00'
       timezone: Europe/Berlin
     ignore:
@@ -22,6 +23,7 @@ updates:
     directory: /
     schedule:
       interval: weekly
+      day: 'sunday'
       time: '03:00'
       timezone: Europe/Berlin
     groups:
@@ -32,6 +34,7 @@ updates:
     directory: /
     schedule:
       interval: weekly
+      day: 'sunday'
       time: '04:00'
       timezone: Europe/Berlin
     groups:
