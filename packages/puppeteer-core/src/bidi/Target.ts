@@ -53,40 +53,13 @@ export abstract class BidiTarget extends Target {
 /**
  * @internal
  */
-export class BiDiBrowserTarget extends Target {
-  #browser: BidiBrowser;
-
-  constructor(browser: BidiBrowser) {
-    super();
-    this.#browser = browser;
-  }
-
+export class BiDiBrowserTarget extends BidiTarget {
   override url(): string {
     return '';
   }
 
   override type(): TargetType {
     return TargetType.BROWSER;
-  }
-
-  override asPage(): Promise<Page> {
-    throw new UnsupportedOperation();
-  }
-
-  override browser(): BidiBrowser {
-    return this.#browser;
-  }
-
-  override browserContext(): BidiBrowserContext {
-    return this.#browser.defaultBrowserContext();
-  }
-
-  override opener(): never {
-    throw new UnsupportedOperation();
-  }
-
-  override createCDPSession(): Promise<CDPSession> {
-    throw new UnsupportedOperation();
   }
 }
 
