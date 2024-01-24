@@ -24,6 +24,6 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Methods
 
-| Method                                                     | Modifiers | Description                                                                                                                |
-| ---------------------------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------- |
-| [snapshot(options)](./puppeteer.accessibility.snapshot.md) |           | Captures the current state of the accessibility tree. The returned object represents the root accessible node of the page. |
+| Method                                            | Modifiers | Description                                                                                                                |
+| ------------------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------- |
+| [snapshot](./puppeteer.accessibility.snapshot.md) |           | Captures the current state of the accessibility tree. The returned object represents the root accessible node of the page. |

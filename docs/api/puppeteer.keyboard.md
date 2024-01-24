@@ -49,10 +49,10 @@ await page.keyboard.up('Shift');
 
 ## Methods
 
-| Method                                                       | Modifiers | Description                                                                                                                             |
-| ------------------------------------------------------------ | --------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| [down(key, options)](./puppeteer.keyboard.down.md)           |           | Dispatches a <code>keydown</code> event.                                                                                                |
-| [press(key, options)](./puppeteer.keyboard.press.md)         |           | Shortcut for [Keyboard.down()](./puppeteer.keyboard.down.md) and [Keyboard.up()](./puppeteer.keyboard.up.md).                           |
-| [sendCharacter(char)](./puppeteer.keyboard.sendcharacter.md) |           | Dispatches a <code>keypress</code> and <code>input</code> event. This does not send a <code>keydown</code> or <code>keyup</code> event. |
-| [type(text, options)](./puppeteer.keyboard.type.md)          |           | Sends a <code>keydown</code>, <code>keypress</code>/<code>input</code>, and <code>keyup</code> event for each character in the text.    |
-| [up(key)](./puppeteer.keyboard.up.md)                        |           | Dispatches a <code>keyup</code> event.                                                                                                  |
+| Method                                                 | Modifiers | Description                                                                                                                             |
+| ------------------------------------------------------ | --------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| [down](./puppeteer.keyboard.down.md)                   |           | Dispatches a <code>keydown</code> event.                                                                                                |
+| [press](./puppeteer.keyboard.press.md)                 |           | Shortcut for [Keyboard.down()](./puppeteer.keyboard.down.md) and [Keyboard.up()](./puppeteer.keyboard.up.md).                           |
+| [sendCharacter](./puppeteer.keyboard.sendcharacter.md) |           | Dispatches a <code>keypress</code> and <code>input</code> event. This does not send a <code>keydown</code> or <code>keyup</code> event. |
+| [type](./puppeteer.keyboard.type.md)                   |           | Sends a <code>keydown</code>, <code>keypress</code>/<code>input</code>, and <code>keyup</code> event for each character in the text.    |
+| [up](./puppeteer.keyboard.up.md)                       |           | Dispatches a <code>keyup</code> event.                                                                                                  |

@@ -18,6 +18,6 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Methods
 
-| Method                                       | Modifiers | Description         |
-| -------------------------------------------- | --------- | ------------------- |
-| [stop()](./puppeteer.screenrecorder.stop.md) |           | Stops the recorder. |
+| Method                                     | Modifiers | Description         |
+| ------------------------------------------ | --------- | ------------------- |
+| [stop](./puppeteer.screenrecorder.stop.md) |           | Stops the recorder. |

@@ -36,6 +36,10 @@
   "dependencies": {
     "c8": "9.1.0",
     "glob": "10.3.10",
-    "zod": "3.22.4"
+    "zod": "3.22.4",
+    "yargs": "17.7.2"
+  },
+  "devDependencies": {
+    "@types/yargs": "17.0.32"
   }
 }
