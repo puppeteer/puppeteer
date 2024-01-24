@@ -4,16 +4,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import type {TSESTree} from '@typescript-eslint/utils';
 import {ESLintUtils} from '@typescript-eslint/utils';
 
 const createRule = ESLintUtils.RuleCreator(name => {
-  return `https://github.com/puppeteer/puppeteer/tree/main/tools/eslint/${name}.js`;
+  return `https://github.com/puppeteer/puppeteer/tree/main/tools/eslint/${name}.ts`;
 });
 
 const copyrightPattern = /Copyright ([0-9]{4}) Google Inc\./;
 
 const enforceLicenseRule = createRule<[], 'licenseRule'>({
-  name: 'license',
+  name: 'check-license',
   meta: {
     type: 'layout',
     docs: {
@@ -35,8 +36,8 @@ const enforceLicenseRule = createRule<[], 'licenseRule'>({
         ? comments[0]
         : null;
 
-    function isHeaderComment(comment: any) {
-      if (comment?.range[0] >= 0 && comment?.range[1] <= 88) {
+    function isHeaderComment(comment: TSESTree.Comment) {
+      if (comment && comment.range[0] >= 0 && comment.range[1] <= 88) {
         return true;
       } else {
         return false;
@@ -46,9 +47,10 @@ const enforceLicenseRule = createRule<[], 'licenseRule'>({
     return {
       Program(node) {
         if (
-          header?.value.includes('@license') &&
-          header?.value.includes('SPDX-License-Identifier: Apache-2.0') &&
-          copyrightPattern.test(header?.value)
+          header &&
+          header.value.includes('@license') &&
+          header.value.includes('SPDX-License-Identifier: Apache-2.0') &&
+          copyrightPattern.test(header.value)
         ) {
           return;
         }
