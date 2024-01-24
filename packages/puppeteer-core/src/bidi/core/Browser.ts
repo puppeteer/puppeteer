@@ -55,7 +55,7 @@ export class Browser extends EventEmitter<{
   #closed = false;
   #reason: string | undefined;
   readonly #disposables = new DisposableStack();
-  readonly #userContexts = new Map();
+  readonly #userContexts = new Map<string, UserContext>();
   readonly session: Session;
   // keep-sorted end
 
@@ -65,7 +65,10 @@ export class Browser extends EventEmitter<{
     this.session = session;
     // keep-sorted end
 
-    this.#userContexts.set('', UserContext.create(this, ''));
+    this.#userContexts.set(
+      UserContext.DEFAULT,
+      UserContext.create(this, UserContext.DEFAULT)
+    );
   }
 
   async #initialize() {
@@ -120,7 +123,7 @@ export class Browser extends EventEmitter<{
   }
   get defaultUserContext(): UserContext {
     // SAFETY: A UserContext is always created for the default context.
-    return this.#userContexts.get('')!;
+    return this.#userContexts.get(UserContext.DEFAULT)!;
   }
   get disconnected(): boolean {
     return this.#reason !== undefined;
@@ -180,6 +183,32 @@ export class Browser extends EventEmitter<{
     await this.session.send('script.removePreloadScript', {
       script,
     });
+  }
+
+  static userContextId = 0;
+  @throwIfDisposed<Browser>(browser => {
+    // SAFETY: By definition of `disposed`, `#reason` is defined.
+    return browser.#reason!;
+  })
+  async createUserContext(): Promise<UserContext> {
+    // TODO: implement incognito context https://github.com/w3c/webdriver-bidi/issues/289.
+    // TODO: Call `createUserContext` once available.
+    // Generating a monotonically increasing context id.
+    const context = `${++Browser.userContextId}`;
+
+    const userContext = UserContext.create(this, context);
+    this.#userContexts.set(userContext.id, userContext);
+
+    const userContextEmitter = this.#disposables.use(
+      new EventEmitter(userContext)
+    );
+    userContextEmitter.once('closed', () => {
+      userContextEmitter.removeAllListeners();
+
+      this.#userContexts.delete(context);
+    });
+
+    return userContext;
   }
 
   [disposeSymbol](): void {
