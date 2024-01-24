@@ -14,9 +14,9 @@ export declare class Connection extends EventEmitter<CDPSessionEvents>
 
 ## Constructors
 
-| Constructor                                                                              | Modifiers | Description                                                    |
-| ---------------------------------------------------------------------------------------- | --------- | -------------------------------------------------------------- |
-| [(constructor)(url, transport, delay, timeout)](./puppeteer.connection._constructor_.md) |           | Constructs a new instance of the <code>Connection</code> class |
+| Constructor                                              | Modifiers | Description                                                    |
+| -------------------------------------------------------- | --------- | -------------------------------------------------------------- |
+| [(constructor)](./puppeteer.connection._constructor_.md) |           | Constructs a new instance of the <code>Connection</code> class |
 
 ## Properties
 
@@ -26,11 +26,11 @@ export declare class Connection extends EventEmitter<CDPSessionEvents>
 
 ## Methods
 
-| Method                                                               | Modifiers           | Description |
-| -------------------------------------------------------------------- | ------------------- | ----------- |
-| [createSession(targetInfo)](./puppeteer.connection.createsession.md) |                     |             |
-| [dispose()](./puppeteer.connection.dispose.md)                       |                     |             |
-| [fromSession(session)](./puppeteer.connection.fromsession.md)        | <code>static</code> |             |
-| [send(method, params, options)](./puppeteer.connection.send.md)      |                     |             |
-| [session(sessionId)](./puppeteer.connection.session.md)              |                     |             |
-| [url()](./puppeteer.connection.url.md)                               |                     |             |
+| Method                                                   | Modifiers           | Description |
+| -------------------------------------------------------- | ------------------- | ----------- |
+| [createSession](./puppeteer.connection.createsession.md) |                     |             |
+| [dispose](./puppeteer.connection.dispose.md)             |                     |             |
+| [fromSession](./puppeteer.connection.fromsession.md)     | <code>static</code> |             |
+| [send](./puppeteer.connection.send.md)                   |                     |             |
+| [session](./puppeteer.connection.session.md)             |                     |             |
+| [url](./puppeteer.connection.url.md)                     |                     |             |

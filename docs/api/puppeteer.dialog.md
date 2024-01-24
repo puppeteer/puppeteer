@@ -35,10 +35,10 @@ import puppeteer from 'puppeteer';
 
 ## Methods
 
-| Method                                               | Modifiers | Description                                                                                     |
-| ---------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------- |
-| [accept(promptText)](./puppeteer.dialog.accept.md)   |           | A promise that resolves when the dialog has been accepted.                                      |
-| [defaultValue()](./puppeteer.dialog.defaultvalue.md) |           | The default value of the prompt, or an empty string if the dialog is not a <code>prompt</code>. |
-| [dismiss()](./puppeteer.dialog.dismiss.md)           |           | A promise which will resolve once the dialog has been dismissed                                 |
-| [message()](./puppeteer.dialog.message.md)           |           | The message displayed in the dialog.                                                            |
-| [type()](./puppeteer.dialog.type.md)                 |           | The type of the dialog.                                                                         |
+| Method                                             | Modifiers | Description                                                                                     |
+| -------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------- |
+| [accept](./puppeteer.dialog.accept.md)             |           | A promise that resolves when the dialog has been accepted.                                      |
+| [defaultValue](./puppeteer.dialog.defaultvalue.md) |           | The default value of the prompt, or an empty string if the dialog is not a <code>prompt</code>. |
+| [dismiss](./puppeteer.dialog.dismiss.md)           |           | A promise which will resolve once the dialog has been dismissed                                 |
+| [message](./puppeteer.dialog.message.md)           |           | The message displayed in the dialog.                                                            |
+| [type](./puppeteer.dialog.type.md)                 |           | The type of the dialog.                                                                         |

@@ -19,7 +19,7 @@ export interface ConnectionTransport
 
 ## Methods
 
-| Method                                                   | Description |
-| -------------------------------------------------------- | ----------- |
-| [close()](./puppeteer.connectiontransport.close.md)      |             |
-| [send(message)](./puppeteer.connectiontransport.send.md) |             |
+| Method                                            | Description |
+| ------------------------------------------------- | ----------- |
+| [close](./puppeteer.connectiontransport.close.md) |             |
+| [send](./puppeteer.connectiontransport.send.md)   |             |

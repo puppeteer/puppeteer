@@ -45,15 +45,15 @@ console.log(`Bytes used: ${(usedBytes / totalBytes) * 100}%`);
 
 ## Constructors
 
-| Constructor                                                    | Modifiers | Description                                                  |
-| -------------------------------------------------------------- | --------- | ------------------------------------------------------------ |
-| [(constructor)(client)](./puppeteer.coverage._constructor_.md) |           | Constructs a new instance of the <code>Coverage</code> class |
+| Constructor                                            | Modifiers | Description                                                  |
+| ------------------------------------------------------ | --------- | ------------------------------------------------------------ |
+| [(constructor)](./puppeteer.coverage._constructor_.md) |           | Constructs a new instance of the <code>Coverage</code> class |
 
 ## Methods
 
-| Method                                                                | Modifiers | Description                                                                 |
-| --------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------- |
-| [startCSSCoverage(options)](./puppeteer.coverage.startcsscoverage.md) |           |                                                                             |
-| [startJSCoverage(options)](./puppeteer.coverage.startjscoverage.md)   |           |                                                                             |
-| [stopCSSCoverage()](./puppeteer.coverage.stopcsscoverage.md)          |           | Promise that resolves to the array of coverage reports for all stylesheets. |
-| [stopJSCoverage()](./puppeteer.coverage.stopjscoverage.md)            |           | Promise that resolves to the array of coverage reports for all scripts.     |
+| Method                                                       | Modifiers | Description                                                                 |
+| ------------------------------------------------------------ | --------- | --------------------------------------------------------------------------- |
+| [startCSSCoverage](./puppeteer.coverage.startcsscoverage.md) |           |                                                                             |
+| [startJSCoverage](./puppeteer.coverage.startjscoverage.md)   |           |                                                                             |
+| [stopCSSCoverage](./puppeteer.coverage.stopcsscoverage.md)   |           | Promise that resolves to the array of coverage reports for all stylesheets. |
+| [stopJSCoverage](./puppeteer.coverage.stopjscoverage.md)     |           | Promise that resolves to the array of coverage reports for all scripts.     |
