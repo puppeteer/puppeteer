@@ -7,6 +7,8 @@
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
+import {inertIfDisposed} from '../../util/decorators.js';
+import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 
 import type {BrowsingContext} from './BrowsingContext.js';
 
@@ -14,44 +16,68 @@ import type {BrowsingContext} from './BrowsingContext.js';
  * @internal
  */
 export class Request extends EventEmitter<{
-  // Emitted whenever a redirect is received.
+  /** Emitted when the request is redirected. */
   redirect: Request;
-  // Emitted when when the request succeeds.
+  /** Emitted when the request succeeds. */
   success: Bidi.Network.ResponseData;
-  // Emitted when when the request errors.
+  /** Emitted when the request fails. */
   error: string;
 }> {
-  readonly #context: BrowsingContext;
-  readonly #event: Bidi.Network.BeforeRequestSentParameters;
+  static from(
+    browsingContext: BrowsingContext,
+    event: Bidi.Network.BeforeRequestSentParameters
+  ): Request {
+    const request = new Request(browsingContext, event);
+    request.#initialize();
+    return request;
+  }
 
-  #response?: Bidi.Network.ResponseData;
-  #redirect?: Request;
+  // keep-sorted start
   #error?: string;
+  #redirect?: Request;
+  #response?: Bidi.Network.ResponseData;
+  readonly #browsingContext: BrowsingContext;
+  readonly #disposables = new DisposableStack();
+  readonly #event: Bidi.Network.BeforeRequestSentParameters;
+  // keep-sorted end
 
-  constructor(
-    context: BrowsingContext,
+  private constructor(
+    browsingContext: BrowsingContext,
     event: Bidi.Network.BeforeRequestSentParameters
   ) {
     super();
-    this.#context = context;
+    // keep-sorted start
+    this.#browsingContext = browsingContext;
     this.#event = event;
+    // keep-sorted end
+  }
 
-    const session = this.#session;
-    session.on('network.beforeRequestSent', event => {
-      if (event.context !== this.id) {
+  #initialize() {
+    const browsingContextEmitter = this.#disposables.use(
+      new EventEmitter(this.#browsingContext)
+    );
+    browsingContextEmitter.once('closed', ({reason}) => {
+      this.#error = reason;
+      this.emit('error', this.#error);
+      this.dispose();
+    });
+
+    const sessionEmitter = this.#disposables.use(
+      new EventEmitter(this.#session)
+    );
+    sessionEmitter.on('network.beforeRequestSent', event => {
+      if (event.context !== this.#browsingContext.id) {
         return;
       }
       if (event.request.request !== this.id) {
         return;
       }
-      if (this.#redirect) {
-        return;
-      }
-      this.#redirect = new Request(this.#context, event);
+      this.#redirect = Request.from(this.#browsingContext, event);
       this.emit('redirect', this.#redirect);
+      this.dispose();
     });
-    session.on('network.fetchError', event => {
-      if (event.context !== this.#context.id) {
+    sessionEmitter.on('network.fetchError', event => {
+      if (event.context !== this.#browsingContext.id) {
         return;
       }
       if (event.request.request !== this.id) {
@@ -59,9 +85,10 @@ export class Request extends EventEmitter<{
       }
       this.#error = event.errorText;
       this.emit('error', this.#error);
+      this.dispose();
     });
-    session.on('network.responseCompleted', event => {
-      if (event.context !== this.#context.id) {
+    sessionEmitter.on('network.responseCompleted', event => {
+      if (event.context !== this.#browsingContext.id) {
         return;
       }
       if (event.request.request !== this.id) {
@@ -69,46 +96,53 @@ export class Request extends EventEmitter<{
       }
       this.#response = event.response;
       this.emit('success', this.#response);
+      this.dispose();
     });
   }
 
+  // keep-sorted start block=yes
   get #session() {
-    return this.#context.userContext.browser.session;
+    return this.#browsingContext.userContext.browser.session;
   }
-
-  get id(): string {
-    return this.#event.request.request;
+  get disposed(): boolean {
+    return this.#disposables.disposed;
   }
-
-  get url(): string {
-    return this.#event.request.url;
+  get error(): string | undefined {
+    return this.#error;
   }
-
-  get initiator(): Bidi.Network.Initiator {
-    return this.#event.initiator;
-  }
-
-  get method(): string {
-    return this.#event.request.method;
-  }
-
   get headers(): Bidi.Network.Header[] {
     return this.#event.request.headers;
   }
-
+  get id(): string {
+    return this.#event.request.request;
+  }
+  get initiator(): Bidi.Network.Initiator {
+    return this.#event.initiator;
+  }
+  get method(): string {
+    return this.#event.request.method;
+  }
   get navigation(): string | undefined {
     return this.#event.navigation ?? undefined;
   }
-
   get redirect(): Request | undefined {
     return this.redirect;
   }
-
   get response(): Bidi.Network.ResponseData | undefined {
     return this.#response;
   }
+  get url(): string {
+    return this.#event.request.url;
+  }
+  // keep-sorted end
 
-  get error(): string | undefined {
-    return this.#error;
+  @inertIfDisposed
+  private dispose(): void {
+    this[disposeSymbol]();
+  }
+
+  [disposeSymbol](): void {
+    this.#disposables.dispose();
+    super[disposeSymbol]();
   }
 }

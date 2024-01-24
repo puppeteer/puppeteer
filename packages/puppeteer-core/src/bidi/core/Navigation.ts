@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
-
 import {EventEmitter} from '../../common/EventEmitter.js';
+import {inertIfDisposed} from '../../util/decorators.js';
 import {Deferred} from '../../util/Deferred.js';
+import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 
 import type {BrowsingContext} from './BrowsingContext.js';
 import type {Request} from './Request.js';
@@ -24,44 +24,82 @@ export interface NavigationInfo {
  * @internal
  */
 export class Navigation extends EventEmitter<{
+  /** Emitted when navigation has a request associated with it. */
+  request: Request;
+  /** Emitted when fragment navigation occurred. */
   fragment: NavigationInfo;
+  /** Emitted when navigation failed. */
   failed: NavigationInfo;
+  /** Emitted when navigation was aborted. */
   aborted: NavigationInfo;
 }> {
-  static from(context: BrowsingContext, url: string): Navigation {
-    const navigation = new Navigation(context, url);
+  static from(context: BrowsingContext): Navigation {
+    const navigation = new Navigation(context);
     navigation.#initialize();
     return navigation;
   }
 
   // keep-sorted start
-  #context: BrowsingContext;
-  #id = new Deferred<string>();
   #request: Request | undefined;
-  #url: string;
+  readonly #browsingContext: BrowsingContext;
+  readonly #disposables = new DisposableStack();
+  readonly #id = new Deferred<string>();
   // keep-sorted end
 
-  private constructor(context: BrowsingContext, url: string) {
+  private constructor(context: BrowsingContext) {
     super();
-
     // keep-sorted start
-    this.#context = context;
-    this.#url = url;
+    this.#browsingContext = context;
     // keep-sorted end
   }
 
   #initialize() {
-    // ///////////////////////
-    // Session listeners //
-    // ///////////////////////
-    const session = this.#session;
-    for (const [bidiEvent, event] of [
+    const browsingContextEmitter = this.#disposables.use(
+      new EventEmitter(this.#browsingContext)
+    );
+    browsingContextEmitter.once('closed', () => {
+      this.emit('failed', {
+        url: this.#browsingContext.url,
+        timestamp: new Date(),
+      });
+      this.dispose();
+    });
+
+    this.#browsingContext.on('request', ({request}) => {
+      if (request.navigation === this.#id.value()) {
+        this.#request = request;
+        this.emit('request', request);
+      }
+    });
+
+    const sessionEmitter = this.#disposables.use(
+      new EventEmitter(this.#session)
+    );
+    // To get the navigation ID if any.
+    for (const eventName of [
+      'browsingContext.domContentLoaded',
+      'browsingContext.load',
+    ] as const) {
+      sessionEmitter.on(eventName, info => {
+        if (info.context !== this.#browsingContext.id) {
+          return;
+        }
+        if (!info.navigation) {
+          return;
+        }
+        if (!this.#id.resolved()) {
+          this.#id.resolve(info.navigation);
+        }
+      });
+    }
+
+    for (const [eventName, event] of [
       ['browsingContext.fragmentNavigated', 'fragment'],
       ['browsingContext.navigationFailed', 'failed'],
       ['browsingContext.navigationAborted', 'aborted'],
     ] as const) {
-      session.on(bidiEvent, (info: Bidi.BrowsingContext.NavigationInfo) => {
-        if (info.context !== this.#context.id) {
+      sessionEmitter.on(eventName, info => {
+        if (info.context !== this.#browsingContext.id) {
           return;
         }
         if (!info.navigation) {
@@ -73,33 +111,34 @@ export class Navigation extends EventEmitter<{
         if (this.#id.value() !== info.navigation) {
           return;
         }
-        this.#url = info.url;
         this.emit(event, {
-          url: this.#url,
+          url: info.url,
           timestamp: new Date(info.timestamp),
         });
+        this.dispose();
       });
     }
-
-    // ///////////////////
-    // Parent listeners //
-    // ///////////////////
-    this.#context.on('request', ({request}) => {
-      if (request.navigation === this.#id.value()) {
-        this.#request = request;
-      }
-    });
   }
 
+  // keep-sorted start block=yes
   get #session() {
-    return this.#context.userContext.browser.session;
+    return this.#browsingContext.userContext.browser.session;
   }
-
-  get url(): string {
-    return this.#url;
+  get disposed(): boolean {
+    return this.#disposables.disposed;
   }
-
-  request(): Request | undefined {
+  get request(): Request | undefined {
     return this.#request;
+  }
+  // keep-sorted end
+
+  @inertIfDisposed
+  private dispose(): void {
+    this[disposeSymbol]();
+  }
+
+  [disposeSymbol](): void {
+    this.#disposables.dispose();
+    super[disposeSymbol]();
   }
 }

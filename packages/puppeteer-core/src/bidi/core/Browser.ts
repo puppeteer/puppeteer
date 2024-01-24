@@ -7,7 +7,8 @@
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
-import {throwIfDisposed} from '../../util/decorators.js';
+import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
+import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 
 import type {BrowsingContext} from './BrowsingContext.js';
 import type {SharedWorkerRealm} from './Realm.js';
@@ -28,13 +29,13 @@ export type AddPreloadScriptOptions = Omit<
  * @internal
  */
 export class Browser extends EventEmitter<{
-  /** Emitted after the browser closes. */
+  /** Emitted before the browser closes. */
   closed: {
     /** The reason for closing the browser. */
     reason: string;
   };
   /** Emitted after the browser disconnects. */
-  disconnect: {
+  disconnected: {
     /** The reason for disconnecting the browser. */
     reason: string;
   };
@@ -51,14 +52,15 @@ export class Browser extends EventEmitter<{
   }
 
   // keep-sorted start
+  #closed = false;
   #reason: string | undefined;
+  readonly #disposables = new DisposableStack();
   readonly #userContexts = new Map();
   readonly session: Session;
   // keep-sorted end
 
   private constructor(session: Session) {
     super();
-
     // keep-sorted start
     this.session = session;
     // keep-sorted end
@@ -67,49 +69,44 @@ export class Browser extends EventEmitter<{
   }
 
   async #initialize() {
-    // ///////////////////////
-    // Session listeners //
-    // ///////////////////////
-    const session = this.#session;
-    session.on('script.realmCreated', info => {
+    const sessionEmitter = this.#disposables.use(
+      new EventEmitter(this.session)
+    );
+    sessionEmitter.once('ended', ({reason}) => {
+      this.dispose(reason);
+    });
+
+    sessionEmitter.on('script.realmCreated', info => {
       if (info.type === 'shared-worker') {
         // TODO: Create a SharedWorkerRealm.
       }
     });
 
-    // ///////////////////
-    // Parent listeners //
-    // ///////////////////
-    this.session.once('ended', ({reason}) => {
-      this.dispose(reason);
-    });
+    await this.#syncBrowsingContexts();
+  }
 
-    // //////////////////////////////
-    // Asynchronous initialization //
-    // //////////////////////////////
+  async #syncBrowsingContexts() {
     // In case contexts are created or destroyed during `getTree`, we use this
     // set to detect them.
     const contextIds = new Set<string>();
-    const created = (info: {context: string}) => {
-      contextIds.add(info.context);
-    };
-    const destroyed = (info: {context: string}) => {
-      contextIds.delete(info.context);
-    };
-    session.on('browsingContext.contextCreated', created);
-    session.on('browsingContext.contextDestroyed', destroyed);
+    let contexts: Bidi.BrowsingContext.Info[];
 
-    const {
-      result: {contexts},
-    } = await session.send('browsingContext.getTree', {});
-
-    session.off('browsingContext.contextDestroyed', destroyed);
-    session.off('browsingContext.contextCreated', created);
+    {
+      using sessionEmitter = new EventEmitter(this.session);
+      sessionEmitter.on('browsingContext.contextCreated', info => {
+        contextIds.add(info.context);
+      });
+      sessionEmitter.on('browsingContext.contextDestroyed', info => {
+        contextIds.delete(info.context);
+      });
+      const {result} = await this.session.send('browsingContext.getTree', {});
+      contexts = result.contexts;
+    }
 
     // Simulating events so contexts are created naturally.
     for (const info of contexts) {
       if (contextIds.has(info.context)) {
-        session.emit('browsingContext.contextCreated', info);
+        this.session.emit('browsingContext.contextCreated', info);
       }
       if (info.children) {
         contexts.push(...info.children);
@@ -117,48 +114,45 @@ export class Browser extends EventEmitter<{
     }
   }
 
-  get #session() {
-    return this.session;
+  // keep-sorted start block=yes
+  get closed(): boolean {
+    return this.#closed;
   }
-
-  get disposed(): boolean {
-    return this.#reason !== undefined;
-  }
-
   get defaultUserContext(): UserContext {
     // SAFETY: A UserContext is always created for the default context.
     return this.#userContexts.get('')!;
   }
-
+  get disconnected(): boolean {
+    return this.#reason !== undefined;
+  }
+  get disposed(): boolean {
+    return this.disconnected;
+  }
   get userContexts(): Iterable<UserContext> {
     return this.#userContexts.values();
   }
+  // keep-sorted end
 
-  dispose(reason?: string, close?: boolean): void {
-    if (this.disposed) {
-      return;
-    }
-    this.#reason = reason ?? `Browser was disposed.`;
-    if (close) {
-      this.emit('closed', {reason: this.#reason});
-    }
-    this.emit('disconnect', {reason: this.#reason});
-    this.removeAllListeners();
+  @inertIfDisposed
+  dispose(reason?: string, closed = false): void {
+    this.#closed = closed;
+    this.#reason = reason;
+    this[disposeSymbol]();
   }
 
-  @throwIfDisposed((browser: Browser) => {
+  @throwIfDisposed<Browser>(browser => {
     // SAFETY: By definition of `disposed`, `#reason` is defined.
     return browser.#reason!;
   })
   async close(): Promise<void> {
     try {
-      await this.#session.send('browser.close', {});
+      await this.session.send('browser.close', {});
     } finally {
-      this.dispose(`Browser was closed.`, true);
+      this.dispose('Browser already closed.', true);
     }
   }
 
-  @throwIfDisposed((browser: Browser) => {
+  @throwIfDisposed<Browser>(browser => {
     // SAFETY: By definition of `disposed`, `#reason` is defined.
     return browser.#reason!;
   })
@@ -168,7 +162,7 @@ export class Browser extends EventEmitter<{
   ): Promise<string> {
     const {
       result: {script},
-    } = await this.#session.send('script.addPreloadScript', {
+    } = await this.session.send('script.addPreloadScript', {
       functionDeclaration,
       ...options,
       contexts: options.contexts?.map(context => {
@@ -178,13 +172,25 @@ export class Browser extends EventEmitter<{
     return script;
   }
 
-  @throwIfDisposed((browser: Browser) => {
+  @throwIfDisposed<Browser>(browser => {
     // SAFETY: By definition of `disposed`, `#reason` is defined.
     return browser.#reason!;
   })
   async removePreloadScript(script: string): Promise<void> {
-    await this.#session.send('script.removePreloadScript', {
+    await this.session.send('script.removePreloadScript', {
       script,
     });
+  }
+
+  [disposeSymbol](): void {
+    this.#reason ??=
+      'Browser was disconnected, probably because the session ended.';
+    if (this.closed) {
+      this.emit('closed', {reason: this.#reason});
+    }
+    this.emit('disconnected', {reason: this.#reason});
+
+    this.#disposables.dispose();
+    super[disposeSymbol]();
   }
 }
