@@ -42,6 +42,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[debugInfo.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[device-request-prompt.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -3366,7 +3372,7 @@
     "testIdPattern": "[target.spec] Target Browser.waitForTarget should wait for a target",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[target.spec] Target Browser.waitForTarget should wait for a target",

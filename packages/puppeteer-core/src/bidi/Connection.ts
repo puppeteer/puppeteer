@@ -234,6 +234,10 @@ export class BidiConnection
     this.unbind();
     this.#transport.close();
   }
+
+  getPendingProtocolErrors(): Error[] {
+    return this.#callbacks.getPendingProtocolErrors();
+  }
 }
 
 /**

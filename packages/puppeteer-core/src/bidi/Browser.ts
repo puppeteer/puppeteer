@@ -13,6 +13,7 @@ import {
   BrowserEvent,
   type BrowserCloseCallback,
   type BrowserContextOptions,
+  type DebugInfo,
 } from '../api/Browser.js';
 import {BrowserContextEvent} from '../api/BrowserContext.js';
 import type {Page} from '../api/Page.js';
@@ -306,5 +307,11 @@ export class BidiBrowser extends Browser {
     } finally {
       this.connection.dispose();
     }
+  }
+
+  override get debugInfo(): DebugInfo {
+    return {
+      pendingProtocolErrors: this.connection.getPendingProtocolErrors(),
+    };
   }
 }

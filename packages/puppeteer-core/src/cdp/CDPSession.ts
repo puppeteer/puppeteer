@@ -157,4 +157,11 @@ export class CdpCDPSession extends CDPSession {
   override id(): string {
     return this.#sessionId;
   }
+
+  /**
+   * @internal
+   */
+  getPendingProtocolErrors(): Error[] {
+    return this.#callbacks.getPendingProtocolErrors();
+  }
 }

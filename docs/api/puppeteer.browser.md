@@ -56,9 +56,10 @@ await browser2.close();
 
 ## Properties
 
-| Property  | Modifiers             | Type    | Description                                                               |
-| --------- | --------------------- | ------- | ------------------------------------------------------------------------- |
-| connected | <code>readonly</code> | boolean | Whether Puppeteer is connected to this [browser](./puppeteer.browser.md). |
+| Property  | Modifiers             | Type                                  | Description                                                               |
+| --------- | --------------------- | ------------------------------------- | ------------------------------------------------------------------------- |
+| connected | <code>readonly</code> | boolean                               | Whether Puppeteer is connected to this [browser](./puppeteer.browser.md). |
+| debugInfo | <code>readonly</code> | [DebugInfo](./puppeteer.debuginfo.md) | Get debug information from Puppeteer.                                     |
 
 ## Methods
 
