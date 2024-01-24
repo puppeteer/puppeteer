@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright 2024 Google Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/* eslint-disable import/order */
+
 import {copyFile, readFile, writeFile} from 'fs/promises';
 
 import {docgen, spliceIntoSection} from '@puppeteer/docgen';
