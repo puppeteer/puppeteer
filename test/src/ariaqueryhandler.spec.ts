@@ -156,7 +156,7 @@ describe('AriaQueryHandler', () => {
       expect(id).toBe('mnu1');
     });
 
-    it('should find by name', async () => {
+    it('should find 2nd element by name', async () => {
       const {page} = await getTestState();
       await page.setContent(
         `
