@@ -20,6 +20,24 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.8.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.7.0...puppeteer-core-v21.8.0) (2024-01-24)
+
+
+### Features
+
+* roll to Chrome 120.0.6099.109 (r1217362) ([#11733](https://github.com/puppeteer/puppeteer/issues/11733)) ([415cfac](https://github.com/puppeteer/puppeteer/commit/415cfaca202126b64ff496e4318cae64c4f14e89))
+
+
+### Bug Fixes
+
+* expose function for Firefox BiDi ([#11660](https://github.com/puppeteer/puppeteer/issues/11660)) ([cf879b8](https://github.com/puppeteer/puppeteer/commit/cf879b82f6c10302fcafe186b315fe7807107c31))
+* wait for WebDriver BiDi browser to close gracefully ([#11636](https://github.com/puppeteer/puppeteer/issues/11636)) ([cc3aeeb](https://github.com/puppeteer/puppeteer/commit/cc3aeeb6eae4663198466755f23746ef821408ae))
+
+
+### Reverts
+
+* refactor: adopt `core/UserContext` on `BidiBrowserContext` ([#11721](https://github.com/puppeteer/puppeteer/issues/11721)) ([d17a9df](https://github.com/puppeteer/puppeteer/commit/d17a9df0278be34c206701d8dfc1fb62af3637b3))
+
 ## [21.7.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.6.1...puppeteer-core-v21.7.0) (2024-01-04)
 
 
