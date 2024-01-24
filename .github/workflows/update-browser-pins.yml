@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
         with:
           cache: npm
-          node-version: lts/*
+          node-version-file: '.nvmrc'
       - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
       - name: Install npm dependencies
         run: npm ci
@@ -52,7 +52,7 @@ jobs:
         uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
         with:
           cache: npm
-          node-version: lts/*
+          node-version-file: '.nvmrc'
       - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
       - name: Install npm dependencies
         run: npm ci

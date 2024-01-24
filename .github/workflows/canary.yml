@@ -40,7 +40,7 @@ jobs:
         uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
         with:
           cache: npm
-          node-version: lts/*
+          node-version-file: '.nvmrc'
       - name: Set up FFmpeg
         uses: FedericoCarboni/setup-ffmpeg@5058c9851b649ced05c3e73a4fb5ef2995a89127 # v2.0.0
       - name: Install dependencies
