@@ -54,8 +54,8 @@ const browser = await puppeteer.launch({
 ### Capture `console.*` output
 
 Since client code runs in the browser, doing `console.*` in client code will not
-directly log to Node.js. However, you can [listen](../api/puppeteer.page.on) for
-the [`console`](../api/puppeteer.pageeventobject) event which returns a
+directly log to Node.js. However, you can [listen (page.on)](../api/puppeteer.page) for
+the [`console`](../api/puppeteer.pageevents) event which returns a
 payload with the logged text.
 
 ```ts
@@ -135,4 +135,7 @@ env DEBUG="puppeteer:*" env DEBUG_MAX_STRING_LENGTH=null node script.js
 
 # Protocol traffic can be rather noisy. This example filters out all Network domain messages
 env DEBUG="puppeteer:*" env DEBUG_COLORS=true node script.js 2>&1 | grep -v '"Network'
+
+# Filter out all protocol messages but keep all other logging
+env DEBUG="puppeteer:*,-puppeteer:protocol:*" node script.js
 ```
