@@ -13,6 +13,14 @@ const createRule = ESLintUtils.RuleCreator(name => {
 
 const copyrightPattern = /Copyright ([0-9]{4}) Google Inc\./;
 
+const currentYear = new Date().getFullYear;
+
+const licenseHeader = `/**
+ * @license
+ * Copyright ${currentYear} Google Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */`;
+
 const enforceLicenseRule = createRule<[], 'licenseRule'>({
   name: 'check-license',
   meta: {
@@ -57,9 +65,13 @@ const enforceLicenseRule = createRule<[], 'licenseRule'>({
 
         // Add header license
         if (!header || !header.value.includes('@license')) {
+          const startLoc: [number, number] = [0, 88];
           context.report({
             node: node,
             messageId: 'licenseRule',
+            fix(fixer) {
+              return fixer.insertTextBeforeRange(startLoc, licenseHeader);
+            },
           });
         }
       },
@@ -67,4 +79,4 @@ const enforceLicenseRule = createRule<[], 'licenseRule'>({
   },
 });
 
-module.exports = enforceLicenseRule;
+export = enforceLicenseRule;
