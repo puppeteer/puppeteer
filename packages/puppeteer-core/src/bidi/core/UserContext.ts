@@ -43,6 +43,8 @@ export class UserContext extends EventEmitter<{
     reason: string;
   };
 }> {
+  static DEFAULT = 'default';
+
   static create(browser: Browser, id: string): UserContext {
     const context = new UserContext(browser, id);
     context.#initialize();
@@ -54,8 +56,6 @@ export class UserContext extends EventEmitter<{
   // Note these are only top-level contexts.
   readonly #browsingContexts = new Map<string, BrowsingContext>();
   readonly #disposables = new DisposableStack();
-  // @ts-expect-error -- TODO: This will be used once the WebDriver BiDi
-  // protocol supports it.
   readonly #id: string;
   readonly browser: Browser;
   // keep-sorted end
@@ -118,6 +118,9 @@ export class UserContext extends EventEmitter<{
   get disposed(): boolean {
     return this.closed;
   }
+  get id(): string {
+    return this.#id;
+  }
   // keep-sorted end
 
   @inertIfDisposed
@@ -156,13 +159,9 @@ export class UserContext extends EventEmitter<{
     // SAFETY: Disposal implies this exists.
     return context.#reason!;
   })
-  async close(): Promise<void> {
+  async remove(): Promise<void> {
     try {
-      const promises = [];
-      for (const browsingContext of this.#browsingContexts.values()) {
-        promises.push(browsingContext.close());
-      }
-      await Promise.all(promises);
+      // TODO: Call `removeUserContext` once available.
     } finally {
       this.dispose('User context already closed.');
     }
