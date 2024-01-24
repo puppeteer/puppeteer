@@ -8,6 +8,8 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {assert} from '../../util/assert.js';
+import {throwIfDisposed} from '../../util/decorators.js';
+import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 
 import type {Browser} from './Browser.js';
 import {BrowsingContext} from './BrowsingContext.js';
@@ -41,11 +43,13 @@ export class UserContext extends EventEmitter<{
   }
 
   // keep-sorted start
+  #reason?: string;
   // Note these are only top-level contexts.
   readonly #browsingContexts = new Map<string, BrowsingContext>();
   // @ts-expect-error -- TODO: This will be used once the WebDriver BiDi
   // protocol supports it.
   readonly #id: string;
+  readonly #disposables = new DisposableStack();
   readonly browser: Browser;
   // keep-sorted end
 
@@ -59,11 +63,13 @@ export class UserContext extends EventEmitter<{
   }
 
   #initialize() {
-    // ///////////////////////
+    // ////////////////////
     // Session listeners //
-    // ///////////////////////
-    const session = this.#session;
-    session.on('browsingContext.contextCreated', info => {
+    // ////////////////////
+    const sessionEmitter = this.#disposables.use(
+      new EventEmitter(this.#session)
+    );
+    sessionEmitter.on('browsingContext.contextCreated', info => {
       if (info.parent) {
         return;
       }
@@ -74,11 +80,14 @@ export class UserContext extends EventEmitter<{
         info.context,
         info.url
       );
-      browsingContext.on('destroyed', () => {
+      this.#browsingContexts.set(browsingContext.id, browsingContext);
+
+      const browsingContextEmitter = this.#disposables.use(
+        new EventEmitter(browsingContext)
+      );
+      browsingContextEmitter.on('destroyed', () => {
         this.#browsingContexts.delete(browsingContext.id);
       });
-
-      this.#browsingContexts.set(browsingContext.id, browsingContext);
 
       this.emit('browsingcontext', {browsingContext});
     });
@@ -91,8 +100,20 @@ export class UserContext extends EventEmitter<{
   get browsingContexts(): Iterable<BrowsingContext> {
     return this.#browsingContexts.values();
   }
+  get disposed(): boolean {
+    return Boolean(this.#reason);
+  }
   // keep-sorted end
 
+  dispose(reason?: string): void {
+    this.#reason = reason;
+    this[disposeSymbol]();
+  }
+
+  @throwIfDisposed<UserContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
   async createBrowsingContext(
     type: Bidi.BrowsingContext.CreateType,
     options: CreateBrowsingContextOptions = {}
@@ -121,5 +142,17 @@ export class UserContext extends EventEmitter<{
       promises.push(browsingContext.close());
     }
     await Promise.all(promises);
+    this.dispose('User context was closed.');
+  }
+
+  [disposeSymbol](): void {
+    super[disposeSymbol]();
+
+    if (this.#reason === undefined) {
+      this.#reason =
+        'User context was destroyed, probably because browser disconnected/closed.';
+    }
+
+    this.#disposables.dispose();
   }
 }
