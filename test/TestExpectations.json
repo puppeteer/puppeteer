@@ -3321,24 +3321,10 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should return base64",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "Remove with M121"
-  },
-  {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "Remove with M121"
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots without captureBeyondViewport",
@@ -3363,13 +3349,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "Remove with M121"
   },
   {
     "testIdPattern": "[stacktrace.spec] Stack trace should work for none error objects",
