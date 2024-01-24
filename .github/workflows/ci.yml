@@ -8,6 +8,15 @@ on:
     branches:
       - main
   pull_request:
+    types:
+      # These are the defaults. See
+      # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request
+      - opened
+      - reopened
+      - synchronize
+
+      # Used for `full-ci`
+      - labeled
     branches:
       - '**'
 
@@ -140,6 +149,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        linux-only:
+          - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
         suite:
           - chrome-headless
           - chrome-headful
@@ -153,6 +164,13 @@ jobs:
           - 1-2
           - 2-2
         exclude:
+          - linux-only: true
+            os: windows-latest
+          - linux-only: true
+            os: macos-latest
+          - linux-only: true
+            suite: chrome-headful
+
           - os: windows-latest
             suite: chrome-bidi
           - os: macos-latest
@@ -228,6 +246,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        linux-only:
+          - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
         suite:
           - firefox-bidi
           - firefox-headful
@@ -242,6 +262,11 @@ jobs:
           - 3-4
           - 4-4
         exclude:
+          - linux-only: true
+            os: windows-latest
+          - linux-only: true
+            os: macos-latest
+
           - os: macos-latest
             suite: firefox-headful
           - os: macos-latest
@@ -334,14 +359,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        linux-only:
+          - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
         node:
           - 18
         pkg_manager:
           - npm
         os:
           - ubuntu-latest
-          - macos-latest
           - windows-latest
+          - macos-latest
+        exclude:
+          - linux-only: true
+            os: windows-latest
+          - linux-only: true
+            os: macos-latest
     steps:
       - name: Download installation test
         uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
@@ -451,10 +483,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        linux-only:
+          - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
         os:
           - ubuntu-latest
           - windows-latest
           - macos-latest
+        exclude:
+          - linux-only: true
+            os: windows-latest
+          - linux-only: true
+            os: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -498,10 +537,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        linux-only:
+          - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
         os:
           - ubuntu-latest
           - windows-latest
           - macos-latest
+        exclude:
+          - linux-only: true
+            os: windows-latest
+          - linux-only: true
+            os: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
