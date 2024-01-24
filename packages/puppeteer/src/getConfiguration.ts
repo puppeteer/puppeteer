@@ -27,7 +27,9 @@ function isSupportedProduct(product: unknown): product is Product {
  * @internal
  */
 export const getConfiguration = (): Configuration => {
-  const result = cosmiconfigSync('puppeteer').search();
+  const result = cosmiconfigSync('puppeteer', {
+    searchStrategy: 'global',
+  }).search();
   const configuration: Configuration = result ? result.config : {};
 
   configuration.logLevel = (process.env['PUPPETEER_LOGLEVEL'] ??
