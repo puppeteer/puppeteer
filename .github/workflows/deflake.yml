@@ -50,11 +50,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-      - name: Set up Node.js
-        uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
-        with:
-          cache: npm
-          node-version: lts/*
       - name: Set up FFmpeg
         uses: FedericoCarboni/setup-ffmpeg@5058c9851b649ced05c3e73a4fb5ef2995a89127 # v2.0.0
       - name: Install dependencies
@@ -107,11 +102,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-      - name: Set up Node.js
-        uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
-        with:
-          cache: npm
-          node-version: lts/*
       - name: Set up FFmpeg
         uses: FedericoCarboni/setup-ffmpeg@5058c9851b649ced05c3e73a4fb5ef2995a89127 # v2.0.0
       - name: Install dependencies
