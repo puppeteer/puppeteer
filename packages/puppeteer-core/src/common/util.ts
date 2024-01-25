@@ -7,26 +7,15 @@
 import type FS from 'fs/promises';
 import type {Readable} from 'stream';
 
-import {
-  filterAsync,
-  firstValueFrom,
-  from,
-  map,
-  NEVER,
-  Observable,
-  raceWith,
-  timer,
-} from '../../third_party/rxjs/rxjs.js';
+import {map, NEVER, Observable, timer} from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import {isNode} from '../environment.js';
 import {assert} from '../util/assert.js';
-import type {Deferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {debug} from './Debug.js';
 import {TimeoutError} from './Errors.js';
 import type {EventEmitter, EventType} from './EventEmitter.js';
-import type {NetworkManagerEvents} from './NetworkManagerEvents.js';
 import type {
   LowerCasePaperFormat,
   ParsedPDFOptions,
@@ -336,33 +325,6 @@ export const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
  */
 export function getSourceUrlComment(url: string): string {
   return `//# sourceURL=${url}`;
-}
-
-/**
- * @internal
- */
-export async function waitForHTTP<T extends {url(): string}>(
-  networkManager: EventEmitter<NetworkManagerEvents>,
-  eventName: EventType,
-  urlOrPredicate: string | ((res: T) => boolean | Promise<boolean>),
-  /** Time after the function will timeout */
-  ms: number,
-  cancelation: Deferred<never>
-): Promise<T> {
-  return await firstValueFrom(
-    (fromEmitterEvent(networkManager, eventName) as Observable<T>).pipe(
-      filterAsync(async http => {
-        if (isString(urlOrPredicate)) {
-          return urlOrPredicate === http.url();
-        }
-        if (typeof urlOrPredicate === 'function') {
-          return !!(await urlOrPredicate(http));
-        }
-        return false;
-      }),
-      raceWith(timeout(ms), from(cancelation.valueOrThrow()))
-    )
-  );
 }
 
 /**

@@ -1621,10 +1621,30 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *   `0` to disable the timeout. The default value can be changed by using the
    *   {@link Page.setDefaultTimeout} method.
    */
-  abstract waitForRequest(
-    urlOrPredicate: string | ((req: HTTPRequest) => boolean | Promise<boolean>),
-    options?: {timeout?: number}
-  ): Promise<HTTPRequest>;
+  waitForRequest(
+    urlOrPredicate: string | AwaitablePredicate<HTTPRequest>,
+    options: WaitTimeoutOptions = {}
+  ): Promise<HTTPRequest> {
+    const {timeout: ms = this._timeoutSettings.timeout()} = options;
+    if (typeof urlOrPredicate === 'string') {
+      const url = urlOrPredicate;
+      urlOrPredicate = (request: HTTPRequest) => {
+        return request.url() === url;
+      };
+    }
+    const observable$ = fromEmitterEvent(this, PageEvent.Request).pipe(
+      filterAsync(urlOrPredicate),
+      raceWith(
+        timeout(ms),
+        fromEmitterEvent(this, PageEvent.Close).pipe(
+          map(() => {
+            throw new TargetCloseError('Page closed!');
+          })
+        )
+      )
+    );
+    return firstValueFrom(observable$);
+  }
 
   /**
    * @param urlOrPredicate - A URL or predicate to wait for.
@@ -1660,8 +1680,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
     const {timeout: ms = this._timeoutSettings.timeout()} = options;
     if (typeof urlOrPredicate === 'string') {
       const url = urlOrPredicate;
-      urlOrPredicate = (request: HTTPResponse) => {
-        return request.url() === url;
+      urlOrPredicate = (response: HTTPResponse) => {
+        return response.url() === url;
       };
     }
     const observable$ = fromEmitterEvent(this, PageEvent.Response).pipe(
