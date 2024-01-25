@@ -51,7 +51,6 @@ import {
   parsePDFOptions,
   timeout,
   validateDialogType,
-  waitForHTTP,
 } from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
@@ -700,22 +699,6 @@ export class BidiPage extends Page {
       ...(box ? {clip: {type: 'box', ...box}} : {}),
     });
     return data;
-  }
-
-  override async waitForRequest(
-    urlOrPredicate:
-      | string
-      | ((req: BidiHTTPRequest) => boolean | Promise<boolean>),
-    options: {timeout?: number} = {}
-  ): Promise<BidiHTTPRequest> {
-    const {timeout = this._timeoutSettings.timeout()} = options;
-    return await waitForHTTP(
-      this.#networkManager,
-      NetworkManagerEvent.Request,
-      urlOrPredicate,
-      timeout,
-      this.#closedDeferred
-    );
   }
 
   override async waitForNetworkIdle(
