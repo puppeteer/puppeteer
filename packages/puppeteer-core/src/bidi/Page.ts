@@ -718,22 +718,6 @@ export class BidiPage extends Page {
     );
   }
 
-  override async waitForResponse(
-    urlOrPredicate:
-      | string
-      | ((res: BidiHTTPResponse) => boolean | Promise<boolean>),
-    options: {timeout?: number} = {}
-  ): Promise<BidiHTTPResponse> {
-    const {timeout = this._timeoutSettings.timeout()} = options;
-    return await waitForHTTP(
-      this.#networkManager,
-      NetworkManagerEvent.Response,
-      urlOrPredicate,
-      timeout,
-      this.#closedDeferred
-    );
-  }
-
   override async waitForNetworkIdle(
     options: {idleTime?: number; timeout?: number} = {}
   ): Promise<void> {

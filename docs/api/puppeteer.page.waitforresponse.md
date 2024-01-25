@@ -8,23 +8,19 @@ sidebar_label: Page.waitForResponse
 
 ```typescript
 class Page {
-  abstract waitForResponse(
-    urlOrPredicate:
-      | string
-      | ((res: HTTPResponse) => boolean | Promise<boolean>),
-    options?: {
-      timeout?: number;
-    }
+  waitForResponse(
+    urlOrPredicate: string | AwaitablePredicate<HTTPResponse>,
+    options?: WaitTimeoutOptions
   ): Promise<HTTPResponse>;
 }
 ```
 
 ## Parameters
 
-| Parameter      | Type                                                                                                   | Description                              |
-| -------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------- |
-| urlOrPredicate | string \| ((res: [HTTPResponse](./puppeteer.httpresponse.md)) =&gt; boolean \| Promise&lt;boolean&gt;) | A URL or predicate to wait for.          |
-| options        | &#123; timeout?: number; &#125;                                                                        | _(Optional)_ Optional waiting parameters |
+| Parameter      | Type                                                                                                                 | Description                              |
+| -------------- | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| urlOrPredicate | string \| [AwaitablePredicate](./puppeteer.awaitablepredicate.md)&lt;[HTTPResponse](./puppeteer.httpresponse.md)&gt; | A URL or predicate to wait for.          |
+| options        | [WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md)                                                              | _(Optional)_ Optional waiting parameters |
 
 **Returns:**
 
