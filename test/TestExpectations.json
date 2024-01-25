@@ -537,7 +537,7 @@
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.removeScriptToEvaluateOnNewDocument *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.removeScriptToEvaluateOnNewDocument *",
