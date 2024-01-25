@@ -30,8 +30,9 @@ describe('`puppeteer` with configuration', () => {
 
     it('evaluates', async function () {
       const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));
-      assert.equal(files.length, 1);
-      assert.equal(files[0], 'chrome');
+      assert.equal(files.length, 2);
+      assert(files.includes('chrome'));
+      assert(files.includes('chrome-headless-shell'));
 
       const script = await readAsset('puppeteer', 'basic.js');
       await this.runScript(script, 'mjs');
@@ -61,8 +62,9 @@ describe('`puppeteer` with configuration', () => {
 
     it('evaluates', async function () {
       const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));
-      assert.equal(files.length, 1);
-      assert.equal(files[0], 'chrome');
+      assert.equal(files.length, 2);
+      assert(files.includes('chrome'));
+      assert(files.includes('chrome-headless-shell'));
 
       const script = await readAsset('puppeteer', 'basic.js');
       await this.runScript(script, 'mjs');
