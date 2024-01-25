@@ -924,22 +924,6 @@ export class CdpPage extends Page {
     );
   }
 
-  override async waitForResponse(
-    urlOrPredicate:
-      | string
-      | ((res: HTTPResponse) => boolean | Promise<boolean>),
-    options: {timeout?: number} = {}
-  ): Promise<HTTPResponse> {
-    const {timeout = this._timeoutSettings.timeout()} = options;
-    return await waitForHTTP(
-      this.#frameManager.networkManager,
-      NetworkManagerEvent.Response,
-      urlOrPredicate,
-      timeout,
-      this.#sessionCloseDeferred
-    );
-  }
-
   override async waitForNetworkIdle(
     options: {idleTime?: number; timeout?: number} = {}
   ): Promise<void> {

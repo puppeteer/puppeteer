@@ -50,6 +50,7 @@ import type {PDFOptions} from '../common/PDFOptions.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {
   Awaitable,
+  AwaitablePredicate,
   EvaluateFunc,
   EvaluateFuncWith,
   HandleFor,
@@ -1652,12 +1653,30 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *   pass `0` to disable the timeout. The default value can be changed by using
    *   the {@link Page.setDefaultTimeout} method.
    */
-  abstract waitForResponse(
-    urlOrPredicate:
-      | string
-      | ((res: HTTPResponse) => boolean | Promise<boolean>),
-    options?: {timeout?: number}
-  ): Promise<HTTPResponse>;
+  waitForResponse(
+    urlOrPredicate: string | AwaitablePredicate<HTTPResponse>,
+    options: WaitTimeoutOptions = {}
+  ): Promise<HTTPResponse> {
+    const {timeout: ms = this._timeoutSettings.timeout()} = options;
+    if (typeof urlOrPredicate === 'string') {
+      const url = urlOrPredicate;
+      urlOrPredicate = (request: HTTPResponse) => {
+        return request.url() === url;
+      };
+    }
+    const observable$ = fromEmitterEvent(this, PageEvent.Response).pipe(
+      filterAsync(urlOrPredicate),
+      raceWith(
+        timeout(ms),
+        fromEmitterEvent(this, PageEvent.Close).pipe(
+          map(() => {
+            throw new TargetCloseError('Page closed!');
+          })
+        )
+      )
+    );
+    return firstValueFrom(observable$);
+  }
 
   /**
    * @param options - Optional waiting parameters
