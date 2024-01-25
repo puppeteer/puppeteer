@@ -251,6 +251,18 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
   ): Promise<CDPSession> {
     return await this._createSession(targetInfo, false);
   }
+
+  /**
+   * @internal
+   */
+  getPendingProtocolErrors(): Error[] {
+    const result: Error[] = [];
+    result.push(...this.#callbacks.getPendingProtocolErrors());
+    for (const session of this.#sessions.values()) {
+      result.push(...session.getPendingProtocolErrors());
+    }
+    return result;
+  }
 }
 
 /**

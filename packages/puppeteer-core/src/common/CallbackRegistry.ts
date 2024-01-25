@@ -94,6 +94,19 @@ export class CallbackRegistry {
     }
     this.#callbacks.clear();
   }
+
+  /**
+   * @internal
+   */
+  getPendingProtocolErrors(): Error[] {
+    const result: Error[] = [];
+    for (const callback of this.#callbacks.values()) {
+      result.push(
+        new Error(`${callback.label} timed out. Trace: ${callback.error.stack}`)
+      );
+    }
+    return result;
+  }
 }
 /**
  * @internal
