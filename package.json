@@ -35,6 +35,7 @@
     "test:chrome:new-headless": "wireit",
     "test:firefox": "wireit",
     "test:firefox:bidi": "wireit",
+    "test:firefox:bidi:headful": "wireit",
     "test:firefox:headful": "wireit",
     "test:firefox:headless": "wireit",
     "validate-licenses": "tsx tools/third_party/validate-licenses.ts",
@@ -103,6 +104,9 @@
     "test:firefox:bidi": {
       "command": "npm test -- --test-suite firefox-bidi"
     },
+    "test:firefox:bidi:headful": {
+      "command": "npm test -- --test-suite firefox-bidi-headful"
+    },
     "test:firefox:headful": {
       "command": "npm test -- --test-suite firefox-headful"
     },
@@ -112,6 +116,7 @@
     "test:firefox": {
       "dependencies": [
         "test:firefox:bidi",
+        "test:firefox:bidi:headful",
         "test:firefox:headful",
         "test:firefox:headless"
       ]
