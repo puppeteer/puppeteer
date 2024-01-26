@@ -6,6 +6,7 @@
 export {
   bufferCount,
   catchError,
+  concat,
   concatMap,
   defaultIfEmpty,
   defer,
@@ -37,6 +38,7 @@ export {
   tap,
   throwIfEmpty,
   timer,
+  zip,
 } from 'rxjs';
 
 export type * from 'rxjs';
