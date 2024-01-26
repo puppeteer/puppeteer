@@ -851,21 +851,16 @@ describe('Page', function () {
           return Date.now();
         }),
         page
-          .evaluate(() => {
-            return (async () => {
-              await Promise.all([
-                fetch('/digits/1.png'),
-                fetch('/digits/2.png'),
-              ]);
-              await new Promise(resolve => {
-                return setTimeout(resolve, 200);
-              });
-              await fetch('/digits/3.png');
-              await new Promise(resolve => {
-                return setTimeout(resolve, 200);
-              });
-              await fetch('/digits/4.png');
-            })();
+          .evaluate(async () => {
+            await Promise.all([fetch('/digits/1.png'), fetch('/digits/2.png')]);
+            await new Promise(resolve => {
+              return setTimeout(resolve, 200);
+            });
+            await fetch('/digits/3.png');
+            await new Promise(resolve => {
+              return setTimeout(resolve, 200);
+            });
+            await fetch('/digits/4.png');
           })
           .then(() => {
             return Date.now();
@@ -937,6 +932,34 @@ describe('Page', function () {
       });
 
       expect(error).toBe(false);
+    });
+    it('should work with delayed response', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      let response!: ServerResponse;
+      server.setRoute('/fetch-request-b.js', (_req, res) => {
+        response = res;
+      });
+      const t0 = Date.now();
+      const [t1, t2] = await Promise.all([
+        page.waitForNetworkIdle({idleTime: 100}).then(() => {
+          return Date.now();
+        }),
+        new Promise<number>(res => {
+          setTimeout(() => {
+            response.end();
+            res(Date.now());
+          }, 300);
+        }),
+        page.evaluate(async () => {
+          await fetch('/fetch-request-b.js');
+        }),
+      ]);
+      expect(t1).toBeGreaterThan(t2);
+      // request finished + idle time.
+      expect(t1 - t0).toBeGreaterThan(400);
+      // request finished + idle time - request finished.
+      expect(t1 - t2).toBeGreaterThanOrEqual(100);
     });
   });
 

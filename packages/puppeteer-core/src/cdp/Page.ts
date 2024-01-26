@@ -42,7 +42,6 @@ import {
   evaluationString,
   getReadableAsBuffer,
   getReadableFromProtocolStream,
-  NETWORK_IDLE_TIME,
   parsePDFOptions,
   timeout,
   validateDialogType,
@@ -907,24 +906,6 @@ export class CdpPage extends Page {
 
   override async createCDPSession(): Promise<CDPSession> {
     return await this.target().createCDPSession();
-  }
-
-  override async waitForNetworkIdle(
-    options: {idleTime?: number; timeout?: number} = {}
-  ): Promise<void> {
-    const {
-      idleTime = NETWORK_IDLE_TIME,
-      timeout: ms = this._timeoutSettings.timeout(),
-    } = options;
-
-    await firstValueFrom(
-      this._waitForNetworkIdle(
-        this.#frameManager.networkManager,
-        idleTime
-      ).pipe(
-        raceWith(timeout(ms), from(this.#sessionCloseDeferred.valueOrThrow()))
-      )
-    );
   }
 
   override async goBack(

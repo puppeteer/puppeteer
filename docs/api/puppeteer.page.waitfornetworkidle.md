@@ -4,25 +4,24 @@ sidebar_label: Page.waitForNetworkIdle
 
 # Page.waitForNetworkIdle() method
 
+Waits for the network to be idle.
+
 #### Signature:
 
 ```typescript
 class Page {
-  abstract waitForNetworkIdle(options?: {
-    idleTime?: number;
-    timeout?: number;
-  }): Promise<void>;
+  waitForNetworkIdle(options?: WaitForNetworkIdleOptions): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                               | Description                              |
-| --------- | -------------------------------------------------- | ---------------------------------------- |
-| options   | &#123; idleTime?: number; timeout?: number; &#125; | _(Optional)_ Optional waiting parameters |
+| Parameter | Type                                                                  | Description                                         |
+| --------- | --------------------------------------------------------------------- | --------------------------------------------------- |
+| options   | [WaitForNetworkIdleOptions](./puppeteer.waitfornetworkidleoptions.md) | _(Optional)_ Options to configure waiting behavior. |
 
 **Returns:**
 
 Promise&lt;void&gt;
 
-Promise which resolves when network is idle
+A promise which resolves once the network is idle.

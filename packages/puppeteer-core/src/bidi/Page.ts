@@ -9,14 +9,12 @@ import type {Readable} from 'stream';
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type Protocol from 'devtools-protocol';
 
-import type {Observable, ObservableInput} from '../../third_party/rxjs/rxjs.js';
 import {
-  first,
   firstValueFrom,
-  forkJoin,
   from,
   map,
   raceWith,
+  zip,
 } from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
@@ -75,7 +73,6 @@ import type {BidiHTTPRequest} from './HTTPRequest.js';
 import type {BidiHTTPResponse} from './HTTPResponse.js';
 import {BidiKeyboard, BidiMouse, BidiTouchscreen} from './Input.js';
 import type {BidiJSHandle} from './JSHandle.js';
-import type {BiDiNetworkIdle} from './lifecycle.js';
 import {getBiDiReadinessState, rewriteNavigationError} from './lifecycle.js';
 import {BidiNetworkManager} from './NetworkManager.js';
 import {createBidiHandle} from './Realm.js';
@@ -497,19 +494,32 @@ export class BidiPage extends Page {
 
     const [readiness, networkIdle] = getBiDiReadinessState(waitUntil);
 
-    const response = await firstValueFrom(
-      this._waitWithNetworkIdle(
+    const result$ = zip(
+      from(
         this.#connection.send('browsingContext.reload', {
           context: this.mainFrame()._id,
           wait: readiness,
-        }),
-        networkIdle
-      )
-        .pipe(raceWith(timeout(ms), from(this.#closedDeferred.valueOrThrow())))
-        .pipe(rewriteNavigationError(this.url(), ms))
+        })
+      ),
+      ...(networkIdle !== null
+        ? [
+            this.waitForNetworkIdle$({
+              timeout: ms,
+              concurrency: networkIdle === 'networkidle2' ? 2 : 0,
+              idleTime: NETWORK_IDLE_TIME,
+            }),
+          ]
+        : [])
+    ).pipe(
+      map(([{result}]) => {
+        return result;
+      }),
+      raceWith(timeout(ms), from(this.#closedDeferred.valueOrThrow())),
+      rewriteNavigationError(this.url(), ms)
     );
 
-    return this.getNavigationResponse(response?.result.navigation);
+    const result = await firstValueFrom(result$);
+    return this.getNavigationResponse(result.navigation);
   }
 
   override setDefaultNavigationTimeout(timeout: number): void {
@@ -699,48 +709,6 @@ export class BidiPage extends Page {
       ...(box ? {clip: {type: 'box', ...box}} : {}),
     });
     return data;
-  }
-
-  override async waitForNetworkIdle(
-    options: {idleTime?: number; timeout?: number} = {}
-  ): Promise<void> {
-    const {
-      idleTime = NETWORK_IDLE_TIME,
-      timeout: ms = this._timeoutSettings.timeout(),
-    } = options;
-
-    await firstValueFrom(
-      this._waitForNetworkIdle(this.#networkManager, idleTime).pipe(
-        raceWith(timeout(ms), from(this.#closedDeferred.valueOrThrow()))
-      )
-    );
-  }
-
-  /** @internal */
-  _waitWithNetworkIdle(
-    observableInput: ObservableInput<{
-      result: Bidi.BrowsingContext.NavigateResult;
-    } | null>,
-    networkIdle: BiDiNetworkIdle
-  ): Observable<{
-    result: Bidi.BrowsingContext.NavigateResult;
-  } | null> {
-    const delay = networkIdle
-      ? this._waitForNetworkIdle(
-          this.#networkManager,
-          NETWORK_IDLE_TIME,
-          networkIdle === 'networkidle0' ? 0 : 2
-        )
-      : from(Promise.resolve());
-
-    return forkJoin([
-      from(observableInput).pipe(first()),
-      delay.pipe(first()),
-    ]).pipe(
-      map(([response]) => {
-        return response;
-      })
-    );
   }
 
   override async createCDPSession(): Promise<CDPSession> {

@@ -14,6 +14,7 @@ import {
   map,
   merge,
   raceWith,
+  zip,
 } from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
@@ -27,7 +28,12 @@ import type {WaitForSelectorOptions} from '../api/Page.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {Awaitable, NodeFor} from '../common/types.js';
-import {fromEmitterEvent, timeout, UTILITY_WORLD_NAME} from '../common/util.js';
+import {
+  fromEmitterEvent,
+  NETWORK_IDLE_TIME,
+  timeout,
+  UTILITY_WORLD_NAME,
+} from '../common/util.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
 
@@ -128,21 +134,33 @@ export class BidiFrame extends Frame {
 
     const [readiness, networkIdle] = getBiDiReadinessState(waitUntil);
 
-    const response = await firstValueFrom(
-      this.#page
-        ._waitWithNetworkIdle(
-          this.#context.connection.send('browsingContext.navigate', {
-            context: this.#context.id,
-            url,
-            wait: readiness,
-          }),
-          networkIdle
-        )
-        .pipe(raceWith(timeout(ms), from(this.#abortDeferred.valueOrThrow())))
-        .pipe(rewriteNavigationError(url, ms))
+    const result$ = zip(
+      from(
+        this.#context.connection.send('browsingContext.navigate', {
+          context: this.#context.id,
+          url,
+          wait: readiness,
+        })
+      ),
+      ...(networkIdle !== null
+        ? [
+            this.#page.waitForNetworkIdle$({
+              timeout: ms,
+              concurrency: networkIdle === 'networkidle2' ? 2 : 0,
+              idleTime: NETWORK_IDLE_TIME,
+            }),
+          ]
+        : [])
+    ).pipe(
+      map(([{result}]) => {
+        return result;
+      }),
+      raceWith(timeout(ms), from(this.#abortDeferred.valueOrThrow())),
+      rewriteNavigationError(url, ms)
     );
 
-    return this.#page.getNavigationResponse(response?.result.navigation);
+    const result = await firstValueFrom(result$);
+    return this.#page.getNavigationResponse(result.navigation);
   }
 
   @throwIfDetached
@@ -157,22 +175,30 @@ export class BidiFrame extends Frame {
 
     const [waitEvent, networkIdle] = getBiDiLifecycleEvent(waitUntil);
 
-    await firstValueFrom(
-      this.#page
-        ._waitWithNetworkIdle(
-          forkJoin([
-            fromEmitterEvent(this.#context, waitEvent).pipe(first()),
-            from(this.setFrameContent(html)),
-          ]).pipe(
-            map(() => {
-              return null;
-            })
-          ),
-          networkIdle
-        )
-        .pipe(raceWith(timeout(ms), from(this.#abortDeferred.valueOrThrow())))
-        .pipe(rewriteNavigationError('setContent', ms))
+    const result$ = zip(
+      forkJoin([
+        fromEmitterEvent(this.#context, waitEvent).pipe(first()),
+        from(this.setFrameContent(html)),
+      ]).pipe(
+        map(() => {
+          return null;
+        })
+      ),
+      ...(networkIdle !== null
+        ? [
+            this.#page.waitForNetworkIdle$({
+              timeout: ms,
+              concurrency: networkIdle === 'networkidle2' ? 2 : 0,
+              idleTime: NETWORK_IDLE_TIME,
+            }),
+          ]
+        : [])
+    ).pipe(
+      raceWith(timeout(ms), from(this.#abortDeferred.valueOrThrow())),
+      rewriteNavigationError('setContent', ms)
     );
+
+    await firstValueFrom(result$);
   }
 
   context(): BrowsingContext {
@@ -190,7 +216,7 @@ export class BidiFrame extends Frame {
 
     const [waitUntilEvent, networkIdle] = getBiDiLifecycleEvent(waitUntil);
 
-    const navigatedObservable = merge(
+    const navigation$ = merge(
       forkJoin([
         fromEmitterEvent(
           this.#context,
@@ -211,13 +237,26 @@ export class BidiFrame extends Frame {
       })
     );
 
-    const response = await firstValueFrom(
-      this.#page
-        ._waitWithNetworkIdle(navigatedObservable, networkIdle)
-        .pipe(raceWith(timeout(ms), from(this.#abortDeferred.valueOrThrow())))
+    const result$ = zip(
+      navigation$,
+      ...(networkIdle !== null
+        ? [
+            this.#page.waitForNetworkIdle$({
+              timeout: ms,
+              concurrency: networkIdle === 'networkidle2' ? 2 : 0,
+              idleTime: NETWORK_IDLE_TIME,
+            }),
+          ]
+        : [])
+    ).pipe(
+      map(([{result}]) => {
+        return result;
+      }),
+      raceWith(timeout(ms), from(this.#abortDeferred.valueOrThrow()))
     );
 
-    return this.#page.getNavigationResponse(response?.result.navigation);
+    const result = await firstValueFrom(result$);
+    return this.#page.getNavigationResponse(result.navigation);
   }
 
   override waitForDevicePrompt(): never {
