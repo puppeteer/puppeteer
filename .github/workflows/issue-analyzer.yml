@@ -64,7 +64,7 @@ jobs:
       - name: Analyze issue
         id: issue-analysis
         run: echo $ISSUE_BODY | ./tools/analyze_issue.mjs >> $GITHUB_OUTPUT
-      - uses: actions/upload-artifact@694cdabd8bdb0f10b2cea11669e1bf5453eed0a6 # v4.2.0
+      - uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
         with:
           name: issue-files
           path: out/
@@ -102,7 +102,7 @@ jobs:
         run: ${{ env.PACKAGE_MANAGER }} run verify
         env:
           DEBUG: 'puppeteer:*'
-      - uses: actions/upload-artifact@694cdabd8bdb0f10b2cea11669e1bf5453eed0a6 # v4.2.0
+      - uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
         if: success() || failure()
         with:
           name: runtime-output
@@ -130,13 +130,13 @@ jobs:
               labels: ["confirmed"]
             })
       - name: Find Comment Id
-        uses: peter-evans/find-comment@a54c31d7fa095754bfef525c0c8e5e5674c4b4b1 # v2.4.0
+        uses: peter-evans/find-comment@d5fe37641ad8451bdd80312415672ba26c86575e # v3.0.0
         id: find-comment-id
         with:
           issue-number: ${{ github.event.issue.number }}
           comment-author: 'github-actions[bot]'
       - name: Upsert comment
-        uses: peter-evans/create-or-update-comment@23ff15729ef2fc348714a3bb66d2f655ca9066f2 # v3.1.0
+        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4.0.0
         with:
           comment-id: ${{ steps.find-comment-id.outputs.comment-id }}
           issue-number: ${{ github.event.issue.number }}
@@ -167,13 +167,13 @@ jobs:
               labels: ["invalid"]
             })
       - name: Find Comment Id
-        uses: peter-evans/find-comment@a54c31d7fa095754bfef525c0c8e5e5674c4b4b1 # v2.4.0
+        uses: peter-evans/find-comment@d5fe37641ad8451bdd80312415672ba26c86575e # v3.0.0
         id: find-comment-id
         with:
           issue-number: ${{ github.event.issue.number }}
           comment-author: 'github-actions[bot]'
       - name: Upsert comment
-        uses: peter-evans/create-or-update-comment@23ff15729ef2fc348714a3bb66d2f655ca9066f2 # v3.1.0
+        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4.0.0
         with:
           comment-id: ${{ steps.find-comment-id.outputs.comment-id }}
           issue-number: ${{ github.event.issue.number }}
@@ -203,13 +203,13 @@ jobs:
               labels: ["not-reproducible", "needs-feedback"]
             })
       - name: Find Comment Id
-        uses: peter-evans/find-comment@a54c31d7fa095754bfef525c0c8e5e5674c4b4b1 # v2.4.0
+        uses: peter-evans/find-comment@d5fe37641ad8451bdd80312415672ba26c86575e # v3.0.0
         id: find-comment-id
         with:
           issue-number: ${{ github.event.issue.number }}
           comment-author: 'github-actions[bot]'
       - name: Upsert comment
-        uses: peter-evans/create-or-update-comment@23ff15729ef2fc348714a3bb66d2f655ca9066f2 # v3.1.0
+        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4.0.0
         with:
           comment-id: ${{ steps.find-comment-id.outputs.comment-id }}
           issue-number: ${{ github.event.issue.number }}
