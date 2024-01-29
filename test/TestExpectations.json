@@ -3704,25 +3704,25 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForXPath should run in specified frame",
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector xpath should run in specified frame",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForXPath should run in specified frame",
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector xpath should run in specified frame",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForXPath should throw when frame is detached",
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector xpath should throw when frame is detached",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForXPath should throw when frame is detached",
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector xpath should throw when frame is detached",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]

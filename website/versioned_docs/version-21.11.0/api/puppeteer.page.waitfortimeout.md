@@ -30,7 +30,7 @@ Promise&lt;void&gt;
 
 ## Remarks
 
-It's generally recommended to not wait for a number of seconds, but instead use [Frame.waitForSelector()](./puppeteer.frame.waitforselector.md), [Frame.waitForXPath()](./puppeteer.frame.waitforxpath.md) or [Frame.waitForFunction()](./puppeteer.frame.waitforfunction.md) to wait for exactly the conditions you want.
+It's generally recommended to not wait for a number of seconds, but instead use [Frame.waitForSelector()](./puppeteer.frame.waitforselector.md), or [Frame.waitForFunction()](./puppeteer.frame.waitforfunction.md) to wait for exactly the conditions you want.
 
 ## Example
 

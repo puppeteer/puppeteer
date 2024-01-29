@@ -693,142 +693,150 @@ describe('waittask specs', function () {
       // The extension is ts here as Mocha maps back via sourcemaps.
       expect(error?.stack).toContain('WaitTask.ts');
     });
-  });
 
-  describe('Frame.waitForXPath', function () {
-    const addElement = (tag: string) => {
-      return document.body.appendChild(document.createElement(tag));
-    };
+    describe('xpath', function () {
+      const addElement = (tag: string) => {
+        return document.body.appendChild(document.createElement(tag));
+      };
 
-    it('should support some fancy xpath', async () => {
-      const {page} = await getTestState();
+      it('should support some fancy xpath', async () => {
+        const {page} = await getTestState();
 
-      await page.setContent(`<p>red herring</p><p>hello  world  </p>`);
-      const waitForXPath = page.waitForXPath(
-        '//p[normalize-space(.)="hello world"]'
-      );
-      expect(
-        await page.evaluate(
-          x => {
-            return x?.textContent;
-          },
-          await waitForXPath
-        )
-      ).toBe('hello  world  ');
-    });
-    it('should respect timeout', async () => {
-      const {page} = await getTestState();
-
-      let error!: Error;
-      await page.waitForXPath('//div', {timeout: 10}).catch(error_ => {
-        return (error = error_);
+        await page.setContent(`<p>red herring</p><p>hello  world  </p>`);
+        const waitForSelector = page.waitForSelector(
+          'xpath/.//p[normalize-space(.)="hello world"]'
+        );
+        expect(
+          await page.evaluate(
+            x => {
+              return x?.textContent;
+            },
+            await waitForSelector
+          )
+        ).toBe('hello  world  ');
       });
-      expect(error).toBeInstanceOf(TimeoutError);
-      expect(error?.message).toContain('Waiting failed: 10ms exceeded');
-    });
-    it('should run in specified frame', async () => {
-      const {page, server} = await getTestState();
+      it('should respect timeout', async () => {
+        const {page} = await getTestState();
 
-      await attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      await attachFrame(page, 'frame2', server.EMPTY_PAGE);
-      const frame1 = page.frames()[1]!;
-      const frame2 = page.frames()[2]!;
-      const waitForXPathPromise = frame2.waitForXPath('//div');
-      await frame1.evaluate(addElement, 'div');
-      await frame2.evaluate(addElement, 'div');
-      using eHandle = await waitForXPathPromise;
-      expect(eHandle?.frame).toBe(frame2);
-    });
-    it('should throw when frame is detached', async () => {
-      const {page, server} = await getTestState();
-
-      await attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      const frame = page.frames()[1]!;
-      let waitError: Error | undefined;
-      const waitPromise = frame
-        .waitForXPath('//*[@class="box"]')
-        .catch(error => {
-          return (waitError = error);
-        });
-      await detachFrame(page, 'frame1');
-      await waitPromise;
-      expect(waitError).toBeTruthy();
-      expect(waitError?.message).toContain(
-        'waitForFunction failed: frame got detached.'
-      );
-    });
-    it('hidden should wait for display: none', async () => {
-      const {page} = await getTestState();
-
-      let divHidden = false;
-      await page.setContent(`<div style='display: block;'>text</div>`);
-      const waitForXPath = page
-        .waitForXPath('//div', {hidden: true})
-        .then(() => {
-          return (divHidden = true);
-        });
-      await page.waitForXPath('//div'); // do a round trip
-      expect(divHidden).toBe(false);
-      await page.evaluate(() => {
-        return document
-          .querySelector('div')
-          ?.style.setProperty('display', 'none');
+        let error!: Error;
+        await page
+          .waitForSelector('xpath/.//div', {timeout: 10})
+          .catch(error_ => {
+            return (error = error_);
+          });
+        expect(error).toBeInstanceOf(TimeoutError);
+        expect(error?.message).toContain('Waiting failed: 10ms exceeded');
       });
-      expect(await waitForXPath).toBe(true);
-      expect(divHidden).toBe(true);
-    });
-    it('hidden should return null if the element is not found', async () => {
-      const {page} = await getTestState();
+      it('should run in specified frame', async () => {
+        const {page, server} = await getTestState();
 
-      using waitForXPath = await page.waitForXPath('//div', {hidden: true});
+        await attachFrame(page, 'frame1', server.EMPTY_PAGE);
+        await attachFrame(page, 'frame2', server.EMPTY_PAGE);
+        const frame1 = page.frames()[1]!;
+        const frame2 = page.frames()[2]!;
+        const waitForSelector = frame2.waitForSelector('xpath/.//div');
+        await frame1.evaluate(addElement, 'div');
+        await frame2.evaluate(addElement, 'div');
+        using eHandle = await waitForSelector;
+        expect(eHandle?.frame).toBe(frame2);
+      });
+      it('should throw when frame is detached', async () => {
+        const {page, server} = await getTestState();
 
-      expect(waitForXPath).toBe(null);
-    });
-    it('hidden should return an empty element handle if the element is found', async () => {
-      const {page} = await getTestState();
+        await attachFrame(page, 'frame1', server.EMPTY_PAGE);
+        const frame = page.frames()[1]!;
+        let waitError: Error | undefined;
+        const waitPromise = frame
+          .waitForSelector('xpath/.//*[@class="box"]')
+          .catch(error => {
+            return (waitError = error);
+          });
+        await detachFrame(page, 'frame1');
+        await waitPromise;
+        expect(waitError).toBeTruthy();
+        expect(waitError?.message).toContain(
+          'waitForFunction failed: frame got detached.'
+        );
+      });
+      it('hidden should wait for display: none', async () => {
+        const {page} = await getTestState();
 
-      await page.setContent(`<div style='display: none;'>text</div>`);
+        let divHidden = false;
+        await page.setContent(`<div style='display: block;'>text</div>`);
+        const waitForSelector = page
+          .waitForSelector('xpath/.//div', {hidden: true})
+          .then(() => {
+            return (divHidden = true);
+          });
+        await page.waitForSelector('xpath/.//div'); // do a round trip
+        expect(divHidden).toBe(false);
+        await page.evaluate(() => {
+          return document
+            .querySelector('div')
+            ?.style.setProperty('display', 'none');
+        });
+        expect(await waitForSelector).toBe(true);
+        expect(divHidden).toBe(true);
+      });
+      it('hidden should return null if the element is not found', async () => {
+        const {page} = await getTestState();
 
-      using waitForXPath = await page.waitForXPath('//div', {hidden: true});
+        using waitForSelector = await page.waitForSelector('xpath/.//div', {
+          hidden: true,
+        });
 
-      expect(waitForXPath).toBeInstanceOf(ElementHandle);
-    });
-    it('should return the element handle', async () => {
-      const {page} = await getTestState();
+        expect(waitForSelector).toBe(null);
+      });
+      it('hidden should return an empty element handle if the element is found', async () => {
+        const {page} = await getTestState();
 
-      const waitForXPath = page.waitForXPath('//*[@class="zombo"]');
-      await page.setContent(`<div class='zombo'>anything</div>`);
-      expect(
-        await page.evaluate(
-          x => {
-            return x?.textContent;
-          },
-          await waitForXPath
-        )
-      ).toBe('anything');
-    });
-    it('should allow you to select a text node', async () => {
-      const {page} = await getTestState();
+        await page.setContent(`<div style='display: none;'>text</div>`);
 
-      await page.setContent(`<div>some text</div>`);
-      using text = await page.waitForXPath('//div/text()');
-      expect(await (await text!.getProperty('nodeType')!).jsonValue()).toBe(
-        3 /* Node.TEXT_NODE */
-      );
-    });
-    it('should allow you to select an element with single slash', async () => {
-      const {page} = await getTestState();
+        using waitForSelector = await page.waitForSelector('xpath/.//div', {
+          hidden: true,
+        });
 
-      await page.setContent(`<div>some text</div>`);
-      const waitForXPath = page.waitForXPath('/html/body/div');
-      expect(
-        await page.evaluate(
-          x => {
-            return x?.textContent;
-          },
-          await waitForXPath
-        )
-      ).toBe('some text');
+        expect(waitForSelector).toBeInstanceOf(ElementHandle);
+      });
+      it('should return the element handle', async () => {
+        const {page} = await getTestState();
+
+        const waitForSelector = page.waitForSelector(
+          'xpath/.//*[@class="zombo"]'
+        );
+        await page.setContent(`<div class='zombo'>anything</div>`);
+        expect(
+          await page.evaluate(
+            x => {
+              return x?.textContent;
+            },
+            await waitForSelector
+          )
+        ).toBe('anything');
+      });
+      it('should allow you to select a text node', async () => {
+        const {page} = await getTestState();
+
+        await page.setContent(`<div>some text</div>`);
+        using text = await page.waitForSelector('xpath/.//div/text()');
+        expect(await (await text!.getProperty('nodeType')!).jsonValue()).toBe(
+          3 /* Node.TEXT_NODE */
+        );
+      });
+      it('should allow you to select an element with single slash', async () => {
+        const {page} = await getTestState();
+
+        await page.setContent(`<div>some text</div>`);
+        const waitForSelector = page.waitForSelector('xpath/html/body/div');
+        expect(
+          await page.evaluate(
+            x => {
+              return x?.textContent;
+            },
+            await waitForSelector
+          )
+        ).toBe('some text');
+      });
     });
   });
 });
