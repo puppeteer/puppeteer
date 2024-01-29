@@ -350,6 +350,7 @@ export function parsePDFOptions(
     preferCSSPageSize: false,
     omitBackground: false,
     tagged: false,
+    outline: false,
   };
 
   let width = 8.5;
@@ -374,6 +375,19 @@ export function parsePDFOptions(
     right:
       convertPrintParameterToInches(options.margin?.right, lengthUnit) || 0,
   };
+
+  // Quirk https://bugs.chromium.org/p/chromium/issues/detail?id=840455#c44
+  if (options.outline) {
+    options.tagged = true;
+  }
+
+  console.log({
+    ...defaults,
+    ...options,
+    width,
+    height,
+    margin,
+  });
 
   return {
     ...defaults,
