@@ -161,6 +161,10 @@ export async function install(
     try {
       debugTime('extract');
       await unpackArchive(archivePath, outputPath);
+    } catch (err) {
+      const error = new Error('Failed to unpack browser from archive!');
+      error.cause = err;
+      throw error;
     } finally {
       debugTimeEnd('extract');
     }
