@@ -12,12 +12,12 @@ export declare class CLI
 
 ## Constructors
 
-| Constructor                                      | Modifiers | Description                                             |
-| ------------------------------------------------ | --------- | ------------------------------------------------------- |
-| [(constructor)](./browsers.cli._constructor_.md) |           | Constructs a new instance of the <code>CLI</code> class |
+| Constructor                                                | Modifiers | Description                                             |
+| ---------------------------------------------------------- | --------- | ------------------------------------------------------- |
+| [(constructor)(opts, rl)](./browsers.cli._constructor_.md) |           | Constructs a new instance of the <code>CLI</code> class |
 
 ## Methods
 
-| Method                       | Modifiers | Description |
-| ---------------------------- | --------- | ----------- |
-| [run](./browsers.cli.run.md) |           |             |
+| Method                             | Modifiers | Description |
+| ---------------------------------- | --------- | ----------- |
+| [run(argv)](./browsers.cli.run.md) |           |             |

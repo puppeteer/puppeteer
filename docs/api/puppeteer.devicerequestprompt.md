@@ -38,8 +38,8 @@ await devicePrompt.select(
 
 ## Methods
 
-| Method                                                            | Modifiers | Description                                                  |
-| ----------------------------------------------------------------- | --------- | ------------------------------------------------------------ |
-| [cancel](./puppeteer.devicerequestprompt.cancel.md)               |           | Cancel the prompt.                                           |
-| [select](./puppeteer.devicerequestprompt.select.md)               |           | Select a device in the prompt's list.                        |
-| [waitForDevice](./puppeteer.devicerequestprompt.waitfordevice.md) |           | Resolve to the first device in the prompt matching a filter. |
+| Method                                                                             | Modifiers | Description                                                  |
+| ---------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------ |
+| [cancel()](./puppeteer.devicerequestprompt.cancel.md)                              |           | Cancel the prompt.                                           |
+| [select(device)](./puppeteer.devicerequestprompt.select.md)                        |           | Select a device in the prompt's list.                        |
+| [waitForDevice(filter, options)](./puppeteer.devicerequestprompt.waitfordevice.md) |           | Resolve to the first device in the prompt matching a filter. |

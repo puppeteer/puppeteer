@@ -22,13 +22,13 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Methods
 
-| Method                                                               | Modifiers | Description                                                                                      |
-| -------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------ |
-| [addListener](./puppeteer.eventemitter.addlistener.md)               |           | Add an event listener.                                                                           |
-| [emit](./puppeteer.eventemitter.emit.md)                             |           | Emit an event and call any associated listeners.                                                 |
-| [listenerCount](./puppeteer.eventemitter.listenercount.md)           |           | Gets the number of listeners for a given event.                                                  |
-| [off](./puppeteer.eventemitter.off.md)                               |           | Remove an event listener from firing.                                                            |
-| [on](./puppeteer.eventemitter.on.md)                                 |           | Bind an event listener to fire when an event occurs.                                             |
-| [once](./puppeteer.eventemitter.once.md)                             |           | Like <code>on</code> but the listener will only be fired once and then it will be removed.       |
-| [removeAllListeners](./puppeteer.eventemitter.removealllisteners.md) |           | Removes all listeners. If given an event argument, it will remove only listeners for that event. |
-| [removeListener](./puppeteer.eventemitter.removelistener.md)         |           | Remove an event listener.                                                                        |
+| Method                                                                      | Modifiers | Description                                                                                      |
+| --------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------ |
+| [addListener(type, handler)](./puppeteer.eventemitter.addlistener.md)       |           | Add an event listener.                                                                           |
+| [emit(type, event)](./puppeteer.eventemitter.emit.md)                       |           | Emit an event and call any associated listeners.                                                 |
+| [listenerCount(type)](./puppeteer.eventemitter.listenercount.md)            |           | Gets the number of listeners for a given event.                                                  |
+| [off(type, handler)](./puppeteer.eventemitter.off.md)                       |           | Remove an event listener from firing.                                                            |
+| [on(type, handler)](./puppeteer.eventemitter.on.md)                         |           | Bind an event listener to fire when an event occurs.                                             |
+| [once(type, handler)](./puppeteer.eventemitter.once.md)                     |           | Like <code>on</code> but the listener will only be fired once and then it will be removed.       |
+| [removeAllListeners(type)](./puppeteer.eventemitter.removealllisteners.md)  |           | Removes all listeners. If given an event argument, it will remove only listeners for that event. |
+| [removeListener(type, handler)](./puppeteer.eventemitter.removelistener.md) |           | Remove an event listener.                                                                        |
