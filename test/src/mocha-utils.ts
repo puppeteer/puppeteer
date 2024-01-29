@@ -25,6 +25,7 @@ import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 import sinon from 'sinon';
 
 import {extendExpectWithToBeGolden} from './utils.js';
+import {Cookie} from 'puppeteer-core/src/common/Cookie.js';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -372,7 +373,7 @@ expect.extend({
 });
 
 export const expectCookieEquals = async (
-  cookies: Protocol.Network.Cookie[],
+  cookies: Cookie[],
   expectedCookies: Array<Partial<Protocol.Network.Cookie>>
 ): Promise<void> => {
   if (!processVariables.isChrome) {

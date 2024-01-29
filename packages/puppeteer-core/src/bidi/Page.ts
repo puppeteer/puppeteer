@@ -775,14 +775,17 @@ export class BidiPage extends Page {
     });
   }
 
-  override async cookies(): Promise<Cookie[]> {
+  override async cookies(...urls: string[]): Promise<Cookie[]> {
+    const requiredUrl = (urls.length ? urls : [this.url()]).map(url=>new URL(url));
+
     const bidiCookies = await this.#connection.send('storage.getCookies', {
       partition: {
         type: 'context',
         context: this.mainFrame()._id,
       },
     });
-    return bidiCookies.result.cookies.map(c => this.#bidiToPuppeteerCookie(c));
+    return bidiCookies.result.cookies.map(c => this.#bidiToPuppeteerCookie(c))
+      .filter(c => requiredUrl.some(u => Page.testCookieUrlMatch(c, u)));
   }
 
   #bidiToPuppeteerCookie(bidiCookie: Bidi.Network.Cookie): Cookie {
@@ -799,12 +802,12 @@ export class BidiPage extends Page {
       expires: bidiCookie.expiry ?? -1,
       session: bidiCookie.expiry === undefined || bidiCookie.expiry <= 0,
       // Extending with CDP-specific properties with `goog:` prefix.
-      ...(bidiCookie['goog:priority'] !== undefined ? { priority: bidiCookie['goog:priority'] } : {}),
       ...(bidiCookie['goog:sameParty'] !== undefined ? { sameParty: bidiCookie['goog:sameParty'] } : {}),
       ...(bidiCookie['goog:sourcePort'] !== undefined ? { sourcePort: bidiCookie['goog:sourcePort'] } : {}),
       ...(bidiCookie['goog:sourceScheme'] !== undefined ? { sourceScheme: bidiCookie['goog:sourceScheme'] } : {}),
       ...(bidiCookie['goog:partitionKey'] !== undefined ? { partitionKey: bidiCookie['goog:partitionKey'] } : {}),
       ...(bidiCookie['goog:partitionKeyOpaque'] !== undefined ? { partitionKeyOpaque: bidiCookie['goog:partitionKeyOpaque'] } : {}),
+      // `priority` is not supported by Puppeteer.
     }
   }
 
