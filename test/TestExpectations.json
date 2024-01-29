@@ -270,7 +270,7 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[spec.spec] Page.pdf *",
+    "testIdPattern": "[pdf.spec] Page.pdf *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"]
