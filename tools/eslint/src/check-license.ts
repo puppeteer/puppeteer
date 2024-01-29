@@ -13,13 +13,13 @@ const createRule = ESLintUtils.RuleCreator(name => {
 
 const copyrightPattern = /Copyright ([0-9]{4}) Google Inc\./;
 
-const currentYear = new Date().getFullYear;
+// const currentYear = new Date().getFullYear;
 
-const licenseHeader = `/**
- * @license
- * Copyright ${currentYear} Google Inc.
- * SPDX-License-Identifier: Apache-2.0
- */`;
+// const licenseHeader = `/**
+//  * @license
+//  * Copyright ${currentYear} Google Inc.
+//  * SPDX-License-Identifier: Apache-2.0
+//  */`;
 
 const enforceLicenseRule = createRule<[], 'licenseRule'>({
   name: 'check-license',
@@ -29,7 +29,7 @@ const enforceLicenseRule = createRule<[], 'licenseRule'>({
       description: 'Validate existence of license header',
       requiresTypeChecking: false,
     },
-    fixable: 'code',
+    fixable: undefined, // TODO: change to 'code' once fixer works.
     schema: [],
     messages: {
       licenseRule: 'Add license header.',
@@ -65,13 +65,14 @@ const enforceLicenseRule = createRule<[], 'licenseRule'>({
 
         // Add header license
         if (!header || !header.value.includes('@license')) {
-          const startLoc: [number, number] = [0, 88];
+          // const startLoc: [number, number] = [0, 88];
           context.report({
             node: node,
             messageId: 'licenseRule',
-            fix(fixer) {
-              return fixer.insertTextBeforeRange(startLoc, licenseHeader);
-            },
+            // TODO: fix the fixer.
+            // fix(fixer) {
+            //   return fixer.insertTextBeforeRange(startLoc, licenseHeader);
+            // },
           });
         }
       },
