@@ -9,10 +9,10 @@ ProtocolError is emitted whenever there is an error from the protocol.
 #### Signature:
 
 ```typescript
-export declare class ProtocolError extends CustomError
+export declare class ProtocolError extends PuppeteerError
 ```
 
-**Extends:** [CustomError](./puppeteer.customerror.md)
+**Extends:** [PuppeteerError](./puppeteer.puppeteererror.md)
 
 ## Properties
 
