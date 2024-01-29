@@ -8,7 +8,6 @@ import type {Readable} from 'stream';
 
 import type {Protocol} from 'devtools-protocol';
 
-import {isIP} from '../../third_party/is-ip/is-ip.js';
 import {
   concat,
   EMPTY,

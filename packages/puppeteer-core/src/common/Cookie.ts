@@ -16,8 +16,8 @@ export type CookieSameSite = 'Strict' | 'Lax' | 'None';
 export type CookiePriority = 'Low' | 'Medium' | 'High';
 
 /**
- * Represents the source scheme of the origin that originally set the cookie.
- * A value of "Unset" allows protocol clients to emulate legacy cookie scope for the scheme.
+ * Represents the source scheme of the origin that originally set the cookie. A value of
+ * "Unset" allows protocol clients to emulate legacy cookie scope for the scheme.
  * This is a temporary ability and it will be removed in the future.
  */
 export type CookieSourceScheme = 'Unset' | 'NonSecure' | 'Secure';
@@ -77,14 +77,14 @@ export interface Cookie {
    */
   sourceScheme?: CookieSourceScheme;
   /**
-   * Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
-   * An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
-   * This is a temporary ability and it will be removed in the future.
+   * Cookie source port. Valid values are \{-1, [1, 65535]\}, -1 indicates an unspecified
+   * port. An unspecified port value allows protocol clients to emulate legacy cookie
+   * scope for the port. This is a temporary ability and it will be removed in the future.
    */
   sourcePort?: JsInt;
   /**
-   * Cookie partition key. The site of the top-level URL the browser was visiting at the start
-   * of the request to the endpoint that set the cookie.
+   * Cookie partition key. The site of the top-level URL the browser was visiting at the
+   * start of the request to the endpoint that set the cookie.
    */
   partitionKey?: string;
   /**
