@@ -817,6 +817,9 @@ export class BidiPage extends Page {
       // The domain string and the string are identical.
       return true;
     }
+    // TODO: add check for:
+    //  * The string should be a host name (i.e., not an IP address).
+
     if (isIP(urlHostname)) {
       // The string should be a host name (i.e., not an IP address).
       return false;
