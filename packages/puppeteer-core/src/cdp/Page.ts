@@ -582,7 +582,7 @@ export class CdpPage extends Page {
       })
     ).cookies.filter(c => {
       return requiredUrls.some(u => {
-        return Page.testCookieUrlMatch(c, u);
+        return Page.testUrlMatchCookie(c, u);
       });
     });
 

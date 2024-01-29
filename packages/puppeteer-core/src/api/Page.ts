@@ -1307,7 +1307,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    */
   abstract cookies(...urls: string[]): Promise<Protocol.Network.Cookie[]>;
 
-  static #testCookieUrlMatchHostname(
+  static #testUrlMatchCookieHostname(
     cookie: Protocol.Network.Cookie,
     parsedUrl: URL
   ): boolean {
@@ -1342,7 +1342,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
     return urlHostname.endsWith('.' + cookieDomain);
   }
 
-  static #testCookieUrlMatchPath(
+  static #testUrlMatchCookiePath(
     cookie: Protocol.Network.Cookie,
     parsedUrl: URL
   ): boolean {
@@ -1388,16 +1388,16 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * - https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
    * - https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4
    */
-  static testCookieUrlMatch(
+  static testUrlMatchCookie(
     cookie: Protocol.Network.Cookie,
     url: string
   ): boolean {
     const parsedUrl = new URL(url);
     console.assert(cookie !== undefined);
-    if (!this.#testCookieUrlMatchHostname(cookie, parsedUrl)) {
+    if (!this.#testUrlMatchCookieHostname(cookie, parsedUrl)) {
       return false;
     }
-    return this.#testCookieUrlMatchPath(cookie, parsedUrl);
+    return this.#testUrlMatchCookiePath(cookie, parsedUrl);
   }
 
   abstract deleteCookie(
