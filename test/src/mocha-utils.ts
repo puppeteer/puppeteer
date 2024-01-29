@@ -15,6 +15,7 @@ import puppeteer from 'puppeteer/lib/cjs/puppeteer/puppeteer.js';
 import type {Browser} from 'puppeteer-core/internal/api/Browser.js';
 import type {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
+import type {Cookie} from 'puppeteer-core/internal/common/Cookie.js';
 import type {
   PuppeteerLaunchOptions,
   PuppeteerNode,
@@ -22,7 +23,6 @@ import type {
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
-import type {Cookie} from 'puppeteer-core/src/common/Cookie.js';
 import sinon from 'sinon';
 
 import {extendExpectWithToBeGolden} from './utils.js';
