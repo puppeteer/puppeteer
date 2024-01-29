@@ -171,6 +171,73 @@ describe('Cookie specs', () => {
         },
       ]);
     });
+    it('should get cookies from subdomain', async () => {
+      const {page, close} = await launch({});
+      try {
+        await page.setCookie(
+          {
+            url: 'https://base_domain.com',
+            name: 'doggo',
+            value: 'woofs',
+          },
+        );
+        const cookies = await page.cookies(
+          'https://sub_domain.base_domain.com',
+        );
+        await expectCookieEquals(cookies, [
+          {
+            name: 'doggo',
+            value: 'woofs',
+            domain: 'base_domain.com',
+            path: '/',
+            sameParty: false,
+            expires: -1,
+            size: 10,
+            httpOnly: false,
+            secure: true,
+            session: true,
+            sourcePort: 443,
+            sourceScheme: 'Secure',
+          },
+        ]);
+      } finally {
+        await close();
+      }
+    });
+    it('should get cookies from nested path', async () => {
+      const {page, close} = await launch({});
+      try {
+        await page.setCookie(
+          {
+            url: 'https://foo.com',
+            path: '/some_path',
+            name: 'doggo',
+            value: 'woofs',
+          },
+        );
+        const cookies = await page.cookies(
+          'https://foo.com/some_path/nested_path',
+        );
+        await expectCookieEquals(cookies, [
+          {
+            name: 'doggo',
+            value: 'woofs',
+            domain: 'foo.com',
+            path: '/some_path',
+            sameParty: false,
+            expires: -1,
+            size: 10,
+            httpOnly: false,
+            secure: true,
+            session: true,
+            sourcePort: 443,
+            sourceScheme: 'Secure',
+          },
+        ]);
+      } finally {
+        await close();
+      }
+    });
   });
   describe('Page.setCookie', function () {
     it('should work', async () => {
