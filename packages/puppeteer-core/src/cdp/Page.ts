@@ -577,7 +577,11 @@ export class CdpPage extends Page {
   ): Promise<Protocol.Network.Cookie[]> {
     const originalCookies = (
       await this.#primaryTargetClient.send('Storage.getCookies', {})
-    ).cookies.filter(c => urls.some(u => Page.testCookieUrlMatch(c, u)));
+    ).cookies.filter(c => {
+      return urls.some(u => {
+        return Page.testCookieUrlMatch(c, u);
+      });
+    });
 
     const unsupportedCookieAttributes = ['priority'];
     const filterUnsupportedAttributes = (

@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import net from 'net';
 import type {Readable} from 'stream';
 
 import type {Protocol} from 'devtools-protocol';
-import net from 'net';
 
 import {
   concat,
@@ -1307,7 +1307,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    */
   abstract cookies(...urls: string[]): Promise<Protocol.Network.Cookie[]>;
 
-  static #testCookieUrlMatchHostname(cookie: Protocol.Network.Cookie, parsedUrl: URL): boolean {
+  static #testCookieUrlMatchHostname(
+    cookie: Protocol.Network.Cookie,
+    parsedUrl: URL
+  ): boolean {
     // Check if domains match according to the spec:
     //   A string domain-matches a given domain string if at least one of the
     //   following conditions hold:
@@ -1336,10 +1339,13 @@ export abstract class Page extends EventEmitter<PageEvents> {
     }
     // The last character of the string that is not included in the domain string is a
     // %x2E (".") character.
-    return urlHostname.endsWith("." + cookieDomain);
+    return urlHostname.endsWith('.' + cookieDomain);
   }
 
-  static #testCookieUrlMatchPath(cookie: Protocol.Network.Cookie, parsedUrl: URL): boolean {
+  static #testCookieUrlMatchPath(
+    cookie: Protocol.Network.Cookie,
+    parsedUrl: URL
+  ): boolean {
     // Check paths match according to the spec:
     //   A request-path path-matches a given cookie-path if at least one of
     //   the following conditions holds:
@@ -1353,7 +1359,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
     const uriPath = parsedUrl.pathname;
     const cookiePath = cookie.path;
 
-    console.log("!!@@##", uriPath, cookiePath);
+    console.log('!!@@##', uriPath, cookiePath);
 
     if (uriPath === cookiePath) {
       // The cookie-path and the request-path are identical.
@@ -1380,17 +1386,21 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
   /**
    * Checks the cookie matches the URL according to the spec:
-   * * https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
-   * * https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4
+   *
+   * - https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
+   * - https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4
    */
-  static testCookieUrlMatch(cookie: Protocol.Network.Cookie, url: string): boolean {
+  static testCookieUrlMatch(
+    cookie: Protocol.Network.Cookie,
+    url: string
+  ): boolean {
     const parsedUrl = new URL(url);
-    console.assert(cookie!==undefined)
-    if(!this.#testCookieUrlMatchHostname(cookie, parsedUrl))
+    console.assert(cookie !== undefined);
+    if (!this.#testCookieUrlMatchHostname(cookie, parsedUrl)) {
       return false;
+    }
     return this.#testCookieUrlMatchPath(cookie, parsedUrl);
   }
-
 
   abstract deleteCookie(
     ...cookies: Protocol.Network.DeleteCookiesRequest[]
