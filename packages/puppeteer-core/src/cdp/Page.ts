@@ -577,7 +577,9 @@ export class CdpPage extends Page {
   ): Promise<Protocol.Network.Cookie[]> {
     const requiredUrls = urls.length ? urls : [this.url()];
     const originalCookies = (
-      await this.#primaryTargetClient.send('Storage.getCookies', {})
+      await this.#primaryTargetClient.send('Storage.getCookies', {
+        browserContextId: this.browserContext().id,
+      })
     ).cookies.filter(c => {
       return requiredUrls.some(u => {
         return Page.testCookieUrlMatch(c, u);

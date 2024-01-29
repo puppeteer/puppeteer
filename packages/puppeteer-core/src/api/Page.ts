@@ -1359,8 +1359,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
     const uriPath = parsedUrl.pathname;
     const cookiePath = cookie.path;
 
-    console.log('!!@@##', uriPath, cookiePath);
-
     if (uriPath === cookiePath) {
       // The cookie-path and the request-path are identical.
       return true;
