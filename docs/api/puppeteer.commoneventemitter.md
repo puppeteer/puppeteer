@@ -12,13 +12,13 @@ export interface CommonEventEmitter<Events extends Record<EventType, unknown>>
 
 ## Methods
 
-| Method                                                                     | Description |
-| -------------------------------------------------------------------------- | ----------- |
-| [addListener](./puppeteer.commoneventemitter.addlistener.md)               |             |
-| [emit](./puppeteer.commoneventemitter.emit.md)                             |             |
-| [listenerCount](./puppeteer.commoneventemitter.listenercount.md)           |             |
-| [off](./puppeteer.commoneventemitter.off.md)                               |             |
-| [on](./puppeteer.commoneventemitter.on.md)                                 |             |
-| [once](./puppeteer.commoneventemitter.once.md)                             |             |
-| [removeAllListeners](./puppeteer.commoneventemitter.removealllisteners.md) |             |
-| [removeListener](./puppeteer.commoneventemitter.removelistener.md)         |             |
+| Method                                                                            | Description |
+| --------------------------------------------------------------------------------- | ----------- |
+| [addListener(type, handler)](./puppeteer.commoneventemitter.addlistener.md)       |             |
+| [emit(type, event)](./puppeteer.commoneventemitter.emit.md)                       |             |
+| [listenerCount(event)](./puppeteer.commoneventemitter.listenercount.md)           |             |
+| [off(type, handler)](./puppeteer.commoneventemitter.off.md)                       |             |
+| [on(type, handler)](./puppeteer.commoneventemitter.on.md)                         |             |
+| [once(type, handler)](./puppeteer.commoneventemitter.once.md)                     |             |
+| [removeAllListeners(event)](./puppeteer.commoneventemitter.removealllisteners.md) |             |
+| [removeListener(type, handler)](./puppeteer.commoneventemitter.removelistener.md) |             |

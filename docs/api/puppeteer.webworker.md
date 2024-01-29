@@ -44,8 +44,8 @@ for (const worker of page.workers()) {
 
 ## Methods
 
-| Method                                                    | Modifiers | Description                                                           |
-| --------------------------------------------------------- | --------- | --------------------------------------------------------------------- |
-| [evaluate](./puppeteer.webworker.evaluate.md)             |           | Evaluates a given function in the [worker](./puppeteer.webworker.md). |
-| [evaluateHandle](./puppeteer.webworker.evaluatehandle.md) |           | Evaluates a given function in the [worker](./puppeteer.webworker.md). |
-| [url](./puppeteer.webworker.url.md)                       |           | The URL of this web worker.                                           |
+| Method                                                                | Modifiers | Description                                                           |
+| --------------------------------------------------------------------- | --------- | --------------------------------------------------------------------- |
+| [evaluate(func, args)](./puppeteer.webworker.evaluate.md)             |           | Evaluates a given function in the [worker](./puppeteer.webworker.md). |
+| [evaluateHandle(func, args)](./puppeteer.webworker.evaluatehandle.md) |           | Evaluates a given function in the [worker](./puppeteer.webworker.md). |
+| [url()](./puppeteer.webworker.url.md)                                 |           | The URL of this web worker.                                           |

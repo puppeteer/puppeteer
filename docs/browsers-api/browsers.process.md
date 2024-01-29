@@ -12,9 +12,9 @@ export declare class Process
 
 ## Constructors
 
-| Constructor                                          | Modifiers | Description                                                 |
-| ---------------------------------------------------- | --------- | ----------------------------------------------------------- |
-| [(constructor)](./browsers.process._constructor_.md) |           | Constructs a new instance of the <code>Process</code> class |
+| Constructor                                                | Modifiers | Description                                                 |
+| ---------------------------------------------------------- | --------- | ----------------------------------------------------------- |
+| [(constructor)(opts)](./browsers.process._constructor_.md) |           | Constructs a new instance of the <code>Process</code> class |
 
 ## Properties
 
@@ -24,9 +24,9 @@ export declare class Process
 
 ## Methods
 
-| Method                                                       | Modifiers | Description |
-| ------------------------------------------------------------ | --------- | ----------- |
-| [close](./browsers.process.close.md)                         |           |             |
-| [hasClosed](./browsers.process.hasclosed.md)                 |           |             |
-| [kill](./browsers.process.kill.md)                           |           |             |
-| [waitForLineOutput](./browsers.process.waitforlineoutput.md) |           |             |
+| Method                                                                       | Modifiers | Description |
+| ---------------------------------------------------------------------------- | --------- | ----------- |
+| [close()](./browsers.process.close.md)                                       |           |             |
+| [hasClosed()](./browsers.process.hasclosed.md)                               |           |             |
+| [kill()](./browsers.process.kill.md)                                         |           |             |
+| [waitForLineOutput(regex, timeout)](./browsers.process.waitforlineoutput.md) |           |             |

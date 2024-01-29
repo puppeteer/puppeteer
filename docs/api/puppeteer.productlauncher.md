@@ -24,8 +24,8 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Methods
 
-| Method                                                          | Modifiers | Description |
-| --------------------------------------------------------------- | --------- | ----------- |
-| [defaultArgs](./puppeteer.productlauncher.defaultargs.md)       |           |             |
-| [executablePath](./puppeteer.productlauncher.executablepath.md) |           |             |
-| [launch](./puppeteer.productlauncher.launch.md)                 |           |             |
+| Method                                                                   | Modifiers | Description |
+| ------------------------------------------------------------------------ | --------- | ----------- |
+| [defaultArgs(object)](./puppeteer.productlauncher.defaultargs.md)        |           |             |
+| [executablePath(channel)](./puppeteer.productlauncher.executablepath.md) |           |             |
+| [launch(options)](./puppeteer.productlauncher.launch.md)                 |           |             |
