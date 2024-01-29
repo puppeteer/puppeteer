@@ -77,6 +77,7 @@ import {getBiDiReadinessState, rewriteNavigationError} from './lifecycle.js';
 import {BidiNetworkManager} from './NetworkManager.js';
 import {createBidiHandle} from './Realm.js';
 import type {BiDiPageTarget} from './Target.js';
+import {Cookie} from '../common/Cookie.js';
 
 /**
  * @internal
@@ -774,42 +775,37 @@ export class BidiPage extends Page {
     });
   }
 
-  override async cookies(): Promise<Protocol.Network.Cookie[]> {
+  override async cookies(): Promise<Cookie[]> {
     const bidiCookies = await this.#connection.send('storage.getCookies', {
       partition: {
         type: 'context',
         context: this.mainFrame()._id,
       },
     });
-    return bidiCookies.result.cookies.map(c => {
-      return {
-        name: c.name,
-        // Present binary value as base64 string.
-        value: c.value.value,
-        domain: c.domain,
-        path: c.path,
-        size: c.size,
-        httpOnly: c.httpOnly,
-        secure: c.secure,
-        sameSite: this.#convertCookiesSameSiteBiDiToCdp(c.sameSite),
-        // TODO: check default `expiry` value.
-        expires: c.expiry ?? -1,
-        // TODO: add proper value.
-        session: c.expiry === undefined || c.expiry <= 0,
-        // TODO: add proper value.
-        priority: 'Medium',
-        // TODO: add proper value.
-        sameParty: false,
-        // TODO: add proper value.
-        sourceScheme: 'NonSecure',
-        // TODO: add proper value.
-        sourcePort: -1,
-        // TODO: respect other `PartitionKey` values.
-        partitionKey: bidiCookies.result.partitionKey.sourceOrigin,
-        // TODO: add proper value.
-        partitionKeyOpaque: false,
-      };
-    });
+    return bidiCookies.result.cookies.map(c => this.#bidiToPuppeteerCookie(c));
+  }
+
+  #bidiToPuppeteerCookie(bidiCookie: Bidi.Network.Cookie): Cookie {
+    return {
+      name: bidiCookie.name,
+      // Presents binary value as base64 string.
+      value: bidiCookie.value.value,
+      domain: bidiCookie.domain,
+      path: bidiCookie.path,
+      size: bidiCookie.size,
+      httpOnly: bidiCookie.httpOnly,
+      secure: bidiCookie.secure,
+      sameSite: this.#convertCookiesSameSiteBiDiToCdp(bidiCookie.sameSite),
+      expires: bidiCookie.expiry ?? -1,
+      session: bidiCookie.expiry === undefined || bidiCookie.expiry <= 0,
+      // Extending with CDP-specific properties with `goog:` prefix.
+      ...(bidiCookie['goog:priority'] !== undefined ? { priority: bidiCookie['goog:priority'] } : {}),
+      ...(bidiCookie['goog:sameParty'] !== undefined ? { sameParty: bidiCookie['goog:sameParty'] } : {}),
+      ...(bidiCookie['goog:sourcePort'] !== undefined ? { sourcePort: bidiCookie['goog:sourcePort'] } : {}),
+      ...(bidiCookie['goog:sourceScheme'] !== undefined ? { sourceScheme: bidiCookie['goog:sourceScheme'] } : {}),
+      ...(bidiCookie['goog:partitionKey'] !== undefined ? { partitionKey: bidiCookie['goog:partitionKey'] } : {}),
+      ...(bidiCookie['goog:partitionKeyOpaque'] !== undefined ? { partitionKeyOpaque: bidiCookie['goog:partitionKeyOpaque'] } : {}),
+    }
   }
 
   #convertCookiesSameSiteBiDiToCdp(

@@ -79,6 +79,7 @@ import {
   valueFromRemoteObject,
 } from './utils.js';
 import {CdpWebWorker} from './WebWorker.js';
+import {Cookie} from '../common/Cookie.js';
 
 /**
  * @internal
@@ -572,9 +573,7 @@ export class CdpPage extends Page {
     ) as HandleFor<Prototype[]>;
   }
 
-  override async cookies(
-    ...urls: string[]
-  ): Promise<Protocol.Network.Cookie[]> {
+  override async cookies(...urls: string[]): Promise<Cookie[]> {
     const originalCookies = (
       await this.#primaryTargetClient.send('Network.getCookies', {
         urls: urls.length ? urls : [this.url()],

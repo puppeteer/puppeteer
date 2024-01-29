@@ -108,6 +108,7 @@ import {
 } from './locators/locators.js';
 import type {Target} from './Target.js';
 import type {WebWorker} from './WebWorker.js';
+import {Cookie} from '../common/Cookie.js';
 
 /**
  * @public
@@ -1303,7 +1304,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * If no URLs are specified, this method returns cookies for the current page
    * URL. If URLs are specified, only cookies for those URLs are returned.
    */
-  abstract cookies(...urls: string[]): Promise<Protocol.Network.Cookie[]>;
+  abstract cookies(...urls: string[]): Promise<Cookie[]>;
 
   abstract deleteCookie(
     ...cookies: Protocol.Network.DeleteCookiesRequest[]
