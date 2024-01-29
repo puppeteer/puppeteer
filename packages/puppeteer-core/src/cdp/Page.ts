@@ -575,10 +575,11 @@ export class CdpPage extends Page {
   override async cookies(
     ...urls: string[]
   ): Promise<Protocol.Network.Cookie[]> {
+    const requiredUrls = urls.length ? urls : [this.url()];
     const originalCookies = (
       await this.#primaryTargetClient.send('Storage.getCookies', {})
     ).cookies.filter(c => {
-      return urls.some(u => {
+      return requiredUrls.some(u => {
         return Page.testCookieUrlMatch(c, u);
       });
     });
