@@ -349,8 +349,8 @@ export function parsePDFOptions(
     pageRanges: '',
     preferCSSPageSize: false,
     omitBackground: false,
-    tagged: false,
     outline: false,
+    tagged: true,
   };
 
   let width = 8.5;
