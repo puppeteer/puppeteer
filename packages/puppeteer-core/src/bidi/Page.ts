@@ -874,7 +874,7 @@ export class BidiPage extends Page {
    * - https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
    * - https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4
    */
-  static #testUrlMatchCookie(cookie: Cookie, url: string): boolean {
+  static #testUrlMatchCookie(cookie: Cookie, url: URL): boolean {
     const parsedUrl = new URL(url);
     console.assert(cookie !== undefined);
     if (!this.#testUrlMatchCookieHostname(cookie, parsedUrl)) {
