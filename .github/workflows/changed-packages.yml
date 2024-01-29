@@ -29,7 +29,7 @@ jobs:
           git fetch origin main --depth 1 &&
           git merge-base --is-ancestor origin/main @;
       - name: Detect changed packages
-        uses: dorny/paths-filter@4512585405083f25c027a35db413c2b3b9006d50 # v2.11.1
+        uses: dorny/paths-filter@0bc4621a3135347011ad047f9ecf449bf72ce2bd # v3.0.0
         id: changes
         with:
           filters: |
