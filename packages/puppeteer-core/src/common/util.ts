@@ -381,14 +381,6 @@ export function parsePDFOptions(
     options.tagged = true;
   }
 
-  console.log({
-    ...defaults,
-    ...options,
-    width,
-    height,
-    margin,
-  });
-
   return {
     ...defaults,
     ...options,

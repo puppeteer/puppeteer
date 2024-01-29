@@ -10,7 +10,7 @@ import expect from 'expect';
 
 import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
 
-describe.only('Page.pdf', () => {
+describe('Page.pdf', () => {
   setupTestBrowserHooks();
 
   it('can print to PDF with accessible', async () => {
@@ -39,7 +39,7 @@ describe.only('Page.pdf', () => {
     const outputFile = __dirname + '/../../assets/output.pdf';
     const outputFileOutlined = __dirname + '/../../assets/output-outlined.pdf';
     await page.goto(server.PREFIX + '/pdf.html');
-    await page.pdf({path: outputFile});
+    await page.pdf({path: outputFile, tagged: true});
     await page.pdf({path: outputFileOutlined, tagged: true, outline: true});
     try {
       const [base, outlined] = await Promise.all([
