@@ -9,7 +9,6 @@ import type {Readable} from 'stream';
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type Protocol from 'devtools-protocol';
 
-import {isIP} from '../../third_party/is-ip/is-ip.js';
 import {
   firstValueFrom,
   from,
@@ -817,13 +816,10 @@ export class BidiPage extends Page {
       // The domain string and the string are identical.
       return true;
     }
+
     // TODO: add check for:
     //  * The string should be a host name (i.e., not an IP address).
 
-    if (isIP(urlHostname)) {
-      // The string should be a host name (i.e., not an IP address).
-      return false;
-    }
     if (!urlHostname.endsWith(cookieDomain)) {
       // The domain string is a suffix of the string.
       return false;
