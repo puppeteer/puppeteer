@@ -20,6 +20,19 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.10.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.9.0...puppeteer-core-v21.10.0) (2024-01-29)
+
+
+### Features
+
+* add experimental browser.debugInfo ([#11748](https://github.com/puppeteer/puppeteer/issues/11748)) ([f88e1da](https://github.com/puppeteer/puppeteer/commit/f88e1da6385bc72e9ffde8514c28e4a0ff9e396a))
+* download chrome-headless-shell by default and use it for the old headless mode ([#11754](https://github.com/puppeteer/puppeteer/issues/11754)) ([ce894a2](https://github.com/puppeteer/puppeteer/commit/ce894a2ffce4bc44bd11f12d1f0543e003a97e02))
+
+
+### Bug Fixes
+
+* set viewport for element screenshots ([#11772](https://github.com/puppeteer/puppeteer/issues/11772)) ([9cd6673](https://github.com/puppeteer/puppeteer/commit/9cd66731d148afff9c2f873c1383fbe367cc5fb2))
+
 ## [21.9.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.8.0...puppeteer-core-v21.9.0) (2024-01-24)
 
 
