@@ -7,8 +7,8 @@
 import type {Readable} from 'stream';
 
 import type {Protocol} from 'devtools-protocol';
-import net from 'net';
 
+import {isIP} from '../../third_party/is-ip/is-ip.js';
 import {
   concat,
   EMPTY,
@@ -39,6 +39,7 @@ import type {DeviceRequestPrompt} from '../cdp/DeviceRequestPrompt.js';
 import type {Credentials, NetworkConditions} from '../cdp/NetworkManager.js';
 import type {Tracing} from '../cdp/Tracing.js';
 import type {ConsoleMessage} from '../common/ConsoleMessage.js';
+import type {Cookie} from '../common/Cookie.js';
 import type {Device} from '../common/Device.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {
@@ -109,7 +110,6 @@ import {
 } from './locators/locators.js';
 import type {Target} from './Target.js';
 import type {WebWorker} from './WebWorker.js';
-import {Cookie} from '../common/Cookie.js';
 
 /**
  * @public
@@ -1326,7 +1326,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       // The domain string and the string are identical.
       return true;
     }
-    if (net.isIP(urlHostname)) {
+    if (isIP(urlHostname)) {
       // The string should be a host name (i.e., not an IP address).
       return false;
     }
@@ -1336,7 +1336,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
     }
     // The last character of the string that is not included in the domain string is a
     // %x2E (".") character.
-    return urlHostname.endsWith("." + cookieDomain);
+    return urlHostname.endsWith('.' + cookieDomain);
   }
 
   static #testCookieUrlMatchPath(cookie: Cookie, parsedUrl: URL): boolean {
@@ -1352,8 +1352,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
     // https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4
     const uriPath = parsedUrl.pathname;
     const cookiePath = cookie.path;
-
-    console.log("!!@@##", uriPath, cookiePath);
 
     if (uriPath === cookiePath) {
       // The cookie-path and the request-path are identical.
@@ -1380,17 +1378,17 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
   /**
    * Checks the cookie matches the URL according to the spec:
-   * * https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
-   * * https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4
+   *
+   * - https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
+   * - https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4
    */
   static testCookieUrlMatch(cookie: Cookie, url: string): boolean {
     const parsedUrl = new URL(url);
-    console.assert(cookie!==undefined)
-    if(!this.#testCookieUrlMatchHostname(cookie, parsedUrl))
+    if (!this.#testCookieUrlMatchHostname(cookie, parsedUrl)) {
       return false;
+    }
     return this.#testCookieUrlMatchPath(cookie, parsedUrl);
   }
-
 
   abstract deleteCookie(
     ...cookies: Protocol.Network.DeleteCookiesRequest[]
