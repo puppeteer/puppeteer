@@ -9,6 +9,7 @@ import type {Readable} from 'stream';
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type Protocol from 'devtools-protocol';
 
+import {isIP} from '../../third_party/is-ip/is-ip.js';
 import {
   firstValueFrom,
   from,
@@ -37,6 +38,7 @@ import {
   ConsoleMessage,
   type ConsoleMessageLocation,
 } from '../common/ConsoleMessage.js';
+import type {Cookie} from '../common/Cookie.js';
 import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
 import type {Handler} from '../common/EventEmitter.js';
 import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
@@ -77,7 +79,6 @@ import {getBiDiReadinessState, rewriteNavigationError} from './lifecycle.js';
 import {BidiNetworkManager} from './NetworkManager.js';
 import {createBidiHandle} from './Realm.js';
 import type {BiDiPageTarget} from './Target.js';
-import {Cookie} from '../common/Cookie.js';
 
 /**
  * @internal
@@ -776,7 +777,9 @@ export class BidiPage extends Page {
   }
 
   override async cookies(...urls: string[]): Promise<Cookie[]> {
-    const requiredUrl = (urls.length ? urls : [this.url()]).map(url=>new URL(url));
+    const requiredUrl = (urls.length ? urls : [this.url()]).map(url => {
+      return new URL(url);
+    });
 
     const bidiCookies = await this.#connection.send('storage.getCookies', {
       partition: {
@@ -784,8 +787,100 @@ export class BidiPage extends Page {
         context: this.mainFrame()._id,
       },
     });
-    return bidiCookies.result.cookies.map(c => this.#bidiToPuppeteerCookie(c))
-      .filter(c => requiredUrl.some(u => Page.testCookieUrlMatch(c, u)));
+    return bidiCookies.result.cookies
+      .map(c => {
+        return this.#bidiToPuppeteerCookie(c);
+      })
+      .filter(c => {
+        return requiredUrl.some(u => {
+          return BidiPage.#testUrlMatchCookie(c, u);
+        });
+      });
+  }
+
+  static #testUrlMatchCookieHostname(cookie: Cookie, parsedUrl: URL): boolean {
+    // Check if domains match according to the spec:
+    //   A string domain-matches a given domain string if at least one of the
+    //   following conditions hold:
+    //   o  The domain string and the string are identical.  (Note that both
+    //      the domain string and the string will have been canonicalized to
+    //      lower case at this point.)
+    //   o  All of the following conditions hold:
+    //     *  The domain string is a suffix of the string.
+    //     *  The last character of the string that is not included in the
+    //        domain string is a %x2E (".") character.
+    //     *  The string is a host name (i.e., not an IP address).
+    // https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
+    const cookieDomain = cookie.domain.toLowerCase();
+    const urlHostname = parsedUrl.hostname.toLowerCase();
+    if (cookieDomain === urlHostname) {
+      // The domain string and the string are identical.
+      return true;
+    }
+    if (isIP(urlHostname)) {
+      // The string should be a host name (i.e., not an IP address).
+      return false;
+    }
+    if (!urlHostname.endsWith(cookieDomain)) {
+      // The domain string is a suffix of the string.
+      return false;
+    }
+    // The last character of the string that is not included in the domain string is a
+    // %x2E (".") character.
+    return urlHostname.endsWith('.' + cookieDomain);
+  }
+
+  static #testUrlMatchCookiePath(cookie: Cookie, parsedUrl: URL): boolean {
+    // Check paths match according to the spec:
+    //   A request-path path-matches a given cookie-path if at least one of
+    //   the following conditions holds:
+    //   o  The cookie-path and the request-path are identical.
+    //   o  The cookie-path is a prefix of the request-path, and the last
+    //      character of the cookie-path is %x2F ("/").
+    //   o  The cookie-path is a prefix of the request-path, and the first
+    //      character of the request-path that is not included in the cookie-
+    //      path is a %x2F ("/") character.
+    // https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4
+    const uriPath = parsedUrl.pathname;
+    const cookiePath = cookie.path;
+
+    if (uriPath === cookiePath) {
+      // The cookie-path and the request-path are identical.
+      return true;
+    }
+    // * The cookie-path is a prefix of the request-path, and the last character of the
+    //   cookie-path is %x2F ("/").
+    // * The cookie-path is a prefix of the request-path, and the first character of the
+    //   request-path that is not included in the cookie-path is a %x2F ("/") character.
+    if (uriPath.startsWith(cookiePath)) {
+      // The cookie-path is a prefix of the request-path.
+      if (cookiePath.endsWith('/')) {
+        // The last character of the cookie-path is %x2F ("/").
+        return true;
+      }
+      if (uriPath[cookiePath.length] === '/') {
+        // The first character of the request-path that is not included in the cookie-path
+        // is a %x2F ("/") character.
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * @internal
+   * Checks the cookie matches the URL according to the spec:
+   *
+   * - https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
+   * - https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4
+   */
+  static #testUrlMatchCookie(cookie: Cookie, url: string): boolean {
+    const parsedUrl = new URL(url);
+    console.assert(cookie !== undefined);
+    if (!this.#testUrlMatchCookieHostname(cookie, parsedUrl)) {
+      return false;
+    }
+    return this.#testUrlMatchCookiePath(cookie, parsedUrl);
   }
 
   #bidiToPuppeteerCookie(bidiCookie: Bidi.Network.Cookie): Cookie {
@@ -802,13 +897,23 @@ export class BidiPage extends Page {
       expires: bidiCookie.expiry ?? -1,
       session: bidiCookie.expiry === undefined || bidiCookie.expiry <= 0,
       // Extending with CDP-specific properties with `goog:` prefix.
-      ...(bidiCookie['goog:sameParty'] !== undefined ? { sameParty: bidiCookie['goog:sameParty'] } : {}),
-      ...(bidiCookie['goog:sourcePort'] !== undefined ? { sourcePort: bidiCookie['goog:sourcePort'] } : {}),
-      ...(bidiCookie['goog:sourceScheme'] !== undefined ? { sourceScheme: bidiCookie['goog:sourceScheme'] } : {}),
-      ...(bidiCookie['goog:partitionKey'] !== undefined ? { partitionKey: bidiCookie['goog:partitionKey'] } : {}),
-      ...(bidiCookie['goog:partitionKeyOpaque'] !== undefined ? { partitionKeyOpaque: bidiCookie['goog:partitionKeyOpaque'] } : {}),
+      ...(bidiCookie['goog:sameParty'] !== undefined
+        ? {sameParty: bidiCookie['goog:sameParty']}
+        : {}),
+      ...(bidiCookie['goog:sourcePort'] !== undefined
+        ? {sourcePort: bidiCookie['goog:sourcePort']}
+        : {}),
+      ...(bidiCookie['goog:sourceScheme'] !== undefined
+        ? {sourceScheme: bidiCookie['goog:sourceScheme']}
+        : {}),
+      ...(bidiCookie['goog:partitionKey'] !== undefined
+        ? {partitionKey: bidiCookie['goog:partitionKey']}
+        : {}),
+      ...(bidiCookie['goog:partitionKeyOpaque'] !== undefined
+        ? {partitionKeyOpaque: bidiCookie['goog:partitionKeyOpaque']}
+        : {}),
       // `priority` is not supported by Puppeteer.
-    }
+    };
   }
 
   #convertCookiesSameSiteBiDiToCdp(

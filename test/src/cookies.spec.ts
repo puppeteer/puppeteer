@@ -204,15 +204,13 @@ describe('Cookie specs', () => {
     it('should get cookies from subdomain', async () => {
       const {page, close} = await launch({});
       try {
-        await page.setCookie(
-          {
-            url: 'https://base_domain.com',
-            name: 'doggo',
-            value: 'woofs',
-          },
-        );
+        await page.setCookie({
+          url: 'https://base_domain.com',
+          name: 'doggo',
+          value: 'woofs',
+        });
         const cookies = await page.cookies(
-          'https://sub_domain.base_domain.com',
+          'https://sub_domain.base_domain.com'
         );
         await expectCookieEquals(cookies, [
           {
@@ -237,16 +235,14 @@ describe('Cookie specs', () => {
     it('should get cookies from nested path', async () => {
       const {page, close} = await launch({});
       try {
-        await page.setCookie(
-          {
-            url: 'https://foo.com',
-            path: '/some_path',
-            name: 'doggo',
-            value: 'woofs',
-          },
-        );
+        await page.setCookie({
+          url: 'https://foo.com',
+          path: '/some_path',
+          name: 'doggo',
+          value: 'woofs',
+        });
         const cookies = await page.cookies(
-          'https://foo.com/some_path/nested_path',
+          'https://foo.com/some_path/nested_path'
         );
         await expectCookieEquals(cookies, [
           {

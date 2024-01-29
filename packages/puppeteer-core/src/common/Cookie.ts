@@ -7,20 +7,20 @@ export type JsInt = number;
  * Represents the cookie's 'SameSite' status:
  * https://tools.ietf.org/html/draft-west-first-party-cookies
  */
-export type CookieSameSite = ('Strict' | 'Lax' | 'None');
+export type CookieSameSite = 'Strict' | 'Lax' | 'None';
 
 /**
  * Represents the cookie's 'Priority' status:
  * https://tools.ietf.org/html/draft-west-cookie-priority-00
  */
-export type CookiePriority = ('Low' | 'Medium' | 'High');
+export type CookiePriority = 'Low' | 'Medium' | 'High';
 
 /**
  * Represents the source scheme of the origin that originally set the cookie.
  * A value of "Unset" allows protocol clients to emulate legacy cookie scope for the scheme.
  * This is a temporary ability and it will be removed in the future.
  */
-export type CookieSourceScheme = ('Unset' | 'NonSecure' | 'Secure');
+export type CookieSourceScheme = 'Unset' | 'NonSecure' | 'Secure';
 
 export interface Cookie {
   /**

@@ -32,6 +32,7 @@ import {
   ConsoleMessage,
   type ConsoleMessageType,
 } from '../common/ConsoleMessage.js';
+import type {Cookie} from '../common/Cookie.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {FileChooser} from '../common/FileChooser.js';
 import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
@@ -79,7 +80,6 @@ import {
   valueFromRemoteObject,
 } from './utils.js';
 import {CdpWebWorker} from './WebWorker.js';
-import {Cookie} from '../common/Cookie.js';
 
 /**
  * @internal
@@ -575,8 +575,10 @@ export class CdpPage extends Page {
 
   override async cookies(...urls: string[]): Promise<Cookie[]> {
     const originalCookies = (
-      await this.#primaryTargetClient.send('Storage.getCookies', {})
-    ).cookies.filter(c => urls.some(u => Page.testCookieUrlMatch(c, u)));
+      await this.#primaryTargetClient.send('Network.getCookies', {
+        urls: urls.length ? urls : [this.url()],
+      })
+    ).cookies;
 
     const unsupportedCookieAttributes = ['priority'];
     const filterUnsupportedAttributes = (

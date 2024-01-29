@@ -22,10 +22,10 @@ import type {
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
+import type {Cookie} from 'puppeteer-core/src/common/Cookie.js';
 import sinon from 'sinon';
 
 import {extendExpectWithToBeGolden} from './utils.js';
-import {Cookie} from 'puppeteer-core/src/common/Cookie.js';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
