@@ -445,7 +445,7 @@ describe('Page', function () {
         messages.map(msg => {
           return msg.type();
         })
-      ).toEqual(['trace', 'dir', 'warning', 'error', 'log']);
+      ).toEqual(['trace', 'dir', 'warn', 'error', 'log']);
       expect(
         messages.map(msg => {
           return msg.text();

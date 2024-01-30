@@ -33,6 +33,7 @@ import {Coverage} from '../cdp/Coverage.js';
 import {EmulationManager as CdpEmulationManager} from '../cdp/EmulationManager.js';
 import {FrameTree} from '../cdp/FrameTree.js';
 import {Tracing} from '../cdp/Tracing.js';
+import type {ConsoleMessageType} from '../common/ConsoleMessage.js';
 import {
   ConsoleMessage,
   type ConsoleMessageLocation,
@@ -408,7 +409,7 @@ export class BidiPage extends Page {
       this.emit(
         PageEvent.Console,
         new ConsoleMessage(
-          event.method as any,
+          event.method as ConsoleMessageType,
           text,
           args,
           getStackTraceLocations(event.stackTrace)

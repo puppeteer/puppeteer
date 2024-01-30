@@ -85,6 +85,15 @@ import {
 } from './utils.js';
 import {CdpWebWorker} from './WebWorker.js';
 
+function convertConsoleMessageLevel(method: string): ConsoleMessageType {
+  switch (method) {
+    case 'warning':
+      return 'warn';
+    default:
+      return method as ConsoleMessageType;
+  }
+}
+
 /**
  * @internal
  */
@@ -475,7 +484,12 @@ export class CdpPage extends Page {
     if (source !== 'worker') {
       this.emit(
         PageEvent.Console,
-        new ConsoleMessage(level, text, [], [{url, lineNumber}])
+        new ConsoleMessage(
+          convertConsoleMessageLevel(level),
+          text,
+          [],
+          [{url, lineNumber}]
+        )
       );
     }
   }
@@ -811,7 +825,11 @@ export class CdpPage extends Page {
     const values = event.args.map(arg => {
       return createCdpHandle(context._world, arg);
     });
-    this.#addConsoleMessage(event.type, values, event.stackTrace);
+    this.#addConsoleMessage(
+      convertConsoleMessageLevel(event.type),
+      values,
+      event.stackTrace
+    );
   }
 
   async #onBindingCalled(
@@ -843,7 +861,7 @@ export class CdpPage extends Page {
   }
 
   #addConsoleMessage(
-    eventType: ConsoleMessageType,
+    eventType: string,
     args: JSHandle[],
     stackTrace?: Protocol.Runtime.StackTrace
   ): void {
@@ -875,7 +893,7 @@ export class CdpPage extends Page {
       }
     }
     const message = new ConsoleMessage(
-      eventType,
+      convertConsoleMessageLevel(eventType),
       textTokens.join(' '),
       args,
       stackTraceLocations
