@@ -48,7 +48,10 @@ describe('Launcher specs', function () {
             [
               'Navigating frame was detached',
               'Protocol error (Page.navigate): Target closed.',
-            ].includes(error.message)
+              'Protocol error (browsingContext.navigate): Target closed',
+            ].some(message => {
+              return error.message.startsWith(message);
+            })
           ).toBeTruthy();
         } finally {
           await close();
