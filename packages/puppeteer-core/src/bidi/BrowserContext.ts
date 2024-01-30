@@ -69,6 +69,7 @@ export class BidiBrowserContext extends BrowserContext {
   override async newPage(): Promise<Page> {
     const {result} = await this.#connection.send('browsingContext.create', {
       type: Bidi.BrowsingContext.CreateType.Tab,
+      userContext: this.#userContext.id,
     });
     const target = this.#browser._getTargetById(result.context);
 
@@ -141,5 +142,12 @@ export class BidiBrowserContext extends BrowserContext {
 
   override clearPermissionOverrides(): never {
     throw new UnsupportedOperation();
+  }
+
+  override get id(): string | undefined {
+    if (this.#userContext.id === 'default') {
+      return undefined;
+    }
+    return this.#userContext.id;
   }
 }
