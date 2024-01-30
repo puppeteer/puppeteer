@@ -395,13 +395,6 @@ export enum InterceptResolutionAction {
 
 /**
  * @public
- *
- * @deprecated please use {@link InterceptResolutionAction} instead.
- */
-export type InterceptResolutionStrategy = InterceptResolutionAction;
-
-/**
- * @public
  */
 export type ErrorCode =
   | 'aborted'
