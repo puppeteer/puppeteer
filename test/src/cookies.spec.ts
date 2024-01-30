@@ -194,6 +194,19 @@ describe('Cookie specs', () => {
       );
       expect(cookies).toHaveLength(1);
     });
+    it('should not get cookies from not nested path', async () => {
+      const {page} = await getTestState();
+      await page.setCookie({
+        url: 'https://foo.com',
+        path: '/some_path',
+        name: 'doggo',
+        value: 'woofs',
+      });
+      const cookies = await page.cookies(
+        'https://foo.com/some_path_looks_like_nested'
+      );
+      expect(cookies).toHaveLength(0);
+    });
   });
   describe('Page.setCookie', function () {
     it('should work', async () => {
