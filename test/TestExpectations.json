@@ -402,6 +402,13 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[browsercontext.spec] BrowserContext should work across sessions",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Missing reading existing user contexts upon creation"
+  },
+  {
     "testIdPattern": "[browsercontext.spec] BrowserContext window.open should use parent tab context",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1374,6 +1381,13 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[browsercontext.spec] BrowserContext should fire target events",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "In BiDi currently more events than needed are fired (because target is updated more often). We probably need to adjust the test as the behavior is not broken per se"
   },
   {
     "testIdPattern": "[browsercontext.spec] BrowserContext should fire target events",

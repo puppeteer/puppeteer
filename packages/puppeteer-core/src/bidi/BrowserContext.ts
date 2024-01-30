@@ -100,16 +100,6 @@ export class BidiBrowserContext extends BrowserContext {
       throw new Error('Default context cannot be closed!');
     }
 
-    // TODO: Remove once we have adopted the new browsing contexts.
-    for (const target of this.targets()) {
-      const page = await target?.page();
-      try {
-        await page?.close();
-      } catch (error) {
-        debugError(error);
-      }
-    }
-
     try {
       await this.#userContext.remove();
     } catch (error) {

@@ -214,15 +214,18 @@ describe('BrowserContext', function () {
 
     expect(browser.browserContexts()).toHaveLength(1);
     const context = await browser.createIncognitoBrowserContext();
-    expect(browser.browserContexts()).toHaveLength(2);
-    const remoteBrowser = await puppeteer.connect({
-      browserWSEndpoint: browser.wsEndpoint(),
-      protocol: browser.protocol,
-    });
-    const contexts = remoteBrowser.browserContexts();
-    expect(contexts).toHaveLength(2);
-    await remoteBrowser.disconnect();
-    await context.close();
+    try {
+      expect(browser.browserContexts()).toHaveLength(2);
+      const remoteBrowser = await puppeteer.connect({
+        browserWSEndpoint: browser.wsEndpoint(),
+        protocol: browser.protocol,
+      });
+      const contexts = remoteBrowser.browserContexts();
+      expect(contexts).toHaveLength(2);
+      await remoteBrowser.disconnect();
+    } finally {
+      await context.close();
+    }
   });
 
   it('should provide a context id', async () => {
