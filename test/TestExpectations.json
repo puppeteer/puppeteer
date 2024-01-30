@@ -3747,6 +3747,60 @@
     "comment": "Remove with M121"
   },
   {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.cookies should get a cookie",
+    "platforms": ["darwin"],
+    "parameters": ["chrome", "headless", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.cookies should get cookies from multiple urls",
+    "platforms": ["darwin"],
+    "parameters": ["chrome", "headless", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.cookies should get cookies from nested path",
+    "platforms": ["darwin"],
+    "parameters": ["chrome", "headless", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.cookies should get multiple cookies",
+    "platforms": ["darwin"],
+    "parameters": ["chrome", "headless", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.cookies should not get cookies from subdomain",
+    "platforms": ["darwin"],
+    "parameters": ["chrome", "headless", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.cookies should properly report \"Lax\" sameSite cookie",
+    "platforms": ["darwin"],
+    "parameters": ["chrome", "headless", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.cookies should properly report \"Strict\" sameSite cookie",
+    "platforms": ["darwin"],
+    "parameters": ["chrome", "headless", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.cookies should properly report httpOnly cookie",
+    "platforms": ["darwin"],
+    "parameters": ["chrome", "headless", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.cookies should return no cookies in pristine browser context",
+    "platforms": ["darwin"],
+    "parameters": ["chrome", "headless", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should be able to set insecure cookie for HTTP website",
     "platforms": ["darwin"],
     "parameters": ["chrome", "headless", "webDriverBiDi"],
