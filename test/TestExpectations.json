@@ -2930,6 +2930,13 @@
     "comment": "Re-test after user contexts land"
   },
   {
+    "testIdPattern": "[page.spec] Page Page.Events.Close should work with window.close",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS", "TIMEOUT"],
+    "comment": "Re-test after user contexts land"
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.Events.Console should have location and stack trace for console API calls",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
@@ -2964,6 +2971,13 @@
     "platforms": ["linux"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
+    "comment": "Re-test after user contexts land"
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.Events.Console should not throw when there are console messages in detached iframes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"],
     "comment": "Re-test after user contexts land"
   },
   {
