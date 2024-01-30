@@ -997,7 +997,7 @@ export class BidiPage extends Page {
       const domain = cookie.domain ?? normalizedUrl?.hostname;
       assert(
         domain !== undefined,
-        `Cookie "${cookie.name}" should have "domain" set`
+        `At least one of the url and domain needs to be specified`
       );
 
       const bidiCookie: Bidi.Storage.PartialCookie = {
