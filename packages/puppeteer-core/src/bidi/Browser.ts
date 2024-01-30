@@ -119,7 +119,9 @@ export class BidiBrowser extends Browser {
     this.#browserCore = browserCore;
     this.#defaultViewport = opts.defaultViewport;
     this.#browserTarget = new BiDiBrowserTarget(this);
-    this.#createBrowserContext(this.#browserCore.defaultUserContext);
+    for (const context of this.#browserCore.userContexts) {
+      this.#createBrowserContext(context);
+    }
   }
 
   #initialize() {

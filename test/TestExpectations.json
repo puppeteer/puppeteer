@@ -402,13 +402,6 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[browsercontext.spec] BrowserContext should work across sessions",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Missing reading existing user contexts upon creation"
-  },
-  {
     "testIdPattern": "[browsercontext.spec] BrowserContext window.open should use parent tab context",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1391,12 +1384,6 @@
   },
   {
     "testIdPattern": "[browsercontext.spec] BrowserContext should fire target events",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[browsercontext.spec] BrowserContext should provide a context id",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]

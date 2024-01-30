@@ -85,7 +85,24 @@ export class Browser extends EventEmitter<{
       }
     });
 
+    await this.#syncUserContexts();
     await this.#syncBrowsingContexts();
+  }
+
+  async #syncUserContexts() {
+    const {
+      result: {userContexts},
+    } = await this.session.send('browser.getUserContexts', {});
+
+    for (const context of userContexts) {
+      if (context.userContext === UserContext.DEFAULT) {
+        continue;
+      }
+      this.#userContexts.set(
+        context.userContext,
+        UserContext.create(this, context.userContext)
+      );
+    }
   }
 
   async #syncBrowsingContexts() {
