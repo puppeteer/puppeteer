@@ -1102,6 +1102,7 @@ export class CdpPage extends Page {
       preferCSSPageSize,
       omitBackground,
       tagged: generateTaggedPDF,
+      outline: generateDocumentOutline,
     } = parsePDFOptions(options);
 
     if (omitBackground) {
@@ -1127,6 +1128,7 @@ export class CdpPage extends Page {
         pageRanges,
         preferCSSPageSize,
         generateTaggedPDF,
+        generateDocumentOutline,
       }
     );
 

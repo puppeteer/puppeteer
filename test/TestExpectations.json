@@ -234,6 +234,12 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[pdf.spec] Page.pdf *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[prerender.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -944,12 +950,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.pdf can print to PDF with accessible",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
     "testIdPattern": "[page.spec] Page Page.pdf should respect timeout",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -1002,6 +1002,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL", "PASS", "TIMEOUT"]
+  },
+  {
+    "testIdPattern": "[pdf.spec] Page.pdf *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[prerender.spec] Prerender can screencast",
@@ -3003,12 +3009,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.pdf can print to PDF with accessible",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
     "testIdPattern": "[page.spec] Page Page.removeExposedFunction should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -3126,6 +3126,18 @@
     "testIdPattern": "[page.spec] Page Page.setUserAgent should work with additional userAgentMetdata",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[pdf.spec] Page.pdf can print to PDF with outline",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "headful"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[pdf.spec] Page.pdf can print to PDF with outline",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "new-headless"],
     "expectations": ["FAIL"]
   },
   {

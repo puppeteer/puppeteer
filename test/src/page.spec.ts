@@ -1940,25 +1940,6 @@ describe('Page', function () {
       }
     });
 
-    it('can print to PDF with accessible', async () => {
-      const {page, server} = await getTestState();
-
-      const outputFile = __dirname + '/../assets/output.pdf';
-      const outputFileAccessible =
-        __dirname + '/../assets/output-accessible.pdf';
-      await page.goto(server.PREFIX + '/pdf.html');
-      await page.pdf({path: outputFile});
-      await page.pdf({path: outputFileAccessible, tagged: true});
-      try {
-        expect(
-          fs.readFileSync(outputFileAccessible).byteLength
-        ).toBeGreaterThan(fs.readFileSync(outputFile).byteLength);
-      } finally {
-        fs.unlinkSync(outputFileAccessible);
-        fs.unlinkSync(outputFile);
-      }
-    });
-
     it('can print to PDF and stream the result', async () => {
       const {page} = await getTestState();
 
