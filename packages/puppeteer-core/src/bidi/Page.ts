@@ -1001,13 +1001,13 @@ export class BidiPage extends Page {
       );
 
       const bidiCookie: Bidi.Storage.PartialCookie = {
-        path: cookie.path ?? normalizedUrl?.pathname,
         domain: domain,
         name: cookie.name,
         value: {
           type: 'string',
           value: cookie.value,
         },
+        ...(cookie.path !== undefined ? {path: cookie.path} : {}),
         ...(cookie.httpOnly !== undefined ? {httpOnly: cookie.httpOnly} : {}),
         ...(cookie.secure !== undefined ? {secure: cookie.secure} : {}),
         ...(cookie.sameSite !== undefined
