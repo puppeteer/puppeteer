@@ -811,9 +811,10 @@ export class BidiPage extends Page {
    *   - The string is a host name (i.e., not an IP address).
    *     https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
    */
-  static #testUrlMatchCookieHostname(cookie: Cookie, parsedUrl: URL): boolean {
+  static #testUrlMatchCookieHostname(cookie: Cookie, normalizedUrl: URL): boolean {
     const cookieDomain = cookie.domain.toLowerCase();
-    const urlHostname = parsedUrl.hostname.toLowerCase();
+    const urlHostname = normalizedUrl.hostname.toLowerCase();
+
     if (cookieDomain === urlHostname) {
       // The domain string and the string are identical.
       return true;
@@ -828,7 +829,7 @@ export class BidiPage extends Page {
     }
     // The last character of the string that is not included in the domain string is a
     // %x2E (".") character.
-    return urlHostname[cookieDomain.length] === '.';
+    return urlHostname[urlHostname.length - cookieDomain.length-1] === '.';
   }
 
   /**
@@ -843,8 +844,8 @@ export class BidiPage extends Page {
    *   request-path that is not included in the cookie-path is a %x2F ("/") character.
    *   https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4
    */
-  static #testUrlMatchCookiePath(cookie: Cookie, parsedUrl: URL): boolean {
-    const uriPath = parsedUrl.pathname;
+  static #testUrlMatchCookiePath(cookie: Cookie, normalizedUrl: URL): boolean {
+    const uriPath = normalizedUrl.pathname;
     const cookiePath = cookie.path;
 
     if (uriPath === cookiePath) {
@@ -873,12 +874,12 @@ export class BidiPage extends Page {
    * - https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4
    */
   static #testUrlMatchCookie(cookie: Cookie, url: URL): boolean {
-    const parsedUrl = new URL(url);
+    const normalizedUrl = new URL(url);
     console.assert(cookie !== undefined);
-    if (!this.#testUrlMatchCookieHostname(cookie, parsedUrl)) {
+    if (!this.#testUrlMatchCookieHostname(cookie, normalizedUrl)) {
       return false;
     }
-    return this.#testUrlMatchCookiePath(cookie, parsedUrl);
+    return this.#testUrlMatchCookiePath(cookie, normalizedUrl);
   }
 
   #bidiToPuppeteerCookie(bidiCookie: Bidi.Network.Cookie): Cookie {
