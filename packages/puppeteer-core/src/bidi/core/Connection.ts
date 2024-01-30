@@ -38,6 +38,21 @@ export interface Commands {
     returnType: Bidi.EmptyResult;
   };
 
+  'browser.createUserContext': {
+    params: Bidi.EmptyParams;
+    returnType: Bidi.Browser.CreateUserContextResult;
+  };
+  'browser.getUserContexts': {
+    params: Bidi.EmptyParams;
+    returnType: Bidi.Browser.GetUserContextsResult;
+  };
+  'browser.removeUserContext': {
+    params: {
+      userContext: Bidi.Browser.UserContext;
+    };
+    returnType: Bidi.Browser.RemoveUserContext;
+  };
+
   'browsingContext.activate': {
     params: Bidi.BrowsingContext.ActivateParameters;
     returnType: Bidi.EmptyResult;
