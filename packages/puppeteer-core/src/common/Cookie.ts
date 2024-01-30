@@ -1,17 +1,16 @@
 /**
- * Represents an integer number.
- */
-export type JsInt = number;
-
-/**
  * Represents the cookie's 'SameSite' status:
  * https://tools.ietf.org/html/draft-west-first-party-cookies
+ *
+ * @public
  */
 export type CookieSameSite = 'Strict' | 'Lax' | 'None';
 
 /**
  * Represents the cookie's 'Priority' status:
  * https://tools.ietf.org/html/draft-west-cookie-priority-00
+ *
+ * @public
  */
 export type CookiePriority = 'Low' | 'Medium' | 'High';
 
@@ -19,9 +18,16 @@ export type CookiePriority = 'Low' | 'Medium' | 'High';
  * Represents the source scheme of the origin that originally set the cookie. A value of
  * "Unset" allows protocol clients to emulate legacy cookie scope for the scheme.
  * This is a temporary ability and it will be removed in the future.
+ *
+ * @public
  */
 export type CookieSourceScheme = 'Unset' | 'NonSecure' | 'Secure';
 
+/**
+ * Represents a cookie object.
+ *
+ * @public
+ */
 export interface Cookie {
   /**
    * Cookie name.
@@ -47,7 +53,7 @@ export interface Cookie {
   /**
    * Cookie size.
    */
-  size: JsInt;
+  size: number;
   /**
    * True if cookie is http-only.
    */
@@ -81,7 +87,7 @@ export interface Cookie {
    * port. An unspecified port value allows protocol clients to emulate legacy cookie
    * scope for the port. This is a temporary ability and it will be removed in the future.
    */
-  sourcePort?: JsInt;
+  sourcePort?: number;
   /**
    * Cookie partition key. The site of the top-level URL the browser was visiting at the
    * start of the request to the endpoint that set the cookie.
