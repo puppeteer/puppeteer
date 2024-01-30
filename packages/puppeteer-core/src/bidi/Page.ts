@@ -867,7 +867,6 @@ export class BidiPage extends Page {
   }
 
   /**
-   * @internal
    * Checks the cookie matches the URL according to the spec:
    *
    * - https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
