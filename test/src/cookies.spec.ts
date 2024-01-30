@@ -172,19 +172,17 @@ describe('Cookie specs', () => {
       ]);
     });
     it('should get cookies from subdomain', async () => {
-      const { page } = await getTestState();
+      const {page} = await getTestState();
       await page.setCookie({
         url: 'https://base_domain.com',
         name: 'doggo',
         value: 'woofs',
       });
-      const cookies = await page.cookies(
-        'https://sub_domain.base_domain.com'
-      );
+      const cookies = await page.cookies('https://sub_domain.base_domain.com');
       expect(cookies).toHaveLength(1);
     });
     it('should get cookies from nested path', async () => {
-      const { page } = await getTestState();
+      const {page} = await getTestState();
       await page.setCookie({
         url: 'https://foo.com',
         path: '/some_path',

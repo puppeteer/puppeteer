@@ -811,7 +811,10 @@ export class BidiPage extends Page {
    *   - The string is a host name (i.e., not an IP address).
    *     https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
    */
-  static #testUrlMatchCookieHostname(cookie: Cookie, normalizedUrl: URL): boolean {
+  static #testUrlMatchCookieHostname(
+    cookie: Cookie,
+    normalizedUrl: URL
+  ): boolean {
     const cookieDomain = cookie.domain.toLowerCase();
     const urlHostname = normalizedUrl.hostname.toLowerCase();
 
@@ -829,7 +832,7 @@ export class BidiPage extends Page {
     }
     // The last character of the string that is not included in the domain string is a
     // %x2E (".") character.
-    return urlHostname[urlHostname.length - cookieDomain.length-1] === '.';
+    return urlHostname[urlHostname.length - cookieDomain.length - 1] === '.';
   }
 
   /**
