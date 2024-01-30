@@ -798,18 +798,11 @@ export class BidiPage extends Page {
   }
 
   /**
-   * Check domains match according to the spec:
-   * A string domain-matches a given domain string if at least one of the following
-   * conditions hold:
-   *
-   * - The domain string and the string are identical. (Note that both the domain string
-   *   and the string will have been canonicalized to lower case at this point.)
-   * - All of the following conditions hold:
-   *   - The domain string is a suffix of the string.
-   *   - The last character of the string that is not included in the domain string is a
-   *     %x2E (".") character.
-   *   - The string is a host name (i.e., not an IP address).
-   *     https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
+   * Check domains match.
+   * According to cookies spec, this check should match subdomains as well, but CDP
+   * implementation does not do that, so this method matches only the exact domains, not
+   * what is written in the spec:
+   * https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
    */
   static #testUrlMatchCookieHostname(
     cookie: Cookie,
@@ -817,35 +810,12 @@ export class BidiPage extends Page {
   ): boolean {
     const cookieDomain = cookie.domain.toLowerCase();
     const urlHostname = normalizedUrl.hostname.toLowerCase();
-
-    if (cookieDomain === urlHostname) {
-      // The domain string and the string are identical.
-      return true;
-    }
-
-    // TODO: add check for:
-    //  * The string should be a host name (i.e., not an IP address).
-
-    if (!urlHostname.endsWith(cookieDomain)) {
-      // The domain string is a suffix of the string.
-      return false;
-    }
-    // The last character of the string that is not included in the domain string is a
-    // %x2E (".") character.
-    return urlHostname[urlHostname.length - cookieDomain.length - 1] === '.';
+    return cookieDomain === urlHostname;
   }
 
   /**
-   * Check paths match according to the spec:
-   * A request-path path-matches a given cookie-path if at least one of the following
-   * conditions holds:
-   *
-   * - The cookie-path and the request-path are identical.
-   * - The cookie-path is a prefix of the request-path, and the last character of the
-   *   cookie-path is %x2F ("/").
-   * - The cookie-path is a prefix of the request-path, and the first character of the
-   *   request-path that is not included in the cookie-path is a %x2F ("/") character.
-   *   https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4
+   * Check paths match.
+   * Spec: https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4
    */
   static #testUrlMatchCookiePath(cookie: Cookie, normalizedUrl: URL): boolean {
     const uriPath = normalizedUrl.pathname;
@@ -872,9 +842,6 @@ export class BidiPage extends Page {
 
   /**
    * Checks the cookie matches the URL according to the spec:
-   *
-   * - https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
-   * - https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4
    */
   static #testUrlMatchCookie(cookie: Cookie, url: URL): boolean {
     const normalizedUrl = new URL(url);

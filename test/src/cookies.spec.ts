@@ -171,7 +171,7 @@ describe('Cookie specs', () => {
         },
       ]);
     });
-    it('should get cookies from subdomain', async () => {
+    it('should not get cookies from subdomain', async () => {
       const {page} = await getTestState();
       await page.setCookie({
         url: 'https://base_domain.com',
@@ -179,7 +179,7 @@ describe('Cookie specs', () => {
         value: 'woofs',
       });
       const cookies = await page.cookies('https://sub_domain.base_domain.com');
-      expect(cookies).toHaveLength(1);
+      expect(cookies).toHaveLength(0);
     });
     it('should get cookies from nested path', async () => {
       const {page} = await getTestState();
