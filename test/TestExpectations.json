@@ -360,6 +360,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.overridePermissions *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.overridePermissions should be prompt by default",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
