@@ -973,35 +973,61 @@ export class BidiPage extends Page {
   override async setCookie(
     ...cookies: Protocol.Network.CookieParam[]
   ): Promise<void> {
+    const pageURL = this.url();
+    const pageUrlStartsWithHTTP = pageURL.startsWith('http');
     for (const cookie of cookies) {
-      // TODO: add support of:
-      // * secure?: boolean;
-      // * priority?: CookiePriority;
-      // * sameParty?: boolean;
-      // * sourceScheme?: CookieSourceScheme;
-      // * sourcePort?: integer;
+      let cookieUrl = cookie.url || '';
+      if (!cookieUrl && pageUrlStartsWithHTTP) {
+        cookieUrl = pageURL;
+      }
+      assert(
+        cookieUrl !== 'about:blank',
+        `Blank page can not have cookie "${cookie.name}"`
+      );
+      assert(
+        !String.prototype.startsWith.call(cookieUrl || '', 'data:'),
+        `Data URL page can not have cookie "${cookie.name}"`
+      );
 
-      const url = new URL(cookie.url ?? this.url());
-      const domain = cookie.domain ?? url.hostname;
-      const path = cookie.path ?? '/';
+      const normalizedUrl = URL.canParse(cookieUrl)
+        ? new URL(cookieUrl)
+        : undefined;
+
+      const domain = cookie.domain ?? normalizedUrl?.hostname;
+      assert(
+        domain !== undefined,
+        `Cookie "${cookie.name}" should have "domain" set`
+      );
 
       const bidiCookie: Bidi.Storage.PartialCookie = {
-        path: path,
+        path: cookie.path ?? normalizedUrl?.pathname,
         domain: domain,
         name: cookie.name,
         value: {
           type: 'string',
           value: cookie.value,
         },
-        secure: false,
-        // ...(cookie.secure !== undefined ? {secure: cookie.secure} : {}),
         ...(cookie.httpOnly !== undefined ? {httpOnly: cookie.httpOnly} : {}),
         ...(cookie.secure !== undefined ? {secure: cookie.secure} : {}),
         ...(cookie.sameSite !== undefined
           ? {sameSite: this.#convertCookiesSameSiteCdpToBiDi(cookie.sameSite)}
           : {}),
         ...(cookie.expires !== undefined ? {expiry: cookie.expires} : {}),
+        // Chrome-specific properties.
+        ...(cookieUrl ? {'goog:url': cookieUrl} : {}),
+        ...(cookie.sameParty !== undefined
+          ? {'goog:sameParty': cookie.sameParty}
+          : {}),
+        ...(cookie.sourceScheme !== undefined
+          ? {'goog:sourceScheme': cookie.sourceScheme}
+          : {}),
+        ...(cookie.sourcePort !== undefined
+          ? {'goog:sourcePort': cookie.sourcePort}
+          : {}),
       };
+
+      // TODO: delete cookie before setting them.
+      // await this.deleteCookie(bidiCookie);
 
       const partition: Bidi.Storage.PartitionDescriptor =
         cookie.partitionKey !== undefined
