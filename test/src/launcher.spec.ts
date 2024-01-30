@@ -16,7 +16,7 @@ import type {Page} from 'puppeteer-core/internal/api/Page.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 import sinon from 'sinon';
 
-import {getTestState, isHeadless, launch} from './mocha-utils.js';
+import {getTestState, launch} from './mocha-utils.js';
 import {dumpFrames, waitEvent} from './utils.js';
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
@@ -408,21 +408,18 @@ describe('Launcher specs', function () {
           expect(puppeteer.product).toBe('firefox');
         }
       });
-      (!isHeadless ? it : it.skip)(
-        'should work with no default arguments',
-        async () => {
-          const {context, close} = await launch({
-            ignoreDefaultArgs: true,
-          });
-          try {
-            const page = await context.newPage();
-            expect(await page.evaluate('11 * 11')).toBe(121);
-            await page.close();
-          } finally {
-            await close();
-          }
+      it('should work with no default arguments', async () => {
+        const {context, close} = await launch({
+          ignoreDefaultArgs: true,
+        });
+        try {
+          const page = await context.newPage();
+          expect(await page.evaluate('11 * 11')).toBe(121);
+          await page.close();
+        } finally {
+          await close();
         }
-      );
+      });
       it('should filter out ignored default arguments in Chrome', async () => {
         const {defaultBrowserOptions, puppeteer} = await getTestState({
           skipLaunch: true,
@@ -590,31 +587,28 @@ describe('Launcher specs', function () {
         });
         expect(error.message).toContain('either pipe or debugging port');
       });
-      (!isHeadless ? it : it.skip)(
-        'should launch Chrome properly with --no-startup-window and waitForInitialPage=false',
-        async () => {
-          const {defaultBrowserOptions} = await getTestState({
-            skipLaunch: true,
-          });
-          const options = {
-            waitForInitialPage: false,
-            // This is needed to prevent Puppeteer from adding an initial blank page.
-            // See also https://github.com/puppeteer/puppeteer/blob/ad6b736039436fcc5c0a262e5b575aa041427be3/src/node/Launcher.ts#L200
-            ignoreDefaultArgs: true,
-            ...defaultBrowserOptions,
-            args: ['--no-startup-window'],
-          };
-          const {browser, close} = await launch(options, {
-            createContext: false,
-          });
-          try {
-            const pages = await browser.pages();
-            expect(pages).toHaveLength(0);
-          } finally {
-            await close();
-          }
+      it('should launch Chrome properly with --no-startup-window and waitForInitialPage=false', async () => {
+        const {defaultBrowserOptions} = await getTestState({
+          skipLaunch: true,
+        });
+        const options = {
+          waitForInitialPage: false,
+          // This is needed to prevent Puppeteer from adding an initial blank page.
+          // See also https://github.com/puppeteer/puppeteer/blob/ad6b736039436fcc5c0a262e5b575aa041427be3/src/node/Launcher.ts#L200
+          ignoreDefaultArgs: true,
+          ...defaultBrowserOptions,
+          args: ['--no-startup-window'],
+        };
+        const {browser, close} = await launch(options, {
+          createContext: false,
+        });
+        try {
+          const pages = await browser.pages();
+          expect(pages).toHaveLength(0);
+        } finally {
+          await close();
         }
-      );
+      });
     });
 
     describe('Puppeteer.launch', function () {
