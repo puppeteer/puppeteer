@@ -1370,6 +1370,13 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[browsercontext.spec] BrowserContext should create new incognito context",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Re-test after user contexts land"
+  },
+  {
     "testIdPattern": "[browsercontext.spec] BrowserContext should fire target events",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
@@ -1381,6 +1388,13 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[browsercontext.spec] BrowserContext should have default context",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Re-test after user contexts land"
   },
   {
     "testIdPattern": "[browsercontext.spec] BrowserContext should timeout waiting for a non-existent target",
@@ -1411,6 +1425,13 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[browsercontext.spec] BrowserContext window.open should use parent tab context",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Re-test after user contexts land"
   },
   {
     "testIdPattern": "[CDPSession.spec] Target.createCDPSession should be able to detach session",
@@ -2902,6 +2923,13 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[page.spec] Page Page.Events.Close should work with window.close",
+    "platforms": ["linux"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["TIMEOUT"],
+    "comment": "Re-test after user contexts land"
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.Events.Console should have location and stack trace for console API calls",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
@@ -2930,6 +2958,13 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.Events.Console should not throw when there are console messages in detached iframes",
+    "platforms": ["linux"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Re-test after user contexts land"
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should trigger correct Log",
@@ -3412,6 +3447,13 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[target.spec] Target should be able to use async waitForTarget",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Re-test after user contexts land"
+  },
+  {
     "testIdPattern": "[target.spec] Target should contain browser target",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
@@ -3438,6 +3480,13 @@
   {
     "testIdPattern": "[target.spec] Target should not crash while redirecting if original request was missed",
     "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Re-test after user contexts land"
+  },
+  {
+    "testIdPattern": "[target.spec] Target should not crash while redirecting if original request was missed",
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
   },
@@ -3452,6 +3501,13 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[target.spec] Target should report when a new page is created and closed",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Re-test after user contexts land"
   },
   {
     "testIdPattern": "[target.spec] Target should report when a new page is created and closed",
