@@ -8,12 +8,7 @@ import assert from 'assert';
 
 import expect from 'expect';
 
-import {
-  getTestState,
-  isHeadless,
-  launch,
-  setupTestBrowserHooks,
-} from './mocha-utils.js';
+import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
 
 describe('Screenshots', function () {
   setupTestBrowserHooks();
@@ -436,18 +431,15 @@ describe('Screenshots', function () {
       });
       expect(screenshot).toBeGolden('white.jpg');
     });
-    (!isHeadless ? it : it.skip)(
-      'should work in "fromSurface: false" mode',
-      async () => {
-        const {page, server} = await getTestState();
+    it('should work in "fromSurface: false" mode', async () => {
+      const {page, server} = await getTestState();
 
-        await page.setViewport({width: 500, height: 500});
-        await page.goto(server.PREFIX + '/grid.html');
-        const screenshot = await page.screenshot({
-          fromSurface: false,
-        });
-        expect(screenshot).toBeDefined(); // toBeGolden('screenshot-fromsurface-false.png');
-      }
-    );
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(server.PREFIX + '/grid.html');
+      const screenshot = await page.screenshot({
+        fromSurface: false,
+      });
+      expect(screenshot).toBeDefined();
+    });
   });
 });
