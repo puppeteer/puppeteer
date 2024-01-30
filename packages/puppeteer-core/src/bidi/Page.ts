@@ -797,19 +797,21 @@ export class BidiPage extends Page {
       });
   }
 
+  /**
+   * Check domains match according to the spec:
+   * A string domain-matches a given domain string if at least one of the following
+   * conditions hold:
+   *
+   * - The domain string and the string are identical. (Note that both the domain string
+   *   and the string will have been canonicalized to lower case at this point.)
+   * - All of the following conditions hold:
+   *   - The domain string is a suffix of the string.
+   *   - The last character of the string that is not included in the domain string is a
+   *     %x2E (".") character.
+   *   - The string is a host name (i.e., not an IP address).
+   *     https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
+   */
   static #testUrlMatchCookieHostname(cookie: Cookie, parsedUrl: URL): boolean {
-    // Check if domains match according to the spec:
-    //   A string domain-matches a given domain string if at least one of the
-    //   following conditions hold:
-    //   o  The domain string and the string are identical.  (Note that both
-    //      the domain string and the string will have been canonicalized to
-    //      lower case at this point.)
-    //   o  All of the following conditions hold:
-    //     *  The domain string is a suffix of the string.
-    //     *  The last character of the string that is not included in the
-    //        domain string is a %x2E (".") character.
-    //     *  The string is a host name (i.e., not an IP address).
-    // https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
     const cookieDomain = cookie.domain.toLowerCase();
     const urlHostname = parsedUrl.hostname.toLowerCase();
     if (cookieDomain === urlHostname) {
@@ -826,20 +828,22 @@ export class BidiPage extends Page {
     }
     // The last character of the string that is not included in the domain string is a
     // %x2E (".") character.
-    return urlHostname.endsWith('.' + cookieDomain);
+    return urlHostname[cookieDomain.length] === '.';
   }
 
+  /**
+   * Check paths match according to the spec:
+   * A request-path path-matches a given cookie-path if at least one of the following
+   * conditions holds:
+   *
+   * - The cookie-path and the request-path are identical.
+   * - The cookie-path is a prefix of the request-path, and the last character of the
+   *   cookie-path is %x2F ("/").
+   * - The cookie-path is a prefix of the request-path, and the first character of the
+   *   request-path that is not included in the cookie-path is a %x2F ("/") character.
+   *   https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4
+   */
   static #testUrlMatchCookiePath(cookie: Cookie, parsedUrl: URL): boolean {
-    // Check paths match according to the spec:
-    //   A request-path path-matches a given cookie-path if at least one of
-    //   the following conditions holds:
-    //   o  The cookie-path and the request-path are identical.
-    //   o  The cookie-path is a prefix of the request-path, and the last
-    //      character of the cookie-path is %x2F ("/").
-    //   o  The cookie-path is a prefix of the request-path, and the first
-    //      character of the request-path that is not included in the cookie-
-    //      path is a %x2F ("/") character.
-    // https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4
     const uriPath = parsedUrl.pathname;
     const cookiePath = cookie.path;
 
@@ -847,10 +851,6 @@ export class BidiPage extends Page {
       // The cookie-path and the request-path are identical.
       return true;
     }
-    // * The cookie-path is a prefix of the request-path, and the last character of the
-    //   cookie-path is %x2F ("/").
-    // * The cookie-path is a prefix of the request-path, and the first character of the
-    //   request-path that is not included in the cookie-path is a %x2F ("/") character.
     if (uriPath.startsWith(cookiePath)) {
       // The cookie-path is a prefix of the request-path.
       if (cookiePath.endsWith('/')) {
@@ -989,13 +989,12 @@ export class BidiPage extends Page {
         path: path,
         domain: domain,
         name: cookie.name,
-        // For whatever reason the `secure: false` value is not accepted by CDP.
-        // > ProtocolError: Protocol error (Storage.setCookies): Invalid cookie fields.
-        secure: true,
         value: {
           type: 'string',
           value: cookie.value,
         },
+        secure: false,
+        // ...(cookie.secure !== undefined ? {secure: cookie.secure} : {}),
         ...(cookie.httpOnly !== undefined ? {httpOnly: cookie.httpOnly} : {}),
         ...(cookie.secure !== undefined ? {secure: cookie.secure} : {}),
         ...(cookie.sameSite !== undefined
@@ -1009,7 +1008,7 @@ export class BidiPage extends Page {
           ? {
               type: 'storageKey',
               sourceOrigin: cookie.partitionKey,
-              userContext: 'IGNORED_VALUE',
+              userContext: this.#browserContext.id,
             }
           : {
               type: 'context',
