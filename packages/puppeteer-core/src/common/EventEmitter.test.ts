@@ -19,7 +19,7 @@ describe('EventEmitter', () => {
   });
 
   describe('on', () => {
-    const onTests = (methodName: 'on' | 'addListener'): void => {
+    const onTests = (methodName: 'on'): void => {
       it(`${methodName}: adds an event listener that is fired when the event is emitted`, () => {
         const listener = sinon.spy();
         emitter[methodName]('foo', listener);
@@ -43,12 +43,10 @@ describe('EventEmitter', () => {
       });
     };
     onTests('on');
-    // we support addListener for legacy reasons
-    onTests('addListener');
   });
 
   describe('off', () => {
-    const offTests = (methodName: 'off' | 'removeListener'): void => {
+    const offTests = (methodName: 'off'): void => {
       it(`${methodName}: removes the listener so it is no longer called`, () => {
         const listener = sinon.spy();
         emitter.on('foo', listener);
@@ -67,8 +65,6 @@ describe('EventEmitter', () => {
       });
     };
     offTests('off');
-    // we support removeListener for legacy reasons
-    offTests('removeListener');
   });
 
   describe('once', () => {
