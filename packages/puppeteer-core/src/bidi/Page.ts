@@ -776,7 +776,7 @@ export class BidiPage extends Page {
   }
 
   override async cookies(...urls: string[]): Promise<Cookie[]> {
-    const requiredUrls = (urls.length ? urls : [this.url()]).map(url => {
+    const normalizedUrls = (urls.length ? urls : [this.url()]).map(url => {
       return new URL(url);
     });
 
@@ -791,7 +791,7 @@ export class BidiPage extends Page {
         return this.#bidiToPuppeteerCookie(c);
       })
       .filter(c => {
-        return requiredUrls.some(u => {
+        return normalizedUrls.some(u => {
           return BidiPage.#testUrlMatchCookie(c, u);
         });
       });
