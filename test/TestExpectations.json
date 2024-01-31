@@ -2538,6 +2538,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with history.pushState()",
+    "platforms": ["linux"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS", "TIMEOUT"]
+  },
+  {
     "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with history.replaceState()",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
