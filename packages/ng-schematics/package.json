@@ -4,7 +4,7 @@
   "description": "Puppeteer Angular schematics",
   "scripts": {
     "build": "wireit",
-    "clean": "../../tools/clean.js",
+    "clean": "../../tools/clean.mjs",
     "dev:test": "npm run test --watch",
     "dev": "npm run build --watch",
     "unit": "wireit"

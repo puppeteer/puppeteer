@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "wireit",
-    "clean": "../../tools/clean.js"
+    "clean": "../../tools/clean.mjs"
   },
   "wireit": {
     "build": {

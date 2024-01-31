@@ -37,7 +37,7 @@
   "scripts": {
     "build:docs": "wireit",
     "build": "wireit",
-    "clean": "../../tools/clean.js",
+    "clean": "../../tools/clean.mjs",
     "postinstall": "node install.mjs",
     "prepack": "wireit"
   },

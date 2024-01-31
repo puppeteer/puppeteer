@@ -1,7 +1,13 @@
 #!/usr/bin/env node
 
-const {exec} = require('child_process');
-const {readdirSync} = require('fs');
+/**
+ * @license
+ * Copyright 2022 Google Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import {exec} from 'child_process';
+import {readdirSync} from 'fs';
 
 exec(
   `git clean -Xf ${readdirSync(process.cwd())

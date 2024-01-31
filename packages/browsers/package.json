@@ -6,7 +6,7 @@
     "build:docs": "wireit",
     "build": "wireit",
     "build:test": "wireit",
-    "clean": "../../tools/clean.js",
+    "clean": "../../tools/clean.mjs",
     "test": "wireit"
   },
   "type": "commonjs",
