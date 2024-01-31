@@ -198,7 +198,7 @@ jobs:
         uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
         with:
           path: ~/.cache/puppeteer/chrome
-          key: ${{ runner.os }}-Chrome-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
+          key: Chrome-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
       - name: Install Chrome
         if: ${{ matrix.suite != 'chrome-bidi' }}
         run: npm run postinstall
@@ -207,7 +207,7 @@ jobs:
         uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
         with:
           path: ~/.cache/puppeteer/chrome-canary
-          key: ${{ runner.os }}-Chrome-Canary-${{ hashFiles('package.json') }}
+          key: Chrome-Canary-${{ runner.os }}-${{ hashFiles('package.json') }}
       - name: Install Chrome Canary
         if: ${{ matrix.suite == 'chrome-bidi' }}
         id: browser
@@ -297,7 +297,7 @@ jobs:
         uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
         with:
           path: ~/.cache/puppeteer/firefox
-          key: ${{ runner.os }}-firefox-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
+          key: Firefox-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
       - name: Install Firefox
         env:
           PUPPETEER_PRODUCT: firefox
@@ -513,7 +513,7 @@ jobs:
         uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
         with:
           path: ~/.cache/puppeteer/chrome
-          key: ${{ runner.os }}-Chrome-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
+          key: Chrome-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
       - name: Install Chrome
         run: npm run postinstall
       - name: Build Schematics
