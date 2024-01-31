@@ -84,6 +84,10 @@ export class UserContext extends EventEmitter<{
         return;
       }
 
+      if (info.userContext !== this.#id) {
+        return;
+      }
+
       const browsingContext = BrowsingContext.from(
         this,
         undefined,
@@ -143,6 +147,7 @@ export class UserContext extends EventEmitter<{
       type,
       ...options,
       referenceContext: options.referenceContext?.id,
+      userContext: this.#id,
     });
 
     const browsingContext = this.#browsingContexts.get(contextId);
@@ -161,7 +166,9 @@ export class UserContext extends EventEmitter<{
   })
   async remove(): Promise<void> {
     try {
-      // TODO: Call `removeUserContext` once available.
+      await this.#session.send('browser.removeUserContext', {
+        userContext: this.#id,
+      });
     } finally {
       this.dispose('User context already closed.');
     }

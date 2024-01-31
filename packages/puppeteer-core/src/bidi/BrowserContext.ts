@@ -69,6 +69,7 @@ export class BidiBrowserContext extends BrowserContext {
   override async newPage(): Promise<Page> {
     const {result} = await this.#connection.send('browsingContext.create', {
       type: Bidi.BrowsingContext.CreateType.Tab,
+      userContext: this.#userContext.id,
     });
     const target = this.#browser._getTargetById(result.context);
 
@@ -97,16 +98,6 @@ export class BidiBrowserContext extends BrowserContext {
   override async close(): Promise<void> {
     if (!this.isIncognito()) {
       throw new Error('Default context cannot be closed!');
-    }
-
-    // TODO: Remove once we have adopted the new browsing contexts.
-    for (const target of this.targets()) {
-      const page = await target?.page();
-      try {
-        await page?.close();
-      } catch (error) {
-        debugError(error);
-      }
     }
 
     try {
@@ -141,5 +132,12 @@ export class BidiBrowserContext extends BrowserContext {
 
   override clearPermissionOverrides(): never {
     throw new UnsupportedOperation();
+  }
+
+  override get id(): string | undefined {
+    if (this.#userContext.id === 'default') {
+      return undefined;
+    }
+    return this.#userContext.id;
   }
 }

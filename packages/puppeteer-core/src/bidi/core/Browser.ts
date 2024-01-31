@@ -85,7 +85,24 @@ export class Browser extends EventEmitter<{
       }
     });
 
+    await this.#syncUserContexts();
     await this.#syncBrowsingContexts();
+  }
+
+  async #syncUserContexts() {
+    const {
+      result: {userContexts},
+    } = await this.session.send('browser.getUserContexts', {});
+
+    for (const context of userContexts) {
+      if (context.userContext === UserContext.DEFAULT) {
+        continue;
+      }
+      this.#userContexts.set(
+        context.userContext,
+        UserContext.create(this, context.userContext)
+      );
+    }
   }
 
   async #syncBrowsingContexts() {
@@ -185,16 +202,14 @@ export class Browser extends EventEmitter<{
     });
   }
 
-  static userContextId = 0;
   @throwIfDisposed<Browser>(browser => {
     // SAFETY: By definition of `disposed`, `#reason` is defined.
     return browser.#reason!;
   })
   async createUserContext(): Promise<UserContext> {
-    // TODO: implement incognito context https://github.com/w3c/webdriver-bidi/issues/289.
-    // TODO: Call `createUserContext` once available.
-    // Generating a monotonically increasing context id.
-    const context = `${++Browser.userContextId}`;
+    const {
+      result: {userContext: context},
+    } = await this.session.send('browser.createUserContext', {});
 
     const userContext = UserContext.create(this, context);
     this.#userContexts.set(userContext.id, userContext);

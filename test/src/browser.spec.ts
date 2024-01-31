@@ -52,7 +52,9 @@ describe('Browser specs', function () {
       expect(process!.pid).toBeGreaterThan(0);
     });
     it('should not return child_process for remote browser', async () => {
-      const {browser, puppeteer} = await getTestState();
+      const {browser, puppeteer} = await getTestState({
+        skipContextCreation: true,
+      });
 
       const browserWSEndpoint = browser.wsEndpoint();
       const remoteBrowser = await puppeteer.connect({
@@ -66,7 +68,9 @@ describe('Browser specs', function () {
 
   describe('Browser.isConnected', () => {
     it('should set the browser connected state', async () => {
-      const {browser, puppeteer} = await getTestState();
+      const {browser, puppeteer} = await getTestState({
+        skipContextCreation: true,
+      });
 
       const browserWSEndpoint = browser.wsEndpoint();
       const newBrowser = await puppeteer.connect({
