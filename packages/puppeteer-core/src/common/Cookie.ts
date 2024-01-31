@@ -1,4 +1,10 @@
 /**
+ * @license
+ * Copyright 2024 Google Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
  * Represents the cookie's 'SameSite' status:
  * https://tools.ietf.org/html/draft-west-first-party-cookies
  *
