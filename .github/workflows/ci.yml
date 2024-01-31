@@ -387,7 +387,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
         with:
-          node-version-file: ${{ needs.installation-test-build.outputs.node-version }}
+          node-version-file: ${{ needs.installation-test-build.node-version }}
       - name: Install dependencies
         run: ${{ matrix.pkg_manager }} install
       - name: Test
