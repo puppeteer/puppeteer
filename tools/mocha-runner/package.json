@@ -9,7 +9,7 @@
   "scripts": {
     "build": "wireit",
     "test": "wireit",
-    "clean": "../clean.js"
+    "clean": "../clean.mjs"
   },
   "wireit": {
     "build": {
