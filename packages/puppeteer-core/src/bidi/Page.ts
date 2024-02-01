@@ -845,7 +845,7 @@ export class BidiPage extends Page {
    */
   static #testUrlMatchCookie(cookie: Cookie, url: URL): boolean {
     const normalizedUrl = new URL(url);
-    console.assert(cookie !== undefined);
+    assert(cookie !== undefined);
     if (!this.#testUrlMatchCookieHostname(cookie, normalizedUrl)) {
       return false;
     }
