@@ -882,6 +882,9 @@ export class BidiPage extends Page {
         ...(cookie.sourceScheme !== undefined
           ? {'goog:sourceScheme': cookie.sourceScheme}
           : {}),
+        ...(cookie.priority !== undefined
+          ? {'goog:priority': cookie.priority}
+          : {}),
       };
 
       // TODO: delete cookie before setting them.
@@ -1084,7 +1087,9 @@ function bidiToPuppeteerCookie(bidiCookie: Bidi.Network.Cookie): Cookie {
     ...(bidiCookie['goog:partitionKeyOpaque'] !== undefined
       ? {partitionKeyOpaque: bidiCookie['goog:partitionKeyOpaque']}
       : {}),
-    // `priority` is not supported by Puppeteer.
+    ...(bidiCookie['goog:priority'] !== undefined
+      ? {priority: bidiCookie['goog:priority']}
+      : {}),
   };
 }
 
