@@ -578,11 +578,22 @@ export class CdpPage extends Page {
   }
 
   override async cookies(...urls: string[]): Promise<Cookie[]> {
-    return (
+    const originalCookies = (
       await this.#primaryTargetClient.send('Network.getCookies', {
         urls: urls.length ? urls : [this.url()],
       })
     ).cookies;
+
+    const unsupportedCookieAttributes = ['sourcePort'];
+    const filterUnsupportedAttributes = (
+      cookie: Protocol.Network.Cookie
+    ): Protocol.Network.Cookie => {
+      for (const attr of unsupportedCookieAttributes) {
+        delete (cookie as unknown as Record<string, unknown>)[attr];
+      }
+      return cookie;
+    };
+    return originalCookies.map(filterUnsupportedAttributes);
   }
 
   override async deleteCookie(

@@ -1075,9 +1075,6 @@ function bidiToPuppeteerCookie(bidiCookie: Bidi.Network.Cookie): Cookie {
     ...(bidiCookie['goog:sameParty'] !== undefined
       ? {sameParty: bidiCookie['goog:sameParty']}
       : {}),
-    ...(bidiCookie['goog:sourcePort'] !== undefined
-      ? {sourcePort: bidiCookie['goog:sourcePort']}
-      : {}),
     ...(bidiCookie['goog:sourceScheme'] !== undefined
       ? {sourceScheme: bidiCookie['goog:sourceScheme']}
       : {}),

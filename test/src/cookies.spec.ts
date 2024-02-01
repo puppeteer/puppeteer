@@ -152,7 +152,6 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: true,
           session: true,
-          sourcePort: 443,
           sourceScheme: 'Secure',
         },
         {
@@ -166,7 +165,6 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: true,
           session: true,
-          sourcePort: 443,
           sourceScheme: 'Secure',
         },
       ]);
@@ -307,7 +305,6 @@ describe('Cookie specs', () => {
             httpOnly: false,
             secure: false,
             session: true,
-            sourcePort: 80,
             sourceScheme: 'NonSecure',
           },
         ]
@@ -334,7 +331,6 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: false,
           session: true,
-          sourcePort: 80,
           sourceScheme: 'NonSecure',
         },
       ]);
@@ -439,7 +435,6 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: true,
           session: true,
-          sourcePort: 443,
           sourceScheme: 'Secure',
         },
       ]);
@@ -482,7 +477,6 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: false,
           session: true,
-          sourcePort: 80,
           sourceScheme: 'NonSecure',
         },
       ]);
@@ -501,7 +495,6 @@ describe('Cookie specs', () => {
             httpOnly: false,
             secure: false,
             session: true,
-            sourcePort: 80,
             sourceScheme: 'NonSecure',
           },
         ]
@@ -551,7 +544,6 @@ describe('Cookie specs', () => {
               sameSite: 'None',
               secure: true,
               session: true,
-              sourcePort: 443,
               sourceScheme: 'Secure',
             },
           ]
