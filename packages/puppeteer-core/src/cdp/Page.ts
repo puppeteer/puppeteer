@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {Readable} from 'stream';
-
 import type {Protocol} from 'devtools-protocol';
 
 import {firstValueFrom, from, raceWith} from '../../third_party/rxjs/rxjs.js';
@@ -1105,7 +1103,9 @@ export class CdpPage extends Page {
     return data;
   }
 
-  override async createPDFStream(options: PDFOptions = {}): Promise<Readable> {
+  override async createPDFStream(
+    options: PDFOptions = {}
+  ): Promise<ReadableStream<Uint8Array>> {
     const {timeout: ms = this._timeoutSettings.timeout()} = options;
     const {
       landscape,

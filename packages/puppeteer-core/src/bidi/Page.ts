@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {Readable} from 'stream';
-
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type Protocol from 'devtools-protocol';
 
@@ -638,19 +636,15 @@ export class BidiPage extends Page {
 
   override async createPDFStream(
     options?: PDFOptions | undefined
-  ): Promise<Readable> {
+  ): Promise<ReadableStream<Uint8Array>> {
     const buffer = await this.pdf(options);
-    try {
-      const {Readable} = await import('stream');
-      return Readable.from(buffer);
-    } catch (error) {
-      if (error instanceof TypeError) {
-        throw new Error(
-          'Can only pass a file path in a Node-like environment.'
-        );
-      }
-      throw error;
-    }
+
+    return new ReadableStream({
+      start(controller) {
+        controller.enqueue(buffer);
+        controller.close();
+      },
+    });
   }
 
   override async _screenshot(
