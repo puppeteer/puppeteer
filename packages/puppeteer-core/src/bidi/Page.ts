@@ -788,121 +788,13 @@ export class BidiPage extends Page {
     });
     return bidiCookies.result.cookies
       .map(cookie => {
-        return this.#bidiToPuppeteerCookie(cookie);
+        return bidiToPuppeteerCookie(cookie);
       })
       .filter(cookie => {
         return normalizedUrls.some(url => {
-          return BidiPage.#testUrlMatchCookie(cookie, url);
+          return testUrlMatchCookie(cookie, url);
         });
       });
-  }
-
-  /**
-   * Check domains match.
-   * According to cookies spec, this check should match subdomains as well, but CDP
-   * implementation does not do that, so this method matches only the exact domains, not
-   * what is written in the spec:
-   * https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
-   */
-  static #testUrlMatchCookieHostname(
-    cookie: Cookie,
-    normalizedUrl: URL
-  ): boolean {
-    const cookieDomain = cookie.domain.toLowerCase();
-    const urlHostname = normalizedUrl.hostname.toLowerCase();
-    return cookieDomain === urlHostname;
-  }
-
-  /**
-   * Check paths match.
-   * Spec: https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4
-   */
-  static #testUrlMatchCookiePath(cookie: Cookie, normalizedUrl: URL): boolean {
-    const uriPath = normalizedUrl.pathname;
-    const cookiePath = cookie.path;
-
-    if (uriPath === cookiePath) {
-      // The cookie-path and the request-path are identical.
-      return true;
-    }
-    if (uriPath.startsWith(cookiePath)) {
-      // The cookie-path is a prefix of the request-path.
-      if (cookiePath.endsWith('/')) {
-        // The last character of the cookie-path is %x2F ("/").
-        return true;
-      }
-      if (uriPath[cookiePath.length] === '/') {
-        // The first character of the request-path that is not included in the cookie-path
-        // is a %x2F ("/") character.
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
-   * Checks the cookie matches the URL according to the spec:
-   */
-  static #testUrlMatchCookie(cookie: Cookie, url: URL): boolean {
-    const normalizedUrl = new URL(url);
-    assert(cookie !== undefined);
-    if (!this.#testUrlMatchCookieHostname(cookie, normalizedUrl)) {
-      return false;
-    }
-    return this.#testUrlMatchCookiePath(cookie, normalizedUrl);
-  }
-
-  #bidiToPuppeteerCookie(bidiCookie: Bidi.Network.Cookie): Cookie {
-    return {
-      name: bidiCookie.name,
-      // Presents binary value as base64 string.
-      value: bidiCookie.value.value,
-      domain: bidiCookie.domain,
-      path: bidiCookie.path,
-      size: bidiCookie.size,
-      httpOnly: bidiCookie.httpOnly,
-      secure: bidiCookie.secure,
-      sameSite: this.#convertCookiesSameSiteBiDiToCdp(bidiCookie.sameSite),
-      expires: bidiCookie.expiry ?? -1,
-      session: bidiCookie.expiry === undefined || bidiCookie.expiry <= 0,
-      // Extending with CDP-specific properties with `goog:` prefix.
-      ...(bidiCookie['goog:sameParty'] !== undefined
-        ? {sameParty: bidiCookie['goog:sameParty']}
-        : {}),
-      ...(bidiCookie['goog:sourcePort'] !== undefined
-        ? {sourcePort: bidiCookie['goog:sourcePort']}
-        : {}),
-      ...(bidiCookie['goog:sourceScheme'] !== undefined
-        ? {sourceScheme: bidiCookie['goog:sourceScheme']}
-        : {}),
-      ...(bidiCookie['goog:partitionKey'] !== undefined
-        ? {partitionKey: bidiCookie['goog:partitionKey']}
-        : {}),
-      ...(bidiCookie['goog:partitionKeyOpaque'] !== undefined
-        ? {partitionKeyOpaque: bidiCookie['goog:partitionKeyOpaque']}
-        : {}),
-      // `priority` is not supported by Puppeteer.
-    };
-  }
-
-  #convertCookiesSameSiteBiDiToCdp(
-    sameSite: Bidi.Network.SameSite | undefined
-  ): Protocol.Network.CookieSameSite {
-    return sameSite === 'strict'
-      ? 'Strict'
-      : sameSite === 'lax'
-        ? 'Lax'
-        : 'None';
-  }
-
-  #convertCookiesSameSiteCdpToBiDi(
-    sameSite: Protocol.Network.CookieSameSite | undefined
-  ): Bidi.Network.SameSite {
-    return sameSite === 'Strict'
-      ? Bidi.Network.SameSite.Strict
-      : sameSite === 'Lax'
-        ? Bidi.Network.SameSite.Lax
-        : Bidi.Network.SameSite.None;
   }
 
   override isServiceWorkerBypassed(): never {
@@ -981,7 +873,7 @@ export class BidiPage extends Page {
         ...(cookie.httpOnly !== undefined ? {httpOnly: cookie.httpOnly} : {}),
         ...(cookie.secure !== undefined ? {secure: cookie.secure} : {}),
         ...(cookie.sameSite !== undefined
-          ? {sameSite: this.#convertCookiesSameSiteCdpToBiDi(cookie.sameSite)}
+          ? {sameSite: convertCookiesSameSiteCdpToBiDi(cookie.sameSite)}
           : {}),
         ...(cookie.expires !== undefined ? {expiry: cookie.expires} : {}),
         // Chrome-specific properties.
@@ -1111,4 +1003,108 @@ function getStackTraceLocations(
 
 function evaluationExpression(fun: Function | string, ...args: unknown[]) {
   return `() => {${evaluationString(fun, ...args)}}`;
+}
+
+/**
+ * Check domains match.
+ * According to cookies spec, this check should match subdomains as well, but CDP
+ * implementation does not do that, so this method matches only the exact domains, not
+ * what is written in the spec:
+ * https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
+ */
+function testUrlMatchCookieHostname(
+  cookie: Cookie,
+  normalizedUrl: URL
+): boolean {
+  const cookieDomain = cookie.domain.toLowerCase();
+  const urlHostname = normalizedUrl.hostname.toLowerCase();
+  return cookieDomain === urlHostname;
+}
+
+/**
+ * Check paths match.
+ * Spec: https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4
+ */
+function testUrlMatchCookiePath(cookie: Cookie, normalizedUrl: URL): boolean {
+  const uriPath = normalizedUrl.pathname;
+  const cookiePath = cookie.path;
+
+  if (uriPath === cookiePath) {
+    // The cookie-path and the request-path are identical.
+    return true;
+  }
+  if (uriPath.startsWith(cookiePath)) {
+    // The cookie-path is a prefix of the request-path.
+    if (cookiePath.endsWith('/')) {
+      // The last character of the cookie-path is %x2F ("/").
+      return true;
+    }
+    if (uriPath[cookiePath.length] === '/') {
+      // The first character of the request-path that is not included in the cookie-path
+      // is a %x2F ("/") character.
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Checks the cookie matches the URL according to the spec:
+ */
+function testUrlMatchCookie(cookie: Cookie, url: URL): boolean {
+  const normalizedUrl = new URL(url);
+  assert(cookie !== undefined);
+  if (!testUrlMatchCookieHostname(cookie, normalizedUrl)) {
+    return false;
+  }
+  return testUrlMatchCookiePath(cookie, normalizedUrl);
+}
+
+function bidiToPuppeteerCookie(bidiCookie: Bidi.Network.Cookie): Cookie {
+  return {
+    name: bidiCookie.name,
+    // Presents binary value as base64 string.
+    value: bidiCookie.value.value,
+    domain: bidiCookie.domain,
+    path: bidiCookie.path,
+    size: bidiCookie.size,
+    httpOnly: bidiCookie.httpOnly,
+    secure: bidiCookie.secure,
+    sameSite: convertCookiesSameSiteBiDiToCdp(bidiCookie.sameSite),
+    expires: bidiCookie.expiry ?? -1,
+    session: bidiCookie.expiry === undefined || bidiCookie.expiry <= 0,
+    // Extending with CDP-specific properties with `goog:` prefix.
+    ...(bidiCookie['goog:sameParty'] !== undefined
+      ? {sameParty: bidiCookie['goog:sameParty']}
+      : {}),
+    ...(bidiCookie['goog:sourcePort'] !== undefined
+      ? {sourcePort: bidiCookie['goog:sourcePort']}
+      : {}),
+    ...(bidiCookie['goog:sourceScheme'] !== undefined
+      ? {sourceScheme: bidiCookie['goog:sourceScheme']}
+      : {}),
+    ...(bidiCookie['goog:partitionKey'] !== undefined
+      ? {partitionKey: bidiCookie['goog:partitionKey']}
+      : {}),
+    ...(bidiCookie['goog:partitionKeyOpaque'] !== undefined
+      ? {partitionKeyOpaque: bidiCookie['goog:partitionKeyOpaque']}
+      : {}),
+    // `priority` is not supported by Puppeteer.
+  };
+}
+
+function convertCookiesSameSiteBiDiToCdp(
+  sameSite: Bidi.Network.SameSite | undefined
+): Protocol.Network.CookieSameSite {
+  return sameSite === 'strict' ? 'Strict' : sameSite === 'lax' ? 'Lax' : 'None';
+}
+
+function convertCookiesSameSiteCdpToBiDi(
+  sameSite: Protocol.Network.CookieSameSite | undefined
+): Bidi.Network.SameSite {
+  return sameSite === 'Strict'
+    ? Bidi.Network.SameSite.Strict
+    : sameSite === 'Lax'
+      ? Bidi.Network.SameSite.Lax
+      : Bidi.Network.SameSite.None;
 }
