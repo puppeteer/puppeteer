@@ -484,15 +484,6 @@ export const enum PageEvent {
   WorkerDestroyed = 'workerdestroyed',
 }
 
-export {
-  /**
-   * All the events that a page instance may emit.
-   *
-   * @deprecated Use {@link PageEvent}.
-   */
-  PageEvent as PageEmittedEvents,
-};
-
 /**
  * Denotes the objects received by callback functions for page events.
  *
@@ -522,13 +513,6 @@ export interface PageEvents extends Record<EventType, unknown> {
   [PageEvent.WorkerCreated]: WebWorker;
   [PageEvent.WorkerDestroyed]: WebWorker;
 }
-
-export type {
-  /**
-   * @deprecated Use {@link PageEvents}.
-   */
-  PageEvents as PageEventObject,
-};
 
 /**
  * @public

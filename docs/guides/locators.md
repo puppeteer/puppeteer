@@ -160,7 +160,7 @@ Currently, locators support a single event that notifies you when the locator is
 let willClick = false;
 await page
   .locator('button')
-  .on(LocatorEmittedEvents.Action, () => {
+  .on(LocatorEvent.Action, () => {
     willClick = true;
   })
   .click();
