@@ -875,16 +875,13 @@ export class BidiPage extends Page {
           : {}),
         ...(cookie.expires !== undefined ? {expiry: cookie.expires} : {}),
         // Chrome-specific properties.
-        ...(cookieUrl ? {'goog:url': cookieUrl} : {}),
-        ...(cookie.sameParty !== undefined
-          ? {'goog:sameParty': cookie.sameParty}
-          : {}),
-        ...(cookie.sourceScheme !== undefined
-          ? {'goog:sourceScheme': cookie.sourceScheme}
-          : {}),
-        ...(cookie.priority !== undefined
-          ? {'goog:priority': cookie.priority}
-          : {}),
+        ...cdpSpecificCookiePropertiesFromPuppeteerToBidi(
+          cookie,
+          'sameParty',
+          'sourceScheme',
+          'priority',
+          'url'
+        ),
       };
 
       // TODO: delete cookie before setting them.
@@ -1072,22 +1069,50 @@ function bidiToPuppeteerCookie(bidiCookie: Bidi.Network.Cookie): Cookie {
     expires: bidiCookie.expiry ?? -1,
     session: bidiCookie.expiry === undefined || bidiCookie.expiry <= 0,
     // Extending with CDP-specific properties with `goog:` prefix.
-    ...(bidiCookie['goog:sameParty'] !== undefined
-      ? {sameParty: bidiCookie['goog:sameParty']}
-      : {}),
-    ...(bidiCookie['goog:sourceScheme'] !== undefined
-      ? {sourceScheme: bidiCookie['goog:sourceScheme']}
-      : {}),
-    ...(bidiCookie['goog:partitionKey'] !== undefined
-      ? {partitionKey: bidiCookie['goog:partitionKey']}
-      : {}),
-    ...(bidiCookie['goog:partitionKeyOpaque'] !== undefined
-      ? {partitionKeyOpaque: bidiCookie['goog:partitionKeyOpaque']}
-      : {}),
-    ...(bidiCookie['goog:priority'] !== undefined
-      ? {priority: bidiCookie['goog:priority']}
-      : {}),
+    ...cdpSpecificCookiePropertiesFromBidiToPuppeteer(
+      bidiCookie,
+      'sameParty',
+      'sourceScheme',
+      'partitionKey',
+      'partitionKeyOpaque',
+      'priority'
+    ),
   };
+}
+
+const CDP_SPECIFIC_PREFIX = 'goog:';
+
+/**
+ * Gets CDP-specific properties from the BiDi cookie and returns them as a new object.
+ */
+function cdpSpecificCookiePropertiesFromBidiToPuppeteer(
+  bidiCookie: Bidi.Network.Cookie,
+  ...propertyNames: Array<keyof Cookie>
+): Partial<Cookie> {
+  const result: Partial<Cookie> = {};
+  for (const property of propertyNames) {
+    if (bidiCookie[CDP_SPECIFIC_PREFIX + property] !== undefined) {
+      result[property] = bidiCookie[CDP_SPECIFIC_PREFIX + property];
+    }
+  }
+  return result;
+}
+
+/**
+ * Gets CDP-specific properties from the cookie, adds CDP-specific prefixes and returns
+ * them as a new object which can be used in BiDi.
+ */
+function cdpSpecificCookiePropertiesFromPuppeteerToBidi(
+  cookieParam: CookieParam,
+  ...propertyNames: Array<keyof CookieParam>
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const property of propertyNames) {
+    if (cookieParam[property] !== undefined) {
+      result[CDP_SPECIFIC_PREFIX + property] = cookieParam[property];
+    }
+  }
+  return result;
 }
 
 function convertCookiesSameSiteBiDiToCdp(
