@@ -222,7 +222,7 @@ describe('OOPIF', function () {
   it('should provide access to elements', async () => {
     const {server, isHeadless, headless, page} = state;
 
-    if (!isHeadless || headless === 'new') {
+    if (!isHeadless || headless === 'true') {
       // TODO: this test is partially blocked on crbug.com/1334119. Enable test once
       // the upstream is fixed.
       // TLDR: when we dispatch events to the frame the compositor might

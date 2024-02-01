@@ -36,25 +36,6 @@ export class ChromeLauncher extends ProductLauncher {
   }
 
   override launch(options: PuppeteerNodeLaunchOptions = {}): Promise<Browser> {
-    const headless = options.headless ?? true;
-    if (
-      headless === true &&
-      this.puppeteer.configuration.logLevel === 'warn' &&
-      !Boolean(process.env['PUPPETEER_DISABLE_HEADLESS_WARNING'])
-    ) {
-      console.warn(
-        [
-          '\x1B[1m\x1B[43m\x1B[30m',
-          'Puppeteer old Headless deprecation warning:\x1B[0m\x1B[33m',
-          '  In the near future `headless: true` will default to the new Headless mode',
-          '  for Chrome instead of the old Headless implementation. For more',
-          '  information, please see https://developer.chrome.com/articles/new-headless/.',
-          '  Consider opting in early by passing `headless: "new"` to `puppeteer.launch()`',
-          '  If you encounter any bugs, please report them to https://github.com/puppeteer/puppeteer/issues/new/choose.\x1B[0m\n',
-        ].join('\n  ')
-      );
-    }
-
     if (
       this.puppeteer.configuration.logLevel === 'warn' &&
       process.platform === 'darwin' &&
@@ -254,7 +235,7 @@ export class ChromeLauncher extends ProductLauncher {
     }
     if (headless) {
       chromeArguments.push(
-        headless === 'new' ? '--headless=new' : '--headless',
+        headless === true ? '--headless=new' : '--headless',
         '--hide-scrollbars',
         '--mute-audio'
       );
@@ -272,7 +253,7 @@ export class ChromeLauncher extends ProductLauncher {
 
   override executablePath(
     channel?: ChromeReleaseChannel,
-    headless?: boolean | 'new'
+    headless?: boolean | 'chrome-headless-shell'
   ): string {
     if (channel) {
       return computeSystemExecutablePath({
