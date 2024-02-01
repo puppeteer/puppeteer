@@ -10,7 +10,6 @@ import type {Protocol} from 'devtools-protocol';
 
 import {
   concat,
-  EMPTY,
   filter,
   filterAsync,
   first,
@@ -1779,7 +1778,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       startWith(this.#requestsInFlight),
       switchMap(() => {
         if (this.#requestsInFlight > concurrency) {
-          return EMPTY;
+          return of(undefined);
         } else {
           return timer(idleTime);
         }
