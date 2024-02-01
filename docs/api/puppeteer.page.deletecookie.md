@@ -8,17 +8,15 @@ sidebar_label: Page.deleteCookie
 
 ```typescript
 class Page {
-  abstract deleteCookie(
-    ...cookies: Protocol.Network.DeleteCookiesRequest[]
-  ): Promise<void>;
+  abstract deleteCookie(...cookies: DeleteCookiesRequest[]): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                      | Description |
-| --------- | ----------------------------------------- | ----------- |
-| cookies   | Protocol.Network.DeleteCookiesRequest\[\] |             |
+| Parameter | Type                                                            | Description |
+| --------- | --------------------------------------------------------------- | ----------- |
+| cookies   | [DeleteCookiesRequest](./puppeteer.deletecookiesrequest.md)\[\] |             |
 
 **Returns:**
 
