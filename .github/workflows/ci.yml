@@ -154,7 +154,7 @@ jobs:
         suite:
           - chrome-headless
           - chrome-headful
-          - chrome-new-headless
+          - chrome-headless-shell
           - chrome-bidi
         os:
           - ubuntu-latest

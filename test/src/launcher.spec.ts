@@ -366,9 +366,9 @@ describe('Launcher specs', function () {
 
         if (isChrome) {
           expect(puppeteer.defaultArgs()).toContain('--no-first-run');
-          expect(puppeteer.defaultArgs()).toContain('--headless');
+          expect(puppeteer.defaultArgs()).toContain('--headless=new');
           expect(puppeteer.defaultArgs({headless: false})).not.toContain(
-            '--headless'
+            '--headless=new'
           );
           expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
             `--user-data-dir=${path.resolve('foo')}`
