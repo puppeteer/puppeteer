@@ -787,12 +787,12 @@ export class BidiPage extends Page {
       },
     });
     return bidiCookies.result.cookies
-      .map(c => {
-        return this.#bidiToPuppeteerCookie(c);
+      .map(cookie => {
+        return this.#bidiToPuppeteerCookie(cookie);
       })
-      .filter(c => {
-        return normalizedUrls.some(u => {
-          return BidiPage.#testUrlMatchCookie(c, u);
+      .filter(cookie => {
+        return normalizedUrls.some(url => {
+          return BidiPage.#testUrlMatchCookie(cookie, url);
         });
       });
   }
