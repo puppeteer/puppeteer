@@ -104,3 +104,89 @@ export interface Cookie {
    */
   partitionKeyOpaque?: boolean;
 }
+
+/**
+ * Cookie parameter object
+ *
+ * @public
+ */
+export interface CookieParam {
+  /**
+   * Cookie name.
+   */
+  name: string;
+  /**
+   * Cookie value.
+   */
+  value: string;
+  /**
+   * The request-URI to associate with the setting of the cookie. This value can affect
+   * the default domain, path, and source scheme values of the created cookie.
+   */
+  url?: string;
+  /**
+   * Cookie domain.
+   */
+  domain?: string;
+  /**
+   * Cookie path.
+   */
+  path?: string;
+  /**
+   * True if cookie is secure.
+   */
+  secure?: boolean;
+  /**
+   * True if cookie is http-only.
+   */
+  httpOnly?: boolean;
+  /**
+   * Cookie SameSite type.
+   */
+  sameSite?: CookieSameSite;
+  /**
+   * Cookie expiration date, session cookie if not set
+   */
+  expires?: number;
+  /**
+   * Cookie Priority.
+   */
+  priority?: CookiePriority;
+  /**
+   * True if cookie is SameParty.
+   */
+  sameParty?: boolean;
+  /**
+   * Cookie source scheme type.
+   */
+  sourceScheme?: CookieSourceScheme;
+  /**
+   * Cookie partition key. The site of the top-level URL the browser was visiting at the
+   * start of the request to the endpoint that set the cookie. If not set, the cookie will
+   * be set as not partitioned.
+   */
+  partitionKey?: string;
+}
+
+/**
+ * @public
+ */
+export interface DeleteCookiesRequest {
+  /**
+   * Name of the cookies to remove.
+   */
+  name: string;
+  /**
+   * If specified, deletes all the cookies with the given name where domain and path match
+   * provided URL.
+   */
+  url?: string;
+  /**
+   * If specified, deletes only cookies with the exact domain.
+   */
+  domain?: string;
+  /**
+   * If specified, deletes only cookies with the exact path.
+   */
+  path?: string;
+}

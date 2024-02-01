@@ -8,7 +8,6 @@ import fs from 'fs';
 import path from 'path';
 
 import {TestServer} from '@pptr/testserver';
-import type {Protocol} from 'devtools-protocol';
 import expect from 'expect';
 import type * as MochaBase from 'mocha';
 import puppeteer from 'puppeteer/lib/cjs/puppeteer/puppeteer.js';
@@ -374,7 +373,7 @@ expect.extend({
 
 export const expectCookieEquals = async (
   cookies: Cookie[],
-  expectedCookies: Array<Partial<Protocol.Network.Cookie>>
+  expectedCookies: Array<Partial<Cookie>>
 ): Promise<void> => {
   if (!processVariables.isChrome) {
     // Only keep standard properties when testing on a browser other than Chrome.

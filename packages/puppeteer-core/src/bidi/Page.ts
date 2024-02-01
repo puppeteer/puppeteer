@@ -37,7 +37,7 @@ import {
   ConsoleMessage,
   type ConsoleMessageLocation,
 } from '../common/ConsoleMessage.js';
-import type {Cookie} from '../common/Cookie.js';
+import type {Cookie, CookieSameSite, CookieParam} from '../common/Cookie.js';
 import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
 import type {Handler} from '../common/EventEmitter.js';
 import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
@@ -833,9 +833,7 @@ export class BidiPage extends Page {
     throw new UnsupportedOperation();
   }
 
-  override async setCookie(
-    ...cookies: Protocol.Network.CookieParam[]
-  ): Promise<void> {
+  override async setCookie(...cookies: CookieParam[]): Promise<void> {
     const pageURL = this.url();
     const pageUrlStartsWithHTTP = pageURL.startsWith('http');
     for (const cookie of cookies) {
@@ -883,9 +881,6 @@ export class BidiPage extends Page {
           : {}),
         ...(cookie.sourceScheme !== undefined
           ? {'goog:sourceScheme': cookie.sourceScheme}
-          : {}),
-        ...(cookie.sourcePort !== undefined
-          ? {'goog:sourcePort': cookie.sourcePort}
           : {}),
       };
 
@@ -1095,12 +1090,12 @@ function bidiToPuppeteerCookie(bidiCookie: Bidi.Network.Cookie): Cookie {
 
 function convertCookiesSameSiteBiDiToCdp(
   sameSite: Bidi.Network.SameSite | undefined
-): Protocol.Network.CookieSameSite {
+): CookieSameSite {
   return sameSite === 'strict' ? 'Strict' : sameSite === 'lax' ? 'Lax' : 'None';
 }
 
 function convertCookiesSameSiteCdpToBiDi(
-  sameSite: Protocol.Network.CookieSameSite | undefined
+  sameSite: CookieSameSite | undefined
 ): Bidi.Network.SameSite {
   return sameSite === 'Strict'
     ? Bidi.Network.SameSite.Strict
