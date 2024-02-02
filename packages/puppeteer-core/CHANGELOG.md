@@ -20,6 +20,62 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.11.0...puppeteer-core-v22.0.0) (2024-02-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* enable the new-headless mode by default ([#11815](https://github.com/puppeteer/puppeteer/issues/11815))
+* remove networkConditions in favor of PredefinedNetworkConditions ([#11806](https://github.com/puppeteer/puppeteer/issues/11806))
+* use ReadableStreams ([#11805](https://github.com/puppeteer/puppeteer/issues/11805))
+* remove duplicate type names ([#11803](https://github.com/puppeteer/puppeteer/issues/11803))
+* remove add/removeEventListener in favor of on/off ([#11792](https://github.com/puppeteer/puppeteer/issues/11792))
+* make console warn level compatible with WebDriver BiDi ([#11790](https://github.com/puppeteer/puppeteer/issues/11790))
+* remove InterceptResolutionStrategy ([#11788](https://github.com/puppeteer/puppeteer/issues/11788))
+* remove devices in favor of KnownDevices ([#11787](https://github.com/puppeteer/puppeteer/issues/11787))
+* remove `$x` and `waitForXpath` ([#11782](https://github.com/puppeteer/puppeteer/issues/11782))
+* remove waitForTimeout ([#11780](https://github.com/puppeteer/puppeteer/issues/11780))
+* generate accessible PDFs by default ([#11778](https://github.com/puppeteer/puppeteer/issues/11778))
+* remove `error` const, change CustomError to PuppeteerError ([#11777](https://github.com/puppeteer/puppeteer/issues/11777))
+* remove viewport resizing from ElementHandle.screenshot ([#11774](https://github.com/puppeteer/puppeteer/issues/11774))
+* remove PUPPETEER_DOWNLOAD_PATH in favor of PUPPETEER_CACHE_DIR ([#11605](https://github.com/puppeteer/puppeteer/issues/11605))
+* BiDi cookies ([#11532](https://github.com/puppeteer/puppeteer/issues/11532))
+* drop support for node16 ([#10912](https://github.com/puppeteer/puppeteer/issues/10912))
+
+### Features
+
+* BiDi cookies ([#11532](https://github.com/puppeteer/puppeteer/issues/11532)) ([9cb1fde](https://github.com/puppeteer/puppeteer/commit/9cb1fde58949811532644decb79b691318031d8c))
+* drop support for node16 ([#10912](https://github.com/puppeteer/puppeteer/issues/10912)) ([953f420](https://github.com/puppeteer/puppeteer/commit/953f4207b17210fa7231225e6f29a826f77e0832))
+* generate accessible PDFs by default ([#11778](https://github.com/puppeteer/puppeteer/issues/11778)) ([4fc1402](https://github.com/puppeteer/puppeteer/commit/4fc14026e9bfffeedf317e9b61c7cda8509091ba))
+* remove PUPPETEER_DOWNLOAD_PATH in favor of PUPPETEER_CACHE_DIR ([#11605](https://github.com/puppeteer/puppeteer/issues/11605)) ([4677281](https://github.com/puppeteer/puppeteer/commit/467728187737283191f6528676e50d53dae6e5ef))
+
+
+### Bug Fixes
+
+* make console warn level compatible with WebDriver BiDi ([#11790](https://github.com/puppeteer/puppeteer/issues/11790)) ([d4e9d8d](https://github.com/puppeteer/puppeteer/commit/d4e9d8d591e4fb1e2a33fe3a586a8beaccf263e8))
+* remove viewport resizing from ElementHandle.screenshot ([#11774](https://github.com/puppeteer/puppeteer/issues/11774)) ([ced2235](https://github.com/puppeteer/puppeteer/commit/ced2235ada95ad67227df0ce579070ccb501a47b))
+
+
+### Code Refactoring
+
+* enable the new-headless mode by default ([#11815](https://github.com/puppeteer/puppeteer/issues/11815)) ([75c9e11](https://github.com/puppeteer/puppeteer/commit/75c9e117f1bf0d7a4de82c79201d70bf3cee2b6f))
+* remove `$x` and `waitForXpath` ([#11782](https://github.com/puppeteer/puppeteer/issues/11782)) ([53c9134](https://github.com/puppeteer/puppeteer/commit/53c91348094dc0bce59086c98986c5d06a949d08))
+* remove `error` const, change CustomError to PuppeteerError ([#11777](https://github.com/puppeteer/puppeteer/issues/11777)) ([b3bfdd2](https://github.com/puppeteer/puppeteer/commit/b3bfdd2024097be1974e28b3766419189b4a9fe0))
+* remove add/removeEventListener in favor of on/off ([#11792](https://github.com/puppeteer/puppeteer/issues/11792)) ([f160874](https://github.com/puppeteer/puppeteer/commit/f1608743c83e8ce7b56aec98ccdddacc91b86179))
+* remove devices in favor of KnownDevices ([#11787](https://github.com/puppeteer/puppeteer/issues/11787)) ([eb360e3](https://github.com/puppeteer/puppeteer/commit/eb360e3a762d9232a4972d4ec877b7d57a5b60c7))
+* remove duplicate type names ([#11803](https://github.com/puppeteer/puppeteer/issues/11803)) ([514e2d5](https://github.com/puppeteer/puppeteer/commit/514e2d5241dc3a9027c96d739cfc99efc5a02783))
+* remove InterceptResolutionStrategy ([#11788](https://github.com/puppeteer/puppeteer/issues/11788)) ([f18d447](https://github.com/puppeteer/puppeteer/commit/f18d44761cd1acc2e6b867e5eb2ebd753854e9ea))
+* remove networkConditions in favor of PredefinedNetworkConditions ([#11806](https://github.com/puppeteer/puppeteer/issues/11806)) ([7564dfa](https://github.com/puppeteer/puppeteer/commit/7564dfa9110e44b1f50f5fb1543c5c7d8529c182))
+* remove waitForTimeout ([#11780](https://github.com/puppeteer/puppeteer/issues/11780)) ([1900fa9](https://github.com/puppeteer/puppeteer/commit/1900fa94183e0a8654633a91f82b372ad068da71))
+* use ReadableStreams ([#11805](https://github.com/puppeteer/puppeteer/issues/11805)) ([84d9a94](https://github.com/puppeteer/puppeteer/commit/84d9a94d6228800e9f80914472ff2e5a4ee71b18))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 1.9.1 to 2.0.0
+
 ## [21.11.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.10.0...puppeteer-core-v21.11.0) (2024-02-02)
 
 
