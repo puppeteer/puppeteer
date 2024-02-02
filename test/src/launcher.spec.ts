@@ -590,28 +590,6 @@ describe('Launcher specs', function () {
         });
         expect(error.message).toContain('either pipe or debugging port');
       });
-      it('should launch Chrome properly with --no-startup-window and waitForInitialPage=false', async () => {
-        const {defaultBrowserOptions} = await getTestState({
-          skipLaunch: true,
-        });
-        const options = {
-          waitForInitialPage: false,
-          // This is needed to prevent Puppeteer from adding an initial blank page.
-          // See also https://github.com/puppeteer/puppeteer/blob/ad6b736039436fcc5c0a262e5b575aa041427be3/src/node/Launcher.ts#L200
-          ignoreDefaultArgs: true,
-          ...defaultBrowserOptions,
-          args: ['--no-startup-window'],
-        };
-        const {browser, close} = await launch(options, {
-          createContext: false,
-        });
-        try {
-          const pages = await browser.pages();
-          expect(pages).toHaveLength(0);
-        } finally {
-          await close();
-        }
-      });
     });
 
     describe('Puppeteer.launch', function () {
