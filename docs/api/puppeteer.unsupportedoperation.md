@@ -9,7 +9,7 @@ Puppeteer will throw this error if a method is not supported by the currently us
 #### Signature:
 
 ```typescript
-export declare class UnsupportedOperation extends CustomError
+export declare class UnsupportedOperation extends PuppeteerError
 ```
 
-**Extends:** [CustomError](./puppeteer.customerror.md)
+**Extends:** [PuppeteerError](./puppeteer.puppeteererror.md)

@@ -9,10 +9,10 @@ TimeoutError is emitted whenever certain operations are terminated due to timeou
 #### Signature:
 
 ```typescript
-export declare class TimeoutError extends CustomError
+export declare class TimeoutError extends PuppeteerError
 ```
 
-**Extends:** [CustomError](./puppeteer.customerror.md)
+**Extends:** [PuppeteerError](./puppeteer.puppeteererror.md)
 
 ## Remarks
 
