@@ -472,10 +472,8 @@ describe('ElementHandle specs', function () {
         })
       ).toStrictEqual('bar1');
     });
-  });
 
-  describe('Element.waitForXPath', () => {
-    it('should wait correctly with waitForXPath on an element', async () => {
+    it('should wait correctly with waitForSelector and xpath on an element', async () => {
       const {page} = await getTestState();
       // Set the page content after the waitFor has been started.
       await page.setContent(
@@ -490,20 +488,18 @@ describe('ElementHandle specs', function () {
         </div>`
       );
 
-      using el1 = (await page.waitForSelector(
+      using elById = (await page.waitForSelector(
         '#el1'
       )) as ElementHandle<HTMLDivElement>;
 
-      for (const path of ['//div', './/div']) {
-        using e = (await el1.waitForXPath(
-          path
-        )) as ElementHandle<HTMLDivElement>;
-        expect(
-          await e.evaluate(el => {
-            return el.id;
-          })
-        ).toStrictEqual('el2');
-      }
+      using elByXpath = (await elById.waitForSelector(
+        'xpath/.//div'
+      )) as ElementHandle<HTMLDivElement>;
+      expect(
+        await elByXpath.evaluate(el => {
+          return el.id;
+        })
+      ).toStrictEqual('el2');
     });
   });
 
