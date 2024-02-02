@@ -29,6 +29,20 @@ All notable changes to this project will be documented in this file. See [standa
     * puppeteer-core bumped from 21.0.2 to 21.0.3
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.11.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v21.10.0...puppeteer-v21.11.0) (2024-02-02)
+
+
+### Features
+
+* implement boolean env vars ([#11811](https://github.com/puppeteer/puppeteer/issues/11811)) ([0a9f6d6](https://github.com/puppeteer/puppeteer/commit/0a9f6d670a86c6d1399501b2780fbb46cbe97b2c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 21.10.0 to 21.11.0
+
 ## [21.10.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v21.9.0...puppeteer-v21.10.0) (2024-01-29)
 
 

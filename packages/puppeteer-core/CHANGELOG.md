@@ -20,6 +20,19 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.11.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.10.0...puppeteer-core-v21.11.0) (2024-02-02)
+
+
+### Features
+
+* add outline to PDF generation ([#11779](https://github.com/puppeteer/puppeteer/issues/11779)) ([b99d478](https://github.com/puppeteer/puppeteer/commit/b99d478cd48adc261878836e04eac55ecc2890f2))
+* **bidi:** implement UserContexts ([#11784](https://github.com/puppeteer/puppeteer/issues/11784)) ([2930a70](https://github.com/puppeteer/puppeteer/commit/2930a70c884ce6835ec6bcff27b32f7d273c8af0))
+
+
+### Bug Fixes
+
+* use shareReplay for inflight requests ([#11810](https://github.com/puppeteer/puppeteer/issues/11810)) ([0f0813d](https://github.com/puppeteer/puppeteer/commit/0f0813db38aa0eb14d7514d725852d0cb66f4f0e))
+
 ## [21.10.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.9.0...puppeteer-core-v21.10.0) (2024-01-29)
 
 
