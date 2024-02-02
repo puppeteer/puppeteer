@@ -38,6 +38,11 @@ import type {DeviceRequestPrompt} from '../cdp/DeviceRequestPrompt.js';
 import type {Credentials, NetworkConditions} from '../cdp/NetworkManager.js';
 import type {Tracing} from '../cdp/Tracing.js';
 import type {ConsoleMessage} from '../common/ConsoleMessage.js';
+import type {
+  Cookie,
+  CookieParam,
+  DeleteCookiesRequest,
+} from '../common/Cookie.js';
 import type {Device} from '../common/Device.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {
@@ -1303,11 +1308,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * If no URLs are specified, this method returns cookies for the current page
    * URL. If URLs are specified, only cookies for those URLs are returned.
    */
-  abstract cookies(...urls: string[]): Promise<Protocol.Network.Cookie[]>;
+  abstract cookies(...urls: string[]): Promise<Cookie[]>;
 
-  abstract deleteCookie(
-    ...cookies: Protocol.Network.DeleteCookiesRequest[]
-  ): Promise<void>;
+  abstract deleteCookie(...cookies: DeleteCookiesRequest[]): Promise<void>;
 
   /**
    * @example
@@ -1316,7 +1319,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * await page.setCookie(cookieObject1, cookieObject2);
    * ```
    */
-  abstract setCookie(...cookies: Protocol.Network.CookieParam[]): Promise<void>;
+  abstract setCookie(...cookies: CookieParam[]): Promise<void>;
 
   /**
    * Adds a `<script>` tag into the page with the desired URL or content.

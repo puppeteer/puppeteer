@@ -8,15 +8,15 @@ sidebar_label: Page.setCookie
 
 ```typescript
 class Page {
-  abstract setCookie(...cookies: Protocol.Network.CookieParam[]): Promise<void>;
+  abstract setCookie(...cookies: CookieParam[]): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                             | Description |
-| --------- | -------------------------------- | ----------- |
-| cookies   | Protocol.Network.CookieParam\[\] |             |
+| Parameter | Type                                          | Description |
+| --------- | --------------------------------------------- | ----------- |
+| cookies   | [CookieParam](./puppeteer.cookieparam.md)\[\] |             |
 
 **Returns:**
 

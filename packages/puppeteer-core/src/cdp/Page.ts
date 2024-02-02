@@ -32,6 +32,11 @@ import {
   ConsoleMessage,
   type ConsoleMessageType,
 } from '../common/ConsoleMessage.js';
+import type {
+  Cookie,
+  DeleteCookiesRequest,
+  CookieParam,
+} from '../common/Cookie.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {FileChooser} from '../common/FileChooser.js';
 import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
@@ -572,16 +577,14 @@ export class CdpPage extends Page {
     ) as HandleFor<Prototype[]>;
   }
 
-  override async cookies(
-    ...urls: string[]
-  ): Promise<Protocol.Network.Cookie[]> {
+  override async cookies(...urls: string[]): Promise<Cookie[]> {
     const originalCookies = (
       await this.#primaryTargetClient.send('Network.getCookies', {
         urls: urls.length ? urls : [this.url()],
       })
     ).cookies;
 
-    const unsupportedCookieAttributes = ['priority'];
+    const unsupportedCookieAttributes = ['sourcePort'];
     const filterUnsupportedAttributes = (
       cookie: Protocol.Network.Cookie
     ): Protocol.Network.Cookie => {
@@ -594,7 +597,7 @@ export class CdpPage extends Page {
   }
 
   override async deleteCookie(
-    ...cookies: Protocol.Network.DeleteCookiesRequest[]
+    ...cookies: DeleteCookiesRequest[]
   ): Promise<void> {
     const pageURL = this.url();
     for (const cookie of cookies) {
@@ -606,9 +609,7 @@ export class CdpPage extends Page {
     }
   }
 
-  override async setCookie(
-    ...cookies: Protocol.Network.CookieParam[]
-  ): Promise<void> {
+  override async setCookie(...cookies: CookieParam[]): Promise<void> {
     const pageURL = this.url();
     const startsWithHTTP = pageURL.startsWith('http');
     const items = cookies.map(cookie => {

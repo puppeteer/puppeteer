@@ -6,7 +6,7 @@
 
 import type {Readable} from 'stream';
 
-import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type Protocol from 'devtools-protocol';
 
 import {
@@ -37,6 +37,7 @@ import {
   ConsoleMessage,
   type ConsoleMessageLocation,
 } from '../common/ConsoleMessage.js';
+import type {Cookie, CookieSameSite, CookieParam} from '../common/Cookie.js';
 import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
 import type {Handler} from '../common/EventEmitter.js';
 import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
@@ -774,6 +775,28 @@ export class BidiPage extends Page {
     });
   }
 
+  override async cookies(...urls: string[]): Promise<Cookie[]> {
+    const normalizedUrls = (urls.length ? urls : [this.url()]).map(url => {
+      return new URL(url);
+    });
+
+    const bidiCookies = await this.#connection.send('storage.getCookies', {
+      partition: {
+        type: 'context',
+        context: this.mainFrame()._id,
+      },
+    });
+    return bidiCookies.result.cookies
+      .map(cookie => {
+        return bidiToPuppeteerCookie(cookie);
+      })
+      .filter(cookie => {
+        return normalizedUrls.some(url => {
+          return testUrlMatchCookie(cookie, url);
+        });
+      });
+  }
+
   override isServiceWorkerBypassed(): never {
     throw new UnsupportedOperation();
   }
@@ -810,12 +833,77 @@ export class BidiPage extends Page {
     throw new UnsupportedOperation();
   }
 
-  override cookies(): never {
-    throw new UnsupportedOperation();
-  }
+  override async setCookie(...cookies: CookieParam[]): Promise<void> {
+    const pageURL = this.url();
+    const pageUrlStartsWithHTTP = pageURL.startsWith('http');
+    for (const cookie of cookies) {
+      let cookieUrl = cookie.url || '';
+      if (!cookieUrl && pageUrlStartsWithHTTP) {
+        cookieUrl = pageURL;
+      }
+      assert(
+        cookieUrl !== 'about:blank',
+        `Blank page can not have cookie "${cookie.name}"`
+      );
+      assert(
+        !String.prototype.startsWith.call(cookieUrl || '', 'data:'),
+        `Data URL page can not have cookie "${cookie.name}"`
+      );
 
-  override setCookie(): never {
-    throw new UnsupportedOperation();
+      const normalizedUrl = URL.canParse(cookieUrl)
+        ? new URL(cookieUrl)
+        : undefined;
+
+      const domain = cookie.domain ?? normalizedUrl?.hostname;
+      assert(
+        domain !== undefined,
+        `At least one of the url and domain needs to be specified`
+      );
+
+      const bidiCookie: Bidi.Storage.PartialCookie = {
+        domain: domain,
+        name: cookie.name,
+        value: {
+          type: 'string',
+          value: cookie.value,
+        },
+        ...(cookie.path !== undefined ? {path: cookie.path} : {}),
+        ...(cookie.httpOnly !== undefined ? {httpOnly: cookie.httpOnly} : {}),
+        ...(cookie.secure !== undefined ? {secure: cookie.secure} : {}),
+        ...(cookie.sameSite !== undefined
+          ? {sameSite: convertCookiesSameSiteCdpToBiDi(cookie.sameSite)}
+          : {}),
+        ...(cookie.expires !== undefined ? {expiry: cookie.expires} : {}),
+        // Chrome-specific properties.
+        ...cdpSpecificCookiePropertiesFromPuppeteerToBidi(
+          cookie,
+          'sameParty',
+          'sourceScheme',
+          'priority',
+          'url'
+        ),
+      };
+
+      // TODO: delete cookie before setting them.
+      // await this.deleteCookie(bidiCookie);
+
+      const partition: Bidi.Storage.PartitionDescriptor =
+        cookie.partitionKey !== undefined
+          ? {
+              type: 'storageKey',
+              sourceOrigin: cookie.partitionKey,
+              userContext: this.#browserContext.id,
+            }
+          : {
+              type: 'context',
+              context: this.mainFrame()._id,
+            };
+
+      await this.#connection.send('storage.setCookie', {
+        cookie: bidiCookie,
+        partition,
+      });
+    }
   }
 
   override deleteCookie(): never {
@@ -910,4 +998,135 @@ function getStackTraceLocations(
 
 function evaluationExpression(fun: Function | string, ...args: unknown[]) {
   return `() => {${evaluationString(fun, ...args)}}`;
+}
+
+/**
+ * Check domains match.
+ * According to cookies spec, this check should match subdomains as well, but CDP
+ * implementation does not do that, so this method matches only the exact domains, not
+ * what is written in the spec:
+ * https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
+ */
+function testUrlMatchCookieHostname(
+  cookie: Cookie,
+  normalizedUrl: URL
+): boolean {
+  const cookieDomain = cookie.domain.toLowerCase();
+  const urlHostname = normalizedUrl.hostname.toLowerCase();
+  return cookieDomain === urlHostname;
+}
+
+/**
+ * Check paths match.
+ * Spec: https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4
+ */
+function testUrlMatchCookiePath(cookie: Cookie, normalizedUrl: URL): boolean {
+  const uriPath = normalizedUrl.pathname;
+  const cookiePath = cookie.path;
+
+  if (uriPath === cookiePath) {
+    // The cookie-path and the request-path are identical.
+    return true;
+  }
+  if (uriPath.startsWith(cookiePath)) {
+    // The cookie-path is a prefix of the request-path.
+    if (cookiePath.endsWith('/')) {
+      // The last character of the cookie-path is %x2F ("/").
+      return true;
+    }
+    if (uriPath[cookiePath.length] === '/') {
+      // The first character of the request-path that is not included in the cookie-path
+      // is a %x2F ("/") character.
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Checks the cookie matches the URL according to the spec:
+ */
+function testUrlMatchCookie(cookie: Cookie, url: URL): boolean {
+  const normalizedUrl = new URL(url);
+  assert(cookie !== undefined);
+  if (!testUrlMatchCookieHostname(cookie, normalizedUrl)) {
+    return false;
+  }
+  return testUrlMatchCookiePath(cookie, normalizedUrl);
+}
+
+function bidiToPuppeteerCookie(bidiCookie: Bidi.Network.Cookie): Cookie {
+  return {
+    name: bidiCookie.name,
+    // Presents binary value as base64 string.
+    value: bidiCookie.value.value,
+    domain: bidiCookie.domain,
+    path: bidiCookie.path,
+    size: bidiCookie.size,
+    httpOnly: bidiCookie.httpOnly,
+    secure: bidiCookie.secure,
+    sameSite: convertCookiesSameSiteBiDiToCdp(bidiCookie.sameSite),
+    expires: bidiCookie.expiry ?? -1,
+    session: bidiCookie.expiry === undefined || bidiCookie.expiry <= 0,
+    // Extending with CDP-specific properties with `goog:` prefix.
+    ...cdpSpecificCookiePropertiesFromBidiToPuppeteer(
+      bidiCookie,
+      'sameParty',
+      'sourceScheme',
+      'partitionKey',
+      'partitionKeyOpaque',
+      'priority'
+    ),
+  };
+}
+
+const CDP_SPECIFIC_PREFIX = 'goog:';
+
+/**
+ * Gets CDP-specific properties from the BiDi cookie and returns them as a new object.
+ */
+function cdpSpecificCookiePropertiesFromBidiToPuppeteer(
+  bidiCookie: Bidi.Network.Cookie,
+  ...propertyNames: Array<keyof Cookie>
+): Partial<Cookie> {
+  const result: Partial<Cookie> = {};
+  for (const property of propertyNames) {
+    if (bidiCookie[CDP_SPECIFIC_PREFIX + property] !== undefined) {
+      result[property] = bidiCookie[CDP_SPECIFIC_PREFIX + property];
+    }
+  }
+  return result;
+}
+
+/**
+ * Gets CDP-specific properties from the cookie, adds CDP-specific prefixes and returns
+ * them as a new object which can be used in BiDi.
+ */
+function cdpSpecificCookiePropertiesFromPuppeteerToBidi(
+  cookieParam: CookieParam,
+  ...propertyNames: Array<keyof CookieParam>
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const property of propertyNames) {
+    if (cookieParam[property] !== undefined) {
+      result[CDP_SPECIFIC_PREFIX + property] = cookieParam[property];
+    }
+  }
+  return result;
+}
+
+function convertCookiesSameSiteBiDiToCdp(
+  sameSite: Bidi.Network.SameSite | undefined
+): CookieSameSite {
+  return sameSite === 'strict' ? 'Strict' : sameSite === 'lax' ? 'Lax' : 'None';
+}
+
+function convertCookiesSameSiteCdpToBiDi(
+  sameSite: CookieSameSite | undefined
+): Bidi.Network.SameSite {
+  return sameSite === 'Strict'
+    ? Bidi.Network.SameSite.Strict
+    : sameSite === 'Lax'
+      ? Bidi.Network.SameSite.Lax
+      : Bidi.Network.SameSite.None;
 }

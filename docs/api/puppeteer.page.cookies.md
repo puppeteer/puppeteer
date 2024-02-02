@@ -10,7 +10,7 @@ If no URLs are specified, this method returns cookies for the current page URL. 
 
 ```typescript
 class Page {
-  abstract cookies(...urls: string[]): Promise<Protocol.Network.Cookie[]>;
+  abstract cookies(...urls: string[]): Promise<Cookie[]>;
 }
 ```
 
@@ -22,4 +22,4 @@ class Page {
 
 **Returns:**
 
-Promise&lt;Protocol.Network.Cookie\[\]&gt;
+Promise&lt;[Cookie](./puppeteer.cookie.md)\[\]&gt;

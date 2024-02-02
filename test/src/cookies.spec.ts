@@ -152,7 +152,6 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: true,
           session: true,
-          sourcePort: 443,
           sourceScheme: 'Secure',
         },
         {
@@ -166,10 +165,45 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: true,
           session: true,
-          sourcePort: 443,
           sourceScheme: 'Secure',
         },
       ]);
+    });
+    it('should not get cookies from subdomain', async () => {
+      const {page} = await getTestState();
+      await page.setCookie({
+        url: 'https://base_domain.com',
+        name: 'doggo',
+        value: 'woofs',
+      });
+      const cookies = await page.cookies('https://sub_domain.base_domain.com');
+      expect(cookies).toHaveLength(0);
+    });
+    it('should get cookies from nested path', async () => {
+      const {page} = await getTestState();
+      await page.setCookie({
+        url: 'https://foo.com',
+        path: '/some_path',
+        name: 'doggo',
+        value: 'woofs',
+      });
+      const cookies = await page.cookies(
+        'https://foo.com/some_path/nested_path'
+      );
+      expect(cookies).toHaveLength(1);
+    });
+    it('should not get cookies from not nested path', async () => {
+      const {page} = await getTestState();
+      await page.setCookie({
+        url: 'https://foo.com',
+        path: '/some_path',
+        name: 'doggo',
+        value: 'woofs',
+      });
+      const cookies = await page.cookies(
+        'https://foo.com/some_path_looks_like_nested'
+      );
+      expect(cookies).toHaveLength(0);
     });
   });
   describe('Page.setCookie', function () {
@@ -271,7 +305,6 @@ describe('Cookie specs', () => {
             httpOnly: false,
             secure: false,
             session: true,
-            sourcePort: 80,
             sourceScheme: 'NonSecure',
           },
         ]
@@ -298,7 +331,6 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: false,
           session: true,
-          sourcePort: 80,
           sourceScheme: 'NonSecure',
         },
       ]);
@@ -403,7 +435,6 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: true,
           session: true,
-          sourcePort: 443,
           sourceScheme: 'Secure',
         },
       ]);
@@ -446,7 +477,6 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: false,
           session: true,
-          sourcePort: 80,
           sourceScheme: 'NonSecure',
         },
       ]);
@@ -465,7 +495,6 @@ describe('Cookie specs', () => {
             httpOnly: false,
             secure: false,
             session: true,
-            sourcePort: 80,
             sourceScheme: 'NonSecure',
           },
         ]
@@ -515,7 +544,6 @@ describe('Cookie specs', () => {
               sameSite: 'None',
               secure: true,
               session: true,
-              sourcePort: 443,
               sourceScheme: 'Secure',
             },
           ]

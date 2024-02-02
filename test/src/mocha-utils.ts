@@ -8,13 +8,13 @@ import fs from 'fs';
 import path from 'path';
 
 import {TestServer} from '@pptr/testserver';
-import type {Protocol} from 'devtools-protocol';
 import expect from 'expect';
 import type * as MochaBase from 'mocha';
 import puppeteer from 'puppeteer/lib/cjs/puppeteer/puppeteer.js';
 import type {Browser} from 'puppeteer-core/internal/api/Browser.js';
 import type {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
+import type {Cookie} from 'puppeteer-core/internal/common/Cookie.js';
 import type {
   PuppeteerLaunchOptions,
   PuppeteerNode,
@@ -372,8 +372,8 @@ expect.extend({
 });
 
 export const expectCookieEquals = async (
-  cookies: Protocol.Network.Cookie[],
-  expectedCookies: Array<Partial<Protocol.Network.Cookie>>
+  cookies: Cookie[],
+  expectedCookies: Array<Partial<Cookie>>
 ): Promise<void> => {
   if (!processVariables.isChrome) {
     // Only keep standard properties when testing on a browser other than Chrome.

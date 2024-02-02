@@ -444,6 +444,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[cookies.spec] Cookie specs *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[coverage.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -1584,22 +1590,34 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[cookies.spec] Cookie specs Page.cookies should get cookies from multiple urls",
+    "testIdPattern": "[cookies.spec] Cookie specs Page.cookies should get cookies from nested path",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.cookies should not get cookies from not nested path",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.cookies should not get cookies from subdomain",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should default to setting secure cookie for HTTPS websites",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should isolate cookies in browser contexts",
@@ -1636,12 +1654,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set secure same-site cookies from a frame",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should work",
