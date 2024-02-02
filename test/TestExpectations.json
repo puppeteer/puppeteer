@@ -3861,18 +3861,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox", "headful"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox", "headless"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[worker.spec] Workers Page.workers",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headless"],
