@@ -1,3 +1,8 @@
+/**
+ * @license
+ * Copyright 2024 Google Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 // eslint-disable-next-line no-restricted-imports
 import {EventEmitter as NodeEventEmitter} from 'node:events';
 

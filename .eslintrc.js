@@ -172,8 +172,6 @@ module.exports = {
         curly: ['error', 'all'],
         // Brackets keep code readable and `return` intentions clear.
         'arrow-body-style': ['error', 'always'],
-        // Error if comments do not adhere to `tsdoc`.
-        'tsdoc/syntax': 'error',
         // Keeps array types simple only when they are simple for readability.
         '@typescript-eslint/array-type': ['error', {default: 'array-simple'}],
         'no-unused-vars': 'off',
@@ -276,6 +274,15 @@ module.exports = {
           },
         },
       ],
+    },
+
+    {
+      // Applies to only published packages
+      files: ['packages/**/*.ts'],
+      rules: {
+        // Error if comments do not adhere to `tsdoc`.
+        'tsdoc/syntax': 'error',
+      },
     },
   ],
 };

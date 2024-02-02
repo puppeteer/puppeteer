@@ -7,7 +7,6 @@
     "outDir": "./lib",
     "declaration": false,
     "declarationMap": false,
-    "sourceMap": false,
     "composite": false,
     "removeComments": true,
   },

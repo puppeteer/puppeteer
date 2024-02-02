@@ -1,3 +1,8 @@
+/**
+ * @license
+ * Copyright 2024 Google Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import {JSHandle} from '../api/JSHandle.js';
 import {debugError} from '../common/util.js';
 import {DisposableStack} from '../util/disposable.js';

@@ -1,4 +1,9 @@
 /**
+ * @license
+ * Copyright 2024 Google Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+/**
  * "Archives" older versions of the website docs to reduce the build time:
  *
  * - keeps one latest version + next

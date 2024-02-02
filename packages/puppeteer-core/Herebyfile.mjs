@@ -1,3 +1,8 @@
+/**
+ * @license
+ * Copyright 2024 Google Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import {mkdir, readFile, readdir, writeFile} from 'fs/promises';
 import {join} from 'path/posix';
 

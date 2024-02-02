@@ -1,3 +1,8 @@
+/**
+ * @license
+ * Copyright 2024 Google Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import {Deferred} from './Deferred.js';
 import {disposeSymbol} from './disposable.js';
 
