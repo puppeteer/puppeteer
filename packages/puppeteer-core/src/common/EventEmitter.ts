@@ -27,18 +27,6 @@ export interface CommonEventEmitter<Events extends Record<EventType, unknown>> {
     handler?: Handler<Events[Key]>
   ): this;
   emit<Key extends keyof Events>(type: Key, event: Events[Key]): boolean;
-  /* To maintain parity with the built in NodeJS event emitter which uses removeListener
-   * rather than `off`.
-   * If you're implementing new code you should use `off`.
-   */
-  addListener<Key extends keyof Events>(
-    type: Key,
-    handler: Handler<Events[Key]>
-  ): this;
-  removeListener<Key extends keyof Events>(
-    type: Key,
-    handler: Handler<Events[Key]>
-  ): this;
   once<Key extends keyof Events>(
     type: Key,
     handler: Handler<Events[Key]>
@@ -146,30 +134,6 @@ export class EventEmitter<Events extends Record<EventType, unknown>>
   ): boolean {
     this.#emitter.emit(type, event);
     return this.listenerCount(type) > 0;
-  }
-
-  /**
-   * Remove an event listener.
-   *
-   * @deprecated please use {@link EventEmitter.off} instead.
-   */
-  removeListener<Key extends keyof EventsWithWildcard<Events>>(
-    type: Key,
-    handler: Handler<EventsWithWildcard<Events>[Key]>
-  ): this {
-    return this.off(type, handler);
-  }
-
-  /**
-   * Add an event listener.
-   *
-   * @deprecated please use {@link EventEmitter.on} instead.
-   */
-  addListener<Key extends keyof EventsWithWildcard<Events>>(
-    type: Key,
-    handler: Handler<EventsWithWildcard<Events>[Key]>
-  ): this {
-    return this.on(type, handler);
   }
 
   /**
