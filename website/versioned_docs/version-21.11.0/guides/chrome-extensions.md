@@ -4,8 +4,7 @@ Puppeteer can be used for testing Chrome Extensions.
 
 :::caution
 
-Extensions in Chrome/Chromium currently only work in non-headless mode and
-experimental Chrome headless mode.
+Extensions in Chrome/Chromium do not work in the old headless/`chrome-headless-shell`.
 
 :::
 
@@ -20,7 +19,7 @@ import path from 'path';
 (async () => {
   const pathToExtension = path.join(process.cwd(), 'my-extension');
   const browser = await puppeteer.launch({
-    headless: 'new',
+    headless: true,
     args: [
       `--disable-extensions-except=${pathToExtension}`,
       `--load-extension=${pathToExtension}`,

@@ -181,7 +181,7 @@ import puppeteer from 'puppeteer';
 **1. Uses Headless mode**
 
 By default Puppeteer launches Chrome in
-[old Headless mode](https://developer.chrome.com/articles/new-headless/).
+[the Headless mode](https://developer.chrome.com/articles/new-headless/).
 
 ```ts
 const browser = await puppeteer.launch();
@@ -189,12 +189,16 @@ const browser = await puppeteer.launch();
 const browser = await puppeteer.launch({headless: true});
 ```
 
-[Chrome 112 launched a new Headless mode](https://developer.chrome.com/articles/new-headless/) that might cause some differences in behavior compared to the old Headless implementation.
-In the future Puppeteer will start defaulting to new implementation.
-We recommend you try it out before the switch:
+Before v22, Puppeteer launched the [old Headless mode](https://developer.chrome.com/articles/new-headless/) by default.
+The old headless mode is now known as
+[`chrome-headless-shell`](https://developer.chrome.com/blog/chrome-headless-shell)
+and ships as a separate binary. `chrome-headless-shell` does not match the
+behavior of the regular Chrome completely but it is currently more performant
+for automation tasks where the complete Chrome feature set is not needed. If the performance
+is more important for your use case, switch to `chrome-headless-shell` as following:
 
 ```ts
-const browser = await puppeteer.launch({headless: 'new'});
+const browser = await puppeteer.launch({headless: 'chrome-headless-shell'});
 ```
 
 To launch a "headful" version of Chrome, set the
