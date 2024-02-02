@@ -8,7 +8,6 @@ import type {Protocol} from 'devtools-protocol';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {Realm} from '../api/Realm.js';
 import {WebWorker} from '../api/WebWorker.js';
-import type {ConsoleMessageType} from '../common/ConsoleMessage.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import {debugError} from '../common/util.js';
 
@@ -20,7 +19,7 @@ import {CdpJSHandle} from './JSHandle.js';
  * @internal
  */
 export type ConsoleAPICalledCallback = (
-  eventType: ConsoleMessageType,
+  eventType: string,
   handles: CdpJSHandle[],
   trace?: Protocol.Runtime.StackTrace
 ) => void;
