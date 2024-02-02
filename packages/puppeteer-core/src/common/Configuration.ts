@@ -63,14 +63,6 @@ export interface Configuration {
    */
   downloadBaseUrl?: string;
   /**
-   * Specifies the path for the downloads folder.
-   *
-   * Can be overridden by `PUPPETEER_DOWNLOAD_PATH`.
-   *
-   * @defaultValue `<cacheDirectory>`
-   */
-  downloadPath?: string;
-  /**
    * Specifies an executable path to be used in
    * {@link PuppeteerNode.launch | puppeteer.launch}.
    *

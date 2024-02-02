@@ -223,7 +223,7 @@ export class PuppeteerNode extends Puppeteer {
    * @internal
    */
   get defaultDownloadPath(): string | undefined {
-    return this.configuration.downloadPath ?? this.configuration.cacheDirectory;
+    return this.configuration.cacheDirectory;
   }
 
   /**
@@ -283,8 +283,7 @@ export class PuppeteerNode extends Puppeteer {
       throw new Error('The current platform is not supported.');
     }
 
-    const cacheDir =
-      this.configuration.downloadPath ?? this.configuration.cacheDirectory!;
+    const cacheDir = this.configuration.cacheDirectory!;
     const installedBrowsers = await getInstalledBrowsers({
       cacheDir,
     });
