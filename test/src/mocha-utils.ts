@@ -68,8 +68,8 @@ const product =
 const headless = (process.env['HEADLESS'] || 'true').trim().toLowerCase() as
   | 'true'
   | 'false'
-  | 'new';
-export const isHeadless = headless === 'true' || headless === 'new';
+  | 'shell';
+export const isHeadless = headless === 'true' || headless === 'shell';
 const isFirefox = product === 'firefox';
 const isChrome = product === 'chrome';
 const protocol = (process.env['PUPPETEER_PROTOCOL'] || 'cdp') as
@@ -93,7 +93,7 @@ const defaultBrowserOptions = Object.assign(
   {
     handleSIGINT: true,
     executablePath: process.env['BINARY'],
-    headless: headless === 'new' ? ('new' as const) : isHeadless,
+    headless: headless === 'shell' ? ('shell' as const) : isHeadless,
     dumpio: !!process.env['DUMPIO'],
     protocol,
   },
@@ -115,7 +115,7 @@ if (defaultBrowserOptions.executablePath) {
 
 const processVariables: {
   product: string;
-  headless: 'true' | 'false' | 'new';
+  headless: 'true' | 'false' | 'shell';
   isHeadless: boolean;
   isFirefox: boolean;
   isChrome: boolean;
@@ -245,7 +245,7 @@ export interface PuppeteerTestState {
   isFirefox: boolean;
   isChrome: boolean;
   isHeadless: boolean;
-  headless: 'true' | 'false' | 'new';
+  headless: 'true' | 'false' | 'shell';
   puppeteerPath: string;
 }
 const state: Partial<PuppeteerTestState> = {};
@@ -263,7 +263,7 @@ if (
   }
   -> mode: ${
     processVariables.isHeadless
-      ? processVariables.headless === 'new'
+      ? processVariables.headless === 'true'
         ? '--headless=new'
         : '--headless'
       : 'headful'

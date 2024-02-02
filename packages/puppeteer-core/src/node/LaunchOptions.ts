@@ -17,13 +17,18 @@ export interface BrowserLaunchArgumentOptions {
    * Whether to run the browser in headless mode.
    *
    * @remarks
-   * In the future `headless: true` will be equivalent to `headless: 'new'`.
-   * You can read more about the change {@link https://developer.chrome.com/articles/new-headless/ | here}.
-   * Consider opting in early by setting the value to `"new"`.
+   *
+   * - `true` launches the browser in the
+   *   {@link https://developer.chrome.com/articles/new-headless/ | new headless}
+   *   mode.
+   *
+   * - `'shell'` launches
+   *   {@link https://developer.chrome.com/blog/chrome-headless-shell | shell}
+   *   known as the old headless mode.
    *
    * @defaultValue `true`
    */
-  headless?: boolean | 'new';
+  headless?: boolean | 'shell';
   /**
    * Path to a user data directory.
    * {@link https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/user_data_dir.md | see the Chromium docs}

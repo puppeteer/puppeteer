@@ -32,7 +32,7 @@
     "test:chrome:bidi-local": "wireit",
     "test:chrome:headful": "wireit",
     "test:chrome:headless": "wireit",
-    "test:chrome:new-headless": "wireit",
+    "test:chrome:shell": "wireit",
     "test:firefox": "wireit",
     "test:firefox:bidi": "wireit",
     "test:firefox:bidi:headful": "wireit",
@@ -83,7 +83,7 @@
         "test:chrome:bidi",
         "test:chrome:headful",
         "test:chrome:headless",
-        "test:chrome:new-headless"
+        "test:chrome:shell"
       ]
     },
     "test:chrome:bidi": {
@@ -98,8 +98,8 @@
     "test:chrome:headless": {
       "command": "npm test -- --test-suite chrome-headless"
     },
-    "test:chrome:new-headless": {
-      "command": "npm test -- --test-suite chrome-new-headless"
+    "test:chrome:shell": {
+      "command": "npm test -- --test-suite chrome-headless-shell"
     },
     "test:firefox:bidi": {
       "command": "npm test -- --test-suite firefox-bidi"

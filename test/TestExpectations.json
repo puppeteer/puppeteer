@@ -338,7 +338,7 @@
   {
     "testIdPattern": "[autofill.spec] *",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "headless"],
+    "parameters": ["chrome", "chrome-headless-shell"],
     "expectations": ["FAIL"]
   },
   {
@@ -1030,7 +1030,7 @@
   {
     "testIdPattern": "[prerender.spec] Prerender can screencast",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["new-headless"],
+    "parameters": ["headless"],
     "expectations": ["FAIL", "PASS"]
   },
   {
@@ -1126,13 +1126,13 @@
   {
     "testIdPattern": "[screenshot.spec] Screenshots Cdp should work in \"fromSurface: false\" mode",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["headless"],
+    "parameters": ["chrome-headless-shell"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Cdp should work in \"fromSurface: false\" mode",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["new-headless"],
+    "parameters": ["headless"],
     "expectations": ["SKIP"]
   },
   {
@@ -2510,13 +2510,13 @@
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work with anchor navigation",
     "platforms": ["linux"],
-    "parameters": ["chrome", "headless"],
+    "parameters": ["chrome", "chrome-headless-shell"],
     "expectations": ["PASS", "TIMEOUT"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work with anchor navigation",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "headless"],
+    "parameters": ["chrome", "chrome-headless-shell"],
     "expectations": ["PASS", "TIMEOUT"]
   },
   {
@@ -3235,7 +3235,7 @@
   {
     "testIdPattern": "[pdf.spec] Page.pdf can print to PDF with outline",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "new-headless"],
+    "parameters": ["chrome", "headless"],
     "expectations": ["FAIL"]
   },
   {
@@ -3760,56 +3760,56 @@
   {
     "testIdPattern": "[CDPSession.spec] Target.createCDPSession should send events",
     "platforms": ["win32"],
-    "parameters": ["cdp", "chrome", "new-headless"],
+    "parameters": ["cdp", "chrome", "headless"],
     "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[chromiumonly.spec] Chromium-Specific Launcher tests Puppeteer.launch |pipe| option should fire \"disconnected\" when closing with pipe",
     "platforms": ["darwin"],
-    "parameters": ["cdp", "chrome", "new-headless"],
+    "parameters": ["cdp", "chrome", "headless"],
     "expectations": ["FAIL"],
     "comment": "Remove with M121"
   },
   {
     "testIdPattern": "[devtools.spec] DevTools should expose DevTools as a page",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome", "headless"],
+    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[devtools.spec] DevTools should open devtools when \"devtools: true\" option is given",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome", "headless"],
+    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[devtools.spec] DevTools target.page() should return a DevTools page if asPage is used",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome", "headless"],
+    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[devtools.spec] DevTools target.page() should return a DevTools page if custom isPageTarget is provided",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome", "headless"],
+    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[extensions.spec] extensions background_page target type should be available",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome", "headless"],
+    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[extensions.spec] extensions service_worker target type should be available",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome", "headless"],
+    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[extensions.spec] extensions target.page() should return a background_page",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome", "headless"],
+    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["SKIP"]
   },
   {
@@ -3821,7 +3821,7 @@
   {
     "testIdPattern": "[network.spec] network Network Events Page.Events.Request",
     "platforms": ["linux"],
-    "parameters": ["cdp", "chrome", "new-headless"],
+    "parameters": ["cdp", "chrome", "headless"],
     "expectations": ["FAIL", "PASS"]
   },
   {
@@ -3833,7 +3833,7 @@
   {
     "testIdPattern": "[page.spec] Page Page.bringToFront should work",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome", "headless"],
+    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["SKIP"]
   },
   {
@@ -3845,7 +3845,7 @@
   {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with redirects",
     "platforms": ["win32"],
-    "parameters": ["cdp", "chrome", "new-headless"],
+    "parameters": ["cdp", "chrome", "headless"],
     "expectations": ["FAIL", "PASS"]
   },
   {
@@ -3887,7 +3887,7 @@
   {
     "testIdPattern": "[worker.spec] Workers Page.workers",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome", "headless"],
+    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["FAIL", "PASS"]
   }
 ]

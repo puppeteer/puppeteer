@@ -21,7 +21,7 @@ on:
         options:
           - chrome-headless
           - chrome-headful
-          - chrome-new-headless
+          - chrome-headless-shell
           - chrome-bidi
           - firefox-headful
           - firefox-headless

@@ -11,7 +11,7 @@
       "options": [
         "chrome-headless",
         "chrome-headful",
-        "chrome-new-headless",
+        "chrome-headless-shell",
         "firefox-headless",
         "firefox-headful",
         "firefox-bidi",
