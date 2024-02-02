@@ -1,9 +1,4 @@
 /**
- * @license
- * Copyright 2024 Google Inc.
- * SPDX-License-Identifier: Apache-2.0
- */
-/**
  * Copyright 2017 Google Inc., PhantomJS Authors All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");

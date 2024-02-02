@@ -11,8 +11,6 @@ const createRule = ESLintUtils.RuleCreator(name => {
   return `https://github.com/puppeteer/puppeteer/tree/main/tools/eslint/${name}.ts`;
 });
 
-const copyrightPattern = /Copyright ([0-9]{4}) Google Inc\./;
-
 const currentYear = new Date().getFullYear();
 
 // Needs to start and end with new line
@@ -69,9 +67,9 @@ const enforceLicenseRule = createRule<[], 'licenseRule'>({
       Program(node) {
         if (
           header &&
-          header.value.includes('@license') &&
-          header.value.includes('SPDX-License-Identifier: Apache-2.0') &&
-          copyrightPattern.test(header.value)
+          (header.value.includes('@license') ||
+            header.value.includes('License') ||
+            header.value.includes('Copyright'))
         ) {
           return;
         }
