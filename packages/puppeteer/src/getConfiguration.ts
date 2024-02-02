@@ -10,6 +10,22 @@ import {join} from 'path';
 import {cosmiconfigSync} from 'cosmiconfig';
 import type {Configuration, Product} from 'puppeteer-core';
 
+function getBooleanEnvVar(name: string) {
+  const env = process.env[name];
+  if (env === undefined) {
+    return;
+  }
+  switch (env.toLowerCase()) {
+    case '':
+    case '0':
+    case 'false':
+    case 'off':
+      return false;
+    default:
+      return true;
+  }
+}
+
 /**
  * @internal
  */
@@ -58,27 +74,29 @@ export const getConfiguration = (): Configuration => {
 
   // Set skipDownload explicitly or from default
   configuration.skipDownload = Boolean(
-    process.env['PUPPETEER_SKIP_DOWNLOAD'] ??
-      process.env['npm_config_puppeteer_skip_download'] ??
-      process.env['npm_package_config_puppeteer_skip_download'] ??
+    getBooleanEnvVar('PUPPETEER_SKIP_DOWNLOAD') ??
+      getBooleanEnvVar('npm_config_puppeteer_skip_download') ??
+      getBooleanEnvVar('npm_package_config_puppeteer_skip_download') ??
       configuration.skipDownload
   );
 
   // Set skipChromeDownload explicitly or from default
   configuration.skipChromeDownload = Boolean(
-    process.env['PUPPETEER_SKIP_CHROME_DOWNLOAD'] ??
-      process.env['npm_config_puppeteer_skip_chrome_download'] ??
-      process.env['npm_package_config_puppeteer_skip_chrome_download'] ??
+    getBooleanEnvVar('PUPPETEER_SKIP_CHROME_DOWNLOAD') ??
+      getBooleanEnvVar('npm_config_puppeteer_skip_chrome_download') ??
+      getBooleanEnvVar('npm_package_config_puppeteer_skip_chrome_download') ??
       configuration.skipChromeDownload
   );
 
   // Set skipChromeDownload explicitly or from default
   configuration.skipChromeHeadlessShellDownload = Boolean(
-    process.env['PUPPETEER_SKIP_CHROME_HEADLESS_SHELL_DOWNLOAD'] ??
-      process.env['npm_config_puppeteer_skip_chrome_headless_shell_download'] ??
-      process.env[
+    getBooleanEnvVar('PUPPETEER_SKIP_CHROME_HEADLESS_SHELL_DOWNLOAD') ??
+      getBooleanEnvVar(
+        'npm_config_puppeteer_skip_chrome_headless_shell_download'
+      ) ??
+      getBooleanEnvVar(
         'npm_package_config_puppeteer_skip_chrome_headless_shell_download'
-      ] ??
+      ) ??
       configuration.skipChromeHeadlessShellDownload
   );
 
