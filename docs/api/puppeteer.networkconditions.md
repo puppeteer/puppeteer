@@ -1,18 +1,19 @@
 ---
-sidebar_label: networkConditions
+sidebar_label: NetworkConditions
 ---
 
-# networkConditions variable
-
-> Warning: This API is now obsolete.
->
-> Import [PredefinedNetworkConditions](./puppeteer.predefinednetworkconditions.md).
+# NetworkConditions interface
 
 #### Signature:
 
 ```typescript
-networkConditions: Readonly<{
-  'Slow 3G': NetworkConditions;
-  'Fast 3G': NetworkConditions;
-}>;
+export interface NetworkConditions
 ```
+
+## Properties
+
+| Property | Modifiers | Type   | Description | Default |
+| -------- | --------- | ------ | ----------- | ------- |
+| download |           | number |             |         |
+| latency  |           | number |             |         |
+| upload   |           | number |             |         |
