@@ -10,7 +10,9 @@ Generates a PDF of the page with the `print` CSS media type.
 
 ```typescript
 class Page {
-  abstract createPDFStream(options?: PDFOptions): Promise<Readable>;
+  abstract createPDFStream(
+    options?: PDFOptions
+  ): Promise<ReadableStream<Uint8Array>>;
 }
 ```
 
@@ -22,7 +24,7 @@ class Page {
 
 **Returns:**
 
-Promise&lt;Readable&gt;
+Promise&lt;ReadableStream&lt;Uint8Array&gt;&gt;
 
 ## Remarks
 

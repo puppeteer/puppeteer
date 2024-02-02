@@ -5,13 +5,10 @@
  */
 
 import type FS from 'fs/promises';
-import type {Readable} from 'stream';
 
 import {map, NEVER, Observable, timer} from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
-import {isNode} from '../environment.js';
 import {assert} from '../util/assert.js';
-import {isErrorLike} from '../util/ErrorLike.js';
 
 import {debug} from './Debug.js';
 import {TimeoutError} from './Errors.js';
@@ -209,29 +206,39 @@ export async function importFSPromises(): Promise<typeof FS> {
  * @internal
  */
 export async function getReadableAsBuffer(
-  readable: Readable,
+  readable: ReadableStream<Uint8Array>,
   path?: string
 ): Promise<Buffer | null> {
   const buffers = [];
+  const reader = readable.getReader();
   if (path) {
     const fs = await importFSPromises();
     const fileHandle = await fs.open(path, 'w+');
     try {
-      for await (const chunk of readable) {
-        buffers.push(chunk);
-        await fileHandle.writeFile(chunk);
+      while (true) {
+        const {done, value} = await reader.read();
+        if (done) {
+          break;
+        }
+        buffers.push(value);
+        await fileHandle.writeFile(value);
       }
     } finally {
       await fileHandle.close();
     }
   } else {
-    for await (const chunk of readable) {
-      buffers.push(chunk);
+    while (true) {
+      const {done, value} = await reader.read();
+      if (done) {
+        break;
+      }
+      buffers.push(value);
     }
   }
   try {
     return Buffer.concat(buffers);
   } catch (error) {
+    debugError(error);
     return null;
   }
 }
@@ -239,39 +246,34 @@ export async function getReadableAsBuffer(
 /**
  * @internal
  */
+
+/**
+ * @internal
+ */
 export async function getReadableFromProtocolStream(
   client: CDPSession,
   handle: string
-): Promise<Readable> {
-  // TODO: Once Node 18 becomes the lowest supported version, we can migrate to
-  // ReadableStream.
-  if (!isNode) {
-    throw new Error('Cannot create a stream outside of Node.js environment.');
-  }
-
-  const {Readable} = await import('stream');
-
-  let eof = false;
-  return new Readable({
-    async read(size: number) {
-      if (eof) {
-        return;
+): Promise<ReadableStream<Uint8Array>> {
+  return new ReadableStream({
+    async pull(controller) {
+      function getUnit8Array(data: string, isBase64: boolean): Uint8Array {
+        if (isBase64) {
+          return Uint8Array.from(atob(data), m => {
+            return m.codePointAt(0)!;
+          });
+        }
+        const encoder = new TextEncoder();
+        return encoder.encode(data);
       }
 
-      try {
-        const response = await client.send('IO.read', {handle, size});
-        this.push(response.data, response.base64Encoded ? 'base64' : undefined);
-        if (response.eof) {
-          eof = true;
-          await client.send('IO.close', {handle});
-          this.push(null);
-        }
-      } catch (error) {
-        if (isErrorLike(error)) {
-          this.destroy(error);
-          return;
-        }
-        throw error;
+      const {data, base64Encoded, eof} = await client.send('IO.read', {
+        handle,
+      });
+
+      controller.enqueue(getUnit8Array(data, base64Encoded ?? false));
+      if (eof) {
+        await client.send('IO.close', {handle});
+        controller.close();
       }
     },
   });

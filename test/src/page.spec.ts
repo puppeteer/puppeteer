@@ -1964,9 +1964,15 @@ describe('Page', function () {
 
       const stream = await page.createPDFStream();
       let size = 0;
-      for await (const chunk of stream) {
-        size += chunk.length;
+      const reader = stream.getReader();
+      while (true) {
+        const {done, value} = await reader.read();
+        if (done) {
+          break;
+        }
+        size += value.length;
       }
+
       expect(size).toBeGreaterThan(0);
     });
 

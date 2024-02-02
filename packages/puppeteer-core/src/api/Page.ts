@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {Readable} from 'stream';
-
 import type {Protocol} from 'devtools-protocol';
 
 import {
@@ -2574,7 +2572,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-print-color-adjust | `-webkit-print-color-adjust`}
    * property to force rendering of exact colors.
    */
-  abstract createPDFStream(options?: PDFOptions): Promise<Readable>;
+  abstract createPDFStream(
+    options?: PDFOptions
+  ): Promise<ReadableStream<Uint8Array>>;
 
   /**
    * {@inheritDoc Page.createPDFStream}
