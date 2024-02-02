@@ -158,7 +158,7 @@ export interface PDFOptions {
   omitBackground?: boolean;
   /**
    * Generate tagged (accessible) PDF.
-   * @defaultValue `false`
+   * @defaultValue `true`
    * @experimental
    */
   tagged?: boolean;

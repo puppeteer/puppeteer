@@ -1940,6 +1940,25 @@ describe('Page', function () {
       }
     });
 
+    it('can print to PDF without accessible tags', async () => {
+      const {page, server} = await getTestState();
+
+      const outputFile = __dirname + '/../assets/output.pdf';
+      const outputFileAccessible =
+        __dirname + '/../assets/output-accessible.pdf';
+      await page.goto(server.PREFIX + '/pdf.html');
+      await page.pdf({path: outputFile});
+      await page.pdf({path: outputFileAccessible, tagged: false});
+      try {
+        expect(fs.readFileSync(outputFileAccessible).byteLength).toBeLessThan(
+          fs.readFileSync(outputFile).byteLength
+        );
+      } finally {
+        fs.unlinkSync(outputFileAccessible);
+        fs.unlinkSync(outputFile);
+      }
+    });
+
     it('can print to PDF and stream the result', async () => {
       const {page} = await getTestState();
 
