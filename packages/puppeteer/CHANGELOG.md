@@ -29,6 +29,27 @@ All notable changes to this project will be documented in this file. See [standa
     * puppeteer-core bumped from 21.0.2 to 21.0.3
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v21.11.0...puppeteer-v22.0.0) (2024-02-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove PUPPETEER_DOWNLOAD_PATH in favor of PUPPETEER_CACHE_DIR ([#11605](https://github.com/puppeteer/puppeteer/issues/11605))
+* drop support for node16 ([#10912](https://github.com/puppeteer/puppeteer/issues/10912))
+
+### Features
+
+* drop support for node16 ([#10912](https://github.com/puppeteer/puppeteer/issues/10912)) ([953f420](https://github.com/puppeteer/puppeteer/commit/953f4207b17210fa7231225e6f29a826f77e0832))
+* remove PUPPETEER_DOWNLOAD_PATH in favor of PUPPETEER_CACHE_DIR ([#11605](https://github.com/puppeteer/puppeteer/issues/11605)) ([4677281](https://github.com/puppeteer/puppeteer/commit/467728187737283191f6528676e50d53dae6e5ef))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 21.11.0 to 22.0.0
+    * @puppeteer/browsers bumped from 1.9.1 to 2.0.0
+
 ## [21.11.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v21.10.0...puppeteer-v21.11.0) (2024-02-02)
 
 
