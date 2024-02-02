@@ -198,7 +198,7 @@ for automation tasks where the complete Chrome feature set is not needed. If the
 is more important for your use case, switch to `chrome-headless-shell` as following:
 
 ```ts
-const browser = await puppeteer.launch({headless: 'chrome-headless-shell'});
+const browser = await puppeteer.launch({headless: 'shell'});
 ```
 
 To launch a "headful" version of Chrome, set the

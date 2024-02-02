@@ -22,13 +22,13 @@ export interface BrowserLaunchArgumentOptions {
    *   {@link https://developer.chrome.com/articles/new-headless/ | new headless}
    *   mode.
    *
-   * - `'chrome-headless-shell'` launches
-   *   {@link https://developer.chrome.com/blog/chrome-headless-shell | chrome-headless-shell}
+   * - `'shell'` launches
+   *   {@link https://developer.chrome.com/blog/chrome-headless-shell | shell}
    *   known as the old headless mode.
    *
    * @defaultValue `true`
    */
-  headless?: boolean | 'chrome-headless-shell';
+  headless?: boolean | 'shell';
   /**
    * Path to a user data directory.
    * {@link https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/user_data_dir.md | see the Chromium docs}

@@ -18,7 +18,7 @@ describe('Fixtures', function () {
   it('dumpio option should work with pipe option', async () => {
     const {defaultBrowserOptions, puppeteerPath, headless} =
       await getTestState();
-    if (headless !== 'chrome-headless-shell') {
+    if (headless !== 'shell') {
       // This test only works in the old headless mode.
       return;
     }

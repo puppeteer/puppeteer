@@ -253,7 +253,7 @@ export class ChromeLauncher extends ProductLauncher {
 
   override executablePath(
     channel?: ChromeReleaseChannel,
-    headless?: boolean | 'chrome-headless-shell'
+    headless?: boolean | 'shell'
   ): string {
     if (channel) {
       return computeSystemExecutablePath({
