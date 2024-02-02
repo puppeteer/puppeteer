@@ -232,14 +232,14 @@ describe('Screenshots', function () {
       await page.setContent(`
           something above
           <style>
+          :root {
+            scrollbar-width: none;
+          }
           div.to-screenshot {
             border: 1px solid blue;
             width: 600px;
             height: 600px;
             margin-left: 50px;
-          }
-          ::-webkit-scrollbar{
-            display: none;
           }
           </style>
           <div class="to-screenshot"></div>
