@@ -38,13 +38,6 @@ export const enum BrowserContextEvent {
   TargetDestroyed = 'targetdestroyed',
 }
 
-export {
-  /**
-   * @deprecated Use {@link BrowserContextEvent}
-   */
-  BrowserContextEvent as BrowserContextEmittedEvents,
-};
-
 /**
  * @public
  */

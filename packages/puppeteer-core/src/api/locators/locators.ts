@@ -109,24 +109,14 @@ export enum LocatorEvent {
    */
   Action = 'action',
 }
-export {
-  /**
-   * @deprecated Use {@link LocatorEvent}.
-   */
-  LocatorEvent as LocatorEmittedEvents,
-};
+
 /**
  * @public
  */
 export interface LocatorEvents extends Record<EventType, unknown> {
   [LocatorEvent.Action]: undefined;
 }
-export type {
-  /**
-   * @deprecated Use {@link LocatorEvents}.
-   */
-  LocatorEvents as LocatorEventObject,
-};
+
 /**
  * Locators describe a strategy of locating objects and performing an action on
  * them. If the action fails because the object is not ready for the action, the

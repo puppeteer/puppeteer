@@ -165,13 +165,6 @@ export const enum BrowserEvent {
   TargetDiscovered = 'targetdiscovered',
 }
 
-export {
-  /**
-   * @deprecated Use {@link BrowserEvent}.
-   */
-  BrowserEvent as BrowserEmittedEvents,
-};
-
 /**
  * @public
  */
