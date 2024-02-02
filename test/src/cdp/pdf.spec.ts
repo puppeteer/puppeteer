@@ -20,7 +20,7 @@ describe('Page.pdf', () => {
     const outputFileAccessible =
       __dirname + '/../../assets/output-accessible.pdf';
     await page.goto(server.PREFIX + '/pdf.html');
-    await page.pdf({path: outputFile});
+    await page.pdf({path: outputFile, tagged: false});
     await page.pdf({path: outputFileAccessible, tagged: true});
     try {
       const [base, tagged] = await Promise.all([
