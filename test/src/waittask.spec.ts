@@ -336,39 +336,6 @@ describe('waittask specs', function () {
     });
   });
 
-  describe('Page.waitForTimeout', () => {
-    it('waits for the given timeout before resolving', async () => {
-      const {page, server} = await getTestState();
-      await page.goto(server.EMPTY_PAGE);
-      const startTime = Date.now();
-      await page.waitForTimeout(1000);
-      const endTime = Date.now();
-      /* In a perfect world endTime - startTime would be exactly 1000 but we
-       * expect some fluctuations and for it to be off by a little bit. So to
-       * avoid a flaky test we'll make sure it waited for roughly 1 second.
-       */
-      expect(endTime - startTime).toBeGreaterThan(700);
-      expect(endTime - startTime).toBeLessThan(1300);
-    });
-  });
-
-  describe('Frame.waitForTimeout', () => {
-    it('waits for the given timeout before resolving', async () => {
-      const {page, server} = await getTestState();
-      await page.goto(server.EMPTY_PAGE);
-      const frame = page.mainFrame();
-      const startTime = Date.now();
-      await frame.waitForTimeout(1000);
-      const endTime = Date.now();
-      /* In a perfect world endTime - startTime would be exactly 1000 but we
-       * expect some fluctuations and for it to be off by a little bit. So to
-       * avoid a flaky test we'll make sure it waited for roughly 1 second
-       */
-      expect(endTime - startTime).toBeGreaterThan(700);
-      expect(endTime - startTime).toBeLessThan(1300);
-    });
-  });
-
   describe('Frame.waitForSelector', function () {
     const addElement = (tag: string) => {
       return document.body.appendChild(document.createElement(tag));

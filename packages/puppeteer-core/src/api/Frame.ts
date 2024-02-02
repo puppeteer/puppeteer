@@ -1152,32 +1152,6 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   }
 
   /**
-   * @deprecated Replace with `new Promise(r => setTimeout(r, milliseconds));`.
-   *
-   * Causes your script to wait for the given number of milliseconds.
-   *
-   * @remarks
-   * It's generally recommended to not wait for a number of seconds, but instead
-   * use {@link Frame.waitForSelector}, {@link Frame.waitForXPath} or
-   * {@link Frame.waitForFunction} to wait for exactly the conditions you want.
-   *
-   * @example
-   *
-   * Wait for 1 second:
-   *
-   * ```ts
-   * await frame.waitForTimeout(1000);
-   * ```
-   *
-   * @param milliseconds - the number of milliseconds to wait.
-   */
-  async waitForTimeout(milliseconds: number): Promise<void> {
-    return await new Promise(resolve => {
-      setTimeout(resolve, milliseconds);
-    });
-  }
-
-  /**
    * The frame's title.
    */
   @throwIfDetached
