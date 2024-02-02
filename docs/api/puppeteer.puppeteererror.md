@@ -4,7 +4,7 @@ sidebar_label: PuppeteerError
 
 # PuppeteerError class
 
-All Puppeteer Error should extend this one
+The base class for all Puppeteer-specific errors
 
 #### Signature:
 
