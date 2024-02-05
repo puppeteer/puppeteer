@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.6.0](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.5.6...ng-schematics-v0.6.0) (2024-02-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop support for node16 ([#10912](https://github.com/puppeteer/puppeteer/issues/10912))
+
+### Features
+
+* drop support for node16 ([#10912](https://github.com/puppeteer/puppeteer/issues/10912)) ([953f420](https://github.com/puppeteer/puppeteer/commit/953f4207b17210fa7231225e6f29a826f77e0832))
+
 ## [0.5.6](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.5.5...ng-schematics-v0.5.6) (2024-01-16)
 
 
