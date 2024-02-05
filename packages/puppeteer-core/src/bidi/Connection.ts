@@ -14,7 +14,8 @@ import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 
-import {cdpSessions, type BrowsingContext} from './BrowsingContext.js';
+import type {BrowsingContext} from './BrowsingContext.js';
+import {cdpSessions} from './CDPSession.js';
 import type {
   BidiEvents,
   Commands as BidiCommands,
