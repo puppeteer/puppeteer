@@ -10,15 +10,11 @@ let page: puppeteer.Page;
 export function setupBrowserHooks(path = ''): void {
 <% if(testRunner == 'jasmine' || testRunner == 'jest') { %>
   beforeAll(async () => {
-    browser = await puppeteer.launch({
-      headless: 'new'
-    });
+    browser = await puppeteer.launch();
   });
 <% } %><% if(testRunner == 'mocha' || testRunner == 'node') { %>
   before(async () => {
-    browser = await puppeteer.launch({
-      headless: 'new'
-    });
+    browser = await puppeteer.launch();
   });
 <% } %>
 
