@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/puppeteer/puppeteer/compare/browsers-v1.9.1...browsers-v2.0.0) (2024-02-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop support for node16 ([#10912](https://github.com/puppeteer/puppeteer/issues/10912))
+
+### Features
+
+* drop support for node16 ([#10912](https://github.com/puppeteer/puppeteer/issues/10912)) ([953f420](https://github.com/puppeteer/puppeteer/commit/953f4207b17210fa7231225e6f29a826f77e0832))
+
 ## [1.9.1](https://github.com/puppeteer/puppeteer/compare/browsers-v1.9.0...browsers-v1.9.1) (2024-01-04)
 
 
