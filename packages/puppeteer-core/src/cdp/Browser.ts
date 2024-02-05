@@ -201,7 +201,7 @@ export class CdpBrowser extends BrowserBase {
     return this.#isPageTargetCallback;
   }
 
-  override async createIncognitoBrowserContext(
+  override async createBrowserContext(
     options: BrowserContextOptions = {}
   ): Promise<CdpBrowserContext> {
     const {proxyServer, proxyBypassList} = options;

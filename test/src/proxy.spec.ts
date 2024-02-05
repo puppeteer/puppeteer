@@ -150,7 +150,7 @@ describe('request proxy', () => {
         args: [...defaultArgs, `--proxy-server=${proxyServerUrl}`],
       });
       try {
-        const context = await browser.createIncognitoBrowserContext();
+        const context = await browser.createBrowserContext();
         const page = await context.newPage();
         const response = (await page.goto(emptyPageUrl))!;
 
@@ -174,7 +174,7 @@ describe('request proxy', () => {
         ],
       });
       try {
-        const context = await browser.createIncognitoBrowserContext();
+        const context = await browser.createBrowserContext();
         const page = await context.newPage();
         const response = (await page.goto(emptyPageUrl))!;
 
@@ -197,7 +197,7 @@ describe('request proxy', () => {
         args: defaultArgs,
       });
       try {
-        const context = await browser.createIncognitoBrowserContext({
+        const context = await browser.createBrowserContext({
           proxyServer: proxyServerUrl,
         });
         const page = await context.newPage();
@@ -219,7 +219,7 @@ describe('request proxy', () => {
         args: defaultArgs,
       });
       try {
-        const context = await browser.createIncognitoBrowserContext({
+        const context = await browser.createBrowserContext({
           proxyServer: proxyServerUrl,
           proxyBypassList: [new URL(emptyPageUrl).host],
         });

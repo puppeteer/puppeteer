@@ -216,7 +216,7 @@ export const getTestState = async (
   }
 
   if (!skipContextCreation) {
-    state.context = await state.browser!.createIncognitoBrowserContext();
+    state.context = await state.browser!.createBrowserContext();
     state.page = await state.context.newPage();
   }
   return state as PuppeteerTestState;
@@ -479,7 +479,7 @@ export const launch = async (
     let context: BrowserContext;
     let page: Page;
     if (createContext) {
-      context = await browser.createIncognitoBrowserContext();
+      context = await browser.createBrowserContext();
       cleanupStorage.push(() => {
         return context.close();
       });

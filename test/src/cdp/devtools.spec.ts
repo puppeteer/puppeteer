@@ -93,7 +93,7 @@ describe('DevTools', function () {
     const browser = await launchBrowser(
       Object.assign({devtools: true}, launchOptions)
     );
-    const context = await browser.createIncognitoBrowserContext();
+    const context = await browser.createBrowserContext();
     await Promise.all([
       context.newPage(),
       browser.waitForTarget((target: {url: () => string | string[]}) => {
@@ -106,7 +106,7 @@ describe('DevTools', function () {
     const browser = await launchBrowser(
       Object.assign({devtools: true}, launchOptions)
     );
-    const context = await browser.createIncognitoBrowserContext();
+    const context = await browser.createBrowserContext();
     const [target] = await Promise.all([
       browser.waitForTarget((target: {url: () => string | string[]}) => {
         return target.url().includes('devtools://');

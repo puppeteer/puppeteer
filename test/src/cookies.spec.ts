@@ -224,7 +224,7 @@ describe('Cookie specs', () => {
     it('should isolate cookies in browser contexts', async () => {
       const {page, server, browser} = await getTestState();
 
-      const anotherContext = await browser.createIncognitoBrowserContext();
+      const anotherContext = await browser.createBrowserContext();
       const anotherPage = await anotherContext.newPage();
 
       await page.goto(server.EMPTY_PAGE);

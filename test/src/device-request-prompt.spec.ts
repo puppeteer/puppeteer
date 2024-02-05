@@ -28,7 +28,7 @@ describe('device request prompt', function () {
   });
 
   beforeEach(async () => {
-    state.context = await state.browser.createIncognitoBrowserContext();
+    state.context = await state.browser.createBrowserContext();
     state.page = await state.context.newPage();
   });
 

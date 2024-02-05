@@ -361,7 +361,7 @@ describe('Screenshots', function () {
     it('should run in parallel in multiple pages', async () => {
       const {browser, server} = await getTestState();
 
-      const context = await browser.createIncognitoBrowserContext();
+      const context = await browser.createBrowserContext();
 
       const N = 2;
       const pages = await Promise.all(

@@ -6,7 +6,7 @@ sidebar_label: BrowserContext.isIncognito
 
 Whether this [browser context](./puppeteer.browsercontext.md) is incognito.
 
-The [default browser context](./puppeteer.browser.defaultbrowsercontext.md) is the only non-incognito browser context.
+In Chrome, the [default browser context](./puppeteer.browser.defaultbrowsercontext.md) is the only non-incognito browser context.
 
 #### Signature:
 
