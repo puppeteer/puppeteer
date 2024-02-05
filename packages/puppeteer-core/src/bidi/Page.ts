@@ -58,11 +58,8 @@ import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {BidiBrowser} from './Browser.js';
 import type {BidiBrowserContext} from './BrowserContext.js';
-import {
-  BrowsingContextEvent,
-  CdpSessionWrapper,
-  type BrowsingContext,
-} from './BrowsingContext.js';
+import {BrowsingContextEvent, type BrowsingContext} from './BrowsingContext.js';
+import {BidiCdpSession} from './CDPSession.js';
 import type {BidiConnection} from './Connection.js';
 import {BidiDeserializer} from './Deserializer.js';
 import {BidiDialog} from './Dialog.js';
@@ -714,7 +711,7 @@ export class BidiPage extends Page {
         targetId: this.mainFrame()._id,
         flatten: true,
       });
-    return new CdpSessionWrapper(this.mainFrame().context(), sessionId);
+    return new BidiCdpSession(this.mainFrame().context(), sessionId);
   }
 
   override async bringToFront(): Promise<void> {
