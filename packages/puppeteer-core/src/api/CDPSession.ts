@@ -1,3 +1,8 @@
+/**
+ * @license
+ * Copyright 2024 Google Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 import type {Connection} from '../cdp/Connection.js';

@@ -1,3 +1,8 @@
+/**
+ * @license
+ * Copyright 2024 Google Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import https from 'https';
 import {before, after} from 'node:test';
 import {join} from 'path';

@@ -11,15 +11,16 @@ const createRule = ESLintUtils.RuleCreator(name => {
   return `https://github.com/puppeteer/puppeteer/tree/main/tools/eslint/${name}.ts`;
 });
 
-const copyrightPattern = /Copyright ([0-9]{4}) Google Inc\./;
+const currentYear = new Date().getFullYear();
 
-// const currentYear = new Date().getFullYear;
-
-// const licenseHeader = `/**
-//  * @license
-//  * Copyright ${currentYear} Google Inc.
-//  * SPDX-License-Identifier: Apache-2.0
-//  */`;
+// Needs to start and end with new line
+const licenseHeader = `
+/**
+ * @license
+ * Copyright ${currentYear} Google Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+`;
 
 const enforceLicenseRule = createRule<[], 'licenseRule'>({
   name: 'check-license',
@@ -29,7 +30,7 @@ const enforceLicenseRule = createRule<[], 'licenseRule'>({
       description: 'Validate existence of license header',
       requiresTypeChecking: false,
     },
-    fixable: undefined, // TODO: change to 'code' once fixer works.
+    fixable: 'code',
     schema: [],
     messages: {
       licenseRule: 'Add license header.',
@@ -39,16 +40,26 @@ const enforceLicenseRule = createRule<[], 'licenseRule'>({
   create(context) {
     const sourceCode = context.sourceCode;
     const comments = sourceCode.getAllComments();
-    const header =
-      comments[0]?.type === 'Block' && isHeaderComment(comments[0])
-        ? comments[0]
-        : null;
-
-    function isHeaderComment(comment: TSESTree.Comment) {
-      if (comment && comment.range[0] >= 0 && comment.range[1] <= 88) {
-        return true;
-      } else {
-        return false;
+    let insertAfter = [0, 0] as TSESTree.Range;
+    let header: TSESTree.Comment | null = null;
+    // Check only the first 2 comments
+    for (let index = 0; index < 2; index++) {
+      const comment = comments[index];
+      if (!comment) {
+        break;
+      }
+      // Shebang comments should be at the top
+      if (
+        // Types don't have it debugger showed it...
+        (comment.type as string) === 'Shebang' ||
+        (comment.type === 'Line' && comment.value.startsWith('#!'))
+      ) {
+        insertAfter = comment.range;
+        continue;
+      }
+      if (comment.type === 'Block') {
+        header = comment;
+        break;
       }
     }
 
@@ -56,23 +67,21 @@ const enforceLicenseRule = createRule<[], 'licenseRule'>({
       Program(node) {
         if (
           header &&
-          header.value.includes('@license') &&
-          header.value.includes('SPDX-License-Identifier: Apache-2.0') &&
-          copyrightPattern.test(header.value)
+          (header.value.includes('@license') ||
+            header.value.includes('License') ||
+            header.value.includes('Copyright'))
         ) {
           return;
         }
 
         // Add header license
         if (!header || !header.value.includes('@license')) {
-          // const startLoc: [number, number] = [0, 88];
           context.report({
             node: node,
             messageId: 'licenseRule',
-            // TODO: fix the fixer.
-            // fix(fixer) {
-            //   return fixer.insertTextBeforeRange(startLoc, licenseHeader);
-            // },
+            fix(fixer) {
+              return fixer.insertTextAfterRange(insertAfter, licenseHeader);
+            },
           });
         }
       },
