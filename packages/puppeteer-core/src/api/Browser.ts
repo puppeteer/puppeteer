@@ -136,7 +136,7 @@ export const enum BrowserEvent {
    * Emitted when the URL of a target changes. Contains a {@link Target}
    * instance.
    *
-   * @remarks Note that this includes target changes in incognito browser
+   * @remarks Note that this includes target changes in all browser
    * contexts.
    */
   TargetChanged = 'targetchanged',
@@ -147,7 +147,7 @@ export const enum BrowserEvent {
    *
    * Contains a {@link Target} instance.
    *
-   * @remarks Note that this includes target creations in incognito browser
+   * @remarks Note that this includes target creations in all browser
    * contexts.
    */
   TargetCreated = 'targetcreated',
@@ -155,7 +155,7 @@ export const enum BrowserEvent {
    * Emitted when a target is destroyed, for example when a page is closed.
    * Contains a {@link Target} instance.
    *
-   * @remarks Note that this includes target destructions in incognito browser
+   * @remarks Note that this includes target destructions in all browser
    * contexts.
    */
   TargetDestroyed = 'targetdestroyed',
@@ -244,7 +244,7 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
   abstract process(): ChildProcess | null;
 
   /**
-   * Creates a new incognito {@link BrowserContext | browser context}.
+   * Creates a new {@link BrowserContext | browser context}.
    *
    * This won't share cookies/cache with other {@link BrowserContext | browser contexts}.
    *
@@ -254,15 +254,15 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * import puppeteer from 'puppeteer';
    *
    * const browser = await puppeteer.launch();
-   * // Create a new incognito browser context.
-   * const context = await browser.createIncognitoBrowserContext();
+   * // Create a new browser context.
+   * const context = await browser.createBrowserContext();
    * // Create a new page in a pristine context.
    * const page = await context.newPage();
    * // Do stuff
    * await page.goto('https://example.com');
    * ```
    */
-  abstract createIncognitoBrowserContext(
+  abstract createBrowserContext(
     options?: BrowserContextOptions
   ): Promise<BrowserContext>;
 

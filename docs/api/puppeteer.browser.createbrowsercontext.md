@@ -1,10 +1,10 @@
 ---
-sidebar_label: Browser.createIncognitoBrowserContext
+sidebar_label: Browser.createBrowserContext
 ---
 
-# Browser.createIncognitoBrowserContext() method
+# Browser.createBrowserContext() method
 
-Creates a new incognito [browser context](./puppeteer.browsercontext.md).
+Creates a new [browser context](./puppeteer.browsercontext.md).
 
 This won't share cookies/cache with other [browser contexts](./puppeteer.browsercontext.md).
 
@@ -12,7 +12,7 @@ This won't share cookies/cache with other [browser contexts](./puppeteer.browser
 
 ```typescript
 class Browser {
-  abstract createIncognitoBrowserContext(
+  abstract createBrowserContext(
     options?: BrowserContextOptions
   ): Promise<BrowserContext>;
 }
@@ -34,8 +34,8 @@ Promise&lt;[BrowserContext](./puppeteer.browsercontext.md)&gt;
 import puppeteer from 'puppeteer';
 
 const browser = await puppeteer.launch();
-// Create a new incognito browser context.
-const context = await browser.createIncognitoBrowserContext();
+// Create a new browser context.
+const context = await browser.createBrowserContext();
 // Create a new page in a pristine context.
 const page = await context.newPage();
 // Do stuff

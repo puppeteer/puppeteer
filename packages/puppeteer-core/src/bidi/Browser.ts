@@ -262,7 +262,7 @@ export class BidiBrowser extends Browser {
     return this.#process ?? null;
   }
 
-  override async createIncognitoBrowserContext(
+  override async createBrowserContext(
     _options?: BrowserContextOptions
   ): Promise<BidiBrowserContext> {
     const userContext = await this.#browserCore.createUserContext();

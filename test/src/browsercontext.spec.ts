@@ -34,7 +34,7 @@ describe('BrowserContext', function () {
     });
 
     expect(browser.browserContexts()).toHaveLength(1);
-    const context = await browser.createIncognitoBrowserContext();
+    const context = await browser.createBrowserContext();
     expect(context.isIncognito()).toBe(true);
     expect(browser.browserContexts()).toHaveLength(2);
     expect(browser.browserContexts().indexOf(context) !== -1).toBe(true);
@@ -48,7 +48,7 @@ describe('BrowserContext', function () {
 
     expect(await browser.pages()).toHaveLength(1);
 
-    const context = await browser.createIncognitoBrowserContext();
+    const context = await browser.createBrowserContext();
     await context.newPage();
     expect(await browser.pages()).toHaveLength(2);
     expect(await context.pages()).toHaveLength(1);
@@ -128,7 +128,7 @@ describe('BrowserContext', function () {
   it('should timeout waiting for a non-existent target', async () => {
     const {browser, server} = await getTestState();
 
-    const context = await browser.createIncognitoBrowserContext();
+    const context = await browser.createBrowserContext();
     const error = await context
       .waitForTarget(
         target => {
@@ -151,8 +151,8 @@ describe('BrowserContext', function () {
     });
 
     // Create two incognito contexts.
-    const context1 = await browser.createIncognitoBrowserContext();
-    const context2 = await browser.createIncognitoBrowserContext();
+    const context1 = await browser.createBrowserContext();
+    const context2 = await browser.createBrowserContext();
     expect(context1.targets()).toHaveLength(0);
     expect(context2.targets()).toHaveLength(0);
 
@@ -213,7 +213,7 @@ describe('BrowserContext', function () {
     });
 
     expect(browser.browserContexts()).toHaveLength(1);
-    const context = await browser.createIncognitoBrowserContext();
+    const context = await browser.createBrowserContext();
     try {
       expect(browser.browserContexts()).toHaveLength(2);
       const remoteBrowser = await puppeteer.connect({
@@ -236,7 +236,7 @@ describe('BrowserContext', function () {
     expect(browser.browserContexts()).toHaveLength(1);
     expect(browser.browserContexts()[0]!.id).toBeUndefined();
 
-    const context = await browser.createIncognitoBrowserContext();
+    const context = await browser.createBrowserContext();
     expect(browser.browserContexts()).toHaveLength(2);
     expect(browser.browserContexts()[1]!.id).toBeDefined();
     await context.close();
@@ -336,7 +336,7 @@ describe('BrowserContext', function () {
       const {page, server, context, browser} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      const otherContext = await browser.createIncognitoBrowserContext();
+      const otherContext = await browser.createBrowserContext();
       const otherPage = await otherContext.newPage();
       await otherPage.goto(server.EMPTY_PAGE);
       expect(await getPermission(page, 'geolocation')).toBe('prompt');
