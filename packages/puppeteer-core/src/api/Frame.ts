@@ -14,7 +14,6 @@ import type {
   WaitTimeoutOptions,
 } from '../api/Page.js';
 import type {DeviceRequestPrompt} from '../cdp/DeviceRequestPrompt.js';
-import type {IsolatedWorldChart} from '../cdp/IsolatedWorld.js';
 import type {PuppeteerLifeCycleEvent} from '../cdp/LifecycleWatcher.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
@@ -38,8 +37,8 @@ import type {CDPSession} from './CDPSession.js';
 import type {KeyboardTypeOptions} from './Input.js';
 import {
   FunctionLocator,
-  type Locator,
   NodeLocator,
+  type Locator,
 } from './locators/locators.js';
 import type {Realm} from './Realm.js';
 
@@ -269,11 +268,6 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * @internal
    */
   _parentId?: string;
-
-  /**
-   * @internal
-   */
-  worlds!: IsolatedWorldChart;
 
   /**
    * @internal

@@ -20,6 +20,7 @@ import type {
   DeviceRequestPromptManager,
 } from './DeviceRequestPrompt.js';
 import type {FrameManager} from './FrameManager.js';
+import type {IsolatedWorldChart} from './IsolatedWorld.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {
@@ -35,6 +36,7 @@ export class CdpFrame extends Frame {
   #url = '';
   #detached = false;
   #client!: CDPSession;
+  worlds!: IsolatedWorldChart;
 
   _frameManager: FrameManager;
   override _id: string;
