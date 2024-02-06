@@ -135,7 +135,7 @@ export class BidiBrowserContext extends BrowserContext {
   }
 
   override get id(): string | undefined {
-    if (this.#userContext.id === 'default') {
+    if (this.#userContext.id === UserContext.DEFAULT) {
       return undefined;
     }
     return this.#userContext.id;
