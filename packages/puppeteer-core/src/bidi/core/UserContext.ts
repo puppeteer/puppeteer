@@ -43,7 +43,7 @@ export class UserContext extends EventEmitter<{
     reason: string;
   };
 }> {
-  static DEFAULT = 'default';
+  static DEFAULT = 'default' as const;
 
   static create(browser: Browser, id: string): UserContext {
     const context = new UserContext(browser, id);

@@ -28,7 +28,7 @@ import {BrowsingContext, BrowsingContextEvent} from './BrowsingContext.js';
 import type {BidiConnection} from './Connection.js';
 import type {Browser as BrowserCore} from './core/Browser.js';
 import {Session} from './core/Session.js';
-import type {UserContext} from './core/UserContext.js';
+import {UserContext} from './core/UserContext.js';
 import {
   BiDiBrowserTarget,
   BiDiBrowsingContextTarget,
@@ -181,7 +181,7 @@ export class BidiBrowser extends Browser {
     );
     this.connection.registerBrowsingContexts(context);
     const browserContext =
-      event.userContext === 'default'
+      event.userContext === UserContext.DEFAULT
         ? this.defaultBrowserContext()
         : this.browserContexts().find(browserContext => {
             return browserContext.id === event.userContext;
