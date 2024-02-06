@@ -10,22 +10,16 @@ Set the content of the frame.
 
 ```typescript
 class Frame {
-  abstract setContent(
-    html: string,
-    options?: {
-      timeout?: number;
-      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    }
-  ): Promise<void>;
+  abstract setContent(html: string, options?: WaitForOptions): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                                                                                                                    | Description                                                                                                                |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| html      | string                                                                                                                                                                                  | HTML markup to assign to the page.                                                                                         |
-| options   | &#123; timeout?: number; waitUntil?: [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) \| [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)\[\]; &#125; | _(Optional)_ Options to configure how long before timing out and at what point to consider the content setting successful. |
+| Parameter | Type                                            | Description                                                                                                                |
+| --------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| html      | string                                          | HTML markup to assign to the page.                                                                                         |
+| options   | [WaitForOptions](./puppeteer.waitforoptions.md) | _(Optional)_ Options to configure how long before timing out and at what point to consider the content setting successful. |
 
 **Returns:**
 

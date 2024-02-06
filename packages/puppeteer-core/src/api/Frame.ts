@@ -339,12 +339,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    */
   abstract goto(
     url: string,
-    options?: {
-      referer?: string;
-      referrerPolicy?: string;
-      timeout?: number;
-      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    }
+    options?: GoToOptions
   ): Promise<HTTPResponse | null>;
 
   /**
@@ -749,13 +744,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * @param options - Options to configure how long before timing out and at
    * what point to consider the content setting successful.
    */
-  abstract setContent(
-    html: string,
-    options?: {
-      timeout?: number;
-      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    }
-  ): Promise<void>;
+  abstract setContent(html: string, options?: WaitForOptions): Promise<void>;
 
   /**
    * @internal
