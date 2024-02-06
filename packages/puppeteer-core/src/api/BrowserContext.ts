@@ -4,8 +4,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {
+  filterAsync,
+  firstValueFrom,
+  from,
+  merge,
+  raceWith,
+} from '../../third_party/rxjs/rxjs.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
-import {debugError} from '../common/util.js';
+import {debugError, fromEmitterEvent, timeout} from '../common/util.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
 import type {Browser, Permission, WaitForTargetOptions} from './Browser.js';
@@ -108,10 +115,19 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * );
    * ```
    */
-  abstract waitForTarget(
+  async waitForTarget(
     predicate: (x: Target) => boolean | Promise<boolean>,
-    options?: WaitForTargetOptions
-  ): Promise<Target>;
+    options: WaitForTargetOptions = {}
+  ): Promise<Target> {
+    const {timeout: ms = 30000} = options;
+    return await firstValueFrom(
+      merge(
+        fromEmitterEvent(this, BrowserContextEvent.TargetCreated),
+        fromEmitterEvent(this, BrowserContextEvent.TargetChanged),
+        from(this.targets())
+      ).pipe(filterAsync(predicate), raceWith(timeout(ms)))
+    );
+  }
 
   /**
    * Gets a list of all open {@link Page | pages} inside this
