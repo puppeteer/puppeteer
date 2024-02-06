@@ -150,7 +150,7 @@ module.exports = {
     // Enforces consistent file extension
     'rulesdir/extensions': 'error',
     // Enforces license headers on files
-    'rulesdir/check-license': 'warn',
+    'rulesdir/check-license': 'error',
   },
   overrides: [
     {
