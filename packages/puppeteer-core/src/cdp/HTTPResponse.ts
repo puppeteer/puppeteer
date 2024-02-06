@@ -130,7 +130,7 @@ export class CdpHTTPResponse extends HTTPResponse {
             const response = await this.#client.send(
               'Network.getResponseBody',
               {
-                requestId: this.#request._requestId,
+                requestId: this.#request.id,
               }
             );
             return Buffer.from(

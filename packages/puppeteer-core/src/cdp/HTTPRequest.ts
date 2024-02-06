@@ -28,6 +28,7 @@ import type {CdpHTTPResponse} from './HTTPResponse.js';
  * @internal
  */
 export class CdpHTTPRequest extends HTTPRequest {
+  override id: string;
   declare _redirectChain: CdpHTTPRequest[];
   declare _response: CdpHTTPResponse | null;
 
@@ -91,7 +92,7 @@ export class CdpHTTPRequest extends HTTPRequest {
   ) {
     super();
     this.#client = client;
-    this._requestId = data.requestId;
+    this.id = data.requestId;
     this.#isNavigationRequest =
       data.requestId === data.loaderId && data.type === 'Document';
     this._interceptionId = interceptionId;
@@ -188,7 +189,7 @@ export class CdpHTTPRequest extends HTTPRequest {
   override async fetchPostData(): Promise<string | undefined> {
     try {
       const result = await this.#client.send('Network.getRequestPostData', {
-        requestId: this._requestId,
+        requestId: this.id,
       });
       return result.postData;
     } catch (err) {

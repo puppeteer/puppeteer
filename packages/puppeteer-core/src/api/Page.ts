@@ -616,7 +616,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
               )
             ).pipe(
               filter(request => {
-                return request._requestId === originalRequest._requestId;
+                return request.id === originalRequest.id;
               }),
               take(1),
               map(() => {

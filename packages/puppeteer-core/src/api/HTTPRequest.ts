@@ -94,7 +94,8 @@ export abstract class HTTPRequest {
   /**
    * @internal
    */
-  _requestId = '';
+  abstract get id(): string;
+
   /**
    * @internal
    */
