@@ -648,6 +648,13 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[frame.spec] Frame specs Frame Management should click elements in a frameset",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "New test for framesets. We probably do not want to support framesets in WebDriver BiDi in the long term."
+  },
+  {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should handle nested frames",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -2196,6 +2203,13 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[frame.spec] Frame specs Frame Management should click elements in a frameset",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "New test for framesets (does not seem to pass in Firefox CDP)."
+  },
+  {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should detach child frames on navigation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -3550,7 +3564,8 @@
     "testIdPattern": "[oopif.spec] OOPIF should keep track of a frames OOP state",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["SKIP"],
+    "comment": "Failed previously and currently times out"
   },
   {
     "testIdPattern": "[oopif.spec] OOPIF should keep track of a frames OOP state",
