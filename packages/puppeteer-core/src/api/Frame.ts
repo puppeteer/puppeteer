@@ -425,12 +425,12 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
       return null;
     }
     using list = await parentFrame.isolatedRealm().evaluateHandle(() => {
-      return document.querySelectorAll('iframe');
+      return document.querySelectorAll('iframe,frame');
     });
     for await (using iframe of transposeIterableHandle(list)) {
       const frame = await iframe.contentFrame();
-      if (frame._id === this._id) {
-        return iframe.move();
+      if (frame?._id === this._id) {
+        return (iframe as HandleFor<HTMLIFrameElement>).move();
       }
     }
     return null;

@@ -205,6 +205,18 @@ describe('Frame specs', function () {
       expect(detachedFrames).toHaveLength(4);
       expect(navigatedFrames).toHaveLength(1);
     });
+
+    it('should click elements in a frameset', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.PREFIX + '/frames/frameset.html');
+      const frame = await page.waitForFrame(frame => {
+        return frame.url().endsWith('/frames/frame.html');
+      });
+      using div = await frame.waitForSelector('div');
+      expect(div).toBeTruthy();
+      await div?.click();
+    });
+
     it('should report frame from-inside shadow DOM', async () => {
       const {page, server} = await getTestState();
 
