@@ -60,6 +60,14 @@ export type SetViewportOptions = Omit<
 /**
  * @internal
  */
+export type GetCookiesOptions = Omit<
+  Bidi.Storage.GetCookiesParameters,
+  'partition'
+>;
+
+/**
+ * @internal
+ */
 export class BrowsingContext extends EventEmitter<{
   /** Emitted when this context is closed. */
   closed: {
@@ -462,6 +470,39 @@ export class BrowsingContext extends EventEmitter<{
   })
   async removePreloadScript(script: string): Promise<void> {
     await this.userContext.browser.removePreloadScript(script);
+  }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
+  async getCookies(
+    options: GetCookiesOptions = {}
+  ): Promise<Bidi.Network.Cookie[]> {
+    const {
+      result: {cookies},
+    } = await this.#session.send('storage.getCookies', {
+      ...options,
+      partition: {
+        type: 'context',
+        context: this.id,
+      },
+    });
+    return cookies;
+  }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
+  async setCookie(cookie: Bidi.Storage.PartialCookie): Promise<void> {
+    await this.#session.send('storage.setCookie', {
+      cookie,
+      partition: {
+        type: 'context',
+        context: this.id,
+      },
+    });
   }
 
   [disposeSymbol](): void {
