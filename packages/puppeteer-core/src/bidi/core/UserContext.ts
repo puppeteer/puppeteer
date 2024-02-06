@@ -209,7 +209,7 @@ export class UserContext extends EventEmitter<{
       partition: {
         type: 'storageKey',
         sourceOrigin,
-        context: this.id,
+        userContext: this.id,
       },
     });
   }
