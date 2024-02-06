@@ -19,6 +19,7 @@ import type {BidiHTTPResponse} from './HTTPResponse.js';
  * @internal
  */
 export class BidiHTTPRequest extends HTTPRequest {
+  override id: string;
   override _response: BidiHTTPResponse | null = null;
   override _redirectChain: BidiHTTPRequest[];
   _navigationId: string | null;
@@ -46,7 +47,7 @@ export class BidiHTTPRequest extends HTTPRequest {
     this.#initiator = event.initiator;
     this.#frame = frame;
 
-    this._requestId = event.request.request;
+    this.id = event.request.request;
     this._redirectChain = redirectChain;
     this._navigationId = event.navigation;
 
