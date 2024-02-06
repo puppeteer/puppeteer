@@ -12,22 +12,17 @@ Navigates the frame to the given `url`.
 class Frame {
   abstract goto(
     url: string,
-    options?: {
-      referer?: string;
-      referrerPolicy?: string;
-      timeout?: number;
-      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    }
+    options?: GoToOptions
   ): Promise<HTTPResponse | null>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                                                                                                                                                               | Description                                                                             |
-| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| url       | string                                                                                                                                                                                                                             | URL to navigate the frame to. The URL should include scheme, e.g. <code>https://</code> |
-| options   | &#123; referer?: string; referrerPolicy?: string; timeout?: number; waitUntil?: [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) \| [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)\[\]; &#125; | _(Optional)_ Options to configure waiting behavior.                                     |
+| Parameter | Type                                      | Description                                                                             |
+| --------- | ----------------------------------------- | --------------------------------------------------------------------------------------- |
+| url       | string                                    | URL to navigate the frame to. The URL should include scheme, e.g. <code>https://</code> |
+| options   | [GoToOptions](./puppeteer.gotooptions.md) | _(Optional)_ Options to configure waiting behavior.                                     |
 
 **Returns:**
 
