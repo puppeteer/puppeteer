@@ -12,7 +12,7 @@ This will look all open [browser contexts](./puppeteer.browsercontext.md).
 
 ```typescript
 class BrowserContext {
-  abstract waitForTarget(
+  waitForTarget(
     predicate: (x: Target) => boolean | Promise<boolean>,
     options?: WaitForTargetOptions
   ): Promise<Target>;

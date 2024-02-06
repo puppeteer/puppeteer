@@ -6,7 +6,6 @@
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import type {WaitForTargetOptions} from '../api/Browser.js';
 import {BrowserContext} from '../api/BrowserContext.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
@@ -51,15 +50,6 @@ export class BidiBrowserContext extends BrowserContext {
     return this.#browser.targets().filter(target => {
       return target.browserContext() === this;
     });
-  }
-
-  override waitForTarget(
-    predicate: (x: Target) => boolean | Promise<boolean>,
-    options: WaitForTargetOptions = {}
-  ): Promise<Target> {
-    return this.#browser.waitForTarget(target => {
-      return target.browserContext() === this && predicate(target);
-    }, options);
   }
 
   get connection(): BidiConnection {
