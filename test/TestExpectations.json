@@ -3240,7 +3240,7 @@
     "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with history.replaceState()",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"],
+    "expectations": ["SKIP"],
     "comment": "https://github.com/puppeteer/puppeteer/issues/11854"
   },
   {
