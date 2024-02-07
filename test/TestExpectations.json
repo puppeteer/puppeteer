@@ -1807,6 +1807,12 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
+    "testIdPattern": "[debugInfo.spec] DebugInfo Browser.debugInfo should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL", "PASS"]
+  },
+  {
     "testIdPattern": "[defaultbrowsercontext.spec] DefaultBrowserContext page.cookies() should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
