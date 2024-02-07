@@ -4279,7 +4279,7 @@
     "testIdPattern": "[target.spec] Target should be able to use async waitForTarget",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"],
+    "expectations": ["SKIP"],
     "comment": "Re-test after user contexts land"
   },
   {
@@ -4352,7 +4352,7 @@
     "testIdPattern": "[target.spec] Target should not crash while redirecting if original request was missed",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"],
+    "expectations": ["SKIP"],
     "comment": "Re-test after user contexts land"
   },
   {
@@ -4383,7 +4383,7 @@
     "testIdPattern": "[target.spec] Target should report when a new page is created and closed",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"],
+    "expectations": ["SKIP"],
     "comment": "Re-test after user contexts land"
   },
   {
