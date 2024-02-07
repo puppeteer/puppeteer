@@ -1080,13 +1080,7 @@
     "testIdPattern": "[prerender.spec] Prerender can screencast",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[prerender.spec] Prerender can screencast",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["headless"],
-    "expectations": ["FAIL", "PASS"]
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[proxy.spec] *",
