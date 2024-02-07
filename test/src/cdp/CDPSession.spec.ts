@@ -30,7 +30,7 @@ describe('Target.createCDPSession', function () {
   });
 
   it('should not report created targets for custom CDP sessions', async () => {
-    const {browser} = await getTestState();
+    const {context} = await getTestState();
     let called = 0;
     const handler = async (target: Target) => {
       called++;
@@ -39,9 +39,9 @@ describe('Target.createCDPSession', function () {
       }
       await target.createCDPSession();
     };
-    browser.browserContexts()[0]!.on('targetcreated', handler);
-    await browser.newPage();
-    browser.browserContexts()[0]!.off('targetcreated', handler);
+    context.on('targetcreated', handler);
+    await context.newPage();
+    context.off('targetcreated', handler);
   });
 
   it('should send events', async () => {

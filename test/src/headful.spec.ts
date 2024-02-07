@@ -64,23 +64,30 @@ const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
       const headfulBrowser = await launchBrowser(
         Object.assign({userDataDir}, headfulOptions)
       );
-      const headfulPage = await headfulBrowser.newPage();
-      await headfulPage.goto(server.EMPTY_PAGE);
-      await headfulPage.evaluate(() => {
-        return (document.cookie =
-          'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT');
-      });
-      await headfulBrowser.close();
+      try {
+        const headfulPage = await headfulBrowser.newPage();
+        await headfulPage.goto(server.EMPTY_PAGE);
+        await headfulPage.evaluate(() => {
+          return (document.cookie =
+            'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT');
+        });
+      } finally {
+        await headfulBrowser.close();
+      }
       // Read the cookie from headless chrome
       const headlessBrowser = await launchBrowser(
         Object.assign({userDataDir}, headlessOptions)
       );
-      const headlessPage = await headlessBrowser.newPage();
-      await headlessPage.goto(server.EMPTY_PAGE);
-      const cookie = await headlessPage.evaluate(() => {
-        return document.cookie;
-      });
-      await headlessBrowser.close();
+      let cookie = '';
+      try {
+        const headlessPage = await headlessBrowser.newPage();
+        await headlessPage.goto(server.EMPTY_PAGE);
+        cookie = await headlessPage.evaluate(() => {
+          return document.cookie;
+        });
+      } finally {
+        await headlessBrowser.close();
+      }
       // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
       try {
         rmSync(userDataDir);

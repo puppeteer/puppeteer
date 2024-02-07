@@ -42,9 +42,9 @@ describe('Page', function () {
       expect(error.message).toContain('Protocol error');
     });
     it('should not be visible in browser.pages', async () => {
-      const {browser} = await getTestState();
+      const {browser, context} = await getTestState();
 
-      const newPage = await browser.newPage();
+      const newPage = await context.newPage();
       expect(await browser.pages()).toContain(newPage);
       await newPage.close();
       expect(await browser.pages()).not.toContain(newPage);
@@ -2239,9 +2239,9 @@ describe('Page', function () {
 
   describe('Page.bringToFront', function () {
     it('should work', async () => {
-      const {browser} = await getTestState();
-      const page1 = await browser.newPage();
-      const page2 = await browser.newPage();
+      const {context} = await getTestState();
+      const page1 = await context.newPage();
+      const page2 = await context.newPage();
 
       await page1.bringToFront();
       expect(
