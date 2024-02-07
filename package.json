@@ -50,7 +50,8 @@
         "./packages/puppeteer:build",
         "./packages/testserver:build",
         "./test:build",
-        "./test/installation:build"
+        "./test/installation:build",
+        "build:tools"
       ]
     },
     "build:tools": {
