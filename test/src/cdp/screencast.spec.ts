@@ -8,8 +8,8 @@ import {statSync} from 'fs';
 
 import expect from 'expect';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {getUniqueVideoFilePlaceholder} from './utils.js';
+import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
+import {getUniqueVideoFilePlaceholder} from '../utils.js';
 
 describe('Screencasts', function () {
   setupTestBrowserHooks();

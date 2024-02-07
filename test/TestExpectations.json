@@ -297,7 +297,7 @@
     "testIdPattern": "[screencast.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["FAIL"]
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[screenshot.spec] *",
