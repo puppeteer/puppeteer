@@ -15,6 +15,21 @@ describe('DebugInfo', function () {
     it('should work', async () => {
       const {page, browser} = await getTestState();
 
+      for (let i = 0; i < 5; i++) {
+        if (!browser.debugInfo.pendingProtocolErrors.length) {
+          break;
+        }
+        await new Promise(resolve => {
+          return setTimeout(resolve, 200);
+        });
+      }
+
+      if (browser.debugInfo.pendingProtocolErrors.length) {
+        throw new Error(
+          'browser.debugInfo.pendingProtocolErrors is not empty before the test'
+        );
+      }
+
       const promise = page.evaluate(() => {
         return new Promise(resolve => {
           // @ts-expect-error another context
