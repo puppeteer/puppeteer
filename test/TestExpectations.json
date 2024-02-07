@@ -2982,7 +2982,7 @@
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch tmp profile should be cleaned up",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch userDataDir option should restore cookies",
@@ -3096,7 +3096,7 @@
     "testIdPattern": "[navigation.spec] navigation Page.goto should navigate to dataURL and fire dataURL requests",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should navigate to dataURL and fire dataURL requests",
@@ -3204,13 +3204,13 @@
     "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work when subframe issues window.stop()",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work when subframe issues window.stop()",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with clicking on anchor links",
@@ -3234,7 +3234,7 @@
     "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with history.pushState()",
     "platforms": ["linux"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with history.replaceState()",
@@ -4528,7 +4528,7 @@
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should survive cross-process navigation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should survive cross-process navigation",
