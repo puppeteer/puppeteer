@@ -24,11 +24,8 @@ describe('DebugInfo', function () {
         });
       }
 
-      if (browser.debugInfo.pendingProtocolErrors.length) {
-        throw new Error(
-          'browser.debugInfo.pendingProtocolErrors is not empty before the test'
-        );
-      }
+      // Insure that the previous test are flushed
+      expect(browser.debugInfo.pendingProtocolErrors).toHaveLength(0);
 
       const promise = page.evaluate(() => {
         return new Promise(resolve => {
