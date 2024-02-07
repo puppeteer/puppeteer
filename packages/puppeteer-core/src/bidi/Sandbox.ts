@@ -4,8 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+
 import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
+import {LazyArg} from '../common/LazyArg.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {EvaluateFunc, HandleFor} from '../common/types.js';
 import {withSourcePuppeteerURLIfNone} from '../common/util.js';
@@ -13,7 +16,9 @@ import {withSourcePuppeteerURLIfNone} from '../common/util.js';
 import type {BrowsingContext} from './BrowsingContext.js';
 import {BidiElementHandle} from './ElementHandle.js';
 import type {BidiFrame} from './Frame.js';
+import {BidiJSHandle} from './JSHandle.js';
 import type {BidiRealm as BidiRealm} from './Realm.js';
+import {BidiSerializer} from './Serializer.js';
 /**
  * A unique key for {@link SandboxChart} to denote the default world.
  * Realms are automatically created in the default sandbox.
@@ -119,5 +124,31 @@ export class Sandbox extends Realm {
       handle: object.objectId,
       type: 'node',
     });
+  }
+
+  async serialize(arg: unknown): Promise<Bidi.Script.LocalValue> {
+    if (arg instanceof LazyArg) {
+      arg = await arg.get(this.realm);
+    }
+    // eslint-disable-next-line rulesdir/use-using -- We want this to continue living.
+    const objectHandle =
+      arg && (arg instanceof BidiJSHandle || arg instanceof BidiElementHandle)
+        ? arg
+        : null;
+    if (objectHandle) {
+      if (
+        objectHandle.realm.environment.context() !== this.environment.context()
+      ) {
+        throw new Error(
+          'JSHandles can be evaluated only in the context they were created!'
+        );
+      }
+      if (objectHandle.disposed) {
+        throw new Error('JSHandle is disposed!');
+      }
+      return objectHandle.remoteValue() as Bidi.Script.RemoteReference;
+    }
+
+    return BidiSerializer.serialize(arg);
   }
 }

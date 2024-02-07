@@ -6,32 +6,9 @@
 
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import {PuppeteerURL, debugError} from '../common/util.js';
+import {PuppeteerURL} from '../common/util.js';
 
 import {BidiDeserializer} from './Deserializer.js';
-import type {BidiRealm} from './Realm.js';
-
-/**
- * @internal
- */
-export async function releaseReference(
-  client: BidiRealm,
-  remoteReference: Bidi.Script.RemoteReference
-): Promise<void> {
-  if (!remoteReference.handle) {
-    return;
-  }
-  await client.connection
-    .send('script.disown', {
-      target: client.target,
-      handles: [remoteReference.handle],
-    })
-    .catch(error => {
-      // Exceptions might happen in case of a page been navigated or closed.
-      // Swallow these since they are harmless and we don't leak anything in this case.
-      debugError(error);
-    });
-}
 
 /**
  * @internal
