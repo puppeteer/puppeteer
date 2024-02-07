@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {EvaluateFunc, HandleFor} from '../common/types.js';
@@ -130,5 +131,9 @@ export abstract class WebWorker extends EventEmitter<
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     func = withSourcePuppeteerURLIfNone(this.evaluateHandle.name, func);
     return await this.mainRealm().evaluateHandle(func, ...args);
+  }
+
+  async close(): Promise<void> {
+    throw new UnsupportedOperation('WebWorker.close() is not supported');
   }
 }
