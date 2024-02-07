@@ -285,7 +285,7 @@ describe('Target', function () {
 
   describe('Browser.waitForTarget', () => {
     it('should wait for a target', async () => {
-      const {browser, server} = await getTestState();
+      const {browser, server, context} = await getTestState();
 
       let resolved = false;
       const targetPromise = browser.waitForTarget(
@@ -306,7 +306,7 @@ describe('Target', function () {
             throw error;
           }
         });
-      const page = await browser.newPage();
+      const page = await context.newPage();
       expect(resolved).toBe(false);
       await page.goto(server.EMPTY_PAGE);
       try {
