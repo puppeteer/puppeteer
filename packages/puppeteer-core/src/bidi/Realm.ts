@@ -9,11 +9,12 @@ import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
 import type {EvaluateFunc, HandleFor} from '../common/types.js';
 import {
-  PuppeteerURL,
-  SOURCE_URL_REGEX,
+  debugError,
   getSourcePuppeteerURLIfAvailable,
   getSourceUrlComment,
   isString,
+  PuppeteerURL,
+  SOURCE_URL_REGEX,
 } from '../common/util.js';
 import type PuppeteerUtil from '../injected/injected.js';
 import {disposeSymbol} from '../util/disposable.js';
@@ -24,7 +25,6 @@ import {BidiDeserializer} from './Deserializer.js';
 import {BidiElementHandle} from './ElementHandle.js';
 import {BidiJSHandle} from './JSHandle.js';
 import type {Sandbox} from './Sandbox.js';
-import {BidiSerializer} from './Serializer.js';
 import {createEvaluationError} from './util.js';
 
 /**
@@ -184,7 +184,7 @@ export class BidiRealm extends EventEmitter<Record<EventType, any>> {
         arguments: args.length
           ? await Promise.all(
               args.map(arg => {
-                return BidiSerializer.serialize(sandbox, arg);
+                return sandbox.serialize(arg);
               })
             )
           : [],
@@ -205,6 +205,30 @@ export class BidiRealm extends EventEmitter<Record<EventType, any>> {
     return returnByValue
       ? BidiDeserializer.deserialize(result.result)
       : createBidiHandle(sandbox, result.result);
+  }
+
+  async destroyHandles(handles: Array<BidiJSHandle<unknown>>): Promise<void> {
+    const handleIds = handles
+      .map(({id}) => {
+        return id;
+      })
+      .filter((id): id is string => {
+        return id !== undefined;
+      });
+    if (handleIds.length === 0) {
+      return;
+    }
+
+    await this.connection
+      .send('script.disown', {
+        target: this.target,
+        handles: handleIds,
+      })
+      .catch(error => {
+        // Exceptions might happen in case of a page been navigated or closed.
+        // Swallow these since they are harmless and we don't leak anything in this case.
+        debugError(error);
+      });
   }
 
   [disposeSymbol](): void {

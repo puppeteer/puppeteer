@@ -13,7 +13,6 @@ import {UnsupportedOperation} from '../common/Errors.js';
 import {BidiDeserializer} from './Deserializer.js';
 import type {BidiRealm} from './Realm.js';
 import type {Sandbox} from './Sandbox.js';
-import {releaseReference} from './util.js';
 
 /**
  * @internal
@@ -56,12 +55,7 @@ export class BidiJSHandle<T = unknown> extends JSHandle<T> {
       return;
     }
     this.#disposed = true;
-    if ('handle' in this.#remoteValue) {
-      await releaseReference(
-        this.context(),
-        this.#remoteValue as Bidi.Script.RemoteReference
-      );
-    }
+    await this.context().destroyHandles([this]);
   }
 
   get isPrimitiveValue(): boolean {

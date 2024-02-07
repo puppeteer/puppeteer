@@ -144,7 +144,7 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
         }),
         arguments: [
           (await callbacks.resolve.valueOrThrow()) as Bidi.Script.LocalValue,
-          BidiSerializer.serializeRemoteValue(result),
+          BidiSerializer.serialize(result),
         ],
         awaitPromise: false,
         target: {
@@ -172,9 +172,9 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
             ),
             arguments: [
               (await callbacks.reject.valueOrThrow()) as Bidi.Script.LocalValue,
-              BidiSerializer.serializeRemoteValue(error.name),
-              BidiSerializer.serializeRemoteValue(error.message),
-              BidiSerializer.serializeRemoteValue(error.stack),
+              BidiSerializer.serialize(error.name),
+              BidiSerializer.serialize(error.message),
+              BidiSerializer.serialize(error.stack),
             ],
             awaitPromise: false,
             target: {
@@ -193,7 +193,7 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
             ),
             arguments: [
               (await callbacks.reject.valueOrThrow()) as Bidi.Script.LocalValue,
-              BidiSerializer.serializeRemoteValue(error),
+              BidiSerializer.serialize(error),
             ],
             awaitPromise: false,
             target: {
