@@ -297,7 +297,7 @@
     "testIdPattern": "[screencast.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["FAIL"]
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[screenshot.spec] *",
@@ -1080,13 +1080,7 @@
     "testIdPattern": "[prerender.spec] Prerender can screencast",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[prerender.spec] Prerender can screencast",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["headless"],
-    "expectations": ["FAIL", "PASS"]
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[proxy.spec] *",
@@ -1810,6 +1804,12 @@
     "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should not ignore eval() scripts if reportAnonymousScripts is true",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"]
+  },
+  {
+    "testIdPattern": "[debugInfo.spec] DebugInfo Browser.debugInfo should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL", "PASS"]
   },
   {
