@@ -19,7 +19,7 @@ jobs:
           script: |
             console.log("Querying")
             
-            const caches = await github.rest.paginate(
+            const caches = await github.paginate(
               github.rest.actions.getActionsCacheList({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
