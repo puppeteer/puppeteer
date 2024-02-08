@@ -18,10 +18,14 @@ jobs:
         with:
           script: |
             console.log("Querying")
-            const caches = await github.rest.actions.getActionsCacheList({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-            })
+            
+            const caches = await github.rest.paginate(
+              github.rest.actions.getActionsCacheList({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                per_page: 100,
+              })
+            )
             for (const cache of caches.data.actions_caches) {
               if (cache.key.toLowerCase().startsWith('firefox')) {
                 console.log(cache)
