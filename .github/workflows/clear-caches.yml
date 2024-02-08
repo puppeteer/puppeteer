@@ -26,6 +26,7 @@ jobs:
                 per_page: 100,
               })
             )
+            console.log(caches)
             for (const cache of caches) {
               if (cache.key.toLowerCase().startsWith('firefox')) {
                 console.log(cache)
