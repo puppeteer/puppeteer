@@ -116,7 +116,7 @@ describe('Tracing', function () {
     await page.goto(server.PREFIX + '/grid.html');
 
     const oldGetReadableAsBuffer = utils.getReadableAsBuffer;
-    const stub = sinon.stub(utils, 'getReadableAsBuffer').callsFake(() => {
+    sinon.stub(utils, 'getReadableAsBuffer').callsFake(() => {
       return oldGetReadableAsBuffer({
         getReader() {
           return {
@@ -132,12 +132,9 @@ describe('Tracing', function () {
         },
       } as unknown as ReadableStream);
     });
-    try {
-      const trace = await page.tracing.stop();
-      expect(trace).toEqual(undefined);
-    } finally {
-      stub.restore();
-    }
+
+    const trace = await page.tracing.stop();
+    expect(trace).toEqual(undefined);
   });
 
   it('should support a buffer without a path', async () => {
