@@ -138,7 +138,7 @@ export class BiDiPageTarget extends BiDiBrowsingContextTarget {
   ) {
     super(browserContext, browsingContext);
 
-    this.#page = new BidiPage(browsingContext, browserContext, this);
+    this.#page = new BidiPage(browsingContext, browserContext);
   }
 
   override async page(): Promise<BidiPage> {
