@@ -583,14 +583,10 @@ describe('Page', function () {
         // 3. After that, remove the iframe.
         frame.remove();
       });
-      const popupTarget = page
-        .browserContext()
-        .targets()
-        .find(target => {
-          return target !== page.target();
-        })!;
-      // 4. Connect to the popup and make sure it doesn't throw.
-      await popupTarget.page();
+      // 4. The target should always be the last one.
+      const popupTarget = page.browserContext().targets().at(-1)!;
+      // 5. Connect to the popup and make sure it doesn't throw and is not the same page.
+      expect(await popupTarget.page()).not.toBe(page);
     });
   });
 
