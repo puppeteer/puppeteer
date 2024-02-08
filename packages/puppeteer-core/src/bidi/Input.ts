@@ -12,9 +12,9 @@ import {
   Mouse,
   MouseButton,
   Touchscreen,
+  type KeyboardTypeOptions,
   type KeyDownOptions,
   type KeyPressOptions,
-  type KeyboardTypeOptions,
   type MouseClickOptions,
   type MouseMoveOptions,
   type MouseOptions,
@@ -23,7 +23,6 @@ import {
 import {UnsupportedOperation} from '../common/Errors.js';
 import type {KeyInput} from '../common/USKeyboardLayout.js';
 
-import type {BrowsingContext} from './BrowsingContext.js';
 import type {BidiPage} from './Page.js';
 
 const enum InputId {
@@ -288,39 +287,33 @@ export class BidiKeyboard extends Keyboard {
     key: KeyInput,
     _options?: Readonly<KeyDownOptions>
   ): Promise<void> {
-    await this.#page.connection.send('input.performActions', {
-      context: this.#page.mainFrame()._id,
-      actions: [
-        {
-          type: SourceActionsType.Key,
-          id: InputId.Keyboard,
-          actions: [
-            {
-              type: ActionType.KeyDown,
-              value: getBidiKeyValue(key),
-            },
-          ],
-        },
-      ],
-    });
+    await this.#page.mainFrame().browsingContext.performActions([
+      {
+        type: SourceActionsType.Key,
+        id: InputId.Keyboard,
+        actions: [
+          {
+            type: ActionType.KeyDown,
+            value: getBidiKeyValue(key),
+          },
+        ],
+      },
+    ]);
   }
 
   override async up(key: KeyInput): Promise<void> {
-    await this.#page.connection.send('input.performActions', {
-      context: this.#page.mainFrame()._id,
-      actions: [
-        {
-          type: SourceActionsType.Key,
-          id: InputId.Keyboard,
-          actions: [
-            {
-              type: ActionType.KeyUp,
-              value: getBidiKeyValue(key),
-            },
-          ],
-        },
-      ],
-    });
+    await this.#page.mainFrame().browsingContext.performActions([
+      {
+        type: SourceActionsType.Key,
+        id: InputId.Keyboard,
+        actions: [
+          {
+            type: ActionType.KeyUp,
+            value: getBidiKeyValue(key),
+          },
+        ],
+      },
+    ]);
   }
 
   override async press(
@@ -344,16 +337,13 @@ export class BidiKeyboard extends Keyboard {
       type: ActionType.KeyUp,
       value: getBidiKeyValue(key),
     });
-    await this.#page.connection.send('input.performActions', {
-      context: this.#page.mainFrame()._id,
-      actions: [
-        {
-          type: SourceActionsType.Key,
-          id: InputId.Keyboard,
-          actions,
-        },
-      ],
-    });
+    await this.#page.mainFrame().browsingContext.performActions([
+      {
+        type: SourceActionsType.Key,
+        id: InputId.Keyboard,
+        actions,
+      },
+    ]);
   }
 
   override async type(
@@ -396,16 +386,13 @@ export class BidiKeyboard extends Keyboard {
         );
       }
     }
-    await this.#page.connection.send('input.performActions', {
-      context: this.#page.mainFrame()._id,
-      actions: [
-        {
-          type: SourceActionsType.Key,
-          id: InputId.Keyboard,
-          actions,
-        },
-      ],
-    });
+    await this.#page.mainFrame().browsingContext.performActions([
+      {
+        type: SourceActionsType.Key,
+        id: InputId.Keyboard,
+        actions,
+      },
+    ]);
   }
 
   override async sendCharacter(char: string): Promise<void> {
@@ -460,19 +447,17 @@ const getBidiButton = (button: MouseButton) => {
  * @internal
  */
 export class BidiMouse extends Mouse {
-  #context: BrowsingContext;
+  #page: BidiPage;
   #lastMovePoint: Point = {x: 0, y: 0};
 
-  constructor(context: BrowsingContext) {
+  constructor(page: BidiPage) {
     super();
-    this.#context = context;
+    this.#page = page;
   }
 
   override async reset(): Promise<void> {
     this.#lastMovePoint = {x: 0, y: 0};
-    await this.#context.connection.send('input.releaseActions', {
-      context: this.#context.id,
-    });
+    await this.#page.mainFrame().browsingContext.releaseActions();
   }
 
   override async move(
@@ -502,52 +487,43 @@ export class BidiMouse extends Mouse {
     });
     // https://w3c.github.io/webdriver-bidi/#command-input-performActions:~:text=input.PointerMoveAction%20%3D%20%7B%0A%20%20type%3A%20%22pointerMove%22%2C%0A%20%20x%3A%20js%2Dint%2C
     this.#lastMovePoint = to;
-    await this.#context.connection.send('input.performActions', {
-      context: this.#context.id,
-      actions: [
-        {
-          type: SourceActionsType.Pointer,
-          id: InputId.Mouse,
-          actions,
-        },
-      ],
-    });
+    await this.#page.mainFrame().browsingContext.performActions([
+      {
+        type: SourceActionsType.Pointer,
+        id: InputId.Mouse,
+        actions,
+      },
+    ]);
   }
 
   override async down(options: Readonly<MouseOptions> = {}): Promise<void> {
-    await this.#context.connection.send('input.performActions', {
-      context: this.#context.id,
-      actions: [
-        {
-          type: SourceActionsType.Pointer,
-          id: InputId.Mouse,
-          actions: [
-            {
-              type: ActionType.PointerDown,
-              button: getBidiButton(options.button ?? MouseButton.Left),
-            },
-          ],
-        },
-      ],
-    });
+    await this.#page.mainFrame().browsingContext.performActions([
+      {
+        type: SourceActionsType.Pointer,
+        id: InputId.Mouse,
+        actions: [
+          {
+            type: ActionType.PointerDown,
+            button: getBidiButton(options.button ?? MouseButton.Left),
+          },
+        ],
+      },
+    ]);
   }
 
   override async up(options: Readonly<MouseOptions> = {}): Promise<void> {
-    await this.#context.connection.send('input.performActions', {
-      context: this.#context.id,
-      actions: [
-        {
-          type: SourceActionsType.Pointer,
-          id: InputId.Mouse,
-          actions: [
-            {
-              type: ActionType.PointerUp,
-              button: getBidiButton(options.button ?? MouseButton.Left),
-            },
-          ],
-        },
-      ],
-    });
+    await this.#page.mainFrame().browsingContext.performActions([
+      {
+        type: SourceActionsType.Pointer,
+        id: InputId.Mouse,
+        actions: [
+          {
+            type: ActionType.PointerUp,
+            button: getBidiButton(options.button ?? MouseButton.Left),
+          },
+        ],
+      },
+    ]);
   }
 
   override async click(
@@ -582,41 +558,35 @@ export class BidiMouse extends Mouse {
       });
     }
     actions.push(pointerUpAction);
-    await this.#context.connection.send('input.performActions', {
-      context: this.#context.id,
-      actions: [
-        {
-          type: SourceActionsType.Pointer,
-          id: InputId.Mouse,
-          actions,
-        },
-      ],
-    });
+    await this.#page.mainFrame().browsingContext.performActions([
+      {
+        type: SourceActionsType.Pointer,
+        id: InputId.Mouse,
+        actions,
+      },
+    ]);
   }
 
   override async wheel(
     options: Readonly<MouseWheelOptions> = {}
   ): Promise<void> {
-    await this.#context.connection.send('input.performActions', {
-      context: this.#context.id,
-      actions: [
-        {
-          type: SourceActionsType.Wheel,
-          id: InputId.Wheel,
-          actions: [
-            {
-              type: ActionType.Scroll,
-              ...(this.#lastMovePoint ?? {
-                x: 0,
-                y: 0,
-              }),
-              deltaX: options.deltaX ?? 0,
-              deltaY: options.deltaY ?? 0,
-            },
-          ],
-        },
-      ],
-    });
+    await this.#page.mainFrame().browsingContext.performActions([
+      {
+        type: SourceActionsType.Wheel,
+        id: InputId.Wheel,
+        actions: [
+          {
+            type: ActionType.Scroll,
+            ...(this.#lastMovePoint ?? {
+              x: 0,
+              y: 0,
+            }),
+            deltaX: options.deltaX ?? 0,
+            deltaY: options.deltaY ?? 0,
+          },
+        ],
+      },
+    ]);
   }
 
   override drag(): never {
@@ -644,11 +614,11 @@ export class BidiMouse extends Mouse {
  * @internal
  */
 export class BidiTouchscreen extends Touchscreen {
-  #context: BrowsingContext;
+  #page: BidiPage;
 
-  constructor(context: BrowsingContext) {
+  constructor(page: BidiPage) {
     super();
-    this.#context = context;
+    this.#page = page;
   }
 
   override async touchStart(
@@ -656,30 +626,27 @@ export class BidiTouchscreen extends Touchscreen {
     y: number,
     options: BidiTouchMoveOptions = {}
   ): Promise<void> {
-    await this.#context.connection.send('input.performActions', {
-      context: this.#context.id,
-      actions: [
-        {
-          type: SourceActionsType.Pointer,
-          id: InputId.Finger,
-          parameters: {
-            pointerType: Bidi.Input.PointerType.Touch,
-          },
-          actions: [
-            {
-              type: ActionType.PointerMove,
-              x: Math.round(x),
-              y: Math.round(y),
-              origin: options.origin,
-            },
-            {
-              type: ActionType.PointerDown,
-              button: 0,
-            },
-          ],
+    await this.#page.mainFrame().browsingContext.performActions([
+      {
+        type: SourceActionsType.Pointer,
+        id: InputId.Finger,
+        parameters: {
+          pointerType: Bidi.Input.PointerType.Touch,
         },
-      ],
-    });
+        actions: [
+          {
+            type: ActionType.PointerMove,
+            x: Math.round(x),
+            y: Math.round(y),
+            origin: options.origin,
+          },
+          {
+            type: ActionType.PointerDown,
+            button: 0,
+          },
+        ],
+      },
+    ]);
   }
 
   override async touchMove(
@@ -687,46 +654,40 @@ export class BidiTouchscreen extends Touchscreen {
     y: number,
     options: BidiTouchMoveOptions = {}
   ): Promise<void> {
-    await this.#context.connection.send('input.performActions', {
-      context: this.#context.id,
-      actions: [
-        {
-          type: SourceActionsType.Pointer,
-          id: InputId.Finger,
-          parameters: {
-            pointerType: Bidi.Input.PointerType.Touch,
-          },
-          actions: [
-            {
-              type: ActionType.PointerMove,
-              x: Math.round(x),
-              y: Math.round(y),
-              origin: options.origin,
-            },
-          ],
+    await this.#page.mainFrame().browsingContext.performActions([
+      {
+        type: SourceActionsType.Pointer,
+        id: InputId.Finger,
+        parameters: {
+          pointerType: Bidi.Input.PointerType.Touch,
         },
-      ],
-    });
+        actions: [
+          {
+            type: ActionType.PointerMove,
+            x: Math.round(x),
+            y: Math.round(y),
+            origin: options.origin,
+          },
+        ],
+      },
+    ]);
   }
 
   override async touchEnd(): Promise<void> {
-    await this.#context.connection.send('input.performActions', {
-      context: this.#context.id,
-      actions: [
-        {
-          type: SourceActionsType.Pointer,
-          id: InputId.Finger,
-          parameters: {
-            pointerType: Bidi.Input.PointerType.Touch,
-          },
-          actions: [
-            {
-              type: ActionType.PointerUp,
-              button: 0,
-            },
-          ],
+    await this.#page.mainFrame().browsingContext.performActions([
+      {
+        type: SourceActionsType.Pointer,
+        id: InputId.Finger,
+        parameters: {
+          pointerType: Bidi.Input.PointerType.Touch,
         },
-      ],
-    });
+        actions: [
+          {
+            type: ActionType.PointerUp,
+            button: 0,
+          },
+        ],
+      },
+    ]);
   }
 }
