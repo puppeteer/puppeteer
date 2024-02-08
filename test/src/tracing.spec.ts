@@ -8,6 +8,8 @@ import fs from 'fs';
 import path from 'path';
 
 import expect from 'expect';
+import * as utils from 'puppeteer-core/internal/common/util.js';
+import sinon from 'sinon';
 
 import {launch} from './mocha-utils.js';
 
@@ -113,15 +115,28 @@ describe('Tracing', function () {
     await page.tracing.start({screenshots: true});
     await page.goto(server.PREFIX + '/grid.html');
 
-    const oldBufferConcat = Buffer.concat;
+    const oldGetReadableAsBuffer = utils.getReadableAsBuffer;
+    const stub = sinon.stub(utils, 'getReadableAsBuffer').callsFake(() => {
+      return oldGetReadableAsBuffer({
+        getReader() {
+          return {
+            done: false,
+            read() {
+              if (!this.done) {
+                this.done = true;
+                return {done: false, value: 42};
+              }
+              return {done: true};
+            },
+          };
+        },
+      } as unknown as ReadableStream);
+    });
     try {
-      Buffer.concat = () => {
-        throw new Error('error');
-      };
       const trace = await page.tracing.stop();
       expect(trace).toEqual(undefined);
     } finally {
-      Buffer.concat = oldBufferConcat;
+      stub.restore();
     }
   });
 
