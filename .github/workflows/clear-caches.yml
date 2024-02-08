@@ -14,15 +14,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clear Firefox cache
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83 # v7.0.1
         with:
           script: |
             console.log("Querying")
-            const caches = await github.rest.actions.getActionsCacheList({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-            })
-            for (const cache of caches.data.actions_caches) {
+
+            const caches = await github.paginate(
+              github.rest.actions.getActionsCacheList,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+              }
+            )
+            console.log(caches.length)
+            for (const cache of caches) {
               if (cache.key.toLowerCase().startsWith('firefox')) {
                 console.log(cache)
                 github.rest.actions.deleteActionsCacheById({
