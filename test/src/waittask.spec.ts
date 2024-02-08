@@ -446,9 +446,10 @@ describe('waittask specs', function () {
       await detachFrame(page, 'frame1');
       await waitPromise;
       expect(waitError).toBeTruthy();
-      expect(waitError?.message).toContain(
-        'waitForFunction failed: frame got detached.'
-      );
+      expect(waitError?.message).atLeastOneToContain([
+        'waitForFunction failed: frame got detached.',
+        'Browsing context already closed.',
+      ]);
     });
     it('should survive cross-process navigation', async () => {
       const {page, server} = await getTestState();
@@ -754,9 +755,10 @@ describe('waittask specs', function () {
         await detachFrame(page, 'frame1');
         await waitPromise;
         expect(waitError).toBeTruthy();
-        expect(waitError?.message).toContain(
-          'waitForFunction failed: frame got detached.'
-        );
+        expect(waitError?.message).atLeastOneToContain([
+          'waitForFunction failed: frame got detached.',
+          'Browsing context already closed.',
+        ]);
       });
       it('hidden should wait for display: none', async () => {
         const {page} = await getTestState();

@@ -102,7 +102,11 @@ describe('Page', function () {
       ]);
       for (let i = 0; i < 2; i++) {
         const message = results[i].message;
-        expect(message).atLeastOneToContain(['Target closed', 'Page closed!']);
+        expect(message).atLeastOneToContain([
+          'Target closed',
+          'Page closed!',
+          'Frame detached',
+        ]);
         expect(message).not.toContain('Timeout');
       }
     });

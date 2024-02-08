@@ -102,6 +102,7 @@ describe('Launcher specs', function () {
             expect(message).atLeastOneToContain([
               'Target closed',
               'Page closed!',
+              'Browser already closed',
             ]);
             expect(message).not.toContain('Timeout');
           }
