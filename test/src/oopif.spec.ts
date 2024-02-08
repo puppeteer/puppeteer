@@ -472,7 +472,7 @@ describe('OOPIF', function () {
     const {server, page} = state;
 
     // Setup our session listeners to observe OOPIF activity.
-    const session = await page.target().createCDPSession();
+    const session = await page.createCDPSession();
     const networkEvents: string[] = [];
     const otherSessions: CDPSession[] = [];
     await session.send('Target.setAutoAttach', {

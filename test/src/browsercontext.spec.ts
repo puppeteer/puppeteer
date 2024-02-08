@@ -181,9 +181,9 @@ describe('BrowserContext', function () {
     });
 
     expect(context1.targets()).toHaveLength(1);
-    expect(context1.targets()[0]).toBe(page1.target());
+    expect(await context1.targets()[0]?.page()).toBe(page1);
     expect(context2.targets()).toHaveLength(1);
-    expect(context2.targets()[0]).toBe(page2.target());
+    expect(await context2.targets()[0]?.page()).toBe(page2);
 
     // Make sure pages don't share localstorage or cookies.
     expect(

@@ -118,7 +118,7 @@ describe('request interception', function () {
       await page.goto(server.EMPTY_PAGE);
       await page.setRequestInterception(true);
 
-      const cdp = await page.target().createCDPSession();
+      const cdp = await page.createCDPSession();
       await cdp.send('DOM.enable');
       const urls: string[] = [];
       page.on('request', request => {
