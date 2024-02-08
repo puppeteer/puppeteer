@@ -26,7 +26,7 @@ jobs:
                 per_page: 100,
               })
             )
-            for (const cache of caches.data.actions_caches) {
+            for (const cache of caches) {
               if (cache.key.toLowerCase().startsWith('firefox')) {
                 console.log(cache)
                 github.rest.actions.deleteActionsCacheById({
