@@ -41,9 +41,10 @@ export class Navigation extends EventEmitter<{
 
   // keep-sorted start
   #request: Request | undefined;
+  #navigation: Navigation | undefined;
   readonly #browsingContext: BrowsingContext;
   readonly #disposables = new DisposableStack();
-  readonly #id = new Deferred<string>();
+  readonly #id = new Deferred<string | null>();
   // keep-sorted end
 
   private constructor(context: BrowsingContext) {
@@ -65,31 +66,48 @@ export class Navigation extends EventEmitter<{
       this.dispose();
     });
 
-    this.#browsingContext.on('request', ({request}) => {
-      if (request.navigation === this.#id.value()) {
-        this.#request = request;
-        this.emit('request', request);
+    browsingContextEmitter.on('request', ({request}) => {
+      if (
+        request.navigation === undefined ||
+        this.#request !== undefined ||
+        // If a request with a navigation ID comes in, then the navigation ID is
+        // for this navigation.
+        !this.#matches(request.navigation)
+      ) {
+        return;
       }
+
+      this.#request = request;
+      this.emit('request', request);
     });
 
     const sessionEmitter = this.#disposables.use(
       new EventEmitter(this.#session)
     );
-    // To get the navigation ID if any.
+    sessionEmitter.on('browsingContext.navigationStarted', info => {
+      if (
+        info.context !== this.#browsingContext.id ||
+        this.#navigation !== undefined
+      ) {
+        return;
+      }
+      this.#navigation = Navigation.from(this.#browsingContext);
+    });
+
     for (const eventName of [
       'browsingContext.domContentLoaded',
       'browsingContext.load',
     ] as const) {
       sessionEmitter.on(eventName, info => {
-        if (info.context !== this.#browsingContext.id) {
+        if (
+          info.context !== this.#browsingContext.id ||
+          info.navigation === null ||
+          !this.#matches(info.navigation)
+        ) {
           return;
         }
-        if (!info.navigation) {
-          return;
-        }
-        if (!this.#id.resolved()) {
-          this.#id.resolve(info.navigation);
-        }
+
+        this.dispose();
       });
     }
 
@@ -99,18 +117,15 @@ export class Navigation extends EventEmitter<{
       ['browsingContext.navigationAborted', 'aborted'],
     ] as const) {
       sessionEmitter.on(eventName, info => {
-        if (info.context !== this.#browsingContext.id) {
+        if (
+          info.context !== this.#browsingContext.id ||
+          // Note we don't check if `navigation` is null since `null` means the
+          // fragment navigated.
+          !this.#matches(info.navigation)
+        ) {
           return;
         }
-        if (!info.navigation) {
-          return;
-        }
-        if (!this.#id.resolved()) {
-          this.#id.resolve(info.navigation);
-        }
-        if (this.#id.value() !== info.navigation) {
-          return;
-        }
+
         this.emit(event, {
           url: info.url,
           timestamp: new Date(info.timestamp),
@@ -118,6 +133,17 @@ export class Navigation extends EventEmitter<{
         this.dispose();
       });
     }
+  }
+
+  #matches(navigation: string | null): boolean {
+    if (this.#navigation !== undefined && !this.#navigation.disposed) {
+      return false;
+    }
+    if (!this.#id.resolved()) {
+      this.#id.resolve(navigation);
+      return true;
+    }
+    return this.#id.value() === navigation;
   }
 
   // keep-sorted start block=yes
@@ -129,6 +155,9 @@ export class Navigation extends EventEmitter<{
   }
   get request(): Request | undefined {
     return this.#request;
+  }
+  get navigation(): Navigation | undefined {
+    return this.#navigation;
   }
   // keep-sorted end
 
