@@ -1476,8 +1476,7 @@
     "testIdPattern": "[browsercontext.spec] BrowserContext should create new incognito context",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Fails because test assumes there is 1 user context initially, Firefox has 5"
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[browsercontext.spec] BrowserContext should fire target events",
@@ -1496,8 +1495,7 @@
     "testIdPattern": "[browsercontext.spec] BrowserContext should have default context",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Fails because test assumes there is 1 user context initially, Firefox has 5"
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[browsercontext.spec] BrowserContext should timeout waiting for a non-existent target",
