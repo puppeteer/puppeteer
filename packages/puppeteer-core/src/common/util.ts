@@ -209,7 +209,7 @@ export async function getReadableAsBuffer(
   readable: ReadableStream<Uint8Array>,
   path?: string
 ): Promise<Buffer | null> {
-  const buffers = [];
+  const buffers: Uint8Array[] = [];
   const reader = readable.getReader();
   if (path) {
     const fs = await importFSPromises();
