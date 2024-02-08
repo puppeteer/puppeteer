@@ -20,11 +20,12 @@ jobs:
             console.log("Querying")
             
             const caches = await github.paginate(
-              github.rest.actions.getActionsCacheList({
+              github.rest.actions.getActionsCacheList,
+              {
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 per_page: 100,
-              })
+              }
             )
             console.log(caches)
             for (const cache of caches) {
