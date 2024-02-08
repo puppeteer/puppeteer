@@ -64,11 +64,6 @@ export class Browser extends EventEmitter<{
     // keep-sorted start
     this.session = session;
     // keep-sorted end
-
-    this.#userContexts.set(
-      UserContext.DEFAULT,
-      UserContext.create(this, UserContext.DEFAULT)
-    );
   }
 
   async #initialize() {
@@ -95,13 +90,7 @@ export class Browser extends EventEmitter<{
     } = await this.session.send('browser.getUserContexts', {});
 
     for (const context of userContexts) {
-      if (context.userContext === UserContext.DEFAULT) {
-        continue;
-      }
-      this.#userContexts.set(
-        context.userContext,
-        UserContext.create(this, context.userContext)
-      );
+      this.#createUserContext(context.userContext);
     }
   }
 
@@ -116,22 +105,35 @@ export class Browser extends EventEmitter<{
       sessionEmitter.on('browsingContext.contextCreated', info => {
         contextIds.add(info.context);
       });
-      sessionEmitter.on('browsingContext.contextDestroyed', info => {
-        contextIds.delete(info.context);
-      });
       const {result} = await this.session.send('browsingContext.getTree', {});
       contexts = result.contexts;
     }
 
     // Simulating events so contexts are created naturally.
     for (const info of contexts) {
-      if (contextIds.has(info.context)) {
+      if (!contextIds.has(info.context)) {
         this.session.emit('browsingContext.contextCreated', info);
       }
       if (info.children) {
         contexts.push(...info.children);
       }
     }
+  }
+
+  #createUserContext(id: string) {
+    const userContext = UserContext.create(this, id);
+    this.#userContexts.set(userContext.id, userContext);
+
+    const userContextEmitter = this.#disposables.use(
+      new EventEmitter(userContext)
+    );
+    userContextEmitter.once('closed', () => {
+      userContextEmitter.removeAllListeners();
+
+      this.#userContexts.delete(userContext.id);
+    });
+
+    return userContext;
   }
 
   // keep-sorted start block=yes
@@ -210,20 +212,7 @@ export class Browser extends EventEmitter<{
     const {
       result: {userContext: context},
     } = await this.session.send('browser.createUserContext', {});
-
-    const userContext = UserContext.create(this, context);
-    this.#userContexts.set(userContext.id, userContext);
-
-    const userContextEmitter = this.#disposables.use(
-      new EventEmitter(userContext)
-    );
-    userContextEmitter.once('closed', () => {
-      userContextEmitter.removeAllListeners();
-
-      this.#userContexts.delete(context);
-    });
-
-    return userContext;
+    return this.#createUserContext(context);
   }
 
   [disposeSymbol](): void {

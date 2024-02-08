@@ -66,10 +66,11 @@ export class Request extends EventEmitter<{
       new EventEmitter(this.#session)
     );
     sessionEmitter.on('network.beforeRequestSent', event => {
-      if (event.context !== this.#browsingContext.id) {
-        return;
-      }
-      if (event.request.request !== this.id) {
+      if (
+        event.context !== this.#browsingContext.id ||
+        event.request.request !== this.id ||
+        this.#redirect !== undefined
+      ) {
         return;
       }
       this.#redirect = Request.from(this.#browsingContext, event);
@@ -77,10 +78,10 @@ export class Request extends EventEmitter<{
       this.dispose();
     });
     sessionEmitter.on('network.fetchError', event => {
-      if (event.context !== this.#browsingContext.id) {
-        return;
-      }
-      if (event.request.request !== this.id) {
+      if (
+        event.context !== this.#browsingContext.id ||
+        event.request.request !== this.id
+      ) {
         return;
       }
       this.#error = event.errorText;
@@ -88,14 +89,18 @@ export class Request extends EventEmitter<{
       this.dispose();
     });
     sessionEmitter.on('network.responseCompleted', event => {
-      if (event.context !== this.#browsingContext.id) {
-        return;
-      }
-      if (event.request.request !== this.id) {
+      if (
+        event.context !== this.#browsingContext.id ||
+        event.request.request !== this.id
+      ) {
         return;
       }
       this.#response = event.response;
       this.emit('success', this.#response);
+      // In case this is a redirect.
+      if (this.#response.status >= 300 && this.#response.status < 400) {
+        return;
+      }
       this.dispose();
     });
   }
@@ -126,7 +131,7 @@ export class Request extends EventEmitter<{
     return this.#event.navigation ?? undefined;
   }
   get redirect(): Request | undefined {
-    return this.redirect;
+    return this.#redirect;
   }
   get response(): Bidi.Network.ResponseData | undefined {
     return this.#response;
