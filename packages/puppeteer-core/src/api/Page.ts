@@ -757,6 +757,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
   /**
    * A target this page was created from.
+   *
+   * @deprecated Use {@link Page.createCDPSession} directly.
    */
   abstract target(): Target;
 

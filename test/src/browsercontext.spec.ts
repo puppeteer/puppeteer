@@ -18,9 +18,13 @@ describe('BrowserContext', function () {
     const {browser} = await getTestState({
       skipContextCreation: true,
     });
-    expect(browser.browserContexts()).toHaveLength(1);
-    const defaultContext = browser.browserContexts()[0]!;
-    expect(defaultContext!.isIncognito()).toBe(false);
+
+    expect(browser.browserContexts().length).toBeGreaterThanOrEqual(1);
+    const defaultContext = browser.browserContexts().find(context => {
+      return !context.isIncognito();
+    });
+    expect(defaultContext).toBeDefined();
+
     let error!: Error;
     await defaultContext!.close().catch(error_ => {
       return (error = error_);
@@ -33,13 +37,14 @@ describe('BrowserContext', function () {
       skipContextCreation: true,
     });
 
-    expect(browser.browserContexts()).toHaveLength(1);
+    const contextCount = browser.browserContexts().length;
+    expect(contextCount).toBeGreaterThanOrEqual(1);
     const context = await browser.createBrowserContext();
     expect(context.isIncognito()).toBe(true);
-    expect(browser.browserContexts()).toHaveLength(2);
+    expect(browser.browserContexts()).toHaveLength(contextCount + 1);
     expect(browser.browserContexts().indexOf(context) !== -1).toBe(true);
     await context.close();
-    expect(browser.browserContexts()).toHaveLength(1);
+    expect(browser.browserContexts()).toHaveLength(contextCount);
   });
   it('should close all belonging targets once closing context', async () => {
     const {browser} = await getTestState({
@@ -176,9 +181,9 @@ describe('BrowserContext', function () {
     });
 
     expect(context1.targets()).toHaveLength(1);
-    expect(context1.targets()[0]).toBe(page1.target());
+    expect(await context1.targets()[0]?.page()).toBe(page1);
     expect(context2.targets()).toHaveLength(1);
-    expect(context2.targets()[0]).toBe(page2.target());
+    expect(await context2.targets()[0]?.page()).toBe(page2);
 
     // Make sure pages don't share localstorage or cookies.
     expect(

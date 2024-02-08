@@ -144,7 +144,6 @@ export class BidiPage extends Page {
   #keyboard: BidiKeyboard;
   #browsingContext: BrowsingContext;
   #browserContext: BidiBrowserContext;
-  #target: BiDiPageTarget;
 
   _client(): CDPSession {
     return this.mainFrame().context().cdpSession;
@@ -152,13 +151,11 @@ export class BidiPage extends Page {
 
   constructor(
     browsingContext: BrowsingContext,
-    browserContext: BidiBrowserContext,
-    target: BiDiPageTarget
+    browserContext: BidiBrowserContext
   ) {
     super();
     this.#browsingContext = browsingContext;
     this.#browserContext = browserContext;
-    this.#target = target;
     this.#connection = browsingContext.connection;
 
     for (const [event, subscriber] of this.#browsingContextEvents) {
@@ -794,7 +791,7 @@ export class BidiPage extends Page {
   }
 
   override target(): BiDiPageTarget {
-    return this.#target;
+    throw new UnsupportedOperation();
   }
 
   override waitForFileChooser(): never {
