@@ -49,7 +49,7 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override get client(): CDPSession {
-    throw new Error('Method not implemented.');
+    throw new UnsupportedOperation();
   }
 
   #initialize() {
@@ -76,15 +76,15 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override postData(): string | undefined {
-    return undefined;
+    throw new UnsupportedOperation();
   }
 
   override hasPostData(): boolean {
-    return false;
+    throw new UnsupportedOperation();
   }
 
   override async fetchPostData(): Promise<string | undefined> {
-    return undefined;
+    throw new UnsupportedOperation();
   }
 
   override headers(): Record<string, string> {

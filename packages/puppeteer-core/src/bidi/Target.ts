@@ -43,7 +43,7 @@ export class BidiBrowserTarget extends Target {
     return this.#browser.defaultBrowserContext();
   }
   override opener(): Target | undefined {
-    return;
+    throw new UnsupportedOperation();
   }
 }
 
@@ -83,7 +83,7 @@ export class BidiPageTarget extends Target {
     return this.#page.browserContext();
   }
   override opener(): Target | undefined {
-    return;
+    throw new UnsupportedOperation();
   }
 }
 
@@ -127,6 +127,6 @@ export class BidiFrameTarget extends Target {
     return this.#frame.page().browserContext();
   }
   override opener(): Target | undefined {
-    return;
+    throw new UnsupportedOperation();
   }
 }

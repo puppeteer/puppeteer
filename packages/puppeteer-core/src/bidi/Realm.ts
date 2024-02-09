@@ -141,18 +141,22 @@ export abstract class BidiRealm extends Realm {
       functionDeclaration = SOURCE_URL_REGEX.test(functionDeclaration)
         ? functionDeclaration
         : `${functionDeclaration}\n${sourceUrlComment}\n`;
-      responsePromise = this.realm.callFunction(functionDeclaration, true, {
-        arguments: args.length
-          ? await Promise.all(
-              args.map(arg => {
-                return this.serialize(arg);
-              })
-            )
-          : [],
-        resultOwnership,
-        userActivation: true,
-        serializationOptions,
-      });
+      responsePromise = this.realm.callFunction(
+        functionDeclaration,
+        /* awaitPromise= */ true,
+        {
+          arguments: args.length
+            ? await Promise.all(
+                args.map(arg => {
+                  return this.serialize(arg);
+                })
+              )
+            : [],
+          resultOwnership,
+          userActivation: true,
+          serializationOptions,
+        }
+      );
     }
 
     const result = await responsePromise;
@@ -195,7 +199,7 @@ export abstract class BidiRealm extends Realm {
         }
         if (arg.realm.environment !== this.environment) {
           throw new Error(
-            "Trying to evaluate JSHandle from different frames. Usually this means you're using a handle from a page on a diffrent page."
+            "Trying to evaluate JSHandle from different frames. Usually this means you're using a handle from a page on a different page."
           );
         }
       }

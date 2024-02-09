@@ -5,10 +5,9 @@
  */
 
 import expect from 'expect';
-import type {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
 import type {CDPSession} from 'puppeteer-core/internal/api/CDPSession.js';
 import {CDPSessionEvent} from 'puppeteer-core/internal/api/CDPSession.js';
-import type {CdpTarget} from 'puppeteer-core/internal/cdp/Target.js';
+import type {Page} from 'puppeteer-core/internal/api/Page.js';
 
 import {getTestState, launch} from './mocha-utils.js';
 import {attachFrame, detachFrame, navigateFrame} from './utils.js';
@@ -266,24 +265,24 @@ describe('OOPIF', function () {
     await frame.waitForSelector('#clicked');
   });
   it('should report oopif frames', async () => {
-    const {server, page, context} = state;
+    const {server, page} = state;
 
     const frame = page.waitForFrame(frame => {
       return frame.url().endsWith('/oopif.html');
     });
     await page.goto(server.PREFIX + '/dynamic-oopif.html');
     await frame;
-    expect(oopifs(context)).toHaveLength(1);
+    expect(await iframes(page)).toHaveLength(1);
     expect(page.frames()).toHaveLength(2);
   });
 
   it('should wait for inner OOPIFs', async () => {
-    const {server, page, context} = state;
+    const {server, page} = state;
     await page.goto(`http://mainframe:${server.PORT}/main-frame.html`);
     const frame2 = await page.waitForFrame(frame => {
       return frame.url().endsWith('inner-frame2.html');
     });
-    expect(oopifs(context)).toHaveLength(2);
+    expect(await iframes(page)).toHaveLength(2);
     expect(
       page.frames().filter(frame => {
         return frame.isOOPFrame();
@@ -297,7 +296,7 @@ describe('OOPIF', function () {
   });
 
   it('should load oopif iframes with subresources and request interception', async () => {
-    const {server, page, context} = state;
+    const {server, page} = state;
 
     const framePromise = page.waitForFrame(frame => {
       return frame.url().endsWith('/oopif.html');
@@ -312,7 +311,7 @@ describe('OOPIF', function () {
     await page.goto(server.PREFIX + '/dynamic-oopif.html');
     const frame = await framePromise;
     const request = await requestPromise;
-    expect(oopifs(context)).toHaveLength(1);
+    expect(await iframes(page)).toHaveLength(1);
     expect(request.frame()).toBe(frame);
   });
 
@@ -394,14 +393,14 @@ describe('OOPIF', function () {
   });
 
   it('should detect existing OOPIFs when Puppeteer connects to an existing page', async () => {
-    const {server, puppeteer, page, context} = state;
+    const {server, puppeteer, page} = state;
 
     const frame = page.waitForFrame(frame => {
       return frame.url().endsWith('/oopif.html');
     });
     await page.goto(server.PREFIX + '/dynamic-oopif.html');
     await frame;
-    expect(oopifs(context)).toHaveLength(1);
+    expect(await iframes(page)).toHaveLength(1);
     expect(page.frames()).toHaveLength(2);
 
     const browserURL = 'http://127.0.0.1:21222';
@@ -520,8 +519,13 @@ describe('OOPIF', function () {
   });
 });
 
-function oopifs(context: BrowserContext) {
-  return context.targets().filter(target => {
-    return (target as CdpTarget)._getTargetInfo().type === 'iframe';
+async function iframes(page: Page) {
+  const iframes = await Promise.all(
+    page.frames().map(async frame => {
+      return await frame.frameElement();
+    })
+  );
+  return iframes.filter(frame => {
+    return frame !== null;
   });
 }

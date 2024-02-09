@@ -820,7 +820,8 @@
     "testIdPattern": "[navigation.spec] navigation Page.goto should fail when navigating to bad SSL",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["FAIL", "TIMEOUT"]
+    "expectations": ["SKIP"],
+    "comment": "Navigation does not end with browsingContext.navigationFailed"
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should send referer",
@@ -863,6 +864,13 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Request.postData should be |undefined| when there is no post data",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Unsupported"
   },
   {
     "testIdPattern": "[network.spec] network Request.postData should work",
@@ -2234,7 +2242,8 @@
     "testIdPattern": "[frame.spec] Frame specs Frame Management should send \"framenavigated\" when navigating on anchor URLs",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["SKIP"],
+    "comment": "browsingContext.navigationStarted event not emitted for fragment navigation"
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should send events when frames are manipulated dynamically",
@@ -3063,25 +3072,29 @@
     "testIdPattern": "[navigation.spec] navigation Page.goBack should work with HistoryAPI",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["SKIP"],
+    "comment": "browsingContext.navigationStarted event not emitted for fragment navigation"
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should fail when main resources failed to load",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["TIMEOUT"]
+    "expectations": ["SKIP"],
+    "comment": "Navigation does not end with browsingContext.navigationFailed"
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should fail when navigating and show the url at the error message",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["TIMEOUT"]
+    "expectations": ["SKIP"],
+    "comment": "Navigation does not end with browsingContext.navigationFailed"
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should fail when navigating to bad SSL after redirects",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["TIMEOUT"]
+    "expectations": ["SKIP"],
+    "comment": "Navigation does not end with browsingContext.navigationFailed"
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should fail when server returns 204",
@@ -3093,7 +3106,8 @@
     "testIdPattern": "[navigation.spec] navigation Page.goto should fail when server returns 204",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["TIMEOUT"]
+    "expectations": ["SKIP"],
+    "comment": "Navigation does not end with browsingContext.navigationFailed"
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should navigate to dataURL and fire dataURL requests",
@@ -3201,7 +3215,8 @@
     "testIdPattern": "[navigation.spec] navigation Page.goto should work with anchor navigation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["TIMEOUT"]
+    "expectations": ["SKIP"],
+    "comment": "browsingContext.navigationStarted event not emitted for fragment navigation"
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work with subframes return 204",
@@ -3243,7 +3258,8 @@
     "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with DOM history.back()/history.forward()",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["TIMEOUT"]
+    "expectations": ["SKIP"],
+    "comment": "browsingContext.navigationStarted event not emitted for fragment navigation"
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with history.pushState()",
@@ -3253,9 +3269,10 @@
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with history.pushState()",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["SKIP"],
+    "comment": "browsingContext.navigationStarted event not emitted for fragment navigation"
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with history.replaceState()",
@@ -3574,12 +3591,6 @@
   {
     "testIdPattern": "[oopif.spec] OOPIF should detect existing OOPIFs when Puppeteer connects to an existing page",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[oopif.spec] OOPIF should detect existing OOPIFs when Puppeteer connects to an existing page",
-    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
@@ -3639,22 +3650,11 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[oopif.spec] OOPIF should report oopif frames",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[oopif.spec] OOPIF should report oopif frames",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[oopif.spec] OOPIF should support frames within OOP iframes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "TIMEOUT"]
+    "expectations": ["SKIP"],
+    "comment": "Fetch error"
   },
   {
     "testIdPattern": "[oopif.spec] OOPIF should support lazy OOP frames",
@@ -3726,7 +3726,8 @@
     "testIdPattern": "[oopif.spec] OOPIF should wait for inner OOPIFs",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "TIMEOUT"]
+    "expectations": ["SKIP"],
+    "comment": "Fetch error"
   },
   {
     "testIdPattern": "[page.spec] Page Page.addScriptTag should throw when added with content to the CSP page",
