@@ -20,6 +20,14 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.0.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.0.0...puppeteer-core-v22.0.1) (2024-02-12)
+
+
+### Bug Fixes
+
+* deprecate `Page.prototype.target` ([#11872](https://github.com/puppeteer/puppeteer/issues/11872)) ([15c986c](https://github.com/puppeteer/puppeteer/commit/15c986c2bc5f5005a738187674cd6c44bcb3df3d))
+* frameElement should work for framesets ([#11842](https://github.com/puppeteer/puppeteer/issues/11842)) ([c5cee0e](https://github.com/puppeteer/puppeteer/commit/c5cee0e37dec8b90a17bf13400ede7ebdf453ac8))
+
 ## [22.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.11.0...puppeteer-core-v22.0.0) (2024-02-05)
 
 
