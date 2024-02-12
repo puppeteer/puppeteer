@@ -821,7 +821,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
-    "comment": "Navigation does not end with browsingContext.navigationFailed"
+    "comment": "https://github.com/w3c/webdriver-bidi/issues/657"
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should send referer",
@@ -2200,7 +2200,8 @@
     "testIdPattern": "[frame.spec] Frame specs Frame Management should detach child frames on navigation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL"],
+    "comment": "https://github.com/w3c/webdriver-bidi/issues/659"
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should report different frame instance when frame re-attaches",
@@ -2243,7 +2244,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "browsingContext.navigationStarted event not emitted for fragment navigation"
+    "comment": "https://github.com/w3c/webdriver-bidi/issues/657"
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should send events when frames are manipulated dynamically",
@@ -2261,7 +2262,8 @@
     "testIdPattern": "[frame.spec] Frame specs Frame Management should support framesets",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL"],
+    "comment": "https://github.com/w3c/webdriver-bidi/issues/659"
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should support lazy frames",
@@ -3080,21 +3082,21 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "Navigation does not end with browsingContext.navigationFailed"
+    "comment": "https://github.com/w3c/webdriver-bidi/issues/657"
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should fail when navigating and show the url at the error message",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "Navigation does not end with browsingContext.navigationFailed"
+    "comment": "https://github.com/w3c/webdriver-bidi/issues/657"
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should fail when navigating to bad SSL after redirects",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "Navigation does not end with browsingContext.navigationFailed"
+    "comment": "https://github.com/w3c/webdriver-bidi/issues/657"
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should fail when server returns 204",
@@ -3107,7 +3109,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "Navigation does not end with browsingContext.navigationFailed"
+    "comment": "https://github.com/w3c/webdriver-bidi/issues/657"
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should navigate to dataURL and fire dataURL requests",
@@ -3173,7 +3175,7 @@
     "testIdPattern": "[navigation.spec] navigation Page.goto should return last response in redirect chain",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should return response when page changes its URL after load",
@@ -3660,13 +3662,8 @@
     "testIdPattern": "[oopif.spec] OOPIF should support lazy OOP frames",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[oopif.spec] OOPIF should support lazy OOP frames",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL"],
+    "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=187816"
   },
   {
     "testIdPattern": "[oopif.spec] OOPIF should support lazy OOP frames",
