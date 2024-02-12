@@ -101,38 +101,40 @@ export class BidiFrame extends Frame {
           void session.detach().catch(debugError);
         }
       }
-      this.page().emit(PageEvent.FrameDetached, this);
-      this.removeAllListeners();
+      this.page().trustedEmitter.emit(PageEvent.FrameDetached, this);
     });
 
     this.browsingContext.on('request', ({request}) => {
       const httpRequest = BidiHTTPRequest.from(request, this);
       request.once('success', () => {
         // SAFETY: BidiHTTPRequest will create this before here.
-        this.page().emit(PageEvent.RequestFinished, httpRequest);
+        this.page().trustedEmitter.emit(PageEvent.RequestFinished, httpRequest);
       });
 
       request.once('error', () => {
-        this.page().emit(PageEvent.RequestFailed, httpRequest);
+        this.page().trustedEmitter.emit(PageEvent.RequestFailed, httpRequest);
       });
     });
 
     this.browsingContext.on('navigation', ({navigation}) => {
       navigation.once('fragment', () => {
-        this.page().emit(PageEvent.FrameNavigated, this);
+        this.page().trustedEmitter.emit(PageEvent.FrameNavigated, this);
       });
     });
     this.browsingContext.on('load', () => {
-      this.page().emit(PageEvent.Load, undefined);
+      this.page().trustedEmitter.emit(PageEvent.Load, undefined);
     });
     this.browsingContext.on('DOMContentLoaded', () => {
       this._hasStartedLoading = true;
-      this.page().emit(PageEvent.DOMContentLoaded, undefined);
-      this.page().emit(PageEvent.FrameNavigated, this);
+      this.page().trustedEmitter.emit(PageEvent.DOMContentLoaded, undefined);
+      this.page().trustedEmitter.emit(PageEvent.FrameNavigated, this);
     });
 
     this.browsingContext.on('userprompt', ({userPrompt}) => {
-      this.page().emit(PageEvent.Dialog, BidiDialog.from(userPrompt));
+      this.page().trustedEmitter.emit(
+        PageEvent.Dialog,
+        BidiDialog.from(userPrompt)
+      );
     });
 
     this.browsingContext.on('log', ({entry}) => {
@@ -154,7 +156,7 @@ export class BidiFrame extends Frame {
           }, '')
           .slice(1);
 
-        this.page().emit(
+        this.page().trustedEmitter.emit(
           PageEvent.Console,
           new ConsoleMessage(
             entry.method as any,
@@ -185,7 +187,7 @@ export class BidiFrame extends Frame {
         }
 
         error.stack = [...messageLines, ...stackLines].join('\n');
-        this.page().emit(PageEvent.PageError, error);
+        this.page().trustedEmitter.emit(PageEvent.PageError, error);
       } else {
         debugError(
           `Unhandled LogEntry with type "${entry.type}", text "${entry.text}" and level "${entry.level}"`
@@ -197,7 +199,7 @@ export class BidiFrame extends Frame {
   #createFrameTarget(browsingContext: BrowsingContext) {
     const frame = BidiFrame.from(this, browsingContext);
     this.#frames.set(browsingContext, frame);
-    this.page().emit(PageEvent.FrameAttached, frame);
+    this.page().trustedEmitter.emit(PageEvent.FrameAttached, frame);
 
     browsingContext.on('closed', () => {
       this.#frames.delete(browsingContext);

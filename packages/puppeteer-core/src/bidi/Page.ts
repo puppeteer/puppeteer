@@ -12,7 +12,11 @@ import type {CDPSession} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
 import type {WaitForOptions} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
-import type {MediaFeature, GeolocationOptions} from '../api/Page.js';
+import type {
+  MediaFeature,
+  GeolocationOptions,
+  PageEvents,
+} from '../api/Page.js';
 import {
   Page,
   PageEvent,
@@ -25,11 +29,13 @@ import {EmulationManager} from '../cdp/EmulationManager.js';
 import {Tracing} from '../cdp/Tracing.js';
 import type {Cookie, CookieParam, CookieSameSite} from '../common/Cookie.js';
 import {UnsupportedOperation} from '../common/Errors.js';
+import {EventEmitter} from '../common/EventEmitter.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
 import type {Awaitable} from '../common/types.js';
 import {evaluationString, parsePDFOptions, timeout} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
+import {bubble} from '../util/decorators.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {BidiBrowser} from './Browser.js';
@@ -55,6 +61,9 @@ export class BidiPage extends Page {
     page.#initialize();
     return page;
   }
+
+  @bubble()
+  accessor trustedEmitter = new EventEmitter<PageEvents>();
 
   readonly #browserContext: BidiBrowserContext;
   readonly #frame: BidiFrame;
@@ -91,8 +100,8 @@ export class BidiPage extends Page {
 
   #initialize() {
     this.#frame.browsingContext.on('closed', () => {
-      this.emit(PageEvent.Close, undefined);
-      this.removeAllListeners();
+      this.trustedEmitter.emit(PageEvent.Close, undefined);
+      this.trustedEmitter.removeAllListeners();
     });
   }
 

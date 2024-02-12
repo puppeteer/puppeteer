@@ -40,7 +40,7 @@ export class BidiHTTPResponse extends HTTPResponse {
   }
 
   #initialize() {
-    this.#request.frame()?.page().emit(PageEvent.Response, this);
+    this.#request.frame()?.page().trustedEmitter.emit(PageEvent.Response, this);
   }
 
   @invokeAtMostOnceForArguments

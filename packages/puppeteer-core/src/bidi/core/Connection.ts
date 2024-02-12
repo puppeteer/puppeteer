@@ -157,7 +157,4 @@ export interface Connection<Events extends BidiEvents = BidiEvents>
     method: T,
     params: Commands[T]['params']
   ): Promise<{result: Commands[T]['returnType']}>;
-
-  // This will pipe events into the provided emitter.
-  pipeTo<Events extends BidiEvents>(emitter: EventEmitter<Events>): void;
 }
