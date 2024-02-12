@@ -241,10 +241,11 @@ export class BrowsingContext extends EventEmitter<{
       if (event.context !== this.id) {
         return;
       }
-      // Means the request is a redirect. This is handled in Request.
-      if (this.#requests.has(event.request.request)) {
+      if (event.redirectCount !== 0) {
+        // Means the request is a redirect. This is handled in Request.
         return;
       }
+
       const request = Request.from(this, event);
       this.#requests.set(request.id, request);
       this.emit('request', {request});
