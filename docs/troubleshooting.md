@@ -221,13 +221,13 @@ sudo sysctl -w kernel.unprivileged_userns_clone=1
 ### [alternative] Setup [setuid sandbox](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux/suid_sandbox_development.md)
 
 The setuid sandbox comes as a standalone executable and is located next to the
-Chromium that Puppeteer downloads. It is fine to re-use the same sandbox
-executable for different Chromium versions, so the following could be done only
+Chrome that Puppeteer downloads. It is fine to re-use the same sandbox
+executable for different Chrome versions, so the following could be done only
 once per host environment:
 
 ```bash
-# cd to the downloaded instance
-cd <project-dir-path>/node_modules/puppeteer/.local-chromium/linux-<revision>/chrome-linux/
+# cd to Puppeteer cache directory (adjust the path if using a different cache directory).
+cd ~/.cache/puppeteer/chrome/linux-<version>/chrome-linux64/
 sudo chown root:root chrome_sandbox
 sudo chmod 4755 chrome_sandbox
 # copy sandbox executable to a shared location
@@ -241,6 +241,12 @@ this case, add the following to the `~/.bashrc` or `.zshenv`:
 
 ```bash
 export CHROME_DEVEL_SANDBOX=/usr/local/sbin/chrome-devel-sandbox
+```
+
+or to your `Dockerfile`:
+
+```
+ENV CHROME_DEVEL_SANDBOX /usr/local/sbin/chrome-devel-sandbox
 ```
 
 ## Running Puppeteer on Travis CI
