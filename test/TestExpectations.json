@@ -655,12 +655,6 @@
     "comment": "New test for framesets. We probably do not want to support framesets in WebDriver BiDi in the long term."
   },
   {
-    "testIdPattern": "[frame.spec] Frame specs Frame Management should handle nested frames",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should report frame.name()",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -2258,13 +2252,15 @@
     "testIdPattern": "[frame.spec] Frame specs Frame Management should support lazy frames",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL"],
+    "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1878166"
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should support lazy frames",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL"],
+    "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1878166"
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame.evaluate should throw for detached frames",

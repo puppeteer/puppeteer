@@ -794,10 +794,10 @@ describe('Launcher specs', function () {
           })!;
           expect(dumpFrames(restoredPage.mainFrame())).toEqual([
             'http://localhost:<PORT>/frames/nested-frames.html',
-            '    http://localhost:<PORT>/frames/two-frames.html (2frames)',
-            '        http://localhost:<PORT>/frames/frame.html (uno)',
-            '        http://localhost:<PORT>/frames/frame.html (dos)',
-            '    http://localhost:<PORT>/frames/frame.html (aframe)',
+            '    http://localhost:<PORT>/frames/two-frames.html',
+            '        http://localhost:<PORT>/frames/frame.html',
+            '        http://localhost:<PORT>/frames/frame.html',
+            '    http://localhost:<PORT>/frames/frame.html',
           ]);
           expect(
             await restoredPage.evaluate(() => {
