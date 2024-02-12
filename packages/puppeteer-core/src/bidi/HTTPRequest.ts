@@ -5,107 +5,126 @@
  */
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import type {Frame} from '../api/Frame.js';
+import type {CDPSession} from '../api/CDPSession.js';
 import type {
   ContinueRequestOverrides,
   ResponseForRequest,
 } from '../api/HTTPRequest.js';
 import {HTTPRequest, type ResourceType} from '../api/HTTPRequest.js';
+import {PageEvent} from '../api/Page.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 
-import type {BidiHTTPResponse} from './HTTPResponse.js';
+import type {Request} from './core/Request.js';
+import type {BidiFrame} from './Frame.js';
+import {BidiHTTPResponse} from './HTTPResponse.js';
+
+export const requests = new WeakMap<Request, BidiHTTPRequest>();
 
 /**
  * @internal
  */
 export class BidiHTTPRequest extends HTTPRequest {
-  override id: string;
-  override _response: BidiHTTPResponse | null = null;
-  override _redirectChain: BidiHTTPRequest[];
-  _navigationId: string | null;
-
-  #url: string;
-  #resourceType: ResourceType;
-
-  #method: string;
-  #postData?: string;
-  #headers: Record<string, string> = {};
-  #initiator: Bidi.Network.Initiator;
-  #frame: Frame | null;
-
-  constructor(
-    event: Bidi.Network.BeforeRequestSentParameters,
-    frame: Frame | null,
-    redirectChain: BidiHTTPRequest[] = []
-  ) {
-    super();
-
-    this.#url = event.request.url;
-    this.#resourceType = event.initiator.type.toLowerCase() as ResourceType;
-    this.#method = event.request.method;
-    this.#postData = undefined;
-    this.#initiator = event.initiator;
-    this.#frame = frame;
-
-    this.id = event.request.request;
-    this._redirectChain = redirectChain;
-    this._navigationId = event.navigation;
-
-    for (const header of event.request.headers) {
-      // TODO: How to handle Binary Headers
-      // https://w3c.github.io/webdriver-bidi/#type-network-Header
-      if (header.value.type === 'string') {
-        this.#headers[header.name.toLowerCase()] = header.value.value;
-      }
-    }
+  static from(
+    bidiRequest: Request,
+    frame: BidiFrame | undefined
+  ): BidiHTTPRequest {
+    const request = new BidiHTTPRequest(bidiRequest, frame);
+    request.#initialize();
+    return request;
   }
 
-  override get client(): never {
+  #redirect: BidiHTTPRequest | undefined;
+  #response: BidiHTTPResponse | null = null;
+  override readonly id: string;
+  readonly #frame: BidiFrame | undefined;
+  readonly #request: Request;
+
+  private constructor(request: Request, frame: BidiFrame | undefined) {
+    super();
+    requests.set(request, this);
+
+    this.#request = request;
+    this.#frame = frame;
+    this.id = request.id;
+  }
+
+  override get client(): CDPSession {
     throw new UnsupportedOperation();
   }
 
+  #initialize() {
+    this.#request.on('redirect', request => {
+      this.#redirect = BidiHTTPRequest.from(request, this.#frame);
+    });
+    this.#request.once('success', data => {
+      this.#response = BidiHTTPResponse.from(data, this);
+    });
+
+    this.#frame?.page().emit(PageEvent.Request, this);
+  }
+
   override url(): string {
-    return this.#url;
+    return this.#request.url;
   }
 
   override resourceType(): ResourceType {
-    return this.#resourceType;
+    return this.initiator().type.toLowerCase() as ResourceType;
   }
 
   override method(): string {
-    return this.#method;
+    return this.#request.method;
   }
 
   override postData(): string | undefined {
-    return this.#postData;
+    throw new UnsupportedOperation();
   }
 
   override hasPostData(): boolean {
-    return this.#postData !== undefined;
+    throw new UnsupportedOperation();
   }
 
   override async fetchPostData(): Promise<string | undefined> {
-    return this.#postData;
+    throw new UnsupportedOperation();
   }
 
   override headers(): Record<string, string> {
-    return this.#headers;
+    const headers: Record<string, string> = {};
+    for (const header of this.#request.headers) {
+      headers[header.name.toLowerCase()] = header.value.value;
+    }
+    return headers;
   }
 
   override response(): BidiHTTPResponse | null {
-    return this._response;
+    return this.#response;
+  }
+
+  override failure(): {errorText: string} | null {
+    if (this.#request.error === undefined) {
+      return null;
+    }
+    return {errorText: this.#request.error};
   }
 
   override isNavigationRequest(): boolean {
-    return Boolean(this._navigationId);
+    return this.#request.navigation !== undefined;
   }
 
   override initiator(): Bidi.Network.Initiator {
-    return this.#initiator;
+    return this.#request.initiator;
   }
 
   override redirectChain(): BidiHTTPRequest[] {
-    return this._redirectChain.slice();
+    if (this.#redirect === undefined) {
+      return [];
+    }
+    const redirects = [this.#redirect];
+    for (const redirect of redirects) {
+      if (redirect.#redirect !== undefined) {
+        redirects.push(redirect.#redirect);
+      }
+    }
+    return redirects;
   }
 
   override enqueueInterceptAction(
@@ -115,8 +134,8 @@ export class BidiHTTPRequest extends HTTPRequest {
     void pendingHandler();
   }
 
-  override frame(): Frame | null {
-    return this.#frame;
+  override frame(): BidiFrame | null {
+    return this.#frame ?? null;
   }
 
   override continueRequestOverrides(): never {
@@ -155,10 +174,6 @@ export class BidiHTTPRequest extends HTTPRequest {
     _response: Partial<ResponseForRequest>,
     _priority?: number
   ): never {
-    throw new UnsupportedOperation();
-  }
-
-  override failure(): never {
     throw new UnsupportedOperation();
   }
 }

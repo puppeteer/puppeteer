@@ -4,17 +4,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
+import type {Observable} from '../../third_party/rxjs/rxjs.js';
 import {
+  combineLatest,
   first,
   firstValueFrom,
-  forkJoin,
-  from,
   map,
-  merge,
+  of,
   raceWith,
-  zip,
+  switchMap,
 } from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
@@ -25,85 +25,205 @@ import {
   type WaitForOptions,
 } from '../api/Frame.js';
 import type {WaitForSelectorOptions} from '../api/Page.js';
-import {UnsupportedOperation} from '../common/Errors.js';
+import {PageEvent} from '../api/Page.js';
+import {
+  ConsoleMessage,
+  type ConsoleMessageLocation,
+} from '../common/ConsoleMessage.js';
+import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {Awaitable, NodeFor} from '../common/types.js';
-import {
-  fromEmitterEvent,
-  NETWORK_IDLE_TIME,
-  timeout,
-  UTILITY_WORLD_NAME,
-} from '../common/util.js';
-import {Deferred} from '../util/Deferred.js';
-import {disposeSymbol} from '../util/disposable.js';
+import {debugError, fromEmitterEvent, timeout} from '../common/util.js';
 
-import type {BrowsingContext} from './BrowsingContext.js';
+import {BidiCdpSession} from './CDPSession.js';
+import type {BrowsingContext} from './core/BrowsingContext.js';
+import {BidiDeserializer} from './Deserializer.js';
+import {BidiDialog} from './Dialog.js';
 import {ExposeableFunction} from './ExposedFunction.js';
+import {BidiHTTPRequest, requests} from './HTTPRequest.js';
 import type {BidiHTTPResponse} from './HTTPResponse.js';
-import {
-  getBiDiLifecycleEvent,
-  getBiDiReadinessState,
-  rewriteNavigationError,
-} from './lifecycle.js';
+import {BidiJSHandle} from './JSHandle.js';
 import type {BidiPage} from './Page.js';
-import {
-  MAIN_SANDBOX,
-  PUPPETEER_SANDBOX,
-  Sandbox,
-  type SandboxChart,
-} from './Sandbox.js';
+import type {BidiRealm} from './Realm.js';
+import {BidiFrameRealm} from './Realm.js';
+import {rewriteNavigationError} from './util.js';
 
-/**
- * Puppeteer's Frame class could be viewed as a BiDi BrowsingContext implementation
- * @internal
- */
 export class BidiFrame extends Frame {
-  #page: BidiPage;
-  #context: BrowsingContext;
-  #timeoutSettings: TimeoutSettings;
-  #abortDeferred = Deferred.create<never>();
-  #disposed = false;
-  sandboxes: SandboxChart;
-  override _id: string;
+  static from(
+    parent: BidiPage | BidiFrame,
+    browsingContext: BrowsingContext
+  ): BidiFrame {
+    const frame = new BidiFrame(parent, browsingContext);
+    frame.#initialize();
+    return frame;
+  }
 
-  constructor(
-    page: BidiPage,
-    context: BrowsingContext,
-    timeoutSettings: TimeoutSettings,
-    parentId?: string | null
+  readonly #parent: BidiPage | BidiFrame;
+  readonly browsingContext: BrowsingContext;
+  readonly #frames = new WeakMap<BrowsingContext, BidiFrame>();
+  readonly realms: {default: BidiFrameRealm; internal: BidiFrameRealm};
+
+  override readonly _id: string;
+  override readonly client: BidiCdpSession;
+
+  private constructor(
+    parent: BidiPage | BidiFrame,
+    browsingContext: BrowsingContext
   ) {
     super();
-    this.#page = page;
-    this.#context = context;
-    this.#timeoutSettings = timeoutSettings;
-    this._id = this.#context.id;
-    this._parentId = parentId ?? undefined;
+    this.#parent = parent;
+    this.browsingContext = browsingContext;
 
-    this.sandboxes = {
-      [MAIN_SANDBOX]: new Sandbox(undefined, this, context, timeoutSettings),
-      [PUPPETEER_SANDBOX]: new Sandbox(
-        UTILITY_WORLD_NAME,
-        this,
-        context.createRealmForSandbox(),
-        timeoutSettings
+    this._id = browsingContext.id;
+    this.client = new BidiCdpSession(this);
+    this.realms = {
+      default: BidiFrameRealm.from(this.browsingContext.defaultRealm, this),
+      internal: BidiFrameRealm.from(
+        this.browsingContext.createWindowRealm(
+          `__puppeteer_internal_${Math.ceil(Math.random() * 10000)}`
+        ),
+        this
       ),
     };
   }
 
-  override get client(): CDPSession {
-    return this.context().cdpSession;
+  #initialize(): void {
+    for (const browsingContext of this.browsingContext.children) {
+      this.#createFrameTarget(browsingContext);
+    }
+
+    this.browsingContext.on('browsingcontext', ({browsingContext}) => {
+      this.#createFrameTarget(browsingContext);
+    });
+    this.browsingContext.on('closed', () => {
+      for (const session of BidiCdpSession.sessions.values()) {
+        if (session.frame === this) {
+          void session.detach().catch(debugError);
+        }
+      }
+      this.page().emit(PageEvent.FrameDetached, this);
+      this.removeAllListeners();
+    });
+
+    this.browsingContext.on('request', ({request}) => {
+      const httpRequest = BidiHTTPRequest.from(request, this);
+      request.once('success', () => {
+        // SAFETY: BidiHTTPRequest will create this before here.
+        this.page().emit(PageEvent.RequestFinished, httpRequest);
+      });
+
+      request.once('error', () => {
+        this.page().emit(PageEvent.RequestFailed, httpRequest);
+      });
+    });
+
+    this.browsingContext.on('navigation', ({navigation}) => {
+      navigation.once('fragment', () => {
+        this.page().emit(PageEvent.FrameNavigated, this);
+      });
+    });
+    this.browsingContext.on('load', () => {
+      this.page().emit(PageEvent.Load, undefined);
+    });
+    this.browsingContext.on('DOMContentLoaded', () => {
+      this._hasStartedLoading = true;
+      this.page().emit(PageEvent.DOMContentLoaded, undefined);
+      this.page().emit(PageEvent.FrameNavigated, this);
+    });
+
+    this.browsingContext.on('userprompt', ({userPrompt}) => {
+      this.page().emit(PageEvent.Dialog, BidiDialog.from(userPrompt));
+    });
+
+    this.browsingContext.on('log', ({entry}) => {
+      if (this._id !== entry.source.context) {
+        return;
+      }
+      if (isConsoleLogEntry(entry)) {
+        const args = entry.args.map(arg => {
+          return this.mainRealm().createHandle(arg);
+        });
+
+        const text = args
+          .reduce((value, arg) => {
+            const parsedValue =
+              arg instanceof BidiJSHandle && arg.isPrimitiveValue
+                ? BidiDeserializer.deserialize(arg.remoteValue())
+                : arg.toString();
+            return `${value} ${parsedValue}`;
+          }, '')
+          .slice(1);
+
+        this.page().emit(
+          PageEvent.Console,
+          new ConsoleMessage(
+            entry.method as any,
+            text,
+            args,
+            getStackTraceLocations(entry.stackTrace)
+          )
+        );
+      } else if (isJavaScriptLogEntry(entry)) {
+        const error = new Error(entry.text ?? '');
+
+        const messageHeight = error.message.split('\n').length;
+        const messageLines = error.stack!.split('\n').splice(0, messageHeight);
+
+        const stackLines = [];
+        if (entry.stackTrace) {
+          for (const frame of entry.stackTrace.callFrames) {
+            // Note we need to add `1` because the values are 0-indexed.
+            stackLines.push(
+              `    at ${frame.functionName || '<anonymous>'} (${frame.url}:${
+                frame.lineNumber + 1
+              }:${frame.columnNumber + 1})`
+            );
+            if (stackLines.length >= Error.stackTraceLimit) {
+              break;
+            }
+          }
+        }
+
+        error.stack = [...messageLines, ...stackLines].join('\n');
+        this.page().emit(PageEvent.PageError, error);
+      } else {
+        debugError(
+          `Unhandled LogEntry with type "${entry.type}", text "${entry.text}" and level "${entry.level}"`
+        );
+      }
+    });
   }
 
-  override mainRealm(): Sandbox {
-    return this.sandboxes[MAIN_SANDBOX];
+  #createFrameTarget(browsingContext: BrowsingContext) {
+    const frame = BidiFrame.from(this, browsingContext);
+    this.#frames.set(browsingContext, frame);
+    this.page().emit(PageEvent.FrameAttached, frame);
+
+    browsingContext.on('closed', () => {
+      this.#frames.delete(browsingContext);
+    });
+
+    return frame;
   }
 
-  override isolatedRealm(): Sandbox {
-    return this.sandboxes[PUPPETEER_SANDBOX];
+  get timeoutSettings(): TimeoutSettings {
+    return this.page()._timeoutSettings;
+  }
+
+  override mainRealm(): BidiRealm {
+    return this.realms.default;
+  }
+
+  override isolatedRealm(): BidiRealm {
+    return this.realms.internal;
   }
 
   override page(): BidiPage {
-    return this.#page;
+    let parent = this.#parent;
+    while (parent instanceof BidiFrame) {
+      parent = parent.#parent;
+    }
+    return parent;
   }
 
   override isOOPFrame(): never {
@@ -111,15 +231,20 @@ export class BidiFrame extends Frame {
   }
 
   override url(): string {
-    return this.#context.url;
+    return this.browsingContext.url;
   }
 
   override parentFrame(): BidiFrame | null {
-    return this.#page.frame(this._parentId ?? '');
+    if (this.#parent instanceof BidiFrame) {
+      return this.#parent;
+    }
+    return null;
   }
 
   override childFrames(): BidiFrame[] {
-    return this.#page.childFrames(this.#context.id);
+    return [...this.browsingContext.children].map(child => {
+      return this.#frames.get(child)!;
+    });
   }
 
   @throwIfDetached
@@ -127,40 +252,16 @@ export class BidiFrame extends Frame {
     url: string,
     options: GoToOptions = {}
   ): Promise<BidiHTTPResponse | null> {
-    const {
-      waitUntil = 'load',
-      timeout: ms = this.#timeoutSettings.navigationTimeout(),
-    } = options;
-
-    const [readiness, networkIdle] = getBiDiReadinessState(waitUntil);
-
-    const result$ = zip(
-      from(
-        this.#context.connection.send('browsingContext.navigate', {
-          context: this.#context.id,
-          url,
-          wait: readiness,
-        })
-      ),
-      ...(networkIdle !== null
-        ? [
-            this.#page.waitForNetworkIdle$({
-              timeout: ms,
-              concurrency: networkIdle === 'networkidle2' ? 2 : 0,
-              idleTime: NETWORK_IDLE_TIME,
-            }),
-          ]
-        : [])
-    ).pipe(
-      map(([{result}]) => {
-        return result;
-      }),
-      raceWith(timeout(ms), from(this.#abortDeferred.valueOrThrow())),
-      rewriteNavigationError(url, ms)
+    const [response] = await Promise.all([
+      this.waitForNavigation(options),
+      this.browsingContext.navigate(url),
+    ]).catch(
+      rewriteNavigationError(
+        url,
+        options.timeout ?? this.timeoutSettings.navigationTimeout()
+      )
     );
-
-    const result = await firstValueFrom(result$);
-    return this.#page.getNavigationResponse(result.navigation);
+    return response;
   }
 
   @throwIfDetached
@@ -168,95 +269,58 @@ export class BidiFrame extends Frame {
     html: string,
     options: WaitForOptions = {}
   ): Promise<void> {
-    const {
-      waitUntil = 'load',
-      timeout: ms = this.#timeoutSettings.navigationTimeout(),
-    } = options;
-
-    const [waitEvent, networkIdle] = getBiDiLifecycleEvent(waitUntil);
-
-    const result$ = zip(
-      forkJoin([
-        fromEmitterEvent(this.#context, waitEvent).pipe(first()),
-        from(this.setFrameContent(html)),
-      ]).pipe(
-        map(() => {
-          return null;
-        })
+    await Promise.all([
+      this.setFrameContent(html),
+      firstValueFrom(
+        combineLatest([
+          this.#waitForLoad$(options),
+          this.#waitForNetworkIdle$(options),
+        ])
       ),
-      ...(networkIdle !== null
-        ? [
-            this.#page.waitForNetworkIdle$({
-              timeout: ms,
-              concurrency: networkIdle === 'networkidle2' ? 2 : 0,
-              idleTime: NETWORK_IDLE_TIME,
-            }),
-          ]
-        : [])
-    ).pipe(
-      raceWith(timeout(ms), from(this.#abortDeferred.valueOrThrow())),
-      rewriteNavigationError('setContent', ms)
-    );
-
-    await firstValueFrom(result$);
-  }
-
-  context(): BrowsingContext {
-    return this.#context;
+    ]);
   }
 
   @throwIfDetached
   override async waitForNavigation(
     options: WaitForOptions = {}
   ): Promise<BidiHTTPResponse | null> {
-    const {
-      waitUntil = 'load',
-      timeout: ms = this.#timeoutSettings.navigationTimeout(),
-    } = options;
+    const {timeout: ms = this.timeoutSettings.navigationTimeout()} = options;
 
-    const [waitUntilEvent, networkIdle] = getBiDiLifecycleEvent(waitUntil);
-
-    const navigation$ = merge(
-      forkJoin([
-        fromEmitterEvent(
-          this.#context,
-          Bidi.ChromiumBidi.BrowsingContext.EventNames.NavigationStarted
-        ).pipe(first()),
-        fromEmitterEvent(this.#context, waitUntilEvent).pipe(first()),
-      ]),
-      fromEmitterEvent(
-        this.#context,
-        Bidi.ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated
+    return await firstValueFrom(
+      combineLatest([
+        fromEmitterEvent(this.browsingContext, 'navigation').pipe(
+          switchMap(({navigation}) => {
+            return this.#waitForLoad$(options).pipe(
+              raceWith(fromEmitterEvent(navigation, 'fragment')),
+              map(() => {
+                return navigation;
+              })
+            );
+          })
+        ),
+        this.#waitForNetworkIdle$(options),
+      ]).pipe(
+        map(([navigation]) => {
+          const request = navigation.request;
+          if (!request) {
+            return null;
+          }
+          const httpRequest = requests.get(request)!;
+          const lastRedirect = httpRequest.redirectChain().at(-1);
+          return (
+            lastRedirect !== undefined ? lastRedirect : httpRequest
+          ).response();
+        }),
+        raceWith(
+          timeout(ms),
+          fromEmitterEvent(this.browsingContext, 'closed').pipe(
+            map(() => {
+              throw new TargetCloseError('Frame detached.');
+            })
+          )
+        )
       )
-    ).pipe(
-      map(result => {
-        if (Array.isArray(result)) {
-          return {result: result[1]};
-        }
-        return {result};
-      })
     );
-
-    const result$ = zip(
-      navigation$,
-      ...(networkIdle !== null
-        ? [
-            this.#page.waitForNetworkIdle$({
-              timeout: ms,
-              concurrency: networkIdle === 'networkidle2' ? 2 : 0,
-              idleTime: NETWORK_IDLE_TIME,
-            }),
-          ]
-        : [])
-    ).pipe(
-      map(([{result}]) => {
-        return result;
-      }),
-      raceWith(timeout(ms), from(this.#abortDeferred.valueOrThrow()))
-    );
-
-    const result = await firstValueFrom(result$);
-    return this.#page.getNavigationResponse(result.navigation);
   }
 
   override waitForDevicePrompt(): never {
@@ -264,18 +328,7 @@ export class BidiFrame extends Frame {
   }
 
   override get detached(): boolean {
-    return this.#disposed;
-  }
-
-  [disposeSymbol](): void {
-    if (this.#disposed) {
-      return;
-    }
-    this.#disposed = true;
-    this.#abortDeferred.reject(new Error('Frame detached'));
-    this.#context.dispose();
-    this.sandboxes[MAIN_SANDBOX][disposeSymbol]();
-    this.sandboxes[PUPPETEER_SANDBOX][disposeSymbol]();
+    return this.browsingContext.closed;
   }
 
   #exposedFunctions = new Map<string, ExposeableFunction<never[], unknown>>();
@@ -310,4 +363,115 @@ export class BidiFrame extends Frame {
 
     return super.waitForSelector(selector, options);
   }
+
+  async createCDPSession(): Promise<CDPSession> {
+    const {sessionId} = await this.client.send('Target.attachToTarget', {
+      targetId: this._id,
+      flatten: true,
+    });
+    return new BidiCdpSession(this, sessionId);
+  }
+
+  @throwIfDetached
+  #waitForLoad$(options: WaitForOptions = {}): Observable<void> {
+    let {waitUntil = 'load'} = options;
+    const {timeout: ms = this.timeoutSettings.navigationTimeout()} = options;
+
+    if (!Array.isArray(waitUntil)) {
+      waitUntil = [waitUntil];
+    }
+
+    const events = new Set<'load' | 'DOMContentLoaded'>();
+    for (const lifecycleEvent of waitUntil) {
+      switch (lifecycleEvent) {
+        case 'load': {
+          events.add('load');
+          break;
+        }
+        case 'domcontentloaded': {
+          events.add('DOMContentLoaded');
+          break;
+        }
+      }
+    }
+    if (events.size === 0) {
+      return of(undefined);
+    }
+
+    return combineLatest(
+      [...events].map(event => {
+        return fromEmitterEvent(this.browsingContext, event);
+      })
+    ).pipe(
+      map(() => {}),
+      first(),
+      raceWith(
+        timeout(ms),
+        fromEmitterEvent(this.browsingContext, 'closed').pipe(
+          map(() => {
+            throw new Error('Frame detached.');
+          })
+        )
+      )
+    );
+  }
+
+  @throwIfDetached
+  #waitForNetworkIdle$(options: WaitForOptions = {}): Observable<void> {
+    let {waitUntil = 'load'} = options;
+    if (!Array.isArray(waitUntil)) {
+      waitUntil = [waitUntil];
+    }
+
+    let concurrency = Infinity;
+    for (const event of waitUntil) {
+      switch (event) {
+        case 'networkidle0': {
+          concurrency = Math.min(0, concurrency);
+          break;
+        }
+        case 'networkidle2': {
+          concurrency = Math.min(2, concurrency);
+          break;
+        }
+      }
+    }
+    if (concurrency === Infinity) {
+      return of(undefined);
+    }
+
+    return this.page().waitForNetworkIdle$({
+      idleTime: 500,
+      timeout: options.timeout ?? this.timeoutSettings.timeout(),
+      concurrency,
+    });
+  }
+}
+
+function isConsoleLogEntry(
+  event: Bidi.Log.Entry
+): event is Bidi.Log.ConsoleLogEntry {
+  return event.type === 'console';
+}
+
+function isJavaScriptLogEntry(
+  event: Bidi.Log.Entry
+): event is Bidi.Log.JavascriptLogEntry {
+  return event.type === 'javascript';
+}
+
+function getStackTraceLocations(
+  stackTrace?: Bidi.Script.StackTrace
+): ConsoleMessageLocation[] {
+  const stackTraceLocations: ConsoleMessageLocation[] = [];
+  if (stackTrace) {
+    for (const callFrame of stackTrace.callFrames) {
+      stackTraceLocations.push({
+        url: callFrame.url,
+        lineNumber: callFrame.lineNumber,
+        columnNumber: callFrame.columnNumber,
+      });
+    }
+  }
+  return stackTraceLocations;
 }

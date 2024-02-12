@@ -7,11 +7,10 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type Protocol from 'devtools-protocol';
 
 import type {Frame} from '../api/Frame.js';
-import {
-  HTTPResponse as HTTPResponse,
-  type RemoteAddress,
-} from '../api/HTTPResponse.js';
+import {HTTPResponse, type RemoteAddress} from '../api/HTTPResponse.js';
+import {PageEvent} from '../api/Page.js';
 import {UnsupportedOperation} from '../common/Errors.js';
+import {invokeAtMostOnceForArguments} from '../util/decorators.js';
 
 import type {BidiHTTPRequest} from './HTTPRequest.js';
 
@@ -19,62 +18,62 @@ import type {BidiHTTPRequest} from './HTTPRequest.js';
  * @internal
  */
 export class BidiHTTPResponse extends HTTPResponse {
-  #request: BidiHTTPRequest;
-  #remoteAddress: RemoteAddress;
-  #status: number;
-  #statusText: string;
-  #url: string;
-  #fromCache: boolean;
-  #headers: Record<string, string> = {};
-  #timings: Record<string, string> | null;
+  static from(
+    data: Bidi.Network.ResponseData,
+    request: BidiHTTPRequest
+  ): BidiHTTPResponse {
+    const response = new BidiHTTPResponse(data, request);
+    response.#initialize();
+    return response;
+  }
 
-  constructor(
-    request: BidiHTTPRequest,
-    {response}: Bidi.Network.ResponseCompletedParameters
+  #data: Bidi.Network.ResponseData;
+  #request: BidiHTTPRequest;
+
+  private constructor(
+    data: Bidi.Network.ResponseData,
+    request: BidiHTTPRequest
   ) {
     super();
+    this.#data = data;
     this.#request = request;
+  }
 
-    this.#remoteAddress = {
+  #initialize() {
+    this.#request.frame()?.page().emit(PageEvent.Response, this);
+  }
+
+  @invokeAtMostOnceForArguments
+  override remoteAddress(): RemoteAddress {
+    return {
       ip: '',
       port: -1,
     };
-
-    this.#url = response.url;
-    this.#fromCache = response.fromCache;
-    this.#status = response.status;
-    this.#statusText = response.statusText;
-    // TODO: File and issue with BiDi spec
-    this.#timings = null;
-
-    // TODO: Removed once the Firefox implementation is compliant with https://w3c.github.io/webdriver-bidi/#get-the-response-data.
-    for (const header of response.headers || []) {
-      // TODO: How to handle Binary Headers
-      // https://w3c.github.io/webdriver-bidi/#type-network-Header
-      if (header.value.type === 'string') {
-        this.#headers[header.name.toLowerCase()] = header.value.value;
-      }
-    }
-  }
-
-  override remoteAddress(): RemoteAddress {
-    return this.#remoteAddress;
   }
 
   override url(): string {
-    return this.#url;
+    return this.#data.url;
   }
 
   override status(): number {
-    return this.#status;
+    return this.#data.status;
   }
 
   override statusText(): string {
-    return this.#statusText;
+    return this.#data.statusText;
   }
 
   override headers(): Record<string, string> {
-    return this.#headers;
+    const headers: Record<string, string> = {};
+    // TODO: Remove once the Firefox implementation is compliant with https://w3c.github.io/webdriver-bidi/#get-the-response-data.
+    for (const header of this.#data.headers || []) {
+      // TODO: How to handle Binary Headers
+      // https://w3c.github.io/webdriver-bidi/#type-network-Header
+      if (header.value.type === 'string') {
+        headers[header.name.toLowerCase()] = header.value.value;
+      }
+    }
+    return headers;
   }
 
   override request(): BidiHTTPRequest {
@@ -82,11 +81,12 @@ export class BidiHTTPResponse extends HTTPResponse {
   }
 
   override fromCache(): boolean {
-    return this.#fromCache;
+    return this.#data.fromCache;
   }
 
   override timing(): Protocol.Network.ResourceTiming | null {
-    return this.#timings as any;
+    // TODO: File and issue with BiDi spec
+    throw new UnsupportedOperation();
   }
 
   override frame(): Frame | null {

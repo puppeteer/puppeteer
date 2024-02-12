@@ -4,57 +4,19 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {CDPSession} from '../api/CDPSession.js';
-import type {Page} from '../api/Page.js';
 import {Target, TargetType} from '../api/Target.js';
 import {UnsupportedOperation} from '../common/Errors.js';
+import type {CDPSession} from '../puppeteer-core.js';
 
 import type {BidiBrowser} from './Browser.js';
 import type {BidiBrowserContext} from './BrowserContext.js';
-import type {BrowsingContext} from './BrowsingContext.js';
-import {BidiCdpSession} from './CDPSession.js';
+import type {BidiFrame} from './Frame.js';
 import {BidiPage} from './Page.js';
 
 /**
  * @internal
  */
-export abstract class BidiTarget extends Target {
-  protected _browserContext: BidiBrowserContext;
-
-  constructor(browserContext: BidiBrowserContext) {
-    super();
-    this._browserContext = browserContext;
-  }
-
-  _setBrowserContext(browserContext: BidiBrowserContext): void {
-    this._browserContext = browserContext;
-  }
-
-  override asPage(): Promise<Page> {
-    throw new UnsupportedOperation();
-  }
-
-  override browser(): BidiBrowser {
-    return this._browserContext.browser();
-  }
-
-  override browserContext(): BidiBrowserContext {
-    return this._browserContext;
-  }
-
-  override opener(): never {
-    throw new UnsupportedOperation();
-  }
-
-  override createCDPSession(): Promise<CDPSession> {
-    throw new UnsupportedOperation();
-  }
-}
-
-/**
- * @internal
- */
-export class BiDiBrowserTarget extends Target {
+export class BidiBrowserTarget extends Target {
   #browser: BidiBrowser;
 
   constructor(browser: BidiBrowser) {
@@ -62,91 +24,109 @@ export class BiDiBrowserTarget extends Target {
     this.#browser = browser;
   }
 
+  override asPage(): Promise<BidiPage> {
+    throw new UnsupportedOperation();
+  }
   override url(): string {
     return '';
   }
-
-  override type(): TargetType {
-    return TargetType.BROWSER;
-  }
-
-  override asPage(): Promise<Page> {
-    throw new UnsupportedOperation();
-  }
-
-  override browser(): BidiBrowser {
-    return this.#browser;
-  }
-
-  override browserContext(): BidiBrowserContext {
-    return this.#browser.defaultBrowserContext();
-  }
-
-  override opener(): never {
-    throw new UnsupportedOperation();
-  }
-
   override createCDPSession(): Promise<CDPSession> {
     throw new UnsupportedOperation();
   }
-}
-
-/**
- * @internal
- */
-export class BiDiBrowsingContextTarget extends BidiTarget {
-  protected _browsingContext: BrowsingContext;
-
-  constructor(
-    browserContext: BidiBrowserContext,
-    browsingContext: BrowsingContext
-  ) {
-    super(browserContext);
-
-    this._browsingContext = browsingContext;
-  }
-
-  override url(): string {
-    return this._browsingContext.url;
-  }
-
-  override async createCDPSession(): Promise<CDPSession> {
-    const {sessionId} = await this._browsingContext.cdpSession.send(
-      'Target.attachToTarget',
-      {
-        targetId: this._browsingContext.id,
-        flatten: true,
-      }
-    );
-    return new BidiCdpSession(this._browsingContext, sessionId);
-  }
-
   override type(): TargetType {
-    return TargetType.PAGE;
+    return TargetType.BROWSER;
+  }
+  override browser(): BidiBrowser {
+    return this.#browser;
+  }
+  override browserContext(): BidiBrowserContext {
+    return this.#browser.defaultBrowserContext();
+  }
+  override opener(): Target | undefined {
+    throw new UnsupportedOperation();
   }
 }
 
 /**
  * @internal
  */
-export class BiDiPageTarget extends BiDiBrowsingContextTarget {
+export class BidiPageTarget extends Target {
   #page: BidiPage;
 
-  constructor(
-    browserContext: BidiBrowserContext,
-    browsingContext: BrowsingContext
-  ) {
-    super(browserContext, browsingContext);
-
-    this.#page = new BidiPage(browsingContext, browserContext);
+  constructor(page: BidiPage) {
+    super();
+    this.#page = page;
   }
 
   override async page(): Promise<BidiPage> {
     return this.#page;
   }
+  override async asPage(): Promise<BidiPage> {
+    return BidiPage.from(
+      this.browserContext(),
+      this.#page.mainFrame().browsingContext
+    );
+  }
+  override url(): string {
+    return this.#page.url();
+  }
+  override createCDPSession(): Promise<CDPSession> {
+    return this.#page.createCDPSession();
+  }
+  override type(): TargetType {
+    return TargetType.PAGE;
+  }
+  override browser(): BidiBrowser {
+    return this.browserContext().browser();
+  }
+  override browserContext(): BidiBrowserContext {
+    return this.#page.browserContext();
+  }
+  override opener(): Target | undefined {
+    throw new UnsupportedOperation();
+  }
+}
 
-  override _setBrowserContext(browserContext: BidiBrowserContext): void {
-    super._setBrowserContext(browserContext);
-    this.#page._setBrowserContext(browserContext);
+/**
+ * @internal
+ */
+export class BidiFrameTarget extends Target {
+  #frame: BidiFrame;
+  #page: BidiPage | undefined;
+
+  constructor(frame: BidiFrame) {
+    super();
+    this.#frame = frame;
+  }
+
+  override async page(): Promise<BidiPage> {
+    if (this.#page === undefined) {
+      this.#page = BidiPage.from(
+        this.browserContext(),
+        this.#frame.browsingContext
+      );
+    }
+    return this.#page;
+  }
+  override async asPage(): Promise<BidiPage> {
+    return BidiPage.from(this.browserContext(), this.#frame.browsingContext);
+  }
+  override url(): string {
+    return this.#frame.url();
+  }
+  override createCDPSession(): Promise<CDPSession> {
+    return this.#frame.createCDPSession();
+  }
+  override type(): TargetType {
+    return TargetType.PAGE;
+  }
+  override browser(): BidiBrowser {
+    return this.browserContext().browser();
+  }
+  override browserContext(): BidiBrowserContext {
+    return this.#frame.page().browserContext();
+  }
+  override opener(): Target | undefined {
+    throw new UnsupportedOperation();
   }
 }

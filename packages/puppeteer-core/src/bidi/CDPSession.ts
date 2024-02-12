@@ -3,7 +3,6 @@
  * Copyright 2024 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-
 import type ProtocolMapping from 'devtools-protocol/types/protocol-mapping.js';
 
 import {CDPSession} from '../api/CDPSession.js';
@@ -11,44 +10,49 @@ import type {Connection as CdpConnection} from '../cdp/Connection.js';
 import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
 import {Deferred} from '../util/Deferred.js';
 
-import type {BrowsingContext} from './BrowsingContext.js';
-
-/**
- * @internal
- */
-
-export const cdpSessions = new Map<string, BidiCdpSession>();
+import type {BidiConnection} from './Connection.js';
+import type {BidiFrame} from './Frame.js';
 
 /**
  * @internal
  */
 export class BidiCdpSession extends CDPSession {
-  #context: BrowsingContext;
-  #sessionId = Deferred.create<string>();
-  #detached = false;
+  static sessions = new Map<string, BidiCdpSession>();
 
-  constructor(context: BrowsingContext, sessionId?: string) {
+  #detached = false;
+  readonly #connection: BidiConnection | undefined = undefined;
+  readonly #sessionId = Deferred.create<string>();
+  readonly frame: BidiFrame;
+
+  constructor(frame: BidiFrame, sessionId?: string) {
     super();
-    this.#context = context;
-    if (!this.#context.supportsCdp()) {
+    this.frame = frame;
+    if (!this.frame.page().browser().cdpSupported) {
       return;
     }
+
+    const connection = this.frame.page().browser().connection;
+    this.#connection = connection;
+
     if (sessionId) {
       this.#sessionId.resolve(sessionId);
-      cdpSessions.set(sessionId, this);
+      BidiCdpSession.sessions.set(sessionId, this);
     } else {
-      context.connection
-        .send('cdp.getSession', {
-          context: context.id,
-        })
-        .then(session => {
+      (async () => {
+        try {
+          const session = await connection.send('cdp.getSession', {
+            context: frame._id,
+          });
           this.#sessionId.resolve(session.result.session!);
-          cdpSessions.set(session.result.session!, this);
-        })
-        .catch(err => {
-          this.#sessionId.reject(err);
-        });
+          BidiCdpSession.sessions.set(session.result.session!, this);
+        } catch (error) {
+          this.#sessionId.reject(error as Error);
+        }
+      })();
     }
+
+    // SAFETY: We never throw #sessionId.
+    BidiCdpSession.sessions.set(this.#sessionId.value() as string, this);
   }
 
   override connection(): CdpConnection | undefined {
@@ -59,7 +63,7 @@ export class BidiCdpSession extends CDPSession {
     method: T,
     params?: ProtocolMapping.Commands[T]['paramsType'][0]
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
-    if (!this.#context.supportsCdp()) {
+    if (this.#connection === undefined) {
       throw new UnsupportedOperation(
         'CDP support is required for this feature. The current browser does not support CDP.'
       );
@@ -70,7 +74,7 @@ export class BidiCdpSession extends CDPSession {
       );
     }
     const session = await this.#sessionId.valueOrThrow();
-    const {result} = await this.#context.connection.send('cdp.sendCommand', {
+    const {result} = await this.#connection.send('cdp.sendCommand', {
       method: method,
       params: params,
       session,
@@ -79,17 +83,21 @@ export class BidiCdpSession extends CDPSession {
   }
 
   override async detach(): Promise<void> {
-    cdpSessions.delete(this.id());
-    if (!this.#detached && this.#context.supportsCdp()) {
-      await this.#context.cdpSession.send('Target.detachFromTarget', {
+    if (this.#connection === undefined || this.#detached) {
+      return;
+    }
+    try {
+      await this.frame.client.send('Target.detachFromTarget', {
         sessionId: this.id(),
       });
+    } finally {
+      BidiCdpSession.sessions.delete(this.id());
+      this.#detached = true;
     }
-    this.#detached = true;
   }
 
   override id(): string {
-    const val = this.#sessionId.value();
-    return val instanceof Error || val === undefined ? '' : val;
+    const value = this.#sessionId.value();
+    return typeof value === 'string' ? value : '';
   }
 }
