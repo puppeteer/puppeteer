@@ -1068,7 +1068,7 @@
     "testIdPattern": "[page.spec] Page Page.waitForNetworkIdle should work with aborted requests",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[pdf.spec] Page.pdf *",
