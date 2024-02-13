@@ -105,6 +105,17 @@ export class Session
     browserEmitter.once('closed', ({reason}) => {
       this.dispose(reason);
     });
+
+    // TODO: Firefox-specific
+    const seen = new WeakSet();
+    this.on('browsingContext.fragmentNavigated', info => {
+      if (seen.has(info)) {
+        return;
+      }
+      seen.add(info);
+      this.emit('browsingContext.navigationStarted', info);
+      this.emit('browsingContext.fragmentNavigated', info);
+    });
   }
 
   // keep-sorted start block=yes

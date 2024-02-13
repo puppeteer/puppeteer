@@ -3100,7 +3100,7 @@
     "testIdPattern": "[navigation.spec] navigation Page.goBack should work with HistoryAPI",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
+    "expectations": ["PASS"],
     "comment": "browsingContext.navigationStarted event not emitted for fragment navigation"
   },
   {
@@ -3243,7 +3243,7 @@
     "testIdPattern": "[navigation.spec] navigation Page.goto should work with anchor navigation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
+    "expectations": ["PASS"],
     "comment": "browsingContext.navigationStarted event not emitted for fragment navigation"
   },
   {
@@ -3286,7 +3286,7 @@
     "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with DOM history.back()/history.forward()",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
+    "expectations": ["PASS"],
     "comment": "browsingContext.navigationStarted event not emitted for fragment navigation"
   },
   {
@@ -3299,7 +3299,7 @@
     "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with history.pushState()",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
+    "expectations": ["PASS"],
     "comment": "browsingContext.navigationStarted event not emitted for fragment navigation"
   },
   {
