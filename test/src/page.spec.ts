@@ -496,6 +496,21 @@ describe('Page', function () {
         'JSHandle@window',
       ]);
     });
+    it('should return remote objects', async () => {
+      const {page} = await getTestState();
+
+      const logPromise = waitEvent<ConsoleMessage>(page, 'console');
+      await page.evaluate(() => {
+        (globalThis as any).test = 1;
+        console.log(1, 2, 3, globalThis);
+      });
+      const log = await logPromise;
+      expect(log.text()).toBe('1 2 3 JSHandle@object');
+      expect(log.args()).toHaveLength(4);
+      expect(await (await log.args()[3]!.getProperty('test')).jsonValue()).toBe(
+        1
+      );
+    });
     it('should trigger correct Log', async () => {
       const {page, server, isChrome} = await getTestState();
 

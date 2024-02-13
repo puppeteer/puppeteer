@@ -994,6 +994,18 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[page.spec] Page Page.Events.Console should return remote objects",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.Events.Console should return remote objects",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.Events.Console should trigger correct Log",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
