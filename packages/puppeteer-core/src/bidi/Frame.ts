@@ -309,7 +309,19 @@ export class BidiFrame extends Frame {
         fromEmitterEvent(this.browsingContext, 'navigation').pipe(
           switchMap(({navigation}) => {
             return this.#waitForLoad$(options).pipe(
-              raceWith(fromEmitterEvent(navigation, 'fragment')),
+              raceWith(
+                fromEmitterEvent(navigation, 'fragment'),
+                fromEmitterEvent(navigation, 'failed').pipe(
+                  map(({url}) => {
+                    throw new Error(`Navigation failed: ${url}`);
+                  })
+                ),
+                fromEmitterEvent(navigation, 'aborted').pipe(
+                  map(({url}) => {
+                    throw new Error(`Navigation aborted: ${url}`);
+                  })
+                )
+              ),
               map(() => {
                 return navigation;
               })
