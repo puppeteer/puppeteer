@@ -12,6 +12,7 @@ import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 
 import type {AddPreloadScriptOptions} from './Browser.js';
 import {Navigation} from './Navigation.js';
+import type {DedicatedWorkerRealm} from './Realm.js';
 import {WindowRealm} from './Realm.js';
 import {Request} from './Request.js';
 import type {UserContext} from './UserContext.js';
@@ -103,6 +104,11 @@ export class BrowsingContext extends EventEmitter<{
   DOMContentLoaded: void;
   /** Emitted whenever the frame emits `load` */
   load: void;
+  /** Emitted whenever a dedicated worker is created */
+  worker: {
+    /** The realm for the new dedicated worker */
+    realm: DedicatedWorkerRealm;
+  };
 }> {
   static from(
     userContext: UserContext,
@@ -143,7 +149,7 @@ export class BrowsingContext extends EventEmitter<{
     this.userContext = context;
     // keep-sorted end
 
-    this.defaultRealm = WindowRealm.from(this);
+    this.defaultRealm = this.#createWindowRealm();
   }
 
   #initialize() {
@@ -283,7 +289,12 @@ export class BrowsingContext extends EventEmitter<{
     return this.closed;
   }
   get realms(): Iterable<WindowRealm> {
-    return this.#realms.values();
+    // eslint-disable-next-line @typescript-eslint/no-this-alias -- Required
+    const self = this;
+    return (function* () {
+      yield self.defaultRealm;
+      yield* self.#realms.values();
+    })();
   }
   get top(): BrowsingContext {
     let context = this as BrowsingContext;
@@ -296,6 +307,14 @@ export class BrowsingContext extends EventEmitter<{
     return this.#url;
   }
   // keep-sorted end
+
+  #createWindowRealm(sandbox?: string) {
+    const realm = WindowRealm.from(this, sandbox);
+    realm.on('worker', realm => {
+      this.emit('worker', {realm});
+    });
+    return realm;
+  }
 
   @inertIfDisposed
   private dispose(reason?: string): void {
@@ -444,7 +463,7 @@ export class BrowsingContext extends EventEmitter<{
     return context.#reason!;
   })
   createWindowRealm(sandbox: string): WindowRealm {
-    return WindowRealm.from(this, sandbox);
+    return this.#createWindowRealm(sandbox);
   }
 
   @throwIfDisposed<BrowsingContext>(context => {
