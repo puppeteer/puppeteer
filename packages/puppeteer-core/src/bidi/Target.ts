@@ -12,6 +12,7 @@ import type {BidiBrowser} from './Browser.js';
 import type {BidiBrowserContext} from './BrowserContext.js';
 import type {BidiFrame} from './Frame.js';
 import {BidiPage} from './Page.js';
+import type {BidiWebWorker} from './WebWorker.js';
 
 /**
  * @internal
@@ -125,6 +126,43 @@ export class BidiFrameTarget extends Target {
   }
   override browserContext(): BidiBrowserContext {
     return this.#frame.page().browserContext();
+  }
+  override opener(): Target | undefined {
+    throw new UnsupportedOperation();
+  }
+}
+
+/**
+ * @internal
+ */
+export class BidiWorkerTarget extends Target {
+  #worker: BidiWebWorker;
+
+  constructor(worker: BidiWebWorker) {
+    super();
+    this.#worker = worker;
+  }
+
+  override async page(): Promise<BidiPage> {
+    throw new UnsupportedOperation();
+  }
+  override async asPage(): Promise<BidiPage> {
+    throw new UnsupportedOperation();
+  }
+  override url(): string {
+    return this.#worker.url();
+  }
+  override createCDPSession(): Promise<CDPSession> {
+    throw new UnsupportedOperation();
+  }
+  override type(): TargetType {
+    return TargetType.WORKER;
+  }
+  override browser(): BidiBrowser {
+    return this.browserContext().browser();
+  }
+  override browserContext(): BidiBrowserContext {
+    return this.#worker.frame.page().browserContext();
   }
   override opener(): Target | undefined {
     throw new UnsupportedOperation();

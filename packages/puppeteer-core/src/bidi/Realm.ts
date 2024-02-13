@@ -22,7 +22,11 @@ import {
 import type PuppeteerUtil from '../injected/injected.js';
 import {stringifyFunction} from '../util/Function.js';
 
-import type {Realm as BidiRealmCore} from './core/Realm.js';
+import type {
+  Realm as BidiRealmCore,
+  DedicatedWorkerRealm,
+  SharedWorkerRealm,
+} from './core/Realm.js';
 import type {WindowRealm} from './core/Realm.js';
 import {BidiDeserializer} from './Deserializer.js';
 import {BidiElementHandle} from './ElementHandle.js';
@@ -30,9 +34,13 @@ import type {BidiFrame} from './Frame.js';
 import {BidiJSHandle} from './JSHandle.js';
 import {BidiSerializer} from './Serializer.js';
 import {createEvaluationError} from './util.js';
+import type {BidiWebWorker} from './WebWorker.js';
 
+/**
+ * @internal
+ */
 export abstract class BidiRealm extends Realm {
-  realm: BidiRealmCore;
+  readonly realm: BidiRealmCore;
 
   constructor(realm: BidiRealmCore, timeoutSettings: TimeoutSettings) {
     super(timeoutSettings);
@@ -250,6 +258,9 @@ export abstract class BidiRealm extends Realm {
   }
 }
 
+/**
+ * @internal
+ */
 export class BidiFrameRealm extends BidiRealm {
   static from(realm: WindowRealm, frame: BidiFrame): BidiFrameRealm {
     const frameRealm = new BidiFrameRealm(realm, frame);
@@ -295,5 +306,38 @@ export class BidiFrameRealm extends BidiRealm {
       },
       this
     );
+  }
+}
+
+/**
+ * @internal
+ */
+export class BidiWorkerRealm extends BidiRealm {
+  static from(
+    realm: DedicatedWorkerRealm | SharedWorkerRealm,
+    worker: BidiWebWorker
+  ): BidiWorkerRealm {
+    const workerRealm = new BidiWorkerRealm(realm, worker);
+    workerRealm.initialize();
+    return workerRealm;
+  }
+  declare readonly realm: DedicatedWorkerRealm | SharedWorkerRealm;
+
+  readonly #worker: BidiWebWorker;
+
+  private constructor(
+    realm: DedicatedWorkerRealm | SharedWorkerRealm,
+    frame: BidiWebWorker
+  ) {
+    super(realm, frame.timeoutSettings);
+    this.#worker = frame;
+  }
+
+  override get environment(): BidiWebWorker {
+    return this.#worker;
+  }
+
+  override async adoptBackendNode(): Promise<JSHandle<Node>> {
+    throw new Error('Cannot adopt DOM nodes into a worker.');
   }
 }

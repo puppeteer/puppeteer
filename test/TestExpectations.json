@@ -327,7 +327,7 @@
     "testIdPattern": "[worker.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[accessibility.spec] *",
@@ -4613,36 +4613,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[worker.spec] Workers should report console logs",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[worker.spec] Workers should report console logs",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[worker.spec] Workers should report errors",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[worker.spec] Workers should report errors",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[worker.spec] Workers should report errors",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
     "testIdPattern": "[CDPSession.spec] Target.createCDPSession should send events",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome", "headless"],
@@ -4775,5 +4745,11 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["FAIL", "PASS"]
+  },
+  {
+    "testIdPattern": "[worker.spec] Workers can be closed",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
   }
 ]

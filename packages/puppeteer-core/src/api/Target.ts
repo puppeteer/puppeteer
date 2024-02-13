@@ -18,6 +18,7 @@ export enum TargetType {
   BACKGROUND_PAGE = 'background_page',
   SERVICE_WORKER = 'service_worker',
   SHARED_WORKER = 'shared_worker',
+  WORKER = 'worker',
   BROWSER = 'browser',
   WEBVIEW = 'webview',
   OTHER = 'other',

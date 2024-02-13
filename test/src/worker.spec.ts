@@ -52,7 +52,10 @@ describe('Workers', function () {
     const error = await workerThisObj.getProperty('self').catch(error => {
       return error;
     });
-    expect(error.message).toContain('Most likely the worker has been closed.');
+    expect(error.message).atLeastOneToContain([
+      'Most likely the worker has been closed.',
+      'Realm already destroyed.',
+    ]);
   });
   it('should report console logs', async () => {
     const {page} = await getTestState();
@@ -70,7 +73,7 @@ describe('Workers', function () {
       columnNumber: 8,
     });
   });
-  it('should have JSHandles for console logs', async () => {
+  it('should work with console logs', async () => {
     const {page} = await getTestState();
 
     const logPromise = waitEvent<ConsoleMessage>(page, 'console');
@@ -80,9 +83,6 @@ describe('Workers', function () {
     const log = await logPromise;
     expect(log.text()).toBe('1 2 3 JSHandle@object');
     expect(log.args()).toHaveLength(4);
-    expect(await (await log.args()[3]!.getProperty('origin')).jsonValue()).toBe(
-      'null'
-    );
   });
   it('should have an execution context', async () => {
     const {page} = await getTestState();

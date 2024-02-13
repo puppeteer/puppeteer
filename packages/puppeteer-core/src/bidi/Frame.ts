@@ -47,6 +47,7 @@ import type {BidiPage} from './Page.js';
 import type {BidiRealm} from './Realm.js';
 import {BidiFrameRealm} from './Realm.js';
 import {rewriteNavigationError} from './util.js';
+import {BidiWebWorker} from './WebWorker.js';
 
 export class BidiFrame extends Frame {
   static from(
@@ -142,6 +143,7 @@ export class BidiFrame extends Frame {
         return;
       }
       if (isConsoleLogEntry(entry)) {
+        console.log(entry.args);
         const args = entry.args.map(arg => {
           return this.mainRealm().createHandle(arg);
         });
@@ -193,6 +195,14 @@ export class BidiFrame extends Frame {
           `Unhandled LogEntry with type "${entry.type}", text "${entry.text}" and level "${entry.level}"`
         );
       }
+    });
+
+    this.browsingContext.on('worker', ({realm}) => {
+      const worker = BidiWebWorker.from(this, realm);
+      realm.on('destroyed', () => {
+        this.page().trustedEmitter.emit(PageEvent.WorkerDestroyed, worker);
+      });
+      this.page().trustedEmitter.emit(PageEvent.WorkerCreated, worker);
     });
   }
 

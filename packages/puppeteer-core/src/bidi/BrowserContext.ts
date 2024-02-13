@@ -21,7 +21,9 @@ import type {BrowsingContext} from './core/BrowsingContext.js';
 import {UserContext} from './core/UserContext.js';
 import type {BidiFrame} from './Frame.js';
 import {BidiPage} from './Page.js';
+import {BidiWorkerTarget} from './Target.js';
 import {BidiFrameTarget, BidiPageTarget} from './Target.js';
+import type {BidiWebWorker} from './WebWorker.js';
 
 /**
  * @internal
@@ -54,7 +56,10 @@ export class BidiBrowserContext extends BrowserContext {
   readonly #pages = new WeakMap<BrowsingContext, BidiPage>();
   readonly #targets = new Map<
     BidiPage,
-    [BidiPageTarget, Map<BidiFrame, BidiFrameTarget>]
+    [
+      BidiPageTarget,
+      Map<BidiFrame | BidiWebWorker, BidiFrameTarget | BidiWorkerTarget>,
+    ]
   >();
 
   private constructor(
@@ -91,17 +96,18 @@ export class BidiBrowserContext extends BrowserContext {
 
     // -- Target stuff starts here --
     const pageTarget = new BidiPageTarget(page);
-    const frameTargets = new Map();
-    this.#targets.set(page, [pageTarget, frameTargets]);
+    const pageTargets = new Map();
+    this.#targets.set(page, [pageTarget, pageTargets]);
+
     page.trustedEmitter.on(PageEvent.FrameAttached, frame => {
       const bidiFrame = frame as BidiFrame;
       const target = new BidiFrameTarget(bidiFrame);
-      frameTargets.set(bidiFrame, target);
+      pageTargets.set(bidiFrame, target);
       this.trustedEmitter.emit(BrowserContextEvent.TargetCreated, target);
     });
     page.trustedEmitter.on(PageEvent.FrameNavigated, frame => {
       const bidiFrame = frame as BidiFrame;
-      const target = frameTargets.get(bidiFrame);
+      const target = pageTargets.get(bidiFrame);
       // If there is no target, then this is the page's frame.
       if (target === undefined) {
         this.trustedEmitter.emit(BrowserContextEvent.TargetChanged, pageTarget);
@@ -111,13 +117,30 @@ export class BidiBrowserContext extends BrowserContext {
     });
     page.trustedEmitter.on(PageEvent.FrameDetached, frame => {
       const bidiFrame = frame as BidiFrame;
-      const target = frameTargets.get(bidiFrame);
+      const target = pageTargets.get(bidiFrame);
       if (target === undefined) {
         return;
       }
-      frameTargets.delete(bidiFrame);
+      pageTargets.delete(bidiFrame);
       this.trustedEmitter.emit(BrowserContextEvent.TargetDestroyed, target);
     });
+
+    page.trustedEmitter.on(PageEvent.WorkerCreated, worker => {
+      const bidiWorker = worker as BidiWebWorker;
+      const target = new BidiWorkerTarget(bidiWorker);
+      pageTargets.set(bidiWorker, target);
+      this.trustedEmitter.emit(BrowserContextEvent.TargetCreated, target);
+    });
+    page.trustedEmitter.on(PageEvent.WorkerDestroyed, worker => {
+      const bidiWorker = worker as BidiWebWorker;
+      const target = pageTargets.get(bidiWorker);
+      if (target === undefined) {
+        return;
+      }
+      pageTargets.delete(worker);
+      this.trustedEmitter.emit(BrowserContextEvent.TargetDestroyed, target);
+    });
+
     page.trustedEmitter.on(PageEvent.Close, () => {
       this.#targets.delete(page);
       this.trustedEmitter.emit(BrowserContextEvent.TargetDestroyed, pageTarget);
