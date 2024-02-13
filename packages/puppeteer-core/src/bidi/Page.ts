@@ -48,6 +48,7 @@ import type {BidiHTTPResponse} from './HTTPResponse.js';
 import {BidiKeyboard, BidiMouse, BidiTouchscreen} from './Input.js';
 import type {BidiJSHandle} from './JSHandle.js';
 import {rewriteNavigationError} from './util.js';
+import type {BidiWebWorker} from './WebWorker.js';
 
 /**
  * @internal
@@ -68,6 +69,7 @@ export class BidiPage extends Page {
   readonly #browserContext: BidiBrowserContext;
   readonly #frame: BidiFrame;
   #viewport: Viewport | null = null;
+  readonly #workers = new Set<BidiWebWorker>();
 
   readonly keyboard: BidiKeyboard;
   readonly mouse: BidiMouse;
@@ -102,6 +104,13 @@ export class BidiPage extends Page {
     this.#frame.browsingContext.on('closed', () => {
       this.trustedEmitter.emit(PageEvent.Close, undefined);
       this.trustedEmitter.removeAllListeners();
+    });
+
+    this.trustedEmitter.on(PageEvent.WorkerCreated, worker => {
+      this.#workers.add(worker as BidiWebWorker);
+    });
+    this.trustedEmitter.on(PageEvent.WorkerDestroyed, worker => {
+      this.#workers.delete(worker as BidiWebWorker);
     });
   }
 
@@ -475,8 +484,8 @@ export class BidiPage extends Page {
     throw new UnsupportedOperation();
   }
 
-  override workers(): never {
-    throw new UnsupportedOperation();
+  override workers(): BidiWebWorker[] {
+    return [...this.#workers];
   }
 
   override setRequestInterception(): never {
