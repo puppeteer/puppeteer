@@ -1235,6 +1235,20 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[target.spec] Target should close a service worker",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "not supported"
+  },
+  {
+    "testIdPattern": "[target.spec] Target should close a shared worker",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "not supported"
+  },
+  {
     "testIdPattern": "[target.spec] Target should contain browser target",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -4291,6 +4305,20 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[target.spec] Target should close a service worker",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"],
+    "comment": "not supported"
+  },
+  {
+    "testIdPattern": "[target.spec] Target should close a shared worker",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"],
+    "comment": "not supported"
+  },
+  {
     "testIdPattern": "[target.spec] Target should contain browser target",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
@@ -4734,6 +4762,13 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox", "headless"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[target.spec] Target should close a service worker",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
+    "expectations": ["SKIP"],
+    "comment": "For some reason service_workers do not close in chrome-headless-shell"
   },
   {
     "testIdPattern": "[worker.spec] Workers Page.workers",

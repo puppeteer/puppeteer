@@ -106,4 +106,17 @@ describe('Workers', function () {
     const errorLog = await errorPromise;
     expect(errorLog.message).toContain('this is my error');
   });
+
+  it('can be closed', async () => {
+    const {page, server} = await getTestState();
+
+    await Promise.all([
+      waitEvent(page, 'workercreated'),
+      page.goto(server.PREFIX + '/worker/worker.html'),
+    ]);
+    const worker = page.workers()[0]!;
+    expect(worker?.url()).toContain('worker.js');
+
+    await Promise.all([waitEvent(page, 'workerdestroyed'), worker?.close()]);
+  });
 });

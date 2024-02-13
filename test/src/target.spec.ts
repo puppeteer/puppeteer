@@ -179,6 +179,29 @@ describe('Target', function () {
       })
     ).toBe('[object ServiceWorkerGlobalScope]');
   });
+
+  it('should close a service worker', async () => {
+    const {page, server, context} = await getTestState();
+
+    await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
+
+    const target = await context.waitForTarget(
+      target => {
+        return target.type() === 'service_worker';
+      },
+      {timeout: 3000}
+    );
+    const worker = (await target.worker())!;
+
+    const onceDestroyed = new Promise(resolve => {
+      context.once('targetdestroyed', event => {
+        resolve(event);
+      });
+    });
+    await worker.close();
+    expect(await onceDestroyed).toBe(target);
+  });
+
   it('should create a worker from a shared worker', async () => {
     const {page, server, context} = await getTestState();
 
@@ -199,6 +222,31 @@ describe('Target', function () {
       })
     ).toBe('[object SharedWorkerGlobalScope]');
   });
+
+  it('should close a shared worker', async () => {
+    const {page, server, context} = await getTestState();
+
+    await page.goto(server.EMPTY_PAGE);
+    await page.evaluate(() => {
+      new SharedWorker('data:text/javascript,console.log("hi2")');
+    });
+    const target = await context.waitForTarget(
+      target => {
+        return target.type() === 'shared_worker';
+      },
+      {timeout: 3000}
+    );
+    const worker = (await target.worker())!;
+
+    const onceDestroyed = new Promise(resolve => {
+      context.once('targetdestroyed', event => {
+        resolve(event);
+      });
+    });
+    await worker.close();
+    expect(await onceDestroyed).toBe(target);
+  });
+
   it('should report when a target url changes', async () => {
     const {page, server, context} = await getTestState();
 
