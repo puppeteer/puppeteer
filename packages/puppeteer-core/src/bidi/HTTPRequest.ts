@@ -60,7 +60,7 @@ export class BidiHTTPRequest extends HTTPRequest {
       this.#response = BidiHTTPResponse.from(data, this);
     });
 
-    this.#frame?.page().emit(PageEvent.Request, this);
+    this.#frame?.page().trustedEmitter.emit(PageEvent.Request, this);
   }
 
   override url(): string {

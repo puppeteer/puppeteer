@@ -8,6 +8,7 @@ import type {ChildProcess} from 'child_process';
 
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
+import type {BrowserEvents} from '../api/Browser.js';
 import {
   Browser,
   BrowserEvent,
@@ -19,8 +20,10 @@ import {BrowserContextEvent} from '../api/BrowserContext.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import {UnsupportedOperation} from '../common/Errors.js';
+import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
+import {bubble} from '../util/decorators.js';
 
 import {BidiBrowserContext} from './BrowserContext.js';
 import type {BidiConnection} from './Connection.js';
@@ -85,6 +88,9 @@ export class BidiBrowser extends Browser {
     return browser;
   }
 
+  @bubble()
+  accessor #trustedEmitter = new EventEmitter<BrowserEvents>();
+
   #process?: ChildProcess;
   #closeCallback?: BrowserCloseCallback;
   #browserCore: BrowserCore;
@@ -107,7 +113,8 @@ export class BidiBrowser extends Browser {
     }
 
     this.#browserCore.once('disconnected', () => {
-      this.emit(BrowserEvent.Disconnected, undefined);
+      this.#trustedEmitter.emit(BrowserEvent.Disconnected, undefined);
+      this.#trustedEmitter.removeAllListeners();
     });
     this.#process?.once('close', () => {
       this.#browserCore.dispose('Browser process exited.', true);
@@ -136,15 +143,24 @@ export class BidiBrowser extends Browser {
     });
     this.#browserContexts.set(userContext, browserContext);
 
-    browserContext.on(BrowserContextEvent.TargetCreated, target => {
-      this.emit(BrowserEvent.TargetCreated, target);
-    });
-    browserContext.on(BrowserContextEvent.TargetChanged, target => {
-      this.emit(BrowserEvent.TargetChanged, target);
-    });
-    browserContext.on(BrowserContextEvent.TargetDestroyed, target => {
-      this.emit(BrowserEvent.TargetDestroyed, target);
-    });
+    browserContext.trustedEmitter.on(
+      BrowserContextEvent.TargetCreated,
+      target => {
+        this.#trustedEmitter.emit(BrowserEvent.TargetCreated, target);
+      }
+    );
+    browserContext.trustedEmitter.on(
+      BrowserContextEvent.TargetChanged,
+      target => {
+        this.#trustedEmitter.emit(BrowserEvent.TargetChanged, target);
+      }
+    );
+    browserContext.trustedEmitter.on(
+      BrowserContextEvent.TargetDestroyed,
+      target => {
+        this.#trustedEmitter.emit(BrowserEvent.TargetDestroyed, target);
+      }
+    );
 
     return browserContext;
   }
