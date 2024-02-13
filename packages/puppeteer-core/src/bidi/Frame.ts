@@ -143,7 +143,6 @@ export class BidiFrame extends Frame {
         return;
       }
       if (isConsoleLogEntry(entry)) {
-        console.log(entry.args);
         const args = entry.args.map(arg => {
           return this.mainRealm().createHandle(arg);
         });
