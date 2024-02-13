@@ -11,7 +11,7 @@ import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 
 import type {BrowsingContext} from './BrowsingContext.js';
-import type {SharedWorkerRealm} from './Realm.js';
+import {SharedWorkerRealm} from './Realm.js';
 import type {Session} from './Session.js';
 import {UserContext} from './UserContext.js';
 
@@ -57,6 +57,7 @@ export class Browser extends EventEmitter<{
   readonly #disposables = new DisposableStack();
   readonly #userContexts = new Map<string, UserContext>();
   readonly session: Session;
+  readonly #sharedWorkers = new Map<string, SharedWorkerRealm>();
   // keep-sorted end
 
   private constructor(session: Session) {
@@ -75,9 +76,13 @@ export class Browser extends EventEmitter<{
     });
 
     sessionEmitter.on('script.realmCreated', info => {
-      if (info.type === 'shared-worker') {
-        // TODO: Create a SharedWorkerRealm.
+      if (info.type !== 'shared-worker') {
+        return;
       }
+      this.#sharedWorkers.set(
+        info.realm,
+        SharedWorkerRealm.from(this, info.realm, info.origin)
+      );
     });
 
     await this.#syncUserContexts();
