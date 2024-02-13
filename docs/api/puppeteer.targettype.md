@@ -21,4 +21,3 @@ export declare enum TargetType
 | SERVICE_WORKER  | <code>&quot;service_worker&quot;</code>  |             |
 | SHARED_WORKER   | <code>&quot;shared_worker&quot;</code>   |             |
 | WEBVIEW         | <code>&quot;webview&quot;</code>         |             |
-| WORKER          | <code>&quot;worker&quot;</code>          |             |

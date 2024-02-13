@@ -156,7 +156,7 @@ export class BidiWorkerTarget extends Target {
     throw new UnsupportedOperation();
   }
   override type(): TargetType {
-    return TargetType.WORKER;
+    return TargetType.OTHER;
   }
   override browser(): BidiBrowser {
     return this.browserContext().browser();
