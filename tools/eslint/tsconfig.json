@@ -8,6 +8,6 @@
     "declaration": false,
     "declarationMap": false,
     "composite": false,
-    "removeComments": true,
-  },
+    "removeComments": true
+  }
 }
