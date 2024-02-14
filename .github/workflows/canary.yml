@@ -53,7 +53,7 @@ jobs:
         run: npm run build --workspace @puppeteer-test/test
       - name: Install Chrome Canary
         id: browser
-        run: node tools/download_chrome_bidi.mjs $HOME/.cache/puppeteer/chrome-canary
+        run: node tools/download_chrome_canary.mjs $HOME/.cache/puppeteer/chrome-canary
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
         run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
