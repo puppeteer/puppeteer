@@ -107,7 +107,7 @@ export class Session
     });
 
     // TODO: Currently, some implementations do not emit navigationStarted event
-    // for fragement navigations (as per spec) and some do. This could emits a
+    // for fragment navigations (as per spec) and some do. This could emits a
     // synthetic navigationStarted to work around this inconsistency.
     const seen = new WeakSet();
     this.on('browsingContext.fragmentNavigated', info => {
