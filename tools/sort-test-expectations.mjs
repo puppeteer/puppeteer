@@ -43,6 +43,10 @@ testExpectations.forEach(item => {
   item.parameters.sort();
   item.expectations.sort();
   item.platforms.sort();
+  // Delete comments for PASS expectations. They are likely outdated.
+  if (item.expectations.length === 1 && item.expectations[0] === 'PASS') {
+    delete item.comment;
+  }
 });
 
 if (process.argv.includes('--lint')) {

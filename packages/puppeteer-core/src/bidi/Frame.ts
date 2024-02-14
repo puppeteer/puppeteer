@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import type {Observable} from '../../third_party/rxjs/rxjs.js';
 import {
@@ -265,7 +265,14 @@ export class BidiFrame extends Frame {
   ): Promise<BidiHTTPResponse | null> {
     const [response] = await Promise.all([
       this.waitForNavigation(options),
-      this.browsingContext.navigate(url),
+      this.browsingContext.navigate(
+        url,
+        // Some implementations currently only report errors when the
+        // readiness=interactive. This also ensures that old frames have been
+        // removed.
+        // Related: https://bugzilla.mozilla.org/show_bug.cgi?id=1846601
+        Bidi.BrowsingContext.ReadinessState.Interactive
+      ),
     ]).catch(
       rewriteNavigationError(
         url,
