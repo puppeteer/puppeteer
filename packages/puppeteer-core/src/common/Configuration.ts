@@ -57,7 +57,7 @@ export interface Configuration {
    * @remarks
    * This must include the protocol and may even need a path prefix.
    *
-   * @defaultValue Either https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing or
+   * @defaultValue Either https://storage.googleapis.com/chrome-for-testing-public or
    * https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central,
    * depending on the product.
    */

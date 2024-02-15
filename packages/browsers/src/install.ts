@@ -74,7 +74,7 @@ export interface InstallOptions {
    *
    * @defaultValue Either
    *
-   * - https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing or
+   * - https://storage.googleapis.com/chrome-for-testing-public or
    * - https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central
    *
    */

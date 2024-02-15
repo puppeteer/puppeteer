@@ -25,7 +25,7 @@ function folder(platform: BrowserPlatform): string {
 export function resolveDownloadUrl(
   platform: BrowserPlatform,
   buildId: string,
-  baseUrl = 'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing'
+  baseUrl = 'https://storage.googleapis.com/chrome-for-testing-public'
 ): string {
   return `${baseUrl}/${resolveDownloadPath(platform, buildId).join('/')}`;
 }
