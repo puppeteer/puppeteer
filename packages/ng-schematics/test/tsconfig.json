@@ -3,8 +3,8 @@
   "compilerOptions": {
     "rootDir": "src/",
     "outDir": "build/",
-    "types": ["node"],
+    "types": ["node"]
   },
   "include": ["src/**/*"],
-  "references": [{"path": "../tsconfig.json"}],
+  "references": [{"path": "../tsconfig.json"}]
 }

@@ -69,7 +69,7 @@ export class Request extends EventEmitter<{
       if (
         event.context !== this.#browsingContext.id ||
         event.request.request !== this.id ||
-        this.#redirect !== undefined
+        event.redirectCount !== this.#event.redirectCount + 1
       ) {
         return;
       }
@@ -80,7 +80,8 @@ export class Request extends EventEmitter<{
     sessionEmitter.on('network.fetchError', event => {
       if (
         event.context !== this.#browsingContext.id ||
-        event.request.request !== this.id
+        event.request.request !== this.id ||
+        this.#event.redirectCount !== event.redirectCount
       ) {
         return;
       }
@@ -91,7 +92,8 @@ export class Request extends EventEmitter<{
     sessionEmitter.on('network.responseCompleted', event => {
       if (
         event.context !== this.#browsingContext.id ||
-        event.request.request !== this.id
+        event.request.request !== this.id ||
+        this.#event.redirectCount !== event.redirectCount
       ) {
         return;
       }

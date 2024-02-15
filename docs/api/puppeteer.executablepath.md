@@ -2,7 +2,7 @@
 sidebar_label: executablePath
 ---
 
-# executablePath variable
+# executablePath() function
 
 #### Signature:
 
@@ -13,3 +13,13 @@ executablePath: (
     | undefined
 ) => string;
 ```
+
+## Parameters
+
+| Parameter | Type                                                                                                                         | Description  |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| channel   | import("puppeteer-core/internal/puppeteer-core.js").[ChromeReleaseChannel](./puppeteer.chromereleasechannel.md) \| undefined | _(Optional)_ |
+
+**Returns:**
+
+string

@@ -358,6 +358,8 @@ export class CdpPage extends Page {
       const worker = new CdpWebWorker(
         session,
         session._target().url(),
+        session._target()._targetId,
+        session._target().type(),
         this.#addConsoleMessage.bind(this),
         this.#handleException.bind(this)
       );

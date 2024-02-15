@@ -408,9 +408,10 @@ describe('Evaluation specs', function () {
           return (error = error_);
         });
       expect(error).toBeTruthy();
-      expect(error.message).toContain(
-        'JSHandles can be evaluated only in the context they were created'
-      );
+      expect(error.message).atLeastOneToContain([
+        'JSHandles can be evaluated only in the context they were created',
+        "Trying to evaluate JSHandle from different frames. Usually this means you're using a handle from a page on a different page.",
+      ]);
     });
     it('should simulate a user gesture', async () => {
       const {page} = await getTestState();

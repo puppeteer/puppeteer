@@ -7,201 +7,111 @@
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type Protocol from 'devtools-protocol';
 
-import {
-  firstValueFrom,
-  from,
-  map,
-  raceWith,
-  zip,
-} from '../../third_party/rxjs/rxjs.js';
+import {firstValueFrom, from, raceWith} from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
 import type {WaitForOptions} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
+import type {
+  MediaFeature,
+  GeolocationOptions,
+  PageEvents,
+} from '../api/Page.js';
 import {
   Page,
   PageEvent,
-  type GeolocationOptions,
-  type MediaFeature,
   type NewDocumentScriptEvaluation,
   type ScreenshotOptions,
 } from '../api/Page.js';
 import {Accessibility} from '../cdp/Accessibility.js';
 import {Coverage} from '../cdp/Coverage.js';
-import {EmulationManager as CdpEmulationManager} from '../cdp/EmulationManager.js';
-import {FrameTree} from '../cdp/FrameTree.js';
+import {EmulationManager} from '../cdp/EmulationManager.js';
 import {Tracing} from '../cdp/Tracing.js';
-import type {ConsoleMessageType} from '../common/ConsoleMessage.js';
-import {
-  ConsoleMessage,
-  type ConsoleMessageLocation,
-} from '../common/ConsoleMessage.js';
-import type {Cookie, CookieSameSite, CookieParam} from '../common/Cookie.js';
-import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
-import type {Handler} from '../common/EventEmitter.js';
-import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
+import type {Cookie, CookieParam, CookieSameSite} from '../common/Cookie.js';
+import {UnsupportedOperation} from '../common/Errors.js';
+import {EventEmitter} from '../common/EventEmitter.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
 import type {Awaitable} from '../common/types.js';
-import {
-  debugError,
-  evaluationString,
-  NETWORK_IDLE_TIME,
-  parsePDFOptions,
-  timeout,
-  validateDialogType,
-} from '../common/util.js';
+import {evaluationString, parsePDFOptions, timeout} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
-import {Deferred} from '../util/Deferred.js';
-import {disposeSymbol} from '../util/disposable.js';
+import {bubble} from '../util/decorators.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {BidiBrowser} from './Browser.js';
 import type {BidiBrowserContext} from './BrowserContext.js';
-import {BrowsingContextEvent, type BrowsingContext} from './BrowsingContext.js';
-import {BidiCdpSession} from './CDPSession.js';
-import type {BidiConnection} from './Connection.js';
-import {BidiDeserializer} from './Deserializer.js';
-import {BidiDialog} from './Dialog.js';
+import type {BidiCdpSession} from './CDPSession.js';
+import type {BrowsingContext} from './core/BrowsingContext.js';
 import {BidiElementHandle} from './ElementHandle.js';
-import {EmulationManager} from './EmulationManager.js';
 import {BidiFrame} from './Frame.js';
-import type {BidiHTTPRequest} from './HTTPRequest.js';
 import type {BidiHTTPResponse} from './HTTPResponse.js';
 import {BidiKeyboard, BidiMouse, BidiTouchscreen} from './Input.js';
 import type {BidiJSHandle} from './JSHandle.js';
-import {getBiDiReadinessState, rewriteNavigationError} from './lifecycle.js';
-import {BidiNetworkManager} from './NetworkManager.js';
-import {createBidiHandle} from './Realm.js';
-import type {BiDiPageTarget} from './Target.js';
+import {rewriteNavigationError} from './util.js';
+import type {BidiWebWorker} from './WebWorker.js';
 
 /**
  * @internal
  */
 export class BidiPage extends Page {
-  #accessibility: Accessibility;
-  #connection: BidiConnection;
-  #frameTree = new FrameTree<BidiFrame>();
-  #networkManager: BidiNetworkManager;
-  #viewport: Viewport | null = null;
-  #closedDeferred = Deferred.create<never, TargetCloseError>();
-  #subscribedEvents = new Map<Bidi.Event['method'], Handler<any>>([
-    ['log.entryAdded', this.#onLogEntryAdded.bind(this)],
-    ['browsingContext.load', this.#onFrameLoaded.bind(this)],
-    [
-      'browsingContext.fragmentNavigated',
-      this.#onFrameFragmentNavigated.bind(this),
-    ],
-    [
-      'browsingContext.domContentLoaded',
-      this.#onFrameDOMContentLoaded.bind(this),
-    ],
-    ['browsingContext.userPromptOpened', this.#onDialog.bind(this)],
-  ]);
-  readonly #networkManagerEvents = [
-    [
-      NetworkManagerEvent.Request,
-      (request: BidiHTTPRequest) => {
-        this.emit(PageEvent.Request, request);
-      },
-    ],
-    [
-      NetworkManagerEvent.RequestServedFromCache,
-      (request: BidiHTTPRequest) => {
-        this.emit(PageEvent.RequestServedFromCache, request);
-      },
-    ],
-    [
-      NetworkManagerEvent.RequestFailed,
-      (request: BidiHTTPRequest) => {
-        this.emit(PageEvent.RequestFailed, request);
-      },
-    ],
-    [
-      NetworkManagerEvent.RequestFinished,
-      (request: BidiHTTPRequest) => {
-        this.emit(PageEvent.RequestFinished, request);
-      },
-    ],
-    [
-      NetworkManagerEvent.Response,
-      (response: BidiHTTPResponse) => {
-        this.emit(PageEvent.Response, response);
-      },
-    ],
-  ] as const;
-
-  readonly #browsingContextEvents = new Map<symbol, Handler<any>>([
-    [BrowsingContextEvent.Created, this.#onContextCreated.bind(this)],
-    [BrowsingContextEvent.Destroyed, this.#onContextDestroyed.bind(this)],
-  ]);
-  #tracing: Tracing;
-  #coverage: Coverage;
-  #cdpEmulationManager: CdpEmulationManager;
-  #emulationManager: EmulationManager;
-  #mouse: BidiMouse;
-  #touchscreen: BidiTouchscreen;
-  #keyboard: BidiKeyboard;
-  #browsingContext: BrowsingContext;
-  #browserContext: BidiBrowserContext;
-
-  _client(): CDPSession {
-    return this.mainFrame().context().cdpSession;
+  static from(
+    browserContext: BidiBrowserContext,
+    browsingContext: BrowsingContext
+  ): BidiPage {
+    const page = new BidiPage(browserContext, browsingContext);
+    page.#initialize();
+    return page;
   }
 
-  constructor(
-    browsingContext: BrowsingContext,
-    browserContext: BidiBrowserContext
+  @bubble()
+  accessor trustedEmitter = new EventEmitter<PageEvents>();
+
+  readonly #browserContext: BidiBrowserContext;
+  readonly #frame: BidiFrame;
+  #viewport: Viewport | null = null;
+  readonly #workers = new Set<BidiWebWorker>();
+
+  readonly keyboard: BidiKeyboard;
+  readonly mouse: BidiMouse;
+  readonly touchscreen: BidiTouchscreen;
+  readonly accessibility: Accessibility;
+  readonly tracing: Tracing;
+  readonly coverage: Coverage;
+  readonly #cdpEmulationManager: EmulationManager;
+
+  _client(): BidiCdpSession {
+    return this.#frame.client;
+  }
+
+  private constructor(
+    browserContext: BidiBrowserContext,
+    browsingContext: BrowsingContext
   ) {
     super();
-    this.#browsingContext = browsingContext;
     this.#browserContext = browserContext;
-    this.#connection = browsingContext.connection;
+    this.#frame = BidiFrame.from(this, browsingContext);
 
-    for (const [event, subscriber] of this.#browsingContextEvents) {
-      this.#browsingContext.on(event, subscriber);
-    }
-
-    this.#networkManager = new BidiNetworkManager(this.#connection, this);
-
-    for (const [event, subscriber] of this.#subscribedEvents) {
-      this.#connection.on(event, subscriber);
-    }
-
-    for (const [event, subscriber] of this.#networkManagerEvents) {
-      // TODO: remove any
-      this.#networkManager.on(event, subscriber as any);
-    }
-
-    const frame = new BidiFrame(
-      this,
-      this.#browsingContext,
-      this._timeoutSettings,
-      this.#browsingContext.parent
-    );
-    this.#frameTree.addFrame(frame);
-    this.emit(PageEvent.FrameAttached, frame);
-
-    // TODO: https://github.com/w3c/webdriver-bidi/issues/443
-    this.#accessibility = new Accessibility(
-      this.mainFrame().context().cdpSession
-    );
-    this.#tracing = new Tracing(this.mainFrame().context().cdpSession);
-    this.#coverage = new Coverage(this.mainFrame().context().cdpSession);
-    this.#cdpEmulationManager = new CdpEmulationManager(
-      this.mainFrame().context().cdpSession
-    );
-    this.#emulationManager = new EmulationManager(browsingContext);
-    this.#mouse = new BidiMouse(this.mainFrame().context());
-    this.#touchscreen = new BidiTouchscreen(this.mainFrame().context());
-    this.#keyboard = new BidiKeyboard(this);
+    this.#cdpEmulationManager = new EmulationManager(this.#frame.client);
+    this.accessibility = new Accessibility(this.#frame.client);
+    this.tracing = new Tracing(this.#frame.client);
+    this.coverage = new Coverage(this.#frame.client);
+    this.keyboard = new BidiKeyboard(this);
+    this.mouse = new BidiMouse(this);
+    this.touchscreen = new BidiTouchscreen(this);
   }
 
-  /**
-   * @internal
-   */
-  get connection(): BidiConnection {
-    return this.#connection;
+  #initialize() {
+    this.#frame.browsingContext.on('closed', () => {
+      this.trustedEmitter.emit(PageEvent.Close, undefined);
+      this.trustedEmitter.removeAllListeners();
+    });
+
+    this.trustedEmitter.on(PageEvent.WorkerCreated, worker => {
+      this.#workers.add(worker as BidiWebWorker);
+    });
+    this.trustedEmitter.on(PageEvent.WorkerDestroyed, worker => {
+      this.#workers.delete(worker as BidiWebWorker);
+    });
   }
 
   override async setUserAgent(
@@ -228,44 +138,13 @@ export class BidiPage extends Page {
       prototypeHandle.id,
       'Prototype JSHandle must not be referencing primitive value'
     );
-    const response = await this.mainFrame().client.send(
-      'Runtime.queryObjects',
-      {
-        prototypeObjectId: prototypeHandle.id,
-      }
-    );
-    return createBidiHandle(this.mainFrame().mainRealm(), {
+    const response = await this.#frame.client.send('Runtime.queryObjects', {
+      prototypeObjectId: prototypeHandle.id,
+    });
+    return this.#frame.mainRealm().createHandle({
       type: 'array',
       handle: response.objects.objectId,
     }) as BidiJSHandle<Prototype[]>;
-  }
-
-  _setBrowserContext(browserContext: BidiBrowserContext): void {
-    this.#browserContext = browserContext;
-  }
-
-  override get accessibility(): Accessibility {
-    return this.#accessibility;
-  }
-
-  override get tracing(): Tracing {
-    return this.#tracing;
-  }
-
-  override get coverage(): Coverage {
-    return this.#coverage;
-  }
-
-  override get mouse(): BidiMouse {
-    return this.#mouse;
-  }
-
-  override get touchscreen(): BidiTouchscreen {
-    return this.#touchscreen;
-  }
-
-  override get keyboard(): BidiKeyboard {
-    return this.#keyboard;
   }
 
   override browser(): BidiBrowser {
@@ -277,14 +156,9 @@ export class BidiPage extends Page {
   }
 
   override mainFrame(): BidiFrame {
-    const mainFrame = this.#frameTree.getMainFrame();
-    assert(mainFrame, 'Requesting main frame too early!');
-    return mainFrame;
+    return this.#frame;
   }
 
-  /**
-   * @internal
-   */
   async focusedFrame(): Promise<BidiFrame> {
     using frame = await this.mainFrame()
       .isolatedRealm()
@@ -304,216 +178,38 @@ export class BidiPage extends Page {
   }
 
   override frames(): BidiFrame[] {
-    return Array.from(this.#frameTree.frames());
-  }
-
-  frame(frameId?: string): BidiFrame | null {
-    return this.#frameTree.getById(frameId ?? '') || null;
-  }
-
-  childFrames(frameId: string): BidiFrame[] {
-    return this.#frameTree.childFrames(frameId);
-  }
-
-  #onFrameLoaded(info: Bidi.BrowsingContext.NavigationInfo): void {
-    const frame = this.frame(info.context);
-    if (frame && this.mainFrame() === frame) {
-      this.emit(PageEvent.Load, undefined);
+    const frames = [this.#frame];
+    for (const frame of frames) {
+      frames.push(...frame.childFrames());
     }
-  }
-
-  #onFrameFragmentNavigated(info: Bidi.BrowsingContext.NavigationInfo): void {
-    const frame = this.frame(info.context);
-    if (frame) {
-      this.emit(PageEvent.FrameNavigated, frame);
-    }
-  }
-
-  #onFrameDOMContentLoaded(info: Bidi.BrowsingContext.NavigationInfo): void {
-    const frame = this.frame(info.context);
-    if (frame) {
-      frame._hasStartedLoading = true;
-      if (this.mainFrame() === frame) {
-        this.emit(PageEvent.DOMContentLoaded, undefined);
-      }
-      this.emit(PageEvent.FrameNavigated, frame);
-    }
-  }
-
-  #onContextCreated(context: BrowsingContext): void {
-    if (
-      !this.frame(context.id) &&
-      (this.frame(context.parent ?? '') || !this.#frameTree.getMainFrame())
-    ) {
-      const frame = new BidiFrame(
-        this,
-        context,
-        this._timeoutSettings,
-        context.parent
-      );
-      this.#frameTree.addFrame(frame);
-      if (frame !== this.mainFrame()) {
-        this.emit(PageEvent.FrameAttached, frame);
-      }
-    }
-  }
-
-  #onContextDestroyed(context: BrowsingContext): void {
-    const frame = this.frame(context.id);
-
-    if (frame) {
-      if (frame === this.mainFrame()) {
-        this.emit(PageEvent.Close, undefined);
-      }
-      this.#removeFramesRecursively(frame);
-    }
-  }
-
-  #removeFramesRecursively(frame: BidiFrame): void {
-    for (const child of frame.childFrames()) {
-      this.#removeFramesRecursively(child);
-    }
-    frame[disposeSymbol]();
-    this.#networkManager.clearMapAfterFrameDispose(frame);
-    this.#frameTree.removeFrame(frame);
-    this.emit(PageEvent.FrameDetached, frame);
-  }
-
-  #onLogEntryAdded(event: Bidi.Log.Entry): void {
-    const frame = this.frame(event.source.context);
-    if (!frame) {
-      return;
-    }
-    if (isConsoleLogEntry(event)) {
-      const args = event.args.map(arg => {
-        return createBidiHandle(frame.mainRealm(), arg);
-      });
-
-      const text = args
-        .reduce((value, arg) => {
-          const parsedValue = arg.isPrimitiveValue
-            ? BidiDeserializer.deserialize(arg.remoteValue())
-            : arg.toString();
-          return `${value} ${parsedValue}`;
-        }, '')
-        .slice(1);
-
-      this.emit(
-        PageEvent.Console,
-        new ConsoleMessage(
-          event.method as ConsoleMessageType,
-          text,
-          args,
-          getStackTraceLocations(event.stackTrace)
-        )
-      );
-    } else if (isJavaScriptLogEntry(event)) {
-      const error = new Error(event.text ?? '');
-
-      const messageHeight = error.message.split('\n').length;
-      const messageLines = error.stack!.split('\n').splice(0, messageHeight);
-
-      const stackLines = [];
-      if (event.stackTrace) {
-        for (const frame of event.stackTrace.callFrames) {
-          // Note we need to add `1` because the values are 0-indexed.
-          stackLines.push(
-            `    at ${frame.functionName || '<anonymous>'} (${frame.url}:${
-              frame.lineNumber + 1
-            }:${frame.columnNumber + 1})`
-          );
-          if (stackLines.length >= Error.stackTraceLimit) {
-            break;
-          }
-        }
-      }
-
-      error.stack = [...messageLines, ...stackLines].join('\n');
-      this.emit(PageEvent.PageError, error);
-    } else {
-      debugError(
-        `Unhandled LogEntry with type "${event.type}", text "${event.text}" and level "${event.level}"`
-      );
-    }
-  }
-
-  #onDialog(event: Bidi.BrowsingContext.UserPromptOpenedParameters): void {
-    const frame = this.frame(event.context);
-    if (!frame) {
-      return;
-    }
-    const type = validateDialogType(event.type);
-
-    const dialog = new BidiDialog(
-      frame.context(),
-      type,
-      event.message,
-      event.defaultValue
-    );
-    this.emit(PageEvent.Dialog, dialog);
-  }
-
-  getNavigationResponse(id?: string | null): BidiHTTPResponse | null {
-    return this.#networkManager.getNavigationResponse(id);
+    return frames;
   }
 
   override isClosed(): boolean {
-    return this.#closedDeferred.finished();
+    return this.#frame.detached;
   }
 
   override async close(options?: {runBeforeUnload?: boolean}): Promise<void> {
-    if (this.#closedDeferred.finished()) {
+    try {
+      await this.#frame.browsingContext.close(options?.runBeforeUnload);
+    } catch {
       return;
     }
-
-    this.#closedDeferred.reject(new TargetCloseError('Page closed!'));
-    this.#networkManager.dispose();
-
-    await this.#connection.send('browsingContext.close', {
-      context: this.mainFrame()._id,
-      promptUnload: options?.runBeforeUnload ?? false,
-    });
-
-    this.emit(PageEvent.Close, undefined);
-    this.removeAllListeners();
   }
 
   override async reload(
     options: WaitForOptions = {}
   ): Promise<BidiHTTPResponse | null> {
-    const {
-      waitUntil = 'load',
-      timeout: ms = this._timeoutSettings.navigationTimeout(),
-    } = options;
-
-    const [readiness, networkIdle] = getBiDiReadinessState(waitUntil);
-
-    const result$ = zip(
-      from(
-        this.#connection.send('browsingContext.reload', {
-          context: this.mainFrame()._id,
-          wait: readiness,
-        })
-      ),
-      ...(networkIdle !== null
-        ? [
-            this.waitForNetworkIdle$({
-              timeout: ms,
-              concurrency: networkIdle === 'networkidle2' ? 2 : 0,
-              idleTime: NETWORK_IDLE_TIME,
-            }),
-          ]
-        : [])
-    ).pipe(
-      map(([{result}]) => {
-        return result;
-      }),
-      raceWith(timeout(ms), from(this.#closedDeferred.valueOrThrow())),
-      rewriteNavigationError(this.url(), ms)
+    const [response] = await Promise.all([
+      this.#frame.waitForNavigation(options),
+      this.#frame.browsingContext.reload(),
+    ]).catch(
+      rewriteNavigationError(
+        this.url(),
+        options.timeout ?? this._timeoutSettings.navigationTimeout()
+      )
     );
-
-    const result = await firstValueFrom(result$);
-    return this.getNavigationResponse(result.navigation);
+    return response;
   }
 
   override setDefaultNavigationTimeout(timeout: number): void {
@@ -572,8 +268,19 @@ export class BidiPage extends Page {
   }
 
   override async setViewport(viewport: Viewport): Promise<void> {
-    if (!this.#browsingContext.supportsCdp()) {
-      await this.#emulationManager.emulateViewport(viewport);
+    if (!this.browser().cdpSupported) {
+      await this.#frame.browsingContext.setViewport({
+        viewport:
+          viewport.width && viewport.height
+            ? {
+                width: viewport.width,
+                height: viewport.height,
+              }
+            : null,
+        devicePixelRatio: viewport.deviceScaleFactor
+          ? viewport.deviceScaleFactor
+          : null,
+      });
       this.#viewport = viewport;
       return;
     }
@@ -603,10 +310,9 @@ export class BidiPage extends Page {
       preferCSSPageSize,
     } = parsePDFOptions(options, 'cm');
     const pageRanges = ranges ? ranges.split(', ') : [];
-    const {result} = await firstValueFrom(
+    const data = await firstValueFrom(
       from(
-        this.#connection.send('browsingContext.print', {
-          context: this.mainFrame()._id,
+        this.#frame.browsingContext.print({
           background,
           margin,
           orientation: landscape ? 'landscape' : 'portrait',
@@ -621,7 +327,7 @@ export class BidiPage extends Page {
       ).pipe(raceWith(timeout(ms)))
     );
 
-    const buffer = Buffer.from(result.data, 'base64');
+    const buffer = Buffer.from(data, 'base64');
 
     await this._maybeWriteBufferToFile(path, buffer);
 
@@ -687,10 +393,7 @@ export class BidiPage extends Page {
       }
     }
 
-    const {
-      result: {data},
-    } = await this.#connection.send('browsingContext.captureScreenshot', {
-      context: this.mainFrame()._id,
+    const data = await this.#frame.browsingContext.captureScreenshot({
       origin: captureBeyondViewport ? 'document' : 'viewport',
       format: {
         type: `image/${type}`,
@@ -702,19 +405,11 @@ export class BidiPage extends Page {
   }
 
   override async createCDPSession(): Promise<CDPSession> {
-    const {sessionId} = await this.mainFrame()
-      .context()
-      .cdpSession.send('Target.attachToTarget', {
-        targetId: this.mainFrame()._id,
-        flatten: true,
-      });
-    return new BidiCdpSession(this.mainFrame().context(), sessionId);
+    return await this.#frame.createCDPSession();
   }
 
   override async bringToFront(): Promise<void> {
-    await this.#connection.send('browsingContext.activate', {
-      context: this.mainFrame()._id,
-    });
+    await this.#frame.browsingContext.activate();
   }
 
   override async evaluateOnNewDocument<
@@ -725,20 +420,16 @@ export class BidiPage extends Page {
     ...args: Params
   ): Promise<NewDocumentScriptEvaluation> {
     const expression = evaluationExpression(pageFunction, ...args);
-    const {result} = await this.#connection.send('script.addPreloadScript', {
-      functionDeclaration: expression,
-      contexts: [this.mainFrame()._id],
-    });
+    const script =
+      await this.#frame.browsingContext.addPreloadScript(expression);
 
-    return {identifier: result.script};
+    return {identifier: script};
   }
 
   override async removeScriptToEvaluateOnNewDocument(
     id: string
   ): Promise<void> {
-    await this.#connection.send('script.removePreloadScript', {
-      script: id,
-    });
+    await this.#frame.browsingContext.removePreloadScript(id);
   }
 
   override async exposeFunction<Args extends unknown[], Ret>(
@@ -769,13 +460,8 @@ export class BidiPage extends Page {
       return new URL(url);
     });
 
-    const bidiCookies = await this.#connection.send('storage.getCookies', {
-      partition: {
-        type: 'context',
-        context: this.mainFrame()._id,
-      },
-    });
-    return bidiCookies.result.cookies
+    const cookies = await this.#frame.browsingContext.getCookies();
+    return cookies
       .map(cookie => {
         return bidiToPuppeteerCookie(cookie);
       })
@@ -790,7 +476,7 @@ export class BidiPage extends Page {
     throw new UnsupportedOperation();
   }
 
-  override target(): BiDiPageTarget {
+  override target(): never {
     throw new UnsupportedOperation();
   }
 
@@ -798,8 +484,8 @@ export class BidiPage extends Page {
     throw new UnsupportedOperation();
   }
 
-  override workers(): never {
-    throw new UnsupportedOperation();
+  override workers(): BidiWebWorker[] {
+    return [...this.#workers];
   }
 
   override setRequestInterception(): never {
@@ -876,22 +562,14 @@ export class BidiPage extends Page {
       // TODO: delete cookie before setting them.
       // await this.deleteCookie(bidiCookie);
 
-      const partition: Bidi.Storage.PartitionDescriptor =
-        cookie.partitionKey !== undefined
-          ? {
-              type: 'storageKey',
-              sourceOrigin: cookie.partitionKey,
-              userContext: this.#browserContext.id,
-            }
-          : {
-              type: 'context',
-              context: this.mainFrame()._id,
-            };
-
-      await this.#connection.send('storage.setCookie', {
-        cookie: bidiCookie,
-        partition,
-      });
+      if (cookie.partitionKey !== undefined) {
+        await this.browserContext().userContext.setCookie(
+          bidiCookie,
+          cookie.partitionKey
+        );
+      } else {
+        await this.#frame.browsingContext.setCookie(bidiCookie);
+      }
     }
   }
 
@@ -925,7 +603,7 @@ export class BidiPage extends Page {
   override async goForward(
     options: WaitForOptions = {}
   ): Promise<HTTPResponse | null> {
-    return await this.#go(+1, options);
+    return await this.#go(1, options);
   }
 
   async #go(
@@ -933,56 +611,25 @@ export class BidiPage extends Page {
     options: WaitForOptions
   ): Promise<HTTPResponse | null> {
     try {
-      const result = await Promise.all([
+      const [response] = await Promise.all([
         this.waitForNavigation(options),
-        this.#connection.send('browsingContext.traverseHistory', {
-          delta,
-          context: this.mainFrame()._id,
-        }),
+        this.#frame.browsingContext.traverseHistory(delta),
       ]);
-      return result[0];
-    } catch (err) {
+      return response;
+    } catch (error) {
       // TODO: waitForNavigation should be cancelled if an error happens.
-      if (isErrorLike(err)) {
-        if (err.message.includes('no such history entry')) {
+      if (isErrorLike(error)) {
+        if (error.message.includes('no such history entry')) {
           return null;
         }
       }
-      throw err;
+      throw error;
     }
   }
 
   override waitForDevicePrompt(): never {
     throw new UnsupportedOperation();
   }
-}
-
-function isConsoleLogEntry(
-  event: Bidi.Log.Entry
-): event is Bidi.Log.ConsoleLogEntry {
-  return event.type === 'console';
-}
-
-function isJavaScriptLogEntry(
-  event: Bidi.Log.Entry
-): event is Bidi.Log.JavascriptLogEntry {
-  return event.type === 'javascript';
-}
-
-function getStackTraceLocations(
-  stackTrace?: Bidi.Script.StackTrace
-): ConsoleMessageLocation[] {
-  const stackTraceLocations: ConsoleMessageLocation[] = [];
-  if (stackTrace) {
-    for (const callFrame of stackTrace.callFrames) {
-      stackTraceLocations.push({
-        url: callFrame.url,
-        lineNumber: callFrame.lineNumber,
-        columnNumber: callFrame.columnNumber,
-      });
-    }
-  }
-  return stackTraceLocations;
 }
 
 function evaluationExpression(fun: Function | string, ...args: unknown[]) {

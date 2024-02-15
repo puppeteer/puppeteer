@@ -8,7 +8,11 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {debugError} from '../../common/util.js';
-import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
+import {
+  bubble,
+  inertIfDisposed,
+  throwIfDisposed,
+} from '../../util/decorators.js';
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 
 import {Browser} from './Browser.js';
@@ -81,7 +85,8 @@ export class Session
   readonly #disposables = new DisposableStack();
   readonly #info: Bidi.Session.NewResult;
   readonly browser!: Browser;
-  readonly connection: Connection;
+  @bubble()
+  accessor connection: Connection;
   // keep-sorted end
 
   private constructor(connection: Connection, info: Bidi.Session.NewResult) {
@@ -93,14 +98,25 @@ export class Session
   }
 
   async #initialize(): Promise<void> {
-    this.connection.pipeTo(this);
-
     // SAFETY: We use `any` to allow assignment of the readonly property.
     (this as any).browser = await Browser.from(this);
 
     const browserEmitter = this.#disposables.use(this.browser);
     browserEmitter.once('closed', ({reason}) => {
       this.dispose(reason);
+    });
+
+    // TODO: Currently, some implementations do not emit navigationStarted event
+    // for fragment navigations (as per spec) and some do. This could emits a
+    // synthetic navigationStarted to work around this inconsistency.
+    const seen = new WeakSet();
+    this.on('browsingContext.fragmentNavigated', info => {
+      if (seen.has(info)) {
+        return;
+      }
+      seen.add(info);
+      this.emit('browsingContext.navigationStarted', info);
+      this.emit('browsingContext.fragmentNavigated', info);
     });
   }
 
@@ -123,10 +139,6 @@ export class Session
   private dispose(reason?: string): void {
     this.#reason = reason;
     this[disposeSymbol]();
-  }
-
-  pipeTo<Events extends BidiEvents>(emitter: EventEmitter<Events>): void {
-    this.connection.pipeTo(emitter);
   }
 
   /**

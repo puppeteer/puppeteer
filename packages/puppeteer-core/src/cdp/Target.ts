@@ -290,6 +290,8 @@ export class WorkerTarget extends CdpTarget {
         return new CdpWebWorker(
           client,
           this._getTargetInfo().url,
+          this._targetId,
+          this.type(),
           () => {} /* consoleAPICalled */,
           () => {} /* exceptionThrown */
         );

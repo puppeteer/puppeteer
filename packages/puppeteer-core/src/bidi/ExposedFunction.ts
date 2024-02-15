@@ -12,7 +12,7 @@ import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {interpolateFunction, stringifyFunction} from '../util/Function.js';
 
-import type {BidiConnection} from './Connection.js';
+import type {Connection} from './core/Connection.js';
 import {BidiDeserializer} from './Deserializer.js';
 import type {BidiFrame} from './Frame.js';
 import {BidiSerializer} from './Serializer.js';
@@ -207,8 +207,8 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
     }
   };
 
-  get #connection(): BidiConnection {
-    return this.#frame.context().connection;
+  get #connection(): Connection {
+    return this.#frame.page().browser().connection;
   }
 
   get #channelArguments() {

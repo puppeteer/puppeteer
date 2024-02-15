@@ -6,6 +6,7 @@
 
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
+import {ProtocolError, TimeoutError} from '../common/Errors.js';
 import {PuppeteerURL} from '../common/util.js';
 
 import {BidiDeserializer} from './Deserializer.js';
@@ -55,4 +56,21 @@ export function createEvaluationError(
 
   error.stack = [details.text, ...stackLines].join('\n');
   return error;
+}
+
+/**
+ * @internal
+ */
+export function rewriteNavigationError(
+  message: string,
+  ms: number
+): (error: unknown) => never {
+  return error => {
+    if (error instanceof ProtocolError) {
+      error.message += ` at ${message}`;
+    } else if (error instanceof TimeoutError) {
+      error.message = `Navigation timeout of ${ms} ms exceeded`;
+    }
+    throw error;
+  };
 }
