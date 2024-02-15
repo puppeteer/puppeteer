@@ -18,6 +18,7 @@ export {
   first,
   firstValueFrom,
   forkJoin,
+  delayWhen,
   from,
   fromEvent,
   identity,

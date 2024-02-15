@@ -9,6 +9,9 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type {Observable} from '../../third_party/rxjs/rxjs.js';
 import {
   combineLatest,
+  defer,
+  delayWhen,
+  filter,
   first,
   firstValueFrom,
   map,
@@ -258,6 +261,22 @@ export class BidiFrame extends Frame {
     });
   }
 
+  #detached$() {
+    return defer(() => {
+      if (this.detached) {
+        return of(this as Frame);
+      }
+      return fromEmitterEvent(
+        this.page().trustedEmitter,
+        PageEvent.FrameDetached
+      ).pipe(
+        filter(detachedFrame => {
+          return detachedFrame === this;
+        })
+      );
+    });
+  }
+
   @throwIfDetached
   override async goto(
     url: string,
@@ -265,12 +284,12 @@ export class BidiFrame extends Frame {
   ): Promise<BidiHTTPResponse | null> {
     const [response] = await Promise.all([
       this.waitForNavigation(options),
+      // Some implementations currently only report errors when the
+      // readiness=interactive.
+      //
+      // Related: https://bugzilla.mozilla.org/show_bug.cgi?id=1846601
       this.browsingContext.navigate(
         url,
-        // Some implementations currently only report errors when the
-        // readiness=interactive. This also ensures that old frames have been
-        // removed.
-        // Related: https://bugzilla.mozilla.org/show_bug.cgi?id=1846601
         Bidi.BrowsingContext.ReadinessState.Interactive
       ),
     ]).catch(
@@ -304,11 +323,20 @@ export class BidiFrame extends Frame {
   ): Promise<BidiHTTPResponse | null> {
     const {timeout: ms = this.timeoutSettings.navigationTimeout()} = options;
 
+    const frames = this.childFrames().map(frame => {
+      return frame.#detached$();
+    });
     return await firstValueFrom(
       combineLatest([
         fromEmitterEvent(this.browsingContext, 'navigation').pipe(
           switchMap(({navigation}) => {
             return this.#waitForLoad$(options).pipe(
+              delayWhen(() => {
+                if (frames.length === 0) {
+                  return of(undefined);
+                }
+                return combineLatest(frames);
+              }),
               raceWith(
                 fromEmitterEvent(navigation, 'fragment'),
                 fromEmitterEvent(navigation, 'failed').pipe(
@@ -343,7 +371,7 @@ export class BidiFrame extends Frame {
         }),
         raceWith(
           timeout(ms),
-          fromEmitterEvent(this.browsingContext, 'closed').pipe(
+          this.#detached$().pipe(
             map(() => {
               throw new TargetCloseError('Frame detached.');
             })
@@ -437,7 +465,7 @@ export class BidiFrame extends Frame {
       first(),
       raceWith(
         timeout(ms),
-        fromEmitterEvent(this.browsingContext, 'closed').pipe(
+        this.#detached$().pipe(
           map(() => {
             throw new Error('Frame detached.');
           })
