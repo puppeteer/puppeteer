@@ -2242,13 +2242,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[navigation.spec] navigation Page.goto should work when page calls history API in beforeunload",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "History navigation is breaking the Puppeteer expecation about navigation."
-  },
-  {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work with anchor navigation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "chrome-headless-shell"],

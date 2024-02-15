@@ -109,6 +109,13 @@ export class BrowsingContext extends EventEmitter<{
     /** The realm for the new dedicated worker */
     realm: DedicatedWorkerRealm;
   };
+  /** Emitted whenever the browsing context fragment navigates */
+  fragment: {
+    /** The new url */
+    url: string;
+    /** The timestamp of the navigation */
+    timestamp: Date;
+  };
 }> {
   static from(
     userContext: UserContext,
@@ -214,34 +221,40 @@ export class BrowsingContext extends EventEmitter<{
       if (info.context !== this.id) {
         return;
       }
-      this.#url = info.url;
 
       for (const [id, request] of this.#requests) {
         if (request.disposed) {
           this.#requests.delete(id);
         }
       }
-      // If the navigation hasn't finished, then this is nested navigation. The
-      // current navigation will handle this.
-      if (this.#navigation !== undefined && !this.#navigation.disposed) {
-        return;
+
+      if (this.#navigation !== undefined) {
+        this.#navigation.dispose();
       }
 
-      // Note the navigation ID is null for this event.
-      this.#navigation = Navigation.from(this);
+      this.#navigation = Navigation.from(this, info.url);
 
       const navigationEmitter = this.#disposables.use(
         new EventEmitter(this.#navigation)
       );
-      for (const eventName of ['fragment', 'failed', 'aborted'] as const) {
-        navigationEmitter.once(eventName, ({url}) => {
+      for (const eventName of ['failed', 'aborted'] as const) {
+        navigationEmitter.once(eventName, () => {
           navigationEmitter[disposeSymbol]();
-
-          this.#url = url;
         });
       }
 
       this.emit('navigation', {navigation: this.#navigation});
+    });
+    sessionEmitter.on('browsingContext.fragmentNavigated', info => {
+      if (info.context !== this.id) {
+        return;
+      }
+      this.#url = info.url;
+
+      this.emit('fragment', {
+        url: info.url,
+        timestamp: new Date(info.timestamp),
+      });
     });
     sessionEmitter.on('network.beforeRequestSent', event => {
       if (event.context !== this.id) {
