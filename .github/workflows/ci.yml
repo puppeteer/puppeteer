@@ -43,7 +43,7 @@ jobs:
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
       # Set up GitHub Actions caching for Wireit.
-      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
+      - uses: orkon/wireit@a840612131abe8c8e877560202b92eb4dafc7149
       - name: Check code
         run: npm run check
       - name: Validate licenses
@@ -190,7 +190,7 @@ jobs:
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
       # Set up GitHub Actions caching for Wireit.
-      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
+      - uses: orkon/wireit@a840612131abe8c8e877560202b92eb4dafc7149
       - name: Build packages
         run: npm run build --workspace @puppeteer-test/test
       - name: Setup cache for Chrome binary
@@ -290,7 +290,7 @@ jobs:
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
       # Set up GitHub Actions caching for Wireit.
-      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
+      - uses: orkon/wireit@a840612131abe8c8e877560202b92eb4dafc7149
       - name: Build packages
         run: npm run build --workspace @puppeteer-test/test
       - name: Setup cache for Firefox binary
