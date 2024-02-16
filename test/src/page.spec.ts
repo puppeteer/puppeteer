@@ -1232,7 +1232,7 @@ describe('Page', function () {
         page.goto(server.PREFIX + '/error.html'),
       ]);
       expect(error.message).toContain('Fancy');
-      expect(error.stack?.split('\n')[1]).toContain('error.html:13');
+      expect(error.stack?.split('\n').at(-1)).toContain('error.html:3:1');
     });
   });
 
