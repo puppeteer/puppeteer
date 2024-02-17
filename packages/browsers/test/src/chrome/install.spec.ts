@@ -198,7 +198,7 @@ describe('Chrome install', () => {
         true
       );
       assert.deepStrictEqual(proxiedRequestUrls, [
-        getServerUrl() + '/113.0.5672.0/linux64/chrome-linux64.zip',
+        getServerUrl() + `/${testChromeBuildId}/linux64/chrome-linux64.zip`,
       ]);
       assert.deepStrictEqual(proxiedRequestHosts, [
         getServerUrl().replace('http://', ''),
@@ -223,7 +223,7 @@ describe('Chrome install', () => {
       assert.strictEqual(browser.path, expectedOutputPath);
       assert.ok(fs.existsSync(expectedOutputPath));
       assert.deepStrictEqual(proxiedRequestUrls, [
-        getServerUrl() + '/113.0.5672.0/linux64/chrome-linux64.zip',
+        getServerUrl() + `/${testChromeBuildId}/linux64/chrome-linux64.zip`,
       ]);
       assert.deepStrictEqual(proxiedRequestHosts, [
         getServerUrl().replace('http://', ''),

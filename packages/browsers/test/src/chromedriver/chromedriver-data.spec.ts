@@ -18,23 +18,23 @@ describe('ChromeDriver', () => {
   it('should resolve download URLs', () => {
     assert.strictEqual(
       resolveDownloadUrl(BrowserPlatform.LINUX, '115.0.5763.0'),
-      'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/115.0.5763.0/linux64/chromedriver-linux64.zip'
+      'https://storage.googleapis.com/chrome-for-testing-public/115.0.5763.0/linux64/chromedriver-linux64.zip'
     );
     assert.strictEqual(
       resolveDownloadUrl(BrowserPlatform.MAC, '115.0.5763.0'),
-      'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/115.0.5763.0/mac-x64/chromedriver-mac-x64.zip'
+      'https://storage.googleapis.com/chrome-for-testing-public/115.0.5763.0/mac-x64/chromedriver-mac-x64.zip'
     );
     assert.strictEqual(
       resolveDownloadUrl(BrowserPlatform.MAC_ARM, '115.0.5763.0'),
-      'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/115.0.5763.0/mac-arm64/chromedriver-mac-arm64.zip'
+      'https://storage.googleapis.com/chrome-for-testing-public/115.0.5763.0/mac-arm64/chromedriver-mac-arm64.zip'
     );
     assert.strictEqual(
       resolveDownloadUrl(BrowserPlatform.WIN32, '115.0.5763.0'),
-      'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/115.0.5763.0/win32/chromedriver-win32.zip'
+      'https://storage.googleapis.com/chrome-for-testing-public/115.0.5763.0/win32/chromedriver-win32.zip'
     );
     assert.strictEqual(
       resolveDownloadUrl(BrowserPlatform.WIN64, '115.0.5763.0'),
-      'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/115.0.5763.0/win64/chromedriver-win64.zip'
+      'https://storage.googleapis.com/chrome-for-testing-public/115.0.5763.0/win64/chromedriver-win64.zip'
     );
   });
 
