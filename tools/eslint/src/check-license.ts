@@ -65,6 +65,10 @@ const enforceLicenseRule = createRule<[], 'licenseRule'>({
 
     return {
       Program(node) {
+        if (context.filename.endsWith('.json')) {
+          return;
+        }
+
         if (
           header &&
           (header.value.includes('@license') ||
