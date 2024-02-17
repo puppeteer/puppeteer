@@ -61,8 +61,13 @@ sidebar_label: API
 | Function                                                                               | Description |
 | -------------------------------------------------------------------------------------- | ----------- |
 | [clearCustomQueryHandlers()](./puppeteer.clearcustomqueryhandlers.md)                  |             |
+| [connect(options)](./puppeteer.connect.md)                                             |             |
 | [customQueryHandlerNames()](./puppeteer.customqueryhandlernames.md)                    |             |
+| [defaultArgs(options)](./puppeteer.defaultargs.md)                                     |             |
+| [executablePath(channel)](./puppeteer.executablepath.md)                               |             |
+| [launch(options)](./puppeteer.launch.md)                                               |             |
 | [registerCustomQueryHandler(name, handler)](./puppeteer.registercustomqueryhandler.md) |             |
+| [trimCache()](./puppeteer.trimcache.md)                                                |             |
 | [unregisterCustomQueryHandler(name)](./puppeteer.unregistercustomqueryhandler.md)      |             |
 
 ## Interfaces
@@ -153,16 +158,11 @@ sidebar_label: API
 
 | Variable                                                                                      | Description                                                                                                                   |
 | --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| [connect](./puppeteer.connect.md)                                                             |                                                                                                                               |
 | [DEFAULT_INTERCEPT_RESOLUTION_PRIORITY](./puppeteer.default_intercept_resolution_priority.md) | The default cooperative request interception resolution priority                                                              |
-| [defaultArgs](./puppeteer.defaultargs.md)                                                     |                                                                                                                               |
-| [executablePath](./puppeteer.executablepath.md)                                               |                                                                                                                               |
 | [KnownDevices](./puppeteer.knowndevices.md)                                                   | A list of devices to be used with [Page.emulate()](./puppeteer.page.emulate.md).                                              |
-| [launch](./puppeteer.launch.md)                                                               |                                                                                                                               |
 | [MouseButton](./puppeteer.mousebutton.md)                                                     | Enum of valid mouse buttons.                                                                                                  |
 | [PredefinedNetworkConditions](./puppeteer.predefinednetworkconditions.md)                     | A list of network conditions to be used with [Page.emulateNetworkConditions()](./puppeteer.page.emulatenetworkconditions.md). |
 | [puppeteer](./puppeteer.puppeteer.md)                                                         |                                                                                                                               |
-| [trimCache](./puppeteer.trimcache.md)                                                         |                                                                                                                               |
 
 ## Type Aliases
 
