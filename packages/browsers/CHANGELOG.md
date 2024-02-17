@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/puppeteer/puppeteer/compare/browsers-v2.0.0...browsers-v2.0.1) (2024-02-17)
+
+
+### Bug Fixes
+
+* Chrome for Testing downloads have a new URL ([#11923](https://github.com/puppeteer/puppeteer/issues/11923)) ([f00a94a](https://github.com/puppeteer/puppeteer/commit/f00a94a809d38ee1c2c8cfc8597c66db9f3d243d))
+
 ## [2.0.0](https://github.com/puppeteer/puppeteer/compare/browsers-v1.9.1...browsers-v2.0.0) (2024-02-05)
 
 
