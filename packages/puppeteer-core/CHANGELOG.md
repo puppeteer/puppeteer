@@ -20,6 +20,27 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.1.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.0.0...puppeteer-core-v22.1.0) (2024-02-17)
+
+
+### Features
+
+* support closing workers ([#11870](https://github.com/puppeteer/puppeteer/issues/11870)) ([1bdae40](https://github.com/puppeteer/puppeteer/commit/1bdae40ec865326fcb365320939869a6efb18c8a))
+
+
+### Bug Fixes
+
+* Chrome for Testing downloads have a new URL ([#11923](https://github.com/puppeteer/puppeteer/issues/11923)) ([f00a94a](https://github.com/puppeteer/puppeteer/commit/f00a94a809d38ee1c2c8cfc8597c66db9f3d243d))
+* deprecate `Page.prototype.target` ([#11872](https://github.com/puppeteer/puppeteer/issues/11872)) ([15c986c](https://github.com/puppeteer/puppeteer/commit/15c986c2bc5f5005a738187674cd6c44bcb3df3d))
+* frameElement should work for framesets ([#11842](https://github.com/puppeteer/puppeteer/issues/11842)) ([c5cee0e](https://github.com/puppeteer/puppeteer/commit/c5cee0e37dec8b90a17bf13400ede7ebdf453ac8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.0.0 to 2.0.1
+
 ## [22.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.11.0...puppeteer-core-v22.0.0) (2024-02-05)
 
 
