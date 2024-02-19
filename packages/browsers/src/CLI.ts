@@ -238,6 +238,7 @@ export class CLI {
             }
             args.browser.buildId = pinnedVersion;
           }
+          const originalBuildId = args.browser.buildId;
           args.browser.buildId = await resolveBuildId(
             args.browser.name,
             args.platform,
@@ -253,6 +254,10 @@ export class CLI {
               args.browser.buildId
             ),
             baseUrl: args.baseUrl,
+            buildIdAlias:
+              originalBuildId !== args.browser.buildId
+                ? originalBuildId
+                : undefined,
           });
           console.log(
             `${args.browser.name}@${

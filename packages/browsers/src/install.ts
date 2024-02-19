@@ -63,6 +63,13 @@ export interface InstallOptions {
    */
   buildId: string;
   /**
+   * An alias for the provided `buildId`. It will be used to maintain local
+   * metadata to support aliases in the `launch` command.
+   *
+   * @example 'canary'
+   */
+  buildIdAlias?: string;
+  /**
    * Provides information about the progress of the download.
    */
   downloadProgressCallback?: (
@@ -233,17 +240,23 @@ async function installUrl(
     } finally {
       debugTimeEnd('extract');
     }
+    const installedBrowser = new InstalledBrowser(
+      cache,
+      options.browser,
+      options.buildId,
+      options.platform
+    );
+    if (options.buildIdAlias) {
+      const metadata = installedBrowser.readMetadata();
+      metadata.aliases[options.buildIdAlias] = options.buildId;
+      installedBrowser.writeMetadata(metadata);
+    }
+    return installedBrowser;
   } finally {
     if (existsSync(archivePath)) {
       await unlink(archivePath);
     }
   }
-  return new InstalledBrowser(
-    cache,
-    options.browser,
-    options.buildId,
-    options.platform
-  );
 }
 
 /**
