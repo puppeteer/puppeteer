@@ -140,15 +140,22 @@ export async function install(
     options.platform,
     options.buildId
   );
-  if (existsSync(outputPath)) {
-    return new InstalledBrowser(
-      cache,
-      options.browser,
-      options.buildId,
-      options.platform
-    );
-  }
+
   try {
+    if (existsSync(outputPath)) {
+      const installedBrowser = new InstalledBrowser(
+        cache,
+        options.browser,
+        options.buildId,
+        options.platform
+      );
+      if (!existsSync(installedBrowser.executablePath)) {
+        throw new Error(
+          `The browser folder (${outputPath}) exists but the executable (${installedBrowser.executablePath}) is missing`
+        );
+      }
+      return installedBrowser;
+    }
     debugInstall(`Downloading binary from ${url}`);
     try {
       debugTime('download');
