@@ -49,6 +49,32 @@ describe('Firefox install', () => {
     assert.ok(fs.existsSync(expectedOutputPath));
   });
 
+  it('throws on invalid URL', async function () {
+    const expectedOutputPath = path.join(
+      tmpDir,
+      'chrome',
+      `${BrowserPlatform.LINUX}-${testFirefoxBuildId}`
+    );
+    assert.strictEqual(fs.existsSync(expectedOutputPath), false);
+
+    async function installThatThrows(): Promise<unknown> {
+      try {
+        await install({
+          cacheDir: tmpDir,
+          browser: Browser.FIREFOX,
+          platform: BrowserPlatform.LINUX,
+          buildId: testFirefoxBuildId,
+          baseUrl: 'https://127.0.0.1',
+        });
+        return undefined;
+      } catch (err) {
+        return err;
+      }
+    }
+    assert.ok(await installThatThrows());
+    assert.strictEqual(fs.existsSync(expectedOutputPath), false);
+  });
+
   // install relies on the `hdiutil` utility on MacOS.
   // The utility is not available on other platforms.
   (os.platform() === 'darwin' ? it : it.skip)(

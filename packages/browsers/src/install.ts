@@ -11,15 +11,15 @@ import os from 'os';
 import path from 'path';
 
 import {
-  type Browser,
-  type BrowserPlatform,
+  Browser,
+  BrowserPlatform,
   downloadUrls,
 } from './browser-data/browser-data.js';
 import {Cache, InstalledBrowser} from './Cache.js';
 import {debug} from './debug.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {unpackArchive} from './fileUtil.js';
-import {downloadFile, headHttpRequest} from './httpUtil.js';
+import {downloadFile, getJSON, headHttpRequest} from './httpUtil.js';
 
 const debugInstall = debug('puppeteer:browsers:install');
 
@@ -115,6 +115,68 @@ export async function install(
     options.buildId,
     options.baseUrl
   );
+  try {
+    return await installUrl(url, options);
+  } catch (err) {
+    debugInstall(`Error downloading from ${url}.`);
+    switch (options.browser) {
+      case Browser.CHROME:
+      case Browser.CHROMEDRIVER:
+      case Browser.CHROMEHEADLESSSHELL: {
+        debugInstall(
+          `Trying to find download URL via https://googlechromelabs.github.io/chrome-for-testing.`
+        );
+        interface Version {
+          downloads: Record<string, Array<{platform: string; url: string}>>;
+        }
+        const version = (await getJSON(
+          new URL(
+            `https://googlechromelabs.github.io/chrome-for-testing/${options.buildId}.json`
+          )
+        )) as Version;
+        let platform = '';
+        switch (options.platform) {
+          case BrowserPlatform.LINUX:
+            platform = 'linux64';
+            break;
+          case BrowserPlatform.MAC_ARM:
+            platform = 'mac-arm64';
+            break;
+          case BrowserPlatform.MAC:
+            platform = 'mac-x64';
+            break;
+          case BrowserPlatform.WIN32:
+            platform = 'win32';
+            break;
+          case BrowserPlatform.WIN64:
+            platform = 'win64';
+            break;
+        }
+        const url = version.downloads[options.browser]?.find(link => {
+          return link['platform'] === platform;
+        })?.url;
+        if (url) {
+          debugInstall(`Falling back to downloading from ${url}.`);
+          return await installUrl(new URL(url), options);
+        }
+        throw err;
+      }
+      default:
+        throw err;
+    }
+  }
+}
+
+async function installUrl(
+  url: URL,
+  options: InstallOptions
+): Promise<InstalledBrowser | string> {
+  options.platform ??= detectBrowserPlatform();
+  if (!options.platform) {
+    throw new Error(
+      `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`
+    );
+  }
   const fileName = url.toString().split('/').pop();
   assert(fileName, `A malformed download URL was found: ${url}.`);
   const cache = new Cache(options.cacheDir);
