@@ -68,7 +68,10 @@ export class BidiElementHandle<
   @ElementHandle.bindIsolatedHandle
   override async contentFrame(): Promise<BidiFrame | null> {
     using handle = (await this.evaluateHandle(element => {
-      if (element instanceof HTMLIFrameElement) {
+      if (
+        element instanceof HTMLIFrameElement ||
+        element instanceof HTMLFrameElement
+      ) {
         return element.contentWindow;
       }
       return;

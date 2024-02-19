@@ -402,13 +402,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[frame.spec] Frame specs Frame Management should click elements in a frameset",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "New test for framesets. We probably do not want to support framesets in WebDriver BiDi in the long term."
-  },
-  {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should handle nested frames",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
