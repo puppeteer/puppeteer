@@ -17,6 +17,7 @@ import {
   Browser,
   BrowserPlatform,
   Cache,
+  computeExecutablePath,
 } from '../../../lib/cjs/main.js';
 import {getServerUrl, setupTestServer} from '../utils.js';
 import {testChromeBuildId} from '../versions.js';
@@ -87,7 +88,14 @@ describe('Chrome install', () => {
     }
     assert.strictEqual(
       (await installThatThrows())?.message,
-      `The browser folder (${expectedOutputPath}) exists but the executable (${expectedOutputPath}/chrome-linux64/chrome) is missing`
+      `The browser folder (${expectedOutputPath}) exists but the executable (${computeExecutablePath(
+        {
+          cacheDir: tmpDir,
+          browser: Browser.CHROME,
+          platform: BrowserPlatform.LINUX,
+          buildId: testChromeBuildId,
+        }
+      )}) is missing`
     );
     assert.strictEqual(fs.existsSync(expectedOutputPath), true);
   });
