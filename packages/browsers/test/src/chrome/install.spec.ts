@@ -63,6 +63,35 @@ describe('Chrome install', () => {
     );
   });
 
+  it('can detect missing executables', async function () {
+    this.timeout(60000);
+    const expectedOutputPath = path.join(
+      tmpDir,
+      'chrome',
+      `${BrowserPlatform.LINUX}-${testChromeBuildId}`
+    );
+    fs.mkdirSync(expectedOutputPath, {recursive: true});
+    assert.strictEqual(fs.existsSync(expectedOutputPath), true);
+    async function installThatThrows(): Promise<Error | undefined> {
+      try {
+        await install({
+          cacheDir: tmpDir,
+          browser: Browser.CHROME,
+          platform: BrowserPlatform.LINUX,
+          buildId: testChromeBuildId,
+        });
+        return undefined;
+      } catch (err) {
+        return err as Error;
+      }
+    }
+    assert.strictEqual(
+      (await installThatThrows())?.message,
+      `The browser folder (${expectedOutputPath}) exists but the executable (${expectedOutputPath}/chrome-linux64/chrome) is missing`
+    );
+    assert.strictEqual(fs.existsSync(expectedOutputPath), true);
+  });
+
   it('should download a buildId that is a zip archive', async function () {
     this.timeout(60000);
     const expectedOutputPath = path.join(
