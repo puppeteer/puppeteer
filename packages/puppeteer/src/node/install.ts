@@ -74,6 +74,8 @@ export async function downloadBrowser(): Promise<void> {
           buildId,
           downloadProgressCallback: makeProgressCallback(browser, buildId),
           baseUrl: downloadBaseUrl,
+          buildIdAlias:
+            buildId !== unresolvedBuildId ? unresolvedBuildId : undefined,
         })
           .then(result => {
             logPolitely(
@@ -112,6 +114,10 @@ export async function downloadBrowser(): Promise<void> {
               shellBuildId
             ),
             baseUrl: downloadBaseUrl,
+            buildIdAlias:
+              shellBuildId !== unresolvedShellBuildId
+                ? unresolvedShellBuildId
+                : undefined,
           })
             .then(result => {
               logPolitely(
