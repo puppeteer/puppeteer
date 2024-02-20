@@ -86,3 +86,7 @@ export async function resolveBuildId(
     )
   );
 }
+
+export function compareVersions(a: string, b: string): number {
+  return Number(a) - Number(b);
+}

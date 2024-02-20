@@ -16,6 +16,7 @@ import {
   relativeExecutablePath,
   resolveSystemExecutablePath,
   resolveBuildId,
+  compareVersions,
 } from '../../../lib/cjs/browser-data/chrome.js';
 
 describe('Chrome', () => {
@@ -115,5 +116,11 @@ describe('Chrome', () => {
 
   it('should resolve build prefix', async () => {
     assert.strictEqual(await resolveBuildId('115.0.5790'), '115.0.5790.170');
+  });
+
+  it('should compare versions', async () => {
+    assert.ok(compareVersions('115.0.5790', '115.0.5789') >= 1);
+    assert.ok(compareVersions('115.0.5789', '115.0.5790') <= -1);
+    assert.ok(compareVersions('115.0.5790', '115.0.5790') === 0);
   });
 });

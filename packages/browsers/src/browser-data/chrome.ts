@@ -6,6 +6,8 @@
 
 import path from 'path';
 
+import semver from 'semver';
+
 import {getJSON} from '../httpUtil.js';
 
 import {BrowserPlatform, ChromeReleaseChannel} from './types.js';
@@ -192,4 +194,20 @@ export function resolveSystemExecutablePath(
   throw new Error(
     `Unable to detect browser executable path for '${channel}' on ${platform}.`
   );
+}
+
+export function compareVersions(a: string, b: string): number {
+  if (!semver.valid(a)) {
+    throw new Error(`Version ${a} is not a valid semver version`);
+  }
+  if (!semver.valid(b)) {
+    throw new Error(`Version ${b} is not a valid semver version`);
+  }
+  if (semver.gt(a, b)) {
+    return 1;
+  } else if (semver.lt(a, b)) {
+    return -1;
+  } else {
+    return 0;
+  }
 }

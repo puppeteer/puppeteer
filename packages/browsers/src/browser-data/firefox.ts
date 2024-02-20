@@ -328,3 +328,8 @@ async function writePreferences(options: ProfileOptions): Promise<void> {
     await fs.promises.copyFile(prefsPath, prefsBackupPath);
   }
 }
+
+export function compareVersions(a: string, b: string): number {
+  // TODO: this is a not very reliable check.
+  return parseInt(a.replace('.', ''), 16) - parseInt(b.replace('.', ''), 16);
+}

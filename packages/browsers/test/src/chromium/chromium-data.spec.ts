@@ -11,6 +11,7 @@ import {BrowserPlatform} from '../../../lib/cjs/browser-data/browser-data.js';
 import {
   resolveDownloadUrl,
   relativeExecutablePath,
+  compareVersions,
 } from '../../../lib/cjs/browser-data/chromium.js';
 
 describe('Chromium', () => {
@@ -58,5 +59,11 @@ describe('Chromium', () => {
       relativeExecutablePath(BrowserPlatform.WIN64, '12372323'),
       path.join('chrome-win', 'chrome.exe')
     );
+  });
+
+  it('should compare versions', async () => {
+    assert.ok(compareVersions('12372323', '12372322') >= 1);
+    assert.ok(compareVersions('12372322', '12372323') <= -1);
+    assert.ok(compareVersions('12372323', '12372323') === 0);
   });
 });
