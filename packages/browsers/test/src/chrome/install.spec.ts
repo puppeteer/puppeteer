@@ -137,30 +137,21 @@ describe('Chrome install', () => {
     );
   });
 
-  it('throws on invalid URL', async function () {
+  it('falls back to the chrome-for-testing dashboard URLs if URL is not available', async function () {
     const expectedOutputPath = path.join(
       tmpDir,
       'chrome',
       `${BrowserPlatform.LINUX}-${testChromeBuildId}`
     );
     assert.strictEqual(fs.existsSync(expectedOutputPath), false);
-
-    async function installThatThrows(): Promise<unknown> {
-      try {
-        await install({
-          cacheDir: tmpDir,
-          browser: Browser.CHROME,
-          platform: BrowserPlatform.LINUX,
-          buildId: testChromeBuildId,
-          baseUrl: 'https://127.0.0.1',
-        });
-        return undefined;
-      } catch (err) {
-        return err;
-      }
-    }
-    assert.ok(await installThatThrows());
-    assert.strictEqual(fs.existsSync(expectedOutputPath), false);
+    await install({
+      cacheDir: tmpDir,
+      browser: Browser.CHROME,
+      platform: BrowserPlatform.LINUX,
+      buildId: testChromeBuildId,
+      baseUrl: 'https://127.0.0.1',
+    });
+    assert.strictEqual(fs.existsSync(expectedOutputPath), true);
   });
 
   describe('with proxy', () => {
