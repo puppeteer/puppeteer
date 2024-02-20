@@ -173,6 +173,18 @@ export class CLI {
             'Install the latest available build for the Chrome browser.'
           );
           yargs.example(
+            '$0 install chrome@stable',
+            'Install the latest available build for the Chrome browser from the stable channel.'
+          );
+          yargs.example(
+            '$0 install chrome@beta',
+            'Install the latest available build for the Chrome browser from the beta channel.'
+          );
+          yargs.example(
+            '$0 install chrome@dev',
+            'Install the latest available build for the Chrome browser from the dev channel.'
+          );
+          yargs.example(
             '$0 install chrome@canary',
             'Install the latest available build for the Chrome Canary browser.'
           );
