@@ -331,5 +331,5 @@ async function writePreferences(options: ProfileOptions): Promise<void> {
 
 export function compareVersions(a: string, b: string): number {
   // TODO: this is a not very reliable check.
-  return parseInt(a, 10) - parseInt(b, 10);
+  return parseInt(a.replace('.', ''), 16) - parseInt(b.replace('.', ''), 16);
 }

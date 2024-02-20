@@ -119,8 +119,8 @@ describe('Chrome', () => {
   });
 
   it('should compare versions', async () => {
-    assert.strictEqual(compareVersions('115.0.5790', '115.0.5789'), 1);
-    assert.strictEqual(compareVersions('115.0.5789', '115.0.5790'), -1);
-    assert.strictEqual(compareVersions('115.0.5790', '115.0.5790'), 0);
+    assert.ok(compareVersions('115.0.5790', '115.0.5789') >= 1);
+    assert.ok(compareVersions('115.0.5789', '115.0.5790') <= -1);
+    assert.ok(compareVersions('115.0.5790', '115.0.5790') === 0);
   });
 });

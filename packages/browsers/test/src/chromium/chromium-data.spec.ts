@@ -62,8 +62,8 @@ describe('Chromium', () => {
   });
 
   it('should compare versions', async () => {
-    assert.strictEqual(compareVersions('12372323', '12372322'), 1);
-    assert.strictEqual(compareVersions('12372322', '12372323'), -1);
-    assert.strictEqual(compareVersions('12372323', '12372323'), 0);
+    assert.ok(compareVersions('12372323', '12372322') >= 1);
+    assert.ok(compareVersions('12372322', '12372323') <= -1);
+    assert.ok(compareVersions('12372323', '12372323') === 0);
   });
 });

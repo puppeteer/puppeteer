@@ -97,8 +97,8 @@ describe('Firefox', () => {
   });
 
   it('should compare versions', async () => {
-    assert.strictEqual(compareVersions('111.0a1', '110.0a1'), 1);
-    assert.strictEqual(compareVersions('110.0a1', '111.0a1'), -1);
-    assert.strictEqual(compareVersions('111.0a1', '111.0a1'), 0);
+    assert.ok(compareVersions('111.0a1', '110.0a1') >= 1);
+    assert.ok(compareVersions('110.0a1', '111.0a1') <= -1);
+    assert.ok(compareVersions('111.0a1', '111.0a1') === 0);
   });
 });
