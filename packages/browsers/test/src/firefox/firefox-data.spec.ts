@@ -11,6 +11,7 @@ import path from 'path';
 
 import {BrowserPlatform} from '../../../lib/cjs/browser-data/browser-data.js';
 import {
+  compareVersions,
   createProfile,
   relativeExecutablePath,
   resolveDownloadUrl,
@@ -93,5 +94,11 @@ describe('Firefox', () => {
       ); // default preference.
       assert.ok(text.includes(`user_pref("test", 1);`)); // custom preference.
     });
+  });
+
+  it('should compare versions', async () => {
+    assert.strictEqual(compareVersions('111.0a1', '110.0a1'), 1);
+    assert.strictEqual(compareVersions('110.0a1', '111.0a1'), -1);
+    assert.strictEqual(compareVersions('111.0a1', '111.0a1'), 0);
   });
 });

@@ -37,6 +37,7 @@ export {
   BrowserPlatform,
   ChromeReleaseChannel,
   createProfile,
+  getVersionComparator,
 } from './browser-data/browser-data.js';
 export {CLI, makeProgressCallback} from './CLI.js';
 export {Cache, InstalledBrowser} from './Cache.js';

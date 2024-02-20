@@ -43,6 +43,14 @@ export const executablePathByBrowser = {
   [Browser.FIREFOX]: firefox.relativeExecutablePath,
 };
 
+export const versionComparators = {
+  [Browser.CHROMEDRIVER]: chromedriver.compareVersions,
+  [Browser.CHROMEHEADLESSSHELL]: chromeHeadlessShell.compareVersions,
+  [Browser.CHROME]: chrome.compareVersions,
+  [Browser.CHROMIUM]: chromium.compareVersions,
+  [Browser.FIREFOX]: firefox.compareVersions,
+};
+
 export {Browser, BrowserPlatform, ChromeReleaseChannel};
 
 /**
@@ -184,4 +192,16 @@ export function resolveSystemExecutablePath(
     case Browser.CHROME:
       return chrome.resolveSystemExecutablePath(platform, channel);
   }
+}
+
+/**
+ * Returns a version comparator for the given browser that can be used to sort
+ * browser versions.
+ *
+ * @public
+ */
+export function getVersionComparator(
+  browser: Browser
+): (a: string, b: string) => number {
+  return versionComparators[browser];
 }

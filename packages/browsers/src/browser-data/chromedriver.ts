@@ -53,4 +53,4 @@ export function relativeExecutablePath(
   }
 }
 
-export {resolveBuildId} from './chrome.js';
+export {resolveBuildId, compareVersions} from './chrome.js';
