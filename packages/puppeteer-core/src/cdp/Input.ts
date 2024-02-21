@@ -10,16 +10,16 @@ import type {CDPSession} from '../api/CDPSession.js';
 import type {Point} from '../api/ElementHandle.js';
 import {
   Keyboard,
-  type KeyDownOptions,
-  type KeyPressOptions,
   Mouse,
   MouseButton,
+  Touchscreen,
+  type KeyDownOptions,
+  type KeyPressOptions,
+  type KeyboardTypeOptions,
   type MouseClickOptions,
   type MouseMoveOptions,
   type MouseOptions,
   type MouseWheelOptions,
-  Touchscreen,
-  type KeyboardTypeOptions,
 } from '../api/Input.js';
 import {
   _keyDefinitions,
@@ -573,6 +573,7 @@ export class CdpTouchscreen extends Touchscreen {
           y: Math.round(y),
           radiusX: 0.5,
           radiusY: 0.5,
+          force: 0.5,
         },
       ],
       modifiers: this.#keyboard._modifiers,
@@ -588,6 +589,7 @@ export class CdpTouchscreen extends Touchscreen {
           y: Math.round(y),
           radiusX: 0.5,
           radiusY: 0.5,
+          force: 0.5,
         },
       ],
       modifiers: this.#keyboard._modifiers,
