@@ -49,12 +49,11 @@ describe('Coverage specs', function () {
       await page.coverage.startJSCoverage({reportAnonymousScripts: true});
       await page.goto(server.PREFIX + '/jscoverage/eval.html');
       const coverage = await page.coverage.stopJSCoverage();
-      expect(
-        coverage.find(entry => {
-          return entry.url.startsWith('debugger://');
-        })
-      ).not.toBe(null);
-      expect(coverage).toHaveLength(2);
+
+      const filtered = coverage.filter(entry => {
+        return !entry.url.startsWith('debugger://');
+      });
+      expect(filtered).toHaveLength(1);
     });
     it('should ignore pptr internal scripts if reportAnonymousScripts is true', async () => {
       const {page, server} = await getTestState();

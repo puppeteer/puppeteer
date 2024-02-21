@@ -3390,13 +3390,6 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
-    "testIdPattern": "[chromiumonly.spec] Chromium-Specific Launcher tests Puppeteer.launch |pipe| option should fire \"disconnected\" when closing with pipe",
-    "platforms": ["darwin"],
-    "parameters": ["cdp", "chrome", "headless"],
-    "expectations": ["FAIL"],
-    "comment": "Remove with M121"
-  },
-  {
     "testIdPattern": "[devtools.spec] DevTools should expose DevTools as a page",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
