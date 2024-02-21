@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.1.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.0.1...browsers-v2.1.0) (2024-02-21)
+
+
+### Features
+
+* allow comparing browser versions ([#11954](https://github.com/puppeteer/puppeteer/issues/11954)) ([bf71b34](https://github.com/puppeteer/puppeteer/commit/bf71b34fca73ed14eeb23616682799ff545fc371))
+* support local aliases when launching a browser ([#11947](https://github.com/puppeteer/puppeteer/issues/11947)) ([561e4cd](https://github.com/puppeteer/puppeteer/commit/561e4cd6ee79b19ac43f2c2fceaa1fce51052c02))
+
+
+### Bug Fixes
+
+* check if executable exists ([#11946](https://github.com/puppeteer/puppeteer/issues/11946)) ([e95a308](https://github.com/puppeteer/puppeteer/commit/e95a308c33021a80c9eb27a4ac02c607af60ff99))
+* implement a fallback to download URLs provided by dashboard ([#11951](https://github.com/puppeteer/puppeteer/issues/11951)) ([73c1f9b](https://github.com/puppeteer/puppeteer/commit/73c1f9bbf3c862decded533401e3bd26a18f8194))
+
 ## [2.0.1](https://github.com/puppeteer/puppeteer/compare/browsers-v2.0.0...browsers-v2.0.1) (2024-02-17)
 
 
