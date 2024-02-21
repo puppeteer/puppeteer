@@ -128,6 +128,7 @@ describe('NetworkManager', () => {
         url: 'http://localhost:8907/redirect/1.html',
         status: 302,
         statusText: 'Found',
+        charset: 'utf-8',
         headers: {
           location: '/redirect/2.html',
           Date: 'Fri, 19 Nov 2021 09:53:58 GMT',
@@ -217,6 +218,7 @@ describe('NetworkManager', () => {
         url: 'http://localhost:8907/redirect/2.html',
         status: 302,
         statusText: 'Found',
+        charset: 'utf-8',
         headers: {
           location: '/redirect/3.html',
           Date: 'Fri, 19 Nov 2021 09:53:58 GMT',
@@ -321,6 +323,7 @@ describe('NetworkManager', () => {
         url: 'http://localhost:8907/redirect/3.html',
         status: 302,
         statusText: 'Found',
+        charset: 'utf-8',
         headers: {
           location: 'http://localhost:8907/empty.html',
           Date: 'Fri, 19 Nov 2021 09:53:58 GMT',
@@ -433,6 +436,7 @@ describe('NetworkManager', () => {
           'Keep-Alive': 'timeout=5',
           'Content-Length': '0',
         },
+        charset: 'utf-8',
         mimeType: 'text/html',
         connectionReused: true,
         connectionId: 322,
@@ -613,6 +617,7 @@ describe('NetworkManager', () => {
           connection: 'keep-alive',
           'content-length': '85862',
         },
+        charset: 'utf-8',
         mimeType: 'text/plain',
         connectionReused: false,
         connectionId: 119,
@@ -725,6 +730,7 @@ describe('NetworkManager', () => {
         url: 'http://10.1.0.39:42915/empty.html',
         status: 200,
         statusText: 'OK',
+        charset: 'utf-8',
         headers: {
           'Cache-Control': 'no-cache, no-store',
           Connection: 'keep-alive',
@@ -932,6 +938,7 @@ describe('NetworkManager', () => {
         url: 'http://127.0.0.1:54590/empty.html',
         status: 200,
         statusText: 'OK',
+        charset: 'utf-8',
         headers: {
           'Cache-Control': 'no-cache, no-store',
           Connection: 'keep-alive',
@@ -1036,6 +1043,7 @@ describe('NetworkManager', () => {
         url: 'http://localhost:56295/empty.html',
         status: 200,
         statusText: 'OK',
+        charset: 'utf-8',
         headers: {
           'Cache-Control': 'no-cache, no-store',
           Connection: 'keep-alive',
@@ -1221,6 +1229,7 @@ describe('NetworkManager', () => {
         url: 'http://localhost:3000/',
         status: 200,
         statusText: 'OK',
+        charset: 'utf-8',
         headers: {
           'Cache-Control': 'max-age=5',
           Connection: 'keep-alive',
@@ -1394,6 +1403,7 @@ describe('NetworkManager', () => {
         url: 'http://localhost:3000/redirect',
         status: 302,
         statusText: 'Found',
+        charset: 'utf-8',
         headers: {
           Connection: 'keep-alive',
           Date: 'Wed, 05 Apr 2023 12:39:13 GMT',
@@ -1457,6 +1467,7 @@ describe('NetworkManager', () => {
         url: 'http://localhost:3000/',
         status: 200,
         statusText: 'OK',
+        charset: 'utf-8',
         headers: {
           'Cache-Control': 'max-age=5',
           'Content-Type': 'text/html; charset=utf-8',
