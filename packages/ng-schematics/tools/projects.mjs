@@ -13,8 +13,14 @@ import {cwd} from 'process';
 class AngularProject {
   static ports = new Set();
   static randomPort() {
-    const min = 4000;
-    const max = 9876;
+    /**
+     * Some ports are restricted by Chromium and will fail to connect
+     * to prevent we start after the
+     *
+     * https://source.chromium.org/chromium/chromium/src/+/main:net/base/port_util.cc;l=107?q=kRestrictedPorts&ss=chromium
+     */
+    const min = 10101;
+    const max = 20202;
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
   static port() {
