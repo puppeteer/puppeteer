@@ -144,6 +144,17 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * In Chrome, the
    * {@link Browser.defaultBrowserContext | default browser context} is the only
    * non-incognito browser context.
+   *
+   * @deprecated In Chrome, the
+   * {@link Browser.defaultBrowserContext | default browser context} can also be
+   * "icognito" if configured via the arguments and in such cases this getter
+   * returns wrong results (see
+   * https://github.com/puppeteer/puppeteer/issues/8836). Also, the term
+   * "incognito" is not applicable to other browsers. To migrate, check the
+   * {@link Browser.defaultBrowserContext | default browser context} instead: in
+   * Chrome all non-default contexts are incognito, and the default context
+   * might be incognito if you provide the `--incognito` argument when launching
+   * the browser.
    */
   abstract isIncognito(): boolean;
 
