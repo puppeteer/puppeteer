@@ -120,7 +120,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@puppeteer/browsers": "2.1.0",
-    "chromium-bidi": "0.5.9",
+    "chromium-bidi": "0.5.10",
     "cross-fetch": "4.0.0",
     "debug": "4.3.4",
     "devtools-protocol": "0.0.1249869",
