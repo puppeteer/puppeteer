@@ -202,4 +202,4 @@ async function executeE2ETest(
   }
 }
 
-export default createBuilder<PuppeteerBuilderOptions>(executeE2ETest) as any;
+export default createBuilder<PuppeteerBuilderOptions>(executeE2ETest);
