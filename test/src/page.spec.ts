@@ -1030,15 +1030,16 @@ describe('Page', function () {
     it('should be callable from-inside evaluateOnNewDocument', async () => {
       const {page} = await getTestState();
 
-      let called = false;
-      await page.exposeFunction('woof', function () {
-        called = true;
+      const called = new Promise<void>(async resolve => {
+        await page.exposeFunction('woof', function () {
+          resolve();
+        });
       });
       await page.evaluateOnNewDocument(() => {
         return (globalThis as any).woof();
       });
       await page.reload();
-      expect(called).toBe(true);
+      await called;
     });
     it('should survive navigation', async () => {
       const {page, server} = await getTestState();
