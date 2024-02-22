@@ -6,7 +6,16 @@
 
 import type FS from 'fs/promises';
 
-import {map, NEVER, Observable, timer} from '../../third_party/rxjs/rxjs.js';
+import type {OperatorFunction} from '../../third_party/rxjs/rxjs.js';
+import {
+  filter,
+  from,
+  map,
+  mergeMap,
+  NEVER,
+  Observable,
+  timer,
+} from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import {assert} from '../util/assert.js';
 
@@ -451,5 +460,23 @@ export function fromEmitterEvent<
     return () => {
       emitter.off(eventName, listener);
     };
+  });
+}
+
+/**
+ * @internal
+ */
+export function filterAsync<T>(
+  predicate: (value: T) => boolean | PromiseLike<boolean>
+): OperatorFunction<T, T> {
+  return mergeMap<T, Observable<T>>((value): Observable<T> => {
+    return from(Promise.resolve(predicate(value))).pipe(
+      filter(isMatch => {
+        return isMatch;
+      }),
+      map(() => {
+        return value;
+      })
+    );
   });
 }

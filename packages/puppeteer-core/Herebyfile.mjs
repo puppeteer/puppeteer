@@ -4,11 +4,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import {mkdir, readFile, readdir, writeFile} from 'fs/promises';
-import {join} from 'path/posix';
+import Module from 'node:module';
+import {join, dirname} from 'path/posix';
 
 import esbuild from 'esbuild';
 import {execa} from 'execa';
 import {task} from 'hereby';
+
+const require = Module.createRequire(import.meta.url);
 
 export const generateVersionTask = task({
   name: 'generate:version',
@@ -108,7 +111,34 @@ export const buildTask = task({
             format,
             target: 'node16',
             minify: true,
+            legalComments: 'inline',
           })
+        );
+        let license = '';
+        switch (name) {
+          case 'rxjs':
+            license = await readFile(
+              `${dirname(require.resolve('rxjs'))}/../../LICENSE.txt`,
+              'utf-8'
+            );
+            break;
+          case 'mitt':
+            license = await readFile(
+              `${dirname(require.resolve('mitt'))}/../LICENSE`,
+              'utf-8'
+            );
+            break;
+          default:
+            throw new Error(`Add license handling for ${path}`);
+        }
+        const content = await readFile(path, 'utf-8');
+        await writeFile(
+          path,
+          `/**
+${license}
+*/
+${content}`,
+          'utf-8'
         );
       }
     }

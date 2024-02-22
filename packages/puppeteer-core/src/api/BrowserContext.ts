@@ -5,14 +5,18 @@
  */
 
 import {
-  filterAsync,
   firstValueFrom,
   from,
   merge,
   raceWith,
 } from '../../third_party/rxjs/rxjs.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
-import {debugError, fromEmitterEvent, timeout} from '../common/util.js';
+import {
+  debugError,
+  fromEmitterEvent,
+  filterAsync,
+  timeout,
+} from '../common/util.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
 import type {Browser, Permission, WaitForTargetOptions} from './Browser.js';

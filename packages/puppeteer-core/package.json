@@ -77,7 +77,8 @@
       "files": [
         "{src,third_party}/**",
         "../../versions.js",
-        "!src/generated"
+        "!src/generated",
+        "Herebyfile.mjs"
       ],
       "output": [
         "lib/{cjs,esm}/**"
