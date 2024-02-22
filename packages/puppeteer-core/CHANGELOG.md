@@ -20,6 +20,27 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.2.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.1.0...puppeteer-core-v22.2.0) (2024-02-21)
+
+
+### Features
+
+* roll to Chrome 122.0.6261.57 (r1250580) ([#11958](https://github.com/puppeteer/puppeteer/issues/11958)) ([70ad3b2](https://github.com/puppeteer/puppeteer/commit/70ad3b244826ca102737e93cd2316e451ea310e8))
+
+
+### Bug Fixes
+
+* deprecate isIncognito ([#11962](https://github.com/puppeteer/puppeteer/issues/11962)) ([ceab7a9](https://github.com/puppeteer/puppeteer/commit/ceab7a9042fe5fc3f71875e75327bb370f1c43a5))
+* roll to Chrome 121.0.6167.184 (r1233107) ([#11948](https://github.com/puppeteer/puppeteer/issues/11948)) ([03ef7a6](https://github.com/puppeteer/puppeteer/commit/03ef7a62c23f2339e4d508d9abfe0894bd790cdd))
+* update touchscreen tests ([#11960](https://github.com/puppeteer/puppeteer/issues/11960)) ([013bd0b](https://github.com/puppeteer/puppeteer/commit/013bd0b12d3a69f9d62fffe7911a327ad26d33d8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.0.1 to 2.1.0
+
 ## [22.1.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.0.0...puppeteer-core-v22.1.0) (2024-02-17)
 
 

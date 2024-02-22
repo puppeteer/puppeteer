@@ -29,6 +29,21 @@ All notable changes to this project will be documented in this file. See [standa
     * puppeteer-core bumped from 21.0.2 to 21.0.3
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.2.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v22.1.0...puppeteer-v22.2.0) (2024-02-21)
+
+
+### Features
+
+* support local aliases when launching a browser ([#11947](https://github.com/puppeteer/puppeteer/issues/11947)) ([561e4cd](https://github.com/puppeteer/puppeteer/commit/561e4cd6ee79b19ac43f2c2fceaa1fce51052c02))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 22.1.0 to 22.2.0
+    * @puppeteer/browsers bumped from 2.0.1 to 2.1.0
+
 ## [22.1.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v22.0.0...puppeteer-v22.1.0) (2024-02-17)
 
 

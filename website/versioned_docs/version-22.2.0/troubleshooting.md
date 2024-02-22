@@ -483,6 +483,47 @@ Next, you have to use `'--no-sandbox'` mode and also
 passing them as an arguments to your `.launch()` call:
 `puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });`.
 
+## Running Puppeteer on Google Cloud Run
+
+Google Cloud Run disables the CPU by default, after an HTTP response is written to the client. This means that puppeteer will appear extremely slow (taking 1-5 minutes to launch), if you "run puppeteer in the background" after your response has been written.
+
+So this simple express app will be percievably slow:
+
+```js
+import express from 'express';
+
+const app = express();
+
+app.post('/test-puppeteer', (req, res) => {
+  res.json({
+    jobId: 123,
+    acknowledged: true,
+  });
+
+  puppeteer.launch().then(browser => {
+    // 2 minutes later...
+  });
+});
+
+app.listen(3000);
+```
+
+It is slow because CPU is disabled on GCR because puppeteer is launched after the response is sent. What you want to do is this:
+
+```js
+app.post('/test-puppeteer', (req, res) => {
+  puppeteer.launch().then(browser => {
+    // A second later...
+    res.json({
+      jobId: 123,
+      acknowledged: true,
+    });
+  });
+});
+```
+
+If you want to run the stuff in the background, you need to "enable CPU always" even after responses are sent. That should fix it.
+
 #### Tips
 
 By default, Docker runs a container with a `/dev/shm` shared memory space 64MB.
@@ -535,7 +576,7 @@ module.exports = {
 };
 ```
 
-> [!NOTE]  
+> [!NOTE]
 > Google App Engine caches your `node_modules` between builds.
 > Specifying the Puppeteer cache as subdirectory of `node_modules`
 > mitigates an issue in which Puppeteer can't find the browser executable
@@ -562,7 +603,7 @@ module.exports = {
 };
 ```
 
-> [!NOTE]  
+> [!NOTE]
 > Google Cloud Functions caches your `node_modules` between builds. Specifying the
 > puppeteer cache as subdirectory of `node_modules` mitigates an issue in which the
 > puppeteer install process does not run when the cache is hit.
