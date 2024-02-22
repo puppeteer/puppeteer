@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.6.0...ng-schematics-v0.7.0) (2024-02-22)
+
+
+### Features
+
+* roll to Chrome 122.0.6261.57 (r1250580) ([#11958](https://github.com/puppeteer/puppeteer/issues/11958)) ([70ad3b2](https://github.com/puppeteer/puppeteer/commit/70ad3b244826ca102737e93cd2316e451ea310e8))
+
 ## [0.6.0](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.5.6...ng-schematics-v0.6.0) (2024-02-05)
 
 
