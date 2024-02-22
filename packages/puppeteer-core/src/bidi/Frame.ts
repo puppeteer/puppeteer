@@ -224,12 +224,21 @@ export class BidiFrame extends Frame {
     return this.page()._timeoutSettings;
   }
 
-  override mainRealm(): BidiRealm {
+  override mainRealm(): BidiFrameRealm {
     return this.realms.default;
   }
 
-  override isolatedRealm(): BidiRealm {
+  override isolatedRealm(): BidiFrameRealm {
     return this.realms.internal;
+  }
+
+  realm(id: string): BidiRealm | undefined {
+    for (const realm of Object.values(this.realms)) {
+      if (realm.realm.id === id) {
+        return realm;
+      }
+    }
+    return;
   }
 
   override page(): BidiPage {

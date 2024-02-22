@@ -15,6 +15,7 @@ import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {Metrics, Page} from 'puppeteer-core/internal/api/Page.js';
 import type {CdpPage} from 'puppeteer-core/internal/cdp/Page.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
+import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 import sinon from 'sinon';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
@@ -1030,15 +1031,15 @@ describe('Page', function () {
     it('should be callable from-inside evaluateOnNewDocument', async () => {
       const {page} = await getTestState();
 
-      let called = false;
+      const called = new Deferred<void>();
       await page.exposeFunction('woof', function () {
-        called = true;
+        called.resolve();
       });
       await page.evaluateOnNewDocument(() => {
         return (globalThis as any).woof();
       });
       await page.reload();
-      expect(called).toBe(true);
+      await called.valueOrThrow();
     });
     it('should survive navigation', async () => {
       const {page, server} = await getTestState();

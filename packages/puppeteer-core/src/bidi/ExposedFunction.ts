@@ -6,29 +6,24 @@
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
+import {EventEmitter} from '../common/EventEmitter.js';
 import type {Awaitable, FlattenHandle} from '../common/types.js';
 import {debugError} from '../common/util.js';
-import {assert} from '../util/assert.js';
-import {Deferred} from '../util/Deferred.js';
+import {DisposableStack} from '../util/disposable.js';
 import {interpolateFunction, stringifyFunction} from '../util/Function.js';
 
 import type {Connection} from './core/Connection.js';
-import {BidiDeserializer} from './Deserializer.js';
+import {BidiElementHandle} from './ElementHandle.js';
 import type {BidiFrame} from './Frame.js';
-import {BidiSerializer} from './Serializer.js';
+import {BidiJSHandle} from './JSHandle.js';
 
-type SendArgsChannel<Args> = (value: [id: number, args: Args]) => void;
-type SendResolveChannel<Ret> = (
-  value: [id: number, resolve: (ret: FlattenHandle<Awaited<Ret>>) => void]
+type CallbackChannel<Args, Ret> = (
+  value: [
+    resolve: (ret: FlattenHandle<Awaited<Ret>>) => void,
+    reject: (error: unknown) => void,
+    args: Args,
+  ]
 ) => void;
-type SendRejectChannel = (
-  value: [id: number, reject: (error: unknown) => void]
-) => void;
-
-interface RemotePromiseCallbacks {
-  resolve: Deferred<Bidi.Script.RemoteValue>;
-  reject: Deferred<Bidi.Script.RemoteValue>;
-}
 
 /**
  * @internal
@@ -38,65 +33,53 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
 
   readonly name;
   readonly #apply;
+  readonly #isolate;
 
-  readonly #channels;
-  readonly #callerInfos = new Map<
-    string,
-    Map<number, RemotePromiseCallbacks>
-  >();
+  readonly #channel;
 
-  #preloadScriptId?: Bidi.Script.PreloadScript;
+  #scripts: Array<[BidiFrame, Bidi.Script.PreloadScript]> = [];
+  #disposables = new DisposableStack();
 
   constructor(
     frame: BidiFrame,
     name: string,
-    apply: (...args: Args) => Awaitable<Ret>
+    apply: (...args: Args) => Awaitable<Ret>,
+    isolate = false
   ) {
     this.#frame = frame;
     this.name = name;
     this.#apply = apply;
+    this.#isolate = isolate;
 
-    this.#channels = {
-      args: `__puppeteer__${this.#frame._id}_page_exposeFunction_${this.name}_args`,
-      resolve: `__puppeteer__${this.#frame._id}_page_exposeFunction_${this.name}_resolve`,
-      reject: `__puppeteer__${this.#frame._id}_page_exposeFunction_${this.name}_reject`,
-    };
+    this.#channel = `__puppeteer__${this.#frame._id}_page_exposeFunction_${this.name}`;
   }
 
   async expose(): Promise<void> {
     const connection = this.#connection;
-    const channelArguments = this.#channelArguments;
+    const channel = {
+      type: 'channel' as const,
+      value: {
+        channel: this.#channel,
+        ownership: Bidi.Script.ResultOwnership.Root,
+      },
+    };
 
-    // TODO(jrandolf): Implement cleanup with removePreloadScript.
-    connection.on(
-      Bidi.ChromiumBidi.Script.EventNames.Message,
-      this.#handleArgumentsMessage
+    const connectionEmitter = this.#disposables.use(
+      new EventEmitter(connection)
     );
-    connection.on(
+    connectionEmitter.on(
       Bidi.ChromiumBidi.Script.EventNames.Message,
-      this.#handleResolveMessage
-    );
-    connection.on(
-      Bidi.ChromiumBidi.Script.EventNames.Message,
-      this.#handleRejectMessage
+      this.#handleMessage
     );
 
     const functionDeclaration = stringifyFunction(
       interpolateFunction(
-        (
-          sendArgs: SendArgsChannel<Args>,
-          sendResolve: SendResolveChannel<Ret>,
-          sendReject: SendRejectChannel
-        ) => {
-          let id = 0;
+        (callback: CallbackChannel<Args, Ret>) => {
           Object.assign(globalThis, {
             [PLACEHOLDER('name') as string]: function (...args: Args) {
               return new Promise<FlattenHandle<Awaited<Ret>>>(
                 (resolve, reject) => {
-                  sendArgs([id, args]);
-                  sendResolve([id, resolve]);
-                  sendReject([id, reject]);
-                  ++id;
+                  callback([resolve, reject, args]);
                 }
               );
             },
@@ -106,179 +89,140 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
       )
     );
 
-    const {result} = await connection.send('script.addPreloadScript', {
-      functionDeclaration,
-      arguments: channelArguments,
-      contexts: [this.#frame.page().mainFrame()._id],
-    });
-    this.#preloadScriptId = result.script;
+    const frames = [this.#frame];
+    for (const frame of frames) {
+      frames.push(...frame.childFrames());
+    }
 
     await Promise.all(
-      this.#frame
-        .page()
-        .frames()
-        .map(async frame => {
-          return await connection.send('script.callFunction', {
-            functionDeclaration,
-            arguments: channelArguments,
-            awaitPromise: false,
-            target: frame.mainRealm().realm.target,
+      frames.map(async frame => {
+        const realm = this.#isolate ? frame.isolatedRealm() : frame.mainRealm();
+        try {
+          this.#scripts.push([
+            frame,
+            await frame.browsingContext.addPreloadScript(functionDeclaration, {
+              arguments: [channel],
+              sandbox: realm.sandbox,
+            }),
+          ]);
+        } catch (error) {
+          // If it errors, the frame probably doesn't support adding preload
+          // scripts. We fail gracefully.
+          debugError(error);
+        }
+
+        try {
+          await realm.realm.callFunction(functionDeclaration, false, {
+            arguments: [channel],
           });
-        })
+        } catch (error) {
+          // If it errors, the frame probably doesn't support call function. We
+          // fail gracefully.
+          debugError(error);
+        }
+      })
     );
   }
-
-  #handleArgumentsMessage = async (params: Bidi.Script.MessageParameters) => {
-    if (params.channel !== this.#channels.args) {
-      return;
-    }
-    const connection = this.#connection;
-    const {callbacks, remoteValue} = this.#getCallbacksAndRemoteValue(params);
-    const args = remoteValue.value?.[1];
-    assert(args);
-    try {
-      const result = await this.#apply(...BidiDeserializer.deserialize(args));
-      await connection.send('script.callFunction', {
-        functionDeclaration: stringifyFunction(([_, resolve]: any, result) => {
-          resolve(result);
-        }),
-        arguments: [
-          (await callbacks.resolve.valueOrThrow()) as Bidi.Script.LocalValue,
-          BidiSerializer.serialize(result),
-        ],
-        awaitPromise: false,
-        target: {
-          realm: params.source.realm,
-        },
-      });
-    } catch (error) {
-      try {
-        if (error instanceof Error) {
-          await connection.send('script.callFunction', {
-            functionDeclaration: stringifyFunction(
-              (
-                [_, reject]: [unknown, (error: Error) => void],
-                name: string,
-                message: string,
-                stack?: string
-              ) => {
-                const error = new Error(message);
-                error.name = name;
-                if (stack) {
-                  error.stack = stack;
-                }
-                reject(error);
-              }
-            ),
-            arguments: [
-              (await callbacks.reject.valueOrThrow()) as Bidi.Script.LocalValue,
-              BidiSerializer.serialize(error.name),
-              BidiSerializer.serialize(error.message),
-              BidiSerializer.serialize(error.stack),
-            ],
-            awaitPromise: false,
-            target: {
-              realm: params.source.realm,
-            },
-          });
-        } else {
-          await connection.send('script.callFunction', {
-            functionDeclaration: stringifyFunction(
-              (
-                [_, reject]: [unknown, (error: unknown) => void],
-                error: unknown
-              ) => {
-                reject(error);
-              }
-            ),
-            arguments: [
-              (await callbacks.reject.valueOrThrow()) as Bidi.Script.LocalValue,
-              BidiSerializer.serialize(error),
-            ],
-            awaitPromise: false,
-            target: {
-              realm: params.source.realm,
-            },
-          });
-        }
-      } catch (error) {
-        debugError(error);
-      }
-    }
-  };
 
   get #connection(): Connection {
     return this.#frame.page().browser().connection;
   }
 
-  get #channelArguments() {
-    return [
-      {
-        type: 'channel' as const,
-        value: {
-          channel: this.#channels.args,
-          ownership: Bidi.Script.ResultOwnership.Root,
-        },
-      },
-      {
-        type: 'channel' as const,
-        value: {
-          channel: this.#channels.resolve,
-          ownership: Bidi.Script.ResultOwnership.Root,
-        },
-      },
-      {
-        type: 'channel' as const,
-        value: {
-          channel: this.#channels.reject,
-          ownership: Bidi.Script.ResultOwnership.Root,
-        },
-      },
-    ];
+  #handleMessage = async (params: Bidi.Script.MessageParameters) => {
+    if (params.channel !== this.#channel) {
+      return;
+    }
+    const realm = this.#getRealm(params.source);
+    if (!realm) {
+      // Unrelated message.
+      return;
+    }
+
+    using dataHandle = BidiJSHandle.from<
+      [
+        resolve: (ret: FlattenHandle<Awaited<Ret>>) => void,
+        reject: (error: unknown) => void,
+        args: Args,
+      ]
+    >(params.data, realm);
+
+    using argsHandle = await dataHandle.evaluateHandle(([, , args]) => {
+      return args;
+    });
+
+    using stack = new DisposableStack();
+    const args = [];
+    for (const [index, handle] of await argsHandle.getProperties()) {
+      stack.use(handle);
+
+      // Element handles are passed as is.
+      if (handle instanceof BidiElementHandle) {
+        args[+index] = handle;
+        stack.use(handle);
+        continue;
+      }
+
+      // Everything else is passed as the JS value.
+      args[+index] = handle.jsonValue();
+    }
+
+    let result;
+    try {
+      result = await this.#apply(...((await Promise.all(args)) as Args));
+    } catch (error) {
+      try {
+        if (error instanceof Error) {
+          await dataHandle.evaluate(
+            ([, reject], name, message, stack) => {
+              const error = new Error(message);
+              error.name = name;
+              if (stack) {
+                error.stack = stack;
+              }
+              reject(error);
+            },
+            error.name,
+            error.message,
+            error.stack
+          );
+        } else {
+          await dataHandle.evaluate(([, reject], error) => {
+            reject(error);
+          }, error);
+        }
+      } catch (error) {
+        debugError(error);
+      }
+      return;
+    }
+
+    try {
+      await dataHandle.evaluate(([resolve], result) => {
+        resolve(result);
+      }, result);
+    } catch (error) {
+      debugError(error);
+    }
+  };
+
+  #getRealm(source: Bidi.Script.Source) {
+    const frame = this.#findFrame(source.context as string);
+    if (!frame) {
+      // Unrelated message.
+      return;
+    }
+    return frame.realm(source.realm);
   }
 
-  #handleResolveMessage = (params: Bidi.Script.MessageParameters) => {
-    if (params.channel !== this.#channels.resolve) {
-      return;
+  #findFrame(id: string) {
+    const frames = [this.#frame];
+    for (const frame of frames) {
+      if (frame._id === id) {
+        return frame;
+      }
+      frames.push(...frame.childFrames());
     }
-    const {callbacks, remoteValue} = this.#getCallbacksAndRemoteValue(params);
-    callbacks.resolve.resolve(remoteValue);
-  };
-
-  #handleRejectMessage = (params: Bidi.Script.MessageParameters) => {
-    if (params.channel !== this.#channels.reject) {
-      return;
-    }
-    const {callbacks, remoteValue} = this.#getCallbacksAndRemoteValue(params);
-    callbacks.reject.resolve(remoteValue);
-  };
-
-  #getCallbacksAndRemoteValue(params: Bidi.Script.MessageParameters) {
-    const {data, source} = params;
-    assert(data.type === 'array');
-    assert(data.value);
-
-    const callerIdRemote = data.value[0];
-    assert(callerIdRemote);
-    assert(callerIdRemote.type === 'number');
-    assert(typeof callerIdRemote.value === 'number');
-
-    let bindingMap = this.#callerInfos.get(source.realm);
-    if (!bindingMap) {
-      bindingMap = new Map();
-      this.#callerInfos.set(source.realm, bindingMap);
-    }
-
-    const callerId = callerIdRemote.value;
-    let callbacks = bindingMap.get(callerId);
-    if (!callbacks) {
-      callbacks = {
-        resolve: new Deferred(),
-        reject: new Deferred(),
-      };
-      bindingMap.set(callerId, callbacks);
-    }
-    return {callbacks, remoteValue: data};
+    return;
   }
 
   [Symbol.dispose](): void {
@@ -286,10 +230,11 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
   }
 
   async [Symbol.asyncDispose](): Promise<void> {
-    if (this.#preloadScriptId) {
-      await this.#connection.send('script.removePreloadScript', {
-        script: this.#preloadScriptId,
-      });
-    }
+    this.#disposables.dispose();
+    await Promise.all(
+      this.#scripts.map(async ([frame, script]) => {
+        await frame.browsingContext.removePreloadScript(script);
+      })
+    );
   }
 }
