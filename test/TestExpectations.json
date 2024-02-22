@@ -18,12 +18,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.overridePermissions *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[device-request-prompt.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -231,12 +225,6 @@
     "testIdPattern": "[browsercontext.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.overridePermissions *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
@@ -705,12 +693,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.setGeolocation should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[page.spec] Page Page.setOfflineMode should emulate navigator.onLine",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -921,6 +903,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.overridePermissions should fail when bad permission is given",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.overridePermissions should grant permission when listed",
@@ -1571,12 +1559,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[idle_override.spec] Emulate idle state changing idle state emulation causes change of the IdleDetector state",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[ignorehttpserrors.spec] ignoreHTTPSErrors Response.securityDetails Network redirects should report SecurityDetails",
@@ -2935,6 +2917,12 @@
     "testIdPattern": "[page.spec] Page Page.setCacheEnabled should stay disabled when toggling request interception on/off",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.setGeolocation should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
