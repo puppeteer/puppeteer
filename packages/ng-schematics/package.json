@@ -1,6 +1,6 @@
 {
   "name": "@puppeteer/ng-schematics",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Puppeteer Angular schematics",
   "scripts": {
     "build": "wireit",
