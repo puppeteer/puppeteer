@@ -10,7 +10,6 @@ import {
   concat,
   EMPTY,
   filter,
-  filterAsync,
   first,
   firstValueFrom,
   from,
@@ -63,6 +62,7 @@ import type {
 import {
   debugError,
   fromEmitterEvent,
+  filterAsync,
   importFSPromises,
   isString,
   NETWORK_IDLE_TIME,
