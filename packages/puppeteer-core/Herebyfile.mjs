@@ -5,7 +5,8 @@
  */
 import {mkdir, readFile, readdir, writeFile} from 'fs/promises';
 import Module from 'node:module';
-import {join, dirname} from 'path/posix';
+import path from 'path';
+import posixPath from 'path/posix';
 
 import esbuild from 'esbuild';
 import {execa} from 'execa';
@@ -99,13 +100,13 @@ export const buildTask = task({
       });
     const builders = [];
     for (const format of formats) {
-      const folder = join('lib', format, 'third_party');
+      const folder = posixPath.join('lib', format, 'third_party');
       for (const name of packages) {
-        const path = join(folder, name, `${name}.js`);
+        const entrypoint = posixPath.join(folder, name, `${name}.js`);
         builders.push(
           await esbuild.build({
-            entryPoints: [path],
-            outfile: path,
+            entryPoints: [entrypoint],
+            outfile: entrypoint,
             bundle: true,
             allowOverwrite: true,
             format,
@@ -118,22 +119,27 @@ export const buildTask = task({
         switch (name) {
           case 'rxjs':
             license = await readFile(
-              `${dirname(require.resolve('rxjs'))}/../../LICENSE.txt`,
+              path.join(
+                path.dirname(require.resolve('rxjs')),
+                '..',
+                '..',
+                'LICENSE.txt'
+              ),
               'utf-8'
             );
             break;
           case 'mitt':
             license = await readFile(
-              `${dirname(require.resolve('mitt'))}/../LICENSE`,
+              path.join(path.dirname(require.resolve('mitt')), '..', 'LICENSE'),
               'utf-8'
             );
             break;
           default:
             throw new Error(`Add license handling for ${path}`);
         }
-        const content = await readFile(path, 'utf-8');
+        const content = await readFile(entrypoint, 'utf-8');
         await writeFile(
-          path,
+          entrypoint,
           `/**
 ${license}
 */
