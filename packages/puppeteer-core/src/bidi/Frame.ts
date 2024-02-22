@@ -422,7 +422,7 @@ export class BidiFrame extends Frame {
     selector: Selector,
     options?: WaitForSelectorOptions
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    if (selector.startsWith('aria')) {
+    if (selector.startsWith('aria') && !this.page().browser().cdpSupported) {
       throw new UnsupportedOperation(
         'ARIA selector is not supported for BiDi!'
       );

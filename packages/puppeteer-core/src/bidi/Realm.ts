@@ -7,6 +7,7 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
+import {ARIAQueryHandler} from '../cdp/AriaQueryHandler.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
@@ -20,6 +21,7 @@ import {
   SOURCE_URL_REGEX,
 } from '../common/util.js';
 import type PuppeteerUtil from '../injected/injected.js';
+import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {stringifyFunction} from '../util/Function.js';
 
 import type {
@@ -30,6 +32,7 @@ import type {
 import type {WindowRealm} from './core/Realm.js';
 import {BidiDeserializer} from './Deserializer.js';
 import {BidiElementHandle} from './ElementHandle.js';
+import {ExposeableFunction} from './ExposedFunction.js';
 import type {BidiFrame} from './Frame.js';
 import {BidiJSHandle} from './JSHandle.js';
 import {BidiSerializer} from './Serializer.js';
@@ -282,7 +285,66 @@ export class BidiFrameRealm extends BidiRealm {
       this.environment.clearDocumentHandle();
     });
 
+    this.realm.session.on(
+      'cdp.Runtime.executionContextCreated',
+      (event: any) => {
+        if (event.context.uniqueId === this.realm.id) {
+          console.log(this.realm.id);
+        }
+      }
+    );
+
     super.initialize();
+  }
+
+  #bindingsInstalled = false;
+  override get puppeteerUtil(): Promise<BidiJSHandle<PuppeteerUtil>> {
+    let promise = Promise.resolve() as Promise<unknown>;
+    if (!this.#bindingsInstalled) {
+      promise = Promise.all([
+        this.#installGlobalBinding(
+          new ExposeableFunction(
+            this.environment as BidiFrame,
+            '__ariaQuerySelector',
+            ARIAQueryHandler.queryOne,
+            !!this.sandbox
+          )
+        ),
+        this.#installGlobalBinding(
+          new ExposeableFunction(
+            this.environment as BidiFrame,
+            '__ariaQuerySelectorAll',
+            async (
+              element: BidiElementHandle<Node>,
+              selector: string
+            ): Promise<JSHandle<Node[]>> => {
+              const results = ARIAQueryHandler.queryAll(element, selector);
+              return await element.realm.evaluateHandle(
+                (...elements) => {
+                  return elements;
+                },
+                ...(await AsyncIterableUtil.collect(results))
+              );
+            },
+            !!this.sandbox
+          )
+        ),
+      ]);
+      this.#bindingsInstalled = true;
+    }
+    return promise.then(() => {
+      return super.puppeteerUtil;
+    });
+  }
+
+  async #installGlobalBinding(binding: ExposeableFunction<never[], unknown>) {
+    try {
+      await binding.expose();
+    } catch (error) {
+      // If the binding cannot be added, then either the browser doesn't support
+      // bindings (e.g. Firefox) or the context is broken. Either breakage is
+      // okay, so we ignore the error.
+    }
   }
 
   get sandbox(): string | undefined {

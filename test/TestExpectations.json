@@ -1,11 +1,5 @@
 [
   {
-    "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler waitForSelector (aria) *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
     "testIdPattern": "[autofill.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -196,30 +190,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler waitForSelector (aria) should have an error message specifically for awaiting an element to be hidden",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler waitForSelector (aria) should have correct stack trace for timeout",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler waitForSelector (aria) should respect timeout",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler waitForSelector (aria) should throw when frame is detached",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[autofill.spec] *",
