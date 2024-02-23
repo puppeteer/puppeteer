@@ -214,6 +214,24 @@ export class UserContext extends EventEmitter<{
     });
   }
 
+  @throwIfDisposed<UserContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
+  async setPermissions(
+    origin: string,
+    descriptor: Bidi.Permissions.PermissionDescriptor,
+    state: Bidi.Permissions.PermissionState
+  ): Promise<void> {
+    await this.#session.send('permissions.setPermission', {
+      origin,
+      descriptor,
+      state,
+      // @ts-expect-error not standard implementation.
+      'goog:userContext': this.#id,
+    });
+  }
+
   [disposeSymbol](): void {
     this.#reason ??=
       'User context already closed, probably because the browser disconnected/closed.';
