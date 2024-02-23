@@ -675,12 +675,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.removeExposedFunction should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],

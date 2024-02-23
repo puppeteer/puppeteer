@@ -29,6 +29,17 @@ type CallbackChannel<Args, Ret> = (
  * @internal
  */
 export class ExposeableFunction<Args extends unknown[], Ret> {
+  static async from<Args extends unknown[], Ret>(
+    frame: BidiFrame,
+    name: string,
+    apply: (...args: Args) => Awaitable<Ret>,
+    isolate = false
+  ): Promise<ExposeableFunction<Args, Ret>> {
+    const func = new ExposeableFunction(frame, name, apply, isolate);
+    await func.#initialize();
+    return func;
+  }
+
   readonly #frame;
 
   readonly name;
@@ -54,7 +65,7 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
     this.#channel = `__puppeteer__${this.#frame._id}_page_exposeFunction_${this.name}`;
   }
 
-  async expose(): Promise<void> {
+  async #initialize() {
     const connection = this.#connection;
     const channel = {
       type: 'channel' as const,
@@ -98,23 +109,16 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
       frames.map(async frame => {
         const realm = this.#isolate ? frame.isolatedRealm() : frame.mainRealm();
         try {
-          this.#scripts.push([
-            frame,
-            await frame.browsingContext.addPreloadScript(functionDeclaration, {
+          const [script] = await Promise.all([
+            frame.browsingContext.addPreloadScript(functionDeclaration, {
               arguments: [channel],
               sandbox: realm.sandbox,
             }),
+            realm.realm.callFunction(functionDeclaration, false, {
+              arguments: [channel],
+            }),
           ]);
-        } catch (error) {
-          // If it errors, the frame probably doesn't support adding preload
-          // scripts. We fail gracefully.
-          debugError(error);
-        }
-
-        try {
-          await realm.realm.callFunction(functionDeclaration, false, {
-            arguments: [channel],
-          });
+          this.#scripts.push([frame, script]);
         } catch (error) {
           // If it errors, the frame probably doesn't support call function. We
           // fail gracefully.
@@ -233,7 +237,17 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
     this.#disposables.dispose();
     await Promise.all(
       this.#scripts.map(async ([frame, script]) => {
-        await frame.browsingContext.removePreloadScript(script);
+        const realm = this.#isolate ? frame.isolatedRealm() : frame.mainRealm();
+        try {
+          await Promise.all([
+            realm.evaluate(name => {
+              delete (globalThis as any)[name];
+            }, this.name),
+            frame.browsingContext.removePreloadScript(script),
+          ]);
+        } catch (error) {
+          debugError(error);
+        }
       })
     );
   }

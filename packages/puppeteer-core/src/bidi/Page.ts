@@ -577,9 +577,8 @@ export class BidiPage extends Page {
     throw new UnsupportedOperation();
   }
 
-  override removeExposedFunction(): never {
-    // TODO: Quick win?
-    throw new UnsupportedOperation();
+  override async removeExposedFunction(name: string): Promise<void> {
+    await this.#frame.removeExposedFunction(name);
   }
 
   override authenticate(): never {
