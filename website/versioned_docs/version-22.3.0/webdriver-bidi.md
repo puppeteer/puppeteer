@@ -94,6 +94,11 @@ This is an exciting step towards a more unified and efficient cross-browser auto
   - Page.pdf (only `format`, `height`, `landscape`, `margin`, `pageRanges`, `printBackground`, `scale`, `width` are supported)
   - Page.createPDFStream (only `format`, `height`, `landscape`, `margin`, `pageRanges`, `printBackground`, `scale`, `width` are supported)
 
+- Permissions (Supported in Chrome only)
+
+  - BrowserContext.clearPermissionOverrides()
+  - BrowserContext.overridePermissions()
+
 ## Puppeteer features not yet supported over WebDriver BiDi
 
 - [Request interception](https://pptr.dev/guides/request-interception)
@@ -110,11 +115,6 @@ This is an exciting step towards a more unified and efficient cross-browser auto
   - HTTPRequest.respond()
   - HTTPRequest.responseForRequest()
   - Page.setRequestInterception()
-
-- Permissions
-
-  - BrowserContext.clearPermissionOverrides()
-  - BrowserContext.overridePermissions()
 
 - Various emulations (most are supported with Chrome)
 

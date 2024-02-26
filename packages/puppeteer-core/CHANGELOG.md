@@ -20,6 +20,19 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.3.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.2.0...puppeteer-core-v22.3.0) (2024-02-25)
+
+
+### Features
+
+* implement permissions for WebDriver BiDi ([#11979](https://github.com/puppeteer/puppeteer/issues/11979)) ([3a467c3](https://github.com/puppeteer/puppeteer/commit/3a467c39cb60de4237081ee201bd86051887c2f2))
+
+
+### Bug Fixes
+
+* roll to Chrome 122.0.6261.69 (r1250580) ([#11991](https://github.com/puppeteer/puppeteer/issues/11991)) ([eb2c334](https://github.com/puppeteer/puppeteer/commit/eb2c33485ec473e085c6b76b45554758764349d6))
+* supress viewport errors for pages that do not support changing it ([#11970](https://github.com/puppeteer/puppeteer/issues/11970)) ([753a954](https://github.com/puppeteer/puppeteer/commit/753a954456699fc06adf67837225f306711af856))
+
 ## [22.2.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.1.0...puppeteer-core-v22.2.0) (2024-02-21)
 
 
