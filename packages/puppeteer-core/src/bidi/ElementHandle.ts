@@ -7,7 +7,6 @@
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {ElementHandle, type AutofillData} from '../api/ElementHandle.js';
-import {UnsupportedOperation} from '../common/Errors.js';
 import {throwIfDisposed} from '../util/decorators.js';
 
 import type {BidiFrame} from './Frame.js';
@@ -90,7 +89,31 @@ export class BidiElementHandle<
     return null;
   }
 
-  override uploadFile(this: ElementHandle<HTMLInputElement>): never {
-    throw new UnsupportedOperation();
+  override async uploadFile(
+    this: BidiElementHandle<HTMLInputElement>,
+    ...files: string[]
+  ): Promise<void> {
+    // Locate all files and confirm that they exist.
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    let path: typeof import('path');
+    try {
+      path = await import('path');
+    } catch (error) {
+      if (error instanceof TypeError) {
+        throw new Error(
+          `JSHandle#uploadFile can only be used in Node-like environments.`
+        );
+      }
+      throw error;
+    }
+
+    files = files.map(file => {
+      if (path.win32.isAbsolute(file) || path.posix.isAbsolute(file)) {
+        return file;
+      } else {
+        return path.resolve(file);
+      }
+    });
+    await this.frame.setFiles(this, files);
   }
 }

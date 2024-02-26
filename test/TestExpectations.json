@@ -396,6 +396,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[input.spec] input tests ElementHandle.uploadFile *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[jshandle.spec] JSHandle JSHandle.jsonValue should not throw for circular objects",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp"],
@@ -1724,18 +1730,6 @@
   },
   {
     "testIdPattern": "[input.spec] input tests FileChooser.isMultiple should work for single file pick",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[input.spec] input tests input should upload the file",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[input.spec] input tests input should upload the file",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]

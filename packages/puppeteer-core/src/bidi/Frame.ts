@@ -42,6 +42,7 @@ import {BidiCdpSession} from './CDPSession.js';
 import type {BrowsingContext} from './core/BrowsingContext.js';
 import {BidiDeserializer} from './Deserializer.js';
 import {BidiDialog} from './Dialog.js';
+import type {BidiElementHandle} from './ElementHandle.js';
 import {ExposeableFunction} from './ExposedFunction.js';
 import {BidiHTTPRequest, requests} from './HTTPRequest.js';
 import type {BidiHTTPResponse} from './HTTPResponse.js';
@@ -518,6 +519,15 @@ export class BidiFrame extends Frame {
       timeout: options.timeout ?? this.timeoutSettings.timeout(),
       concurrency,
     });
+  }
+
+  @throwIfDetached
+  async setFiles(element: BidiElementHandle, files: string[]): Promise<void> {
+    await this.browsingContext.setFiles(
+      // SAFETY: ElementHandles are always remote references.
+      element.remoteValue() as Bidi.Script.SharedReference,
+      files
+    );
   }
 }
 
