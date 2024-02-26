@@ -36,6 +36,10 @@ export interface Commands extends BidiCommands {
     params: Bidi.Cdp.GetSessionParameters;
     returnType: Bidi.Cdp.GetSessionResult;
   };
+  'cdp.resolveRealm': {
+    params: Bidi.Cdp.ResolveRealmParameters;
+    returnType: Bidi.Cdp.ResolveRealmResult;
+  };
 }
 
 /**

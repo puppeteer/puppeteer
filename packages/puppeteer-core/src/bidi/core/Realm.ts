@@ -9,6 +9,7 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
+import type {BidiConnection} from '../Connection.js';
 
 import type {Browser} from './Browser.js';
 import type {BrowsingContext} from './BrowsingContext.js';
@@ -119,6 +120,18 @@ export abstract class Realm extends EventEmitter<{
       ...options,
     });
     return result;
+  }
+
+  @throwIfDisposed<Realm>(realm => {
+    // SAFETY: Disposal implies this exists.
+    return realm.#reason!;
+  })
+  async resolveExecutionContextId(): Promise<number> {
+    const {result} = await (this.session.connection as BidiConnection).send(
+      'cdp.resolveRealm',
+      {realm: this.id}
+    );
+    return result.executionContextId;
   }
 
   [disposeSymbol](): void {
