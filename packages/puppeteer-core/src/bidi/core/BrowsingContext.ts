@@ -524,6 +524,21 @@ export class BrowsingContext extends EventEmitter<{
     });
   }
 
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
+  async setFiles(
+    element: Bidi.Script.SharedReference,
+    files: string[]
+  ): Promise<void> {
+    await this.#session.send('input.setFiles', {
+      context: this.id,
+      element,
+      files,
+    });
+  }
+
   [disposeSymbol](): void {
     this.#reason ??=
       'Browsing context already closed, probably because the user context closed.';

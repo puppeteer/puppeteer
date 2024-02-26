@@ -106,6 +106,10 @@ export interface Commands {
     params: Bidi.Input.ReleaseActionsParameters;
     returnType: Bidi.EmptyResult;
   };
+  'input.setFiles': {
+    params: Bidi.Input.SetFilesParameters;
+    returnType: Bidi.EmptyResult;
+  };
 
   'permissions.setPermission': {
     params: Bidi.Permissions.SetPermissionParameters;
