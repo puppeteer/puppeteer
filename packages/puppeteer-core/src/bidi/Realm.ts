@@ -7,6 +7,7 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
+import {ARIAQueryHandler} from '../cdp/AriaQueryHandler.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
@@ -20,6 +21,7 @@ import {
   SOURCE_URL_REGEX,
 } from '../common/util.js';
 import type PuppeteerUtil from '../injected/injected.js';
+import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {stringifyFunction} from '../util/Function.js';
 
 import type {
@@ -30,6 +32,7 @@ import type {
 import type {WindowRealm} from './core/Realm.js';
 import {BidiDeserializer} from './Deserializer.js';
 import {BidiElementHandle} from './ElementHandle.js';
+import {ExposeableFunction} from './ExposedFunction.js';
 import type {BidiFrame} from './Frame.js';
 import {BidiJSHandle} from './JSHandle.js';
 import {BidiSerializer} from './Serializer.js';
@@ -277,12 +280,49 @@ export class BidiFrameRealm extends BidiRealm {
   }
 
   #initialize() {
+    super.initialize();
+
     // This should run first.
     this.realm.on('updated', () => {
       this.environment.clearDocumentHandle();
+      this.#bindingsInstalled = false;
     });
+  }
 
-    super.initialize();
+  #bindingsInstalled = false;
+  override get puppeteerUtil(): Promise<BidiJSHandle<PuppeteerUtil>> {
+    let promise = Promise.resolve() as Promise<unknown>;
+    if (!this.#bindingsInstalled) {
+      promise = Promise.all([
+        ExposeableFunction.from(
+          this.environment as BidiFrame,
+          '__ariaQuerySelector',
+          ARIAQueryHandler.queryOne,
+          !!this.sandbox
+        ),
+        ExposeableFunction.from(
+          this.environment as BidiFrame,
+          '__ariaQuerySelectorAll',
+          async (
+            element: BidiElementHandle<Node>,
+            selector: string
+          ): Promise<JSHandle<Node[]>> => {
+            const results = ARIAQueryHandler.queryAll(element, selector);
+            return await element.realm.evaluateHandle(
+              (...elements) => {
+                return elements;
+              },
+              ...(await AsyncIterableUtil.collect(results))
+            );
+          },
+          !!this.sandbox
+        ),
+      ]);
+      this.#bindingsInstalled = true;
+    }
+    return promise.then(() => {
+      return super.puppeteerUtil;
+    });
   }
 
   get sandbox(): string | undefined {
@@ -298,14 +338,19 @@ export class BidiFrameRealm extends BidiRealm {
   ): Promise<JSHandle<Node>> {
     const {object} = await this.#frame.client.send('DOM.resolveNode', {
       backendNodeId,
+      executionContextId: await this.realm.resolveExecutionContextId(),
     });
-    return BidiElementHandle.from(
+    using handle = BidiElementHandle.from(
       {
         handle: object.objectId,
         type: 'node',
       },
       this
     );
+    // We need the sharedId, so we perform the following to obtain it.
+    return await handle.evaluateHandle(element => {
+      return element;
+    });
   }
 }
 
