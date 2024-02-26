@@ -408,14 +408,20 @@ export class BidiFrame extends Frame {
         `Failed to add page binding with name ${name}: globalThis['${name}'] already exists!`
       );
     }
-    const exposeable = new ExposeableFunction(this, name, apply);
+    const exposeable = await ExposeableFunction.from(this, name, apply);
     this.#exposedFunctions.set(name, exposeable);
-    try {
-      await exposeable.expose();
-    } catch (error) {
-      this.#exposedFunctions.delete(name);
-      throw error;
+  }
+
+  async removeExposedFunction(name: string): Promise<void> {
+    const exposedFunction = this.#exposedFunctions.get(name);
+    if (!exposedFunction) {
+      throw new Error(
+        `Failed to remove page binding with name ${name}: window['${name}'] does not exists!`
+      );
     }
+
+    this.#exposedFunctions.delete(name);
+    await exposedFunction[Symbol.asyncDispose]();
   }
 
   override waitForSelector<Selector extends string>(
