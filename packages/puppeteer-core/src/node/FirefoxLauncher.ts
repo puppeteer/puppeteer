@@ -50,6 +50,9 @@ export class FirefoxLauncher extends ProductLauncher {
         : {
             // Do not close the window when the last tab gets closed
             'browser.tabs.closeWindowWithLastTab': false,
+            // Prevent various error message on the console
+            // jest-puppeteer asserts that no error message is emitted by the console
+            'network.cookie.cookieBehavior': 0,
             // Temporarily force disable BFCache in parent (https://bit.ly/bug-1732263)
             'fission.bfcacheInParent': false,
             // Only enable the CDP protocol
