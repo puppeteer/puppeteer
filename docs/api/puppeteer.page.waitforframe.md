@@ -32,6 +32,6 @@ Promise&lt;[Frame](./puppeteer.frame.md)&gt;
 
 ```ts
 const frame = await page.waitForFrame(async frame => {
-  return frame.name() === 'Test';
+  return (await frame.name()) === 'Test';
 });
 ```
