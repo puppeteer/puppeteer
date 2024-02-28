@@ -225,23 +225,26 @@ describe('Cookie specs', () => {
       const {page, server, browser} = await getTestState();
 
       const anotherContext = await browser.createBrowserContext();
-      const anotherPage = await anotherContext.newPage();
+      try {
+        const anotherPage = await anotherContext.newPage();
 
-      await page.goto(server.EMPTY_PAGE);
-      await anotherPage.goto(server.EMPTY_PAGE);
+        await page.goto(server.EMPTY_PAGE);
+        await anotherPage.goto(server.EMPTY_PAGE);
 
-      await page.setCookie({name: 'page1cookie', value: 'page1value'});
-      await anotherPage.setCookie({name: 'page2cookie', value: 'page2value'});
+        await page.setCookie({name: 'page1cookie', value: 'page1value'});
+        await anotherPage.setCookie({name: 'page2cookie', value: 'page2value'});
 
-      const cookies1 = await page.cookies();
-      const cookies2 = await anotherPage.cookies();
-      expect(cookies1).toHaveLength(1);
-      expect(cookies2).toHaveLength(1);
-      expect(cookies1[0]!.name).toBe('page1cookie');
-      expect(cookies1[0]!.value).toBe('page1value');
-      expect(cookies2[0]!.name).toBe('page2cookie');
-      expect(cookies2[0]!.value).toBe('page2value');
-      await anotherContext.close();
+        const cookies1 = await page.cookies();
+        const cookies2 = await anotherPage.cookies();
+        expect(cookies1).toHaveLength(1);
+        expect(cookies2).toHaveLength(1);
+        expect(cookies1[0]!.name).toBe('page1cookie');
+        expect(cookies1[0]!.value).toBe('page1value');
+        expect(cookies2[0]!.name).toBe('page2cookie');
+        expect(cookies2[0]!.value).toBe('page2value');
+      } finally {
+        await anotherContext.close();
+      }
     });
     it('should set multiple cookies', async () => {
       const {page, server} = await getTestState();
