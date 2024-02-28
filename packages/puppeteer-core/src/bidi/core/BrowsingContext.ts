@@ -503,8 +503,8 @@ export class BrowsingContext extends EventEmitter<{
     } = await this.#session.send('storage.getCookies', {
       ...options,
       partition: {
-        type: 'context',
-        context: this.id,
+        type: 'storageKey',
+        userContext: this.userContext.id,
       },
     });
     return cookies;
@@ -518,8 +518,8 @@ export class BrowsingContext extends EventEmitter<{
     await this.#session.send('storage.setCookie', {
       cookie,
       partition: {
-        type: 'context',
-        context: this.id,
+        type: 'storageKey',
+        userContext: this.userContext.id,
       },
     });
   }
