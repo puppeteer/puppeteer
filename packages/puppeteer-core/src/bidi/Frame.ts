@@ -10,14 +10,18 @@ import type {Observable} from '../../third_party/rxjs/rxjs.js';
 import {
   combineLatest,
   defer,
-  delayWhen,
   filter,
   first,
   firstValueFrom,
+  from,
   map,
+  merge,
+  mergeMap,
   of,
   raceWith,
-  switchMap,
+  startWith,
+  take,
+  zip,
 } from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
@@ -121,10 +125,8 @@ export class BidiFrame extends Frame {
       });
     });
 
-    this.browsingContext.on('navigation', ({navigation}) => {
-      navigation.once('fragment', () => {
-        this.page().trustedEmitter.emit(PageEvent.FrameNavigated, this);
-      });
+    this.browsingContext.on('fragment', () => {
+      this.page().trustedEmitter.emit(PageEvent.FrameNavigated, this);
     });
     this.browsingContext.on('load', () => {
       this.page().trustedEmitter.emit(PageEvent.Load, undefined);
@@ -292,23 +294,26 @@ export class BidiFrame extends Frame {
     url: string,
     options: GoToOptions = {}
   ): Promise<BidiHTTPResponse | null> {
-    const [response] = await Promise.all([
-      this.waitForNavigation(options),
-      // Some implementations currently only report errors when the
-      // readiness=interactive.
-      //
-      // Related: https://bugzilla.mozilla.org/show_bug.cgi?id=1846601
-      this.browsingContext.navigate(
-        url,
-        Bidi.BrowsingContext.ReadinessState.Interactive
-      ),
-    ]).catch(
+    return await firstValueFrom(
+      this.#waitForNavigation$({
+        ...options,
+        // Some implementations currently only report errors when the
+        // readiness=interactive.
+        //
+        // Related: https://bugzilla.mozilla.org/show_bug.cgi?id=1846601
+        completion$: from(
+          this.browsingContext.navigate(
+            url,
+            Bidi.BrowsingContext.ReadinessState.Interactive
+          )
+        ),
+      })
+    ).catch(
       rewriteNavigationError(
         url,
         options.timeout ?? this.timeoutSettings.navigationTimeout()
       )
     );
-    return response;
   }
 
   @throwIfDetached
@@ -331,64 +336,7 @@ export class BidiFrame extends Frame {
   override async waitForNavigation(
     options: WaitForOptions = {}
   ): Promise<BidiHTTPResponse | null> {
-    const {timeout: ms = this.timeoutSettings.navigationTimeout()} = options;
-
-    const frames = this.childFrames().map(frame => {
-      return frame.#detached$();
-    });
-    return await firstValueFrom(
-      combineLatest([
-        fromEmitterEvent(this.browsingContext, 'navigation').pipe(
-          switchMap(({navigation}) => {
-            return this.#waitForLoad$(options).pipe(
-              delayWhen(() => {
-                if (frames.length === 0) {
-                  return of(undefined);
-                }
-                return combineLatest(frames);
-              }),
-              raceWith(
-                fromEmitterEvent(navigation, 'fragment'),
-                fromEmitterEvent(navigation, 'failed').pipe(
-                  map(({url}) => {
-                    throw new Error(`Navigation failed: ${url}`);
-                  })
-                ),
-                fromEmitterEvent(navigation, 'aborted').pipe(
-                  map(({url}) => {
-                    throw new Error(`Navigation aborted: ${url}`);
-                  })
-                )
-              ),
-              map(() => {
-                return navigation;
-              })
-            );
-          })
-        ),
-        this.#waitForNetworkIdle$(options),
-      ]).pipe(
-        map(([navigation]) => {
-          const request = navigation.request;
-          if (!request) {
-            return null;
-          }
-          const httpRequest = requests.get(request)!;
-          const lastRedirect = httpRequest.redirectChain().at(-1);
-          return (
-            lastRedirect !== undefined ? lastRedirect : httpRequest
-          ).response();
-        }),
-        raceWith(
-          timeout(ms),
-          this.#detached$().pipe(
-            map(() => {
-              throw new TargetCloseError('Frame detached.');
-            })
-          )
-        )
-      )
-    );
+    return await firstValueFrom(this.#waitForNavigation$(options));
   }
 
   override waitForDevicePrompt(): never {
@@ -444,6 +392,89 @@ export class BidiFrame extends Frame {
       flatten: true,
     });
     return new BidiCdpSession(this, sessionId);
+  }
+
+  @throwIfDetached
+  #waitForNavigation$(
+    options: WaitForOptions & {
+      /**
+       * If defined, waitForNavigation$ will wait for this condition and a
+       * navigation.
+       */
+      completion$?: Observable<unknown>;
+    } = {}
+  ): Observable<BidiHTTPResponse | null> {
+    const {
+      timeout: ms = this.timeoutSettings.navigationTimeout(),
+      completion$,
+    } = options;
+
+    const enum State {
+      WaitingForRequest,
+      WaitingForResponse,
+    }
+
+    // Wait for the first navigation of any type.
+    let navigations$: Observable<unknown> = merge(
+      fromEmitterEvent(this.browsingContext, 'navigation'),
+      fromEmitterEvent(this.browsingContext, 'fragment')
+    ).pipe(first());
+
+    // Wait for the completion condition to complete if defined.
+    if (completion$ !== undefined) {
+      navigations$ = zip(navigations$, completion$);
+    }
+
+    // An observable that returns the response to the first navigation request,
+    // if any.
+    const frames = this.childFrames();
+    const response$ = fromEmitterEvent(this.browsingContext, 'navigation').pipe(
+      take(1),
+      mergeMap(({navigation}) => {
+        // Wait for conditions before returning the response.
+        return combineLatest([
+          this.#waitForNetworkIdle$(options),
+          this.#waitForLoad$(options),
+          ...frames.map(frame => {
+            return frame.#detached$();
+          }),
+        ]).pipe(
+          map(() => {
+            if (!navigation.request) {
+              return null;
+            }
+            const httpRequest = requests.get(navigation.request)!;
+            const redirect = httpRequest.redirectChain().at(-1);
+            return (redirect !== undefined ? redirect : httpRequest).response();
+          }),
+          startWith(State.WaitingForResponse)
+        );
+      }),
+      startWith(State.WaitingForRequest)
+    );
+
+    return combineLatest([response$, navigations$]).pipe(
+      mergeMap(([stateOrResponse]) => {
+        switch (stateOrResponse) {
+          // If we are waiting for the navigation request, give up.
+          case State.WaitingForRequest:
+            return of(null);
+          // We shall also wait for the response.
+          case State.WaitingForResponse:
+            return of();
+          default:
+            return of(stateOrResponse);
+        }
+      }),
+      raceWith(
+        timeout(ms),
+        this.#detached$().pipe(
+          map(() => {
+            throw new TargetCloseError('Frame detached.');
+          })
+        )
+      )
+    );
   }
 
   @throwIfDetached
