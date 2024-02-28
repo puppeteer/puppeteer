@@ -387,7 +387,7 @@
   {
     "testIdPattern": "[headful.spec] *",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
+    "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
