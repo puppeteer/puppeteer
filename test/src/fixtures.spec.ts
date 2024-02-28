@@ -42,7 +42,8 @@ describe('Fixtures', function () {
     expect(dumpioData).toContain('message from dumpio');
   });
   it('should dump browser process stderr', async () => {
-    const {defaultBrowserOptions, puppeteerPath} = await getTestState();
+    const {defaultBrowserOptions, isFirefox, puppeteerPath} =
+      await getTestState();
 
     let dumpioData = '';
     const options = Object.assign({}, defaultBrowserOptions, {dumpio: true});
@@ -57,7 +58,11 @@ describe('Fixtures', function () {
     await new Promise(resolve => {
       return res.on('close', resolve);
     });
-    expect(dumpioData).toContain('DevTools listening on ws://');
+    if (isFirefox && defaultBrowserOptions.protocol === 'webDriverBiDi') {
+      expect(dumpioData).toContain('WebDriver BiDi listening on ws://');
+    } else {
+      expect(dumpioData).toContain('DevTools listening on ws://');
+    }
   });
   it('should close the browser when the node process closes', async () => {
     const {defaultBrowserOptions, puppeteerPath, puppeteer} =
