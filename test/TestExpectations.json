@@ -138,6 +138,13 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[proxy.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "Chrome-specific test"
+  },
+  {
     "testIdPattern": "[requestinterception-experimental.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -696,12 +703,6 @@
     "testIdPattern": "[prerender.spec] Prerender can screencast",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[proxy.spec] *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
   },
   {
@@ -2926,40 +2927,24 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[proxy.spec] request proxy in incognito browser context should proxy requests when configured at browser level",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[proxy.spec] request proxy in incognito browser context should proxy requests when configured at context level",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL"],
+    "comment": "TODO: investigate"
   },
   {
     "testIdPattern": "[proxy.spec] request proxy in incognito browser context should proxy requests when configured at context level",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome"],
-    "expectations": ["SKIP"]
+    "expectations": ["SKIP"],
+    "comment": "Windows version of Chrome has a long-standing bug"
   },
   {
     "testIdPattern": "[proxy.spec] request proxy in incognito browser context should proxy requests when configured at context level",
     "platforms": ["linux"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[proxy.spec] request proxy in incognito browser context should proxy requests when configured at context level",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[proxy.spec] request proxy should proxy requests when configured",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[queryObjects.spec] page.queryObjects should fail for disposed handles",
