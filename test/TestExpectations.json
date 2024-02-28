@@ -1574,6 +1574,13 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[ignorehttpserrors.spec] ignoreHTTPSErrors should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "Flaky due to https://bugzilla.mozilla.org/show_bug.cgi?id=1882454"
+  },
+  {
     "testIdPattern": "[ignorehttpserrors.spec] ignoreHTTPSErrors should work with request interception",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
