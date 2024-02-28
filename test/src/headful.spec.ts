@@ -16,7 +16,7 @@ import {getTestState, launch} from './mocha-utils.js';
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 
-describe('Headful only tests', function () {
+describe('headful tests', function () {
   /* These tests fire up an actual browser so let's
    * allow a higher timeout
    */
