@@ -2111,6 +2111,13 @@
   },
   {
     "testIdPattern": "[mouse.spec] Mouse should send mouse wheel events",
+    "platforms": ["win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Started failing on 2024-02-28"
+  },
+  {
+    "testIdPattern": "[mouse.spec] Mouse should send mouse wheel events",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
