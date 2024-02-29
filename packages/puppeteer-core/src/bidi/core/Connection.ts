@@ -137,6 +137,10 @@ export interface Commands {
     returnType: Bidi.EmptyResult;
   };
 
+  'storage.deleteCookies': {
+    params: Bidi.Storage.DeleteCookiesParameters;
+    returnType: Bidi.Storage.DeleteCookiesResult;
+  };
   'storage.getCookies': {
     params: Bidi.Storage.GetCookiesParameters;
     returnType: Bidi.Storage.GetCookiesResult;

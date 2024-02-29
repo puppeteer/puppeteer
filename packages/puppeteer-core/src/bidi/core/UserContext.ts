@@ -14,6 +14,7 @@ import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 import type {Browser} from './Browser.js';
 import type {GetCookiesOptions} from './BrowsingContext.js';
 import {BrowsingContext} from './BrowsingContext.js';
+import {DeleteCookiesRequest} from '../../common/Cookie';
 
 /**
  * @internal
@@ -195,6 +196,26 @@ export class UserContext extends EventEmitter<{
     });
     return cookies;
   }
+
+  @throwIfDisposed<UserContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
+  async deleteCookie(...cookies: DeleteCookiesRequest[]): Promise<void> {
+    await Promise.all(cookies.map(async deleteCookieRequest => {
+      const filter = {
+        ...deleteCookieRequest
+      };
+      await this.#session.send('storage.deleteCookies', {
+        filter: filter,
+        partition: {
+          type: 'storageKey',
+          userContext: this.id,
+        },
+      });
+    }));
+  }
+
 
   @throwIfDisposed<UserContext>(context => {
     // SAFETY: Disposal implies this exists.

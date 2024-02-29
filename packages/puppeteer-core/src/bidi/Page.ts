@@ -49,6 +49,7 @@ import {BidiKeyboard, BidiMouse, BidiTouchscreen} from './Input.js';
 import type {BidiJSHandle} from './JSHandle.js';
 import {rewriteNavigationError} from './util.js';
 import type {BidiWebWorker} from './WebWorker.js';
+import {DeleteCookiesRequest} from '../common/Cookie.js';
 
 /**
  * @internal
@@ -559,9 +560,6 @@ export class BidiPage extends Page {
         ),
       };
 
-      // TODO: delete cookie before setting them.
-      // await this.deleteCookie(bidiCookie);
-
       if (cookie.partitionKey !== undefined) {
         await this.browserContext().userContext.setCookie(
           bidiCookie,
@@ -573,8 +571,8 @@ export class BidiPage extends Page {
     }
   }
 
-  override deleteCookie(): never {
-    throw new UnsupportedOperation();
+  override deleteCookie(...cookies: DeleteCookiesRequest[]): Promise<void> {
+    return this.#browserContext.userContext.deleteCookie(...cookies);
   }
 
   override async removeExposedFunction(name: string): Promise<void> {
