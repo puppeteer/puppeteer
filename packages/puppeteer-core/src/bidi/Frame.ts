@@ -40,6 +40,8 @@ import {debugError, fromEmitterEvent, timeout} from '../common/util.js';
 
 import {BidiCdpSession} from './CDPSession.js';
 import type {BrowsingContext} from './core/BrowsingContext.js';
+import type {Navigation} from './core/Navigation.js';
+import type {Request} from './core/Request.js';
 import {BidiDeserializer} from './Deserializer.js';
 import {BidiDialog} from './Dialog.js';
 import type {BidiElementHandle} from './ElementHandle.js';
@@ -360,8 +362,34 @@ export class BidiFrame extends Frame {
                   })
                 )
               ),
-              map(() => {
-                return navigation;
+              switchMap(() => {
+                if (navigation.request) {
+                  function requestFinished$(
+                    request: Request
+                  ): Observable<Navigation> {
+                    // Reduces flakiness if the response events arrive after
+                    // the load event.
+                    // Usually, the response or error is already there at this point.
+                    if (request.response || request.error) {
+                      return of(navigation);
+                    }
+                    if (request.redirect) {
+                      return requestFinished$(request.redirect);
+                    }
+                    return fromEmitterEvent(request, 'success')
+                      .pipe(
+                        raceWith(fromEmitterEvent(request, 'error')),
+                        raceWith(fromEmitterEvent(request, 'redirect'))
+                      )
+                      .pipe(
+                        switchMap(() => {
+                          return requestFinished$(request);
+                        })
+                      );
+                  }
+                  return requestFinished$(navigation.request);
+                }
+                return of(navigation);
               })
             );
           })
