@@ -235,10 +235,6 @@ function defaultProfilePreferences(
     // Disable the GFX sanity window
     'media.sanity-test.disabled': true,
 
-    // Prevent various error message on the console
-    // jest-puppeteer asserts that no error message is emitted by the console
-    'network.cookie.cookieBehavior': 0,
-
     // Disable experimental feature that is only available in Nightly
     'network.cookie.sameSite.laxByDefault': false,
 
