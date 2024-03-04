@@ -5,12 +5,15 @@
  */
 
 import fs from 'node:fs/promises';
+import path from 'path';
+import url from 'url';
 
 import actions from '@actions/core';
 
 import {testFirefoxBuildId} from '../test/build/versions.js';
 
-const filePath = './test/src/versions.ts';
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+const filePath = path.join(__dirname, '../test/src/versions.ts');
 
 const getVersion = async () => {
   // https://stackoverflow.com/a/1732454/96656
