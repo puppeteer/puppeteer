@@ -55,7 +55,7 @@ describe('headful tests', function () {
   });
 
   describe('HEADFUL', function () {
-    it('headless should be able to read cookies written by headful', async function () {
+    it('headless should be able to read cookies written by headful', async () => {
       /* Needs investigation into why but this fails consistently on Windows CI. */
       const {server} = await getTestState({skipLaunch: true});
 
