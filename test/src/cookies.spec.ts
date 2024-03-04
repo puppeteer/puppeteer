@@ -675,10 +675,10 @@ describe('Cookie specs', () => {
       ]);
     });
     it('should delete cookie for specified URL regardless of the current page', async () => {
-      // Tentative test case. Depending on the cookie partitioning implementation, this
-      // test case may not pass.
       // This test verifies the page.deleteCookie method deletes cookies for the custom
-      // destination URL, even if it was set from another page.
+      // destination URL, even if it was set from another page. Depending on the cookie
+      // partitioning implementation, this test case does not pass, if source origin is in
+      // the default cookie partition.
 
       const {page, server} = await getTestState();
       const COOKIE_DESTINATION_URL = 'https://example.com';
