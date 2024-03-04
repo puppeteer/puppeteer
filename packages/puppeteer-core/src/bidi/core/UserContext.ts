@@ -200,22 +200,6 @@ export class UserContext extends EventEmitter<{
     // SAFETY: Disposal implies this exists.
     return context.#reason!;
   })
-  async deleteCookie(...cookieFilters: Bidi.Storage.CookieFilter[]): Promise<void> {
-    await Promise.all(cookieFilters.map(async filter => {
-      await this.#session.send('storage.deleteCookies', {
-        filter: filter,
-        partition: {
-          type: 'storageKey',
-          userContext: this.id,
-        },
-      });
-    }));
-  }
-
-  @throwIfDisposed<UserContext>(context => {
-    // SAFETY: Disposal implies this exists.
-    return context.#reason!;
-  })
   async setCookie(
     cookie: Bidi.Storage.PartialCookie,
     sourceOrigin?: string

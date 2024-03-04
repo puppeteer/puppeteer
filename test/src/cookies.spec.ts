@@ -579,13 +579,13 @@ describe('Cookie specs', () => {
       expect(await page.evaluate('document.cookie')).toBe(
         'cookie1=1; cookie2=2; cookie3=3'
       );
-      await page.deleteCookie({ name: 'cookie2' });
+      await page.deleteCookie({name: 'cookie2'});
       expect(await page.evaluate('document.cookie')).toBe(
         'cookie1=1; cookie3=3'
       );
     });
     it('should not delete cookie for different domain', async () => {
-      const { page, server } = await getTestState();
+      const {page, server} = await getTestState();
       const COOKIE_DESTINATION_URL = 'https://example.com';
       const COOKIE_NAME = 'some_cookie_name';
 
@@ -605,7 +605,7 @@ describe('Cookie specs', () => {
       });
       expect(await page.cookies(COOKIE_DESTINATION_URL)).toHaveLength(1);
 
-      await page.deleteCookie({ name: COOKIE_NAME });
+      await page.deleteCookie({name: COOKIE_NAME});
 
       // Verify the cookie is deleted for the current page.
       expect(await page.cookies()).toHaveLength(0);
@@ -624,11 +624,11 @@ describe('Cookie specs', () => {
           secure: true,
           session: true,
           sourceScheme: 'Secure',
-        }]
-      );
+        },
+      ]);
     });
     it('should delete cookie for specified URL', async () => {
-      const { page, server } = await getTestState();
+      const {page, server} = await getTestState();
       const COOKIE_DESTINATION_URL = 'https://example.com';
       const COOKIE_NAME = 'some_cookie_name';
 
@@ -671,9 +671,8 @@ describe('Cookie specs', () => {
           secure: false,
           session: true,
           sourceScheme: 'NonSecure',
-        }]
-      );
-
+        },
+      ]);
     });
     it('should delete cookie for specified URL regardless of the current page', async () => {
       // Tentative test case. Depending on the cookie partitioning implementation, this
@@ -681,7 +680,7 @@ describe('Cookie specs', () => {
       // This test verifies the page.deleteCookie method deletes cookies for the custom
       // destination URL, even if it was set from another page.
 
-      const { page, server } = await getTestState();
+      const {page, server} = await getTestState();
       const COOKIE_DESTINATION_URL = 'https://example.com';
       const COOKIE_NAME = 'some_cookie_name';
       const URL_1 = server.EMPTY_PAGE;
@@ -708,7 +707,7 @@ describe('Cookie specs', () => {
       // Delete the cookie for the COOKIE_DESTINATION from URL_2.
       await page.deleteCookie({
         name: COOKIE_NAME,
-        url: COOKIE_DESTINATION_URL
+        url: COOKIE_DESTINATION_URL,
       });
 
       // Expect the cookie for the COOKIE_DESTINATION from URL_2 is deleted.

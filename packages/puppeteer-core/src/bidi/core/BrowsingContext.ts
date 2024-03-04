@@ -552,15 +552,19 @@ export class BrowsingContext extends EventEmitter<{
     // SAFETY: Disposal implies this exists.
     return context.#reason!;
   })
-  async deleteCookie(...cookieFilters: Bidi.Storage.CookieFilter[]): Promise<void> {
-    await Promise.all(cookieFilters.map(async filter => {
-      await this.#session.send('storage.deleteCookies', {
-        filter: filter,
-        partition: {
-          type: 'context',
-          context: this.id,
-        },
-      });
-    }));
+  async deleteCookie(
+    ...cookieFilters: Bidi.Storage.CookieFilter[]
+  ): Promise<void> {
+    await Promise.all(
+      cookieFilters.map(async filter => {
+        await this.#session.send('storage.deleteCookies', {
+          filter: filter,
+          partition: {
+            type: 'context',
+            context: this.id,
+          },
+        });
+      })
+    );
   }
 }
