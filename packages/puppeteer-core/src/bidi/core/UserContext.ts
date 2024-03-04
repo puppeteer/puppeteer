@@ -14,7 +14,6 @@ import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 import type {Browser} from './Browser.js';
 import type {GetCookiesOptions} from './BrowsingContext.js';
 import {BrowsingContext} from './BrowsingContext.js';
-import {DeleteCookiesRequest} from '../../common/Cookie';
 
 /**
  * @internal
@@ -201,11 +200,8 @@ export class UserContext extends EventEmitter<{
     // SAFETY: Disposal implies this exists.
     return context.#reason!;
   })
-  async deleteCookie(...cookies: DeleteCookiesRequest[]): Promise<void> {
-    await Promise.all(cookies.map(async deleteCookieRequest => {
-      const filter = {
-        ...deleteCookieRequest
-      };
+  async deleteCookie(...cookieFilters: Bidi.Storage.CookieFilter[]): Promise<void> {
+    await Promise.all(cookieFilters.map(async filter => {
       await this.#session.send('storage.deleteCookies', {
         filter: filter,
         partition: {
@@ -215,7 +211,6 @@ export class UserContext extends EventEmitter<{
       });
     }));
   }
-
 
   @throwIfDisposed<UserContext>(context => {
     // SAFETY: Disposal implies this exists.

@@ -571,8 +571,26 @@ export class BidiPage extends Page {
     }
   }
 
-  override deleteCookie(...cookies: DeleteCookiesRequest[]): Promise<void> {
-    return this.#browserContext.userContext.deleteCookie(...cookies);
+  override async deleteCookie(...cookies: DeleteCookiesRequest[]): Promise<void> {
+    await Promise.all(cookies.map(async deleteCookieRequest => {
+      const cookieUrl = deleteCookieRequest.url ?? this.url();
+      const normalizedUrl = URL.canParse(cookieUrl)
+        ? new URL(cookieUrl)
+        : undefined;
+
+      const domain = deleteCookieRequest.domain ?? normalizedUrl?.hostname;
+      assert(
+        domain !== undefined,
+        `At least one of the url and domain needs to be specified`
+      );
+
+      const filter = {
+        domain: domain,
+        name: deleteCookieRequest.name,
+        ...(deleteCookieRequest.path !== undefined ? { path: deleteCookieRequest.path } : {})
+      }
+      await this.#browserContext.userContext.deleteCookie(filter);
+    }));
   }
 
   override async removeExposedFunction(name: string): Promise<void> {
