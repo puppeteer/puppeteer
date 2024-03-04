@@ -1216,13 +1216,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[cookies.spec] Cookie specs Page.cookies should get cookies from multiple urls",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[cookies.spec] Cookie specs Page.cookies should get cookies from nested path",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -1296,8 +1289,8 @@
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should default to setting secure cookie for HTTPS websites",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "expectations": ["SKIP"],
+    "comment": "Chromium-specific test. The test relies on the cookie in secure context to be secure. This is not the case for Firefox."
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should isolate cookies in browser contexts",
@@ -1373,8 +1366,8 @@
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set secure same-site cookies from a frame",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "expectations": ["SKIP"],
+    "comment": "Chromium-specific test. The test relies on the cookie in secure context to be secure. This is not the case for Firefox."
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should work",
