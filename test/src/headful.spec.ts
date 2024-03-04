@@ -22,8 +22,8 @@ describe('headful tests', function () {
    */
   this.timeout(20_000);
 
-  let headfulOptions: PuppeteerLaunchOptions | undefined;
-  let headlessOptions: PuppeteerLaunchOptions & {headless: boolean};
+  let headfulOptions: PuppeteerLaunchOptions & {headless: false};
+  let headlessOptions: PuppeteerLaunchOptions & {headless: true};
 
   const browsers: Array<() => Promise<void>> = [];
 
@@ -32,10 +32,10 @@ describe('headful tests', function () {
       skipLaunch: true,
     });
     headfulOptions = Object.assign({}, defaultBrowserOptions, {
-      headless: false,
+      headless: false as const,
     });
     headlessOptions = Object.assign({}, defaultBrowserOptions, {
-      headless: true,
+      headless: true as const,
     });
   });
 
@@ -55,7 +55,7 @@ describe('headful tests', function () {
   });
 
   describe('HEADFUL', function () {
-    it('headless should be able to read cookies written by headful', async () => {
+    it('headless should be able to read cookies written by headful', async function () {
       /* Needs investigation into why but this fails consistently on Windows CI. */
       const {server} = await getTestState({skipLaunch: true});
 
