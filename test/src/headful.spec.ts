@@ -22,8 +22,8 @@ describe('headful tests', function () {
    */
   this.timeout(20_000);
 
-  let headfulOptions: PuppeteerLaunchOptions | undefined;
-  let headlessOptions: PuppeteerLaunchOptions & {headless: boolean};
+  let headfulOptions: PuppeteerLaunchOptions & {headless: false};
+  let headlessOptions: PuppeteerLaunchOptions & {headless: true};
 
   const browsers: Array<() => Promise<void>> = [];
 
@@ -32,10 +32,10 @@ describe('headful tests', function () {
       skipLaunch: true,
     });
     headfulOptions = Object.assign({}, defaultBrowserOptions, {
-      headless: false,
+      headless: false as const,
     });
     headlessOptions = Object.assign({}, defaultBrowserOptions, {
-      headless: true,
+      headless: true as const,
     });
   });
 
