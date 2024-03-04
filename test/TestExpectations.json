@@ -48,12 +48,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[headful.spec] *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
     "testIdPattern": "[idle_override.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
