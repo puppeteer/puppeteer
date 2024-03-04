@@ -165,4 +165,48 @@ describe('Chromium-Specific Page Tests', function () {
       'feature/5718547946799104'
     );
   });
+
+  it('Page.deleteCookie should delete cookie for specified URL regardless of the current page', async () => {
+    // This test depends on the cookie partition implementation. It verifies the
+    // `page.deleteCookie` method deletes cookies for the custom destination URL, even if
+    // it was set from another page.
+
+    const {page, server} = await getTestState();
+    const COOKIE_DESTINATION_URL = 'https://example.com';
+    const COOKIE_NAME = 'some_cookie_name';
+    const URL_1 = server.EMPTY_PAGE;
+    const URL_2 = server.CROSS_PROCESS_PREFIX + '/empty.html';
+
+    await page.goto(URL_1);
+    // Set a cookie for the COOKIE_DESTINATION from URL_1.
+    await page.setCookie({
+      url: COOKIE_DESTINATION_URL,
+      name: COOKIE_NAME,
+      value: 'Cookie from URL_1',
+    });
+    expect(await page.cookies(COOKIE_DESTINATION_URL)).toHaveLength(1);
+
+    await page.goto(URL_2);
+    // Set a cookie for the COOKIE_DESTINATION from URL_2.
+    await page.setCookie({
+      url: COOKIE_DESTINATION_URL,
+      name: COOKIE_NAME,
+      value: 'Cookie from URL_2',
+    });
+    expect(await page.cookies(COOKIE_DESTINATION_URL)).toHaveLength(1);
+
+    // Delete the cookie for the COOKIE_DESTINATION from URL_2.
+    await page.deleteCookie({
+      name: COOKIE_NAME,
+      url: COOKIE_DESTINATION_URL,
+    });
+
+    // Expect the cookie for the COOKIE_DESTINATION from URL_2 is deleted.
+    expect(await page.cookies(COOKIE_DESTINATION_URL)).toHaveLength(0);
+
+    // Navigate back to the URL_1.
+    await page.goto(server.EMPTY_PAGE);
+    // Expect the cookie for the COOKIE_DESTINATION from URL_1 is deleted.
+    expect(await page.cookies(COOKIE_DESTINATION_URL)).toHaveLength(0);
+  });
 });

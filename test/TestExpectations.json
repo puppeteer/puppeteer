@@ -1105,18 +1105,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should delete cookie for specified URL regardless of the current page",
-    "platforms": ["linux"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should delete cookie for specified URL regardless of the current page",
-    "platforms": ["linux"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should not delete cookie for different domain",
     "platforms": ["linux"],
     "parameters": ["firefox", "webDriverBiDi"],
