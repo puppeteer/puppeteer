@@ -589,7 +589,7 @@ export class BidiPage extends Page {
         name: deleteCookieRequest.name,
         ...(deleteCookieRequest.path !== undefined ? { path: deleteCookieRequest.path } : {})
       }
-      await this.#browserContext.userContext.deleteCookie(filter);
+      await this.#frame.browsingContext.deleteCookie(filter);
     }));
   }
 
