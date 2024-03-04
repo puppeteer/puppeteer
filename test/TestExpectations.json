@@ -1064,12 +1064,6 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
-    "testIdPattern": "[cookies.spec] Cookie specs Page.cookies should get cookies from multiple urls",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[cookies.spec] Cookie specs Page.cookies should get cookies from nested path",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
