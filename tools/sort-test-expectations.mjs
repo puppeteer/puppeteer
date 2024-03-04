@@ -120,11 +120,29 @@ testExpectations = testExpectations.filter(item => {
 });
 
 if (process.argv.includes('--lint')) {
+  const missingComments = [];
+  testExpectations.forEach(item => {
+    if (item.expectations.length === 1 && item.expectations[0] === 'PASS') {
+      return;
+    }
+    if (!item.comment) {
+      missingComments.push(item);
+    }
+  });
+
   if (
     JSON.stringify(committedExpectations) !== JSON.stringify(testExpectations)
   ) {
     console.error(
       `${source} is not formatted properly. Run 'npm run format:expectations'.`
+    );
+    process.exit(1);
+  }
+
+  if (missingComments.length > 0) {
+    console.error(
+      `${source}: missing comments for the following expectations:`,
+      missingComments
     );
     process.exit(1);
   }
