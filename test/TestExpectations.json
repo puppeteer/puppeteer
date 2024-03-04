@@ -277,6 +277,13 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should delete cookie for specified URL regardless of the current page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "The test relies on the default page partition key do not contain the source origin. This is not the case for Firefox."
+  },
+  {
     "testIdPattern": "[coverage.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -1081,22 +1088,46 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should work",
+    "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should delete cookie",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL"],
+    "comment": "Firefox default partition key is inconsistent: #12004"
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should delete cookie",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Not supported with cdp"
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should delete cookie for specified URL",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox default partition key is inconsistent: #12004"
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should delete cookie for specified URL",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Not supported with cdp"
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should not delete cookie for different domain",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox default partition key is inconsistent: #12004"
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should not delete cookie for different domain",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Not supported with cdp"
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should be able to set insecure cookie for HTTP website",
@@ -1193,12 +1224,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[defaultbrowsercontext.spec] DefaultBrowserContext page.deleteCookie() should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[defaultbrowsercontext.spec] DefaultBrowserContext page.deleteCookie() should work",

@@ -547,4 +547,24 @@ export class BrowsingContext extends EventEmitter<{
     this.#disposables.dispose();
     super[disposeSymbol]();
   }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
+  async deleteCookie(
+    ...cookieFilters: Bidi.Storage.CookieFilter[]
+  ): Promise<void> {
+    await Promise.all(
+      cookieFilters.map(async filter => {
+        await this.#session.send('storage.deleteCookies', {
+          filter: filter,
+          partition: {
+            type: 'context',
+            context: this.id,
+          },
+        });
+      })
+    );
+  }
 }

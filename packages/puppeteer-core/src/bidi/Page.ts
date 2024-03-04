@@ -28,6 +28,7 @@ import {Coverage} from '../cdp/Coverage.js';
 import {EmulationManager} from '../cdp/EmulationManager.js';
 import {Tracing} from '../cdp/Tracing.js';
 import type {Cookie, CookieParam, CookieSameSite} from '../common/Cookie.js';
+import type {DeleteCookiesRequest} from '../common/Cookie.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
@@ -559,9 +560,6 @@ export class BidiPage extends Page {
         ),
       };
 
-      // TODO: delete cookie before setting them.
-      // await this.deleteCookie(bidiCookie);
-
       if (cookie.partitionKey !== undefined) {
         await this.browserContext().userContext.setCookie(
           bidiCookie,
@@ -573,8 +571,32 @@ export class BidiPage extends Page {
     }
   }
 
-  override deleteCookie(): never {
-    throw new UnsupportedOperation();
+  override async deleteCookie(
+    ...cookies: DeleteCookiesRequest[]
+  ): Promise<void> {
+    await Promise.all(
+      cookies.map(async deleteCookieRequest => {
+        const cookieUrl = deleteCookieRequest.url ?? this.url();
+        const normalizedUrl = URL.canParse(cookieUrl)
+          ? new URL(cookieUrl)
+          : undefined;
+
+        const domain = deleteCookieRequest.domain ?? normalizedUrl?.hostname;
+        assert(
+          domain !== undefined,
+          `At least one of the url and domain needs to be specified`
+        );
+
+        const filter = {
+          domain: domain,
+          name: deleteCookieRequest.name,
+          ...(deleteCookieRequest.path !== undefined
+            ? {path: deleteCookieRequest.path}
+            : {}),
+        };
+        await this.#frame.browsingContext.deleteCookie(filter);
+      })
+    );
   }
 
   override async removeExposedFunction(name: string): Promise<void> {
