@@ -379,20 +379,19 @@ export const expectCookieEquals = async (
     // Only keep standard properties when testing on a browser other than Chrome.
     expectedCookies = expectedCookies.map(cookie => {
       return Object.fromEntries(
-        (Object.entries(cookie)).filter(
-          ([key]) =>
-            [
-              'domain',
-              'expires',
-              'httpOnly',
-              'name',
-              'path',
-              'secure',
-              'session',
-              'size',
-              'value',
-            ].includes(key)
-        )
+        Object.entries(cookie).filter(([key]) => {
+          return [
+            'domain',
+            'expires',
+            'httpOnly',
+            'name',
+            'path',
+            'secure',
+            'session',
+            'size',
+            'value',
+          ].includes(key);
+        })
       );
     });
   }

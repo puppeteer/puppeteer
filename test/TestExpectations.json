@@ -1139,8 +1139,8 @@
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should default to setting secure cookie for HTTPS websites",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-`    "expectations": ["SKIP"],
-    "comment": "Chrome-specific test. The test relies on the cookie in secure context to be secure. This is not the case for Firefox."
+    "expectations": ["SKIP"],
+    "comment": "Chromium-specific test. The test relies on the cookie in secure context to be secure. This is not the case for Firefox."
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should isolate cookies in browser contexts",
@@ -1207,7 +1207,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "Chrome-specific test. The test relies on the cookie in secure context to be secure. This is not the case for Firefox."
+    "comment": "Chromium-specific test. The test relies on the cookie in secure context to be secure. This is not the case for Firefox."
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should work",
