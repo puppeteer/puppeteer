@@ -70,6 +70,7 @@ This is an exciting step towards a more unified and efficient cross-browser auto
 
 - Input
 
+  - ElementHandle.uploadFile
   - ElementHandle.click
   - Keyboard.down
   - Keyboard.press
@@ -141,7 +142,6 @@ This is an exciting step towards a more unified and efficient cross-browser auto
 - Other methods:
 
   - Browser.userAgent()
-  - ElementHandle.uploadFile()
   - Frame.isOOPFrame()
   - Frame.waitForDevicePrompt()
   - HTTPResponse.buffer()

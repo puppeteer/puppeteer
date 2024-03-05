@@ -20,6 +20,20 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.4.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.3.0...puppeteer-core-v22.4.0) (2024-03-05)
+
+
+### Features
+
+* implement ElementHandle.uploadFile for WebDriver BiDi ([#11963](https://github.com/puppeteer/puppeteer/issues/11963)) ([accf2b6](https://github.com/puppeteer/puppeteer/commit/accf2b6ca84c93bc700277b4e3382d894fb45a76))
+* **webdriver:** support `Page.deleteCookie()` for WebDriver BiDi ([#12031](https://github.com/puppeteer/puppeteer/issues/12031)) ([7fe22b5](https://github.com/puppeteer/puppeteer/commit/7fe22b533dc96104f28696eb4ff96b2543fd8e5b))
+
+
+### Bug Fixes
+
+* roll to Chrome 122.0.6261.94 (r1250580) ([#12012](https://github.com/puppeteer/puppeteer/issues/12012)) ([7ba5529](https://github.com/puppeteer/puppeteer/commit/7ba5529f8d6f8ed085968b7a9bc6f25f8d91abd5))
+* **webdriver:** wait for response if the response has not completed once navigation has finished ([#12018](https://github.com/puppeteer/puppeteer/issues/12018)) ([6d8831a](https://github.com/puppeteer/puppeteer/commit/6d8831a9c398230f2543c3862d3fe5fc7cd2b940))
+
 ## [22.3.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.2.0...puppeteer-core-v22.3.0) (2024-02-25)
 
 
