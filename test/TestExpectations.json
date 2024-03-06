@@ -56,6 +56,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[headful.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["headless"],
+    "expectations": ["SKIP"],
+    "comment": "Spawns headful browser, needs display or `xvfb` like which is not required for other headless tests"
+  },
+  {
     "testIdPattern": "[idle_override.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
