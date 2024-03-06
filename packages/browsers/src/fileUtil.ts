@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {exec as execChildProcess} from 'child_process';
+import {exec as execChildProcess, spawnSync} from 'child_process';
 import {createReadStream} from 'fs';
 import {mkdir, readdir} from 'fs/promises';
 import * as path from 'path';
@@ -30,6 +30,18 @@ export async function unpackArchive(
   } else if (archivePath.endsWith('.dmg')) {
     await mkdir(folderPath);
     await installDMG(archivePath, folderPath);
+  } else if (archivePath.endsWith('.exe')) {
+    // Firefox on Windows.
+    const result = spawnSync(archivePath, [`/ExtractDir=${folderPath}`], {
+      env: {
+        __compat_layer: 'RunAsInvoker',
+      },
+    });
+    if (result.status !== 0) {
+      throw new Error(
+        `Failed to extract ${archivePath} to ${folderPath}: ${result.output}`
+      );
+    }
   } else {
     throw new Error(`Unsupported archive format: ${archivePath}`);
   }

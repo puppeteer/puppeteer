@@ -65,14 +65,19 @@ export async function resolveBuildId(
     case Browser.FIREFOX:
       switch (tag as BrowserTag) {
         case BrowserTag.LATEST:
-          return await firefox.resolveBuildId('FIREFOX_NIGHTLY');
+          return await firefox.resolveBuildId(firefox.FirefoxChannel.NIGHTLY);
         case BrowserTag.BETA:
+          return await firefox.resolveBuildId(firefox.FirefoxChannel.BETA);
         case BrowserTag.CANARY:
+          return await firefox.resolveBuildId(firefox.FirefoxChannel.NIGHTLY);
         case BrowserTag.DEV:
-        case BrowserTag.STABLE:
-          throw new Error(
-            `${tag} is not supported for ${browser}. Use 'latest' instead.`
+          return await firefox.resolveBuildId(
+            firefox.FirefoxChannel.DEVEDITION
           );
+        case BrowserTag.STABLE:
+          return await firefox.resolveBuildId(firefox.FirefoxChannel.STABLE);
+        case BrowserTag.ESR:
+          return await firefox.resolveBuildId(firefox.FirefoxChannel.ESR);
       }
     case Browser.CHROME: {
       switch (tag as BrowserTag) {
@@ -86,6 +91,8 @@ export async function resolveBuildId(
           return await chrome.resolveBuildId(ChromeReleaseChannel.DEV);
         case BrowserTag.STABLE:
           return await chrome.resolveBuildId(ChromeReleaseChannel.STABLE);
+        case BrowserTag.ESR:
+          throw new Error('ESR is not available for Chrome');
         default:
           const result = await chrome.resolveBuildId(tag);
           if (result) {
@@ -105,6 +112,8 @@ export async function resolveBuildId(
           return await chromedriver.resolveBuildId(ChromeReleaseChannel.DEV);
         case BrowserTag.STABLE:
           return await chromedriver.resolveBuildId(ChromeReleaseChannel.STABLE);
+        case BrowserTag.ESR:
+          throw new Error('ESR is not available for ChromeDriver');
         default:
           const result = await chromedriver.resolveBuildId(tag);
           if (result) {
@@ -132,6 +141,8 @@ export async function resolveBuildId(
           return await chromeHeadlessShell.resolveBuildId(
             ChromeReleaseChannel.STABLE
           );
+        case BrowserTag.ESR:
+          throw new Error('ESR is not available for chrome-headless-shell');
         default:
           const result = await chromeHeadlessShell.resolveBuildId(tag);
           if (result) {
@@ -148,6 +159,7 @@ export async function resolveBuildId(
         case BrowserTag.CANARY:
         case BrowserTag.DEV:
         case BrowserTag.STABLE:
+        case BrowserTag.ESR:
           throw new Error(
             `${tag} is not supported for ${browser}. Use 'latest' instead.`
           );

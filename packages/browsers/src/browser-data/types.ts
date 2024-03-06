@@ -39,6 +39,7 @@ export enum BrowserTag {
   BETA = 'beta',
   DEV = 'dev',
   STABLE = 'stable',
+  ESR = 'esr',
   LATEST = 'latest',
 }
 
