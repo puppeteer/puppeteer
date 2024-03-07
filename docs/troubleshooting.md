@@ -1,11 +1,11 @@
 # Troubleshooting
 
-:::caution
+:::note
 
-Chromium currently does not provide arm64 binaries for Linux. There are only
-binaries for Mac ARM.
+To keep this page up-to-date we largely rely on community contributions.
+Please send a PR if you notice something is no longer up-to-date.
 
-:::
+:::note
 
 ## `Cannot find module 'puppeteer-core/internal/...'`
 
@@ -77,6 +77,14 @@ Make sure all the necessary dependencies are installed. You can run `ldd chrome
 common ones are provided below. Also, see
 https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/debian/dist_package_versions.json
 for the up-to-date list of dependencies declared by the Chrome installer.
+
+:::caution
+
+Chrome currently does not provide arm64 binaries for Linux.
+There are only arm64 binaries for Mac ARM.
+That means that Linux binaries downloaded by default will not work on Linux arm64.
+
+:::
 
 <details>
 <summary>Debian (e.g. Ubuntu) Dependencies</summary>
@@ -169,17 +177,22 @@ yum update nss -y
 
 </details>
 
-## Chrome headless disables GPU compositing
+## chrome-headless-shell disables GPU compositing
 
-Chrome/Chromium requires `--enable-gpu` to
+chrome-headless-shell requires `--enable-gpu` to
 [enable GPU acceleration in headless mode](https://crbug.com/1416283).
 
 ```ts
 const browser = await puppeteer.launch({
-  headless: true,
+  headless: 'shell',
   args: ['--enable-gpu'],
 });
 ```
+
+## Setting up GPU with Chrome
+
+Generally, Chrome should be able to detect and enable GPU if the system has appropriate drivers.
+For additional tips, see the following blog post https://developer.chrome.com/blog/supercharge-web-ai-testing.
 
 ## Setting Up Chrome Linux Sandbox
 
