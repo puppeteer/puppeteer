@@ -471,6 +471,7 @@ export class BidiFrame extends Frame {
       targetId: this._id,
       flatten: true,
     });
+    await this.browsingContext.subscribe([Bidi.ChromiumBidi.BiDiModule.Cdp]);
     return new BidiCdpSession(this, sessionId);
   }
 
