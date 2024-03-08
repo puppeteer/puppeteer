@@ -539,6 +539,14 @@ export class BrowsingContext extends EventEmitter<{
     });
   }
 
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
+  async subscribe(events: string[]): Promise<void> {
+    await this.#session.subscribe(events, [this.id]);
+  }
+
   [disposeSymbol](): void {
     this.#reason ??=
       'Browsing context already closed, probably because the user context closed.';

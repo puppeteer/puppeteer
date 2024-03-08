@@ -163,9 +163,10 @@ export class Session
     // SAFETY: By definition of `disposed`, `#reason` is defined.
     return session.#reason!;
   })
-  async subscribe(events: string[]): Promise<void> {
+  async subscribe(events: string[], contexts?: string[]): Promise<void> {
     await this.send('session.subscribe', {
       events,
+      contexts,
     });
   }
 
