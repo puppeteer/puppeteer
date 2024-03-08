@@ -2458,7 +2458,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
     };
     if (options.type === undefined && options.path !== undefined) {
       const filePath = options.path;
-      // Note we cannot use Node.js here due to browser compatability.
+      // Note we cannot use Node.js here due to browser compatibility.
       const extension = filePath
         .slice(filePath.lastIndexOf('.') + 1)
         .toLowerCase();
