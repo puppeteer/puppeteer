@@ -363,14 +363,14 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[devtools.spec] DevTools target.page() should return Page when calling asPage on DevTools target",
+    "testIdPattern": "[devtools.spec] DevTools target.page() should return a DevTools page if custom isPageTarget is provided",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[devtools.spec] DevTools target.page() should return a DevTools page if custom isPageTarget is provided",
+    "testIdPattern": "[devtools.spec] DevTools target.page() should return Page when calling asPage on DevTools target",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
@@ -3831,14 +3831,14 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[devtools.spec] DevTools target.page() should return Page when calling asPage on DevTools target",
+    "testIdPattern": "[devtools.spec] DevTools target.page() should return a DevTools page if custom isPageTarget is provided",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["SKIP"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[devtools.spec] DevTools target.page() should return a DevTools page if custom isPageTarget is provided",
+    "testIdPattern": "[devtools.spec] DevTools target.page() should return Page when calling asPage on DevTools target",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["SKIP"],
