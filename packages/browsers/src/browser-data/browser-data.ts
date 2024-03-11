@@ -69,8 +69,10 @@ export async function resolveBuildId(
         case BrowserTag.BETA:
           return await firefox.resolveBuildId(firefox.FirefoxChannel.BETA);
         case BrowserTag.CANARY:
+        case BrowserTag.NIGHTLY:
           return await firefox.resolveBuildId(firefox.FirefoxChannel.NIGHTLY);
         case BrowserTag.DEV:
+        case BrowserTag.DEVEDITION:
           return await firefox.resolveBuildId(
             firefox.FirefoxChannel.DEVEDITION
           );
@@ -86,8 +88,10 @@ export async function resolveBuildId(
         case BrowserTag.BETA:
           return await chrome.resolveBuildId(ChromeReleaseChannel.BETA);
         case BrowserTag.CANARY:
+        case BrowserTag.NIGHTLY:
           return await chrome.resolveBuildId(ChromeReleaseChannel.CANARY);
         case BrowserTag.DEV:
+        case BrowserTag.DEVEDITION:
           return await chrome.resolveBuildId(ChromeReleaseChannel.DEV);
         case BrowserTag.STABLE:
           return await chrome.resolveBuildId(ChromeReleaseChannel.STABLE);
