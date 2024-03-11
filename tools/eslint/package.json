@@ -33,6 +33,6 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@prettier/sync": "0.5.1",
-    "@typescript-eslint/utils": "7.1.0"
+    "@typescript-eslint/utils": "7.1.1"
   }
 }
