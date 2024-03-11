@@ -67,9 +67,9 @@ describe('DevTools', function () {
         return 2 * 3;
       })
     ).toBe(6);
-    expect(await browser.pages()).toContainEqual(page);
+    expect(await browser.pages()).toContain(page);
   });
-  it('target.page() should return a DevTools page if asPage is used', async function () {
+  it('target.page() should return Page when calling asPage on DevTools target', async function () {
     const {puppeteer} = await getTestState({skipLaunch: true});
     const originalBrowser = await launchBrowser(launchOptions);
 
@@ -87,7 +87,8 @@ describe('DevTools', function () {
         return 2 * 3;
       })
     ).toBe(6);
-    expect(await browser.pages()).toContainEqual(page);
+    // The page won't be part of browser.pages() if a custom isPageTarget is not provided
+    expect(await browser.pages()).not.toContain(page);
   });
   it('should open devtools when "devtools: true" option is given', async () => {
     const browser = await launchBrowser(
