@@ -289,7 +289,7 @@ The following steps are manual version of the script above.
 2. Update `packages/puppeteer-core/src/revisions.ts` with the found `version`
    number.
 3. Update `versions.js` with the new Chrome-to-Puppeteer `version` mapping and
-   update `lastMaintainedChromeVersion` with the the next one in from the list.
+   update `lastMaintainedChromeVersion` with the next one in from the list.
 4. Run `npm run check`. If it fails, update
    `packages/puppeteer-core/package.json`
    with the expected `devtools-protocol` version and run `npm install` to generate an updated `package-lock.json`.
