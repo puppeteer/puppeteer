@@ -326,6 +326,16 @@ describe('JSHandle', function () {
         'JSHandle@proxy'
       );
     });
+    it('should work with window subtypes', async () => {
+      const {page} = await getTestState();
+
+      expect((await page.evaluateHandle('window')).toString()).toBe(
+        'JSHandle@window'
+      );
+      expect((await page.evaluateHandle('globalThis')).toString()).toBe(
+        'JSHandle@window'
+      );
+    });
   });
 
   describe('JSHandle[Symbol.dispose]', () => {
