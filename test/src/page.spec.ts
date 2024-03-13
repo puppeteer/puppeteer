@@ -497,7 +497,7 @@ describe('Page', function () {
         'JSHandle@window',
       ]);
     });
-    it.only('should return remote objects', async () => {
+    it('should return remote objects', async () => {
       const {page} = await getTestState();
 
       const logPromise = waitEvent<ConsoleMessage>(page, 'console');
