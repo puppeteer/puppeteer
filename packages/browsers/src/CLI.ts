@@ -222,7 +222,31 @@ export class CLI {
           );
           yargs.example(
             '$0 install firefox',
-            'Install the latest available build of the Firefox browser.'
+            'Install the latest nightly available build of the Firefox browser.'
+          );
+          yargs.example(
+            '$0 install firefox@stable',
+            'Install the latest stable build of the Firefox browser.'
+          );
+          yargs.example(
+            '$0 install firefox@beta',
+            'Install the latest beta build of the Firefox browser.'
+          );
+          yargs.example(
+            '$0 install firefox@devedition',
+            'Install the latest devedition build of the Firefox browser.'
+          );
+          yargs.example(
+            '$0 install firefox@esr',
+            'Install the latest ESR build of the Firefox browser.'
+          );
+          yargs.example(
+            '$0 install firefox@nightly',
+            'Install the latest nightly build of the Firefox browser.'
+          );
+          yargs.example(
+            '$0 install firefox@stable_111.0.1',
+            'Install a specific version of the Firefox browser.'
           );
           yargs.example(
             '$0 install firefox --platform mac',
@@ -395,7 +419,7 @@ export function makeProgressCallback(
   return (downloadedBytes: number, totalBytes: number) => {
     if (!progressBar) {
       progressBar = new ProgressBar(
-        `Downloading ${browser} r${buildId} - ${toMegabytes(
+        `Downloading ${browser} ${buildId} - ${toMegabytes(
           totalBytes
         )} [:bar] :percent :etas `,
         {

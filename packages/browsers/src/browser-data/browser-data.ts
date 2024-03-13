@@ -54,28 +54,36 @@ export const versionComparators = {
 export {Browser, BrowserPlatform, ChromeReleaseChannel};
 
 /**
- * @public
+ * @internal
  */
-export async function resolveBuildId(
+async function resolveBuildIdForBrowserTag(
   browser: Browser,
   platform: BrowserPlatform,
-  tag: string
+  tag: BrowserTag
 ): Promise<string> {
   switch (browser) {
     case Browser.FIREFOX:
-      switch (tag as BrowserTag) {
+      switch (tag) {
         case BrowserTag.LATEST:
-          return await firefox.resolveBuildId('FIREFOX_NIGHTLY');
+          return await firefox.resolveBuildId(firefox.FirefoxChannel.NIGHTLY);
         case BrowserTag.BETA:
+          return await firefox.resolveBuildId(firefox.FirefoxChannel.BETA);
+        case BrowserTag.NIGHTLY:
+          return await firefox.resolveBuildId(firefox.FirefoxChannel.NIGHTLY);
+        case BrowserTag.DEVEDITION:
+          return await firefox.resolveBuildId(
+            firefox.FirefoxChannel.DEVEDITION
+          );
+        case BrowserTag.STABLE:
+          return await firefox.resolveBuildId(firefox.FirefoxChannel.STABLE);
+        case BrowserTag.ESR:
+          return await firefox.resolveBuildId(firefox.FirefoxChannel.ESR);
         case BrowserTag.CANARY:
         case BrowserTag.DEV:
-        case BrowserTag.STABLE:
-          throw new Error(
-            `${tag} is not supported for ${browser}. Use 'latest' instead.`
-          );
+          throw new Error(`${tag.toUpperCase()} is not available for Firefox`);
       }
     case Browser.CHROME: {
-      switch (tag as BrowserTag) {
+      switch (tag) {
         case BrowserTag.LATEST:
           return await chrome.resolveBuildId(ChromeReleaseChannel.CANARY);
         case BrowserTag.BETA:
@@ -86,13 +94,11 @@ export async function resolveBuildId(
           return await chrome.resolveBuildId(ChromeReleaseChannel.DEV);
         case BrowserTag.STABLE:
           return await chrome.resolveBuildId(ChromeReleaseChannel.STABLE);
-        default:
-          const result = await chrome.resolveBuildId(tag);
-          if (result) {
-            return result;
-          }
+        case BrowserTag.NIGHTLY:
+        case BrowserTag.DEVEDITION:
+        case BrowserTag.ESR:
+          throw new Error(`${tag.toUpperCase()} is not available for Chrome`);
       }
-      return tag;
     }
     case Browser.CHROMEDRIVER: {
       switch (tag) {
@@ -105,13 +111,13 @@ export async function resolveBuildId(
           return await chromedriver.resolveBuildId(ChromeReleaseChannel.DEV);
         case BrowserTag.STABLE:
           return await chromedriver.resolveBuildId(ChromeReleaseChannel.STABLE);
-        default:
-          const result = await chromedriver.resolveBuildId(tag);
-          if (result) {
-            return result;
-          }
+        case BrowserTag.NIGHTLY:
+        case BrowserTag.DEVEDITION:
+        case BrowserTag.ESR:
+          throw new Error(
+            `${tag.toUpperCase()} is not available for ChromeDriver`
+          );
       }
-      return tag;
     }
     case Browser.CHROMEHEADLESSSHELL: {
       switch (tag) {
@@ -132,29 +138,68 @@ export async function resolveBuildId(
           return await chromeHeadlessShell.resolveBuildId(
             ChromeReleaseChannel.STABLE
           );
-        default:
-          const result = await chromeHeadlessShell.resolveBuildId(tag);
-          if (result) {
-            return result;
-          }
+        case BrowserTag.NIGHTLY:
+        case BrowserTag.DEVEDITION:
+        case BrowserTag.ESR:
+          throw new Error(`${tag} is not available for chrome-headless-shell`);
       }
-      return tag;
     }
     case Browser.CHROMIUM:
-      switch (tag as BrowserTag) {
+      switch (tag) {
         case BrowserTag.LATEST:
           return await chromium.resolveBuildId(platform);
-        case BrowserTag.BETA:
+        case BrowserTag.NIGHTLY:
         case BrowserTag.CANARY:
         case BrowserTag.DEV:
+        case BrowserTag.DEVEDITION:
+        case BrowserTag.BETA:
         case BrowserTag.STABLE:
+        case BrowserTag.ESR:
           throw new Error(
-            `${tag} is not supported for ${browser}. Use 'latest' instead.`
+            `${tag} is not supported for Chromium. Use 'latest' instead.`
           );
       }
   }
-  // We assume the tag is the buildId if it didn't match any keywords.
-  return tag;
+}
+
+/**
+ * @public
+ */
+export async function resolveBuildId(
+  browser: Browser,
+  platform: BrowserPlatform,
+  tag: string
+): Promise<string> {
+  const browserTag = tag as BrowserTag;
+  if (Object.values(BrowserTag).includes(browserTag)) {
+    return await resolveBuildIdForBrowserTag(browser, platform, browserTag);
+  }
+
+  switch (browser) {
+    case Browser.FIREFOX:
+      return tag;
+    case Browser.CHROME:
+      const chromeResult = await chrome.resolveBuildId(tag);
+      if (chromeResult) {
+        return chromeResult;
+      }
+      return tag;
+    case Browser.CHROMEDRIVER:
+      const chromeDriverResult = await chromedriver.resolveBuildId(tag);
+      if (chromeDriverResult) {
+        return chromeDriverResult;
+      }
+      return tag;
+    case Browser.CHROMEHEADLESSSHELL:
+      const chromeHeadlessShellResult =
+        await chromeHeadlessShell.resolveBuildId(tag);
+      if (chromeHeadlessShellResult) {
+        return chromeHeadlessShellResult;
+      }
+      return tag;
+    case Browser.CHROMIUM:
+      return tag;
+  }
 }
 
 /**

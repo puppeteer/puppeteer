@@ -138,6 +138,7 @@ describe('Chrome install', () => {
   });
 
   it('falls back to the chrome-for-testing dashboard URLs if URL is not available', async function () {
+    this.timeout(60000);
     const expectedOutputPath = path.join(
       tmpDir,
       'chrome',

@@ -36,9 +36,12 @@ export enum BrowserPlatform {
  */
 export enum BrowserTag {
   CANARY = 'canary',
+  NIGHTLY = 'nightly',
   BETA = 'beta',
   DEV = 'dev',
+  DEVEDITION = 'devedition',
   STABLE = 'stable',
+  ESR = 'esr',
   LATEST = 'latest',
 }
 
