@@ -765,7 +765,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    *
    * ```ts
    * const element = await frame.frameElement();
-   * const name = await element.evaluate(frame => frame.name);
+   * const nameOrId = await element.evaluate(frame => frame.name ?? frame.id);
    * ```
    */
   name(): string {
