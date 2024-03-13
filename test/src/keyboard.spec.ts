@@ -186,8 +186,15 @@ describe('Keyboard', function () {
     await page.setContent(`
       <iframe srcdoc="<iframe name='test' srcdoc='<textarea></textarea>'></iframe>"</iframe>
     `);
-    const frame = await page.waitForFrame(frame => {
-      return frame.name() === 'test';
+    const frame = await page.waitForFrame(async frame => {
+      using element = await frame.frameElement();
+      if (!element) {
+        return false;
+      }
+      const name = await element.evaluate(frame => {
+        return frame.name;
+      });
+      return name === 'test';
     });
     await frame.focus('textarea');
 

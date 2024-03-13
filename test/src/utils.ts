@@ -112,15 +112,24 @@ export async function navigateFrame(
   }
 }
 
-export const dumpFrames = (frame: Frame, indentation?: string): string[] => {
+export const dumpFrames = async (
+  frame: Frame,
+  indentation?: string
+): Promise<string[]> => {
   indentation = indentation || '';
   let description = frame.url().replace(/:\d{4,5}\//, ':<PORT>/');
-  if (frame.name()) {
-    description += ' (' + frame.name() + ')';
+  using element = await frame.frameElement();
+  if (element) {
+    const nameOrId = await element.evaluate(frame => {
+      return frame.name || frame.id;
+    });
+    if (nameOrId) {
+      description += ' (' + nameOrId + ')';
+    }
   }
   const result = [indentation + description];
   for (const child of frame.childFrames()) {
-    result.push(...dumpFrames(child, '    ' + indentation));
+    result.push(...(await dumpFrames(child, '    ' + indentation)));
   }
   return result;
 };

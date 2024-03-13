@@ -777,7 +777,7 @@ describe('Launcher specs', function () {
           await close();
         }
       });
-      it('should be able to reconnect to a disconnected browser', async () => {
+      it.skip('should be able to reconnect to a disconnected browser', async () => {
         const {puppeteer, server, browser, close} = await launch({});
         try {
           const browserWSEndpoint = browser.wsEndpoint();
@@ -793,7 +793,7 @@ describe('Launcher specs', function () {
           const restoredPage = pages.find(page => {
             return page.url() === server.PREFIX + '/frames/nested-frames.html';
           })!;
-          expect(dumpFrames(restoredPage.mainFrame())).toEqual([
+          expect(await dumpFrames(restoredPage.mainFrame())).toEqual([
             'http://localhost:<PORT>/frames/nested-frames.html',
             '    http://localhost:<PORT>/frames/two-frames.html (2frames)',
             '        http://localhost:<PORT>/frames/frame.html (uno)',

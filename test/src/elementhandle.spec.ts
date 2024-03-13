@@ -385,8 +385,15 @@ describe('ElementHandle specs', function () {
       await page.setContent(
         `<iframe name='frame' style='position: absolute; left: -100px' srcdoc="<button style='width: 10px; height: 10px;'></button>"></iframe>`
       );
-      const frame = await page.waitForFrame(frame => {
-        return frame.name() === 'frame';
+      const frame = await page.waitForFrame(async frame => {
+        using element = await frame.frameElement();
+        if (!element) {
+          return false;
+        }
+        const name = await element.evaluate(frame => {
+          return frame.name;
+        });
+        return name === 'frame';
       });
 
       using handle = await frame.locator('button').waitHandle();
@@ -395,8 +402,15 @@ describe('ElementHandle specs', function () {
       await page.setContent(
         `<iframe name='frame2' style='position: absolute; top: -100px' srcdoc="<button style='width: 10px; height: 10px;'></button>"></iframe>`
       );
-      const frame2 = await page.waitForFrame(frame => {
-        return frame.name() === 'frame2';
+      const frame2 = await page.waitForFrame(async frame => {
+        using element = await frame.frameElement();
+        if (!element) {
+          return false;
+        }
+        const name = await element.evaluate(frame => {
+          return frame.name;
+        });
+        return name === 'frame2';
       });
 
       using handle2 = await frame2.locator('button').waitHandle();
