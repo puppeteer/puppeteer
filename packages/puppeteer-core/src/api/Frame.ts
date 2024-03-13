@@ -447,7 +447,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   }
 
   /**
-   * Behaves identically to {@link Page.evaluate} except it's run within the
+   * Behaves identically to {@link Page.evaluate} except it's run within
    * the context of this frame.
    *
    * @see {@link Page.evaluate} for details.
