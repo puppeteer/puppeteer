@@ -475,13 +475,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[keyboard.spec] Keyboard should send a character with sendCharacter in iframe",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.disconnect *",
     "platforms": ["win32"],
     "parameters": ["firefox", "webDriverBiDi"],

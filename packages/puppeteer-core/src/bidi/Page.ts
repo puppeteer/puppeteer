@@ -13,8 +13,8 @@ import type {BoundingBox} from '../api/ElementHandle.js';
 import type {WaitForOptions} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {
-  MediaFeature,
   GeolocationOptions,
+  MediaFeature,
   PageEvents,
 } from '../api/Page.js';
 import {
@@ -27,8 +27,12 @@ import {Accessibility} from '../cdp/Accessibility.js';
 import {Coverage} from '../cdp/Coverage.js';
 import {EmulationManager} from '../cdp/EmulationManager.js';
 import {Tracing} from '../cdp/Tracing.js';
-import type {Cookie, CookieParam, CookieSameSite} from '../common/Cookie.js';
-import type {DeleteCookiesRequest} from '../common/Cookie.js';
+import type {
+  Cookie,
+  CookieParam,
+  CookieSameSite,
+  DeleteCookiesRequest,
+} from '../common/Cookie.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
@@ -43,7 +47,6 @@ import type {BidiBrowser} from './Browser.js';
 import type {BidiBrowserContext} from './BrowserContext.js';
 import type {BidiCdpSession} from './CDPSession.js';
 import type {BrowsingContext} from './core/BrowsingContext.js';
-import {BidiElementHandle} from './ElementHandle.js';
 import {BidiFrame} from './Frame.js';
 import type {BidiHTTPResponse} from './HTTPResponse.js';
 import {BidiKeyboard, BidiMouse, BidiTouchscreen} from './Input.js';
@@ -161,21 +164,28 @@ export class BidiPage extends Page {
   }
 
   async focusedFrame(): Promise<BidiFrame> {
-    using frame = await this.mainFrame()
+    using handle = (await this.mainFrame()
       .isolatedRealm()
       .evaluateHandle(() => {
-        let frame: HTMLIFrameElement | undefined;
-        let win: Window | null = window;
-        while (win?.document.activeElement instanceof HTMLIFrameElement) {
-          frame = win.document.activeElement;
-          win = frame.contentWindow;
+        let win = window;
+        while (
+          win.document.activeElement instanceof win.HTMLIFrameElement ||
+          win.document.activeElement instanceof win.HTMLFrameElement
+        ) {
+          if (win.document.activeElement.contentWindow === null) {
+            break;
+          }
+          win = win.document.activeElement.contentWindow as typeof win;
         }
-        return frame;
-      });
-    if (!(frame instanceof BidiElementHandle)) {
-      return this.mainFrame();
-    }
-    return await frame.contentFrame();
+        return win;
+      })) as BidiJSHandle<Window & typeof globalThis>;
+    const value = handle.remoteValue();
+    assert(value.type === 'window');
+    const frame = this.frames().find(frame => {
+      return frame._id === value.value.context;
+    });
+    assert(frame);
+    return frame;
   }
 
   override frames(): BidiFrame[] {
