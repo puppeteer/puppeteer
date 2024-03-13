@@ -10,7 +10,7 @@ sidebar_label: Frame.name
 >
 > ```ts
 > const element = await frame.frameElement();
-> const name = await element.evaluate(frame => frame.name);
+> const nameOrId = await element.evaluate(frame => frame.name ?? frame.id);
 > ```
 
 The frame's `name` attribute as specified in the tag.

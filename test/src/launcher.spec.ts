@@ -777,7 +777,7 @@ describe('Launcher specs', function () {
           await close();
         }
       });
-      it.skip('should be able to reconnect to a disconnected browser', async () => {
+      it('should be able to reconnect to a disconnected browser', async () => {
         const {puppeteer, server, browser, close} = await launch({});
         try {
           const browserWSEndpoint = browser.wsEndpoint();
