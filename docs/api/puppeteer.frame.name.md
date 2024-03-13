@@ -4,6 +4,15 @@ sidebar_label: Frame.name
 
 # Frame.name() method
 
+> Warning: This API is now obsolete.
+>
+> Use
+>
+> ```ts
+> const element = await frame.frameElement();
+> const name = await element.evaluate(frame => frame.name);
+> ```
+
 The frame's `name` attribute as specified in the tag.
 
 #### Signature:
