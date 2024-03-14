@@ -28,7 +28,7 @@ async function importInstaller() {
 }
 
 try {
-  const {downloadBrowser} = await importInstaller();
+  const {downloadBrowser} = importInstaller();
   downloadBrowser();
 } catch (error) {
   console.warn('Browser download failed', error);
