@@ -20,6 +20,27 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.5.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.4.1...puppeteer-core-v22.5.0) (2024-03-15)
+
+
+### Features
+
+* deprecate `Frame.prototype.name` ([#12084](https://github.com/puppeteer/puppeteer/issues/12084)) ([0203b45](https://github.com/puppeteer/puppeteer/commit/0203b4533dfec503f9ce7fcd07c3493021a9cecb))
+
+
+### Bug Fixes
+
+* fix keyboard.sendCharacter ([#12088](https://github.com/puppeteer/puppeteer/issues/12088)) ([2637622](https://github.com/puppeteer/puppeteer/commit/26376224d557ce30c911f670c5e7625dd1a1df72))
+* roll to Chrome 122.0.6261.128 (r1250580) ([#12078](https://github.com/puppeteer/puppeteer/issues/12078)) ([ef7a9ea](https://github.com/puppeteer/puppeteer/commit/ef7a9eac16dcb466b220bcb0bc06a1eac3492354))
+* **webdriver:** emit CDP events ([#12058](https://github.com/puppeteer/puppeteer/issues/12058)) ([9afe424](https://github.com/puppeteer/puppeteer/commit/9afe4246bb58c30a13215a254f9326935b24ece3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.1.0 to 2.2.0
+
 ## [22.4.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.4.0...puppeteer-core-v22.4.1) (2024-03-08)
 
 
