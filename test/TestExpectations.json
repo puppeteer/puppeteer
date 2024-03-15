@@ -925,6 +925,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[accessibility.spec] Accessibility should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Change in A11Y tree on Canary"
+  },
+  {
     "testIdPattern": "[bfcache.spec] BFCache can navigate to a BFCached page containing an OOPIF and a worker",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],

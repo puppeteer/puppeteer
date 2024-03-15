@@ -71,8 +71,9 @@ export class Session
           platformName: '',
           setWindowRect: false,
           webSocketUrl: '',
+          userAgent: '',
         },
-      };
+      } satisfies Bidi.Session.NewResult;
     }
 
     const session = new Session(connection, result);
@@ -163,7 +164,10 @@ export class Session
     // SAFETY: By definition of `disposed`, `#reason` is defined.
     return session.#reason!;
   })
-  async subscribe(events: string[], contexts?: string[]): Promise<void> {
+  async subscribe(
+    events: [string, ...string[]],
+    contexts?: [string, ...string[]]
+  ): Promise<void> {
     await this.send('session.subscribe', {
       events,
       contexts,

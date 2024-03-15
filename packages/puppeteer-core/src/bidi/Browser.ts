@@ -50,7 +50,7 @@ export class BidiBrowser extends Browser {
   readonly protocol = 'webDriverBiDi';
 
   // TODO: Update generator to include fully module
-  static readonly subscribeModules: string[] = [
+  static readonly subscribeModules: [string, ...string[]] = [
     'browsingContext',
     'network',
     'log',

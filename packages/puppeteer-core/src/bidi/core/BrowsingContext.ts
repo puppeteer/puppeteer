@@ -543,7 +543,7 @@ export class BrowsingContext extends EventEmitter<{
     // SAFETY: Disposal implies this exists.
     return context.#reason!;
   })
-  async subscribe(events: string[]): Promise<void> {
+  async subscribe(events: [string, ...string[]]): Promise<void> {
     await this.#session.subscribe(events, [this.id]);
   }
 
