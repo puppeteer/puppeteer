@@ -6,7 +6,7 @@
 
 import expect from 'expect';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
 
 describe('Browser specs', function () {
   setupTestBrowserHooks();
@@ -63,6 +63,23 @@ describe('Browser specs', function () {
       });
       expect(remoteBrowser.process()).toBe(null);
       await remoteBrowser.disconnect();
+    });
+    it('should keep connected after the last page is closed', async () => {
+      const {browser, close} = await launch({}, {createContext: false});
+      try {
+        const pages = await browser.pages();
+        await Promise.all(
+          pages.map(page => {
+            return page.close();
+          })
+        );
+        // Verify the browser is still connected.
+        expect(browser.connected).toBe(true);
+        // Verify the browser can open a new page.
+        await browser.newPage();
+      } finally {
+        await close();
+      }
     });
   });
 
