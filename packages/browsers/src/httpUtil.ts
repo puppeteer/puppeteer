@@ -46,7 +46,12 @@ export function httpRequest(
     agent: new ProxyAgent(),
   };
 
-  const requestCallback = (res: http.IncomingMessage): void => {
+  const request =
+    options.protocol === 'https:'
+      ? https.request(options, requestCallback)
+      : http.request(options, requestCallback);
+
+  function requestCallback(res: http.IncomingMessage) {
     if (
       res.statusCode &&
       res.statusCode >= 300 &&
@@ -54,14 +59,12 @@ export function httpRequest(
       res.headers.location
     ) {
       httpRequest(new URL(res.headers.location), method, response);
+      // Destroy the request to allow the connection to close
+      request.destroy();
     } else {
       response(res);
     }
-  };
-  const request =
-    options.protocol === 'https:'
-      ? https.request(options, requestCallback)
-      : http.request(options, requestCallback);
+  }
   request.end();
   return request;
 }
