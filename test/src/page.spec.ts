@@ -18,7 +18,7 @@ import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 import sinon from 'sinon';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
 import {attachFrame, detachFrame, isFavicon, waitEvent} from './utils.js';
 
 describe('Page', function () {
@@ -109,6 +109,28 @@ describe('Page', function () {
           'Frame detached',
         ]);
         expect(message).not.toContain('Timeout');
+      }
+    });
+    it('closing last tab should not close the browser', async () => {
+      // This test asserts the behavior is consistent between protocols and browsers.
+      // WebDriver Classic requires the session to be closed after the last page is
+      // closed: https://w3c.github.io/webdriver/#dfn-close-window.
+      // WebDriver BiDi does not specify behavior for closing the last page:
+      // https://github.com/w3c/webdriver-bidi/issues/187
+      const {browser, close} = await launch({}, {createContext: false});
+      try {
+        const pages = await browser.pages();
+        await Promise.all(
+          pages.map(page => {
+            return page.close();
+          })
+        );
+        // Verify the browser is still connected.
+        expect(browser.isConnected()).toBe(true);
+        // Verify the browser can open a new page.
+        await browser.newPage();
+      } finally {
+        await close();
       }
     });
   });
