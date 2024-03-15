@@ -226,14 +226,14 @@
   {
     "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler queryOne (Chromium web test) should find by role \"button\"",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
+    "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
     "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler queryOne (Chromium web test) should find by role \"heading\"",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
+    "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
