@@ -5,7 +5,7 @@
 To keep this page up-to-date we largely rely on community contributions.
 Please send a PR if you notice something is no longer up-to-date.
 
-:::note
+:::
 
 ## `Cannot find module 'puppeteer-core/internal/...'`
 
