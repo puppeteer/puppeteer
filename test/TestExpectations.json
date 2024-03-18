@@ -1239,13 +1239,6 @@
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should delete cookie for specified URL",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Firefox default partition key is inconsistent: #12004"
-  },
-  {
-    "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should delete cookie for specified URL",
-    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"],
     "comment": "Not supported with cdp"
@@ -1263,13 +1256,6 @@
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"],
     "comment": "Not supported with cdp"
-  },
-  {
-    "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should be able to set insecure cookie for HTTP website",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should default to setting secure cookie for HTTPS websites",
@@ -1289,13 +1275,6 @@
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set a cookie on a different domain",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set a cookie on a different domain",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
