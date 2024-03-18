@@ -1,0 +1,431 @@
+
+> test:firefox:bidi
+> wireit
+
+Analyzing
+
+> test
+> wireit --test-suite firefox-bidi
+
+Analyzing
+ 36% [4 / 11] [1 running] packages/puppeteer-core:build:tsc
+ 45% [5 / 11] [1 running] packages/puppeteer-core:build:types
+ 73% [8 / 11] [1 running] packages/puppeteer:build:types
+ 91% [10 / 11] [0 running]
+ 91% [10 / 11] [1 running] test
+Planning to run the following test suites [
+  {
+    id: 'firefox-bidi',
+    platforms: [ 'linux' ],
+    parameters: [ 'firefox', 'headless', 'webDriverBiDi' ],
+    expectedLineCoverage: 56
+  }
+]
+Running ["firefox","headless","webDriverBiDi"] /tmp/puppeteer-test-runner-jq51W0/output.json
+Running unit tests with:
+  -> product: firefox
+  -> binary: ../.cache/puppeteer/firefox/linux-nightly_125.0a1/firefox/firefox
+  -> mode: --headless=new
+
+
+  OOPIF
+2024-03-19T19:37:00.865Z puppeteer:browsers:launcher Launching /usr/local/google/home/nvitkov/.cache/puppeteer/firefox/linux-nightly_125.0a1/firefox/firefox --no-remote --headless about:blank --site-per-process --remote-debugging-port=21222 --host-rules=MAP * 127.0.0.1 --profile /tmp/puppeteer_dev_firefox_profile-8rGLwd {
+  detached: true,
+  env: {
+    PUPPETEER_SKIPPED_TEST_CONFIG: '[{"testIdPattern":"[waittask.spec] waittask specs Frame.waitForSelector should survive cross-process navigation","skip":true},{"testIdPattern":"[waittask.spec] waittask specs Frame.waitForFunction should work with strict CSP policy","skip":false},{"testIdPattern":"[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work","skip":false},{"testIdPattern":"[touchscreen.spec] Touchscreen Touchscreen.prototype.tap should work","skip":false},{"testIdPattern":"[target.spec] Target should report when a service worker is created and destroyed","skip":true},{"testIdPattern":"[target.spec] Target should not report uninitialized pages","skip":true},{"testIdPattern":"[target.spec] Target should have an opener","skip":true},{"testIdPattern":"[target.spec] Target should create a worker from a shared worker","skip":true},{"testIdPattern":"[target.spec] Target should create a worker from a service worker","skip":true},{"testIdPattern":"[screenshot.spec] Screenshots ElementHandle.screenshot should work with a rotated element","skip":false},{"testIdPattern":"[screenshot.spec] Screenshots ElementHandle.screenshot should work for an element with an offset","skip":false},{"testIdPattern":"[queryObjects.spec] page.queryObjects should fail primitive values as prototypes","skip":false},{"testIdPattern":"[queryObjects.spec] page.queryObjects should fail for disposed handles","skip":false},{"testIdPattern":"[page.spec] Page Page.setJavaScriptEnabled should work","skip":false},{"testIdPattern":"[page.spec] Page Page.setGeolocation should work","skip":false},{"testIdPattern":"[page.spec] Page Page.setCacheEnabled should enable or disable the cache based on the state passed","skip":false},{"testIdPattern":"[page.spec] Page Page.Events.Console should work for different console API calls with timing functions","skip":false},{"testIdPattern":"[page.spec] Page Page.Events.Console should work","skip":false},{"testIdPattern":"[page.spec] Page Page.Events.Console should have location and stack trace for console API calls","skip":false},{"testIdPattern":"[page.spec] Page Page.close should run beforeunload if asked for","skip":false},{"testIdPattern":"[oopif.spec] OOPIF should wait for inner OOPIFs","skip":true},{"testIdPattern":"[oopif.spec] OOPIF should support wait for navigation for transitions from local to OOPIF","skip":false},{"testIdPattern":"[oopif.spec] OOPIF should support OOP iframes getting detached","skip":false},{"testIdPattern":"[oopif.spec] OOPIF should support OOP iframes becoming normal iframes again","skip":false},{"testIdPattern":"[oopif.spec] OOPIF should support lazy OOP frames","skip":false},{"testIdPattern":"[oopif.spec] OOPIF should expose events within OOPIFs","skip":false},{"testIdPattern":"[oopif.spec] OOPIF should detect existing OOPIFs when Puppeteer connects to an existing page","skip":false},{"testIdPattern":"[network.spec] network Response.fromCache should work","skip":false},{"testIdPattern":"[navigation.spec] navigation Page.waitForNavigation should work with history.replaceState()","skip":true},{"testIdPattern":"[navigation.spec] navigation Page.waitForNavigation should work when subframe issues window.stop()","skip":true},{"testIdPattern":"[navigation.spec] navigation Page.goto should work when page calls history API in beforeunload","skip":false},{"testIdPattern":"[navigation.spec] navigation Page.goto should work when navigating to data url","skip":false},{"testIdPattern":"[navigation.spec] navigation Page.goto should navigate to URL with hash and fire requests without hash","skip":false},{"testIdPattern":"[navigation.spec] navigation Page.goto should navigate to dataURL and fire dataURL requests","skip":true},{"testIdPattern":"[launcher.spec] Launcher specs Puppeteer Puppeteer.launch tmp profile should be cleaned up","skip":true},{"testIdPattern":"[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should be able to launch Firefox","skip":false},{"testIdPattern":"[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should be able to launch Firefox","skip":false},{"testIdPattern":"[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option in puppeteer.launch","skip":false},{"testIdPattern":"[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option","skip":false},{"testIdPattern":"[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support ignoreHTTPSErrors option","skip":false},{"testIdPattern":"[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to reconnect to a disconnected browser","skip":false},{"testIdPattern":"[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to connect to the same page simultaneously","skip":false},{"testIdPattern":"[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to connect to a browser with no page targets","skip":false},{"testIdPattern":"[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to connect multiple times to the same browser","skip":false},{"testIdPattern":"[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to close remote browser","skip":false},{"testIdPattern":"[launcher.spec] Launcher specs Puppeteer Browser.disconnect should reject navigation when browser closes","skip":false},{"testIdPattern":"[launcher.spec] Launcher specs Puppeteer Browser.close should terminate network waiters","skip":false},{"testIdPattern":"[launcher.spec] Launcher specs Browser.Events.disconnected should be emitted when: browser gets closed, disconnected or underlying websocket gets closed","skip":false},{"testIdPattern":"[launcher.spec] Launcher specs Browser target events should work","skip":false},{"testIdPattern":"[input.spec] input tests Page.waitForFileChooser should work with no timeout","skip":false},{"testIdPattern":"[input.spec] input tests Page.waitForFileChooser should work when file input is not attached to DOM","skip":false},{"testIdPattern":"[input.spec] input tests Page.waitForFileChooser should work when file input is attached to DOM","skip":false},{"testIdPattern":"[input.spec] input tests Page.waitForFileChooser should return the same file chooser when there are many watchdogs simultaneously","skip":false},{"testIdPattern":"[input.spec] input tests Page.waitForFileChooser should respect timeout","skip":false},{"testIdPattern":"[input.spec] input tests Page.waitForFileChooser should respect default timeout when there is no custom timeout","skip":false},{"testIdPattern":"[input.spec] input tests Page.waitForFileChooser should prioritize exact timeout over default timeout","skip":false},{"testIdPattern":"[input.spec] input tests FileChooser.isMultiple should work for single file pick","skip":false},{"testIdPattern":"[input.spec] input tests FileChooser.isMultiple should work for \\"webkitdirectory\\"","skip":false},{"testIdPattern":"[input.spec] input tests FileChooser.isMultiple should work for \\"multiple\\"","skip":false},{"testIdPattern":"[input.spec] input tests FileChooser.cancel should fail when canceling file chooser twice","skip":false},{"testIdPattern":"[input.spec] input tests FileChooser.cancel should cancel dialog","skip":false},{"testIdPattern":"[input.spec] input tests FileChooser.accept should succeed even for non-existent files","skip":false},{"testIdPattern":"[input.spec] input tests FileChooser.accept should not accept multiple files for single-file input","skip":false},{"testIdPattern":"[input.spec] input tests FileChooser.accept should fail when accepting file chooser twice","skip":false},{"testIdPattern":"[input.spec] input tests FileChooser.accept should error on read of non-existent files","skip":false},{"testIdPattern":"[input.spec] input tests FileChooser.accept should be able to reset selected files with empty file list","skip":false},{"testIdPattern":"[input.spec] input tests FileChooser.accept should be able to read selected file","skip":false},{"testIdPattern":"[input.spec] input tests FileChooser.accept should accept single file","skip":false},{"testIdPattern":"[ignorehttpserrors.spec] ignoreHTTPSErrors Response.securityDetails should work","skip":false},{"testIdPattern":"[ignorehttpserrors.spec] ignoreHTTPSErrors Response.securityDetails should be |null| for non-secure requests","skip":false},{"testIdPattern":"[ignorehttpserrors.spec] ignoreHTTPSErrors Response.securityDetails Network redirects should report SecurityDetails","skip":false},{"testIdPattern":"[frame.spec] Frame specs Frame Management should support lazy frames","skip":false},{"testIdPattern":"[fixtures.spec] Fixtures should close the browser when the node process closes","skip":true},{"testIdPattern":"[emulation.spec] Emulation Page.viewport should update media queries when resoltion changes","skip":false},{"testIdPattern":"[emulation.spec] Emulation Page.viewport should support touch emulation","skip":false},{"testIdPattern":"[emulation.spec] Emulation Page.viewport should support landscape emulation","skip":false},{"testIdPattern":"[emulation.spec] Emulation Page.viewport should load correct pictures when emulation dpr","skip":false},{"testIdPattern":"[emulation.spec] Emulation Page.viewport should detect touch when applying viewport with touches","skip":false},{"testIdPattern":"[emulation.spec] Emulation Page.viewport should be detectable by Modernizr","skip":false},{"testIdPattern":"[emulation.spec] Emulation Page.emulateVisionDeficiency should work","skip":false},{"testIdPattern":"[emulation.spec] Emulation Page.emulateTimezone should work","skip":false},{"testIdPattern":"[emulation.spec] Emulation Page.emulateTimezone should throw for invalid timezone IDs","skip":false},{"testIdPattern":"[emulation.spec] Emulation Page.emulateNetworkConditions should change navigator.connection.effectiveType","skip":false},{"testIdPattern":"[emulation.spec] Emulation Page.emulateMediaType should work","skip":false},{"testIdPattern":"[emulation.spec] Emulation Page.emulateMe'... 11847 more characters,
+    PUPPETEER_LOGLEVEL: 'silent',
+    PUPPETEER_PRODUCT: 'firefox',
+    PUPPETEER_PROTOCOL: 'webDriverBiDi'
+  },
+  stdio: [ 'pipe', 'ignore', 'pipe' ]
+}
+2024-03-19T19:37:00.871Z puppeteer:browsers:launcher Launched 1471004
+2024-03-19T19:37:01.359Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":1,"method":"session.new","params":{"capabilities":{"alwaysMatch":{"acceptInsecureCerts":false,"webSocketUrl":true}}}}'
+]
+2024-03-19T19:37:02.357Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"success","id":1,"result":{"sessionId":"66a917e0-cfe7-4c2a-b78d-fe1c51cc1ecc","capabilities":{"browserName":"firefox","browserVersion":"125.0a1","platformName":"linux","acceptInsecureCerts":false,"proxy":{},"setWindowRect":true,"userAgent":"Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0","moz:accessibilityChecks":false,"moz:buildID":"20240317212740","moz:headless":true,"moz:platformVersion":"6.5.13-1rodete2-amd64","moz:processID":1471004,"moz:profile":"/tmp/puppeteer_dev_firefox_profile-8rGLwd","moz:shutdownTimeout":60000,"moz:windowless":false}}}'
+]
+2024-03-19T19:37:02.358Z puppeteer:webDriverBiDi:SEND ► [ '{"id":2,"method":"browser.getUserContexts","params":{}}' ]
+2024-03-19T19:37:02.366Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"success","id":2,"result":{"userContexts":[{"userContext":"default"},{"userContext":"36ce5d26-3ada-4bbc-baf0-ae6289fa0b7c"},{"userContext":"5c89e761-9b86-4d7f-8ed7-b2b4a9bbfa95"},{"userContext":"af6a69ad-72d7-48af-a913-464e56ff5327"},{"userContext":"91eab38b-3ad1-4e35-b7af-7c3ca09d0724"}]}}'
+]
+2024-03-19T19:37:02.367Z puppeteer:webDriverBiDi:SEND ► [ '{"id":3,"method":"browsingContext.getTree","params":{}}' ]
+2024-03-19T19:37:02.370Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"success","id":3,"result":{"contexts":[{"children":[],"context":"e4ad1a71-4f03-43b1-bbd2-ddfa0102a725","url":"about:blank","userContext":"default","parent":null},{"children":[],"context":"6ff82ac0-e4ec-4bd4-a544-9255064f0d82","url":"file:///usr/local/google/home/nvitkov/puppeteer/MAP%20*%20127.0.0.1","userContext":"default","parent":null}]}}'
+]
+2024-03-19T19:37:02.371Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":4,"method":"session.subscribe","params":{"events":["browsingContext","network","log","script"]}}'
+]
+2024-03-19T19:37:02.384Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmCreated","params":{"realm":"3823a77a-07f2-4410-ab84-8e085d8c01e1","origin":"null","context":"6ff82ac0-e4ec-4bd4-a544-9255064f0d82","type":"window"}}'
+]
+2024-03-19T19:37:02.425Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmCreated","params":{"realm":"7ba825c6-7641-46c6-8211-69a4ea3226c6","origin":"null","context":"e4ad1a71-4f03-43b1-bbd2-ddfa0102a725","type":"window"}}'
+]
+2024-03-19T19:37:02.425Z puppeteer:webDriverBiDi:RECV ◀ [ '{"type":"success","id":4,"result":{}}' ]
+2024-03-19T19:37:02.429Z puppeteer:webDriverBiDi:SEND ► [ '{"id":5,"method":"browser.createUserContext","params":{}}' ]
+2024-03-19T19:37:02.430Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"success","id":5,"result":{"userContext":"88689782-13e0-433d-958e-f48075cad130"}}'
+]
+2024-03-19T19:37:02.430Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":6,"method":"browsingContext.create","params":{"type":"tab","userContext":"88689782-13e0-433d-958e-f48075cad130"}}'
+]
+2024-03-19T19:37:02.448Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.contextCreated","params":{"children":null,"context":"0837d7d1-4d51-47f4-bbac-660bc29a18c6","url":"about:blank","userContext":"88689782-13e0-433d-958e-f48075cad130","parent":null}}'
+]
+2024-03-19T19:37:02.538Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmCreated","params":{"realm":"dd05f50d-9cf0-416f-b501-33a97fea700a","origin":"null","context":"0837d7d1-4d51-47f4-bbac-660bc29a18c6","type":"window"}}'
+]
+2024-03-19T19:37:02.545Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.navigationStarted","params":{"context":"0837d7d1-4d51-47f4-bbac-660bc29a18c6","navigation":"59512404-5dba-48d4-ac86-6b003b481021","timestamp":1710877022544,"url":"about:blank"}}'
+]
+2024-03-19T19:37:02.552Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmDestroyed","params":{"realm":"dd05f50d-9cf0-416f-b501-33a97fea700a"}}'
+]
+2024-03-19T19:37:02.552Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmCreated","params":{"realm":"f3b4d212-e642-4219-acea-27197b8b7d85","origin":"null","context":"0837d7d1-4d51-47f4-bbac-660bc29a18c6","type":"window"}}'
+]
+2024-03-19T19:37:02.561Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.domContentLoaded","params":{"context":"0837d7d1-4d51-47f4-bbac-660bc29a18c6","timestamp":1710877022557,"url":"about:blank","navigation":"59512404-5dba-48d4-ac86-6b003b481021"}}'
+]
+2024-03-19T19:37:02.561Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.load","params":{"context":"0837d7d1-4d51-47f4-bbac-660bc29a18c6","timestamp":1710877022558,"url":"about:blank","navigation":"59512404-5dba-48d4-ac86-6b003b481021"}}'
+]
+2024-03-19T19:37:02.563Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"success","id":6,"result":{"context":"0837d7d1-4d51-47f4-bbac-660bc29a18c6"}}'
+]
+2024-03-19T19:37:02.564Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":7,"method":"browsingContext.setViewport","params":{"context":"0837d7d1-4d51-47f4-bbac-660bc29a18c6","viewport":{"width":800,"height":600},"devicePixelRatio":null}}'
+]
+2024-03-19T19:37:02.592Z puppeteer:webDriverBiDi:RECV ◀ [ '{"type":"success","id":7,"result":{}}' ]
+2024-03-19T19:37:02.593Z puppeteer:webDriverBiDi:SEND ► [ '{"id":8,"method":"browser.createUserContext","params":{}}' ]
+2024-03-19T19:37:02.594Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"success","id":8,"result":{"userContext":"fa5fd5d5-3492-42be-a31b-6a568741549b"}}'
+]
+2024-03-19T19:37:02.594Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":9,"method":"browsingContext.create","params":{"type":"tab","userContext":"fa5fd5d5-3492-42be-a31b-6a568741549b"}}'
+]
+2024-03-19T19:37:02.620Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.contextCreated","params":{"children":null,"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","url":"about:blank","userContext":"fa5fd5d5-3492-42be-a31b-6a568741549b","parent":null}}'
+]
+2024-03-19T19:37:02.700Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmCreated","params":{"realm":"41868920-2e91-45d1-96a5-8f2b6cf91076","origin":"null","context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","type":"window"}}'
+]
+2024-03-19T19:37:02.706Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.navigationStarted","params":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","navigation":"d6e22273-e194-4832-8f0c-c228f8e2b377","timestamp":1710877022705,"url":"about:blank"}}'
+]
+2024-03-19T19:37:02.714Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmDestroyed","params":{"realm":"41868920-2e91-45d1-96a5-8f2b6cf91076"}}'
+]
+2024-03-19T19:37:02.715Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmCreated","params":{"realm":"46336070-e91a-495a-aa6f-bc9758cd7fe9","origin":"null","context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","type":"window"}}'
+]
+2024-03-19T19:37:02.720Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.domContentLoaded","params":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","timestamp":1710877022719,"url":"about:blank","navigation":"d6e22273-e194-4832-8f0c-c228f8e2b377"}}'
+]
+2024-03-19T19:37:02.721Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.load","params":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","timestamp":1710877022720,"url":"about:blank","navigation":"d6e22273-e194-4832-8f0c-c228f8e2b377"}}'
+]
+2024-03-19T19:37:02.722Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"success","id":9,"result":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023"}}'
+]
+2024-03-19T19:37:02.722Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":10,"method":"browsingContext.setViewport","params":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","viewport":{"width":800,"height":600},"devicePixelRatio":null}}'
+]
+2024-03-19T19:37:02.742Z puppeteer:webDriverBiDi:RECV ◀ [ '{"type":"success","id":10,"result":{}}' ]
+2024-03-19T19:37:02.744Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":11,"method":"network.addIntercept","params":{"phases":["beforeRequestSent","authRequired"],"contexts":["fc38a624-8fa9-4db2-a5e6-d512c17cc023"]}}'
+]
+2024-03-19T19:37:02.745Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"success","id":11,"result":{"intercept":"53a4bcef-d9f6-4203-8ea9-661435786680"}}'
+]
+2024-03-19T19:37:02.746Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":12,"method":"browsingContext.navigate","params":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","url":"http://localhost:33751/dynamic-oopif.html","wait":"interactive"}}'
+]
+2024-03-19T19:37:02.753Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.navigationStarted","params":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","navigation":"24c5e487-2a45-41cf-a5b0-6222f14dfcc3","timestamp":1710877022752,"url":"http://localhost:33751/dynamic-oopif.html"}}'
+]
+2024-03-19T19:37:02.798Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"network.beforeRequestSent","params":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","isBlocked":true,"navigation":"24c5e487-2a45-41cf-a5b0-6222f14dfcc3","redirectCount":0,"request":{"bodySize":null,"cookies":[],"headers":[{"name":"Host","value":{"type":"string","value":"localhost:33751"}},{"name":"User-Agent","value":{"type":"string","value":"Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"}},{"name":"Accept","value":{"type":"string","value":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"}},{"name":"Accept-Language","value":{"type":"string","value":"en-US,en;q=0.5"}},{"name":"Accept-Encoding","value":{"type":"string","value":"gzip, deflate, br"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Upgrade-Insecure-Requests","value":{"type":"string","value":"1"}},{"name":"Sec-Fetch-Dest","value":{"type":"string","value":"document"}},{"name":"Sec-Fetch-Mode","value":{"type":"string","value":"navigate"}},{"name":"Sec-Fetch-Site","value":{"type":"string","value":"none"}},{"name":"Sec-Fetch-User","value":{"type":"string","value":"?1"}}],"headersSize":455,"method":"GET","request":"14","timings":{"timeOrigin":0,"requestTime":1710877022750806,"redirectStart":0,"redirectEnd":0,"fetchStart":1710877022767663,"dnsStart":1710877022767663,"dnsEnd":1710877022767693,"connectStart":1710877022767749,"connectEnd":1710877022767850,"tlsStart":0,"tlsEnd":1710877022767850,"requestStart":1710877022767905,"responseStart":1710877022770997,"responseEnd":1710877022771062},"url":"http://localhost:33751/dynamic-oopif.html"},"timestamp":1710877022771,"intercepts":["53a4bcef-d9f6-4203-8ea9-661435786680"],"initiator":{"type":"other"}}}'
+]
+2024-03-19T19:37:02.798Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":13,"method":"network.continueRequest","params":{"request":"14"}}'
+]
+2024-03-19T19:37:02.798Z puppeteer:webDriverBiDi:RECV ◀ [ '{"type":"success","id":13,"result":{}}' ]
+2024-03-19T19:37:02.841Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"network.responseStarted","params":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","isBlocked":false,"navigation":"24c5e487-2a45-41cf-a5b0-6222f14dfcc3","redirectCount":0,"request":{"bodySize":null,"cookies":[],"headers":[{"name":"Host","value":{"type":"string","value":"localhost:33751"}},{"name":"User-Agent","value":{"type":"string","value":"Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"}},{"name":"Accept","value":{"type":"string","value":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"}},{"name":"Accept-Language","value":{"type":"string","value":"en-US,en;q=0.5"}},{"name":"Accept-Encoding","value":{"type":"string","value":"gzip, deflate, br"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Upgrade-Insecure-Requests","value":{"type":"string","value":"1"}},{"name":"Sec-Fetch-Dest","value":{"type":"string","value":"document"}},{"name":"Sec-Fetch-Mode","value":{"type":"string","value":"navigate"}},{"name":"Sec-Fetch-Site","value":{"type":"string","value":"none"}},{"name":"Sec-Fetch-User","value":{"type":"string","value":"?1"}}],"headersSize":455,"method":"GET","request":"14","timings":{"timeOrigin":0,"requestTime":1710877022750806,"redirectStart":0,"redirectEnd":0,"fetchStart":1710877022767663,"dnsStart":1710877022767663,"dnsEnd":1710877022767693,"connectStart":1710877022767749,"connectEnd":1710877022767850,"tlsStart":0,"tlsEnd":1710877022767850,"requestStart":1710877022767905,"responseStart":1710877022770997,"responseEnd":1710877022771062},"url":"http://localhost:33751/dynamic-oopif.html"},"timestamp":1710877022799,"response":{"bodySize":0,"content":{"size":null},"headersSize":176,"url":"http://localhost:33751/dynamic-oopif.html","bytesReceived":176,"fromCache":false,"headers":[{"name":"Cache-Control","value":{"type":"string","value":"no-cache, no-store"}},{"name":"Content-Type","value":{"type":"string","value":"text/html; charset=utf-8"}},{"name":"Date","value":{"type":"string","value":"Tue, 19 Mar 2024 19:37:02 GMT"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Content-Length","value":{"type":"string","value":"362"}}],"mimeType":"text/html;charset=utf-8","protocol":"http/1.1","status":200,"statusText":"OK"}}}'
+]
+2024-03-19T19:37:02.841Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmDestroyed","params":{"realm":"46336070-e91a-495a-aa6f-bc9758cd7fe9"}}'
+]
+2024-03-19T19:37:02.841Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmCreated","params":{"realm":"1891d361-f1d8-45e5-91db-e486b8670c72","origin":"null","context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","type":"window"}}'
+]
+2024-03-19T19:37:02.841Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmDestroyed","params":{"realm":"1891d361-f1d8-45e5-91db-e486b8670c72"}}'
+]
+2024-03-19T19:37:02.842Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"network.responseCompleted","params":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","isBlocked":false,"navigation":"24c5e487-2a45-41cf-a5b0-6222f14dfcc3","redirectCount":0,"request":{"bodySize":null,"cookies":[],"headers":[{"name":"Host","value":{"type":"string","value":"localhost:33751"}},{"name":"User-Agent","value":{"type":"string","value":"Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"}},{"name":"Accept","value":{"type":"string","value":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"}},{"name":"Accept-Language","value":{"type":"string","value":"en-US,en;q=0.5"}},{"name":"Accept-Encoding","value":{"type":"string","value":"gzip, deflate, br"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Upgrade-Insecure-Requests","value":{"type":"string","value":"1"}},{"name":"Sec-Fetch-Dest","value":{"type":"string","value":"document"}},{"name":"Sec-Fetch-Mode","value":{"type":"string","value":"navigate"}},{"name":"Sec-Fetch-Site","value":{"type":"string","value":"none"}},{"name":"Sec-Fetch-User","value":{"type":"string","value":"?1"}}],"headersSize":455,"method":"GET","request":"14","timings":{"timeOrigin":0,"requestTime":1710877022750806,"redirectStart":0,"redirectEnd":0,"fetchStart":1710877022753842,"dnsStart":1710877022753842,"dnsEnd":1710877022754360,"connectStart":1710877022767749,"connectEnd":1710877022767850,"tlsStart":0,"tlsEnd":1710877022767850,"requestStart":1710877022767905,"responseStart":1710877022770997,"responseEnd":1710877022771062},"url":"http://localhost:33751/dynamic-oopif.html"},"timestamp":1710877022813,"response":{"bodySize":362,"content":{"size":362},"headersSize":176,"url":"http://localhost:33751/dynamic-oopif.html","bytesReceived":538,"fromCache":false,"headers":[{"name":"Cache-Control","value":{"type":"string","value":"no-cache, no-store"}},{"name":"Content-Type","value":{"type":"string","value":"text/html; charset=utf-8"}},{"name":"Date","value":{"type":"string","value":"Tue, 19 Mar 2024 19:37:02 GMT"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Content-Length","value":{"type":"string","value":"362"}}],"mimeType":"text/html;charset=utf-8","protocol":"http/1.1","status":200,"statusText":"OK"}}}'
+]
+2024-03-19T19:37:02.842Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmCreated","params":{"realm":"3d339338-8675-4fe5-8244-cbbedef8bdb6","origin":"http://localhost:33751","context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","type":"window"}}'
+]
+2024-03-19T19:37:02.842Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.contextCreated","params":{"children":null,"context":"10737418241","url":"about:blank","userContext":"fa5fd5d5-3492-42be-a31b-6a568741549b","parent":"fc38a624-8fa9-4db2-a5e6-d512c17cc023"}}'
+]
+2024-03-19T19:37:02.843Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmCreated","params":{"realm":"1af8d52f-cebd-464d-a768-801259b89d41","origin":"http://localhost:33751","context":"10737418241","type":"window"}}'
+]
+2024-03-19T19:37:02.843Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.navigationStarted","params":{"context":"10737418241","navigation":"9d25a7a7-874d-4fb0-bdcf-26e403c288d2","timestamp":1710877022824,"url":"http://127.0.0.1:33751/oopif.html"}}'
+]
+2024-03-19T19:37:02.843Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.domContentLoaded","params":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","timestamp":1710877022820,"url":"http://localhost:33751/dynamic-oopif.html","navigation":"24c5e487-2a45-41cf-a5b0-6222f14dfcc3"}}'
+]
+2024-03-19T19:37:02.843Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"success","id":12,"result":{"navigation":"24c5e487-2a45-41cf-a5b0-6222f14dfcc3","url":"http://localhost:33751/dynamic-oopif.html"}}'
+]
+2024-03-19T19:37:02.854Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"network.beforeRequestSent","params":{"context":"10737418241","isBlocked":true,"navigation":"9d25a7a7-874d-4fb0-bdcf-26e403c288d2","redirectCount":0,"request":{"bodySize":null,"cookies":[],"headers":[{"name":"Host","value":{"type":"string","value":"127.0.0.1:33751"}},{"name":"User-Agent","value":{"type":"string","value":"Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"}},{"name":"Accept","value":{"type":"string","value":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"}},{"name":"Accept-Language","value":{"type":"string","value":"en-US,en;q=0.5"}},{"name":"Accept-Encoding","value":{"type":"string","value":"gzip, deflate, br"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Referer","value":{"type":"string","value":"http://localhost:33751/"}},{"name":"Upgrade-Insecure-Requests","value":{"type":"string","value":"1"}},{"name":"Sec-Fetch-Dest","value":{"type":"string","value":"iframe"}},{"name":"Sec-Fetch-Mode","value":{"type":"string","value":"navigate"}},{"name":"Sec-Fetch-Site","value":{"type":"string","value":"cross-site"}}],"headersSize":465,"method":"GET","request":"19","timings":{"timeOrigin":0,"requestTime":1710877022828408,"redirectStart":0,"redirectEnd":0,"fetchStart":1710877022841249,"dnsStart":1710877022841249,"dnsEnd":1710877022841318,"connectStart":1710877022841485,"connectEnd":1710877022841599,"tlsStart":0,"tlsEnd":1710877022841599,"requestStart":1710877022841662,"responseStart":1710877022846482,"responseEnd":1710877022846550},"url":"http://127.0.0.1:33751/oopif.html"},"timestamp":1710877022853,"intercepts":["53a4bcef-d9f6-4203-8ea9-661435786680"],"initiator":{"type":"other"}}}'
+]
+2024-03-19T19:37:02.854Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":14,"method":"network.continueRequest","params":{"request":"19"}}'
+]
+2024-03-19T19:37:02.856Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"network.beforeRequestSent","params":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","isBlocked":true,"navigation":null,"redirectCount":0,"request":{"bodySize":null,"cookies":[],"headers":[{"name":"Host","value":{"type":"string","value":"localhost:33751"}},{"name":"User-Agent","value":{"type":"string","value":"Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"}},{"name":"Accept","value":{"type":"string","value":"image/avif,image/webp,*/*"}},{"name":"Accept-Language","value":{"type":"string","value":"en-US,en;q=0.5"}},{"name":"Accept-Encoding","value":{"type":"string","value":"gzip, deflate, br"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Referer","value":{"type":"string","value":"http://localhost:33751/dynamic-oopif.html"}},{"name":"Sec-Fetch-Dest","value":{"type":"string","value":"image"}},{"name":"Sec-Fetch-Mode","value":{"type":"string","value":"no-cors"}},{"name":"Sec-Fetch-Site","value":{"type":"string","value":"same-origin"}}],"headersSize":393,"method":"GET","request":"20","timings":{"timeOrigin":0,"requestTime":1710877022822478,"redirectStart":0,"redirectEnd":0,"fetchStart":0,"dnsStart":0,"dnsEnd":0,"connectStart":0,"connectEnd":0,"tlsStart":0,"tlsEnd":0,"requestStart":1710877022853180,"responseStart":1710877022853797,"responseEnd":1710877022853851},"url":"http://localhost:33751/favicon.ico"},"timestamp":1710877022855,"intercepts":["53a4bcef-d9f6-4203-8ea9-661435786680"],"initiator":{"type":"other"}}}'
+]
+2024-03-19T19:37:02.856Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":15,"method":"network.continueRequest","params":{"request":"20"}}'
+]
+2024-03-19T19:37:02.860Z puppeteer:webDriverBiDi:RECV ◀ [ '{"type":"success","id":14,"result":{}}' ]
+2024-03-19T19:37:02.905Z puppeteer:webDriverBiDi:RECV ◀ [ '{"type":"success","id":15,"result":{}}' ]
+2024-03-19T19:37:02.905Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"network.responseStarted","params":{"context":"10737418241","isBlocked":false,"navigation":"9d25a7a7-874d-4fb0-bdcf-26e403c288d2","redirectCount":0,"request":{"bodySize":null,"cookies":[],"headers":[{"name":"Host","value":{"type":"string","value":"127.0.0.1:33751"}},{"name":"User-Agent","value":{"type":"string","value":"Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"}},{"name":"Accept","value":{"type":"string","value":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"}},{"name":"Accept-Language","value":{"type":"string","value":"en-US,en;q=0.5"}},{"name":"Accept-Encoding","value":{"type":"string","value":"gzip, deflate, br"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Referer","value":{"type":"string","value":"http://localhost:33751/"}},{"name":"Upgrade-Insecure-Requests","value":{"type":"string","value":"1"}},{"name":"Sec-Fetch-Dest","value":{"type":"string","value":"iframe"}},{"name":"Sec-Fetch-Mode","value":{"type":"string","value":"navigate"}},{"name":"Sec-Fetch-Site","value":{"type":"string","value":"cross-site"}}],"headersSize":465,"method":"GET","request":"19","timings":{"timeOrigin":0,"requestTime":1710877022828408,"redirectStart":0,"redirectEnd":0,"fetchStart":1710877022841249,"dnsStart":1710877022841249,"dnsEnd":1710877022841318,"connectStart":1710877022841485,"connectEnd":1710877022841599,"tlsStart":0,"tlsEnd":1710877022841599,"requestStart":1710877022841662,"responseStart":1710877022846482,"responseEnd":1710877022846550},"url":"http://127.0.0.1:33751/oopif.html"},"timestamp":1710877022864,"response":{"bodySize":0,"content":{"size":null},"headersSize":176,"url":"http://127.0.0.1:33751/oopif.html","bytesReceived":176,"fromCache":false,"headers":[{"name":"Cache-Control","value":{"type":"string","value":"no-cache, no-store"}},{"name":"Content-Type","value":{"type":"string","value":"text/html; charset=utf-8"}},{"name":"Date","value":{"type":"string","value":"Tue, 19 Mar 2024 19:37:02 GMT"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Content-Length","value":{"type":"string","value":"169"}}],"mimeType":"text/html;charset=utf-8","protocol":"http/1.1","status":200,"statusText":"OK"}}}'
+]
+2024-03-19T19:37:02.905Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"network.responseStarted","params":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","isBlocked":false,"navigation":null,"redirectCount":0,"request":{"bodySize":null,"cookies":[],"headers":[{"name":"Host","value":{"type":"string","value":"localhost:33751"}},{"name":"User-Agent","value":{"type":"string","value":"Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"}},{"name":"Accept","value":{"type":"string","value":"image/avif,image/webp,*/*"}},{"name":"Accept-Language","value":{"type":"string","value":"en-US,en;q=0.5"}},{"name":"Accept-Encoding","value":{"type":"string","value":"gzip, deflate, br"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Referer","value":{"type":"string","value":"http://localhost:33751/dynamic-oopif.html"}},{"name":"Sec-Fetch-Dest","value":{"type":"string","value":"image"}},{"name":"Sec-Fetch-Mode","value":{"type":"string","value":"no-cors"}},{"name":"Sec-Fetch-Site","value":{"type":"string","value":"same-origin"}}],"headersSize":393,"method":"GET","request":"20","timings":{"timeOrigin":0,"requestTime":1710877022822478,"redirectStart":0,"redirectEnd":0,"fetchStart":0,"dnsStart":0,"dnsEnd":0,"connectStart":0,"connectEnd":0,"tlsStart":0,"tlsEnd":0,"requestStart":1710877022853180,"responseStart":1710877022853797,"responseEnd":1710877022853851},"url":"http://localhost:33751/favicon.ico"},"timestamp":1710877022866,"response":{"bodySize":0,"content":{"size":null},"headersSize":175,"url":"http://localhost:33751/favicon.ico","bytesReceived":175,"fromCache":false,"headers":[{"name":"Cache-Control","value":{"type":"string","value":"no-cache, no-store"}},{"name":"Content-Type","value":{"type":"string","value":"image/vnd.microsoft.icon"}},{"name":"Date","value":{"type":"string","value":"Tue, 19 Mar 2024 19:37:02 GMT"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Content-Length","value":{"type":"string","value":"70"}}],"mimeType":"image/vnd.microsoft.icon","protocol":"http/1.1","status":200,"statusText":"OK"}}}'
+]
+2024-03-19T19:37:02.905Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"network.responseCompleted","params":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","isBlocked":false,"navigation":null,"redirectCount":0,"request":{"bodySize":null,"cookies":[],"headers":[{"name":"Host","value":{"type":"string","value":"localhost:33751"}},{"name":"User-Agent","value":{"type":"string","value":"Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"}},{"name":"Accept","value":{"type":"string","value":"image/avif,image/webp,*/*"}},{"name":"Accept-Language","value":{"type":"string","value":"en-US,en;q=0.5"}},{"name":"Accept-Encoding","value":{"type":"string","value":"gzip, deflate, br"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Referer","value":{"type":"string","value":"http://localhost:33751/dynamic-oopif.html"}},{"name":"Sec-Fetch-Dest","value":{"type":"string","value":"image"}},{"name":"Sec-Fetch-Mode","value":{"type":"string","value":"no-cors"}},{"name":"Sec-Fetch-Site","value":{"type":"string","value":"same-origin"}}],"headersSize":393,"method":"GET","request":"20","timings":{"timeOrigin":0,"requestTime":1710877022822478,"redirectStart":0,"redirectEnd":0,"fetchStart":0,"dnsStart":0,"dnsEnd":0,"connectStart":0,"connectEnd":0,"tlsStart":0,"tlsEnd":0,"requestStart":1710877022853180,"responseStart":1710877022853797,"responseEnd":1710877022853851},"url":"http://localhost:33751/favicon.ico"},"timestamp":1710877022869,"response":{"bodySize":70,"content":{"size":70},"headersSize":175,"url":"http://localhost:33751/favicon.ico","bytesReceived":245,"fromCache":false,"headers":[{"name":"Cache-Control","value":{"type":"string","value":"no-cache, no-store"}},{"name":"Content-Type","value":{"type":"string","value":"image/vnd.microsoft.icon"}},{"name":"Date","value":{"type":"string","value":"Tue, 19 Mar 2024 19:37:02 GMT"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Content-Length","value":{"type":"string","value":"70"}}],"mimeType":"image/vnd.microsoft.icon","protocol":"http/1.1","status":200,"statusText":"OK"}}}'
+]
+2024-03-19T19:37:02.905Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmDestroyed","params":{"realm":"1af8d52f-cebd-464d-a768-801259b89d41"}}'
+]
+2024-03-19T19:37:02.905Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmCreated","params":{"realm":"0da66a85-e44b-4b5c-8f07-ce12ffb58b88","origin":"http://127.0.0.1:33751","context":"10737418241","type":"window"}}'
+]
+2024-03-19T19:37:02.906Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"network.responseCompleted","params":{"context":"10737418241","isBlocked":false,"navigation":"9d25a7a7-874d-4fb0-bdcf-26e403c288d2","redirectCount":0,"request":{"bodySize":null,"cookies":[],"headers":[{"name":"Host","value":{"type":"string","value":"127.0.0.1:33751"}},{"name":"User-Agent","value":{"type":"string","value":"Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"}},{"name":"Accept","value":{"type":"string","value":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"}},{"name":"Accept-Language","value":{"type":"string","value":"en-US,en;q=0.5"}},{"name":"Accept-Encoding","value":{"type":"string","value":"gzip, deflate, br"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Referer","value":{"type":"string","value":"http://localhost:33751/"}},{"name":"Upgrade-Insecure-Requests","value":{"type":"string","value":"1"}},{"name":"Sec-Fetch-Dest","value":{"type":"string","value":"iframe"}},{"name":"Sec-Fetch-Mode","value":{"type":"string","value":"navigate"}},{"name":"Sec-Fetch-Site","value":{"type":"string","value":"cross-site"}}],"headersSize":465,"method":"GET","request":"19","timings":{"timeOrigin":0,"requestTime":1710877022828408,"redirectStart":0,"redirectEnd":0,"fetchStart":1710877022834023,"dnsStart":1710877022834023,"dnsEnd":1710877022840138,"connectStart":1710877022841485,"connectEnd":1710877022841599,"tlsStart":0,"tlsEnd":1710877022841599,"requestStart":1710877022841662,"responseStart":1710877022846482,"responseEnd":1710877022846550},"url":"http://127.0.0.1:33751/oopif.html"},"timestamp":1710877022872,"response":{"bodySize":169,"content":{"size":169},"headersSize":176,"url":"http://127.0.0.1:33751/oopif.html","bytesReceived":345,"fromCache":false,"headers":[{"name":"Cache-Control","value":{"type":"string","value":"no-cache, no-store"}},{"name":"Content-Type","value":{"type":"string","value":"text/html; charset=utf-8"}},{"name":"Date","value":{"type":"string","value":"Tue, 19 Mar 2024 19:37:02 GMT"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Content-Length","value":{"type":"string","value":"169"}}],"mimeType":"text/html;charset=utf-8","protocol":"http/1.1","status":200,"statusText":"OK"}}}'
+]
+2024-03-19T19:37:02.906Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.domContentLoaded","params":{"context":"10737418241","timestamp":1710877022872,"url":"http://127.0.0.1:33751/oopif.html","navigation":"9d25a7a7-874d-4fb0-bdcf-26e403c288d2"}}'
+]
+2024-03-19T19:37:02.906Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.load","params":{"context":"10737418241","timestamp":1710877022873,"url":"http://127.0.0.1:33751/oopif.html","navigation":"9d25a7a7-874d-4fb0-bdcf-26e403c288d2"}}'
+]
+2024-03-19T19:37:02.907Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.load","params":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","timestamp":1710877022873,"url":"http://localhost:33751/dynamic-oopif.html","navigation":"24c5e487-2a45-41cf-a5b0-6222f14dfcc3"}}'
+]
+2024-03-19T19:37:02.907Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"network.beforeRequestSent","params":{"context":"10737418241","isBlocked":true,"navigation":null,"redirectCount":0,"request":{"bodySize":null,"cookies":[],"headers":[{"name":"Host","value":{"type":"string","value":"127.0.0.1:33751"}},{"name":"User-Agent","value":{"type":"string","value":"Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"}},{"name":"Accept","value":{"type":"string","value":"*/*"}},{"name":"Accept-Language","value":{"type":"string","value":"en-US,en;q=0.5"}},{"name":"Accept-Encoding","value":{"type":"string","value":"gzip, deflate, br"}},{"name":"Referer","value":{"type":"string","value":"http://127.0.0.1:33751/oopif.html"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Sec-Fetch-Dest","value":{"type":"string","value":"empty"}},{"name":"Sec-Fetch-Mode","value":{"type":"string","value":"cors"}},{"name":"Sec-Fetch-Site","value":{"type":"string","value":"same-origin"}}],"headersSize":376,"method":"GET","request":"24","timings":{"timeOrigin":0,"requestTime":1710877022875479,"redirectStart":0,"redirectEnd":0,"fetchStart":0,"dnsStart":0,"dnsEnd":0,"connectStart":0,"connectEnd":0,"tlsStart":0,"tlsEnd":0,"requestStart":1710877022879752,"responseStart":0,"responseEnd":0},"url":"http://127.0.0.1:33751/oopif.html?requestFromOOPIF"},"timestamp":1710877022880,"intercepts":["53a4bcef-d9f6-4203-8ea9-661435786680"],"initiator":{"type":"other"}}}'
+]
+2024-03-19T19:37:02.907Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":16,"method":"network.continueRequest","params":{"request":"24"}}'
+]
+2024-03-19T19:37:02.908Z puppeteer:webDriverBiDi:SEND ► [
+  `{"id":17,"method":"script.callFunction","params":{"functionDeclaration":"() => {\\n                    return document.querySelectorAll('iframe,frame');\\n                }\\n//# sourceURL=pptr:internal\\n","awaitPromise":true,"target":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","sandbox":"__puppeteer_internal_9961"},"arguments":[],"resultOwnership":"root","userActivation":true,"serializationOptions":{"maxObjectDepth":0,"maxDomDepth":0}}}`
+]
+2024-03-19T19:37:02.920Z puppeteer:webDriverBiDi:RECV ◀ [ '{"type":"success","id":16,"result":{}}' ]
+2024-03-19T19:37:02.961Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"network.responseStarted","params":{"context":"10737418241","isBlocked":false,"navigation":null,"redirectCount":0,"request":{"bodySize":null,"cookies":[],"headers":[{"name":"Host","value":{"type":"string","value":"127.0.0.1:33751"}},{"name":"User-Agent","value":{"type":"string","value":"Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"}},{"name":"Accept","value":{"type":"string","value":"*/*"}},{"name":"Accept-Language","value":{"type":"string","value":"en-US,en;q=0.5"}},{"name":"Accept-Encoding","value":{"type":"string","value":"gzip, deflate, br"}},{"name":"Referer","value":{"type":"string","value":"http://127.0.0.1:33751/oopif.html"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Sec-Fetch-Dest","value":{"type":"string","value":"empty"}},{"name":"Sec-Fetch-Mode","value":{"type":"string","value":"cors"}},{"name":"Sec-Fetch-Site","value":{"type":"string","value":"same-origin"}}],"headersSize":376,"method":"GET","request":"24","timings":{"timeOrigin":0,"requestTime":1710877022875479,"redirectStart":0,"redirectEnd":0,"fetchStart":0,"dnsStart":0,"dnsEnd":0,"connectStart":0,"connectEnd":0,"tlsStart":0,"tlsEnd":0,"requestStart":1710877022879752,"responseStart":1710877022880357,"responseEnd":1710877022880413},"url":"http://127.0.0.1:33751/oopif.html?requestFromOOPIF"},"timestamp":1710877022929,"response":{"bodySize":0,"content":{"size":null},"headersSize":142,"url":"http://127.0.0.1:33751/oopif.html?requestFromOOPIF","bytesReceived":142,"fromCache":false,"headers":[{"name":"Cache-Control","value":{"type":"string","value":"no-cache, no-store"}},{"name":"Date","value":{"type":"string","value":"Tue, 19 Mar 2024 19:37:02 GMT"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Content-Length","value":{"type":"string","value":"96"}}],"mimeType":"application/x-unknown-content-type","protocol":"http/1.1","status":404,"statusText":"Not Found"}}}'
+]
+2024-03-19T19:37:02.961Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmCreated","params":{"realm":"ccc0498f-8ccf-4157-8072-5c123ba848c1","origin":"http://localhost:33751","context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","type":"window","sandbox":"__puppeteer_internal_9961"}}'
+]
+2024-03-19T19:37:02.961Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"success","id":17,"result":{"realm":"ccc0498f-8ccf-4157-8072-5c123ba848c1","type":"success","result":{"type":"nodelist","handle":"014fde4c-a825-4558-a054-16ecdfe4f48b"}}}'
+]
+2024-03-19T19:37:02.961Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"network.responseCompleted","params":{"context":"10737418241","isBlocked":false,"navigation":null,"redirectCount":0,"request":{"bodySize":null,"cookies":[],"headers":[{"name":"Host","value":{"type":"string","value":"127.0.0.1:33751"}},{"name":"User-Agent","value":{"type":"string","value":"Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"}},{"name":"Accept","value":{"type":"string","value":"*/*"}},{"name":"Accept-Language","value":{"type":"string","value":"en-US,en;q=0.5"}},{"name":"Accept-Encoding","value":{"type":"string","value":"gzip, deflate, br"}},{"name":"Referer","value":{"type":"string","value":"http://127.0.0.1:33751/oopif.html"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Sec-Fetch-Dest","value":{"type":"string","value":"empty"}},{"name":"Sec-Fetch-Mode","value":{"type":"string","value":"cors"}},{"name":"Sec-Fetch-Site","value":{"type":"string","value":"same-origin"}}],"headersSize":376,"method":"GET","request":"24","timings":{"timeOrigin":0,"requestTime":1710877022875479,"redirectStart":0,"redirectEnd":0,"fetchStart":0,"dnsStart":0,"dnsEnd":0,"connectStart":0,"connectEnd":0,"tlsStart":0,"tlsEnd":0,"requestStart":1710877022879752,"responseStart":1710877022880357,"responseEnd":1710877022880413},"url":"http://127.0.0.1:33751/oopif.html?requestFromOOPIF"},"timestamp":1710877022937,"response":{"bodySize":96,"content":{"size":96},"headersSize":142,"url":"http://127.0.0.1:33751/oopif.html?requestFromOOPIF","bytesReceived":238,"fromCache":false,"headers":[{"name":"Cache-Control","value":{"type":"string","value":"no-cache, no-store"}},{"name":"Date","value":{"type":"string","value":"Tue, 19 Mar 2024 19:37:02 GMT"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Content-Length","value":{"type":"string","value":"96"}}],"mimeType":"application/x-unknown-content-type","protocol":"http/1.1","status":404,"statusText":"Not Found"}}}'
+]
+2024-03-19T19:37:02.962Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":18,"method":"script.callFunction","params":{"functionDeclaration":"iterable => {\\n            return (async function* () {\\n                yield* iterable;\\n            })();\\n        }\\n//# sourceURL=pptr:evaluateHandle;transposeIterableHandle%20(%2Fusr%2Flocal%2Fgoogle%2Fhome%2Fnvitkov%2Fpuppeteer%2Fpackages%2Fpuppeteer-core%2Flib%2Fcjs%2Fpuppeteer%2Fcommon%2FHandleIterator.js%3A123%3A77)\\n","awaitPromise":true,"target":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","sandbox":"__puppeteer_internal_9961"},"arguments":[{"type":"nodelist","handle":"014fde4c-a825-4558-a054-16ecdfe4f48b"}],"resultOwnership":"root","userActivation":true,"serializationOptions":{"maxObjectDepth":0,"maxDomDepth":0}}}'
+]
+2024-03-19T19:37:03.043Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"success","id":18,"result":{"realm":"ccc0498f-8ccf-4157-8072-5c123ba848c1","type":"success","result":{"type":"generator","handle":"ae61a31f-c047-4e13-b862-ca7fa72d292b"}}}'
+]
+2024-03-19T19:37:03.044Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":19,"method":"script.callFunction","params":{"functionDeclaration":"async (iterator, size) => {\\n            const results = [];\\n            while (results.length < size) {\\n                const result = await iterator.next();\\n                if (result.done) {\\n                    break;\\n                }\\n                results.push(result.value);\\n            }\\n            return results;\\n        }\\n//# sourceURL=pptr:evaluateHandle;fastTransposeIteratorHandle%20(%2Fusr%2Flocal%2Fgoogle%2Fhome%2Fnvitkov%2Fpuppeteer%2Fpackages%2Fpuppeteer-core%2Flib%2Fcjs%2Fpuppeteer%2Fcommon%2FHandleIterator.js%3A66%3A69)\\n","awaitPromise":true,"target":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","sandbox":"__puppeteer_internal_9961"},"arguments":[{"type":"generator","handle":"ae61a31f-c047-4e13-b862-ca7fa72d292b"},{"type":"number","value":20}],"resultOwnership":"root","userActivation":true,"serializationOptions":{"maxObjectDepth":0,"maxDomDepth":0}}}'
+]
+2024-03-19T19:37:03.050Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"success","id":19,"result":{"realm":"ccc0498f-8ccf-4157-8072-5c123ba848c1","type":"success","result":{"type":"array","handle":"cd190255-ae79-4397-bcc5-f717807a6982"}}}'
+]
+2024-03-19T19:37:03.050Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":20,"method":"script.callFunction","params":{"functionDeclaration":"object => {\\n                const enumerableProperties = [];\\n                const descriptors = Object.getOwnPropertyDescriptors(object);\\n                for (const propertyName in descriptors) {\\n                    if (descriptors[propertyName]?.enumerable) {\\n                        enumerableProperties.push(propertyName);\\n                    }\\n                }\\n                return enumerableProperties;\\n            }\\n//# sourceURL=pptr:evaluate;BidiJSHandle.getProperties%20(%2Fusr%2Flocal%2Fgoogle%2Fhome%2Fnvitkov%2Fpuppeteer%2Fpackages%2Fpuppeteer-core%2Flib%2Fcjs%2Fpuppeteer%2Fapi%2FJSHandle.js%3A179%3A46)\\n","awaitPromise":true,"target":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","sandbox":"__puppeteer_internal_9961"},"arguments":[{"type":"array","handle":"cd190255-ae79-4397-bcc5-f717807a6982"}],"resultOwnership":"none","userActivation":true,"serializationOptions":{}}}'
+]
+2024-03-19T19:37:03.053Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"success","id":20,"result":{"realm":"ccc0498f-8ccf-4157-8072-5c123ba848c1","type":"success","result":{"type":"array","value":[{"type":"string","value":"0"}]}}}'
+]
+2024-03-19T19:37:03.053Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":21,"method":"script.callFunction","params":{"functionDeclaration":"(object, propertyName) => {\\n                return object[propertyName];\\n            }\\n//# sourceURL=pptr:evaluateHandle;BidiJSHandle.getProperty%20(%2Fusr%2Flocal%2Fgoogle%2Fhome%2Fnvitkov%2Fpuppeteer%2Fpackages%2Fpuppeteer-core%2Flib%2Fcjs%2Fpuppeteer%2Fapi%2FJSHandle.js%3A156%3A31)\\n","awaitPromise":true,"target":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","sandbox":"__puppeteer_internal_9961"},"arguments":[{"type":"array","handle":"cd190255-ae79-4397-bcc5-f717807a6982"},{"type":"string","value":"0"}],"resultOwnership":"root","userActivation":true,"serializationOptions":{"maxObjectDepth":0,"maxDomDepth":0}}}'
+]
+2024-03-19T19:37:03.057Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"success","id":21,"result":{"realm":"ccc0498f-8ccf-4157-8072-5c123ba848c1","type":"success","result":{"type":"node","handle":"659750bb-0996-4b58-871f-0ba1d8b78c57","sharedId":"a87ec1ce-cdb6-4f85-b7e6-1632adf5d9c7","value":{"nodeType":1,"localName":"iframe","namespaceURI":"http://www.w3.org/1999/xhtml","childNodeCount":0,"attributes":{"src":"http://127.0.0.1:33751/oopif.html"},"shadowRoot":null}}}}'
+]
+2024-03-19T19:37:03.057Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":22,"method":"script.callFunction","params":{"functionDeclaration":"element => {\\n                    if (element instanceof HTMLIFrameElement ||\\n                        element instanceof HTMLFrameElement) {\\n                        return element.contentWindow;\\n                    }\\n                    return;\\n                }\\n//# sourceURL=pptr:evaluateHandle;BidiElementHandle.contentFrame%20(%2Fusr%2Flocal%2Fgoogle%2Fhome%2Fnvitkov%2Fpuppeteer%2Fpackages%2Fpuppeteer-core%2Flib%2Fcjs%2Fpuppeteer%2Fbidi%2FElementHandle.js%3A165%3A75)\\n","awaitPromise":true,"target":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","sandbox":"__puppeteer_internal_9961"},"arguments":[{"type":"node","handle":"659750bb-0996-4b58-871f-0ba1d8b78c57","sharedId":"a87ec1ce-cdb6-4f85-b7e6-1632adf5d9c7","value":{"nodeType":1,"localName":"iframe","namespaceURI":"http://www.w3.org/1999/xhtml","childNodeCount":0,"attributes":{"src":"http://127.0.0.1:33751/oopif.html"},"shadowRoot":null}}],"resultOwnership":"root","userActivation":true,"serializationOptions":{"maxObjectDepth":0,"maxDomDepth":0}}}'
+]
+2024-03-19T19:37:03.061Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"success","id":22,"result":{"realm":"ccc0498f-8ccf-4157-8072-5c123ba848c1","type":"success","result":{"type":"window","handle":"c36189d9-3d65-4ac1-95ae-670dc70463bc","value":{"context":"10737418241"}}}}'
+]
+2024-03-19T19:37:03.061Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":23,"method":"script.disown","params":{"target":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","sandbox":"__puppeteer_internal_9961"},"handles":["c36189d9-3d65-4ac1-95ae-670dc70463bc"]}}'
+]
+2024-03-19T19:37:03.062Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":24,"method":"script.disown","params":{"target":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","sandbox":"__puppeteer_internal_9961"},"handles":["cd190255-ae79-4397-bcc5-f717807a6982"]}}'
+]
+2024-03-19T19:37:03.062Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":25,"method":"script.disown","params":{"target":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","sandbox":"__puppeteer_internal_9961"},"handles":["ae61a31f-c047-4e13-b862-ca7fa72d292b"]}}'
+]
+2024-03-19T19:37:03.062Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":26,"method":"script.disown","params":{"target":{"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","sandbox":"__puppeteer_internal_9961"},"handles":["014fde4c-a825-4558-a054-16ecdfe4f48b"]}}'
+]
+    ✔ should load oopif iframes with subresources and request interception (321ms)
+2024-03-19T19:37:03.064Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":27,"method":"browser.removeUserContext","params":{"userContext":"fa5fd5d5-3492-42be-a31b-6a568741549b"}}'
+]
+2024-03-19T19:37:03.064Z puppeteer:webDriverBiDi:RECV ◀ [ '{"type":"success","id":23,"result":{}}' ]
+2024-03-19T19:37:03.064Z puppeteer:webDriverBiDi:RECV ◀ [ '{"type":"success","id":24,"result":{}}' ]
+2024-03-19T19:37:03.064Z puppeteer:webDriverBiDi:RECV ◀ [ '{"type":"success","id":25,"result":{}}' ]
+2024-03-19T19:37:03.064Z puppeteer:webDriverBiDi:RECV ◀ [ '{"type":"success","id":26,"result":{}}' ]
+2024-03-19T19:37:03.105Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.contextDestroyed","params":{"children":null,"context":"fc38a624-8fa9-4db2-a5e6-d512c17cc023","url":"http://localhost:33751/dynamic-oopif.html","userContext":"fa5fd5d5-3492-42be-a31b-6a568741549b","parent":null}}'
+]
+2024-03-19T19:37:03.106Z puppeteer:webDriverBiDi:RECV ◀ [ '{"type":"success","id":27,"result":{}}' ]
+2024-03-19T19:37:03.106Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmDestroyed","params":{"realm":"0da66a85-e44b-4b5c-8f07-ce12ffb58b88"}}'
+]
+2024-03-19T19:37:03.107Z puppeteer:webDriverBiDi:SEND ► [ '{"id":28,"method":"browser.createUserContext","params":{}}' ]
+2024-03-19T19:37:03.107Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmDestroyed","params":{"realm":"3d339338-8675-4fe5-8244-cbbedef8bdb6"}}'
+]
+2024-03-19T19:37:03.153Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmDestroyed","params":{"realm":"ccc0498f-8ccf-4157-8072-5c123ba848c1"}}'
+]
+2024-03-19T19:37:03.153Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"success","id":28,"result":{"userContext":"3f477a41-da17-46cb-bee3-2101d9d45c39"}}'
+]
+2024-03-19T19:37:03.153Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":29,"method":"browsingContext.create","params":{"type":"tab","userContext":"3f477a41-da17-46cb-bee3-2101d9d45c39"}}'
+]
+2024-03-19T19:37:03.156Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.contextCreated","params":{"children":null,"context":"8f97627c-85f3-4ab8-a35c-58a7a0433ef4","url":"about:blank","userContext":"3f477a41-da17-46cb-bee3-2101d9d45c39","parent":null}}'
+]
+2024-03-19T19:37:03.197Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmCreated","params":{"realm":"98f009f4-da34-437b-8cb7-ed42780e2612","origin":"null","context":"8f97627c-85f3-4ab8-a35c-58a7a0433ef4","type":"window"}}'
+]
+2024-03-19T19:37:03.197Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.navigationStarted","params":{"context":"8f97627c-85f3-4ab8-a35c-58a7a0433ef4","navigation":"5d7dbbf1-b631-4dde-8617-dd3fd679e550","timestamp":1710877023170,"url":"about:blank"}}'
+]
+2024-03-19T19:37:03.197Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmDestroyed","params":{"realm":"98f009f4-da34-437b-8cb7-ed42780e2612"}}'
+]
+2024-03-19T19:37:03.197Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmCreated","params":{"realm":"25896a3c-273b-4e54-884d-ecaf5921fad1","origin":"null","context":"8f97627c-85f3-4ab8-a35c-58a7a0433ef4","type":"window"}}'
+]
+2024-03-19T19:37:03.197Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.domContentLoaded","params":{"context":"8f97627c-85f3-4ab8-a35c-58a7a0433ef4","timestamp":1710877023183,"url":"about:blank","navigation":"5d7dbbf1-b631-4dde-8617-dd3fd679e550"}}'
+]
+2024-03-19T19:37:03.197Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.load","params":{"context":"8f97627c-85f3-4ab8-a35c-58a7a0433ef4","timestamp":1710877023184,"url":"about:blank","navigation":"5d7dbbf1-b631-4dde-8617-dd3fd679e550"}}'
+]
+2024-03-19T19:37:03.197Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"success","id":29,"result":{"context":"8f97627c-85f3-4ab8-a35c-58a7a0433ef4"}}'
+]
+2024-03-19T19:37:03.198Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":30,"method":"browsingContext.setViewport","params":{"context":"8f97627c-85f3-4ab8-a35c-58a7a0433ef4","viewport":{"width":800,"height":600},"devicePixelRatio":null}}'
+]
+2024-03-19T19:37:03.225Z puppeteer:webDriverBiDi:RECV ◀ [ '{"type":"success","id":30,"result":{}}' ]
+2024-03-19T19:37:03.225Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":31,"method":"browsingContext.navigate","params":{"context":"8f97627c-85f3-4ab8-a35c-58a7a0433ef4","url":"http://localhost:33751/dynamic-oopif.html","wait":"interactive"}}'
+]
+2024-03-19T19:37:03.231Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.navigationStarted","params":{"context":"8f97627c-85f3-4ab8-a35c-58a7a0433ef4","navigation":"6967cb8e-c0b3-4c09-b74c-cf887a6617af","timestamp":1710877023231,"url":"http://localhost:33751/dynamic-oopif.html"}}'
+]
+2024-03-19T19:37:03.273Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"network.beforeRequestSent","params":{"context":"8f97627c-85f3-4ab8-a35c-58a7a0433ef4","isBlocked":true,"navigation":"6967cb8e-c0b3-4c09-b74c-cf887a6617af","redirectCount":0,"request":{"bodySize":null,"cookies":[],"headers":[{"name":"Host","value":{"type":"string","value":"localhost:33751"}},{"name":"User-Agent","value":{"type":"string","value":"Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"}},{"name":"Accept","value":{"type":"string","value":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"}},{"name":"Accept-Language","value":{"type":"string","value":"en-US,en;q=0.5"}},{"name":"Accept-Encoding","value":{"type":"string","value":"gzip, deflate, br"}},{"name":"Connection","value":{"type":"string","value":"keep-alive"}},{"name":"Upgrade-Insecure-Requests","value":{"type":"string","value":"1"}},{"name":"Sec-Fetch-Dest","value":{"type":"string","value":"document"}},{"name":"Sec-Fetch-Mode","value":{"type":"string","value":"navigate"}},{"name":"Sec-Fetch-Site","value":{"type":"string","value":"none"}},{"name":"Sec-Fetch-User","value":{"type":"string","value":"?1"}}],"headersSize":455,"method":"GET","request":"34","timings":{"timeOrigin":0,"requestTime":1710877023230284,"redirectStart":0,"redirectEnd":0,"fetchStart":1710877023236427,"dnsStart":1710877023236427,"dnsEnd":1710877023236478,"connectStart":1710877023236539,"connectEnd":1710877023236646,"tlsStart":0,"tlsEnd":1710877023236646,"requestStart":1710877023236718,"responseStart":0,"responseEnd":0},"url":"http://localhost:33751/dynamic-oopif.html"},"timestamp":1710877023236,"intercepts":["53a4bcef-d9f6-4203-8ea9-661435786680"],"initiator":{"type":"other"}}}'
+]
+    1) should support frames within OOP iframes
+2024-03-19T19:37:13.234Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":32,"method":"browser.removeUserContext","params":{"userContext":"3f477a41-da17-46cb-bee3-2101d9d45c39"}}'
+]
+2024-03-19T19:37:13.244Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.contextDestroyed","params":{"children":null,"context":"8f97627c-85f3-4ab8-a35c-58a7a0433ef4","url":"about:blank","userContext":"3f477a41-da17-46cb-bee3-2101d9d45c39","parent":null}}'
+]
+2024-03-19T19:37:13.248Z puppeteer:webDriverBiDi:RECV ◀ [ '{"type":"success","id":32,"result":{}}' ]
+2024-03-19T19:37:13.248Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"error","id":31,"error":"unknown error","message":"Error: NS_ERROR_ABORT","stacktrace":"#checkLoadingState@chrome://remote/content/shared/Navigate.sys.mjs:244:28\\nonStateChange@chrome://remote/content/shared/Navigate.sys.mjs:293:28\\n_endRemoveTab@chrome://browser/content/tabbrowser.js:4362:15\\nremoveTab@chrome://browser/content/tabbrowser.js:4009:14\\ncloseContainerTabs/</<@resource://gre/modules/ContextualIdentityService.sys.mjs:581:20\\n_forEachContainerTab@resource://gre/modules/ContextualIdentityService.sys.mjs:620:19\\ncloseContainerTabs/<@resource://gre/modules/ContextualIdentityService.sys.mjs:573:12\\ncloseContainerTabs@resource://gre/modules/ContextualIdentityService.sys.mjs:571:12\\nremoveUserContext@chrome://remote/content/shared/UserContextManager.sys.mjs:193:38\\nremoveUserContext@chrome://remote/content/webdriver-bidi/modules/root/browser.sys.mjs:121:29\\nhandleCommand@chrome://remote/content/shared/messagehandler/MessageHandler.sys.mjs:255:33\\nexecute@chrome://remote/content/shared/webdriver/Session.sys.mjs:274:32\\nonPacket@chrome://remote/content/webdriver-bidi/WebDriverBiDiConnection.sys.mjs:211:37\\nonMessage@chrome://remote/content/server/WebSocketTransport.sys.mjs:127:18\\nhandleEvent@chrome://remote/content/server/WebSocketTransport.sys.mjs:109:14\\n"}'
+]
+state 1 undefined
+2024-03-19T19:37:13.249Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":33,"method":"browsingContext.close","params":{"context":"0837d7d1-4d51-47f4-bbac-660bc29a18c6"}}'
+]
+2024-03-19T19:37:13.252Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmDestroyed","params":{"realm":"25896a3c-273b-4e54-884d-ecaf5921fad1"}}'
+]
+2024-03-19T19:37:13.293Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"browsingContext.contextDestroyed","params":{"children":null,"context":"0837d7d1-4d51-47f4-bbac-660bc29a18c6","url":"about:blank","userContext":"88689782-13e0-433d-958e-f48075cad130","parent":null}}'
+]
+2024-03-19T19:37:13.293Z puppeteer:webDriverBiDi:RECV ◀ [ '{"type":"success","id":33,"result":{}}' ]
+2024-03-19T19:37:13.293Z puppeteer:webDriverBiDi:RECV ◀ [
+  '{"type":"event","method":"script.realmDestroyed","params":{"realm":"f3b4d212-e642-4219-acea-27197b8b7d85"}}'
+]
+2024-03-19T19:37:13.293Z puppeteer:webDriverBiDi:SEND ► [
+  '{"id":34,"method":"browser.removeUserContext","params":{"userContext":"88689782-13e0-433d-958e-f48075cad130"}}'
+]
+2024-03-19T19:37:13.296Z puppeteer:webDriverBiDi:RECV ◀ [ '{"type":"success","id":34,"result":{}}' ]
+2024-03-19T19:37:13.296Z puppeteer:webDriverBiDi:SEND ► [ '{"id":35,"method":"browser.close","params":{}}' ]
+2024-03-19T19:37:13.297Z puppeteer:webDriverBiDi:RECV ◀ [ '{"type":"success","id":35,"result":{}}' ]
+2024-03-19T19:37:13.884Z puppeteer:browsers:launcher Browser process 1471004 onExit
+
+
+  1 passing (13s)
+  1 failing
+
+  1) OOPIF
+       should support frames within OOP iframes:
+     Error: Timeout of 10000ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves. (/usr/local/google/home/nvitkov/puppeteer/test/build/oopif.spec.js)
+      at listOnTimeout (node:internal/timers:573:17)
+      at processTimers (node:internal/timers:514:7)
+
+
+
+Finished ["firefox","headless","webDriverBiDi"]
+Add the following to TestExpectations.json to ignore the error:
+[
+  {
+    "testIdPattern": "[oopif.spec] OOPIF should support frames within OOP iframes",
+    "platforms": [
+      "linux"
+    ],
+    "parameters": [
+      "firefox",
+      "headless",
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "TIMEOUT"
+    ]
+  }
+]
+The recommendations are based on the following applied expectations:
+[
+  null
+]
+
+❌ [test] exited with exit code 1.
+❌ 1 script failed.
+
+❌ [test:firefox:bidi] exited with exit code 1.
+❌ 1 script failed.
