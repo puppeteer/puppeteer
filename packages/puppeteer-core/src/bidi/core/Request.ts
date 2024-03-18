@@ -143,6 +143,32 @@ export class Request extends EventEmitter<{
   }
   // keep-sorted end
 
+  async continueRequest(): Promise<void> {
+    if (!this.#event.isBlocked) {
+      throw new Error('Request Interception is not enabled!');
+    }
+    // Request interception is not supported for data: urls.
+    if (this.url.startsWith('data:')) {
+      return;
+    }
+    await this.#session.send('network.continueRequest', {
+      request: this.id,
+    });
+  }
+
+  async failRequest(): Promise<void> {
+    if (!this.#event.isBlocked) {
+      throw new Error('Request Interception is not enabled!');
+    }
+    // Request interception is not supported for data: urls.
+    if (this.url.startsWith('data:')) {
+      return;
+    }
+    await this.#session.send('network.failRequest', {
+      request: this.id,
+    });
+  }
+
   @inertIfDisposed
   private dispose(): void {
     this[disposeSymbol]();

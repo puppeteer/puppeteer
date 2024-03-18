@@ -10,7 +10,7 @@ import {EventEmitter} from '../../common/EventEmitter.js';
 import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 
-import type {AddPreloadScriptOptions} from './Browser.js';
+import type {AddInterceptOptions, AddPreloadScriptOptions} from './Browser.js';
 import {Navigation} from './Navigation.js';
 import type {DedicatedWorkerRealm} from './Realm.js';
 import {WindowRealm} from './Realm.js';
@@ -478,9 +478,20 @@ export class BrowsingContext extends EventEmitter<{
       functionDeclaration,
       {
         ...options,
-        contexts: [this, ...(options.contexts ?? [])],
+        contexts: [this],
       }
     );
+  }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
+  async addIntercept(options: AddInterceptOptions): Promise<string> {
+    return await this.userContext.browser.addIntercept({
+      ...options,
+      contexts: [this],
+    });
   }
 
   @throwIfDisposed<BrowsingContext>(context => {
@@ -544,6 +555,14 @@ export class BrowsingContext extends EventEmitter<{
     return context.#reason!;
   })
   async subscribe(events: [string, ...string[]]): Promise<void> {
+    await this.#session.subscribe(events, [this.id]);
+  }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
+  async addInterception(events: [string, ...string[]]): Promise<void> {
     await this.#session.subscribe(events, [this.id]);
   }
 

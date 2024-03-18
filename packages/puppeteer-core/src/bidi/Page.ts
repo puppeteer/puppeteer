@@ -202,6 +202,10 @@ export class BidiPage extends Page {
 
   override async close(options?: {runBeforeUnload?: boolean}): Promise<void> {
     try {
+      if (this.#interception) {
+        // Workaround for Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1882260
+        await this.setRequestInterception(false);
+      }
       await this.#frame.browsingContext.close(options?.runBeforeUnload);
     } catch {
       return;
@@ -499,8 +503,21 @@ export class BidiPage extends Page {
     return [...this.#workers];
   }
 
-  override setRequestInterception(): never {
-    throw new UnsupportedOperation();
+  #interception?: string;
+  override async setRequestInterception(enable: boolean): Promise<void> {
+    if (enable && !this.#interception) {
+      this.#interception = await this.#frame.browsingContext.addIntercept({
+        phases: [
+          Bidi.Network.InterceptPhase.BeforeRequestSent,
+          Bidi.Network.InterceptPhase.AuthRequired,
+        ],
+      });
+    } else if (!enable && this.#interception) {
+      await this.#frame.browsingContext.userContext.browser.removeIntercept(
+        this.#interception
+      );
+      this.#interception = undefined;
+    }
   }
 
   override setDragInterception(): never {
