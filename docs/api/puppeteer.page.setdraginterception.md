@@ -18,10 +18,33 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type    | Description                          |
-| --------- | ------- | ------------------------------------ |
-| enabled   | boolean | Whether to enable drag interception. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+enabled
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether to enable drag interception.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

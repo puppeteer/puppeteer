@@ -12,6 +12,46 @@ export interface WaitForTargetOptions
 
 ## Properties
 
-| Property | Modifiers             | Type   | Description                                                                    | Default             |
-| -------- | --------------------- | ------ | ------------------------------------------------------------------------------ | ------------------- |
-| timeout  | <code>optional</code> | number | Maximum wait time in milliseconds. Pass <code>0</code> to disable the timeout. | <code>30_000</code> |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+timeout
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Maximum wait time in milliseconds. Pass `0` to disable the timeout.
+
+</td><td>
+
+`30_000`
+
+</td></tr>
+</tbody></table>

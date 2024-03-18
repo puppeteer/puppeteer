@@ -16,10 +16,33 @@ class Puppeteer {
 
 ## Parameters
 
-| Parameter | Type                                            | Description                                        |
-| --------- | ----------------------------------------------- | -------------------------------------------------- |
-| options   | [ConnectOptions](./puppeteer.connectoptions.md) | Set of configurable options to set on the browser. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+[ConnectOptions](./puppeteer.connectoptions.md)
+
+</td><td>
+
+Set of configurable options to set on the browser.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[Browser](./puppeteer.browser.md)&gt;

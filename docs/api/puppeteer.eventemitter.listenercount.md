@@ -16,10 +16,33 @@ class EventEmitter {
 
 ## Parameters
 
-| Parameter | Type                                                                        | Description                             |
-| --------- | --------------------------------------------------------------------------- | --------------------------------------- |
-| type      | keyof [EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt; | the event to get the listener count for |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+type
+
+</td><td>
+
+keyof [EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt;
+
+</td><td>
+
+the event to get the listener count for
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 number

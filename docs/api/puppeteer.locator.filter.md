@@ -18,10 +18,31 @@ class Locator {
 
 ## Parameters
 
-| Parameter | Type                                              | Description |
-| --------- | ------------------------------------------------- | ----------- |
-| predicate | [Predicate](./puppeteer.predicate.md)&lt;T, S&gt; |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+predicate
+
+</td><td>
+
+[Predicate](./puppeteer.predicate.md)&lt;T, S&gt;
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;S&gt;

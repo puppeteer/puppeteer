@@ -14,22 +14,382 @@ export interface PDFOptions
 
 ## Properties
 
-| Property            | Modifiers             | Type                                      | Description                                                                                                                                                                                                                                                                                                                                                                     | Default                                                                  |
-| ------------------- | --------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| displayHeaderFooter | <code>optional</code> | boolean                                   | Whether to show the header and footer.                                                                                                                                                                                                                                                                                                                                          | <code>false</code>                                                       |
-| footerTemplate      | <code>optional</code> | string                                    | HTML template for the print footer. Has the same constraints and support for special classes as [PDFOptions.headerTemplate](./puppeteer.pdfoptions.md).                                                                                                                                                                                                                         |                                                                          |
-| format              | <code>optional</code> | [PaperFormat](./puppeteer.paperformat.md) |                                                                                                                                                                                                                                                                                                                                                                                 | <code>letter</code>.                                                     |
-| headerTemplate      | <code>optional</code> | string                                    | <p>HTML template for the print header. Should be valid HTML with the following classes used to inject values into them:</p><p>- <code>date</code> formatted print date</p><p>- <code>title</code> document title</p><p>- <code>url</code> document location</p><p>- <code>pageNumber</code> current page number</p><p>- <code>totalPages</code> total pages in the document</p> |                                                                          |
-| height              | <code>optional</code> | string \| number                          | Sets the height of paper. You can pass in a number or a string with a unit.                                                                                                                                                                                                                                                                                                     |                                                                          |
-| landscape           | <code>optional</code> | boolean                                   | Whether to print in landscape orientation.                                                                                                                                                                                                                                                                                                                                      | <code>false</code>                                                       |
-| margin              | <code>optional</code> | [PDFMargin](./puppeteer.pdfmargin.md)     | Set the PDF margins.                                                                                                                                                                                                                                                                                                                                                            | <code>undefined</code> no margins are set.                               |
-| omitBackground      | <code>optional</code> | boolean                                   | Hides default white background and allows generating pdfs with transparency.                                                                                                                                                                                                                                                                                                    | <code>false</code>                                                       |
-| outline             | <code>optional</code> | boolean                                   | Generate document outline.                                                                                                                                                                                                                                                                                                                                                      | <code>false</code>                                                       |
-| pageRanges          | <code>optional</code> | string                                    | Paper ranges to print, e.g. <code>1-5, 8, 11-13</code>.                                                                                                                                                                                                                                                                                                                         | The empty string, which means all pages are printed.                     |
-| path                | <code>optional</code> | string                                    | The path to save the file to.                                                                                                                                                                                                                                                                                                                                                   | <code>undefined</code>, which means the PDF will not be written to disk. |
-| preferCSSPageSize   | <code>optional</code> | boolean                                   | Give any CSS <code>@page</code> size declared in the page priority over what is declared in the <code>width</code> or <code>height</code> or <code>format</code> option.                                                                                                                                                                                                        | <code>false</code>, which will scale the content to fit the paper size.  |
-| printBackground     | <code>optional</code> | boolean                                   | Set to <code>true</code> to print background graphics.                                                                                                                                                                                                                                                                                                                          | <code>false</code>                                                       |
-| scale               | <code>optional</code> | number                                    | Scales the rendering of the web page. Amount must be between <code>0.1</code> and <code>2</code>.                                                                                                                                                                                                                                                                               | <code>1</code>                                                           |
-| tagged              | <code>optional</code> | boolean                                   | Generate tagged (accessible) PDF.                                                                                                                                                                                                                                                                                                                                               | <code>true</code>                                                        |
-| timeout             | <code>optional</code> | number                                    | Timeout in milliseconds. Pass <code>0</code> to disable timeout.                                                                                                                                                                                                                                                                                                                | <code>30_000</code>                                                      |
-| width               | <code>optional</code> | string \| number                          | Sets the width of paper. You can pass in a number or a string with a unit.                                                                                                                                                                                                                                                                                                      |                                                                          |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+displayHeaderFooter
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether to show the header and footer.
+
+</td><td>
+
+`false`
+
+</td></tr>
+<tr><td>
+
+footerTemplate
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+HTML template for the print footer. Has the same constraints and support for special classes as [PDFOptions.headerTemplate](./puppeteer.pdfoptions.md).
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+format
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[PaperFormat](./puppeteer.paperformat.md)
+
+</td><td>
+
+</td><td>
+
+`letter`.
+
+</td></tr>
+<tr><td>
+
+headerTemplate
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+HTML template for the print header. Should be valid HTML with the following classes used to inject values into them:
+
+- `date` formatted print date
+
+- `title` document title
+
+- `url` document location
+
+- `pageNumber` current page number
+
+- `totalPages` total pages in the document
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+height
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string \| number
+
+</td><td>
+
+Sets the height of paper. You can pass in a number or a string with a unit.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+landscape
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether to print in landscape orientation.
+
+</td><td>
+
+`false`
+
+</td></tr>
+<tr><td>
+
+margin
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[PDFMargin](./puppeteer.pdfmargin.md)
+
+</td><td>
+
+Set the PDF margins.
+
+</td><td>
+
+`undefined` no margins are set.
+
+</td></tr>
+<tr><td>
+
+omitBackground
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Hides default white background and allows generating pdfs with transparency.
+
+</td><td>
+
+`false`
+
+</td></tr>
+<tr><td>
+
+outline
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Generate document outline.
+
+</td><td>
+
+`false`
+
+</td></tr>
+<tr><td>
+
+pageRanges
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+Paper ranges to print, e.g. `1-5, 8, 11-13`.
+
+</td><td>
+
+The empty string, which means all pages are printed.
+
+</td></tr>
+<tr><td>
+
+path
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+The path to save the file to.
+
+</td><td>
+
+`undefined`, which means the PDF will not be written to disk.
+
+</td></tr>
+<tr><td>
+
+preferCSSPageSize
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Give any CSS `@page` size declared in the page priority over what is declared in the `width` or `height` or `format` option.
+
+</td><td>
+
+`false`, which will scale the content to fit the paper size.
+
+</td></tr>
+<tr><td>
+
+printBackground
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Set to `true` to print background graphics.
+
+</td><td>
+
+`false`
+
+</td></tr>
+<tr><td>
+
+scale
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Scales the rendering of the web page. Amount must be between `0.1` and `2`.
+
+</td><td>
+
+`1`
+
+</td></tr>
+<tr><td>
+
+tagged
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Generate tagged (accessible) PDF.
+
+</td><td>
+
+`true`
+
+</td></tr>
+<tr><td>
+
+timeout
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Timeout in milliseconds. Pass `0` to disable timeout.
+
+</td><td>
+
+`30_000`
+
+</td></tr>
+<tr><td>
+
+width
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string \| number
+
+</td><td>
+
+Sets the width of paper. You can pass in a number or a string with a unit.
+
+</td><td>
+
+</td></tr>
+</tbody></table>

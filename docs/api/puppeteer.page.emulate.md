@@ -18,10 +18,31 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                            | Description |
-| --------- | ------------------------------- | ----------- |
-| device    | [Device](./puppeteer.device.md) |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+device
+
+</td><td>
+
+[Device](./puppeteer.device.md)
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

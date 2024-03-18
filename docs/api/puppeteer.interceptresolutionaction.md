@@ -12,11 +12,83 @@ export declare enum InterceptResolutionAction
 
 ## Enumeration Members
 
-| Member         | Value                                    | Description |
-| -------------- | ---------------------------------------- | ----------- |
-| Abort          | <code>&quot;abort&quot;</code>           |             |
-| AlreadyHandled | <code>&quot;already-handled&quot;</code> |             |
-| Continue       | <code>&quot;continue&quot;</code>        |             |
-| Disabled       | <code>&quot;disabled&quot;</code>        |             |
-| None           | <code>&quot;none&quot;</code>            |             |
-| Respond        | <code>&quot;respond&quot;</code>         |             |
+<table><thead><tr><th>
+
+Member
+
+</th><th>
+
+Value
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+Abort
+
+</td><td>
+
+`"abort"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+AlreadyHandled
+
+</td><td>
+
+`"already-handled"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+Continue
+
+</td><td>
+
+`"continue"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+Disabled
+
+</td><td>
+
+`"disabled"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+None
+
+</td><td>
+
+`"none"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+Respond
+
+</td><td>
+
+`"respond"`
+
+</td><td>
+
+</td></tr>
+</tbody></table>

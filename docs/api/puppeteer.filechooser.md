@@ -32,8 +32,50 @@ await fileChooser.accept(['/tmp/myfile.pdf']);
 
 ## Methods
 
-| Method                                                | Modifiers | Description                                                                                                                                   |
-| ----------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| [accept(paths)](./puppeteer.filechooser.accept.md)    |           | Accept the file chooser request with the given file paths.                                                                                    |
-| [cancel()](./puppeteer.filechooser.cancel.md)         |           | Closes the file chooser without selecting any files.                                                                                          |
-| [isMultiple()](./puppeteer.filechooser.ismultiple.md) |           | Whether file chooser allow for [multiple](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#attr-multiple) file selection. |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[accept(paths)](./puppeteer.filechooser.accept.md)
+
+</td><td>
+
+</td><td>
+
+Accept the file chooser request with the given file paths.
+
+</td></tr>
+<tr><td>
+
+[cancel()](./puppeteer.filechooser.cancel.md)
+
+</td><td>
+
+</td><td>
+
+Closes the file chooser without selecting any files.
+
+</td></tr>
+<tr><td>
+
+[isMultiple()](./puppeteer.filechooser.ismultiple.md)
+
+</td><td>
+
+</td><td>
+
+Whether file chooser allow for [multiple](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#attr-multiple) file selection.
+
+</td></tr>
+</tbody></table>

@@ -12,10 +12,130 @@ export interface ScreencastOptions
 
 ## Properties
 
-| Property   | Modifiers             | Type                                      | Description                                                                                                                                                                                            | Default        |
-| ---------- | --------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------- |
-| crop       | <code>optional</code> | [BoundingBox](./puppeteer.boundingbox.md) | Specifies the region of the viewport to crop.                                                                                                                                                          |                |
-| ffmpegPath | <code>optional</code> | string                                    | <p>Path to the \[ffmpeg\](https://ffmpeg.org/).</p><p>Required if <code>ffmpeg</code> is not in your PATH.</p>                                                                                         |                |
-| path       | <code>optional</code> | \`$&#123;string&#125;.webm\`              | File path to save the screencast to.                                                                                                                                                                   |                |
-| scale      | <code>optional</code> | number                                    | <p>Scales the output video.</p><p>For example, <code>0.5</code> will shrink the width and height of the output video by half. <code>2</code> will double the width and height of the output video.</p> | <code>1</code> |
-| speed      | <code>optional</code> | number                                    | <p>Specifies the speed to record at.</p><p>For example, <code>0.5</code> will slowdown the output video by 50%. <code>2</code> will double the speed of the output video.</p>                          | <code>1</code> |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+crop
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[BoundingBox](./puppeteer.boundingbox.md)
+
+</td><td>
+
+Specifies the region of the viewport to crop.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+ffmpegPath
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+Path to the \[ffmpeg\](https://ffmpeg.org/).
+
+Required if `ffmpeg` is not in your PATH.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+path
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+\`$&#123;string&#125;.webm\`
+
+</td><td>
+
+File path to save the screencast to.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+scale
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Scales the output video.
+
+For example, `0.5` will shrink the width and height of the output video by half. `2` will double the width and height of the output video.
+
+</td><td>
+
+`1`
+
+</td></tr>
+<tr><td>
+
+speed
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Specifies the speed to record at.
+
+For example, `0.5` will slowdown the output video by 50%. `2` will double the speed of the output video.
+
+</td><td>
+
+`1`
+
+</td></tr>
+</tbody></table>

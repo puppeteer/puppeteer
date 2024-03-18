@@ -18,10 +18,33 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                                                | Description             |
-| --------- | ------------------------------------------------------------------- | ----------------------- |
-| options   | [FrameAddScriptTagOptions](./puppeteer.frameaddscripttagoptions.md) | Options for the script. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+[FrameAddScriptTagOptions](./puppeteer.frameaddscripttagoptions.md)
+
+</td><td>
+
+Options for the script.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLScriptElement&gt;&gt;

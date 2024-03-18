@@ -27,12 +27,59 @@ class Page {
 
 ## Parameters
 
-| Parameter    | Type           | Description                                                                                                                                         |
-| ------------ | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| selector     | Selector       | the [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) to query for                                                         |
-| pageFunction | Func \| string | the function to be evaluated in the page context. Will be passed the result of <code>document.querySelector(selector)</code> as its first argument. |
-| args         | Params         | any additional arguments to pass through to <code>pageFunction</code>.                                                                              |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+selector
+
+</td><td>
+
+Selector
+
+</td><td>
+
+the [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) to query for
+
+</td></tr>
+<tr><td>
+
+pageFunction
+
+</td><td>
+
+Func \| string
+
+</td><td>
+
+the function to be evaluated in the page context. Will be passed the result of `document.querySelector(selector)` as its first argument.
+
+</td></tr>
+<tr><td>
+
+args
+
+</td><td>
+
+Params
+
+</td><td>
+
+any additional arguments to pass through to `pageFunction`.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;

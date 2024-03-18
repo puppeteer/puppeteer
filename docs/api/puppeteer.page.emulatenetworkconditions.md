@@ -20,10 +20,33 @@ class Page {
 
 ## Parameters
 
-| Parameter         | Type                                                          | Description                                                     |
-| ----------------- | ------------------------------------------------------------- | --------------------------------------------------------------- |
-| networkConditions | [NetworkConditions](./puppeteer.networkconditions.md) \| null | Passing <code>null</code> disables network condition emulation. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+networkConditions
+
+</td><td>
+
+[NetworkConditions](./puppeteer.networkconditions.md) \| null
+
+</td><td>
+
+Passing `null` disables network condition emulation.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

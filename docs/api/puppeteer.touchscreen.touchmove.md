@@ -16,11 +16,46 @@ class Touchscreen {
 
 ## Parameters
 
-| Parameter | Type   | Description                      |
-| --------- | ------ | -------------------------------- |
-| x         | number | Horizontal position of the move. |
-| y         | number | Vertical position of the move.   |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+x
+
+</td><td>
+
+number
+
+</td><td>
+
+Horizontal position of the move.
+
+</td></tr>
+<tr><td>
+
+y
+
+</td><td>
+
+number
+
+</td><td>
+
+Vertical position of the move.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

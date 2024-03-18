@@ -16,10 +16,33 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                                                  | Description                                  |
-| --------- | --------------------------------------------------------------------- | -------------------------------------------- |
-| options   | Readonly&lt;[ScreencastOptions](./puppeteer.screencastoptions.md)&gt; | _(Optional)_ Configures screencast behavior. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+Readonly&lt;[ScreencastOptions](./puppeteer.screencastoptions.md)&gt;
+
+</td><td>
+
+_(Optional)_ Configures screencast behavior.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[ScreenRecorder](./puppeteer.screenrecorder.md)&gt;

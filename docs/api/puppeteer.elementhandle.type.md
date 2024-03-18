@@ -18,11 +18,44 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type                                                                      | Description                                        |
-| --------- | ------------------------------------------------------------------------- | -------------------------------------------------- |
-| text      | string                                                                    |                                                    |
-| options   | Readonly&lt;[KeyboardTypeOptions](./puppeteer.keyboardtypeoptions.md)&gt; | _(Optional)_ Delay in milliseconds. Defaults to 0. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+text
+
+</td><td>
+
+string
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+Readonly&lt;[KeyboardTypeOptions](./puppeteer.keyboardtypeoptions.md)&gt;
+
+</td><td>
+
+_(Optional)_ Delay in milliseconds. Defaults to 0.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

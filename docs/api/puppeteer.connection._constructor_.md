@@ -21,9 +21,65 @@ class Connection {
 
 ## Parameters
 
-| Parameter | Type                                                      | Description  |
-| --------- | --------------------------------------------------------- | ------------ |
-| url       | string                                                    |              |
-| transport | [ConnectionTransport](./puppeteer.connectiontransport.md) |              |
-| delay     | number                                                    | _(Optional)_ |
-| timeout   | number                                                    | _(Optional)_ |
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+url
+
+</td><td>
+
+string
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+transport
+
+</td><td>
+
+[ConnectionTransport](./puppeteer.connectiontransport.md)
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+delay
+
+</td><td>
+
+number
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+<tr><td>
+
+timeout
+
+</td><td>
+
+number
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+</tbody></table>

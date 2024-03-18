@@ -18,10 +18,31 @@ class JSHandle {
 
 ## Parameters
 
-| Parameter    | Type                                         | Description |
-| ------------ | -------------------------------------------- | ----------- |
-| propertyName | [HandleOr](./puppeteer.handleor.md)&lt;K&gt; |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+propertyName
+
+</td><td>
+
+[HandleOr](./puppeteer.handleor.md)&lt;K&gt;
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;T\[K\]&gt;&gt;

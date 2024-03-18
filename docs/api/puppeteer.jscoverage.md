@@ -12,13 +12,63 @@ export declare class JSCoverage
 
 ## Constructors
 
-| Constructor                                                      | Modifiers | Description                                                    |
-| ---------------------------------------------------------------- | --------- | -------------------------------------------------------------- |
-| [(constructor)(client)](./puppeteer.jscoverage._constructor_.md) |           | Constructs a new instance of the <code>JSCoverage</code> class |
+<table><thead><tr><th>
+
+Constructor
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[(constructor)(client)](./puppeteer.jscoverage._constructor_.md)
+
+</td><td>
+
+</td><td>
+
+Constructs a new instance of the `JSCoverage` class
+
+</td></tr>
+</tbody></table>
 
 ## Methods
 
-| Method                                            | Modifiers | Description |
-| ------------------------------------------------- | --------- | ----------- |
-| [start(options)](./puppeteer.jscoverage.start.md) |           |             |
-| [stop()](./puppeteer.jscoverage.stop.md)          |           |             |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[start(options)](./puppeteer.jscoverage.start.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[stop()](./puppeteer.jscoverage.stop.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+</tbody></table>

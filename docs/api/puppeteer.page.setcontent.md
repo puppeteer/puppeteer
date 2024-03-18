@@ -16,11 +16,46 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                            | Description                                       |
-| --------- | ----------------------------------------------- | ------------------------------------------------- |
-| html      | string                                          | HTML markup to assign to the page.                |
-| options   | [WaitForOptions](./puppeteer.waitforoptions.md) | _(Optional)_ Parameters that has some properties. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+html
+
+</td><td>
+
+string
+
+</td><td>
+
+HTML markup to assign to the page.
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+[WaitForOptions](./puppeteer.waitforoptions.md)
+
+</td><td>
+
+_(Optional)_ Parameters that has some properties.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

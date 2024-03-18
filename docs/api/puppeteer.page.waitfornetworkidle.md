@@ -16,10 +16,33 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                                                  | Description                                         |
-| --------- | --------------------------------------------------------------------- | --------------------------------------------------- |
-| options   | [WaitForNetworkIdleOptions](./puppeteer.waitfornetworkidleoptions.md) | _(Optional)_ Options to configure waiting behavior. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+[WaitForNetworkIdleOptions](./puppeteer.waitfornetworkidleoptions.md)
+
+</td><td>
+
+_(Optional)_ Options to configure waiting behavior.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

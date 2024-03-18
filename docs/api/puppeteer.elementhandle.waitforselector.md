@@ -21,11 +21,46 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type                                                            | Description                                            |
-| --------- | --------------------------------------------------------------- | ------------------------------------------------------ |
-| selector  | Selector                                                        | The selector to query and wait for.                    |
-| options   | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) | _(Optional)_ Options for customizing waiting behavior. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+selector
+
+</td><td>
+
+Selector
+
+</td><td>
+
+The selector to query and wait for.
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+[WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md)
+
+</td><td>
+
+_(Optional)_ Options for customizing waiting behavior.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt; \| null&gt;

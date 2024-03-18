@@ -22,12 +22,59 @@ class Mouse {
 
 ## Parameters
 
-| Parameter | Type                          | Description                                                                                                                                                                   |
-| --------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| start     | [Point](./puppeteer.point.md) | point to drag from                                                                                                                                                            |
-| target    | [Point](./puppeteer.point.md) | point to drop on                                                                                                                                                              |
-| options   | &#123; delay?: number; &#125; | _(Optional)_ An object of options. Accepts delay which, if specified, is the time to wait between <code>dragover</code> and <code>drop</code> in milliseconds. Defaults to 0. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+start
+
+</td><td>
+
+[Point](./puppeteer.point.md)
+
+</td><td>
+
+point to drag from
+
+</td></tr>
+<tr><td>
+
+target
+
+</td><td>
+
+[Point](./puppeteer.point.md)
+
+</td><td>
+
+point to drop on
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+&#123; delay?: number; &#125;
+
+</td><td>
+
+_(Optional)_ An object of options. Accepts delay which, if specified, is the time to wait between `dragover` and `drop` in milliseconds. Defaults to 0.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

@@ -18,10 +18,33 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type | Description                               |
-| --------- | ---- | ----------------------------------------- |
-| tagName   | K    | The tag name of the desired element type. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+tagName
+
+</td><td>
+
+K
+
+</td><td>
+
+The tag name of the desired element type.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;[ElementFor](./puppeteer.elementfor.md)&lt;K&gt;&gt;&gt;

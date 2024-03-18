@@ -24,12 +24,55 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type                                                         | Description  |
-| --------- | ------------------------------------------------------------ | ------------ |
-| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |              |
-| target    | [ElementHandle](./puppeteer.elementhandle.md)&lt;Node&gt;    |              |
-| options   | &#123; delay: number; &#125;                                 | _(Optional)_ |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+this
+
+</td><td>
+
+[ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt;
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+target
+
+</td><td>
+
+[ElementHandle](./puppeteer.elementhandle.md)&lt;Node&gt;
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+&#123; delay: number; &#125;
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

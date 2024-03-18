@@ -14,10 +14,72 @@ export declare enum Browser
 
 ## Enumeration Members
 
-| Member              | Value                                          | Description |
-| ------------------- | ---------------------------------------------- | ----------- |
-| CHROME              | <code>&quot;chrome&quot;</code>                |             |
-| CHROMEDRIVER        | <code>&quot;chromedriver&quot;</code>          |             |
-| CHROMEHEADLESSSHELL | <code>&quot;chrome-headless-shell&quot;</code> |             |
-| CHROMIUM            | <code>&quot;chromium&quot;</code>              |             |
-| FIREFOX             | <code>&quot;firefox&quot;</code>               |             |
+<table><thead><tr><th>
+
+Member
+
+</th><th>
+
+Value
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+CHROME
+
+</td><td>
+
+`"chrome"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+CHROMEDRIVER
+
+</td><td>
+
+`"chromedriver"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+CHROMEHEADLESSSHELL
+
+</td><td>
+
+`"chrome-headless-shell"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+CHROMIUM
+
+</td><td>
+
+`"chromium"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+FIREFOX
+
+</td><td>
+
+`"firefox"`
+
+</td><td>
+
+</td></tr>
+</tbody></table>

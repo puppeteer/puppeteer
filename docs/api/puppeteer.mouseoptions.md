@@ -12,7 +12,67 @@ export interface MouseOptions
 
 ## Properties
 
-| Property   | Modifiers             | Type                                      | Description                                                                            | Default             |
-| ---------- | --------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------- | ------------------- |
-| button     | <code>optional</code> | [MouseButton](./puppeteer.mousebutton.md) | Determines which button will be pressed.                                               | <code>'left'</code> |
-| clickCount | <code>optional</code> | number                                    | Determines the click count for the mouse event. This does not perform multiple clicks. | <code>1</code>      |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+button
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[MouseButton](./puppeteer.mousebutton.md)
+
+</td><td>
+
+Determines which button will be pressed.
+
+</td><td>
+
+`'left'`
+
+</td></tr>
+<tr><td>
+
+clickCount
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Determines the click count for the mouse event. This does not perform multiple clicks.
+
+</td><td>
+
+`1`
+
+</td></tr>
+</tbody></table>

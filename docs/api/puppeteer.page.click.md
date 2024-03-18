@@ -16,11 +16,46 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                                        | Description                                                                                                                                            |
-| --------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| selector  | string                                                      | A <code>selector</code> to search for element to click. If there are multiple elements satisfying the <code>selector</code>, the first will be clicked |
-| options   | Readonly&lt;[ClickOptions](./puppeteer.clickoptions.md)&gt; | _(Optional)_ <code>Object</code>                                                                                                                       |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+selector
+
+</td><td>
+
+string
+
+</td><td>
+
+A `selector` to search for element to click. If there are multiple elements satisfying the `selector`, the first will be clicked
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+Readonly&lt;[ClickOptions](./puppeteer.clickoptions.md)&gt;
+
+</td><td>
+
+_(Optional)_ `Object`
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

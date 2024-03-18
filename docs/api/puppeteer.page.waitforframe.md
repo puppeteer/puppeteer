@@ -19,11 +19,44 @@ class Page {
 
 ## Parameters
 
-| Parameter      | Type                                                                                                          | Description  |
-| -------------- | ------------------------------------------------------------------------------------------------------------- | ------------ |
-| urlOrPredicate | string \| ((frame: [Frame](./puppeteer.frame.md)) =&gt; [Awaitable](./puppeteer.awaitable.md)&lt;boolean&gt;) |              |
-| options        | [WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md)                                                       | _(Optional)_ |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+urlOrPredicate
+
+</td><td>
+
+string \| ((frame: [Frame](./puppeteer.frame.md)) =&gt; [Awaitable](./puppeteer.awaitable.md)&lt;boolean&gt;)
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+[WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md)
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[Frame](./puppeteer.frame.md)&gt;

@@ -14,7 +14,59 @@ export interface BoundingBox extends Point
 
 ## Properties
 
-| Property | Modifiers | Type   | Description                          | Default |
-| -------- | --------- | ------ | ------------------------------------ | ------- |
-| height   |           | number | the height of the element in pixels. |         |
-| width    |           | number | the width of the element in pixels.  |         |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+height
+
+</td><td>
+
+</td><td>
+
+number
+
+</td><td>
+
+the height of the element in pixels.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+width
+
+</td><td>
+
+</td><td>
+
+number
+
+</td><td>
+
+the width of the element in pixels.
+
+</td><td>
+
+</td></tr>
+</tbody></table>

@@ -19,11 +19,46 @@ class Keyboard {
 
 ## Parameters
 
-| Parameter | Type                                                              | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| --------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| key       | [KeyInput](./puppeteer.keyinput.md)                               | Name of key to press, such as <code>ArrowLeft</code>. See [KeyInput](./puppeteer.keyinput.md) for a list of all key names.                                                                                                                                                                                                                                                                                                                                                                                                  |
-| options   | Readonly&lt;[KeyPressOptions](./puppeteer.keypressoptions.md)&gt; | _(Optional)_ An object of options. Accepts text which, if specified, generates an input event with this text. Accepts delay which, if specified, is the time to wait between <code>keydown</code> and <code>keyup</code> in milliseconds. Defaults to 0. Accepts commands which, if specified, is the commands of keyboard shortcuts, see [Chromium Source Code](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h) for valid command names. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+key
+
+</td><td>
+
+[KeyInput](./puppeteer.keyinput.md)
+
+</td><td>
+
+Name of key to press, such as `ArrowLeft`. See [KeyInput](./puppeteer.keyinput.md) for a list of all key names.
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+Readonly&lt;[KeyPressOptions](./puppeteer.keypressoptions.md)&gt;
+
+</td><td>
+
+_(Optional)_ An object of options. Accepts text which, if specified, generates an input event with this text. Accepts delay which, if specified, is the time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0. Accepts commands which, if specified, is the commands of keyboard shortcuts, see [Chromium Source Code](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h) for valid command names.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

@@ -12,7 +12,67 @@ export interface SnapshotOptions
 
 ## Properties
 
-| Property        | Modifiers             | Type                                                      | Description                                 | Default                           |
-| --------------- | --------------------- | --------------------------------------------------------- | ------------------------------------------- | --------------------------------- |
-| interestingOnly | <code>optional</code> | boolean                                                   | Prune uninteresting nodes from the tree.    | <code>true</code>                 |
-| root            | <code>optional</code> | [ElementHandle](./puppeteer.elementhandle.md)&lt;Node&gt; | Root node to get the accessibility tree for | The root node of the entire page. |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+interestingOnly
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Prune uninteresting nodes from the tree.
+
+</td><td>
+
+`true`
+
+</td></tr>
+<tr><td>
+
+root
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[ElementHandle](./puppeteer.elementhandle.md)&lt;Node&gt;
+
+</td><td>
+
+Root node to get the accessibility tree for
+
+</td><td>
+
+The root node of the entire page.
+
+</td></tr>
+</tbody></table>

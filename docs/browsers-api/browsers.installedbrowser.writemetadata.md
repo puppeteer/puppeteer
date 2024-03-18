@@ -14,10 +14,31 @@ class InstalledBrowser {
 
 ## Parameters
 
-| Parameter | Type     | Description |
-| --------- | -------- | ----------- |
-| metadata  | Metadata |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+metadata
+
+</td><td>
+
+Metadata
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 void

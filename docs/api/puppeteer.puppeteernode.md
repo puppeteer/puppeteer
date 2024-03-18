@@ -44,18 +44,142 @@ Once you have created a `page` you have access to a large API to interact with t
 
 ## Properties
 
-| Property            | Modifiers             | Type                              | Description                                                                                                                                                          |
-| ------------------- | --------------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| defaultProduct      | <code>readonly</code> | [Product](./puppeteer.product.md) | The name of the browser that will be launched by default. For <code>puppeteer</code>, this is influenced by your configuration. Otherwise, it's <code>chrome</code>. |
-| lastLaunchedProduct | <code>readonly</code> | [Product](./puppeteer.product.md) | The name of the browser that was last launched.                                                                                                                      |
-| product             | <code>readonly</code> | string                            |                                                                                                                                                                      |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+defaultProduct
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+[Product](./puppeteer.product.md)
+
+</td><td>
+
+The name of the browser that will be launched by default. For `puppeteer`, this is influenced by your configuration. Otherwise, it's `chrome`.
+
+</td></tr>
+<tr><td>
+
+lastLaunchedProduct
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+[Product](./puppeteer.product.md)
+
+</td><td>
+
+The name of the browser that was last launched.
+
+</td></tr>
+<tr><td>
+
+product
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+string
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 
 ## Methods
 
-| Method                                                                 | Modifiers | Description                                                                                                                                                                                                                                                                             |
-| ---------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [connect(options)](./puppeteer.puppeteernode.connect.md)               |           | This method attaches Puppeteer to an existing browser instance.                                                                                                                                                                                                                         |
-| [defaultArgs(options)](./puppeteer.puppeteernode.defaultargs.md)       |           |                                                                                                                                                                                                                                                                                         |
-| [executablePath(channel)](./puppeteer.puppeteernode.executablepath.md) |           | The default executable path.                                                                                                                                                                                                                                                            |
-| [launch(options)](./puppeteer.puppeteernode.launch.md)                 |           | <p>Launches a browser instance with given arguments and options when specified.</p><p>When using with <code>puppeteer-core</code>, [options.executablePath](./puppeteer.launchoptions.md) or [options.channel](./puppeteer.launchoptions.md) must be provided.</p>                      |
-| [trimCache()](./puppeteer.puppeteernode.trimcache.md)                  |           | Removes all non-current Firefox and Chrome binaries in the cache directory identified by the provided Puppeteer configuration. The current browser version is determined by resolving PUPPETEER_REVISIONS from Puppeteer unless <code>configuration.browserRevision</code> is provided. |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[connect(options)](./puppeteer.puppeteernode.connect.md)
+
+</td><td>
+
+</td><td>
+
+This method attaches Puppeteer to an existing browser instance.
+
+</td></tr>
+<tr><td>
+
+[defaultArgs(options)](./puppeteer.puppeteernode.defaultargs.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[executablePath(channel)](./puppeteer.puppeteernode.executablepath.md)
+
+</td><td>
+
+</td><td>
+
+The default executable path.
+
+</td></tr>
+<tr><td>
+
+[launch(options)](./puppeteer.puppeteernode.launch.md)
+
+</td><td>
+
+</td><td>
+
+Launches a browser instance with given arguments and options when specified.
+
+When using with `puppeteer-core`, [options.executablePath](./puppeteer.launchoptions.md) or [options.channel](./puppeteer.launchoptions.md) must be provided.
+
+</td></tr>
+<tr><td>
+
+[trimCache()](./puppeteer.puppeteernode.trimcache.md)
+
+</td><td>
+
+</td><td>
+
+Removes all non-current Firefox and Chrome binaries in the cache directory identified by the provided Puppeteer configuration. The current browser version is determined by resolving PUPPETEER_REVISIONS from Puppeteer unless `configuration.browserRevision` is provided.
+
+</td></tr>
+</tbody></table>

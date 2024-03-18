@@ -56,27 +56,259 @@ await browser2.close();
 
 ## Properties
 
-| Property  | Modifiers             | Type                                  | Description                                                               |
-| --------- | --------------------- | ------------------------------------- | ------------------------------------------------------------------------- |
-| connected | <code>readonly</code> | boolean                               | Whether Puppeteer is connected to this [browser](./puppeteer.browser.md). |
-| debugInfo | <code>readonly</code> | [DebugInfo](./puppeteer.debuginfo.md) | Get debug information from Puppeteer.                                     |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+connected
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether Puppeteer is connected to this [browser](./puppeteer.browser.md).
+
+</td></tr>
+<tr><td>
+
+debugInfo
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+[DebugInfo](./puppeteer.debuginfo.md)
+
+</td><td>
+
+Get debug information from Puppeteer.
+
+</td></tr>
+</tbody></table>
 
 ## Methods
 
-| Method                                                                       | Modifiers | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| ---------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [browserContexts()](./puppeteer.browser.browsercontexts.md)                  |           | <p>Gets a list of open [browser contexts](./puppeteer.browsercontext.md).</p><p>In a newly-created [browser](./puppeteer.browser.md), this will return a single instance of [BrowserContext](./puppeteer.browsercontext.md).</p>                                                                                                                                                                                                                                                                  |
-| [close()](./puppeteer.browser.close.md)                                      |           | Closes this [browser](./puppeteer.browser.md) and all associated [pages](./puppeteer.page.md).                                                                                                                                                                                                                                                                                                                                                                                                    |
-| [createBrowserContext(options)](./puppeteer.browser.createbrowsercontext.md) |           | <p>Creates a new [browser context](./puppeteer.browsercontext.md).</p><p>This won't share cookies/cache with other [browser contexts](./puppeteer.browsercontext.md).</p>                                                                                                                                                                                                                                                                                                                         |
-| [defaultBrowserContext()](./puppeteer.browser.defaultbrowsercontext.md)      |           | Gets the default [browser context](./puppeteer.browsercontext.md).                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| [disconnect()](./puppeteer.browser.disconnect.md)                            |           | Disconnects Puppeteer from this [browser](./puppeteer.browser.md), but leaves the process running.                                                                                                                                                                                                                                                                                                                                                                                                |
-| [isConnected()](./puppeteer.browser.isconnected.md)                          |           | Whether Puppeteer is connected to this [browser](./puppeteer.browser.md).                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| [newPage()](./puppeteer.browser.newpage.md)                                  |           | Creates a new [page](./puppeteer.page.md) in the [default browser context](./puppeteer.browser.defaultbrowsercontext.md).                                                                                                                                                                                                                                                                                                                                                                         |
-| [pages()](./puppeteer.browser.pages.md)                                      |           | <p>Gets a list of all open [pages](./puppeteer.page.md) inside this [Browser](./puppeteer.browser.md).</p><p>If there ar multiple [browser contexts](./puppeteer.browsercontext.md), this returns all [pages](./puppeteer.page.md) in all [browser contexts](./puppeteer.browsercontext.md).</p>                                                                                                                                                                                                  |
-| [process()](./puppeteer.browser.process.md)                                  |           | Gets the associated [ChildProcess](https://nodejs.org/api/child_process.html#class-childprocess).                                                                                                                                                                                                                                                                                                                                                                                                 |
-| [target()](./puppeteer.browser.target.md)                                    |           | Gets the [target](./puppeteer.target.md) associated with the [default browser context](./puppeteer.browser.defaultbrowsercontext.md)).                                                                                                                                                                                                                                                                                                                                                            |
-| [targets()](./puppeteer.browser.targets.md)                                  |           | <p>Gets all active [targets](./puppeteer.target.md).</p><p>In case of multiple [browser contexts](./puppeteer.browsercontext.md), this returns all [targets](./puppeteer.target.md) in all [browser contexts](./puppeteer.browsercontext.md).</p>                                                                                                                                                                                                                                                 |
-| [userAgent()](./puppeteer.browser.useragent.md)                              |           | <p>Gets this [browser's](./puppeteer.browser.md) original user agent.</p><p>[Pages](./puppeteer.page.md) can override the user agent with [Page.setUserAgent()](./puppeteer.page.setuseragent.md).</p>                                                                                                                                                                                                                                                                                            |
-| [version()](./puppeteer.browser.version.md)                                  |           | <p>Gets a string representing this [browser's](./puppeteer.browser.md) name and version.</p><p>For headless browser, this is similar to <code>&quot;HeadlessChrome/61.0.3153.0&quot;</code>. For non-headless or new-headless, this is similar to <code>&quot;Chrome/61.0.3153.0&quot;</code>. For Firefox, it is similar to <code>&quot;Firefox/116.0a1&quot;</code>.</p><p>The format of [Browser.version()](./puppeteer.browser.version.md) might change with future releases of browsers.</p> |
-| [waitForTarget(predicate, options)](./puppeteer.browser.waitfortarget.md)    |           | <p>Waits until a [target](./puppeteer.target.md) matching the given <code>predicate</code> appears and returns it.</p><p>This will look all open [browser contexts](./puppeteer.browsercontext.md).</p>                                                                                                                                                                                                                                                                                           |
-| [wsEndpoint()](./puppeteer.browser.wsendpoint.md)                            |           | <p>Gets the WebSocket URL to connect to this [browser](./puppeteer.browser.md).</p><p>This is usually used with [Puppeteer.connect()](./puppeteer.puppeteer.connect.md).</p><p>You can find the debugger URL (<code>webSocketDebuggerUrl</code>) from <code>http://HOST:PORT/json/version</code>.</p><p>See [browser endpoint](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target) for more information.</p>                                                  |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[browserContexts()](./puppeteer.browser.browsercontexts.md)
+
+</td><td>
+
+</td><td>
+
+Gets a list of open [browser contexts](./puppeteer.browsercontext.md).
+
+In a newly-created [browser](./puppeteer.browser.md), this will return a single instance of [BrowserContext](./puppeteer.browsercontext.md).
+
+</td></tr>
+<tr><td>
+
+[close()](./puppeteer.browser.close.md)
+
+</td><td>
+
+</td><td>
+
+Closes this [browser](./puppeteer.browser.md) and all associated [pages](./puppeteer.page.md).
+
+</td></tr>
+<tr><td>
+
+[createBrowserContext(options)](./puppeteer.browser.createbrowsercontext.md)
+
+</td><td>
+
+</td><td>
+
+Creates a new [browser context](./puppeteer.browsercontext.md).
+
+This won't share cookies/cache with other [browser contexts](./puppeteer.browsercontext.md).
+
+</td></tr>
+<tr><td>
+
+[defaultBrowserContext()](./puppeteer.browser.defaultbrowsercontext.md)
+
+</td><td>
+
+</td><td>
+
+Gets the default [browser context](./puppeteer.browsercontext.md).
+
+</td></tr>
+<tr><td>
+
+[disconnect()](./puppeteer.browser.disconnect.md)
+
+</td><td>
+
+</td><td>
+
+Disconnects Puppeteer from this [browser](./puppeteer.browser.md), but leaves the process running.
+
+</td></tr>
+<tr><td>
+
+[isConnected()](./puppeteer.browser.isconnected.md)
+
+</td><td>
+
+</td><td>
+
+Whether Puppeteer is connected to this [browser](./puppeteer.browser.md).
+
+</td></tr>
+<tr><td>
+
+[newPage()](./puppeteer.browser.newpage.md)
+
+</td><td>
+
+</td><td>
+
+Creates a new [page](./puppeteer.page.md) in the [default browser context](./puppeteer.browser.defaultbrowsercontext.md).
+
+</td></tr>
+<tr><td>
+
+[pages()](./puppeteer.browser.pages.md)
+
+</td><td>
+
+</td><td>
+
+Gets a list of all open [pages](./puppeteer.page.md) inside this [Browser](./puppeteer.browser.md).
+
+If there ar multiple [browser contexts](./puppeteer.browsercontext.md), this returns all [pages](./puppeteer.page.md) in all [browser contexts](./puppeteer.browsercontext.md).
+
+</td></tr>
+<tr><td>
+
+[process()](./puppeteer.browser.process.md)
+
+</td><td>
+
+</td><td>
+
+Gets the associated [ChildProcess](https://nodejs.org/api/child_process.html#class-childprocess).
+
+</td></tr>
+<tr><td>
+
+[target()](./puppeteer.browser.target.md)
+
+</td><td>
+
+</td><td>
+
+Gets the [target](./puppeteer.target.md) associated with the [default browser context](./puppeteer.browser.defaultbrowsercontext.md)).
+
+</td></tr>
+<tr><td>
+
+[targets()](./puppeteer.browser.targets.md)
+
+</td><td>
+
+</td><td>
+
+Gets all active [targets](./puppeteer.target.md).
+
+In case of multiple [browser contexts](./puppeteer.browsercontext.md), this returns all [targets](./puppeteer.target.md) in all [browser contexts](./puppeteer.browsercontext.md).
+
+</td></tr>
+<tr><td>
+
+[userAgent()](./puppeteer.browser.useragent.md)
+
+</td><td>
+
+</td><td>
+
+Gets this [browser's](./puppeteer.browser.md) original user agent.
+
+[Pages](./puppeteer.page.md) can override the user agent with [Page.setUserAgent()](./puppeteer.page.setuseragent.md).
+
+</td></tr>
+<tr><td>
+
+[version()](./puppeteer.browser.version.md)
+
+</td><td>
+
+</td><td>
+
+Gets a string representing this [browser's](./puppeteer.browser.md) name and version.
+
+For headless browser, this is similar to `"HeadlessChrome/61.0.3153.0"`. For non-headless or new-headless, this is similar to `"Chrome/61.0.3153.0"`. For Firefox, it is similar to `"Firefox/116.0a1"`.
+
+The format of [Browser.version()](./puppeteer.browser.version.md) might change with future releases of browsers.
+
+</td></tr>
+<tr><td>
+
+[waitForTarget(predicate, options)](./puppeteer.browser.waitfortarget.md)
+
+</td><td>
+
+</td><td>
+
+Waits until a [target](./puppeteer.target.md) matching the given `predicate` appears and returns it.
+
+This will look all open [browser contexts](./puppeteer.browsercontext.md).
+
+</td></tr>
+<tr><td>
+
+[wsEndpoint()](./puppeteer.browser.wsendpoint.md)
+
+</td><td>
+
+</td><td>
+
+Gets the WebSocket URL to connect to this [browser](./puppeteer.browser.md).
+
+This is usually used with [Puppeteer.connect()](./puppeteer.puppeteer.connect.md).
+
+You can find the debugger URL (`webSocketDebuggerUrl`) from `http://HOST:PORT/json/version`.
+
+See [browser endpoint](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target) for more information.
+
+</td></tr>
+</tbody></table>

@@ -14,7 +14,59 @@ export interface LocatorScrollOptions extends ActionOptions
 
 ## Properties
 
-| Property   | Modifiers             | Type   | Description | Default |
-| ---------- | --------------------- | ------ | ----------- | ------- |
-| scrollLeft | <code>optional</code> | number |             |         |
-| scrollTop  | <code>optional</code> | number |             |         |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+scrollLeft
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+scrollTop
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+</tbody></table>

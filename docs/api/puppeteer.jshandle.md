@@ -28,22 +28,176 @@ const windowHandle = await page.evaluateHandle(() => window);
 
 ## Properties
 
-| Property | Modifiers             | Type          | Description                                                    |
-| -------- | --------------------- | ------------- | -------------------------------------------------------------- |
-| \_       | <code>optional</code> | T             | Used for nominally typing [JSHandle](./puppeteer.jshandle.md). |
-| move     |                       | () =&gt; this |                                                                |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+\_
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+T
+
+</td><td>
+
+Used for nominally typing [JSHandle](./puppeteer.jshandle.md).
+
+</td></tr>
+<tr><td>
+
+move
+
+</td><td>
+
+</td><td>
+
+() =&gt; this
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 
 ## Methods
 
-| Method                                                                       | Modifiers | Description                                                                                                                                                    |
-| ---------------------------------------------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [asElement()](./puppeteer.jshandle.aselement.md)                             |           | Either <code>null</code> or the handle itself if the handle is an instance of [ElementHandle](./puppeteer.elementhandle.md).                                   |
-| [dispose()](./puppeteer.jshandle.dispose.md)                                 |           | Releases the object referenced by the handle for garbage collection.                                                                                           |
-| [evaluate(pageFunction, args)](./puppeteer.jshandle.evaluate.md)             |           | Evaluates the given function with the current handle as its first argument.                                                                                    |
-| [evaluateHandle(pageFunction, args)](./puppeteer.jshandle.evaluatehandle.md) |           | Evaluates the given function with the current handle as its first argument.                                                                                    |
-| [getProperties()](./puppeteer.jshandle.getproperties.md)                     |           | Gets a map of handles representing the properties of the current handle.                                                                                       |
-| [getProperty(propertyName)](./puppeteer.jshandle.getproperty.md)             |           | Fetches a single property from the referenced object.                                                                                                          |
-| [getProperty(propertyName)](./puppeteer.jshandle.getproperty_1.md)           |           |                                                                                                                                                                |
-| [jsonValue()](./puppeteer.jshandle.jsonvalue.md)                             |           | A vanilla object representing the serializable portions of the referenced object.                                                                              |
-| [remoteObject()](./puppeteer.jshandle.remoteobject.md)                       |           | Provides access to the [Protocol.Runtime.RemoteObject](https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-RemoteObject) backing this handle. |
-| [toString()](./puppeteer.jshandle.tostring.md)                               |           | Returns a string representation of the JSHandle.                                                                                                               |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[asElement()](./puppeteer.jshandle.aselement.md)
+
+</td><td>
+
+</td><td>
+
+Either `null` or the handle itself if the handle is an instance of [ElementHandle](./puppeteer.elementhandle.md).
+
+</td></tr>
+<tr><td>
+
+[dispose()](./puppeteer.jshandle.dispose.md)
+
+</td><td>
+
+</td><td>
+
+Releases the object referenced by the handle for garbage collection.
+
+</td></tr>
+<tr><td>
+
+[evaluate(pageFunction, args)](./puppeteer.jshandle.evaluate.md)
+
+</td><td>
+
+</td><td>
+
+Evaluates the given function with the current handle as its first argument.
+
+</td></tr>
+<tr><td>
+
+[evaluateHandle(pageFunction, args)](./puppeteer.jshandle.evaluatehandle.md)
+
+</td><td>
+
+</td><td>
+
+Evaluates the given function with the current handle as its first argument.
+
+</td></tr>
+<tr><td>
+
+[getProperties()](./puppeteer.jshandle.getproperties.md)
+
+</td><td>
+
+</td><td>
+
+Gets a map of handles representing the properties of the current handle.
+
+</td></tr>
+<tr><td>
+
+[getProperty(propertyName)](./puppeteer.jshandle.getproperty.md)
+
+</td><td>
+
+</td><td>
+
+Fetches a single property from the referenced object.
+
+</td></tr>
+<tr><td>
+
+[getProperty(propertyName)](./puppeteer.jshandle.getproperty_1.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[jsonValue()](./puppeteer.jshandle.jsonvalue.md)
+
+</td><td>
+
+</td><td>
+
+A vanilla object representing the serializable portions of the referenced object.
+
+</td></tr>
+<tr><td>
+
+[remoteObject()](./puppeteer.jshandle.remoteobject.md)
+
+</td><td>
+
+</td><td>
+
+Provides access to the [Protocol.Runtime.RemoteObject](https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-RemoteObject) backing this handle.
+
+</td></tr>
+<tr><td>
+
+[toString()](./puppeteer.jshandle.tostring.md)
+
+</td><td>
+
+</td><td>
+
+Returns a string representation of the JSHandle.
+
+</td></tr>
+</tbody></table>

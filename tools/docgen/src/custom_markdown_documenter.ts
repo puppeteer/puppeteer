@@ -100,12 +100,15 @@ export class CustomMarkdownEmitter extends ApiFormatterMarkdownEmitter {
   }
 
   protected override getTableEscapedText(text: string): string {
-    return text
+    // Replace characters that need escaping
+    const escaped = text
       .replace(/&/g, '&amp;')
       .replace(/"/g, '&quot;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/\|/g, '&#124;');
+    // Remove special notes as they can't be rendered in the table view
+    return escaped.replace(/^:::$/g, '').replace(/^:::[A-Za-z]+$/g, '');
   }
 }
 

@@ -16,11 +16,46 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type       | Description                                                                                                                                                                             |
-| --------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| selector  | string     | A [Selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) to query the page for                                                                                      |
-| values    | string\[\] | Values of options to select. If the <code>&lt;select&gt;</code> has the <code>multiple</code> attribute, all values are considered, otherwise only the first one is taken into account. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+selector
+
+</td><td>
+
+string
+
+</td><td>
+
+A [Selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) to query the page for
+
+</td></tr>
+<tr><td>
+
+values
+
+</td><td>
+
+string\[\]
+
+</td><td>
+
+Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;string\[\]&gt;

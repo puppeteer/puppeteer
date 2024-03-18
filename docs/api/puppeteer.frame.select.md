@@ -16,11 +16,46 @@ class Frame {
 
 ## Parameters
 
-| Parameter | Type       | Description                                                                                                                                                                               |
-| --------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| selector  | string     | The selector to query for.                                                                                                                                                                |
-| values    | string\[\] | The array of values to select. If the <code>&lt;select&gt;</code> has the <code>multiple</code> attribute, all values are considered, otherwise only the first one is taken into account. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+selector
+
+</td><td>
+
+string
+
+</td><td>
+
+The selector to query for.
+
+</td></tr>
+<tr><td>
+
+values
+
+</td><td>
+
+string\[\]
+
+</td><td>
+
+The array of values to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;string\[\]&gt;

@@ -14,10 +14,33 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type   | Description                                                                                                                                                                                             |
-| --------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| type      | string | _(Optional)_ Changes the CSS media type of the page. The only allowed values are <code>screen</code>, <code>print</code> and <code>null</code>. Passing <code>null</code> disables CSS media emulation. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+type
+
+</td><td>
+
+string
+
+</td><td>
+
+_(Optional)_ Changes the CSS media type of the page. The only allowed values are `screen`, `print` and `null`. Passing `null` disables CSS media emulation.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

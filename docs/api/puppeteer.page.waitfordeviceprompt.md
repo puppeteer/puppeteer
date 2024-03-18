@@ -24,10 +24,33 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                                    | Description  |
-| --------- | ------------------------------------------------------- | ------------ |
-| options   | [WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md) | _(Optional)_ |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+[WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md)
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[DeviceRequestPrompt](./puppeteer.devicerequestprompt.md)&gt;

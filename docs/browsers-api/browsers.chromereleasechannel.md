@@ -12,9 +12,61 @@ export declare enum ChromeReleaseChannel
 
 ## Enumeration Members
 
-| Member | Value                           | Description |
-| ------ | ------------------------------- | ----------- |
-| BETA   | <code>&quot;beta&quot;</code>   |             |
-| CANARY | <code>&quot;canary&quot;</code> |             |
-| DEV    | <code>&quot;dev&quot;</code>    |             |
-| STABLE | <code>&quot;stable&quot;</code> |             |
+<table><thead><tr><th>
+
+Member
+
+</th><th>
+
+Value
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+BETA
+
+</td><td>
+
+`"beta"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+CANARY
+
+</td><td>
+
+`"canary"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+DEV
+
+</td><td>
+
+`"dev"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+STABLE
+
+</td><td>
+
+`"stable"`
+
+</td><td>
+
+</td></tr>
+</tbody></table>

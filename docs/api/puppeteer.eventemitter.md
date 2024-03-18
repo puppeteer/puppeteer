@@ -22,11 +22,83 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Methods
 
-| Method                                                                     | Modifiers | Description                                                                                      |
-| -------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------ |
-| [emit(type, event)](./puppeteer.eventemitter.emit.md)                      |           | Emit an event and call any associated listeners.                                                 |
-| [listenerCount(type)](./puppeteer.eventemitter.listenercount.md)           |           | Gets the number of listeners for a given event.                                                  |
-| [off(type, handler)](./puppeteer.eventemitter.off.md)                      |           | Remove an event listener from firing.                                                            |
-| [on(type, handler)](./puppeteer.eventemitter.on.md)                        |           | Bind an event listener to fire when an event occurs.                                             |
-| [once(type, handler)](./puppeteer.eventemitter.once.md)                    |           | Like <code>on</code> but the listener will only be fired once and then it will be removed.       |
-| [removeAllListeners(type)](./puppeteer.eventemitter.removealllisteners.md) |           | Removes all listeners. If given an event argument, it will remove only listeners for that event. |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[emit(type, event)](./puppeteer.eventemitter.emit.md)
+
+</td><td>
+
+</td><td>
+
+Emit an event and call any associated listeners.
+
+</td></tr>
+<tr><td>
+
+[listenerCount(type)](./puppeteer.eventemitter.listenercount.md)
+
+</td><td>
+
+</td><td>
+
+Gets the number of listeners for a given event.
+
+</td></tr>
+<tr><td>
+
+[off(type, handler)](./puppeteer.eventemitter.off.md)
+
+</td><td>
+
+</td><td>
+
+Remove an event listener from firing.
+
+</td></tr>
+<tr><td>
+
+[on(type, handler)](./puppeteer.eventemitter.on.md)
+
+</td><td>
+
+</td><td>
+
+Bind an event listener to fire when an event occurs.
+
+</td></tr>
+<tr><td>
+
+[once(type, handler)](./puppeteer.eventemitter.once.md)
+
+</td><td>
+
+</td><td>
+
+Like `on` but the listener will only be fired once and then it will be removed.
+
+</td></tr>
+<tr><td>
+
+[removeAllListeners(type)](./puppeteer.eventemitter.removealllisteners.md)
+
+</td><td>
+
+</td><td>
+
+Removes all listeners. If given an event argument, it will remove only listeners for that event.
+
+</td></tr>
+</tbody></table>

@@ -14,6 +14,40 @@ export interface LocatorEvents extends Record<EventType, unknown>
 
 ## Properties
 
-| Property | Modifiers | Type      | Description | Default |
-| -------- | --------- | --------- | ----------- | ------- |
-| action   |           | undefined |             |         |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+action
+
+</td><td>
+
+</td><td>
+
+undefined
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+</tbody></table>

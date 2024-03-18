@@ -14,10 +14,31 @@ class ProductLauncher {
 
 ## Parameters
 
-| Parameter | Type                                                                        | Description |
-| --------- | --------------------------------------------------------------------------- | ----------- |
-| object    | [BrowserLaunchArgumentOptions](./puppeteer.browserlaunchargumentoptions.md) |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+object
+
+</td><td>
+
+[BrowserLaunchArgumentOptions](./puppeteer.browserlaunchargumentoptions.md)
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 string\[\]

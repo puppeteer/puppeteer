@@ -19,11 +19,46 @@ class HTTPRequest {
 
 ## Parameters
 
-| Parameter | Type                                                                   | Description                                                                                                                     |
-| --------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| response  | Partial&lt;[ResponseForRequest](./puppeteer.responseforrequest.md)&gt; | the response to fulfill the request with.                                                                                       |
-| priority  | number                                                                 | _(Optional)_ If provided, intercept is resolved using cooperative handling rules. Otherwise, intercept is resolved immediately. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+response
+
+</td><td>
+
+Partial&lt;[ResponseForRequest](./puppeteer.responseforrequest.md)&gt;
+
+</td><td>
+
+the response to fulfill the request with.
+
+</td></tr>
+<tr><td>
+
+priority
+
+</td><td>
+
+number
+
+</td><td>
+
+_(Optional)_ If provided, intercept is resolved using cooperative handling rules. Otherwise, intercept is resolved immediately.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

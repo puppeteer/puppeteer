@@ -14,23 +14,137 @@ export declare class Connection extends EventEmitter<CDPSessionEvents>
 
 ## Constructors
 
-| Constructor                                                                              | Modifiers | Description                                                    |
-| ---------------------------------------------------------------------------------------- | --------- | -------------------------------------------------------------- |
-| [(constructor)(url, transport, delay, timeout)](./puppeteer.connection._constructor_.md) |           | Constructs a new instance of the <code>Connection</code> class |
+<table><thead><tr><th>
+
+Constructor
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[(constructor)(url, transport, delay, timeout)](./puppeteer.connection._constructor_.md)
+
+</td><td>
+
+</td><td>
+
+Constructs a new instance of the `Connection` class
+
+</td></tr>
+</tbody></table>
 
 ## Properties
 
-| Property | Modifiers             | Type   | Description |
-| -------- | --------------------- | ------ | ----------- |
-| timeout  | <code>readonly</code> | number |             |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+timeout
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+number
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 
 ## Methods
 
-| Method                                                               | Modifiers           | Description |
-| -------------------------------------------------------------------- | ------------------- | ----------- |
-| [createSession(targetInfo)](./puppeteer.connection.createsession.md) |                     |             |
-| [dispose()](./puppeteer.connection.dispose.md)                       |                     |             |
-| [fromSession(session)](./puppeteer.connection.fromsession.md)        | <code>static</code> |             |
-| [send(method, params, options)](./puppeteer.connection.send.md)      |                     |             |
-| [session(sessionId)](./puppeteer.connection.session.md)              |                     |             |
-| [url()](./puppeteer.connection.url.md)                               |                     |             |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[createSession(targetInfo)](./puppeteer.connection.createsession.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[dispose()](./puppeteer.connection.dispose.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[fromSession(session)](./puppeteer.connection.fromsession.md)
+
+</td><td>
+
+`static`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[send(method, params, options)](./puppeteer.connection.send.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[session(sessionId)](./puppeteer.connection.session.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[url()](./puppeteer.connection.url.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+</tbody></table>

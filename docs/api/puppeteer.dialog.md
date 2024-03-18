@@ -35,10 +35,72 @@ import puppeteer from 'puppeteer';
 
 ## Methods
 
-| Method                                               | Modifiers | Description                                                                                     |
-| ---------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------- |
-| [accept(promptText)](./puppeteer.dialog.accept.md)   |           | A promise that resolves when the dialog has been accepted.                                      |
-| [defaultValue()](./puppeteer.dialog.defaultvalue.md) |           | The default value of the prompt, or an empty string if the dialog is not a <code>prompt</code>. |
-| [dismiss()](./puppeteer.dialog.dismiss.md)           |           | A promise which will resolve once the dialog has been dismissed                                 |
-| [message()](./puppeteer.dialog.message.md)           |           | The message displayed in the dialog.                                                            |
-| [type()](./puppeteer.dialog.type.md)                 |           | The type of the dialog.                                                                         |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[accept(promptText)](./puppeteer.dialog.accept.md)
+
+</td><td>
+
+</td><td>
+
+A promise that resolves when the dialog has been accepted.
+
+</td></tr>
+<tr><td>
+
+[defaultValue()](./puppeteer.dialog.defaultvalue.md)
+
+</td><td>
+
+</td><td>
+
+The default value of the prompt, or an empty string if the dialog is not a `prompt`.
+
+</td></tr>
+<tr><td>
+
+[dismiss()](./puppeteer.dialog.dismiss.md)
+
+</td><td>
+
+</td><td>
+
+A promise which will resolve once the dialog has been dismissed
+
+</td></tr>
+<tr><td>
+
+[message()](./puppeteer.dialog.message.md)
+
+</td><td>
+
+</td><td>
+
+The message displayed in the dialog.
+
+</td></tr>
+<tr><td>
+
+[type()](./puppeteer.dialog.type.md)
+
+</td><td>
+
+</td><td>
+
+The type of the dialog.
+
+</td></tr>
+</tbody></table>

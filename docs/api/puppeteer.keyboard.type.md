@@ -19,11 +19,46 @@ class Keyboard {
 
 ## Parameters
 
-| Parameter | Type                                                                      | Description                                                                                                                                                                   |
-| --------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| text      | string                                                                    | A text to type into a focused element.                                                                                                                                        |
-| options   | Readonly&lt;[KeyboardTypeOptions](./puppeteer.keyboardtypeoptions.md)&gt; | _(Optional)_ An object of options. Accepts delay which, if specified, is the time to wait between <code>keydown</code> and <code>keyup</code> in milliseconds. Defaults to 0. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+text
+
+</td><td>
+
+string
+
+</td><td>
+
+A text to type into a focused element.
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+Readonly&lt;[KeyboardTypeOptions](./puppeteer.keyboardtypeoptions.md)&gt;
+
+</td><td>
+
+_(Optional)_ An object of options. Accepts delay which, if specified, is the time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

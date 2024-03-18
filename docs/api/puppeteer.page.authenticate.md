@@ -16,10 +16,31 @@ class Page {
 
 ## Parameters
 
-| Parameter   | Type                                      | Description |
-| ----------- | ----------------------------------------- | ----------- |
-| credentials | [Credentials](./puppeteer.credentials.md) |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+credentials
+
+</td><td>
+
+[Credentials](./puppeteer.credentials.md)
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

@@ -19,10 +19,33 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                                            | Description                                                     |
-| --------- | --------------------------------------------------------------- | --------------------------------------------------------------- |
-| overrides | &#123; isUserActive: boolean; isScreenUnlocked: boolean; &#125; | _(Optional)_ Mock idle state. If not set, clears idle overrides |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+overrides
+
+</td><td>
+
+&#123; isUserActive: boolean; isScreenUnlocked: boolean; &#125;
+
+</td><td>
+
+_(Optional)_ Mock idle state. If not set, clears idle overrides
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

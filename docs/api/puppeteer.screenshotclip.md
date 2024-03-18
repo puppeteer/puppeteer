@@ -14,6 +14,44 @@ export interface ScreenshotClip extends BoundingBox
 
 ## Properties
 
-| Property | Modifiers             | Type   | Description | Default        |
-| -------- | --------------------- | ------ | ----------- | -------------- |
-| scale    | <code>optional</code> | number |             | <code>1</code> |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+scale
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+</td><td>
+
+`1`
+
+</td></tr>
+</tbody></table>

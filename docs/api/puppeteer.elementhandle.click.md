@@ -19,11 +19,44 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type                                                         | Description  |
-| --------- | ------------------------------------------------------------ | ------------ |
-| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |              |
-| options   | Readonly&lt;[ClickOptions](./puppeteer.clickoptions.md)&gt;  | _(Optional)_ |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+this
+
+</td><td>
+
+[ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt;
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+Readonly&lt;[ClickOptions](./puppeteer.clickoptions.md)&gt;
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

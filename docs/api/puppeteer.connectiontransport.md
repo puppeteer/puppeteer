@@ -12,14 +12,86 @@ export interface ConnectionTransport
 
 ## Properties
 
-| Property  | Modifiers             | Type                         | Description | Default |
-| --------- | --------------------- | ---------------------------- | ----------- | ------- |
-| onclose   | <code>optional</code> | () =&gt; void                |             |         |
-| onmessage | <code>optional</code> | (message: string) =&gt; void |             |         |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+onclose
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+() =&gt; void
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+onmessage
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+(message: string) =&gt; void
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 
 ## Methods
 
-| Method                                                   | Description |
-| -------------------------------------------------------- | ----------- |
-| [close()](./puppeteer.connectiontransport.close.md)      |             |
-| [send(message)](./puppeteer.connectiontransport.send.md) |             |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[close()](./puppeteer.connectiontransport.close.md)
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[send(message)](./puppeteer.connectiontransport.send.md)
+
+</td><td>
+
+</td></tr>
+</tbody></table>

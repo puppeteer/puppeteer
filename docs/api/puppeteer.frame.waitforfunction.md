@@ -21,12 +21,59 @@ class Frame {
 
 ## Parameters
 
-| Parameter    | Type                                                                      | Description                                                       |
-| ------------ | ------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| pageFunction | Func \| string                                                            | the function to evaluate in the frame context.                    |
-| options      | [FrameWaitForFunctionOptions](./puppeteer.framewaitforfunctionoptions.md) | _(Optional)_ options to configure the polling method and timeout. |
-| args         | Params                                                                    | arguments to pass to the <code>pageFunction</code>.               |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+pageFunction
+
+</td><td>
+
+Func \| string
+
+</td><td>
+
+the function to evaluate in the frame context.
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+[FrameWaitForFunctionOptions](./puppeteer.framewaitforfunctionoptions.md)
+
+</td><td>
+
+_(Optional)_ options to configure the polling method and timeout.
+
+</td></tr>
+<tr><td>
+
+args
+
+</td><td>
+
+Params
+
+</td><td>
+
+arguments to pass to the `pageFunction`.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;&gt;

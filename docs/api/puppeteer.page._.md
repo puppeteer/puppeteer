@@ -18,10 +18,33 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type     | Description                                                                                                                             |
-| --------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| selector  | Selector | A <code>selector</code> to query page for [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) to query page for. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+selector
+
+</td><td>
+
+Selector
+
+</td><td>
+
+A `selector` to query page for [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) to query page for.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt; \| null&gt;

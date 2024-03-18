@@ -24,11 +24,46 @@ class Page {
 
 ## Parameters
 
-| Parameter    | Type           | Description                                |
-| ------------ | -------------- | ------------------------------------------ |
-| pageFunction | Func \| string | a function that is run within the page     |
-| args         | Params         | arguments to be passed to the pageFunction |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+pageFunction
+
+</td><td>
+
+Func \| string
+
+</td><td>
+
+a function that is run within the page
+
+</td></tr>
+<tr><td>
+
+args
+
+</td><td>
+
+Params
+
+</td><td>
+
+arguments to be passed to the pageFunction
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;

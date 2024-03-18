@@ -19,11 +19,44 @@ class EventEmitter {
 
 ## Parameters
 
-| Parameter | Type                                                                         | Description                  |
-| --------- | ---------------------------------------------------------------------------- | ---------------------------- |
-| type      | Key                                                                          | the event you'd like to emit |
-| event     | [EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt;\[Key\] |                              |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+type
+
+</td><td>
+
+Key
+
+</td><td>
+
+the event you'd like to emit
+
+</td></tr>
+<tr><td>
+
+event
+
+</td><td>
+
+[EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt;\[Key\]
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 boolean

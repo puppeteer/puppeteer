@@ -16,10 +16,31 @@ class Locator {
 
 ## Parameters
 
-| Parameter | Type                                         | Description |
-| --------- | -------------------------------------------- | ----------- |
-| mapper    | [Mapper](./puppeteer.mapper.md)&lt;T, To&gt; |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+mapper
+
+</td><td>
+
+[Mapper](./puppeteer.mapper.md)&lt;T, To&gt;
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;To&gt;

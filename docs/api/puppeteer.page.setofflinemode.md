@@ -18,10 +18,33 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type    | Description                                                |
-| --------- | ------- | ---------------------------------------------------------- |
-| enabled   | boolean | When <code>true</code>, enables offline mode for the page. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+enabled
+
+</td><td>
+
+boolean
+
+</td><td>
+
+When `true`, enables offline mode for the page.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

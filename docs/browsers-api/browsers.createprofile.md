@@ -15,11 +15,42 @@ export declare function createProfile(
 
 ## Parameters
 
-| Parameter | Type                                           | Description |
-| --------- | ---------------------------------------------- | ----------- |
-| browser   | [Browser](./browsers.browser.md)               |             |
-| opts      | [ProfileOptions](./browsers.profileoptions.md) |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+browser
+
+</td><td>
+
+[Browser](./browsers.browser.md)
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+opts
+
+</td><td>
+
+[ProfileOptions](./browsers.profileoptions.md)
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

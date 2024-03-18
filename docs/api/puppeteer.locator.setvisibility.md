@@ -17,11 +17,42 @@ class Locator {
 
 ## Parameters
 
-| Parameter  | Type                                                | Description |
-| ---------- | --------------------------------------------------- | ----------- |
-| this       | [Locator](./puppeteer.locator.md)&lt;NodeType&gt;   |             |
-| visibility | [VisibilityOption](./puppeteer.visibilityoption.md) |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+this
+
+</td><td>
+
+[Locator](./puppeteer.locator.md)&lt;NodeType&gt;
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+visibility
+
+</td><td>
+
+[VisibilityOption](./puppeteer.visibilityoption.md)
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;NodeType&gt;

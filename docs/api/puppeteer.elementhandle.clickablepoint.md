@@ -16,10 +16,33 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type                            | Description  |
-| --------- | ------------------------------- | ------------ |
-| offset    | [Offset](./puppeteer.offset.md) | _(Optional)_ |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+offset
+
+</td><td>
+
+[Offset](./puppeteer.offset.md)
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[Point](./puppeteer.point.md)&gt;

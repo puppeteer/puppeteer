@@ -21,11 +21,44 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type                                                         | Description                                                                                                       |
-| --------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
-| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |                                                                                                                   |
-| options   | &#123; threshold?: number; &#125;                            | _(Optional)_ Threshold for the intersection between 0 (no intersection) and 1 (full intersection). Defaults to 1. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+this
+
+</td><td>
+
+[ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt;
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+&#123; threshold?: number; &#125;
+
+</td><td>
+
+_(Optional)_ Threshold for the intersection between 0 (no intersection) and 1 (full intersection). Defaults to 1.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;boolean&gt;

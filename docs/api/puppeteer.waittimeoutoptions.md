@@ -12,6 +12,48 @@ export interface WaitTimeoutOptions
 
 ## Properties
 
-| Property | Modifiers             | Type   | Description                                                                                                                                                                                            | Default            |
-| -------- | --------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------ |
-| timeout  | <code>optional</code> | number | <p>Maximum wait time in milliseconds. Pass 0 to disable the timeout.</p><p>The default value can be changed by using the [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) method.</p> | <code>30000</code> |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+timeout
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Maximum wait time in milliseconds. Pass 0 to disable the timeout.
+
+The default value can be changed by using the [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) method.
+
+</td><td>
+
+`30000`
+
+</td></tr>
+</tbody></table>

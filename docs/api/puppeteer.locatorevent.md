@@ -14,6 +14,30 @@ export declare enum LocatorEvent
 
 ## Enumeration Members
 
-| Member | Value                           | Description                                                                         |
-| ------ | ------------------------------- | ----------------------------------------------------------------------------------- |
-| Action | <code>&quot;action&quot;</code> | Emitted every time before the locator performs an action on the located element(s). |
+<table><thead><tr><th>
+
+Member
+
+</th><th>
+
+Value
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+Action
+
+</td><td>
+
+`"action"`
+
+</td><td>
+
+Emitted every time before the locator performs an action on the located element(s).
+
+</td></tr>
+</tbody></table>

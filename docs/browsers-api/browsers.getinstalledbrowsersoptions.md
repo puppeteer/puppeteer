@@ -12,6 +12,42 @@ export interface GetInstalledBrowsersOptions
 
 ## Properties
 
-| Property | Modifiers | Type   | Description                                  | Default |
-| -------- | --------- | ------ | -------------------------------------------- | ------- |
-| cacheDir |           | string | The path to the root of the cache directory. |         |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+cacheDir
+
+</td><td>
+
+</td><td>
+
+string
+
+</td><td>
+
+The path to the root of the cache directory.
+
+</td><td>
+
+</td></tr>
+</tbody></table>

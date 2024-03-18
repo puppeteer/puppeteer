@@ -19,11 +19,46 @@ class Puppeteer {
 
 ## Parameters
 
-| Parameter    | Type                                                    | Description                                                                |
-| ------------ | ------------------------------------------------------- | -------------------------------------------------------------------------- |
-| name         | string                                                  | The name that the custom query handler will be registered under.           |
-| queryHandler | [CustomQueryHandler](./puppeteer.customqueryhandler.md) | The [custom query handler](./puppeteer.customqueryhandler.md) to register. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+name
+
+</td><td>
+
+string
+
+</td><td>
+
+The name that the custom query handler will be registered under.
+
+</td></tr>
+<tr><td>
+
+queryHandler
+
+</td><td>
+
+[CustomQueryHandler](./puppeteer.customqueryhandler.md)
+
+</td><td>
+
+The [custom query handler](./puppeteer.customqueryhandler.md) to register.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 void

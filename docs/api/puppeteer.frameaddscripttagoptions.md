@@ -12,10 +12,120 @@ export interface FrameAddScriptTagOptions
 
 ## Properties
 
-| Property | Modifiers             | Type   | Description                                                                                          | Default |
-| -------- | --------------------- | ------ | ---------------------------------------------------------------------------------------------------- | ------- |
-| content  | <code>optional</code> | string | JavaScript to be injected into the frame.                                                            |         |
-| id       | <code>optional</code> | string | Sets the <code>id</code> of the script.                                                              |         |
-| path     | <code>optional</code> | string | Path to a JavaScript file to be injected into the frame.                                             |         |
-| type     | <code>optional</code> | string | Sets the <code>type</code> of the script. Use <code>module</code> in order to load an ES2015 module. |         |
-| url      | <code>optional</code> | string | URL of the script to be added.                                                                       |         |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+content
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+JavaScript to be injected into the frame.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+id
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+Sets the `id` of the script.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+path
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+Path to a JavaScript file to be injected into the frame.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+type
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+Sets the `type` of the script. Use `module` in order to load an ES2015 module.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+url
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+URL of the script to be added.
+
+</td><td>
+
+</td></tr>
+</tbody></table>

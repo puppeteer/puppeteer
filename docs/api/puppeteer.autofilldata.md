@@ -12,6 +12,40 @@ export interface AutofillData
 
 ## Properties
 
-| Property   | Modifiers | Type                                                                                              | Description | Default |
-| ---------- | --------- | ------------------------------------------------------------------------------------------------- | ----------- | ------- |
-| creditCard |           | &#123; number: string; name: string; expiryMonth: string; expiryYear: string; cvc: string; &#125; |             |         |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+creditCard
+
+</td><td>
+
+</td><td>
+
+&#123; number: string; name: string; expiryMonth: string; expiryYear: string; cvc: string; &#125;
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+</tbody></table>

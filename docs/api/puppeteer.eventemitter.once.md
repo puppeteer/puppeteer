@@ -19,11 +19,46 @@ class EventEmitter {
 
 ## Parameters
 
-| Parameter | Type                                                                                                                  | Description                                       |
-| --------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| type      | Key                                                                                                                   | the event you'd like to listen to                 |
-| handler   | [Handler](./puppeteer.handler.md)&lt;[EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt;\[Key\]&gt; | the handler function to run when the event occurs |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+type
+
+</td><td>
+
+Key
+
+</td><td>
+
+the event you'd like to listen to
+
+</td></tr>
+<tr><td>
+
+handler
+
+</td><td>
+
+[Handler](./puppeteer.handler.md)&lt;[EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt;\[Key\]&gt;
+
+</td><td>
+
+the handler function to run when the event occurs
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 this

@@ -45,15 +45,85 @@ console.log(`Bytes used: ${(usedBytes / totalBytes) * 100}%`);
 
 ## Constructors
 
-| Constructor                                                    | Modifiers | Description                                                  |
-| -------------------------------------------------------------- | --------- | ------------------------------------------------------------ |
-| [(constructor)(client)](./puppeteer.coverage._constructor_.md) |           | Constructs a new instance of the <code>Coverage</code> class |
+<table><thead><tr><th>
+
+Constructor
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[(constructor)(client)](./puppeteer.coverage._constructor_.md)
+
+</td><td>
+
+</td><td>
+
+Constructs a new instance of the `Coverage` class
+
+</td></tr>
+</tbody></table>
 
 ## Methods
 
-| Method                                                                | Modifiers | Description                                                                 |
-| --------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------- |
-| [startCSSCoverage(options)](./puppeteer.coverage.startcsscoverage.md) |           |                                                                             |
-| [startJSCoverage(options)](./puppeteer.coverage.startjscoverage.md)   |           |                                                                             |
-| [stopCSSCoverage()](./puppeteer.coverage.stopcsscoverage.md)          |           | Promise that resolves to the array of coverage reports for all stylesheets. |
-| [stopJSCoverage()](./puppeteer.coverage.stopjscoverage.md)            |           | Promise that resolves to the array of coverage reports for all scripts.     |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[startCSSCoverage(options)](./puppeteer.coverage.startcsscoverage.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[startJSCoverage(options)](./puppeteer.coverage.startjscoverage.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[stopCSSCoverage()](./puppeteer.coverage.stopcsscoverage.md)
+
+</td><td>
+
+</td><td>
+
+Promise that resolves to the array of coverage reports for all stylesheets.
+
+</td></tr>
+<tr><td>
+
+[stopJSCoverage()](./puppeteer.coverage.stopjscoverage.md)
+
+</td><td>
+
+</td><td>
+
+Promise that resolves to the array of coverage reports for all scripts.
+
+</td></tr>
+</tbody></table>

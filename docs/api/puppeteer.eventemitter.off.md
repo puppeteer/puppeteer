@@ -19,11 +19,46 @@ class EventEmitter {
 
 ## Parameters
 
-| Parameter | Type                                                                                                                  | Description                                       |
-| --------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| type      | Key                                                                                                                   | the event type you'd like to stop listening to.   |
-| handler   | [Handler](./puppeteer.handler.md)&lt;[EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt;\[Key\]&gt; | _(Optional)_ the function that should be removed. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+type
+
+</td><td>
+
+Key
+
+</td><td>
+
+the event type you'd like to stop listening to.
+
+</td></tr>
+<tr><td>
+
+handler
+
+</td><td>
+
+[Handler](./puppeteer.handler.md)&lt;[EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt;\[Key\]&gt;
+
+</td><td>
+
+_(Optional)_ the function that should be removed.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 this

@@ -12,10 +12,33 @@ defaultArgs: (options?: import("puppeteer-core/internal/puppeteer-core.js").Brow
 
 ## Parameters
 
-| Parameter | Type                                                                                                                                         | Description  |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| options   | import("puppeteer-core/internal/puppeteer-core.js").[BrowserLaunchArgumentOptions](./puppeteer.browserlaunchargumentoptions.md) \| undefined | _(Optional)_ |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+import("puppeteer-core/internal/puppeteer-core.js").[BrowserLaunchArgumentOptions](./puppeteer.browserlaunchargumentoptions.md) \| undefined
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 string\[\]

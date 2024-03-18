@@ -19,11 +19,46 @@ class BrowserContext {
 
 ## Parameters
 
-| Parameter   | Type                                        | Description                                                                                              |
-| ----------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| origin      | string                                      | The origin to grant permissions to, e.g. "https://example.com".                                          |
-| permissions | [Permission](./puppeteer.permission.md)\[\] | An array of permissions to grant. All permissions that are not listed here will be automatically denied. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+origin
+
+</td><td>
+
+string
+
+</td><td>
+
+The origin to grant permissions to, e.g. "https://example.com".
+
+</td></tr>
+<tr><td>
+
+permissions
+
+</td><td>
+
+[Permission](./puppeteer.permission.md)\[\]
+
+</td><td>
+
+An array of permissions to grant. All permissions that are not listed here will be automatically denied.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

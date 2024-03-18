@@ -17,11 +17,44 @@ class Locator {
 
 ## Parameters
 
-| Parameter | Type                                                                        | Description  |
-| --------- | --------------------------------------------------------------------------- | ------------ |
-| this      | [Locator](./puppeteer.locator.md)&lt;ElementType&gt;                        |              |
-| options   | Readonly&lt;[LocatorScrollOptions](./puppeteer.locatorscrolloptions.md)&gt; | _(Optional)_ |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+this
+
+</td><td>
+
+[Locator](./puppeteer.locator.md)&lt;ElementType&gt;
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+Readonly&lt;[LocatorScrollOptions](./puppeteer.locatorscrolloptions.md)&gt;
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

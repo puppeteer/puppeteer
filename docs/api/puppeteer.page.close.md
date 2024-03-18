@@ -14,10 +14,33 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                     | Description  |
-| --------- | ---------------------------------------- | ------------ |
-| options   | &#123; runBeforeUnload?: boolean; &#125; | _(Optional)_ |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+&#123; runBeforeUnload?: boolean; &#125;
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

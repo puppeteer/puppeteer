@@ -28,11 +28,46 @@ class Page {
 
 ## Parameters
 
-| Parameter    | Type           | Description                                    |
-| ------------ | -------------- | ---------------------------------------------- |
-| pageFunction | Func \| string | Function to be evaluated in browser context    |
-| args         | Params         | Arguments to pass to <code>pageFunction</code> |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+pageFunction
+
+</td><td>
+
+Func \| string
+
+</td><td>
+
+Function to be evaluated in browser context
+
+</td></tr>
+<tr><td>
+
+args
+
+</td><td>
+
+Params
+
+</td><td>
+
+Arguments to pass to `pageFunction`
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[NewDocumentScriptEvaluation](./puppeteer.newdocumentscriptevaluation.md)&gt;

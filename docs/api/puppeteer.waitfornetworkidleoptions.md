@@ -14,7 +14,67 @@ export interface WaitForNetworkIdleOptions extends WaitTimeoutOptions
 
 ## Properties
 
-| Property    | Modifiers             | Type   | Description                                                                 | Default          |
-| ----------- | --------------------- | ------ | --------------------------------------------------------------------------- | ---------------- |
-| concurrency | <code>optional</code> | number | Maximum number concurrent of network connections to be considered inactive. | <code>0</code>   |
-| idleTime    | <code>optional</code> | number | Time (in milliseconds) the network should be idle.                          | <code>500</code> |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+concurrency
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Maximum number concurrent of network connections to be considered inactive.
+
+</td><td>
+
+`0`
+
+</td></tr>
+<tr><td>
+
+idleTime
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Time (in milliseconds) the network should be idle.
+
+</td><td>
+
+`500`
+
+</td></tr>
+</tbody></table>

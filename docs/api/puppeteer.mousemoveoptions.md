@@ -12,6 +12,46 @@ export interface MouseMoveOptions
 
 ## Properties
 
-| Property | Modifiers             | Type   | Description                                                                                | Default        |
-| -------- | --------------------- | ------ | ------------------------------------------------------------------------------------------ | -------------- |
-| steps    | <code>optional</code> | number | Determines the number of movements to make from the current mouse position to the new one. | <code>1</code> |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+steps
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Determines the number of movements to make from the current mouse position to the new one.
+
+</td><td>
+
+`1`
+
+</td></tr>
+</tbody></table>

@@ -17,11 +17,46 @@ class Page {
 
 ## Parameters
 
-| Parameter         | Type                                 | Description                             |
-| ----------------- | ------------------------------------ | --------------------------------------- |
-| userAgent         | string                               | Specific user agent to use in this page |
-| userAgentMetadata | Protocol.Emulation.UserAgentMetadata | _(Optional)_                            |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+userAgent
+
+</td><td>
+
+string
+
+</td><td>
+
+Specific user agent to use in this page
+
+</td></tr>
+<tr><td>
+
+userAgentMetadata
+
+</td><td>
+
+Protocol.Emulation.UserAgentMetadata
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

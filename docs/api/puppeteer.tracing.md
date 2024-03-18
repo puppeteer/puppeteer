@@ -28,7 +28,39 @@ await page.tracing.stop();
 
 ## Methods
 
-| Method                                         | Modifiers | Description                                               |
-| ---------------------------------------------- | --------- | --------------------------------------------------------- |
-| [start(options)](./puppeteer.tracing.start.md) |           | Starts a trace for the current page.                      |
-| [stop()](./puppeteer.tracing.stop.md)          |           | Stops a trace started with the <code>start</code> method. |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[start(options)](./puppeteer.tracing.start.md)
+
+</td><td>
+
+</td><td>
+
+Starts a trace for the current page.
+
+</td></tr>
+<tr><td>
+
+[stop()](./puppeteer.tracing.stop.md)
+
+</td><td>
+
+</td><td>
+
+Stops a trace started with the `start` method.
+
+</td></tr>
+</tbody></table>

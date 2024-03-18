@@ -18,7 +18,51 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Properties
 
-| Property | Modifiers | Type   | Description                            |
-| -------- | --------- | ------ | -------------------------------------- |
-| id       |           | string | Device id during a prompt.             |
-| name     |           | string | Device name as it appears in a prompt. |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+id
+
+</td><td>
+
+</td><td>
+
+string
+
+</td><td>
+
+Device id during a prompt.
+
+</td></tr>
+<tr><td>
+
+name
+
+</td><td>
+
+</td><td>
+
+string
+
+</td><td>
+
+Device name as it appears in a prompt.
+
+</td></tr>
+</tbody></table>

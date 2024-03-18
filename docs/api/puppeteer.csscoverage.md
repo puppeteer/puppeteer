@@ -12,13 +12,63 @@ export declare class CSSCoverage
 
 ## Constructors
 
-| Constructor                                                       | Modifiers | Description                                                     |
-| ----------------------------------------------------------------- | --------- | --------------------------------------------------------------- |
-| [(constructor)(client)](./puppeteer.csscoverage._constructor_.md) |           | Constructs a new instance of the <code>CSSCoverage</code> class |
+<table><thead><tr><th>
+
+Constructor
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[(constructor)(client)](./puppeteer.csscoverage._constructor_.md)
+
+</td><td>
+
+</td><td>
+
+Constructs a new instance of the `CSSCoverage` class
+
+</td></tr>
+</tbody></table>
 
 ## Methods
 
-| Method                                             | Modifiers | Description |
-| -------------------------------------------------- | --------- | ----------- |
-| [start(options)](./puppeteer.csscoverage.start.md) |           |             |
-| [stop()](./puppeteer.csscoverage.stop.md)          |           |             |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[start(options)](./puppeteer.csscoverage.start.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[stop()](./puppeteer.csscoverage.stop.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+</tbody></table>

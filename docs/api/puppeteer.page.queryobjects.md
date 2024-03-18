@@ -18,10 +18,33 @@ class Page {
 
 ## Parameters
 
-| Parameter       | Type                                                 | Description                       |
-| --------------- | ---------------------------------------------------- | --------------------------------- |
-| prototypeHandle | [JSHandle](./puppeteer.jshandle.md)&lt;Prototype&gt; | a handle to the object prototype. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+prototypeHandle
+
+</td><td>
+
+[JSHandle](./puppeteer.jshandle.md)&lt;Prototype&gt;
+
+</td><td>
+
+a handle to the object prototype.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[JSHandle](./puppeteer.jshandle.md)&lt;Prototype\[\]&gt;&gt;
