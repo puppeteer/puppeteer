@@ -94,24 +94,26 @@ describe('cooperative request interception', function () {
       const {page, server} = await getTestState();
 
       await page.setRequestInterception(true);
-      page.on('request', request => {
-        if (isFavicon(request)) {
-          void request.continue({}, 0);
-          return;
+      let request!: HTTPRequest;
+      page.on('request', req => {
+        void req.continue({}, 0);
+        if (!isFavicon(req)) {
+          request = req;
         }
-        expect(request.url()).toContain('empty.html');
-        expect(request.headers()['user-agent']).toBeTruthy();
-        expect(request.method()).toBe('GET');
-        expect(request.postData()).toBe(undefined);
-        expect(request.isNavigationRequest()).toBe(true);
-        expect(request.resourceType()).toBe('document');
-        expect(request.frame() === page.mainFrame()).toBe(true);
-        expect(request.frame()!.url()).toBe('about:blank');
-        void request.continue({}, 0);
       });
       const response = (await page.goto(server.EMPTY_PAGE))!;
-      expect(response!.ok()).toBe(true);
-      expect(response!.remoteAddress().port).toBe(server.PORT);
+
+      expect(request).toBeTruthy();
+      expect(request.url()).toContain('empty.html');
+      expect(request.headers()['user-agent']).toBeTruthy();
+      expect(request.method()).toBe('GET');
+      expect(request.postData()).toBe(undefined);
+      expect(request.isNavigationRequest()).toBe(true);
+      expect(request.resourceType()).toBe('document');
+      expect(request.frame() === page.mainFrame()).toBe(true);
+      expect(request.frame()!.url()).toBe('about:blank');
+      expect(response.ok()).toBe(true);
+      expect(response.remoteAddress().port).toBe(server.PORT);
     });
     // @see https://github.com/puppeteer/puppeteer/pull/3105
     it('should work when POST is redirected with 302', async () => {
@@ -141,16 +143,20 @@ describe('cooperative request interception', function () {
 
       server.setRedirect('/rrredirect', '/empty.html');
       await page.setRequestInterception(true);
-      page.on('request', request => {
-        const headers = Object.assign({}, request.headers(), {
+      let request!: HTTPRequest;
+      let headers!: Record<string, string>;
+      page.on('request', req => {
+        headers = Object.assign({}, req.headers(), {
           foo: 'bar',
         });
         void request.continue({headers}, 0);
-
-        expect(request.continueRequestOverrides()).toEqual({headers});
+        request = req;
       });
       // Make sure that the goto does not time out.
       await page.goto(server.PREFIX + '/rrredirect');
+      expect(request).toBeTruthy();
+      expect(headers).toBeTruthy();
+      expect(request.continueRequestOverrides()).toEqual({headers});
     });
     // @see https://github.com/puppeteer/puppeteer/issues/4743
     it('should be able to remove headers', async () => {

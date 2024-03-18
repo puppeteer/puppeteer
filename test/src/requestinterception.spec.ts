@@ -22,23 +22,28 @@ describe('request interception', function () {
       const {page, server} = await getTestState();
 
       await page.setRequestInterception(true);
-      page.on('request', request => {
-        if (isFavicon(request)) {
-          void request.continue();
+      let request!: HTTPRequest;
+      page.on('request', req => {
+        if (isFavicon(req)) {
+          void req.continue();
           return;
         }
-        expect(request.url()).toContain('empty.html');
-        expect(request.headers()['user-agent']).toBeTruthy();
-        expect(request.headers()['accept']).toBeTruthy();
-        expect(request.method()).toBe('GET');
-        expect(request.postData()).toBe(undefined);
-        expect(request.isNavigationRequest()).toBe(true);
-        expect(request.resourceType()).toBe('document');
-        expect(request.frame() === page.mainFrame()).toBe(true);
-        expect(request.frame()!.url()).toBe('about:blank');
-        void request.continue();
+        request = req;
+        void req.continue();
       });
       const response = (await page.goto(server.EMPTY_PAGE))!;
+
+      expect(request).toBeTruthy();
+      expect(request.url()).toContain('empty.html');
+      expect(request.headers()['user-agent']).toBeTruthy();
+      expect(request.headers()['accept']).toBeTruthy();
+      expect(request.method()).toBe('GET');
+      expect(request.postData()).toBe(undefined);
+      expect(request.isNavigationRequest()).toBe(true);
+      expect(request.resourceType()).toBe('document');
+      expect(request.frame() === page.mainFrame()).toBe(true);
+      expect(request.frame()!.url()).toBe('about:blank');
+
       expect(response.ok()).toBe(true);
       expect(response.remoteAddress().port).toBe(server.PORT);
     });
@@ -162,11 +167,14 @@ describe('request interception', function () {
         foo: 'bar',
       });
       await page.setRequestInterception(true);
-      page.on('request', request => {
-        expect(request.headers()['foo']).toBe('bar');
+      let request!: HTTPRequest;
+      page.on('request', req => {
+        request = req;
         void request.continue();
       });
       const response = (await page.goto(server.EMPTY_PAGE))!;
+      expect(request).toBeTruthy();
+      expect(request.headers()['foo']).toBe('bar');
       expect(response.ok()).toBe(true);
     });
     // @see https://github.com/puppeteer/puppeteer/issues/4337
@@ -192,11 +200,13 @@ describe('request interception', function () {
 
       await page.setExtraHTTPHeaders({referer: server.EMPTY_PAGE});
       await page.setRequestInterception(true);
-      page.on('request', request => {
-        expect(request.headers()['referer']).toBe(server.EMPTY_PAGE);
+      let request!: HTTPRequest;
+      page.on('request', req => {
+        request = req;
         void request.continue();
       });
       const response = (await page.goto(server.EMPTY_PAGE))!;
+      expect(request.headers()['referer']).toBe(server.EMPTY_PAGE);
       expect(response.ok()).toBe(true);
     });
     it('should be abortable', async () => {
