@@ -36,6 +36,7 @@ describe('request interception', function () {
           expect(request.postData()).toBe(undefined);
           expect(request.isNavigationRequest()).toBe(true);
           expect(request.resourceType()).toBe('document');
+          expect(request.frame()!.url()).toBe('about:blank');
           expect(request.frame() === page.mainFrame()).toBe(true);
         } catch (error) {
           requestError = error;
