@@ -78,14 +78,14 @@ const toBeRemoved = new Set();
 for (let i = testExpectations.length - 1; i >= 0; i--) {
   const expectation = testExpectations[i];
   const params = new Set(expectation.parameters);
-  const labels = new Set(expectation.expectations);
+  const expectations = new Set(expectation.expectations);
   const platforms = new Set(expectation.platforms);
 
   let foundMatch = false;
   for (let j = i - 1; j >= 0; j--) {
     const candidate = testExpectations[j];
     const candidateParams = new Set(candidate.parameters);
-    const candidateLabels = new Set(candidate.expectations);
+    const candidateExpectations = new Set(candidate.expectations);
     const candidatePlatforms = new Set(candidate.platforms);
 
     if (
@@ -93,11 +93,11 @@ for (let i = testExpectations.length - 1; i >= 0; i--) {
         expectation.testIdPattern,
         candidate.testIdPattern
       ) &&
-      isSubset(candidateParams, params) &&
-      isSubset(candidatePlatforms, platforms)
+      isSubset(candidatePlatforms, platforms) &&
+      (isSubset(params, candidateParams) || isSubset(candidateParams, params))
     ) {
       foundMatch = true;
-      if (isSubset(candidateLabels, labels)) {
+      if (isSubset(candidateExpectations, expectations)) {
         console.log('removing', expectation, 'already covered by', candidate);
         toBeRemoved.add(expectation);
       }
@@ -105,7 +105,7 @@ for (let i = testExpectations.length - 1; i >= 0; i--) {
     }
   }
 
-  if (!foundMatch && isSubset(new Set(['PASS']), labels)) {
+  if (!foundMatch && isSubset(new Set(['PASS']), expectations)) {
     console.log(
       'removing',
       expectation,
