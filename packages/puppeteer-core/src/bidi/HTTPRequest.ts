@@ -68,7 +68,7 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override resourceType(): ResourceType {
-    return this.initiator().type.toLowerCase() as ResourceType;
+    throw new UnsupportedOperation();
   }
 
   override method(): string {

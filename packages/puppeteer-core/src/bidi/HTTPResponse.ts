@@ -40,6 +40,12 @@ export class BidiHTTPResponse extends HTTPResponse {
   }
 
   #initialize() {
+    if (this.#data.fromCache) {
+      this.#request
+        .frame()
+        ?.page()
+        .trustedEmitter.emit(PageEvent.RequestServedFromCache, this.#request);
+    }
     this.#request.frame()?.page().trustedEmitter.emit(PageEvent.Response, this);
   }
 
