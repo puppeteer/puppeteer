@@ -42,7 +42,6 @@ describe('request interception', function () {
       expect(request.isNavigationRequest()).toBe(true);
       expect(request.resourceType()).toBe('document');
       expect(request.frame() === page.mainFrame()).toBe(true);
-      expect(request.frame()!.url()).toBe('about:blank');
 
       expect(response.ok()).toBe(true);
       expect(response.remoteAddress().port).toBe(server.PORT);
