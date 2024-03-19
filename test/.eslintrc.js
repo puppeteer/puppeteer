@@ -40,7 +40,7 @@ module.exports = {
             message:
               'No `expect` in EventHandler. They will never throw errors',
             selector:
-              'CallExpression[callee.property.name="on"] ArrowFunctionExpression > BlockStatement > :not(TryStatement) > ExpressionStatement > CallExpression[callee.object.callee.name="expect"]',
+              'CallExpression[callee.property.name="on"] BlockStatement > :not(TryStatement) > ExpressionStatement > CallExpression[callee.object.callee.name="expect"]',
           },
         ],
       },
