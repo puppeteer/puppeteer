@@ -36,6 +36,12 @@ module.exports = {
             selector:
               'CallExpression[callee.object.name="it"] > MemberExpression > Identifier[name="deflake"], CallExpression[callee.object.name="it"] > MemberExpression > Identifier[name="deflakeOnly"]',
           },
+          {
+            message:
+              'No `expect` in EventHandler. They will never throw errors',
+            selector:
+              'CallExpression[callee.property.name="on"] BlockStatement > :not(TryStatement) > ExpressionStatement > CallExpression[callee.object.callee.name="expect"]',
+          },
         ],
       },
     },
