@@ -1213,13 +1213,15 @@ describe('Page', function () {
       expect(result).toBe(36);
       await page.removeExposedFunction('compute');
 
-      let error: Error | null = null;
-      await page
+      const error = await page
         .evaluate(async function () {
           return (globalThis as any).compute(9, 4);
         })
-        .catch(_error => {
-          return (error = _error);
+        .then(() => {
+          return null;
+        })
+        .catch(error => {
+          return error;
         });
       expect(error).toBeTruthy();
     });

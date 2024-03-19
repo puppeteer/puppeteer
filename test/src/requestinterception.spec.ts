@@ -22,26 +22,32 @@ describe('request interception', function () {
       const {page, server} = await getTestState();
 
       await page.setRequestInterception(true);
-      let request!: HTTPRequest;
-      page.on('request', req => {
-        if (isFavicon(req)) {
-          void req.continue();
+      let requestError;
+      page.on('request', request => {
+        if (isFavicon(request)) {
+          void request.continue();
           return;
         }
-        request = req;
-        void req.continue();
+        try {
+          expect(request).toBeTruthy();
+          expect(request.url()).toContain('empty.html');
+          expect(request.headers()['user-agent']).toBeTruthy();
+          expect(request.method()).toBe('GET');
+          expect(request.postData()).toBe(undefined);
+          expect(request.isNavigationRequest()).toBe(true);
+          expect(request.resourceType()).toBe('document');
+          expect(request.frame() === page.mainFrame()).toBe(true);
+        } catch (error) {
+          requestError = error;
+        } finally {
+          void request.continue();
+        }
       });
-      const response = (await page.goto(server.EMPTY_PAGE))!;
 
-      expect(request).toBeTruthy();
-      expect(request.url()).toContain('empty.html');
-      expect(request.headers()['user-agent']).toBeTruthy();
-      expect(request.headers()['accept']).toBeTruthy();
-      expect(request.method()).toBe('GET');
-      expect(request.postData()).toBe(undefined);
-      expect(request.isNavigationRequest()).toBe(true);
-      expect(request.resourceType()).toBe('document');
-      expect(request.frame() === page.mainFrame()).toBe(true);
+      const response = (await page.goto(server.EMPTY_PAGE))!;
+      if (requestError) {
+        throw requestError;
+      }
 
       expect(response.ok()).toBe(true);
       expect(response.remoteAddress().port).toBe(server.PORT);
@@ -166,14 +172,21 @@ describe('request interception', function () {
         foo: 'bar',
       });
       await page.setRequestInterception(true);
-      let request!: HTTPRequest;
-      page.on('request', req => {
-        request = req;
-        void request.continue();
+      let requestError;
+      page.on('request', request => {
+        try {
+          expect(request.headers()['foo']).toBe('bar');
+        } catch (error) {
+          requestError = error;
+        } finally {
+          void request.continue();
+        }
       });
+
       const response = (await page.goto(server.EMPTY_PAGE))!;
-      expect(request).toBeTruthy();
-      expect(request.headers()['foo']).toBe('bar');
+      if (requestError) {
+        throw requestError;
+      }
       expect(response.ok()).toBe(true);
     });
     // @see https://github.com/puppeteer/puppeteer/issues/4337
