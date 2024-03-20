@@ -697,13 +697,7 @@ describe('AriaQueryHandler', () => {
         ElementHandle<HTMLButtonElement>
       >;
       const ids = await getIds(found);
-      expect(ids).toEqual([
-        'node5',
-        'node6',
-        'node8',
-        'node10',
-        'node21',
-      ]);
+      expect(ids).toEqual(['node5', 'node6', 'node8', 'node10', 'node21']);
     });
     it('should find by role "heading"', async () => {
       const {page} = await setupPage();
