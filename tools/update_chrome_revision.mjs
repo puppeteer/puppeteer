@@ -99,6 +99,12 @@ async function updateDevToolsProtocolVersion(revision) {
     `"devtools-protocol": "${currentProtocol}"`,
     `"devtools-protocol": "${bestNewProtocol}"`
   );
+
+  await replaceInFile(
+    './packages/puppeteer/package.json',
+    `"devtools-protocol": "${currentProtocol}"`,
+    `"devtools-protocol": "${bestNewProtocol}"`
+  );
 }
 
 async function updateVersionFileLastMaintained(oldVersion, newVersion) {
