@@ -142,8 +142,10 @@ export class BidiHTTPRequest extends HTTPRequest {
     throw new UnsupportedOperation();
   }
 
-  override continue(_overrides: ContinueRequestOverrides = {}): never {
-    throw new UnsupportedOperation();
+  override async continue(
+    _overrides: ContinueRequestOverrides = {}
+  ): Promise<void> {
+    return await this.#request.continueRequest();
   }
 
   override responseForRequest(): never {
@@ -166,14 +168,14 @@ export class BidiHTTPRequest extends HTTPRequest {
     throw new UnsupportedOperation();
   }
 
-  override abort(): never {
-    throw new UnsupportedOperation();
+  override async abort(): Promise<void> {
+    return await this.#request.failRequest();
   }
 
-  override respond(
+  override async respond(
     _response: Partial<ResponseForRequest>,
     _priority?: number
-  ): never {
+  ): Promise<void> {
     throw new UnsupportedOperation();
   }
 }

@@ -178,6 +178,20 @@ export class Session
     // SAFETY: By definition of `disposed`, `#reason` is defined.
     return session.#reason!;
   })
+  async addIntercepts(
+    events: [string, ...string[]],
+    contexts?: [string, ...string[]]
+  ): Promise<void> {
+    await this.send('session.subscribe', {
+      events,
+      contexts,
+    });
+  }
+
+  @throwIfDisposed<Session>(session => {
+    // SAFETY: By definition of `disposed`, `#reason` is defined.
+    return session.#reason!;
+  })
   async end(): Promise<void> {
     try {
       await this.send('session.end', {});

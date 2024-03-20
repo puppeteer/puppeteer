@@ -21,6 +21,14 @@ import {UserPrompt} from './UserPrompt.js';
 /**
  * @internal
  */
+export type AddInterceptOptions = Omit<
+  Bidi.Network.AddInterceptParameters,
+  'contexts'
+>;
+
+/**
+ * @internal
+ */
 export type CaptureScreenshotOptions = Omit<
   Bidi.BrowsingContext.CaptureScreenshotParameters,
   'context'
@@ -478,9 +486,24 @@ export class BrowsingContext extends EventEmitter<{
       functionDeclaration,
       {
         ...options,
-        contexts: [this, ...(options.contexts ?? [])],
+        contexts: [this],
       }
     );
+  }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
+  async addIntercept(options: AddInterceptOptions): Promise<string> {
+    const {
+      result: {intercept},
+    } = await this.userContext.browser.session.send('network.addIntercept', {
+      ...options,
+      contexts: [this.id],
+    });
+
+    return intercept;
   }
 
   @throwIfDisposed<BrowsingContext>(context => {
@@ -544,6 +567,14 @@ export class BrowsingContext extends EventEmitter<{
     return context.#reason!;
   })
   async subscribe(events: [string, ...string[]]): Promise<void> {
+    await this.#session.subscribe(events, [this.id]);
+  }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
+  async addInterception(events: [string, ...string[]]): Promise<void> {
     await this.#session.subscribe(events, [this.id]);
   }
 

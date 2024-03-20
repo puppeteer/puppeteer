@@ -203,6 +203,16 @@ export class Browser extends EventEmitter<{
     // SAFETY: By definition of `disposed`, `#reason` is defined.
     return browser.#reason!;
   })
+  async removeIntercept(intercept: Bidi.Network.Intercept): Promise<void> {
+    await this.session.send('network.removeIntercept', {
+      intercept,
+    });
+  }
+
+  @throwIfDisposed<Browser>(browser => {
+    // SAFETY: By definition of `disposed`, `#reason` is defined.
+    return browser.#reason!;
+  })
   async removePreloadScript(script: string): Promise<void> {
     await this.session.send('script.removePreloadScript', {
       script,
