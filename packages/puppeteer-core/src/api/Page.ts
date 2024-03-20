@@ -1342,7 +1342,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * Functions installed via `page.exposeFunction` survive navigations.
    *
-   * :::note
+   * :::
    *
    * @example
    * An example of adding an `md5` function into the page:

@@ -534,7 +534,7 @@ If the puppeteerFunction returns a `Promise`, it will be awaited.
 
 Functions installed via `page.exposeFunction` survive navigations.
 
-:::note
+:::
 
 </td></tr>
 <tr><td>

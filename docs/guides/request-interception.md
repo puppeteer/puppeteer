@@ -36,7 +36,7 @@ Always assume that an unknown handler may have already called
 `abort/continue/respond`. Even if your handler is the only one you registered,
 3rd party packages may register their own handlers. It is therefore important to
 always check the resolution status using
-[request.isInterceptResolutionHandled](#httprequestisinterceptresolutionhandled)
+[request.isInterceptResolutionHandled](../api/puppeteer.httprequest.isinterceptresolutionhandled)
 before calling `abort/continue/respond`.
 
 Importantly, the intercept resolution may get handled by another listener while
@@ -105,7 +105,7 @@ page.on('request', async interceptedRequest => {
 
 For finer-grained introspection (see Cooperative Intercept Mode below), you may
 also call
-[request.interceptResolutionState](#httprequestinterceptresolutionstate)
+[request.interceptResolutionState](../api/puppeteer.httprequest.interceptresolutionstate)
 synchronously before using `abort/continue/respond`.
 
 Here is the example above rewritten using `request.interceptResolutionState`
