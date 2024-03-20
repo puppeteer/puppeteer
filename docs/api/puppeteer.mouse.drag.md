@@ -16,11 +16,46 @@ class Mouse {
 
 ## Parameters
 
-| Parameter | Type                          | Description             |
-| --------- | ----------------------------- | ----------------------- |
-| start     | [Point](./puppeteer.point.md) | starting point for drag |
-| target    | [Point](./puppeteer.point.md) | point to drag to        |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+start
+
+</td><td>
+
+[Point](./puppeteer.point.md)
+
+</td><td>
+
+starting point for drag
+
+</td></tr>
+<tr><td>
+
+target
+
+</td><td>
+
+[Point](./puppeteer.point.md)
+
+</td><td>
+
+point to drag to
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;Protocol.Input.DragData&gt;

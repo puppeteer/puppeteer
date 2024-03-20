@@ -12,6 +12,22 @@ export interface Moveable
 
 ## Methods
 
-| Method                                 | Description                      |
-| -------------------------------------- | -------------------------------- |
-| [move()](./puppeteer.moveable.move.md) | Moves the resource when 'using'. |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[move()](./puppeteer.moveable.move.md)
+
+</td><td>
+
+Moves the resource when 'using'.
+
+</td></tr>
+</tbody></table>

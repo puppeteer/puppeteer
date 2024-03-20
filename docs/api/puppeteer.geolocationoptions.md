@@ -12,8 +12,78 @@ export interface GeolocationOptions
 
 ## Properties
 
-| Property  | Modifiers             | Type   | Description                                               | Default |
-| --------- | --------------------- | ------ | --------------------------------------------------------- | ------- |
-| accuracy  | <code>optional</code> | number | Optional non-negative accuracy value.                     |         |
-| latitude  |                       | number | Longitude between <code>-180</code> and <code>180</code>. |         |
-| longitude |                       | number | Latitude between <code>-90</code> and <code>90</code>.    |         |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+accuracy
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Optional non-negative accuracy value.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+latitude
+
+</td><td>
+
+</td><td>
+
+number
+
+</td><td>
+
+Longitude between `-180` and `180`.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+longitude
+
+</td><td>
+
+</td><td>
+
+number
+
+</td><td>
+
+Latitude between `-90` and `90`.
+
+</td><td>
+
+</td></tr>
+</tbody></table>

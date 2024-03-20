@@ -16,10 +16,33 @@ class Accessibility {
 
 ## Parameters
 
-| Parameter | Type                                              | Description  |
-| --------- | ------------------------------------------------- | ------------ |
-| options   | [SnapshotOptions](./puppeteer.snapshotoptions.md) | _(Optional)_ |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+[SnapshotOptions](./puppeteer.snapshotoptions.md)
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[SerializedAXNode](./puppeteer.serializedaxnode.md) \| null&gt;

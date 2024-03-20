@@ -20,10 +20,33 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type    | Description                             |
-| --------- | ------- | --------------------------------------- |
-| value     | boolean | Whether to enable request interception. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+value
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether to enable request interception.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

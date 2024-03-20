@@ -18,14 +18,80 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Properties
 
-| Property | Modifiers             | Type                              | Description |
-| -------- | --------------------- | --------------------------------- | ----------- |
-| product  | <code>readonly</code> | [Product](./puppeteer.product.md) |             |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+product
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+[Product](./puppeteer.product.md)
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 
 ## Methods
 
-| Method                                                                   | Modifiers | Description |
-| ------------------------------------------------------------------------ | --------- | ----------- |
-| [defaultArgs(object)](./puppeteer.productlauncher.defaultargs.md)        |           |             |
-| [executablePath(channel)](./puppeteer.productlauncher.executablepath.md) |           |             |
-| [launch(options)](./puppeteer.productlauncher.launch.md)                 |           |             |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[defaultArgs(object)](./puppeteer.productlauncher.defaultargs.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[executablePath(channel)](./puppeteer.productlauncher.executablepath.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[launch(options)](./puppeteer.productlauncher.launch.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+</tbody></table>

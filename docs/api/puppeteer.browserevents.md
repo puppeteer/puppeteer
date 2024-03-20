@@ -14,9 +14,85 @@ export interface BrowserEvents extends Record<EventType, unknown>
 
 ## Properties
 
-| Property        | Modifiers | Type                            | Description | Default |
-| --------------- | --------- | ------------------------------- | ----------- | ------- |
-| disconnected    |           | undefined                       |             |         |
-| targetchanged   |           | [Target](./puppeteer.target.md) |             |         |
-| targetcreated   |           | [Target](./puppeteer.target.md) |             |         |
-| targetdestroyed |           | [Target](./puppeteer.target.md) |             |         |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+disconnected
+
+</td><td>
+
+</td><td>
+
+undefined
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+targetchanged
+
+</td><td>
+
+</td><td>
+
+[Target](./puppeteer.target.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+targetcreated
+
+</td><td>
+
+</td><td>
+
+[Target](./puppeteer.target.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+targetdestroyed
+
+</td><td>
+
+</td><td>
+
+[Target](./puppeteer.target.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+</tbody></table>

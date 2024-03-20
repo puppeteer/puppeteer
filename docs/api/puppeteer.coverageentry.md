@@ -14,8 +14,76 @@ export interface CoverageEntry
 
 ## Properties
 
-| Property | Modifiers | Type                                                   | Description                                   | Default |
-| -------- | --------- | ------------------------------------------------------ | --------------------------------------------- | ------- |
-| ranges   |           | Array&lt;&#123; start: number; end: number; &#125;&gt; | The covered range as start and end positions. |         |
-| text     |           | string                                                 | The content of the style sheet or script.     |         |
-| url      |           | string                                                 | The URL of the style sheet or script.         |         |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+ranges
+
+</td><td>
+
+</td><td>
+
+Array&lt;&#123; start: number; end: number; &#125;&gt;
+
+</td><td>
+
+The covered range as start and end positions.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+text
+
+</td><td>
+
+</td><td>
+
+string
+
+</td><td>
+
+The content of the style sheet or script.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+url
+
+</td><td>
+
+</td><td>
+
+string
+
+</td><td>
+
+The URL of the style sheet or script.
+
+</td><td>
+
+</td></tr>
+</tbody></table>

@@ -12,12 +12,94 @@ export declare enum TargetType
 
 ## Enumeration Members
 
-| Member          | Value                                    | Description |
-| --------------- | ---------------------------------------- | ----------- |
-| BACKGROUND_PAGE | <code>&quot;background_page&quot;</code> |             |
-| BROWSER         | <code>&quot;browser&quot;</code>         |             |
-| OTHER           | <code>&quot;other&quot;</code>           |             |
-| PAGE            | <code>&quot;page&quot;</code>            |             |
-| SERVICE_WORKER  | <code>&quot;service_worker&quot;</code>  |             |
-| SHARED_WORKER   | <code>&quot;shared_worker&quot;</code>   |             |
-| WEBVIEW         | <code>&quot;webview&quot;</code>         |             |
+<table><thead><tr><th>
+
+Member
+
+</th><th>
+
+Value
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+BACKGROUND_PAGE
+
+</td><td>
+
+`"background_page"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+BROWSER
+
+</td><td>
+
+`"browser"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+OTHER
+
+</td><td>
+
+`"other"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+PAGE
+
+</td><td>
+
+`"page"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+SERVICE_WORKER
+
+</td><td>
+
+`"service_worker"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+SHARED_WORKER
+
+</td><td>
+
+`"shared_worker"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+WEBVIEW
+
+</td><td>
+
+`"webview"`
+
+</td><td>
+
+</td></tr>
+</tbody></table>

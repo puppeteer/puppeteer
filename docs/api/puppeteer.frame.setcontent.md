@@ -16,11 +16,46 @@ class Frame {
 
 ## Parameters
 
-| Parameter | Type                                            | Description                                                                                                                |
-| --------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| html      | string                                          | HTML markup to assign to the page.                                                                                         |
-| options   | [WaitForOptions](./puppeteer.waitforoptions.md) | _(Optional)_ Options to configure how long before timing out and at what point to consider the content setting successful. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+html
+
+</td><td>
+
+string
+
+</td><td>
+
+HTML markup to assign to the page.
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+[WaitForOptions](./puppeteer.waitforoptions.md)
+
+</td><td>
+
+_(Optional)_ Options to configure how long before timing out and at what point to consider the content setting successful.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

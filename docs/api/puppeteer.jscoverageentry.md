@@ -16,6 +16,44 @@ export interface JSCoverageEntry extends CoverageEntry
 
 ## Properties
 
-| Property          | Modifiers             | Type                             | Description                   | Default |
-| ----------------- | --------------------- | -------------------------------- | ----------------------------- | ------- |
-| rawScriptCoverage | <code>optional</code> | Protocol.Profiler.ScriptCoverage | Raw V8 script coverage entry. |         |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+rawScriptCoverage
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+Protocol.Profiler.ScriptCoverage
+
+</td><td>
+
+Raw V8 script coverage entry.
+
+</td><td>
+
+</td></tr>
+</tbody></table>

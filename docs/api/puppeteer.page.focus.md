@@ -16,10 +16,33 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type   | Description                                                                                                                                                                             |
-| --------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| selector  | string | A [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) of an element to focus. If there are multiple elements satisfying the selector, the first will be focused. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+selector
+
+</td><td>
+
+string
+
+</td><td>
+
+A [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) of an element to focus. If there are multiple elements satisfying the selector, the first will be focused.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

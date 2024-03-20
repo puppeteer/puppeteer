@@ -627,7 +627,7 @@ The default Node.js runtime of
 [Google Cloud Run](https://cloud.google.com/run/docs/) does not come with the
 system packages needed to run Headless Chrome. You will need to set up your own
 `Dockerfile` and
-[include the missing dependencies](#chrome-headless-doesnt-launch-on-unix).
+[include the missing dependencies](#chrome-doesnt-launch-on-linux).
 
 ### Running Puppeteer on Heroku
 

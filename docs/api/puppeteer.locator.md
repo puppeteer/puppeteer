@@ -16,27 +16,225 @@ export declare abstract class Locator<T> extends EventEmitter<LocatorEvents>
 
 ## Properties
 
-| Property | Modifiers             | Type   | Description                                                  |
-| -------- | --------------------- | ------ | ------------------------------------------------------------ |
-| \_       | <code>optional</code> | T      | Used for nominally typing [Locator](./puppeteer.locator.md). |
-| timeout  | <code>readonly</code> | number |                                                              |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+\_
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+T
+
+</td><td>
+
+Used for nominally typing [Locator](./puppeteer.locator.md).
+
+</td></tr>
+<tr><td>
+
+timeout
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+number
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 
 ## Methods
 
-| Method                                                                                                 | Modifiers           | Description                                                                                                                                                                                                                              |
-| ------------------------------------------------------------------------------------------------------ | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [click(this, options)](./puppeteer.locator.click.md)                                                   |                     |                                                                                                                                                                                                                                          |
-| [clone()](./puppeteer.locator.clone.md)                                                                |                     | Clones the locator.                                                                                                                                                                                                                      |
-| [fill(this, value, options)](./puppeteer.locator.fill.md)                                              |                     | Fills out the input identified by the locator using the provided value. The type of the input is determined at runtime and the appropriate fill-out method is chosen based on the type. contenteditable, selector, inputs are supported. |
-| [filter(predicate)](./puppeteer.locator.filter.md)                                                     |                     | <p>Creates an expectation that is evaluated against located values.</p><p>If the expectations do not match, then the locator will retry.</p>                                                                                             |
-| [hover(this, options)](./puppeteer.locator.hover.md)                                                   |                     |                                                                                                                                                                                                                                          |
-| [map(mapper)](./puppeteer.locator.map.md)                                                              |                     | Maps the locator using the provided mapper.                                                                                                                                                                                              |
-| [race(locators)](./puppeteer.locator.race.md)                                                          | <code>static</code> | Creates a race between multiple locators but ensures that only a single one acts.                                                                                                                                                        |
-| [scroll(this, options)](./puppeteer.locator.scroll.md)                                                 |                     |                                                                                                                                                                                                                                          |
-| [setEnsureElementIsInTheViewport(this, value)](./puppeteer.locator.setensureelementisintheviewport.md) |                     |                                                                                                                                                                                                                                          |
-| [setTimeout(timeout)](./puppeteer.locator.settimeout.md)                                               |                     |                                                                                                                                                                                                                                          |
-| [setVisibility(this, visibility)](./puppeteer.locator.setvisibility.md)                                |                     |                                                                                                                                                                                                                                          |
-| [setWaitForEnabled(this, value)](./puppeteer.locator.setwaitforenabled.md)                             |                     |                                                                                                                                                                                                                                          |
-| [setWaitForStableBoundingBox(this, value)](./puppeteer.locator.setwaitforstableboundingbox.md)         |                     |                                                                                                                                                                                                                                          |
-| [wait(options)](./puppeteer.locator.wait.md)                                                           |                     | <p>Waits for the locator to get the serialized value from the page.</p><p>Note this requires the value to be JSON-serializable.</p>                                                                                                      |
-| [waitHandle(options)](./puppeteer.locator.waithandle.md)                                               |                     | Waits for the locator to get a handle from the page.                                                                                                                                                                                     |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[click(this, options)](./puppeteer.locator.click.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[clone()](./puppeteer.locator.clone.md)
+
+</td><td>
+
+</td><td>
+
+Clones the locator.
+
+</td></tr>
+<tr><td>
+
+[fill(this, value, options)](./puppeteer.locator.fill.md)
+
+</td><td>
+
+</td><td>
+
+Fills out the input identified by the locator using the provided value. The type of the input is determined at runtime and the appropriate fill-out method is chosen based on the type. contenteditable, selector, inputs are supported.
+
+</td></tr>
+<tr><td>
+
+[filter(predicate)](./puppeteer.locator.filter.md)
+
+</td><td>
+
+</td><td>
+
+Creates an expectation that is evaluated against located values.
+
+If the expectations do not match, then the locator will retry.
+
+</td></tr>
+<tr><td>
+
+[hover(this, options)](./puppeteer.locator.hover.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[map(mapper)](./puppeteer.locator.map.md)
+
+</td><td>
+
+</td><td>
+
+Maps the locator using the provided mapper.
+
+</td></tr>
+<tr><td>
+
+[race(locators)](./puppeteer.locator.race.md)
+
+</td><td>
+
+`static`
+
+</td><td>
+
+Creates a race between multiple locators but ensures that only a single one acts.
+
+</td></tr>
+<tr><td>
+
+[scroll(this, options)](./puppeteer.locator.scroll.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[setEnsureElementIsInTheViewport(this, value)](./puppeteer.locator.setensureelementisintheviewport.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[setTimeout(timeout)](./puppeteer.locator.settimeout.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[setVisibility(this, visibility)](./puppeteer.locator.setvisibility.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[setWaitForEnabled(this, value)](./puppeteer.locator.setwaitforenabled.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[setWaitForStableBoundingBox(this, value)](./puppeteer.locator.setwaitforstableboundingbox.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[wait(options)](./puppeteer.locator.wait.md)
+
+</td><td>
+
+</td><td>
+
+Waits for the locator to get the serialized value from the page.
+
+Note this requires the value to be JSON-serializable.
+
+</td></tr>
+<tr><td>
+
+[waitHandle(options)](./puppeteer.locator.waithandle.md)
+
+</td><td>
+
+</td><td>
+
+Waits for the locator to get a handle from the page.
+
+</td></tr>
+</tbody></table>

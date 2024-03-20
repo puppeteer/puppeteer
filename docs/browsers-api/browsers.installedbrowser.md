@@ -16,17 +16,127 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Properties
 
-| Property       | Modifiers             | Type                                             | Description                                                                                                                                               |
-| -------------- | --------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| browser        |                       | [Browser](./browsers.browser.md)                 |                                                                                                                                                           |
-| buildId        |                       | string                                           |                                                                                                                                                           |
-| executablePath | <code>readonly</code> | string                                           |                                                                                                                                                           |
-| path           | <code>readonly</code> | string                                           | Path to the root of the installation folder. Use [computeExecutablePath()](./browsers.computeexecutablepath.md) to get the path to the executable binary. |
-| platform       |                       | [BrowserPlatform](./browsers.browserplatform.md) |                                                                                                                                                           |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+browser
+
+</td><td>
+
+</td><td>
+
+[Browser](./browsers.browser.md)
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+buildId
+
+</td><td>
+
+</td><td>
+
+string
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+executablePath
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+string
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+path
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+string
+
+</td><td>
+
+Path to the root of the installation folder. Use [computeExecutablePath()](./browsers.computeexecutablepath.md) to get the path to the executable binary.
+
+</td></tr>
+<tr><td>
+
+platform
+
+</td><td>
+
+</td><td>
+
+[BrowserPlatform](./browsers.browserplatform.md)
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 
 ## Methods
 
-| Method                                                                  | Modifiers | Description |
-| ----------------------------------------------------------------------- | --------- | ----------- |
-| [readMetadata()](./browsers.installedbrowser.readmetadata.md)           |           |             |
-| [writeMetadata(metadata)](./browsers.installedbrowser.writemetadata.md) |           |             |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[readMetadata()](./browsers.installedbrowser.readmetadata.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[writeMetadata(metadata)](./browsers.installedbrowser.writemetadata.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+</tbody></table>

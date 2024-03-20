@@ -21,9 +21,61 @@ class ConsoleMessage {
 
 ## Parameters
 
-| Parameter           | Type                                                                | Description |
-| ------------------- | ------------------------------------------------------------------- | ----------- |
-| type                | [ConsoleMessageType](./puppeteer.consolemessagetype.md)             |             |
-| text                | string                                                              |             |
-| args                | [JSHandle](./puppeteer.jshandle.md)\[\]                             |             |
-| stackTraceLocations | [ConsoleMessageLocation](./puppeteer.consolemessagelocation.md)\[\] |             |
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+type
+
+</td><td>
+
+[ConsoleMessageType](./puppeteer.consolemessagetype.md)
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+text
+
+</td><td>
+
+string
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+args
+
+</td><td>
+
+[JSHandle](./puppeteer.jshandle.md)\[\]
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+stackTraceLocations
+
+</td><td>
+
+[ConsoleMessageLocation](./puppeteer.consolemessagelocation.md)\[\]
+
+</td><td>
+
+</td></tr>
+</tbody></table>

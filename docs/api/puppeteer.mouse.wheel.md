@@ -16,10 +16,33 @@ class Mouse {
 
 ## Parameters
 
-| Parameter | Type                                                                  | Description                                            |
-| --------- | --------------------------------------------------------------------- | ------------------------------------------------------ |
-| options   | Readonly&lt;[MouseWheelOptions](./puppeteer.mousewheeloptions.md)&gt; | _(Optional)_ Optional: <code>MouseWheelOptions</code>. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+Readonly&lt;[MouseWheelOptions](./puppeteer.mousewheeloptions.md)&gt;
+
+</td><td>
+
+_(Optional)_ Optional: `MouseWheelOptions`.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

@@ -17,11 +17,42 @@ class Locator {
 
 ## Parameters
 
-| Parameter | Type                                                 | Description |
-| --------- | ---------------------------------------------------- | ----------- |
-| this      | [Locator](./puppeteer.locator.md)&lt;ElementType&gt; |             |
-| value     | boolean                                              |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+this
+
+</td><td>
+
+[Locator](./puppeteer.locator.md)&lt;ElementType&gt;
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+value
+
+</td><td>
+
+boolean
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;ElementType&gt;

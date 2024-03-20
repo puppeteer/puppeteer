@@ -14,10 +14,33 @@ class Connection {
 
 ## Parameters
 
-| Parameter  | Type                       | Description     |
-| ---------- | -------------------------- | --------------- |
-| targetInfo | Protocol.Target.TargetInfo | The target info |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+targetInfo
+
+</td><td>
+
+Protocol.Target.TargetInfo
+
+</td><td>
+
+The target info
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[CDPSession](./puppeteer.cdpsession.md)&gt;

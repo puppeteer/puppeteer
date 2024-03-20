@@ -17,11 +17,46 @@ class Page {
 
 ## Parameters
 
-| Parameter      | Type                                                                                                                 | Description                              |
-| -------------- | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
-| urlOrPredicate | string \| [AwaitablePredicate](./puppeteer.awaitablepredicate.md)&lt;[HTTPResponse](./puppeteer.httpresponse.md)&gt; | A URL or predicate to wait for.          |
-| options        | [WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md)                                                              | _(Optional)_ Optional waiting parameters |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+urlOrPredicate
+
+</td><td>
+
+string \| [AwaitablePredicate](./puppeteer.awaitablepredicate.md)&lt;[HTTPResponse](./puppeteer.httpresponse.md)&gt;
+
+</td><td>
+
+A URL or predicate to wait for.
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+[WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md)
+
+</td><td>
+
+_(Optional)_ Optional waiting parameters
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[HTTPResponse](./puppeteer.httpresponse.md)&gt;

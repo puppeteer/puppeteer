@@ -20,10 +20,33 @@ class Frame {
 
 ## Parameters
 
-| Parameter | Type                                            | Description                                         |
-| --------- | ----------------------------------------------- | --------------------------------------------------- |
-| options   | [WaitForOptions](./puppeteer.waitforoptions.md) | _(Optional)_ Options to configure waiting behavior. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+[WaitForOptions](./puppeteer.waitforoptions.md)
+
+</td><td>
+
+_(Optional)_ Options to configure waiting behavior.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[HTTPResponse](./puppeteer.httpresponse.md) \| null&gt;

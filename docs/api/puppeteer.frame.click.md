@@ -16,11 +16,46 @@ class Frame {
 
 ## Parameters
 
-| Parameter | Type                                                        | Description                |
-| --------- | ----------------------------------------------------------- | -------------------------- |
-| selector  | string                                                      | The selector to query for. |
-| options   | Readonly&lt;[ClickOptions](./puppeteer.clickoptions.md)&gt; | _(Optional)_               |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+selector
+
+</td><td>
+
+string
+
+</td><td>
+
+The selector to query for.
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+Readonly&lt;[ClickOptions](./puppeteer.clickoptions.md)&gt;
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

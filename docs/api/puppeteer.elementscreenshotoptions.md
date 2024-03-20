@@ -14,6 +14,44 @@ export interface ElementScreenshotOptions extends ScreenshotOptions
 
 ## Properties
 
-| Property       | Modifiers             | Type    | Description | Default           |
-| -------------- | --------------------- | ------- | ----------- | ----------------- |
-| scrollIntoView | <code>optional</code> | boolean |             | <code>true</code> |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+scrollIntoView
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+</td><td>
+
+`true`
+
+</td></tr>
+</tbody></table>

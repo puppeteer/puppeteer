@@ -98,15 +98,6 @@ export class CustomMarkdownEmitter extends ApiFormatterMarkdownEmitter {
       .replace(/\}/g, '&#125;');
     return textWithBackslashes;
   }
-
-  protected override getTableEscapedText(text: string): string {
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/"/g, '&quot;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/\|/g, '&#124;');
-  }
 }
 
 /**

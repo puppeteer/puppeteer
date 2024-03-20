@@ -14,10 +14,31 @@ export declare function computeSystemExecutablePath(
 
 ## Parameters
 
-| Parameter | Type                                         | Description |
-| --------- | -------------------------------------------- | ----------- |
-| options   | [SystemOptions](./browsers.systemoptions.md) |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+[SystemOptions](./browsers.systemoptions.md)
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 string

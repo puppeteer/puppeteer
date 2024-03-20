@@ -77,16 +77,138 @@ await browser
 
 ## Methods
 
-| Method                                                                  | Modifiers | Description                                                                              |
-| ----------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------- |
-| [click(x, y, options)](./puppeteer.mouse.click.md)                      |           | Shortcut for <code>mouse.move</code>, <code>mouse.down</code> and <code>mouse.up</code>. |
-| [down(options)](./puppeteer.mouse.down.md)                              |           | Presses the mouse.                                                                       |
-| [drag(start, target)](./puppeteer.mouse.drag.md)                        |           | Dispatches a <code>drag</code> event.                                                    |
-| [dragAndDrop(start, target, options)](./puppeteer.mouse.draganddrop.md) |           | Performs a drag, dragenter, dragover, and drop in sequence.                              |
-| [dragEnter(target, data)](./puppeteer.mouse.dragenter.md)               |           | Dispatches a <code>dragenter</code> event.                                               |
-| [dragOver(target, data)](./puppeteer.mouse.dragover.md)                 |           | Dispatches a <code>dragover</code> event.                                                |
-| [drop(target, data)](./puppeteer.mouse.drop.md)                         |           | Performs a dragenter, dragover, and drop in sequence.                                    |
-| [move(x, y, options)](./puppeteer.mouse.move.md)                        |           | Moves the mouse to the given coordinate.                                                 |
-| [reset()](./puppeteer.mouse.reset.md)                                   |           | Resets the mouse to the default state: No buttons pressed; position at (0,0).            |
-| [up(options)](./puppeteer.mouse.up.md)                                  |           | Releases the mouse.                                                                      |
-| [wheel(options)](./puppeteer.mouse.wheel.md)                            |           | Dispatches a <code>mousewheel</code> event.                                              |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[click(x, y, options)](./puppeteer.mouse.click.md)
+
+</td><td>
+
+</td><td>
+
+Shortcut for `mouse.move`, `mouse.down` and `mouse.up`.
+
+</td></tr>
+<tr><td>
+
+[down(options)](./puppeteer.mouse.down.md)
+
+</td><td>
+
+</td><td>
+
+Presses the mouse.
+
+</td></tr>
+<tr><td>
+
+[drag(start, target)](./puppeteer.mouse.drag.md)
+
+</td><td>
+
+</td><td>
+
+Dispatches a `drag` event.
+
+</td></tr>
+<tr><td>
+
+[dragAndDrop(start, target, options)](./puppeteer.mouse.draganddrop.md)
+
+</td><td>
+
+</td><td>
+
+Performs a drag, dragenter, dragover, and drop in sequence.
+
+</td></tr>
+<tr><td>
+
+[dragEnter(target, data)](./puppeteer.mouse.dragenter.md)
+
+</td><td>
+
+</td><td>
+
+Dispatches a `dragenter` event.
+
+</td></tr>
+<tr><td>
+
+[dragOver(target, data)](./puppeteer.mouse.dragover.md)
+
+</td><td>
+
+</td><td>
+
+Dispatches a `dragover` event.
+
+</td></tr>
+<tr><td>
+
+[drop(target, data)](./puppeteer.mouse.drop.md)
+
+</td><td>
+
+</td><td>
+
+Performs a dragenter, dragover, and drop in sequence.
+
+</td></tr>
+<tr><td>
+
+[move(x, y, options)](./puppeteer.mouse.move.md)
+
+</td><td>
+
+</td><td>
+
+Moves the mouse to the given coordinate.
+
+</td></tr>
+<tr><td>
+
+[reset()](./puppeteer.mouse.reset.md)
+
+</td><td>
+
+</td><td>
+
+Resets the mouse to the default state: No buttons pressed; position at (0,0).
+
+</td></tr>
+<tr><td>
+
+[up(options)](./puppeteer.mouse.up.md)
+
+</td><td>
+
+</td><td>
+
+Releases the mouse.
+
+</td></tr>
+<tr><td>
+
+[wheel(options)](./puppeteer.mouse.wheel.md)
+
+</td><td>
+
+</td><td>
+
+Dispatches a `mousewheel` event.
+
+</td></tr>
+</tbody></table>

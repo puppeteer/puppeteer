@@ -41,21 +41,175 @@ await context.close();
 
 ## Properties
 
-| Property | Modifiers             | Type                | Description                                                              |
-| -------- | --------------------- | ------------------- | ------------------------------------------------------------------------ |
-| closed   | <code>readonly</code> | boolean             | Whether this [browser context](./puppeteer.browsercontext.md) is closed. |
-| id       | <code>readonly</code> | string \| undefined | Identifier for this [browser context](./puppeteer.browsercontext.md).    |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+closed
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether this [browser context](./puppeteer.browsercontext.md) is closed.
+
+</td></tr>
+<tr><td>
+
+id
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+string \| undefined
+
+</td><td>
+
+Identifier for this [browser context](./puppeteer.browsercontext.md).
+
+</td></tr>
+</tbody></table>
 
 ## Methods
 
-| Method                                                                                        | Modifiers | Description                                                                                                                                                                                                                |
-| --------------------------------------------------------------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [browser()](./puppeteer.browsercontext.browser.md)                                            |           | Gets the [browser](./puppeteer.browser.md) associated with this [browser context](./puppeteer.browsercontext.md).                                                                                                          |
-| [clearPermissionOverrides()](./puppeteer.browsercontext.clearpermissionoverrides.md)          |           | Clears all permission overrides for this [browser context](./puppeteer.browsercontext.md).                                                                                                                                 |
-| [close()](./puppeteer.browsercontext.close.md)                                                |           | Closes this [browser context](./puppeteer.browsercontext.md) and all associated [pages](./puppeteer.page.md).                                                                                                              |
-| [isIncognito()](./puppeteer.browsercontext.isincognito.md)                                    |           | <p>Whether this [browser context](./puppeteer.browsercontext.md) is incognito.</p><p>In Chrome, the [default browser context](./puppeteer.browser.defaultbrowsercontext.md) is the only non-incognito browser context.</p> |
-| [newPage()](./puppeteer.browsercontext.newpage.md)                                            |           | Creates a new [page](./puppeteer.page.md) in this [browser context](./puppeteer.browsercontext.md).                                                                                                                        |
-| [overridePermissions(origin, permissions)](./puppeteer.browsercontext.overridepermissions.md) |           | Grants this [browser context](./puppeteer.browsercontext.md) the given <code>permissions</code> within the given <code>origin</code>.                                                                                      |
-| [pages()](./puppeteer.browsercontext.pages.md)                                                |           | Gets a list of all open [pages](./puppeteer.page.md) inside this [browser context](./puppeteer.browsercontext.md).                                                                                                         |
-| [targets()](./puppeteer.browsercontext.targets.md)                                            |           | Gets all active [targets](./puppeteer.target.md) inside this [browser context](./puppeteer.browsercontext.md).                                                                                                             |
-| [waitForTarget(predicate, options)](./puppeteer.browsercontext.waitfortarget.md)              |           | <p>Waits until a [target](./puppeteer.target.md) matching the given <code>predicate</code> appears and returns it.</p><p>This will look all open [browser contexts](./puppeteer.browsercontext.md).</p>                    |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[browser()](./puppeteer.browsercontext.browser.md)
+
+</td><td>
+
+</td><td>
+
+Gets the [browser](./puppeteer.browser.md) associated with this [browser context](./puppeteer.browsercontext.md).
+
+</td></tr>
+<tr><td>
+
+[clearPermissionOverrides()](./puppeteer.browsercontext.clearpermissionoverrides.md)
+
+</td><td>
+
+</td><td>
+
+Clears all permission overrides for this [browser context](./puppeteer.browsercontext.md).
+
+</td></tr>
+<tr><td>
+
+[close()](./puppeteer.browsercontext.close.md)
+
+</td><td>
+
+</td><td>
+
+Closes this [browser context](./puppeteer.browsercontext.md) and all associated [pages](./puppeteer.page.md).
+
+</td></tr>
+<tr><td>
+
+[isIncognito()](./puppeteer.browsercontext.isincognito.md)
+
+</td><td>
+
+</td><td>
+
+Whether this [browser context](./puppeteer.browsercontext.md) is incognito.
+
+In Chrome, the [default browser context](./puppeteer.browser.defaultbrowsercontext.md) is the only non-incognito browser context.
+
+</td></tr>
+<tr><td>
+
+[newPage()](./puppeteer.browsercontext.newpage.md)
+
+</td><td>
+
+</td><td>
+
+Creates a new [page](./puppeteer.page.md) in this [browser context](./puppeteer.browsercontext.md).
+
+</td></tr>
+<tr><td>
+
+[overridePermissions(origin, permissions)](./puppeteer.browsercontext.overridepermissions.md)
+
+</td><td>
+
+</td><td>
+
+Grants this [browser context](./puppeteer.browsercontext.md) the given `permissions` within the given `origin`.
+
+</td></tr>
+<tr><td>
+
+[pages()](./puppeteer.browsercontext.pages.md)
+
+</td><td>
+
+</td><td>
+
+Gets a list of all open [pages](./puppeteer.page.md) inside this [browser context](./puppeteer.browsercontext.md).
+
+</td></tr>
+<tr><td>
+
+[targets()](./puppeteer.browsercontext.targets.md)
+
+</td><td>
+
+</td><td>
+
+Gets all active [targets](./puppeteer.target.md) inside this [browser context](./puppeteer.browsercontext.md).
+
+</td></tr>
+<tr><td>
+
+[waitForTarget(predicate, options)](./puppeteer.browsercontext.waitfortarget.md)
+
+</td><td>
+
+</td><td>
+
+Waits until a [target](./puppeteer.target.md) matching the given `predicate` appears and returns it.
+
+This will look all open [browser contexts](./puppeteer.browsercontext.md).
+
+</td></tr>
+</tbody></table>

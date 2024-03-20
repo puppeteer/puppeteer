@@ -20,12 +20,59 @@ class Frame {
 
 ## Parameters
 
-| Parameter | Type                                                                      | Description                                                                                                                                     |
-| --------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| selector  | string                                                                    | the selector for the element to type into. If there are multiple the first will be used.                                                        |
-| text      | string                                                                    | text to type into the element                                                                                                                   |
-| options   | Readonly&lt;[KeyboardTypeOptions](./puppeteer.keyboardtypeoptions.md)&gt; | _(Optional)_ takes one option, <code>delay</code>, which sets the time to wait between key presses in milliseconds. Defaults to <code>0</code>. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+selector
+
+</td><td>
+
+string
+
+</td><td>
+
+the selector for the element to type into. If there are multiple the first will be used.
+
+</td></tr>
+<tr><td>
+
+text
+
+</td><td>
+
+string
+
+</td><td>
+
+text to type into the element
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+Readonly&lt;[KeyboardTypeOptions](./puppeteer.keyboardtypeoptions.md)&gt;
+
+</td><td>
+
+_(Optional)_ takes one option, `delay`, which sets the time to wait between key presses in milliseconds. Defaults to `0`.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

@@ -28,10 +28,33 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                         | Description                                                                                                    |
-| --------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| headers   | Record&lt;string, string&gt; | An object containing additional HTTP headers to be sent with every request. All header values must be strings. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+headers
+
+</td><td>
+
+Record&lt;string, string&gt;
+
+</td><td>
+
+An object containing additional HTTP headers to be sent with every request. All header values must be strings.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

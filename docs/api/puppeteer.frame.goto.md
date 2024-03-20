@@ -19,11 +19,46 @@ class Frame {
 
 ## Parameters
 
-| Parameter | Type                                      | Description                                                                             |
-| --------- | ----------------------------------------- | --------------------------------------------------------------------------------------- |
-| url       | string                                    | URL to navigate the frame to. The URL should include scheme, e.g. <code>https://</code> |
-| options   | [GoToOptions](./puppeteer.gotooptions.md) | _(Optional)_ Options to configure waiting behavior.                                     |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+url
+
+</td><td>
+
+string
+
+</td><td>
+
+URL to navigate the frame to. The URL should include scheme, e.g. `https://`
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+[GoToOptions](./puppeteer.gotooptions.md)
+
+</td><td>
+
+_(Optional)_ Options to configure waiting behavior.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[HTTPResponse](./puppeteer.httpresponse.md) \| null&gt;

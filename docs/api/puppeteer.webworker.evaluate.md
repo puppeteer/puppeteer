@@ -19,11 +19,46 @@ class WebWorker {
 
 ## Parameters
 
-| Parameter | Type           | Description                               |
-| --------- | -------------- | ----------------------------------------- |
-| func      | Func \| string | Function to be evaluated.                 |
-| args      | Params         | Arguments to pass into <code>func</code>. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+func
+
+</td><td>
+
+Func \| string
+
+</td><td>
+
+Function to be evaluated.
+
+</td></tr>
+<tr><td>
+
+args
+
+</td><td>
+
+Params
+
+</td><td>
+
+Arguments to pass into `func`.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;

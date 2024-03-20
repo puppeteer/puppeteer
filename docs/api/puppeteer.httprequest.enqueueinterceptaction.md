@@ -18,10 +18,31 @@ class HTTPRequest {
 
 ## Parameters
 
-| Parameter      | Type                                        | Description |
-| -------------- | ------------------------------------------- | ----------- |
-| pendingHandler | () =&gt; void \| PromiseLike&lt;unknown&gt; |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+pendingHandler
+
+</td><td>
+
+() =&gt; void \| PromiseLike&lt;unknown&gt;
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 void

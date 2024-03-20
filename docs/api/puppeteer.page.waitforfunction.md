@@ -23,12 +23,57 @@ class Page {
 
 ## Parameters
 
-| Parameter    | Type                                                                      | Description                                                                  |
-| ------------ | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| pageFunction | Func \| string                                                            | Function to be evaluated in browser context until it returns a truthy value. |
-| options      | [FrameWaitForFunctionOptions](./puppeteer.framewaitforfunctionoptions.md) | _(Optional)_ Options for configuring waiting behavior.                       |
-| args         | Params                                                                    |                                                                              |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+pageFunction
+
+</td><td>
+
+Func \| string
+
+</td><td>
+
+Function to be evaluated in browser context until it returns a truthy value.
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+[FrameWaitForFunctionOptions](./puppeteer.framewaitforfunctionoptions.md)
+
+</td><td>
+
+_(Optional)_ Options for configuring waiting behavior.
+
+</td></tr>
+<tr><td>
+
+args
+
+</td><td>
+
+Params
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;&gt;

@@ -16,10 +16,33 @@ class EventEmitter {
 
 ## Parameters
 
-| Parameter | Type                                                                        | Description                                     |
-| --------- | --------------------------------------------------------------------------- | ----------------------------------------------- |
-| type      | keyof [EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt; | _(Optional)_ the event to remove listeners for. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+type
+
+</td><td>
+
+keyof [EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt;
+
+</td><td>
+
+_(Optional)_ the event to remove listeners for.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 this

@@ -14,6 +14,44 @@ export interface CSSCoverageOptions
 
 ## Properties
 
-| Property          | Modifiers             | Type    | Description                                    | Default |
-| ----------------- | --------------------- | ------- | ---------------------------------------------- | ------- |
-| resetOnNavigation | <code>optional</code> | boolean | Whether to reset coverage on every navigation. |         |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+resetOnNavigation
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether to reset coverage on every navigation.
+
+</td><td>
+
+</td></tr>
+</tbody></table>

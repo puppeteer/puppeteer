@@ -14,6 +14,44 @@ export interface ClickOptions extends MouseClickOptions
 
 ## Properties
 
-| Property | Modifiers             | Type                            | Description                                                                       | Default |
-| -------- | --------------------- | ------------------------------- | --------------------------------------------------------------------------------- | ------- |
-| offset   | <code>optional</code> | [Offset](./puppeteer.offset.md) | Offset for the clickable point relative to the top-left corner of the border box. |         |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+offset
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[Offset](./puppeteer.offset.md)
+
+</td><td>
+
+Offset for the clickable point relative to the top-left corner of the border box.
+
+</td><td>
+
+</td></tr>
+</tbody></table>

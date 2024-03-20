@@ -18,10 +18,31 @@ class Locator {
 
 ## Parameters
 
-| Parameter | Type     | Description |
-| --------- | -------- | ----------- |
-| locators  | Locators |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+locators
+
+</td><td>
+
+Locators
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;[AwaitedLocator](./puppeteer.awaitedlocator.md)&lt;Locators\[number\]&gt;&gt;

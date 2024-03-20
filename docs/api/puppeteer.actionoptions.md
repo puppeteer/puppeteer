@@ -12,6 +12,42 @@ export interface ActionOptions
 
 ## Properties
 
-| Property | Modifiers             | Type        | Description | Default |
-| -------- | --------------------- | ----------- | ----------- | ------- |
-| signal   | <code>optional</code> | AbortSignal |             |         |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+signal
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+AbortSignal
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+</tbody></table>

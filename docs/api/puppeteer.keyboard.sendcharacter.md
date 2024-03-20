@@ -16,10 +16,33 @@ class Keyboard {
 
 ## Parameters
 
-| Parameter | Type   | Description                      |
-| --------- | ------ | -------------------------------- |
-| char      | string | Character to send into the page. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+char
+
+</td><td>
+
+string
+
+</td><td>
+
+Character to send into the page.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

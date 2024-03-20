@@ -12,10 +12,31 @@ export declare function canDownload(options: InstallOptions): Promise<boolean>;
 
 ## Parameters
 
-| Parameter | Type                                           | Description |
-| --------- | ---------------------------------------------- | ----------- |
-| options   | [InstallOptions](./browsers.installoptions.md) |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+[InstallOptions](./browsers.installoptions.md)
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;boolean&gt;

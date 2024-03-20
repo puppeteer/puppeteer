@@ -16,10 +16,33 @@ class Tracing {
 
 ## Parameters
 
-| Parameter | Type                                            | Description                                        |
-| --------- | ----------------------------------------------- | -------------------------------------------------- |
-| options   | [TracingOptions](./puppeteer.tracingoptions.md) | _(Optional)_ Optional <code>TracingOptions</code>. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+[TracingOptions](./puppeteer.tracingoptions.md)
+
+</td><td>
+
+_(Optional)_ Optional `TracingOptions`.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

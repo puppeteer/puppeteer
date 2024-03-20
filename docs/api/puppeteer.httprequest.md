@@ -34,34 +34,312 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Properties
 
-| Property | Modifiers             | Type                                    | Description                                                       |
-| -------- | --------------------- | --------------------------------------- | ----------------------------------------------------------------- |
-| client   | <code>readonly</code> | [CDPSession](./puppeteer.cdpsession.md) | Warning! Using this client can break Puppeteer. Use with caution. |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+client
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+[CDPSession](./puppeteer.cdpsession.md)
+
+</td><td>
+
+Warning! Using this client can break Puppeteer. Use with caution.
+
+</td></tr>
+</tbody></table>
 
 ## Methods
 
-| Method                                                                                      | Modifiers | Description                                                                                                                                                                                                                                                                                                                                                                          |
-| ------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [abort(errorCode, priority)](./puppeteer.httprequest.abort.md)                              |           | Aborts a request.                                                                                                                                                                                                                                                                                                                                                                    |
-| [abortErrorReason()](./puppeteer.httprequest.aborterrorreason.md)                           |           | The most recent reason for aborting the request                                                                                                                                                                                                                                                                                                                                      |
-| [continue(overrides, priority)](./puppeteer.httprequest.continue.md)                        |           | Continues request with optional request overrides.                                                                                                                                                                                                                                                                                                                                   |
-| [continueRequestOverrides()](./puppeteer.httprequest.continuerequestoverrides.md)           |           | The <code>ContinueRequestOverrides</code> that will be used if the interception is allowed to continue (ie, <code>abort()</code> and <code>respond()</code> aren't called).                                                                                                                                                                                                          |
-| [enqueueInterceptAction(pendingHandler)](./puppeteer.httprequest.enqueueinterceptaction.md) |           | Adds an async request handler to the processing queue. Deferred handlers are not guaranteed to execute in any particular order, but they are guaranteed to resolve before the request interception is finalized.                                                                                                                                                                     |
-| [failure()](./puppeteer.httprequest.failure.md)                                             |           | Access information about the request's failure.                                                                                                                                                                                                                                                                                                                                      |
-| [fetchPostData()](./puppeteer.httprequest.fetchpostdata.md)                                 |           | Fetches the POST data for the request from the browser.                                                                                                                                                                                                                                                                                                                              |
-| [finalizeInterceptions()](./puppeteer.httprequest.finalizeinterceptions.md)                 |           | Awaits pending interception handlers and then decides how to fulfill the request interception.                                                                                                                                                                                                                                                                                       |
-| [frame()](./puppeteer.httprequest.frame.md)                                                 |           | The frame that initiated the request, or null if navigating to error pages.                                                                                                                                                                                                                                                                                                          |
-| [hasPostData()](./puppeteer.httprequest.haspostdata.md)                                     |           | True when the request has POST data. Note that [HTTPRequest.postData()](./puppeteer.httprequest.postdata.md) might still be undefined when this flag is true when the data is too long or not readily available in the decoded form. In that case, use [HTTPRequest.fetchPostData()](./puppeteer.httprequest.fetchpostdata.md).                                                      |
-| [headers()](./puppeteer.httprequest.headers.md)                                             |           | An object with HTTP headers associated with the request. All header names are lower-case.                                                                                                                                                                                                                                                                                            |
-| [initiator()](./puppeteer.httprequest.initiator.md)                                         |           | The initiator of the request.                                                                                                                                                                                                                                                                                                                                                        |
-| [interceptResolutionState()](./puppeteer.httprequest.interceptresolutionstate.md)           |           | <p>An InterceptResolutionState object describing the current resolution action and priority.</p><p>InterceptResolutionState contains: action: InterceptResolutionAction priority?: number</p><p>InterceptResolutionAction is one of: <code>abort</code>, <code>respond</code>, <code>continue</code>, <code>disabled</code>, <code>none</code>, or <code>already-handled</code>.</p> |
-| [isInterceptResolutionHandled()](./puppeteer.httprequest.isinterceptresolutionhandled.md)   |           | Is <code>true</code> if the intercept resolution has already been handled, <code>false</code> otherwise.                                                                                                                                                                                                                                                                             |
-| [isNavigationRequest()](./puppeteer.httprequest.isnavigationrequest.md)                     |           | True if the request is the driver of the current frame's navigation.                                                                                                                                                                                                                                                                                                                 |
-| [method()](./puppeteer.httprequest.method.md)                                               |           | The method used (<code>GET</code>, <code>POST</code>, etc.)                                                                                                                                                                                                                                                                                                                          |
-| [postData()](./puppeteer.httprequest.postdata.md)                                           |           | The request's post body, if any.                                                                                                                                                                                                                                                                                                                                                     |
-| [redirectChain()](./puppeteer.httprequest.redirectchain.md)                                 |           | A <code>redirectChain</code> is a chain of requests initiated to fetch a resource.                                                                                                                                                                                                                                                                                                   |
-| [resourceType()](./puppeteer.httprequest.resourcetype.md)                                   |           | Contains the request's resource type as it was perceived by the rendering engine.                                                                                                                                                                                                                                                                                                    |
-| [respond(response, priority)](./puppeteer.httprequest.respond.md)                           |           | Fulfills a request with the given response.                                                                                                                                                                                                                                                                                                                                          |
-| [response()](./puppeteer.httprequest.response.md)                                           |           | A matching <code>HTTPResponse</code> object, or null if the response has not been received yet.                                                                                                                                                                                                                                                                                      |
-| [responseForRequest()](./puppeteer.httprequest.responseforrequest.md)                       |           | The <code>ResponseForRequest</code> that gets used if the interception is allowed to respond (ie, <code>abort()</code> is not called).                                                                                                                                                                                                                                               |
-| [url()](./puppeteer.httprequest.url.md)                                                     |           | The URL of the request                                                                                                                                                                                                                                                                                                                                                               |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[abort(errorCode, priority)](./puppeteer.httprequest.abort.md)
+
+</td><td>
+
+</td><td>
+
+Aborts a request.
+
+</td></tr>
+<tr><td>
+
+[abortErrorReason()](./puppeteer.httprequest.aborterrorreason.md)
+
+</td><td>
+
+</td><td>
+
+The most recent reason for aborting the request
+
+</td></tr>
+<tr><td>
+
+[continue(overrides, priority)](./puppeteer.httprequest.continue.md)
+
+</td><td>
+
+</td><td>
+
+Continues request with optional request overrides.
+
+</td></tr>
+<tr><td>
+
+[continueRequestOverrides()](./puppeteer.httprequest.continuerequestoverrides.md)
+
+</td><td>
+
+</td><td>
+
+The `ContinueRequestOverrides` that will be used if the interception is allowed to continue (ie, `abort()` and `respond()` aren't called).
+
+</td></tr>
+<tr><td>
+
+[enqueueInterceptAction(pendingHandler)](./puppeteer.httprequest.enqueueinterceptaction.md)
+
+</td><td>
+
+</td><td>
+
+Adds an async request handler to the processing queue. Deferred handlers are not guaranteed to execute in any particular order, but they are guaranteed to resolve before the request interception is finalized.
+
+</td></tr>
+<tr><td>
+
+[failure()](./puppeteer.httprequest.failure.md)
+
+</td><td>
+
+</td><td>
+
+Access information about the request's failure.
+
+</td></tr>
+<tr><td>
+
+[fetchPostData()](./puppeteer.httprequest.fetchpostdata.md)
+
+</td><td>
+
+</td><td>
+
+Fetches the POST data for the request from the browser.
+
+</td></tr>
+<tr><td>
+
+[finalizeInterceptions()](./puppeteer.httprequest.finalizeinterceptions.md)
+
+</td><td>
+
+</td><td>
+
+Awaits pending interception handlers and then decides how to fulfill the request interception.
+
+</td></tr>
+<tr><td>
+
+[frame()](./puppeteer.httprequest.frame.md)
+
+</td><td>
+
+</td><td>
+
+The frame that initiated the request, or null if navigating to error pages.
+
+</td></tr>
+<tr><td>
+
+[hasPostData()](./puppeteer.httprequest.haspostdata.md)
+
+</td><td>
+
+</td><td>
+
+True when the request has POST data. Note that [HTTPRequest.postData()](./puppeteer.httprequest.postdata.md) might still be undefined when this flag is true when the data is too long or not readily available in the decoded form. In that case, use [HTTPRequest.fetchPostData()](./puppeteer.httprequest.fetchpostdata.md).
+
+</td></tr>
+<tr><td>
+
+[headers()](./puppeteer.httprequest.headers.md)
+
+</td><td>
+
+</td><td>
+
+An object with HTTP headers associated with the request. All header names are lower-case.
+
+</td></tr>
+<tr><td>
+
+[initiator()](./puppeteer.httprequest.initiator.md)
+
+</td><td>
+
+</td><td>
+
+The initiator of the request.
+
+</td></tr>
+<tr><td>
+
+[interceptResolutionState()](./puppeteer.httprequest.interceptresolutionstate.md)
+
+</td><td>
+
+</td><td>
+
+An InterceptResolutionState object describing the current resolution action and priority.
+
+InterceptResolutionState contains: action: InterceptResolutionAction priority?: number
+
+InterceptResolutionAction is one of: `abort`, `respond`, `continue`, `disabled`, `none`, or `already-handled`.
+
+</td></tr>
+<tr><td>
+
+[isInterceptResolutionHandled()](./puppeteer.httprequest.isinterceptresolutionhandled.md)
+
+</td><td>
+
+</td><td>
+
+Is `true` if the intercept resolution has already been handled, `false` otherwise.
+
+</td></tr>
+<tr><td>
+
+[isNavigationRequest()](./puppeteer.httprequest.isnavigationrequest.md)
+
+</td><td>
+
+</td><td>
+
+True if the request is the driver of the current frame's navigation.
+
+</td></tr>
+<tr><td>
+
+[method()](./puppeteer.httprequest.method.md)
+
+</td><td>
+
+</td><td>
+
+The method used (`GET`, `POST`, etc.)
+
+</td></tr>
+<tr><td>
+
+[postData()](./puppeteer.httprequest.postdata.md)
+
+</td><td>
+
+</td><td>
+
+The request's post body, if any.
+
+</td></tr>
+<tr><td>
+
+[redirectChain()](./puppeteer.httprequest.redirectchain.md)
+
+</td><td>
+
+</td><td>
+
+A `redirectChain` is a chain of requests initiated to fetch a resource.
+
+</td></tr>
+<tr><td>
+
+[resourceType()](./puppeteer.httprequest.resourcetype.md)
+
+</td><td>
+
+</td><td>
+
+Contains the request's resource type as it was perceived by the rendering engine.
+
+</td></tr>
+<tr><td>
+
+[respond(response, priority)](./puppeteer.httprequest.respond.md)
+
+</td><td>
+
+</td><td>
+
+Fulfills a request with the given response.
+
+</td></tr>
+<tr><td>
+
+[response()](./puppeteer.httprequest.response.md)
+
+</td><td>
+
+</td><td>
+
+A matching `HTTPResponse` object, or null if the response has not been received yet.
+
+</td></tr>
+<tr><td>
+
+[responseForRequest()](./puppeteer.httprequest.responseforrequest.md)
+
+</td><td>
+
+</td><td>
+
+The `ResponseForRequest` that gets used if the interception is allowed to respond (ie, `abort()` is not called).
+
+</td></tr>
+<tr><td>
+
+[url()](./puppeteer.httprequest.url.md)
+
+</td><td>
+
+</td><td>
+
+The URL of the request
+
+</td></tr>
+</tbody></table>

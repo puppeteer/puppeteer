@@ -12,8 +12,82 @@ export interface ConsoleMessageLocation
 
 ## Properties
 
-| Property     | Modifiers             | Type   | Description                                                                         | Default |
-| ------------ | --------------------- | ------ | ----------------------------------------------------------------------------------- | ------- |
-| columnNumber | <code>optional</code> | number | 0-based column number in the resource if known or <code>undefined</code> otherwise. |         |
-| lineNumber   | <code>optional</code> | number | 0-based line number in the resource if known or <code>undefined</code> otherwise.   |         |
-| url          | <code>optional</code> | string | URL of the resource if known or <code>undefined</code> otherwise.                   |         |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+columnNumber
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+0-based column number in the resource if known or `undefined` otherwise.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+lineNumber
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+0-based line number in the resource if known or `undefined` otherwise.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+url
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+URL of the resource if known or `undefined` otherwise.
+
+</td><td>
+
+</td></tr>
+</tbody></table>

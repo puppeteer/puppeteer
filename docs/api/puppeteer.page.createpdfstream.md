@@ -18,10 +18,33 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                    | Description                                  |
-| --------- | --------------------------------------- | -------------------------------------------- |
-| options   | [PDFOptions](./puppeteer.pdfoptions.md) | _(Optional)_ options for generating the PDF. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+[PDFOptions](./puppeteer.pdfoptions.md)
+
+</td><td>
+
+_(Optional)_ options for generating the PDF.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;ReadableStream&lt;Uint8Array&gt;&gt;

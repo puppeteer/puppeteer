@@ -14,11 +14,44 @@ class Process {
 
 ## Parameters
 
-| Parameter | Type   | Description  |
-| --------- | ------ | ------------ |
-| regex     | RegExp |              |
-| timeout   | number | _(Optional)_ |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+regex
+
+</td><td>
+
+RegExp
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+timeout
+
+</td><td>
+
+number
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;string&gt;

@@ -16,10 +16,31 @@ class Frame {
 
 ## Parameters
 
-| Parameter | Type                                                      | Description |
-| --------- | --------------------------------------------------------- | ----------- |
-| func      | () =&gt; [Awaitable](./puppeteer.awaitable.md)&lt;Ret&gt; |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+func
+
+</td><td>
+
+() =&gt; [Awaitable](./puppeteer.awaitable.md)&lt;Ret&gt;
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;Ret&gt;

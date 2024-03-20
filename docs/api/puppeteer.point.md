@@ -12,7 +12,55 @@ export interface Point
 
 ## Properties
 
-| Property | Modifiers | Type   | Description | Default |
-| -------- | --------- | ------ | ----------- | ------- |
-| x        |           | number |             |         |
-| y        |           | number |             |         |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+x
+
+</td><td>
+
+</td><td>
+
+number
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+y
+
+</td><td>
+
+</td><td>
+
+number
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+</tbody></table>

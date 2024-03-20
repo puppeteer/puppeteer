@@ -14,10 +14,33 @@ class Coverage {
 
 ## Parameters
 
-| Parameter | Type                                                  | Description                                                                                                                                                                                                     |
-| --------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| options   | [JSCoverageOptions](./puppeteer.jscoverageoptions.md) | _(Optional)_ Set of configurable options for coverage defaults to <code>resetOnNavigation : true, reportAnonymousScripts : false,</code> <code>includeRawScriptCoverage : false, useBlockCoverage : true</code> |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+[JSCoverageOptions](./puppeteer.jscoverageoptions.md)
+
+</td><td>
+
+_(Optional)_ Set of configurable options for coverage defaults to `resetOnNavigation : true, reportAnonymousScripts : false,` `includeRawScriptCoverage : false, useBlockCoverage : true`
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

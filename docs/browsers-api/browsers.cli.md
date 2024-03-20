@@ -12,12 +12,54 @@ export declare class CLI
 
 ## Constructors
 
-| Constructor                                                | Modifiers | Description                                             |
-| ---------------------------------------------------------- | --------- | ------------------------------------------------------- |
-| [(constructor)(opts, rl)](./browsers.cli._constructor_.md) |           | Constructs a new instance of the <code>CLI</code> class |
+<table><thead><tr><th>
+
+Constructor
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[(constructor)(opts, rl)](./browsers.cli._constructor_.md)
+
+</td><td>
+
+</td><td>
+
+Constructs a new instance of the `CLI` class
+
+</td></tr>
+</tbody></table>
 
 ## Methods
 
-| Method                             | Modifiers | Description |
-| ---------------------------------- | --------- | ----------- |
-| [run(argv)](./browsers.cli.run.md) |           |             |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[run(argv)](./browsers.cli.run.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+</tbody></table>

@@ -20,12 +20,55 @@ class Locator {
 
 ## Parameters
 
-| Parameter | Type                                                          | Description  |
-| --------- | ------------------------------------------------------------- | ------------ |
-| this      | [Locator](./puppeteer.locator.md)&lt;ElementType&gt;          |              |
-| value     | string                                                        |              |
-| options   | Readonly&lt;[ActionOptions](./puppeteer.actionoptions.md)&gt; | _(Optional)_ |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+this
+
+</td><td>
+
+[Locator](./puppeteer.locator.md)&lt;ElementType&gt;
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+value
+
+</td><td>
+
+string
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+Readonly&lt;[ActionOptions](./puppeteer.actionoptions.md)&gt;
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

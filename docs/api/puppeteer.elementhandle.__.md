@@ -18,10 +18,33 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type     | Description                |
-| --------- | -------- | -------------------------- |
-| selector  | Selector | The selector to query for. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+selector
+
+</td><td>
+
+Selector
+
+</td><td>
+
+The selector to query for.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;Array&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt;&gt;&gt;

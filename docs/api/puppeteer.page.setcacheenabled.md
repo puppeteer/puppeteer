@@ -16,10 +16,33 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type    | Description                                               |
-| --------- | ------- | --------------------------------------------------------- |
-| enabled   | boolean | _(Optional)_ sets the <code>enabled</code> state of cache |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+enabled
+
+</td><td>
+
+boolean
+
+</td><td>
+
+_(Optional)_ sets the `enabled` state of cache
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

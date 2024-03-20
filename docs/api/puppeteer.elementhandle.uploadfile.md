@@ -19,11 +19,42 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type                                                                  | Description |
-| --------- | --------------------------------------------------------------------- | ----------- |
-| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLInputElement&gt; |             |
-| paths     | string\[\]                                                            |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+this
+
+</td><td>
+
+[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLInputElement&gt;
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+paths
+
+</td><td>
+
+string\[\]
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

@@ -49,10 +49,72 @@ await page.keyboard.up('Shift');
 
 ## Methods
 
-| Method                                                       | Modifiers | Description                                                                                                                             |
-| ------------------------------------------------------------ | --------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| [down(key, options)](./puppeteer.keyboard.down.md)           |           | Dispatches a <code>keydown</code> event.                                                                                                |
-| [press(key, options)](./puppeteer.keyboard.press.md)         |           | Shortcut for [Keyboard.down()](./puppeteer.keyboard.down.md) and [Keyboard.up()](./puppeteer.keyboard.up.md).                           |
-| [sendCharacter(char)](./puppeteer.keyboard.sendcharacter.md) |           | Dispatches a <code>keypress</code> and <code>input</code> event. This does not send a <code>keydown</code> or <code>keyup</code> event. |
-| [type(text, options)](./puppeteer.keyboard.type.md)          |           | Sends a <code>keydown</code>, <code>keypress</code>/<code>input</code>, and <code>keyup</code> event for each character in the text.    |
-| [up(key)](./puppeteer.keyboard.up.md)                        |           | Dispatches a <code>keyup</code> event.                                                                                                  |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[down(key, options)](./puppeteer.keyboard.down.md)
+
+</td><td>
+
+</td><td>
+
+Dispatches a `keydown` event.
+
+</td></tr>
+<tr><td>
+
+[press(key, options)](./puppeteer.keyboard.press.md)
+
+</td><td>
+
+</td><td>
+
+Shortcut for [Keyboard.down()](./puppeteer.keyboard.down.md) and [Keyboard.up()](./puppeteer.keyboard.up.md).
+
+</td></tr>
+<tr><td>
+
+[sendCharacter(char)](./puppeteer.keyboard.sendcharacter.md)
+
+</td><td>
+
+</td><td>
+
+Dispatches a `keypress` and `input` event. This does not send a `keydown` or `keyup` event.
+
+</td></tr>
+<tr><td>
+
+[type(text, options)](./puppeteer.keyboard.type.md)
+
+</td><td>
+
+</td><td>
+
+Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
+
+</td></tr>
+<tr><td>
+
+[up(key)](./puppeteer.keyboard.up.md)
+
+</td><td>
+
+</td><td>
+
+Dispatches a `keyup` event.
+
+</td></tr>
+</tbody></table>

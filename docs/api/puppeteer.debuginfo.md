@@ -12,6 +12,40 @@ export interface DebugInfo
 
 ## Properties
 
-| Property              | Modifiers | Type      | Description | Default |
-| --------------------- | --------- | --------- | ----------- | ------- |
-| pendingProtocolErrors |           | Error\[\] |             |         |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+pendingProtocolErrors
+
+</td><td>
+
+</td><td>
+
+Error\[\]
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+</tbody></table>

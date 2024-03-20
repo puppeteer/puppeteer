@@ -12,8 +12,80 @@ export interface SystemOptions
 
 ## Properties
 
-| Property | Modifiers             | Type                                                       | Description                                               | Default            |
-| -------- | --------------------- | ---------------------------------------------------------- | --------------------------------------------------------- | ------------------ |
-| browser  |                       | [Browser](./browsers.browser.md)                           | Determines which browser to launch.                       |                    |
-| channel  |                       | [ChromeReleaseChannel](./browsers.chromereleasechannel.md) | Release channel to look for on the system.                |                    |
-| platform | <code>optional</code> | [BrowserPlatform](./browsers.browserplatform.md)           | Determines which platform the browser will be suited for. | **Auto-detected.** |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+browser
+
+</td><td>
+
+</td><td>
+
+[Browser](./browsers.browser.md)
+
+</td><td>
+
+Determines which browser to launch.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+channel
+
+</td><td>
+
+</td><td>
+
+[ChromeReleaseChannel](./browsers.chromereleasechannel.md)
+
+</td><td>
+
+Release channel to look for on the system.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+platform
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[BrowserPlatform](./browsers.browserplatform.md)
+
+</td><td>
+
+Determines which platform the browser will be suited for.
+
+</td><td>
+
+**Auto-detected.**
+
+</td></tr>
+</tbody></table>

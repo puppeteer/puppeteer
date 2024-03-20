@@ -12,7 +12,57 @@ export interface InterceptResolutionState
 
 ## Properties
 
-| Property | Modifiers             | Type                                                                  | Description | Default |
-| -------- | --------------------- | --------------------------------------------------------------------- | ----------- | ------- |
-| action   |                       | [InterceptResolutionAction](./puppeteer.interceptresolutionaction.md) |             |         |
-| priority | <code>optional</code> | number                                                                |             |         |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+action
+
+</td><td>
+
+</td><td>
+
+[InterceptResolutionAction](./puppeteer.interceptresolutionaction.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+priority
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+</tbody></table>

@@ -18,10 +18,33 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                                            | Description                                                                       |
-| --------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| type      | Protocol.Emulation.SetEmulatedVisionDeficiencyRequest\['type'\] | _(Optional)_ the type of deficiency to simulate, or <code>'none'</code> to reset. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+type
+
+</td><td>
+
+Protocol.Emulation.SetEmulatedVisionDeficiencyRequest\['type'\]
+
+</td><td>
+
+_(Optional)_ the type of deficiency to simulate, or `'none'` to reset.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

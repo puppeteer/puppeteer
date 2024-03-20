@@ -14,10 +14,33 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                            | Description                                                                                                                                                                                            |
-| --------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| features  | [MediaFeature](./puppeteer.mediafeature.md)\[\] | _(Optional)_ <code>&lt;?Array&lt;Object&gt;&gt;</code> Given an array of media feature objects, emulates CSS media features on the page. Each media feature object must have the following properties: |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+features
+
+</td><td>
+
+[MediaFeature](./puppeteer.mediafeature.md)\[\]
+
+</td><td>
+
+_(Optional)_ `<?Array<Object>>` Given an array of media feature objects, emulates CSS media features on the page. Each media feature object must have the following properties:
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

@@ -18,10 +18,31 @@ class Frame {
 
 ## Parameters
 
-| Parameter | Type                                                              | Description |
-| --------- | ----------------------------------------------------------------- | ----------- |
-| options   | [FrameAddStyleTagOptions](./puppeteer.frameaddstyletagoptions.md) |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+[FrameAddStyleTagOptions](./puppeteer.frameaddstyletagoptions.md)
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLLinkElement&gt;&gt;

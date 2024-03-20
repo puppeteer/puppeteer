@@ -14,10 +14,31 @@ class Locator {
 
 ## Parameters
 
-| Parameter | Type   | Description |
-| --------- | ------ | ----------- |
-| timeout   | number |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+timeout
+
+</td><td>
+
+number
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;T&gt;

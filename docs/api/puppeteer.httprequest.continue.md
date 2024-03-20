@@ -19,11 +19,46 @@ class HTTPRequest {
 
 ## Parameters
 
-| Parameter | Type                                                                | Description                                                                                                                     |
-| --------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| overrides | [ContinueRequestOverrides](./puppeteer.continuerequestoverrides.md) | _(Optional)_ optional overrides to apply to the request.                                                                        |
-| priority  | number                                                              | _(Optional)_ If provided, intercept is resolved using cooperative handling rules. Otherwise, intercept is resolved immediately. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+overrides
+
+</td><td>
+
+[ContinueRequestOverrides](./puppeteer.continuerequestoverrides.md)
+
+</td><td>
+
+_(Optional)_ optional overrides to apply to the request.
+
+</td></tr>
+<tr><td>
+
+priority
+
+</td><td>
+
+number
+
+</td><td>
+
+_(Optional)_ If provided, intercept is resolved using cooperative handling rules. Otherwise, intercept is resolved immediately.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

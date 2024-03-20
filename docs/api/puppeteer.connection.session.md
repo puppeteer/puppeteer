@@ -14,10 +14,33 @@ class Connection {
 
 ## Parameters
 
-| Parameter | Type   | Description    |
-| --------- | ------ | -------------- |
-| sessionId | string | The session id |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+sessionId
+
+</td><td>
+
+string
+
+</td><td>
+
+The session id
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 [CDPSession](./puppeteer.cdpsession.md) \| null

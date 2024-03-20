@@ -18,10 +18,33 @@ class PuppeteerNode {
 
 ## Parameters
 
-| Parameter | Type                                                            | Description                                           |
-| --------- | --------------------------------------------------------------- | ----------------------------------------------------- |
-| options   | [PuppeteerLaunchOptions](./puppeteer.puppeteerlaunchoptions.md) | _(Optional)_ Options to configure launching behavior. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+[PuppeteerLaunchOptions](./puppeteer.puppeteerlaunchoptions.md)
+
+</td><td>
+
+_(Optional)_ Options to configure launching behavior.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[Browser](./puppeteer.browser.md)&gt;

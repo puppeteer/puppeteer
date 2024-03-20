@@ -18,9 +18,61 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Methods
 
-| Method                                                    | Modifiers | Description                                                           |
-| --------------------------------------------------------- | --------- | --------------------------------------------------------------------- |
-| [tap(x, y)](./puppeteer.touchscreen.tap.md)               |           | Dispatches a <code>touchstart</code> and <code>touchend</code> event. |
-| [touchEnd()](./puppeteer.touchscreen.touchend.md)         |           | Dispatches a <code>touchend</code> event.                             |
-| [touchMove(x, y)](./puppeteer.touchscreen.touchmove.md)   |           | Dispatches a <code>touchMove</code> event.                            |
-| [touchStart(x, y)](./puppeteer.touchscreen.touchstart.md) |           | Dispatches a <code>touchstart</code> event.                           |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[tap(x, y)](./puppeteer.touchscreen.tap.md)
+
+</td><td>
+
+</td><td>
+
+Dispatches a `touchstart` and `touchend` event.
+
+</td></tr>
+<tr><td>
+
+[touchEnd()](./puppeteer.touchscreen.touchend.md)
+
+</td><td>
+
+</td><td>
+
+Dispatches a `touchend` event.
+
+</td></tr>
+<tr><td>
+
+[touchMove(x, y)](./puppeteer.touchscreen.touchmove.md)
+
+</td><td>
+
+</td><td>
+
+Dispatches a `touchMove` event.
+
+</td></tr>
+<tr><td>
+
+[touchStart(x, y)](./puppeteer.touchscreen.touchstart.md)
+
+</td><td>
+
+</td><td>
+
+Dispatches a `touchstart` event.
+
+</td></tr>
+</tbody></table>

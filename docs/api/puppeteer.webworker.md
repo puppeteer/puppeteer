@@ -38,15 +38,97 @@ for (const worker of page.workers()) {
 
 ## Properties
 
-| Property | Modifiers             | Type                                    | Description                                      |
-| -------- | --------------------- | --------------------------------------- | ------------------------------------------------ |
-| client   | <code>readonly</code> | [CDPSession](./puppeteer.cdpsession.md) | The CDP session client the WebWorker belongs to. |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+client
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+[CDPSession](./puppeteer.cdpsession.md)
+
+</td><td>
+
+The CDP session client the WebWorker belongs to.
+
+</td></tr>
+</tbody></table>
 
 ## Methods
 
-| Method                                                                | Modifiers | Description                                                           |
-| --------------------------------------------------------------------- | --------- | --------------------------------------------------------------------- |
-| [close()](./puppeteer.webworker.close.md)                             |           |                                                                       |
-| [evaluate(func, args)](./puppeteer.webworker.evaluate.md)             |           | Evaluates a given function in the [worker](./puppeteer.webworker.md). |
-| [evaluateHandle(func, args)](./puppeteer.webworker.evaluatehandle.md) |           | Evaluates a given function in the [worker](./puppeteer.webworker.md). |
-| [url()](./puppeteer.webworker.url.md)                                 |           | The URL of this web worker.                                           |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[close()](./puppeteer.webworker.close.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[evaluate(func, args)](./puppeteer.webworker.evaluate.md)
+
+</td><td>
+
+</td><td>
+
+Evaluates a given function in the [worker](./puppeteer.webworker.md).
+
+</td></tr>
+<tr><td>
+
+[evaluateHandle(func, args)](./puppeteer.webworker.evaluatehandle.md)
+
+</td><td>
+
+</td><td>
+
+Evaluates a given function in the [worker](./puppeteer.webworker.md).
+
+</td></tr>
+<tr><td>
+
+[url()](./puppeteer.webworker.url.md)
+
+</td><td>
+
+</td><td>
+
+The URL of this web worker.
+
+</td></tr>
+</tbody></table>

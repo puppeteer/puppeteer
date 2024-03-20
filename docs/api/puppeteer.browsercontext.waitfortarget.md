@@ -21,11 +21,44 @@ class BrowserContext {
 
 ## Parameters
 
-| Parameter | Type                                                                         | Description  |
-| --------- | ---------------------------------------------------------------------------- | ------------ |
-| predicate | (x: [Target](./puppeteer.target.md)) =&gt; boolean \| Promise&lt;boolean&gt; |              |
-| options   | [WaitForTargetOptions](./puppeteer.waitfortargetoptions.md)                  | _(Optional)_ |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+predicate
+
+</td><td>
+
+(x: [Target](./puppeteer.target.md)) =&gt; boolean \| Promise&lt;boolean&gt;
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+[WaitForTargetOptions](./puppeteer.waitfortargetoptions.md)
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[Target](./puppeteer.target.md)&gt;

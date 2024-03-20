@@ -14,6 +14,40 @@ export interface InternalNetworkConditions extends NetworkConditions
 
 ## Properties
 
-| Property | Modifiers | Type    | Description | Default |
-| -------- | --------- | ------- | ----------- | ------- |
-| offline  |           | boolean |             |         |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+offline
+
+</td><td>
+
+</td><td>
+
+boolean
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+</tbody></table>

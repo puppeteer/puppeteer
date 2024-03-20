@@ -14,10 +14,72 @@ export declare enum BrowserPlatform
 
 ## Enumeration Members
 
-| Member  | Value                            | Description |
-| ------- | -------------------------------- | ----------- |
-| LINUX   | <code>&quot;linux&quot;</code>   |             |
-| MAC     | <code>&quot;mac&quot;</code>     |             |
-| MAC_ARM | <code>&quot;mac_arm&quot;</code> |             |
-| WIN32   | <code>&quot;win32&quot;</code>   |             |
-| WIN64   | <code>&quot;win64&quot;</code>   |             |
+<table><thead><tr><th>
+
+Member
+
+</th><th>
+
+Value
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+LINUX
+
+</td><td>
+
+`"linux"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+MAC
+
+</td><td>
+
+`"mac"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+MAC_ARM
+
+</td><td>
+
+`"mac_arm"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+WIN32
+
+</td><td>
+
+`"win32"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+WIN64
+
+</td><td>
+
+`"win64"`
+
+</td><td>
+
+</td></tr>
+</tbody></table>

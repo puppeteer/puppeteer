@@ -16,10 +16,33 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type    | Description                                             |
-| --------- | ------- | ------------------------------------------------------- |
-| bypass    | boolean | Whether to bypass service worker and load from network. |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+bypass
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether to bypass service worker and load from network.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;void&gt;

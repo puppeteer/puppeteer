@@ -16,10 +16,31 @@ export declare function getInstalledBrowsers(
 
 ## Parameters
 
-| Parameter | Type                                                                     | Description |
-| --------- | ------------------------------------------------------------------------ | ----------- |
-| options   | [GetInstalledBrowsersOptions](./browsers.getinstalledbrowsersoptions.md) |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+[GetInstalledBrowsersOptions](./browsers.getinstalledbrowsersoptions.md)
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[InstalledBrowser](./browsers.installedbrowser.md)\[\]&gt;

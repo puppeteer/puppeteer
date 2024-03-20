@@ -16,10 +16,31 @@ export declare function getVersionComparator(
 
 ## Parameters
 
-| Parameter | Type                             | Description |
-| --------- | -------------------------------- | ----------- |
-| browser   | [Browser](./browsers.browser.md) |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+browser
+
+</td><td>
+
+[Browser](./browsers.browser.md)
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 (a: string, b: string) =&gt; number

@@ -14,7 +14,55 @@ export interface CDPSessionEvents extends CDPEvents, Record<EventType, unknown>
 
 ## Properties
 
-| Property        | Modifiers | Type                                    | Description | Default |
-| --------------- | --------- | --------------------------------------- | ----------- | ------- |
-| sessionattached |           | [CDPSession](./puppeteer.cdpsession.md) |             |         |
-| sessiondetached |           | [CDPSession](./puppeteer.cdpsession.md) |             |         |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+sessionattached
+
+</td><td>
+
+</td><td>
+
+[CDPSession](./puppeteer.cdpsession.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+sessiondetached
+
+</td><td>
+
+</td><td>
+
+[CDPSession](./puppeteer.cdpsession.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+</tbody></table>

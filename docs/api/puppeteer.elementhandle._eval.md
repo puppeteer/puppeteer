@@ -29,12 +29,59 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter    | Type           | Description                                                                                                                                     |
-| ------------ | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| selector     | Selector       | The selector to query for.                                                                                                                      |
-| pageFunction | Func \| string | The function to be evaluated in this element's page's context. The first element matching the selector will be passed in as the first argument. |
-| args         | Params         | Additional arguments to pass to <code>pageFunction</code>.                                                                                      |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+selector
+
+</td><td>
+
+Selector
+
+</td><td>
+
+The selector to query for.
+
+</td></tr>
+<tr><td>
+
+pageFunction
+
+</td><td>
+
+Func \| string
+
+</td><td>
+
+The function to be evaluated in this element's page's context. The first element matching the selector will be passed in as the first argument.
+
+</td></tr>
+<tr><td>
+
+args
+
+</td><td>
+
+Params
+
+</td><td>
+
+Additional arguments to pass to `pageFunction`.
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;

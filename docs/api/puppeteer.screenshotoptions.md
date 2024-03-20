@@ -12,15 +12,225 @@ export interface ScreenshotOptions
 
 ## Properties
 
-| Property              | Modifiers             | Type                                            | Description                                                                                                                                                                                                                                        | Default                                                                           |
-| --------------------- | --------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| captureBeyondViewport | <code>optional</code> | boolean                                         | Capture the screenshot beyond the viewport.                                                                                                                                                                                                        | <code>false</code> if there is no <code>clip</code>. <code>true</code> otherwise. |
-| clip                  | <code>optional</code> | [ScreenshotClip](./puppeteer.screenshotclip.md) | Specifies the region of the page to clip.                                                                                                                                                                                                          |                                                                                   |
-| encoding              | <code>optional</code> | 'base64' \| 'binary'                            | Encoding of the image.                                                                                                                                                                                                                             | <code>'binary'</code>                                                             |
-| fromSurface           | <code>optional</code> | boolean                                         | Capture the screenshot from the surface, rather than the view.                                                                                                                                                                                     | <code>true</code>                                                                 |
-| fullPage              | <code>optional</code> | boolean                                         | When <code>true</code>, takes a screenshot of the full page.                                                                                                                                                                                       | <code>false</code>                                                                |
-| omitBackground        | <code>optional</code> | boolean                                         | Hides default white background and allows capturing screenshots with transparency.                                                                                                                                                                 | <code>false</code>                                                                |
-| optimizeForSpeed      | <code>optional</code> | boolean                                         |                                                                                                                                                                                                                                                    | <code>false</code>                                                                |
-| path                  | <code>optional</code> | string                                          | The file path to save the image to. The screenshot type will be inferred from file extension. If path is a relative path, then it is resolved relative to current working directory. If no path is provided, the image won't be saved to the disk. |                                                                                   |
-| quality               | <code>optional</code> | number                                          | Quality of the image, between 0-100. Not applicable to <code>png</code> images.                                                                                                                                                                    |                                                                                   |
-| type                  | <code>optional</code> | 'png' \| 'jpeg' \| 'webp'                       |                                                                                                                                                                                                                                                    | <code>'png'</code>                                                                |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+captureBeyondViewport
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Capture the screenshot beyond the viewport.
+
+</td><td>
+
+`false` if there is no `clip`. `true` otherwise.
+
+</td></tr>
+<tr><td>
+
+clip
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[ScreenshotClip](./puppeteer.screenshotclip.md)
+
+</td><td>
+
+Specifies the region of the page to clip.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+encoding
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+'base64' \| 'binary'
+
+</td><td>
+
+Encoding of the image.
+
+</td><td>
+
+`'binary'`
+
+</td></tr>
+<tr><td>
+
+fromSurface
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Capture the screenshot from the surface, rather than the view.
+
+</td><td>
+
+`true`
+
+</td></tr>
+<tr><td>
+
+fullPage
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+When `true`, takes a screenshot of the full page.
+
+</td><td>
+
+`false`
+
+</td></tr>
+<tr><td>
+
+omitBackground
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Hides default white background and allows capturing screenshots with transparency.
+
+</td><td>
+
+`false`
+
+</td></tr>
+<tr><td>
+
+optimizeForSpeed
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+</td><td>
+
+`false`
+
+</td></tr>
+<tr><td>
+
+path
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+The file path to save the image to. The screenshot type will be inferred from file extension. If path is a relative path, then it is resolved relative to current working directory. If no path is provided, the image won't be saved to the disk.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+quality
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Quality of the image, between 0-100. Not applicable to `png` images.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+type
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+'png' \| 'jpeg' \| 'webp'
+
+</td><td>
+
+</td><td>
+
+`'png'`
+
+</td></tr>
+</tbody></table>

@@ -32,14 +32,86 @@ await devicePrompt.select(
 
 ## Properties
 
-| Property | Modifiers | Type                                                                      | Description                         |
-| -------- | --------- | ------------------------------------------------------------------------- | ----------------------------------- |
-| devices  |           | [DeviceRequestPromptDevice](./puppeteer.devicerequestpromptdevice.md)\[\] | Current list of selectable devices. |
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+devices
+
+</td><td>
+
+</td><td>
+
+[DeviceRequestPromptDevice](./puppeteer.devicerequestpromptdevice.md)\[\]
+
+</td><td>
+
+Current list of selectable devices.
+
+</td></tr>
+</tbody></table>
 
 ## Methods
 
-| Method                                                                             | Modifiers | Description                                                  |
-| ---------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------ |
-| [cancel()](./puppeteer.devicerequestprompt.cancel.md)                              |           | Cancel the prompt.                                           |
-| [select(device)](./puppeteer.devicerequestprompt.select.md)                        |           | Select a device in the prompt's list.                        |
-| [waitForDevice(filter, options)](./puppeteer.devicerequestprompt.waitfordevice.md) |           | Resolve to the first device in the prompt matching a filter. |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[cancel()](./puppeteer.devicerequestprompt.cancel.md)
+
+</td><td>
+
+</td><td>
+
+Cancel the prompt.
+
+</td></tr>
+<tr><td>
+
+[select(device)](./puppeteer.devicerequestprompt.select.md)
+
+</td><td>
+
+</td><td>
+
+Select a device in the prompt's list.
+
+</td></tr>
+<tr><td>
+
+[waitForDevice(filter, options)](./puppeteer.devicerequestprompt.waitfordevice.md)
+
+</td><td>
+
+</td><td>
+
+Resolve to the first device in the prompt matching a filter.
+
+</td></tr>
+</tbody></table>

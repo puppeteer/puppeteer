@@ -18,10 +18,31 @@ class Frame {
 
 ## Parameters
 
-| Parameter | Type     | Description |
-| --------- | -------- | ----------- |
-| selector  | Selector |             |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+selector
+
+</td><td>
+
+Selector
+
+</td><td>
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt;

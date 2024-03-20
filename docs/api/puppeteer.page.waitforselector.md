@@ -19,11 +19,46 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                                            | Description                                                                                            |
-| --------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| selector  | Selector                                                        | A [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) of an element to wait for |
-| options   | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) | _(Optional)_ Optional waiting parameters                                                               |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+selector
+
+</td><td>
+
+Selector
+
+</td><td>
+
+A [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) of an element to wait for
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+[WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md)
+
+</td><td>
+
+_(Optional)_ Optional waiting parameters
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt; \| null&gt;

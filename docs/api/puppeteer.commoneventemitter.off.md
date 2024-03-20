@@ -17,11 +17,44 @@ interface CommonEventEmitter {
 
 ## Parameters
 
-| Parameter | Type                                                   | Description  |
-| --------- | ------------------------------------------------------ | ------------ |
-| type      | Key                                                    |              |
-| handler   | [Handler](./puppeteer.handler.md)&lt;Events\[Key\]&gt; | _(Optional)_ |
+<table><thead><tr><th>
 
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+type
+
+</td><td>
+
+Key
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+handler
+
+</td><td>
+
+[Handler](./puppeteer.handler.md)&lt;Events\[Key\]&gt;
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
 this

@@ -39,9 +39,57 @@ await client.send('Animation.setPlaybackRate', {
 
 ## Methods
 
-| Method                                                          | Modifiers | Description                                                                                                                             |
-| --------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| [connection()](./puppeteer.cdpsession.connection.md)            |           |                                                                                                                                         |
-| [detach()](./puppeteer.cdpsession.detach.md)                    |           | Detaches the cdpSession from the target. Once detached, the cdpSession object won't emit any events and can't be used to send messages. |
-| [id()](./puppeteer.cdpsession.id.md)                            |           | Returns the session's id.                                                                                                               |
-| [send(method, params, options)](./puppeteer.cdpsession.send.md) |           |                                                                                                                                         |
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[connection()](./puppeteer.cdpsession.connection.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[detach()](./puppeteer.cdpsession.detach.md)
+
+</td><td>
+
+</td><td>
+
+Detaches the cdpSession from the target. Once detached, the cdpSession object won't emit any events and can't be used to send messages.
+
+</td></tr>
+<tr><td>
+
+[id()](./puppeteer.cdpsession.id.md)
+
+</td><td>
+
+</td><td>
+
+Returns the session's id.
+
+</td></tr>
+<tr><td>
+
+[send(method, params, options)](./puppeteer.cdpsession.send.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+</tbody></table>
