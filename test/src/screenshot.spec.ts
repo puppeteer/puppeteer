@@ -393,6 +393,33 @@ describe('Screenshots', function () {
 
       await context.close();
     });
+
+    it('should use element clip', async () => {
+      const {page} = await getTestState();
+
+      await page.setViewport({width: 500, height: 500});
+      await page.setContent(`
+        something above
+        <style>div {
+          border: 2px solid blue;
+          background: green;
+          width: 50px;
+          height: 50px;
+        }
+        </style>
+        <div></div>
+      `);
+      using elementHandle = (await page.$('div'))!;
+      const screenshot = await elementHandle.screenshot({
+        clip: {
+          x: 10,
+          y: 10,
+          width: 20,
+          height: 20,
+        },
+      });
+      expect(screenshot).toBeGolden('screenshot-element-clip.png');
+    });
   });
 
   describe('Cdp', () => {

@@ -1236,9 +1236,9 @@ export abstract class ElementHandle<
     this: ElementHandle<Element>,
     options: Readonly<ElementScreenshotOptions> = {}
   ): Promise<string | Buffer> {
-    const {scrollIntoView = true} = options;
+    const {scrollIntoView = true, clip} = options;
 
-    let clip = await this.#nonEmptyVisibleBoundingBox();
+    let elementClip = await this.#nonEmptyVisibleBoundingBox();
 
     const page = this.frame.page();
 
@@ -1247,7 +1247,7 @@ export abstract class ElementHandle<
       await this.scrollIntoViewIfNeeded();
 
       // We measure again just in case.
-      clip = await this.#nonEmptyVisibleBoundingBox();
+      elementClip = await this.#nonEmptyVisibleBoundingBox();
     }
 
     const [pageLeft, pageTop] = await this.evaluate(() => {
@@ -1259,10 +1259,16 @@ export abstract class ElementHandle<
         window.visualViewport.pageTop,
       ] as const;
     });
-    clip.x += pageLeft;
-    clip.y += pageTop;
+    elementClip.x += pageLeft;
+    elementClip.y += pageTop;
+    if (clip) {
+      elementClip.x += clip.x;
+      elementClip.y += clip.y;
+      elementClip.height = clip.height;
+      elementClip.width = clip.width;
+    }
 
-    return await page.screenshot({...options, clip});
+    return await page.screenshot({...options, clip: elementClip});
   }
 
   async #nonEmptyVisibleBoundingBox() {
