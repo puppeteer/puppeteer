@@ -107,8 +107,8 @@ This issue has an invalid Puppeteer version: \`${value}\`. Versions must follow 
     let set = () => {
       return void 0;
     };
-    let j = 1;
-    let i = 1;
+    let j = 0;
+    let i = 0;
     for (; i < lines.length; ++i) {
       if (lines[i].startsWith('### Bug behavior')) {
         set(lines.slice(j, i).join('\n').trim());
