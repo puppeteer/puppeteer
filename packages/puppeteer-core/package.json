@@ -122,7 +122,7 @@
     "@puppeteer/browsers": "2.2.0",
     "chromium-bidi": "0.5.13",
     "debug": "4.3.4",
-    "devtools-protocol": "0.0.1249869",
+    "devtools-protocol": "0.0.1262051",
     "ws": "8.16.0"
   },
   "devDependencies": {

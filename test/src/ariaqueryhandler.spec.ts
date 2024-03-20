@@ -697,20 +697,13 @@ describe('AriaQueryHandler', () => {
         ElementHandle<HTMLButtonElement>
       >;
       const ids = await getIds(found);
-      expect(ids).toEqual([
-        'node5',
-        'node6',
-        'node7',
-        'node8',
-        'node10',
-        'node21',
-      ]);
+      expect(ids).toEqual(['node5', 'node6', 'node8', 'node10', 'node21']);
     });
     it('should find by role "heading"', async () => {
       const {page} = await setupPage();
       const found = await page.$$('aria/[role="heading"]');
       const ids = await getIds(found);
-      expect(ids).toEqual(['shown', 'hidden', 'node11', 'node13']);
+      expect(ids).toEqual(['shown', 'node11', 'node13']);
     });
     it('should find both ignored and unignored', async () => {
       const {page} = await setupPage();
