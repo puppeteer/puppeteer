@@ -36,9 +36,7 @@ const LAST_PUPPETEER_VERSION = packageJson.version;
 if (!LAST_PUPPETEER_VERSION) {
   core.setFailed('No maintained version found.');
 }
-const LAST_SUPPORTED_NODE_VERSION = removeVersionPrefix(
-  packageJson.engines.node.slice(2).trim()
-);
+const LAST_SUPPORTED_NODE_VERSION = packageJson.engines.node;
 
 const SUPPORTED_OSES = ['windows', 'macos', 'linux'];
 const SUPPORTED_PACKAGE_MANAGERS = ['yarn', 'npm', 'pnpm'];
@@ -65,7 +63,7 @@ This issue has an invalid package manager version: \`${value}\`. Versions must f
   },
   unsupportedNodeVersion(value) {
     return formatMessage(`
-This issue has an unsupported Node.js version: \`${value}\`. Only versions above \`v${LAST_SUPPORTED_NODE_VERSION}\` are supported. Please verify the issue on a supported version of Node.js and update the form.
+This issue has an unsupported Node.js version: \`${value}\`. Only versions satisfying \`${LAST_SUPPORTED_NODE_VERSION}\` are supported. Please verify the issue on a supported version of Node.js and update the form.
 `);
   },
   invalidNodeVersion(value) {
@@ -211,7 +209,7 @@ This issue has an invalid Puppeteer version: \`${value}\`. Versions must follow 
     );
     core.setFailed('Invalid Node version');
   }
-  if (semver.lt(nodeVersion, LAST_SUPPORTED_NODE_VERSION)) {
+  if (!semver.satisfies(nodeVersion, LAST_SUPPORTED_NODE_VERSION)) {
     core.setOutput(
       'errorMessage',
       ERROR_MESSAGES.unsupportedNodeVersion(nodeVersion)
