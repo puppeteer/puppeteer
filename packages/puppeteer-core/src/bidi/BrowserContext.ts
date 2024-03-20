@@ -186,7 +186,8 @@ export class BidiBrowserContext extends BrowserContext {
 
     try {
       for (const page of await this.pages()) {
-        // Workaround for Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1882260
+        // Workaround for Firefox
+        // TODO: Remove once https://bugzilla.mozilla.org/show_bug.cgi?id=1882260 is fixed
         await page.setRequestInterception(false);
       }
       await this.userContext.remove();

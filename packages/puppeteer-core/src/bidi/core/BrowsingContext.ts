@@ -10,13 +10,21 @@ import {EventEmitter} from '../../common/EventEmitter.js';
 import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 
-import type {AddInterceptOptions, AddPreloadScriptOptions} from './Browser.js';
+import type {AddPreloadScriptOptions} from './Browser.js';
 import {Navigation} from './Navigation.js';
 import type {DedicatedWorkerRealm} from './Realm.js';
 import {WindowRealm} from './Realm.js';
 import {Request} from './Request.js';
 import type {UserContext} from './UserContext.js';
 import {UserPrompt} from './UserPrompt.js';
+
+/**
+ * @internal
+ */
+export type AddInterceptOptions = Omit<
+  Bidi.Network.AddInterceptParameters,
+  'contexts'
+>;
 
 /**
  * @internal
@@ -488,10 +496,14 @@ export class BrowsingContext extends EventEmitter<{
     return context.#reason!;
   })
   async addIntercept(options: AddInterceptOptions): Promise<string> {
-    return await this.userContext.browser.addIntercept({
+    const {
+      result: {intercept},
+    } = await this.userContext.browser.session.send('network.addIntercept', {
       ...options,
-      contexts: [this],
+      contexts: [this.id],
     });
+
+    return intercept;
   }
 
   @throwIfDisposed<BrowsingContext>(context => {

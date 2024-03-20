@@ -28,16 +28,6 @@ export type AddPreloadScriptOptions = Omit<
 /**
  * @internal
  */
-export type AddInterceptOptions = Omit<
-  Bidi.Network.AddInterceptParameters,
-  'contexts'
-> & {
-  contexts?: [BrowsingContext, ...BrowsingContext[]];
-};
-
-/**
- * @internal
- */
 export class Browser extends EventEmitter<{
   /** Emitted before the browser closes. */
   closed: {
@@ -207,23 +197,6 @@ export class Browser extends EventEmitter<{
       }) as [string, ...string[]],
     });
     return script;
-  }
-
-  @throwIfDisposed<Browser>(browser => {
-    // SAFETY: By definition of `disposed`, `#reason` is defined.
-    return browser.#reason!;
-  })
-  async addIntercept(options: AddInterceptOptions): Promise<string> {
-    const {
-      result: {intercept},
-    } = await this.session.send('network.addIntercept', {
-      phases: options.phases,
-      urlPatterns: options.urlPatterns,
-      contexts: options.contexts?.map(context => {
-        return context.id;
-      }) as [string, ...string[]],
-    });
-    return intercept;
   }
 
   @throwIfDisposed<Browser>(browser => {
