@@ -45,7 +45,7 @@
     {
       "id": "chrome-bidi",
       "platforms": ["linux"],
-      "parameters": ["chrome", "chrome-headless-shell", "webDriverBiDi"],
+      "parameters": ["chrome", "headless", "webDriverBiDi"],
       "expectedLineCoverage": 56
     }
   ],
