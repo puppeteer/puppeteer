@@ -206,6 +206,7 @@ export class CdpFrame extends Frame {
     options: {
       timeout?: number;
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
+      ignoreSameDocumentNavigation?: boolean;
     } = {}
   ): Promise<HTTPResponse | null> {
     const {
@@ -220,7 +221,9 @@ export class CdpFrame extends Frame {
     );
     const error = await Deferred.race([
       watcher.terminationPromise(),
-      watcher.sameDocumentNavigationPromise(),
+      ...(options.ignoreSameDocumentNavigation
+        ? []
+        : [watcher.sameDocumentNavigationPromise()]),
       watcher.newDocumentNavigationPromise(),
     ]);
     try {
