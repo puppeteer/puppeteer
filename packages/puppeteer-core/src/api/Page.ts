@@ -274,7 +274,7 @@ export interface ScreenshotOptions {
    */
   path?: string;
   /**
-   * Specifies the region of the page to clip.
+   * Specifies the region of the page/element to clip.
    */
   clip?: ScreenshotClip;
   /**

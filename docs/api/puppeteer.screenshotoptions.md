@@ -68,7 +68,7 @@ clip
 
 </td><td>
 
-Specifies the region of the page to clip.
+Specifies the region of the page/element to clip.
 
 </td><td>
 
