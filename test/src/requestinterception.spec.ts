@@ -290,7 +290,7 @@ describe('request interception', function () {
       if (isChrome) {
         expect(error.message).toContain('net::ERR_FAILED');
       } else {
-        expect(error.message).toContain('NS_ERROR_FAILURE');
+        expect(error.message).toContain('NS_ERROR_ABORT');
       }
     });
     it('should work with redirects', async () => {
@@ -516,7 +516,7 @@ describe('request interception', function () {
       ))!;
       expect(response.status()).toBe(200);
     });
-    it('should work wit h encoded server - 2', async () => {
+    it('should work with encoded server - 2', async () => {
       const {page, server} = await getTestState();
 
       // The requestWillBeSent will report URL as-is, whereas interception will

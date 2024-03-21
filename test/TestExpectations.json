@@ -808,9 +808,35 @@
   {
     "testIdPattern": "[requestinterception-experimental.spec] *",
     "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL", "SKIP"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Request.continue *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs full support for continueRequest in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1850680"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Request.respond *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs full support for continueResponse in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1853887"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[requestinterception.spec] *",
@@ -818,6 +844,20 @@
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL", "SKIP"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.continue *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs full support for continueRequest in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1850680"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.respond *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs full support for continueResponse in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1853887"
   },
   {
     "testIdPattern": "[screencast.spec] Screencasts Page.screencast should validate options",
@@ -3335,6 +3375,173 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should be able to access the error reason",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs Puppeteer support for BidiHTTPRequest.abortErrorReason"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should be able to fetch dataURL and fire dataURL requests",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for data URIs in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1805176"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should be able to remove headers",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs investigation, on Firefox the test is passing even if the origin header is not removed"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should be abortable with custom error codes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Test relies on chrome-only error code (Firefox currently outputs NS_ERROR_ABORT)"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should cache if cache enabled",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for enabling cache in BiDi without CDP https://github.com/w3c/webdriver-bidi/issues/582"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should cooperatively abort by priority",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs full support for continueRequest in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1850680"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should cooperatively continue by priority",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs full support for continueRequest in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1850680"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should cooperatively respond by priority",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs full support for continueRequest in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1850680"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should intercept",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs Puppeteer support for BidiHTTPRequest.postData"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should load fonts if cache enabled",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for enabling cache in BiDi without CDP https://github.com/w3c/webdriver-bidi/issues/582"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should navigate to dataURL and fire dataURL requests",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for data URIs in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1805176"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should navigate to URL with hash and fire requests without hash",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "TODO: Needs investigation, not clear why the test expects the hash to be removed"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should not cache if cache disabled",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for enabling cache in BiDi without CDP https://github.com/w3c/webdriver-bidi/issues/582"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should send referer",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for Page.setExtraHTTPHeaders"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should show custom HTTP headers",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for Page.setExtraHTTPHeaders"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should work when header manipulation headers with redirect",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs investigation, on Firefox the test is passing even if headers are not actually modified"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should work with custom referer headers",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for Page.setExtraHTTPHeaders"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should work with encoded server - 2",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for data URIs in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1805176"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should work with equal requests",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "TODO: Needs investigation"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should work with file URLs",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for file URIs in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1826210"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should work with redirects",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for BidiHTTPRequest.resourceType"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should work with redirects for subresources",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for BidiHTTPRequest.resourceType"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should work with requests without networkId",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "Test requires CDP"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Request.continue should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[requestinterception-experimental.spec] request interception \"after each\" hook in \"request interception\"",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome"],
@@ -3363,11 +3570,150 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should be able to fetch dataURL and fire dataURL requests",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for data URIs in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1805176"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should be able to remove headers",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs investigation, on Firefox the test is passing even if the origin header is not removed"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should be abortable with custom error codes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Test relies on chrome-only error code (Firefox currently outputs NS_ERROR_ABORT)"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should cache if cache enabled",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for enabling cache in BiDi without CDP https://github.com/w3c/webdriver-bidi/issues/582"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should intercept",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs Puppeteer support for BidiHTTPRequest.postData"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should load fonts if cache enabled",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for enabling cache in BiDi without CDP https://github.com/w3c/webdriver-bidi/issues/582"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should navigate to dataURL and fire dataURL requests",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for data URIs in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1805176"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should navigate to URL with hash and fire requests without hash",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "TODO: Needs investigation, not clear why the test expects the hash to be removed"
+  },
+  {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should navigate to URL with hash and fire requests without hash",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL", "PASS"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should not cache if cache disabled",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for enabling cache in BiDi without CDP https://github.com/w3c/webdriver-bidi/issues/582"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should send referer",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for Page.setExtraHTTPHeaders"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should show custom HTTP headers",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for Page.setExtraHTTPHeaders"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work when header manipulation headers with redirect",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs investigation, on Firefox the test is passing even if headers are not actually modified"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with custom referer headers",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for Page.setExtraHTTPHeaders"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with encoded server - 2",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for data URIs in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1805176"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with equal requests",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "TODO: Needs investigation"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with file URLs",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for file URIs in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1826210"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with redirects",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for BidiHTTPRequest.resourceType"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with redirects for subresources",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs support for BidiHTTPRequest.resourceType"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with requests without networkId",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "Test requires CDP"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.continue should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Cdp should use scale for clip",
