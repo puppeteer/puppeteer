@@ -112,6 +112,27 @@ describe('navigation', function () {
       const response = await page.goto(server.PREFIX + '/grid.html');
       expect(response!.status()).toBe(200);
     });
+    it('should work when reload causes history API in beforeunload', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        window.addEventListener(
+          'beforeunload',
+          () => {
+            return history.replaceState(null, 'initial', window.location.href);
+          },
+          false
+        );
+      });
+      await page.reload();
+      // Evaluate still works.
+      expect(
+        await page.evaluate(() => {
+          return 1;
+        })
+      ).toBe(1);
+    });
     it('should navigate to empty page with networkidle0', async () => {
       const {page, server} = await getTestState();
 
