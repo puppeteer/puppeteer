@@ -47,8 +47,8 @@ export abstract class Realm extends EventEmitter<{
   // keep-sorted start
   #reason?: string;
   protected readonly disposables = new DisposableStack();
-  readonly id: string;
-  readonly origin: string;
+  protected id: string;
+  protected origin: string;
   // keep-sorted end
 
   protected constructor(id: string, origin: string) {
@@ -186,8 +186,8 @@ export class WindowRealm extends Realm {
       ) {
         return;
       }
-      (this as any).id = info.realm;
-      (this as any).origin = info.origin;
+      this.id = info.realm;
+      this.origin = info.origin;
       this.emit('updated', this);
     });
     sessionEmitter.on('script.realmCreated', info => {
