@@ -49,6 +49,7 @@ export abstract class Realm extends EventEmitter<{
   protected readonly disposables = new DisposableStack();
   readonly id: string;
   readonly origin: string;
+  protected executionContextId?: number;
   // keep-sorted end
 
   protected constructor(id: string, origin: string) {
@@ -127,11 +128,15 @@ export abstract class Realm extends EventEmitter<{
     return realm.#reason!;
   })
   async resolveExecutionContextId(): Promise<number> {
-    const {result} = await (this.session.connection as BidiConnection).send(
-      'cdp.resolveRealm',
-      {realm: this.id}
-    );
-    return result.executionContextId;
+    if (!this.executionContextId) {
+      const {result} = await (this.session.connection as BidiConnection).send(
+        'cdp.resolveRealm',
+        {realm: this.id}
+      );
+      this.executionContextId = result.executionContextId;
+    }
+
+    return this.executionContextId;
   }
 
   [disposeSymbol](): void {
@@ -188,6 +193,7 @@ export class WindowRealm extends Realm {
       }
       (this as any).id = info.realm;
       (this as any).origin = info.origin;
+      this.executionContextId = undefined;
       this.emit('updated', this);
     });
     sessionEmitter.on('script.realmCreated', info => {
