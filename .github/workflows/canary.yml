@@ -44,7 +44,7 @@ jobs:
       - name: Set up FFmpeg
         uses: FedericoCarboni/setup-ffmpeg@37062fbf7149fc5578d6c57e08aed62458b375d6 # v3.1.0
         with:
-          ffmpeg-version: 6.1.0
+          ffmpeg-version: 6.1
       - name: Install dependencies
         run: npm ci
         env:
