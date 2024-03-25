@@ -799,7 +799,11 @@ describe('request interception', function () {
       });
       const response = (await page.goto(server.EMPTY_PAGE))!;
       expect(response.status()).toBe(422);
-      expect(response.statusText()).toBe('Unprocessable Entity');
+      expect(response.statusText()).atLeastOneToContain([
+        'Unprocessable Entity',
+        // TODO: is this OK it comes from Chromium defaults?
+        'Unprocessable Content',
+      ]);
       expect(
         await page.evaluate(() => {
           return document.body.textContent;

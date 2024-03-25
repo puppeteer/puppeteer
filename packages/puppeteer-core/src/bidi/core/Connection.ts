@@ -166,6 +166,10 @@ export interface Commands {
     params: Bidi.Network.FailRequestParameters;
     returnType: Bidi.EmptyResult;
   };
+  'network.provideResponse': {
+    params: Bidi.Network.ProvideResponseParameters;
+    returnType: Bidi.EmptyResult;
+  };
 }
 
 /**

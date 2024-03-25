@@ -169,6 +169,26 @@ export class Request extends EventEmitter<{
     });
   }
 
+  async provideResponse({
+    statusCode,
+    headers,
+    body,
+  }: Omit<Bidi.Network.ProvideResponseParameters, 'request'>): Promise<void> {
+    if (!this.#event.isBlocked) {
+      throw new Error('Request Interception is not enabled!');
+    }
+    // Request interception is not supported for data: urls.
+    if (this.url.startsWith('data:')) {
+      return;
+    }
+    await this.#session.send('network.provideResponse', {
+      request: this.id,
+      statusCode,
+      headers,
+      body,
+    });
+  }
+
   @inertIfDisposed
   private dispose(): void {
     this[disposeSymbol]();
