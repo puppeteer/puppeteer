@@ -20,6 +20,15 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.6.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.6.0...puppeteer-core-v22.6.1) (2024-03-25)
+
+
+### Bug Fixes
+
+* apply timeout to waiting for a response ([#12142](https://github.com/puppeteer/puppeteer/issues/12142)) ([ac1767d](https://github.com/puppeteer/puppeteer/commit/ac1767da0b4214ced548a62dd737e2863f92c715))
+* reload should not resolve early on fragment navigations ([#12119](https://github.com/puppeteer/puppeteer/issues/12119)) ([d476031](https://github.com/puppeteer/puppeteer/commit/d4760317c9bd359c9ecdb5f36231449dae16a8d2))
+* support clip in ElementHandle.screenshot ([#12115](https://github.com/puppeteer/puppeteer/issues/12115)) ([b096ffa](https://github.com/puppeteer/puppeteer/commit/b096ffaa0359078bd5748b53b67e87c9453c7196))
+
 ## [22.6.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.5.0...puppeteer-core-v22.6.0) (2024-03-20)
 
 
