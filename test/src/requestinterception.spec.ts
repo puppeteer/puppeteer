@@ -787,7 +787,7 @@ describe('request interception', function () {
         })
       ).toBe('Yo, page!');
     });
-    it.only('should work with status code 422', async () => {
+    it('should work with status code 422', async () => {
       const {page, server} = await getTestState();
 
       await page.setRequestInterception(true);
