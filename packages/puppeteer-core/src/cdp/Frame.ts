@@ -230,7 +230,13 @@ export class CdpFrame extends Frame {
       if (error) {
         throw error;
       }
-      return await watcher.navigationResponse();
+      const result = await Deferred.race<
+        Error | HTTPResponse | null | undefined
+      >([watcher.terminationPromise(), watcher.navigationResponse()]);
+      if (result instanceof Error) {
+        throw error;
+      }
+      return result || null;
     } finally {
       watcher.dispose();
     }
