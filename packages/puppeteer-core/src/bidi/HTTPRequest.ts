@@ -10,7 +10,11 @@ import type {
   ContinueRequestOverrides,
   ResponseForRequest,
 } from '../api/HTTPRequest.js';
-import {HTTPRequest, type ResourceType} from '../api/HTTPRequest.js';
+import {
+  HTTPRequest,
+  STATUS_TEXTS,
+  type ResourceType,
+} from '../api/HTTPRequest.js';
 import {PageEvent} from '../api/Page.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {isString} from '../common/util.js';
@@ -216,9 +220,12 @@ export class BidiHTTPRequest extends HTTPRequest {
       });
     }
 
+    const status = response.status || 200;
+
     return await this.#request.provideResponse({
-      statusCode: response.status,
+      statusCode: status,
       headers: headers.length > 0 ? headers : undefined,
+      reasonPhrase: STATUS_TEXTS[status],
       body: responseBody
         ? {
             type: 'base64',

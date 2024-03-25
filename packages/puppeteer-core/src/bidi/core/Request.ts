@@ -171,6 +171,7 @@ export class Request extends EventEmitter<{
 
   async provideResponse({
     statusCode,
+    reasonPhrase,
     headers,
     body,
   }: Omit<Bidi.Network.ProvideResponseParameters, 'request'>): Promise<void> {
@@ -184,6 +185,7 @@ export class Request extends EventEmitter<{
     await this.#session.send('network.provideResponse', {
       request: this.id,
       statusCode,
+      reasonPhrase,
       headers,
       body,
     });

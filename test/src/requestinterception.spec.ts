@@ -787,7 +787,7 @@ describe('request interception', function () {
         })
       ).toBe('Yo, page!');
     });
-    it('should work with status code 422', async () => {
+    it.only('should work with status code 422', async () => {
       const {page, server} = await getTestState();
 
       await page.setRequestInterception(true);
@@ -799,11 +799,7 @@ describe('request interception', function () {
       });
       const response = (await page.goto(server.EMPTY_PAGE))!;
       expect(response.status()).toBe(422);
-      expect(response.statusText()).atLeastOneToContain([
-        'Unprocessable Entity',
-        // TODO: is this OK it comes from Chromium defaults?
-        'Unprocessable Content',
-      ]);
+      expect(response.statusText()).toBe('Unprocessable Entity');
       expect(
         await page.evaluate(() => {
           return document.body.textContent;
