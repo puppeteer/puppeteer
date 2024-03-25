@@ -4,7 +4,7 @@ sidebar_label: HTTPResponse.text
 
 # HTTPResponse.text() method
 
-Promise which resolves to a text representation of response body.
+Promise which resolves to a text (utf8) representation of response body.
 
 #### Signature:
 

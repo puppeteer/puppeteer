@@ -171,7 +171,7 @@ The status text of the response (e.g. usually an "OK" for a success).
 
 </td><td>
 
-Promise which resolves to a text representation of response body.
+Promise which resolves to a text (utf8) representation of response body.
 
 </td></tr>
 <tr><td>
