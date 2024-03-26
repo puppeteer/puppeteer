@@ -618,7 +618,6 @@ describe('Cookie specs', () => {
           expires: -1,
           size: 51,
           httpOnly: false,
-          secure: true,
           session: true,
           sourceScheme: 'Secure',
         },
