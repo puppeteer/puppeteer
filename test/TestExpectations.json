@@ -943,6 +943,13 @@
     "comment": "Change in A11Y tree on Canary"
   },
   {
+    "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler queryAllArray $$eval should handle many elements",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS", "TIMEOUT"],
+    "comment": "times out flakily"
+  },
+  {
     "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler queryOne (Chromium web test) should find by role \"button\"",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -995,13 +1002,6 @@
     "testIdPattern": "[browser.spec] Browser specs Browser.userAgent should include Browser engine",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[browser.spec] Browser specs Browser.version should return version",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
