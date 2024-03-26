@@ -715,6 +715,13 @@
     "comment": "Missing request interception"
   },
   {
+    "testIdPattern": "[page.spec] Page Page.pdf should respect timeout",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "https://github.com/puppeteer/puppeteer/issues/12152"
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
