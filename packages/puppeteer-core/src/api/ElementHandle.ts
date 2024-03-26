@@ -147,7 +147,7 @@ export abstract class ElementHandle<
 
   /**
    * @internal
-   * Cached isolatedHandle to prevent 
+   * Cached isolatedHandle to prevent
    * trying to adopt it multiple times
    */
   isolatedHandle?: typeof this;
