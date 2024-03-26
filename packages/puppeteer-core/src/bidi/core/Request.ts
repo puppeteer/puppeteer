@@ -143,7 +143,13 @@ export class Request extends EventEmitter<{
   }
   // keep-sorted end
 
-  async continueRequest(): Promise<void> {
+  async continueRequest({
+    url,
+    method,
+    headers,
+    cookies,
+    body,
+  }: Omit<Bidi.Network.ContinueRequestParameters, 'request'>): Promise<void> {
     if (!this.#event.isBlocked) {
       throw new Error('Request Interception is not enabled!');
     }
@@ -153,6 +159,11 @@ export class Request extends EventEmitter<{
     }
     await this.#session.send('network.continueRequest', {
       request: this.id,
+      url,
+      method,
+      headers,
+      body,
+      cookies,
     });
   }
 

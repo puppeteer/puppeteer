@@ -17,8 +17,8 @@ import {
   type ResourceType,
   type ResponseForRequest,
   STATUS_TEXTS,
+  handleError,
 } from '../api/HTTPRequest.js';
-import type {ProtocolError} from '../common/Errors.js';
 import {debugError, isString} from '../common/util.js';
 import {assert} from '../util/assert.js';
 
@@ -438,13 +438,3 @@ const errorReasons: Record<ErrorCode, Protocol.Network.ErrorReason> = {
   timedout: 'TimedOut',
   failed: 'Failed',
 } as const;
-
-async function handleError(error: ProtocolError) {
-  if (['Invalid header'].includes(error.originalMessage)) {
-    throw error;
-  }
-  // In certain cases, protocol will return error if the request was
-  // already canceled or the page was closed. We should tolerate these
-  // errors.
-  debugError(error);
-}
