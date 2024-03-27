@@ -110,8 +110,10 @@ export const buildTask = task({
             bundle: true,
             allowOverwrite: true,
             format,
-            target: 'node16',
-            minify: true,
+            target: 'node18',
+            // Do not minify for readability and leave minification to
+            // consumers.
+            minify: false,
             legalComments: 'inline',
           })
         );
