@@ -162,7 +162,7 @@ export class BidiHTTPRequest extends HTTPRequest {
               value: btoa(overrides.postData),
             }
           : undefined,
-        headers,
+        headers: headers.length > 0 ? headers : undefined,
       })
       .catch(error => {
         return handleError(error);
