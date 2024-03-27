@@ -18,7 +18,6 @@ import type {PuppeteerLifeCycleEvent} from '../cdp/LifecycleWatcher.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {transposeIterableHandle} from '../common/HandleIterator.js';
-import {LazyArg} from '../common/LazyArg.js';
 import type {
   Awaitable,
   EvaluateFunc,
@@ -921,46 +920,42 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
     }
 
     return await this.mainRealm().transferHandle(
-      await this.isolatedRealm().evaluateHandle(
-        async ({Deferred}, {url, content}) => {
-          const deferred = Deferred.create<void>();
-          let element: HTMLStyleElement | HTMLLinkElement;
-          if (!url) {
-            element = document.createElement('style');
-            element.appendChild(document.createTextNode(content!));
-          } else {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = url;
-            element = link;
+      await this.isolatedRealm().evaluateHandle(async ({url, content}) => {
+        return await new Promise<HTMLStyleElement | HTMLLinkElement>(
+          (resolve, reject) => {
+            let element: HTMLStyleElement | HTMLLinkElement;
+            if (!url) {
+              element = document.createElement('style');
+              element.appendChild(document.createTextNode(content!));
+            } else {
+              const link = document.createElement('link');
+              link.rel = 'stylesheet';
+              link.href = url;
+              element = link;
+            }
+            element.addEventListener(
+              'load',
+              () => {
+                resolve(element);
+              },
+              {once: true}
+            );
+            element.addEventListener(
+              'error',
+              event => {
+                reject(
+                  new Error(
+                    (event as ErrorEvent).message ?? 'Could not load style'
+                  )
+                );
+              },
+              {once: true}
+            );
+            document.head.appendChild(element);
+            return element;
           }
-          element.addEventListener(
-            'load',
-            () => {
-              deferred.resolve();
-            },
-            {once: true}
-          );
-          element.addEventListener(
-            'error',
-            event => {
-              deferred.reject(
-                new Error(
-                  (event as ErrorEvent).message ?? 'Could not load style'
-                )
-              );
-            },
-            {once: true}
-          );
-          document.head.appendChild(element);
-          await deferred.valueOrThrow();
-          return element;
-        },
-        LazyArg.create(context => {
-          return context.puppeteerUtil;
-        }),
-        options
-      )
+        );
+      }, options)
     );
   }
 
