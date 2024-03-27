@@ -272,13 +272,17 @@ function getBidiHeaders(rawHeaders?: Record<string, unknown>) {
   const headers: Bidi.Network.Header[] = [];
   for (const [name, value] of Object.entries(rawHeaders ?? [])) {
     if (!Object.is(value, undefined)) {
-      headers.push({
-        name: name.toLowerCase(),
-        value: {
-          type: 'string',
-          value: String(value),
-        },
-      });
+      const values = Array.isArray(value) ? value : [value];
+
+      for (const value of values) {
+        headers.push({
+          name: name.toLowerCase(),
+          value: {
+            type: 'string',
+            value: String(value),
+          },
+        });
+      }
     }
   }
 
