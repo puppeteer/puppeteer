@@ -5,6 +5,9 @@
  */
 import type {Protocol} from 'devtools-protocol';
 
+import type {ProtocolError} from '../common/Errors.js';
+import {debugError} from '../common/util.js';
+
 import type {CDPSession} from './CDPSession.js';
 import type {Frame} from './Frame.js';
 import type {HTTPResponse} from './HTTPResponse.js';
@@ -513,3 +516,16 @@ export const STATUS_TEXTS: Record<string, string> = {
   '510': 'Not Extended',
   '511': 'Network Authentication Required',
 } as const;
+
+/**
+ * @internal
+ */
+export function handleError(error: ProtocolError): void {
+  if (error.originalMessage.includes('Invalid header')) {
+    throw error;
+  }
+  // In certain cases, protocol will return error if the request was
+  // already canceled or the page was closed. We should tolerate these
+  // errors.
+  debugError(error);
+}

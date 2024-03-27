@@ -14,10 +14,10 @@ import {
   HTTPRequest,
   STATUS_TEXTS,
   type ResourceType,
+  handleError,
 } from '../api/HTTPRequest.js';
 import {PageEvent} from '../api/Page.js';
 import {UnsupportedOperation} from '../common/Errors.js';
-import {isString} from '../common/util.js';
 
 import type {Request} from './core/Request.js';
 import type {BidiFrame} from './Frame.js';
@@ -148,9 +148,33 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override async continue(
-    _overrides: ContinueRequestOverrides = {}
+    overrides: ContinueRequestOverrides = {}
   ): Promise<void> {
-    return await this.#request.continueRequest();
+    if (!this.#request.isBlocked) {
+      throw new Error('Request Interception is not enabled!');
+    }
+    // Request interception is not supported for data: urls.
+    if (this.url().startsWith('data:')) {
+      return;
+    }
+
+    const headers: Bidi.Network.Header[] = getBidiHeaders(overrides.headers);
+
+    return await this.#request
+      .continueRequest({
+        url: overrides.url,
+        method: overrides.method,
+        body: overrides.postData
+          ? {
+              type: 'base64',
+              value: btoa(overrides.postData),
+            }
+          : undefined,
+        headers: headers.length > 0 ? headers : undefined,
+      })
+      .catch(error => {
+        return handleError(error);
+      });
   }
 
   override responseForRequest(): never {
@@ -174,6 +198,13 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override async abort(): Promise<void> {
+    if (!this.#request.isBlocked) {
+      throw new Error('Request Interception is not enabled!');
+    }
+    // Request interception is not supported for data: urls.
+    if (this.url().startsWith('data:')) {
+      return;
+    }
     return await this.#request.failRequest();
   }
 
@@ -181,25 +212,25 @@ export class BidiHTTPRequest extends HTTPRequest {
     response: Partial<ResponseForRequest>,
     _priority?: number
   ): Promise<void> {
-    const responseBody: Buffer | null =
-      response.body && isString(response.body)
-        ? Buffer.from(response.body)
-        : (response.body as Buffer) || null;
-
-    const headers: Bidi.Network.Header[] = [];
-    let hasContentLength = false;
-    for (const [name, value] of Object.entries(response.headers ?? [])) {
-      if (name.toLocaleLowerCase() === 'content-length') {
-        hasContentLength = true;
-      }
-      headers.push({
-        name: name.toLowerCase(),
-        value: {
-          type: 'string',
-          value: String(value),
-        },
-      });
+    if (!this.#request.isBlocked) {
+      throw new Error('Request Interception is not enabled!');
     }
+    // Request interception is not supported for data: urls.
+    if (this.url().startsWith('data:')) {
+      return;
+    }
+
+    const responseBody: string | undefined =
+      response.body && response.body instanceof Uint8Array
+        ? response.body.toString('base64')
+        : response.body
+          ? btoa(response.body)
+          : undefined;
+
+    const headers: Bidi.Network.Header[] = getBidiHeaders(response.headers);
+    const hasContentLength = headers.some(header => {
+      return header.name === 'content-length';
+    });
 
     if (response.contentType) {
       headers.push({
@@ -210,16 +241,17 @@ export class BidiHTTPRequest extends HTTPRequest {
         },
       });
     }
+
     if (responseBody && !hasContentLength) {
+      const encoder = new TextEncoder();
       headers.push({
         name: 'content-length',
         value: {
           type: 'string',
-          value: String(Buffer.byteLength(responseBody)),
+          value: String(encoder.encode(responseBody).byteLength),
         },
       });
     }
-
     const status = response.status || 200;
 
     return await this.#request.provideResponse({
@@ -229,9 +261,24 @@ export class BidiHTTPRequest extends HTTPRequest {
       body: responseBody
         ? {
             type: 'base64',
-            value: responseBody.toString('base64'),
+            value: responseBody,
           }
         : undefined,
     });
   }
+}
+
+function getBidiHeaders(rawHeaders?: Record<string, unknown>) {
+  const headers: Bidi.Network.Header[] = [];
+  for (const [name, value] of Object.entries(rawHeaders ?? [])) {
+    headers.push({
+      name: name.toLowerCase(),
+      value: {
+        type: 'string',
+        value: String(value),
+      },
+    });
+  }
+
+  return headers;
 }
