@@ -6,7 +6,6 @@
 
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {inertIfDisposed} from '../../util/decorators.js';
-import {Deferred} from '../../util/Deferred.js';
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 
 import type {BrowsingContext} from './BrowsingContext.js';
@@ -44,7 +43,7 @@ export class Navigation extends EventEmitter<{
   #navigation: Navigation | undefined;
   readonly #browsingContext: BrowsingContext;
   readonly #disposables = new DisposableStack();
-  readonly #id = new Deferred<string | null>();
+  #id?: string | null;
   // keep-sorted end
 
   private constructor(context: BrowsingContext) {
@@ -69,7 +68,6 @@ export class Navigation extends EventEmitter<{
     browsingContextEmitter.on('request', ({request}) => {
       if (
         request.navigation === undefined ||
-        this.#request !== undefined ||
         // If a request with a navigation ID comes in, then the navigation ID is
         // for this navigation.
         !this.#matches(request.navigation)
@@ -79,6 +77,13 @@ export class Navigation extends EventEmitter<{
 
       this.#request = request;
       this.emit('request', request);
+      const requestEmitter = this.#disposables.use(
+        new EventEmitter(this.#request)
+      );
+
+      requestEmitter.on('redirect', request => {
+        this.#request = request;
+      });
     });
 
     const sessionEmitter = this.#disposables.use(
@@ -139,11 +144,11 @@ export class Navigation extends EventEmitter<{
     if (this.#navigation !== undefined && !this.#navigation.disposed) {
       return false;
     }
-    if (!this.#id.resolved()) {
-      this.#id.resolve(navigation);
+    if (this.#id === undefined) {
+      this.#id = navigation;
       return true;
     }
-    return this.#id.value() === navigation;
+    return this.#id === navigation;
   }
 
   // keep-sorted start block=yes
