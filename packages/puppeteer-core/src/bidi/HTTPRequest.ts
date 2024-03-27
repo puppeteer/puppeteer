@@ -31,20 +31,24 @@ export const requests = new WeakMap<Request, BidiHTTPRequest>();
 export class BidiHTTPRequest extends HTTPRequest {
   static from(
     bidiRequest: Request,
-    frame: BidiFrame | undefined
+    frame: BidiFrame | undefined,
+    redirect?: BidiHTTPRequest
   ): BidiHTTPRequest {
-    const request = new BidiHTTPRequest(bidiRequest, frame);
+    const request = new BidiHTTPRequest(bidiRequest, frame, redirect);
     request.#initialize();
     return request;
   }
-
-  #redirect: BidiHTTPRequest | undefined;
+  #redirectBy: BidiHTTPRequest | undefined;
   #response: BidiHTTPResponse | null = null;
   override readonly id: string;
   readonly #frame: BidiFrame | undefined;
   readonly #request: Request;
 
-  private constructor(request: Request, frame: BidiFrame | undefined) {
+  private constructor(
+    request: Request,
+    frame: BidiFrame | undefined,
+    redirectBy?: BidiHTTPRequest
+  ) {
     super();
     requests.set(request, this);
 
@@ -52,6 +56,7 @@ export class BidiHTTPRequest extends HTTPRequest {
 
     this.#request = request;
     this.#frame = frame;
+    this.#redirectBy = redirectBy;
     this.id = request.id;
   }
 
@@ -61,7 +66,7 @@ export class BidiHTTPRequest extends HTTPRequest {
 
   #initialize() {
     this.#request.on('redirect', request => {
-      this.#redirect = BidiHTTPRequest.from(request, this.#frame);
+      BidiHTTPRequest.from(request, this.#frame, this);
       void this.#redirect.finalizeInterceptions();
     });
     this.#request.once('success', data => {
@@ -123,13 +128,13 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override redirectChain(): BidiHTTPRequest[] {
-    if (this.#redirect === undefined) {
+    if (this.#redirectBy === undefined) {
       return [];
     }
-    const redirects = [this.#redirect];
+    const redirects = [this.#redirectBy];
     for (const redirect of redirects) {
-      if (redirect.#redirect !== undefined) {
-        redirects.push(redirect.#redirect);
+      if (redirect.#redirectBy !== undefined) {
+        redirects.push(redirect.#redirectBy);
       }
     }
     return redirects;
