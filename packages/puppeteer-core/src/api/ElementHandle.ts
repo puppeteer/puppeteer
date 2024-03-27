@@ -146,6 +146,13 @@ export abstract class ElementHandle<
   declare [_isElementHandle]: boolean;
 
   /**
+   * @internal
+   * Cached isolatedHandle to prevent
+   * trying to adopt it multiple times
+   */
+  isolatedHandle?: typeof this;
+
+  /**
    * A given method will have it's `this` replaced with an isolated version of
    * `this` when decorated with this decorator.
    *
@@ -163,7 +170,14 @@ export abstract class ElementHandle<
       if (this.realm === this.frame.isolatedRealm()) {
         return await target.call(this, ...args);
       }
-      using adoptedThis = await this.frame.isolatedRealm().adoptHandle(this);
+      let adoptedThis: This;
+      if (this['isolatedHandle']) {
+        adoptedThis = this['isolatedHandle'];
+      } else {
+        this['isolatedHandle'] = adoptedThis = await this.frame
+          .isolatedRealm()
+          .adoptHandle(this);
+      }
       const result = await target.call(adoptedThis, ...args);
       // If the function returns `adoptedThis`, then we return `this`.
       if (result === adoptedThis) {
