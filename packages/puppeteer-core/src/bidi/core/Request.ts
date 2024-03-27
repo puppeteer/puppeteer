@@ -141,6 +141,9 @@ export class Request extends EventEmitter<{
   get url(): string {
     return this.#event.request.url;
   }
+  get isBlocked(): boolean {
+    return this.#event.isBlocked;
+  }
   // keep-sorted end
 
   async continueRequest({
@@ -150,13 +153,6 @@ export class Request extends EventEmitter<{
     cookies,
     body,
   }: Omit<Bidi.Network.ContinueRequestParameters, 'request'>): Promise<void> {
-    if (!this.#event.isBlocked) {
-      throw new Error('Request Interception is not enabled!');
-    }
-    // Request interception is not supported for data: urls.
-    if (this.url.startsWith('data:')) {
-      return;
-    }
     await this.#session.send('network.continueRequest', {
       request: this.id,
       url,
@@ -168,13 +164,6 @@ export class Request extends EventEmitter<{
   }
 
   async failRequest(): Promise<void> {
-    if (!this.#event.isBlocked) {
-      throw new Error('Request Interception is not enabled!');
-    }
-    // Request interception is not supported for data: urls.
-    if (this.url.startsWith('data:')) {
-      return;
-    }
     await this.#session.send('network.failRequest', {
       request: this.id,
     });
@@ -186,13 +175,6 @@ export class Request extends EventEmitter<{
     headers,
     body,
   }: Omit<Bidi.Network.ProvideResponseParameters, 'request'>): Promise<void> {
-    if (!this.#event.isBlocked) {
-      throw new Error('Request Interception is not enabled!');
-    }
-    // Request interception is not supported for data: urls.
-    if (this.url.startsWith('data:')) {
-      return;
-    }
     await this.#session.send('network.provideResponse', {
       request: this.id,
       statusCode,

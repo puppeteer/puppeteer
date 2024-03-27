@@ -150,6 +150,14 @@ export class BidiHTTPRequest extends HTTPRequest {
   override async continue(
     overrides: ContinueRequestOverrides = {}
   ): Promise<void> {
+    if (!this.#request.isBlocked) {
+      throw new Error('Request Interception is not enabled!');
+    }
+    // Request interception is not supported for data: urls.
+    if (this.url().startsWith('data:')) {
+      return;
+    }
+
     const headers: Bidi.Network.Header[] = getBidiHeaders(overrides.headers);
 
     return await this.#request
@@ -190,6 +198,13 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override async abort(): Promise<void> {
+    if (!this.#request.isBlocked) {
+      throw new Error('Request Interception is not enabled!');
+    }
+    // Request interception is not supported for data: urls.
+    if (this.url().startsWith('data:')) {
+      return;
+    }
     return await this.#request.failRequest();
   }
 
@@ -197,6 +212,14 @@ export class BidiHTTPRequest extends HTTPRequest {
     response: Partial<ResponseForRequest>,
     _priority?: number
   ): Promise<void> {
+    if (!this.#request.isBlocked) {
+      throw new Error('Request Interception is not enabled!');
+    }
+    // Request interception is not supported for data: urls.
+    if (this.url().startsWith('data:')) {
+      return;
+    }
+
     const responseBody: string | undefined =
       response.body && response.body instanceof Uint8Array
         ? response.body.toString('base64')
