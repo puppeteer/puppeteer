@@ -841,42 +841,37 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
 
     return await this.mainRealm().transferHandle(
       await this.isolatedRealm().evaluateHandle(
-        async ({Deferred}, {url, id, type, content}) => {
-          const deferred = Deferred.create<void>();
-          const script = document.createElement('script');
-          script.type = type;
-          script.text = content;
-          if (url) {
-            script.src = url;
-            script.addEventListener(
-              'load',
-              () => {
-                return deferred.resolve();
-              },
-              {once: true}
-            );
+        async ({url, id, type, content}) => {
+          return await new Promise<HTMLScriptElement>((resolve, reject) => {
+            const script = document.createElement('script');
+            script.type = type;
+            script.text = content;
             script.addEventListener(
               'error',
               event => {
-                deferred.reject(
-                  new Error(event.message ?? 'Could not load script')
-                );
+                reject(new Error(event.message ?? 'Could not load script'));
               },
               {once: true}
             );
-          } else {
-            deferred.resolve();
-          }
-          if (id) {
-            script.id = id;
-          }
-          document.head.appendChild(script);
-          await deferred.valueOrThrow();
-          return script;
+            if (id) {
+              script.id = id;
+            }
+            if (url) {
+              script.src = url;
+              script.addEventListener(
+                'load',
+                () => {
+                  resolve(script);
+                },
+                {once: true}
+              );
+              document.head.appendChild(script);
+            } else {
+              document.head.appendChild(script);
+              resolve(script);
+            }
+          });
         },
-        LazyArg.create(context => {
-          return context.puppeteerUtil;
-        }),
         {...options, type, content}
       )
     );
