@@ -19,7 +19,6 @@ import {
 import {BrowserContextEvent} from '../api/BrowserContext.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
-import {UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -133,8 +132,8 @@ export class BidiBrowser extends Browser {
     return !this.#browserName.toLocaleLowerCase().includes('firefox');
   }
 
-  override userAgent(): never {
-    throw new UnsupportedOperation();
+  override async userAgent(): Promise<string> {
+    return this.#browserCore.session.capabilities.userAgent;
   }
 
   #createBrowserContext(userContext: UserContext) {
