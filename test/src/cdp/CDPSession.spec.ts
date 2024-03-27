@@ -134,7 +134,7 @@ describe('Target.createCDPSession', function () {
         }
       )
     ).rejects.toThrowError(
-      `Runtime.evaluate timed out. Increase the 'protocolTimeout' setting in launch/connect calls for a higher timeout if needed.`
+      /Increase the 'protocolTimeout' setting in launch\/connect calls for a higher timeout if needed./gi
     );
   });
 

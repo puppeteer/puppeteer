@@ -5,6 +5,7 @@
  */
 import type ProtocolMapping from 'devtools-protocol/types/protocol-mapping.js';
 
+import type {CommandOptions} from '../api/CDPSession.js';
 import {CDPSession} from '../api/CDPSession.js';
 import type {Connection as CdpConnection} from '../cdp/Connection.js';
 import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
@@ -61,7 +62,8 @@ export class BidiCdpSession extends CDPSession {
 
   override async send<T extends keyof ProtocolMapping.Commands>(
     method: T,
-    params?: ProtocolMapping.Commands[T]['paramsType'][0]
+    params?: ProtocolMapping.Commands[T]['paramsType'][0],
+    options?: CommandOptions
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
     if (this.#connection === undefined) {
       throw new UnsupportedOperation(
@@ -74,11 +76,15 @@ export class BidiCdpSession extends CDPSession {
       );
     }
     const session = await this.#sessionId.valueOrThrow();
-    const {result} = await this.#connection.send('cdp.sendCommand', {
-      method: method,
-      params: params,
-      session,
-    });
+    const {result} = await this.#connection.send(
+      'cdp.sendCommand',
+      {
+        method: method,
+        params: params,
+        session,
+      },
+      options?.timeout
+    );
     return result.result;
   }
 

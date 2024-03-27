@@ -97,11 +97,12 @@ export class BidiConnection
 
   send<T extends keyof Commands>(
     method: T,
-    params: Commands[T]['params']
+    params: Commands[T]['params'],
+    timeout?: number
   ): Promise<{result: Commands[T]['returnType']}> {
     assert(!this.#closed, 'Protocol error: Connection closed.');
 
-    return this.#callbacks.create(method, this.#timeout, id => {
+    return this.#callbacks.create(method, timeout ?? this.#timeout, id => {
       const stringifiedMessage = JSON.stringify({
         id,
         method,
