@@ -271,13 +271,15 @@ export class BidiHTTPRequest extends HTTPRequest {
 function getBidiHeaders(rawHeaders?: Record<string, unknown>) {
   const headers: Bidi.Network.Header[] = [];
   for (const [name, value] of Object.entries(rawHeaders ?? [])) {
-    headers.push({
-      name: name.toLowerCase(),
-      value: {
-        type: 'string',
-        value: String(value),
-      },
-    });
+    if (!Object.is(value, undefined)) {
+      headers.push({
+        name: name.toLowerCase(),
+        value: {
+          type: 'string',
+          value: String(value),
+        },
+      });
+    }
   }
 
   return headers;
