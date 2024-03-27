@@ -517,6 +517,9 @@ export const STATUS_TEXTS: Record<string, string> = {
   '511': 'Network Authentication Required',
 } as const;
 
+/**
+ * @internal
+ */
 export function handleError(error: ProtocolError): void {
   if (error.originalMessage.includes('Invalid header')) {
     throw error;
