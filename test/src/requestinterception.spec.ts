@@ -87,7 +87,11 @@ describe('request interception', function () {
         });
         void request.continue({headers});
       });
-      await page.goto(server.PREFIX + '/rrredirect');
+      const [request] = await Promise.all([
+        server.waitForRequest('/empty.html'),
+        page.goto(server.PREFIX + '/rrredirect'),
+      ]);
+      expect(request.headers['foo']).toBe('bar');
     });
     // @see https://github.com/puppeteer/puppeteer/issues/4743
     it('should be able to remove headers', async () => {
