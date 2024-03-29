@@ -127,6 +127,17 @@ export const getConfiguration = (): Configuration => {
       downloadHost;
   }
 
+  if (
+    Object.keys(process.env).some(key => {
+      return key.startsWith('npm_package_config_puppeteer_');
+    }) &&
+    configuration.logLevel === 'warn'
+  ) {
+    console.warn(
+      `Configuring Puppeteer via npm/package.json is deprecated. Use https://pptr.dev/guides/configuration instead.`
+    );
+  }
+
   configuration.cacheDirectory =
     process.env['PUPPETEER_CACHE_DIR'] ??
     process.env['npm_config_puppeteer_cache_dir'] ??
