@@ -1133,6 +1133,16 @@ export class CdpPage extends Page {
       await this.#emulationManager.setTransparentBackgroundColor();
     }
 
+    await firstValueFrom(
+      from(
+        this.mainFrame()
+          .isolatedRealm()
+          .evaluate(() => {
+            return document.fonts.ready;
+          })
+      ).pipe(raceWith(timeout(ms)))
+    );
+
     const printCommandPromise = this.#primaryTargetClient.send(
       'Page.printToPDF',
       {

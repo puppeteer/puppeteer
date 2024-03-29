@@ -321,6 +321,17 @@ export class BidiPage extends Page {
       preferCSSPageSize,
     } = parsePDFOptions(options, 'cm');
     const pageRanges = ranges ? ranges.split(', ') : [];
+
+    await firstValueFrom(
+      from(
+        this.mainFrame()
+          .isolatedRealm()
+          .evaluate(() => {
+            return document.fonts.ready;
+          })
+      ).pipe(raceWith(timeout(ms)))
+    );
+
     const data = await firstValueFrom(
       from(
         this.#frame.browsingContext.print({
