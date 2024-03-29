@@ -30,3 +30,10 @@ mode.
 If you need to build an image based on a different base image, you can use our
 [`Dockerfile`](https://github.com/puppeteer/puppeteer/blob/main/docker/Dockerfile)
 as the starting point.
+
+:::caution
+
+Make sure to specify a init process via the `--init` flag or a custom `ENTRYPOINT`
+to make sure all processes started by Puppeteer are managed properly.
+
+:::
