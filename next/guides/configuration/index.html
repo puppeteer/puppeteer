@@ -6,7 +6,7 @@
 <title data-rh="true">Configuration | Puppeteer</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://pptr.dev/next/guides/configuration"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:counter" content="3"><meta data-rh="true" property="og:title" content="Configuration | Puppeteer"><meta data-rh="true" name="description" content="All defaults in Puppeteer can be customized in two ways:"><meta data-rh="true" property="og:description" content="All defaults in Puppeteer can be customized in two ways:"><link data-rh="true" rel="icon" href="/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://pptr.dev/next/guides/configuration"><link data-rh="true" rel="alternate" href="https://pptr.dev/next/guides/configuration" hreflang="en"><link data-rh="true" rel="alternate" href="https://pptr.dev/next/guides/configuration" hreflang="x-default"><link data-rh="true" rel="preconnect" href="https://DVKY664LG7-dsn.algolia.net" crossorigin="anonymous"><link rel="search" type="application/opensearchdescription+xml" title="Puppeteer" href="/opensearch.xml">
 
 <script src="/fix-location.js"></script><link rel="stylesheet" href="/assets/css/styles.6fb25b18.css">
-<script src="/assets/js/runtime~main.5ff48132.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.97ea85cf.js" defer="defer"></script>
 <script src="/assets/js/main.2a34fbdb.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -33,12 +33,12 @@ Puppeteer will look up the file tree for any of the following formats:</p>
 <li><code>puppeteer.config.js</code>, and</li>
 <li><code>puppeteer.config.cjs</code></li>
 </ul>
-<p>Puppeteer will also read a <code>puppeteer</code> key from your application&#x27;s
-<code>package.json</code>.</p>
 <p>See the <a href="/next/api/puppeteer.configuration"><code>Configuration</code></a> interface for possible
 options.</p>
 <div class="theme-admonition theme-admonition-caution admonition_xJq3 alert alert--warning"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.893 1.5c-.183-.31-.52-.5-.887-.5s-.703.19-.886.5L.138 13.499a.98.98 0 0 0 0 1.001c.193.31.53.501.886.501h13.964c.367 0 .704-.19.877-.5a1.03 1.03 0 0 0 .01-1.002L8.893 1.5zm.133 11.497H6.987v-2.003h2.039v2.003zm0-3.004H6.987V5.987h2.039v4.006z"></path></svg></span>caution</div><div class="admonitionContent_BuS1"><p>After adding a configuration file, you may need to remove and reinstall
 <code>puppeteer</code> for it to take effect if the changes affect installation.</p></div></div>
+<div class="theme-admonition theme-admonition-caution admonition_xJq3 alert alert--warning"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.893 1.5c-.183-.31-.52-.5-.887-.5s-.703.19-.886.5L.138 13.499a.98.98 0 0 0 0 1.001c.193.31.53.501.886.501h13.964c.367 0 .704-.19.877-.5a1.03 1.03 0 0 0 .01-1.002L8.893 1.5zm.133 11.497H6.987v-2.003h2.039v2.003zm0-3.004H6.987V5.987h2.039v4.006z"></path></svg></span>caution</div><div class="admonitionContent_BuS1"><p>Previous versions of Puppeteer allowed configuration via the <code>config</code> key in
+<code>package.json</code>. This behavior is now deprecated and will be removed in the future.</p></div></div>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="examples">Examples<a href="#examples" class="hash-link" aria-label="Direct link to Examples" title="Direct link to Examples">​</a></h3>
 <h4 class="anchor anchorWithStickyNavbar_LWe7" id="changing-the-default-cache-directory">Changing the default cache directory<a href="#changing-the-default-cache-directory" class="hash-link" aria-label="Direct link to Changing the default cache directory" title="Direct link to Changing the default cache directory">​</a></h4>
 <p>Starting in v19.0.0, Puppeteer stores browsers in <code>~/.cache/puppeteer</code> to
