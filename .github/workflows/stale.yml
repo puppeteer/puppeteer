@@ -1,0 +1,31 @@
+name: 'Close stale issues and PRs'
+on:
+  schedule:
+    - cron: '30 1 * * *'
+  workflow_dispatch:
+
+# Declare default permissions as read only.
+permissions: read-all
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/stale@28ca1036281a5e5922ead5184a1bbf96e5fc984e # v9.0.0
+        with:
+          # Issue settings
+          stale-issue-message: >
+            We're marking this issue as unconfirmed because it has not had recent activity and 
+            we weren't able to confirm it yet. It will be closed if no further activity occurs
+            within the next 30 days.
+          close-issue-message: >
+            We are closing this issue. If the issue still persists in the latest version of
+            Puppeteer, please reopen the issue and update the description. We will try our
+            best to accommodate it!
+          stale-issue-label: 'unconfirmed'
+          exempt-issue-labels: 'confirmed,feature'
+          # PR settings
+          days-before-pr-close: -1
