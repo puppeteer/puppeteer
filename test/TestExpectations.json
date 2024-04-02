@@ -3405,13 +3405,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should be able to access the error reason",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: Needs Puppeteer support for BidiHTTPRequest.abortErrorReason"
-  },
-  {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should be able to fetch dataURL and fire dataURL requests",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -3445,13 +3438,6 @@
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: Fixed in the next chromium-bidi release"
-  },
-  {
-    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should cooperatively abort by priority",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: Needs full support for continueRequest in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1850680"
   },
   {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should cooperatively continue by priority",
@@ -3703,13 +3689,6 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "TODO: Needs support for data URIs in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1805176"
-  },
-  {
-    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with equal requests",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: Needs investigation"
   },
   {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with file URLs",
