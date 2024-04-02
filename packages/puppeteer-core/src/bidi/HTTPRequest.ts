@@ -48,6 +48,8 @@ export class BidiHTTPRequest extends HTTPRequest {
     super();
     requests.set(request, this);
 
+    this.interception.enabled = request.isBlocked;
+
     this.#request = request;
     this.#frame = frame;
     this.id = request.id;
@@ -60,6 +62,7 @@ export class BidiHTTPRequest extends HTTPRequest {
   #initialize() {
     this.#request.on('redirect', request => {
       this.#redirect = BidiHTTPRequest.from(request, this.#frame);
+      void this.#redirect.finalizeInterceptions();
     });
     this.#request.once('success', data => {
       this.#response = BidiHTTPResponse.from(data, this);
@@ -132,33 +135,15 @@ export class BidiHTTPRequest extends HTTPRequest {
     return redirects;
   }
 
-  override enqueueInterceptAction(
-    pendingHandler: () => void | PromiseLike<unknown>
-  ): void {
-    // Execute the handler when interception is not supported
-    void pendingHandler();
-  }
-
   override frame(): BidiFrame | null {
     return this.#frame ?? null;
   }
 
-  override continueRequestOverrides(): never {
-    throw new UnsupportedOperation();
-  }
-
-  override async continue(
+  override async _continue(
     overrides: ContinueRequestOverrides = {}
   ): Promise<void> {
-    if (!this.#request.isBlocked) {
-      throw new Error('Request Interception is not enabled!');
-    }
-    // Request interception is not supported for data: urls.
-    if (this.url().startsWith('data:')) {
-      return;
-    }
-
     const headers: Bidi.Network.Header[] = getBidiHeaders(overrides.headers);
+    this.interception.handled = true;
 
     return await this.#request
       .continueRequest({
@@ -173,53 +158,24 @@ export class BidiHTTPRequest extends HTTPRequest {
         headers: headers.length > 0 ? headers : undefined,
       })
       .catch(error => {
+        this.interception.handled = false;
         return handleError(error);
       });
   }
 
-  override responseForRequest(): never {
-    throw new UnsupportedOperation();
+  override async _abort(): Promise<void> {
+    this.interception.handled = true;
+    return await this.#request.failRequest().catch(error => {
+      this.interception.handled = false;
+      throw error;
+    });
   }
 
-  override abortErrorReason(): never {
-    throw new UnsupportedOperation();
-  }
-
-  override interceptResolutionState(): never {
-    throw new UnsupportedOperation();
-  }
-
-  override isInterceptResolutionHandled(): never {
-    throw new UnsupportedOperation();
-  }
-
-  override finalizeInterceptions(): never {
-    throw new UnsupportedOperation();
-  }
-
-  override async abort(): Promise<void> {
-    if (!this.#request.isBlocked) {
-      throw new Error('Request Interception is not enabled!');
-    }
-    // Request interception is not supported for data: urls.
-    if (this.url().startsWith('data:')) {
-      return;
-    }
-    return await this.#request.failRequest();
-  }
-
-  override async respond(
+  override async _respond(
     response: Partial<ResponseForRequest>,
     _priority?: number
   ): Promise<void> {
-    if (!this.#request.isBlocked) {
-      throw new Error('Request Interception is not enabled!');
-    }
-    // Request interception is not supported for data: urls.
-    if (this.url().startsWith('data:')) {
-      return;
-    }
-
+    this.interception.handled = true;
     const responseBody: string | undefined =
       response.body && response.body instanceof Uint8Array
         ? response.body.toString('base64')
@@ -254,17 +210,22 @@ export class BidiHTTPRequest extends HTTPRequest {
     }
     const status = response.status || 200;
 
-    return await this.#request.provideResponse({
-      statusCode: status,
-      headers: headers.length > 0 ? headers : undefined,
-      reasonPhrase: STATUS_TEXTS[status],
-      body: responseBody
-        ? {
-            type: 'base64',
-            value: responseBody,
-          }
-        : undefined,
-    });
+    return await this.#request
+      .provideResponse({
+        statusCode: status,
+        headers: headers.length > 0 ? headers : undefined,
+        reasonPhrase: STATUS_TEXTS[status],
+        body: responseBody
+          ? {
+              type: 'base64',
+              value: responseBody,
+            }
+          : undefined,
+      })
+      .catch(error => {
+        this.interception.handled = false;
+        throw error;
+      });
   }
 }
 

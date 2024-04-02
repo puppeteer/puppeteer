@@ -10,7 +10,7 @@ Fulfills a request with the given response.
 
 ```typescript
 class HTTPRequest {
-  abstract respond(
+  respond(
     response: Partial<ResponseForRequest>,
     priority?: number
   ): Promise<void>;

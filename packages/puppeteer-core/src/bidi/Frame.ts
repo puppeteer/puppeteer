@@ -121,6 +121,7 @@ export class BidiFrame extends Frame {
       request.once('error', () => {
         this.page().trustedEmitter.emit(PageEvent.RequestFailed, httpRequest);
       });
+      void httpRequest.finalizeInterceptions();
     });
 
     this.browsingContext.on('navigation', ({navigation}) => {

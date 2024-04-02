@@ -10,7 +10,7 @@ The most recent reason for aborting the request
 
 ```typescript
 class HTTPRequest {
-  abstract abortErrorReason(): Protocol.Network.ErrorReason | null;
+  abortErrorReason(): Protocol.Network.ErrorReason | null;
 }
 ```
 
