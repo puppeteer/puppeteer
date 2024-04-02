@@ -3551,13 +3551,6 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Request.respond should redirect",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "Firefox does not support headers in provideResponse"
-  },
-  {
     "testIdPattern": "[requestinterception-experimental.spec] request interception \"after each\" hook in \"request interception\"",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome"],
