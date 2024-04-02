@@ -876,21 +876,14 @@ export class MarkdownDocumenter {
               ])
             );
           } else {
-            if (
-              !(
-                ApiProtectedMixin.isBaseClassOf(apiMember) &&
-                apiMember.isProtected
-              )
-            ) {
-              propertiesTable.addRow(
-                new DocTableRow({configuration}, [
-                  this._createTitleCell(apiMember, true),
-                  this._createModifiersCell(apiMember),
-                  this._createPropertyTypeCell(apiMember),
-                  this._createDescriptionCell(apiMember),
-                ])
-              );
-            }
+            propertiesTable.addRow(
+              new DocTableRow({configuration}, [
+                this._createTitleCell(apiMember, true),
+                this._createModifiersCell(apiMember),
+                this._createPropertyTypeCell(apiMember),
+                this._createDescriptionCell(apiMember),
+              ])
+            );
           }
           break;
         }

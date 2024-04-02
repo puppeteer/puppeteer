@@ -121,6 +121,9 @@ export abstract class HTTPRequest {
    */
   _redirectChain: HTTPRequest[] = [];
 
+  /**
+   * @internal
+   */
   protected interception: {
     enabled: boolean;
     handled: boolean;
