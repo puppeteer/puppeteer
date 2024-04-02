@@ -402,7 +402,8 @@ export class BidiFrame extends Frame {
           if (!request) {
             return null;
           }
-          const httpRequest = requests.get(request)!;
+          const lastRequest = request.lastRedirect ?? request;
+          const httpRequest = requests.get(lastRequest)!;
           return httpRequest.response();
         }),
         raceWith(

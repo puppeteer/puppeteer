@@ -66,8 +66,8 @@ export class BidiHTTPRequest extends HTTPRequest {
 
   #initialize() {
     this.#request.on('redirect', request => {
-      BidiHTTPRequest.from(request, this.#frame, this);
-      void this.#redirect.finalizeInterceptions();
+      const httpRequest = BidiHTTPRequest.from(request, this.#frame, this);
+      void httpRequest.finalizeInterceptions();
     });
     this.#request.once('success', data => {
       this.#response = BidiHTTPResponse.from(data, this);

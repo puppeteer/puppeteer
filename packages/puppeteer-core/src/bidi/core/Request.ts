@@ -135,6 +135,16 @@ export class Request extends EventEmitter<{
   get redirect(): Request | undefined {
     return this.#redirect;
   }
+  get lastRedirect(): Request | undefined {
+    let redirect = this.#redirect;
+    while (redirect) {
+      if (redirect && !redirect.#redirect) {
+        return redirect;
+      }
+      redirect = redirect.#redirect;
+    }
+    return redirect;
+  }
   get response(): Bidi.Network.ResponseData | undefined {
     return this.#response;
   }
