@@ -23,8 +23,7 @@ describe('cooperative request interception', function () {
 
   describe('Page.setRequestInterception', function () {
     const expectedActions: ActionResult[] = ['abort', 'continue', 'respond'];
-    while (expectedActions.length > 0) {
-      const expectedAction = expectedActions.pop();
+    for (const expectedAction of expectedActions) {
       it(`should cooperatively ${expectedAction} by priority`, async () => {
         const {page, server} = await getTestState();
 
