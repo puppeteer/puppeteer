@@ -14,7 +14,7 @@ InterceptResolutionAction is one of: `abort`, `respond`, `continue`, `disabled`,
 
 ```typescript
 class HTTPRequest {
-  abstract interceptResolutionState(): InterceptResolutionState;
+  interceptResolutionState(): InterceptResolutionState;
 }
 ```
 
