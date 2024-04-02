@@ -227,8 +227,7 @@ export class UserContext extends EventEmitter<{
       origin,
       descriptor,
       state,
-      // @ts-expect-error not standard implementation.
-      'goog:userContext': this.#id,
+      userContext: this.#id,
     });
   }
 
