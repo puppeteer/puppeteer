@@ -12,7 +12,7 @@ In general, there are two possible sources of an issue: Code running on Node.js
 (which we call _server code_), and
 [code running in the browser](../api/puppeteer.page.evaluate)
 (which we call _client code_). There is also a third possible source being the
-browser itself (which we call _internal code_), but if you suspect this is the
+browser itself (which we call _internal code_ or _browser code_), but if you suspect this is the
 source **after attempting the methods below**, we suggest
 [searching existing issues](https://github.com/puppeteer/puppeteer/issues)
 before
@@ -139,3 +139,31 @@ env DEBUG="puppeteer:*" env DEBUG_COLORS=true node script.js 2>&1 | grep -v '"Ne
 # Filter out all protocol messages but keep all other logging
 env DEBUG="puppeteer:*,-puppeteer:protocol:*" node script.js
 ```
+
+### Log pending protocol calls
+
+If you encounter issues with async Puppeteer calls not getting resolved, try logging
+pending callbacks by using the [`debugInfo`](https://pptr.dev/api/puppeteer.browser/#properties) interface
+to see what call is the cause:
+
+```ts
+console.log(browser.debugInfo.pendingProtocolErrors);
+```
+
+The getter returns a list of `Error` objects and the stacktraces of the error objects
+indicate which code triggered a protocol call.
+
+## Debugging methods for the browser code
+
+### Print browser logs
+
+If the browser unexpectedly crashes or does not launch properly, it could be useful
+to inspect logs from the browser process by setting the launch attribute `dumpio` to `true`.
+
+```ts
+const browser = await puppeteer.launch({
+  dumpio: true,
+});
+```
+
+In this case, Puppeteer forwards browser logs to the Node process' stdio.
