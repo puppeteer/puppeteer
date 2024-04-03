@@ -60,7 +60,7 @@ clickCount
 
 </td><td>
 
-`optional`
+`optional, deprecated`
 
 </td><td>
 
@@ -69,6 +69,10 @@ number
 </td><td>
 
 Determines the click count for the mouse event. This does not perform multiple clicks.
+
+**Deprecated:**
+
+Use [MouseClickOptions.count](./puppeteer.mouseclickoptions.count.md).
 
 </td><td>
 

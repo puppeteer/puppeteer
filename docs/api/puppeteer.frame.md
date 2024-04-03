@@ -296,9 +296,15 @@ Hovers the pointer over the center of the first element that matches the `select
 
 </td><td>
 
+`deprecated`
+
 </td><td>
 
 Is`true` if the frame has been detached. Otherwise, `false`.
+
+**Deprecated:**
+
+Use the `detached` getter.
 
 </td></tr>
 <tr><td>
@@ -340,9 +346,20 @@ Creates a locator for the provided function. See [Locator](./puppeteer.locator.m
 
 </td><td>
 
+`deprecated`
+
 </td><td>
 
 The frame's `name` attribute as specified in the tag.
+
+**Deprecated:**
+
+Use
+
+```ts
+const element = await frame.frameElement();
+const nameOrId = await element.evaluate(frame => frame.name ?? frame.id);
+```
 
 </td></tr>
 <tr><td>

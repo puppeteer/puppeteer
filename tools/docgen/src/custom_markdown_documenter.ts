@@ -1266,6 +1266,20 @@ export class MarkdownDocumenter {
           section,
           apiItem.tsdocComment.summarySection
         );
+
+        if (apiItem.tsdocComment.deprecatedBlock) {
+          section.appendNode(
+            new DocParagraph({configuration}, [
+              new DocEmphasisSpan({configuration, bold: true}, [
+                new DocPlainText({configuration, text: 'Deprecated: '}),
+              ]),
+            ])
+          );
+
+          section.appendNodes(
+            apiItem.tsdocComment.deprecatedBlock.content.getChildNodes()
+          );
+        }
       }
     }
 
@@ -1295,44 +1309,43 @@ export class MarkdownDocumenter {
 
     const section: DocSection = new DocSection({configuration});
 
+    const codes = [];
+
     if (ApiProtectedMixin.isBaseClassOf(apiItem)) {
       if (apiItem.isProtected) {
-        section.appendNode(
-          new DocParagraph({configuration}, [
-            new DocCodeSpan({configuration, code: 'protected'}),
-          ])
-        );
+        codes.push('protected');
       }
     }
 
     if (ApiReadonlyMixin.isBaseClassOf(apiItem)) {
       if (apiItem.isReadonly) {
-        section.appendNode(
-          new DocParagraph({configuration}, [
-            new DocCodeSpan({configuration, code: 'readonly'}),
-          ])
-        );
+        codes.push('readonly');
       }
     }
 
     if (ApiStaticMixin.isBaseClassOf(apiItem)) {
       if (apiItem.isStatic) {
-        section.appendNode(
-          new DocParagraph({configuration}, [
-            new DocCodeSpan({configuration, code: 'static'}),
-          ])
-        );
+        codes.push('static');
       }
     }
 
     if (ApiOptionalMixin.isBaseClassOf(apiItem)) {
       if (apiItem.isOptional) {
-        section.appendNode(
-          new DocParagraph({configuration}, [
-            new DocCodeSpan({configuration, code: 'optional'}),
-          ])
-        );
+        codes.push('optional');
       }
+    }
+
+    if (apiItem instanceof ApiDocumentedItem) {
+      if (apiItem.tsdocComment?.deprecatedBlock) {
+        codes.push('deprecated');
+      }
+    }
+    if (codes.length) {
+      section.appendNode(
+        new DocParagraph({configuration}, [
+          new DocCodeSpan({configuration, code: codes.join(', ')}),
+        ])
+      );
     }
 
     return new DocTableCell({configuration}, section.nodes);
