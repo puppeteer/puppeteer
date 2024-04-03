@@ -98,6 +98,12 @@ export abstract class ProductLauncher {
 
     const launchArgs = await this.computeLaunchArguments(options);
 
+    if (!existsSync(launchArgs.executablePath)) {
+      throw new Error(
+        `Browser was not found at the configured executablePath (${launchArgs.executablePath})`
+      );
+    }
+
     const usePipe = launchArgs.args.includes('--remote-debugging-pipe');
 
     const onProcessExit = async () => {
