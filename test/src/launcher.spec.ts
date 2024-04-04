@@ -190,7 +190,9 @@ describe('Launcher specs', function () {
         }).catch(error => {
           return (waitError = error);
         });
-        expect(waitError.message).toContain('Failed to launch');
+        expect(waitError.message).toBe(
+          'Browser was not found at the configured executablePath (random-invalid-path)'
+        );
       });
       it('userDataDir option', async () => {
         const userDataDir = await mkdtemp(TMP_FOLDER);
@@ -614,6 +616,20 @@ describe('Launcher specs', function () {
           return (error = error_);
         });
         expect(error.message).toContain('either pipe or debugging port');
+      });
+
+      it('throws an error if executable path is not valid with pipe=true', async () => {
+        const options = {
+          executablePath: '/tmp/does-not-exist',
+          pipe: true,
+        };
+        let error!: Error;
+        await launch(options).catch(error_ => {
+          return (error = error_);
+        });
+        expect(error.message).toContain(
+          'Browser was not found at the configured executablePath (/tmp/does-not-exist)'
+        );
       });
     });
 

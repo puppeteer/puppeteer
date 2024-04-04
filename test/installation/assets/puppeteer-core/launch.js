@@ -13,7 +13,11 @@ import puppeteer from 'puppeteer-core';
       executablePath: 'node',
     });
   } catch (error) {
-    if (error.message.includes('Failed to launch the browser process')) {
+    if (
+      error.message.includes(
+        'Browser was not found at the configured executablePath (node)'
+      )
+    ) {
       process.exit(0);
     }
     console.error(error);
