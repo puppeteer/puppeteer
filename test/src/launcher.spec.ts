@@ -116,6 +116,30 @@ describe('Launcher specs', function () {
         const {close} = await launch({});
         await close();
       });
+
+      it('can launch multiple instances without node warnings', async () => {
+        const instances = [];
+        let warning = null;
+        const warningHandler: NodeJS.WarningListener = w => {
+          return (warning = w);
+        };
+        process.on('warning', warningHandler);
+        process.setMaxListeners(1);
+        try {
+          for (let i = 0; i < 2; i++) {
+            instances.push(launch({}));
+          }
+          await Promise.all(
+            (await Promise.all(instances)).map(instance => {
+              return instance.close();
+            })
+          );
+        } finally {
+          process.setMaxListeners(10);
+        }
+        process.off('warning', warningHandler);
+        expect(warning).toBe(null);
+      });
       it('should have default url when launching browser', async function () {
         const {browser, close} = await launch({}, {createContext: false});
         try {

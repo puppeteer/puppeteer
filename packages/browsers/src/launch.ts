@@ -135,6 +135,59 @@ export const CDP_WEBSOCKET_ENDPOINT_REGEX =
 export const WEBDRIVER_BIDI_WEBSOCKET_ENDPOINT_REGEX =
   /^WebDriver BiDi listening on (ws:\/\/.*)$/;
 
+type EventHandler = (...args: any[]) => void;
+const processListeners = new Map<string, EventHandler[]>();
+const dispatchers = {
+  exit: (...args: any[]) => {
+    processListeners.get('exit')?.forEach(handler => {
+      return handler(...args);
+    });
+  },
+  SIGINT: (...args: any[]) => {
+    processListeners.get('SIGINT')?.forEach(handler => {
+      return handler(...args);
+    });
+  },
+  SIGHUP: (...args: any[]) => {
+    processListeners.get('SIGHUP')?.forEach(handler => {
+      return handler(...args);
+    });
+  },
+  SIGTERM: (...args: any[]) => {
+    processListeners.get('SIGTERM')?.forEach(handler => {
+      return handler(...args);
+    });
+  },
+};
+
+function subscribeToProcessEvent(
+  event: 'exit' | 'SIGINT' | 'SIGHUP' | 'SIGTERM',
+  handler: EventHandler
+): void {
+  const listeners = processListeners.get(event) || [];
+  if (listeners.length === 0) {
+    process.on(event, dispatchers[event]);
+  }
+  listeners.push(handler);
+  processListeners.set(event, listeners);
+}
+
+function unsubscribeFromProcessEvent(
+  event: 'exit' | 'SIGINT' | 'SIGHUP' | 'SIGTERM',
+  handler: EventHandler
+): void {
+  const listeners = processListeners.get(event) || [];
+  const existingListenerIdx = listeners.indexOf(handler);
+  if (existingListenerIdx === -1) {
+    return;
+  }
+  listeners.splice(existingListenerIdx, 1);
+  processListeners.set(event, listeners);
+  if (listeners.length === 0) {
+    process.off(event, dispatchers[event]);
+  }
+}
+
 /**
  * @public
  */
@@ -201,15 +254,15 @@ export class Process {
       this.#browserProcess.stderr?.pipe(process.stderr);
       this.#browserProcess.stdout?.pipe(process.stdout);
     }
-    process.on('exit', this.#onDriverProcessExit);
+    subscribeToProcessEvent('exit', this.#onDriverProcessExit);
     if (opts.handleSIGINT) {
-      process.on('SIGINT', this.#onDriverProcessSignal);
+      subscribeToProcessEvent('SIGINT', this.#onDriverProcessSignal);
     }
     if (opts.handleSIGTERM) {
-      process.on('SIGTERM', this.#onDriverProcessSignal);
+      subscribeToProcessEvent('SIGTERM', this.#onDriverProcessSignal);
     }
     if (opts.handleSIGHUP) {
-      process.on('SIGHUP', this.#onDriverProcessSignal);
+      subscribeToProcessEvent('SIGHUP', this.#onDriverProcessSignal);
     }
     if (opts.onExit) {
       this.#onExitHook = opts.onExit;
@@ -262,10 +315,10 @@ export class Process {
   }
 
   #clearListeners(): void {
-    process.off('exit', this.#onDriverProcessExit);
-    process.off('SIGINT', this.#onDriverProcessSignal);
-    process.off('SIGTERM', this.#onDriverProcessSignal);
-    process.off('SIGHUP', this.#onDriverProcessSignal);
+    unsubscribeFromProcessEvent('exit', this.#onDriverProcessExit);
+    unsubscribeFromProcessEvent('SIGINT', this.#onDriverProcessSignal);
+    unsubscribeFromProcessEvent('SIGTERM', this.#onDriverProcessSignal);
+    unsubscribeFromProcessEvent('SIGHUP', this.#onDriverProcessSignal);
   }
 
   #onDriverProcessExit = (_code: number) => {
