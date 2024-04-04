@@ -751,10 +751,7 @@ describe('network', function () {
       });
       let response = (await page.goto(server.EMPTY_PAGE))!;
       expect(response.status()).toBe(200);
-      await page.authenticate({
-        username: '',
-        password: '',
-      });
+      await page.authenticate(null);
       // Navigate to a different origin to bust Chrome's credential caching.
       try {
         response = (await page.goto(

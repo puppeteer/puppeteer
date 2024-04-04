@@ -523,6 +523,14 @@ export interface PageEvents extends Record<EventType, unknown> {
 /**
  * @public
  */
+export interface Credentials {
+  username: string;
+  password: string;
+}
+
+/**
+ * @public
+ */
 export interface NewDocumentScriptEvaluation {
   identifier: string;
 }
@@ -1420,7 +1428,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @remarks
    * To disable authentication, pass `null`.
    */
-  abstract authenticate(credentials: Credentials): Promise<void>;
+  abstract authenticate(credentials: Credentials | null): Promise<void>;
 
   /**
    * The extra HTTP headers will be sent with every request the page initiates.

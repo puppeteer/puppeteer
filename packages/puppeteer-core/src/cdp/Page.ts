@@ -743,7 +743,7 @@ export class CdpPage extends Page {
     this.#bindings.delete(name);
   }
 
-  override async authenticate(credentials: Credentials): Promise<void> {
+  override async authenticate(credentials: Credentials | null): Promise<void> {
     return await this.#frameManager.networkManager.authenticate(credentials);
   }
 
