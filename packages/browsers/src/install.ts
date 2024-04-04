@@ -92,6 +92,11 @@ export interface InstallOptions {
    * @defaultValue `true`
    */
   unpack?: boolean;
+  /**
+   * @internal
+   * @defaultValue `false`
+   */
+  forceFallbackForTesting?: boolean;
 }
 
 /**
@@ -125,6 +130,10 @@ export async function install(
   try {
     return await installUrl(url, options);
   } catch (err) {
+    // If custom baseUrl is provided, do not fall back to CfT dashboard.
+    if (options.baseUrl && !options.forceFallbackForTesting) {
+      throw err;
+    }
     debugInstall(`Error downloading from ${url}.`);
     switch (options.browser) {
       case Browser.CHROME:
