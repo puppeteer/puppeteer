@@ -151,6 +151,7 @@ describe('Chrome install', () => {
       platform: BrowserPlatform.LINUX,
       buildId: testChromeBuildId,
       baseUrl: 'https://127.0.0.1',
+      forceFallbackForTesting: true,
     });
     assert.strictEqual(fs.existsSync(expectedOutputPath), true);
   });
