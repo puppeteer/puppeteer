@@ -189,9 +189,15 @@ Disconnects Puppeteer from this [browser](./puppeteer.browser.md), but leaves th
 
 </td><td>
 
+`deprecated`
+
 </td><td>
 
 Whether Puppeteer is connected to this [browser](./puppeteer.browser.md).
+
+**Deprecated:**
+
+Use [Browser.connected](./puppeteer.browser.md).
 
 </td></tr>
 <tr><td>
