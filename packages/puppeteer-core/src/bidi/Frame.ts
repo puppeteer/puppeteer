@@ -115,7 +115,6 @@ export class BidiFrame extends Frame {
     this.browsingContext.on('request', ({request}) => {
       const httpRequest = BidiHTTPRequest.from(request, this);
       request.once('success', () => {
-        // SAFETY: BidiHTTPRequest will create this before here.
         this.page().trustedEmitter.emit(PageEvent.RequestFinished, httpRequest);
       });
 

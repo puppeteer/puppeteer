@@ -722,7 +722,7 @@ describe('network', function () {
       } catch (error) {
         // In headful, an error is thrown instead of 401.
         if (
-          !(error as Error).message.startsWith(
+          !(error as Error).message?.includes(
             'net::ERR_INVALID_AUTH_CREDENTIALS'
           )
         ) {
@@ -772,7 +772,7 @@ describe('network', function () {
       } catch (error) {
         // In headful, an error is thrown instead of 401.
         if (
-          !(error as Error).message.startsWith(
+          !(error as Error).message?.includes(
             'net::ERR_INVALID_AUTH_CREDENTIALS'
           )
         ) {

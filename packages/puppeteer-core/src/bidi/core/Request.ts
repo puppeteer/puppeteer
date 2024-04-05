@@ -19,6 +19,8 @@ export class Request extends EventEmitter<{
   /** Emitted when the request is redirected. */
   redirect: Request;
   /** Emitted when the request succeeds. */
+  authenticate: void;
+  /** Emitted when the request succeeds. */
   success: Bidi.Network.ResponseData;
   /** Emitted when the request fails. */
   error: string;
@@ -73,6 +75,15 @@ export class Request extends EventEmitter<{
       this.#redirect = Request.from(this.#browsingContext, event);
       this.emit('redirect', this.#redirect);
       this.dispose();
+    });
+    sessionEmitter.on('network.authRequired', event => {
+      if (
+        event.context !== this.#browsingContext.id ||
+        event.request.request !== this.id
+      ) {
+        return;
+      }
+      this.emit('authenticate', undefined);
     });
     sessionEmitter.on('network.fetchError', event => {
       if (
@@ -187,6 +198,25 @@ export class Request extends EventEmitter<{
       headers,
       body,
     });
+  }
+
+  async continueWithAuth(
+    parameters:
+      | Bidi.Network.ContinueWithAuthCredentials
+      | Bidi.Network.ContinueWithAuthNoCredentials
+  ): Promise<void> {
+    if (parameters.action === 'provideCredentials') {
+      await this.#session.send('network.continueWithAuth', {
+        request: this.id,
+        action: parameters.action,
+        credentials: parameters.credentials,
+      });
+    } else {
+      await this.#session.send('network.continueWithAuth', {
+        request: this.id,
+        action: parameters.action,
+      });
+    }
   }
 
   @inertIfDisposed

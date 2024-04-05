@@ -32,7 +32,7 @@ import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {Accessibility} from '../cdp/Accessibility.js';
 import type {Coverage} from '../cdp/Coverage.js';
 import type {DeviceRequestPrompt} from '../cdp/DeviceRequestPrompt.js';
-import type {Credentials, NetworkConditions} from '../cdp/NetworkManager.js';
+import type {NetworkConditions} from '../cdp/NetworkManager.js';
 import type {Tracing} from '../cdp/Tracing.js';
 import type {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {
@@ -129,6 +129,14 @@ export interface Metrics {
   TaskDuration?: number;
   JSHeapUsedSize?: number;
   JSHeapTotalSize?: number;
+}
+
+/**
+ * @public
+ */
+export interface Credentials {
+  username: string;
+  password: string;
 }
 
 /**

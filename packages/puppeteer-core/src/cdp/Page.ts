@@ -15,6 +15,7 @@ import type {Frame, WaitForOptions} from '../api/Frame.js';
 import type {HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {JSHandle} from '../api/JSHandle.js';
+import type {Credentials} from '../api/Page.js';
 import {
   Page,
   PageEvent,
@@ -71,7 +72,7 @@ import {FrameManagerEvent} from './FrameManagerEvents.js';
 import {CdpKeyboard, CdpMouse, CdpTouchscreen} from './Input.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
 import {releaseObject} from './JSHandle.js';
-import type {Credentials, NetworkConditions} from './NetworkManager.js';
+import type {NetworkConditions} from './NetworkManager.js';
 import type {CdpTarget} from './Target.js';
 import type {TargetManager} from './TargetManager.js';
 import {TargetManagerEvent} from './TargetManager.js';
