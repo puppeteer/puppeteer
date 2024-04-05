@@ -40,7 +40,6 @@ export class Navigation extends EventEmitter<{
 
   // keep-sorted start
   #request: Request | undefined;
-  #navigation: Navigation | undefined;
   readonly #browsingContext: BrowsingContext;
   readonly #disposables = new DisposableStack();
   #id?: string | null;
@@ -89,15 +88,6 @@ export class Navigation extends EventEmitter<{
     const sessionEmitter = this.#disposables.use(
       new EventEmitter(this.#session)
     );
-    sessionEmitter.on('browsingContext.navigationStarted', info => {
-      if (
-        info.context !== this.#browsingContext.id ||
-        this.#navigation !== undefined
-      ) {
-        return;
-      }
-      this.#navigation = Navigation.from(this.#browsingContext);
-    });
 
     for (const eventName of [
       'browsingContext.domContentLoaded',
@@ -141,9 +131,6 @@ export class Navigation extends EventEmitter<{
   }
 
   #matches(navigation: string | null): boolean {
-    if (this.#navigation !== undefined && !this.#navigation.disposed) {
-      return false;
-    }
     if (this.#id === undefined) {
       this.#id = navigation;
       return true;
@@ -161,13 +148,10 @@ export class Navigation extends EventEmitter<{
   get request(): Request | undefined {
     return this.#request;
   }
-  get navigation(): Navigation | undefined {
-    return this.#navigation;
-  }
   // keep-sorted end
 
   @inertIfDisposed
-  private dispose(): void {
+  dispose(): void {
     this[disposeSymbol]();
   }
 

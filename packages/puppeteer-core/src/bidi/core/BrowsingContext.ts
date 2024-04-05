@@ -229,10 +229,9 @@ export class BrowsingContext extends EventEmitter<{
           this.#requests.delete(id);
         }
       }
-      // If the navigation hasn't finished, then this is nested navigation. The
-      // current navigation will handle this.
-      if (this.#navigation !== undefined && !this.#navigation.disposed) {
-        return;
+
+      if (this.#navigation !== undefined) {
+        this.#navigation.dispose();
       }
 
       // Note the navigation ID is null for this event.
