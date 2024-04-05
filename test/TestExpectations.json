@@ -708,13 +708,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[page.spec] Page Page.exposeFunction should work with loading frames",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "Missing request interception"
-  },
-  {
     "testIdPattern": "[page.spec] Page Page.pdf should respect timeout",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
