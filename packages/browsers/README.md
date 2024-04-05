@@ -10,7 +10,7 @@ Use `npx` to run the CLI:
 npx @puppeteer/browsers --help
 ```
 
-CLI help will provide all documentation you need to use the CLI.
+Built-in per-command `help` will provide all documentation you need to use the CLI.
 
 ```bash
 npx @puppeteer/browsers --help # help for all commands
@@ -18,10 +18,28 @@ npx @puppeteer/browsers install --help # help for the install command
 npx @puppeteer/browsers launch --help # help for the launch command
 ```
 
+Some example to give an idea of what the CLI looks like (use the `--help` command for more examples):
+
+```sh
+# Download the latest available Chrome for Testing binary corresponding to the Stable channel.
+npx @puppeteer/browsers install chrome@stable
+
+# Download a specific Chrome for Testing version.
+npx @puppeteer/browsers install chrome@116.0.5793.0
+
+# Download the latest Chrome for Testing version for the given milestone.
+npx @puppeteer/browsers install chrome@117
+
+# Download the latest available ChromeDriver version corresponding to the Canary channel.
+npx @puppeteer/browsers install chromedriver@canary
+
+# Download a specific ChromeDriver version.
+npx @puppeteer/browsers install chromedriver@116.0.5793.0
+```
+
 ## Known limitations
 
-1. We support installing and running Firefox, Chrome and Chromium. The `latest`, `beta`, `dev`, `canary`, `stable` keywords are only supported for the install command. For the `launch` command you need to specify an exact build ID. The build ID is provided by the `install` command (see `npx @puppeteer/browsers install --help` for the format).
-2. Launching the system browsers is only possible for Chrome/Chromium.
+1. Launching the system browsers is only possible for Chrome/Chromium.
 
 ## API
 
