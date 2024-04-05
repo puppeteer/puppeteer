@@ -37,7 +37,6 @@ npx @puppeteer/browsers install chromedriver@canary
 npx @puppeteer/browsers install chromedriver@116.0.5793.0
 ```
 
-
 ## Known limitations
 
 1. Launching the system browsers is only possible for Chrome/Chromium.
