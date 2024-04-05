@@ -4,6 +4,7 @@ The following versions of Chromium are supported, mapped to Puppeteer version. T
 
 <!-- version-start -->
 
+- [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 123.0.6312.105 - [Puppeteer v22.6.3](https://github.com/puppeteer/puppeteer/blob/puppeteer-v22.6.3/docs/api/index.md)
 - [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 123.0.6312.86 - [Puppeteer v22.6.2](https://github.com/puppeteer/puppeteer/blob/puppeteer-v22.6.2/docs/api/index.md)
 - [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 123.0.6312.58 - [Puppeteer v22.6.0](https://github.com/puppeteer/puppeteer/blob/puppeteer-v22.6.0/docs/api/index.md)
 - [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 122.0.6261.128 - [Puppeteer v22.5.0](https://github.com/puppeteer/puppeteer/blob/puppeteer-v22.5.0/docs/api/index.md)

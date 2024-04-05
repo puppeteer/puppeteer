@@ -10,7 +10,7 @@ The `ResponseForRequest` that gets used if the interception is allowed to respon
 
 ```typescript
 class HTTPRequest {
-  abstract responseForRequest(): Partial<ResponseForRequest> | null;
+  responseForRequest(): Partial<ResponseForRequest> | null;
 }
 ```
 

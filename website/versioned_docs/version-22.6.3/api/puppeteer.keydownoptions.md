@@ -39,13 +39,17 @@ commands
 
 </td><td>
 
-`optional`
+`optional, deprecated`
 
 </td><td>
 
 string\[\]
 
 </td><td>
+
+**Deprecated:**
+
+Do not use. This is automatically handled.
 
 </td><td>
 
@@ -56,13 +60,17 @@ text
 
 </td><td>
 
-`optional`
+`optional, deprecated`
 
 </td><td>
 
 string
 
 </td><td>
+
+**Deprecated:**
+
+Do not use. This is automatically handled.
 
 </td><td>
 

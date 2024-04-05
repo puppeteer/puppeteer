@@ -36,9 +36,6 @@ Puppeteer will look up the file tree for any of the following formats:
 - `puppeteer.config.js`, and
 - `puppeteer.config.cjs`
 
-Puppeteer will also read a `puppeteer` key from your application's
-`package.json`.
-
 See the [`Configuration`](../api/puppeteer.configuration) interface for possible
 options.
 
@@ -46,6 +43,13 @@ options.
 
 After adding a configuration file, you may need to remove and reinstall
 `puppeteer` for it to take effect if the changes affect installation.
+
+:::
+
+:::caution
+
+Previous versions of Puppeteer allowed configuration via the `config` key in
+`package.json`. This behavior is now deprecated and will be removed in the future.
 
 :::
 

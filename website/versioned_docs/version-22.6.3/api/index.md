@@ -437,6 +437,10 @@ Description
 
 </td><td>
 
+**Deprecated:**
+
+Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppeteer.clearCustomQueryHandlers()](./puppeteer.puppeteer.clearcustomqueryhandlers.md)
+
 </td></tr>
 <tr><td>
 
@@ -450,6 +454,10 @@ Description
 [customQueryHandlerNames()](./puppeteer.customqueryhandlernames.md)
 
 </td><td>
+
+**Deprecated:**
+
+Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppeteer.customQueryHandlerNames()](./puppeteer.puppeteer.customqueryhandlernames.md)
 
 </td></tr>
 <tr><td>
@@ -479,6 +487,10 @@ Description
 
 </td><td>
 
+**Deprecated:**
+
+Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppeteer.registerCustomQueryHandler()](./puppeteer.puppeteer.registercustomqueryhandler.md)
+
 </td></tr>
 <tr><td>
 
@@ -492,6 +504,10 @@ Description
 [unregisterCustomQueryHandler(name)](./puppeteer.unregistercustomqueryhandler.md)
 
 </td><td>
+
+**Deprecated:**
+
+Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppeteer.unregisterCustomQueryHandler()](./puppeteer.puppeteer.unregistercustomqueryhandler.md)
 
 </td></tr>
 </tbody></table>

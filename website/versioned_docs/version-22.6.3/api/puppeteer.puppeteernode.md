@@ -101,13 +101,17 @@ product
 
 </td><td>
 
-`readonly`
+`readonly, deprecated`
 
 </td><td>
 
 string
 
 </td><td>
+
+**Deprecated:**
+
+Do not use as this field as it does not take into account multiple browsers of different types. Use [defaultProduct](./puppeteer.puppeteernode.defaultproduct.md) or [lastLaunchedProduct](./puppeteer.puppeteernode.lastlaunchedproduct.md).
 
 </td></tr>
 </tbody></table>
