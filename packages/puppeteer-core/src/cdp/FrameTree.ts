@@ -21,6 +21,7 @@ export class FrameTree<FrameType extends Frame> {
   // frameID -> childFrameIDs
   #childIds = new Map<string, Set<string>>();
   #mainFrame?: FrameType;
+  #isMainFrameStale = false;
   #waitRequests = new Map<string, Set<Deferred<FrameType>>>();
 
   getMainFrame(): FrameType | undefined {
@@ -59,8 +60,9 @@ export class FrameTree<FrameType extends Frame> {
         this.#childIds.set(frame._parentId, new Set());
       }
       this.#childIds.get(frame._parentId)!.add(frame._id);
-    } else if (!this.#mainFrame) {
+    } else if (!this.#mainFrame || this.#isMainFrameStale) {
       this.#mainFrame = frame;
+      this.#isMainFrameStale = false;
     }
     this.#waitRequests.get(frame._id)?.forEach(request => {
       return request.resolve(frame);
@@ -73,7 +75,7 @@ export class FrameTree<FrameType extends Frame> {
     if (frame._parentId) {
       this.#childIds.get(frame._parentId)?.delete(frame._id);
     } else {
-      this.#mainFrame = undefined;
+      this.#isMainFrameStale = true;
     }
   }
 
