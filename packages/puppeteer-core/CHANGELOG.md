@@ -20,6 +20,23 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.6.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.6.2...puppeteer-core-v22.6.3) (2024-04-05)
+
+
+### Bug Fixes
+
+* check if executablePath exists ([#12201](https://github.com/puppeteer/puppeteer/issues/12201)) ([4ec0280](https://github.com/puppeteer/puppeteer/commit/4ec02800801d441238d6160a933f88f98c5f7165))
+* roll to Chrome 123.0.6312.105 (r1262506) ([#12209](https://github.com/puppeteer/puppeteer/issues/12209)) ([ee31272](https://github.com/puppeteer/puppeteer/commit/ee312721152cce61a9e9cb2b78b71b40c4fa9e64))
+* wait for fonts before pdf printing ([#12175](https://github.com/puppeteer/puppeteer/issues/12175)) ([59bffce](https://github.com/puppeteer/puppeteer/commit/59bffce9720b4d5e5204b26b335735e0a5ca9cc1))
+* **webdriver:** request redirect chain ([#12168](https://github.com/puppeteer/puppeteer/issues/12168)) ([d345055](https://github.com/puppeteer/puppeteer/commit/d345055af3c63effbdfb2751274b9d7137b8a308))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.2.0 to 2.2.1
+
 ## [22.6.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.6.1...puppeteer-core-v22.6.2) (2024-03-28)
 
 

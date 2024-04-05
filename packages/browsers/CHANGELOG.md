@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.1](https://github.com/puppeteer/puppeteer/compare/browsers-v2.2.0...browsers-v2.2.1) (2024-04-05)
+
+
+### Bug Fixes
+
+* do not use fallback download URLs if custom baseUrl is provided ([#12206](https://github.com/puppeteer/puppeteer/issues/12206)) ([ab560bc](https://github.com/puppeteer/puppeteer/commit/ab560bcf6fee57cabde94d9d261d28ffc2112948))
+* only set up a single process event listener in launch ([#12200](https://github.com/puppeteer/puppeteer/issues/12200)) ([7bc5e0f](https://github.com/puppeteer/puppeteer/commit/7bc5e0fb2dc443765e2512e4dc15fb2bcc1cb4be))
+
 ## [2.2.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.1.0...browsers-v2.2.0) (2024-03-15)
 
 
