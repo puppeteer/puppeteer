@@ -27,7 +27,16 @@ const queryAXTree = async (
     role,
   });
   return nodes.filter((node: Protocol.Accessibility.AXNode) => {
-    return !node.role || !NON_ELEMENT_NODE_ROLES.has(node.role.value);
+    if (node.ignored) {
+      return false;
+    }
+    if (!node.role) {
+      return false;
+    }
+    if (NON_ELEMENT_NODE_ROLES.has(node.role.value)) {
+      return false;
+    }
+    return true;
   });
 };
 
