@@ -232,7 +232,13 @@ Drags an element over the given element or point.
 
 </td><td>
 
+`deprecated`
+
 </td><td>
+
+**Deprecated:**
+
+Use `ElementHandle.drop` instead.
 
 </td></tr>
 <tr><td>
@@ -241,7 +247,13 @@ Drags an element over the given element or point.
 
 </td><td>
 
+`deprecated`
+
 </td><td>
+
+**Deprecated:**
+
+Do not use. `dragenter` will automatically be performed during dragging.
 
 </td></tr>
 <tr><td>
@@ -250,7 +262,13 @@ Drags an element over the given element or point.
 
 </td><td>
 
+`deprecated`
+
 </td><td>
+
+**Deprecated:**
+
+Do not use. `dragover` will automatically be performed during dragging.
 
 </td></tr>
 <tr><td>
@@ -270,7 +288,13 @@ Drops the given element onto the current one.
 
 </td><td>
 
+`deprecated`
+
 </td><td>
+
+**Deprecated:**
+
+No longer supported.
 
 </td></tr>
 <tr><td>

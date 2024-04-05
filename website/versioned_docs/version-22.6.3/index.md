@@ -11,7 +11,7 @@
 > Chrome/Chromium over the
 > [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
 > Puppeteer runs in
-> [headless](https://developer.chrome.com/articles/new-headless/)
+> [headless](https://developer.chrome.com/docs/chromium/new-headless/)
 > mode by default, but can be configured to run in full ("headful")
 > Chrome/Chromium.
 
@@ -27,7 +27,7 @@ Here are a few examples to get you started:
 - Create an automated testing environment using the latest JavaScript and
   browser features.
 - Capture a
-  [timeline trace](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/reference)
+  [timeline trace](https://developer.chrome.com/docs/devtools/performance/reference)
   of your site to help diagnose performance issues.
 - [Test Chrome Extensions](https://pptr.dev/guides/chrome-extensions).
 
@@ -181,7 +181,7 @@ import puppeteer from 'puppeteer';
 **1. Uses Headless mode**
 
 By default Puppeteer launches Chrome in
-[the Headless mode](https://developer.chrome.com/articles/new-headless/).
+[the Headless mode](https://developer.chrome.com/docs/chromium/new-headless/).
 
 ```ts
 const browser = await puppeteer.launch();
@@ -189,7 +189,7 @@ const browser = await puppeteer.launch();
 const browser = await puppeteer.launch({headless: true});
 ```
 
-Before v22, Puppeteer launched the [old Headless mode](https://developer.chrome.com/articles/new-headless/) by default.
+Before v22, Puppeteer launched the [old Headless mode](https://developer.chrome.com/docs/chromium/new-headless/) by default.
 The old headless mode is now known as
 [`chrome-headless-shell`](https://developer.chrome.com/blog/chrome-headless-shell)
 and ships as a separate binary. `chrome-headless-shell` does not match the
@@ -221,7 +221,7 @@ const browser = await puppeteer.launch({executablePath: '/path/to/Chrome'});
 ```
 
 You can also use Puppeteer with Firefox. See
-[status of cross-browser support](https://pptr.dev/faq/#q-what-is-the-status-of-cross-browser-support) for
+[status of cross-browser support](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support) for
 more information.
 
 See

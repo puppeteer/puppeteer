@@ -631,9 +631,15 @@ Indicates that the page has been closed.
 
 </td><td>
 
+`deprecated`
+
 </td><td>
 
 `true` if drag events are being intercepted, `false` otherwise.
+
+**Deprecated:**
+
+We no longer support intercepting drag payloads. Use the new drag APIs found on [ElementHandle](./puppeteer.elementhandle.md) to drag (or just use the [Page.mouse](./puppeteer.page.md)).
 
 </td></tr>
 <tr><td>
@@ -890,7 +896,13 @@ This setting will change the default maximum navigation time for the following m
 
 </td><td>
 
+`deprecated`
+
 </td><td>
+
+**Deprecated:**
+
+We no longer support intercepting drag payloads. Use the new drag APIs found on [ElementHandle](./puppeteer.elementhandle.md) to drag (or just use the [Page.mouse](./puppeteer.page.md)).
 
 </td></tr>
 <tr><td>
@@ -1003,9 +1015,15 @@ This method fetches an element with `selector`, scrolls it into view if needed, 
 
 </td><td>
 
+`deprecated`
+
 </td><td>
 
 A target this page was created from.
+
+**Deprecated:**
+
+Use [Page.createCDPSession()](./puppeteer.page.createcdpsession.md) directly.
 
 </td></tr>
 <tr><td>
