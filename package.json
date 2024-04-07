@@ -153,7 +153,7 @@
     "eslint-plugin-rulesdir": "0.2.2",
     "eslint-plugin-tsdoc": "0.2.17",
     "eslint-plugin-unused-imports": "3.1.0",
-    "eslint": "8.57.0",
+    "eslint": "9.0.0",
     "execa": "8.0.1",
     "expect": "29.7.0",
     "gts": "5.3.0",
