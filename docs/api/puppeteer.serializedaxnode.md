@@ -502,3 +502,27 @@ A description of the current value.
 
 </td></tr>
 </tbody></table>
+
+## Methods
+
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+<span id="elementhandle">[elementHandle()](./puppeteer.serializedaxnode.elementhandle.md)</span>
+
+</td><td>
+
+Get an ElementHandle for this AXNode if available.
+
+If the underlying DOM element has been disposed, the method might return an error.
+
+</td></tr>
+</tbody></table>

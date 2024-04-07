@@ -24,7 +24,6 @@ import {
   type NewDocumentScriptEvaluation,
   type ScreenshotOptions,
 } from '../api/Page.js';
-import {Accessibility} from '../cdp/Accessibility.js';
 import {Coverage} from '../cdp/Coverage.js';
 import {EmulationManager} from '../cdp/EmulationManager.js';
 import {Tracing} from '../cdp/Tracing.js';
@@ -86,7 +85,6 @@ export class BidiPage extends Page {
   readonly keyboard: BidiKeyboard;
   readonly mouse: BidiMouse;
   readonly touchscreen: BidiTouchscreen;
-  readonly accessibility: Accessibility;
   readonly tracing: Tracing;
   readonly coverage: Coverage;
   readonly #cdpEmulationManager: EmulationManager;
@@ -104,7 +102,6 @@ export class BidiPage extends Page {
     this.#frame = BidiFrame.from(this, browsingContext);
 
     this.#cdpEmulationManager = new EmulationManager(this.#frame.client);
-    this.accessibility = new Accessibility(this.#frame.client);
     this.tracing = new Tracing(this.#frame.client);
     this.coverage = new Coverage(this.#frame.client);
     this.keyboard = new BidiKeyboard(this);

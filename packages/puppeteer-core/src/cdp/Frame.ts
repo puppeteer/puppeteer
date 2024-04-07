@@ -15,6 +15,7 @@ import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
+import {Accessibility} from './Accessibility.js';
 import type {
   DeviceRequestPrompt,
   DeviceRequestPromptManager,
@@ -44,6 +45,7 @@ export class CdpFrame extends Frame {
 
   override _id: string;
   override _parentId?: string;
+  override accessibility: Accessibility;
 
   worlds: IsolatedWorldChart;
 
@@ -69,6 +71,8 @@ export class CdpFrame extends Frame {
         this._frameManager.timeoutSettings
       ),
     };
+
+    this.accessibility = new Accessibility(this.worlds[MAIN_WORLD]);
 
     this.on(FrameEvent.FrameSwappedByActivation, () => {
       // Emulate loading process for swapped frames.
