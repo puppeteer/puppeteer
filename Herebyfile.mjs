@@ -35,9 +35,9 @@ function getApiUrl(version) {
 }
 
 export const docsChromiumSupportTask = task({
-  name: 'docs:chromium-support',
+  name: 'docs:supported-browsers',
   run: async () => {
-    const content = await readFile('docs/chromium-support.md', {
+    const content = await readFile('docs/supported-browsers.md', {
       encoding: 'utf8',
     });
     const {versionsPerRelease} = await import('./versions.js');
@@ -61,7 +61,7 @@ export const docsChromiumSupportTask = task({
       }
     }
     await writeFile(
-      'docs/chromium-support.md',
+      'docs/supported-browsers.md',
       spliceIntoSection('version', content, buffer.join('\n'))
     );
   },

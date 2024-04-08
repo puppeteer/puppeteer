@@ -1,6 +1,12 @@
-# Chromium Support
+# Supported browsers
 
-The following versions of Chromium are supported, mapped to Puppeteer version. This list is automatically updated when the version of Chromium changes in a given release of Puppeteer. If an exact matching version of Puppeteer isn't listed, the supported version of Chromium is that for the immediately prior version of Puppeteer:
+:::note
+
+Puppeteer originally only worked with Chromium and downloaded Chromium builds by default. Newer versions use **[Chrome for Testing](https://github.com/GoogleChromeLabs/chrome-for-testing?tab=readme-ov-file#what-is-chrome-for-testing)**, which supports both headless and headful modes sharing the same code path in the browser. The old headless mode is now a separate program called **[chrome-headless-shell](https://developer.chrome.com/blog/chrome-headless-shell)** (use `headless: 'shell'` with Puppeteer). Puppeteer also supports nightly versions of [Firefox](https://www.mozilla.org/en-US/firefox/). This page lists which Puppeteer version works with which Chromium or Chrome for Testing version (chrome-headless-shell versions match Chrome for Testing).
+
+:::
+
+The following versions of the browsers are supported, mapped to Puppeteer version. This list is automatically updated when the version of the pinned browsers changes in a given release of Puppeteer. If an exact matching version of Puppeteer isn't listed, the supported version of the browser is that for the immediately prior version of Puppeteer:
 
 <!-- version-start -->
 
