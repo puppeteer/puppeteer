@@ -72,7 +72,7 @@ export const interpolateFunction = <T extends (...args: never[]) => unknown>(
   for (const [name, jsValue] of Object.entries(replacements)) {
     value = value.replace(
       new RegExp(`PLACEHOLDER\\(\\s*(?:'${name}'|"${name}")\\s*\\)`, 'g'),
-      // Wrapping this ensures tersers that accidently inline PLACEHOLDER calls
+      // Wrapping this ensures tersers that accidentally inline PLACEHOLDER calls
       // are still valid. Without, we may get calls like ()=>{...}() which is
       // not valid.
       `(${jsValue})`
