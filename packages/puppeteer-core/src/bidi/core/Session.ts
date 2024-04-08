@@ -81,21 +81,18 @@ export class Session
     return session;
   }
 
-  // keep-sorted start
   #reason: string | undefined;
   readonly #disposables = new DisposableStack();
   readonly #info: Bidi.Session.NewResult;
   readonly browser!: Browser;
   @bubble()
   accessor connection: Connection;
-  // keep-sorted end
 
   private constructor(connection: Connection, info: Bidi.Session.NewResult) {
     super();
-    // keep-sorted start
+
     this.#info = info;
     this.connection = connection;
-    // keep-sorted end
   }
 
   async #initialize(): Promise<void> {
@@ -121,7 +118,6 @@ export class Session
     });
   }
 
-  // keep-sorted start block=yes
   get capabilities(): Bidi.Session.NewResult['capabilities'] {
     return this.#info.capabilities;
   }
@@ -134,7 +130,6 @@ export class Session
   get id(): string {
     return this.#info.sessionId;
   }
-  // keep-sorted end
 
   @inertIfDisposed
   private dispose(reason?: string): void {

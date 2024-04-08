@@ -51,20 +51,17 @@ export class Browser extends EventEmitter<{
     return browser;
   }
 
-  // keep-sorted start
   #closed = false;
   #reason: string | undefined;
   readonly #disposables = new DisposableStack();
   readonly #userContexts = new Map<string, UserContext>();
   readonly session: Session;
   readonly #sharedWorkers = new Map<string, SharedWorkerRealm>();
-  // keep-sorted end
 
   private constructor(session: Session) {
     super();
-    // keep-sorted start
+
     this.session = session;
-    // keep-sorted end
   }
 
   async #initialize() {
@@ -141,7 +138,6 @@ export class Browser extends EventEmitter<{
     return userContext;
   }
 
-  // keep-sorted start block=yes
   get closed(): boolean {
     return this.#closed;
   }
@@ -158,7 +154,6 @@ export class Browser extends EventEmitter<{
   get userContexts(): Iterable<UserContext> {
     return this.#userContexts.values();
   }
-  // keep-sorted end
 
   @inertIfDisposed
   dispose(reason?: string, closed = false): void {
