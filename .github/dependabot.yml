@@ -10,6 +10,7 @@ updates:
     ignore:
       - dependency-name: devtools-protocol
       - dependency-name: '@types/node'
+      - dependency-name: '@angular-devkit/*'
     groups:
       dependencies:
         dependency-type: production
