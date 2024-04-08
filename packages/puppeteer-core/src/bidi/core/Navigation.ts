@@ -38,19 +38,16 @@ export class Navigation extends EventEmitter<{
     return navigation;
   }
 
-  // keep-sorted start
   #request: Request | undefined;
   #navigation: Navigation | undefined;
   readonly #browsingContext: BrowsingContext;
   readonly #disposables = new DisposableStack();
   #id?: string | null;
-  // keep-sorted end
 
   private constructor(context: BrowsingContext) {
     super();
-    // keep-sorted start
+
     this.#browsingContext = context;
-    // keep-sorted end
   }
 
   #initialize() {
@@ -151,7 +148,6 @@ export class Navigation extends EventEmitter<{
     return this.#id === navigation;
   }
 
-  // keep-sorted start block=yes
   get #session() {
     return this.#browsingContext.userContext.browser.session;
   }
@@ -164,7 +160,6 @@ export class Navigation extends EventEmitter<{
   get navigation(): Navigation | undefined {
     return this.#navigation;
   }
-  // keep-sorted end
 
   @inertIfDisposed
   private dispose(): void {

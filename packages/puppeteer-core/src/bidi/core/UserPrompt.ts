@@ -49,23 +49,20 @@ export class UserPrompt extends EventEmitter<{
     return userPrompt;
   }
 
-  // keep-sorted start
   #reason?: string;
   #result?: UserPromptResult;
   readonly #disposables = new DisposableStack();
   readonly browsingContext: BrowsingContext;
   readonly info: Bidi.BrowsingContext.UserPromptOpenedParameters;
-  // keep-sorted end
 
   private constructor(
     context: BrowsingContext,
     info: Bidi.BrowsingContext.UserPromptOpenedParameters
   ) {
     super();
-    // keep-sorted start
+
     this.browsingContext = context;
     this.info = info;
-    // keep-sorted end
   }
 
   #initialize() {
@@ -89,7 +86,6 @@ export class UserPrompt extends EventEmitter<{
     });
   }
 
-  // keep-sorted start block=yes
   get #session() {
     return this.browsingContext.userContext.browser.session;
   }
@@ -105,7 +101,6 @@ export class UserPrompt extends EventEmitter<{
   get result(): UserPromptResult | undefined {
     return this.#result;
   }
-  // keep-sorted end
 
   @inertIfDisposed
   private dispose(reason?: string): void {

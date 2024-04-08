@@ -44,23 +44,19 @@ export abstract class Realm extends EventEmitter<{
   /** Emitted when a shared worker is created in the realm. */
   sharedworker: SharedWorkerRealm;
 }> {
-  // keep-sorted start
   #reason?: string;
   protected readonly disposables = new DisposableStack();
   readonly id: string;
   readonly origin: string;
   protected executionContextId?: number;
-  // keep-sorted end
 
   protected constructor(id: string, origin: string) {
     super();
-    // keep-sorted start
+
     this.id = id;
     this.origin = origin;
-    // keep-sorted end
   }
 
-  // keep-sorted start block=yes
   get disposed(): boolean {
     return this.#reason !== undefined;
   }
@@ -68,7 +64,6 @@ export abstract class Realm extends EventEmitter<{
   get target(): Bidi.Script.Target {
     return {realm: this.id};
   }
-  // keep-sorted end
 
   @inertIfDisposed
   protected dispose(reason?: string): void {
@@ -159,19 +154,16 @@ export class WindowRealm extends Realm {
     return realm;
   }
 
-  // keep-sorted start
   readonly browsingContext: BrowsingContext;
   readonly sandbox?: string;
-  // keep-sorted end
 
   readonly #workers = new Map<string, DedicatedWorkerRealm>();
 
   private constructor(context: BrowsingContext, sandbox?: string) {
     super('', '');
-    // keep-sorted start
+
     this.browsingContext = context;
     this.sandbox = sandbox;
-    // keep-sorted end
   }
 
   #initialize(): void {
@@ -248,10 +240,8 @@ export class DedicatedWorkerRealm extends Realm {
     return realm;
   }
 
-  // keep-sorted start
   readonly #workers = new Map<string, DedicatedWorkerRealm>();
   readonly owners: Set<DedicatedWorkerOwnerRealm>;
-  // keep-sorted end
 
   private constructor(
     owner: DedicatedWorkerOwnerRealm,
@@ -306,10 +296,8 @@ export class SharedWorkerRealm extends Realm {
     return realm;
   }
 
-  // keep-sorted start
   readonly #workers = new Map<string, DedicatedWorkerRealm>();
   readonly browser: Browser;
-  // keep-sorted end
 
   private constructor(browser: Browser, id: string, origin: string) {
     super(id, origin);

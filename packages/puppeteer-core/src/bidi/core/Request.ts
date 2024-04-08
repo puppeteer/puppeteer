@@ -32,24 +32,21 @@ export class Request extends EventEmitter<{
     return request;
   }
 
-  // keep-sorted start
   #error?: string;
   #redirect?: Request;
   #response?: Bidi.Network.ResponseData;
   readonly #browsingContext: BrowsingContext;
   readonly #disposables = new DisposableStack();
   readonly #event: Bidi.Network.BeforeRequestSentParameters;
-  // keep-sorted end
 
   private constructor(
     browsingContext: BrowsingContext,
     event: Bidi.Network.BeforeRequestSentParameters
   ) {
     super();
-    // keep-sorted start
+
     this.#browsingContext = browsingContext;
     this.#event = event;
-    // keep-sorted end
   }
 
   #initialize() {
@@ -107,7 +104,6 @@ export class Request extends EventEmitter<{
     });
   }
 
-  // keep-sorted start block=yes
   get #session() {
     return this.#browsingContext.userContext.browser.session;
   }
@@ -154,7 +150,6 @@ export class Request extends EventEmitter<{
   get isBlocked(): boolean {
     return this.#event.isBlocked;
   }
-  // keep-sorted end
 
   async continueRequest({
     url,

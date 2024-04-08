@@ -52,21 +52,18 @@ export class UserContext extends EventEmitter<{
     return context;
   }
 
-  // keep-sorted start
   #reason?: string;
   // Note these are only top-level contexts.
   readonly #browsingContexts = new Map<string, BrowsingContext>();
   readonly #disposables = new DisposableStack();
   readonly #id: string;
   readonly browser: Browser;
-  // keep-sorted end
 
   private constructor(browser: Browser, id: string) {
     super();
-    // keep-sorted start
+
     this.#id = id;
     this.browser = browser;
-    // keep-sorted end
   }
 
   #initialize() {
@@ -110,7 +107,6 @@ export class UserContext extends EventEmitter<{
     });
   }
 
-  // keep-sorted start block=yes
   get #session() {
     return this.browser.session;
   }
@@ -126,7 +122,6 @@ export class UserContext extends EventEmitter<{
   get id(): string {
     return this.#id;
   }
-  // keep-sorted end
 
   @inertIfDisposed
   private dispose(reason?: string): void {

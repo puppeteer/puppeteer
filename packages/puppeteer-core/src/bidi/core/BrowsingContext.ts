@@ -129,7 +129,6 @@ export class BrowsingContext extends EventEmitter<{
     return browsingContext;
   }
 
-  // keep-sorted start
   #navigation: Navigation | undefined;
   #reason?: string;
   #url: string;
@@ -141,7 +140,6 @@ export class BrowsingContext extends EventEmitter<{
   readonly id: string;
   readonly parent: BrowsingContext | undefined;
   readonly userContext: UserContext;
-  // keep-sorted end
 
   private constructor(
     context: UserContext,
@@ -150,12 +148,11 @@ export class BrowsingContext extends EventEmitter<{
     url: string
   ) {
     super();
-    // keep-sorted start
+
     this.#url = url;
     this.id = id;
     this.parent = parent;
     this.userContext = context;
-    // keep-sorted end
 
     this.defaultRealm = this.#createWindowRealm();
   }
@@ -283,7 +280,6 @@ export class BrowsingContext extends EventEmitter<{
     });
   }
 
-  // keep-sorted start block=yes
   get #session() {
     return this.userContext.browser.session;
   }
@@ -314,7 +310,6 @@ export class BrowsingContext extends EventEmitter<{
   get url(): string {
     return this.#url;
   }
-  // keep-sorted end
 
   #createWindowRealm(sandbox?: string) {
     const realm = WindowRealm.from(this, sandbox);
