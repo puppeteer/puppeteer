@@ -71,9 +71,6 @@ export const docsTask = task({
   name: 'docs',
   dependencies: [docsNgSchematicsTask, docsChromiumSupportTask],
   run: async () => {
-    // Copy main page.
-    await copyFile('README.md', 'docs/index.md');
-
     // Generate documentation
     for (const [name, folder] of [
       ['browsers', 'browsers-api'],

@@ -260,8 +260,8 @@ const config = {
         items: [
           ...[
             {
-              type: 'doc',
-              docId: 'index',
+              type: 'docSidebar',
+              sidebarId: 'docs',
               label: 'Docs',
             },
             {

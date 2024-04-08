@@ -6,7 +6,59 @@
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 module.exports = {
   docs: [
-    'index',
+    {
+      type: 'category',
+      label: 'Getting started',
+      link: {
+        type: 'generated-index',
+        title: 'Getting started',
+        keywords: ['getting-started'],
+      },
+      collapsed: false,
+      items: [
+        'getting-started/what-is-puppeteer',
+        'getting-started/installation',
+        'getting-started/system-requirements',
+        'getting-started/first-script',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Core concepts',
+      link: {
+        type: 'generated-index',
+        title: 'Core concepts',
+        keywords: ['core-concepts'],
+      },
+      collapsed: false,
+      items: [
+        'core-concepts/browser-management',
+        'core-concepts/page-interactions',
+        'core-concepts/javascript-execution',
+        'core-concepts/network-logging',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Advanced concepts',
+      link: {
+        type: 'generated-index',
+        title: 'Advanced concepts',
+        keywords: ['advanced-concepts'],
+      },
+      collapsed: false,
+      items: [
+        'advanced-concepts/configuration',
+        'advanced-concepts/debugging',
+        'advanced-concepts/network-interception',
+        'advanced-concepts/headless-modes',
+        'advanced-concepts/screenshots',
+        'advanced-concepts/pdf-generation',
+        'advanced-concepts/cookies',
+        'advanced-concepts/files',
+        'advanced-concepts/docker',
+      ],
+    },
     {
       type: 'category',
       label: 'Guides',

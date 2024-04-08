@@ -7,49 +7,9 @@
 
 #### [Guides](https://pptr.dev/category/guides) | [API](https://pptr.dev/api) | [FAQ](https://pptr.dev/faq) | [Contributing](https://pptr.dev/contributing) | [Troubleshooting](https://pptr.dev/troubleshooting)
 
-> Puppeteer is a Node.js library which provides a high-level API to control
-> Chrome/Chromium over the
-> [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
-> Puppeteer runs in
-> [headless](https://developer.chrome.com/docs/chromium/new-headless/)
-> mode by default, but can be configured to run in full ("headful")
-> Chrome/Chromium.
-
-#### What can I do?
-
-Most things that you can do manually in the browser can be done using Puppeteer!
-Here are a few examples to get you started:
-
-- Generate screenshots and PDFs of pages.
-- Crawl a SPA (Single-Page Application) and generate pre-rendered content (i.e.
-  "SSR" (Server-Side Rendering)).
-- Automate form submission, UI testing, keyboard input, etc.
-- Create an automated testing environment using the latest JavaScript and
-  browser features.
-- Capture a
-  [timeline trace](https://developer.chrome.com/docs/devtools/performance/reference)
-  of your site to help diagnose performance issues.
-- [Test Chrome Extensions](https://pptr.dev/guides/chrome-extensions).
-
 ## Getting Started
 
 ### Installation
-
-To use Puppeteer in your project, run:
-
-```bash
-npm i puppeteer
-# or using yarn
-yarn add puppeteer
-# or using pnpm
-pnpm i puppeteer
-```
-
-When you install Puppeteer, it automatically downloads a recent version of
-[Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) (~170MB macOS, ~282MB Linux, ~280MB Windows) and a `chrome-headless-shell` binary (starting with Puppeteer v21.6.0) that is [guaranteed to
-work](https://pptr.dev/faq#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy)
-with Puppeteer. The browser is downloaded to the `$HOME/.cache/puppeteer` folder
-by default (starting with Puppeteer v19.0.0). See [configuration](https://pptr.dev/api/puppeteer.configuration) for configuration options and environmental variables to control the download behavior.
 
 If you deploy a project using Puppeteer to a hosting provider, such as Render or
 Heroku, you might need to reconfigure the location of the cache to be within
@@ -58,8 +18,6 @@ include `$HOME/.cache` into the project's deployment.
 
 For a version of Puppeteer without the browser installation, see
 [`puppeteer-core`](#puppeteer-core).
-
-If used with TypeScript, the minimum supported TypeScript version is `4.7.4`.
 
 #### Configuration
 
@@ -136,45 +94,6 @@ a [browser](https://pptr.dev/api/puppeteer.browser),
 
 For more in-depth usage, check our [guides](https://pptr.dev/category/guides)
 and [examples](https://github.com/puppeteer/puppeteer/tree/main/examples).
-
-#### Example
-
-The following example searches [developer.chrome.com](https://developer.chrome.com/) for blog posts with text "automate beyond recorder", click on the first result and print the full title of the blog post.
-
-```ts
-import puppeteer from 'puppeteer';
-
-(async () => {
-  // Launch the browser and open a new blank page
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-
-  // Navigate the page to a URL
-  await page.goto('https://developer.chrome.com/');
-
-  // Set screen size
-  await page.setViewport({width: 1080, height: 1024});
-
-  // Type into search box
-  await page.type('.devsite-search-field', 'automate beyond recorder');
-
-  // Wait and click on first result
-  const searchResultSelector = '.devsite-result-item-link';
-  await page.waitForSelector(searchResultSelector);
-  await page.click(searchResultSelector);
-
-  // Locate the full title with a unique string
-  const textSelector = await page.waitForSelector(
-    'text/Customize and automate'
-  );
-  const fullTitle = await textSelector?.evaluate(el => el.textContent);
-
-  // Print the full title
-  console.log('The title of this blog post is "%s".', fullTitle);
-
-  await browser.close();
-})();
-```
 
 ### Default runtime settings
 
