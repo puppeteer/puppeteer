@@ -37,6 +37,7 @@ import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {Awaitable, NodeFor} from '../common/types.js';
 import {debugError, fromEmitterEvent, timeout} from '../common/util.js';
+import {isErrorLike} from '../util/ErrorLike.js';
 
 import {BidiCdpSession} from './CDPSession.js';
 import type {BrowsingContext} from './core/BrowsingContext.js';
@@ -301,10 +302,18 @@ export class BidiFrame extends Frame {
       // readiness=interactive.
       //
       // Related: https://bugzilla.mozilla.org/show_bug.cgi?id=1846601
-      this.browsingContext.navigate(
-        url,
-        Bidi.BrowsingContext.ReadinessState.Interactive
-      ),
+      this.browsingContext
+        .navigate(url, Bidi.BrowsingContext.ReadinessState.Interactive)
+        .catch(error => {
+          if (
+            isErrorLike(error) &&
+            error.message.includes('net::ERR_HTTP_RESPONSE_CODE_FAILURE')
+          ) {
+            return;
+          }
+
+          throw error;
+        }),
     ]).catch(
       rewriteNavigationError(
         url,
@@ -352,11 +361,7 @@ export class BidiFrame extends Frame {
               }),
               raceWith(
                 fromEmitterEvent(navigation, 'fragment'),
-                fromEmitterEvent(navigation, 'failed').pipe(
-                  map(({url}) => {
-                    throw new Error(`Navigation failed: ${url}`);
-                  })
-                ),
+                fromEmitterEvent(navigation, 'failed'),
                 fromEmitterEvent(navigation, 'aborted').pipe(
                   map(({url}) => {
                     throw new Error(`Navigation aborted: ${url}`);
