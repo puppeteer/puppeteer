@@ -1,5 +1,18 @@
 # Configuration
 
+By default, Puppeteer downloads and uses a specific version of Chrome so its
+API is guaranteed to work out of the box. To use Puppeteer with a different
+version of Chrome or Chromium, pass in the executable's path when creating a
+`Browser` instance:
+
+```ts
+const browser = await puppeteer.launch({executablePath: '/path/to/Chrome'});
+```
+
+You can also use Puppeteer with Firefox. See
+[status of cross-browser support](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support) for
+more information.
+
 ```mdx-code-block
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';

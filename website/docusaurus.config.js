@@ -84,6 +84,50 @@ const config = {
             to: '/category/guides',
           },
           {
+            from: '/guides/request-interception',
+            to: '/advanced-concepts/request-interception',
+          },
+          {
+            from: '/guides/query-selectors',
+            to: '/core-concepts/page-interactions',
+          },
+          {
+            from: '/guides/query-selectors-legacy',
+            to: '/core-concepts/page-interactions',
+          },
+          {
+            from: '/guides/locators',
+            to: '/core-concepts/page-interactions',
+          },
+          {
+            from: '/guides/evaluate-javascript',
+            to: '/core-concepts/javascript-execution',
+          },
+          {
+            from: '/guides/docker',
+            to: '/integrations/docker',
+          },
+          {
+            from: '/guides/debugging',
+            to: '/advanced-concepts/debugging',
+          },
+          {
+            from: '/guides/configuration',
+            to: '/advanced-concepts/configuration',
+          },
+          {
+            from: '/guides/chrome-extensions',
+            to: '/advanced-concepts/chrome-extensions',
+          },
+          {
+            from: '/contributing',
+            to: '/community/contributing',
+          },
+          {
+            from: '/troubleshooting',
+            to: '/community/troubleshooting',
+          },
+          {
             from: '/chromium-support',
             to: '/supported-browsers',
           },

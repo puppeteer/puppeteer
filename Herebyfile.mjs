@@ -6,7 +6,7 @@
 
 /* eslint-disable import/order */
 
-import {copyFile, readFile, writeFile} from 'fs/promises';
+import {readFile, writeFile} from 'fs/promises';
 
 import {docgen, spliceIntoSection} from '@puppeteer/docgen';
 import {execa} from 'execa';
