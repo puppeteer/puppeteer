@@ -86,7 +86,7 @@ The following preconditions are automatically checked:
 await page.locator('input').fill('value');
 ```
 
-Automatically detects the input type and choose an approritate way to fill it out with the provided value.
+Automatically detects the input type and choose an appropriate way to fill it out with the provided value.
 
 The following preconditions are automatically checked:
 

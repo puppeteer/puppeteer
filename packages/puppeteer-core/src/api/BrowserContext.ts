@@ -151,7 +151,7 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    *
    * @deprecated In Chrome, the
    * {@link Browser.defaultBrowserContext | default browser context} can also be
-   * "icognito" if configured via the arguments and in such cases this getter
+   * "incognito" if configured via the arguments and in such cases this getter
    * returns wrong results (see
    * https://github.com/puppeteer/puppeteer/issues/8836). Also, the term
    * "incognito" is not applicable to other browsers. To migrate, check the

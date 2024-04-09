@@ -689,7 +689,7 @@ and if you want to run Puppeteer tests in amazon-linux, follow these steps.
 
 Now Puppeteer can launch Chromium to run your tests. If you do not enable EPEL
 and if you continue installing chromium as part of `npm install`, Puppeteer
-cannot launch Chromium due to unavailablity of `libatk-1.0.so.0` and many more
+cannot launch Chromium due to unavailability of `libatk-1.0.so.0` and many more
 packages.
 
 ## Code Transpilation Issues
