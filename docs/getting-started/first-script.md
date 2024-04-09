@@ -7,7 +7,7 @@ a [browser](https://pptr.dev/api/puppeteer.browser),
 [pages](https://pptr.dev/api/puppeteer.page), and then manipulate them with
 [Puppeteer's API](https://pptr.dev/api).
 
-For more in-depth usage, check our [guides](https://pptr.dev/category/guides)
+For more in-depth usage, check our [guides](https://pptr.dev/docs)
 and [examples](https://github.com/puppeteer/puppeteer/tree/main/examples).
 
 The following example searches [developer.chrome.com](https://developer.chrome.com/) for blog posts with text "automate beyond recorder", click on the first result and print the full title of the blog post.

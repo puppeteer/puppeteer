@@ -10,5 +10,5 @@
 
   - Windows, x64 architecture
   - MacOS, x64 and arm64 architectures
-  - Latest Debian/Ubuntu Linux, with x64 arhictures
-    - The following dependencies have to be installed https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/debian/dist_package_versions.json
+  - Debian/Ubuntu Linux, with x64 arhicture
+    - Required system packages https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/debian/dist_package_versions.json
