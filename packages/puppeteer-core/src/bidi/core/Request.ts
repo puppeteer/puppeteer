@@ -79,7 +79,9 @@ export class Request extends EventEmitter<{
     sessionEmitter.on('network.authRequired', event => {
       if (
         event.context !== this.#browsingContext.id ||
-        event.request.request !== this.id
+        event.request.request !== this.id ||
+        // Don't try to authenticate for events that are not blocked
+        !event.isBlocked
       ) {
         return;
       }
