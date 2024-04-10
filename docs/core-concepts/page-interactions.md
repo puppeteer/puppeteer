@@ -29,7 +29,7 @@ The following preconditions are automatically checked:
 - Waits for the element to become
   [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible/) or hidden.
 
-### Waiting for a function
+#### Waiting for a function
 
 ```ts
 await page

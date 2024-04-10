@@ -67,7 +67,7 @@ module.exports = {
       items: [
         {
           type: 'doc',
-          label: 'Angular Schematics',
+          label: 'Angular',
           id: 'integrations/ng-schematics',
         },
         {
