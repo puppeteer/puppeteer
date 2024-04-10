@@ -1,7 +1,9 @@
 # Files
 
-## How to upload a file
+Currently, Puppeteer does not offer a way to handle file downloads in a programmtic way.
+For uploading files, you need to locate a file input element and call [`ElementHandle.uploadFile`](https://pptr.dev/api/puppeteer.elementhandle.uploadfile/).
 
-## How to download a file
-
-TODO: add documentation
+```ts
+const fileElement = await page.waitForSelector('input[type=file]');
+await fileElement.uploadFile(['./path-to-local-file']);
+```

@@ -1,9 +1,14 @@
 # Network Logging
 
-## Listening to network requests
+By default, Puppeteer listens for all network requests and responses and emits network events on the page.
 
-## Network request responses
+```ts
+const page = await browser.newPage();
+page.on('request', request => {
+  console.log(request.url());
+});
 
-## Redirects
-
-TODO: add documentation
+page.on('response', response => {
+  console.log(response.url());
+});
+```
