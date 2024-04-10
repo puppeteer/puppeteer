@@ -17,7 +17,7 @@ export const docsNgSchematicsTask = task({
   name: 'docs:ng-schematics',
   run: async () => {
     const readme = await readFile('packages/ng-schematics/README.md', 'utf-8');
-    await writeFile('docs/integrations/ng-schematics.md', readme);
+    await writeFile('docs/guides/ng-schematics.md', readme);
   },
 });
 

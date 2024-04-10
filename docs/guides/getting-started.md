@@ -1,4 +1,4 @@
-# First script
+# Getting started
 
 Puppeteer will be familiar to people using other browser testing frameworks. You
 [launch](https://pptr.dev/api/puppeteer.puppeteernode.launch)/[connect](https://pptr.dev/api/puppeteer.puppeteernode.connect)
@@ -6,9 +6,6 @@ a [browser](https://pptr.dev/api/puppeteer.browser),
 [create](https://pptr.dev/api/puppeteer.browser.newpage) some
 [pages](https://pptr.dev/api/puppeteer.page), and then manipulate them with
 [Puppeteer's API](https://pptr.dev/api).
-
-For more in-depth usage, check our [guides](https://pptr.dev/docs)
-and [examples](https://github.com/puppeteer/puppeteer/tree/main/examples).
 
 The following example searches [developer.chrome.com](https://developer.chrome.com/) for blog posts with text "automate beyond recorder", click on the first result and print the full title of the blog post.
 
@@ -46,3 +43,6 @@ import puppeteer from 'puppeteer';
   await browser.close();
 })();
 ```
+
+For more in-depth usage, check our [documentation](https://pptr.dev/docs)
+and [examples](https://github.com/puppeteer/puppeteer/tree/main/examples).

@@ -1,4 +1,4 @@
-# Network Logging
+# Network logging
 
 By default, Puppeteer listens for all network requests and responses and emits network events on the page.
 
