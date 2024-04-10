@@ -14,7 +14,6 @@ module.exports = {
         title: 'Getting started',
         keywords: ['getting-started'],
       },
-      collapsed: false,
       items: [
         'getting-started/what-is-puppeteer',
         'getting-started/installation',
@@ -30,7 +29,6 @@ module.exports = {
         title: 'Core concepts',
         keywords: ['core-concepts'],
       },
-      collapsed: false,
       items: [
         'core-concepts/browser-management',
         'core-concepts/page-interactions',
@@ -46,7 +44,6 @@ module.exports = {
         title: 'Advanced concepts',
         keywords: ['advanced-concepts'],
       },
-      collapsed: true,
       items: [
         'advanced-concepts/configuration',
         'advanced-concepts/debugging',
@@ -67,7 +64,6 @@ module.exports = {
         title: 'Puppeteer Integrations',
         keywords: ['integrations'],
       },
-      collapsed: true,
       items: [
         {
           type: 'doc',
@@ -89,7 +85,6 @@ module.exports = {
         title: 'Community',
         keywords: ['community'],
       },
-      collapsed: true,
       items: [
         'community/contributing',
         'community/troubleshooting',
