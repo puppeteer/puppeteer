@@ -84,22 +84,6 @@ const config = {
             to: '/category/guides',
           },
           {
-            from: '/guides/query-selectors',
-            to: '/guides/page-interactions',
-          },
-          {
-            from: '/guides/query-selectors-legacy',
-            to: '/guides/page-interactions',
-          },
-          {
-            from: '/guides/locators',
-            to: '/guides/page-interactions',
-          },
-          {
-            from: '/guides/evaluate-javascript',
-            to: '/guides/javascript-execution',
-          },
-          {
             from: '/chromium-support',
             to: '/supported-browsers',
           },
