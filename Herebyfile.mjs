@@ -6,7 +6,7 @@
 
 /* eslint-disable import/order */
 
-import {readFile, writeFile} from 'fs/promises';
+import {copyFile, readFile, writeFile} from 'fs/promises';
 
 import {docgen, spliceIntoSection} from '@puppeteer/docgen';
 import {execa} from 'execa';
@@ -71,6 +71,9 @@ export const docsTask = task({
   name: 'docs',
   dependencies: [docsNgSchematicsTask, docsChromiumSupportTask],
   run: async () => {
+    // Copy main page.
+    await copyFile('README.md', 'docs/index.md');
+
     // Generate documentation
     for (const [name, folder] of [
       ['browsers', 'browsers-api'],
