@@ -6,7 +6,7 @@
 
 /* eslint-disable import/order */
 
-import {copyFile, readFile, writeFile} from 'fs/promises';
+import {readFile, writeFile} from 'fs/promises';
 
 import {docgen, spliceIntoSection} from '@puppeteer/docgen';
 import {execa} from 'execa';
@@ -17,7 +17,7 @@ export const docsNgSchematicsTask = task({
   name: 'docs:ng-schematics',
   run: async () => {
     const readme = await readFile('packages/ng-schematics/README.md', 'utf-8');
-    await writeFile('docs/integrations/ng-schematics.md', readme);
+    await writeFile('docs/guides/ng-schematics.md', readme);
   },
 });
 
@@ -71,9 +71,6 @@ export const docsTask = task({
   name: 'docs',
   dependencies: [docsNgSchematicsTask, docsChromiumSupportTask],
   run: async () => {
-    // Copy main page.
-    await copyFile('README.md', 'docs/index.md');
-
     // Generate documentation
     for (const [name, folder] of [
       ['browsers', 'browsers-api'],

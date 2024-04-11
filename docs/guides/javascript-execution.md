@@ -1,4 +1,4 @@
-# Evaluate JavaScript
+# JavaScript execution
 
 Puppeteer allows evaluating JavaScript functions in the context of the page
 driven by Puppeteer:
