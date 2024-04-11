@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-queryAll
+<p id="queryall">queryAll</p>
 
 </td><td>
 
@@ -54,7 +54,7 @@ Searches for some [Nodes](https://developer.mozilla.org/en-US/docs/Web/API/Node)
 </td></tr>
 <tr><td>
 
-queryOne
+<p id="queryone">queryOne</p>
 
 </td><td>
 

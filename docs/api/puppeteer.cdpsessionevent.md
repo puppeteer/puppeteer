@@ -25,14 +25,14 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[SessionAttached](./puppeteer.cdpsessionevent.sessionattached.md)
+<p id="sessionattached">[SessionAttached](./puppeteer.cdpsessionevent.sessionattached.md)</p>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-[SessionDetached](./puppeteer.cdpsessionevent.sessiondetached.md)
+<p id="sessiondetached">[SessionDetached](./puppeteer.cdpsessionevent.sessiondetached.md)</p>
 
 </td><td>
 

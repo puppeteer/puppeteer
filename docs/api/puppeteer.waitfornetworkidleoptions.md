@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-concurrency
+<p id="concurrency">concurrency</p>
 
 </td><td>
 
@@ -58,7 +58,7 @@ Maximum number concurrent of network connections to be considered inactive.
 </td></tr>
 <tr><td>
 
-idleTime
+<p id="idletime">idleTime</p>
 
 </td><td>
 

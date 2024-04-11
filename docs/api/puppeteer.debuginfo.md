@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-pendingProtocolErrors
+<p id="pendingprotocolerrors">pendingProtocolErrors</p>
 
 </td><td>
 

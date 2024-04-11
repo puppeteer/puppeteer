@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-download
+<p id="download">download</p>
 
 </td><td>
 
@@ -52,7 +52,7 @@ Download speed (bytes/s)
 </td></tr>
 <tr><td>
 
-latency
+<p id="latency">latency</p>
 
 </td><td>
 
@@ -69,7 +69,7 @@ Latency (ms)
 </td></tr>
 <tr><td>
 
-upload
+<p id="upload">upload</p>
 
 </td><td>
 

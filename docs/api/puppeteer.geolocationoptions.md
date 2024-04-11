@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-accuracy
+<p id="accuracy">accuracy</p>
 
 </td><td>
 
@@ -54,7 +54,7 @@ Optional non-negative accuracy value.
 </td></tr>
 <tr><td>
 
-latitude
+<p id="latitude">latitude</p>
 
 </td><td>
 
@@ -71,7 +71,7 @@ Longitude between `-180` and `180`.
 </td></tr>
 <tr><td>
 
-longitude
+<p id="longitude">longitude</p>
 
 </td><td>
 

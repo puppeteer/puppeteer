@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-count
+<p id="count">count</p>
 
 </td><td>
 
@@ -58,7 +58,7 @@ Number of clicks to perform.
 </td></tr>
 <tr><td>
 
-delay
+<p id="delay">delay</p>
 
 </td><td>
 

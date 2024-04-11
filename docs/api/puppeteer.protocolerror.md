@@ -35,7 +35,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-code
+<p id="code">code</p>
 
 </td><td>
 
@@ -50,7 +50,7 @@ number \| undefined
 </td></tr>
 <tr><td>
 
-originalMessage
+<p id="originalmessage">originalMessage</p>
 
 </td><td>
 

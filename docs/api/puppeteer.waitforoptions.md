@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-timeout
+<p id="timeout">timeout</p>
 
 </td><td>
 
@@ -58,7 +58,7 @@ The default value can be changed by using the [Page.setDefaultTimeout()](./puppe
 </td></tr>
 <tr><td>
 
-waitUntil
+<p id="waituntil">waitUntil</p>
 
 </td><td>
 

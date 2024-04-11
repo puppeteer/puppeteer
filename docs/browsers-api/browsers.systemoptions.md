@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-browser
+<p id="browser">browser</p>
 
 </td><td>
 
@@ -52,7 +52,7 @@ Determines which browser to launch.
 </td></tr>
 <tr><td>
 
-channel
+<p id="channel">channel</p>
 
 </td><td>
 
@@ -69,7 +69,7 @@ Release channel to look for on the system.
 </td></tr>
 <tr><td>
 
-platform
+<p id="platform">platform</p>
 
 </td><td>
 

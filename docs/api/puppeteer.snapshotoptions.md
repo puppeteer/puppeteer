@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-interestingOnly
+<p id="interestingonly">interestingOnly</p>
 
 </td><td>
 
@@ -56,7 +56,7 @@ Prune uninteresting nodes from the tree.
 </td></tr>
 <tr><td>
 
-root
+<p id="root">root</p>
 
 </td><td>
 

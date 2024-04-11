@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-headers
+<p id="headers">headers</p>
 
 </td><td>
 
@@ -52,7 +52,7 @@ Record&lt;string, string&gt;
 </td></tr>
 <tr><td>
 
-method
+<p id="method">method</p>
 
 </td><td>
 
@@ -69,7 +69,7 @@ string
 </td></tr>
 <tr><td>
 
-postData
+<p id="postdata">postData</p>
 
 </td><td>
 
@@ -86,7 +86,7 @@ string
 </td></tr>
 <tr><td>
 
-url
+<p id="url">url</p>
 
 </td><td>
 

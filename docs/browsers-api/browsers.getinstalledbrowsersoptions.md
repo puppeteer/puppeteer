@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-cacheDir
+<p id="cachedir">cacheDir</p>
 
 </td><td>
 

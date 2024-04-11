@@ -60,7 +60,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-closed
+<p id="closed">closed</p>
 
 </td><td>
 
@@ -77,7 +77,7 @@ Whether this [browser context](./puppeteer.browsercontext.md) is closed.
 </td></tr>
 <tr><td>
 
-id
+<p id="id">id</p>
 
 </td><td>
 
@@ -111,7 +111,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[browser()](./puppeteer.browsercontext.browser.md)
+<p id="browser">[browser()](./puppeteer.browsercontext.browser.md)</p>
 
 </td><td>
 
@@ -122,7 +122,7 @@ Gets the [browser](./puppeteer.browser.md) associated with this [browser context
 </td></tr>
 <tr><td>
 
-[clearPermissionOverrides()](./puppeteer.browsercontext.clearpermissionoverrides.md)
+<p id="clearpermissionoverrides">[clearPermissionOverrides()](./puppeteer.browsercontext.clearpermissionoverrides.md)</p>
 
 </td><td>
 
@@ -133,7 +133,7 @@ Clears all permission overrides for this [browser context](./puppeteer.browserco
 </td></tr>
 <tr><td>
 
-[close()](./puppeteer.browsercontext.close.md)
+<p id="close">[close()](./puppeteer.browsercontext.close.md)</p>
 
 </td><td>
 
@@ -144,7 +144,7 @@ Closes this [browser context](./puppeteer.browsercontext.md) and all associated 
 </td></tr>
 <tr><td>
 
-[isIncognito()](./puppeteer.browsercontext.isincognito.md)
+<p id="isincognito">[isIncognito()](./puppeteer.browsercontext.isincognito.md)</p>
 
 </td><td>
 
@@ -163,7 +163,7 @@ In Chrome, the [default browser context](./puppeteer.browser.defaultbrowserconte
 </td></tr>
 <tr><td>
 
-[newPage()](./puppeteer.browsercontext.newpage.md)
+<p id="newpage">[newPage()](./puppeteer.browsercontext.newpage.md)</p>
 
 </td><td>
 
@@ -174,7 +174,7 @@ Creates a new [page](./puppeteer.page.md) in this [browser context](./puppeteer.
 </td></tr>
 <tr><td>
 
-[overridePermissions(origin, permissions)](./puppeteer.browsercontext.overridepermissions.md)
+<p id="overridepermissions">[overridePermissions(origin, permissions)](./puppeteer.browsercontext.overridepermissions.md)</p>
 
 </td><td>
 
@@ -185,7 +185,7 @@ Grants this [browser context](./puppeteer.browsercontext.md) the given `permissi
 </td></tr>
 <tr><td>
 
-[pages()](./puppeteer.browsercontext.pages.md)
+<p id="pages">[pages()](./puppeteer.browsercontext.pages.md)</p>
 
 </td><td>
 
@@ -196,7 +196,7 @@ Gets a list of all open [pages](./puppeteer.page.md) inside this [browser contex
 </td></tr>
 <tr><td>
 
-[targets()](./puppeteer.browsercontext.targets.md)
+<p id="targets">[targets()](./puppeteer.browsercontext.targets.md)</p>
 
 </td><td>
 
@@ -207,7 +207,7 @@ Gets all active [targets](./puppeteer.target.md) inside this [browser context](.
 </td></tr>
 <tr><td>
 
-[waitForTarget(predicate, options)](./puppeteer.browsercontext.waitfortarget.md)
+<p id="waitfortarget">[waitForTarget(predicate, options)](./puppeteer.browsercontext.waitfortarget.md)</p>
 
 </td><td>
 

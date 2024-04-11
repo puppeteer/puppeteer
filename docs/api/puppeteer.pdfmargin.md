@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-bottom
+<p id="bottom">bottom</p>
 
 </td><td>
 
@@ -52,7 +52,7 @@ string \| number
 </td></tr>
 <tr><td>
 
-left
+<p id="left">left</p>
 
 </td><td>
 
@@ -69,7 +69,7 @@ string \| number
 </td></tr>
 <tr><td>
 
-right
+<p id="right">right</p>
 
 </td><td>
 
@@ -86,7 +86,7 @@ string \| number
 </td></tr>
 <tr><td>
 
-top
+<p id="top">top</p>
 
 </td><td>
 

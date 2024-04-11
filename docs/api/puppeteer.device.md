@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-userAgent
+<p id="useragent">userAgent</p>
 
 </td><td>
 
@@ -50,7 +50,7 @@ string
 </td></tr>
 <tr><td>
 
-viewport
+<p id="viewport">viewport</p>
 
 </td><td>
 

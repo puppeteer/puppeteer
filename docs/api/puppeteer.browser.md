@@ -8,7 +8,7 @@ sidebar_label: Browser
 
 - connected to via [Puppeteer.connect()](./puppeteer.puppeteer.connect.md) or - launched by [PuppeteerNode.launch()](./puppeteer.puppeteernode.launch.md).
 
-[Browser](./puppeteer.browser.md) [emits](./puppeteer.eventemitter.md) various events which are documented in the [BrowserEvent](./puppeteer.browserevent.md) enum.
+[Browser](./puppeteer.browser.md) [emits](./puppeteer.eventemitter.emit.md) various events which are documented in the [BrowserEvent](./puppeteer.browserevent.md) enum.
 
 #### Signature:
 
@@ -75,7 +75,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-connected
+<p id="connected">connected</p>
 
 </td><td>
 
@@ -92,7 +92,7 @@ Whether Puppeteer is connected to this [browser](./puppeteer.browser.md).
 </td></tr>
 <tr><td>
 
-debugInfo
+<p id="debuginfo">debugInfo</p>
 
 </td><td>
 
@@ -126,7 +126,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[browserContexts()](./puppeteer.browser.browsercontexts.md)
+<p id="browsercontexts">[browserContexts()](./puppeteer.browser.browsercontexts.md)</p>
 
 </td><td>
 
@@ -139,7 +139,7 @@ In a newly-created [browser](./puppeteer.browser.md), this will return a single 
 </td></tr>
 <tr><td>
 
-[close()](./puppeteer.browser.close.md)
+<p id="close">[close()](./puppeteer.browser.close.md)</p>
 
 </td><td>
 
@@ -150,7 +150,7 @@ Closes this [browser](./puppeteer.browser.md) and all associated [pages](./puppe
 </td></tr>
 <tr><td>
 
-[createBrowserContext(options)](./puppeteer.browser.createbrowsercontext.md)
+<p id="createbrowsercontext">[createBrowserContext(options)](./puppeteer.browser.createbrowsercontext.md)</p>
 
 </td><td>
 
@@ -163,7 +163,7 @@ This won't share cookies/cache with other [browser contexts](./puppeteer.browser
 </td></tr>
 <tr><td>
 
-[defaultBrowserContext()](./puppeteer.browser.defaultbrowsercontext.md)
+<p id="defaultbrowsercontext">[defaultBrowserContext()](./puppeteer.browser.defaultbrowsercontext.md)</p>
 
 </td><td>
 
@@ -174,7 +174,7 @@ Gets the default [browser context](./puppeteer.browsercontext.md).
 </td></tr>
 <tr><td>
 
-[disconnect()](./puppeteer.browser.disconnect.md)
+<p id="disconnect">[disconnect()](./puppeteer.browser.disconnect.md)</p>
 
 </td><td>
 
@@ -185,7 +185,7 @@ Disconnects Puppeteer from this [browser](./puppeteer.browser.md), but leaves th
 </td></tr>
 <tr><td>
 
-[isConnected()](./puppeteer.browser.isconnected.md)
+<p id="isconnected">[isConnected()](./puppeteer.browser.isconnected.md)</p>
 
 </td><td>
 
@@ -202,7 +202,7 @@ Use [Browser.connected](./puppeteer.browser.md).
 </td></tr>
 <tr><td>
 
-[newPage()](./puppeteer.browser.newpage.md)
+<p id="newpage">[newPage()](./puppeteer.browser.newpage.md)</p>
 
 </td><td>
 
@@ -213,7 +213,7 @@ Creates a new [page](./puppeteer.page.md) in the [default browser context](./pup
 </td></tr>
 <tr><td>
 
-[pages()](./puppeteer.browser.pages.md)
+<p id="pages">[pages()](./puppeteer.browser.pages.md)</p>
 
 </td><td>
 
@@ -226,7 +226,7 @@ If there ar multiple [browser contexts](./puppeteer.browsercontext.md), this ret
 </td></tr>
 <tr><td>
 
-[process()](./puppeteer.browser.process.md)
+<p id="process">[process()](./puppeteer.browser.process.md)</p>
 
 </td><td>
 
@@ -237,7 +237,7 @@ Gets the associated [ChildProcess](https://nodejs.org/api/child_process.html#cla
 </td></tr>
 <tr><td>
 
-[target()](./puppeteer.browser.target.md)
+<p id="target">[target()](./puppeteer.browser.target.md)</p>
 
 </td><td>
 
@@ -248,7 +248,7 @@ Gets the [target](./puppeteer.target.md) associated with the [default browser co
 </td></tr>
 <tr><td>
 
-[targets()](./puppeteer.browser.targets.md)
+<p id="targets">[targets()](./puppeteer.browser.targets.md)</p>
 
 </td><td>
 
@@ -261,7 +261,7 @@ In case of multiple [browser contexts](./puppeteer.browsercontext.md), this retu
 </td></tr>
 <tr><td>
 
-[userAgent()](./puppeteer.browser.useragent.md)
+<p id="useragent">[userAgent()](./puppeteer.browser.useragent.md)</p>
 
 </td><td>
 
@@ -274,7 +274,7 @@ Gets this [browser's](./puppeteer.browser.md) original user agent.
 </td></tr>
 <tr><td>
 
-[version()](./puppeteer.browser.version.md)
+<p id="version">[version()](./puppeteer.browser.version.md)</p>
 
 </td><td>
 
@@ -289,7 +289,7 @@ The format of [Browser.version()](./puppeteer.browser.version.md) might change w
 </td></tr>
 <tr><td>
 
-[waitForTarget(predicate, options)](./puppeteer.browser.waitfortarget.md)
+<p id="waitfortarget">[waitForTarget(predicate, options)](./puppeteer.browser.waitfortarget.md)</p>
 
 </td><td>
 
@@ -302,7 +302,7 @@ This will look all open [browser contexts](./puppeteer.browsercontext.md).
 </td></tr>
 <tr><td>
 
-[wsEndpoint()](./puppeteer.browser.wsendpoint.md)
+<p id="wsendpoint">[wsEndpoint()](./puppeteer.browser.wsendpoint.md)</p>
 
 </td><td>
 

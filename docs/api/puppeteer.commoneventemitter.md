@@ -23,42 +23,42 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[emit(type, event)](./puppeteer.commoneventemitter.emit.md)
+<p id="emit">[emit(type, event)](./puppeteer.commoneventemitter.emit.md)</p>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-[listenerCount(event)](./puppeteer.commoneventemitter.listenercount.md)
+<p id="listenercount">[listenerCount(event)](./puppeteer.commoneventemitter.listenercount.md)</p>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-[off(type, handler)](./puppeteer.commoneventemitter.off.md)
+<p id="off">[off(type, handler)](./puppeteer.commoneventemitter.off.md)</p>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-[on(type, handler)](./puppeteer.commoneventemitter.on.md)
+<p id="on">[on(type, handler)](./puppeteer.commoneventemitter.on.md)</p>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-[once(type, handler)](./puppeteer.commoneventemitter.once.md)
+<p id="once">[once(type, handler)](./puppeteer.commoneventemitter.once.md)</p>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-[removeAllListeners(event)](./puppeteer.commoneventemitter.removealllisteners.md)
+<p id="removealllisteners">[removeAllListeners(event)](./puppeteer.commoneventemitter.removealllisteners.md)</p>
 
 </td><td>
 

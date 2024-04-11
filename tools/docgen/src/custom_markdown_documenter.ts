@@ -69,6 +69,9 @@ import {
   DocSection,
   StandardTags,
   StringBuilder,
+  DocHtmlStartTag,
+  DocHtmlEndTag,
+  DocHtmlAttribute,
   type TSDocConfiguration,
 } from '@microsoft/tsdoc';
 import {
@@ -1223,6 +1226,17 @@ export class MarkdownDocumenter {
 
     return new DocTableCell({configuration}, [
       new DocParagraph({configuration}, [
+        new DocHtmlStartTag({
+          configuration,
+          name: 'p',
+          htmlAttributes: [
+            new DocHtmlAttribute({
+              configuration,
+              name: 'id',
+              value: `"${Utilities.getSafeFilenameForName(apiItem.displayName)}"`,
+            }),
+          ],
+        }),
         plain
           ? new DocPlainText({configuration, text})
           : new DocLinkTag({
@@ -1231,6 +1245,10 @@ export class MarkdownDocumenter {
               linkText: text,
               urlDestination: this._getLinkFilenameForApiItem(apiItem),
             }),
+        new DocHtmlEndTag({
+          configuration,
+          name: 'p',
+        }),
       ]),
     ]);
   }
@@ -1452,12 +1470,13 @@ export class MarkdownDocumenter {
     return baseName.slice(0, baseName.length - 1);
   }
 
-  private _getFilenameForApiItem(apiItem: ApiItem): string {
+  private _getFilenameForApiItem(apiItem: ApiItem, link = false): string {
     if (apiItem.kind === ApiItemKind.Package) {
       return 'index.md';
     }
 
     let baseName = '';
+    let suffix = '';
     for (const hierarchyItem of apiItem.getHierarchy()) {
       // For overloaded methods, add a suffix such as "MyClass.myMethod_2".
       let qualifiedName: string = Utilities.getSafeFilenameForName(
@@ -1475,6 +1494,9 @@ export class MarkdownDocumenter {
         case ApiItemKind.Model:
         case ApiItemKind.EntryPoint:
         case ApiItemKind.EnumMember:
+        // Properties don't have separate pages
+        case ApiItemKind.Property:
+        case ApiItemKind.PropertySignature:
           break;
         case ApiItemKind.Package:
           baseName = Utilities.getSafeFilenameForName(
@@ -1484,12 +1506,26 @@ export class MarkdownDocumenter {
         default:
           baseName += '.' + qualifiedName;
       }
+
+      if (link) {
+        switch (hierarchyItem.kind) {
+          case ApiItemKind.Property:
+          case ApiItemKind.PropertySignature:
+            suffix =
+              '#' +
+              Utilities.getSafeFilenameForName(
+                PackageName.getUnscopedName(hierarchyItem.displayName)
+              );
+            break;
+        }
+      }
     }
-    return baseName + '.md';
+
+    return `${baseName}.md${suffix}`;
   }
 
   private _getLinkFilenameForApiItem(apiItem: ApiItem): string {
-    return './' + this._getFilenameForApiItem(apiItem);
+    return './' + this._getFilenameForApiItem(apiItem, true);
   }
 
   private _deleteOldOutputFiles(): void {

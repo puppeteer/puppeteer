@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-referer
+<p id="referer">referer</p>
 
 </td><td>
 
@@ -56,7 +56,7 @@ If provided, it will take preference over the referer header value set by [page.
 </td></tr>
 <tr><td>
 
-referrerPolicy
+<p id="referrerpolicy">referrerPolicy</p>
 
 </td><td>
 

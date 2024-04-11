@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-captureBeyondViewport
+<p id="capturebeyondviewport">captureBeyondViewport</p>
 
 </td><td>
 
@@ -56,7 +56,7 @@ Capture the screenshot beyond the viewport.
 </td></tr>
 <tr><td>
 
-clip
+<p id="clip">clip</p>
 
 </td><td>
 
@@ -75,7 +75,7 @@ Specifies the region of the page/element to clip.
 </td></tr>
 <tr><td>
 
-encoding
+<p id="encoding">encoding</p>
 
 </td><td>
 
@@ -96,7 +96,7 @@ Encoding of the image.
 </td></tr>
 <tr><td>
 
-fromSurface
+<p id="fromsurface">fromSurface</p>
 
 </td><td>
 
@@ -117,7 +117,7 @@ Capture the screenshot from the surface, rather than the view.
 </td></tr>
 <tr><td>
 
-fullPage
+<p id="fullpage">fullPage</p>
 
 </td><td>
 
@@ -138,7 +138,7 @@ When `true`, takes a screenshot of the full page.
 </td></tr>
 <tr><td>
 
-omitBackground
+<p id="omitbackground">omitBackground</p>
 
 </td><td>
 
@@ -159,7 +159,7 @@ Hides default white background and allows capturing screenshots with transparenc
 </td></tr>
 <tr><td>
 
-optimizeForSpeed
+<p id="optimizeforspeed">optimizeForSpeed</p>
 
 </td><td>
 
@@ -178,7 +178,7 @@ boolean
 </td></tr>
 <tr><td>
 
-path
+<p id="path">path</p>
 
 </td><td>
 
@@ -197,7 +197,7 @@ The file path to save the image to. The screenshot type will be inferred from fi
 </td></tr>
 <tr><td>
 
-quality
+<p id="quality">quality</p>
 
 </td><td>
 
@@ -216,7 +216,7 @@ Quality of the image, between 0-100. Not applicable to `png` images.
 </td></tr>
 <tr><td>
 
-type
+<p id="type">type</p>
 
 </td><td>
 

@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-signal
+<p id="signal">signal</p>
 
 </td><td>
 

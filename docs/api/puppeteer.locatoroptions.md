@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-ensureElementIsInTheViewport
+<p id="ensureelementisintheviewport">ensureElementIsInTheViewport</p>
 
 </td><td>
 
@@ -54,7 +54,7 @@ Whether to scroll the element into viewport if not in the viewprot already.
 </td></tr>
 <tr><td>
 
-timeout
+<p id="timeout">timeout</p>
 
 </td><td>
 
@@ -75,7 +75,7 @@ Pass `0` to disable timeout.
 </td></tr>
 <tr><td>
 
-visibility
+<p id="visibility">visibility</p>
 
 </td><td>
 
@@ -92,7 +92,7 @@ Whether to wait for the element to be `visible` or `hidden`. `null` to disable v
 </td></tr>
 <tr><td>
 
-waitForEnabled
+<p id="waitforenabled">waitForEnabled</p>
 
 </td><td>
 
@@ -111,7 +111,7 @@ Whether to wait for input elements to become enabled before the action. Applicab
 </td></tr>
 <tr><td>
 
-waitForStableBoundingBox
+<p id="waitforstableboundingbox">waitForStableBoundingBox</p>
 
 </td><td>
 

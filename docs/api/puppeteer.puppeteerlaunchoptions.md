@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-extraPrefsFirefox
+<p id="extraprefsfirefox">extraPrefsFirefox</p>
 
 </td><td>
 
@@ -54,7 +54,7 @@ Record&lt;string, unknown&gt;
 </td></tr>
 <tr><td>
 
-product
+<p id="product">product</p>
 
 </td><td>
 

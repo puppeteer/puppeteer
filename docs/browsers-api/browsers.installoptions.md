@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-baseUrl
+<p id="baseurl">baseUrl</p>
 
 </td><td>
 
@@ -58,7 +58,7 @@ Either
 </td></tr>
 <tr><td>
 
-browser
+<p id="browser">browser</p>
 
 </td><td>
 
@@ -75,7 +75,7 @@ Determines which browser to install.
 </td></tr>
 <tr><td>
 
-buildId
+<p id="buildid">buildId</p>
 
 </td><td>
 
@@ -92,7 +92,7 @@ Determines which buildId to download. BuildId should uniquely identify binaries 
 </td></tr>
 <tr><td>
 
-buildIdAlias
+<p id="buildidalias">buildIdAlias</p>
 
 </td><td>
 
@@ -111,7 +111,7 @@ An alias for the provided `buildId`. It will be used to maintain local metadata 
 </td></tr>
 <tr><td>
 
-cacheDir
+<p id="cachedir">cacheDir</p>
 
 </td><td>
 
@@ -128,7 +128,7 @@ Determines the path to download browsers to.
 </td></tr>
 <tr><td>
 
-downloadProgressCallback
+<p id="downloadprogresscallback">downloadProgressCallback</p>
 
 </td><td>
 
@@ -147,7 +147,7 @@ Provides information about the progress of the download.
 </td></tr>
 <tr><td>
 
-platform
+<p id="platform">platform</p>
 
 </td><td>
 
@@ -168,7 +168,7 @@ Determines which platform the browser will be suited for.
 </td></tr>
 <tr><td>
 
-unpack
+<p id="unpack">unpack</p>
 
 </td><td>
 

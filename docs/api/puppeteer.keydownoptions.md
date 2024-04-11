@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-commands
+<p id="commands">commands</p>
 
 </td><td>
 
@@ -56,7 +56,7 @@ Do not use. This is automatically handled.
 </td></tr>
 <tr><td>
 
-text
+<p id="text">text</p>
 
 </td><td>
 

@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-polling
+<p id="polling">polling</p>
 
 </td><td>
 
@@ -58,7 +58,7 @@ An interval at which the `pageFunction` is executed, defaults to `raf`. If `poll
 </td></tr>
 <tr><td>
 
-signal
+<p id="signal">signal</p>
 
 </td><td>
 
@@ -77,7 +77,7 @@ A signal object that allows you to cancel a waitForFunction call.
 </td></tr>
 <tr><td>
 
-timeout
+<p id="timeout">timeout</p>
 
 </td><td>
 

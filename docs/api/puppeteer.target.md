@@ -33,7 +33,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[asPage()](./puppeteer.target.aspage.md)
+<p id="aspage">[asPage()](./puppeteer.target.aspage.md)</p>
 
 </td><td>
 
@@ -44,7 +44,7 @@ Forcefully creates a page for a target of any type. It is useful if you want to 
 </td></tr>
 <tr><td>
 
-[browser()](./puppeteer.target.browser.md)
+<p id="browser">[browser()](./puppeteer.target.browser.md)</p>
 
 </td><td>
 
@@ -55,7 +55,7 @@ Get the browser the target belongs to.
 </td></tr>
 <tr><td>
 
-[browserContext()](./puppeteer.target.browsercontext.md)
+<p id="browsercontext">[browserContext()](./puppeteer.target.browsercontext.md)</p>
 
 </td><td>
 
@@ -66,7 +66,7 @@ Get the browser context the target belongs to.
 </td></tr>
 <tr><td>
 
-[createCDPSession()](./puppeteer.target.createcdpsession.md)
+<p id="createcdpsession">[createCDPSession()](./puppeteer.target.createcdpsession.md)</p>
 
 </td><td>
 
@@ -77,7 +77,7 @@ Creates a Chrome Devtools Protocol session attached to the target.
 </td></tr>
 <tr><td>
 
-[opener()](./puppeteer.target.opener.md)
+<p id="opener">[opener()](./puppeteer.target.opener.md)</p>
 
 </td><td>
 
@@ -88,7 +88,7 @@ Get the target that opened this target. Top-level targets return `null`.
 </td></tr>
 <tr><td>
 
-[page()](./puppeteer.target.page.md)
+<p id="page">[page()](./puppeteer.target.page.md)</p>
 
 </td><td>
 
@@ -99,7 +99,7 @@ If the target is not of type `"page"`, `"webview"` or `"background_page"`, retur
 </td></tr>
 <tr><td>
 
-[type()](./puppeteer.target.type.md)
+<p id="type">[type()](./puppeteer.target.type.md)</p>
 
 </td><td>
 
@@ -110,7 +110,7 @@ Identifies what kind of target this is.
 </td></tr>
 <tr><td>
 
-[url()](./puppeteer.target.url.md)
+<p id="url">[url()](./puppeteer.target.url.md)</p>
 
 </td><td>
 
@@ -119,7 +119,7 @@ Identifies what kind of target this is.
 </td></tr>
 <tr><td>
 
-[worker()](./puppeteer.target.worker.md)
+<p id="worker">[worker()](./puppeteer.target.worker.md)</p>
 
 </td><td>
 

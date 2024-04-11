@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-domain
+<p id="domain">domain</p>
 
 </td><td>
 
@@ -54,7 +54,7 @@ Cookie domain.
 </td></tr>
 <tr><td>
 
-expires
+<p id="expires">expires</p>
 
 </td><td>
 
@@ -71,7 +71,7 @@ Cookie expiration date as the number of seconds since the UNIX epoch. Set to `-1
 </td></tr>
 <tr><td>
 
-httpOnly
+<p id="httponly">httpOnly</p>
 
 </td><td>
 
@@ -88,7 +88,7 @@ True if cookie is http-only.
 </td></tr>
 <tr><td>
 
-name
+<p id="name">name</p>
 
 </td><td>
 
@@ -105,7 +105,7 @@ Cookie name.
 </td></tr>
 <tr><td>
 
-partitionKey
+<p id="partitionkey">partitionKey</p>
 
 </td><td>
 
@@ -124,7 +124,7 @@ Cookie partition key. The site of the top-level URL the browser was visiting at 
 </td></tr>
 <tr><td>
 
-partitionKeyOpaque
+<p id="partitionkeyopaque">partitionKeyOpaque</p>
 
 </td><td>
 
@@ -143,7 +143,7 @@ True if cookie partition key is opaque. Supported only in Chrome.
 </td></tr>
 <tr><td>
 
-path
+<p id="path">path</p>
 
 </td><td>
 
@@ -160,7 +160,7 @@ Cookie path.
 </td></tr>
 <tr><td>
 
-priority
+<p id="priority">priority</p>
 
 </td><td>
 
@@ -179,7 +179,7 @@ Cookie Priority. Supported only in Chrome.
 </td></tr>
 <tr><td>
 
-sameParty
+<p id="sameparty">sameParty</p>
 
 </td><td>
 
@@ -198,7 +198,7 @@ True if cookie is SameParty. Supported only in Chrome.
 </td></tr>
 <tr><td>
 
-sameSite
+<p id="samesite">sameSite</p>
 
 </td><td>
 
@@ -217,7 +217,7 @@ Cookie SameSite type.
 </td></tr>
 <tr><td>
 
-secure
+<p id="secure">secure</p>
 
 </td><td>
 
@@ -234,7 +234,7 @@ True if cookie is secure.
 </td></tr>
 <tr><td>
 
-session
+<p id="session">session</p>
 
 </td><td>
 
@@ -251,7 +251,7 @@ True in case of session cookie.
 </td></tr>
 <tr><td>
 
-size
+<p id="size">size</p>
 
 </td><td>
 
@@ -268,7 +268,7 @@ Cookie size.
 </td></tr>
 <tr><td>
 
-sourceScheme
+<p id="sourcescheme">sourceScheme</p>
 
 </td><td>
 
@@ -287,7 +287,7 @@ Cookie source scheme type. Supported only in Chrome.
 </td></tr>
 <tr><td>
 
-value
+<p id="value">value</p>
 
 </td><td>
 

@@ -50,7 +50,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[accept(promptText)](./puppeteer.dialog.accept.md)
+<p id="accept">[accept(promptText)](./puppeteer.dialog.accept.md)</p>
 
 </td><td>
 
@@ -61,7 +61,7 @@ A promise that resolves when the dialog has been accepted.
 </td></tr>
 <tr><td>
 
-[defaultValue()](./puppeteer.dialog.defaultvalue.md)
+<p id="defaultvalue">[defaultValue()](./puppeteer.dialog.defaultvalue.md)</p>
 
 </td><td>
 
@@ -72,7 +72,7 @@ The default value of the prompt, or an empty string if the dialog is not a `prom
 </td></tr>
 <tr><td>
 
-[dismiss()](./puppeteer.dialog.dismiss.md)
+<p id="dismiss">[dismiss()](./puppeteer.dialog.dismiss.md)</p>
 
 </td><td>
 
@@ -83,7 +83,7 @@ A promise which will resolve once the dialog has been dismissed
 </td></tr>
 <tr><td>
 
-[message()](./puppeteer.dialog.message.md)
+<p id="message">[message()](./puppeteer.dialog.message.md)</p>
 
 </td><td>
 
@@ -94,7 +94,7 @@ The message displayed in the dialog.
 </td></tr>
 <tr><td>
 
-[type()](./puppeteer.dialog.type.md)
+<p id="type">[type()](./puppeteer.dialog.type.md)</p>
 
 </td><td>
 

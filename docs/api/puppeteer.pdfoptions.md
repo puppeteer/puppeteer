@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-displayHeaderFooter
+<p id="displayheaderfooter">displayHeaderFooter</p>
 
 </td><td>
 
@@ -58,7 +58,7 @@ Whether to show the header and footer.
 </td></tr>
 <tr><td>
 
-footerTemplate
+<p id="footertemplate">footerTemplate</p>
 
 </td><td>
 
@@ -70,14 +70,14 @@ string
 
 </td><td>
 
-HTML template for the print footer. Has the same constraints and support for special classes as [PDFOptions.headerTemplate](./puppeteer.pdfoptions.md).
+HTML template for the print footer. Has the same constraints and support for special classes as [PDFOptions.headerTemplate](./puppeteer.pdfoptions.md#headertemplate).
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-format
+<p id="format">format</p>
 
 </td><td>
 
@@ -96,7 +96,7 @@ format
 </td></tr>
 <tr><td>
 
-headerTemplate
+<p id="headertemplate">headerTemplate</p>
 
 </td><td>
 
@@ -125,7 +125,7 @@ HTML template for the print header. Should be valid HTML with the following clas
 </td></tr>
 <tr><td>
 
-height
+<p id="height">height</p>
 
 </td><td>
 
@@ -144,7 +144,7 @@ Sets the height of paper. You can pass in a number or a string with a unit.
 </td></tr>
 <tr><td>
 
-landscape
+<p id="landscape">landscape</p>
 
 </td><td>
 
@@ -165,7 +165,7 @@ Whether to print in landscape orientation.
 </td></tr>
 <tr><td>
 
-margin
+<p id="margin">margin</p>
 
 </td><td>
 
@@ -186,7 +186,7 @@ Set the PDF margins.
 </td></tr>
 <tr><td>
 
-omitBackground
+<p id="omitbackground">omitBackground</p>
 
 </td><td>
 
@@ -207,7 +207,7 @@ Hides default white background and allows generating pdfs with transparency.
 </td></tr>
 <tr><td>
 
-outline
+<p id="outline">outline</p>
 
 </td><td>
 
@@ -228,7 +228,7 @@ Generate document outline.
 </td></tr>
 <tr><td>
 
-pageRanges
+<p id="pageranges">pageRanges</p>
 
 </td><td>
 
@@ -249,7 +249,7 @@ The empty string, which means all pages are printed.
 </td></tr>
 <tr><td>
 
-path
+<p id="path">path</p>
 
 </td><td>
 
@@ -270,7 +270,7 @@ The path to save the file to.
 </td></tr>
 <tr><td>
 
-preferCSSPageSize
+<p id="prefercsspagesize">preferCSSPageSize</p>
 
 </td><td>
 
@@ -291,7 +291,7 @@ Give any CSS `@page` size declared in the page priority over what is declared in
 </td></tr>
 <tr><td>
 
-printBackground
+<p id="printbackground">printBackground</p>
 
 </td><td>
 
@@ -312,7 +312,7 @@ Set to `true` to print background graphics.
 </td></tr>
 <tr><td>
 
-scale
+<p id="scale">scale</p>
 
 </td><td>
 
@@ -333,7 +333,7 @@ Scales the rendering of the web page. Amount must be between `0.1` and `2`.
 </td></tr>
 <tr><td>
 
-tagged
+<p id="tagged">tagged</p>
 
 </td><td>
 
@@ -354,7 +354,7 @@ Generate tagged (accessible) PDF.
 </td></tr>
 <tr><td>
 
-timeout
+<p id="timeout">timeout</p>
 
 </td><td>
 
@@ -375,7 +375,7 @@ Timeout in milliseconds. Pass `0` to disable timeout.
 </td></tr>
 <tr><td>
 
-width
+<p id="width">width</p>
 
 </td><td>
 

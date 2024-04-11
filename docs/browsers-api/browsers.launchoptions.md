@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-args
+<p id="args">args</p>
 
 </td><td>
 
@@ -52,7 +52,7 @@ string\[\]
 </td></tr>
 <tr><td>
 
-detached
+<p id="detached">detached</p>
 
 </td><td>
 
@@ -69,7 +69,7 @@ boolean
 </td></tr>
 <tr><td>
 
-dumpio
+<p id="dumpio">dumpio</p>
 
 </td><td>
 
@@ -86,7 +86,7 @@ boolean
 </td></tr>
 <tr><td>
 
-env
+<p id="env">env</p>
 
 </td><td>
 
@@ -103,7 +103,7 @@ Record&lt;string, string \| undefined&gt;
 </td></tr>
 <tr><td>
 
-executablePath
+<p id="executablepath">executablePath</p>
 
 </td><td>
 
@@ -118,7 +118,7 @@ string
 </td></tr>
 <tr><td>
 
-handleSIGHUP
+<p id="handlesighup">handleSIGHUP</p>
 
 </td><td>
 
@@ -135,7 +135,7 @@ boolean
 </td></tr>
 <tr><td>
 
-handleSIGINT
+<p id="handlesigint">handleSIGINT</p>
 
 </td><td>
 
@@ -152,7 +152,7 @@ boolean
 </td></tr>
 <tr><td>
 
-handleSIGTERM
+<p id="handlesigterm">handleSIGTERM</p>
 
 </td><td>
 
@@ -169,7 +169,7 @@ boolean
 </td></tr>
 <tr><td>
 
-onExit
+<p id="onexit">onExit</p>
 
 </td><td>
 
@@ -186,7 +186,7 @@ onExit
 </td></tr>
 <tr><td>
 
-pipe
+<p id="pipe">pipe</p>
 
 </td><td>
 

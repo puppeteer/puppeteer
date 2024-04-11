@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-targetchanged
+<p id="targetchanged">targetchanged</p>
 
 </td><td>
 
@@ -52,7 +52,7 @@ targetchanged
 </td></tr>
 <tr><td>
 
-targetcreated
+<p id="targetcreated">targetcreated</p>
 
 </td><td>
 
@@ -67,7 +67,7 @@ targetcreated
 </td></tr>
 <tr><td>
 
-targetdestroyed
+<p id="targetdestroyed">targetdestroyed</p>
 
 </td><td>
 

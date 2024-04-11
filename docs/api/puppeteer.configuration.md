@@ -39,7 +39,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-browserRevision
+<p id="browserrevision">browserRevision</p>
 
 </td><td>
 
@@ -66,7 +66,7 @@ The pinned browser version supported by the current Puppeteer version.
 </td></tr>
 <tr><td>
 
-cacheDirectory
+<p id="cachedirectory">cacheDirectory</p>
 
 </td><td>
 
@@ -89,7 +89,7 @@ Can be overridden by `PUPPETEER_CACHE_DIR`.
 </td></tr>
 <tr><td>
 
-defaultProduct
+<p id="defaultproduct">defaultProduct</p>
 
 </td><td>
 
@@ -112,7 +112,7 @@ Can be overridden by `PUPPETEER_PRODUCT`.
 </td></tr>
 <tr><td>
 
-downloadBaseUrl
+<p id="downloadbaseurl">downloadBaseUrl</p>
 
 </td><td>
 
@@ -135,7 +135,7 @@ Either https://storage.googleapis.com/chrome-for-testing-public or https://archi
 </td></tr>
 <tr><td>
 
-executablePath
+<p id="executablepath">executablePath</p>
 
 </td><td>
 
@@ -158,7 +158,7 @@ Can be overridden by `PUPPETEER_EXECUTABLE_PATH`.
 </td></tr>
 <tr><td>
 
-experiments
+<p id="experiments">experiments</p>
 
 </td><td>
 
@@ -177,7 +177,7 @@ Defines experimental options for Puppeteer.
 </td></tr>
 <tr><td>
 
-logLevel
+<p id="loglevel">logLevel</p>
 
 </td><td>
 
@@ -198,7 +198,7 @@ Tells Puppeteer to log at the given level.
 </td></tr>
 <tr><td>
 
-skipChromeDownload
+<p id="skipchromedownload">skipChromeDownload</p>
 
 </td><td>
 
@@ -219,7 +219,7 @@ Can be overridden by `PUPPETEER_SKIP_CHROME_DOWNLOAD`.
 </td></tr>
 <tr><td>
 
-skipChromeHeadlessShellDownload
+<p id="skipchromeheadlessshelldownload">skipChromeHeadlessShellDownload</p>
 
 </td><td>
 
@@ -240,7 +240,7 @@ Can be overridden by `PUPPETEER_SKIP_CHROME_HEADLESS_SHELL_DOWNLOAD`.
 </td></tr>
 <tr><td>
 
-skipDownload
+<p id="skipdownload">skipDownload</p>
 
 </td><td>
 
@@ -261,7 +261,7 @@ Can be overridden by `PUPPETEER_SKIP_DOWNLOAD`.
 </td></tr>
 <tr><td>
 
-temporaryDirectory
+<p id="temporarydirectory">temporaryDirectory</p>
 
 </td><td>
 

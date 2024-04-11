@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-domain
+<p id="domain">domain</p>
 
 </td><td>
 
@@ -56,7 +56,7 @@ Cookie domain.
 </td></tr>
 <tr><td>
 
-expires
+<p id="expires">expires</p>
 
 </td><td>
 
@@ -75,7 +75,7 @@ Cookie expiration date, session cookie if not set
 </td></tr>
 <tr><td>
 
-httpOnly
+<p id="httponly">httpOnly</p>
 
 </td><td>
 
@@ -94,7 +94,7 @@ True if cookie is http-only.
 </td></tr>
 <tr><td>
 
-name
+<p id="name">name</p>
 
 </td><td>
 
@@ -111,7 +111,7 @@ Cookie name.
 </td></tr>
 <tr><td>
 
-partitionKey
+<p id="partitionkey">partitionKey</p>
 
 </td><td>
 
@@ -130,7 +130,7 @@ Cookie partition key. The site of the top-level URL the browser was visiting at 
 </td></tr>
 <tr><td>
 
-path
+<p id="path">path</p>
 
 </td><td>
 
@@ -149,7 +149,7 @@ Cookie path.
 </td></tr>
 <tr><td>
 
-priority
+<p id="priority">priority</p>
 
 </td><td>
 
@@ -168,7 +168,7 @@ Cookie Priority. Supported only in Chrome.
 </td></tr>
 <tr><td>
 
-sameParty
+<p id="sameparty">sameParty</p>
 
 </td><td>
 
@@ -187,7 +187,7 @@ True if cookie is SameParty. Supported only in Chrome.
 </td></tr>
 <tr><td>
 
-sameSite
+<p id="samesite">sameSite</p>
 
 </td><td>
 
@@ -206,7 +206,7 @@ Cookie SameSite type.
 </td></tr>
 <tr><td>
 
-secure
+<p id="secure">secure</p>
 
 </td><td>
 
@@ -225,7 +225,7 @@ True if cookie is secure.
 </td></tr>
 <tr><td>
 
-sourceScheme
+<p id="sourcescheme">sourceScheme</p>
 
 </td><td>
 
@@ -244,7 +244,7 @@ Cookie source scheme type. Supported only in Chrome.
 </td></tr>
 <tr><td>
 
-url
+<p id="url">url</p>
 
 </td><td>
 
@@ -263,7 +263,7 @@ The request-URI to associate with the setting of the cookie. This value can affe
 </td></tr>
 <tr><td>
 
-value
+<p id="value">value</p>
 
 </td><td>
 

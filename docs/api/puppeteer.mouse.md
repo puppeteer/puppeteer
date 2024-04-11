@@ -92,7 +92,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[click(x, y, options)](./puppeteer.mouse.click.md)
+<p id="click">[click(x, y, options)](./puppeteer.mouse.click.md)</p>
 
 </td><td>
 
@@ -103,7 +103,7 @@ Shortcut for `mouse.move`, `mouse.down` and `mouse.up`.
 </td></tr>
 <tr><td>
 
-[down(options)](./puppeteer.mouse.down.md)
+<p id="down">[down(options)](./puppeteer.mouse.down.md)</p>
 
 </td><td>
 
@@ -114,7 +114,7 @@ Presses the mouse.
 </td></tr>
 <tr><td>
 
-[drag(start, target)](./puppeteer.mouse.drag.md)
+<p id="drag">[drag(start, target)](./puppeteer.mouse.drag.md)</p>
 
 </td><td>
 
@@ -125,7 +125,7 @@ Dispatches a `drag` event.
 </td></tr>
 <tr><td>
 
-[dragAndDrop(start, target, options)](./puppeteer.mouse.draganddrop.md)
+<p id="draganddrop">[dragAndDrop(start, target, options)](./puppeteer.mouse.draganddrop.md)</p>
 
 </td><td>
 
@@ -136,7 +136,7 @@ Performs a drag, dragenter, dragover, and drop in sequence.
 </td></tr>
 <tr><td>
 
-[dragEnter(target, data)](./puppeteer.mouse.dragenter.md)
+<p id="dragenter">[dragEnter(target, data)](./puppeteer.mouse.dragenter.md)</p>
 
 </td><td>
 
@@ -147,7 +147,7 @@ Dispatches a `dragenter` event.
 </td></tr>
 <tr><td>
 
-[dragOver(target, data)](./puppeteer.mouse.dragover.md)
+<p id="dragover">[dragOver(target, data)](./puppeteer.mouse.dragover.md)</p>
 
 </td><td>
 
@@ -158,7 +158,7 @@ Dispatches a `dragover` event.
 </td></tr>
 <tr><td>
 
-[drop(target, data)](./puppeteer.mouse.drop.md)
+<p id="drop">[drop(target, data)](./puppeteer.mouse.drop.md)</p>
 
 </td><td>
 
@@ -169,7 +169,7 @@ Performs a dragenter, dragover, and drop in sequence.
 </td></tr>
 <tr><td>
 
-[move(x, y, options)](./puppeteer.mouse.move.md)
+<p id="move">[move(x, y, options)](./puppeteer.mouse.move.md)</p>
 
 </td><td>
 
@@ -180,7 +180,7 @@ Moves the mouse to the given coordinate.
 </td></tr>
 <tr><td>
 
-[reset()](./puppeteer.mouse.reset.md)
+<p id="reset">[reset()](./puppeteer.mouse.reset.md)</p>
 
 </td><td>
 
@@ -191,7 +191,7 @@ Resets the mouse to the default state: No buttons pressed; position at (0,0).
 </td></tr>
 <tr><td>
 
-[up(options)](./puppeteer.mouse.up.md)
+<p id="up">[up(options)](./puppeteer.mouse.up.md)</p>
 
 </td><td>
 
@@ -202,7 +202,7 @@ Releases the mouse.
 </td></tr>
 <tr><td>
 
-[wheel(options)](./puppeteer.mouse.wheel.md)
+<p id="wheel">[wheel(options)](./puppeteer.mouse.wheel.md)</p>
 
 </td><td>
 

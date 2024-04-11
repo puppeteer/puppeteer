@@ -41,7 +41,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-close
+<p id="close">close</p>
 
 </td><td>
 
@@ -56,7 +56,7 @@ undefined
 </td></tr>
 <tr><td>
 
-console
+<p id="console">console</p>
 
 </td><td>
 
@@ -71,7 +71,7 @@ console
 </td></tr>
 <tr><td>
 
-dialog
+<p id="dialog">dialog</p>
 
 </td><td>
 
@@ -86,7 +86,7 @@ dialog
 </td></tr>
 <tr><td>
 
-domcontentloaded
+<p id="domcontentloaded">domcontentloaded</p>
 
 </td><td>
 
@@ -101,7 +101,7 @@ undefined
 </td></tr>
 <tr><td>
 
-error
+<p id="error">error</p>
 
 </td><td>
 
@@ -116,7 +116,7 @@ Error
 </td></tr>
 <tr><td>
 
-frameattached
+<p id="frameattached">frameattached</p>
 
 </td><td>
 
@@ -131,7 +131,7 @@ frameattached
 </td></tr>
 <tr><td>
 
-framedetached
+<p id="framedetached">framedetached</p>
 
 </td><td>
 
@@ -146,7 +146,7 @@ framedetached
 </td></tr>
 <tr><td>
 
-framenavigated
+<p id="framenavigated">framenavigated</p>
 
 </td><td>
 
@@ -161,7 +161,7 @@ framenavigated
 </td></tr>
 <tr><td>
 
-load
+<p id="load">load</p>
 
 </td><td>
 
@@ -176,7 +176,7 @@ undefined
 </td></tr>
 <tr><td>
 
-metrics
+<p id="metrics">metrics</p>
 
 </td><td>
 
@@ -191,7 +191,7 @@ metrics
 </td></tr>
 <tr><td>
 
-pageerror
+<p id="pageerror">pageerror</p>
 
 </td><td>
 
@@ -206,7 +206,7 @@ Error
 </td></tr>
 <tr><td>
 
-popup
+<p id="popup">popup</p>
 
 </td><td>
 
@@ -221,7 +221,7 @@ popup
 </td></tr>
 <tr><td>
 
-request
+<p id="request">request</p>
 
 </td><td>
 
@@ -236,7 +236,7 @@ request
 </td></tr>
 <tr><td>
 
-requestfailed
+<p id="requestfailed">requestfailed</p>
 
 </td><td>
 
@@ -251,7 +251,7 @@ requestfailed
 </td></tr>
 <tr><td>
 
-requestfinished
+<p id="requestfinished">requestfinished</p>
 
 </td><td>
 
@@ -266,7 +266,7 @@ requestfinished
 </td></tr>
 <tr><td>
 
-requestservedfromcache
+<p id="requestservedfromcache">requestservedfromcache</p>
 
 </td><td>
 
@@ -281,7 +281,7 @@ requestservedfromcache
 </td></tr>
 <tr><td>
 
-response
+<p id="response">response</p>
 
 </td><td>
 
@@ -296,7 +296,7 @@ response
 </td></tr>
 <tr><td>
 
-workercreated
+<p id="workercreated">workercreated</p>
 
 </td><td>
 
@@ -311,7 +311,7 @@ workercreated
 </td></tr>
 <tr><td>
 
-workerdestroyed
+<p id="workerdestroyed">workerdestroyed</p>
 
 </td><td>
 

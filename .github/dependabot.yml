@@ -20,12 +20,23 @@ updates:
         dependency-type: development
         patterns:
           - '*'
+  - package-ecosystem: npm
+    directory: /website
+    schedule:
+      interval: weekly
+      day: 'sunday'
+      time: '03:00'
+      timezone: Europe/Berlin
+    groups:
+      all:
+        patterns:
+          - '*'
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
       day: 'sunday'
-      time: '03:00'
+      time: '04:00'
       timezone: Europe/Berlin
     groups:
       all:
@@ -36,7 +47,7 @@ updates:
     schedule:
       interval: weekly
       day: 'sunday'
-      time: '04:00'
+      time: '05:00'
       timezone: Europe/Berlin
     groups:
       all:

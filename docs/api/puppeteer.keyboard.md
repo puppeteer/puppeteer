@@ -64,7 +64,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[down(key, options)](./puppeteer.keyboard.down.md)
+<p id="down">[down(key, options)](./puppeteer.keyboard.down.md)</p>
 
 </td><td>
 
@@ -75,7 +75,7 @@ Dispatches a `keydown` event.
 </td></tr>
 <tr><td>
 
-[press(key, options)](./puppeteer.keyboard.press.md)
+<p id="press">[press(key, options)](./puppeteer.keyboard.press.md)</p>
 
 </td><td>
 
@@ -86,7 +86,7 @@ Shortcut for [Keyboard.down()](./puppeteer.keyboard.down.md) and [Keyboard.up()]
 </td></tr>
 <tr><td>
 
-[sendCharacter(char)](./puppeteer.keyboard.sendcharacter.md)
+<p id="sendcharacter">[sendCharacter(char)](./puppeteer.keyboard.sendcharacter.md)</p>
 
 </td><td>
 
@@ -97,7 +97,7 @@ Dispatches a `keypress` and `input` event. This does not send a `keydown` or `ke
 </td></tr>
 <tr><td>
 
-[type(text, options)](./puppeteer.keyboard.type.md)
+<p id="type">[type(text, options)](./puppeteer.keyboard.type.md)</p>
 
 </td><td>
 
@@ -108,7 +108,7 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 </td></tr>
 <tr><td>
 
-[up(key)](./puppeteer.keyboard.up.md)
+<p id="up">[up(key)](./puppeteer.keyboard.up.md)</p>
 
 </td><td>
 

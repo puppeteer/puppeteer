@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-height
+<p id="height">height</p>
 
 </td><td>
 
@@ -54,7 +54,7 @@ the height of the element in pixels.
 </td></tr>
 <tr><td>
 
-width
+<p id="width">width</p>
 
 </td><td>
 

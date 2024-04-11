@@ -27,7 +27,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[(constructor)(client)](./puppeteer.jscoverage._constructor_.md)
+<p id="_constructor_">[(constructor)(client)](./puppeteer.jscoverage._constructor_.md)</p>
 
 </td><td>
 
@@ -55,7 +55,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[start(options)](./puppeteer.jscoverage.start.md)
+<p id="start">[start(options)](./puppeteer.jscoverage.start.md)</p>
 
 </td><td>
 
@@ -64,7 +64,7 @@ Description
 </td></tr>
 <tr><td>
 
-[stop()](./puppeteer.jscoverage.stop.md)
+<p id="stop">[stop()](./puppeteer.jscoverage.stop.md)</p>
 
 </td><td>
 

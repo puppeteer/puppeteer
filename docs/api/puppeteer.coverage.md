@@ -60,7 +60,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[(constructor)(client)](./puppeteer.coverage._constructor_.md)
+<p id="_constructor_">[(constructor)(client)](./puppeteer.coverage._constructor_.md)</p>
 
 </td><td>
 
@@ -88,7 +88,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[startCSSCoverage(options)](./puppeteer.coverage.startcsscoverage.md)
+<p id="startcsscoverage">[startCSSCoverage(options)](./puppeteer.coverage.startcsscoverage.md)</p>
 
 </td><td>
 
@@ -97,7 +97,7 @@ Description
 </td></tr>
 <tr><td>
 
-[startJSCoverage(options)](./puppeteer.coverage.startjscoverage.md)
+<p id="startjscoverage">[startJSCoverage(options)](./puppeteer.coverage.startjscoverage.md)</p>
 
 </td><td>
 
@@ -106,7 +106,7 @@ Description
 </td></tr>
 <tr><td>
 
-[stopCSSCoverage()](./puppeteer.coverage.stopcsscoverage.md)
+<p id="stopcsscoverage">[stopCSSCoverage()](./puppeteer.coverage.stopcsscoverage.md)</p>
 
 </td><td>
 
@@ -117,7 +117,7 @@ Promise that resolves to the array of coverage reports for all stylesheets.
 </td></tr>
 <tr><td>
 
-[stopJSCoverage()](./puppeteer.coverage.stopjscoverage.md)
+<p id="stopjscoverage">[stopJSCoverage()](./puppeteer.coverage.stopjscoverage.md)</p>
 
 </td><td>
 

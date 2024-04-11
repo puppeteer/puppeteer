@@ -27,7 +27,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[(constructor)(opts)](./browsers.process._constructor_.md)
+<p id="_constructor_">[(constructor)(opts)](./browsers.process._constructor_.md)</p>
 
 </td><td>
 
@@ -59,7 +59,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-nodeProcess
+<p id="nodeprocess">nodeProcess</p>
 
 </td><td>
 
@@ -91,7 +91,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[close()](./browsers.process.close.md)
+<p id="close">[close()](./browsers.process.close.md)</p>
 
 </td><td>
 
@@ -100,7 +100,7 @@ Description
 </td></tr>
 <tr><td>
 
-[hasClosed()](./browsers.process.hasclosed.md)
+<p id="hasclosed">[hasClosed()](./browsers.process.hasclosed.md)</p>
 
 </td><td>
 
@@ -109,7 +109,7 @@ Description
 </td></tr>
 <tr><td>
 
-[kill()](./browsers.process.kill.md)
+<p id="kill">[kill()](./browsers.process.kill.md)</p>
 
 </td><td>
 
@@ -118,7 +118,7 @@ Description
 </td></tr>
 <tr><td>
 
-[waitForLineOutput(regex, timeout)](./browsers.process.waitforlineoutput.md)
+<p id="waitforlineoutput">[waitForLineOutput(regex, timeout)](./browsers.process.waitforlineoutput.md)</p>
 
 </td><td>
 

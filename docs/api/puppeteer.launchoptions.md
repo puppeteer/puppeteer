@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-channel
+<p id="channel">channel</p>
 
 </td><td>
 
@@ -56,7 +56,7 @@ Chrome Release Channel
 </td></tr>
 <tr><td>
 
-dumpio
+<p id="dumpio">dumpio</p>
 
 </td><td>
 
@@ -77,7 +77,7 @@ If true, pipes the browser process stdout and stderr to `process.stdout` and `pr
 </td></tr>
 <tr><td>
 
-env
+<p id="env">env</p>
 
 </td><td>
 
@@ -98,7 +98,7 @@ The contents of `process.env`.
 </td></tr>
 <tr><td>
 
-executablePath
+<p id="executablepath">executablePath</p>
 
 </td><td>
 
@@ -117,7 +117,7 @@ Path to a browser executable to use instead of the bundled Chromium. Note that P
 </td></tr>
 <tr><td>
 
-extraPrefsFirefox
+<p id="extraprefsfirefox">extraPrefsFirefox</p>
 
 </td><td>
 
@@ -136,7 +136,7 @@ Record&lt;string, unknown&gt;
 </td></tr>
 <tr><td>
 
-handleSIGHUP
+<p id="handlesighup">handleSIGHUP</p>
 
 </td><td>
 
@@ -157,7 +157,7 @@ Close the browser process on `SIGHUP`.
 </td></tr>
 <tr><td>
 
-handleSIGINT
+<p id="handlesigint">handleSIGINT</p>
 
 </td><td>
 
@@ -178,7 +178,7 @@ Close the browser process on `Ctrl+C`.
 </td></tr>
 <tr><td>
 
-handleSIGTERM
+<p id="handlesigterm">handleSIGTERM</p>
 
 </td><td>
 
@@ -199,7 +199,7 @@ Close the browser process on `SIGTERM`.
 </td></tr>
 <tr><td>
 
-ignoreDefaultArgs
+<p id="ignoredefaultargs">ignoreDefaultArgs</p>
 
 </td><td>
 
@@ -220,7 +220,7 @@ If `true`, do not use `puppeteer.defaultArgs()` when creating a browser. If an a
 </td></tr>
 <tr><td>
 
-pipe
+<p id="pipe">pipe</p>
 
 </td><td>
 
@@ -241,7 +241,7 @@ Connect to a browser over a pipe instead of a WebSocket.
 </td></tr>
 <tr><td>
 
-product
+<p id="product">product</p>
 
 </td><td>
 
@@ -262,7 +262,7 @@ Which browser to launch.
 </td></tr>
 <tr><td>
 
-timeout
+<p id="timeout">timeout</p>
 
 </td><td>
 
@@ -283,7 +283,7 @@ Maximum time in milliseconds to wait for the browser to start. Pass `0` to disab
 </td></tr>
 <tr><td>
 
-waitForInitialPage
+<p id="waitforinitialpage">waitForInitialPage</p>
 
 </td><td>
 

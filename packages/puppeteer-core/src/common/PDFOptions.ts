@@ -98,7 +98,7 @@ export interface PDFOptions {
   headerTemplate?: string;
   /**
    * HTML template for the print footer. Has the same constraints and support
-   * for special classes as {@link PDFOptions | PDFOptions.headerTemplate}.
+   * for special classes as {@link PDFOptions.headerTemplate}.
    */
   footerTemplate?: string;
   /**

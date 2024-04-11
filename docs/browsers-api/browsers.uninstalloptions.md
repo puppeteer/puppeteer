@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-browser
+<p id="browser">browser</p>
 
 </td><td>
 
@@ -52,7 +52,7 @@ Determines which browser to uninstall.
 </td></tr>
 <tr><td>
 
-buildId
+<p id="buildid">buildId</p>
 
 </td><td>
 
@@ -69,7 +69,7 @@ The browser build to uninstall
 </td></tr>
 <tr><td>
 
-cacheDir
+<p id="cachedir">cacheDir</p>
 
 </td><td>
 
@@ -86,7 +86,7 @@ The path to the root of the cache directory.
 </td></tr>
 <tr><td>
 
-platform
+<p id="platform">platform</p>
 
 </td><td>
 

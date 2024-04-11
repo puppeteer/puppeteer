@@ -39,7 +39,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-rawScriptCoverage
+<p id="rawscriptcoverage">rawScriptCoverage</p>
 
 </td><td>
 

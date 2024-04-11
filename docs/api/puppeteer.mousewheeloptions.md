@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-deltaX
+<p id="deltax">deltaX</p>
 
 </td><td>
 
@@ -52,7 +52,7 @@ number
 </td></tr>
 <tr><td>
 
-deltaY
+<p id="deltay">deltaY</p>
 
 </td><td>
 

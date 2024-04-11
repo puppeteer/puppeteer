@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-content
+<p id="content">content</p>
 
 </td><td>
 
@@ -54,7 +54,7 @@ JavaScript to be injected into the frame.
 </td></tr>
 <tr><td>
 
-id
+<p id="id">id</p>
 
 </td><td>
 
@@ -73,7 +73,7 @@ Sets the `id` of the script.
 </td></tr>
 <tr><td>
 
-path
+<p id="path">path</p>
 
 </td><td>
 
@@ -92,7 +92,7 @@ Path to a JavaScript file to be injected into the frame.
 </td></tr>
 <tr><td>
 
-type
+<p id="type">type</p>
 
 </td><td>
 
@@ -111,7 +111,7 @@ Sets the `type` of the script. Use `module` in order to load an ES2015 module.
 </td></tr>
 <tr><td>
 
-url
+<p id="url">url</p>
 
 </td><td>
 

@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-action
+<p id="action">action</p>
 
 </td><td>
 
@@ -50,7 +50,7 @@ action
 </td></tr>
 <tr><td>
 
-priority
+<p id="priority">priority</p>
 
 </td><td>
 

@@ -37,7 +37,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[emit(type, event)](./puppeteer.eventemitter.emit.md)
+<p id="emit">[emit(type, event)](./puppeteer.eventemitter.emit.md)</p>
 
 </td><td>
 
@@ -48,7 +48,7 @@ Emit an event and call any associated listeners.
 </td></tr>
 <tr><td>
 
-[listenerCount(type)](./puppeteer.eventemitter.listenercount.md)
+<p id="listenercount">[listenerCount(type)](./puppeteer.eventemitter.listenercount.md)</p>
 
 </td><td>
 
@@ -59,7 +59,7 @@ Gets the number of listeners for a given event.
 </td></tr>
 <tr><td>
 
-[off(type, handler)](./puppeteer.eventemitter.off.md)
+<p id="off">[off(type, handler)](./puppeteer.eventemitter.off.md)</p>
 
 </td><td>
 
@@ -70,7 +70,7 @@ Remove an event listener from firing.
 </td></tr>
 <tr><td>
 
-[on(type, handler)](./puppeteer.eventemitter.on.md)
+<p id="on">[on(type, handler)](./puppeteer.eventemitter.on.md)</p>
 
 </td><td>
 
@@ -81,7 +81,7 @@ Bind an event listener to fire when an event occurs.
 </td></tr>
 <tr><td>
 
-[once(type, handler)](./puppeteer.eventemitter.once.md)
+<p id="once">[once(type, handler)](./puppeteer.eventemitter.once.md)</p>
 
 </td><td>
 
@@ -92,7 +92,7 @@ Like `on` but the listener will only be fired once and then it will be removed.
 </td></tr>
 <tr><td>
 
-[removeAllListeners(type)](./puppeteer.eventemitter.removealllisteners.md)
+<p id="removealllisteners">[removeAllListeners(type)](./puppeteer.eventemitter.removealllisteners.md)</p>
 
 </td><td>
 

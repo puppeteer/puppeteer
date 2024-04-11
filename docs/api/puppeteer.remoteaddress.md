@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-ip
+<p id="ip">ip</p>
 
 </td><td>
 
@@ -52,7 +52,7 @@ string
 </td></tr>
 <tr><td>
 
-port
+<p id="port">port</p>
 
 </td><td>
 

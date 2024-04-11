@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-x
+<p id="x">x</p>
 
 </td><td>
 
@@ -52,7 +52,7 @@ x-offset for the clickable point relative to the top-left corner of the border b
 </td></tr>
 <tr><td>
 
-y
+<p id="y">y</p>
 
 </td><td>
 

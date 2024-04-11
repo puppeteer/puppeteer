@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-hidden
+<p id="hidden">hidden</p>
 
 </td><td>
 
@@ -56,7 +56,7 @@ Wait for the selected element to not be found in the DOM or to be hidden, i.e. h
 </td></tr>
 <tr><td>
 
-signal
+<p id="signal">signal</p>
 
 </td><td>
 
@@ -75,7 +75,7 @@ A signal object that allows you to cancel a waitForSelector call.
 </td></tr>
 <tr><td>
 
-timeout
+<p id="timeout">timeout</p>
 
 </td><td>
 
@@ -98,7 +98,7 @@ The default value can be changed by using [Page.setDefaultTimeout()](./puppeteer
 </td></tr>
 <tr><td>
 
-visible
+<p id="visible">visible</p>
 
 </td><td>
 

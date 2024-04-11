@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-args
+<p id="args">args</p>
 
 </td><td>
 
@@ -56,7 +56,7 @@ Additional command line arguments to pass to the browser instance.
 </td></tr>
 <tr><td>
 
-debuggingPort
+<p id="debuggingport">debuggingPort</p>
 
 </td><td>
 
@@ -75,7 +75,7 @@ Specify the debugging port number to use
 </td></tr>
 <tr><td>
 
-devtools
+<p id="devtools">devtools</p>
 
 </td><td>
 
@@ -96,7 +96,7 @@ Whether to auto-open a DevTools panel for each tab. If this is set to `true`, th
 </td></tr>
 <tr><td>
 
-headless
+<p id="headless">headless</p>
 
 </td><td>
 
@@ -117,7 +117,7 @@ Whether to run the browser in headless mode.
 </td></tr>
 <tr><td>
 
-userDataDir
+<p id="userdatadir">userDataDir</p>
 
 </td><td>
 

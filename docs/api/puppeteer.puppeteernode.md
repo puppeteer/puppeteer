@@ -63,7 +63,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-defaultProduct
+<p id="defaultproduct">defaultProduct</p>
 
 </td><td>
 
@@ -80,7 +80,7 @@ The name of the browser that will be launched by default. For `puppeteer`, this 
 </td></tr>
 <tr><td>
 
-lastLaunchedProduct
+<p id="lastlaunchedproduct">lastLaunchedProduct</p>
 
 </td><td>
 
@@ -97,7 +97,7 @@ The name of the browser that was last launched.
 </td></tr>
 <tr><td>
 
-product
+<p id="product">product</p>
 
 </td><td>
 
@@ -111,7 +111,7 @@ string
 
 **Deprecated:**
 
-Do not use as this field as it does not take into account multiple browsers of different types. Use [defaultProduct](./puppeteer.puppeteernode.defaultproduct.md) or [lastLaunchedProduct](./puppeteer.puppeteernode.lastlaunchedproduct.md).
+Do not use as this field as it does not take into account multiple browsers of different types. Use [defaultProduct](./puppeteer.puppeteernode.md#defaultproduct) or [lastLaunchedProduct](./puppeteer.puppeteernode.md#lastlaunchedproduct).
 
 </td></tr>
 </tbody></table>
@@ -133,7 +133,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[connect(options)](./puppeteer.puppeteernode.connect.md)
+<p id="connect">[connect(options)](./puppeteer.puppeteernode.connect.md)</p>
 
 </td><td>
 
@@ -144,7 +144,7 @@ This method attaches Puppeteer to an existing browser instance.
 </td></tr>
 <tr><td>
 
-[defaultArgs(options)](./puppeteer.puppeteernode.defaultargs.md)
+<p id="defaultargs">[defaultArgs(options)](./puppeteer.puppeteernode.defaultargs.md)</p>
 
 </td><td>
 
@@ -153,7 +153,7 @@ This method attaches Puppeteer to an existing browser instance.
 </td></tr>
 <tr><td>
 
-[executablePath(channel)](./puppeteer.puppeteernode.executablepath.md)
+<p id="executablepath">[executablePath(channel)](./puppeteer.puppeteernode.executablepath.md)</p>
 
 </td><td>
 
@@ -164,7 +164,7 @@ The default executable path.
 </td></tr>
 <tr><td>
 
-[launch(options)](./puppeteer.puppeteernode.launch.md)
+<p id="launch">[launch(options)](./puppeteer.puppeteernode.launch.md)</p>
 
 </td><td>
 
@@ -172,12 +172,12 @@ The default executable path.
 
 Launches a browser instance with given arguments and options when specified.
 
-When using with `puppeteer-core`, [options.executablePath](./puppeteer.launchoptions.md) or [options.channel](./puppeteer.launchoptions.md) must be provided.
+When using with `puppeteer-core`, [options.executablePath](./puppeteer.launchoptions.md#executablepath) or [options.channel](./puppeteer.launchoptions.md#channel) must be provided.
 
 </td></tr>
 <tr><td>
 
-[trimCache()](./puppeteer.puppeteernode.trimcache.md)
+<p id="trimcache">[trimCache()](./puppeteer.puppeteernode.trimcache.md)</p>
 
 </td><td>
 
