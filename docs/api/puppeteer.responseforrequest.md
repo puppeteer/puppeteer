@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="body">body</p>
+<span id="body">body</span>
 
 </td><td>
 
@@ -52,7 +52,7 @@ string \| Buffer
 </td></tr>
 <tr><td>
 
-<p id="contenttype">contentType</p>
+<span id="contenttype">contentType</span>
 
 </td><td>
 
@@ -67,7 +67,7 @@ string
 </td></tr>
 <tr><td>
 
-<p id="headers">headers</p>
+<span id="headers">headers</span>
 
 </td><td>
 
@@ -84,7 +84,7 @@ Optional response headers. All values are converted to strings.
 </td></tr>
 <tr><td>
 
-<p id="status">status</p>
+<span id="status">status</span>
 
 </td><td>
 

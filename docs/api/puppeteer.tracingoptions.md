@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="categories">categories</p>
+<span id="categories">categories</span>
 
 </td><td>
 
@@ -52,7 +52,7 @@ string\[\]
 </td></tr>
 <tr><td>
 
-<p id="path">path</p>
+<span id="path">path</span>
 
 </td><td>
 
@@ -69,7 +69,7 @@ string
 </td></tr>
 <tr><td>
 
-<p id="screenshots">screenshots</p>
+<span id="screenshots">screenshots</span>
 
 </td><td>
 

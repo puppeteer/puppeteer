@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="domain">domain</p>
+<span id="domain">domain</span>
 
 </td><td>
 
@@ -56,7 +56,7 @@ Cookie domain.
 </td></tr>
 <tr><td>
 
-<p id="expires">expires</p>
+<span id="expires">expires</span>
 
 </td><td>
 
@@ -75,7 +75,7 @@ Cookie expiration date, session cookie if not set
 </td></tr>
 <tr><td>
 
-<p id="httponly">httpOnly</p>
+<span id="httponly">httpOnly</span>
 
 </td><td>
 
@@ -94,7 +94,7 @@ True if cookie is http-only.
 </td></tr>
 <tr><td>
 
-<p id="name">name</p>
+<span id="name">name</span>
 
 </td><td>
 
@@ -111,7 +111,7 @@ Cookie name.
 </td></tr>
 <tr><td>
 
-<p id="partitionkey">partitionKey</p>
+<span id="partitionkey">partitionKey</span>
 
 </td><td>
 
@@ -130,7 +130,7 @@ Cookie partition key. The site of the top-level URL the browser was visiting at 
 </td></tr>
 <tr><td>
 
-<p id="path">path</p>
+<span id="path">path</span>
 
 </td><td>
 
@@ -149,7 +149,7 @@ Cookie path.
 </td></tr>
 <tr><td>
 
-<p id="priority">priority</p>
+<span id="priority">priority</span>
 
 </td><td>
 
@@ -168,7 +168,7 @@ Cookie Priority. Supported only in Chrome.
 </td></tr>
 <tr><td>
 
-<p id="sameparty">sameParty</p>
+<span id="sameparty">sameParty</span>
 
 </td><td>
 
@@ -187,7 +187,7 @@ True if cookie is SameParty. Supported only in Chrome.
 </td></tr>
 <tr><td>
 
-<p id="samesite">sameSite</p>
+<span id="samesite">sameSite</span>
 
 </td><td>
 
@@ -206,7 +206,7 @@ Cookie SameSite type.
 </td></tr>
 <tr><td>
 
-<p id="secure">secure</p>
+<span id="secure">secure</span>
 
 </td><td>
 
@@ -225,7 +225,7 @@ True if cookie is secure.
 </td></tr>
 <tr><td>
 
-<p id="sourcescheme">sourceScheme</p>
+<span id="sourcescheme">sourceScheme</span>
 
 </td><td>
 
@@ -244,7 +244,7 @@ Cookie source scheme type. Supported only in Chrome.
 </td></tr>
 <tr><td>
 
-<p id="url">url</p>
+<span id="url">url</span>
 
 </td><td>
 
@@ -263,7 +263,7 @@ The request-URI to associate with the setting of the cookie. This value can affe
 </td></tr>
 <tr><td>
 
-<p id="value">value</p>
+<span id="value">value</span>
 
 </td><td>
 

@@ -29,7 +29,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="_constructor_">[(constructor)(type, text, args, stackTraceLocations)](./puppeteer.consolemessage._constructor_.md)</p>
+<span id="_constructor_">[(constructor)(type, text, args, stackTraceLocations)](./puppeteer.consolemessage._constructor_.md)</span>
 
 </td><td>
 
@@ -57,7 +57,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="args">[args()](./puppeteer.consolemessage.args.md)</p>
+<span id="args">[args()](./puppeteer.consolemessage.args.md)</span>
 
 </td><td>
 
@@ -68,7 +68,7 @@ An array of arguments passed to the console.
 </td></tr>
 <tr><td>
 
-<p id="location">[location()](./puppeteer.consolemessage.location.md)</p>
+<span id="location">[location()](./puppeteer.consolemessage.location.md)</span>
 
 </td><td>
 
@@ -79,7 +79,7 @@ The location of the console message.
 </td></tr>
 <tr><td>
 
-<p id="stacktrace">[stackTrace()](./puppeteer.consolemessage.stacktrace.md)</p>
+<span id="stacktrace">[stackTrace()](./puppeteer.consolemessage.stacktrace.md)</span>
 
 </td><td>
 
@@ -90,7 +90,7 @@ The array of locations on the stack of the console message.
 </td></tr>
 <tr><td>
 
-<p id="text">[text()](./puppeteer.consolemessage.text.md)</p>
+<span id="text">[text()](./puppeteer.consolemessage.text.md)</span>
 
 </td><td>
 
@@ -101,7 +101,7 @@ The text of the console message.
 </td></tr>
 <tr><td>
 
-<p id="type">[type()](./puppeteer.consolemessage.type.md)</p>
+<span id="type">[type()](./puppeteer.consolemessage.type.md)</span>
 
 </td><td>
 

@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="domain">domain</p>
+<span id="domain">domain</span>
 
 </td><td>
 
@@ -54,7 +54,7 @@ If specified, deletes only cookies with the exact domain.
 </td></tr>
 <tr><td>
 
-<p id="name">name</p>
+<span id="name">name</span>
 
 </td><td>
 
@@ -71,7 +71,7 @@ Name of the cookies to remove.
 </td></tr>
 <tr><td>
 
-<p id="path">path</p>
+<span id="path">path</span>
 
 </td><td>
 
@@ -90,7 +90,7 @@ If specified, deletes only cookies with the exact path.
 </td></tr>
 <tr><td>
 
-<p id="url">url</p>
+<span id="url">url</span>
 
 </td><td>
 

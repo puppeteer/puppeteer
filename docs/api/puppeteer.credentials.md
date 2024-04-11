@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="password">password</p>
+<span id="password">password</span>
 
 </td><td>
 
@@ -50,7 +50,7 @@ string
 </td></tr>
 <tr><td>
 
-<p id="username">username</p>
+<span id="username">username</span>
 
 </td><td>
 

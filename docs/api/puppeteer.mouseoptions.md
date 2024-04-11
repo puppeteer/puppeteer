@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="button">button</p>
+<span id="button">button</span>
 
 </td><td>
 
@@ -56,7 +56,7 @@ Determines which button will be pressed.
 </td></tr>
 <tr><td>
 
-<p id="clickcount">clickCount</p>
+<span id="clickcount">clickCount</span>
 
 </td><td>
 

@@ -41,7 +41,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="close">close</p>
+<span id="close">close</span>
 
 </td><td>
 
@@ -56,7 +56,7 @@ undefined
 </td></tr>
 <tr><td>
 
-<p id="console">console</p>
+<span id="console">console</span>
 
 </td><td>
 
@@ -71,7 +71,7 @@ undefined
 </td></tr>
 <tr><td>
 
-<p id="dialog">dialog</p>
+<span id="dialog">dialog</span>
 
 </td><td>
 
@@ -86,7 +86,7 @@ undefined
 </td></tr>
 <tr><td>
 
-<p id="domcontentloaded">domcontentloaded</p>
+<span id="domcontentloaded">domcontentloaded</span>
 
 </td><td>
 
@@ -101,7 +101,7 @@ undefined
 </td></tr>
 <tr><td>
 
-<p id="error">error</p>
+<span id="error">error</span>
 
 </td><td>
 
@@ -116,7 +116,7 @@ Error
 </td></tr>
 <tr><td>
 
-<p id="frameattached">frameattached</p>
+<span id="frameattached">frameattached</span>
 
 </td><td>
 
@@ -131,7 +131,7 @@ Error
 </td></tr>
 <tr><td>
 
-<p id="framedetached">framedetached</p>
+<span id="framedetached">framedetached</span>
 
 </td><td>
 
@@ -146,7 +146,7 @@ Error
 </td></tr>
 <tr><td>
 
-<p id="framenavigated">framenavigated</p>
+<span id="framenavigated">framenavigated</span>
 
 </td><td>
 
@@ -161,7 +161,7 @@ Error
 </td></tr>
 <tr><td>
 
-<p id="load">load</p>
+<span id="load">load</span>
 
 </td><td>
 
@@ -176,7 +176,7 @@ undefined
 </td></tr>
 <tr><td>
 
-<p id="metrics">metrics</p>
+<span id="metrics">metrics</span>
 
 </td><td>
 
@@ -191,7 +191,7 @@ undefined
 </td></tr>
 <tr><td>
 
-<p id="pageerror">pageerror</p>
+<span id="pageerror">pageerror</span>
 
 </td><td>
 
@@ -206,7 +206,7 @@ Error
 </td></tr>
 <tr><td>
 
-<p id="popup">popup</p>
+<span id="popup">popup</span>
 
 </td><td>
 
@@ -221,7 +221,7 @@ Error
 </td></tr>
 <tr><td>
 
-<p id="request">request</p>
+<span id="request">request</span>
 
 </td><td>
 
@@ -236,7 +236,7 @@ Error
 </td></tr>
 <tr><td>
 
-<p id="requestfailed">requestfailed</p>
+<span id="requestfailed">requestfailed</span>
 
 </td><td>
 
@@ -251,7 +251,7 @@ Error
 </td></tr>
 <tr><td>
 
-<p id="requestfinished">requestfinished</p>
+<span id="requestfinished">requestfinished</span>
 
 </td><td>
 
@@ -266,7 +266,7 @@ Error
 </td></tr>
 <tr><td>
 
-<p id="requestservedfromcache">requestservedfromcache</p>
+<span id="requestservedfromcache">requestservedfromcache</span>
 
 </td><td>
 
@@ -281,7 +281,7 @@ Error
 </td></tr>
 <tr><td>
 
-<p id="response">response</p>
+<span id="response">response</span>
 
 </td><td>
 
@@ -296,7 +296,7 @@ Error
 </td></tr>
 <tr><td>
 
-<p id="workercreated">workercreated</p>
+<span id="workercreated">workercreated</span>
 
 </td><td>
 
@@ -311,7 +311,7 @@ Error
 </td></tr>
 <tr><td>
 
-<p id="workerdestroyed">workerdestroyed</p>
+<span id="workerdestroyed">workerdestroyed</span>
 
 </td><td>
 

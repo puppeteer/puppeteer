@@ -82,7 +82,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="accessibility">accessibility</p>
+<span id="accessibility">accessibility</span>
 
 </td><td>
 
@@ -99,7 +99,7 @@ The Accessibility class provides methods for inspecting the browser's accessibil
 </td></tr>
 <tr><td>
 
-<p id="coverage">coverage</p>
+<span id="coverage">coverage</span>
 
 </td><td>
 
@@ -116,7 +116,7 @@ The Coverage class provides methods to gather information about parts of JavaScr
 </td></tr>
 <tr><td>
 
-<p id="keyboard">keyboard</p>
+<span id="keyboard">keyboard</span>
 
 </td><td>
 
@@ -133,7 +133,7 @@ Keyboard provides an api for managing a virtual keyboard. The high level api is 
 </td></tr>
 <tr><td>
 
-<p id="mouse">mouse</p>
+<span id="mouse">mouse</span>
 
 </td><td>
 
@@ -150,7 +150,7 @@ The Mouse class operates in main-frame CSS pixels relative to the top-left corne
 </td></tr>
 <tr><td>
 
-<p id="touchscreen">touchscreen</p>
+<span id="touchscreen">touchscreen</span>
 
 </td><td>
 
@@ -167,7 +167,7 @@ The Touchscreen class exposes touchscreen events.
 </td></tr>
 <tr><td>
 
-<p id="tracing">tracing</p>
+<span id="tracing">tracing</span>
 
 </td><td>
 
@@ -201,7 +201,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="_">[$(selector)](./puppeteer.page._.md)</p>
+<span id="_">[$(selector)](./puppeteer.page._.md)</span>
 
 </td><td>
 
@@ -212,7 +212,7 @@ Runs `document.querySelector` within the page. If no element matches the selecto
 </td></tr>
 <tr><td>
 
-<p id="__">[$$(selector)](./puppeteer.page.__.md)</p>
+<span id="__">[$$(selector)](./puppeteer.page.__.md)</span>
 
 </td><td>
 
@@ -223,7 +223,7 @@ The method runs `document.querySelectorAll` within the page. If no elements matc
 </td></tr>
 <tr><td>
 
-<p id="__eval">[$$eval(selector, pageFunction, args)](./puppeteer.page.__eval.md)</p>
+<span id="__eval">[$$eval(selector, pageFunction, args)](./puppeteer.page.__eval.md)</span>
 
 </td><td>
 
@@ -234,7 +234,7 @@ This method runs `Array.from(document.querySelectorAll(selector))` within the pa
 </td></tr>
 <tr><td>
 
-<p id="_eval">[$eval(selector, pageFunction, args)](./puppeteer.page._eval.md)</p>
+<span id="_eval">[$eval(selector, pageFunction, args)](./puppeteer.page._eval.md)</span>
 
 </td><td>
 
@@ -245,7 +245,7 @@ This method runs `document.querySelector` within the page and passes the result 
 </td></tr>
 <tr><td>
 
-<p id="addscripttag">[addScriptTag(options)](./puppeteer.page.addscripttag.md)</p>
+<span id="addscripttag">[addScriptTag(options)](./puppeteer.page.addscripttag.md)</span>
 
 </td><td>
 
@@ -256,7 +256,7 @@ Adds a `<script>` tag into the page with the desired URL or content.
 </td></tr>
 <tr><td>
 
-<p id="addstyletag">[addStyleTag(options)](./puppeteer.page.addstyletag.md)</p>
+<span id="addstyletag">[addStyleTag(options)](./puppeteer.page.addstyletag.md)</span>
 
 </td><td>
 
@@ -269,7 +269,7 @@ Shortcut for [page.mainFrame().addStyleTag(options)](./puppeteer.frame.addstylet
 </td></tr>
 <tr><td>
 
-<p id="addstyletag">[addStyleTag(options)](./puppeteer.page.addstyletag_1.md)</p>
+<span id="addstyletag">[addStyleTag(options)](./puppeteer.page.addstyletag_1.md)</span>
 
 </td><td>
 
@@ -278,7 +278,7 @@ Shortcut for [page.mainFrame().addStyleTag(options)](./puppeteer.frame.addstylet
 </td></tr>
 <tr><td>
 
-<p id="authenticate">[authenticate(credentials)](./puppeteer.page.authenticate.md)</p>
+<span id="authenticate">[authenticate(credentials)](./puppeteer.page.authenticate.md)</span>
 
 </td><td>
 
@@ -289,7 +289,7 @@ Provide credentials for `HTTP authentication`.
 </td></tr>
 <tr><td>
 
-<p id="bringtofront">[bringToFront()](./puppeteer.page.bringtofront.md)</p>
+<span id="bringtofront">[bringToFront()](./puppeteer.page.bringtofront.md)</span>
 
 </td><td>
 
@@ -300,7 +300,7 @@ Brings page to front (activates tab).
 </td></tr>
 <tr><td>
 
-<p id="browser">[browser()](./puppeteer.page.browser.md)</p>
+<span id="browser">[browser()](./puppeteer.page.browser.md)</span>
 
 </td><td>
 
@@ -311,7 +311,7 @@ Get the browser the page belongs to.
 </td></tr>
 <tr><td>
 
-<p id="browsercontext">[browserContext()](./puppeteer.page.browsercontext.md)</p>
+<span id="browsercontext">[browserContext()](./puppeteer.page.browsercontext.md)</span>
 
 </td><td>
 
@@ -322,7 +322,7 @@ Get the browser context that the page belongs to.
 </td></tr>
 <tr><td>
 
-<p id="click">[click(selector, options)](./puppeteer.page.click.md)</p>
+<span id="click">[click(selector, options)](./puppeteer.page.click.md)</span>
 
 </td><td>
 
@@ -333,7 +333,7 @@ This method fetches an element with `selector`, scrolls it into view if needed, 
 </td></tr>
 <tr><td>
 
-<p id="close">[close(options)](./puppeteer.page.close.md)</p>
+<span id="close">[close(options)](./puppeteer.page.close.md)</span>
 
 </td><td>
 
@@ -342,7 +342,7 @@ This method fetches an element with `selector`, scrolls it into view if needed, 
 </td></tr>
 <tr><td>
 
-<p id="content">[content()](./puppeteer.page.content.md)</p>
+<span id="content">[content()](./puppeteer.page.content.md)</span>
 
 </td><td>
 
@@ -353,7 +353,7 @@ The full HTML contents of the page, including the DOCTYPE.
 </td></tr>
 <tr><td>
 
-<p id="cookies">[cookies(urls)](./puppeteer.page.cookies.md)</p>
+<span id="cookies">[cookies(urls)](./puppeteer.page.cookies.md)</span>
 
 </td><td>
 
@@ -364,7 +364,7 @@ If no URLs are specified, this method returns cookies for the current page URL. 
 </td></tr>
 <tr><td>
 
-<p id="createcdpsession">[createCDPSession()](./puppeteer.page.createcdpsession.md)</p>
+<span id="createcdpsession">[createCDPSession()](./puppeteer.page.createcdpsession.md)</span>
 
 </td><td>
 
@@ -375,7 +375,7 @@ Creates a Chrome Devtools Protocol session attached to the page.
 </td></tr>
 <tr><td>
 
-<p id="createpdfstream">[createPDFStream(options)](./puppeteer.page.createpdfstream.md)</p>
+<span id="createpdfstream">[createPDFStream(options)](./puppeteer.page.createpdfstream.md)</span>
 
 </td><td>
 
@@ -386,7 +386,7 @@ Generates a PDF of the page with the `print` CSS media type.
 </td></tr>
 <tr><td>
 
-<p id="deletecookie">[deleteCookie(cookies)](./puppeteer.page.deletecookie.md)</p>
+<span id="deletecookie">[deleteCookie(cookies)](./puppeteer.page.deletecookie.md)</span>
 
 </td><td>
 
@@ -395,7 +395,7 @@ Generates a PDF of the page with the `print` CSS media type.
 </td></tr>
 <tr><td>
 
-<p id="emulate">[emulate(device)](./puppeteer.page.emulate.md)</p>
+<span id="emulate">[emulate(device)](./puppeteer.page.emulate.md)</span>
 
 </td><td>
 
@@ -408,7 +408,7 @@ To aid emulation, Puppeteer provides a list of known devices that can be via [Kn
 </td></tr>
 <tr><td>
 
-<p id="emulatecputhrottling">[emulateCPUThrottling(factor)](./puppeteer.page.emulatecputhrottling.md)</p>
+<span id="emulatecputhrottling">[emulateCPUThrottling(factor)](./puppeteer.page.emulatecputhrottling.md)</span>
 
 </td><td>
 
@@ -419,7 +419,7 @@ Enables CPU throttling to emulate slow CPUs.
 </td></tr>
 <tr><td>
 
-<p id="emulateidlestate">[emulateIdleState(overrides)](./puppeteer.page.emulateidlestate.md)</p>
+<span id="emulateidlestate">[emulateIdleState(overrides)](./puppeteer.page.emulateidlestate.md)</span>
 
 </td><td>
 
@@ -430,7 +430,7 @@ Emulates the idle state. If no arguments set, clears idle state emulation.
 </td></tr>
 <tr><td>
 
-<p id="emulatemediafeatures">[emulateMediaFeatures(features)](./puppeteer.page.emulatemediafeatures.md)</p>
+<span id="emulatemediafeatures">[emulateMediaFeatures(features)](./puppeteer.page.emulatemediafeatures.md)</span>
 
 </td><td>
 
@@ -439,7 +439,7 @@ Emulates the idle state. If no arguments set, clears idle state emulation.
 </td></tr>
 <tr><td>
 
-<p id="emulatemediatype">[emulateMediaType(type)](./puppeteer.page.emulatemediatype.md)</p>
+<span id="emulatemediatype">[emulateMediaType(type)](./puppeteer.page.emulatemediatype.md)</span>
 
 </td><td>
 
@@ -448,7 +448,7 @@ Emulates the idle state. If no arguments set, clears idle state emulation.
 </td></tr>
 <tr><td>
 
-<p id="emulatenetworkconditions">[emulateNetworkConditions(networkConditions)](./puppeteer.page.emulatenetworkconditions.md)</p>
+<span id="emulatenetworkconditions">[emulateNetworkConditions(networkConditions)](./puppeteer.page.emulatenetworkconditions.md)</span>
 
 </td><td>
 
@@ -461,7 +461,7 @@ A list of predefined network conditions can be used by importing [PredefinedNetw
 </td></tr>
 <tr><td>
 
-<p id="emulatetimezone">[emulateTimezone(timezoneId)](./puppeteer.page.emulatetimezone.md)</p>
+<span id="emulatetimezone">[emulateTimezone(timezoneId)](./puppeteer.page.emulatetimezone.md)</span>
 
 </td><td>
 
@@ -470,7 +470,7 @@ A list of predefined network conditions can be used by importing [PredefinedNetw
 </td></tr>
 <tr><td>
 
-<p id="emulatevisiondeficiency">[emulateVisionDeficiency(type)](./puppeteer.page.emulatevisiondeficiency.md)</p>
+<span id="emulatevisiondeficiency">[emulateVisionDeficiency(type)](./puppeteer.page.emulatevisiondeficiency.md)</span>
 
 </td><td>
 
@@ -481,7 +481,7 @@ Simulates the given vision deficiency on the page.
 </td></tr>
 <tr><td>
 
-<p id="evaluate">[evaluate(pageFunction, args)](./puppeteer.page.evaluate.md)</p>
+<span id="evaluate">[evaluate(pageFunction, args)](./puppeteer.page.evaluate.md)</span>
 
 </td><td>
 
@@ -494,7 +494,7 @@ If the function passed to `page.evaluate` returns a Promise, the function will w
 </td></tr>
 <tr><td>
 
-<p id="evaluatehandle">[evaluateHandle(pageFunction, args)](./puppeteer.page.evaluatehandle.md)</p>
+<span id="evaluatehandle">[evaluateHandle(pageFunction, args)](./puppeteer.page.evaluatehandle.md)</span>
 
 </td><td>
 
@@ -503,7 +503,7 @@ If the function passed to `page.evaluate` returns a Promise, the function will w
 </td></tr>
 <tr><td>
 
-<p id="evaluateonnewdocument">[evaluateOnNewDocument(pageFunction, args)](./puppeteer.page.evaluateonnewdocument.md)</p>
+<span id="evaluateonnewdocument">[evaluateOnNewDocument(pageFunction, args)](./puppeteer.page.evaluateonnewdocument.md)</span>
 
 </td><td>
 
@@ -520,7 +520,7 @@ The function is invoked after the document was created but before any of its scr
 </td></tr>
 <tr><td>
 
-<p id="exposefunction">[exposeFunction(name, pptrFunction)](./puppeteer.page.exposefunction.md)</p>
+<span id="exposefunction">[exposeFunction(name, pptrFunction)](./puppeteer.page.exposefunction.md)</span>
 
 </td><td>
 
@@ -539,7 +539,7 @@ Functions installed via `page.exposeFunction` survive navigations.
 </td></tr>
 <tr><td>
 
-<p id="focus">[focus(selector)](./puppeteer.page.focus.md)</p>
+<span id="focus">[focus(selector)](./puppeteer.page.focus.md)</span>
 
 </td><td>
 
@@ -550,7 +550,7 @@ This method fetches an element with `selector` and focuses it. If there's no ele
 </td></tr>
 <tr><td>
 
-<p id="frames">[frames()](./puppeteer.page.frames.md)</p>
+<span id="frames">[frames()](./puppeteer.page.frames.md)</span>
 
 </td><td>
 
@@ -561,7 +561,7 @@ An array of all frames attached to the page.
 </td></tr>
 <tr><td>
 
-<p id="getdefaulttimeout">[getDefaultTimeout()](./puppeteer.page.getdefaulttimeout.md)</p>
+<span id="getdefaulttimeout">[getDefaultTimeout()](./puppeteer.page.getdefaulttimeout.md)</span>
 
 </td><td>
 
@@ -572,7 +572,7 @@ Maximum time in milliseconds.
 </td></tr>
 <tr><td>
 
-<p id="goback">[goBack(options)](./puppeteer.page.goback.md)</p>
+<span id="goback">[goBack(options)](./puppeteer.page.goback.md)</span>
 
 </td><td>
 
@@ -583,7 +583,7 @@ This method navigate to the previous page in history.
 </td></tr>
 <tr><td>
 
-<p id="goforward">[goForward(options)](./puppeteer.page.goforward.md)</p>
+<span id="goforward">[goForward(options)](./puppeteer.page.goforward.md)</span>
 
 </td><td>
 
@@ -594,7 +594,7 @@ This method navigate to the next page in history.
 </td></tr>
 <tr><td>
 
-<p id="goto">[goto(url, options)](./puppeteer.page.goto.md)</p>
+<span id="goto">[goto(url, options)](./puppeteer.page.goto.md)</span>
 
 </td><td>
 
@@ -605,7 +605,7 @@ Navigates the page to the given `url`.
 </td></tr>
 <tr><td>
 
-<p id="hover">[hover(selector)](./puppeteer.page.hover.md)</p>
+<span id="hover">[hover(selector)](./puppeteer.page.hover.md)</span>
 
 </td><td>
 
@@ -616,7 +616,7 @@ This method fetches an element with `selector`, scrolls it into view if needed, 
 </td></tr>
 <tr><td>
 
-<p id="isclosed">[isClosed()](./puppeteer.page.isclosed.md)</p>
+<span id="isclosed">[isClosed()](./puppeteer.page.isclosed.md)</span>
 
 </td><td>
 
@@ -627,7 +627,7 @@ Indicates that the page has been closed.
 </td></tr>
 <tr><td>
 
-<p id="isdraginterceptionenabled">[isDragInterceptionEnabled()](./puppeteer.page.isdraginterceptionenabled.md)</p>
+<span id="isdraginterceptionenabled">[isDragInterceptionEnabled()](./puppeteer.page.isdraginterceptionenabled.md)</span>
 
 </td><td>
 
@@ -644,7 +644,7 @@ We no longer support intercepting drag payloads. Use the new drag APIs found on 
 </td></tr>
 <tr><td>
 
-<p id="isjavascriptenabled">[isJavaScriptEnabled()](./puppeteer.page.isjavascriptenabled.md)</p>
+<span id="isjavascriptenabled">[isJavaScriptEnabled()](./puppeteer.page.isjavascriptenabled.md)</span>
 
 </td><td>
 
@@ -655,7 +655,7 @@ We no longer support intercepting drag payloads. Use the new drag APIs found on 
 </td></tr>
 <tr><td>
 
-<p id="isserviceworkerbypassed">[isServiceWorkerBypassed()](./puppeteer.page.isserviceworkerbypassed.md)</p>
+<span id="isserviceworkerbypassed">[isServiceWorkerBypassed()](./puppeteer.page.isserviceworkerbypassed.md)</span>
 
 </td><td>
 
@@ -666,7 +666,7 @@ We no longer support intercepting drag payloads. Use the new drag APIs found on 
 </td></tr>
 <tr><td>
 
-<p id="locator">[locator(selector)](./puppeteer.page.locator.md)</p>
+<span id="locator">[locator(selector)](./puppeteer.page.locator.md)</span>
 
 </td><td>
 
@@ -677,7 +677,7 @@ Creates a locator for the provided selector. See [Locator](./puppeteer.locator.m
 </td></tr>
 <tr><td>
 
-<p id="locator">[locator(func)](./puppeteer.page.locator_1.md)</p>
+<span id="locator">[locator(func)](./puppeteer.page.locator_1.md)</span>
 
 </td><td>
 
@@ -688,7 +688,7 @@ Creates a locator for the provided function. See [Locator](./puppeteer.locator.m
 </td></tr>
 <tr><td>
 
-<p id="mainframe">[mainFrame()](./puppeteer.page.mainframe.md)</p>
+<span id="mainframe">[mainFrame()](./puppeteer.page.mainframe.md)</span>
 
 </td><td>
 
@@ -699,7 +699,7 @@ The page's main frame.
 </td></tr>
 <tr><td>
 
-<p id="metrics">[metrics()](./puppeteer.page.metrics.md)</p>
+<span id="metrics">[metrics()](./puppeteer.page.metrics.md)</span>
 
 </td><td>
 
@@ -710,7 +710,7 @@ Object containing metrics as key/value pairs.
 </td></tr>
 <tr><td>
 
-<p id="pdf">[pdf(options)](./puppeteer.page.pdf.md)</p>
+<span id="pdf">[pdf(options)](./puppeteer.page.pdf.md)</span>
 
 </td><td>
 
@@ -721,7 +721,7 @@ Generates a PDF of the page with the `print` CSS media type.
 </td></tr>
 <tr><td>
 
-<p id="queryobjects">[queryObjects(prototypeHandle)](./puppeteer.page.queryobjects.md)</p>
+<span id="queryobjects">[queryObjects(prototypeHandle)](./puppeteer.page.queryobjects.md)</span>
 
 </td><td>
 
@@ -732,7 +732,7 @@ This method iterates the JavaScript heap and finds all objects with the given pr
 </td></tr>
 <tr><td>
 
-<p id="reload">[reload(options)](./puppeteer.page.reload.md)</p>
+<span id="reload">[reload(options)](./puppeteer.page.reload.md)</span>
 
 </td><td>
 
@@ -743,7 +743,7 @@ Reloads the page.
 </td></tr>
 <tr><td>
 
-<p id="removeexposedfunction">[removeExposedFunction(name)](./puppeteer.page.removeexposedfunction.md)</p>
+<span id="removeexposedfunction">[removeExposedFunction(name)](./puppeteer.page.removeexposedfunction.md)</span>
 
 </td><td>
 
@@ -754,7 +754,7 @@ The method removes a previously added function via $[Page.exposeFunction()](./pu
 </td></tr>
 <tr><td>
 
-<p id="removescripttoevaluateonnewdocument">[removeScriptToEvaluateOnNewDocument(identifier)](./puppeteer.page.removescripttoevaluateonnewdocument.md)</p>
+<span id="removescripttoevaluateonnewdocument">[removeScriptToEvaluateOnNewDocument(identifier)](./puppeteer.page.removescripttoevaluateonnewdocument.md)</span>
 
 </td><td>
 
@@ -765,7 +765,7 @@ Removes script that injected into page by Page.evaluateOnNewDocument.
 </td></tr>
 <tr><td>
 
-<p id="screencast">[screencast(options)](./puppeteer.page.screencast.md)</p>
+<span id="screencast">[screencast(options)](./puppeteer.page.screencast.md)</span>
 
 </td><td>
 
@@ -776,7 +776,7 @@ Captures a screencast of this [page](./puppeteer.page.md).
 </td></tr>
 <tr><td>
 
-<p id="screenshot">[screenshot(options)](./puppeteer.page.screenshot.md)</p>
+<span id="screenshot">[screenshot(options)](./puppeteer.page.screenshot.md)</span>
 
 </td><td>
 
@@ -787,7 +787,7 @@ Captures a screenshot of this [page](./puppeteer.page.md).
 </td></tr>
 <tr><td>
 
-<p id="screenshot">[screenshot(options)](./puppeteer.page.screenshot_1.md)</p>
+<span id="screenshot">[screenshot(options)](./puppeteer.page.screenshot_1.md)</span>
 
 </td><td>
 
@@ -796,7 +796,7 @@ Captures a screenshot of this [page](./puppeteer.page.md).
 </td></tr>
 <tr><td>
 
-<p id="select">[select(selector, values)](./puppeteer.page.select.md)</p>
+<span id="select">[select(selector, values)](./puppeteer.page.select.md)</span>
 
 </td><td>
 
@@ -807,7 +807,7 @@ Triggers a `change` and `input` event once all the provided options have been se
 </td></tr>
 <tr><td>
 
-<p id="setbypasscsp">[setBypassCSP(enabled)](./puppeteer.page.setbypasscsp.md)</p>
+<span id="setbypasscsp">[setBypassCSP(enabled)](./puppeteer.page.setbypasscsp.md)</span>
 
 </td><td>
 
@@ -818,7 +818,7 @@ Toggles bypassing page's Content-Security-Policy.
 </td></tr>
 <tr><td>
 
-<p id="setbypassserviceworker">[setBypassServiceWorker(bypass)](./puppeteer.page.setbypassserviceworker.md)</p>
+<span id="setbypassserviceworker">[setBypassServiceWorker(bypass)](./puppeteer.page.setbypassserviceworker.md)</span>
 
 </td><td>
 
@@ -829,7 +829,7 @@ Toggles ignoring of service worker for each request.
 </td></tr>
 <tr><td>
 
-<p id="setcacheenabled">[setCacheEnabled(enabled)](./puppeteer.page.setcacheenabled.md)</p>
+<span id="setcacheenabled">[setCacheEnabled(enabled)](./puppeteer.page.setcacheenabled.md)</span>
 
 </td><td>
 
@@ -840,7 +840,7 @@ Toggles ignoring cache for each request based on the enabled state. By default, 
 </td></tr>
 <tr><td>
 
-<p id="setcontent">[setContent(html, options)](./puppeteer.page.setcontent.md)</p>
+<span id="setcontent">[setContent(html, options)](./puppeteer.page.setcontent.md)</span>
 
 </td><td>
 
@@ -851,7 +851,7 @@ Set the content of the page.
 </td></tr>
 <tr><td>
 
-<p id="setcookie">[setCookie(cookies)](./puppeteer.page.setcookie.md)</p>
+<span id="setcookie">[setCookie(cookies)](./puppeteer.page.setcookie.md)</span>
 
 </td><td>
 
@@ -860,7 +860,7 @@ Set the content of the page.
 </td></tr>
 <tr><td>
 
-<p id="setdefaultnavigationtimeout">[setDefaultNavigationTimeout(timeout)](./puppeteer.page.setdefaultnavigationtimeout.md)</p>
+<span id="setdefaultnavigationtimeout">[setDefaultNavigationTimeout(timeout)](./puppeteer.page.setdefaultnavigationtimeout.md)</span>
 
 </td><td>
 
@@ -883,7 +883,7 @@ This setting will change the default maximum navigation time for the following m
 </td></tr>
 <tr><td>
 
-<p id="setdefaulttimeout">[setDefaultTimeout(timeout)](./puppeteer.page.setdefaulttimeout.md)</p>
+<span id="setdefaulttimeout">[setDefaultTimeout(timeout)](./puppeteer.page.setdefaulttimeout.md)</span>
 
 </td><td>
 
@@ -892,7 +892,7 @@ This setting will change the default maximum navigation time for the following m
 </td></tr>
 <tr><td>
 
-<p id="setdraginterception">[setDragInterception(enabled)](./puppeteer.page.setdraginterception.md)</p>
+<span id="setdraginterception">[setDragInterception(enabled)](./puppeteer.page.setdraginterception.md)</span>
 
 </td><td>
 
@@ -907,7 +907,7 @@ We no longer support intercepting drag payloads. Use the new drag APIs found on 
 </td></tr>
 <tr><td>
 
-<p id="setextrahttpheaders">[setExtraHTTPHeaders(headers)](./puppeteer.page.setextrahttpheaders.md)</p>
+<span id="setextrahttpheaders">[setExtraHTTPHeaders(headers)](./puppeteer.page.setextrahttpheaders.md)</span>
 
 </td><td>
 
@@ -930,7 +930,7 @@ page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing
 </td></tr>
 <tr><td>
 
-<p id="setgeolocation">[setGeolocation(options)](./puppeteer.page.setgeolocation.md)</p>
+<span id="setgeolocation">[setGeolocation(options)](./puppeteer.page.setgeolocation.md)</span>
 
 </td><td>
 
@@ -941,7 +941,7 @@ Sets the page's geolocation.
 </td></tr>
 <tr><td>
 
-<p id="setjavascriptenabled">[setJavaScriptEnabled(enabled)](./puppeteer.page.setjavascriptenabled.md)</p>
+<span id="setjavascriptenabled">[setJavaScriptEnabled(enabled)](./puppeteer.page.setjavascriptenabled.md)</span>
 
 </td><td>
 
@@ -950,7 +950,7 @@ Sets the page's geolocation.
 </td></tr>
 <tr><td>
 
-<p id="setofflinemode">[setOfflineMode(enabled)](./puppeteer.page.setofflinemode.md)</p>
+<span id="setofflinemode">[setOfflineMode(enabled)](./puppeteer.page.setofflinemode.md)</span>
 
 </td><td>
 
@@ -963,7 +963,7 @@ It does not change the parameters used in [Page.emulateNetworkConditions()](./pu
 </td></tr>
 <tr><td>
 
-<p id="setrequestinterception">[setRequestInterception(value)](./puppeteer.page.setrequestinterception.md)</p>
+<span id="setrequestinterception">[setRequestInterception(value)](./puppeteer.page.setrequestinterception.md)</span>
 
 </td><td>
 
@@ -978,7 +978,7 @@ See the [Request interception guide](https://pptr.dev/next/guides/request-interc
 </td></tr>
 <tr><td>
 
-<p id="setuseragent">[setUserAgent(userAgent, userAgentMetadata)](./puppeteer.page.setuseragent.md)</p>
+<span id="setuseragent">[setUserAgent(userAgent, userAgentMetadata)](./puppeteer.page.setuseragent.md)</span>
 
 </td><td>
 
@@ -987,7 +987,7 @@ See the [Request interception guide](https://pptr.dev/next/guides/request-interc
 </td></tr>
 <tr><td>
 
-<p id="setviewport">[setViewport(viewport)](./puppeteer.page.setviewport.md)</p>
+<span id="setviewport">[setViewport(viewport)](./puppeteer.page.setviewport.md)</span>
 
 </td><td>
 
@@ -1000,7 +1000,7 @@ In the case of multiple pages in a single browser, each page can have its own vi
 </td></tr>
 <tr><td>
 
-<p id="tap">[tap(selector)](./puppeteer.page.tap.md)</p>
+<span id="tap">[tap(selector)](./puppeteer.page.tap.md)</span>
 
 </td><td>
 
@@ -1011,7 +1011,7 @@ This method fetches an element with `selector`, scrolls it into view if needed, 
 </td></tr>
 <tr><td>
 
-<p id="target">[target()](./puppeteer.page.target.md)</p>
+<span id="target">[target()](./puppeteer.page.target.md)</span>
 
 </td><td>
 
@@ -1028,7 +1028,7 @@ Use [Page.createCDPSession()](./puppeteer.page.createcdpsession.md) directly.
 </td></tr>
 <tr><td>
 
-<p id="title">[title()](./puppeteer.page.title.md)</p>
+<span id="title">[title()](./puppeteer.page.title.md)</span>
 
 </td><td>
 
@@ -1039,7 +1039,7 @@ The page's title
 </td></tr>
 <tr><td>
 
-<p id="type">[type(selector, text, options)](./puppeteer.page.type.md)</p>
+<span id="type">[type(selector, text, options)](./puppeteer.page.type.md)</span>
 
 </td><td>
 
@@ -1052,7 +1052,7 @@ To press a special key, like `Control` or `ArrowDown`, use [Keyboard.press()](./
 </td></tr>
 <tr><td>
 
-<p id="url">[url()](./puppeteer.page.url.md)</p>
+<span id="url">[url()](./puppeteer.page.url.md)</span>
 
 </td><td>
 
@@ -1063,7 +1063,7 @@ The page's URL.
 </td></tr>
 <tr><td>
 
-<p id="viewport">[viewport()](./puppeteer.page.viewport.md)</p>
+<span id="viewport">[viewport()](./puppeteer.page.viewport.md)</span>
 
 </td><td>
 
@@ -1076,7 +1076,7 @@ This is either the viewport set with the previous [Page.setViewport()](./puppete
 </td></tr>
 <tr><td>
 
-<p id="waitfordeviceprompt">[waitForDevicePrompt(options)](./puppeteer.page.waitfordeviceprompt.md)</p>
+<span id="waitfordeviceprompt">[waitForDevicePrompt(options)](./puppeteer.page.waitfordeviceprompt.md)</span>
 
 </td><td>
 
@@ -1093,7 +1093,7 @@ This must be called before the device request is made. It will not return a curr
 </td></tr>
 <tr><td>
 
-<p id="waitforfilechooser">[waitForFileChooser(options)](./puppeteer.page.waitforfilechooser.md)</p>
+<span id="waitforfilechooser">[waitForFileChooser(options)](./puppeteer.page.waitforfilechooser.md)</span>
 
 </td><td>
 
@@ -1110,7 +1110,7 @@ This must be called before the file chooser is launched. It will not return a cu
 </td></tr>
 <tr><td>
 
-<p id="waitforframe">[waitForFrame(urlOrPredicate, options)](./puppeteer.page.waitforframe.md)</p>
+<span id="waitforframe">[waitForFrame(urlOrPredicate, options)](./puppeteer.page.waitforframe.md)</span>
 
 </td><td>
 
@@ -1121,7 +1121,7 @@ Waits for a frame matching the given conditions to appear.
 </td></tr>
 <tr><td>
 
-<p id="waitforfunction">[waitForFunction(pageFunction, options, args)](./puppeteer.page.waitforfunction.md)</p>
+<span id="waitforfunction">[waitForFunction(pageFunction, options, args)](./puppeteer.page.waitforfunction.md)</span>
 
 </td><td>
 
@@ -1132,7 +1132,7 @@ Waits for the provided function, `pageFunction`, to return a truthy value when e
 </td></tr>
 <tr><td>
 
-<p id="waitfornavigation">[waitForNavigation(options)](./puppeteer.page.waitfornavigation.md)</p>
+<span id="waitfornavigation">[waitForNavigation(options)](./puppeteer.page.waitfornavigation.md)</span>
 
 </td><td>
 
@@ -1143,7 +1143,7 @@ Waits for the page to navigate to a new URL or to reload. It is useful when you 
 </td></tr>
 <tr><td>
 
-<p id="waitfornetworkidle">[waitForNetworkIdle(options)](./puppeteer.page.waitfornetworkidle.md)</p>
+<span id="waitfornetworkidle">[waitForNetworkIdle(options)](./puppeteer.page.waitfornetworkidle.md)</span>
 
 </td><td>
 
@@ -1154,7 +1154,7 @@ Waits for the network to be idle.
 </td></tr>
 <tr><td>
 
-<p id="waitforrequest">[waitForRequest(urlOrPredicate, options)](./puppeteer.page.waitforrequest.md)</p>
+<span id="waitforrequest">[waitForRequest(urlOrPredicate, options)](./puppeteer.page.waitforrequest.md)</span>
 
 </td><td>
 
@@ -1163,7 +1163,7 @@ Waits for the network to be idle.
 </td></tr>
 <tr><td>
 
-<p id="waitforresponse">[waitForResponse(urlOrPredicate, options)](./puppeteer.page.waitforresponse.md)</p>
+<span id="waitforresponse">[waitForResponse(urlOrPredicate, options)](./puppeteer.page.waitforresponse.md)</span>
 
 </td><td>
 
@@ -1172,7 +1172,7 @@ Waits for the network to be idle.
 </td></tr>
 <tr><td>
 
-<p id="waitforselector">[waitForSelector(selector, options)](./puppeteer.page.waitforselector.md)</p>
+<span id="waitforselector">[waitForSelector(selector, options)](./puppeteer.page.waitforselector.md)</span>
 
 </td><td>
 
@@ -1183,7 +1183,7 @@ Wait for the `selector` to appear in page. If at the moment of calling the metho
 </td></tr>
 <tr><td>
 
-<p id="workers">[workers()](./puppeteer.page.workers.md)</p>
+<span id="workers">[workers()](./puppeteer.page.workers.md)</span>
 
 </td><td>
 

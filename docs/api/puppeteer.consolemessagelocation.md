@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="columnnumber">columnNumber</p>
+<span id="columnnumber">columnNumber</span>
 
 </td><td>
 
@@ -54,7 +54,7 @@ number
 </td></tr>
 <tr><td>
 
-<p id="linenumber">lineNumber</p>
+<span id="linenumber">lineNumber</span>
 
 </td><td>
 
@@ -73,7 +73,7 @@ number
 </td></tr>
 <tr><td>
 
-<p id="url">url</p>
+<span id="url">url</span>
 
 </td><td>
 

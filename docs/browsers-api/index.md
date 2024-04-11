@@ -62,28 +62,28 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="cli">[CLI](./browsers.cli.md)</p>
+<span id="cli">[CLI](./browsers.cli.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="installedbrowser">[InstalledBrowser](./browsers.installedbrowser.md)</p>
+<span id="installedbrowser">[InstalledBrowser](./browsers.installedbrowser.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="process">[Process](./browsers.process.md)</p>
+<span id="process">[Process](./browsers.process.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="timeouterror">[TimeoutError](./browsers.timeouterror.md)</p>
+<span id="timeouterror">[TimeoutError](./browsers.timeouterror.md)</span>
 
 </td><td>
 
@@ -103,7 +103,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="browser">[Browser](./browsers.browser.md)</p>
+<span id="browser">[Browser](./browsers.browser.md)</span>
 
 </td><td>
 
@@ -112,7 +112,7 @@ Supported browsers.
 </td></tr>
 <tr><td>
 
-<p id="browserplatform">[BrowserPlatform](./browsers.browserplatform.md)</p>
+<span id="browserplatform">[BrowserPlatform](./browsers.browserplatform.md)</span>
 
 </td><td>
 
@@ -121,7 +121,7 @@ Platform names used to identify a OS platform x architecture combination in the 
 </td></tr>
 <tr><td>
 
-<p id="chromereleasechannel">[ChromeReleaseChannel](./browsers.chromereleasechannel.md)</p>
+<span id="chromereleasechannel">[ChromeReleaseChannel](./browsers.chromereleasechannel.md)</span>
 
 </td><td>
 
@@ -141,42 +141,42 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="candownload">[canDownload(options)](./browsers.candownload.md)</p>
+<span id="candownload">[canDownload(options)](./browsers.candownload.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="computeexecutablepath">[computeExecutablePath(options)](./browsers.computeexecutablepath.md)</p>
+<span id="computeexecutablepath">[computeExecutablePath(options)](./browsers.computeexecutablepath.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="computesystemexecutablepath">[computeSystemExecutablePath(options)](./browsers.computesystemexecutablepath.md)</p>
+<span id="computesystemexecutablepath">[computeSystemExecutablePath(options)](./browsers.computesystemexecutablepath.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="createprofile">[createProfile(browser, opts)](./browsers.createprofile.md)</p>
+<span id="createprofile">[createProfile(browser, opts)](./browsers.createprofile.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="detectbrowserplatform">[detectBrowserPlatform()](./browsers.detectbrowserplatform.md)</p>
+<span id="detectbrowserplatform">[detectBrowserPlatform()](./browsers.detectbrowserplatform.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="getinstalledbrowsers">[getInstalledBrowsers(options)](./browsers.getinstalledbrowsers.md)</p>
+<span id="getinstalledbrowsers">[getInstalledBrowsers(options)](./browsers.getinstalledbrowsers.md)</span>
 
 </td><td>
 
@@ -185,7 +185,7 @@ Returns metadata about browsers installed in the cache directory.
 </td></tr>
 <tr><td>
 
-<p id="getversioncomparator">[getVersionComparator(browser)](./browsers.getversioncomparator.md)</p>
+<span id="getversioncomparator">[getVersionComparator(browser)](./browsers.getversioncomparator.md)</span>
 
 </td><td>
 
@@ -194,42 +194,42 @@ Returns a version comparator for the given browser that can be used to sort brow
 </td></tr>
 <tr><td>
 
-<p id="install">[install(options)](./browsers.install.md)</p>
+<span id="install">[install(options)](./browsers.install.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="install">[install(options)](./browsers.install_1.md)</p>
+<span id="install">[install(options)](./browsers.install_1.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="launch">[launch(opts)](./browsers.launch.md)</p>
+<span id="launch">[launch(opts)](./browsers.launch.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="makeprogresscallback">[makeProgressCallback(browser, buildId)](./browsers.makeprogresscallback.md)</p>
+<span id="makeprogresscallback">[makeProgressCallback(browser, buildId)](./browsers.makeprogresscallback.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="resolvebuildid">[resolveBuildId(browser, platform, tag)](./browsers.resolvebuildid.md)</p>
+<span id="resolvebuildid">[resolveBuildId(browser, platform, tag)](./browsers.resolvebuildid.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="uninstall">[uninstall(options)](./browsers.uninstall.md)</p>
+<span id="uninstall">[uninstall(options)](./browsers.uninstall.md)</span>
 
 </td><td>
 
@@ -249,49 +249,49 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="getinstalledbrowsersoptions">[GetInstalledBrowsersOptions](./browsers.getinstalledbrowsersoptions.md)</p>
+<span id="getinstalledbrowsersoptions">[GetInstalledBrowsersOptions](./browsers.getinstalledbrowsersoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="installoptions">[InstallOptions](./browsers.installoptions.md)</p>
+<span id="installoptions">[InstallOptions](./browsers.installoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="launchoptions">[LaunchOptions](./browsers.launchoptions.md)</p>
+<span id="launchoptions">[LaunchOptions](./browsers.launchoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="options">[Options](./browsers.options.md)</p>
+<span id="options">[Options](./browsers.options.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="profileoptions">[ProfileOptions](./browsers.profileoptions.md)</p>
+<span id="profileoptions">[ProfileOptions](./browsers.profileoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="systemoptions">[SystemOptions](./browsers.systemoptions.md)</p>
+<span id="systemoptions">[SystemOptions](./browsers.systemoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="uninstalloptions">[UninstallOptions](./browsers.uninstalloptions.md)</p>
+<span id="uninstalloptions">[UninstallOptions](./browsers.uninstalloptions.md)</span>
 
 </td><td>
 
@@ -311,14 +311,14 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="cdp_websocket_endpoint_regex">[CDP\_WEBSOCKET\_ENDPOINT\_REGEX](./browsers.cdp_websocket_endpoint_regex.md)</p>
+<span id="cdp_websocket_endpoint_regex">[CDP_WEBSOCKET_ENDPOINT_REGEX](./browsers.cdp_websocket_endpoint_regex.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="webdriver_bidi_websocket_endpoint_regex">[WEBDRIVER\_BIDI\_WEBSOCKET\_ENDPOINT\_REGEX](./browsers.webdriver_bidi_websocket_endpoint_regex.md)</p>
+<span id="webdriver_bidi_websocket_endpoint_regex">[WEBDRIVER_BIDI_WEBSOCKET_ENDPOINT_REGEX](./browsers.webdriver_bidi_websocket_endpoint_regex.md)</span>
 
 </td><td>
 

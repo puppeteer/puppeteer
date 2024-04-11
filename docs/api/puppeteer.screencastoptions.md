@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="crop">crop</p>
+<span id="crop">crop</span>
 
 </td><td>
 
@@ -54,7 +54,7 @@ Specifies the region of the viewport to crop.
 </td></tr>
 <tr><td>
 
-<p id="ffmpegpath">ffmpegPath</p>
+<span id="ffmpegpath">ffmpegPath</span>
 
 </td><td>
 
@@ -75,7 +75,7 @@ Required if `ffmpeg` is not in your PATH.
 </td></tr>
 <tr><td>
 
-<p id="path">path</p>
+<span id="path">path</span>
 
 </td><td>
 
@@ -94,7 +94,7 @@ File path to save the screencast to.
 </td></tr>
 <tr><td>
 
-<p id="scale">scale</p>
+<span id="scale">scale</span>
 
 </td><td>
 
@@ -117,7 +117,7 @@ For example, `0.5` will shrink the width and height of the output video by half.
 </td></tr>
 <tr><td>
 
-<p id="speed">speed</p>
+<span id="speed">speed</span>
 
 </td><td>
 

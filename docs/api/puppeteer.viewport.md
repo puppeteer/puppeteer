@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="devicescalefactor">deviceScaleFactor</p>
+<span id="devicescalefactor">deviceScaleFactor</span>
 
 </td><td>
 
@@ -56,7 +56,7 @@ Specify device scale factor. See [devicePixelRatio](https://developer.mozilla.or
 </td></tr>
 <tr><td>
 
-<p id="hastouch">hasTouch</p>
+<span id="hastouch">hasTouch</span>
 
 </td><td>
 
@@ -77,7 +77,7 @@ Specify if the viewport supports touch events.
 </td></tr>
 <tr><td>
 
-<p id="height">height</p>
+<span id="height">height</span>
 
 </td><td>
 
@@ -94,7 +94,7 @@ The page height in CSS pixels.
 </td></tr>
 <tr><td>
 
-<p id="islandscape">isLandscape</p>
+<span id="islandscape">isLandscape</span>
 
 </td><td>
 
@@ -115,7 +115,7 @@ Specifies if the viewport is in landscape mode.
 </td></tr>
 <tr><td>
 
-<p id="ismobile">isMobile</p>
+<span id="ismobile">isMobile</span>
 
 </td><td>
 
@@ -136,7 +136,7 @@ Whether the `meta viewport` tag is taken into account.
 </td></tr>
 <tr><td>
 
-<p id="width">width</p>
+<span id="width">width</span>
 
 </td><td>
 

@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="steps">steps</p>
+<span id="steps">steps</span>
 
 </td><td>
 

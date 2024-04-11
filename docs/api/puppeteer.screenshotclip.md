@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="scale">scale</p>
+<span id="scale">scale</span>
 
 </td><td>
 

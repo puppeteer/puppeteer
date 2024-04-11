@@ -17,7 +17,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="accessibility">[Accessibility](./puppeteer.accessibility.md)</p>
+<span id="accessibility">[Accessibility](./puppeteer.accessibility.md)</span>
 
 </td><td>
 
@@ -26,7 +26,7 @@ The Accessibility class provides methods for inspecting the browser's accessibil
 </td></tr>
 <tr><td>
 
-<p id="browser">[Browser](./puppeteer.browser.md)</p>
+<span id="browser">[Browser](./puppeteer.browser.md)</span>
 
 </td><td>
 
@@ -39,7 +39,7 @@ The Accessibility class provides methods for inspecting the browser's accessibil
 </td></tr>
 <tr><td>
 
-<p id="browsercontext">[BrowserContext](./puppeteer.browsercontext.md)</p>
+<span id="browsercontext">[BrowserContext](./puppeteer.browsercontext.md)</span>
 
 </td><td>
 
@@ -54,7 +54,7 @@ If a [page](./puppeteer.page.md) opens another [page](./puppeteer.page.md), e.g.
 </td></tr>
 <tr><td>
 
-<p id="cdpsession">[CDPSession](./puppeteer.cdpsession.md)</p>
+<span id="cdpsession">[CDPSession](./puppeteer.cdpsession.md)</span>
 
 </td><td>
 
@@ -63,14 +63,14 @@ The `CDPSession` instances are used to talk raw Chrome Devtools Protocol.
 </td></tr>
 <tr><td>
 
-<p id="connection">[Connection](./puppeteer.connection.md)</p>
+<span id="connection">[Connection](./puppeteer.connection.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="consolemessage">[ConsoleMessage](./puppeteer.consolemessage.md)</p>
+<span id="consolemessage">[ConsoleMessage](./puppeteer.consolemessage.md)</span>
 
 </td><td>
 
@@ -79,7 +79,7 @@ ConsoleMessage objects are dispatched by page via the 'console' event.
 </td></tr>
 <tr><td>
 
-<p id="coverage">[Coverage](./puppeteer.coverage.md)</p>
+<span id="coverage">[Coverage](./puppeteer.coverage.md)</span>
 
 </td><td>
 
@@ -88,14 +88,14 @@ The Coverage class provides methods to gather information about parts of JavaScr
 </td></tr>
 <tr><td>
 
-<p id="csscoverage">[CSSCoverage](./puppeteer.csscoverage.md)</p>
+<span id="csscoverage">[CSSCoverage](./puppeteer.csscoverage.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="devicerequestprompt">[DeviceRequestPrompt](./puppeteer.devicerequestprompt.md)</p>
+<span id="devicerequestprompt">[DeviceRequestPrompt](./puppeteer.devicerequestprompt.md)</span>
 
 </td><td>
 
@@ -104,7 +104,7 @@ Device request prompts let you respond to the page requesting for a device throu
 </td></tr>
 <tr><td>
 
-<p id="devicerequestpromptdevice">[DeviceRequestPromptDevice](./puppeteer.devicerequestpromptdevice.md)</p>
+<span id="devicerequestpromptdevice">[DeviceRequestPromptDevice](./puppeteer.devicerequestpromptdevice.md)</span>
 
 </td><td>
 
@@ -113,7 +113,7 @@ Device in a request prompt.
 </td></tr>
 <tr><td>
 
-<p id="dialog">[Dialog](./puppeteer.dialog.md)</p>
+<span id="dialog">[Dialog](./puppeteer.dialog.md)</span>
 
 </td><td>
 
@@ -122,7 +122,7 @@ Dialog instances are dispatched by the [Page](./puppeteer.page.md) via the `dial
 </td></tr>
 <tr><td>
 
-<p id="elementhandle">[ElementHandle](./puppeteer.elementhandle.md)</p>
+<span id="elementhandle">[ElementHandle](./puppeteer.elementhandle.md)</span>
 
 </td><td>
 
@@ -131,7 +131,7 @@ ElementHandle represents an in-page DOM element.
 </td></tr>
 <tr><td>
 
-<p id="eventemitter">[EventEmitter](./puppeteer.eventemitter.md)</p>
+<span id="eventemitter">[EventEmitter](./puppeteer.eventemitter.md)</span>
 
 </td><td>
 
@@ -140,7 +140,7 @@ The EventEmitter class that many Puppeteer classes extend.
 </td></tr>
 <tr><td>
 
-<p id="filechooser">[FileChooser](./puppeteer.filechooser.md)</p>
+<span id="filechooser">[FileChooser](./puppeteer.filechooser.md)</span>
 
 </td><td>
 
@@ -149,7 +149,7 @@ File choosers let you react to the page requesting for a file.
 </td></tr>
 <tr><td>
 
-<p id="frame">[Frame](./puppeteer.frame.md)</p>
+<span id="frame">[Frame](./puppeteer.frame.md)</span>
 
 </td><td>
 
@@ -160,7 +160,7 @@ To understand frames, you can think of frames as `<iframe>` elements. Just like 
 </td></tr>
 <tr><td>
 
-<p id="httprequest">[HTTPRequest](./puppeteer.httprequest.md)</p>
+<span id="httprequest">[HTTPRequest](./puppeteer.httprequest.md)</span>
 
 </td><td>
 
@@ -169,7 +169,7 @@ Represents an HTTP request sent by a page.
 </td></tr>
 <tr><td>
 
-<p id="httpresponse">[HTTPResponse](./puppeteer.httpresponse.md)</p>
+<span id="httpresponse">[HTTPResponse](./puppeteer.httpresponse.md)</span>
 
 </td><td>
 
@@ -178,14 +178,14 @@ The HTTPResponse class represents responses which are received by the [Page](./p
 </td></tr>
 <tr><td>
 
-<p id="jscoverage">[JSCoverage](./puppeteer.jscoverage.md)</p>
+<span id="jscoverage">[JSCoverage](./puppeteer.jscoverage.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="jshandle">[JSHandle](./puppeteer.jshandle.md)</p>
+<span id="jshandle">[JSHandle](./puppeteer.jshandle.md)</span>
 
 </td><td>
 
@@ -198,7 +198,7 @@ Handles can be used as arguments for any evaluation function such as [Page.$eval
 </td></tr>
 <tr><td>
 
-<p id="keyboard">[Keyboard](./puppeteer.keyboard.md)</p>
+<span id="keyboard">[Keyboard](./puppeteer.keyboard.md)</span>
 
 </td><td>
 
@@ -207,7 +207,7 @@ Keyboard provides an api for managing a virtual keyboard. The high level api is 
 </td></tr>
 <tr><td>
 
-<p id="locator">[Locator](./puppeteer.locator.md)</p>
+<span id="locator">[Locator](./puppeteer.locator.md)</span>
 
 </td><td>
 
@@ -216,7 +216,7 @@ Locators describe a strategy of locating objects and performing an action on the
 </td></tr>
 <tr><td>
 
-<p id="mouse">[Mouse](./puppeteer.mouse.md)</p>
+<span id="mouse">[Mouse](./puppeteer.mouse.md)</span>
 
 </td><td>
 
@@ -225,7 +225,7 @@ The Mouse class operates in main-frame CSS pixels relative to the top-left corne
 </td></tr>
 <tr><td>
 
-<p id="page">[Page](./puppeteer.page.md)</p>
+<span id="page">[Page](./puppeteer.page.md)</span>
 
 </td><td>
 
@@ -240,7 +240,7 @@ One Browser instance might have multiple Page instances.
 </td></tr>
 <tr><td>
 
-<p id="productlauncher">[ProductLauncher](./puppeteer.productlauncher.md)</p>
+<span id="productlauncher">[ProductLauncher](./puppeteer.productlauncher.md)</span>
 
 </td><td>
 
@@ -249,7 +249,7 @@ Describes a launcher - a class that is able to create and launch a browser insta
 </td></tr>
 <tr><td>
 
-<p id="protocolerror">[ProtocolError](./puppeteer.protocolerror.md)</p>
+<span id="protocolerror">[ProtocolError](./puppeteer.protocolerror.md)</span>
 
 </td><td>
 
@@ -258,7 +258,7 @@ ProtocolError is emitted whenever there is an error from the protocol.
 </td></tr>
 <tr><td>
 
-<p id="puppeteer">[Puppeteer](./puppeteer.puppeteer.md)</p>
+<span id="puppeteer">[Puppeteer](./puppeteer.puppeteer.md)</span>
 
 </td><td>
 
@@ -269,7 +269,7 @@ IMPORTANT: if you are using Puppeteer in a Node environment, you will get an ins
 </td></tr>
 <tr><td>
 
-<p id="puppeteererror">[PuppeteerError](./puppeteer.puppeteererror.md)</p>
+<span id="puppeteererror">[PuppeteerError](./puppeteer.puppeteererror.md)</span>
 
 </td><td>
 
@@ -278,7 +278,7 @@ The base class for all Puppeteer-specific errors
 </td></tr>
 <tr><td>
 
-<p id="puppeteernode">[PuppeteerNode](./puppeteer.puppeteernode.md)</p>
+<span id="puppeteernode">[PuppeteerNode](./puppeteer.puppeteernode.md)</span>
 
 </td><td>
 
@@ -289,14 +289,14 @@ If you're using Puppeteer in a Node environment, this is the class you'll get wh
 </td></tr>
 <tr><td>
 
-<p id="screenrecorder">[ScreenRecorder](./puppeteer.screenrecorder.md)</p>
+<span id="screenrecorder">[ScreenRecorder](./puppeteer.screenrecorder.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="securitydetails">[SecurityDetails](./puppeteer.securitydetails.md)</p>
+<span id="securitydetails">[SecurityDetails](./puppeteer.securitydetails.md)</span>
 
 </td><td>
 
@@ -305,7 +305,7 @@ The SecurityDetails class represents the security details of a response that was
 </td></tr>
 <tr><td>
 
-<p id="target">[Target](./puppeteer.target.md)</p>
+<span id="target">[Target](./puppeteer.target.md)</span>
 
 </td><td>
 
@@ -314,7 +314,7 @@ Target represents a [CDP target](https://chromedevtools.github.io/devtools-proto
 </td></tr>
 <tr><td>
 
-<p id="timeouterror">[TimeoutError](./puppeteer.timeouterror.md)</p>
+<span id="timeouterror">[TimeoutError](./puppeteer.timeouterror.md)</span>
 
 </td><td>
 
@@ -323,7 +323,7 @@ TimeoutError is emitted whenever certain operations are terminated due to timeou
 </td></tr>
 <tr><td>
 
-<p id="touchscreen">[Touchscreen](./puppeteer.touchscreen.md)</p>
+<span id="touchscreen">[Touchscreen](./puppeteer.touchscreen.md)</span>
 
 </td><td>
 
@@ -332,7 +332,7 @@ The Touchscreen class exposes touchscreen events.
 </td></tr>
 <tr><td>
 
-<p id="tracing">[Tracing](./puppeteer.tracing.md)</p>
+<span id="tracing">[Tracing](./puppeteer.tracing.md)</span>
 
 </td><td>
 
@@ -341,7 +341,7 @@ The Tracing class exposes the tracing audit interface.
 </td></tr>
 <tr><td>
 
-<p id="unsupportedoperation">[UnsupportedOperation](./puppeteer.unsupportedoperation.md)</p>
+<span id="unsupportedoperation">[UnsupportedOperation](./puppeteer.unsupportedoperation.md)</span>
 
 </td><td>
 
@@ -350,7 +350,7 @@ Puppeteer will throw this error if a method is not supported by the currently us
 </td></tr>
 <tr><td>
 
-<p id="webworker">[WebWorker](./puppeteer.webworker.md)</p>
+<span id="webworker">[WebWorker](./puppeteer.webworker.md)</span>
 
 </td><td>
 
@@ -372,14 +372,14 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="browsercontextevent">[BrowserContextEvent](./puppeteer.browsercontextevent.md)</p>
+<span id="browsercontextevent">[BrowserContextEvent](./puppeteer.browsercontextevent.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="browserevent">[BrowserEvent](./puppeteer.browserevent.md)</p>
+<span id="browserevent">[BrowserEvent](./puppeteer.browserevent.md)</span>
 
 </td><td>
 
@@ -388,14 +388,14 @@ All the events a [browser instance](./puppeteer.browser.md) may emit.
 </td></tr>
 <tr><td>
 
-<p id="interceptresolutionaction">[InterceptResolutionAction](./puppeteer.interceptresolutionaction.md)</p>
+<span id="interceptresolutionaction">[InterceptResolutionAction](./puppeteer.interceptresolutionaction.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="locatorevent">[LocatorEvent](./puppeteer.locatorevent.md)</p>
+<span id="locatorevent">[LocatorEvent](./puppeteer.locatorevent.md)</span>
 
 </td><td>
 
@@ -404,7 +404,7 @@ All the events that a locator instance may emit.
 </td></tr>
 <tr><td>
 
-<p id="pageevent">[PageEvent](./puppeteer.pageevent.md)</p>
+<span id="pageevent">[PageEvent](./puppeteer.pageevent.md)</span>
 
 </td><td>
 
@@ -413,7 +413,7 @@ All the events that a page instance may emit.
 </td></tr>
 <tr><td>
 
-<p id="targettype">[TargetType](./puppeteer.targettype.md)</p>
+<span id="targettype">[TargetType](./puppeteer.targettype.md)</span>
 
 </td><td>
 
@@ -433,7 +433,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="clearcustomqueryhandlers">[clearCustomQueryHandlers()](./puppeteer.clearcustomqueryhandlers.md)</p>
+<span id="clearcustomqueryhandlers">[clearCustomQueryHandlers()](./puppeteer.clearcustomqueryhandlers.md)</span>
 
 </td><td>
 
@@ -444,14 +444,14 @@ Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppetee
 </td></tr>
 <tr><td>
 
-<p id="connect">[connect(options)](./puppeteer.connect.md)</p>
+<span id="connect">[connect(options)](./puppeteer.connect.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="customqueryhandlernames">[customQueryHandlerNames()](./puppeteer.customqueryhandlernames.md)</p>
+<span id="customqueryhandlernames">[customQueryHandlerNames()](./puppeteer.customqueryhandlernames.md)</span>
 
 </td><td>
 
@@ -462,28 +462,28 @@ Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppetee
 </td></tr>
 <tr><td>
 
-<p id="defaultargs">[defaultArgs(options)](./puppeteer.defaultargs.md)</p>
+<span id="defaultargs">[defaultArgs(options)](./puppeteer.defaultargs.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="executablepath">[executablePath(channel)](./puppeteer.executablepath.md)</p>
+<span id="executablepath">[executablePath(channel)](./puppeteer.executablepath.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="launch">[launch(options)](./puppeteer.launch.md)</p>
+<span id="launch">[launch(options)](./puppeteer.launch.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="registercustomqueryhandler">[registerCustomQueryHandler(name, handler)](./puppeteer.registercustomqueryhandler.md)</p>
+<span id="registercustomqueryhandler">[registerCustomQueryHandler(name, handler)](./puppeteer.registercustomqueryhandler.md)</span>
 
 </td><td>
 
@@ -494,14 +494,14 @@ Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppetee
 </td></tr>
 <tr><td>
 
-<p id="trimcache">[trimCache()](./puppeteer.trimcache.md)</p>
+<span id="trimcache">[trimCache()](./puppeteer.trimcache.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="unregistercustomqueryhandler">[unregisterCustomQueryHandler(name)](./puppeteer.unregistercustomqueryhandler.md)</p>
+<span id="unregistercustomqueryhandler">[unregisterCustomQueryHandler(name)](./puppeteer.unregistercustomqueryhandler.md)</span>
 
 </td><td>
 
@@ -525,35 +525,35 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="actionoptions">[ActionOptions](./puppeteer.actionoptions.md)</p>
+<span id="actionoptions">[ActionOptions](./puppeteer.actionoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="autofilldata">[AutofillData](./puppeteer.autofilldata.md)</p>
+<span id="autofilldata">[AutofillData](./puppeteer.autofilldata.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="boundingbox">[BoundingBox](./puppeteer.boundingbox.md)</p>
+<span id="boundingbox">[BoundingBox](./puppeteer.boundingbox.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="boxmodel">[BoxModel](./puppeteer.boxmodel.md)</p>
+<span id="boxmodel">[BoxModel](./puppeteer.boxmodel.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="browserconnectoptions">[BrowserConnectOptions](./puppeteer.browserconnectoptions.md)</p>
+<span id="browserconnectoptions">[BrowserConnectOptions](./puppeteer.browserconnectoptions.md)</span>
 
 </td><td>
 
@@ -562,28 +562,28 @@ Generic browser options that can be passed when launching any browser or when co
 </td></tr>
 <tr><td>
 
-<p id="browsercontextevents">[BrowserContextEvents](./puppeteer.browsercontextevents.md)</p>
+<span id="browsercontextevents">[BrowserContextEvents](./puppeteer.browsercontextevents.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="browsercontextoptions">[BrowserContextOptions](./puppeteer.browsercontextoptions.md)</p>
+<span id="browsercontextoptions">[BrowserContextOptions](./puppeteer.browsercontextoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="browserevents">[BrowserEvents](./puppeteer.browserevents.md)</p>
+<span id="browserevents">[BrowserEvents](./puppeteer.browserevents.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="browserlaunchargumentoptions">[BrowserLaunchArgumentOptions](./puppeteer.browserlaunchargumentoptions.md)</p>
+<span id="browserlaunchargumentoptions">[BrowserLaunchArgumentOptions](./puppeteer.browserlaunchargumentoptions.md)</span>
 
 </td><td>
 
@@ -592,35 +592,35 @@ Launcher options that only apply to Chrome.
 </td></tr>
 <tr><td>
 
-<p id="cdpsessionevents">[CDPSessionEvents](./puppeteer.cdpsessionevents.md)</p>
+<span id="cdpsessionevents">[CDPSessionEvents](./puppeteer.cdpsessionevents.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="clickoptions">[ClickOptions](./puppeteer.clickoptions.md)</p>
+<span id="clickoptions">[ClickOptions](./puppeteer.clickoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="commandoptions">[CommandOptions](./puppeteer.commandoptions.md)</p>
+<span id="commandoptions">[CommandOptions](./puppeteer.commandoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="commoneventemitter">[CommonEventEmitter](./puppeteer.commoneventemitter.md)</p>
+<span id="commoneventemitter">[CommonEventEmitter](./puppeteer.commoneventemitter.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="configuration">[Configuration](./puppeteer.configuration.md)</p>
+<span id="configuration">[Configuration](./puppeteer.configuration.md)</span>
 
 </td><td>
 
@@ -631,35 +631,35 @@ See individual properties for more information.
 </td></tr>
 <tr><td>
 
-<p id="connectiontransport">[ConnectionTransport](./puppeteer.connectiontransport.md)</p>
+<span id="connectiontransport">[ConnectionTransport](./puppeteer.connectiontransport.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="connectoptions">[ConnectOptions](./puppeteer.connectoptions.md)</p>
+<span id="connectoptions">[ConnectOptions](./puppeteer.connectoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="consolemessagelocation">[ConsoleMessageLocation](./puppeteer.consolemessagelocation.md)</p>
+<span id="consolemessagelocation">[ConsoleMessageLocation](./puppeteer.consolemessagelocation.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="continuerequestoverrides">[ContinueRequestOverrides](./puppeteer.continuerequestoverrides.md)</p>
+<span id="continuerequestoverrides">[ContinueRequestOverrides](./puppeteer.continuerequestoverrides.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="cookie">[Cookie](./puppeteer.cookie.md)</p>
+<span id="cookie">[Cookie](./puppeteer.cookie.md)</span>
 
 </td><td>
 
@@ -668,7 +668,7 @@ Represents a cookie object.
 </td></tr>
 <tr><td>
 
-<p id="cookieparam">[CookieParam](./puppeteer.cookieparam.md)</p>
+<span id="cookieparam">[CookieParam](./puppeteer.cookieparam.md)</span>
 
 </td><td>
 
@@ -677,7 +677,7 @@ Cookie parameter object
 </td></tr>
 <tr><td>
 
-<p id="coverageentry">[CoverageEntry](./puppeteer.coverageentry.md)</p>
+<span id="coverageentry">[CoverageEntry](./puppeteer.coverageentry.md)</span>
 
 </td><td>
 
@@ -686,14 +686,14 @@ The CoverageEntry class represents one entry of the coverage report.
 </td></tr>
 <tr><td>
 
-<p id="credentials">[Credentials](./puppeteer.credentials.md)</p>
+<span id="credentials">[Credentials](./puppeteer.credentials.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="csscoverageoptions">[CSSCoverageOptions](./puppeteer.csscoverageoptions.md)</p>
+<span id="csscoverageoptions">[CSSCoverageOptions](./puppeteer.csscoverageoptions.md)</span>
 
 </td><td>
 
@@ -702,98 +702,98 @@ Set of configurable options for CSS coverage.
 </td></tr>
 <tr><td>
 
-<p id="customqueryhandler">[CustomQueryHandler](./puppeteer.customqueryhandler.md)</p>
+<span id="customqueryhandler">[CustomQueryHandler](./puppeteer.customqueryhandler.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="debuginfo">[DebugInfo](./puppeteer.debuginfo.md)</p>
+<span id="debuginfo">[DebugInfo](./puppeteer.debuginfo.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="deletecookiesrequest">[DeleteCookiesRequest](./puppeteer.deletecookiesrequest.md)</p>
+<span id="deletecookiesrequest">[DeleteCookiesRequest](./puppeteer.deletecookiesrequest.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="device">[Device](./puppeteer.device.md)</p>
+<span id="device">[Device](./puppeteer.device.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="elementscreenshotoptions">[ElementScreenshotOptions](./puppeteer.elementscreenshotoptions.md)</p>
+<span id="elementscreenshotoptions">[ElementScreenshotOptions](./puppeteer.elementscreenshotoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="frameaddscripttagoptions">[FrameAddScriptTagOptions](./puppeteer.frameaddscripttagoptions.md)</p>
+<span id="frameaddscripttagoptions">[FrameAddScriptTagOptions](./puppeteer.frameaddscripttagoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="frameaddstyletagoptions">[FrameAddStyleTagOptions](./puppeteer.frameaddstyletagoptions.md)</p>
+<span id="frameaddstyletagoptions">[FrameAddStyleTagOptions](./puppeteer.frameaddstyletagoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="frameevents">[FrameEvents](./puppeteer.frameevents.md)</p>
+<span id="frameevents">[FrameEvents](./puppeteer.frameevents.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="framewaitforfunctionoptions">[FrameWaitForFunctionOptions](./puppeteer.framewaitforfunctionoptions.md)</p>
+<span id="framewaitforfunctionoptions">[FrameWaitForFunctionOptions](./puppeteer.framewaitforfunctionoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="geolocationoptions">[GeolocationOptions](./puppeteer.geolocationoptions.md)</p>
+<span id="geolocationoptions">[GeolocationOptions](./puppeteer.geolocationoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="gotooptions">[GoToOptions](./puppeteer.gotooptions.md)</p>
+<span id="gotooptions">[GoToOptions](./puppeteer.gotooptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="interceptresolutionstate">[InterceptResolutionState](./puppeteer.interceptresolutionstate.md)</p>
+<span id="interceptresolutionstate">[InterceptResolutionState](./puppeteer.interceptresolutionstate.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="internalnetworkconditions">[InternalNetworkConditions](./puppeteer.internalnetworkconditions.md)</p>
+<span id="internalnetworkconditions">[InternalNetworkConditions](./puppeteer.internalnetworkconditions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="jscoverageentry">[JSCoverageEntry](./puppeteer.jscoverageentry.md)</p>
+<span id="jscoverageentry">[JSCoverageEntry](./puppeteer.jscoverageentry.md)</span>
 
 </td><td>
 
@@ -802,7 +802,7 @@ The CoverageEntry class for JavaScript
 </td></tr>
 <tr><td>
 
-<p id="jscoverageoptions">[JSCoverageOptions](./puppeteer.jscoverageoptions.md)</p>
+<span id="jscoverageoptions">[JSCoverageOptions](./puppeteer.jscoverageoptions.md)</span>
 
 </td><td>
 
@@ -811,21 +811,21 @@ Set of configurable options for JS coverage.
 </td></tr>
 <tr><td>
 
-<p id="keyboardtypeoptions">[KeyboardTypeOptions](./puppeteer.keyboardtypeoptions.md)</p>
+<span id="keyboardtypeoptions">[KeyboardTypeOptions](./puppeteer.keyboardtypeoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="keydownoptions">[KeyDownOptions](./puppeteer.keydownoptions.md)</p>
+<span id="keydownoptions">[KeyDownOptions](./puppeteer.keydownoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="launchoptions">[LaunchOptions](./puppeteer.launchoptions.md)</p>
+<span id="launchoptions">[LaunchOptions](./puppeteer.launchoptions.md)</span>
 
 </td><td>
 
@@ -834,98 +834,98 @@ Generic launch options that can be passed when launching any browser.
 </td></tr>
 <tr><td>
 
-<p id="locatorevents">[LocatorEvents](./puppeteer.locatorevents.md)</p>
+<span id="locatorevents">[LocatorEvents](./puppeteer.locatorevents.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="locatoroptions">[LocatorOptions](./puppeteer.locatoroptions.md)</p>
+<span id="locatoroptions">[LocatorOptions](./puppeteer.locatoroptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="locatorscrolloptions">[LocatorScrollOptions](./puppeteer.locatorscrolloptions.md)</p>
+<span id="locatorscrolloptions">[LocatorScrollOptions](./puppeteer.locatorscrolloptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="mediafeature">[MediaFeature](./puppeteer.mediafeature.md)</p>
+<span id="mediafeature">[MediaFeature](./puppeteer.mediafeature.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="metrics">[Metrics](./puppeteer.metrics.md)</p>
+<span id="metrics">[Metrics](./puppeteer.metrics.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="mouseclickoptions">[MouseClickOptions](./puppeteer.mouseclickoptions.md)</p>
+<span id="mouseclickoptions">[MouseClickOptions](./puppeteer.mouseclickoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="mousemoveoptions">[MouseMoveOptions](./puppeteer.mousemoveoptions.md)</p>
+<span id="mousemoveoptions">[MouseMoveOptions](./puppeteer.mousemoveoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="mouseoptions">[MouseOptions](./puppeteer.mouseoptions.md)</p>
+<span id="mouseoptions">[MouseOptions](./puppeteer.mouseoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="mousewheeloptions">[MouseWheelOptions](./puppeteer.mousewheeloptions.md)</p>
+<span id="mousewheeloptions">[MouseWheelOptions](./puppeteer.mousewheeloptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="moveable">[Moveable](./puppeteer.moveable.md)</p>
+<span id="moveable">[Moveable](./puppeteer.moveable.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="networkconditions">[NetworkConditions](./puppeteer.networkconditions.md)</p>
+<span id="networkconditions">[NetworkConditions](./puppeteer.networkconditions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="newdocumentscriptevaluation">[NewDocumentScriptEvaluation](./puppeteer.newdocumentscriptevaluation.md)</p>
+<span id="newdocumentscriptevaluation">[NewDocumentScriptEvaluation](./puppeteer.newdocumentscriptevaluation.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="offset">[Offset](./puppeteer.offset.md)</p>
+<span id="offset">[Offset](./puppeteer.offset.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="pageevents">[PageEvents](./puppeteer.pageevents.md)</p>
+<span id="pageevents">[PageEvents](./puppeteer.pageevents.md)</span>
 
 </td><td>
 
@@ -936,14 +936,14 @@ See [PageEvent](./puppeteer.pageevent.md) for more detail on the events and when
 </td></tr>
 <tr><td>
 
-<p id="pdfmargin">[PDFMargin](./puppeteer.pdfmargin.md)</p>
+<span id="pdfmargin">[PDFMargin](./puppeteer.pdfmargin.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="pdfoptions">[PDFOptions](./puppeteer.pdfoptions.md)</p>
+<span id="pdfoptions">[PDFOptions](./puppeteer.pdfoptions.md)</span>
 
 </td><td>
 
@@ -952,28 +952,28 @@ Valid options to configure PDF generation via [Page.pdf()](./puppeteer.page.pdf.
 </td></tr>
 <tr><td>
 
-<p id="point">[Point](./puppeteer.point.md)</p>
+<span id="point">[Point](./puppeteer.point.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="puppeteerlaunchoptions">[PuppeteerLaunchOptions](./puppeteer.puppeteerlaunchoptions.md)</p>
+<span id="puppeteerlaunchoptions">[PuppeteerLaunchOptions](./puppeteer.puppeteerlaunchoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="remoteaddress">[RemoteAddress](./puppeteer.remoteaddress.md)</p>
+<span id="remoteaddress">[RemoteAddress](./puppeteer.remoteaddress.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="responseforrequest">[ResponseForRequest](./puppeteer.responseforrequest.md)</p>
+<span id="responseforrequest">[ResponseForRequest](./puppeteer.responseforrequest.md)</span>
 
 </td><td>
 
@@ -982,28 +982,28 @@ Required response data to fulfill a request with.
 </td></tr>
 <tr><td>
 
-<p id="screencastoptions">[ScreencastOptions](./puppeteer.screencastoptions.md)</p>
+<span id="screencastoptions">[ScreencastOptions](./puppeteer.screencastoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="screenshotclip">[ScreenshotClip](./puppeteer.screenshotclip.md)</p>
+<span id="screenshotclip">[ScreenshotClip](./puppeteer.screenshotclip.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="screenshotoptions">[ScreenshotOptions](./puppeteer.screenshotoptions.md)</p>
+<span id="screenshotoptions">[ScreenshotOptions](./puppeteer.screenshotoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="serializedaxnode">[SerializedAXNode](./puppeteer.serializedaxnode.md)</p>
+<span id="serializedaxnode">[SerializedAXNode](./puppeteer.serializedaxnode.md)</span>
 
 </td><td>
 
@@ -1012,56 +1012,56 @@ Represents a Node and the properties of it that are relevant to Accessibility.
 </td></tr>
 <tr><td>
 
-<p id="snapshotoptions">[SnapshotOptions](./puppeteer.snapshotoptions.md)</p>
+<span id="snapshotoptions">[SnapshotOptions](./puppeteer.snapshotoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="tracingoptions">[TracingOptions](./puppeteer.tracingoptions.md)</p>
+<span id="tracingoptions">[TracingOptions](./puppeteer.tracingoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="viewport">[Viewport](./puppeteer.viewport.md)</p>
+<span id="viewport">[Viewport](./puppeteer.viewport.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="waitfornetworkidleoptions">[WaitForNetworkIdleOptions](./puppeteer.waitfornetworkidleoptions.md)</p>
+<span id="waitfornetworkidleoptions">[WaitForNetworkIdleOptions](./puppeteer.waitfornetworkidleoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="waitforoptions">[WaitForOptions](./puppeteer.waitforoptions.md)</p>
+<span id="waitforoptions">[WaitForOptions](./puppeteer.waitforoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="waitforselectoroptions">[WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md)</p>
+<span id="waitforselectoroptions">[WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="waitfortargetoptions">[WaitForTargetOptions](./puppeteer.waitfortargetoptions.md)</p>
+<span id="waitfortargetoptions">[WaitForTargetOptions](./puppeteer.waitfortargetoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="waittimeoutoptions">[WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md)</p>
+<span id="waittimeoutoptions">[WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md)</span>
 
 </td><td>
 
@@ -1081,7 +1081,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="cdpsessionevent">[CDPSessionEvent](./puppeteer.cdpsessionevent.md)</p>
+<span id="cdpsessionevent">[CDPSessionEvent](./puppeteer.cdpsessionevent.md)</span>
 
 </td><td>
 
@@ -1103,7 +1103,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="default_intercept_resolution_priority">[DEFAULT\_INTERCEPT\_RESOLUTION\_PRIORITY](./puppeteer.default_intercept_resolution_priority.md)</p>
+<span id="default_intercept_resolution_priority">[DEFAULT_INTERCEPT_RESOLUTION_PRIORITY](./puppeteer.default_intercept_resolution_priority.md)</span>
 
 </td><td>
 
@@ -1112,7 +1112,7 @@ The default cooperative request interception resolution priority
 </td></tr>
 <tr><td>
 
-<p id="knowndevices">[KnownDevices](./puppeteer.knowndevices.md)</p>
+<span id="knowndevices">[KnownDevices](./puppeteer.knowndevices.md)</span>
 
 </td><td>
 
@@ -1121,7 +1121,7 @@ A list of devices to be used with [Page.emulate()](./puppeteer.page.emulate.md).
 </td></tr>
 <tr><td>
 
-<p id="mousebutton">[MouseButton](./puppeteer.mousebutton.md)</p>
+<span id="mousebutton">[MouseButton](./puppeteer.mousebutton.md)</span>
 
 </td><td>
 
@@ -1130,7 +1130,7 @@ Enum of valid mouse buttons.
 </td></tr>
 <tr><td>
 
-<p id="predefinednetworkconditions">[PredefinedNetworkConditions](./puppeteer.predefinednetworkconditions.md)</p>
+<span id="predefinednetworkconditions">[PredefinedNetworkConditions](./puppeteer.predefinednetworkconditions.md)</span>
 
 </td><td>
 
@@ -1139,7 +1139,7 @@ A list of network conditions to be used with [Page.emulateNetworkConditions()](.
 </td></tr>
 <tr><td>
 
-<p id="puppeteer">[puppeteer](./puppeteer.puppeteer.md)</p>
+<span id="puppeteer">[puppeteer](./puppeteer.puppeteer.md)</span>
 
 </td><td>
 
@@ -1159,56 +1159,56 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="actionresult">[ActionResult](./puppeteer.actionresult.md)</p>
+<span id="actionresult">[ActionResult](./puppeteer.actionresult.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="awaitable">[Awaitable](./puppeteer.awaitable.md)</p>
+<span id="awaitable">[Awaitable](./puppeteer.awaitable.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="awaitableiterable">[AwaitableIterable](./puppeteer.awaitableiterable.md)</p>
+<span id="awaitableiterable">[AwaitableIterable](./puppeteer.awaitableiterable.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="awaitablepredicate">[AwaitablePredicate](./puppeteer.awaitablepredicate.md)</p>
+<span id="awaitablepredicate">[AwaitablePredicate](./puppeteer.awaitablepredicate.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="awaitedlocator">[AwaitedLocator](./puppeteer.awaitedlocator.md)</p>
+<span id="awaitedlocator">[AwaitedLocator](./puppeteer.awaitedlocator.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="cdpevents">[CDPEvents](./puppeteer.cdpevents.md)</p>
+<span id="cdpevents">[CDPEvents](./puppeteer.cdpevents.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="chromereleasechannel">[ChromeReleaseChannel](./puppeteer.chromereleasechannel.md)</p>
+<span id="chromereleasechannel">[ChromeReleaseChannel](./puppeteer.chromereleasechannel.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="consolemessagetype">[ConsoleMessageType](./puppeteer.consolemessagetype.md)</p>
+<span id="consolemessagetype">[ConsoleMessageType](./puppeteer.consolemessagetype.md)</span>
 
 </td><td>
 
@@ -1217,7 +1217,7 @@ The supported types for console messages.
 </td></tr>
 <tr><td>
 
-<p id="cookiepriority">[CookiePriority](./puppeteer.cookiepriority.md)</p>
+<span id="cookiepriority">[CookiePriority](./puppeteer.cookiepriority.md)</span>
 
 </td><td>
 
@@ -1226,7 +1226,7 @@ Represents the cookie's 'Priority' status: https://tools.ietf.org/html/draft-wes
 </td></tr>
 <tr><td>
 
-<p id="cookiesamesite">[CookieSameSite](./puppeteer.cookiesamesite.md)</p>
+<span id="cookiesamesite">[CookieSameSite](./puppeteer.cookiesamesite.md)</span>
 
 </td><td>
 
@@ -1235,7 +1235,7 @@ Represents the cookie's 'SameSite' status: https://tools.ietf.org/html/draft-wes
 </td></tr>
 <tr><td>
 
-<p id="cookiesourcescheme">[CookieSourceScheme](./puppeteer.cookiesourcescheme.md)</p>
+<span id="cookiesourcescheme">[CookieSourceScheme](./puppeteer.cookiesourcescheme.md)</span>
 
 </td><td>
 
@@ -1244,49 +1244,49 @@ Represents the source scheme of the origin that originally set the cookie. A val
 </td></tr>
 <tr><td>
 
-<p id="elementfor">[ElementFor](./puppeteer.elementfor.md)</p>
+<span id="elementfor">[ElementFor](./puppeteer.elementfor.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="errorcode">[ErrorCode](./puppeteer.errorcode.md)</p>
+<span id="errorcode">[ErrorCode](./puppeteer.errorcode.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="evaluatefunc">[EvaluateFunc](./puppeteer.evaluatefunc.md)</p>
+<span id="evaluatefunc">[EvaluateFunc](./puppeteer.evaluatefunc.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="evaluatefuncwith">[EvaluateFuncWith](./puppeteer.evaluatefuncwith.md)</p>
+<span id="evaluatefuncwith">[EvaluateFuncWith](./puppeteer.evaluatefuncwith.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="eventswithwildcard">[EventsWithWildcard](./puppeteer.eventswithwildcard.md)</p>
+<span id="eventswithwildcard">[EventsWithWildcard](./puppeteer.eventswithwildcard.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="eventtype">[EventType](./puppeteer.eventtype.md)</p>
+<span id="eventtype">[EventType](./puppeteer.eventtype.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="experimentsconfiguration">[ExperimentsConfiguration](./puppeteer.experimentsconfiguration.md)</p>
+<span id="experimentsconfiguration">[ExperimentsConfiguration](./puppeteer.experimentsconfiguration.md)</span>
 
 </td><td>
 
@@ -1297,42 +1297,42 @@ See individual properties for more information.
 </td></tr>
 <tr><td>
 
-<p id="flattenhandle">[FlattenHandle](./puppeteer.flattenhandle.md)</p>
+<span id="flattenhandle">[FlattenHandle](./puppeteer.flattenhandle.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="handlefor">[HandleFor](./puppeteer.handlefor.md)</p>
+<span id="handlefor">[HandleFor](./puppeteer.handlefor.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="handleor">[HandleOr](./puppeteer.handleor.md)</p>
+<span id="handleor">[HandleOr](./puppeteer.handleor.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="handler">[Handler](./puppeteer.handler.md)</p>
+<span id="handler">[Handler](./puppeteer.handler.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="innerparams">[InnerParams](./puppeteer.innerparams.md)</p>
+<span id="innerparams">[InnerParams](./puppeteer.innerparams.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="keyinput">[KeyInput](./puppeteer.keyinput.md)</p>
+<span id="keyinput">[KeyInput](./puppeteer.keyinput.md)</span>
 
 </td><td>
 
@@ -1341,49 +1341,49 @@ All the valid keys that can be passed to functions that take user input, such as
 </td></tr>
 <tr><td>
 
-<p id="keypressoptions">[KeyPressOptions](./puppeteer.keypressoptions.md)</p>
+<span id="keypressoptions">[KeyPressOptions](./puppeteer.keypressoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="locatorclickoptions">[LocatorClickOptions](./puppeteer.locatorclickoptions.md)</p>
+<span id="locatorclickoptions">[LocatorClickOptions](./puppeteer.locatorclickoptions.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="lowercasepaperformat">[LowerCasePaperFormat](./puppeteer.lowercasepaperformat.md)</p>
+<span id="lowercasepaperformat">[LowerCasePaperFormat](./puppeteer.lowercasepaperformat.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="mapper">[Mapper](./puppeteer.mapper.md)</p>
+<span id="mapper">[Mapper](./puppeteer.mapper.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="mousebutton">[MouseButton](./puppeteer.mousebutton.md)</p>
+<span id="mousebutton">[MouseButton](./puppeteer.mousebutton.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="nodefor">[NodeFor](./puppeteer.nodefor.md)</p>
+<span id="nodefor">[NodeFor](./puppeteer.nodefor.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="paperformat">[PaperFormat](./puppeteer.paperformat.md)</p>
+<span id="paperformat">[PaperFormat](./puppeteer.paperformat.md)</span>
 
 </td><td>
 
@@ -1392,21 +1392,21 @@ All the valid paper format types when printing a PDF.
 </td></tr>
 <tr><td>
 
-<p id="permission">[Permission](./puppeteer.permission.md)</p>
+<span id="permission">[Permission](./puppeteer.permission.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="predicate">[Predicate](./puppeteer.predicate.md)</p>
+<span id="predicate">[Predicate](./puppeteer.predicate.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="product">[Product](./puppeteer.product.md)</p>
+<span id="product">[Product](./puppeteer.product.md)</span>
 
 </td><td>
 
@@ -1415,28 +1415,28 @@ Supported products.
 </td></tr>
 <tr><td>
 
-<p id="protocollifecycleevent">[ProtocolLifeCycleEvent](./puppeteer.protocollifecycleevent.md)</p>
+<span id="protocollifecycleevent">[ProtocolLifeCycleEvent](./puppeteer.protocollifecycleevent.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="protocoltype">[ProtocolType](./puppeteer.protocoltype.md)</p>
+<span id="protocoltype">[ProtocolType](./puppeteer.protocoltype.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="puppeteerlifecycleevent">[PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)</p>
+<span id="puppeteerlifecycleevent">[PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="puppeteernodelaunchoptions">[PuppeteerNodeLaunchOptions](./puppeteer.puppeteernodelaunchoptions.md)</p>
+<span id="puppeteernodelaunchoptions">[PuppeteerNodeLaunchOptions](./puppeteer.puppeteernodelaunchoptions.md)</span>
 
 </td><td>
 
@@ -1445,14 +1445,14 @@ Utility type exposed to enable users to define options that can be passed to `pu
 </td></tr>
 <tr><td>
 
-<p id="quad">[Quad](./puppeteer.quad.md)</p>
+<span id="quad">[Quad](./puppeteer.quad.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="resourcetype">[ResourceType](./puppeteer.resourcetype.md)</p>
+<span id="resourcetype">[ResourceType](./puppeteer.resourcetype.md)</span>
 
 </td><td>
 
@@ -1461,14 +1461,14 @@ Resource types for HTTPRequests as perceived by the rendering engine.
 </td></tr>
 <tr><td>
 
-<p id="targetfiltercallback">[TargetFilterCallback](./puppeteer.targetfiltercallback.md)</p>
+<span id="targetfiltercallback">[TargetFilterCallback](./puppeteer.targetfiltercallback.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="visibilityoption">[VisibilityOption](./puppeteer.visibilityoption.md)</p>
+<span id="visibilityoption">[VisibilityOption](./puppeteer.visibilityoption.md)</span>
 
 </td><td>
 

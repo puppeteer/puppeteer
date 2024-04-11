@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="content">content</p>
+<span id="content">content</span>
 
 </td><td>
 
@@ -54,7 +54,7 @@ Raw CSS content to be injected into the frame.
 </td></tr>
 <tr><td>
 
-<p id="path">path</p>
+<span id="path">path</span>
 
 </td><td>
 
@@ -73,7 +73,7 @@ The path to a CSS file to be injected into the frame.
 </td></tr>
 <tr><td>
 
-<p id="url">url</p>
+<span id="url">url</span>
 
 </td><td>
 

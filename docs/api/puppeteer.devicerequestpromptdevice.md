@@ -37,7 +37,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="id">id</p>
+<span id="id">id</span>
 
 </td><td>
 
@@ -52,7 +52,7 @@ Device id during a prompt.
 </td></tr>
 <tr><td>
 
-<p id="name">name</p>
+<span id="name">name</span>
 
 </td><td>
 

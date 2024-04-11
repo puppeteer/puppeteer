@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="displayheaderfooter">displayHeaderFooter</p>
+<span id="displayheaderfooter">displayHeaderFooter</span>
 
 </td><td>
 
@@ -58,7 +58,7 @@ Whether to show the header and footer.
 </td></tr>
 <tr><td>
 
-<p id="footertemplate">footerTemplate</p>
+<span id="footertemplate">footerTemplate</span>
 
 </td><td>
 
@@ -77,7 +77,7 @@ HTML template for the print footer. Has the same constraints and support for spe
 </td></tr>
 <tr><td>
 
-<p id="format">format</p>
+<span id="format">format</span>
 
 </td><td>
 
@@ -96,7 +96,7 @@ HTML template for the print footer. Has the same constraints and support for spe
 </td></tr>
 <tr><td>
 
-<p id="headertemplate">headerTemplate</p>
+<span id="headertemplate">headerTemplate</span>
 
 </td><td>
 
@@ -125,7 +125,7 @@ HTML template for the print header. Should be valid HTML with the following clas
 </td></tr>
 <tr><td>
 
-<p id="height">height</p>
+<span id="height">height</span>
 
 </td><td>
 
@@ -144,7 +144,7 @@ Sets the height of paper. You can pass in a number or a string with a unit.
 </td></tr>
 <tr><td>
 
-<p id="landscape">landscape</p>
+<span id="landscape">landscape</span>
 
 </td><td>
 
@@ -165,7 +165,7 @@ Whether to print in landscape orientation.
 </td></tr>
 <tr><td>
 
-<p id="margin">margin</p>
+<span id="margin">margin</span>
 
 </td><td>
 
@@ -186,7 +186,7 @@ Set the PDF margins.
 </td></tr>
 <tr><td>
 
-<p id="omitbackground">omitBackground</p>
+<span id="omitbackground">omitBackground</span>
 
 </td><td>
 
@@ -207,7 +207,7 @@ Hides default white background and allows generating pdfs with transparency.
 </td></tr>
 <tr><td>
 
-<p id="outline">outline</p>
+<span id="outline">outline</span>
 
 </td><td>
 
@@ -228,7 +228,7 @@ Generate document outline.
 </td></tr>
 <tr><td>
 
-<p id="pageranges">pageRanges</p>
+<span id="pageranges">pageRanges</span>
 
 </td><td>
 
@@ -249,7 +249,7 @@ The empty string, which means all pages are printed.
 </td></tr>
 <tr><td>
 
-<p id="path">path</p>
+<span id="path">path</span>
 
 </td><td>
 
@@ -270,7 +270,7 @@ The path to save the file to.
 </td></tr>
 <tr><td>
 
-<p id="prefercsspagesize">preferCSSPageSize</p>
+<span id="prefercsspagesize">preferCSSPageSize</span>
 
 </td><td>
 
@@ -291,7 +291,7 @@ Give any CSS `@page` size declared in the page priority over what is declared in
 </td></tr>
 <tr><td>
 
-<p id="printbackground">printBackground</p>
+<span id="printbackground">printBackground</span>
 
 </td><td>
 
@@ -312,7 +312,7 @@ Set to `true` to print background graphics.
 </td></tr>
 <tr><td>
 
-<p id="scale">scale</p>
+<span id="scale">scale</span>
 
 </td><td>
 
@@ -333,7 +333,7 @@ Scales the rendering of the web page. Amount must be between `0.1` and `2`.
 </td></tr>
 <tr><td>
 
-<p id="tagged">tagged</p>
+<span id="tagged">tagged</span>
 
 </td><td>
 
@@ -354,7 +354,7 @@ Generate tagged (accessible) PDF.
 </td></tr>
 <tr><td>
 
-<p id="timeout">timeout</p>
+<span id="timeout">timeout</span>
 
 </td><td>
 
@@ -375,7 +375,7 @@ Timeout in milliseconds. Pass `0` to disable timeout.
 </td></tr>
 <tr><td>
 
-<p id="width">width</p>
+<span id="width">width</span>
 
 </td><td>
 

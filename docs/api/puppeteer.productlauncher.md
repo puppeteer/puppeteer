@@ -37,7 +37,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="product">product</p>
+<span id="product">product</span>
 
 </td><td>
 
@@ -69,7 +69,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="defaultargs">[defaultArgs(object)](./puppeteer.productlauncher.defaultargs.md)</p>
+<span id="defaultargs">[defaultArgs(object)](./puppeteer.productlauncher.defaultargs.md)</span>
 
 </td><td>
 
@@ -78,7 +78,7 @@ Description
 </td></tr>
 <tr><td>
 
-<p id="executablepath">[executablePath(channel)](./puppeteer.productlauncher.executablepath.md)</p>
+<span id="executablepath">[executablePath(channel)](./puppeteer.productlauncher.executablepath.md)</span>
 
 </td><td>
 
@@ -87,7 +87,7 @@ Description
 </td></tr>
 <tr><td>
 
-<p id="launch">[launch(options)](./puppeteer.productlauncher.launch.md)</p>
+<span id="launch">[launch(options)](./puppeteer.productlauncher.launch.md)</span>
 
 </td><td>
 

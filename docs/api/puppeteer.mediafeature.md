@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="name">name</p>
+<span id="name">name</span>
 
 </td><td>
 
@@ -50,7 +50,7 @@ string
 </td></tr>
 <tr><td>
 
-<p id="value">value</p>
+<span id="value">value</span>
 
 </td><td>
 

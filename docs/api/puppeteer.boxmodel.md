@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="border">border</p>
+<span id="border">border</span>
 
 </td><td>
 
@@ -50,7 +50,7 @@ Default
 </td></tr>
 <tr><td>
 
-<p id="content">content</p>
+<span id="content">content</span>
 
 </td><td>
 
@@ -65,7 +65,7 @@ Default
 </td></tr>
 <tr><td>
 
-<p id="height">height</p>
+<span id="height">height</span>
 
 </td><td>
 
@@ -80,7 +80,7 @@ number
 </td></tr>
 <tr><td>
 
-<p id="margin">margin</p>
+<span id="margin">margin</span>
 
 </td><td>
 
@@ -95,7 +95,7 @@ number
 </td></tr>
 <tr><td>
 
-<p id="padding">padding</p>
+<span id="padding">padding</span>
 
 </td><td>
 
@@ -110,7 +110,7 @@ number
 </td></tr>
 <tr><td>
 
-<p id="width">width</p>
+<span id="width">width</span>
 
 </td><td>
 

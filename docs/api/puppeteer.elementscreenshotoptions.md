@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="scrollintoview">scrollIntoView</p>
+<span id="scrollintoview">scrollIntoView</span>
 
 </td><td>
 

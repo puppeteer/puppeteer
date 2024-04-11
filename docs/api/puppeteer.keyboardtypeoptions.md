@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="delay">delay</p>
+<span id="delay">delay</span>
 
 </td><td>
 

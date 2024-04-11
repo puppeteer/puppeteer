@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="identifier">identifier</p>
+<span id="identifier">identifier</span>
 
 </td><td>
 

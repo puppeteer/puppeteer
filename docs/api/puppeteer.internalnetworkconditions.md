@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="offline">offline</p>
+<span id="offline">offline</span>
 
 </td><td>
 

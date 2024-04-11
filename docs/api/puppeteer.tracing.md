@@ -43,7 +43,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="start">[start(options)](./puppeteer.tracing.start.md)</p>
+<span id="start">[start(options)](./puppeteer.tracing.start.md)</span>
 
 </td><td>
 
@@ -54,7 +54,7 @@ Starts a trace for the current page.
 </td></tr>
 <tr><td>
 
-<p id="stop">[stop()](./puppeteer.tracing.stop.md)</p>
+<span id="stop">[stop()](./puppeteer.tracing.stop.md)</span>
 
 </td><td>
 

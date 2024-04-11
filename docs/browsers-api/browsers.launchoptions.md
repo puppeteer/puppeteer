@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="args">args</p>
+<span id="args">args</span>
 
 </td><td>
 
@@ -52,7 +52,7 @@ string\[\]
 </td></tr>
 <tr><td>
 
-<p id="detached">detached</p>
+<span id="detached">detached</span>
 
 </td><td>
 
@@ -69,7 +69,7 @@ boolean
 </td></tr>
 <tr><td>
 
-<p id="dumpio">dumpio</p>
+<span id="dumpio">dumpio</span>
 
 </td><td>
 
@@ -86,7 +86,7 @@ boolean
 </td></tr>
 <tr><td>
 
-<p id="env">env</p>
+<span id="env">env</span>
 
 </td><td>
 
@@ -103,7 +103,7 @@ Record&lt;string, string \| undefined&gt;
 </td></tr>
 <tr><td>
 
-<p id="executablepath">executablePath</p>
+<span id="executablepath">executablePath</span>
 
 </td><td>
 
@@ -118,7 +118,7 @@ string
 </td></tr>
 <tr><td>
 
-<p id="handlesighup">handleSIGHUP</p>
+<span id="handlesighup">handleSIGHUP</span>
 
 </td><td>
 
@@ -135,7 +135,7 @@ boolean
 </td></tr>
 <tr><td>
 
-<p id="handlesigint">handleSIGINT</p>
+<span id="handlesigint">handleSIGINT</span>
 
 </td><td>
 
@@ -152,7 +152,7 @@ boolean
 </td></tr>
 <tr><td>
 
-<p id="handlesigterm">handleSIGTERM</p>
+<span id="handlesigterm">handleSIGTERM</span>
 
 </td><td>
 
@@ -169,7 +169,7 @@ boolean
 </td></tr>
 <tr><td>
 
-<p id="onexit">onExit</p>
+<span id="onexit">onExit</span>
 
 </td><td>
 
@@ -186,7 +186,7 @@ boolean
 </td></tr>
 <tr><td>
 
-<p id="pipe">pipe</p>
+<span id="pipe">pipe</span>
 
 </td><td>
 

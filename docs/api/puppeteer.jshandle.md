@@ -47,7 +47,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="_">\_</p>
+<span id="_">\_</span>
 
 </td><td>
 
@@ -64,7 +64,7 @@ Used for nominally typing [JSHandle](./puppeteer.jshandle.md).
 </td></tr>
 <tr><td>
 
-<p id="move">move</p>
+<span id="move">move</span>
 
 </td><td>
 
@@ -94,7 +94,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="aselement">[asElement()](./puppeteer.jshandle.aselement.md)</p>
+<span id="aselement">[asElement()](./puppeteer.jshandle.aselement.md)</span>
 
 </td><td>
 
@@ -105,7 +105,7 @@ Either `null` or the handle itself if the handle is an instance of [ElementHandl
 </td></tr>
 <tr><td>
 
-<p id="dispose">[dispose()](./puppeteer.jshandle.dispose.md)</p>
+<span id="dispose">[dispose()](./puppeteer.jshandle.dispose.md)</span>
 
 </td><td>
 
@@ -116,7 +116,7 @@ Releases the object referenced by the handle for garbage collection.
 </td></tr>
 <tr><td>
 
-<p id="evaluate">[evaluate(pageFunction, args)](./puppeteer.jshandle.evaluate.md)</p>
+<span id="evaluate">[evaluate(pageFunction, args)](./puppeteer.jshandle.evaluate.md)</span>
 
 </td><td>
 
@@ -127,7 +127,7 @@ Evaluates the given function with the current handle as its first argument.
 </td></tr>
 <tr><td>
 
-<p id="evaluatehandle">[evaluateHandle(pageFunction, args)](./puppeteer.jshandle.evaluatehandle.md)</p>
+<span id="evaluatehandle">[evaluateHandle(pageFunction, args)](./puppeteer.jshandle.evaluatehandle.md)</span>
 
 </td><td>
 
@@ -138,7 +138,7 @@ Evaluates the given function with the current handle as its first argument.
 </td></tr>
 <tr><td>
 
-<p id="getproperties">[getProperties()](./puppeteer.jshandle.getproperties.md)</p>
+<span id="getproperties">[getProperties()](./puppeteer.jshandle.getproperties.md)</span>
 
 </td><td>
 
@@ -149,7 +149,7 @@ Gets a map of handles representing the properties of the current handle.
 </td></tr>
 <tr><td>
 
-<p id="getproperty">[getProperty(propertyName)](./puppeteer.jshandle.getproperty.md)</p>
+<span id="getproperty">[getProperty(propertyName)](./puppeteer.jshandle.getproperty.md)</span>
 
 </td><td>
 
@@ -160,7 +160,7 @@ Fetches a single property from the referenced object.
 </td></tr>
 <tr><td>
 
-<p id="getproperty">[getProperty(propertyName)](./puppeteer.jshandle.getproperty_1.md)</p>
+<span id="getproperty">[getProperty(propertyName)](./puppeteer.jshandle.getproperty_1.md)</span>
 
 </td><td>
 
@@ -169,7 +169,7 @@ Fetches a single property from the referenced object.
 </td></tr>
 <tr><td>
 
-<p id="jsonvalue">[jsonValue()](./puppeteer.jshandle.jsonvalue.md)</p>
+<span id="jsonvalue">[jsonValue()](./puppeteer.jshandle.jsonvalue.md)</span>
 
 </td><td>
 
@@ -180,7 +180,7 @@ A vanilla object representing the serializable portions of the referenced object
 </td></tr>
 <tr><td>
 
-<p id="remoteobject">[remoteObject()](./puppeteer.jshandle.remoteobject.md)</p>
+<span id="remoteobject">[remoteObject()](./puppeteer.jshandle.remoteobject.md)</span>
 
 </td><td>
 
@@ -191,7 +191,7 @@ Provides access to the [Protocol.Runtime.RemoteObject](https://chromedevtools.gi
 </td></tr>
 <tr><td>
 
-<p id="tostring">[toString()](./puppeteer.jshandle.tostring.md)</p>
+<span id="tostring">[toString()](./puppeteer.jshandle.tostring.md)</span>
 
 </td><td>
 

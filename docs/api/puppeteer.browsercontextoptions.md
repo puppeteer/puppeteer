@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="proxybypasslist">proxyBypassList</p>
+<span id="proxybypasslist">proxyBypassList</span>
 
 </td><td>
 
@@ -54,7 +54,7 @@ Bypass the proxy for the given list of hosts.
 </td></tr>
 <tr><td>
 
-<p id="proxyserver">proxyServer</p>
+<span id="proxyserver">proxyServer</span>
 
 </td><td>
 

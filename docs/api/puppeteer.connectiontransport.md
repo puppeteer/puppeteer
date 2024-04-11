@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="onclose">onclose</p>
+<span id="onclose">onclose</span>
 
 </td><td>
 
@@ -52,7 +52,7 @@ Default
 </td></tr>
 <tr><td>
 
-<p id="onmessage">onmessage</p>
+<span id="onmessage">onmessage</span>
 
 </td><td>
 
@@ -82,14 +82,14 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="close">[close()](./puppeteer.connectiontransport.close.md)</p>
+<span id="close">[close()](./puppeteer.connectiontransport.close.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<p id="send">[send(message)](./puppeteer.connectiontransport.send.md)</p>
+<span id="send">[send(message)](./puppeteer.connectiontransport.send.md)</span>
 
 </td><td>
 

@@ -35,7 +35,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="browser">browser</p>
+<span id="browser">browser</span>
 
 </td><td>
 
@@ -48,7 +48,7 @@ Description
 </td></tr>
 <tr><td>
 
-<p id="buildid">buildId</p>
+<span id="buildid">buildId</span>
 
 </td><td>
 
@@ -61,7 +61,7 @@ string
 </td></tr>
 <tr><td>
 
-<p id="executablepath">executablePath</p>
+<span id="executablepath">executablePath</span>
 
 </td><td>
 
@@ -76,7 +76,7 @@ string
 </td></tr>
 <tr><td>
 
-<p id="path">path</p>
+<span id="path">path</span>
 
 </td><td>
 
@@ -93,7 +93,7 @@ Path to the root of the installation folder. Use [computeExecutablePath()](./bro
 </td></tr>
 <tr><td>
 
-<p id="platform">platform</p>
+<span id="platform">platform</span>
 
 </td><td>
 
@@ -123,7 +123,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="readmetadata">[readMetadata()](./browsers.installedbrowser.readmetadata.md)</p>
+<span id="readmetadata">[readMetadata()](./browsers.installedbrowser.readmetadata.md)</span>
 
 </td><td>
 
@@ -132,7 +132,7 @@ Description
 </td></tr>
 <tr><td>
 
-<p id="writemetadata">[writeMetadata(metadata)](./browsers.installedbrowser.writemetadata.md)</p>
+<span id="writemetadata">[writeMetadata(metadata)](./browsers.installedbrowser.writemetadata.md)</span>
 
 </td><td>
 

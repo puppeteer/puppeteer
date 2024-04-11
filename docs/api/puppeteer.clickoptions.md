@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="offset">offset</p>
+<span id="offset">offset</span>
 
 </td><td>
 

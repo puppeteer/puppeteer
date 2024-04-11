@@ -54,7 +54,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="connection">[connection()](./puppeteer.cdpsession.connection.md)</p>
+<span id="connection">[connection()](./puppeteer.cdpsession.connection.md)</span>
 
 </td><td>
 
@@ -63,7 +63,7 @@ Description
 </td></tr>
 <tr><td>
 
-<p id="detach">[detach()](./puppeteer.cdpsession.detach.md)</p>
+<span id="detach">[detach()](./puppeteer.cdpsession.detach.md)</span>
 
 </td><td>
 
@@ -74,7 +74,7 @@ Detaches the cdpSession from the target. Once detached, the cdpSession object wo
 </td></tr>
 <tr><td>
 
-<p id="id">[id()](./puppeteer.cdpsession.id.md)</p>
+<span id="id">[id()](./puppeteer.cdpsession.id.md)</span>
 
 </td><td>
 
@@ -85,7 +85,7 @@ Returns the session's id.
 </td></tr>
 <tr><td>
 
-<p id="send">[send(method, params, options)](./puppeteer.cdpsession.send.md)</p>
+<span id="send">[send(method, params, options)](./puppeteer.cdpsession.send.md)</span>
 
 </td><td>
 

@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="targetchanged">targetchanged</p>
+<span id="targetchanged">targetchanged</span>
 
 </td><td>
 
@@ -52,7 +52,7 @@ Default
 </td></tr>
 <tr><td>
 
-<p id="targetcreated">targetcreated</p>
+<span id="targetcreated">targetcreated</span>
 
 </td><td>
 
@@ -67,7 +67,7 @@ Default
 </td></tr>
 <tr><td>
 
-<p id="targetdestroyed">targetdestroyed</p>
+<span id="targetdestroyed">targetdestroyed</span>
 
 </td><td>
 

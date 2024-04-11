@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="creditcard">creditCard</p>
+<span id="creditcard">creditCard</span>
 
 </td><td>
 

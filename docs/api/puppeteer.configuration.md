@@ -39,7 +39,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<p id="browserrevision">browserRevision</p>
+<span id="browserrevision">browserRevision</span>
 
 </td><td>
 
@@ -66,7 +66,7 @@ The pinned browser version supported by the current Puppeteer version.
 </td></tr>
 <tr><td>
 
-<p id="cachedirectory">cacheDirectory</p>
+<span id="cachedirectory">cacheDirectory</span>
 
 </td><td>
 
@@ -89,7 +89,7 @@ Can be overridden by `PUPPETEER_CACHE_DIR`.
 </td></tr>
 <tr><td>
 
-<p id="defaultproduct">defaultProduct</p>
+<span id="defaultproduct">defaultProduct</span>
 
 </td><td>
 
@@ -112,7 +112,7 @@ Can be overridden by `PUPPETEER_PRODUCT`.
 </td></tr>
 <tr><td>
 
-<p id="downloadbaseurl">downloadBaseUrl</p>
+<span id="downloadbaseurl">downloadBaseUrl</span>
 
 </td><td>
 
@@ -135,7 +135,7 @@ Either https://storage.googleapis.com/chrome-for-testing-public or https://archi
 </td></tr>
 <tr><td>
 
-<p id="executablepath">executablePath</p>
+<span id="executablepath">executablePath</span>
 
 </td><td>
 
@@ -158,7 +158,7 @@ Can be overridden by `PUPPETEER_EXECUTABLE_PATH`.
 </td></tr>
 <tr><td>
 
-<p id="experiments">experiments</p>
+<span id="experiments">experiments</span>
 
 </td><td>
 
@@ -177,7 +177,7 @@ Defines experimental options for Puppeteer.
 </td></tr>
 <tr><td>
 
-<p id="loglevel">logLevel</p>
+<span id="loglevel">logLevel</span>
 
 </td><td>
 
@@ -198,7 +198,7 @@ Tells Puppeteer to log at the given level.
 </td></tr>
 <tr><td>
 
-<p id="skipchromedownload">skipChromeDownload</p>
+<span id="skipchromedownload">skipChromeDownload</span>
 
 </td><td>
 
@@ -219,7 +219,7 @@ Can be overridden by `PUPPETEER_SKIP_CHROME_DOWNLOAD`.
 </td></tr>
 <tr><td>
 
-<p id="skipchromeheadlessshelldownload">skipChromeHeadlessShellDownload</p>
+<span id="skipchromeheadlessshelldownload">skipChromeHeadlessShellDownload</span>
 
 </td><td>
 
@@ -240,7 +240,7 @@ Can be overridden by `PUPPETEER_SKIP_CHROME_HEADLESS_SHELL_DOWNLOAD`.
 </td></tr>
 <tr><td>
 
-<p id="skipdownload">skipDownload</p>
+<span id="skipdownload">skipDownload</span>
 
 </td><td>
 
@@ -261,7 +261,7 @@ Can be overridden by `PUPPETEER_SKIP_DOWNLOAD`.
 </td></tr>
 <tr><td>
 
-<p id="temporarydirectory">temporaryDirectory</p>
+<span id="temporarydirectory">temporaryDirectory</span>
 
 </td><td>
 
