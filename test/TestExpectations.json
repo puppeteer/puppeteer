@@ -2743,6 +2743,13 @@
   {
     "testIdPattern": "[network.spec] network Page.authenticate should work",
     "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "Flaky see https://github.com/puppeteer/puppeteer/issues/12253"
+  },
+  {
+    "testIdPattern": "[network.spec] network Page.authenticate should work",
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["TIMEOUT"],
     "comment": "When navigating to page with authentication the command response (error) never comes without interception"
