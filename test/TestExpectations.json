@@ -2710,7 +2710,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "The implememtation does not expect 2 responseCompleted events"
+    "comment": "The Puppeteer implementation does not expect 2 responseCompleted events (that AuthRequired triggered)"
   },
   {
     "testIdPattern": "[network.spec] network Page.authenticate should fail if wrong credentials",
