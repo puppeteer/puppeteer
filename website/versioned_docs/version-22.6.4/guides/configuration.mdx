@@ -1,0 +1,111 @@
+# Configuration
+
+By default, Puppeteer downloads and uses a specific version of Chrome so its
+API is guaranteed to work out of the box. To use Puppeteer with a different
+version of Chrome or Chromium, pass in the executable's path when creating a
+`Browser` instance:
+
+```ts
+const browser = await puppeteer.launch({executablePath: '/path/to/Chrome'});
+```
+
+You can also use Puppeteer with Firefox. See
+[status of cross-browser support](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support) for
+more information.
+
+```mdx-code-block
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+```
+
+All defaults in Puppeteer can be customized in two ways:
+
+1. [Configuration files](#configuration-files) (**recommended**)
+2. [Environment variables](#environment-variables)
+
+:::caution
+
+Note that some options are only customizable through environment variables (such
+as `HTTPS_PROXY`).
+
+:::
+
+:::caution
+
+Puppeteer's configuration files and environment variables are ignored by `puppeteer-core`.
+
+:::
+
+## Configuration files
+
+Configuration files are the **recommended** choice for configuring Puppeteer.
+Puppeteer will look up the file tree for any of the following formats:
+
+- `.puppeteerrc.cjs`,
+- `.puppeteerrc.js`,
+- `.puppeteerrc` (YAML/JSON),
+- `.puppeteerrc.json`,
+- `.puppeteerrc.yaml`,
+- `puppeteer.config.js`, and
+- `puppeteer.config.cjs`
+
+See the [`Configuration`](../api/puppeteer.configuration) interface for possible
+options.
+
+:::caution
+
+After adding a configuration file, you may need to remove and reinstall
+`puppeteer` for it to take effect if the changes affect installation.
+
+:::
+
+:::caution
+
+Previous versions of Puppeteer allowed configuration via the `config` key in
+`package.json`. This behavior is now deprecated and will be removed in the future.
+
+:::
+
+### Examples
+
+#### Changing the default cache directory
+
+Starting in v19.0.0, Puppeteer stores browsers in `~/.cache/puppeteer` to
+globally cache browsers between installation. This can cause problems if
+`puppeteer` is packed during some build step and moved to a fresh location. The
+following configuration can solve this issue (reinstall `puppeteer` to take
+effect):
+
+```js title="project-directory/.puppeteerrc.cjs"
+const {join} = require('path');
+
+/**
+ * @type {import("puppeteer").Configuration}
+ */
+module.exports = {
+  // Changes the cache location for Puppeteer.
+  cacheDirectory: join(__dirname, '.cache', 'puppeteer'),
+};
+```
+
+:::note
+
+Notice this is only possible with CommonJS configuration files as information
+about the ambient environment is needed (in this case, `__dirname`).
+
+:::
+
+## Environment variables
+
+Along with configuration files, Puppeteer looks for certain
+[environment variables](https://en.wikipedia.org/wiki/Environment_variable) for
+customizing behavior. Environment variables will always override configuration
+file options when applicable.
+
+The following options are _environment-only_ options
+
+- `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are
+  used to download and run the browser.
+
+All other options can be found in the documentation for the
+[`Configuration`](../api/puppeteer.configuration) interface.
