@@ -13,6 +13,7 @@ import type {BoundingBox} from '../api/ElementHandle.js';
 import type {WaitForOptions} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {
+  Credentials,
   GeolocationOptions,
   MediaFeature,
   PageEvents,
@@ -514,10 +515,7 @@ export class BidiPage extends Page {
   override async setRequestInterception(enable: boolean): Promise<void> {
     if (enable && !this.#interception) {
       this.#interception = await this.#frame.browsingContext.addIntercept({
-        phases: [
-          Bidi.Network.InterceptPhase.BeforeRequestSent,
-          Bidi.Network.InterceptPhase.AuthRequired,
-        ],
+        phases: [Bidi.Network.InterceptPhase.BeforeRequestSent],
       });
     } else if (!enable && this.#interception) {
       await this.#frame.browsingContext.userContext.browser.removeIntercept(
@@ -525,6 +523,25 @@ export class BidiPage extends Page {
       );
       this.#interception = undefined;
     }
+  }
+
+  /**
+   * @internal
+   */
+  _credentials: Credentials | null = null;
+  #authInterception?: string;
+  override async authenticate(credentials: Credentials | null): Promise<void> {
+    if (credentials && !this.#authInterception) {
+      this.#authInterception = await this.#frame.browsingContext.addIntercept({
+        phases: [Bidi.Network.InterceptPhase.AuthRequired],
+      });
+    } else if (!credentials && this.#authInterception) {
+      await this.#frame.browsingContext.userContext.browser.removeIntercept(
+        this.#authInterception
+      );
+      this.#authInterception = undefined;
+    }
+    this._credentials = credentials;
   }
 
   override setDragInterception(): never {
@@ -635,10 +652,6 @@ export class BidiPage extends Page {
 
   override async removeExposedFunction(name: string): Promise<void> {
     await this.#frame.removeExposedFunction(name);
-  }
-
-  override authenticate(): never {
-    throw new UnsupportedOperation();
   }
 
   override setExtraHTTPHeaders(): never {
