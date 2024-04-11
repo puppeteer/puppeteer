@@ -236,6 +236,9 @@ const config = {
           path: DOC_PATH,
           routeBasePath: DOC_ROUTE_BASE_PATH,
           sidebarPath: require.resolve('./sidebars.js'),
+          remarkPlugins: [
+            [require('@docusaurus/remark-plugin-npm2yarn'), {sync: true}],
+          ],
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
