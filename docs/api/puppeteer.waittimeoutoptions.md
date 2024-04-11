@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-timeout
+<span id="timeout">timeout</span>
 
 </td><td>
 

@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-scrollLeft
+<span id="scrollleft">scrollLeft</span>
 
 </td><td>
 
@@ -54,7 +54,7 @@ number
 </td></tr>
 <tr><td>
 
-scrollTop
+<span id="scrolltop">scrollTop</span>
 
 </td><td>
 

@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-disconnected
+<span id="disconnected">disconnected</span>
 
 </td><td>
 
@@ -52,7 +52,7 @@ undefined
 </td></tr>
 <tr><td>
 
-targetchanged
+<span id="targetchanged">targetchanged</span>
 
 </td><td>
 
@@ -67,7 +67,7 @@ targetchanged
 </td></tr>
 <tr><td>
 
-targetcreated
+<span id="targetcreated">targetcreated</span>
 
 </td><td>
 
@@ -82,7 +82,7 @@ targetcreated
 </td></tr>
 <tr><td>
 
-targetdestroyed
+<span id="targetdestroyed">targetdestroyed</span>
 
 </td><td>
 

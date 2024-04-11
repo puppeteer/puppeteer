@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-Documents
+<span id="documents">Documents</span>
 
 </td><td>
 
@@ -52,7 +52,7 @@ number
 </td></tr>
 <tr><td>
 
-Frames
+<span id="frames">Frames</span>
 
 </td><td>
 
@@ -69,7 +69,7 @@ number
 </td></tr>
 <tr><td>
 
-JSEventListeners
+<span id="jseventlisteners">JSEventListeners</span>
 
 </td><td>
 
@@ -86,7 +86,7 @@ number
 </td></tr>
 <tr><td>
 
-JSHeapTotalSize
+<span id="jsheaptotalsize">JSHeapTotalSize</span>
 
 </td><td>
 
@@ -103,7 +103,7 @@ number
 </td></tr>
 <tr><td>
 
-JSHeapUsedSize
+<span id="jsheapusedsize">JSHeapUsedSize</span>
 
 </td><td>
 
@@ -120,7 +120,7 @@ number
 </td></tr>
 <tr><td>
 
-LayoutCount
+<span id="layoutcount">LayoutCount</span>
 
 </td><td>
 
@@ -137,7 +137,7 @@ number
 </td></tr>
 <tr><td>
 
-LayoutDuration
+<span id="layoutduration">LayoutDuration</span>
 
 </td><td>
 
@@ -154,7 +154,7 @@ number
 </td></tr>
 <tr><td>
 
-Nodes
+<span id="nodes">Nodes</span>
 
 </td><td>
 
@@ -171,7 +171,7 @@ number
 </td></tr>
 <tr><td>
 
-RecalcStyleCount
+<span id="recalcstylecount">RecalcStyleCount</span>
 
 </td><td>
 
@@ -188,7 +188,7 @@ number
 </td></tr>
 <tr><td>
 
-RecalcStyleDuration
+<span id="recalcstyleduration">RecalcStyleDuration</span>
 
 </td><td>
 
@@ -205,7 +205,7 @@ number
 </td></tr>
 <tr><td>
 
-ScriptDuration
+<span id="scriptduration">ScriptDuration</span>
 
 </td><td>
 
@@ -222,7 +222,7 @@ number
 </td></tr>
 <tr><td>
 
-TaskDuration
+<span id="taskduration">TaskDuration</span>
 
 </td><td>
 
@@ -239,7 +239,7 @@ number
 </td></tr>
 <tr><td>
 
-Timestamp
+<span id="timestamp">Timestamp</span>
 
 </td><td>
 

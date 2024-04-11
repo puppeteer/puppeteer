@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-autocomplete
+<span id="autocomplete">autocomplete</span>
 
 </td><td>
 
@@ -54,7 +54,7 @@ string
 </td></tr>
 <tr><td>
 
-checked
+<span id="checked">checked</span>
 
 </td><td>
 
@@ -73,7 +73,7 @@ Whether the checkbox is checked, or in a [mixed state](https://www.w3.org/TR/wai
 </td></tr>
 <tr><td>
 
-children
+<span id="children">children</span>
 
 </td><td>
 
@@ -92,7 +92,7 @@ Children of this node, if there are any.
 </td></tr>
 <tr><td>
 
-description
+<span id="description">description</span>
 
 </td><td>
 
@@ -111,7 +111,7 @@ An additional human readable description of the node.
 </td></tr>
 <tr><td>
 
-disabled
+<span id="disabled">disabled</span>
 
 </td><td>
 
@@ -128,7 +128,7 @@ boolean
 </td></tr>
 <tr><td>
 
-expanded
+<span id="expanded">expanded</span>
 
 </td><td>
 
@@ -145,7 +145,7 @@ boolean
 </td></tr>
 <tr><td>
 
-focused
+<span id="focused">focused</span>
 
 </td><td>
 
@@ -162,7 +162,7 @@ boolean
 </td></tr>
 <tr><td>
 
-haspopup
+<span id="haspopup">haspopup</span>
 
 </td><td>
 
@@ -179,7 +179,7 @@ string
 </td></tr>
 <tr><td>
 
-invalid
+<span id="invalid">invalid</span>
 
 </td><td>
 
@@ -198,7 +198,7 @@ Whether and in what way this node's value is invalid.
 </td></tr>
 <tr><td>
 
-keyshortcuts
+<span id="keyshortcuts">keyshortcuts</span>
 
 </td><td>
 
@@ -217,7 +217,7 @@ Any keyboard shortcuts associated with this node.
 </td></tr>
 <tr><td>
 
-level
+<span id="level">level</span>
 
 </td><td>
 
@@ -236,7 +236,7 @@ The level of a heading.
 </td></tr>
 <tr><td>
 
-modal
+<span id="modal">modal</span>
 
 </td><td>
 
@@ -253,7 +253,7 @@ boolean
 </td></tr>
 <tr><td>
 
-multiline
+<span id="multiline">multiline</span>
 
 </td><td>
 
@@ -270,7 +270,7 @@ boolean
 </td></tr>
 <tr><td>
 
-multiselectable
+<span id="multiselectable">multiselectable</span>
 
 </td><td>
 
@@ -289,7 +289,7 @@ Whether more than one child can be selected.
 </td></tr>
 <tr><td>
 
-name
+<span id="name">name</span>
 
 </td><td>
 
@@ -308,7 +308,7 @@ A human readable name for the node.
 </td></tr>
 <tr><td>
 
-orientation
+<span id="orientation">orientation</span>
 
 </td><td>
 
@@ -325,7 +325,7 @@ string
 </td></tr>
 <tr><td>
 
-pressed
+<span id="pressed">pressed</span>
 
 </td><td>
 
@@ -344,7 +344,7 @@ Whether the node is checked or in a mixed state.
 </td></tr>
 <tr><td>
 
-readonly
+<span id="readonly">readonly</span>
 
 </td><td>
 
@@ -361,7 +361,7 @@ boolean
 </td></tr>
 <tr><td>
 
-required
+<span id="required">required</span>
 
 </td><td>
 
@@ -378,7 +378,7 @@ boolean
 </td></tr>
 <tr><td>
 
-role
+<span id="role">role</span>
 
 </td><td>
 
@@ -395,7 +395,7 @@ The [role](https://www.w3.org/TR/wai-aria/#usage_intro) of the node.
 </td></tr>
 <tr><td>
 
-roledescription
+<span id="roledescription">roledescription</span>
 
 </td><td>
 
@@ -414,7 +414,7 @@ A human readable alternative to the role.
 </td></tr>
 <tr><td>
 
-selected
+<span id="selected">selected</span>
 
 </td><td>
 
@@ -431,7 +431,7 @@ boolean
 </td></tr>
 <tr><td>
 
-value
+<span id="value">value</span>
 
 </td><td>
 
@@ -450,7 +450,7 @@ The current value of the node.
 </td></tr>
 <tr><td>
 
-valuemax
+<span id="valuemax">valuemax</span>
 
 </td><td>
 
@@ -467,7 +467,7 @@ number
 </td></tr>
 <tr><td>
 
-valuemin
+<span id="valuemin">valuemin</span>
 
 </td><td>
 
@@ -484,7 +484,7 @@ number
 </td></tr>
 <tr><td>
 
-valuetext
+<span id="valuetext">valuetext</span>
 
 </td><td>
 

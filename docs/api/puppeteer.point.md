@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-x
+<span id="x">x</span>
 
 </td><td>
 
@@ -50,7 +50,7 @@ number
 </td></tr>
 <tr><td>
 
-y
+<span id="y">y</span>
 
 </td><td>
 

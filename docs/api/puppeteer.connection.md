@@ -29,7 +29,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[(constructor)(url, transport, delay, timeout)](./puppeteer.connection._constructor_.md)
+<span id="_constructor_">[(constructor)(url, transport, delay, timeout)](./puppeteer.connection._constructor_.md)</span>
 
 </td><td>
 
@@ -61,7 +61,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-timeout
+<span id="timeout">timeout</span>
 
 </td><td>
 
@@ -93,7 +93,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[createSession(targetInfo)](./puppeteer.connection.createsession.md)
+<span id="createsession">[createSession(targetInfo)](./puppeteer.connection.createsession.md)</span>
 
 </td><td>
 
@@ -102,7 +102,7 @@ Description
 </td></tr>
 <tr><td>
 
-[dispose()](./puppeteer.connection.dispose.md)
+<span id="dispose">[dispose()](./puppeteer.connection.dispose.md)</span>
 
 </td><td>
 
@@ -111,7 +111,7 @@ Description
 </td></tr>
 <tr><td>
 
-[fromSession(session)](./puppeteer.connection.fromsession.md)
+<span id="fromsession">[fromSession(session)](./puppeteer.connection.fromsession.md)</span>
 
 </td><td>
 
@@ -122,7 +122,7 @@ Description
 </td></tr>
 <tr><td>
 
-[send(method, params, options)](./puppeteer.connection.send.md)
+<span id="send">[send(method, params, options)](./puppeteer.connection.send.md)</span>
 
 </td><td>
 
@@ -131,7 +131,7 @@ Description
 </td></tr>
 <tr><td>
 
-[session(sessionId)](./puppeteer.connection.session.md)
+<span id="session">[session(sessionId)](./puppeteer.connection.session.md)</span>
 
 </td><td>
 
@@ -140,7 +140,7 @@ Description
 </td></tr>
 <tr><td>
 
-[url()](./puppeteer.connection.url.md)
+<span id="url">[url()](./puppeteer.connection.url.md)</span>
 
 </td><td>
 

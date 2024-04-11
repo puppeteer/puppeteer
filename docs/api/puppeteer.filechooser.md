@@ -47,7 +47,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[accept(paths)](./puppeteer.filechooser.accept.md)
+<span id="accept">[accept(paths)](./puppeteer.filechooser.accept.md)</span>
 
 </td><td>
 
@@ -58,7 +58,7 @@ Accept the file chooser request with the given file paths.
 </td></tr>
 <tr><td>
 
-[cancel()](./puppeteer.filechooser.cancel.md)
+<span id="cancel">[cancel()](./puppeteer.filechooser.cancel.md)</span>
 
 </td><td>
 
@@ -69,7 +69,7 @@ Closes the file chooser without selecting any files.
 </td></tr>
 <tr><td>
 
-[isMultiple()](./puppeteer.filechooser.ismultiple.md)
+<span id="ismultiple">[isMultiple()](./puppeteer.filechooser.ismultiple.md)</span>
 
 </td><td>
 

@@ -23,7 +23,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[move()](./puppeteer.moveable.move.md)
+<span id="move">[move()](./puppeteer.moveable.move.md)</span>
 
 </td><td>
 

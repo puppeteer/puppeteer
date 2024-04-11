@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-ranges
+<span id="ranges">ranges</span>
 
 </td><td>
 
@@ -54,7 +54,7 @@ The covered range as start and end positions.
 </td></tr>
 <tr><td>
 
-text
+<span id="text">text</span>
 
 </td><td>
 
@@ -71,7 +71,7 @@ The content of the style sheet or script.
 </td></tr>
 <tr><td>
 
-url
+<span id="url">url</span>
 
 </td><td>
 

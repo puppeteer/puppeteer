@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-resetOnNavigation
+<span id="resetonnavigation">resetOnNavigation</span>
 
 </td><td>
 

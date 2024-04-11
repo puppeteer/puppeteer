@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-browserURL
+<span id="browserurl">browserURL</span>
 
 </td><td>
 
@@ -54,7 +54,7 @@ string
 </td></tr>
 <tr><td>
 
-browserWSEndpoint
+<span id="browserwsendpoint">browserWSEndpoint</span>
 
 </td><td>
 
@@ -71,7 +71,7 @@ string
 </td></tr>
 <tr><td>
 
-headers
+<span id="headers">headers</span>
 
 </td><td>
 
@@ -90,7 +90,7 @@ Headers to use for the web socket connection.
 </td></tr>
 <tr><td>
 
-transport
+<span id="transport">transport</span>
 
 </td><td>
 

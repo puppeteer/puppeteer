@@ -197,7 +197,7 @@ export interface DebugInfo {
  * - connected to via {@link Puppeteer.connect} or
  * - launched by {@link PuppeteerNode.launch}.
  *
- * {@link Browser} {@link EventEmitter | emits} various events which are
+ * {@link Browser} {@link EventEmitter.emit | emits} various events which are
  * documented in the {@link BrowserEvent} enum.
  *
  * @example Using a {@link Browser} to create a {@link Page}:

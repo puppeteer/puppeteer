@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-defaultViewport
+<span id="defaultviewport">defaultViewport</span>
 
 </td><td>
 
@@ -58,7 +58,7 @@ Sets the viewport for each page.
 </td></tr>
 <tr><td>
 
-ignoreHTTPSErrors
+<span id="ignorehttpserrors">ignoreHTTPSErrors</span>
 
 </td><td>
 
@@ -79,7 +79,7 @@ Whether to ignore HTTPS errors during navigation.
 </td></tr>
 <tr><td>
 
-protocol
+<span id="protocol">protocol</span>
 
 </td><td>
 
@@ -98,7 +98,7 @@ protocol
 </td></tr>
 <tr><td>
 
-protocolTimeout
+<span id="protocoltimeout">protocolTimeout</span>
 
 </td><td>
 
@@ -119,7 +119,7 @@ Timeout setting for individual protocol (CDP) calls.
 </td></tr>
 <tr><td>
 
-slowMo
+<span id="slowmo">slowMo</span>
 
 </td><td>
 
@@ -138,7 +138,7 @@ Slows down Puppeteer operations by the specified amount of milliseconds to aid d
 </td></tr>
 <tr><td>
 
-targetFilter
+<span id="targetfilter">targetFilter</span>
 
 </td><td>
 

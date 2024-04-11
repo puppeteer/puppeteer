@@ -41,7 +41,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-close
+<span id="close">close</span>
 
 </td><td>
 
@@ -56,7 +56,7 @@ undefined
 </td></tr>
 <tr><td>
 
-console
+<span id="console">console</span>
 
 </td><td>
 
@@ -71,7 +71,7 @@ console
 </td></tr>
 <tr><td>
 
-dialog
+<span id="dialog">dialog</span>
 
 </td><td>
 
@@ -86,7 +86,7 @@ dialog
 </td></tr>
 <tr><td>
 
-domcontentloaded
+<span id="domcontentloaded">domcontentloaded</span>
 
 </td><td>
 
@@ -101,7 +101,7 @@ undefined
 </td></tr>
 <tr><td>
 
-error
+<span id="error">error</span>
 
 </td><td>
 
@@ -116,7 +116,7 @@ Error
 </td></tr>
 <tr><td>
 
-frameattached
+<span id="frameattached">frameattached</span>
 
 </td><td>
 
@@ -131,7 +131,7 @@ frameattached
 </td></tr>
 <tr><td>
 
-framedetached
+<span id="framedetached">framedetached</span>
 
 </td><td>
 
@@ -146,7 +146,7 @@ framedetached
 </td></tr>
 <tr><td>
 
-framenavigated
+<span id="framenavigated">framenavigated</span>
 
 </td><td>
 
@@ -161,7 +161,7 @@ framenavigated
 </td></tr>
 <tr><td>
 
-load
+<span id="load">load</span>
 
 </td><td>
 
@@ -176,7 +176,7 @@ undefined
 </td></tr>
 <tr><td>
 
-metrics
+<span id="metrics">metrics</span>
 
 </td><td>
 
@@ -191,7 +191,7 @@ metrics
 </td></tr>
 <tr><td>
 
-pageerror
+<span id="pageerror">pageerror</span>
 
 </td><td>
 
@@ -206,7 +206,7 @@ Error
 </td></tr>
 <tr><td>
 
-popup
+<span id="popup">popup</span>
 
 </td><td>
 
@@ -221,7 +221,7 @@ popup
 </td></tr>
 <tr><td>
 
-request
+<span id="request">request</span>
 
 </td><td>
 
@@ -236,7 +236,7 @@ request
 </td></tr>
 <tr><td>
 
-requestfailed
+<span id="requestfailed">requestfailed</span>
 
 </td><td>
 
@@ -251,7 +251,7 @@ requestfailed
 </td></tr>
 <tr><td>
 
-requestfinished
+<span id="requestfinished">requestfinished</span>
 
 </td><td>
 
@@ -266,7 +266,7 @@ requestfinished
 </td></tr>
 <tr><td>
 
-requestservedfromcache
+<span id="requestservedfromcache">requestservedfromcache</span>
 
 </td><td>
 
@@ -281,7 +281,7 @@ requestservedfromcache
 </td></tr>
 <tr><td>
 
-response
+<span id="response">response</span>
 
 </td><td>
 
@@ -296,7 +296,7 @@ response
 </td></tr>
 <tr><td>
 
-workercreated
+<span id="workercreated">workercreated</span>
 
 </td><td>
 
@@ -311,7 +311,7 @@ workercreated
 </td></tr>
 <tr><td>
 
-workerdestroyed
+<span id="workerdestroyed">workerdestroyed</span>
 
 </td><td>
 

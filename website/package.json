@@ -15,9 +15,9 @@
     "archive": "node archive.js"
   },
   "dependencies": {
-    "@docusaurus/core": "3.1.1",
-    "@docusaurus/plugin-client-redirects": "3.1.1",
-    "@docusaurus/preset-classic": "3.1.1",
+    "@docusaurus/core": "3.2.1",
+    "@docusaurus/plugin-client-redirects": "3.2.1",
+    "@docusaurus/preset-classic": "3.2.1",
     "@mdx-js/react": "3.0.1",
     "clsx": "2.1.0",
     "prism-react-renderer": "2.3.1",
@@ -26,9 +26,9 @@
     "semver": "7.6.0"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.1.1",
-    "@docusaurus/types": "3.1.1",
-    "@swc/core": "1.4.8",
+    "@docusaurus/module-type-aliases": "3.2.1",
+    "@docusaurus/types": "3.2.1",
+    "@swc/core": "1.4.13",
     "swc-loader": "0.2.6"
   },
   "browserslist": {

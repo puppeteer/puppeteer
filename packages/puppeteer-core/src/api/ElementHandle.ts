@@ -623,7 +623,7 @@ export abstract class ElementHandle<
 
   /**
    * This method scrolls element into view if needed, and then
-   * uses {@link Page} to hover over the center of the element.
+   * uses {@link Page.mouse} to hover over the center of the element.
    * If the element is detached from DOM, the method throws an error.
    */
   @throwIfDisposed()
@@ -636,7 +636,7 @@ export abstract class ElementHandle<
 
   /**
    * This method scrolls element into view if needed, and then
-   * uses {@link Page | Page.mouse} to click in the center of the element.
+   * uses {@link Page.mouse} to click in the center of the element.
    * If the element is detached from DOM, the method throws an error.
    */
   @throwIfDisposed()

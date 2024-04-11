@@ -33,7 +33,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[issuer()](./puppeteer.securitydetails.issuer.md)
+<span id="issuer">[issuer()](./puppeteer.securitydetails.issuer.md)</span>
 
 </td><td>
 
@@ -44,7 +44,7 @@ The name of the issuer of the certificate.
 </td></tr>
 <tr><td>
 
-[protocol()](./puppeteer.securitydetails.protocol.md)
+<span id="protocol">[protocol()](./puppeteer.securitydetails.protocol.md)</span>
 
 </td><td>
 
@@ -55,7 +55,7 @@ The security protocol being used, e.g. "TLS 1.2".
 </td></tr>
 <tr><td>
 
-[subjectAlternativeNames()](./puppeteer.securitydetails.subjectalternativenames.md)
+<span id="subjectalternativenames">[subjectAlternativeNames()](./puppeteer.securitydetails.subjectalternativenames.md)</span>
 
 </td><td>
 
@@ -66,7 +66,7 @@ The list of [subject alternative names (SANs)](https://en.wikipedia.org/wiki/Sub
 </td></tr>
 <tr><td>
 
-[subjectName()](./puppeteer.securitydetails.subjectname.md)
+<span id="subjectname">[subjectName()](./puppeteer.securitydetails.subjectname.md)</span>
 
 </td><td>
 
@@ -77,7 +77,7 @@ The name of the subject to which the certificate was issued.
 </td></tr>
 <tr><td>
 
-[validFrom()](./puppeteer.securitydetails.validfrom.md)
+<span id="validfrom">[validFrom()](./puppeteer.securitydetails.validfrom.md)</span>
 
 </td><td>
 
@@ -88,7 +88,7 @@ The name of the subject to which the certificate was issued.
 </td></tr>
 <tr><td>
 
-[validTo()](./puppeteer.securitydetails.validto.md)
+<span id="validto">[validTo()](./puppeteer.securitydetails.validto.md)</span>
 
 </td><td>
 

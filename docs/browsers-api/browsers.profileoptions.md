@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-path
+<span id="path">path</span>
 
 </td><td>
 
@@ -50,7 +50,7 @@ string
 </td></tr>
 <tr><td>
 
-preferences
+<span id="preferences">preferences</span>
 
 </td><td>
 

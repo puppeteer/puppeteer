@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-action
+<span id="action">action</span>
 
 </td><td>
 

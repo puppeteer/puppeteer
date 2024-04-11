@@ -37,7 +37,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-sessionattached
+<span id="sessionattached">sessionattached</span>
 
 </td><td>
 
@@ -52,7 +52,7 @@ sessionattached
 </td></tr>
 <tr><td>
 
-sessiondetached
+<span id="sessiondetached">sessiondetached</span>
 
 </td><td>
 

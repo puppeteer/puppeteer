@@ -27,7 +27,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[(constructor)(opts, rl)](./browsers.cli._constructor_.md)
+<span id="_constructor_">[(constructor)(opts, rl)](./browsers.cli._constructor_.md)</span>
 
 </td><td>
 
@@ -55,7 +55,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[run(argv)](./browsers.cli.run.md)
+<span id="run">[run(argv)](./browsers.cli.run.md)</span>
 
 </td><td>
 

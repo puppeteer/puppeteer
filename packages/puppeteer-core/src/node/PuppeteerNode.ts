@@ -136,11 +136,11 @@ export class PuppeteerNode extends Puppeteer {
    * specified.
    *
    * When using with `puppeteer-core`,
-   * {@link LaunchOptions | options.executablePath} or
-   * {@link LaunchOptions | options.channel} must be provided.
+   * {@link LaunchOptions.executablePath | options.executablePath} or
+   * {@link LaunchOptions.channel | options.channel} must be provided.
    *
    * @example
-   * You can use {@link LaunchOptions | options.ignoreDefaultArgs}
+   * You can use {@link LaunchOptions.ignoreDefaultArgs | options.ignoreDefaultArgs}
    * to filter out `--mute-audio` from default arguments:
    *
    * ```ts

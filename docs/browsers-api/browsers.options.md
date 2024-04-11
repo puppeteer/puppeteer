@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-browser
+<span id="browser">browser</span>
 
 </td><td>
 
@@ -52,7 +52,7 @@ Determines which browser to launch.
 </td></tr>
 <tr><td>
 
-buildId
+<span id="buildid">buildId</span>
 
 </td><td>
 
@@ -69,7 +69,7 @@ Determines which buildId to download. BuildId should uniquely identify binaries 
 </td></tr>
 <tr><td>
 
-cacheDir
+<span id="cachedir">cacheDir</span>
 
 </td><td>
 
@@ -86,7 +86,7 @@ Root path to the storage directory.
 </td></tr>
 <tr><td>
 
-platform
+<span id="platform">platform</span>
 
 </td><td>
 

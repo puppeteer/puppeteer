@@ -57,7 +57,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-client
+<span id="client">client</span>
 
 </td><td>
 
@@ -91,7 +91,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[close()](./puppeteer.webworker.close.md)
+<span id="close">[close()](./puppeteer.webworker.close.md)</span>
 
 </td><td>
 
@@ -100,7 +100,7 @@ Description
 </td></tr>
 <tr><td>
 
-[evaluate(func, args)](./puppeteer.webworker.evaluate.md)
+<span id="evaluate">[evaluate(func, args)](./puppeteer.webworker.evaluate.md)</span>
 
 </td><td>
 
@@ -111,7 +111,7 @@ Evaluates a given function in the [worker](./puppeteer.webworker.md).
 </td></tr>
 <tr><td>
 
-[evaluateHandle(func, args)](./puppeteer.webworker.evaluatehandle.md)
+<span id="evaluatehandle">[evaluateHandle(func, args)](./puppeteer.webworker.evaluatehandle.md)</span>
 
 </td><td>
 
@@ -122,7 +122,7 @@ Evaluates a given function in the [worker](./puppeteer.webworker.md).
 </td></tr>
 <tr><td>
 
-[url()](./puppeteer.webworker.url.md)
+<span id="url">[url()](./puppeteer.webworker.url.md)</span>
 
 </td><td>
 

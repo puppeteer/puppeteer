@@ -35,7 +35,7 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-button
+<span id="button">button</span>
 
 </td><td>
 
@@ -56,7 +56,7 @@ Determines which button will be pressed.
 </td></tr>
 <tr><td>
 
-clickCount
+<span id="clickcount">clickCount</span>
 
 </td><td>
 
@@ -72,7 +72,7 @@ Determines the click count for the mouse event. This does not perform multiple c
 
 **Deprecated:**
 
-Use [MouseClickOptions.count](./puppeteer.mouseclickoptions.count.md).
+Use [MouseClickOptions.count](./puppeteer.mouseclickoptions.md#count).
 
 </td><td>
 
