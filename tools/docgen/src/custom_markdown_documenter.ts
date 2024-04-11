@@ -1228,7 +1228,7 @@ export class MarkdownDocumenter {
       new DocParagraph({configuration}, [
         new DocHtmlStartTag({
           configuration,
-          name: 'p',
+          name: 'span',
           htmlAttributes: [
             new DocHtmlAttribute({
               configuration,
@@ -1247,7 +1247,7 @@ export class MarkdownDocumenter {
             }),
         new DocHtmlEndTag({
           configuration,
-          name: 'p',
+          name: 'span',
         }),
       ]),
     ]);
