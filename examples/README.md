@@ -1,6 +1,18 @@
 # Running the examples
 
-Assuming you have a checkout of the Puppeteer repo and have run `npm i` (or `yarn`) to install the dependencies, and `npm run build` (or `yarn run build`) to build the project, the examples can be run from the root folder like so:
+Assuming you have a checkout of the Puppeteer repo and install the dependencies:
+
+```bash npm2yarn
+npm install
+```
+
+Build the project:
+
+```bash npm2yarn
+npm run build
+```
+
+The examples can be run from the root folder like so:
 
 ```bash
 NODE_PATH=../ node examples/search.js
