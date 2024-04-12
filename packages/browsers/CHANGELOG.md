@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.2](https://github.com/puppeteer/puppeteer/compare/browsers-v2.2.1...browsers-v2.2.2) (2024-04-12)
+
+
+### Bug Fixes
+
+* remove NetworkServiceInProcess2 set by default ([#12261](https://github.com/puppeteer/puppeteer/issues/12261)) ([4f659b0](https://github.com/puppeteer/puppeteer/commit/4f659b0acf0282600300f70ead645aa7d724b41f))
+
 ## [2.2.1](https://github.com/puppeteer/puppeteer/compare/browsers-v2.2.0...browsers-v2.2.1) (2024-04-05)
 
 

@@ -20,6 +20,20 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.6.5](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.6.4...puppeteer-core-v22.6.5) (2024-04-12)
+
+
+### Bug Fixes
+
+* remove NetworkServiceInProcess2 set by default ([#12261](https://github.com/puppeteer/puppeteer/issues/12261)) ([4f659b0](https://github.com/puppeteer/puppeteer/commit/4f659b0acf0282600300f70ead645aa7d724b41f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.2.1 to 2.2.2
+
 ## [22.6.4](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.6.3...puppeteer-core-v22.6.4) (2024-04-11)
 
 
