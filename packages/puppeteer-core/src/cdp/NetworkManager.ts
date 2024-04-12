@@ -140,18 +140,16 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     );
   }
 
-  async setExtraHTTPHeaders(
-    extraHTTPHeaders: Record<string, string>
-  ): Promise<void> {
-    this.#extraHTTPHeaders = {};
-    for (const key of Object.keys(extraHTTPHeaders)) {
-      const value = extraHTTPHeaders[key];
+  async setExtraHTTPHeaders(headers: Record<string, string>): Promise<void> {
+    const extraHTTPHeaders: Record<string, string> = {};
+    for (const [key, value] of Object.entries(headers)) {
       assert(
         isString(value),
         `Expected value of header "${key}" to be String, but "${typeof value}" is found.`
       );
-      this.#extraHTTPHeaders[key.toLowerCase()] = value;
+      extraHTTPHeaders[key.toLowerCase()] = value;
     }
+    this.#extraHTTPHeaders = extraHTTPHeaders;
 
     await this.#applyToAllClients(this.#applyExtraHTTPHeaders.bind(this));
   }
