@@ -84,6 +84,10 @@ const config = {
             to: '/category/guides',
           },
           {
+            from: '/docs',
+            to: '/category/introduction',
+          },
+          {
             from: '/chromium-support',
             to: '/supported-browsers',
           },
