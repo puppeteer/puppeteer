@@ -77,7 +77,6 @@ export class BidiHTTPRequest extends HTTPRequest {
     this.#frame.page().trustedEmitter.emit(PageEvent.Request, this);
 
     if (Object.keys(this.#extraHTTPHeaders).length) {
-      console.log('added header', this.#extraHTTPHeaders);
       this.interception.handlers.push(async () => {
         await this.continue(
           {
