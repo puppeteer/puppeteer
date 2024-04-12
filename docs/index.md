@@ -5,15 +5,15 @@
 
 <img src="https://user-images.githubusercontent.com/10379601/29446482-04f7036a-841f-11e7-9872-91d1fc2ea683.png" height="200" align="right"/>
 
-#### [Docs](https://pptr.dev/docs) | [API](https://pptr.dev/api) | [FAQ](https://pptr.dev/faq) | [Contributing](https://pptr.dev/contributing) | [Troubleshooting](https://pptr.dev/troubleshooting)
+> Puppeteer is a Node.js library which provides a high-level API to control
+> Chrome/Chromium over the
+> [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
+> Puppeteer runs in
+> [headless](https://developer.chrome.com/docs/chromium/new-headless/)
+> mode by default, but can be configured to run in full ("headful")
+> Chrome/Chromium.
 
-Puppeteer is a Node.js library which provides a high-level API to control
-Chrome/Chromium over the
-[DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
-Puppeteer runs in
-[headless](https://developer.chrome.com/docs/chromium/new-headless/)
-mode by default, but can be configured to run in full ("headful")
-Chrome/Chromium.
+## [Get started](https://pptr.dev/docs) | [API](https://pptr.dev/api) | [FAQ](https://pptr.dev/faq) | [Contributing](https://pptr.dev/contributing) | [Troubleshooting](https://pptr.dev/troubleshooting)
 
 ## Example
 
@@ -51,8 +51,3 @@ import puppeteer from 'puppeteer';
   await browser.close();
 })();
 ```
-
-## Contributing
-
-Check out our [contributing guide](https://pptr.dev/community/contributing) to get an
-overview of Puppeteer development.
