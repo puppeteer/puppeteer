@@ -553,7 +553,7 @@
     "testIdPattern": "[network.spec] network Page.setExtraHTTPHeaders *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
+    "expectations": ["SKIP"],
     "comment": "Firefox does not support headers override"
   },
   {
