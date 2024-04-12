@@ -3471,7 +3471,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: Needs investigation, it looks like Firefox let's the request go also to the server"
+    "comment": "TODO: Needs investigation, it looks like Firefox lets the request go also to the server"
   },
   {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should work with file URLs",
