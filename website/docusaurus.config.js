@@ -85,7 +85,7 @@ const config = {
           },
           {
             from: '/docs',
-            to: '/category/introduction',
+            to: '/guides/what-is-puppeteer',
           },
           {
             from: '/chromium-support',
