@@ -28,7 +28,7 @@ the installation directory.
 
 For example,
 
-```bash
+```bash npm2yarn
 PUPPETEER_CACHE_DIR=$(pwd) npm install puppeteer
 PUPPETEER_CACHE_DIR=$(pwd) node <script-path>
 ```

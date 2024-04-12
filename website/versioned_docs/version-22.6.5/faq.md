@@ -120,7 +120,7 @@ is `latest` -- Puppeteer isn't tied to a particular Firefox version.
 
 To fetch Firefox Nightly as part of Puppeteer installation:
 
-```bash
+```bash npm2yarn
 PUPPETEER_PRODUCT=firefox npm i puppeteer
 ```
 
