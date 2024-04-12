@@ -77,7 +77,6 @@ describe('Chromium', () => {
         '--disable-renderer-backgrounding',
         '--disable-sync',
         '--enable-automation',
-        '--enable-features=NetworkServiceInProcess2',
         '--export-tagged-pdf',
         '--force-color-profile=srgb',
         '--headless=new',

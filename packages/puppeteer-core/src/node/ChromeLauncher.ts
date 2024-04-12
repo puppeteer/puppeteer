@@ -192,7 +192,7 @@ export class ChromeLauncher extends ProductLauncher {
 
     // Merge default enabled features with user-provided ones, if any.
     const enabledFeatures = [
-      'NetworkServiceInProcess2',
+      // Add features to enable by default here.
       ...userEnabledFeatures,
     ].filter(feature => {
       return feature !== '';
