@@ -31,7 +31,7 @@ export const requests = new WeakMap<Request, BidiHTTPRequest>();
 export class BidiHTTPRequest extends HTTPRequest {
   static from(
     bidiRequest: Request,
-    frame: BidiFrame | undefined,
+    frame: BidiFrame,
     redirect?: BidiHTTPRequest
   ): BidiHTTPRequest {
     const request = new BidiHTTPRequest(bidiRequest, frame, redirect);
@@ -41,12 +41,12 @@ export class BidiHTTPRequest extends HTTPRequest {
   #redirectBy: BidiHTTPRequest | undefined;
   #response: BidiHTTPResponse | null = null;
   override readonly id: string;
-  readonly #frame: BidiFrame | undefined;
+  readonly #frame: BidiFrame;
   readonly #request: Request;
 
   private constructor(
     request: Request,
-    frame: BidiFrame | undefined,
+    frame: BidiFrame,
     redirectBy?: BidiHTTPRequest
   ) {
     super();
@@ -61,7 +61,7 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override get client(): CDPSession {
-    throw new UnsupportedOperation();
+    return this.#frame.client;
   }
 
   #initialize() {
@@ -74,7 +74,7 @@ export class BidiHTTPRequest extends HTTPRequest {
     });
     this.#request.on('authenticate', this.#handleAuthentication);
 
-    this.#frame?.page().trustedEmitter.emit(PageEvent.Request, this);
+    this.#frame.page().trustedEmitter.emit(PageEvent.Request, this);
   }
 
   override url(): string {
@@ -141,8 +141,8 @@ export class BidiHTTPRequest extends HTTPRequest {
     return redirects;
   }
 
-  override frame(): BidiFrame | null {
-    return this.#frame ?? null;
+  override frame(): BidiFrame {
+    return this.#frame;
   }
 
   override async _continue(
