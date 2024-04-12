@@ -6,20 +6,20 @@
 
 /* eslint-disable import/order */
 
-import {copyFile, readFile, writeFile} from 'fs/promises';
+import {readFile, writeFile} from 'fs/promises';
 
 import {docgen, spliceIntoSection} from '@puppeteer/docgen';
 import {execa} from 'execa';
 import {task} from 'hereby';
 import semver from 'semver';
 
-export const docsNgSchematicsTask = task({
-  name: 'docs:ng-schematics',
-  run: async () => {
-    const readme = await readFile('packages/ng-schematics/README.md', 'utf-8');
-    await writeFile('docs/guides/ng-schematics.md', readme);
-  },
-});
+function addNoTocHeader(markdown) {
+  return `---
+hide_table_of_contents: true
+---
+
+${markdown}`;
+}
 
 /**
  * This logic should match the one in `website/docusaurus.config.js`.
@@ -33,6 +33,14 @@ function getApiUrl(version) {
     return `https://github.com/puppeteer/puppeteer/blob/${version}/docs/api.md`;
   }
 }
+
+export const docsNgSchematicsTask = task({
+  name: 'docs:ng-schematics',
+  run: async () => {
+    const readme = await readFile('packages/ng-schematics/README.md', 'utf-8');
+    await writeFile('docs/guides/ng-schematics.md', readme);
+  },
+});
 
 export const docsChromiumSupportTask = task({
   name: 'docs:supported-browsers',
@@ -72,7 +80,8 @@ export const docsTask = task({
   dependencies: [docsNgSchematicsTask, docsChromiumSupportTask],
   run: async () => {
     // Copy main page.
-    await copyFile('README.md', 'docs/index.md');
+    const mainPage = await readFile('README.md', 'utf-8');
+    await writeFile('docs/index.md', addNoTocHeader(mainPage));
 
     // Generate documentation
     for (const [name, folder] of [

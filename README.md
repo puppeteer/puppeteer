@@ -1,7 +1,3 @@
----
-hide_table_of_contents: true
----
-
 # Puppeteer
 
 [![build](https://github.com/puppeteer/puppeteer/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/puppeteer/puppeteer/actions/workflows/ci.yml)
