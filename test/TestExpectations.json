@@ -98,13 +98,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[network.spec] network Page.setExtraHTTPHeaders *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[network.spec] network Request.isNavigationRequest *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -557,6 +550,13 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[network.spec] network Page.setExtraHTTPHeaders *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "Firefox does not support headers override"
+  },
+  {
     "testIdPattern": "[network.spec] network Request.initiator should return the initiator",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -839,27 +839,6 @@
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "BiDi spec and WPT require expect the Hash"
-  },
-  {
-    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should send referer",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "`setExtraHTTPHeaders` not implemented"
-  },
-  {
-    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should show custom HTTP headers",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "`setExtraHTTPHeaders` not implemented"
-  },
-  {
-    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with custom referer headers",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "`setExtraHTTPHeaders` not implemented"
   },
   {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with redirects",
@@ -3457,14 +3436,14 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: Needs support for Page.setExtraHTTPHeaders"
+    "comment": "Firefox does not support headers override"
   },
   {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should show custom HTTP headers",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: Needs support for Page.setExtraHTTPHeaders"
+    "comment": "Firefox does not support headers override"
   },
   {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should work when header manipulation headers with redirect",
@@ -3478,7 +3457,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: Needs support for Page.setExtraHTTPHeaders"
+    "comment": "Firefox does not support headers override"
   },
   {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should work with encoded server - 2",
@@ -3492,7 +3471,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: Needs investigation"
+    "comment": "TODO: Needs investigation, it looks like Firefox lets the request go also to the server"
   },
   {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should work with file URLs",
@@ -3629,15 +3608,29 @@
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should send referer",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox does not support headers override"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should send referer",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: Needs support for Page.setExtraHTTPHeaders"
+    "comment": "Firefox does not support headers override"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should show custom HTTP headers",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox does not support headers override"
   },
   {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should show custom HTTP headers",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: Needs support for Page.setExtraHTTPHeaders"
+    "comment": "Firefox does not support headers override"
   },
   {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work when header manipulation headers with redirect",
@@ -3650,8 +3643,15 @@
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with custom referer headers",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox does not support headers override"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with custom referer headers",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: Needs support for Page.setExtraHTTPHeaders"
+    "comment": "Firefox does not support headers override"
   },
   {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with encoded server - 2",
@@ -4132,27 +4132,6 @@
     "parameters": ["chrome", "headless", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "`request.postData()` has no eqivalent in BiDi spec"
-  },
-  {
-    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should send referer",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "headless", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "`setExtraHTTPHeaders` not implemented"
-  },
-  {
-    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should show custom HTTP headers",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "headless", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "`setExtraHTTPHeaders` not implemented"
-  },
-  {
-    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should work with custom referer headers",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "headless", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "`setExtraHTTPHeaders` not implemented"
   },
   {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should work with redirects",

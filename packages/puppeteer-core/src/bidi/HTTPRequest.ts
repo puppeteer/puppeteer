@@ -75,6 +75,17 @@ export class BidiHTTPRequest extends HTTPRequest {
     this.#request.on('authenticate', this.#handleAuthentication);
 
     this.#frame.page().trustedEmitter.emit(PageEvent.Request, this);
+
+    if (Object.keys(this.#extraHTTPHeaders).length) {
+      this.interception.handlers.push(async () => {
+        await this.continue(
+          {
+            headers: this.headers(),
+          },
+          0
+        );
+      });
+    }
   }
 
   override url(): string {
@@ -101,12 +112,19 @@ export class BidiHTTPRequest extends HTTPRequest {
     throw new UnsupportedOperation();
   }
 
+  get #extraHTTPHeaders(): Record<string, string> {
+    return this.#frame?.page()._extraHTTPHeaders ?? {};
+  }
+
   override headers(): Record<string, string> {
     const headers: Record<string, string> = {};
     for (const header of this.#request.headers) {
       headers[header.name.toLowerCase()] = header.value.value;
     }
-    return headers;
+    return {
+      ...headers,
+      ...this.#extraHTTPHeaders,
+    };
   }
 
   override response(): BidiHTTPResponse | null {
@@ -143,6 +161,21 @@ export class BidiHTTPRequest extends HTTPRequest {
 
   override frame(): BidiFrame {
     return this.#frame;
+  }
+
+  override async continue(
+    overrides?: ContinueRequestOverrides,
+    priority?: number | undefined
+  ): Promise<void> {
+    return await super.continue(
+      {
+        headers: Object.keys(this.#extraHTTPHeaders).length
+          ? this.headers()
+          : undefined,
+        ...overrides,
+      },
+      priority
+    );
   }
 
   override async _continue(

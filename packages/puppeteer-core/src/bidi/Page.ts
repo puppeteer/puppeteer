@@ -38,7 +38,12 @@ import {UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
 import type {Awaitable} from '../common/types.js';
-import {evaluationString, parsePDFOptions, timeout} from '../common/util.js';
+import {
+  evaluationString,
+  isString,
+  parsePDFOptions,
+  timeout,
+} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
 import {bubble} from '../util/decorators.js';
@@ -523,6 +528,31 @@ export class BidiPage extends Page {
   /**
    * @internal
    */
+  _extraHTTPHeaders: Record<string, string> = {};
+  #extraHeadersInterception?: string;
+  override async setExtraHTTPHeaders(
+    headers: Record<string, string>
+  ): Promise<void> {
+    const extraHTTPHeaders: Record<string, string> = {};
+    for (const [key, value] of Object.entries(headers)) {
+      assert(
+        isString(value),
+        `Expected value of header "${key}" to be String, but "${typeof value}" is found.`
+      );
+      extraHTTPHeaders[key.toLowerCase()] = value;
+    }
+    this._extraHTTPHeaders = extraHTTPHeaders;
+
+    this.#extraHeadersInterception = await this.#toggleInterception(
+      [Bidi.Network.InterceptPhase.BeforeRequestSent],
+      this.#extraHeadersInterception,
+      Boolean(Object.keys(this._extraHTTPHeaders).length)
+    );
+  }
+
+  /**
+   * @internal
+   */
   _credentials: Credentials | null = null;
   #authInterception?: string;
   override async authenticate(credentials: Credentials | null): Promise<void> {
@@ -661,10 +691,6 @@ export class BidiPage extends Page {
 
   override async removeExposedFunction(name: string): Promise<void> {
     await this.#frame.removeExposedFunction(name);
-  }
-
-  override setExtraHTTPHeaders(): never {
-    throw new UnsupportedOperation();
   }
 
   override metrics(): never {
