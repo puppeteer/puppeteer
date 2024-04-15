@@ -85,7 +85,7 @@ node tools/smoke.mjs
 
 The schematics utilize `@angular-devkit/schematics/testing` for verifying correct file creation and `package.json` updates. To execute the test suit:
 
-```bash
+```bash npm2yarn
 npm run test
 ```
 
