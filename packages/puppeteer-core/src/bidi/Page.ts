@@ -61,6 +61,8 @@ import {rewriteNavigationError} from './util.js';
 import type {BidiWebWorker} from './WebWorker.js';
 
 /**
+ * Implements Page using WebDriver BiDi.
+ *
  * @internal
  */
 export class BidiPage extends Page {
