@@ -7,7 +7,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
-import {EventSubscription} from '../common/EventEmitter.js';
+import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError, PuppeteerURL} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {DisposableStack} from '../util/disposable.js';
@@ -229,19 +229,13 @@ export class JSCoverage {
     this.#scriptURLs.clear();
     this.#scriptSources.clear();
     this.#subscriptions = new DisposableStack();
-    this.#subscriptions.use(
-      new EventSubscription(
-        this.#client,
-        'Debugger.scriptParsed',
-        this.#onScriptParsed.bind(this)
-      )
+    const clientEmitter = this.#subscriptions.use(
+      new EventEmitter(this.#client)
     );
-    this.#subscriptions.use(
-      new EventSubscription(
-        this.#client,
-        'Runtime.executionContextsCleared',
-        this.#onExecutionContextsCleared.bind(this)
-      )
+    clientEmitter.on('Debugger.scriptParsed', this.#onScriptParsed.bind(this));
+    clientEmitter.on(
+      'Runtime.executionContextsCleared',
+      this.#onExecutionContextsCleared.bind(this)
     );
     await Promise.all([
       this.#client.send('Profiler.enable'),
@@ -355,20 +349,15 @@ export class CSSCoverage {
     this.#stylesheetURLs.clear();
     this.#stylesheetSources.clear();
     this.#eventListeners = new DisposableStack();
-    this.#eventListeners.use(
-      new EventSubscription(
-        this.#client,
-        'CSS.styleSheetAdded',
-        this.#onStyleSheet.bind(this)
-      )
+    const clientEmitter = this.#eventListeners.use(
+      new EventEmitter(this.#client)
     );
-    this.#eventListeners.use(
-      new EventSubscription(
-        this.#client,
-        'Runtime.executionContextsCleared',
-        this.#onExecutionContextsCleared.bind(this)
-      )
+    clientEmitter.on('CSS.styleSheetAdded', this.#onStyleSheet.bind(this));
+    clientEmitter.on(
+      'Runtime.executionContextsCleared',
+      this.#onExecutionContextsCleared.bind(this)
     );
+
     await Promise.all([
       this.#client.send('DOM.enable'),
       this.#client.send('CSS.enable'),
