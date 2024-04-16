@@ -18,8 +18,8 @@ Firefox integration is nearing feature parity with its previous CDP-based approa
 
 To gauge the capabilities of WebDriver BiDi, we utilized the comprehensive [Puppeteer test suite](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/)
 
-- For Firefox, there are currently under [60](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/firefox-delta.json) failing tests compared to the CDP implementation, while over [82](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/firefox-delta.json) new tests successfully utilize WebDriver BiDi, demonstrating its growing potential.
-- For Chrome, around 68% of tests pass with WebDriver BiDi, indicating room for improvement compared to the CDP-based approach.
+- For Firefox, there are currently under [30](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/firefox-delta.json) failing tests compared to the CDP implementation, while over [140](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/firefox-delta.json) new tests successfully utilize WebDriver BiDi, demonstrating its growing potential.
+- For Chrome, around 85% of tests pass with WebDriver BiDi, indicating room for improvement compared to the CDP-based approach.
 
 ## Get started
 
@@ -41,17 +41,28 @@ This is an exciting step towards a more unified and efficient cross-browser auto
 
 ## Puppeteer features supported over WebDriver BiDi
 
-- Browser and page automation
+- Browser automation
 
+  - Puppeteer.launch
   - Browser.close
-  - Frame.goto() (except `referer` and `referrerPolicy`)
+  - Browser.userAgent()
+
+- Page automation
+
   - Page.bringToFront
   - Page.goBack()
   - Page.goForward()
   - Page.goto (except `referer` and `referrerPolicy`)
+  - Frame.goto() (except `referer` and `referrerPolicy`)
   - Page.reload (except for `ignoreCache` parameter)
   - Page.setViewport (`width`, `height`, `deviceScaleFactor` only)
-  - Puppeteer.launch
+  - Page.cookies()
+  - Page.setCookie()
+  - Page.deleteCookie()
+  - Page.workers()
+  - PageEvent.WorkerCreated
+  - PageEvent.WorkerDestroyed
+  - Page.setExtraHTTPHeaders()
 
 - [Script evaluation](https://pptr.dev/guides/evaluate-javascript):
 
@@ -100,13 +111,9 @@ This is an exciting step towards a more unified and efficient cross-browser auto
   - BrowserContext.clearPermissionOverrides()
   - BrowserContext.overridePermissions()
 
-## Puppeteer features not yet supported over WebDriver BiDi
-
 - [Request interception](https://pptr.dev/guides/request-interception)
-
-  - HTTPRequest.abort()
+  - HTTPRequest.abort() (no custom error support)
   - HTTPRequest.abortErrorReason()
-  - HTTPRequest.client()
   - HTTPRequest.continue()
   - HTTPRequest.continueRequestOverrides()
   - HTTPRequest.failure()
@@ -116,6 +123,8 @@ This is an exciting step towards a more unified and efficient cross-browser auto
   - HTTPRequest.respond()
   - HTTPRequest.responseForRequest()
   - Page.setRequestInterception()
+
+## Puppeteer features not yet supported over WebDriver BiDi
 
 - Various emulations (most are supported with Chrome)
 
@@ -134,6 +143,7 @@ This is an exciting step towards a more unified and efficient cross-browser auto
 - CDP-specific features
 
   - Page.createCDPSession() (supported only in Chrome)
+  - HTTPRequest.client() (supported only in Chrome)
 
 - Tracing (supported only in Chrome)
 - Coverage (supported only in Chrome)
@@ -141,7 +151,6 @@ This is an exciting step towards a more unified and efficient cross-browser auto
 
 - Other methods:
 
-  - Browser.userAgent()
   - Frame.isOOPFrame()
   - Frame.waitForDevicePrompt()
   - HTTPResponse.buffer()
@@ -152,8 +161,6 @@ This is an exciting step towards a more unified and efficient cross-browser auto
   - Input.dragOver()
   - Input.drop()
   - Page.authenticate()
-  - Page.cookies()
-  - Page.deleteCookie()
   - Page.emulateNetworkConditions()
   - Page.isDragInterceptionEnabled()
   - Page.isJavaScriptEnabled() (supported only in Chrome)
@@ -162,15 +169,10 @@ This is an exciting step towards a more unified and efficient cross-browser auto
   - Page.queryObjects() (supported only in Chrome)
   - Page.screencast() (supported only in Chrome)
   - Page.setBypassServiceWorker()
-  - Page.setCookie()
   - Page.setDragInterception()
-  - Page.setExtraHTTPHeaders()
   - Page.setOfflineMode()
   - Page.setUserAgent()
   - Page.waitForDevicePrompt()
   - Page.waitForFileChooser()
-  - Page.workers()
   - PageEvent.popup
-  - PageEvent.WorkerCreated
-  - PageEvent.WorkerDestroyed
   - Target.opener()
