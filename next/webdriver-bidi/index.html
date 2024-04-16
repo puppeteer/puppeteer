@@ -6,7 +6,7 @@
 <title data-rh="true">Experimental WebDriver BiDi support | Puppeteer</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://pptr.dev/next/webdriver-bidi"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:counter" content="3"><meta data-rh="true" property="og:title" content="Experimental WebDriver BiDi support | Puppeteer"><meta data-rh="true" name="description" content="WebDriver BiDi is a new cross-browser"><meta data-rh="true" property="og:description" content="WebDriver BiDi is a new cross-browser"><link data-rh="true" rel="icon" href="/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://pptr.dev/next/webdriver-bidi"><link data-rh="true" rel="alternate" href="https://pptr.dev/next/webdriver-bidi" hreflang="en"><link data-rh="true" rel="alternate" href="https://pptr.dev/next/webdriver-bidi" hreflang="x-default"><link data-rh="true" rel="preconnect" href="https://DVKY664LG7-dsn.algolia.net" crossorigin="anonymous"><link rel="search" type="application/opensearchdescription+xml" title="Puppeteer" href="/opensearch.xml">
 
 <script src="/fix-location.js"></script><link rel="stylesheet" href="/assets/css/styles.76d942d0.css">
-<script src="/assets/js/runtime~main.6decfb0e.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.add97c40.js" defer="defer"></script>
 <script src="/assets/js/main.89e3ed5d.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -24,8 +24,8 @@ automation protocol currently under development, aiming to combine the best of b
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="measuring-progress">Measuring progress<a href="#measuring-progress" class="hash-link" aria-label="Direct link to Measuring progress" title="Direct link to Measuring progress">​</a></h2>
 <p>To gauge the capabilities of WebDriver BiDi, we utilized the comprehensive <a href="https://puppeteer.github.io/ispuppeteerwebdriverbidiready/" target="_blank" rel="noopener noreferrer">Puppeteer test suite</a></p>
 <ul>
-<li>For Firefox, there are currently under <a href="https://puppeteer.github.io/ispuppeteerwebdriverbidiready/firefox-delta.json" target="_blank" rel="noopener noreferrer">30</a> failing tests compared to the CDP implementation, while over <a href="https://puppeteer.github.io/ispuppeteerwebdriverbidiready/firefox-delta.json" target="_blank" rel="noopener noreferrer">140</a> new tests successfully utilize WebDriver BiDi, demonstrating its growing potential.</li>
-<li>For Chrome, around 85% of tests pass with WebDriver BiDi, indicating room for improvement compared to the CDP-based approach.</li>
+<li>For Firefox, there are currently under <a href="https://puppeteer.github.io/ispuppeteerwebdriverbidiready/firefox-delta.json" target="_blank" rel="noopener noreferrer">60</a> failing tests compared to the CDP implementation, while over <a href="https://puppeteer.github.io/ispuppeteerwebdriverbidiready/firefox-delta.json" target="_blank" rel="noopener noreferrer">82</a> new tests successfully utilize WebDriver BiDi, demonstrating its growing potential.</li>
+<li>For Chrome, around 68% of tests pass with WebDriver BiDi, indicating room for improvement compared to the CDP-based approach.</li>
 </ul>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="get-started">Get started<a href="#get-started" class="hash-link" aria-label="Direct link to Get started" title="Direct link to Get started">​</a></h2>
 <p>Below is an example of launching Firefox or Chrome with WebDriver BiDi:</p>
@@ -34,30 +34,17 @@ automation protocol currently under development, aiming to combine the best of b
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="puppeteer-features-supported-over-webdriver-bidi">Puppeteer features supported over WebDriver BiDi<a href="#puppeteer-features-supported-over-webdriver-bidi" class="hash-link" aria-label="Direct link to Puppeteer features supported over WebDriver BiDi" title="Direct link to Puppeteer features supported over WebDriver BiDi">​</a></h2>
 <ul>
 <li>
-<p>Browser automation</p>
+<p>Browser and page automation</p>
 <ul>
-<li>Puppeteer.launch</li>
 <li>Browser.close</li>
-<li>Browser.userAgent()</li>
-</ul>
-</li>
-<li>
-<p>Page automation</p>
-<ul>
+<li>Frame.goto() (except <code>referer</code> and <code>referrerPolicy</code>)</li>
 <li>Page.bringToFront</li>
 <li>Page.goBack()</li>
 <li>Page.goForward()</li>
 <li>Page.goto (except <code>referer</code> and <code>referrerPolicy</code>)</li>
-<li>Frame.goto() (except <code>referer</code> and <code>referrerPolicy</code>)</li>
 <li>Page.reload (except for <code>ignoreCache</code> parameter)</li>
 <li>Page.setViewport (<code>width</code>, <code>height</code>, <code>deviceScaleFactor</code> only)</li>
-<li>Page.cookies()</li>
-<li>Page.setCookie()</li>
-<li>Page.deleteCookie()</li>
-<li>Page.workers()</li>
-<li>PageEvent.WorkerCreated</li>
-<li>PageEvent.WorkerDestroyed</li>
-<li>Page.setExtraHTTPHeaders()</li>
+<li>Puppeteer.launch</li>
 </ul>
 </li>
 <li>
@@ -121,11 +108,15 @@ automation protocol currently under development, aiming to combine the best of b
 <li>BrowserContext.overridePermissions()</li>
 </ul>
 </li>
+</ul>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="puppeteer-features-not-yet-supported-over-webdriver-bidi">Puppeteer features not yet supported over WebDriver BiDi<a href="#puppeteer-features-not-yet-supported-over-webdriver-bidi" class="hash-link" aria-label="Direct link to Puppeteer features not yet supported over WebDriver BiDi" title="Direct link to Puppeteer features not yet supported over WebDriver BiDi">​</a></h2>
+<ul>
 <li>
 <p><a href="https://pptr.dev/guides/request-interception" target="_blank" rel="noopener noreferrer">Request interception</a></p>
 <ul>
-<li>HTTPRequest.abort() (no custom error support)</li>
+<li>HTTPRequest.abort()</li>
 <li>HTTPRequest.abortErrorReason()</li>
+<li>HTTPRequest.client()</li>
 <li>HTTPRequest.continue()</li>
 <li>HTTPRequest.continueRequestOverrides()</li>
 <li>HTTPRequest.failure()</li>
@@ -137,9 +128,6 @@ automation protocol currently under development, aiming to combine the best of b
 <li>Page.setRequestInterception()</li>
 </ul>
 </li>
-</ul>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="puppeteer-features-not-yet-supported-over-webdriver-bidi">Puppeteer features not yet supported over WebDriver BiDi<a href="#puppeteer-features-not-yet-supported-over-webdriver-bidi" class="hash-link" aria-label="Direct link to Puppeteer features not yet supported over WebDriver BiDi" title="Direct link to Puppeteer features not yet supported over WebDriver BiDi">​</a></h2>
-<ul>
 <li>
 <p>Various emulations (most are supported with Chrome)</p>
 <ul>
@@ -160,7 +148,6 @@ automation protocol currently under development, aiming to combine the best of b
 <p>CDP-specific features</p>
 <ul>
 <li>Page.createCDPSession() (supported only in Chrome)</li>
-<li>HTTPRequest.client() (supported only in Chrome)</li>
 </ul>
 </li>
 <li>
@@ -175,6 +162,7 @@ automation protocol currently under development, aiming to combine the best of b
 <li>
 <p>Other methods:</p>
 <ul>
+<li>Browser.userAgent()</li>
 <li>Frame.isOOPFrame()</li>
 <li>Frame.waitForDevicePrompt()</li>
 <li>HTTPResponse.buffer()</li>
@@ -185,6 +173,8 @@ automation protocol currently under development, aiming to combine the best of b
 <li>Input.dragOver()</li>
 <li>Input.drop()</li>
 <li>Page.authenticate()</li>
+<li>Page.cookies()</li>
+<li>Page.deleteCookie()</li>
 <li>Page.emulateNetworkConditions()</li>
 <li>Page.isDragInterceptionEnabled()</li>
 <li>Page.isJavaScriptEnabled() (supported only in Chrome)</li>
@@ -193,12 +183,17 @@ automation protocol currently under development, aiming to combine the best of b
 <li>Page.queryObjects() (supported only in Chrome)</li>
 <li>Page.screencast() (supported only in Chrome)</li>
 <li>Page.setBypassServiceWorker()</li>
+<li>Page.setCookie()</li>
 <li>Page.setDragInterception()</li>
+<li>Page.setExtraHTTPHeaders()</li>
 <li>Page.setOfflineMode()</li>
 <li>Page.setUserAgent()</li>
 <li>Page.waitForDevicePrompt()</li>
 <li>Page.waitForFileChooser()</li>
+<li>Page.workers()</li>
 <li>PageEvent.popup</li>
+<li>PageEvent.WorkerCreated</li>
+<li>PageEvent.WorkerDestroyed</li>
 <li>Target.opener()</li>
 </ul>
 </li>
