@@ -540,6 +540,13 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       responseReceived.requestId
     );
     if (extraInfos.length) {
+      // Under such situation we can assume that
+      // the latest one is the correct one
+      // An example is when we update from http to https
+      // some events are not emitted and we get and lingering
+      // responseExtraInfo
+      extraInfo = extraInfos.pop() ?? extraInfo;
+
       debugError(
         new Error(
           'Unexpected extraInfo events for request ' +

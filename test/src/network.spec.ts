@@ -914,24 +914,4 @@ describe('network', function () {
       expect(responses.get('style.css').fromServiceWorker()).toBe(false);
     });
   });
-
-  it.only('redirect interception issue', async () => {
-    const {page} = await getTestState();
-    await page.setRequestInterception(true);
-    page.on('request', req => {
-      void req.continue();
-    });
-    const responses: HTTPResponse[] = [];
-    page.on('response', res => {
-      if (res.request().isNavigationRequest()) {
-        responses.push(res);
-      }
-    });
-    const response = await page.goto('https://bit.ly/1gqbFUR', {
-      waitUntil: ['networkidle0'],
-    });
-
-    console.log(responses.at(-1)?.status());
-    expect(response?.status()).toBe(200);
-  });
 });

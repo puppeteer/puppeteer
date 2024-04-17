@@ -35,10 +35,8 @@ async function runCdpLogSnapshot(
     'utf-8'
   );
   const events = JSON.parse(json) as CdpLog[];
-  console.log(events);
 
   for (const event of events) {
-    console.log('Emitting Event', event.method);
     cdpSession.emit(event.method, event.params);
     await new Promise(resolve => {
       setTimeout(resolve, 10);

@@ -100,7 +100,7 @@
       ]
     },
     "unit": {
-      "command": "node --test --test-only --test-reporter spec lib/cjs",
+      "command": "node --test --test-reporter spec lib/cjs",
       "dependencies": [
         "build"
       ]
