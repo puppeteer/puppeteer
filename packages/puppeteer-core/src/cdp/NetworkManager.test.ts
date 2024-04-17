@@ -4,7 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {readFile} from 'fs/promises';
 import {describe, it} from 'node:test';
+import {resolve} from 'path';
 
 import expect from 'expect';
 
@@ -16,9 +18,33 @@ import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
 
 import type {CdpFrame} from './Frame.js';
 import {NetworkManager} from './NetworkManager.js';
-
 // TODO: develop a helper to generate fake network events for attributes that
 // are not relevant for the network manager to make tests shorter.
+
+interface CdpLog extends Record<string, unknown> {
+  method: string;
+  params: any;
+}
+
+async function runCdpLogSnapshot(
+  cdpSession: MockCDPSession,
+  name: `${string}.json`
+) {
+  const json = await readFile(
+    resolve(__dirname, '../../../../', './src/cdp/snapshots', name),
+    'utf-8'
+  );
+  const events = JSON.parse(json) as CdpLog[];
+  console.log(events);
+
+  for (const event of events) {
+    console.log('Emitting Event', event.method);
+    cdpSession.emit(event.method, event.params);
+    await new Promise(resolve => {
+      setTimeout(resolve, 10);
+    });
+  }
+}
 
 class MockCDPSession extends EventEmitter<CDPSessionEvents> {
   async send(): Promise<any> {}
@@ -34,7 +60,7 @@ class MockCDPSession extends EventEmitter<CDPSessionEvents> {
   }
 }
 
-describe('NetworkManager', () => {
+describe.only('NetworkManager', () => {
   it('should process extra info on multiple redirects', async () => {
     const mockCDPSession = new MockCDPSession();
     const manager = new NetworkManager(true, {
@@ -1538,5 +1564,29 @@ describe('NetworkManager', () => {
         return r.status();
       })
     ).toEqual([200, 302, 200]);
+  });
+
+  it.only(`should work when a request paused is missing for upgrading connection`, async () => {
+    const mockCDPSession = new MockCDPSession();
+    const manager = new NetworkManager(true, {
+      frame(): CdpFrame | null {
+        return null;
+      },
+    });
+    await manager.addClient(mockCDPSession);
+
+    const responses: HTTPResponse[] = [];
+    manager.on(NetworkManagerEvent.Response, (response: HTTPResponse) => {
+      responses.push(response);
+    });
+
+    await runCdpLogSnapshot(
+      mockCDPSession,
+      'redirect-update-no-interception.json'
+    );
+
+    const lastResponse = responses.at(-1)!;
+    expect(lastResponse).toBeTruthy();
+    expect(lastResponse.status()).toBe(200);
   });
 });

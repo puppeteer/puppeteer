@@ -1,0 +1,476 @@
+[
+  {
+    "method": "Network.requestWillBeSent",
+    "params": {
+      "requestId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "loaderId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "documentURL": "https://bit.ly/1gqbFUR",
+      "request": {
+        "url": "https://bit.ly/1gqbFUR",
+        "method": "GET",
+        "headers": {},
+        "mixedContentType": "none",
+        "initialPriority": "VeryHigh",
+        "referrerPolicy": "strict-origin-when-cross-origin",
+        "isSameSite": true
+      },
+      "timestamp": 1787808.87665,
+      "wallTime": 1713266522.992787,
+      "initiator": {"type": "other"},
+      "redirectHasExtraInfo": false,
+      "type": "Document",
+      "frameId": "323830E38071D3AAFE9F5F20FC53497D",
+      "hasUserGesture": false
+    },
+    "sessionId": "EDCD9EB60F8CB3C04E9498172C0E7D02"
+  },
+  {
+    "method": "Fetch.requestPaused",
+    "params": {
+      "requestId": "interception-job-1.0",
+      "request": {
+        "url": "https://bit.ly/1gqbFUR",
+        "method": "GET",
+        "headers": {},
+        "initialPriority": "VeryHigh",
+        "referrerPolicy": "strict-origin-when-cross-origin"
+      },
+      "frameId": "323830E38071D3AAFE9F5F20FC53497D",
+      "resourceType": "Document",
+      "networkId": "EC9E8A0A3C5CBA635FB126B04B862BEF"
+    },
+    "sessionId": "EDCD9EB60F8CB3C04E9498172C0E7D02"
+  },
+  {
+    "method": "Network.requestWillBeSentExtraInfo",
+    "params": {
+      "requestId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "associatedCookies": [],
+      "headers": {},
+      "connectTiming": {"requestTime": 1787808.879718},
+      "siteHasCookieInOtherPartition": false
+    },
+    "sessionId": "EDCD9EB60F8CB3C04E9498172C0E7D02"
+  },
+  {
+    "method": "Network.responseReceivedExtraInfo",
+    "params": {
+      "requestId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "blockedCookies": [],
+      "headers": {},
+      "resourceIPAddressSpace": "Public",
+      "statusCode": 301,
+      "cookiePartitionKey": "https://bit.ly",
+      "cookiePartitionKeyOpaque": false,
+      "exemptedCookies": []
+    },
+    "sessionId": "EDCD9EB60F8CB3C04E9498172C0E7D02"
+  },
+  {
+    "method": "Network.requestWillBeSent",
+    "params": {
+      "requestId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "loaderId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "documentURL": "http://www.cinestar.de/de/kino/saarbruecken-cinestar/veranstaltungen/patema-inverted/",
+      "request": {
+        "url": "http://www.cinestar.de/de/kino/saarbruecken-cinestar/veranstaltungen/patema-inverted/",
+        "method": "GET",
+        "headers": {},
+        "mixedContentType": "none",
+        "initialPriority": "VeryHigh",
+        "referrerPolicy": "strict-origin-when-cross-origin",
+        "isSameSite": true
+      },
+      "timestamp": 1787809.305366,
+      "wallTime": 1713266523.421556,
+      "initiator": {"type": "other"},
+      "redirectHasExtraInfo": true,
+      "redirectResponse": {
+        "url": "https://bit.ly/1gqbFUR",
+        "status": 301,
+        "statusText": "",
+        "headers": {},
+        "mimeType": "text/html",
+        "charset": "utf-8",
+        "connectionReused": false,
+        "connectionId": 49,
+        "remoteIPAddress": "67.199.248.10",
+        "remotePort": 443,
+        "fromDiskCache": false,
+        "fromServiceWorker": false,
+        "fromPrefetchCache": false,
+        "encodedDataLength": 323,
+        "timing": {},
+        "responseTime": 1.713266523420284e12,
+        "protocol": "h2",
+        "alternateProtocolUsage": "unspecifiedReason",
+        "securityState": "secure",
+        "securityDetails": {
+          "protocol": "TLS 1.3",
+          "keyExchange": "",
+          "keyExchangeGroup": "X25519",
+          "cipher": "AES_128_GCM",
+          "certificateId": 0,
+          "subjectName": "bit.ly",
+          "sanList": ["bit.ly", "www.bit.ly"],
+          "issuer": "DigiCert EV RSA CA G2",
+          "validFrom": 1683849600,
+          "validTo": 1715817599,
+          "signedCertificateTimestampList": [],
+          "certificateTransparencyCompliance": "unknown",
+          "serverSignatureAlgorithm": 2052,
+          "encryptedClientHello": false
+        }
+      },
+      "type": "Document",
+      "frameId": "323830E38071D3AAFE9F5F20FC53497D",
+      "hasUserGesture": false
+    },
+    "sessionId": "EDCD9EB60F8CB3C04E9498172C0E7D02"
+  },
+  {
+    "method": "Network.requestWillBeSent",
+    "params": {
+      "requestId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "loaderId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "documentURL": "https://www.cinestar.de/de/kino/saarbruecken-cinestar/veranstaltungen/patema-inverted/",
+      "request": {
+        "url": "https://www.cinestar.de/de/kino/saarbruecken-cinestar/veranstaltungen/patema-inverted/",
+        "method": "GET",
+        "headers": {},
+        "mixedContentType": "none",
+        "initialPriority": "VeryHigh",
+        "referrerPolicy": "strict-origin-when-cross-origin",
+        "isSameSite": true
+      },
+      "timestamp": 1787809.306505,
+      "wallTime": 1713266523.42264,
+      "initiator": {"type": "other"},
+      "redirectHasExtraInfo": false,
+      "redirectResponse": {
+        "url": "http://www.cinestar.de/de/kino/saarbruecken-cinestar/veranstaltungen/patema-inverted/",
+        "status": 307,
+        "statusText": "Temporary Redirect",
+        "headers": {},
+        "mimeType": "",
+        "charset": "",
+        "connectionReused": false,
+        "connectionId": 0,
+        "remoteIPAddress": "",
+        "remotePort": 0,
+        "fromDiskCache": false,
+        "fromServiceWorker": false,
+        "fromPrefetchCache": false,
+        "encodedDataLength": 0,
+        "protocol": "http/1.1",
+        "alternateProtocolUsage": "alternativeJobWonWithoutRace",
+        "securityState": "insecure"
+      },
+      "type": "Document",
+      "frameId": "323830E38071D3AAFE9F5F20FC53497D",
+      "hasUserGesture": false
+    },
+    "sessionId": "EDCD9EB60F8CB3C04E9498172C0E7D02"
+  },
+  {
+    "method": "Fetch.requestPaused",
+    "params": {
+      "requestId": "interception-job-2.0",
+      "request": {
+        "url": "https://www.cinestar.de/de/kino/saarbruecken-cinestar/veranstaltungen/patema-inverted/",
+        "method": "GET",
+        "headers": {},
+        "initialPriority": "VeryHigh",
+        "referrerPolicy": "unsafe-url"
+      },
+      "frameId": "323830E38071D3AAFE9F5F20FC53497D",
+      "resourceType": "Document",
+      "networkId": "EC9E8A0A3C5CBA635FB126B04B862BEF"
+    },
+    "sessionId": "EDCD9EB60F8CB3C04E9498172C0E7D02"
+  },
+  {
+    "method": "Network.requestWillBeSentExtraInfo",
+    "params": {
+      "requestId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "associatedCookies": [],
+      "headers": {},
+      "connectTiming": {"requestTime": 1787809.309392},
+      "siteHasCookieInOtherPartition": false
+    },
+    "sessionId": "EDCD9EB60F8CB3C04E9498172C0E7D02"
+  },
+  {
+    "method": "Network.responseReceivedExtraInfo",
+    "params": {
+      "requestId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "blockedCookies": [],
+      "headers": {},
+      "resourceIPAddressSpace": "Public",
+      "statusCode": 301,
+      "cookiePartitionKey": "https://cinestar.de",
+      "cookiePartitionKeyOpaque": false,
+      "exemptedCookies": []
+    },
+    "sessionId": "EDCD9EB60F8CB3C04E9498172C0E7D02"
+  },
+  {
+    "method": "Network.requestWillBeSent",
+    "params": {
+      "requestId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "loaderId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "documentURL": "https://www.cinestar.de/kino-saarbruecken/patema-inverted",
+      "request": {
+        "url": "https://www.cinestar.de/kino-saarbruecken/patema-inverted",
+        "method": "GET",
+        "headers": {},
+        "mixedContentType": "none",
+        "initialPriority": "VeryHigh",
+        "referrerPolicy": "strict-origin-when-cross-origin",
+        "isSameSite": true
+      },
+      "timestamp": 1787809.403335,
+      "wallTime": 1713266523.519485,
+      "initiator": {"type": "other"},
+      "redirectHasExtraInfo": true,
+      "redirectResponse": {
+        "url": "https://www.cinestar.de/de/kino/saarbruecken-cinestar/veranstaltungen/patema-inverted/",
+        "status": 301,
+        "statusText": "",
+        "headers": {},
+        "mimeType": "text/html",
+        "charset": "utf-8",
+        "connectionReused": false,
+        "connectionId": 68,
+        "remoteIPAddress": "195.192.131.14",
+        "remotePort": 443,
+        "fromDiskCache": false,
+        "fromServiceWorker": false,
+        "fromPrefetchCache": false,
+        "encodedDataLength": 283,
+        "timing": {},
+        "responseTime": 1.713266523518891e12,
+        "protocol": "h2",
+        "alternateProtocolUsage": "unspecifiedReason",
+        "securityState": "secure",
+        "securityDetails": {
+          "protocol": "TLS 1.2",
+          "keyExchange": "ECDHE_RSA",
+          "keyExchangeGroup": "P-256",
+          "cipher": "AES_256_GCM",
+          "certificateId": 0,
+          "subjectName": "*.cinestar.de",
+          "sanList": ["*.cinestar.de", "cinestar.de"],
+          "issuer": "Thawte TLS RSA CA G1",
+          "validFrom": 1699315200,
+          "validTo": 1732319999,
+          "signedCertificateTimestampList": [],
+          "certificateTransparencyCompliance": "unknown",
+          "serverSignatureAlgorithm": 1537,
+          "encryptedClientHello": false
+        }
+      },
+      "type": "Document",
+      "frameId": "323830E38071D3AAFE9F5F20FC53497D",
+      "hasUserGesture": false
+    },
+    "sessionId": "EDCD9EB60F8CB3C04E9498172C0E7D02"
+  },
+  {
+    "method": "Fetch.requestPaused",
+    "params": {
+      "requestId": "interception-job-2.1",
+      "request": {
+        "url": "https://www.cinestar.de/kino-saarbruecken/patema-inverted",
+        "method": "GET",
+        "headers": {},
+        "initialPriority": "VeryHigh",
+        "referrerPolicy": "unsafe-url"
+      },
+      "frameId": "323830E38071D3AAFE9F5F20FC53497D",
+      "resourceType": "Document",
+      "networkId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "redirectedRequestId": "interception-job-2.0"
+    },
+    "sessionId": "EDCD9EB60F8CB3C04E9498172C0E7D02"
+  },
+  {
+    "method": "Network.requestWillBeSentExtraInfo",
+    "params": {
+      "requestId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "associatedCookies": [],
+      "headers": {},
+      "connectTiming": {"requestTime": 1787809.40502},
+      "siteHasCookieInOtherPartition": false
+    },
+    "sessionId": "EDCD9EB60F8CB3C04E9498172C0E7D02"
+  },
+  {
+    "method": "Network.responseReceivedExtraInfo",
+    "params": {
+      "requestId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "blockedCookies": [],
+      "headers": {},
+      "resourceIPAddressSpace": "Public",
+      "statusCode": 301,
+      "cookiePartitionKey": "https://cinestar.de",
+      "cookiePartitionKeyOpaque": false,
+      "exemptedCookies": []
+    },
+    "sessionId": "EDCD9EB60F8CB3C04E9498172C0E7D02"
+  },
+  {
+    "method": "Network.requestWillBeSent",
+    "params": {
+      "requestId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "loaderId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "documentURL": "https://www.cinestar.de/kino-saarbruecken",
+      "request": {
+        "url": "https://www.cinestar.de/kino-saarbruecken",
+        "method": "GET",
+        "headers": {},
+        "mixedContentType": "none",
+        "initialPriority": "VeryHigh",
+        "referrerPolicy": "strict-origin-when-cross-origin",
+        "isSameSite": true
+      },
+      "timestamp": 1787809.426146,
+      "wallTime": 1713266523.542294,
+      "initiator": {"type": "other"},
+      "redirectHasExtraInfo": true,
+      "redirectResponse": {
+        "url": "https://www.cinestar.de/kino-saarbruecken/patema-inverted",
+        "status": 301,
+        "statusText": "",
+        "headers": {},
+        "mimeType": "text/html",
+        "charset": "utf-8",
+        "connectionReused": true,
+        "connectionId": 68,
+        "remoteIPAddress": "195.192.131.14",
+        "remotePort": 443,
+        "fromDiskCache": false,
+        "fromServiceWorker": false,
+        "fromPrefetchCache": false,
+        "encodedDataLength": 60,
+        "timing": {},
+        "responseTime": 1.713266523541789e12,
+        "protocol": "h2",
+        "alternateProtocolUsage": "unspecifiedReason",
+        "securityState": "secure",
+        "securityDetails": {
+          "protocol": "TLS 1.2",
+          "keyExchange": "ECDHE_RSA",
+          "keyExchangeGroup": "P-256",
+          "cipher": "AES_256_GCM",
+          "certificateId": 0,
+          "subjectName": "*.cinestar.de",
+          "sanList": ["*.cinestar.de", "cinestar.de"],
+          "issuer": "Thawte TLS RSA CA G1",
+          "validFrom": 1699315200,
+          "validTo": 1732319999,
+          "signedCertificateTimestampList": [],
+          "certificateTransparencyCompliance": "unknown",
+          "serverSignatureAlgorithm": 1537,
+          "encryptedClientHello": false
+        }
+      },
+      "type": "Document",
+      "frameId": "323830E38071D3AAFE9F5F20FC53497D",
+      "hasUserGesture": false
+    },
+    "sessionId": "EDCD9EB60F8CB3C04E9498172C0E7D02"
+  },
+  {
+    "method": "Fetch.requestPaused",
+    "params": {
+      "requestId": "interception-job-2.2",
+      "request": {
+        "url": "https://www.cinestar.de/kino-saarbruecken",
+        "method": "GET",
+        "headers": {},
+        "initialPriority": "VeryHigh",
+        "referrerPolicy": "unsafe-url"
+      },
+      "frameId": "323830E38071D3AAFE9F5F20FC53497D",
+      "resourceType": "Document",
+      "networkId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "redirectedRequestId": "interception-job-2.1"
+    },
+    "sessionId": "EDCD9EB60F8CB3C04E9498172C0E7D02"
+  },
+  {
+    "method": "Network.requestWillBeSentExtraInfo",
+    "params": {
+      "requestId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "associatedCookies": [],
+      "headers": {},
+      "connectTiming": {"requestTime": 1787809.427644},
+      "siteHasCookieInOtherPartition": false
+    },
+    "sessionId": "EDCD9EB60F8CB3C04E9498172C0E7D02"
+  },
+  {
+    "method": "Network.responseReceivedExtraInfo",
+    "params": {
+      "requestId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "blockedCookies": [],
+      "headers": {},
+      "resourceIPAddressSpace": "Public",
+      "statusCode": 200,
+      "cookiePartitionKey": "https://cinestar.de",
+      "cookiePartitionKeyOpaque": false,
+      "exemptedCookies": []
+    },
+    "sessionId": "EDCD9EB60F8CB3C04E9498172C0E7D02"
+  },
+  {
+    "method": "Network.responseReceived",
+    "params": {
+      "requestId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "loaderId": "EC9E8A0A3C5CBA635FB126B04B862BEF",
+      "timestamp": 1787809.446364,
+      "type": "Document",
+      "response": {
+        "url": "https://www.cinestar.de/kino-saarbruecken",
+        "status": 200,
+        "statusText": "",
+        "headers": {},
+        "mimeType": "text/html",
+        "charset": "utf-8",
+        "connectionReused": true,
+        "connectionId": 68,
+        "remoteIPAddress": "195.192.131.14",
+        "remotePort": 443,
+        "fromDiskCache": false,
+        "fromServiceWorker": false,
+        "fromPrefetchCache": false,
+        "encodedDataLength": 5706,
+        "timing": {},
+        "responseTime": 1.713266523560382e12,
+        "protocol": "h2",
+        "alternateProtocolUsage": "unspecifiedReason",
+        "securityState": "secure",
+        "securityDetails": {
+          "protocol": "TLS 1.2",
+          "keyExchange": "ECDHE_RSA",
+          "keyExchangeGroup": "P-256",
+          "cipher": "AES_256_GCM",
+          "certificateId": 0,
+          "subjectName": "*.cinestar.de",
+          "sanList": ["*.cinestar.de", "cinestar.de"],
+          "issuer": "Thawte TLS RSA CA G1",
+          "validFrom": 1699315200,
+          "validTo": 1732319999,
+          "signedCertificateTimestampList": [],
+          "certificateTransparencyCompliance": "unknown",
+          "serverSignatureAlgorithm": 1537,
+          "encryptedClientHello": false
+        }
+      },
+      "hasExtraInfo": true,
+      "frameId": "323830E38071D3AAFE9F5F20FC53497D"
+    },
+    "sessionId": "EDCD9EB60F8CB3C04E9498172C0E7D02"
+  }
+]
