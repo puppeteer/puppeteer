@@ -69,6 +69,29 @@ describe('`puppeteer`', () => {
       await server.stop();
     }
   });
+
+  it('runs in the extension', async function () {
+    const examplePath = join(this.sandbox, 'puppeteer-in-extension');
+    fs.cpSync(join(EXAMPLES_DIR, 'puppeteer-in-extension'), examplePath, {
+      recursive: true,
+    });
+    spawnSync('npm', ['ci'], {
+      cwd: examplePath,
+      shell: true,
+    });
+    spawnSync('npm', ['run', 'build'], {
+      cwd: examplePath,
+      shell: true,
+    });
+
+    const server = await TestServer.create(examplePath);
+    try {
+      const script = await readAsset('puppeteer', 'puppeteer-in-extension.js');
+      await this.runScript(script, 'mjs', [String(server.port)]);
+    } finally {
+      await server.stop();
+    }
+  });
 });
 
 // Skipping this test on Windows as windows runners are much slower.
