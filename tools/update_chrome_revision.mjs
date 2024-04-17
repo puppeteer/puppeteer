@@ -44,7 +44,7 @@ function checkIfNeedsUpdate(oldVersion, newVersion, newRevision) {
 }
 
 /**
- * We cant use `npm run format` as it's too slow
+ * We can't use `npm run format` as it's too slow
  * so we only scope the files we updated
  */
 async function formatUpdateFiles() {

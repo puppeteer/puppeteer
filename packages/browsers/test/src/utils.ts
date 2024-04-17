@@ -65,7 +65,7 @@ export function clearCache(tmpDir: string): void {
     if (os.platform() === 'win32') {
       console.log(execSync('tasklist').toString('utf-8'));
       // Sometimes on Windows the folder cannot be removed due to unknown reasons.
-      // We suppress the error to avoud flakiness.
+      // We suppress the error to avoid flakiness.
       if (isErrorLike(err) && err.message.includes('EBUSY')) {
         return;
       }

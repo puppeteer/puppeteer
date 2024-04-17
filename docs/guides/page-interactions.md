@@ -317,7 +317,7 @@ Puppeteer.registerCustomQueryHandler('getById', {
   queryOne: (elementOrDocument, selector) => {
     return elementOrDocument.querySelector(`[id="${CSS.escape(selector)}"]`);
   },
-  // Note: for demonstation perpose only `id` should be page unique
+  // Note: for demonstration perpose only `id` should be page unique
   queryAll: (elementOrDocument, selector) => {
     return elementOrDocument.querySelectorAll(`[id="${CSS.escape(selector)}"]`);
   },
