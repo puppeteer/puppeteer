@@ -55,7 +55,7 @@ Specifies a certain version of the browser you'd like Puppeteer to use.
 
 Can be overridden by `PUPPETEER_BROWSER_REVISION`.
 
-See [puppeteer.launch](./puppeteer.puppeteernode.launch.md) on how executable path is inferred.
+See [puppeteer.launch](./puppeteer.puppeteer.launch.md) on how executable path is inferred.
 
 Use a specific browser version (e.g., 119.0.6045.105). If you use an alias such `stable` or `canary` it will only work during the installation of Puppeteer and it will fail when launching the browser.
 
@@ -147,7 +147,7 @@ string
 
 </td><td>
 
-Specifies an executable path to be used in [puppeteer.launch](./puppeteer.puppeteernode.launch.md).
+Specifies an executable path to be used in [puppeteer.launch](./puppeteer.puppeteer.launch.md).
 
 Can be overridden by `PUPPETEER_EXECUTABLE_PATH`.
 

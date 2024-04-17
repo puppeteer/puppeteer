@@ -1,13 +1,13 @@
 ---
-sidebar_label: PuppeteerNode.defaultArgs
+sidebar_label: Puppeteer.defaultArgs
 ---
 
-# PuppeteerNode.defaultArgs() method
+# Puppeteer.defaultArgs() method
 
 #### Signature:
 
 ```typescript
-class PuppeteerNode {
+class Puppeteer {
   defaultArgs(options?: BrowserLaunchArgumentOptions): string[];
 }
 ```

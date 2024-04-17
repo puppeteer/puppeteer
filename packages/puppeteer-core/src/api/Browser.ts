@@ -195,7 +195,7 @@ export interface DebugInfo {
  * {@link Browser} represents a browser instance that is either:
  *
  * - connected to via {@link Puppeteer.connect} or
- * - launched by {@link PuppeteerNode.launch}.
+ * - launched by {@link Puppeteer.launch}.
  *
  * {@link Browser} {@link EventEmitter.emit | emits} various events which are
  * documented in the {@link BrowserEvent} enum.

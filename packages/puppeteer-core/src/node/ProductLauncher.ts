@@ -34,11 +34,10 @@ import type {Viewport} from '../common/Viewport.js';
 import type {
   BrowserLaunchArgumentOptions,
   ChromeReleaseChannel,
-  PuppeteerNodeLaunchOptions,
 } from './LaunchOptions.js';
 import {NodeWebSocketTransport as WebSocketTransport} from './NodeWebSocketTransport.js';
 import {PipeTransport} from './PipeTransport.js';
-import type {PuppeteerNode} from './PuppeteerNode.js';
+import type {Puppeteer, PuppeteerLaunchOptions} from './Puppeteer.js';
 
 /**
  * @internal
@@ -61,7 +60,7 @@ export abstract class ProductLauncher {
   /**
    * @internal
    */
-  puppeteer: PuppeteerNode;
+  puppeteer: Puppeteer;
 
   /**
    * @internal
@@ -71,7 +70,7 @@ export abstract class ProductLauncher {
   /**
    * @internal
    */
-  constructor(puppeteer: PuppeteerNode, product: Product) {
+  constructor(puppeteer: Puppeteer, product: Product) {
     this.puppeteer = puppeteer;
     this.#product = product;
   }
@@ -80,7 +79,7 @@ export abstract class ProductLauncher {
     return this.#product;
   }
 
-  async launch(options: PuppeteerNodeLaunchOptions = {}): Promise<Browser> {
+  async launch(options: PuppeteerLaunchOptions = {}): Promise<Browser> {
     const {
       dumpio = false,
       env = process.env,
@@ -221,7 +220,7 @@ export abstract class ProductLauncher {
    * @internal
    */
   protected abstract computeLaunchArguments(
-    options: PuppeteerNodeLaunchOptions
+    options: PuppeteerLaunchOptions
   ): Promise<ResolvedLaunchArgs>;
 
   /**

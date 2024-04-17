@@ -9,7 +9,7 @@ import os from 'os';
 import path from 'path';
 
 import expect from 'expect';
-import type {PuppeteerLaunchOptions} from 'puppeteer-core/internal/node/PuppeteerNode.js';
+import type {PuppeteerLaunchOptions} from 'puppeteer-core/internal/node/Puppeteer.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 
 import {getTestState, launch} from './mocha-utils.js';

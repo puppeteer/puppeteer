@@ -29,7 +29,7 @@ export interface Configuration {
    *
    * Can be overridden by `PUPPETEER_BROWSER_REVISION`.
    *
-   * See {@link PuppeteerNode.launch | puppeteer.launch} on how executable path
+   * See {@link Puppeteer.launch | puppeteer.launch} on how executable path
    * is inferred.
    *
    * Use a specific browser version (e.g., 119.0.6045.105). If you use an alias
@@ -64,7 +64,7 @@ export interface Configuration {
   downloadBaseUrl?: string;
   /**
    * Specifies an executable path to be used in
-   * {@link PuppeteerNode.launch | puppeteer.launch}.
+   * {@link Puppeteer.launch | puppeteer.launch}.
    *
    * Can be overridden by `PUPPETEER_EXECUTABLE_PATH`.
    *

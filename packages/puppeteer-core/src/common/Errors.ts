@@ -32,7 +32,7 @@ export class PuppeteerError extends Error {
  *
  * @remarks
  * Example operations are {@link Page.waitForSelector | page.waitForSelector} or
- * {@link PuppeteerNode.launch | puppeteer.launch}.
+ * {@link Puppeteer.launch | puppeteer.launch}.
  *
  * @public
  */

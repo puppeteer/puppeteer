@@ -13,13 +13,17 @@ import {
 } from '@puppeteer/browsers';
 
 import type {Browser} from '../api/Browser.js';
+import {_connectToBrowser} from '../common/BrowserConnector.js';
 import type {Configuration} from '../common/Configuration.js';
 import type {
   ConnectOptions,
   BrowserConnectOptions,
 } from '../common/ConnectOptions.js';
+import {
+  type CustomQueryHandler,
+  customQueryHandlers,
+} from '../common/CustomQueryHandler.js';
 import type {Product} from '../common/Product.js';
-import {type CommonPuppeteerSettings, Puppeteer} from '../common/Puppeteer.js';
 import {PUPPETEER_REVISIONS} from '../revisions.js';
 
 import {ChromeLauncher} from './ChromeLauncher.js';
@@ -43,18 +47,12 @@ export interface PuppeteerLaunchOptions
 }
 
 /**
- * Extends the main {@link Puppeteer} class with Node specific behaviour for
+ * The main {@link Puppeteer} class with Node specific behaviour for
  * fetching and downloading browsers.
  *
- * If you're using Puppeteer in a Node environment, this is the class you'll get
- * when you run `require('puppeteer')` (or the equivalent ES `import`).
- *
  * @remarks
- * The most common method to use is {@link PuppeteerNode.launch | launch}, which
+ * The most common method to use is {@link Puppeteer.launch | launch}, which
  * is used to launch and connect to a new browser instance.
- *
- * See {@link Puppeteer | the main Puppeteer class} for methods common to all
- * environments, such as {@link Puppeteer.connect}.
  *
  * @example
  * The following is a typical example of using Puppeteer to drive automation:
@@ -77,7 +75,74 @@ export interface PuppeteerLaunchOptions
  *
  * @public
  */
-export class PuppeteerNode extends Puppeteer {
+export class Puppeteer {
+  /**
+   * Operations for {@link CustomQueryHandler | custom query handlers}. See
+   * {@link CustomQueryHandlerRegistry}.
+   *
+   * @internal
+   */
+  static customQueryHandlers = customQueryHandlers;
+
+  /**
+   * Registers a {@link CustomQueryHandler | custom query handler}.
+   *
+   * @remarks
+   * After registration, the handler can be used everywhere where a selector is
+   * expected by prepending the selection string with `<name>/`. The name is only
+   * allowed to consist of lower- and upper case latin letters.
+   *
+   * @example
+   *
+   * ```
+   * puppeteer.registerCustomQueryHandler('text', { … });
+   * const aHandle = await page.$('text/…');
+   * ```
+   *
+   * @param name - The name that the custom query handler will be registered
+   * under.
+   * @param queryHandler - The {@link CustomQueryHandler | custom query handler}
+   * to register.
+   *
+   * @public
+   */
+  static registerCustomQueryHandler(
+    name: string,
+    queryHandler: CustomQueryHandler
+  ): void {
+    return this.customQueryHandlers.register(name, queryHandler);
+  }
+
+  /**
+   * Unregisters a custom query handler for a given name.
+   */
+  static unregisterCustomQueryHandler(name: string): void {
+    return this.customQueryHandlers.unregister(name);
+  }
+
+  /**
+   * Gets the names of all custom query handlers.
+   */
+  static customQueryHandlerNames(): string[] {
+    return this.customQueryHandlers.names();
+  }
+
+  /**
+   * Unregisters all custom query handlers.
+   */
+  static clearCustomQueryHandlers(): void {
+    return this.customQueryHandlers.clear();
+  }
+
+  /**
+   * @internal
+   */
+  _isPuppeteerCore: boolean;
+  /**
+   * @internal
+   */
+  protected _changedProduct = false;
+
   #_launcher?: ProductLauncher;
   #lastLaunchedProduct?: Product;
 
@@ -94,13 +159,12 @@ export class PuppeteerNode extends Puppeteer {
   /**
    * @internal
    */
-  constructor(
-    settings: {
-      configuration?: Configuration;
-    } & CommonPuppeteerSettings
-  ) {
-    const {configuration, ...commonSettings} = settings;
-    super(commonSettings);
+  constructor(settings: {
+    configuration?: Configuration;
+    isPuppeteerCore: boolean;
+  }) {
+    this._isPuppeteerCore = settings.isPuppeteerCore;
+    const {configuration} = settings;
     if (configuration) {
       this.configuration = configuration;
     }
@@ -127,8 +191,8 @@ export class PuppeteerNode extends Puppeteer {
    * @param options - Set of configurable options to set on the browser.
    * @returns Promise which resolves to browser instance.
    */
-  override connect(options: ConnectOptions): Promise<Browser> {
-    return super.connect(options);
+  connect(options: ConnectOptions): Promise<Browser> {
+    return _connectToBrowser(options);
   }
 
   /**
@@ -212,7 +276,7 @@ export class PuppeteerNode extends Puppeteer {
     return (
       this.#_launcher?.getActualBrowserRevision() ??
       this.configuration.browserRevision ??
-      this.defaultBrowserRevision!
+      this.defaultBrowserRevision
     );
   }
 
@@ -245,8 +309,8 @@ export class PuppeteerNode extends Puppeteer {
   /**
    * @deprecated Do not use as this field as it does not take into account
    * multiple browsers of different types. Use
-   * {@link PuppeteerNode.defaultProduct | defaultProduct} or
-   * {@link PuppeteerNode.lastLaunchedProduct | lastLaunchedProduct}.
+   * {@link Puppeteer.defaultProduct | defaultProduct} or
+   * {@link Puppeteer.lastLaunchedProduct | lastLaunchedProduct}.
    *
    * @returns The name of the browser that is under automation.
    */
@@ -283,7 +347,10 @@ export class PuppeteerNode extends Puppeteer {
       throw new Error('The current platform is not supported.');
     }
 
-    const cacheDir = this.configuration.cacheDirectory!;
+    const cacheDir = this.configuration.cacheDirectory;
+    if (!cacheDir) {
+      throw new Error('cacheDirectory is not configured.');
+    }
     const installedBrowsers = await getInstalledBrowsers({
       cacheDir,
     });

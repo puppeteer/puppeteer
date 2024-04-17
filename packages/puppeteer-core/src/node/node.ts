@@ -9,5 +9,5 @@ export * from './FirefoxLauncher.js';
 export * from './LaunchOptions.js';
 export * from './PipeTransport.js';
 export * from './ProductLauncher.js';
-export * from './PuppeteerNode.js';
+export * from './Puppeteer.js';
 export * from './ScreenRecorder.js';

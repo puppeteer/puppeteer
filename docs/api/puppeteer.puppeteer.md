@@ -7,5 +7,5 @@ sidebar_label: puppeteer
 #### Signature:
 
 ```typescript
-puppeteer: PuppeteerNode;
+puppeteer: Puppeteer;
 ```

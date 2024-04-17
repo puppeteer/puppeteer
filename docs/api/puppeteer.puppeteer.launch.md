@@ -1,8 +1,8 @@
 ---
-sidebar_label: PuppeteerNode.launch
+sidebar_label: Puppeteer.launch
 ---
 
-# PuppeteerNode.launch() method
+# Puppeteer.launch() method
 
 Launches a browser instance with given arguments and options when specified.
 
@@ -11,7 +11,7 @@ When using with `puppeteer-core`, [options.executablePath](./puppeteer.launchopt
 #### Signature:
 
 ```typescript
-class PuppeteerNode {
+class Puppeteer {
   launch(options?: PuppeteerLaunchOptions): Promise<Browser>;
 }
 ```

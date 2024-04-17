@@ -18,12 +18,12 @@ export * from './util/util.js';
  */
 export * from './common/CustomQueryHandler.js';
 
-import {PuppeteerNode} from './node/PuppeteerNode.js';
+import {Puppeteer} from './node/Puppeteer.js';
 
 /**
  * @public
  */
-const puppeteer = new PuppeteerNode({
+const puppeteer = new Puppeteer({
   isPuppeteerCore: true,
 });
 

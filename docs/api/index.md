@@ -32,7 +32,7 @@ The Accessibility class provides methods for inspecting the browser's accessibil
 
 [Browser](./puppeteer.browser.md) represents a browser instance that is either:
 
-- connected to via [Puppeteer.connect()](./puppeteer.puppeteer.connect.md) or - launched by [PuppeteerNode.launch()](./puppeteer.puppeteernode.launch.md).
+- connected to via [Puppeteer.connect()](./puppeteer.puppeteer.connect.md) or - launched by [Puppeteer.launch()](./puppeteer.puppeteer.launch.md).
 
 [Browser](./puppeteer.browser.md) [emits](./puppeteer.eventemitter.emit.md) various events which are documented in the [BrowserEvent](./puppeteer.browserevent.md) enum.
 
@@ -262,9 +262,7 @@ ProtocolError is emitted whenever there is an error from the protocol.
 
 </td><td>
 
-The main Puppeteer class.
-
-IMPORTANT: if you are using Puppeteer in a Node environment, you will get an instance of [PuppeteerNode](./puppeteer.puppeteernode.md) when you import or require `puppeteer`. That class extends `Puppeteer`, so has all the methods documented below as well as all that are defined on [PuppeteerNode](./puppeteer.puppeteernode.md).
+The main [Puppeteer](./puppeteer.puppeteer.md) class with Node specific behaviour for fetching and downloading browsers.
 
 </td></tr>
 <tr><td>
@@ -274,17 +272,6 @@ IMPORTANT: if you are using Puppeteer in a Node environment, you will get an ins
 </td><td>
 
 The base class for all Puppeteer-specific errors
-
-</td></tr>
-<tr><td>
-
-<span id="puppeteernode">[PuppeteerNode](./puppeteer.puppeteernode.md)</span>
-
-</td><td>
-
-Extends the main [Puppeteer](./puppeteer.puppeteer.md) class with Node specific behaviour for fetching and downloading browsers.
-
-If you're using Puppeteer in a Node environment, this is the class you'll get when you run `require('puppeteer')` (or the equivalent ES `import`).
 
 </td></tr>
 <tr><td>
@@ -1432,15 +1419,6 @@ Supported products.
 <span id="puppeteerlifecycleevent">[PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)</span>
 
 </td><td>
-
-</td></tr>
-<tr><td>
-
-<span id="puppeteernodelaunchoptions">[PuppeteerNodeLaunchOptions](./puppeteer.puppeteernodelaunchoptions.md)</span>
-
-</td><td>
-
-Utility type exposed to enable users to define options that can be passed to `puppeteer.launch` without having to list the set of all types.
 
 </td></tr>
 <tr><td>

@@ -16,9 +16,9 @@ import type {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 import type {Cookie} from 'puppeteer-core/internal/common/Cookie.js';
 import type {
+  Puppeteer,
   PuppeteerLaunchOptions,
-  PuppeteerNode,
-} from 'puppeteer-core/internal/node/PuppeteerNode.js';
+} from 'puppeteer-core/internal/node/Puppeteer.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
@@ -238,7 +238,7 @@ export interface PuppeteerTestState {
   browser: Browser;
   context: BrowserContext;
   page: Page;
-  puppeteer: PuppeteerNode;
+  puppeteer: Puppeteer;
   defaultBrowserOptions: PuppeteerLaunchOptions;
   server: TestServer;
   httpsServer: TestServer;

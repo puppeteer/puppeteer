@@ -21,21 +21,20 @@ import {assert} from '../util/assert.js';
 import type {
   BrowserLaunchArgumentOptions,
   ChromeReleaseChannel,
-  PuppeteerNodeLaunchOptions,
 } from './LaunchOptions.js';
 import {ProductLauncher, type ResolvedLaunchArgs} from './ProductLauncher.js';
-import type {PuppeteerNode} from './PuppeteerNode.js';
+import type {Puppeteer, PuppeteerLaunchOptions} from './Puppeteer.js';
 import {rm} from './util/fs.js';
 
 /**
  * @internal
  */
 export class ChromeLauncher extends ProductLauncher {
-  constructor(puppeteer: PuppeteerNode) {
+  constructor(puppeteer: Puppeteer) {
     super(puppeteer, 'chrome');
   }
 
-  override launch(options: PuppeteerNodeLaunchOptions = {}): Promise<Browser> {
+  override launch(options: PuppeteerLaunchOptions = {}): Promise<Browser> {
     if (
       this.puppeteer.configuration.logLevel === 'warn' &&
       process.platform === 'darwin' &&
@@ -63,7 +62,7 @@ export class ChromeLauncher extends ProductLauncher {
    * @internal
    */
   override async computeLaunchArguments(
-    options: PuppeteerNodeLaunchOptions = {}
+    options: PuppeteerLaunchOptions = {}
   ): Promise<ResolvedLaunchArgs> {
     const {
       ignoreDefaultArgs = false,

@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {BrowserConnectOptions} from '../common/ConnectOptions.js';
 import type {Product} from '../common/Product.js';
 
 /**
@@ -134,12 +133,3 @@ export interface LaunchOptions {
    */
   waitForInitialPage?: boolean;
 }
-
-/**
- * Utility type exposed to enable users to define options that can be passed to
- * `puppeteer.launch` without having to list the set of all types.
- * @public
- */
-export type PuppeteerNodeLaunchOptions = BrowserLaunchArgumentOptions &
-  LaunchOptions &
-  BrowserConnectOptions;

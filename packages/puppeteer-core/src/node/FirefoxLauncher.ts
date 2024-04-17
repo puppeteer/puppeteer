@@ -20,19 +20,16 @@ import {
 import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 
-import type {
-  BrowserLaunchArgumentOptions,
-  PuppeteerNodeLaunchOptions,
-} from './LaunchOptions.js';
+import type {BrowserLaunchArgumentOptions} from './LaunchOptions.js';
 import {ProductLauncher, type ResolvedLaunchArgs} from './ProductLauncher.js';
-import type {PuppeteerNode} from './PuppeteerNode.js';
+import type {Puppeteer, PuppeteerLaunchOptions} from './Puppeteer.js';
 import {rm} from './util/fs.js';
 
 /**
  * @internal
  */
 export class FirefoxLauncher extends ProductLauncher {
-  constructor(puppeteer: PuppeteerNode) {
+  constructor(puppeteer: Puppeteer) {
     super(puppeteer, 'firefox');
   }
 
@@ -71,7 +68,7 @@ export class FirefoxLauncher extends ProductLauncher {
    * @internal
    */
   override async computeLaunchArguments(
-    options: PuppeteerNodeLaunchOptions = {}
+    options: PuppeteerLaunchOptions = {}
   ): Promise<ResolvedLaunchArgs> {
     const {
       ignoreDefaultArgs = false,

@@ -16,4 +16,4 @@ export declare class TimeoutError extends PuppeteerError
 
 ## Remarks
 
-Example operations are [page.waitForSelector](./puppeteer.page.waitforselector.md) or [puppeteer.launch](./puppeteer.puppeteernode.launch.md).
+Example operations are [page.waitForSelector](./puppeteer.page.waitforselector.md) or [puppeteer.launch](./puppeteer.puppeteer.launch.md).

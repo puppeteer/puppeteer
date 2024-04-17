@@ -6,7 +6,7 @@ sidebar_label: Browser
 
 [Browser](./puppeteer.browser.md) represents a browser instance that is either:
 
-- connected to via [Puppeteer.connect()](./puppeteer.puppeteer.connect.md) or - launched by [PuppeteerNode.launch()](./puppeteer.puppeteernode.launch.md).
+- connected to via [Puppeteer.connect()](./puppeteer.puppeteer.connect.md) or - launched by [Puppeteer.launch()](./puppeteer.puppeteer.launch.md).
 
 [Browser](./puppeteer.browser.md) [emits](./puppeteer.eventemitter.emit.md) various events which are documented in the [BrowserEvent](./puppeteer.browserevent.md) enum.
 

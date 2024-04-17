@@ -48,5 +48,3 @@ Set of configurable options to set on the browser.
 Promise&lt;[Browser](./puppeteer.browser.md)&gt;
 
 Promise which resolves to browser instance.
-
-## Remarks
