@@ -37,9 +37,8 @@ async function runCdpLogSnapshot(
   const events = JSON.parse(json) as CdpLog[];
 
   for (const event of events) {
-    cdpSession.emit(event.method, event.params);
-    await new Promise(resolve => {
-      setTimeout(resolve, 10);
+    setImmediate(() => {
+      cdpSession.emit(event.method, event.params);
     });
   }
 }
@@ -58,7 +57,7 @@ class MockCDPSession extends EventEmitter<CDPSessionEvents> {
   }
 }
 
-describe.only('NetworkManager', () => {
+describe('NetworkManager', () => {
   it('should process extra info on multiple redirects', async () => {
     const mockCDPSession = new MockCDPSession();
     const manager = new NetworkManager(true, {
@@ -1564,7 +1563,7 @@ describe.only('NetworkManager', () => {
     ).toEqual([200, 302, 200]);
   });
 
-  it.only(`should work when a request paused is missing for upgrading connection`, async () => {
+  it(`should work when a request paused is missing for upgrading connection`, async () => {
     const mockCDPSession = new MockCDPSession();
     const manager = new NetworkManager(true, {
       frame(): CdpFrame | null {
