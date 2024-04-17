@@ -1574,6 +1574,7 @@ describe.only('NetworkManager', () => {
       },
     });
     await manager.addClient(mockCDPSession);
+    manager.setRequestInterception(true);
 
     const responses: HTTPResponse[] = [];
     manager.on(NetworkManagerEvent.Response, (response: HTTPResponse) => {
