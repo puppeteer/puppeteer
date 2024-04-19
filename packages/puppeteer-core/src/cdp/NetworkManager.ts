@@ -75,15 +75,21 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   #userAgentMetadata?: Protocol.Emulation.UserAgentMetadata;
 
   readonly #handlers = [
-    ['Fetch.requestPaused', this.#onRequestPaused],
-    ['Fetch.authRequired', this.#onAuthRequired],
-    ['Network.requestWillBeSent', this.#onRequestWillBeSent],
-    ['Network.requestServedFromCache', this.#onRequestServedFromCache],
-    ['Network.responseReceived', this.#onResponseReceived],
-    ['Network.loadingFinished', this.#onLoadingFinished],
-    ['Network.loadingFailed', this.#onLoadingFailed],
-    ['Network.responseReceivedExtraInfo', this.#onResponseReceivedExtraInfo],
-    [CDPSessionEvent.Disconnected, this.#removeClient],
+    ['Fetch.requestPaused', this.#onRequestPaused.bind(this)],
+    ['Fetch.authRequired', this.#onAuthRequired.bind(this)],
+    ['Network.requestWillBeSent', this.#onRequestWillBeSent.bind(this)],
+    [
+      'Network.requestServedFromCache',
+      this.#onRequestServedFromCache.bind(this),
+    ],
+    ['Network.responseReceived', this.#onResponseReceived.bind(this)],
+    ['Network.loadingFinished', this.#onLoadingFinished.bind(this)],
+    ['Network.loadingFailed', this.#onLoadingFailed.bind(this)],
+    [
+      'Network.responseReceivedExtraInfo',
+      this.#onResponseReceivedExtraInfo.bind(this),
+    ],
+    [CDPSessionEvent.Disconnected, this.#removeClient.bind(this)],
   ] as const;
 
   #clients = new Map<CDPSession, DisposableStack>();
