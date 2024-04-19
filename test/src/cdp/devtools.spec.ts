@@ -5,7 +5,7 @@
  */
 
 import expect from 'expect';
-import type {PuppeteerLaunchOptions} from 'puppeteer-core/internal/node/Puppeteer.js';
+import type {PuppeteerLaunchOptions} from 'puppeteer-core/internal/common/Puppeteer.js';
 
 import {getTestState, launch} from '../mocha-utils.js';
 

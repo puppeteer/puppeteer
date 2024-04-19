@@ -10,7 +10,7 @@ The default executable path.
 
 ```typescript
 class Puppeteer {
-  executablePath(channel?: ChromeReleaseChannel): string;
+  executablePath(channel?: ChromeReleaseChannel): Promise<string>;
 }
 ```
 
@@ -45,4 +45,4 @@ _(Optional)_
 </tbody></table>
 **Returns:**
 
-string
+Promise&lt;string&gt;

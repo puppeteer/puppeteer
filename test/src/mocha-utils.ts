@@ -18,7 +18,7 @@ import type {Cookie} from 'puppeteer-core/internal/common/Cookie.js';
 import type {
   Puppeteer,
   PuppeteerLaunchOptions,
-} from 'puppeteer-core/internal/node/Puppeteer.js';
+} from 'puppeteer-core/internal/common/Puppeteer.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
@@ -99,19 +99,6 @@ const defaultBrowserOptions = Object.assign(
   },
   extraLaunchOptions
 );
-
-if (defaultBrowserOptions.executablePath) {
-  console.warn(
-    `WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}`
-  );
-} else {
-  const executablePath = puppeteer.executablePath();
-  if (!fs.existsSync(executablePath)) {
-    throw new Error(
-      `Browser is not downloaded at ${executablePath}. Run 'npm install' and try to re-run tests`
-    );
-  }
-}
 
 const processVariables: {
   product: string;
@@ -250,27 +237,6 @@ export interface PuppeteerTestState {
 }
 const state: Partial<PuppeteerTestState> = {};
 
-if (
-  process.env['MOCHA_WORKER_ID'] === undefined ||
-  process.env['MOCHA_WORKER_ID'] === '0'
-) {
-  console.log(
-    `Running unit tests with:
-  -> product: ${processVariables.product}
-  -> binary: ${
-    processVariables.defaultBrowserOptions.executablePath ||
-    path.relative(process.cwd(), puppeteer.executablePath())
-  }
-  -> mode: ${
-    processVariables.isHeadless
-      ? processVariables.headless === 'true'
-        ? '--headless=new'
-        : '--headless'
-      : 'headful'
-  }`
-  );
-}
-
 const browserNotClosedError = new Error(
   'A manually launched browser was not closed!'
 );
@@ -278,6 +244,27 @@ const browserNotClosedError = new Error(
 export const mochaHooks = {
   async beforeAll(): Promise<void> {
     async function setUpDefaultState() {
+      if (
+        process.env['MOCHA_WORKER_ID'] === undefined ||
+        process.env['MOCHA_WORKER_ID'] === '0'
+      ) {
+        console.log(
+          `Running unit tests with:
+        -> product: ${processVariables.product}
+        -> binary: ${
+          processVariables.defaultBrowserOptions.executablePath ||
+          path.relative(process.cwd(), await puppeteer.executablePath())
+        }
+        -> mode: ${
+          processVariables.isHeadless
+            ? processVariables.headless === 'true'
+              ? '--headless=new'
+              : '--headless'
+            : 'headful'
+        }`
+        );
+      }
+
       const {server, httpsServer} = await setupServer();
 
       state.puppeteer = puppeteer;

@@ -11,7 +11,7 @@ executablePath: (
   channel?:
     | import('puppeteer-core/internal/puppeteer-core.js').ChromeReleaseChannel
     | undefined
-) => string;
+) => Promise<string>;
 ```
 
 ## Parameters
@@ -45,4 +45,4 @@ _(Optional)_
 </tbody></table>
 **Returns:**
 
-string
+Promise&lt;string&gt;

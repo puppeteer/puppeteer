@@ -28,6 +28,7 @@ import {CdpBrowser} from '../cdp/Browser.js';
 import {Connection} from '../cdp/Connection.js';
 import {TimeoutError} from '../common/Errors.js';
 import type {Product} from '../common/Product.js';
+import type {Puppeteer, PuppeteerLaunchOptions} from '../common/Puppeteer.js';
 import {debugError, DEFAULT_VIEWPORT} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 
@@ -37,7 +38,6 @@ import type {
 } from './LaunchOptions.js';
 import {NodeWebSocketTransport as WebSocketTransport} from './NodeWebSocketTransport.js';
 import {PipeTransport} from './PipeTransport.js';
-import type {Puppeteer, PuppeteerLaunchOptions} from './Puppeteer.js';
 
 /**
  * @internal

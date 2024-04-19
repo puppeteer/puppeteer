@@ -392,50 +392,42 @@ describe('Launcher specs', function () {
         });
 
         if (isChrome) {
-          expect(puppeteer.defaultArgs()).toContain('--no-first-run');
-          expect(puppeteer.defaultArgs()).toContain('--headless=new');
-          expect(puppeteer.defaultArgs({headless: false})).not.toContain(
+          expect(await puppeteer.defaultArgs()).toContain('--no-first-run');
+          expect(await puppeteer.defaultArgs()).toContain('--headless=new');
+          expect(await puppeteer.defaultArgs({headless: false})).not.toContain(
             '--headless=new'
           );
-          expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
+          expect(await puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
             `--user-data-dir=${path.resolve('foo')}`
           );
         } else if (isFirefox) {
-          expect(puppeteer.defaultArgs()).toContain('--headless');
-          expect(puppeteer.defaultArgs()).toContain('--no-remote');
+          expect(await puppeteer.defaultArgs()).toContain('--headless');
+          expect(await puppeteer.defaultArgs()).toContain('--no-remote');
           if (os.platform() === 'darwin') {
-            expect(puppeteer.defaultArgs()).toContain('--foreground');
+            expect(await puppeteer.defaultArgs()).toContain('--foreground');
           } else {
-            expect(puppeteer.defaultArgs()).not.toContain('--foreground');
+            expect(await puppeteer.defaultArgs()).not.toContain('--foreground');
           }
-          expect(puppeteer.defaultArgs({headless: false})).not.toContain(
+          expect(await puppeteer.defaultArgs({headless: false})).not.toContain(
             '--headless'
           );
-          expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
+          expect(await puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
             '--profile'
           );
-          expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain('foo');
+          expect(await puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
+            'foo'
+          );
         } else {
-          expect(puppeteer.defaultArgs()).toContain('-headless');
-          expect(puppeteer.defaultArgs({headless: false})).not.toContain(
+          expect(await puppeteer.defaultArgs()).toContain('-headless');
+          expect(await puppeteer.defaultArgs({headless: false})).not.toContain(
             '-headless'
           );
-          expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
+          expect(await puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
             '-profile'
           );
-          expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
+          expect(await puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
             path.resolve('foo')
           );
-        }
-      });
-      it('should report the correct product', async () => {
-        const {isChrome, isFirefox, puppeteer} = await getTestState({
-          skipLaunch: true,
-        });
-        if (isChrome) {
-          expect(puppeteer.product).toBe('chrome');
-        } else if (isFirefox) {
-          expect(puppeteer.product).toBe('firefox');
         }
       });
       it('should work with no default arguments', async () => {
@@ -455,7 +447,7 @@ describe('Launcher specs', function () {
           skipLaunch: true,
         });
         // Make sure we launch with `--enable-automation` by default.
-        const defaultArgs = puppeteer.defaultArgs();
+        const defaultArgs = await puppeteer.defaultArgs();
         const {browser, close} = await launch(
           Object.assign({}, defaultBrowserOptions, {
             // Ignore first and third default argument.
@@ -479,7 +471,7 @@ describe('Launcher specs', function () {
           skipLaunch: true,
         });
 
-        const defaultArgs = puppeteer.defaultArgs();
+        const defaultArgs = await puppeteer.defaultArgs();
         const {browser, close} = await launch(
           Object.assign({}, defaultBrowserOptions, {
             // Only the first argument is fixed, others are optional.
@@ -919,7 +911,7 @@ describe('Launcher specs', function () {
           skipLaunch: true,
         });
 
-        const executablePath = puppeteer.executablePath();
+        const executablePath = await puppeteer.executablePath();
         expect(fs.existsSync(executablePath)).toBe(true);
         expect(fs.realpathSync(executablePath)).toBe(executablePath);
       });
@@ -928,7 +920,7 @@ describe('Launcher specs', function () {
           skipLaunch: true,
         });
 
-        const executablePath = puppeteer.executablePath('chrome');
+        const executablePath = await puppeteer.executablePath('chrome');
         expect(executablePath).toBeTruthy();
       });
       describe('when executable path is configured', () => {
@@ -952,7 +944,7 @@ describe('Launcher specs', function () {
             skipLaunch: true,
           });
           try {
-            puppeteer.executablePath();
+            await puppeteer.executablePath();
           } catch (error) {
             expect((error as Error).message).toContain(
               'SOME_CUSTOM_EXECUTABLE'

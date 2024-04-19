@@ -8,7 +8,7 @@ export type {Protocol} from 'puppeteer-core';
 
 export * from 'puppeteer-core/internal/puppeteer-core.js';
 
-import {Puppeteer} from 'puppeteer-core/internal/node/Puppeteer.js';
+import {Puppeteer} from 'puppeteer-core/internal/common/Puppeteer.js';
 
 import {getConfiguration} from './getConfiguration.js';
 

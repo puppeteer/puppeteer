@@ -8,7 +8,7 @@ sidebar_label: Puppeteer.defaultArgs
 
 ```typescript
 class Puppeteer {
-  defaultArgs(options?: BrowserLaunchArgumentOptions): string[];
+  defaultArgs(options?: BrowserLaunchArgumentOptions): Promise<string[]>;
 }
 ```
 
@@ -43,6 +43,6 @@ _(Optional)_ Set of configurable options to set on the browser.
 </tbody></table>
 **Returns:**
 
-string\[\]
+Promise&lt;string\[\]&gt;
 
 The default flags that Chromium will be launched with.

@@ -13,27 +13,22 @@ import {
 } from '@puppeteer/browsers';
 
 import type {Browser} from '../api/Browser.js';
-import {_connectToBrowser} from '../common/BrowserConnector.js';
-import type {Configuration} from '../common/Configuration.js';
-import type {
-  ConnectOptions,
-  BrowserConnectOptions,
-} from '../common/ConnectOptions.js';
-import {
-  type CustomQueryHandler,
-  customQueryHandlers,
-} from '../common/CustomQueryHandler.js';
-import type {Product} from '../common/Product.js';
-import {PUPPETEER_REVISIONS} from '../revisions.js';
-
-import {ChromeLauncher} from './ChromeLauncher.js';
-import {FirefoxLauncher} from './FirefoxLauncher.js';
 import type {
   BrowserLaunchArgumentOptions,
   ChromeReleaseChannel,
   LaunchOptions,
-} from './LaunchOptions.js';
-import type {ProductLauncher} from './ProductLauncher.js';
+} from '../node/LaunchOptions.js';
+import type {ProductLauncher} from '../node/ProductLauncher.js';
+import {PUPPETEER_REVISIONS} from '../revisions.js';
+
+import {_connectToBrowser} from './BrowserConnector.js';
+import type {Configuration} from './Configuration.js';
+import type {ConnectOptions, BrowserConnectOptions} from './ConnectOptions.js';
+import {
+  type CustomQueryHandler,
+  customQueryHandlers,
+} from './CustomQueryHandler.js';
+import type {Product} from './Product.js';
 
 /**
  * @public
@@ -231,16 +226,16 @@ export class Puppeteer {
    *
    * @param options - Options to configure launching behavior.
    */
-  launch(options: PuppeteerLaunchOptions = {}): Promise<Browser> {
+  async launch(options: PuppeteerLaunchOptions = {}): Promise<Browser> {
     const {product = this.defaultProduct} = options;
     this.#lastLaunchedProduct = product;
-    return this.#launcher.launch(options);
+    return await (await this.#getLauncher()).launch(options);
   }
 
   /**
    * @internal
    */
-  get #launcher(): ProductLauncher {
+  async #getLauncher(): Promise<ProductLauncher> {
     if (
       this.#_launcher &&
       this.#_launcher.product === this.lastLaunchedProduct
@@ -250,10 +245,12 @@ export class Puppeteer {
     switch (this.lastLaunchedProduct) {
       case 'chrome':
         this.defaultBrowserRevision = PUPPETEER_REVISIONS.chrome;
+        const {ChromeLauncher} = await import('../node/ChromeLauncher.js');
         this.#_launcher = new ChromeLauncher(this);
         break;
       case 'firefox':
         this.defaultBrowserRevision = PUPPETEER_REVISIONS.firefox;
+        const {FirefoxLauncher} = await import('../node/FirefoxLauncher.js');
         this.#_launcher = new FirefoxLauncher(this);
         break;
       default:
@@ -265,8 +262,8 @@ export class Puppeteer {
   /**
    * The default executable path.
    */
-  executablePath(channel?: ChromeReleaseChannel): string {
-    return this.#launcher.executablePath(channel);
+  async executablePath(channel?: ChromeReleaseChannel): Promise<string> {
+    return (await this.#getLauncher()).executablePath(channel);
   }
 
   /**
@@ -307,24 +304,14 @@ export class Puppeteer {
   }
 
   /**
-   * @deprecated Do not use as this field as it does not take into account
-   * multiple browsers of different types. Use
-   * {@link Puppeteer.defaultProduct | defaultProduct} or
-   * {@link Puppeteer.lastLaunchedProduct | lastLaunchedProduct}.
-   *
-   * @returns The name of the browser that is under automation.
-   */
-  get product(): string {
-    return this.#launcher.product;
-  }
-
-  /**
    * @param options - Set of configurable options to set on the browser.
    *
    * @returns The default flags that Chromium will be launched with.
    */
-  defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
-    return this.#launcher.defaultArgs(options);
+  async defaultArgs(
+    options: BrowserLaunchArgumentOptions = {}
+  ): Promise<string[]> {
+    return (await this.#getLauncher()).defaultArgs(options);
   }
 
   /**

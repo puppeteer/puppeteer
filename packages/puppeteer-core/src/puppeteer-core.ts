@@ -18,7 +18,7 @@ export * from './util/util.js';
  */
 export * from './common/CustomQueryHandler.js';
 
-import {Puppeteer} from './node/Puppeteer.js';
+import {Puppeteer} from './common/Puppeteer.js';
 
 /**
  * @public

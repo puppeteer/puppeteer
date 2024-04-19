@@ -17,12 +17,12 @@ import {
   Browser,
 } from '@puppeteer/browsers';
 
+import type {Puppeteer, PuppeteerLaunchOptions} from '../common/Puppeteer.js';
 import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 
 import type {BrowserLaunchArgumentOptions} from './LaunchOptions.js';
 import {ProductLauncher, type ResolvedLaunchArgs} from './ProductLauncher.js';
-import type {Puppeteer, PuppeteerLaunchOptions} from './Puppeteer.js';
 import {rm} from './util/fs.js';
 
 /**
