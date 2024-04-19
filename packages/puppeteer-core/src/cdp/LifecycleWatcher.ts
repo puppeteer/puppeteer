@@ -17,7 +17,6 @@ import {Deferred} from '../util/Deferred.js';
 import {DisposableStack} from '../util/disposable.js';
 
 import type {CdpFrame} from './Frame.js';
-import {FrameManagerEvent} from './FrameManagerEvents.js';
 import type {NetworkManager} from './NetworkManager.js';
 
 /**
@@ -103,15 +102,12 @@ export class LifecycleWatcher {
 
     this.#frame = frame;
     this.#timeout = timeout;
-    const frameManagerEmitter = this.#subscriptions.use(
-      new EventEmitter(frame._frameManager)
-    );
-    frameManagerEmitter.on(
-      FrameManagerEvent.LifecycleEvent,
-      this.#checkLifecycleComplete.bind(this)
-    );
 
     const frameEmitter = this.#subscriptions.use(new EventEmitter(frame));
+    frameEmitter.on(
+      FrameEvent.LifecycleEvent,
+      this.#checkLifecycleComplete.bind(this)
+    );
     frameEmitter.on(
       FrameEvent.FrameNavigatedWithinDocument,
       this.#navigatedWithinDocument.bind(this)
@@ -227,10 +223,11 @@ export class LifecycleWatcher {
   }
 
   #checkLifecycleComplete(): void {
-    // We expect navigation to commit.
+    console.log('Check Lifecycle for', this.#frame._id);
     if (!checkLifecycle(this.#frame, this.#expectedLifecycle)) {
       return;
     }
+
     this.#lifecycleDeferred.resolve();
     if (this.#hasSameDocumentNavigation) {
       this.#sameDocumentNavigationDeferred.resolve(undefined);
@@ -248,18 +245,7 @@ export class LifecycleWatcher {
           return false;
         }
       }
-      // TODO(#1): Its possible we don't need this check
-      // CDP provided the correct order for Loading Events
-      // And NetworkIdle is a global state
-      // Consider removing
-      for (const child of frame.childFrames()) {
-        if (
-          child._hasStartedLoading &&
-          !checkLifecycle(child, expectedLifecycle)
-        ) {
-          return false;
-        }
-      }
+
       return true;
     }
   }
