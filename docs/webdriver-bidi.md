@@ -111,7 +111,7 @@ This is an exciting step towards a more unified and efficient cross-browser auto
   - BrowserContext.clearPermissionOverrides()
   - BrowserContext.overridePermissions()
 
-- [Request interception](https://pptr.dev/guides/request-interception)
+- [Request interception](https://pptr.dev/guides/network-interception)
   - HTTPRequest.abort() (no custom error support)
   - HTTPRequest.abortErrorReason()
   - HTTPRequest.continue()

@@ -102,7 +102,7 @@ This is an exciting step towards a more unified and efficient cross-browser auto
 
 ## Puppeteer features not yet supported over WebDriver BiDi
 
-- [Request interception](https://pptr.dev/guides/request-interception)
+- [Request interception](https://pptr.dev/guides/network-interception)
 
   - HTTPRequest.abort()
   - HTTPRequest.abortErrorReason()
