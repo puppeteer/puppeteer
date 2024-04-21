@@ -29,7 +29,7 @@
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.2.1",
     "@docusaurus/types": "3.2.1",
-    "@swc/core": "1.4.13",
+    "@swc/core": "1.4.16",
     "swc-loader": "0.2.6"
   },
   "browserslist": {
