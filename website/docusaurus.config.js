@@ -96,6 +96,10 @@ const config = {
             to: '/guides/page-interactions',
           },
           {
+            from: '/guides/request-interception',
+            to: '/guides/network-interception',
+          },
+          {
             from: '/guides/query-selectors-legacy',
             to: '/guides/page-interactions',
           },
