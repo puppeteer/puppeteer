@@ -407,7 +407,6 @@ function defaultProfilePreferences(
  * @param profilePath - Firefox profile to write the preferences to.
  */
 async function writePreferences(options: ProfileOptions): Promise<void> {
-  // Create a backup of the preferences file if it already exitsts.
   const prefsPath = path.join(options.path, 'prefs.js');
   const lines = Object.entries(options.preferences).map(([key, value]) => {
     return `user_pref(${JSON.stringify(key)}, ${JSON.stringify(value)});`;
@@ -415,12 +414,17 @@ async function writePreferences(options: ProfileOptions): Promise<void> {
 
   await Promise.all([
     fs.promises.writeFile(path.join(options.path, 'user.js'), lines.join('\n')),
+    // Create a backup of the preferences file if it already exitsts.
     fs.promises
       .access(prefsPath, fs.constants.F_OK)
-      .then(backUpPrefs)
-      .catch(() => {
-        return false;
-      }),
+      .then(async () => {
+        await fs.promises.copyFile(
+          prefsPath,
+          path.join(options.path, 'prefs.js.puppeteer')
+        );
+      })
+      // Swallow if the file does not exist
+      .catch(() => {}),
     options.disableExtraUserContexts ? shouldUpdateContainers() : undefined,
   ]);
 
@@ -443,11 +447,6 @@ async function writePreferences(options: ProfileOptions): Promise<void> {
     });
 
     await fs.promises.writeFile(containersPath, singleContainer);
-  }
-
-  async function backUpPrefs() {
-    const prefsBackupPath = path.join(options.path, 'prefs.js.puppeteer');
-    await fs.promises.copyFile(prefsPath, prefsBackupPath);
   }
 }
 
