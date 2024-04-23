@@ -98,8 +98,8 @@ describe('Accessibility', function () {
               value: 'First Option',
               haspopup: 'menu',
               children: [
-                {role: 'menuitem', name: 'First Option', selected: true},
-                {role: 'menuitem', name: 'Second Option'},
+                {role: 'option', name: 'First Option', selected: true},
+                {role: 'option', name: 'Second Option'},
               ],
             },
           ],

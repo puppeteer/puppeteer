@@ -126,7 +126,7 @@
     "cosmiconfig": "9.0.0",
     "puppeteer-core": "22.6.5",
     "@puppeteer/browsers": "2.2.2",
-    "devtools-protocol": "0.0.1262051"
+    "devtools-protocol": "0.0.1273771"
   },
   "devDependencies": {
     "@types/node": "18.17.15"
