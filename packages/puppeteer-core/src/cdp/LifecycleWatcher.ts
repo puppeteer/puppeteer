@@ -223,8 +223,10 @@ export class LifecycleWatcher {
   }
 
   #checkLifecycleComplete(): void {
-    if (!checkLifecycle(this.#frame, this.#expectedLifecycle)) {
-      return;
+    for (const event of this.#expectedLifecycle) {
+      if (!this.#frame._lifecycleEvents.has(event)) {
+        return;
+      }
     }
 
     this.#lifecycleDeferred.resolve();
@@ -233,19 +235,6 @@ export class LifecycleWatcher {
     }
     if (this.#swapped || this.#frame._loaderId !== this.#initialLoaderId) {
       this.#newDocumentNavigationDeferred.resolve(undefined);
-    }
-
-    function checkLifecycle(
-      frame: CdpFrame,
-      expectedLifecycle: ProtocolLifeCycleEvent[]
-    ): boolean {
-      for (const event of expectedLifecycle) {
-        if (!frame._lifecycleEvents.has(event)) {
-          return false;
-        }
-      }
-
-      return true;
     }
   }
 
