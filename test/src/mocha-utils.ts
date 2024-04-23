@@ -161,6 +161,7 @@ export const setupTestBrowserHooks = (): void => {
         state.browser = await puppeteer.launch({
           ...processVariables.defaultBrowserOptions,
           timeout: this.timeout() - 1_000,
+          protocolTimeout: this.timeout() * 2,
         });
       }
     } catch (error) {
@@ -207,6 +208,8 @@ export const getTestState = async (
 
   if (!state.browser) {
     throw new Error('Browser was not set-up in time!');
+  } else if (!state.browser.connected) {
+    throw new Error('Browser has disconnected!');
   }
 
   if (state.context) {
