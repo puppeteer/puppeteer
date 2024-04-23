@@ -21,7 +21,7 @@ export class BidiCdpSession extends CDPSession {
   static sessions = new Map<string, BidiCdpSession>();
 
   #detached = false;
-  readonly #connection: BidiConnection | undefined = undefined;
+  readonly #connection?: BidiConnection;
   readonly #sessionId = Deferred.create<string>();
   readonly frame: BidiFrame;
 
@@ -41,11 +41,11 @@ export class BidiCdpSession extends CDPSession {
     } else {
       (async () => {
         try {
-          const session = await connection.send('cdp.getSession', {
+          const {result} = await connection.send('cdp.getSession', {
             context: frame._id,
           });
-          this.#sessionId.resolve(session.result.session!);
-          BidiCdpSession.sessions.set(session.result.session!, this);
+          this.#sessionId.resolve(result.session!);
+          BidiCdpSession.sessions.set(result.session!, this);
         } catch (error) {
           this.#sessionId.reject(error as Error);
         }
@@ -89,7 +89,11 @@ export class BidiCdpSession extends CDPSession {
   }
 
   override async detach(): Promise<void> {
-    if (this.#connection === undefined || this.#detached) {
+    if (
+      this.#connection === undefined ||
+      this.#connection.closed ||
+      this.#detached
+    ) {
       return;
     }
     try {
@@ -97,10 +101,17 @@ export class BidiCdpSession extends CDPSession {
         sessionId: this.id(),
       });
     } finally {
-      BidiCdpSession.sessions.delete(this.id());
-      this.#detached = true;
+      this.onClose();
     }
   }
+
+  /**
+   * @internal
+   */
+  onClose = (): void => {
+    BidiCdpSession.sessions.delete(this.id());
+    this.#detached = true;
+  };
 
   override id(): string {
     const value = this.#sessionId.value();
