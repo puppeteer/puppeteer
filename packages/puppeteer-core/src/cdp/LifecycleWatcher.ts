@@ -223,7 +223,6 @@ export class LifecycleWatcher {
   }
 
   #checkLifecycleComplete(): void {
-    console.log('Check Lifecycle for', this.#frame._id);
     if (!checkLifecycle(this.#frame, this.#expectedLifecycle)) {
       return;
     }
