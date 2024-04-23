@@ -139,6 +139,7 @@ export class FirefoxLauncher extends ProductLauncher {
         extraPrefsFirefox,
         options.protocol
       ),
+      disableExtraUserContexts: isTempUserDataDir,
     });
 
     let firefoxExecutable: string;

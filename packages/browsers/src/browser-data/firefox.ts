@@ -178,6 +178,7 @@ export async function createProfile(options: ProfileOptions): Promise<void> {
       ...options.preferences,
     },
     path: options.path,
+    disableExtraUserContexts: options.disableExtraUserContexts,
   });
 }
 
@@ -420,6 +421,27 @@ async function writePreferences(options: ProfileOptions): Promise<void> {
   if (fs.existsSync(prefsPath)) {
     const prefsBackupPath = path.join(options.path, 'prefs.js.puppeteer');
     await fs.promises.copyFile(prefsPath, prefsBackupPath);
+  }
+
+  if (options.disableExtraUserContexts) {
+    const containersPath = path.join(options.path, 'containers.json');
+
+    const singleContainer = JSON.stringify({
+      version: 4,
+      lastUserContextId: 1,
+      identities: [
+        {
+          public: false,
+          icon: '',
+          color: '',
+          name: 'userContextIdInternal.thumbnail',
+          accessKey: '',
+          userContextId: 1,
+        },
+      ],
+    });
+
+    await fs.promises.writeFile(containersPath, singleContainer);
   }
 }
 

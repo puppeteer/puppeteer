@@ -51,6 +51,7 @@ export enum BrowserTag {
 export interface ProfileOptions {
   preferences: Record<string, unknown>;
   path: string;
+  disableExtraUserContexts: boolean;
 }
 
 /**
