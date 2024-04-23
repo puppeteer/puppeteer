@@ -409,14 +409,18 @@ function defaultProfilePreferences(
 async function writePreferences(options: ProfileOptions): Promise<void> {
   // Create a backup of the preferences file if it already exitsts.
   const prefsPath = path.join(options.path, 'prefs.js');
-  const shouldBackUpPrefs = fs.existsSync(prefsPath);
   const lines = Object.entries(options.preferences).map(([key, value]) => {
     return `user_pref(${JSON.stringify(key)}, ${JSON.stringify(value)});`;
   });
 
   await Promise.all([
     fs.promises.writeFile(path.join(options.path, 'user.js'), lines.join('\n')),
-    shouldBackUpPrefs ? backUpPrefs() : undefined,
+    fs.promises
+      .access(prefsPath, fs.constants.F_OK)
+      .then(backUpPrefs)
+      .catch(() => {
+        return false;
+      }),
     options.disableExtraUserContexts ? shouldUpdateContainers() : undefined,
   ]);
 
