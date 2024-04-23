@@ -407,23 +407,20 @@ function defaultProfilePreferences(
  * @param profilePath - Firefox profile to write the preferences to.
  */
 async function writePreferences(options: ProfileOptions): Promise<void> {
+  // Create a backup of the preferences file if it already exitsts.
+  const prefsPath = path.join(options.path, 'prefs.js');
+  const shouldBackUpPrefs = fs.existsSync(prefsPath);
   const lines = Object.entries(options.preferences).map(([key, value]) => {
     return `user_pref(${JSON.stringify(key)}, ${JSON.stringify(value)});`;
   });
 
-  await fs.promises.writeFile(
-    path.join(options.path, 'user.js'),
-    lines.join('\n')
-  );
+  await Promise.all([
+    fs.promises.writeFile(path.join(options.path, 'user.js'), lines.join('\n')),
+    shouldBackUpPrefs ? backUpPrefs() : undefined,
+    options.disableExtraUserContexts ? shouldUpdateContainers() : undefined,
+  ]);
 
-  // Create a backup of the preferences file if it already exitsts.
-  const prefsPath = path.join(options.path, 'prefs.js');
-  if (fs.existsSync(prefsPath)) {
-    const prefsBackupPath = path.join(options.path, 'prefs.js.puppeteer');
-    await fs.promises.copyFile(prefsPath, prefsBackupPath);
-  }
-
-  if (options.disableExtraUserContexts) {
+  async function shouldUpdateContainers() {
     const containersPath = path.join(options.path, 'containers.json');
 
     const singleContainer = JSON.stringify({
@@ -442,6 +439,11 @@ async function writePreferences(options: ProfileOptions): Promise<void> {
     });
 
     await fs.promises.writeFile(containersPath, singleContainer);
+  }
+
+  async function backUpPrefs() {
+    const prefsBackupPath = path.join(options.path, 'prefs.js.puppeteer');
+    await fs.promises.copyFile(prefsPath, prefsBackupPath);
   }
 }
 
