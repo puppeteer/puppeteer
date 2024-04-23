@@ -106,7 +106,7 @@ export class BidiFrame extends Frame {
     this.browsingContext.on('closed', () => {
       for (const session of BidiCdpSession.sessions.values()) {
         if (session.frame === this) {
-          void session.detach().catch(debugError);
+          session.onClose();
         }
       }
       this.page().trustedEmitter.emit(PageEvent.FrameDetached, this);
