@@ -952,13 +952,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[accessibility.spec] Accessibility should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Change in A11Y tree on Canary"
-  },
-  {
     "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler queryAllArray $$eval should handle many elements",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
