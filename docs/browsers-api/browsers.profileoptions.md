@@ -35,6 +35,23 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="disableextrausercontexts">disableExtraUserContexts</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="path">path</span>
 
 </td><td>
