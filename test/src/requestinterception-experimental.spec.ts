@@ -141,7 +141,7 @@ describe('cooperative request interception', function () {
       `);
       await Promise.all([
         page.$eval('form', form => {
-          return (form as HTMLFormElement).submit();
+          return form.submit();
         }),
         page.waitForNavigation(),
       ]);
@@ -631,7 +631,7 @@ describe('cooperative request interception', function () {
       void (page.$eval(
         'iframe',
         (frame, url) => {
-          return ((frame as HTMLIFrameElement).src = url as string);
+          return (frame.src = url as string);
         },
         server.EMPTY_PAGE
       ),

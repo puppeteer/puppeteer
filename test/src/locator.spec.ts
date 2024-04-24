@@ -750,7 +750,7 @@ describe('Locator', function () {
       await page.setContent(`<div onclick="window.clicked = true">test</div>`);
       await page
         .locator(() => {
-          return document.getElementsByTagName('div')[0] as HTMLDivElement;
+          return document.getElementsByTagName('div')[0]!;
         })
         .click();
       await expect(

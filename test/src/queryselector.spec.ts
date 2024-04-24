@@ -43,7 +43,7 @@ describe('querySelector', function () {
       const text = await page.$eval(
         'section',
         (e, div) => {
-          return e.textContent! + (div as HTMLElement).textContent!;
+          return e.textContent! + div.textContent!;
         },
         divHandle
       );
@@ -108,7 +108,7 @@ describe('querySelector', function () {
           return (
             sections.reduce((acc, section) => {
               return acc + Number(section.textContent);
-            }, 0) + Number((div as HTMLElement).textContent)
+            }, 0) + Number(div.textContent)
           );
         },
         divHandle
@@ -161,7 +161,7 @@ describe('querySelector', function () {
       const elements = await page.$$('div');
       expect(elements).toHaveLength(2);
       const promises = elements.map(element => {
-        return page.evaluate((e: HTMLElement) => {
+        return page.evaluate(e => {
           return e.textContent;
         }, element);
       });
@@ -330,7 +330,7 @@ describe('querySelector', function () {
       const elements = await html.$$('div');
       expect(elements).toHaveLength(2);
       const promises = elements.map(element => {
-        return page.evaluate((e: HTMLElement) => {
+        return page.evaluate(e => {
           return e.textContent;
         }, element);
       });
@@ -463,7 +463,7 @@ describe('querySelector', function () {
           return (
             sections.reduce((acc, section) => {
               return acc + Number(section.textContent);
-            }, 0) + Number((div as HTMLElement).textContent)
+            }, 0) + Number(div.textContent)
           );
         },
         divHandle

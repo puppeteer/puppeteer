@@ -88,12 +88,10 @@ export async function detachFrame(
   pageOrFrame: Page | Frame,
   frameId: string
 ): Promise<void> {
-  await pageOrFrame.evaluate(detachFrame, frameId);
-
-  function detachFrame(frameId: string) {
+  await pageOrFrame.evaluate(frameId => {
     const frame = document.getElementById(frameId) as HTMLIFrameElement;
     frame.remove();
-  }
+  }, frameId);
 }
 
 export async function navigateFrame(
@@ -101,15 +99,17 @@ export async function navigateFrame(
   frameId: string,
   url: string
 ): Promise<void> {
-  await pageOrFrame.evaluate(navigateFrame, frameId, url);
-
-  function navigateFrame(frameId: string, url: string) {
-    const frame = document.getElementById(frameId) as HTMLIFrameElement;
-    frame.src = url;
-    return new Promise(x => {
-      return (frame.onload = x);
-    });
-  }
+  await pageOrFrame.evaluate(
+    (frameId, url) => {
+      const frame = document.getElementById(frameId) as HTMLIFrameElement;
+      frame.src = url;
+      return new Promise(x => {
+        return (frame.onload = x);
+      });
+    },
+    frameId,
+    url
+  );
 }
 
 export const dumpFrames = async (

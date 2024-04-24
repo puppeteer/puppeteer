@@ -1232,9 +1232,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @example
    *
    * ```ts
-   * // if you don't provide HTMLInputElement here, TS will error
-   * // as `value` is not on `Element`
-   * await page.$$eval('input', (elements: HTMLInputElement[]) => {
+   * await page.$$eval('input', elements => {
    *   return elements.map(e => e.value);
    * });
    * ```
@@ -1246,11 +1244,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @example
    *
    * ```ts
-   * // The compiler can infer the return type in this case, but if it can't
-   * // or if you want to be more explicit, provide it as the generic type.
-   * const allInputValues = await page.$$eval<string[]>(
-   *   'input',
-   *   (elements: HTMLInputElement[]) => elements.map(e => e.textContent)
+   * const allInputValues = await page.$$eval('input', elements =>
+   *   elements.map(e => e.textContent)
    * );
    * ```
    *

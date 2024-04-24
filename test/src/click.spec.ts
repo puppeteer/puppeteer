@@ -441,8 +441,8 @@ describe('Page.click', function () {
       server.CROSS_PROCESS_PREFIX + '/input/button.html'
     );
     const frame = page.frames()[1];
-    await frame!.$eval('button', (button: Element) => {
-      return (button as HTMLElement).style.setProperty('position', 'fixed');
+    await frame!.$eval('button', button => {
+      return button.style.setProperty('position', 'fixed');
     });
     await frame!.click('button');
     expect(
