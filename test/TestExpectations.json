@@ -203,55 +203,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[browsercontext.spec] *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.overridePermissions should be prompt by default",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[browsercontext.spec] BrowserContext should close all belonging targets once closing context",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[browsercontext.spec] BrowserContext should create new incognito context",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[browsercontext.spec] BrowserContext should have default context",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[browsercontext.spec] BrowserContext should timeout waiting for a non-existent target",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[browsercontext.spec] BrowserContext should wait for a target",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[browsercontext.spec] BrowserContext window.open should use parent tab context",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
     "testIdPattern": "[CDPSession.spec] Target.createCDPSession *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -1001,10 +952,11 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.overridePermissions should fail when bad permission is given",
+    "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.overridePermissions should deny permission when not listed",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL"],
+    "comment": "Firefox does not have support for the Permissions BiDi extension yet"
   },
   {
     "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.overridePermissions should grant permission when listed",
@@ -1014,11 +966,25 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.overridePermissions should grant permission when listed",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox does not have support for the Permissions BiDi extension yet"
+  },
+  {
     "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.overridePermissions should grant persistent-storage",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.overridePermissions should grant persistent-storage",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox does not have support for the Permissions BiDi extension yet"
   },
   {
     "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.overridePermissions should isolate permissions between browser contexts",
@@ -1028,7 +994,28 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.overridePermissions should isolate permissions between browser contexts",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox does not have support for the Permissions BiDi extension yet"
+  },
+  {
     "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.overridePermissions should reset permissions",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.overridePermissions should reset permissions",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox does not have support for the Permissions BiDi extension yet"
+  },
+  {
+    "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.overridePermissions should trigger permission onchange",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"],
@@ -1037,9 +1024,9 @@
   {
     "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.overridePermissions should trigger permission onchange",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not have support for the Permissions BiDi extension yet"
   },
   {
     "testIdPattern": "[browsercontext.spec] BrowserContext should fire target events",
@@ -1056,6 +1043,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[browsercontext.spec] BrowserContext should fire target events",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "In BiDi currently more events than needed are fired (because target is updated more often). We probably need to adjust the test as the behavior is not broken per se"
+  },
+  {
     "testIdPattern": "[browsercontext.spec] BrowserContext should wait for a target",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -1068,6 +1062,13 @@
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[browsercontext.spec] BrowserContext should work across sessions",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox does not support multiple connection at this time"
   },
   {
     "testIdPattern": "[CDPSession.spec] Target.createCDPSession should be able to detach session",
@@ -1129,6 +1130,13 @@
     "testIdPattern": "[click.spec] Page.click should click the button if window.Node is removed",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[click.spec] Page.click should click the button with deviceScaleFactor set",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
@@ -1553,6 +1561,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[emulation.spec] Emulation Page.viewport should load correct pictures when emulation dpr",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
     "testIdPattern": "[emulation.spec] Emulation Page.viewport should support landscape emulation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -1568,6 +1583,13 @@
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.viewport should support touch emulation",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[emulation.spec] Emulation Page.viewport should update media queries when resoltion changes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
