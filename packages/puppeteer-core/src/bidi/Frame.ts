@@ -561,6 +561,18 @@ export class BidiFrame extends Frame {
       files
     );
   }
+
+  @throwIfDetached
+  async locateNodes(
+    element: BidiElementHandle,
+    locator: Bidi.BrowsingContext.Locator
+  ): Promise<Bidi.Script.NodeRemoteValue[]> {
+    return await this.browsingContext.locateNodes(
+      locator,
+      // SAFETY: ElementHandles are always remote references.
+      [element.remoteValue() as Bidi.Script.SharedReference]
+    );
+  }
 }
 
 function isConsoleLogEntry(

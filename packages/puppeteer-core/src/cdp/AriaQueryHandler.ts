@@ -4,41 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {Protocol} from 'devtools-protocol';
-
-import type {CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import {QueryHandler, type QuerySelector} from '../common/QueryHandler.js';
 import type {AwaitableIterable} from '../common/types.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
-
-const NON_ELEMENT_NODE_ROLES = new Set(['StaticText', 'InlineTextBox']);
-
-const queryAXTree = async (
-  client: CDPSession,
-  element: ElementHandle<Node>,
-  accessibleName?: string,
-  role?: string
-): Promise<Protocol.Accessibility.AXNode[]> => {
-  const {nodes} = await client.send('Accessibility.queryAXTree', {
-    objectId: element.id,
-    accessibleName,
-    role,
-  });
-  return nodes.filter((node: Protocol.Accessibility.AXNode) => {
-    if (node.ignored) {
-      return false;
-    }
-    if (!node.role) {
-      return false;
-    }
-    if (NON_ELEMENT_NODE_ROLES.has(node.role.value)) {
-      return false;
-    }
-    return true;
-  });
-};
 
 interface ARIASelector {
   name?: string;
@@ -105,17 +75,7 @@ export class ARIAQueryHandler extends QueryHandler {
     selector: string
   ): AwaitableIterable<ElementHandle<Node>> {
     const {name, role} = parseARIASelector(selector);
-    const results = await queryAXTree(
-      element.realm.environment.client,
-      element,
-      name,
-      role
-    );
-    yield* AsyncIterableUtil.map(results, node => {
-      return element.realm.adoptBackendNode(node.backendDOMNodeId) as Promise<
-        ElementHandle<Node>
-      >;
-    });
+    yield* element.queryAXTree(name, role);
   }
 
   static override queryOne = async (

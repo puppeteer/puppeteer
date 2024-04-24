@@ -7,6 +7,8 @@
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {ElementHandle, type AutofillData} from '../api/ElementHandle.js';
+import type {AwaitableIterable} from '../common/types.js';
+import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {throwIfDisposed} from '../util/decorators.js';
 
 import type {BidiFrame} from './Frame.js';
@@ -115,5 +117,24 @@ export class BidiElementHandle<
       }
     });
     await this.frame.setFiles(this, files);
+  }
+
+  override async *queryAXTree(
+    this: BidiElementHandle<HTMLElement>,
+    name?: string | undefined,
+    role?: string | undefined
+  ): AwaitableIterable<ElementHandle<Node>> {
+    const results = await this.frame.locateNodes(this, {
+      type: 'accessibility',
+      value: {
+        role,
+        name,
+      },
+    });
+
+    return yield* AsyncIterableUtil.map(results, node => {
+      // TODO: maybe change ownership since the default ownership is probably none.
+      return Promise.resolve(BidiElementHandle.from(node, this.realm));
+    });
   }
 }

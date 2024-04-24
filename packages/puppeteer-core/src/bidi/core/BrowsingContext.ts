@@ -601,4 +601,21 @@ export class BrowsingContext extends EventEmitter<{
       })
     );
   }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
+  async locateNodes(
+    locator: Bidi.BrowsingContext.Locator,
+    startNodes: [Bidi.Script.SharedReference, ...Bidi.Script.SharedReference[]]
+  ): Promise<Bidi.Script.NodeRemoteValue[]> {
+    // TODO: add other locateNodes options if needed.
+    const result = await this.#session.send('browsingContext.locateNodes', {
+      context: this.id,
+      locator,
+      startNodes: startNodes.length ? startNodes : undefined,
+    });
+    return result.result.nodes;
+  }
 }

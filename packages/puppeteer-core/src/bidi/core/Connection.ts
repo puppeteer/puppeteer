@@ -69,6 +69,10 @@ export interface Commands {
     params: Bidi.BrowsingContext.GetTreeParameters;
     returnType: Bidi.BrowsingContext.GetTreeResult;
   };
+  'browsingContext.locateNodes': {
+    params: Bidi.BrowsingContext.LocateNodesParameters;
+    returnType: Bidi.BrowsingContext.LocateNodesResult;
+  };
   'browsingContext.navigate': {
     params: Bidi.BrowsingContext.NavigateParameters;
     returnType: Bidi.BrowsingContext.NavigateResult;
