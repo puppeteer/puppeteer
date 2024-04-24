@@ -1252,17 +1252,13 @@ export abstract class ElementHandle<
   ): Promise<string | Buffer> {
     const {scrollIntoView = true, clip} = options;
 
-    let elementClip = await this.#nonEmptyVisibleBoundingBox();
-
     const page = this.frame.page();
 
     // Only scroll the element into view if the user wants it.
     if (scrollIntoView) {
       await this.scrollIntoViewIfNeeded();
-
-      // We measure again just in case.
-      elementClip = await this.#nonEmptyVisibleBoundingBox();
     }
+    const elementClip = await this.#nonEmptyVisibleBoundingBox();
 
     const [pageLeft, pageTop] = await this.evaluate(() => {
       if (!window.visualViewport) {
