@@ -386,7 +386,7 @@ describe('Evaluation specs', function () {
       await element.dispose();
       let error!: Error;
       await page
-        .evaluate((e: HTMLElement) => {
+        .evaluate(e => {
           return e.textContent;
         }, element)
         .catch(error_ => {

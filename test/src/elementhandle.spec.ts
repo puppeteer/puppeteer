@@ -58,7 +58,7 @@ describe('ElementHandle specs', function () {
         '<div style="width: 100px; height: 100px">hello</div>'
       );
       using elementHandle = (await page.$('div'))!;
-      await page.evaluate((element: HTMLElement) => {
+      await page.evaluate(element => {
         return (element.style.height = '200px');
       }, elementHandle);
       const box = await elementHandle.boundingBox();
@@ -260,7 +260,7 @@ describe('ElementHandle specs', function () {
 
       await page.goto(server.PREFIX + '/input/button.html');
       using button = (await page.$('button'))!;
-      await page.evaluate((button: HTMLElement) => {
+      await page.evaluate(button => {
         return button.remove();
       }, button);
       let error!: Error;
@@ -277,7 +277,7 @@ describe('ElementHandle specs', function () {
 
       await page.goto(server.PREFIX + '/input/button.html');
       using button = (await page.$('button'))!;
-      await page.evaluate((button: HTMLElement) => {
+      await page.evaluate(button => {
         return (button.style.display = 'none');
       }, button);
       const error = await button.click().catch(error_ => {
@@ -293,7 +293,7 @@ describe('ElementHandle specs', function () {
 
       await page.goto(server.PREFIX + '/input/button.html');
       using button = (await page.$('button'))!;
-      await page.evaluate((button: HTMLElement) => {
+      await page.evaluate(button => {
         return (button.parentElement!.style.display = 'none');
       }, button);
       const error = await button.click().catch(error_ => {
@@ -478,7 +478,7 @@ describe('ElementHandle specs', function () {
       expect(element2).toBeDefined();
       expect(
         await element2.evaluate(el => {
-          return (el as HTMLElement).innerText;
+          return el.innerText;
         })
       ).toStrictEqual('bar1');
     });

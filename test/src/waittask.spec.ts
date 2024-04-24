@@ -225,7 +225,7 @@ describe('waittask specs', function () {
           return (resolved = true);
         });
       expect(resolved).toBe(false);
-      await page.evaluate((element: HTMLElement) => {
+      await page.evaluate(element => {
         return element.remove();
       }, div);
       await waitForFunction;

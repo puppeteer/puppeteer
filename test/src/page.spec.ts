@@ -285,7 +285,7 @@ describe('Page', function () {
       const [popup] = await Promise.all([
         waitEvent<Page>(page, 'popup'),
         page.$eval('a', a => {
-          return (a as HTMLAnchorElement).click();
+          return a.click();
         }),
       ]);
       expect(
@@ -1830,7 +1830,7 @@ describe('Page', function () {
         path: path.join(__dirname, '../assets/injectedstyle.css'),
       });
       using styleHandle = (await page.$('style'))!;
-      const styleContent = await page.evaluate((style: HTMLStyleElement) => {
+      const styleContent = await page.evaluate(style => {
         return style.innerHTML;
       }, styleHandle);
       expect(styleContent).toContain(path.join('assets', 'injectedstyle.css'));
@@ -2144,11 +2144,9 @@ describe('Page', function () {
       await page.select('select');
       expect(
         await page.$eval('select', select => {
-          return Array.from((select as HTMLSelectElement).options).every(
-            option => {
-              return !option.selected;
-            }
-          );
+          return Array.from(select.options).every(option => {
+            return !option.selected;
+          });
         })
       ).toEqual(true);
     });
@@ -2160,11 +2158,9 @@ describe('Page', function () {
       await page.select('select');
       expect(
         await page.$eval('select', select => {
-          return Array.from((select as HTMLSelectElement).options).filter(
-            option => {
-              return option.selected;
-            }
-          )[0]!.value;
+          return Array.from(select.options).filter(option => {
+            return option.selected;
+          })[0]!.value;
         })
       ).toEqual('');
     });
