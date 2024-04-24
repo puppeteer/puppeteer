@@ -425,10 +425,10 @@ async function writePreferences(options: ProfileOptions): Promise<void> {
       })
       // Swallow if the file does not exist
       .catch(() => {}),
-    options.disableExtraUserContexts ? shouldUpdateContainers() : undefined,
+    options.disableExtraUserContexts ? writeContainersFile() : undefined,
   ]);
 
-  async function shouldUpdateContainers() {
+  async function writeContainersFile() {
     const containersPath = path.join(options.path, 'containers.json');
 
     const singleContainer = JSON.stringify({
