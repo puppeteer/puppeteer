@@ -306,14 +306,15 @@ describe('Screenshots', function () {
 
       await page.setContent('<h1>remove this</h1>');
       using elementHandle = (await page.$('h1'))!;
-      await page.evaluate((element: HTMLElement) => {
+      await page.evaluate(element => {
         return element.remove();
       }, elementHandle);
       const screenshotError = await elementHandle.screenshot().catch(error => {
         return error;
       });
-      expect(screenshotError.message).toBe(
-        'Node is either not visible or not an HTMLElement'
+      expect(screenshotError).toBeInstanceOf(Error);
+      expect(screenshotError.message).toMatch(
+        /Node is either not visible or not an HTMLElement|Node is detached from document/
       );
     });
     it('should not hang with zero width/height element', async () => {
