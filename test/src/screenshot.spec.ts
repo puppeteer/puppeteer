@@ -301,7 +301,7 @@ describe('Screenshots', function () {
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-rotate.png');
     });
-    it.only('should fail to screenshot a detached element', async () => {
+    it('should fail to screenshot a detached element', async () => {
       const {page} = await getTestState();
 
       await page.setContent('<h1>remove this</h1>');
