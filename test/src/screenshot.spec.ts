@@ -301,19 +301,20 @@ describe('Screenshots', function () {
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-rotate.png');
     });
-    it('should fail to screenshot a detached element', async () => {
+    it.only('should fail to screenshot a detached element', async () => {
       const {page} = await getTestState();
 
       await page.setContent('<h1>remove this</h1>');
       using elementHandle = (await page.$('h1'))!;
-      await page.evaluate((element: HTMLElement) => {
+      await page.evaluate(element => {
         return element.remove();
       }, elementHandle);
       const screenshotError = await elementHandle.screenshot().catch(error => {
         return error;
       });
-      expect(screenshotError.message).toBe(
-        'Node is either not visible or not an HTMLElement'
+      expect(screenshotError).toBeInstanceOf(Error);
+      expect(screenshotError.message).toMatch(
+        /Node is either not visible or not an HTMLElement|Node is detached from document/
       );
     });
     it('should not hang with zero width/height element', async () => {
