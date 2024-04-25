@@ -76,7 +76,7 @@ export class BidiHTTPRequest extends HTTPRequest {
 
     this.#frame.page().trustedEmitter.emit(PageEvent.Request, this);
 
-    if (Object.keys(this.#extraHTTPHeaders).length) {
+    if (this.#hasInternalHeaderOverwrite) {
       this.interception.handlers.push(async () => {
         await this.continue(
           {
@@ -112,8 +112,19 @@ export class BidiHTTPRequest extends HTTPRequest {
     throw new UnsupportedOperation();
   }
 
+  get #hasInternalHeaderOverwrite(): boolean {
+    return Boolean(
+      Object.keys(this.#extraHTTPHeaders).length ||
+        Object.keys(this.#userAgentHeaders).length
+    );
+  }
+
   get #extraHTTPHeaders(): Record<string, string> {
     return this.#frame?.page()._extraHTTPHeaders ?? {};
+  }
+
+  get #userAgentHeaders(): Record<string, string> {
+    return this.#frame?.page()._userAgentHeaders ?? {};
   }
 
   override headers(): Record<string, string> {
@@ -124,6 +135,7 @@ export class BidiHTTPRequest extends HTTPRequest {
     return {
       ...headers,
       ...this.#extraHTTPHeaders,
+      ...this.#userAgentHeaders,
     };
   }
 
@@ -169,9 +181,7 @@ export class BidiHTTPRequest extends HTTPRequest {
   ): Promise<void> {
     return await super.continue(
       {
-        headers: Object.keys(this.#extraHTTPHeaders).length
-          ? this.headers()
-          : undefined,
+        headers: this.#hasInternalHeaderOverwrite ? this.headers() : undefined,
         ...overrides,
       },
       priority
