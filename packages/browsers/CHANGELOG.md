@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.3](https://github.com/puppeteer/puppeteer/compare/browsers-v2.2.2...browsers-v2.2.3) (2024-04-25)
+
+
+### Bug Fixes
+
+* **performance:** speed up Firefox profile creation ([#12320](https://github.com/puppeteer/puppeteer/issues/12320)) ([c9a5644](https://github.com/puppeteer/puppeteer/commit/c9a5644c65197a7458995092c332545482d04ee2))
+
 ## [2.2.2](https://github.com/puppeteer/puppeteer/compare/browsers-v2.2.1...browsers-v2.2.2) (2024-04-15)
 
 
