@@ -33,7 +33,7 @@ on:
         options:
           - ubuntu-latest
           - windows-latest
-          - macos-latest
+          - macos-13
       retries:
         description: Number of retries per test
         required: false
