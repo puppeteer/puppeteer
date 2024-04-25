@@ -2481,7 +2481,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "History navigation is breaking the Puppeteer expecation about navigation."
+    "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1879163"
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work with anchor navigation",
