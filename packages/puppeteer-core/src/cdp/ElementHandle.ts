@@ -184,7 +184,7 @@ export class CdpElementHandle<
       role,
     });
 
-    const results = nodes.filter((node: Protocol.Accessibility.AXNode) => {
+    const results = nodes.filter(node => {
       if (node.ignored) {
         return false;
       }
