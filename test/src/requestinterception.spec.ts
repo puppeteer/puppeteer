@@ -35,7 +35,6 @@ describe('request interception', function () {
           expect(request.method()).toBe('GET');
           expect(request.postData()).toBe(undefined);
           expect(request.isNavigationRequest()).toBe(true);
-          expect(request.resourceType()).toBe('document');
           expect(request.frame()!.url()).toBe('about:blank');
           expect(request.frame() === page.mainFrame()).toBe(true);
         } catch (error) {
@@ -325,7 +324,6 @@ describe('request interception', function () {
       expect(response.status()).toBe(200);
       expect(response.url()).toContain('empty.html');
       expect(requests).toHaveLength(5);
-      expect(requests[2]!.resourceType()).toBe('document');
       // Check redirect chain
       const redirectChain = response.request().redirectChain();
       expect(redirectChain).toHaveLength(4);
@@ -359,8 +357,6 @@ describe('request interception', function () {
       expect(response.status()).toBe(200);
       expect(response.url()).toContain('one-style.html');
       expect(requests).toHaveLength(5);
-      expect(requests[0]!.resourceType()).toBe('document');
-      expect(requests[1]!.resourceType()).toBe('stylesheet');
       // Check redirect chain
       const redirectChain = requests[1]!.redirectChain();
       expect(redirectChain).toHaveLength(3);
@@ -933,6 +929,41 @@ describe('request interception', function () {
       });
       await page.goto(server.PREFIX + '/empty.html');
       expect(error.message).toMatch(/Invalid header/);
+    });
+  });
+
+  describe('Request.resourceType', () => {
+    it('should work for document type', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setRequestInterception(true);
+      const requests: HTTPRequest[] = [];
+      page.on('request', request => {
+        requests.push(request);
+        void request.continue();
+      });
+      await page.goto(server.EMPTY_PAGE);
+      expect(requests).toHaveLength(1);
+      const request = requests[0]!;
+      expect(request.resourceType()).toBe('document');
+    });
+
+    it('should work for stylesheets', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setRequestInterception(true);
+      const cssRequests: HTTPRequest[] = [];
+      page.on('request', request => {
+        if (request.url().endsWith('css')) {
+          cssRequests.push(request);
+        }
+        void request.continue();
+      });
+      await page.goto(server.PREFIX + '/one-style.html');
+      expect(cssRequests).toHaveLength(1);
+      const request = cssRequests[0]!;
+      expect(request.url()).toContain('one-style.css');
+      expect(request.resourceType()).toBe('stylesheet');
     });
   });
 });

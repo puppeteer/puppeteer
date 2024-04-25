@@ -492,12 +492,12 @@ describe('network', function () {
       });
       await page.goto(server.EMPTY_PAGE);
       expect(requests).toHaveLength(1);
-      expect(requests[0]!.url()).toBe(server.EMPTY_PAGE);
-      expect(requests[0]!.resourceType()).toBe('document');
-      expect(requests[0]!.method()).toBe('GET');
-      expect(requests[0]!.response()).toBeTruthy();
-      expect(requests[0]!.frame() === page.mainFrame()).toBe(true);
-      expect(requests[0]!.frame()!.url()).toBe(server.EMPTY_PAGE);
+      const request = requests[0]!;
+      expect(request.url()).toBe(server.EMPTY_PAGE);
+      expect(request.method()).toBe('GET');
+      expect(request.response()).toBeTruthy();
+      expect(request.frame() === page.mainFrame()).toBe(true);
+      expect(request.frame()!.url()).toBe(server.EMPTY_PAGE);
     });
     it('Page.Events.RequestServedFromCache', async () => {
       const {page, server} = await getTestState();
@@ -509,7 +509,9 @@ describe('network', function () {
 
       await page.goto(server.PREFIX + '/cached/one-style.html');
       expect(cached).toEqual([]);
-
+      await new Promise(res => {
+        setTimeout(res, 1000);
+      });
       await page.reload();
       expect(cached).toEqual(['one-style.css']);
     });
@@ -522,16 +524,11 @@ describe('network', function () {
       });
       await page.goto(server.EMPTY_PAGE);
       expect(responses).toHaveLength(1);
-      expect(responses[0]!.url()).toBe(server.EMPTY_PAGE);
-      expect(responses[0]!.status()).toBe(200);
-      expect(responses[0]!.ok()).toBe(true);
-      expect(responses[0]!.request()).toBeTruthy();
-      const remoteAddress = responses[0]!.remoteAddress();
-      // Either IPv6 or IPv4, depending on environment.
-      expect(
-        remoteAddress.ip!.includes('::1') || remoteAddress.ip === '127.0.0.1'
-      ).toBe(true);
-      expect(remoteAddress.port).toBe(server.PORT);
+      const response = responses[0]!;
+      expect(response.url()).toBe(server.EMPTY_PAGE);
+      expect(response.status()).toBe(200);
+      expect(response.ok()).toBe(true);
+      expect(response.request()).toBeTruthy();
     });
 
     it('Page.Events.RequestFailed', async () => {
@@ -551,17 +548,15 @@ describe('network', function () {
       });
       await page.goto(server.PREFIX + '/one-style.html');
       expect(failedRequests).toHaveLength(1);
-      expect(failedRequests[0]!.url()).toContain('one-style.css');
-      expect(failedRequests[0]!.response()).toBe(null);
-      expect(failedRequests[0]!.resourceType()).toBe('stylesheet');
+      const failedRequest = failedRequests[0]!;
+      expect(failedRequest.url()).toContain('one-style.css');
+      expect(failedRequest.response()).toBe(null);
+      expect(failedRequest.frame()).toBeTruthy();
       if (isChrome) {
-        expect(failedRequests[0]!.failure()!.errorText).toBe('net::ERR_FAILED');
+        expect(failedRequest.failure()!.errorText).toBe('net::ERR_FAILED');
       } else {
-        expect(failedRequests[0]!.failure()!.errorText).toBe(
-          'NS_ERROR_FAILURE'
-        );
+        expect(failedRequest.failure()!.errorText).toBe('NS_ERROR_FAILURE');
       }
-      expect(failedRequests[0]!.frame()).toBeTruthy();
     });
     it('Page.Events.RequestFinished', async () => {
       const {page, server} = await getTestState();
@@ -631,9 +626,6 @@ describe('network', function () {
       const redirectChain = response.request().redirectChain();
       expect(redirectChain).toHaveLength(1);
       expect(redirectChain[0]!.url()).toContain('/foo.html');
-      expect(redirectChain[0]!.response()!.remoteAddress().port).toBe(
-        server.PORT
-      );
     });
   });
 
@@ -912,6 +904,73 @@ describe('network', function () {
       expect(responses.get('sw.html').fromServiceWorker()).toBe(false);
       expect(responses.get('style.css').status()).toBe(200);
       expect(responses.get('style.css').fromServiceWorker()).toBe(false);
+    });
+  });
+
+  describe('Request.resourceType', () => {
+    it('should work for document type', async () => {
+      const {page, server} = await getTestState();
+
+      const requests: HTTPRequest[] = [];
+      page.on('request', request => {
+        return requests.push(request);
+      });
+      await page.goto(server.EMPTY_PAGE);
+      expect(requests).toHaveLength(1);
+      const request = requests[0]!;
+      expect(request.resourceType()).toBe('document');
+    });
+
+    it('should work for stylesheets', async () => {
+      const {page, server} = await getTestState();
+
+      const cssRequests: HTTPRequest[] = [];
+      page.on('request', request => {
+        if (request.url().endsWith('css')) {
+          cssRequests.push(request);
+        }
+      });
+      await page.goto(server.PREFIX + '/one-style.html');
+      expect(cssRequests).toHaveLength(1);
+      const request = cssRequests[0]!;
+      expect(request.url()).toContain('one-style.css');
+      expect(request.resourceType()).toBe('stylesheet');
+    });
+  });
+
+  describe('Response.remoteAddress', () => {
+    it('should work', async () => {
+      const {page, server} = await getTestState();
+
+      const responses: HTTPResponse[] = [];
+      page.on('response', response => {
+        return responses.push(response);
+      });
+      await page.goto(server.EMPTY_PAGE);
+      expect(responses).toHaveLength(1);
+      const response = responses[0]!;
+      const remoteAddress = response.remoteAddress();
+      // Either IPv6 or IPv4, depending on environment.
+      expect(
+        remoteAddress.ip!.includes('::1') || remoteAddress.ip === '127.0.0.1'
+      ).toBe(true);
+      expect(remoteAddress.port).toBe(server.PORT);
+    });
+
+    it('should support redirects', async () => {
+      const {page, server} = await getTestState();
+
+      server.setRedirect('/foo.html', '/empty.html');
+      const FOO_URL = server.PREFIX + '/foo.html';
+      const response = (await page.goto(FOO_URL))!;
+
+      // Check redirect chain
+      const redirectChain = response.request().redirectChain();
+      expect(redirectChain).toHaveLength(1);
+      expect(redirectChain[0]!.url()).toContain('/foo.html');
+      expect(redirectChain[0]!.response()!.remoteAddress().port).toBe(
+        server.PORT
+      );
     });
   });
 });
