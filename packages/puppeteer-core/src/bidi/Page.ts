@@ -148,14 +148,19 @@ export class BidiPage extends Page {
         userAgentMetadata: userAgentMetadata,
       });
     }
-    this._userAgentHeaders = {
-      'User-Agent': userAgent,
-    };
+    const enable = userAgent !== '';
+    userAgent = userAgent ?? (await this.#browserContext.browser().userAgent());
 
-    this.#userInterception = await this.#toggleInterception(
+    this._userAgentHeaders = enable
+      ? {
+          'User-Agent': userAgent,
+        }
+      : {};
+
+    this.#userAgentInterception = await this.#toggleInterception(
       [Bidi.Network.InterceptPhase.BeforeRequestSent],
       this.#userAgentInterception,
-      true
+      enable
     );
 
     const changeUserAgent = (userAgent: string) => {
@@ -175,12 +180,16 @@ export class BidiPage extends Page {
       );
     }
     const [evaluateToken] = await Promise.all([
-      this.evaluateOnNewDocument(changeUserAgent, userAgent, userAgentMetadata),
+      enable
+        ? this.evaluateOnNewDocument(changeUserAgent, userAgent)
+        : undefined,
+      // When we disable the UserAgent we want to
+      // evaluate the original value in all Browsing Contexts
       frames.map(frame => {
-        return frame.evaluate(changeUserAgent, userAgent, userAgentMetadata);
+        return frame.evaluate(changeUserAgent, userAgent);
       }),
     ]);
-    this.#userAgentPreloadScript = evaluateToken.identifier;
+    this.#userAgentPreloadScript = evaluateToken?.identifier;
   }
 
   override async setBypassCSP(enabled: boolean): Promise<void> {
