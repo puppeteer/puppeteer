@@ -100,10 +100,10 @@ export class CdpBrowser extends BrowserBase {
     this.#defaultViewport = defaultViewport;
     this.#process = process;
     this.#connection = connection;
-    this.#closeCallback = closeCallback || function (): void {};
+    this.#closeCallback = closeCallback || (() => {});
     this.#targetFilterCallback =
       targetFilterCallback ||
-      ((): boolean => {
+      (() => {
         return true;
       });
     this.#setIsPageTargetCallback(isPageTargetCallback);
