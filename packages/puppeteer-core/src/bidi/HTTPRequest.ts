@@ -67,6 +67,17 @@ export class BidiHTTPRequest extends HTTPRequest {
   #initialize() {
     this.#request.on('redirect', request => {
       const httpRequest = BidiHTTPRequest.from(request, this.#frame, this);
+      request.once('success', () => {
+        this.#frame
+          .page()
+          .trustedEmitter.emit(PageEvent.RequestFinished, httpRequest);
+      });
+
+      request.once('error', () => {
+        this.#frame
+          .page()
+          .trustedEmitter.emit(PageEvent.RequestFailed, httpRequest);
+      });
       void httpRequest.finalizeInterceptions();
     });
     this.#request.once('success', data => {
