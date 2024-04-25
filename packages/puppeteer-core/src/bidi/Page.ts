@@ -125,16 +125,62 @@ export class BidiPage extends Page {
       this.#workers.delete(worker as BidiWebWorker);
     });
   }
-
+  /**
+   * @internal
+   */
+  _userAgentHeaders: Record<string, string> = {};
+  #userAgentInterception?: string;
+  #userAgentPreloadScript?: string;
   override async setUserAgent(
     userAgent: string,
-    userAgentMetadata?: Protocol.Emulation.UserAgentMetadata | undefined
+    userAgentMetadata?: Protocol.Emulation.UserAgentMetadata
   ): Promise<void> {
-    // TODO: handle CDP-specific cases such as mprach.
-    await this._client().send('Network.setUserAgentOverride', {
-      userAgent: userAgent,
-      userAgentMetadata: userAgentMetadata,
-    });
+    if (!this.#browserContext.browser().cdpSupported && userAgentMetadata) {
+      throw new UnsupportedOperation(
+        'Current Browser does not support `userAgentMetadata`'
+      );
+    } else if (
+      this.#browserContext.browser().cdpSupported &&
+      userAgentMetadata
+    ) {
+      return await this._client().send('Network.setUserAgentOverride', {
+        userAgent: userAgent,
+        userAgentMetadata: userAgentMetadata,
+      });
+    }
+    this._userAgentHeaders = {
+      'User-Agent': userAgent,
+    };
+
+    this.#userInterception = await this.#toggleInterception(
+      [Bidi.Network.InterceptPhase.BeforeRequestSent],
+      this.#userAgentInterception,
+      true
+    );
+
+    const changeUserAgent = (userAgent: string) => {
+      Object.defineProperty(navigator, 'userAgent', {
+        value: userAgent,
+      });
+    };
+
+    const frames = [this.#frame];
+    for (const frame of frames) {
+      frames.push(...frame.childFrames());
+    }
+
+    if (this.#userAgentPreloadScript) {
+      await this.removeScriptToEvaluateOnNewDocument(
+        this.#userAgentPreloadScript
+      );
+    }
+    const [evaluateToken] = await Promise.all([
+      this.evaluateOnNewDocument(changeUserAgent, userAgent, userAgentMetadata),
+      frames.map(frame => {
+        return frame.evaluate(changeUserAgent, userAgent, userAgentMetadata);
+      }),
+    ]);
+    this.#userAgentPreloadScript = evaluateToken.identifier;
   }
 
   override async setBypassCSP(enabled: boolean): Promise<void> {
