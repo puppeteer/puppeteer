@@ -10,6 +10,7 @@ import type {Frame} from '../api/Frame.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {LazyArg} from '../common/LazyArg.js';
 import type {
+  AwaitableIterable,
   ElementFor,
   EvaluateFuncWith,
   HandleFor,
@@ -872,6 +873,14 @@ export abstract class ElementHandle<
     this: ElementHandle<HTMLInputElement>,
     ...paths: string[]
   ): Promise<void>;
+
+  /**
+   * @internal
+   */
+  abstract queryAXTree(
+    name?: string,
+    role?: string
+  ): AwaitableIterable<ElementHandle<Node>>;
 
   /**
    * This method scrolls element into view if needed, and then uses
