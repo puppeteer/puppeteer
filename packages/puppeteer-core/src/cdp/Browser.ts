@@ -59,7 +59,6 @@ export class CdpBrowser extends BrowserBase {
       product,
       connection,
       contextIds,
-      ignoreHTTPSErrors,
       defaultViewport,
       process,
       closeCallback,
@@ -67,10 +66,14 @@ export class CdpBrowser extends BrowserBase {
       isPageTargetCallback,
       waitForInitiallyDiscoveredTargets
     );
+    if (ignoreHTTPSErrors) {
+      await connection.send('Security.setIgnoreCertificateErrors', {
+        ignore: true,
+      });
+    }
     await browser._attach();
     return browser;
   }
-  #ignoreHTTPSErrors: boolean;
   #defaultViewport?: Viewport | null;
   #process?: ChildProcess;
   #connection: Connection;
@@ -85,7 +88,6 @@ export class CdpBrowser extends BrowserBase {
     product: 'chrome' | 'firefox' | undefined,
     connection: Connection,
     contextIds: string[],
-    ignoreHTTPSErrors: boolean,
     defaultViewport?: Viewport | null,
     process?: ChildProcess,
     closeCallback?: BrowserCloseCallback,
@@ -95,7 +97,6 @@ export class CdpBrowser extends BrowserBase {
   ) {
     super();
     product = product || 'chrome';
-    this.#ignoreHTTPSErrors = ignoreHTTPSErrors;
     this.#defaultViewport = defaultViewport;
     this.#process = process;
     this.#connection = connection;
@@ -268,7 +269,6 @@ export class CdpBrowser extends BrowserBase {
         context,
         this.#targetManager,
         createSession,
-        this.#ignoreHTTPSErrors,
         this.#defaultViewport ?? null
       );
     }
@@ -279,7 +279,6 @@ export class CdpBrowser extends BrowserBase {
         context,
         this.#targetManager,
         createSession,
-        this.#ignoreHTTPSErrors,
         this.#defaultViewport ?? null
       );
     }
