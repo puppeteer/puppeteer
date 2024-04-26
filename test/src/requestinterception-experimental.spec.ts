@@ -1008,14 +1008,11 @@ describe('cooperative request interception', function () {
       const {page, server} = await getTestState();
 
       await page.setRequestInterception(true);
-      const requests: HTTPRequest[] = [];
       page.on('request', request => {
-        requests.push(request);
         void request.continue({}, 0);
       });
-      await page.goto(server.EMPTY_PAGE);
-      expect(requests).toHaveLength(1);
-      const request = requests[0]!;
+      const response = await page.goto(server.EMPTY_PAGE);
+      const request = response!.request();
       expect(request.resourceType()).toBe('document');
     });
 
