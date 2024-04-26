@@ -488,7 +488,7 @@ describe('network', function () {
 
       const requests: HTTPRequest[] = [];
       page.on('request', request => {
-        return requests.push(request);
+        return !isFavicon(request) && requests.push(request);
       });
       await page.goto(server.EMPTY_PAGE);
       expect(requests).toHaveLength(1);
