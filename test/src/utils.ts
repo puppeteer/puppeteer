@@ -6,7 +6,6 @@
 
 import {rm} from 'fs/promises';
 import {tmpdir} from 'os';
-import path from 'path';
 
 import expect from 'expect';
 import type {Frame} from 'puppeteer-core/internal/api/Frame.js';
@@ -15,8 +14,6 @@ import type {EventEmitter} from 'puppeteer-core/internal/common/EventEmitter.js'
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 
 import {compare} from './golden-utils.js';
-
-const PROJECT_ROOT = path.join(__dirname, '..', '..');
 
 declare module 'expect' {
   interface Matchers<R> {
