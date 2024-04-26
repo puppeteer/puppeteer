@@ -4088,13 +4088,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[network.spec] network Network Events should support redirects",
-    "platforms": ["linux"],
-    "parameters": ["chrome", "headless", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Fix in next PR"
-  },
-  {
     "testIdPattern": "[network.spec] network raw network headers Same-origin set-cookie subresource",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headful"],
