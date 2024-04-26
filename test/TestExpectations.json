@@ -1250,13 +1250,6 @@
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should not delete cookie for different domain",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Firefox default partition key is inconsistent: #12004"
-  },
-  {
-    "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should not delete cookie for different domain",
-    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"],
     "comment": "Not supported with cdp"
