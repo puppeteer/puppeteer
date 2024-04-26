@@ -842,7 +842,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * continued, responded or aborted; or completed using the browser cache.
    *
    * See the
-   * {@link https://pptr.dev/next/guides/request-interception|Request interception guide}
+   * {@link https://pptr.dev/guides/network-interception|Request interception guide}
    * for more details.
    *
    * @example
