@@ -520,7 +520,7 @@ describe('network', function () {
 
       const responses: HTTPResponse[] = [];
       page.on('response', response => {
-        return responses.push(response);
+        return !isFavicon(response) && responses.push(response);
       });
       await page.goto(server.EMPTY_PAGE);
       expect(responses).toHaveLength(1);
