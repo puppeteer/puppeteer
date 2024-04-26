@@ -56,28 +56,26 @@ export const extendExpectWithToBeGolden = (
   });
 };
 
-export const projectRoot = (): string => {
-  return PROJECT_ROOT;
-};
-
 export const attachFrame = async (
   pageOrFrame: Page | Frame,
   frameId: string,
   url: string
-): Promise<Frame | undefined> => {
-  using handle = await pageOrFrame.evaluateHandle(attachFrame, frameId, url);
-  return (await handle.asElement()?.contentFrame()) ?? undefined;
-
-  async function attachFrame(frameId: string, url: string) {
-    const frame = document.createElement('iframe');
-    frame.src = url;
-    frame.id = frameId;
-    document.body.appendChild(frame);
-    await new Promise(x => {
-      return (frame.onload = x);
-    });
-    return frame;
-  }
+): Promise<Frame> => {
+  using handle = await pageOrFrame.evaluateHandle(
+    async (frameId, url) => {
+      const frame = document.createElement('iframe');
+      frame.src = url;
+      frame.id = frameId;
+      document.body.appendChild(frame);
+      await new Promise(x => {
+        return (frame.onload = x);
+      });
+      return frame;
+    },
+    frameId,
+    url
+  );
+  return await handle.contentFrame();
 };
 
 export const isFavicon = (request: {url: () => string | string[]}): boolean => {
