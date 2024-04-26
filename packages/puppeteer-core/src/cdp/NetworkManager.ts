@@ -61,7 +61,6 @@ export interface FrameProvider {
  * @internal
  */
 export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
-  #ignoreHTTPSErrors: boolean;
   #frameManager: FrameProvider;
   #networkEventManager = new NetworkEventManager();
   #extraHTTPHeaders?: Record<string, string>;
@@ -88,9 +87,8 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
 
   #clients = new Map<CDPSession, DisposableStack>();
 
-  constructor(ignoreHTTPSErrors: boolean, frameManager: FrameProvider) {
+  constructor(frameManager: FrameProvider) {
     super();
-    this.#ignoreHTTPSErrors = ignoreHTTPSErrors;
     this.#frameManager = frameManager;
   }
 
@@ -109,11 +107,6 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     }
 
     await Promise.all([
-      this.#ignoreHTTPSErrors
-        ? client.send('Security.setIgnoreCertificateErrors', {
-            ignore: true,
-          })
-        : null,
       client.send('Network.enable'),
       this.#applyExtraHTTPHeaders(client),
       this.#applyNetworkConditions(client),

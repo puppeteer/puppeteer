@@ -100,10 +100,9 @@ export class CdpPage extends Page {
   static async _create(
     client: CDPSession,
     target: CdpTarget,
-    ignoreHTTPSErrors: boolean,
     defaultViewport: Viewport | null
   ): Promise<CdpPage> {
-    const page = new CdpPage(client, target, ignoreHTTPSErrors);
+    const page = new CdpPage(client, target);
     await page.#initialize();
     if (defaultViewport) {
       try {
@@ -228,11 +227,7 @@ export class CdpPage extends Page {
     ['Page.fileChooserOpened', this.#onFileChooser.bind(this)],
   ] as const;
 
-  constructor(
-    client: CDPSession,
-    target: CdpTarget,
-    ignoreHTTPSErrors: boolean
-  ) {
+  constructor(client: CDPSession, target: CdpTarget) {
     super();
     this.#primaryTargetClient = client;
     this.#tabTargetClient = client.parentSession()!;
@@ -245,12 +240,7 @@ export class CdpPage extends Page {
     this.#mouse = new CdpMouse(client, this.#keyboard);
     this.#touchscreen = new CdpTouchscreen(client, this.#keyboard);
     this.#accessibility = new Accessibility(client);
-    this.#frameManager = new FrameManager(
-      client,
-      this,
-      ignoreHTTPSErrors,
-      this._timeoutSettings
-    );
+    this.#frameManager = new FrameManager(client, this, this._timeoutSettings);
     this.#emulationManager = new EmulationManager(client);
     this.#tracing = new Tracing(client);
     this.#coverage = new Coverage(client);
