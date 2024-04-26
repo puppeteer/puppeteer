@@ -911,13 +911,8 @@ describe('network', function () {
     it('should work for document type', async () => {
       const {page, server} = await getTestState();
 
-      const requests: HTTPRequest[] = [];
-      page.on('request', request => {
-        return requests.push(request);
-      });
-      await page.goto(server.EMPTY_PAGE);
-      expect(requests).toHaveLength(1);
-      const request = requests[0]!;
+      const response = await page.goto(server.EMPTY_PAGE);
+      const request = response!.request();
       expect(request.resourceType()).toBe('document');
     });
 
@@ -942,13 +937,7 @@ describe('network', function () {
     it('should work', async () => {
       const {page, server} = await getTestState();
 
-      const responses: HTTPResponse[] = [];
-      page.on('response', response => {
-        return responses.push(response);
-      });
-      await page.goto(server.EMPTY_PAGE);
-      expect(responses).toHaveLength(1);
-      const response = responses[0]!;
+      const response = (await page.goto(server.EMPTY_PAGE))!;
       const remoteAddress = response.remoteAddress();
       // Either IPv6 or IPv4, depending on environment.
       expect(
