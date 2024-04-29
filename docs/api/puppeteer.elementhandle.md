@@ -150,6 +150,25 @@ If the given function returns a promise, then this method will wait till the pro
 
 If the element is a form input, you can use [ElementHandle.autofill()](./puppeteer.elementhandle.autofill.md) to test if the form is compatible with the browser's autofill implementation. Throws an error if the form cannot be autofilled.
 
+**Remarks:**
+
+Currently, Puppeteer supports auto-filling credit card information only and in Chrome in the new headless and headful modes only.
+
+```ts
+// Select an input on the credit card form.
+const name = await page.waitForSelector('form #name');
+// Trigger autofill with the desired data.
+await name.autofill({
+  creditCard: {
+    number: '4444444444444444',
+    name: 'John Smith',
+    expiryMonth: '01',
+    expiryYear: '2030',
+    cvc: '123',
+  },
+});
+```
+
 </td></tr>
 <tr><td>
 
@@ -171,6 +190,10 @@ This method returns the bounding box of the element (relative to the main frame)
 </td><td>
 
 This method returns boxes of the element, or `null` if the element is [not part of the layout](https://drafts.csswg.org/css-display-4/#box-generation) (example: `display: none`).
+
+**Remarks:**
+
+Boxes are represented as an array of points; Each Point is an object `{x, y}`. Box points are sorted clock-wise.
 
 </td></tr>
 <tr><td>
@@ -362,6 +385,12 @@ Checks if an element is visible using the same mechanism as [ElementHandle.waitF
 
 Focuses the element, and then uses [Keyboard.down()](./puppeteer.keyboard.down.md) and [Keyboard.up()](./puppeteer.keyboard.up.md).
 
+**Remarks:**
+
+If `key` is a single character and no modifier keys besides `Shift` are being held down, a `keypress`/`input` event will also be generated. The `text` option can be specified to force an input event to be generated.
+
+**NOTE** Modifier keys DO affect `elementHandle.press`. Holding down `Shift` will type the text in upper case.
+
 </td></tr>
 <tr><td>
 
@@ -476,6 +505,10 @@ To press a special key, like `Control` or `ArrowDown`, use [ElementHandle.press(
 </td><td>
 
 Sets the value of an [input element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input) to the given file paths.
+
+**Remarks:**
+
+This will not validate whether the file paths exists. Also, if a path is relative, then it is resolved against the [current working directory](https://nodejs.org/api/process.html#process_process_cwd). For locals script connecting to remote chrome environments, paths must be absolute.
 
 </td></tr>
 <tr><td>

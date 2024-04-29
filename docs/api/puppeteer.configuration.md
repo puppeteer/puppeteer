@@ -128,6 +128,10 @@ Specifies the URL prefix that is used to download the browser.
 
 Can be overridden by `PUPPETEER_DOWNLOAD_BASE_URL`.
 
+**Remarks:**
+
+This must include the protocol and may even need a path prefix.
+
 </td><td>
 
 Either https://storage.googleapis.com/chrome-for-testing-public or https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central, depending on the product.

@@ -214,6 +214,17 @@ An array of child frames.
 
 Clicks the first element found that matches `selector`.
 
+**Remarks:**
+
+If `click()` triggers a navigation event and there's a separate `page.waitForNavigation()` promise to be resolved, you may end up with a race condition that yields unexpected results. The correct pattern for click and wait for navigation is the following:
+
+```ts
+const [response] = await Promise.all([
+  page.waitForNavigation(waitOptions),
+  frame.click(selector, clickOptions),
+]);
+```
+
 </td></tr>
 <tr><td>
 
@@ -278,6 +289,16 @@ Focuses the first element that matches the `selector`.
 
 Navigates the frame to the given `url`.
 
+**Remarks:**
+
+Navigation to `about:blank` or navigation to the same URL with a different hash will succeed and return `null`.
+
+:::warning
+
+Headless mode doesn't support navigation to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
+
+:::
+
 </td></tr>
 <tr><td>
 
@@ -328,6 +349,10 @@ Is `true` if the frame is an out-of-process (OOP) frame. Otherwise, `false`.
 
 Creates a locator for the provided selector. See [Locator](./puppeteer.locator.md) for details and supported actions.
 
+**Remarks:**
+
+Locators API is experimental and we will not follow semver for breaking change in the Locators API.
+
 </td></tr>
 <tr><td>
 
@@ -338,6 +363,10 @@ Creates a locator for the provided selector. See [Locator](./puppeteer.locator.m
 </td><td>
 
 Creates a locator for the provided function. See [Locator](./puppeteer.locator.md) for details and supported actions.
+
+**Remarks:**
+
+Locators API is experimental and we will not follow semver for breaking change in the Locators API.
 
 </td></tr>
 <tr><td>
@@ -360,6 +389,10 @@ Use
 const element = await frame.frameElement();
 const nameOrId = await element.evaluate(frame => frame.name ?? frame.id);
 ```
+
+**Remarks:**
+
+This value is calculated once when the frame is created, and will not update if the attribute is changed later.
 
 </td></tr>
 <tr><td>
@@ -437,6 +470,10 @@ The frame's title.
 </td><td>
 
 Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
+
+**Remarks:**
+
+To press a special key, like `Control` or `ArrowDown`, use [Keyboard.press()](./puppeteer.keyboard.press.md).
 
 </td></tr>
 <tr><td>

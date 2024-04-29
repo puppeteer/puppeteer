@@ -104,7 +104,11 @@ Whether Puppeteer is connected to this [browser](./puppeteer.browser.md).
 
 </td><td>
 
-Get debug information from Puppeteer.
+**_(Experimental)_** Get debug information from Puppeteer.
+
+**Remarks:**
+
+Currently, includes pending protocol calls. In the future, we might add more info.
 
 </td></tr>
 </tbody></table>
@@ -171,6 +175,10 @@ This won't share cookies/cache with other [browser contexts](./puppeteer.browser
 
 Gets the default [browser context](./puppeteer.browsercontext.md).
 
+**Remarks:**
+
+The default [browser context](./puppeteer.browsercontext.md) cannot be closed.
+
 </td></tr>
 <tr><td>
 
@@ -222,6 +230,10 @@ Creates a new [page](./puppeteer.page.md) in the [default browser context](./pup
 Gets a list of all open [pages](./puppeteer.page.md) inside this [Browser](./puppeteer.browser.md).
 
 If there ar multiple [browser contexts](./puppeteer.browsercontext.md), this returns all [pages](./puppeteer.page.md) in all [browser contexts](./puppeteer.browsercontext.md).
+
+**Remarks:**
+
+Non-visible [pages](./puppeteer.page.md), such as `"background_page"`, will not be listed here. You can find them using [Target.page()](./puppeteer.target.page.md).
 
 </td></tr>
 <tr><td>
@@ -315,6 +327,10 @@ This is usually used with [Puppeteer.connect()](./puppeteer.puppeteer.connect.md
 You can find the debugger URL (`webSocketDebuggerUrl`) from `http://HOST:PORT/json/version`.
 
 See [browser endpoint](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target) for more information.
+
+**Remarks:**
+
+The format is always `ws://HOST:PORT/devtools/browser/<id>`.
 
 </td></tr>
 </tbody></table>

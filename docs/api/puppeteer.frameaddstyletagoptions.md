@@ -68,6 +68,10 @@ string
 
 The path to a CSS file to be injected into the frame.
 
+**Remarks:**
+
+If `path` is a relative path, it is resolved relative to the current working directory (`process.cwd()` in Node.js).
+
 </td><td>
 
 </td></tr>

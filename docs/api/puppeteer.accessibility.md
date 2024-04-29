@@ -47,5 +47,9 @@ Description
 
 Captures the current state of the accessibility tree. The returned object represents the root accessible node of the page.
 
+**Remarks:**
+
+**NOTE** The Chrome accessibility tree contains nodes that go unused on most platforms and by most screen readers. Puppeteer will discard them as well for an easier to process tree, unless `interestingOnly` is set to `false`.
+
 </td></tr>
 </tbody></table>

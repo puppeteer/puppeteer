@@ -52,6 +52,10 @@ Console
 
 Emitted when JavaScript within the page calls one of console API methods, e.g. `console.log` or `console.dir`. Also emitted if the page throws an error or a warning.
 
+**Remarks:**
+
+A `console` event provides a [ConsoleMessage](./puppeteer.consolemessage.md) representing the console message that was logged.
+
 </td></tr>
 <tr><td>
 
@@ -156,6 +160,12 @@ Metrics
 
 Emitted when the JavaScript code makes a call to `console.timeStamp`. For the list of metrics see [page.metrics](./puppeteer.page.metrics.md).
 
+**Remarks:**
+
+Contains an object with two properties:
+
+- `title`: the title passed to `console.timeStamp` - `metrics`: object containing metrics as key/value pairs. The values will be `number`s.
+
 </td></tr>
 <tr><td>
 
@@ -197,6 +207,10 @@ Request
 
 Emitted when a page issues a request and contains a [HTTPRequest](./puppeteer.httprequest.md).
 
+**Remarks:**
+
+The object is readonly. See [Page.setRequestInterception()](./puppeteer.page.setrequestinterception.md) for intercepting and mutating requests.
+
 </td></tr>
 <tr><td>
 
@@ -211,6 +225,10 @@ RequestFailed
 Emitted when a request fails, for example by timing out.
 
 Contains a [HTTPRequest](./puppeteer.httprequest.md).
+
+**Remarks:**
+
+HTTP Error responses, such as 404 or 503, are still successful responses from HTTP standpoint, so request will complete with `requestfinished` event and not with `requestfailed`.
 
 </td></tr>
 <tr><td>
@@ -237,6 +255,10 @@ RequestServedFromCache
 </td><td>
 
 Emitted when a request ended up loading from cache. Contains a [HTTPRequest](./puppeteer.httprequest.md).
+
+**Remarks:**
+
+For certain requests, might contain undefined. [https://crbug.com/750469](https://crbug.com/750469)
 
 </td></tr>
 <tr><td>

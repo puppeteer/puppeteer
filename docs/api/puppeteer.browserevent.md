@@ -54,6 +54,10 @@ TargetChanged
 
 Emitted when the URL of a target changes. Contains a [Target](./puppeteer.target.md) instance.
 
+**Remarks:**
+
+Note that this includes target changes in all browser contexts.
+
 </td></tr>
 <tr><td>
 
@@ -69,6 +73,10 @@ Emitted when a target is created, for example when a new page is opened by [wind
 
 Contains a [Target](./puppeteer.target.md) instance.
 
+**Remarks:**
+
+Note that this includes target creations in all browser contexts.
+
 </td></tr>
 <tr><td>
 
@@ -81,6 +89,10 @@ TargetDestroyed
 </td><td>
 
 Emitted when a target is destroyed, for example when a page is closed. Contains a [Target](./puppeteer.target.md) instance.
+
+**Remarks:**
+
+Note that this includes target destructions in all browser contexts.
 
 </td></tr>
 </tbody></table>

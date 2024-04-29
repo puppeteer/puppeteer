@@ -41,6 +41,10 @@ Description
 
 Promise which resolves to a buffer with response body.
 
+**Remarks:**
+
+The buffer might be re-encoded by the browser based on HTTP-headers or other heuristics. If the browser failed to detect the correct encoding, the buffer might be encoded incorrectly. See https://github.com/puppeteer/puppeteer/issues/6478.
+
 </td></tr>
 <tr><td>
 
@@ -95,6 +99,10 @@ An object with HTTP headers associated with the response. All header names are l
 </td><td>
 
 Promise which resolves to a JSON representation of response body.
+
+**Remarks:**
+
+This method will throw if the response body is not parsable via `JSON.parse`.
 
 </td></tr>
 <tr><td>

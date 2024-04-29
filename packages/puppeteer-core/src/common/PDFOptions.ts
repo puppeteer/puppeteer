@@ -168,7 +168,7 @@ export interface PDFOptions {
    * @remarks
    * If this is enabled the PDF will also be tagged (accessible)
    * Currently only works in old Headless (headless = 'shell')
-   * crbug/840455#c47
+   * {@link https://issues.chromium.org/issues/41387522#comment48 | Chromium feature request}
    *
    * @defaultValue `false`
    * @experimental

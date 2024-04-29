@@ -174,6 +174,10 @@ Launches a browser instance with given arguments and options when specified.
 
 When using with `puppeteer-core`, [options.executablePath](./puppeteer.launchoptions.md#executablepath) or [options.channel](./puppeteer.launchoptions.md#channel) must be provided.
 
+**Remarks:**
+
+Puppeteer can also be used to control the Chrome browser, but it works best with the version of Chrome for Testing downloaded by default. There is no guarantee it will work with any other version. If Google Chrome (rather than Chrome for Testing) is preferred, a [Chrome Canary](https://www.google.com/chrome/browser/canary.html) or [Dev Channel](https://www.chromium.org/getting-involved/dev-channel) build is suggested. See [this article](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) for a description of the differences between Chromium and Chrome. [This article](https://chromium.googlesource.com/chromium/src/+/lkgr/docs/chromium_browser_vs_google_chrome.md) describes some differences for Linux users. See [this doc](https://developer.chrome.com/blog/chrome-for-testing/) for the description of Chrome for Testing.
+
 </td></tr>
 <tr><td>
 
@@ -184,6 +188,10 @@ When using with `puppeteer-core`, [options.executablePath](./puppeteer.launchopt
 </td><td>
 
 Removes all non-current Firefox and Chrome binaries in the cache directory identified by the provided Puppeteer configuration. The current browser version is determined by resolving PUPPETEER_REVISIONS from Puppeteer unless `configuration.browserRevision` is provided.
+
+**Remarks:**
+
+Note that the method does not check if any other Puppeteer versions installed on the host that use the same cache directory require the non-current binaries.
 
 </td></tr>
 </tbody></table>
