@@ -73,6 +73,10 @@ Description
 
 </td><td>
 
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `InstalledBrowser` class.
+
 </td></tr>
 <tr><td>
 
@@ -86,6 +90,10 @@ Description
 <span id="timeouterror">[TimeoutError](./browsers.timeouterror.md)</span>
 
 </td><td>
+
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `TimeoutError` class.
 
 </td></tr>
 </tbody></table>

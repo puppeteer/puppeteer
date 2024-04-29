@@ -96,6 +96,16 @@ Description
 
 The Accessibility class provides methods for inspecting the browser's accessibility tree. The accessibility tree is used by assistive technology such as [screen readers](https://en.wikipedia.org/wiki/Screen_reader) or [switches](https://en.wikipedia.org/wiki/Switch_access).
 
+**Remarks:**
+
+Accessibility is a very platform-specific thing. On different platforms, there are different screen readers that might have wildly different output.
+
+Blink - Chrome's rendering engine - has a concept of "accessibility tree", which is then translated into different platform-specific APIs. Accessibility namespace gives users access to the Blink Accessibility Tree.
+
+Most of the accessibility tree gets filtered out when converting from Blink AX Tree to Platform-specific AX-Tree or by assistive technologies themselves. By default, Puppeteer tries to approximate this filtering, exposing only the "interesting" nodes of the tree.
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Accessibility` class.
+
 </td></tr>
 <tr><td>
 
@@ -112,6 +122,10 @@ The Accessibility class provides methods for inspecting the browser's accessibil
 </td><td>
 
 The Coverage class provides methods to gather information about parts of JavaScript and CSS that were used by the page.
+
+**Remarks:**
+
+To output coverage in a form consumable by [Istanbul](https://github.com/istanbuljs), see [puppeteer-to-istanbul](https://github.com/istanbuljs/puppeteer-to-istanbul).
 
 </td></tr>
 <tr><td>
@@ -130,6 +144,14 @@ The Coverage class provides methods to gather information about parts of JavaScr
 
 Keyboard provides an api for managing a virtual keyboard. The high level api is [Keyboard.type()](./puppeteer.keyboard.type.md), which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
 
+**Remarks:**
+
+For finer control, you can use [Keyboard.down()](./puppeteer.keyboard.down.md), [Keyboard.up()](./puppeteer.keyboard.up.md), and [Keyboard.sendCharacter()](./puppeteer.keyboard.sendcharacter.md) to manually fire events as if they were generated from a real keyboard.
+
+On macOS, keyboard shortcuts like `⌘ A` -&gt; Select All do not work. See [\#1313](https://github.com/puppeteer/puppeteer/issues/1313).
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Keyboard` class.
+
 </td></tr>
 <tr><td>
 
@@ -146,6 +168,12 @@ Keyboard provides an api for managing a virtual keyboard. The high level api is 
 </td><td>
 
 The Mouse class operates in main-frame CSS pixels relative to the top-left corner of the viewport.
+
+**Remarks:**
+
+Every `page` object has its own Mouse, accessible with \[`page.mouse`\](\#pagemouse).
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Mouse` class.
 
 </td></tr>
 <tr><td>
@@ -180,6 +208,12 @@ The Touchscreen class exposes touchscreen events.
 </td><td>
 
 The Tracing class exposes the tracing audit interface.
+
+**Remarks:**
+
+You can use `tracing.start` and `tracing.stop` to create a trace file which can be opened in Chrome DevTools or [timeline viewer](https://chromedevtools.github.io/timeline-viewer/).
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Tracing` class.
 
 </td></tr>
 </tbody></table>
@@ -220,6 +254,10 @@ Runs `document.querySelector` within the page. If no element matches the selecto
 
 The method runs `document.querySelectorAll` within the page. If no elements match the selector, the return value resolves to `[]`.
 
+**Remarks:**
+
+Shortcut for [Page.mainFrame().$$(selector)](./puppeteer.frame.__.md).
+
 </td></tr>
 <tr><td>
 
@@ -230,6 +268,10 @@ The method runs `document.querySelectorAll` within the page. If no elements matc
 </td><td>
 
 This method runs `Array.from(document.querySelectorAll(selector))` within the page and passes the result as the first argument to the `pageFunction`.
+
+**Remarks:**
+
+If `pageFunction` returns a promise `$$eval` will wait for the promise to resolve and then return its value.
 
 </td></tr>
 <tr><td>
@@ -242,6 +284,12 @@ This method runs `Array.from(document.querySelectorAll(selector))` within the pa
 
 This method runs `document.querySelector` within the page and passes the result as the first argument to the `pageFunction`.
 
+**Remarks:**
+
+If no element is found matching `selector`, the method will throw an error.
+
+If `pageFunction` returns a promise `$eval` will wait for the promise to resolve and then return its value.
+
 </td></tr>
 <tr><td>
 
@@ -252,6 +300,10 @@ This method runs `document.querySelector` within the page and passes the result 
 </td><td>
 
 Adds a `<script>` tag into the page with the desired URL or content.
+
+**Remarks:**
+
+Shortcut for [page.mainFrame().addScriptTag(options)](./puppeteer.frame.addscripttag.md).
 
 </td></tr>
 <tr><td>
@@ -285,6 +337,10 @@ Shortcut for [page.mainFrame().addStyleTag(options)](./puppeteer.frame.addstylet
 </td><td>
 
 Provide credentials for `HTTP authentication`.
+
+**Remarks:**
+
+To disable authentication, pass `null`.
 
 </td></tr>
 <tr><td>
@@ -329,6 +385,19 @@ Get the browser context that the page belongs to.
 </td><td>
 
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [Page.mouse](./puppeteer.page.md#mouse) to click in the center of the element. If there's no element matching `selector`, the method throws an error.
+
+**Remarks:**
+
+Bear in mind that if `click()` triggers a navigation event and there's a separate `page.waitForNavigation()` promise to be resolved, you may end up with a race condition that yields unexpected results. The correct pattern for click and wait for navigation is the following:
+
+```ts
+const [response] = await Promise.all([
+  page.waitForNavigation(waitOptions),
+  page.click(selector, clickOptions),
+]);
+```
+
+Shortcut for [page.mainFrame().click(selector\[, options\])](./puppeteer.frame.click.md).
 
 </td></tr>
 <tr><td>
@@ -383,6 +452,12 @@ Creates a Chrome Devtools Protocol session attached to the page.
 
 Generates a PDF of the page with the `print` CSS media type.
 
+**Remarks:**
+
+To generate a PDF with the `screen` media type, call [\`page.emulateMediaType('screen')\`](./puppeteer.page.emulatemediatype.md) before calling `page.pdf()`.
+
+By default, `page.pdf()` generates a pdf with modified colors for printing. Use the [\`-webkit-print-color-adjust\`](https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-print-color-adjust) property to force rendering of exact colors.
+
 </td></tr>
 <tr><td>
 
@@ -404,6 +479,12 @@ Generates a PDF of the page with the `print` CSS media type.
 Emulates a given device's metrics and user agent.
 
 To aid emulation, Puppeteer provides a list of known devices that can be via [KnownDevices](./puppeteer.knowndevices.md).
+
+**Remarks:**
+
+This method is a shortcut for calling two methods: [Page.setUserAgent()](./puppeteer.page.setuseragent.md) and [Page.setViewport()](./puppeteer.page.setviewport.md).
+
+This method will resize the page. A lot of websites don't expect phones to change size, so you should emulate before navigating to the page.
 
 </td></tr>
 <tr><td>
@@ -500,6 +581,14 @@ If the function passed to `page.evaluate` returns a Promise, the function will w
 
 </td><td>
 
+**Remarks:**
+
+The only difference between [page.evaluate](./puppeteer.page.evaluate.md) and `page.evaluateHandle` is that `evaluateHandle` will return the value wrapped in an in-page object.
+
+If the function passed to `page.evaluateHandle` returns a Promise, the function will wait for the promise to resolve and return its value.
+
+You can pass a string instead of a function (although functions are recommended as they are easier to debug and use with TypeScript):
+
 </td></tr>
 <tr><td>
 
@@ -547,6 +636,10 @@ Functions installed via `page.exposeFunction` survive navigations.
 
 This method fetches an element with `selector` and focuses it. If there's no element matching `selector`, the method throws an error.
 
+**Remarks:**
+
+Shortcut for [page.mainFrame().focus(selector)](./puppeteer.frame.focus.md).
+
 </td></tr>
 <tr><td>
 
@@ -580,6 +673,14 @@ Maximum time in milliseconds.
 
 This method navigate to the previous page in history.
 
+**Remarks:**
+
+The argument `options` might have the following properties:
+
+- `timeout` : Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the [Page.setDefaultNavigationTimeout()](./puppeteer.page.setdefaultnavigationtimeout.md) or [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) methods.
+
+- `waitUntil` : When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:<br/> - `load` : consider navigation to be finished when the load event is fired.<br/> - `domcontentloaded` : consider navigation to be finished when the DOMContentLoaded event is fired.<br/> - `networkidle0` : consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.<br/> - `networkidle2` : consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
+
 </td></tr>
 <tr><td>
 
@@ -590,6 +691,14 @@ This method navigate to the previous page in history.
 </td><td>
 
 This method navigate to the next page in history.
+
+**Remarks:**
+
+The argument `options` might have the following properties:
+
+- `timeout` : Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the [Page.setDefaultNavigationTimeout()](./puppeteer.page.setdefaultnavigationtimeout.md) or [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) methods.
+
+- `waitUntil`: When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:<br/> - `load` : consider navigation to be finished when the load event is fired.<br/> - `domcontentloaded` : consider navigation to be finished when the DOMContentLoaded event is fired.<br/> - `networkidle0` : consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.<br/> - `networkidle2` : consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
 
 </td></tr>
 <tr><td>
@@ -602,6 +711,18 @@ This method navigate to the next page in history.
 
 Navigates the page to the given `url`.
 
+**Remarks:**
+
+Navigation to `about:blank` or navigation to the same URL with a different hash will succeed and return `null`.
+
+:::warning
+
+Headless mode doesn't support navigation to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
+
+:::
+
+Shortcut for [page.mainFrame().goto(url, options)](./puppeteer.frame.goto.md).
+
 </td></tr>
 <tr><td>
 
@@ -612,6 +733,10 @@ Navigates the page to the given `url`.
 </td><td>
 
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [Page.mouse](./puppeteer.page.md#mouse) to hover over the center of the element. If there's no element matching `selector`, the method throws an error.
+
+**Remarks:**
+
+Shortcut for [page.mainFrame().hover(selector)](./puppeteer.page.hover.md).
 
 </td></tr>
 <tr><td>
@@ -674,6 +799,10 @@ We no longer support intercepting drag payloads. Use the new drag APIs found on 
 
 Creates a locator for the provided selector. See [Locator](./puppeteer.locator.md) for details and supported actions.
 
+**Remarks:**
+
+Locators API is experimental and we will not follow semver for breaking change in the Locators API.
+
 </td></tr>
 <tr><td>
 
@@ -684,6 +813,10 @@ Creates a locator for the provided selector. See [Locator](./puppeteer.locator.m
 </td><td>
 
 Creates a locator for the provided function. See [Locator](./puppeteer.locator.md) for details and supported actions.
+
+**Remarks:**
+
+Locators API is experimental and we will not follow semver for breaking change in the Locators API.
 
 </td></tr>
 <tr><td>
@@ -696,6 +829,10 @@ Creates a locator for the provided function. See [Locator](./puppeteer.locator.m
 
 The page's main frame.
 
+**Remarks:**
+
+Page is guaranteed to have a main frame which persists during navigations.
+
 </td></tr>
 <tr><td>
 
@@ -707,6 +844,10 @@ The page's main frame.
 
 Object containing metrics as key/value pairs.
 
+**Remarks:**
+
+All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
+
 </td></tr>
 <tr><td>
 
@@ -717,6 +858,12 @@ Object containing metrics as key/value pairs.
 </td><td>
 
 Generates a PDF of the page with the `print` CSS media type.
+
+**Remarks:**
+
+To generate a PDF with the `screen` media type, call [\`page.emulateMediaType('screen')\`](./puppeteer.page.emulatemediatype.md) before calling `page.pdf()`.
+
+By default, `page.pdf()` generates a pdf with modified colors for printing. Use the [\`-webkit-print-color-adjust\`](https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-print-color-adjust) property to force rendering of exact colors.
 
 </td></tr>
 <tr><td>
@@ -771,7 +918,13 @@ Removes script that injected into page by Page.evaluateOnNewDocument.
 
 </td><td>
 
-Captures a screencast of this [page](./puppeteer.page.md).
+**_(Experimental)_** Captures a screencast of this [page](./puppeteer.page.md).
+
+**Remarks:**
+
+All recordings will be [WebM](https://www.webmproject.org/) format using the [VP9](https://www.webmproject.org/vp9/) video codec. The FPS is 30.
+
+You must have [ffmpeg](https://ffmpeg.org/) installed on your system.
 
 </td></tr>
 <tr><td>
@@ -804,6 +957,10 @@ Captures a screenshot of this [page](./puppeteer.page.md).
 
 Triggers a `change` and `input` event once all the provided options have been selected. If there's no `<select>` element matching `selector`, the method throws an error.
 
+**Remarks:**
+
+Shortcut for [page.mainFrame().select()](./puppeteer.frame.select.md)
+
 </td></tr>
 <tr><td>
 
@@ -814,6 +971,10 @@ Triggers a `change` and `input` event once all the provided options have been se
 </td><td>
 
 Toggles bypassing page's Content-Security-Policy.
+
+**Remarks:**
+
+NOTE: CSP bypassing happens at the moment of CSP initialization rather than evaluation. Usually, this means that `page.setBypassCSP` should be called before navigating to the domain.
 
 </td></tr>
 <tr><td>
@@ -847,6 +1008,14 @@ Toggles ignoring cache for each request based on the enabled state. By default, 
 </td><td>
 
 Set the content of the page.
+
+**Remarks:**
+
+The parameter `options` might have the following options.
+
+- `timeout` : Maximum time in milliseconds for resources to load, defaults to 30 seconds, pass `0` to disable timeout. The default value can be changed by using the [Page.setDefaultNavigationTimeout()](./puppeteer.page.setdefaultnavigationtimeout.md) or [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) methods.
+
+- `waitUntil`: When to consider setting markup succeeded, defaults to `load`. Given an array of event strings, setting content is considered to be successful after all events have been fired. Events can be either:<br/> - `load` : consider setting content to be finished when the `load` event is fired.<br/> - `domcontentloaded` : consider setting content to be finished when the `DOMContentLoaded` event is fired.<br/> - `networkidle0` : consider setting content to be finished when there are no more than 0 network connections for at least `500` ms.<br/> - `networkidle2` : consider setting content to be finished when there are no more than 2 network connections for at least `500` ms.
 
 </td></tr>
 <tr><td>
@@ -938,6 +1107,10 @@ page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing
 
 Sets the page's geolocation.
 
+**Remarks:**
+
+Consider using [BrowserContext.overridePermissions()](./puppeteer.browsercontext.overridepermissions.md) to grant permissions for the page to read its geolocation.
+
 </td></tr>
 <tr><td>
 
@@ -946,6 +1119,10 @@ Sets the page's geolocation.
 </td><td>
 
 </td><td>
+
+**Remarks:**
+
+NOTE: changing this value won't affect scripts that have already been run. It will take full effect on the next navigation.
 
 </td></tr>
 <tr><td>
@@ -997,6 +1174,10 @@ See the [Request interception guide](https://pptr.dev/guides/network-interceptio
 
 In the case of multiple pages in a single browser, each page can have its own viewport size.
 
+**Remarks:**
+
+NOTE: in certain cases, setting viewport will reload the page in order to set the isMobile or hasTouch properties.
+
 </td></tr>
 <tr><td>
 
@@ -1007,6 +1188,10 @@ In the case of multiple pages in a single browser, each page can have its own vi
 </td><td>
 
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [Page.touchscreen](./puppeteer.page.md#touchscreen) to tap in the center of the element. If there's no element matching `selector`, the method throws an error.
+
+**Remarks:**
+
+Shortcut for [page.mainFrame().tap(selector)](./puppeteer.frame.tap.md).
 
 </td></tr>
 <tr><td>
@@ -1036,6 +1221,10 @@ Use [Page.createCDPSession()](./puppeteer.page.createcdpsession.md) directly.
 
 The page's title
 
+**Remarks:**
+
+Shortcut for [page.mainFrame().title()](./puppeteer.frame.title.md).
+
 </td></tr>
 <tr><td>
 
@@ -1059,6 +1248,10 @@ To press a special key, like `Control` or `ArrowDown`, use [Keyboard.press()](./
 </td><td>
 
 The page's URL.
+
+**Remarks:**
+
+Shortcut for [page.mainFrame().url()](./puppeteer.frame.url.md).
 
 </td></tr>
 <tr><td>
@@ -1107,6 +1300,10 @@ This must be called before the file chooser is launched. It will not return a cu
 
 :::
 
+**Remarks:**
+
+In the "headful" browser, this method results in the native file picker dialog `not showing up` for the user.
+
 </td></tr>
 <tr><td>
 
@@ -1140,6 +1337,10 @@ Waits for the provided function, `pageFunction`, to return a truthy value when e
 
 Waits for the page to navigate to a new URL or to reload. It is useful when you run code that will indirectly cause the page to navigate.
 
+**Remarks:**
+
+Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
+
 </td></tr>
 <tr><td>
 
@@ -1160,6 +1361,12 @@ Waits for the network to be idle.
 
 </td><td>
 
+**Remarks:**
+
+Optional Waiting Parameters have:
+
+- `timeout`: Maximum wait time in milliseconds, defaults to `30` seconds, pass `0` to disable the timeout. The default value can be changed by using the [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) method.
+
 </td></tr>
 <tr><td>
 
@@ -1168,6 +1375,12 @@ Waits for the network to be idle.
 </td><td>
 
 </td><td>
+
+**Remarks:**
+
+Optional Parameter have:
+
+- `timeout`: Maximum wait time in milliseconds, defaults to `30` seconds, pass `0` to disable the timeout. The default value can be changed by using the [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) method.
 
 </td></tr>
 <tr><td>
@@ -1180,6 +1393,16 @@ Waits for the network to be idle.
 
 Wait for the `selector` to appear in page. If at the moment of calling the method the `selector` already exists, the method will return immediately. If the `selector` doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
 
+**Remarks:**
+
+The optional Parameter in Arguments `options` are:
+
+- `visible`: A boolean wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+
+- `hidden`: Wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+
+- `timeout`: maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The default value can be changed by using the [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) method.
+
 </td></tr>
 <tr><td>
 
@@ -1190,6 +1413,10 @@ Wait for the `selector` to appear in page. If at the moment of calling the metho
 </td><td>
 
 All of the dedicated [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) associated with the page.
+
+**Remarks:**
+
+This does not contain ServiceWorkers
 
 </td></tr>
 </tbody></table>

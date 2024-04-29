@@ -107,6 +107,10 @@ If the target is not of type `"page"`, `"webview"` or `"background_page"`, retur
 
 Identifies what kind of target this is.
 
+**Remarks:**
+
+See [docs](https://developer.chrome.com/extensions/background_pages) for more info about background pages.
+
 </td></tr>
 <tr><td>
 

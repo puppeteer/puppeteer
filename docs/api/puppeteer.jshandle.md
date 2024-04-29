@@ -177,6 +177,10 @@ Fetches a single property from the referenced object.
 
 A vanilla object representing the serializable portions of the referenced object.
 
+**Remarks:**
+
+If the object has a `toJSON` function, it **will not** be called.
+
 </td></tr>
 <tr><td>
 
@@ -198,6 +202,10 @@ Provides access to the [Protocol.Runtime.RemoteObject](https://chromedevtools.gi
 </td><td>
 
 Returns a string representation of the JSHandle.
+
+**Remarks:**
+
+Useful during debugging.
 
 </td></tr>
 </tbody></table>

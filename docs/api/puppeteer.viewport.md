@@ -49,6 +49,10 @@ number
 
 Specify device scale factor. See [devicePixelRatio](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio) for more info.
 
+**Remarks:**
+
+Setting this value to `0` will reset this value to the system default.
+
 </td><td>
 
 `1`
@@ -88,6 +92,10 @@ number
 </td><td>
 
 The page height in CSS pixels.
+
+**Remarks:**
+
+Setting this value to `0` will reset this value to the system default.
 
 </td><td>
 
@@ -147,6 +155,10 @@ number
 </td><td>
 
 The page width in CSS pixels.
+
+**Remarks:**
+
+Setting this value to `0` will reset this value to the system default.
 
 </td><td>
 

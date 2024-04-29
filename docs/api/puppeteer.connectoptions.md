@@ -85,6 +85,10 @@ Record&lt;string, string&gt;
 
 Headers to use for the web socket connection.
 
+**Remarks:**
+
+Only works in the Node.js environment.
+
 </td><td>
 
 </td></tr>

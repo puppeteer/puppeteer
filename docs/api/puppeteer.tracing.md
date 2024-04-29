@@ -51,6 +51,10 @@ Description
 
 Starts a trace for the current page.
 
+**Remarks:**
+
+Only one trace can be active at a time per browser.
+
 </td></tr>
 <tr><td>
 

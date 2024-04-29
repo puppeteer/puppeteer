@@ -110,6 +110,12 @@ boolean \| 'shell'
 
 Whether to run the browser in headless mode.
 
+**Remarks:**
+
+- `true` launches the browser in the [new headless](https://developer.chrome.com/articles/new-headless/) mode.
+
+- `'shell'` launches [shell](https://developer.chrome.com/blog/chrome-headless-shell) known as the old headless mode.
+
 </td><td>
 
 `true`

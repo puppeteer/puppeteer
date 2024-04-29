@@ -65,7 +65,7 @@ Description
 
 </td><td>
 
-Warning! Using this client can break Puppeteer. Use with caution.
+**_(Experimental)_** Warning! Using this client can break Puppeteer. Use with caution.
 
 </td></tr>
 </tbody></table>
@@ -95,6 +95,10 @@ Description
 
 Aborts a request.
 
+**Remarks:**
+
+To use this, request interception should be enabled with [Page.setRequestInterception()](./puppeteer.page.setrequestinterception.md). If it is not enabled, this method will throw an exception immediately.
+
 </td></tr>
 <tr><td>
 
@@ -116,6 +120,12 @@ The most recent reason for aborting the request
 </td><td>
 
 Continues request with optional request overrides.
+
+**Remarks:**
+
+To use this, request interception should be enabled with [Page.setRequestInterception()](./puppeteer.page.setrequestinterception.md).
+
+Exception is immediately thrown if the request interception is not enabled.
 
 </td></tr>
 <tr><td>
@@ -149,6 +159,8 @@ Adds an async request handler to the processing queue. Deferred handlers are not
 </td><td>
 
 Access information about the request's failure.
+
+**Remarks:**
 
 </td></tr>
 <tr><td>
@@ -286,6 +298,27 @@ The request's post body, if any.
 
 A `redirectChain` is a chain of requests initiated to fetch a resource.
 
+**Remarks:**
+
+`redirectChain` is shared between all the requests of the same chain.
+
+For example, if the website `http://example.com` has a single redirect to `https://example.com`, then the chain will contain one request:
+
+```ts
+const response = await page.goto('http://example.com');
+const chain = response.request().redirectChain();
+console.log(chain.length); // 1
+console.log(chain[0].url()); // 'http://example.com'
+```
+
+If the website `https://google.com` has no redirects, then the chain will be empty:
+
+```ts
+const response = await page.goto('https://google.com');
+const chain = response.request().redirectChain();
+console.log(chain.length); // 0
+```
+
 </td></tr>
 <tr><td>
 
@@ -307,6 +340,12 @@ Contains the request's resource type as it was perceived by the rendering engine
 </td><td>
 
 Fulfills a request with the given response.
+
+**Remarks:**
+
+To use this, request interception should be enabled with [Page.setRequestInterception()](./puppeteer.page.setrequestinterception.md).
+
+Exception is immediately thrown if the request interception is not enabled.
 
 </td></tr>
 <tr><td>

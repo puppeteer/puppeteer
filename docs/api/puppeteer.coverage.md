@@ -103,6 +103,10 @@ Description
 
 </td><td>
 
+**Remarks:**
+
+Anonymous scripts are ones that don't have an associated url. These are scripts that are dynamically created on the page using `eval` or `new Function`. If `reportAnonymousScripts` is set to `true`, anonymous scripts URL will start with `debugger://VM` (unless a magic //\# sourceURL comment is present, in which case that will the be URL).
+
 </td></tr>
 <tr><td>
 
@@ -114,6 +118,10 @@ Description
 
 Promise that resolves to the array of coverage reports for all stylesheets.
 
+**Remarks:**
+
+CSS Coverage doesn't include dynamically injected style tags without sourceURLs.
+
 </td></tr>
 <tr><td>
 
@@ -124,6 +132,10 @@ Promise that resolves to the array of coverage reports for all stylesheets.
 </td><td>
 
 Promise that resolves to the array of coverage reports for all scripts.
+
+**Remarks:**
+
+JavaScript Coverage doesn't include anonymous scripts by default. However, scripts with sourceURLs are reported.
 
 </td></tr>
 </tbody></table>

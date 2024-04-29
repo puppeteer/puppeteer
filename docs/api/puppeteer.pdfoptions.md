@@ -89,6 +89,10 @@ HTML template for the print footer. Has the same constraints and support for spe
 
 </td><td>
 
+**Remarks:**
+
+If set, this takes priority over the `width` and `height` options.
+
 </td><td>
 
 `letter`.
@@ -219,7 +223,11 @@ boolean
 
 </td><td>
 
-Generate document outline.
+**_(Experimental)_** Generate document outline.
+
+**Remarks:**
+
+If this is enabled the PDF will also be tagged (accessible) Currently only works in old Headless (headless = 'shell') [Chromium feature request](https://issues.chromium.org/issues/41387522#comment48)
 
 </td><td>
 
@@ -262,6 +270,10 @@ string
 </td><td>
 
 The path to save the file to.
+
+**Remarks:**
+
+If the path is relative, it's resolved relative to the current working directory.
 
 </td><td>
 
@@ -345,7 +357,7 @@ boolean
 
 </td><td>
 
-Generate tagged (accessible) PDF.
+**_(Experimental)_** Generate tagged (accessible) PDF.
 
 </td><td>
 

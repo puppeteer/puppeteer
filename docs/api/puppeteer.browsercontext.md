@@ -141,6 +141,10 @@ Clears all permission overrides for this [browser context](./puppeteer.browserco
 
 Closes this [browser context](./puppeteer.browsercontext.md) and all associated [pages](./puppeteer.page.md).
 
+**Remarks:**
+
+The [default browser context](./puppeteer.browser.defaultbrowsercontext.md) cannot be closed.
+
 </td></tr>
 <tr><td>
 
@@ -192,6 +196,10 @@ Grants this [browser context](./puppeteer.browsercontext.md) the given `permissi
 </td><td>
 
 Gets a list of all open [pages](./puppeteer.page.md) inside this [browser context](./puppeteer.browsercontext.md).
+
+**Remarks:**
+
+Non-visible [pages](./puppeteer.page.md), such as `"background_page"`, will not be listed here. You can find them using [Target.page()](./puppeteer.target.page.md).
 
 </td></tr>
 <tr><td>

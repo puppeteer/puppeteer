@@ -108,6 +108,14 @@ Description
 
 Evaluates a given function in the [worker](./puppeteer.webworker.md).
 
+**Remarks:**
+
+If the given function returns a promise, [evaluate](./puppeteer.webworker.evaluate.md) will wait for the promise to resolve.
+
+As a rule of thumb, if the return value of the given function is more complicated than a JSON object (e.g. most classes), then [evaluate](./puppeteer.webworker.evaluate.md) will \_likely\_ return some truncated value (or `{}`). This is because we are not returning the actual return value, but a deserialized version as a result of transferring the return value through a protocol to Puppeteer.
+
+In general, you should use [evaluateHandle](./puppeteer.webworker.evaluatehandle.md) if [evaluate](./puppeteer.webworker.evaluate.md) cannot serialize the return value properly or you need a mutable [handle](./puppeteer.jshandle.md) to the return object.
+
 </td></tr>
 <tr><td>
 
@@ -118,6 +126,12 @@ Evaluates a given function in the [worker](./puppeteer.webworker.md).
 </td><td>
 
 Evaluates a given function in the [worker](./puppeteer.webworker.md).
+
+**Remarks:**
+
+If the given function returns a promise, [evaluate](./puppeteer.webworker.evaluate.md) will wait for the promise to resolve.
+
+In general, you should use [evaluateHandle](./puppeteer.webworker.evaluatehandle.md) if [evaluate](./puppeteer.webworker.evaluate.md) cannot serialize the return value properly or you need a mutable [handle](./puppeteer.jshandle.md) to the return object.
 
 </td></tr>
 <tr><td>

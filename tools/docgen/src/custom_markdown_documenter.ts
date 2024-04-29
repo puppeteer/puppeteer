@@ -1269,6 +1269,19 @@ export class MarkdownDocumenter {
     }
 
     if (apiItem instanceof ApiDocumentedItem) {
+      const isExperimental =
+        apiItem.tsdocComment?.modifierTagSet.isExperimental();
+      if (isExperimental) {
+        section.appendNodesInParagraph([
+          new DocEmphasisSpan({configuration, bold: true, italic: true}, [
+            new DocPlainText({configuration, text: '(Experimental)'}),
+          ]),
+          new DocPlainText({configuration, text: ' '}),
+        ]);
+      }
+    }
+
+    if (apiItem instanceof ApiDocumentedItem) {
       if (apiItem.tsdocComment !== undefined) {
         this._appendAndMergeSection(
           section,
@@ -1288,6 +1301,21 @@ export class MarkdownDocumenter {
             apiItem.tsdocComment.deprecatedBlock.content.getChildNodes()
           );
         }
+      }
+    }
+
+    if (apiItem instanceof ApiDocumentedItem) {
+      const remarks = apiItem.tsdocComment?.remarksBlock;
+      if (remarks) {
+        section.appendNode(
+          new DocParagraph({configuration}, [
+            new DocEmphasisSpan({configuration, bold: true}, [
+              new DocPlainText({configuration, text: 'Remarks: '}),
+            ]),
+          ])
+        );
+
+        section.appendNodes(remarks.content.getChildNodes());
       }
     }
 
