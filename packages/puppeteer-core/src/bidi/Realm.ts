@@ -53,6 +53,7 @@ export abstract class BidiRealm extends Realm {
   protected initialize(): void {
     this.realm.on('destroyed', ({reason}) => {
       this.taskManager.terminateAll(new Error(reason));
+      this.dispose();
     });
     this.realm.on('updated', () => {
       this.internalPuppeteerUtil = undefined;
@@ -224,6 +225,10 @@ export abstract class BidiRealm extends Realm {
   }
 
   async destroyHandles(handles: Array<BidiJSHandle<unknown>>): Promise<void> {
+    if (this.disposed) {
+      return;
+    }
+
     const handleIds = handles
       .map(({id}) => {
         return id;
