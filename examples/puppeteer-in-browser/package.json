@@ -1,0 +1,17 @@
+{
+  "name": "puppeteer-in-browser",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "rm -rf out && rollup -c && terser out/main.js --compress --mangle --output out/main.min.js && gzip -k --best -r -f out"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "rollup": "^4.14.3",
+    "terser": "^5.30.4"
+  }
+}
