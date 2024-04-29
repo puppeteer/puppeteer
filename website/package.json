@@ -20,16 +20,16 @@
     "@docusaurus/preset-classic": "3.2.1",
     "@docusaurus/remark-plugin-npm2yarn": "3.2.1",
     "@mdx-js/react": "3.0.1",
-    "clsx": "2.1.0",
+    "clsx": "2.1.1",
     "prism-react-renderer": "2.3.1",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "semver": "7.6.0"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.2.1",
     "@docusaurus/types": "3.2.1",
-    "@swc/core": "1.4.16",
+    "@swc/core": "1.4.17",
     "swc-loader": "0.2.6"
   },
   "browserslist": {
