@@ -28,7 +28,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "mime": "3.0.0",
-    "ws": "8.16.0"
+    "ws": "8.17.0"
   },
   "devDependencies": {
     "@types/mime": "3.0.4"

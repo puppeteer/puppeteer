@@ -99,7 +99,7 @@
     "extract-zip": "2.0.1",
     "progress": "2.0.3",
     "proxy-agent": "6.4.0",
-    "tar-fs": "3.0.5",
+    "tar-fs": "3.0.6",
     "unbzip2-stream": "1.4.3",
     "yargs": "17.7.2",
     "semver": "7.6.0"
