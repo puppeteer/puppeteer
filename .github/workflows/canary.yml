@@ -24,7 +24,7 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-          - macos-13
+          - macos-latest
         shard:
           - 1-2
           - 2-2
@@ -34,7 +34,7 @@ jobs:
         exclude:
           - os: windows-latest
             suite: chrome-bidi
-          - os: macos-13
+          - os: macos-latest
             suite: chrome-headful
     steps:
       - name: Check out repository
