@@ -5,11 +5,16 @@
  */
 
 import assert from 'assert';
+import {spawnSync} from 'child_process';
 import {readdirSync} from 'fs';
+import fs from 'fs';
 import {readdir} from 'fs/promises';
 import {platform} from 'os';
 import {join} from 'path';
 
+import {TestServer} from '@pptr/testserver';
+
+import {EXAMPLES_DIR} from './constants.js';
 import {configureSandbox} from './sandbox.js';
 import {readAsset} from './util.js';
 
@@ -36,6 +41,33 @@ describe('`puppeteer`', () => {
   it('evaluates ES modules', async function () {
     const script = await readAsset('puppeteer-core', 'imports.js');
     await this.runScript(script, 'mjs');
+  });
+
+  it('runs in the browser', async function () {
+    const puppeteerInBrowserPath = join(this.sandbox, 'puppeteer-in-browser');
+    fs.cpSync(
+      join(EXAMPLES_DIR, 'puppeteer-in-browser'),
+      puppeteerInBrowserPath,
+      {
+        recursive: true,
+      }
+    );
+    spawnSync('npm', ['ci'], {
+      cwd: puppeteerInBrowserPath,
+      shell: true,
+    });
+    spawnSync('npm', ['run', 'build'], {
+      cwd: puppeteerInBrowserPath,
+      shell: true,
+    });
+
+    const server = await TestServer.create(puppeteerInBrowserPath);
+    try {
+      const script = await readAsset('puppeteer', 'puppeteer-in-browser.js');
+      await this.runScript(script, 'mjs', [String(server.port)]);
+    } finally {
+      await server.stop();
+    }
   });
 });
 

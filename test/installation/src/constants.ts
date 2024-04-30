@@ -23,3 +23,10 @@ export const ASSETS_DIR = join(
   '..',
   'assets'
 );
+export const EXAMPLES_DIR = join(
+  dirname(fileURLToPath(import.meta.url)),
+  '..',
+  '..',
+  '..',
+  'examples'
+);
