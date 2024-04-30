@@ -577,6 +577,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[oopif.spec] OOPIF should load a page with a PDF viewer",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["FAIL"],
+    "comment": "chrome-headless-shell does not have a PDF viewer"
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.addScriptTag should throw when added with content to the CSP page",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -2944,6 +2951,13 @@
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "Failed previously and currently times out"
+  },
+  {
+    "testIdPattern": "[oopif.spec] OOPIF should load a page with a PDF viewer",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "https://github.com/GoogleChromeLabs/chromium-bidi/issues/2175"
   },
   {
     "testIdPattern": "[oopif.spec] OOPIF should report google.com frame",

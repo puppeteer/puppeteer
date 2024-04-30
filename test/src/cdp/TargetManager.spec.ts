@@ -39,7 +39,7 @@ describe('TargetManager', () => {
   });
 
   // CDP-specific test.
-  it('should handle targets', async () => {
+  it.deflake(10, 'should handle targets', async () => {
     const {server, context, browser} = state;
 
     const targetManager = browser._targetManager();
@@ -64,9 +64,11 @@ describe('TargetManager', () => {
     await framePromise;
     expect(await context.pages()).toHaveLength(1);
     expect(targetManager.getAvailableTargets().size).toBe(5);
-    expect(page.frames()).toHaveLength(2);
+    await page.waitForFrame(() => {
+      return page.frames().length === 2;
+    });
 
-    // // attach a remote frame iframe.
+    // attach a remote frame iframe.
     framePromise = page.waitForFrame(frame => {
       return frame.url() === server.CROSS_PROCESS_PREFIX + '/empty.html';
     });
@@ -78,7 +80,9 @@ describe('TargetManager', () => {
     await framePromise;
     expect(await context.pages()).toHaveLength(1);
     expect(targetManager.getAvailableTargets().size).toBe(6);
-    expect(page.frames()).toHaveLength(3);
+    await page.waitForFrame(() => {
+      return page.frames().length === 3;
+    });
 
     framePromise = page.waitForFrame(frame => {
       return frame.url() === server.CROSS_PROCESS_PREFIX + '/empty.html';
@@ -91,6 +95,8 @@ describe('TargetManager', () => {
     await framePromise;
     expect(await context.pages()).toHaveLength(1);
     expect(targetManager.getAvailableTargets().size).toBe(7);
-    expect(page.frames()).toHaveLength(4);
+    await page.waitForFrame(() => {
+      return page.frames().length === 4;
+    });
   });
 });

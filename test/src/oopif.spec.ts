@@ -425,6 +425,24 @@ describe('OOPIF', function () {
     ).toEqual([true, true, false]);
   });
 
+  it('should load a page with a PDF viewer', async () => {
+    const {page, server} = state;
+
+    await page.goto(server.PREFIX + '/pdf-viewer.html', {
+      waitUntil: 'networkidle2',
+    });
+
+    expect(
+      await Promise.all(
+        page.frames().map(async frame => {
+          return await frame.evaluate(() => {
+            return window.location.pathname;
+          });
+        })
+      )
+    ).toEqual(['/pdf-viewer.html', '/sample.pdf']);
+  });
+
   describe('waitForFrame', () => {
     it('should resolve immediately if the frame already exists', async () => {
       const {server, page} = state;
