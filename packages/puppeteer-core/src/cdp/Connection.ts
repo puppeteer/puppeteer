@@ -29,11 +29,6 @@ const debugProtocolReceive = debug('puppeteer:protocol:RECV ◀');
 /**
  * @public
  */
-export type {ConnectionTransport, ProtocolMapping};
-
-/**
- * @public
- */
 export class Connection extends EventEmitter<CDPSessionEvents> {
   #url: string;
   #transport: ConnectionTransport;
@@ -62,6 +57,13 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
 
   static fromSession(session: CDPSession): Connection | undefined {
     return session.connection();
+  }
+
+  /**
+   * @internal
+   */
+  get delay(): number {
+    return this.#delay;
   }
 
   get timeout(): number {
