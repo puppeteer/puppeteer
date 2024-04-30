@@ -320,42 +320,10 @@ jobs:
         run: 'exit 1'
       - run: 'exit 0'
 
-  installation-test-build:
-    name: Build installation test
-    runs-on: ubuntu-latest
-    needs: check-changes
-    outputs:
-      node-version: ${{ steps.node-version.outputs.node }}
-    if: ${{ !startsWith(github.ref_name, 'release-please') && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
-      - name: Set up Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
-        with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Config Node.JS for installation test run
-        id: node-version
-        run: echo "node=$(cat .nvmrc)" >> "$GITHUB_OUTPUT"
-      - name: Install dependencies
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
-      - name: Build installation test
-        run: npm run build --workspace @puppeteer-test/installation
-      - name: Pack installation test
-        run: npm pack --workspace @puppeteer-test/installation
-      - name: Upload installation test
-        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
-        with:
-          name: installation-test
-          path: puppeteer-test-installation-latest.tgz
-
   installation-test:
     name: ${{ matrix.pkg_manager }} installation on ${{ matrix.os }}
-    needs: installation-test-build
-    if: ${{ !startsWith(github.ref_name, 'release-please') }}
+    needs: check-changes
+    if: ${{ !startsWith(github.ref_name, 'release-please') && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -374,22 +342,34 @@ jobs:
           - linux-only: true
             os: macos-13
     steps:
-      - name: Download installation test
-        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
-        with:
-          name: installation-test
-      - name: Unpack installation test
-        run: tar -xf puppeteer-test-installation-latest.tgz --strip-components 1 -C .
+      - name: Check out repository
+        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
       - name: Set up Node.js
         uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
-          node-version: ${{ needs.installation-test-build.outputs.node-version }}
+          cache: npm
+          node-version-file: '.nvmrc'
       - name: Install dependencies
-        run: ${{ matrix.pkg_manager }} install
-      - name: Test
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
+      # Set up GitHub Actions caching for Wireit.
+      - uses: google/wireit@4aad131006ea85c1e42af927534ebb13426dd730 # setup-github-actions-caching/v1.0.2
+      - name: Build packages
+        run: npm run build --workspace @puppeteer-test/test
+      - name: Setup cache for Chrome binary
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+        with:
+          path: ~/.cache/puppeteer/chrome
+          key: Chrome-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
+      - name: Install Chrome
+        run: npm run postinstall
+      - name: Build installation test
+        run: npm run build --workspace @puppeteer-test/installation
+      - name: Test install
         env:
           PKG_MANAGER: ${{ matrix.pkg_manager }}
-        run: ${{ matrix.pkg_manager }} test
+        run: ${{ matrix.pkg_manager }} run test-install
 
   installation-test-required:
     name: '[Required] Installation tests'
