@@ -2,7 +2,8 @@
   "last-release-sha": "30e5b1a58edb8b1d94acdff00d64c76e76cf02a3",
   "packages": {
     "packages/puppeteer": {
-      "component": "puppeteer"
+      "component": "puppeteer",
+      "extra-files": ["docker/Dockerfile"]
     },
     "packages/puppeteer-core": {
       "component": "puppeteer-core"
