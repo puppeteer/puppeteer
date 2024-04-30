@@ -22,7 +22,7 @@ import {dumpFrames, waitEvent} from './utils.js';
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 const FIREFOX_TIMEOUT = 30_000;
 
-describe.only('Launcher specs', function () {
+describe('Launcher specs', function () {
   this.timeout(FIREFOX_TIMEOUT);
 
   describe('Puppeteer', function () {
@@ -37,7 +37,7 @@ describe.only('Launcher specs', function () {
           });
           const page = await remote.newPage();
           const navigationPromise = page
-            .goto(server.PREFIX + '/one-style.html', {timeout: 0})
+            .goto(server.PREFIX + '/one-style.html', {timeout: 60_000})
             .catch(error_ => {
               return error_;
             });
@@ -67,7 +67,7 @@ describe.only('Launcher specs', function () {
           });
           const page = await remote.newPage();
           const watchdog = page
-            .waitForSelector('div', {timeout: 0})
+            .waitForSelector('div', {timeout: 60_000})
             .catch(error_ => {
               return error_;
             });
