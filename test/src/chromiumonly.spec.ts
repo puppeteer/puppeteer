@@ -21,7 +21,7 @@ describe('Chromium-Specific Launcher tests', function () {
       try {
         const browserURL = 'http://127.0.0.1:21222';
 
-        const browser1 = await puppeteer.connect({browserURL});
+        using browser1 = await puppeteer.connect({browserURL});
         const page1 = await browser1.newPage();
         expect(
           await page1.evaluate(() => {
@@ -30,7 +30,7 @@ describe('Chromium-Specific Launcher tests', function () {
         ).toBe(56);
         await browser1.disconnect();
 
-        const browser2 = await puppeteer.connect({
+        using browser2 = await puppeteer.connect({
           browserURL: browserURL + '/',
         });
         const page2 = await browser2.newPage();
@@ -39,7 +39,6 @@ describe('Chromium-Specific Launcher tests', function () {
             return 8 * 7;
           })
         ).toBe(56);
-        await browser2.disconnect();
       } finally {
         await close();
       }

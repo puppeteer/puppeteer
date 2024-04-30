@@ -57,12 +57,11 @@ describe('Browser specs', function () {
       });
 
       const browserWSEndpoint = browser.wsEndpoint();
-      const remoteBrowser = await puppeteer.connect({
+      using remoteBrowser = await puppeteer.connect({
         browserWSEndpoint,
         protocol: browser.protocol,
       });
       expect(remoteBrowser.process()).toBe(null);
-      await remoteBrowser.disconnect();
     });
     it('should keep connected after the last page is closed', async () => {
       const {browser, close} = await launch({}, {createContext: false});
@@ -90,7 +89,7 @@ describe('Browser specs', function () {
       });
 
       const browserWSEndpoint = browser.wsEndpoint();
-      const newBrowser = await puppeteer.connect({
+      using newBrowser = await puppeteer.connect({
         browserWSEndpoint,
         protocol: browser.protocol,
       });
