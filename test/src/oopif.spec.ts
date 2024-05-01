@@ -425,7 +425,19 @@ describe('OOPIF', function () {
     ).toEqual([true, true, false]);
   });
 
-  it('should load a page with a PDF viewer', async () => {
+  it('should exposeFunction on a page with a PDF viewer', async () => {
+    const {page, server} = state;
+
+    await page.goto(server.PREFIX + '/pdf-viewer.html', {
+      waitUntil: 'networkidle2',
+    });
+
+    await page.exposeFunction('test', () => {
+      console.log('test');
+    });
+  });
+
+  it('should evaluate on a page with a PDF viewer', async () => {
     const {page, server} = state;
 
     await page.goto(server.PREFIX + '/pdf-viewer.html', {
@@ -440,7 +452,12 @@ describe('OOPIF', function () {
           });
         })
       )
-    ).toEqual(['/pdf-viewer.html', '/sample.pdf']);
+    ).toEqual([
+      '/pdf-viewer.html',
+      '/sample.pdf',
+      '/index.html',
+      '/sample.pdf',
+    ]);
   });
 
   describe('waitForFrame', () => {

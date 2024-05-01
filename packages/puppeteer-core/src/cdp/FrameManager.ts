@@ -262,9 +262,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
   }
 
   frames(): CdpFrame[] {
-    return Array.from(this._frameTree.frames()).filter(frame => {
-      return !frame.isBeingSwapped;
-    });
+    return Array.from(this._frameTree.frames());
   }
 
   frame(frameId: string): CdpFrame | null {
@@ -465,7 +463,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
         break;
       case 'swap':
         this.emit(FrameManagerEvent.FrameSwapped, frame);
-        frame.onFrameSwap();
+        frame.emit(FrameEvent.FrameSwapped, undefined);
         break;
     }
   }

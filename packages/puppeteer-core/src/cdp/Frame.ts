@@ -35,7 +35,6 @@ import type {CdpPage} from './Page.js';
 export class CdpFrame extends Frame {
   #url = '';
   #detached = false;
-  #isBeingSwapped = false;
   #client!: CDPSession;
   worlds!: IsolatedWorldChart;
 
@@ -87,7 +86,6 @@ export class CdpFrame extends Frame {
   }
 
   updateClient(client: CDPSession, keepWorlds = false): void {
-    this.#isBeingSwapped = false;
     this.#client = client;
     if (!keepWorlds) {
       // Clear the current contexts on previous world instances.
@@ -322,12 +320,10 @@ export class CdpFrame extends Frame {
   _navigated(framePayload: Protocol.Page.Frame): void {
     this._name = framePayload.name;
     this.#url = `${framePayload.url}${framePayload.urlFragment || ''}`;
-    this.#isBeingSwapped = false;
   }
 
   _navigatedWithinDocument(url: string): void {
     this.#url = url;
-    this.#isBeingSwapped = false;
   }
 
   _onLifecycleEvent(loaderId: string, name: string): void {
@@ -335,14 +331,12 @@ export class CdpFrame extends Frame {
       this._loaderId = loaderId;
       this._lifecycleEvents.clear();
     }
-    this.#isBeingSwapped = false;
     this._lifecycleEvents.add(name);
   }
 
   _onLoadingStopped(): void {
     this._lifecycleEvents.add('DOMContentLoaded');
     this._lifecycleEvents.add('load');
-    this.#isBeingSwapped = false;
   }
 
   _onLoadingStarted(): void {
@@ -364,14 +358,5 @@ export class CdpFrame extends Frame {
 
   exposeFunction(): never {
     throw new UnsupportedOperation();
-  }
-
-  onFrameSwap(): void {
-    this.#isBeingSwapped = true;
-    this.emit(FrameEvent.FrameSwapped, undefined);
-  }
-
-  get isBeingSwapped(): boolean {
-    return this.#isBeingSwapped;
   }
 }

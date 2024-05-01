@@ -255,7 +255,6 @@ export class LifecycleWatcher {
       for (const child of frame.childFrames()) {
         if (
           child._hasStartedLoading &&
-          !child.isBeingSwapped &&
           !checkLifecycle(child, expectedLifecycle)
         ) {
           return false;

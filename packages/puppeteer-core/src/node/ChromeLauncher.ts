@@ -192,6 +192,7 @@ export class ChromeLauncher extends ProductLauncher {
 
     // Merge default enabled features with user-provided ones, if any.
     const enabledFeatures = [
+      'PdfOopif',
       // Add features to enable by default here.
       ...userEnabledFeatures,
     ].filter(feature => {
