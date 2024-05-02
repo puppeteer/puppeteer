@@ -577,6 +577,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[oopif.spec] OOPIF should evaluate on a page with a PDF viewer",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["FAIL"],
+    "comment": "chrome-headless-shell does not have a PDF viewer"
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.addScriptTag should throw when added with content to the CSP page",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1437,10 +1444,10 @@
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.clickablePoint should work for iframes",
-    "platforms": ["linux", "win32"],
+    "platforms": ["linux", "win32", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL", "PASS"],
-    "comment": "Flaky on Windows and Linux"
+    "comment": "Flaky with fieldtrial testing config"
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.isIntersectingViewport should work",
@@ -2923,6 +2930,13 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[oopif.spec] OOPIF should evaluate on a page with a PDF viewer",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "chrome-specific test"
   },
   {
     "testIdPattern": "[oopif.spec] OOPIF should expose events within OOPIFs",
