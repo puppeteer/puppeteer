@@ -112,6 +112,18 @@ export abstract class ProductLauncher {
       });
     };
 
+    if (
+      this.#product === 'firefox' &&
+      protocol !== 'webDriverBiDi' &&
+      this.puppeteer.configuration.logLevel === 'warn'
+    ) {
+      console.warn(
+        `Chrome DevTools Protocol (CDP) support for Firefox is deprecated in Puppeteer ` +
+          `and it will be eventually removed. ` +
+          `Use WebDriver BiDi instead (see https://pptr.dev/webdriver-bidi#get-started).`
+      );
+    }
+
     const browserProcess = launch({
       executablePath: launchArgs.executablePath,
       args: launchArgs.args,
