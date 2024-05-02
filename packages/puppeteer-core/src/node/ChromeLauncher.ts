@@ -210,9 +210,6 @@ export class ChromeLauncher extends ProductLauncher {
       '--disable-default-apps',
       '--disable-dev-shm-usage',
       '--disable-extensions',
-      turnOnExperimentalFeaturesForTesting
-        ? ''
-        : '--disable-field-trial-config', // https://source.chromium.org/chromium/chromium/src/+/main:testing/variations/README.md
       '--disable-hang-monitor',
       '--disable-infobars',
       '--disable-ipc-flooding-protection',

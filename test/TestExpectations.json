@@ -251,6 +251,13 @@
     "comment": "The test relies on the default page partition key do not contain the source origin. This is not the case for Firefox."
   },
   {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set secure same-site cookies from a frame",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"],
+    "comment": "Failes with fieldtrial testing config in Chrome"
+  },
+  {
     "testIdPattern": "[coverage.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -582,6 +589,13 @@
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.bringToFront should work",
+    "platforms": ["darwin"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "Flaky on Mac"
   },
   {
     "testIdPattern": "[page.spec] Page Page.close should *not* run beforeunload by default",
@@ -1327,6 +1341,12 @@
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set secure same-site cookies from a frame",
     "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "chrome-headless-shell"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set secure same-site cookies from a frame",
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "Chromium-specific test. The test relies on the cookie in secure context to be secure. This is not the case for Firefox."
@@ -1414,6 +1434,13 @@
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.clickablePoint should work for iframes",
+    "platforms": ["linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "Flaky on Windows and Linux"
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.isIntersectingViewport should work",
