@@ -72,3 +72,23 @@ jobs:
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.suite }}-${{ matrix.shard }}-${{ matrix.configs }}
           path: /tmp/artifacts/*.json
+
+  report-results:
+    name: 'Report results'
+    needs: [canary-chrome-tests]
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    if: ${{ always() }}
+    steps:
+      - name: Post comment
+        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4.0.0
+        if: ${{ needs.canary-chrome-tests.result != 'success'}}
+        with:
+          # https://github.com/puppeteer/puppeteer/issues/12379
+          issue-number: 12379
+          body: |
+            Tests with Chrome Canary failed
+
+            ---
+            [Link](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
