@@ -52,7 +52,11 @@ declare module 'mocha' {
      */
     sandbox: string;
     env: NodeJS.ProcessEnv | undefined;
-    runScript: (content: string, type: 'cjs' | 'mjs') => Promise<void>;
+    runScript: (
+      content: string,
+      type: 'cjs' | 'mjs',
+      args?: string[]
+    ) => Promise<void>;
   }
 }
 
@@ -111,10 +115,14 @@ export const configureSandbox = (options: SandboxOptions): void => {
 
     this.sandbox = sandbox;
     this.env = env;
-    this.runScript = async (content: string, type: 'cjs' | 'mjs') => {
+    this.runScript = async (
+      content: string,
+      type: 'cjs' | 'mjs',
+      args?: string[]
+    ) => {
       const script = join(sandbox, `script-${crypto.randomUUID()}.${type}`);
       await writeFile(script, content);
-      await execFile('node', [script], {cwd: sandbox, env});
+      await execFile('node', [script, ...(args ?? [])], {cwd: sandbox, env});
     };
     console.timeEnd('before');
   });

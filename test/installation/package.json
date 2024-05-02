@@ -29,7 +29,8 @@
       "dependencies": [
         "../../packages/puppeteer:build",
         "../../packages/puppeteer-core:build",
-        "../../packages/browsers:build"
+        "../../packages/browsers:build",
+        "../../packages/testserver:build"
       ],
       "files": [],
       "output": [
