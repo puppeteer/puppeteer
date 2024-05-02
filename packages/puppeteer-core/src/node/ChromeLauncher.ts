@@ -176,10 +176,15 @@ export class ChromeLauncher extends ProductLauncher {
       'AcceptCHFrame',
       'MediaRouter',
       'OptimizationHints',
-      // https://crbug.com/1492053
-      turnOnExperimentalFeaturesForTesting
-        ? ''
-        : 'ProcessPerSiteUpToMainFrameThreshold',
+
+      ...(turnOnExperimentalFeaturesForTesting
+        ? []
+        : [
+            // https://crbug.com/1492053
+            'ProcessPerSiteUpToMainFrameThreshold',
+            // https://github.com/puppeteer/puppeteer/issues/10715
+            'IsolateSandboxedIframes',
+          ]),
       ...userDisabledFeatures,
     ].filter(feature => {
       return feature !== '';
