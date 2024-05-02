@@ -6,7 +6,9 @@
 const puppeteer = require('puppeteer');
 
 (async () => {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    dumpio: true,
+  });
   const page = await browser.newPage();
   await page.goto('https://example.com');
   await browser.close();
