@@ -197,7 +197,7 @@ export class TestServer {
     this.#requestSubscribers.clear();
     for (const request of this.#requests.values()) {
       if (!request.writableEnded) {
-        request.end();
+        request.destroy();
       }
     }
     this.#requests.clear();

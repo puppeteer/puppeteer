@@ -404,7 +404,7 @@ describe('OOPIF', function () {
     expect(page.frames()).toHaveLength(2);
 
     const browserURL = 'http://127.0.0.1:21222';
-    const browser1 = await puppeteer.connect({browserURL});
+    using browser1 = await puppeteer.connect({browserURL});
     const target = await browser1.waitForTarget(target => {
       return target.url().endsWith('dynamic-oopif.html');
     });

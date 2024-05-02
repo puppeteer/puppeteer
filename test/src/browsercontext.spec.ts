@@ -222,13 +222,12 @@ describe('BrowserContext', function () {
     const context = await browser.createBrowserContext();
     try {
       expect(browser.browserContexts()).toHaveLength(2);
-      const remoteBrowser = await puppeteer.connect({
+      using remoteBrowser = await puppeteer.connect({
         browserWSEndpoint: browser.wsEndpoint(),
         protocol: browser.protocol,
       });
       const contexts = remoteBrowser.browserContexts();
       expect(contexts).toHaveLength(2);
-      await remoteBrowser.disconnect();
     } finally {
       await context.close();
     }

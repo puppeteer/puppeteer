@@ -101,7 +101,7 @@ describe('Fixtures', function () {
           wsEndPointCallback(output.substring(0, output.indexOf('\n')));
         }
       });
-      const browser = await puppeteer.connect({
+      using browser = await puppeteer.connect({
         browserWSEndpoint: await wsEndPointPromise,
       });
       const promises = [

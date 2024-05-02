@@ -50,7 +50,7 @@ describe('DevTools', function () {
 
     const browserWSEndpoint = originalBrowser.wsEndpoint();
 
-    const browser = await puppeteer.connect({
+    using browser = await puppeteer.connect({
       browserWSEndpoint,
       _isPageTarget(target) {
         return (
@@ -75,7 +75,7 @@ describe('DevTools', function () {
 
     const browserWSEndpoint = originalBrowser.wsEndpoint();
 
-    const browser = await puppeteer.connect({
+    using browser = await puppeteer.connect({
       browserWSEndpoint,
     });
     const devtoolsPageTarget = await browser.waitForTarget(target => {
