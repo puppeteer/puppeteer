@@ -37,3 +37,17 @@ Make sure to specify a init process via the `--init` flag or a custom `ENTRYPOIN
 to make sure all processes started by Puppeteer are managed properly.
 
 :::
+
+## dbus
+
+The image installs and configures dbus for Chrome. Usually you would not
+need dbus in the headless mode but you might see warnings in the browser
+console. You can start the dbus service before launching
+your application:
+
+```
+sudo service dbus start
+```
+
+See https://docs.docker.com/config/containers/multi-service_container/
+for instructions how to start multiple processes in a container.
