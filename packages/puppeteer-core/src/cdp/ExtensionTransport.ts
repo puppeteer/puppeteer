@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020 Google Inc.
+ * Copyright 2024 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
