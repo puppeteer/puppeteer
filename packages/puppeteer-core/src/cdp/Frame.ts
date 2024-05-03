@@ -93,8 +93,6 @@ export class CdpFrame extends Frame {
 
   updateClient(client: CDPSession): void {
     this.#client = client;
-    this.worlds[MAIN_WORLD].frameClientUpdated();
-    this.worlds[PUPPETEER_WORLD].frameClientUpdated();
   }
 
   override page(): CdpPage {
