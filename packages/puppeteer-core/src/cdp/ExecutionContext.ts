@@ -44,7 +44,6 @@ export class ExecutionContext implements Disposable {
   _client: CDPSession;
   _world: IsolatedWorld;
   _contextId: number;
-  _contextName?: string;
 
   // Set of bindings that have been registered in the current context.
   #contextBindings = new Set<string>();
@@ -59,9 +58,6 @@ export class ExecutionContext implements Disposable {
     this._client = client;
     this._world = world;
     this._contextId = contextPayload.id;
-    if (contextPayload.name) {
-      this._contextName = contextPayload.name;
-    }
     client.on('Runtime.bindingCalled', this.#onBindingCalled);
   }
 
@@ -75,18 +71,10 @@ export class ExecutionContext implements Disposable {
 
     using _ = await this.#mutex.acquire();
     try {
-      await this._client.send(
-        'Runtime.addBinding',
-        this._contextName
-          ? {
-              name,
-              executionContextName: this._contextName,
-            }
-          : {
-              name,
-              executionContextId: this._contextId,
-            }
-      );
+      await this._client.send('Runtime.addBinding', {
+        name,
+        executionContextId: this._contextId,
+      });
 
       await this.evaluate(addPageBinding, 'internal', name);
 
