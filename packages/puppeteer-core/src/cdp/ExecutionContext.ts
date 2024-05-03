@@ -30,7 +30,6 @@ import {ARIAQueryHandler} from './AriaQueryHandler.js';
 import {Binding} from './Binding.js';
 import {CdpElementHandle} from './ElementHandle.js';
 import type {IsolatedWorld} from './IsolatedWorld.js';
-import {createCdpHandle} from './IsolatedWorld.js';
 import {CdpJSHandle} from './JSHandle.js';
 import {
   addPageBinding,
@@ -356,7 +355,7 @@ export class ExecutionContext implements Disposable {
 
       return returnByValue
         ? valueFromRemoteObject(remoteObject)
-        : createCdpHandle(this._world, remoteObject);
+        : this._world.createCdpHandle(remoteObject);
     }
 
     const functionDeclaration = stringifyFunction(pageFunction);
@@ -393,7 +392,7 @@ export class ExecutionContext implements Disposable {
     }
     return returnByValue
       ? valueFromRemoteObject(remoteObject)
-      : createCdpHandle(this._world, remoteObject);
+      : this._world.createCdpHandle(remoteObject);
 
     async function convertArgument(
       this: ExecutionContext,

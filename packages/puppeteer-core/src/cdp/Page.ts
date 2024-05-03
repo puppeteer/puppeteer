@@ -69,7 +69,6 @@ import type {CdpFrame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {FrameManagerEvent} from './FrameManagerEvents.js';
 import {CdpKeyboard, CdpMouse, CdpTouchscreen} from './Input.js';
-import {createCdpHandle} from './IsolatedWorld.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
 import {releaseObject} from './JSHandle.js';
 import type {NetworkConditions} from './NetworkManager.js';
@@ -576,10 +575,9 @@ export class CdpPage extends Page {
         prototypeObjectId: prototypeHandle.id,
       }
     );
-    return createCdpHandle(
-      this.mainFrame().mainRealm(),
-      response.objects
-    ) as HandleFor<Prototype[]>;
+    return this.mainFrame()
+      .mainRealm()
+      .createCdpHandle(response.objects) as HandleFor<Prototype[]>;
   }
 
   override async cookies(...urls: string[]): Promise<Cookie[]> {
@@ -814,7 +812,7 @@ export class CdpPage extends Page {
       return;
     }
     const values = event.args.map(arg => {
-      return createCdpHandle(context._world, arg);
+      return context._world.createCdpHandle(arg);
     });
     this.#addConsoleMessage(
       convertConsoleMessageLevel(event.type),

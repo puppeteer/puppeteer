@@ -7,8 +7,10 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
+import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
+import {EventEmitter} from '../common/EventEmitter.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {EvaluateFunc, HandleFor} from '../common/types.js';
 import {withSourcePuppeteerURLIfNone} from '../common/util.js';
@@ -18,10 +20,8 @@ import {ExecutionContext} from './ExecutionContext.js';
 import type {CdpFrame} from './Frame.js';
 import type {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import type {CdpWebWorker} from './WebWorker.js';
-import {EventEmitter} from '../common/EventEmitter.js';
 import {CdpElementHandle} from './ElementHandle.js';
 import {CdpJSHandle} from './JSHandle.js';
-import {ElementHandle} from '../api/ElementHandle.js';
 
 /**
  * @internal
@@ -108,11 +108,11 @@ export class IsolatedWorld extends Realm {
     );
     let context = this.#executionContext();
     if (!context) {
-      context = await new Promise<ExecutionContext>(resolve =>
-        this.#emitter.once('context', context =>
-          resolve(context as ExecutionContext)
-        )
-      );
+      context = await new Promise<ExecutionContext>(resolve => {
+        return this.#emitter.once('context', context => {
+          return resolve(context as ExecutionContext);
+        });
+      });
     }
     return await context.evaluateHandle(pageFunction, ...args);
   }
@@ -130,11 +130,11 @@ export class IsolatedWorld extends Realm {
     );
     let context = this.#executionContext();
     if (!context) {
-      context = await new Promise<ExecutionContext>(resolve =>
-        this.#emitter.once('context', context =>
-          resolve(context as ExecutionContext)
-        )
-      );
+      context = await new Promise<ExecutionContext>(resolve => {
+        return this.#emitter.once('context', context => {
+          return resolve(context as ExecutionContext);
+        });
+      });
     }
     return await context.evaluate(pageFunction, ...args);
   }
@@ -150,7 +150,7 @@ export class IsolatedWorld extends Realm {
       backendNodeId: backendNodeId,
       executionContextId: executionContext._contextId,
     });
-    return createCdpHandle(this, object) as JSHandle<Node>;
+    return this.createCdpHandle(object) as JSHandle<Node>;
   }
 
   async adoptHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
@@ -189,17 +189,16 @@ export class IsolatedWorld extends Realm {
     super[disposeSymbol]();
     this.#disposables.dispose();
   }
-}
 
-/**
- * @internal
- */
-export function createCdpHandle(
-  realm: IsolatedWorld,
-  remoteObject: Protocol.Runtime.RemoteObject
-): JSHandle | ElementHandle<Node> {
-  if (remoteObject.subtype === 'node') {
-    return new CdpElementHandle(realm, remoteObject);
+  /**
+   * @internal
+   */
+  createCdpHandle(
+    remoteObject: Protocol.Runtime.RemoteObject
+  ): JSHandle | ElementHandle<Node> {
+    if (remoteObject.subtype === 'node') {
+      return new CdpElementHandle(this, remoteObject);
+    }
+    return new CdpJSHandle(this, remoteObject);
   }
-  return new CdpJSHandle(realm, remoteObject);
 }
