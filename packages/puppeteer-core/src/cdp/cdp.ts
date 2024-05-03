@@ -19,6 +19,7 @@ export * from './Dialog.js';
 export * from './ElementHandle.js';
 export * from './EmulationManager.js';
 export * from './ExecutionContext.js';
+export * from './ExtensionTransport.js';
 export * from './FirefoxTargetManager.js';
 export * from './Frame.js';
 export * from './FrameManager.js';
