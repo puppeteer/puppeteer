@@ -12,8 +12,7 @@ import {Realm} from '../api/Realm.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {BindingPayload, EvaluateFunc, HandleFor} from '../common/types.js';
 import {debugError, withSourcePuppeteerURLIfNone} from '../common/util.js';
-import {Deferred} from '../util/Deferred.js';
-import {disposeSymbol} from '../util/disposable.js';
+import {DisposableStack, disposeSymbol} from '../util/disposable.js';
 import {Mutex} from '../util/Mutex.js';
 
 import type {Binding} from './Binding.js';
@@ -22,6 +21,7 @@ import type {CdpFrame} from './Frame.js';
 import type {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {addPageBinding} from './utils.js';
 import type {CdpWebWorker} from './WebWorker.js';
+import {EventEmitter} from '../common/EventEmitter.js';
 
 /**
  * @internal
@@ -44,19 +44,14 @@ export interface IsolatedWorldChart {
  * @internal
  */
 export class IsolatedWorld extends Realm {
-  #context = Deferred.create<ExecutionContext>();
-
+  #context?: ExecutionContext;
   // Set of bindings that have been registered in the current context.
   #contextBindings = new Set<string>();
-
   // Contains mapping from functions that should be bound to Puppeteer functions.
   #bindings = new Map<string, Binding>();
-
-  get _bindings(): Map<string, Binding> {
-    return this.#bindings;
-  }
-
   readonly #frameOrWorker: CdpFrame | CdpWebWorker;
+  readonly #disposables = new DisposableStack();
+  readonly #emitter = new EventEmitter();
 
   constructor(
     frameOrWorker: CdpFrame | CdpWebWorker,
@@ -64,14 +59,19 @@ export class IsolatedWorld extends Realm {
   ) {
     super(timeoutSettings);
     this.#frameOrWorker = frameOrWorker;
-    this.frameUpdated();
+    this.#disposables.use(this.#emitter);
+    this.frameClientUpdated();
+  }
+
+  get _bindings(): Map<string, Binding> {
+    return this.#bindings;
   }
 
   get environment(): CdpFrame | CdpWebWorker {
     return this.#frameOrWorker;
   }
 
-  frameUpdated(): void {
+  frameClientUpdated(): void {
     this.client.on('Runtime.bindingCalled', this.#onBindingCalled);
   }
 
@@ -81,8 +81,7 @@ export class IsolatedWorld extends Realm {
 
   clearContext(): void {
     // The message has to match the CDP message expected by the WaitTask class.
-    this.#context?.reject(new Error('Execution context was destroyed'));
-    this.#context = Deferred.create();
+    this.#context = undefined;
     if ('clearDocumentHandle' in this.#frameOrWorker) {
       this.#frameOrWorker.clearDocumentHandle();
     }
@@ -90,24 +89,22 @@ export class IsolatedWorld extends Realm {
 
   setContext(context: ExecutionContext): void {
     this.#contextBindings.clear();
-    this.#context.resolve(context);
+    this.#context = context;
+    this.#emitter.emit('context', context);
     void this.taskManager.rerunAll();
   }
 
   hasContext(): boolean {
-    return this.#context.resolved();
+    return this.#context !== undefined;
   }
 
-  #executionContext(): Promise<ExecutionContext> {
+  #executionContext(): ExecutionContext | undefined {
     if (this.disposed) {
       throw new Error(
         `Execution context is not available in detached frame "${this.environment.url()}" (are you trying to evaluate?)`
       );
     }
-    if (this.#context === null) {
-      throw new Error(`Execution content promise is missing`);
-    }
-    return this.#context.valueOrThrow();
+    return this.#context;
   }
 
   async evaluateHandle<
@@ -121,7 +118,14 @@ export class IsolatedWorld extends Realm {
       this.evaluateHandle.name,
       pageFunction
     );
-    const context = await this.#executionContext();
+    let context = this.#executionContext();
+    if (!context) {
+      context = await new Promise<ExecutionContext>(resolve =>
+        this.#emitter.once('context', context =>
+          resolve(context as ExecutionContext)
+        )
+      );
+    }
     return await context.evaluateHandle(pageFunction, ...args);
   }
 
@@ -136,9 +140,13 @@ export class IsolatedWorld extends Realm {
       this.evaluate.name,
       pageFunction
     );
-    let context = this.#context.value();
-    if (!context || !(context instanceof ExecutionContext)) {
-      context = await this.#executionContext();
+    let context = this.#executionContext();
+    if (!context) {
+      context = await new Promise<ExecutionContext>(resolve =>
+        this.#emitter.once('context', context =>
+          resolve(context as ExecutionContext)
+        )
+      );
     }
     return await context.evaluate(pageFunction, ...args);
   }
@@ -211,7 +219,14 @@ export class IsolatedWorld extends Realm {
     }
 
     try {
-      const context = await this.#context.valueOrThrow();
+      let context = this.#executionContext();
+      if (!context) {
+        context = await new Promise<ExecutionContext>(resolve =>
+          this.#emitter.once('context', context =>
+            resolve(context as ExecutionContext)
+          )
+        );
+      }
       if (event.executionContextId !== context._contextId) {
         return;
       }
@@ -226,7 +241,10 @@ export class IsolatedWorld extends Realm {
   override async adoptBackendNode(
     backendNodeId?: Protocol.DOM.BackendNodeId
   ): Promise<JSHandle<Node>> {
-    const executionContext = await this.#executionContext();
+    const executionContext = this.#executionContext();
+    if (!executionContext) {
+      throw new Error('executionContext is not defined');
+    }
     const {object} = await this.client.send('DOM.resolveNode', {
       backendNodeId: backendNodeId,
       executionContextId: executionContext._contextId,
@@ -269,5 +287,6 @@ export class IsolatedWorld extends Realm {
   [disposeSymbol](): void {
     super[disposeSymbol]();
     this.client.off('Runtime.bindingCalled', this.#onBindingCalled);
+    this.#disposables.dispose();
   }
 }
