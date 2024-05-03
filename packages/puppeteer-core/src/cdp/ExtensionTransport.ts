@@ -3,7 +3,7 @@
  * Copyright 2020 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import type {ConnectionTransport} from './ConnectionTransport.js';
+import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 
 const tabTargetInfo = {
   targetId: 'tabTargetId',
@@ -24,6 +24,12 @@ const pageTargetInfo = {
 };
 
 /**
+ * Experimental ExtensionTransport allows establishing a connection via
+ * chrome.debugger API if Puppeteer runs in an extension. Since Chrome
+ * DevTools Protocol is restricted for extensions, the transport
+ * implements missing commands and events.
+ *
+ * @experimental
  * @internal
  */
 export class ExtensionTransport implements ConnectionTransport {
@@ -37,6 +43,9 @@ export class ExtensionTransport implements ConnectionTransport {
 
   #tabId: number;
 
+  /**
+   * @internal
+   */
   constructor(tabId: number) {
     this.#tabId = tabId;
     chrome.debugger.onEvent.addListener(this.#debuggerEventHandler);
