@@ -172,12 +172,6 @@ export const setupTestBrowserHooks = (): void => {
   });
 
   after(async () => {
-    if (state.context) {
-      await state.context.close();
-      state.context = undefined;
-      state.page = undefined;
-    }
-
     if (typeof gc !== 'undefined') {
       gc();
       const memory = process.memoryUsage();
@@ -189,6 +183,14 @@ export const setupTestBrowserHooks = (): void => {
           `${Math.round(((memory[key] / 1024 / 1024) * 100) / 100)} MB`
         );
       }
+    }
+  });
+
+  afterEach(async () => {
+    if (state.context) {
+      await state.context.close();
+      state.context = undefined;
+      state.page = undefined;
     }
   });
 };
@@ -217,7 +219,6 @@ export const getTestState = async (
   } else if (!state.browser.connected) {
     throw new Error('Browser has disconnected!');
   }
-
   if (state.context) {
     throw new Error('Previous state was not cleared');
   }
