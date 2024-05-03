@@ -29,6 +29,7 @@ import {CdpElementHandle} from './ElementHandle.js';
 import type {IsolatedWorld} from './IsolatedWorld.js';
 import {CdpJSHandle} from './JSHandle.js';
 import {createEvaluationError, valueFromRemoteObject} from './utils.js';
+import {createCdpHandle} from './IsolatedWorld.js';
 
 /**
  * @internal
@@ -377,16 +378,3 @@ const rewriteError = (error: Error): Protocol.Runtime.EvaluateResponse => {
   }
   throw error;
 };
-
-/**
- * @internal
- */
-export function createCdpHandle(
-  realm: IsolatedWorld,
-  remoteObject: Protocol.Runtime.RemoteObject
-): JSHandle | ElementHandle<Node> {
-  if (remoteObject.subtype === 'node') {
-    return new CdpElementHandle(realm, remoteObject);
-  }
-  return new CdpJSHandle(realm, remoteObject);
-}

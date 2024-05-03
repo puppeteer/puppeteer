@@ -16,12 +16,15 @@ import {DisposableStack, disposeSymbol} from '../util/disposable.js';
 import {Mutex} from '../util/Mutex.js';
 
 import type {Binding} from './Binding.js';
-import {ExecutionContext, createCdpHandle} from './ExecutionContext.js';
+import {ExecutionContext} from './ExecutionContext.js';
 import type {CdpFrame} from './Frame.js';
 import type {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {addPageBinding} from './utils.js';
 import type {CdpWebWorker} from './WebWorker.js';
 import {EventEmitter} from '../common/EventEmitter.js';
+import {ElementHandle} from '../puppeteer-core.js';
+import {CdpElementHandle} from './ElementHandle.js';
+import {CdpJSHandle} from './JSHandle.js';
 
 /**
  * @internal
@@ -289,4 +292,17 @@ export class IsolatedWorld extends Realm {
     this.client.off('Runtime.bindingCalled', this.#onBindingCalled);
     this.#disposables.dispose();
   }
+}
+
+/**
+ * @internal
+ */
+export function createCdpHandle(
+  realm: IsolatedWorld,
+  remoteObject: Protocol.Runtime.RemoteObject
+): JSHandle | ElementHandle<Node> {
+  if (remoteObject.subtype === 'node') {
+    return new CdpElementHandle(realm, remoteObject);
+  }
+  return new CdpJSHandle(realm, remoteObject);
 }

@@ -64,7 +64,7 @@ import {Coverage} from './Coverage.js';
 import type {DeviceRequestPrompt} from './DeviceRequestPrompt.js';
 import {CdpDialog} from './Dialog.js';
 import {EmulationManager} from './EmulationManager.js';
-import {createCdpHandle} from './ExecutionContext.js';
+import {createCdpHandle} from './IsolatedWorld.js';
 import {FirefoxTargetManager} from './FirefoxTargetManager.js';
 import type {CdpFrame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
