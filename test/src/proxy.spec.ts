@@ -12,7 +12,7 @@ import os from 'os';
 import type {TestServer} from '@pptr/testserver';
 import expect from 'expect';
 
-import {getTestState, launch} from './mocha-utils.js';
+import {getTestState, launch} from './utils/mocha-utils.js';
 
 let HOSTNAME = os.hostname();
 

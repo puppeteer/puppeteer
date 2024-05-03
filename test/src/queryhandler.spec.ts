@@ -9,7 +9,7 @@ import expect from 'expect';
 import {Puppeteer} from 'puppeteer-core';
 import type {ElementHandle} from 'puppeteer-core/internal/api/ElementHandle.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './utils/mocha-utils.js';
 
 describe('Query handler tests', function () {
   setupTestBrowserHooks();

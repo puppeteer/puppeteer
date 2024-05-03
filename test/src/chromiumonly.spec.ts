@@ -8,8 +8,12 @@ import type {IncomingMessage} from 'http';
 import expect from 'expect';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 
-import {getTestState, setupTestBrowserHooks, launch} from './mocha-utils.js';
-import {waitEvent} from './utils.js';
+import {
+  getTestState,
+  setupTestBrowserHooks,
+  launch,
+} from './utils/mocha-utils.js';
+import {waitEvent} from './utils/utils.js';
 // TODO: rename this test suite to launch/connect test suite as it actually
 // works across browsers.
 describe('Chromium-Specific Launcher tests', function () {

@@ -10,7 +10,7 @@ import {MouseButton} from 'puppeteer-core/internal/api/Input.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 import type {KeyInput} from 'puppeteer-core/internal/common/USKeyboardLayout.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './utils/mocha-utils.js';
 
 interface ClickData {
   type: string;

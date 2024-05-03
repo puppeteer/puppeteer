@@ -8,7 +8,7 @@ import {readFile, unlink} from 'fs/promises';
 
 import expect from 'expect';
 
-import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from '../utils/mocha-utils.js';
 
 describe('Page.pdf', () => {
   setupTestBrowserHooks();

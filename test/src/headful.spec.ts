@@ -12,7 +12,7 @@ import expect from 'expect';
 import type {PuppeteerLaunchOptions} from 'puppeteer-core/internal/node/PuppeteerNode.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 
-import {getTestState, launch} from './mocha-utils.js';
+import {getTestState, launch} from './utils/mocha-utils.js';
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 

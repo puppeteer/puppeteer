@@ -9,7 +9,7 @@ import {
   expectCookieEquals,
   getTestState,
   setupTestBrowserHooks,
-} from './mocha-utils.js';
+} from './utils/mocha-utils.js';
 
 describe('DefaultBrowserContext', function () {
   setupTestBrowserHooks();

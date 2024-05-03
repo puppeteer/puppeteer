@@ -9,8 +9,8 @@ import type {CDPSession} from 'puppeteer-core/internal/api/CDPSession.js';
 import {CDPSessionEvent} from 'puppeteer-core/internal/api/CDPSession.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 
-import {getTestState, launch} from './mocha-utils.js';
-import {attachFrame, detachFrame, navigateFrame} from './utils.js';
+import {getTestState, launch} from './utils/mocha-utils.js';
+import {attachFrame, detachFrame, navigateFrame} from './utils/utils.js';
 
 describe('OOPIF', function () {
   /* We use a special browser for this test as we need the --site-per-process flag */

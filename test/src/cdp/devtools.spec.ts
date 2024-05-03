@@ -7,7 +7,7 @@
 import expect from 'expect';
 import type {PuppeteerLaunchOptions} from 'puppeteer-core/internal/node/PuppeteerNode.js';
 
-import {getTestState, launch} from '../mocha-utils.js';
+import {getTestState, launch} from '../utils/mocha-utils.js';
 
 describe('DevTools', function () {
   /* These tests fire up an actual browser so let's

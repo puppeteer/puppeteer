@@ -12,8 +12,8 @@ import {
   createTimeout,
   getTestState,
   setupTestBrowserHooks,
-} from './mocha-utils.js';
-import {attachFrame, detachFrame} from './utils.js';
+} from './utils/mocha-utils.js';
+import {attachFrame, detachFrame} from './utils/utils.js';
 
 describe('waittask specs', function () {
   setupTestBrowserHooks();

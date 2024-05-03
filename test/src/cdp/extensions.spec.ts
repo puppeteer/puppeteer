@@ -9,7 +9,7 @@ import path from 'path';
 import expect from 'expect';
 import type {PuppeteerLaunchOptions} from 'puppeteer-core/internal/node/PuppeteerNode.js';
 
-import {getTestState, launch} from '../mocha-utils.js';
+import {getTestState, launch} from '../utils/mocha-utils.js';
 
 const extensionPath = path.join(
   __dirname,

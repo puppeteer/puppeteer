@@ -18,8 +18,8 @@ import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 import sinon from 'sinon';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame, detachFrame, isFavicon, waitEvent} from './utils.js';
+import {getTestState, setupTestBrowserHooks} from './utils/mocha-utils.js';
+import {attachFrame, detachFrame, isFavicon, waitEvent} from './utils/utils.js';
 
 describe('Page', function () {
   setupTestBrowserHooks();

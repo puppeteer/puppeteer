@@ -10,8 +10,8 @@ import expect from 'expect';
 import {TimeoutError} from 'puppeteer';
 import type {ElementHandle} from 'puppeteer-core/internal/api/ElementHandle.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame, detachFrame} from './utils.js';
+import {getTestState, setupTestBrowserHooks} from './utils/mocha-utils.js';
+import {attachFrame, detachFrame} from './utils/utils.js';
 
 describe('AriaQueryHandler', () => {
   setupTestBrowserHooks();

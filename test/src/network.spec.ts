@@ -12,8 +12,12 @@ import expect from 'expect';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 
-import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame, isFavicon, waitEvent} from './utils.js';
+import {
+  getTestState,
+  launch,
+  setupTestBrowserHooks,
+} from './utils/mocha-utils.js';
+import {attachFrame, isFavicon, waitEvent} from './utils/utils.js';
 
 describe('network', function () {
   setupTestBrowserHooks();

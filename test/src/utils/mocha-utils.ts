@@ -24,14 +24,14 @@ import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 import sinon from 'sinon';
 
-import {extendExpectWithToBeGolden} from './utils.js';
+import {extendExpectWithToBeGolden} from './expect.js';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Mocha {
     export interface SuiteFunction {
       /**
-       * Use it if you want to capture debug logs for a specitic test suite in CI.
+       * Use it if you want to capture debug logs for a specific test suite in CI.
        * This describe function enables capturing of debug logs and would print them
        * only if a test fails to reduce the amount of output.
        */
@@ -171,7 +171,7 @@ export const setupTestBrowserHooks = (): void => {
     }
   });
 
-  after(async () => {
+  after(() => {
     if (typeof gc !== 'undefined') {
       gc();
       const memory = process.memoryUsage();
@@ -219,6 +219,7 @@ export const getTestState = async (
   } else if (!state.browser.connected) {
     throw new Error('Browser has disconnected!');
   }
+
   if (state.context) {
     throw new Error('Previous state was not cleared');
   }
@@ -232,8 +233,8 @@ export const getTestState = async (
 
 const setupGoldenAssertions = (): void => {
   const suffix = processVariables.product.toLowerCase();
-  const GOLDEN_DIR = path.join(__dirname, `../golden-${suffix}`);
-  const OUTPUT_DIR = path.join(__dirname, `../output-${suffix}`);
+  const GOLDEN_DIR = path.join(__dirname, `../../golden-${suffix}`);
+  const OUTPUT_DIR = path.join(__dirname, `../../output-${suffix}`);
   if (fs.existsSync(OUTPUT_DIR)) {
     rmSync(OUTPUT_DIR);
   }
@@ -348,37 +349,6 @@ export const mochaHooks = {
   },
 };
 
-declare module 'expect' {
-  interface Matchers<R> {
-    atLeastOneToContain(expected: string[]): R;
-  }
-}
-
-expect.extend({
-  atLeastOneToContain: (actual: string, expected: string[]) => {
-    for (const test of expected) {
-      try {
-        expect(actual).toContain(test);
-        return {
-          pass: true,
-          message: () => {
-            return '';
-          },
-        };
-      } catch (err) {}
-    }
-
-    return {
-      pass: false,
-      message: () => {
-        return `"${actual}" didn't contain any of the strings ${JSON.stringify(
-          expected
-        )}`;
-      },
-    };
-  },
-});
-
 export const expectCookieEquals = async (
   cookies: Cookie[],
   expectedCookies: Array<Partial<Cookie>>
@@ -407,22 +377,6 @@ export const expectCookieEquals = async (
   expect(cookies).toHaveLength(expectedCookies.length);
   for (let i = 0; i < cookies.length; i++) {
     expect(cookies[i]).toMatchObject(expectedCookies[i]!);
-  }
-};
-
-export const shortWaitForArrayToHaveAtLeastNElements = async (
-  data: unknown[],
-  minLength: number,
-  attempts = 3,
-  timeout = 50
-): Promise<void> => {
-  for (let i = 0; i < attempts; i++) {
-    if (data.length >= minLength) {
-      break;
-    }
-    await new Promise(resolve => {
-      return setTimeout(resolve, timeout);
-    });
   }
 };
 

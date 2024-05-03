@@ -10,7 +10,7 @@ import {
   getTestState,
   launch,
   setupTestBrowserHooks,
-} from './mocha-utils.js';
+} from './utils/mocha-utils.js';
 
 describe('Cookie specs', () => {
   setupTestBrowserHooks();

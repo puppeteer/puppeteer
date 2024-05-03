@@ -11,7 +11,7 @@ import expect from 'expect';
 import * as utils from 'puppeteer-core/internal/common/util.js';
 import sinon from 'sinon';
 
-import {launch} from './mocha-utils.js';
+import {launch} from './utils/mocha-utils.js';
 
 describe('Tracing', function () {
   let outputFile!: string;

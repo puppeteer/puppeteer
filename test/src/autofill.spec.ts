@@ -6,7 +6,7 @@
 
 import expect from 'expect';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './utils/mocha-utils.js';
 
 describe('Autofill', function () {
   setupTestBrowserHooks();

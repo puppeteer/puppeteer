@@ -9,7 +9,7 @@ import assert from 'assert';
 import expect from 'expect';
 import type {SerializedAXNode} from 'puppeteer-core/internal/cdp/Accessibility.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './utils/mocha-utils.js';
 
 describe('Accessibility', function () {
   setupTestBrowserHooks();

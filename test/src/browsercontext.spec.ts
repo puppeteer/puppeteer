@@ -8,8 +8,8 @@ import expect from 'expect';
 import {TimeoutError} from 'puppeteer';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {waitEvent} from './utils.js';
+import {getTestState, setupTestBrowserHooks} from './utils/mocha-utils.js';
+import {waitEvent} from './utils/utils.js';
 
 describe('BrowserContext', function () {
   setupTestBrowserHooks();

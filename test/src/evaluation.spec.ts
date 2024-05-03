@@ -6,8 +6,8 @@
 
 import expect from 'expect';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame} from './utils.js';
+import {getTestState, setupTestBrowserHooks} from './utils/mocha-utils.js';
+import {attachFrame} from './utils/utils.js';
 
 describe('Evaluation specs', function () {
   setupTestBrowserHooks();

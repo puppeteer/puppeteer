@@ -6,7 +6,7 @@
 import expect from 'expect';
 import {TimeoutError} from 'puppeteer';
 
-import {launch} from './mocha-utils.js';
+import {launch} from './utils/mocha-utils.js';
 
 describe('device request prompt', function () {
   let state: Awaited<ReturnType<typeof launch>>;

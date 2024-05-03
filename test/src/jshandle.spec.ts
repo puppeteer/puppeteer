@@ -12,7 +12,7 @@ import {
 } from 'puppeteer-core/internal/util/disposable.js';
 import sinon from 'sinon';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './utils/mocha-utils.js';
 
 describe('JSHandle', function () {
   setupTestBrowserHooks();

@@ -9,14 +9,14 @@ import {CDPSession} from 'puppeteer-core/internal/api/CDPSession.js';
 import type {Frame} from 'puppeteer-core/internal/api/Frame.js';
 import {assert} from 'puppeteer-core/internal/util/assert.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './utils/mocha-utils.js';
 import {
   attachFrame,
   detachFrame,
   dumpFrames,
   navigateFrame,
   waitEvent,
-} from './utils.js';
+} from './utils/utils.js';
 
 describe('Frame specs', function () {
   setupTestBrowserHooks();

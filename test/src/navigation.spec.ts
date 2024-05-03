@@ -12,8 +12,8 @@ import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame, isFavicon, waitEvent} from './utils.js';
+import {getTestState, setupTestBrowserHooks} from './utils/mocha-utils.js';
+import {attachFrame, isFavicon, waitEvent} from './utils/utils.js';
 
 describe('navigation', function () {
   setupTestBrowserHooks();

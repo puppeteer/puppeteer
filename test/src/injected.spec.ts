@@ -7,7 +7,7 @@
 import expect from 'expect';
 import {LazyArg} from 'puppeteer-core/internal/common/LazyArg.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './utils/mocha-utils.js';
 
 describe('PuppeteerUtil tests', function () {
   setupTestBrowserHooks();

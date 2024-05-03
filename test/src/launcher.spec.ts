@@ -16,8 +16,8 @@ import type {Page} from 'puppeteer-core/internal/api/Page.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 import sinon from 'sinon';
 
-import {getTestState, launch} from './mocha-utils.js';
-import {dumpFrames, waitEvent} from './utils.js';
+import {getTestState, launch} from './utils/mocha-utils.js';
+import {dumpFrames, waitEvent} from './utils/utils.js';
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 const FIREFOX_TIMEOUT = 30_000;

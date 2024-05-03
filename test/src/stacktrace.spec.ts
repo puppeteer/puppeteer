@@ -8,8 +8,8 @@ import assert from 'assert';
 
 import expect from 'expect';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {waitEvent} from './utils.js';
+import {getTestState, setupTestBrowserHooks} from './utils/mocha-utils.js';
+import {waitEvent} from './utils/utils.js';
 
 const FILENAME = __filename.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
 const parseStackTrace = (stack: string): string => {

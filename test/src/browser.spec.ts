@@ -6,7 +6,11 @@
 
 import expect from 'expect';
 
-import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
+import {
+  getTestState,
+  launch,
+  setupTestBrowserHooks,
+} from './utils/mocha-utils.js';
 
 describe('Browser specs', function () {
   setupTestBrowserHooks();

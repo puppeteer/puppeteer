@@ -9,7 +9,7 @@ import type {TLSSocket} from 'tls';
 import expect from 'expect';
 import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 
-import {launch} from './mocha-utils.js';
+import {launch} from './utils/mocha-utils.js';
 
 describe('ignoreHTTPSErrors', function () {
   /* Note that this test creates its own browser rather than use

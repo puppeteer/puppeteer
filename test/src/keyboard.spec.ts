@@ -9,8 +9,8 @@ import os from 'os';
 import expect from 'expect';
 import type {KeyInput} from 'puppeteer-core/internal/common/USKeyboardLayout.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame} from './utils.js';
+import {getTestState, setupTestBrowserHooks} from './utils/mocha-utils.js';
+import {attachFrame} from './utils/utils.js';
 
 describe('Keyboard', function () {
   setupTestBrowserHooks();

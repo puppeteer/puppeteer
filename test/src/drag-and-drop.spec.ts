@@ -8,7 +8,7 @@ import assert from 'assert';
 
 import expect from 'expect';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './utils/mocha-utils.js';
 
 async function getDragState() {
   const {page} = await getTestState({skipLaunch: true});

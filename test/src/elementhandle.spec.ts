@@ -13,12 +13,11 @@ import {
 } from 'puppeteer-core/internal/util/disposable.js';
 import sinon from 'sinon';
 
+import {getTestState, setupTestBrowserHooks} from './utils/mocha-utils.js';
 import {
-  getTestState,
-  setupTestBrowserHooks,
+  attachFrame,
   shortWaitForArrayToHaveAtLeastNElements,
-} from './mocha-utils.js';
-import {attachFrame} from './utils.js';
+} from './utils/utils.js';
 
 describe('ElementHandle specs', function () {
   setupTestBrowserHooks();

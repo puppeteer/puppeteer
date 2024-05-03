@@ -7,7 +7,7 @@ import expect from 'expect';
 import {Puppeteer} from 'puppeteer';
 import type {CustomQueryHandler} from 'puppeteer-core/internal/common/CustomQueryHandler.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './utils/mocha-utils.js';
 
 describe('querySelector', function () {
   setupTestBrowserHooks();

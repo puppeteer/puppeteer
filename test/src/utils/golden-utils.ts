@@ -93,6 +93,7 @@ const compareText = (
     },
     `<link rel="stylesheet" href="file://${path.join(
       __dirname,
+      '../../assets',
       'diffstyle.css'
     )}">`
   );
