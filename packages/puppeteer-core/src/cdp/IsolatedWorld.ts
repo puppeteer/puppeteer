@@ -11,19 +11,16 @@ import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
-import type {BindingPayload, EvaluateFunc, HandleFor} from '../common/types.js';
-import {debugError, withSourcePuppeteerURLIfNone} from '../common/util.js';
+import type {EvaluateFunc, HandleFor} from '../common/types.js';
+import {withSourcePuppeteerURLIfNone} from '../common/util.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
-import {Mutex} from '../util/Mutex.js';
 
-import type {Binding} from './Binding.js';
 import {CdpElementHandle} from './ElementHandle.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import type {CdpFrame} from './Frame.js';
 import type {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {CdpJSHandle} from './JSHandle.js';
-import {addPageBinding} from './utils.js';
 import type {CdpWebWorker} from './WebWorker.js';
 
 /**
@@ -49,16 +46,6 @@ export interface IsolatedWorldChart {
 export class IsolatedWorld extends Realm {
   #context = Deferred.create<ExecutionContext>();
 
-  // Set of bindings that have been registered in the current context.
-  #contextBindings = new Set<string>();
-
-  // Contains mapping from functions that should be bound to Puppeteer functions.
-  #bindings = new Map<string, Binding>();
-
-  get _bindings(): Map<string, Binding> {
-    return this.#bindings;
-  }
-
   readonly #frameOrWorker: CdpFrame | CdpWebWorker;
 
   constructor(
@@ -74,9 +61,7 @@ export class IsolatedWorld extends Realm {
     return this.#frameOrWorker;
   }
 
-  frameUpdated(): void {
-    this.client.on('Runtime.bindingCalled', this.#onBindingCalled);
-  }
+  frameUpdated(): void {}
 
   get client(): CDPSession {
     return this.#frameOrWorker.client;
@@ -92,7 +77,10 @@ export class IsolatedWorld extends Realm {
   }
 
   setContext(context: ExecutionContext): void {
-    this.#contextBindings.clear();
+    const existingContext = this.#context.value();
+    if (existingContext instanceof ExecutionContext) {
+      existingContext[disposeSymbol]();
+    }
     this.#context.resolve(context);
     void this.taskManager.rerunAll();
   }
@@ -145,86 +133,6 @@ export class IsolatedWorld extends Realm {
     }
     return await context.evaluate(pageFunction, ...args);
   }
-
-  // If multiple waitFor are set up asynchronously, we need to wait for the
-  // first one to set up the binding in the page before running the others.
-  #mutex = new Mutex();
-  async _addBindingToContext(
-    context: ExecutionContext,
-    name: string
-  ): Promise<void> {
-    if (this.#contextBindings.has(name)) {
-      return;
-    }
-
-    using _ = await this.#mutex.acquire();
-    try {
-      await context._client.send(
-        'Runtime.addBinding',
-        context._contextName
-          ? {
-              name,
-              executionContextName: context._contextName,
-            }
-          : {
-              name,
-              executionContextId: context._contextId,
-            }
-      );
-
-      await context.evaluate(addPageBinding, 'internal', name);
-
-      this.#contextBindings.add(name);
-    } catch (error) {
-      // We could have tried to evaluate in a context which was already
-      // destroyed. This happens, for example, if the page is navigated while
-      // we are trying to add the binding
-      if (error instanceof Error) {
-        // Destroyed context.
-        if (error.message.includes('Execution context was destroyed')) {
-          return;
-        }
-        // Missing context.
-        if (error.message.includes('Cannot find context with specified id')) {
-          return;
-        }
-      }
-
-      debugError(error);
-    }
-  }
-
-  #onBindingCalled = async (
-    event: Protocol.Runtime.BindingCalledEvent
-  ): Promise<void> => {
-    let payload: BindingPayload;
-    try {
-      payload = JSON.parse(event.payload);
-    } catch {
-      // The binding was either called by something in the page or it was
-      // called before our wrapper was initialized.
-      return;
-    }
-    const {type, name, seq, args, isTrivial} = payload;
-    if (type !== 'internal') {
-      return;
-    }
-    if (!this.#contextBindings.has(name)) {
-      return;
-    }
-
-    try {
-      const context = await this.#context.valueOrThrow();
-      if (event.executionContextId !== context._contextId) {
-        return;
-      }
-
-      const binding = this._bindings.get(name);
-      await binding?.run(context, seq, args, isTrivial);
-    } catch (err) {
-      debugError(err);
-    }
-  };
 
   override async adoptBackendNode(
     backendNodeId?: Protocol.DOM.BackendNodeId
@@ -282,7 +190,10 @@ export class IsolatedWorld extends Realm {
   }
 
   [disposeSymbol](): void {
+    const existingContext = this.#context.value();
+    if (existingContext instanceof ExecutionContext) {
+      existingContext[disposeSymbol]();
+    }
     super[disposeSymbol]();
-    this.client.off('Runtime.bindingCalled', this.#onBindingCalled);
   }
 }
