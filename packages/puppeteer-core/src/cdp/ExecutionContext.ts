@@ -6,9 +6,10 @@
 
 import type {Protocol} from 'devtools-protocol';
 
-import type {CDPSession} from '../api/CDPSession.js';
+import type {CDPSession, CDPSessionEvents} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
+import {EventEmitter} from '../common/EventEmitter.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
 import type {BindingPayload, EvaluateFunc, HandleFor} from '../common/types.js';
@@ -22,7 +23,7 @@ import {
 } from '../common/util.js';
 import type PuppeteerUtil from '../injected/injected.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
-import {disposeSymbol} from '../util/disposable.js';
+import {DisposableStack, disposeSymbol} from '../util/disposable.js';
 import {stringifyFunction} from '../util/Function.js';
 import {Mutex} from '../util/Mutex.js';
 
@@ -37,6 +38,27 @@ import {
   valueFromRemoteObject,
 } from './utils.js';
 
+const ariaQuerySelectorBinding = new Binding(
+  '__ariaQuerySelector',
+  ARIAQueryHandler.queryOne as (...args: unknown[]) => unknown
+);
+
+const ariaQuerySelectorAllBinding = new Binding(
+  '__ariaQuerySelectorAll',
+  (async (
+    element: ElementHandle<Node>,
+    selector: string
+  ): Promise<JSHandle<Node[]>> => {
+    const results = ARIAQueryHandler.queryAll(element, selector);
+    return await element.realm.evaluateHandle(
+      (...elements) => {
+        return elements;
+      },
+      ...(await AsyncIterableUtil.collect(results))
+    );
+  }) as (...args: unknown[]) => unknown
+);
+
 /**
  * @internal
  */
@@ -45,6 +67,9 @@ export class ExecutionContext implements Disposable {
   _world: IsolatedWorld;
   _contextId: number;
   _contextName?: string;
+
+  readonly #disposables = new DisposableStack();
+  readonly #clientEmitter: EventEmitter<CDPSessionEvents>;
 
   constructor(
     client: CDPSession,
@@ -57,11 +82,12 @@ export class ExecutionContext implements Disposable {
     if (contextPayload.name) {
       this._contextName = contextPayload.name;
     }
-    this._client.on('Runtime.bindingCalled', this.#onBindingCalled);
+    this.#clientEmitter = this.#disposables.use(new EventEmitter(this._client));
+    this.#clientEmitter.on(
+      'Runtime.bindingCalled',
+      this.#onBindingCalled.bind(this)
+    );
   }
-
-  // Set of bindings that have been registered in the current context.
-  #contextBindings = new Set<string>();
 
   // Contains mapping from functions that should be bound to Puppeteer functions.
   #bindings = new Map<string, Binding>();
@@ -69,8 +95,8 @@ export class ExecutionContext implements Disposable {
   // If multiple waitFor are set up asynchronously, we need to wait for the
   // first one to set up the binding in the page before running the others.
   #mutex = new Mutex();
-  async _addBindingToContext(name: string): Promise<void> {
-    if (this.#contextBindings.has(name)) {
+  async #addBinding(binding: Binding): Promise<void> {
+    if (this.#bindings.has(binding.name)) {
       return;
     }
 
@@ -80,18 +106,18 @@ export class ExecutionContext implements Disposable {
         'Runtime.addBinding',
         this._contextName
           ? {
-              name,
+              name: binding.name,
               executionContextName: this._contextName,
             }
           : {
-              name,
+              name: binding.name,
               executionContextId: this._contextId,
             }
       );
 
-      await this.evaluate(addPageBinding, 'internal', name);
+      await this.evaluate(addPageBinding, 'internal', binding.name);
 
-      this.#contextBindings.add(name);
+      this.#bindings.set(binding.name, binding);
     } catch (error) {
       // We could have tried to evaluate in a context which was already
       // destroyed. This happens, for example, if the page is navigated while
@@ -111,9 +137,9 @@ export class ExecutionContext implements Disposable {
     }
   }
 
-  #onBindingCalled = async (
+  async #onBindingCalled(
     event: Protocol.Runtime.BindingCalledEvent
-  ): Promise<void> => {
+  ): Promise<void> {
     let payload: BindingPayload;
     try {
       payload = JSON.parse(event.payload);
@@ -126,7 +152,7 @@ export class ExecutionContext implements Disposable {
     if (type !== 'internal') {
       return;
     }
-    if (!this.#contextBindings.has(name)) {
+    if (!this.#bindings.has(name)) {
       return;
     }
 
@@ -140,7 +166,7 @@ export class ExecutionContext implements Disposable {
     } catch (err) {
       debugError(err);
     }
-  };
+  }
 
   #bindingsInstalled = false;
   #puppeteerUtil?: Promise<JSHandle<PuppeteerUtil>>;
@@ -148,26 +174,8 @@ export class ExecutionContext implements Disposable {
     let promise = Promise.resolve() as Promise<unknown>;
     if (!this.#bindingsInstalled) {
       promise = Promise.all([
-        this.#installGlobalBinding(
-          new Binding(
-            '__ariaQuerySelector',
-            ARIAQueryHandler.queryOne as (...args: unknown[]) => unknown
-          )
-        ),
-        this.#installGlobalBinding(
-          new Binding('__ariaQuerySelectorAll', (async (
-            element: ElementHandle<Node>,
-            selector: string
-          ): Promise<JSHandle<Node[]>> => {
-            const results = ARIAQueryHandler.queryAll(element, selector);
-            return await element.realm.evaluateHandle(
-              (...elements) => {
-                return elements;
-              },
-              ...(await AsyncIterableUtil.collect(results))
-            );
-          }) as (...args: unknown[]) => unknown)
-        ),
+        this.#addBindingWithoutThrowing(ariaQuerySelectorBinding),
+        this.#addBindingWithoutThrowing(ariaQuerySelectorAllBinding),
       ]);
       this.#bindingsInstalled = true;
     }
@@ -184,16 +192,14 @@ export class ExecutionContext implements Disposable {
     return this.#puppeteerUtil as Promise<JSHandle<PuppeteerUtil>>;
   }
 
-  async #installGlobalBinding(binding: Binding) {
+  async #addBindingWithoutThrowing(binding: Binding) {
     try {
-      if (this._world) {
-        this.#bindings.set(binding.name, binding);
-        await this._addBindingToContext(binding.name);
-      }
-    } catch {
+      await this.#addBinding(binding);
+    } catch (err) {
       // If the binding cannot be added, then either the browser doesn't support
       // bindings (e.g. Firefox) or the context is broken. Either breakage is
       // okay, so we ignore the error.
+      debugError(err);
     }
   }
 
@@ -449,7 +455,7 @@ export class ExecutionContext implements Disposable {
   }
 
   [disposeSymbol](): void {
-    this._client.off('Runtime.bindingCalled', this.#onBindingCalled);
+    this.#disposables.dispose();
   }
 }
 
