@@ -11,29 +11,36 @@ import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
-import type {EvaluateFunc, HandleFor} from '../common/types.js';
+import type {BindingPayload, EvaluateFunc, HandleFor} from '../common/types.js';
 import {
   PuppeteerURL,
   SOURCE_URL_REGEX,
+  debugError,
   getSourcePuppeteerURLIfAvailable,
   getSourceUrlComment,
   isString,
 } from '../common/util.js';
 import type PuppeteerUtil from '../injected/injected.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
+import {disposeSymbol} from '../util/disposable.js';
 import {stringifyFunction} from '../util/Function.js';
+import {Mutex} from '../util/Mutex.js';
 
 import {ARIAQueryHandler} from './AriaQueryHandler.js';
 import {Binding} from './Binding.js';
 import {CdpElementHandle} from './ElementHandle.js';
 import type {IsolatedWorld} from './IsolatedWorld.js';
 import {CdpJSHandle} from './JSHandle.js';
-import {createEvaluationError, valueFromRemoteObject} from './utils.js';
+import {
+  addPageBinding,
+  createEvaluationError,
+  valueFromRemoteObject,
+} from './utils.js';
 
 /**
  * @internal
  */
-export class ExecutionContext {
+export class ExecutionContext implements Disposable {
   _client: CDPSession;
   _world: IsolatedWorld;
   _contextId: number;
@@ -50,7 +57,90 @@ export class ExecutionContext {
     if (contextPayload.name) {
       this._contextName = contextPayload.name;
     }
+    this._client.on('Runtime.bindingCalled', this.#onBindingCalled);
   }
+
+  // Set of bindings that have been registered in the current context.
+  #contextBindings = new Set<string>();
+
+  // Contains mapping from functions that should be bound to Puppeteer functions.
+  #bindings = new Map<string, Binding>();
+
+  // If multiple waitFor are set up asynchronously, we need to wait for the
+  // first one to set up the binding in the page before running the others.
+  #mutex = new Mutex();
+  async _addBindingToContext(name: string): Promise<void> {
+    if (this.#contextBindings.has(name)) {
+      return;
+    }
+
+    using _ = await this.#mutex.acquire();
+    try {
+      await this._client.send(
+        'Runtime.addBinding',
+        this._contextName
+          ? {
+              name,
+              executionContextName: this._contextName,
+            }
+          : {
+              name,
+              executionContextId: this._contextId,
+            }
+      );
+
+      await this.evaluate(addPageBinding, 'internal', name);
+
+      this.#contextBindings.add(name);
+    } catch (error) {
+      // We could have tried to evaluate in a context which was already
+      // destroyed. This happens, for example, if the page is navigated while
+      // we are trying to add the binding
+      if (error instanceof Error) {
+        // Destroyed context.
+        if (error.message.includes('Execution context was destroyed')) {
+          return;
+        }
+        // Missing context.
+        if (error.message.includes('Cannot find context with specified id')) {
+          return;
+        }
+      }
+
+      debugError(error);
+    }
+  }
+
+  #onBindingCalled = async (
+    event: Protocol.Runtime.BindingCalledEvent
+  ): Promise<void> => {
+    let payload: BindingPayload;
+    try {
+      payload = JSON.parse(event.payload);
+    } catch {
+      // The binding was either called by something in the page or it was
+      // called before our wrapper was initialized.
+      return;
+    }
+    const {type, name, seq, args, isTrivial} = payload;
+    if (type !== 'internal') {
+      return;
+    }
+    if (!this.#contextBindings.has(name)) {
+      return;
+    }
+
+    try {
+      if (event.executionContextId !== this._contextId) {
+        return;
+      }
+
+      const binding = this.#bindings.get(name);
+      await binding?.run(this, seq, args, isTrivial);
+    } catch (err) {
+      debugError(err);
+    }
+  };
 
   #bindingsInstalled = false;
   #puppeteerUtil?: Promise<JSHandle<PuppeteerUtil>>;
@@ -97,8 +187,8 @@ export class ExecutionContext {
   async #installGlobalBinding(binding: Binding) {
     try {
       if (this._world) {
-        this._world._bindings.set(binding.name, binding);
-        await this._world._addBindingToContext(this, binding.name);
+        this.#bindings.set(binding.name, binding);
+        await this._addBindingToContext(binding.name);
       }
     } catch {
       // If the binding cannot be added, then either the browser doesn't support
@@ -356,6 +446,10 @@ export class ExecutionContext {
       }
       return {value: arg};
     }
+  }
+
+  [disposeSymbol](): void {
+    this._client.off('Runtime.bindingCalled', this.#onBindingCalled);
   }
 }
 
