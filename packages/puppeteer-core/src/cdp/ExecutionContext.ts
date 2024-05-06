@@ -6,7 +6,7 @@
 
 import type {Protocol} from 'devtools-protocol';
 
-import type {CDPSession, CDPSessionEvents} from '../api/CDPSession.js';
+import type {CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -62,31 +62,42 @@ const ariaQuerySelectorAllBinding = new Binding(
 /**
  * @internal
  */
-export class ExecutionContext implements Disposable {
+export class ExecutionContext
+  extends EventEmitter<{
+    /** Emitted when this execution context is disposed. */
+    disposed: undefined;
+  }>
+  implements Disposable
+{
   _client: CDPSession;
   _world: IsolatedWorld;
   _contextId: number;
   _contextName?: string;
 
   readonly #disposables = new DisposableStack();
-  readonly #clientEmitter: EventEmitter<CDPSessionEvents>;
 
   constructor(
     client: CDPSession,
     contextPayload: Protocol.Runtime.ExecutionContextDescription,
     world: IsolatedWorld
   ) {
+    super();
     this._client = client;
     this._world = world;
     this._contextId = contextPayload.id;
     if (contextPayload.name) {
       this._contextName = contextPayload.name;
     }
-    this.#clientEmitter = this.#disposables.use(new EventEmitter(this._client));
-    this.#clientEmitter.on(
-      'Runtime.bindingCalled',
-      this.#onBindingCalled.bind(this)
-    );
+    const clientEmitter = this.#disposables.use(new EventEmitter(this._client));
+    clientEmitter.on('Runtime.bindingCalled', this.#onBindingCalled.bind(this));
+    clientEmitter.on('Runtime.executionContextDestroyed', async event => {
+      if (event.executionContextId === this._contextId) {
+        this[disposeSymbol]();
+      }
+    });
+    clientEmitter.on('Runtime.executionContextsCleared', async () => {
+      this[disposeSymbol]();
+    });
   }
 
   // Contains mapping from functions that should be bound to Puppeteer functions.
@@ -456,6 +467,7 @@ export class ExecutionContext implements Disposable {
 
   [disposeSymbol](): void {
     this.#disposables.dispose();
+    this.emit('disposed', undefined);
   }
 }
 
