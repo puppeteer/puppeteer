@@ -35,14 +35,16 @@ import type {CdpPage} from './Page.js';
 export class CdpFrame extends Frame {
   #url = '';
   #detached = false;
-  #client!: CDPSession;
-  worlds!: IsolatedWorldChart;
+  #client: CDPSession;
 
   _frameManager: FrameManager;
-  override _id: string;
   _loaderId = '';
   _lifecycleEvents = new Set<string>();
+
+  override _id: string;
   override _parentId?: string;
+
+  worlds: IsolatedWorldChart;
 
   constructor(
     frameManager: FrameManager,
@@ -56,10 +58,16 @@ export class CdpFrame extends Frame {
     this._id = frameId;
     this._parentId = parentFrameId;
     this.#detached = false;
+    this.#client = client;
 
     this._loaderId = '';
-
-    this.updateClient(client);
+    this.worlds = {
+      [MAIN_WORLD]: new IsolatedWorld(this, this._frameManager.timeoutSettings),
+      [PUPPETEER_WORLD]: new IsolatedWorld(
+        this,
+        this._frameManager.timeoutSettings
+      ),
+    };
 
     this.on(FrameEvent.FrameSwappedByActivation, () => {
       // Emulate loading process for swapped frames.
@@ -85,28 +93,8 @@ export class CdpFrame extends Frame {
     this._id = id;
   }
 
-  updateClient(client: CDPSession, keepWorlds = false): void {
+  updateClient(client: CDPSession): void {
     this.#client = client;
-    if (!keepWorlds) {
-      // Clear the current contexts on previous world instances.
-      if (this.worlds) {
-        this.worlds[MAIN_WORLD].clearContext();
-        this.worlds[PUPPETEER_WORLD].clearContext();
-      }
-      this.worlds = {
-        [MAIN_WORLD]: new IsolatedWorld(
-          this,
-          this._frameManager.timeoutSettings
-        ),
-        [PUPPETEER_WORLD]: new IsolatedWorld(
-          this,
-          this._frameManager.timeoutSettings
-        ),
-      };
-    } else {
-      this.worlds[MAIN_WORLD].frameUpdated();
-      this.worlds[PUPPETEER_WORLD].frameUpdated();
-    }
   }
 
   override page(): CdpPage {
