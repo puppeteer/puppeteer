@@ -134,10 +134,8 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       this.#frameNavigatedReceived.add(this.#client._target()._targetId);
       this._frameTree.removeFrame(frame);
       frame.updateId(this.#client._target()._targetId);
-      frame.mainRealm().clearContext();
-      frame.isolatedRealm().clearContext();
       this._frameTree.addFrame(frame);
-      frame.updateClient(client, true);
+      frame.updateClient(client);
     }
     this.setupEventListeners(client);
     client.once(CDPSessionEvent.Disconnected, () => {

@@ -54,14 +54,11 @@ export class IsolatedWorld extends Realm {
   ) {
     super(timeoutSettings);
     this.#frameOrWorker = frameOrWorker;
-    this.frameUpdated();
   }
 
   get environment(): CdpFrame | CdpWebWorker {
     return this.#frameOrWorker;
   }
-
-  frameUpdated(): void {}
 
   get client(): CDPSession {
     return this.#frameOrWorker.client;
