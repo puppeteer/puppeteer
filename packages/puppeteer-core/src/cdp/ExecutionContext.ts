@@ -268,7 +268,7 @@ export class ExecutionContext {
 
       return returnByValue
         ? valueFromRemoteObject(remoteObject)
-        : createCdpHandle(this._world, remoteObject);
+        : this._world.createCdpHandle(remoteObject);
     }
 
     const functionDeclaration = stringifyFunction(pageFunction);
@@ -305,7 +305,7 @@ export class ExecutionContext {
     }
     return returnByValue
       ? valueFromRemoteObject(remoteObject)
-      : createCdpHandle(this._world, remoteObject);
+      : this._world.createCdpHandle(remoteObject);
 
     async function convertArgument(
       this: ExecutionContext,
@@ -377,16 +377,3 @@ const rewriteError = (error: Error): Protocol.Runtime.EvaluateResponse => {
   }
   throw error;
 };
-
-/**
- * @internal
- */
-export function createCdpHandle(
-  realm: IsolatedWorld,
-  remoteObject: Protocol.Runtime.RemoteObject
-): JSHandle | ElementHandle<Node> {
-  if (remoteObject.subtype === 'node') {
-    return new CdpElementHandle(realm, remoteObject);
-  }
-  return new CdpJSHandle(realm, remoteObject);
-}

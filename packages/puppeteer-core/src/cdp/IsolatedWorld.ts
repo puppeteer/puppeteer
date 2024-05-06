@@ -7,6 +7,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
+import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
@@ -17,9 +18,11 @@ import {disposeSymbol} from '../util/disposable.js';
 import {Mutex} from '../util/Mutex.js';
 
 import type {Binding} from './Binding.js';
-import {ExecutionContext, createCdpHandle} from './ExecutionContext.js';
+import {CdpElementHandle} from './ElementHandle.js';
+import {ExecutionContext} from './ExecutionContext.js';
 import type {CdpFrame} from './Frame.js';
 import type {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
+import {CdpJSHandle} from './JSHandle.js';
 import {addPageBinding} from './utils.js';
 import type {CdpWebWorker} from './WebWorker.js';
 
@@ -231,7 +234,7 @@ export class IsolatedWorld extends Realm {
       backendNodeId: backendNodeId,
       executionContextId: executionContext._contextId,
     });
-    return createCdpHandle(this, object) as JSHandle<Node>;
+    return this.createCdpHandle(object) as JSHandle<Node>;
   }
 
   async adoptHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
@@ -264,6 +267,18 @@ export class IsolatedWorld extends Realm {
     )) as T;
     await handle.dispose();
     return newHandle;
+  }
+
+  /**
+   * @internal
+   */
+  createCdpHandle(
+    remoteObject: Protocol.Runtime.RemoteObject
+  ): JSHandle | ElementHandle<Node> {
+    if (remoteObject.subtype === 'node') {
+      return new CdpElementHandle(this, remoteObject);
+    }
+    return new CdpJSHandle(this, remoteObject);
   }
 
   [disposeSymbol](): void {
