@@ -64,7 +64,6 @@ import {Coverage} from './Coverage.js';
 import type {DeviceRequestPrompt} from './DeviceRequestPrompt.js';
 import {CdpDialog} from './Dialog.js';
 import {EmulationManager} from './EmulationManager.js';
-import {createCdpHandle} from './ExecutionContext.js';
 import {FirefoxTargetManager} from './FirefoxTargetManager.js';
 import type {CdpFrame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
@@ -576,10 +575,9 @@ export class CdpPage extends Page {
         prototypeObjectId: prototypeHandle.id,
       }
     );
-    return createCdpHandle(
-      this.mainFrame().mainRealm(),
-      response.objects
-    ) as HandleFor<Prototype[]>;
+    return this.mainFrame()
+      .mainRealm()
+      .createCdpHandle(response.objects) as HandleFor<Prototype[]>;
   }
 
   override async cookies(...urls: string[]): Promise<Cookie[]> {
@@ -814,7 +812,7 @@ export class CdpPage extends Page {
       return;
     }
     const values = event.args.map(arg => {
-      return createCdpHandle(context._world, arg);
+      return context._world.createCdpHandle(arg);
     });
     this.#addConsoleMessage(
       convertConsoleMessageLevel(event.type),
