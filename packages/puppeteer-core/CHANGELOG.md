@@ -20,6 +20,25 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.8.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.7.1...puppeteer-core-v22.8.0) (2024-05-06)
+
+
+### Features
+
+* **webdriver:** support `page.setUserAgent` for WebDriver BiDi ([#12330](https://github.com/puppeteer/puppeteer/issues/12330)) ([1f99e66](https://github.com/puppeteer/puppeteer/commit/1f99e669a1d644d1d17d5a7e926fbeafb8d231c6))
+* **webdriver:** support ARIA selectors ([#12315](https://github.com/puppeteer/puppeteer/issues/12315)) ([88b46ee](https://github.com/puppeteer/puppeteer/commit/88b46ee5020d30355a3e52512030e1162502e4f5))
+
+
+### Bug Fixes
+
+* **cdp:** throw on closed connection ([#12352](https://github.com/puppeteer/puppeteer/issues/12352)) ([28a8d0f](https://github.com/puppeteer/puppeteer/commit/28a8d0ffb6345309df2bb23c9a5e2bd8be2f059d))
+* deprecate CDP for Firefox ([#12349](https://github.com/puppeteer/puppeteer/issues/12349)) ([dffad28](https://github.com/puppeteer/puppeteer/commit/dffad28a429596be66741fb263e616437d7b965d))
+* disable IsolateSandboxedIframes trial to prevent flakiness ([#12381](https://github.com/puppeteer/puppeteer/issues/12381)) ([461a8ff](https://github.com/puppeteer/puppeteer/commit/461a8ff92ff0e3887b4ceb4e4b7d1198eb8f7901))
+* remove --disable-field-trial-config ([#12377](https://github.com/puppeteer/puppeteer/issues/12377)) ([54a6377](https://github.com/puppeteer/puppeteer/commit/54a6377d7d505e4580c78c06bb8a2c538bbf6857))
+* roll to Chrome 124.0.6367.91 (r1274542) ([#12344](https://github.com/puppeteer/puppeteer/issues/12344)) ([fedd8a9](https://github.com/puppeteer/puppeteer/commit/fedd8a9628aed134e8fc725b4e6c3cb20d546581))
+* turn on PdfOopif for PDF viewer ([#12370](https://github.com/puppeteer/puppeteer/issues/12370)) ([73d7692](https://github.com/puppeteer/puppeteer/commit/73d7692ae93959239f909cdee6ee849f8a70b7e5))
+* **webdriver:** redirects emitting events ([#12338](https://github.com/puppeteer/puppeteer/issues/12338)) ([e1606ac](https://github.com/puppeteer/puppeteer/commit/e1606acfc800ab067ec5a8db336a70dba57b0827))
+
 ## [22.7.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.7.0...puppeteer-core-v22.7.1) (2024-04-25)
 
 
