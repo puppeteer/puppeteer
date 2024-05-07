@@ -122,8 +122,6 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
    * its frame tree and ID.
    */
   async swapFrameTree(client: CDPSession): Promise<void> {
-    this.#onExecutionContextsCleared(this.#client);
-
     this.#client = client;
     assert(
       this.#client instanceof CdpCDPSession,
@@ -187,14 +185,6 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     session.on('Runtime.executionContextCreated', async event => {
       await this.#frameTreeHandled?.valueOrThrow();
       this.#onExecutionContextCreated(event.context, session);
-    });
-    session.on('Runtime.executionContextDestroyed', async event => {
-      await this.#frameTreeHandled?.valueOrThrow();
-      this.#onExecutionContextDestroyed(event.executionContextId, session);
-    });
-    session.on('Runtime.executionContextsCleared', async () => {
-      await this.#frameTreeHandled?.valueOrThrow();
-      this.#onExecutionContextsCleared(session);
     });
     session.on('Page.lifecycleEvent', async event => {
       await this.#frameTreeHandled?.valueOrThrow();
@@ -505,35 +495,15 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     }
     const key = `${session.id()}:${contextPayload.id}`;
     this.#contextIdToContext.set(key, context);
-  }
-
-  #onExecutionContextDestroyed(
-    executionContextId: number,
-    session: CDPSession
-  ): void {
-    const key = `${session.id()}:${executionContextId}`;
-    const context = this.#contextIdToContext.get(key);
-    if (!context) {
-      return;
-    }
-    this.#contextIdToContext.delete(key);
-    if (context._world) {
-      context._world.clearContext();
-    }
-  }
-
-  #onExecutionContextsCleared(session: CDPSession): void {
-    for (const [key, context] of this.#contextIdToContext.entries()) {
-      // Make sure to only clear execution contexts that belong
-      // to the current session.
-      if (context._client !== session) {
-        continue;
-      }
-      if (context._world) {
-        context._world.clearContext();
+    context.once('disposed', () => {
+      const key = `${session.id()}:${contextPayload.id}`;
+      const context = this.#contextIdToContext.get(key);
+      if (!context) {
+        return;
       }
       this.#contextIdToContext.delete(key);
-    }
+      context._world.clearContext();
+    });
   }
 
   #removeFramesRecursively(frame: CdpFrame): void {
