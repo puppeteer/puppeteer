@@ -67,6 +67,8 @@ export class ExecutionContext
     /** Emitted when this execution context is disposed. */
     disposed: undefined;
     consoleapicalled: Protocol.Runtime.ConsoleAPICalledEvent;
+    /** Emitted when a binding that is not installed by the ExecutionContext is called. */
+    bindingcalled: Protocol.Runtime.BindingCalledEvent;
   }>
   implements Disposable
 {
@@ -166,9 +168,11 @@ export class ExecutionContext
     }
     const {type, name, seq, args, isTrivial} = payload;
     if (type !== 'internal') {
+      this.emit('bindingcalled', event);
       return;
     }
     if (!this.#bindings.has(name)) {
+      this.emit('bindingcalled', event);
       return;
     }
 

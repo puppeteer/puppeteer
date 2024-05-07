@@ -80,12 +80,23 @@ export class CdpFrame extends Frame {
       'consoleapicalled',
       this.#onMainWorldConsoleApiCalled.bind(this)
     );
+    this.worlds[MAIN_WORLD].emitter.on(
+      'bindingcalled',
+      this.#onMainWorldBindingCalled.bind(this)
+    );
   }
 
   #onMainWorldConsoleApiCalled(
     event: Protocol.Runtime.ConsoleAPICalledEvent
   ): void {
     this._frameManager.emit(FrameManagerEvent.ConsoleApiCalled, [
+      this.worlds[MAIN_WORLD],
+      event,
+    ]);
+  }
+
+  #onMainWorldBindingCalled(event: Protocol.Runtime.BindingCalledEvent) {
+    this._frameManager.emit(FrameManagerEvent.BindingCalled, [
       this.worlds[MAIN_WORLD],
       event,
     ]);
