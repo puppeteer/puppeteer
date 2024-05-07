@@ -64,20 +64,19 @@ export class IsolatedWorld extends Realm {
     return this.#frameOrWorker.client;
   }
 
-  clearContext(): void {
-    // The message has to match the CDP message expected by the WaitTask class.
-    this.#context?.reject(new Error('Execution context was destroyed'));
-    this.#context = Deferred.create();
-    if ('clearDocumentHandle' in this.#frameOrWorker) {
-      this.#frameOrWorker.clearDocumentHandle();
-    }
-  }
-
   setContext(context: ExecutionContext): void {
     const existingContext = this.#context.value();
     if (existingContext instanceof ExecutionContext) {
       existingContext[disposeSymbol]();
     }
+    context.once('disposed', () => {
+      // The message has to match the CDP message expected by the WaitTask class.
+      this.#context?.reject(new Error('Execution context was destroyed'));
+      this.#context = Deferred.create();
+      if ('clearDocumentHandle' in this.#frameOrWorker) {
+        this.#frameOrWorker.clearDocumentHandle();
+      }
+    });
     this.#context.resolve(context);
     void this.taskManager.rerunAll();
   }
