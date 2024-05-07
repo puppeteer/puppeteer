@@ -6,7 +6,7 @@
 
 import type {Protocol} from 'devtools-protocol';
 
-import type {CDPSession} from '../api/CDPSession.js';
+import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -66,6 +66,7 @@ export class ExecutionContext
   extends EventEmitter<{
     /** Emitted when this execution context is disposed. */
     disposed: undefined;
+    consoleapicalled: Protocol.Runtime.ConsoleAPICalledEvent;
   }>
   implements Disposable
 {
@@ -96,6 +97,10 @@ export class ExecutionContext
       }
     });
     clientEmitter.on('Runtime.executionContextsCleared', async () => {
+      this[disposeSymbol]();
+    });
+    clientEmitter.on('Runtime.consoleAPICalled', this.#onConsoleAPI.bind(this));
+    clientEmitter.on(CDPSessionEvent.Disconnected, () => {
       this[disposeSymbol]();
     });
   }
@@ -177,6 +182,13 @@ export class ExecutionContext
     } catch (err) {
       debugError(err);
     }
+  }
+
+  #onConsoleAPI(event: Protocol.Runtime.ConsoleAPICalledEvent): void {
+    if (event.executionContextId !== this._contextId) {
+      return;
+    }
+    this.emit('consoleapicalled', event);
   }
 
   #bindingsInstalled = false;

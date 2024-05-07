@@ -73,7 +73,9 @@ describe('Launcher specs', function () {
             });
           await remote.disconnect();
           const error = await watchdog;
-          expect(error.message).toContain('Session closed.');
+          expect(error.message).toContain(
+            'Waiting for selector `div` failed: waitForFunction failed: frame got detached.'
+          );
         } finally {
           await close();
         }

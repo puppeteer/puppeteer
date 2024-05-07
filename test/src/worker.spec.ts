@@ -53,8 +53,8 @@ describe('Workers', function () {
       return error;
     });
     expect(error.message).atLeastOneToContain([
-      'Most likely the worker has been closed.',
       'Realm already destroyed.',
+      'Execution context is not available in detached frame',
     ]);
   });
   it('should report console logs', async () => {

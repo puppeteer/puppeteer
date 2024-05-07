@@ -47,14 +47,21 @@ export interface IsolatedWorldChart {
 /**
  * @internal
  */
+type IsolatedWorldEmitter = EventEmitter<{
+  // Emitted when the isolated world gets a new execution context.
+  context: ExecutionContext;
+  // Emitted when the isolated world is disposed.
+  disposed: undefined;
+  // Emitted when a new console message is logged.
+  consoleapicalled: Protocol.Runtime.ConsoleAPICalledEvent;
+}>;
+
+/**
+ * @internal
+ */
 export class IsolatedWorld extends Realm {
   #context?: ExecutionContext;
-  #emitter = new EventEmitter<{
-    // Emitted when the isolated world gets a new execution context.
-    context: ExecutionContext;
-    // Emitted when the isolated world is disposed.
-    disposed: undefined;
-  }>();
+  #emitter: IsolatedWorldEmitter = new EventEmitter();
 
   readonly #frameOrWorker: CdpFrame | CdpWebWorker;
 
@@ -74,17 +81,30 @@ export class IsolatedWorld extends Realm {
     return this.#frameOrWorker.client;
   }
 
+  get emitter(): IsolatedWorldEmitter {
+    return this.#emitter;
+  }
+
   setContext(context: ExecutionContext): void {
     this.#context?.[disposeSymbol]();
-    context.once('disposed', () => {
-      this.#context = undefined;
-      if ('clearDocumentHandle' in this.#frameOrWorker) {
-        this.#frameOrWorker.clearDocumentHandle();
-      }
-    });
+    context.once('disposed', this.#onContextDisposed.bind(this));
+    context.on('consoleapicalled', this.#onContextConsoleApiCalled.bind(this));
     this.#context = context;
     this.#emitter.emit('context', context);
     void this.taskManager.rerunAll();
+  }
+
+  #onContextDisposed(): void {
+    this.#context = undefined;
+    if ('clearDocumentHandle' in this.#frameOrWorker) {
+      this.#frameOrWorker.clearDocumentHandle();
+    }
+  }
+
+  #onContextConsoleApiCalled(
+    event: Protocol.Runtime.ConsoleAPICalledEvent
+  ): void {
+    this.#emitter.emit('consoleapicalled', event);
   }
 
   hasContext(): boolean {
@@ -94,7 +114,7 @@ export class IsolatedWorld extends Realm {
   #executionContext(): ExecutionContext | undefined {
     if (this.disposed) {
       throw new Error(
-        `Execution context is not available in detached frame "${this.environment.url()}" (are you trying to evaluate?)`
+        `Execution context is not available in detached frame or worker "${this.environment.url()}" (are you trying to evaluate?)`
       );
     }
     return this.#context;
@@ -226,5 +246,6 @@ export class IsolatedWorld extends Realm {
     this.#context?.[disposeSymbol]();
     this.#emitter.emit('disposed', undefined);
     super[disposeSymbol]();
+    this.#emitter.removeAllListeners();
   }
 }

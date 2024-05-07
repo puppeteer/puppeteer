@@ -5,7 +5,7 @@
  */
 import type {Protocol} from 'devtools-protocol';
 
-import type {CDPSession} from '../api/CDPSession.js';
+import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {Realm} from '../api/Realm.js';
 import {TargetType} from '../api/Target.js';
 import {WebWorker} from '../api/WebWorker.js';
@@ -60,7 +60,7 @@ export class CdpWebWorker extends WebWorker {
         new ExecutionContext(client, event.context, this.#world)
       );
     });
-    this.#client.on('Runtime.consoleAPICalled', async event => {
+    this.#world.emitter.on('consoleapicalled', async event => {
       try {
         return consoleAPICalled(
           event.type,
@@ -74,6 +74,9 @@ export class CdpWebWorker extends WebWorker {
       }
     });
     this.#client.on('Runtime.exceptionThrown', exceptionThrown);
+    this.#client.once(CDPSessionEvent.Disconnected, () => {
+      this.#world.dispose();
+    });
 
     // This might fail if the target is closed before we receive all execution contexts.
     this.#client.send('Runtime.enable').catch(debugError);
