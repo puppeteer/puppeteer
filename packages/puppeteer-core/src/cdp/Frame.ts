@@ -20,6 +20,7 @@ import type {
   DeviceRequestPromptManager,
 } from './DeviceRequestPrompt.js';
 import type {FrameManager} from './FrameManager.js';
+import {FrameManagerEvent} from './FrameManagerEvents.js';
 import type {IsolatedWorldChart} from './IsolatedWorld.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
@@ -74,6 +75,20 @@ export class CdpFrame extends Frame {
       this._onLoadingStarted();
       this._onLoadingStopped();
     });
+
+    this.worlds[MAIN_WORLD].emitter.on(
+      'consoleapicalled',
+      this.#onMainWorldConsoleApiCalled.bind(this)
+    );
+  }
+
+  #onMainWorldConsoleApiCalled(
+    event: Protocol.Runtime.ConsoleAPICalledEvent
+  ): void {
+    this._frameManager.emit(FrameManagerEvent.ConsoleApiCalled, [
+      this.worlds[MAIN_WORLD],
+      event,
+    ]);
   }
 
   /**

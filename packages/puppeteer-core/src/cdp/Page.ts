@@ -69,6 +69,7 @@ import type {CdpFrame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {FrameManagerEvent} from './FrameManagerEvents.js';
 import {CdpKeyboard, CdpMouse, CdpTouchscreen} from './Input.js';
+import type {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
 import {releaseObject} from './JSHandle.js';
 import type {NetworkConditions} from './NetworkManager.js';
@@ -216,7 +217,6 @@ export class CdpPage extends Page {
         return this.emit(PageEvent.Load, undefined);
       },
     ],
-    ['Runtime.consoleAPICalled', this.#onConsoleAPI.bind(this)],
     ['Runtime.bindingCalled', this.#onBindingCalled.bind(this)],
     ['Page.javascriptDialogOpening', this.#onDialog.bind(this)],
     ['Runtime.exceptionThrown', this.#handleException.bind(this)],
@@ -248,6 +248,16 @@ export class CdpPage extends Page {
     for (const [eventName, handler] of this.#frameManagerHandlers) {
       this.#frameManager.on(eventName, handler);
     }
+
+    this.#frameManager.on(
+      FrameManagerEvent.ConsoleApiCalled,
+      ([world, event]: [
+        IsolatedWorld,
+        Protocol.Runtime.ConsoleAPICalledEvent,
+      ]) => {
+        this.#onConsoleAPI(world, event);
+      }
+    );
 
     for (const [eventName, handler] of this.#networkManagerHandlers) {
       // TODO: Remove any.
@@ -778,41 +788,12 @@ export class CdpPage extends Page {
     );
   }
 
-  async #onConsoleAPI(
+  #onConsoleAPI(
+    world: IsolatedWorld,
     event: Protocol.Runtime.ConsoleAPICalledEvent
-  ): Promise<void> {
-    if (event.executionContextId === 0) {
-      // DevTools protocol stores the last 1000 console messages. These
-      // messages are always reported even for removed execution contexts. In
-      // this case, they are marked with executionContextId = 0 and are
-      // reported upon enabling Runtime agent.
-      //
-      // Ignore these messages since:
-      // - there's no execution context we can use to operate with message
-      //   arguments
-      // - these messages are reported before Puppeteer clients can subscribe
-      //   to the 'console'
-      //   page event.
-      //
-      // @see https://github.com/puppeteer/puppeteer/issues/3865
-      return;
-    }
-    const context = this.#frameManager.getExecutionContextById(
-      event.executionContextId,
-      this.#primaryTargetClient
-    );
-    if (!context) {
-      debugError(
-        new Error(
-          `ExecutionContext not found for a console message: ${JSON.stringify(
-            event
-          )}`
-        )
-      );
-      return;
-    }
+  ): void {
     const values = event.args.map(arg => {
-      return context._world.createCdpHandle(arg);
+      return world.createCdpHandle(arg);
     });
     this.#addConsoleMessage(
       convertConsoleMessageLevel(event.type),
