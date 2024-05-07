@@ -90,7 +90,18 @@ jobs:
           # https://github.com/puppeteer/puppeteer/issues/12379
           issue-number: 12379
           body: |
-            Tests with Chrome Canary failed
+            ❌ Tests with Chrome Canary failed
+
+            ---
+            [Link](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+      - name: Post comment
+        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4.0.0
+        if: ${{ needs.canary-chrome-tests.result == 'success'}}
+        with:
+          # https://github.com/puppeteer/puppeteer/issues/12379
+          issue-number: 12379
+          body: |
+            ✅ Tests with Chrome Canary succeeded
 
             ---
             [Link](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
