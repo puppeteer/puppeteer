@@ -66,9 +66,7 @@ jobs:
       - name: Install Puppeteer
         working-directory: devtools-frontend
         run: |
-          puppeteer_pkgs=(../puppeteer-*.tgz)
-          tar -xf ${puppeteer_pkgs[1]} --strip-components 1 -C node_modules/@puppeteer/browsers
-          tar -xf ${puppeteer_pkgs[2]} --strip-components 1 -C node_modules/puppeteer-core
+          npm install ../puppeteer-browsers*.tgz ../puppeteer-core*.tgz
       - name: Generate targets
         working-directory: devtools-frontend
         run: gn gen out/Default --args='devtools_skip_typecheck=true'
