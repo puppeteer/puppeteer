@@ -41,7 +41,6 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
   #page: CdpPage;
   #networkManager: NetworkManager;
   #timeoutSettings: TimeoutSettings;
-  #contextIdToContext = new Map<string, ExecutionContext>();
   #isolatedWorlds = new Set<string>();
   #client: CDPSession;
 
@@ -221,22 +220,6 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
 
       throw error;
     }
-  }
-
-  executionContextById(
-    contextId: number,
-    session: CDPSession = this.#client
-  ): ExecutionContext {
-    const context = this.getExecutionContextById(contextId, session);
-    assert(context, 'INTERNAL ERROR: missing context with id = ' + contextId);
-    return context;
-  }
-
-  getExecutionContextById(
-    contextId: number,
-    session: CDPSession = this.#client
-  ): ExecutionContext | undefined {
-    return this.#contextIdToContext.get(`${session.id()}:${contextId}`);
   }
 
   page(): CdpPage {
@@ -491,16 +474,6 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       world
     );
     world.setContext(context);
-    const key = `${session.id()}:${contextPayload.id}`;
-    this.#contextIdToContext.set(key, context);
-    context.once('disposed', () => {
-      const key = `${session.id()}:${contextPayload.id}`;
-      const context = this.#contextIdToContext.get(key);
-      if (!context) {
-        return;
-      }
-      this.#contextIdToContext.delete(key);
-    });
   }
 
   #removeFramesRecursively(frame: CdpFrame): void {

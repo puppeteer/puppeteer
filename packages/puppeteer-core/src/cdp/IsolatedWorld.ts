@@ -204,7 +204,7 @@ export class IsolatedWorld extends Realm {
     }
     const {object} = await this.client.send('DOM.resolveNode', {
       backendNodeId: backendNodeId,
-      executionContextId: context._contextId,
+      executionContextId: context.id,
     });
     return this.createCdpHandle(object) as JSHandle<Node>;
   }
