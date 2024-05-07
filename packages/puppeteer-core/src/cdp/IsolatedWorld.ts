@@ -6,18 +6,22 @@
 
 import type {Protocol} from 'devtools-protocol';
 
+import {firstValueFrom, map, raceWith} from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
+import {EventEmitter} from '../common/EventEmitter.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {EvaluateFunc, HandleFor} from '../common/types.js';
-import {withSourcePuppeteerURLIfNone} from '../common/util.js';
-import {Deferred} from '../util/Deferred.js';
+import {
+  fromEmitterEvent,
+  withSourcePuppeteerURLIfNone,
+} from '../common/util.js';
 import {disposeSymbol} from '../util/disposable.js';
 
 import {CdpElementHandle} from './ElementHandle.js';
-import {ExecutionContext} from './ExecutionContext.js';
+import type {ExecutionContext} from './ExecutionContext.js';
 import type {CdpFrame} from './Frame.js';
 import type {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {CdpJSHandle} from './JSHandle.js';
@@ -44,7 +48,13 @@ export interface IsolatedWorldChart {
  * @internal
  */
 export class IsolatedWorld extends Realm {
-  #context = Deferred.create<ExecutionContext>();
+  #context?: ExecutionContext;
+  #emitter = new EventEmitter<{
+    // Emitted when the isolated world gets a new execution context.
+    context: ExecutionContext;
+    // Emitted when the isolated world is disposed.
+    disposed: undefined;
+  }>();
 
   readonly #frameOrWorker: CdpFrame | CdpWebWorker;
 
@@ -65,36 +75,48 @@ export class IsolatedWorld extends Realm {
   }
 
   setContext(context: ExecutionContext): void {
-    const existingContext = this.#context.value();
-    if (existingContext instanceof ExecutionContext) {
-      existingContext[disposeSymbol]();
-    }
+    this.#context?.[disposeSymbol]();
     context.once('disposed', () => {
-      // The message has to match the CDP message expected by the WaitTask class.
-      this.#context?.reject(new Error('Execution context was destroyed'));
-      this.#context = Deferred.create();
+      this.#context = undefined;
       if ('clearDocumentHandle' in this.#frameOrWorker) {
         this.#frameOrWorker.clearDocumentHandle();
       }
     });
-    this.#context.resolve(context);
+    this.#context = context;
+    this.#emitter.emit('context', context);
     void this.taskManager.rerunAll();
   }
 
   hasContext(): boolean {
-    return this.#context.resolved();
+    return !!this.#context;
   }
 
-  #executionContext(): Promise<ExecutionContext> {
+  #executionContext(): ExecutionContext | undefined {
     if (this.disposed) {
       throw new Error(
         `Execution context is not available in detached frame "${this.environment.url()}" (are you trying to evaluate?)`
       );
     }
-    if (this.#context === null) {
-      throw new Error(`Execution content promise is missing`);
-    }
-    return this.#context.valueOrThrow();
+    return this.#context;
+  }
+
+  /**
+   * Waits for the next context to be set on the isolated world.
+   */
+  async #waitForExecutionContext(): Promise<ExecutionContext> {
+    const result = await firstValueFrom(
+      fromEmitterEvent(this.#emitter, 'context').pipe(
+        raceWith(
+          fromEmitterEvent(this.#emitter, 'disposed').pipe(
+            map(() => {
+              // The message has to match the CDP message expected by the WaitTask class.
+              throw new Error('Execution context was destroyed');
+            })
+          )
+        )
+      )
+    );
+    return result;
   }
 
   async evaluateHandle<
@@ -108,7 +130,13 @@ export class IsolatedWorld extends Realm {
       this.evaluateHandle.name,
       pageFunction
     );
-    const context = await this.#executionContext();
+    // This code needs to schedule evaluateHandle call synchroniously (at
+    // least when the context is there) so we cannot unconditionally
+    // await.
+    let context = this.#executionContext();
+    if (!context) {
+      context = await this.#waitForExecutionContext();
+    }
     return await context.evaluateHandle(pageFunction, ...args);
   }
 
@@ -123,9 +151,12 @@ export class IsolatedWorld extends Realm {
       this.evaluate.name,
       pageFunction
     );
-    let context = this.#context.value();
-    if (!context || !(context instanceof ExecutionContext)) {
-      context = await this.#executionContext();
+    // This code needs to schedule evaluate call synchroniously (at
+    // least when the context is there) so we cannot unconditionally
+    // await.
+    let context = this.#executionContext();
+    if (!context) {
+      context = await this.#waitForExecutionContext();
     }
     return await context.evaluate(pageFunction, ...args);
   }
@@ -133,10 +164,16 @@ export class IsolatedWorld extends Realm {
   override async adoptBackendNode(
     backendNodeId?: Protocol.DOM.BackendNodeId
   ): Promise<JSHandle<Node>> {
-    const executionContext = await this.#executionContext();
+    // This code needs to schedule resolveNode call synchroniously (at
+    // least when the context is there) so we cannot unconditionally
+    // await.
+    let context = this.#executionContext();
+    if (!context) {
+      context = await this.#waitForExecutionContext();
+    }
     const {object} = await this.client.send('DOM.resolveNode', {
       backendNodeId: backendNodeId,
-      executionContextId: executionContext._contextId,
+      executionContextId: context._contextId,
     });
     return this.createCdpHandle(object) as JSHandle<Node>;
   }
@@ -186,10 +223,8 @@ export class IsolatedWorld extends Realm {
   }
 
   [disposeSymbol](): void {
-    const existingContext = this.#context.value();
-    if (existingContext instanceof ExecutionContext) {
-      existingContext[disposeSymbol]();
-    }
+    this.#context?.[disposeSymbol]();
+    this.#emitter.emit('disposed', undefined);
     super[disposeSymbol]();
   }
 }
