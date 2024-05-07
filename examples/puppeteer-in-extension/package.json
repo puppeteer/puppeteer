@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rollup -c && cp manifest.json out/ && cp background.js out/"
+    "build": "rollup -c && cp manifest.json out/"
   },
   "keywords": [],
   "author": "",

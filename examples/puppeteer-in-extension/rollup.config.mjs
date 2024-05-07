@@ -6,7 +6,7 @@
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 
 export default {
-  input: 'main.mjs',
+  input: 'background.js',
   output: {
     format: 'esm',
     dir: 'out',

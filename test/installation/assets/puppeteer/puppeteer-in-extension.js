@@ -12,6 +12,7 @@ const browser = await puppeteer.launch({
   args: [
     `--disable-extensions-except=${pathToExtension}`,
     `--load-extension=${pathToExtension}`,
+    '--silent-debugger-extension-api',
   ],
 });
 
@@ -24,10 +25,10 @@ try {
       target.url().endsWith('background.js')
   );
   const worker = await workerTarget.worker();
+
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
   const result = await worker.evaluate(async url => {
-    while (!('testConnect' in globalThis)) {
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
     return await globalThis.testConnect(url);
   }, `http://localhost:${port}/playground.html`);
 
