@@ -490,9 +490,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       contextPayload,
       world
     );
-    if (world) {
-      world.setContext(context);
-    }
+    world.setContext(context);
     const key = `${session.id()}:${contextPayload.id}`;
     this.#contextIdToContext.set(key, context);
     context.once('disposed', () => {
@@ -502,7 +500,6 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
         return;
       }
       this.#contextIdToContext.delete(key);
-      context._world.clearContext();
     });
   }
 
