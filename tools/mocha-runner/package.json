@@ -13,7 +13,7 @@
   },
   "wireit": {
     "build": {
-      "command": "tsc -b && chmod +x ./bin/mocha-runner.js",
+      "command": "tsc -b && tsx ../../tools/chmod.ts 755 ./bin/mocha-runner.js",
       "clean": "if-file-deleted",
       "files": [
         "src/**"

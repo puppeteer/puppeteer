@@ -12,7 +12,7 @@
   },
   "wireit": {
     "build": {
-      "command": "tsc -b && chmod +x ./bin/doctest.js",
+      "command": "tsc -b && tsx ../../tools/chmod.ts 755 ./bin/doctest.js",
       "clean": "if-file-deleted",
       "files": [
         "src/**"
