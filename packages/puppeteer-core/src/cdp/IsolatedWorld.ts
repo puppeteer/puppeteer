@@ -54,6 +54,8 @@ type IsolatedWorldEmitter = EventEmitter<{
   disposed: undefined;
   // Emitted when a new console message is logged.
   consoleapicalled: Protocol.Runtime.ConsoleAPICalledEvent;
+  /** Emitted when a binding that is not installed by the ExecutionContext is called. */
+  bindingcalled: Protocol.Runtime.BindingCalledEvent;
 }>;
 
 /**
@@ -89,6 +91,7 @@ export class IsolatedWorld extends Realm {
     this.#context?.[disposeSymbol]();
     context.once('disposed', this.#onContextDisposed.bind(this));
     context.on('consoleapicalled', this.#onContextConsoleApiCalled.bind(this));
+    context.on('bindingcalled', this.#onContextBindingCalled.bind(this));
     this.#context = context;
     this.#emitter.emit('context', context);
     void this.taskManager.rerunAll();
@@ -107,8 +110,16 @@ export class IsolatedWorld extends Realm {
     this.#emitter.emit('consoleapicalled', event);
   }
 
+  #onContextBindingCalled(event: Protocol.Runtime.BindingCalledEvent): void {
+    this.#emitter.emit('bindingcalled', event);
+  }
+
   hasContext(): boolean {
     return !!this.#context;
+  }
+
+  get context(): ExecutionContext | undefined {
+    return this.#context;
   }
 
   #executionContext(): ExecutionContext | undefined {
@@ -193,7 +204,7 @@ export class IsolatedWorld extends Realm {
     }
     const {object} = await this.client.send('DOM.resolveNode', {
       backendNodeId: backendNodeId,
-      executionContextId: context._contextId,
+      executionContextId: context.id,
     });
     return this.createCdpHandle(object) as JSHandle<Node>;
   }

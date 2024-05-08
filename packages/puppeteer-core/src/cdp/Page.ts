@@ -217,7 +217,6 @@ export class CdpPage extends Page {
         return this.emit(PageEvent.Load, undefined);
       },
     ],
-    ['Runtime.bindingCalled', this.#onBindingCalled.bind(this)],
     ['Page.javascriptDialogOpening', this.#onDialog.bind(this)],
     ['Runtime.exceptionThrown', this.#handleException.bind(this)],
     ['Inspector.targetCrashed', this.#onTargetCrashed.bind(this)],
@@ -256,6 +255,16 @@ export class CdpPage extends Page {
         Protocol.Runtime.ConsoleAPICalledEvent,
       ]) => {
         this.#onConsoleAPI(world, event);
+      }
+    );
+
+    this.#frameManager.on(
+      FrameManagerEvent.BindingCalled,
+      ([world, event]: [
+        IsolatedWorld,
+        Protocol.Runtime.BindingCalledEvent,
+      ]) => {
+        void this.#onBindingCalled(world, event);
       }
     );
 
@@ -803,6 +812,7 @@ export class CdpPage extends Page {
   }
 
   async #onBindingCalled(
+    world: IsolatedWorld,
     event: Protocol.Runtime.BindingCalledEvent
   ): Promise<void> {
     let payload: BindingPayload;
@@ -818,10 +828,7 @@ export class CdpPage extends Page {
       return;
     }
 
-    const context = this.#frameManager.executionContextById(
-      event.executionContextId,
-      this.#primaryTargetClient
-    );
+    const context = world.context;
     if (!context) {
       return;
     }

@@ -67,13 +67,15 @@ export class ExecutionContext
     /** Emitted when this execution context is disposed. */
     disposed: undefined;
     consoleapicalled: Protocol.Runtime.ConsoleAPICalledEvent;
+    /** Emitted when a binding that is not installed by the ExecutionContext is called. */
+    bindingcalled: Protocol.Runtime.BindingCalledEvent;
   }>
   implements Disposable
 {
-  _client: CDPSession;
-  _world: IsolatedWorld;
-  _contextId: number;
-  _contextName?: string;
+  #client: CDPSession;
+  #world: IsolatedWorld;
+  #id: number;
+  #name?: string;
 
   readonly #disposables = new DisposableStack();
 
@@ -83,16 +85,16 @@ export class ExecutionContext
     world: IsolatedWorld
   ) {
     super();
-    this._client = client;
-    this._world = world;
-    this._contextId = contextPayload.id;
+    this.#client = client;
+    this.#world = world;
+    this.#id = contextPayload.id;
     if (contextPayload.name) {
-      this._contextName = contextPayload.name;
+      this.#name = contextPayload.name;
     }
-    const clientEmitter = this.#disposables.use(new EventEmitter(this._client));
+    const clientEmitter = this.#disposables.use(new EventEmitter(this.#client));
     clientEmitter.on('Runtime.bindingCalled', this.#onBindingCalled.bind(this));
     clientEmitter.on('Runtime.executionContextDestroyed', async event => {
-      if (event.executionContextId === this._contextId) {
+      if (event.executionContextId === this.#id) {
         this[disposeSymbol]();
       }
     });
@@ -118,16 +120,16 @@ export class ExecutionContext
 
     using _ = await this.#mutex.acquire();
     try {
-      await this._client.send(
+      await this.#client.send(
         'Runtime.addBinding',
-        this._contextName
+        this.#name
           ? {
               name: binding.name,
-              executionContextName: this._contextName,
+              executionContextName: this.#name,
             }
           : {
               name: binding.name,
-              executionContextId: this._contextId,
+              executionContextId: this.#id,
             }
       );
 
@@ -166,14 +168,16 @@ export class ExecutionContext
     }
     const {type, name, seq, args, isTrivial} = payload;
     if (type !== 'internal') {
+      this.emit('bindingcalled', event);
       return;
     }
     if (!this.#bindings.has(name)) {
+      this.emit('bindingcalled', event);
       return;
     }
 
     try {
-      if (event.executionContextId !== this._contextId) {
+      if (event.executionContextId !== this.#id) {
         return;
       }
 
@@ -184,8 +188,12 @@ export class ExecutionContext
     }
   }
 
+  get id(): number {
+    return this.#id;
+  }
+
   #onConsoleAPI(event: Protocol.Runtime.ConsoleAPICalledEvent): void {
-    if (event.executionContextId !== this._contextId) {
+    if (event.executionContextId !== this.#id) {
       return;
     }
     this.emit('consoleapicalled', event);
@@ -365,13 +373,13 @@ export class ExecutionContext
     );
 
     if (isString(pageFunction)) {
-      const contextId = this._contextId;
+      const contextId = this.#id;
       const expression = pageFunction;
       const expressionWithSourceUrl = SOURCE_URL_REGEX.test(expression)
         ? expression
         : `${expression}\n${sourceUrlComment}\n`;
 
-      const {exceptionDetails, result: remoteObject} = await this._client
+      const {exceptionDetails, result: remoteObject} = await this.#client
         .send('Runtime.evaluate', {
           expression: expressionWithSourceUrl,
           contextId,
@@ -387,7 +395,7 @@ export class ExecutionContext
 
       return returnByValue
         ? valueFromRemoteObject(remoteObject)
-        : this._world.createCdpHandle(remoteObject);
+        : this.#world.createCdpHandle(remoteObject);
     }
 
     const functionDeclaration = stringifyFunction(pageFunction);
@@ -398,9 +406,9 @@ export class ExecutionContext
       : `${functionDeclaration}\n${sourceUrlComment}\n`;
     let callFunctionOnPromise;
     try {
-      callFunctionOnPromise = this._client.send('Runtime.callFunctionOn', {
+      callFunctionOnPromise = this.#client.send('Runtime.callFunctionOn', {
         functionDeclaration: functionDeclarationWithSourceUrl,
-        executionContextId: this._contextId,
+        executionContextId: this.#id,
         arguments: args.length
           ? await Promise.all(args.map(convertArgument.bind(this)))
           : [],
@@ -424,7 +432,7 @@ export class ExecutionContext
     }
     return returnByValue
       ? valueFromRemoteObject(remoteObject)
-      : this._world.createCdpHandle(remoteObject);
+      : this.#world.createCdpHandle(remoteObject);
 
     async function convertArgument(
       this: ExecutionContext,
@@ -454,7 +462,7 @@ export class ExecutionContext
           ? arg
           : null;
       if (objectHandle) {
-        if (objectHandle.realm !== this._world) {
+        if (objectHandle.realm !== this.#world) {
           throw new Error(
             'JSHandles can be evaluated only in the context they were created!'
           );

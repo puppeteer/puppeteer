@@ -28,6 +28,7 @@ export namespace FrameManagerEvent {
     'FrameManager.FrameNavigatedWithinDocument'
   );
   export const ConsoleApiCalled = Symbol('FrameManager.ConsoleApiCalled');
+  export const BindingCalled = Symbol('FrameManager.BindingCalled');
 }
 
 /**
@@ -44,5 +45,9 @@ export interface FrameManagerEvents extends Record<EventType, unknown> {
   [FrameManagerEvent.ConsoleApiCalled]: [
     IsolatedWorld,
     Protocol.Runtime.ConsoleAPICalledEvent,
+  ];
+  [FrameManagerEvent.BindingCalled]: [
+    IsolatedWorld,
+    Protocol.Runtime.BindingCalledEvent,
   ];
 }
