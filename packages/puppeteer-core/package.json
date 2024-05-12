@@ -128,7 +128,7 @@
   "devDependencies": {
     "@types/debug": "4.1.12",
     "@types/node": "18.17.15",
-    "@types/chrome": "0.0.267",
+    "@types/chrome": "0.0.268",
     "@types/ws": "8.5.10",
     "mitt": "3.0.1",
     "parsel-js": "1.1.2",
