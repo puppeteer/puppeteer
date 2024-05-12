@@ -27,12 +27,12 @@
     "prism-react-renderer": "2.3.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "semver": "7.6.0"
+    "semver": "7.6.2"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.3.2",
     "@docusaurus/types": "3.3.2",
-    "@swc/core": "1.4.17",
+    "@swc/core": "1.5.5",
     "swc-loader": "0.2.6"
   },
   "browserslist": {
