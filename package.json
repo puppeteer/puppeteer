@@ -162,7 +162,7 @@
     "mocha": "10.4.0",
     "npm-run-all2": "6.1.2",
     "prettier": "3.2.5",
-    "semver": "7.6.0",
+    "semver": "7.6.2",
     "sinon": "17.0.1",
     "source-map-support": "0.5.21",
     "spdx-satisfies": "5.0.1",
