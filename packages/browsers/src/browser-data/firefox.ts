@@ -242,7 +242,6 @@ function defaultProfilePreferences(
     'browser.tabs.warnOnCloseOtherTabs': false,
     // Do not warn when multiple tabs will be opened
     'browser.tabs.warnOnOpen': false,
-    'browser.tabs.remote.unloadDelayMs': 2500,
 
     // Do not automatically offer translations, as tests do not expect this.
     'browser.translations.automaticallyPopup': false,
@@ -281,6 +280,7 @@ function defaultProfilePreferences(
 
     // Disable the ProcessHangMonitor
     'dom.ipc.reportProcessHangs': false,
+    'dom.ipc.processCount': 1,
 
     // Disable slow script dialogues
     'dom.max_chrome_script_run_time': 0,
