@@ -9,7 +9,7 @@ await page.goto('https://news.ycombinator.com', {
   waitUntil: 'networkidle2',
 });
 await page.screenshot({
-  path: 'hn.pdf',
+  path: 'hn.png',
 });
 
 await browser.close();
