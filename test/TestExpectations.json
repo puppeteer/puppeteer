@@ -210,13 +210,6 @@
     "comment": "WebDriver BiDi locateNodes does not support shadow roots so far"
   },
   {
-    "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler waitForSelector *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: Needs investigation"
-  },
-  {
     "testIdPattern": "[autofill.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "chrome-headless-shell"],
