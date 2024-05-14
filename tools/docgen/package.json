@@ -24,10 +24,10 @@
     }
   },
   "devDependencies": {
-    "@microsoft/api-extractor": "7.43.1",
-    "@microsoft/api-documenter": "7.24.2",
-    "@microsoft/api-extractor-model": "7.28.14",
+    "@microsoft/api-extractor": "7.43.4",
+    "@microsoft/api-documenter": "7.24.5",
+    "@microsoft/api-extractor-model": "7.28.16",
     "@microsoft/tsdoc": "0.14.2",
-    "@rushstack/node-core-library": "4.1.0"
+    "@rushstack/node-core-library": "4.2.1"
   }
 }
