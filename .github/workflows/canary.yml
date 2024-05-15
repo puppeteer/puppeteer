@@ -55,6 +55,9 @@ jobs:
       - name: Install Chrome Canary
         id: browser
         run: node tools/download_chrome_canary.mjs $HOME/.cache/puppeteer/chrome-canary
+      - name: Configure permissions
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: icacls $HOME/.cache/puppeteer/chrome-canary /grant "ALL APPLICATION PACKAGES:(OI)(CI)(RX)"
       - name: Apply Canary expectations
         run: node tools/merge-canary-test-expectations.mjs
       - name: Run all tests (for non-Linux)
