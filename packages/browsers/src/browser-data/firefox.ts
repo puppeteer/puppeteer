@@ -280,7 +280,6 @@ function defaultProfilePreferences(
 
     // Disable the ProcessHangMonitor
     'dom.ipc.reportProcessHangs': false,
-    'dom.ipc.processCount': 1,
 
     // Disable slow script dialogues
     'dom.max_chrome_script_run_time': 0,
