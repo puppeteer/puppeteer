@@ -200,6 +200,9 @@ jobs:
       - name: Install Chrome
         if: ${{ matrix.suite != 'chrome-bidi' }}
         run: npm run postinstall
+      - name: Configure permissions
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: icacls $HOME/.cache/puppeteer/chrome /grant "ALL APPLICATION PACKAGES:(OI)(CI)(RX)"
       - name: Setup cache for Chrome Canary binary
         if: ${{ matrix.suite == 'chrome-bidi' }}
         uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
@@ -210,6 +213,9 @@ jobs:
         if: ${{ matrix.suite == 'chrome-bidi' }}
         id: browser
         run: node tools/download_chrome_bidi.mjs $HOME/.cache/puppeteer/chrome-canary
+      - name: Configure permissions
+        if: ${{ matrix.suite == 'chrome-bidi' && matrix.os == 'windows-latest' }}
+        run: icacls $HOME/.cache/puppeteer/chrome-canary /grant "ALL APPLICATION PACKAGES:(OI)(CI)(RX)"
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
         run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
