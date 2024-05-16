@@ -51,7 +51,7 @@ You will need to reinstall `puppeteer` in order for the configuration to take
 effect. See [Configuring Puppeteer](./guides/configuration) for more
 information.
 
-## Chrome headless doesn't launch on Windows
+## Chrome doesn't launch on Windows
 
 Some [chrome policies](https://support.google.com/chrome/a/answer/7532015) might
 enforce running Chrome/Chromium with certain extensions.
@@ -69,6 +69,34 @@ const browser = await puppeteer.launch({
 
 > Context:
 > [issue 3681](https://github.com/puppeteer/puppeteer/issues/3681#issuecomment-447865342).
+
+## Chrome reports sandbox errors on Windows
+
+Chrome uses sandboxes on Windows which require additional permissions on
+the downloaded Chrome files. Currently, Puppeteer is not able to set
+those permissions for you.
+
+If you encounter this issue, you will see errors like this in the browser stdout:
+
+```
+[24452:59820:0508/113713.058:ERROR:sandbox_win.cc(913)] Sandbox cannot access executable. Check filesystem permissions are valid. See https://bit.ly/31yqMJR.: Access is denied. (0x5)
+```
+
+To workaround the issue, use the icacls utility to set permissions manually:
+
+```powershell
+icacls $HOME/.cache/puppeteer/chrome /grant "ALL APPLICATION PACKAGES:(OI)(CI)(RX)"
+```
+
+:::note
+
+In high security environments a more restrictive SID should be used such
+as one from the
+[installer](https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/setup/install_worker.cc;l=74).
+
+:::
+
+See https://bit.ly/31yqMJR for more details.
 
 ## Chrome doesn't launch on Linux
 
