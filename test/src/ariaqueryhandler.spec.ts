@@ -621,7 +621,7 @@ describe('AriaQueryHandler', () => {
         `
           <h2 id="shown">title</h2>
           <h2 id="hidden" aria-hidden="true">title</h2>
-          <div id="node1" aria-labeledby="node2"></div>
+          <div id="node1" aria-labelledby="node2"></div>
           <div id="node2" aria-label="bar"></div>
           <div id="node3" aria-label="foo"></div>
           <div id="node4" class="container">
