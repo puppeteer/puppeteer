@@ -933,13 +933,6 @@
     "comment": "times out flakily"
   },
   {
-    "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler queryOne (Chromium web test) should find treeitem by name",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: Needs investigation"
-  },
-  {
     "testIdPattern": "[bfcache.spec] BFCache can navigate to a BFCached page containing an OOPIF and a worker",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
