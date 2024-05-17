@@ -651,12 +651,14 @@ describe('AriaQueryHandler', () => {
           <!-- Accessible name for the <input> is "Accessible Name" -->
           <input id="node23">
           <div id="node24" title="Accessible Name"></div>
+          <div role="tree">
           <div role="treeitem" id="node30">
           <div role="treeitem" id="node31">
           <div role="treeitem" id="node32">item1</div>
           <div role="treeitem" id="node33">item2</div>
           </div>
           <div role="treeitem" id="node34">item3</div>
+          </div>
           </div>
           <!-- Accessible name for the <div> is "item1 item2 item3" -->
           <div aria-describedby="node30"></div>
