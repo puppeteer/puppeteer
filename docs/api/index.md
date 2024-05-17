@@ -215,6 +215,19 @@ The constructor for this class is marked as internal. Third-party code should no
 </td></tr>
 <tr><td>
 
+<span id="extensiontransport">[ExtensionTransport](./puppeteer.extensiontransport.md)</span>
+
+</td><td>
+
+**_(Experimental)_** Experimental ExtensionTransport allows establishing a connection via chrome.debugger API if Puppeteer runs in an extension. Since Chrome DevTools Protocol is restricted for extensions, the transport implements missing commands and events.
+
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ExtensionTransport` class.
+
+</td></tr>
+<tr><td>
+
 <span id="filechooser">[FileChooser](./puppeteer.filechooser.md)</span>
 
 </td><td>
