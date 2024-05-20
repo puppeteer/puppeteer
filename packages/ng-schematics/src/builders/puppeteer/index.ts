@@ -89,7 +89,7 @@ async function executeCommand(
     command[0] = updateExecutablePath(command[0]!, String(project['root']));
   }
 
-  await new Promise(async (resolve, reject) => {
+  await new Promise((resolve, reject) => {
     context.logger.debug(`Trying to execute command - ${command.join(' ')}.`);
     const {executable, args, debugError, error} = getExecutable(command);
     let path = context.workspaceRoot;
