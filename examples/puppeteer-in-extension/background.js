@@ -12,9 +12,25 @@ globalThis.testConnect = async url => {
   const tab = await chrome.tabs.create({
     url,
   });
+
+  // Wait for the new tab to load before connecting.
+  await new Promise(resolve => {
+    function listener(tabId, changeInfo) {
+      if (tabId === tab.id && changeInfo.status === 'complete') {
+        chrome.tabs.onUpdated.removeListener(listener);
+        resolve();
+      }
+    }
+    chrome.tabs.onUpdated.addListener(listener);
+  });
+
   const browser = await connect({
     transport: await ExtensionTransport.connectTab(tab.id),
   });
   const [page] = await browser.pages();
-  return await page.evaluate('document.title');
+  const title = await page.evaluate(() => {
+    return document.title;
+  });
+  await browser.disconnect();
+  return title;
 };
