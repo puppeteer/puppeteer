@@ -9,7 +9,6 @@ export * from './AriaQueryHandler.js';
 export * from './Binding.js';
 export * from './Browser.js';
 export * from './BrowserConnector.js';
-export * from './cdp.js';
 export * from './CDPSession.js';
 export * from './ChromeTargetManager.js';
 export * from './Connection.js';
