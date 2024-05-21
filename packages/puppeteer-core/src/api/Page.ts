@@ -523,14 +523,6 @@ export interface PageEvents extends Record<EventType, unknown> {
 /**
  * @public
  */
-export interface Credentials {
-  username: string;
-  password: string;
-}
-
-/**
- * @public
- */
 export interface NewDocumentScriptEvaluation {
   identifier: string;
 }
