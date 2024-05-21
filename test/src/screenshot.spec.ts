@@ -290,7 +290,8 @@ describe('Screenshots', function () {
       const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
-      await page.setContent(`<div style="position:absolute;
+      await page.setContent(`<!DOCTYPE html>
+                             <div style="position:absolute;
                                         top: 100px;
                                         left: 100px;
                                         width: 100px;
@@ -341,7 +342,7 @@ describe('Screenshots', function () {
       const {page} = await getTestState();
 
       await page.setContent(
-        '<div style="position:absolute; top: 10.3px; left: 20.4px;width:50.3px;height:20.2px;border:1px solid black;"></div>'
+        '<!DOCTYPE html><div style="position:absolute; top: 10.3px; left: 20.4px;width:50.3px;height:20.2px;border:1px solid black;"></div>'
       );
       using elementHandle = (await page.$('div'))!;
       const screenshot = await elementHandle.screenshot();
