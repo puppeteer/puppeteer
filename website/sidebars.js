@@ -54,6 +54,8 @@ module.exports = {
         'guides/chrome-extensions',
         'guides/cookies',
         'guides/files',
+        'guides/running-puppeteer-in-the-browser',
+        'guides/running-puppeteer-in-extensions',
       ],
     },
     {
