@@ -28,10 +28,9 @@ globalThis.testConnect = async url => {
     transport: await ExtensionTransport.connectTab(tab.id),
   });
   const [page] = await browser.pages();
-  // In extensions, the content security policy might prevent the use of
-  // JavaScript functions in evaluate calls. Define the functions inside
-  // the strings instead.
-  const title = await page.evaluate('document.title');
+  const title = await page.evaluate(() => {
+    return document.title;
+  });
   await browser.disconnect();
   return title;
 };
