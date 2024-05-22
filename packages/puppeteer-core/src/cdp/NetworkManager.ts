@@ -64,7 +64,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   #frameManager: FrameProvider;
   #networkEventManager = new NetworkEventManager();
   #extraHTTPHeaders?: Record<string, string>;
-  #credentials?: Credentials;
+  #credentials: Credentials | null = null;
   #attemptedAuthentications = new Set<string>();
   #userRequestInterceptionEnabled = false;
   #protocolRequestInterceptionEnabled = false;
@@ -121,7 +121,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     this.#clients.delete(client);
   }
 
-  async authenticate(credentials?: Credentials): Promise<void> {
+  async authenticate(credentials: Credentials | null): Promise<void> {
     this.#credentials = credentials;
     const enabled = this.#userRequestInterceptionEnabled || !!this.#credentials;
     if (enabled === this.#protocolRequestInterceptionEnabled) {
