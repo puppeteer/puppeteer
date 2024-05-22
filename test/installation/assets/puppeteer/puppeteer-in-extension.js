@@ -26,7 +26,8 @@ try {
   );
   const worker = await workerTarget.worker();
 
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  // See https://crbug.com/341213355
+  await new Promise(resolve => setTimeout(resolve, 2000));
 
   const result = await worker.evaluate(async url => {
     return await globalThis.testConnect(url);
