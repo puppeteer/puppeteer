@@ -290,7 +290,10 @@ export class CdpFrame extends Frame {
 
     // We rely upon the fact that document.open() will reset frame lifecycle with "init"
     // lifecycle event. @see https://crrev.com/608658
-    await this.setFrameContent(html);
+    await this.#client.send('Page.setDocumentContent', {
+      html,
+      frameId: this._id,
+    });
 
     const watcher = new LifecycleWatcher(
       this._frameManager.networkManager,
