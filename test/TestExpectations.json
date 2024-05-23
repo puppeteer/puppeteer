@@ -808,13 +808,6 @@
     "comment": "Firefox needs support for the url parameter of continueRequest"
   },
   {
-    "testIdPattern": "[requestinterception.spec] request interception Request.continue should fail if the header value is invalid",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Puppeteer expecting a chrome only error https://github.com/puppeteer/puppeteer/issues/12412"
-  },
-  {
     "testIdPattern": "[requestinterception.spec] request interception Request.resourceType should work for document type",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
