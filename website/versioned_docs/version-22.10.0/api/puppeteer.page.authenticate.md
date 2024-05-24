@@ -10,7 +10,7 @@ Provide credentials for `HTTP authentication`.
 
 ```typescript
 class Page {
-  abstract authenticate(credentials: Credentials): Promise<void>;
+  abstract authenticate(credentials: Credentials | null): Promise<void>;
 }
 ```
 
@@ -35,7 +35,7 @@ credentials
 
 </td><td>
 
-[Credentials](./puppeteer.credentials.md)
+[Credentials](./puppeteer.credentials.md) \| null
 
 </td><td>
 

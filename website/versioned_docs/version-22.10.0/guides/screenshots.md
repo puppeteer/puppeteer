@@ -1,6 +1,6 @@
 # Screenshots
 
-For capturing screenshots use [`Page.screenshot()`](https://pptr.dev/api/puppeteer.screenshot.pdf).
+For capturing screenshots use [`Page.screenshot()`](https://pptr.dev/api/puppeteer.page.screenshot).
 
 ```ts
 const browser = await puppeteer.launch();
@@ -9,7 +9,7 @@ await page.goto('https://news.ycombinator.com', {
   waitUntil: 'networkidle2',
 });
 await page.screenshot({
-  path: 'hn.pdf',
+  path: 'hn.png',
 });
 
 await browser.close();
