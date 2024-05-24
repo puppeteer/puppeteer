@@ -20,6 +20,21 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.10.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.9.0...puppeteer-core-v22.10.0) (2024-05-24)
+
+
+### Features
+
+* support running Puppeteer in extensions ([#12459](https://github.com/puppeteer/puppeteer/issues/12459)) ([3c6f01a](https://github.com/puppeteer/puppeteer/commit/3c6f01a31dbaef0fdd7f477302b7daa95e0c0929))
+
+
+### Bug Fixes
+
+* providing null to page.authenticate should disable authentication ([#12203](https://github.com/puppeteer/puppeteer/issues/12203)) ([f375267](https://github.com/puppeteer/puppeteer/commit/f375267e790f61ee2a93d1f2811bef7539fc58d4))
+* roll to Chrome 125.0.6422.76 (r1287751) ([#12477](https://github.com/puppeteer/puppeteer/issues/12477)) ([d83d9a6](https://github.com/puppeteer/puppeteer/commit/d83d9a6ae2b66b165a4aef5ae59ef3885bfbcff9))
+* roll to Chrome 125.0.6422.78 (r1287751) ([#12484](https://github.com/puppeteer/puppeteer/issues/12484)) ([f30977f](https://github.com/puppeteer/puppeteer/commit/f30977f8172e3cca605514295fff2086bcd154be))
+* **webdriver:** emit single HTTPRequest for Auth requests ([#12455](https://github.com/puppeteer/puppeteer/issues/12455)) ([637e827](https://github.com/puppeteer/puppeteer/commit/637e82796b492bcbc82d26753a019972b31a26fd))
+
 ## [22.9.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.8.2...puppeteer-core-v22.9.0) (2024-05-16)
 
 

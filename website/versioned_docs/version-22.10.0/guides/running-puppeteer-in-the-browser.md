@@ -53,6 +53,7 @@ export default {
       // Indicate that we target a browser environment.
       browser: true,
       // Exclude any dependencies except for puppeteer-core.
+      // `npm install puppeteer-core` # To install puppeteer-core if needed.
       resolveOnly: ['puppeteer-core'],
     }),
   ],
