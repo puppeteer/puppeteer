@@ -7,8 +7,6 @@
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
-import {debugError} from '../../common/util.js';
-import {isErrorLike} from '../../puppeteer-core.js';
 import {
   bubble,
   inertIfDisposed,
