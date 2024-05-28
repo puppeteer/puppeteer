@@ -18,7 +18,7 @@ function enableGoogleAnalytics() {
     dataLayer.push(arguments);
   }
   gtag('js', new Date());
-  gtag('config', 'G-J15CTWBVHX');
+  gtag('config', 'G-J15CTWBVHX', {anonymize_ip: true});
 }
 
 export default function Root({children}) {
