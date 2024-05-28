@@ -6,6 +6,12 @@ sidebar_label: Page.authenticate
 
 Provide credentials for `HTTP authentication`.
 
+:::note
+
+Request interception will be turned on behind the scenes to implement authentication. This might affect performance.
+
+:::
+
 #### Signature:
 
 ```typescript

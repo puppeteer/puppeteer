@@ -12,6 +12,12 @@ This must be called before the file chooser is launched. It will not return a cu
 
 :::
 
+:::caution
+
+Interception of file dialogs triggered via DOM APIs such as window.showOpenFilePicker is currently not supported.
+
+:::
+
 #### Signature:
 
 ```typescript

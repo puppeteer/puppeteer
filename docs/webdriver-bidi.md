@@ -122,7 +122,9 @@ This is an exciting step towards a more unified and efficient cross-browser auto
   - HTTPRequest.isInterceptResolutionHandled()
   - HTTPRequest.respond()
   - HTTPRequest.responseForRequest()
+  - Page.authenticate()
   - Page.setRequestInterception()
+  - Page.setUserAgent()
 
 ## Puppeteer features not yet supported over WebDriver BiDi
 
@@ -160,7 +162,6 @@ This is an exciting step towards a more unified and efficient cross-browser auto
   - Input.dragAndDrop()
   - Input.dragOver()
   - Input.drop()
-  - Page.authenticate()
   - Page.emulateNetworkConditions()
   - Page.isDragInterceptionEnabled()
   - Page.isJavaScriptEnabled() (supported only in Chrome)
@@ -171,7 +172,6 @@ This is an exciting step towards a more unified and efficient cross-browser auto
   - Page.setBypassServiceWorker()
   - Page.setDragInterception()
   - Page.setOfflineMode()
-  - Page.setUserAgent()
   - Page.waitForDevicePrompt()
   - Page.waitForFileChooser()
   - PageEvent.popup
