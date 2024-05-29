@@ -178,7 +178,7 @@ describe('cooperative request interception', function () {
       page.on('request', request => {
         const headers = Object.assign({}, request.headers(), {
           foo: 'bar',
-          accept: undefined, // remove "origin" header
+          accept: undefined, // remove "accept" header
         });
         void request.continue({headers}, 0);
       });
