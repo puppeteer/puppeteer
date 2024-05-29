@@ -32,22 +32,22 @@ export class BidiHTTPRequest extends HTTPRequest {
   static from(
     bidiRequest: Request,
     frame: BidiFrame,
-    redirect?: BidiHTTPRequest
+    redirectChain: BidiHTTPRequest[] = []
   ): BidiHTTPRequest {
-    const request = new BidiHTTPRequest(bidiRequest, frame, redirect);
+    const request = new BidiHTTPRequest(bidiRequest, frame, redirectChain);
     request.#initialize();
     return request;
   }
-  #redirectBy: BidiHTTPRequest | undefined;
   #response: BidiHTTPResponse | null = null;
   override readonly id: string;
   readonly #frame: BidiFrame;
   readonly #request: Request;
+  declare _redirectChain: BidiHTTPRequest[];
 
   private constructor(
     request: Request,
     frame: BidiFrame,
-    redirectBy?: BidiHTTPRequest
+    redirectChain: BidiHTTPRequest[] = []
   ) {
     super();
     requests.set(request, this);
@@ -56,7 +56,7 @@ export class BidiHTTPRequest extends HTTPRequest {
 
     this.#request = request;
     this.#frame = frame;
-    this.#redirectBy = redirectBy;
+    this._redirectChain = redirectChain;
     this.id = request.id;
   }
 
@@ -66,7 +66,14 @@ export class BidiHTTPRequest extends HTTPRequest {
 
   #initialize() {
     this.#request.on('redirect', request => {
-      const httpRequest = BidiHTTPRequest.from(request, this.#frame, this);
+      this._redirectChain.push(this);
+
+      const httpRequest = BidiHTTPRequest.from(
+        request,
+        this.#frame,
+        this._redirectChain
+      );
+
       request.once('success', () => {
         this.#frame
           .page()
@@ -170,16 +177,7 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override redirectChain(): BidiHTTPRequest[] {
-    if (this.#redirectBy === undefined) {
-      return [];
-    }
-    const redirects = [this.#redirectBy];
-    for (const redirect of redirects) {
-      if (redirect.#redirectBy !== undefined) {
-        redirects.push(redirect.#redirectBy);
-      }
-    }
-    return redirects;
+    return this._redirectChain.slice();
   }
 
   override frame(): BidiFrame {
