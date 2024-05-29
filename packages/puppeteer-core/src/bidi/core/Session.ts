@@ -7,7 +7,6 @@
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
-import {debugError} from '../../common/util.js';
 import {
   bubble,
   inertIfDisposed,
@@ -52,29 +51,9 @@ export class Session
     //   throw new Error(status.message);
     // }
 
-    let result;
-    try {
-      result = (
-        await connection.send('session.new', {
-          capabilities,
-        })
-      ).result;
-    } catch (err) {
-      // Chrome does not support session.new.
-      debugError(err);
-      result = {
-        sessionId: '',
-        capabilities: {
-          acceptInsecureCerts: false,
-          browserName: '',
-          browserVersion: '',
-          platformName: '',
-          setWindowRect: false,
-          webSocketUrl: '',
-          userAgent: '',
-        },
-      } satisfies Bidi.Session.NewResult;
-    }
+    const {result} = await connection.send('session.new', {
+      capabilities,
+    });
 
     const session = new Session(connection, result);
     await session.#initialize();

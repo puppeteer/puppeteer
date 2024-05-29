@@ -1569,6 +1569,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[fixtures.spec] Fixtures should close the browser when the node process closes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "The browser `disconnect` event is not emitted"
+  },
+  {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should click elements in a frameset",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
