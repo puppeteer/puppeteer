@@ -555,7 +555,7 @@ describe('network', function () {
       if (isChrome) {
         expect(failedRequest.failure()!.errorText).toBe('net::ERR_FAILED');
       } else {
-        expect(failedRequest.failure()!.errorText).toBe('NS_ERROR_FAILURE');
+        expect(failedRequest.failure()!.errorText).toBe('NS_ERROR_ABORT');
       }
     });
     it('Page.Events.RequestFinished', async () => {

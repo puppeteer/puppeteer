@@ -976,19 +976,23 @@ describe('Launcher specs', function () {
 
       try {
         const events: string[] = [];
-        browser.on('targetcreated', () => {
-          events.push('CREATED');
+        browser.on('targetcreated', target => {
+          events.push('CREATED: ' + target.url());
         });
-        browser.on('targetchanged', () => {
-          events.push('CHANGED');
+        browser.on('targetchanged', target => {
+          events.push('CHANGED: ' + target.url());
         });
-        browser.on('targetdestroyed', () => {
-          events.push('DESTROYED');
+        browser.on('targetdestroyed', target => {
+          events.push('DESTROYED: ' + target.url());
         });
         const page = await browser.newPage();
         await page.goto(server.EMPTY_PAGE);
         await page.close();
-        expect(events).toEqual(['CREATED', 'CHANGED', 'DESTROYED']);
+        expect(events).toEqual([
+          'CREATED: about:blank',
+          `CHANGED: ${server.EMPTY_PAGE}`,
+          `DESTROYED: ${server.EMPTY_PAGE}`,
+        ]);
       } finally {
         await close();
       }

@@ -120,7 +120,7 @@ export class FirefoxLauncher extends ProductLauncher {
 
     if (profileArgIndex !== -1) {
       userDataDir = firefoxArguments[profileArgIndex + 1];
-      if (!userDataDir || !fs.existsSync(userDataDir)) {
+      if (!userDataDir) {
         throw new Error(`Firefox profile not found at '${userDataDir}'`);
       }
 
