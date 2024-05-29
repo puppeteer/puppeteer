@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>console.trace test</title>
+  </head>
+  <body>
+    <script>
+      function foo() {
+        console.trace('yellow')
+      }
+      function bar() {
+        foo();
+      }
+      bar();
+    </script>
+  </body>
+</html>

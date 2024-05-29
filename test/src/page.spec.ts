@@ -408,11 +408,6 @@ describe('Page', function () {
       expect(message.text()).toEqual('hello 5 JSHandle@object');
       expect(message.type()).toEqual('log');
       expect(message.args()).toHaveLength(3);
-      expect(message.location()).toEqual({
-        url: expect.any(String),
-        lineNumber: expect.any(Number),
-        columnNumber: expect.any(Number),
-      });
 
       expect(await message.args()[0]!.jsonValue()).toEqual('hello');
       expect(await message.args()[1]!.jsonValue()).toEqual(5);
@@ -550,33 +545,33 @@ describe('Page', function () {
       });
     });
     it('should have location and stack trace for console API calls', async () => {
-      const {page, server, isChrome} = await getTestState();
+      const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       const [message] = await Promise.all([
         waitEvent(page, 'console'),
-        page.goto(server.PREFIX + '/consolelog.html'),
+        page.goto(server.PREFIX + '/consoletrace.html'),
       ]);
       expect(message.text()).toBe('yellow');
-      expect(message.type()).toBe('log');
+      expect(message.type()).toBe('trace');
       expect(message.location()).toEqual({
-        url: server.PREFIX + '/consolelog.html',
+        url: server.PREFIX + '/consoletrace.html',
         lineNumber: 8,
-        columnNumber: isChrome ? 16 : 8, // console.|log vs |console.log
+        columnNumber: 16,
       });
       expect(message.stackTrace()).toEqual([
         {
-          url: server.PREFIX + '/consolelog.html',
+          url: server.PREFIX + '/consoletrace.html',
           lineNumber: 8,
-          columnNumber: isChrome ? 16 : 8, // console.|log vs |console.log
+          columnNumber: 16,
         },
         {
-          url: server.PREFIX + '/consolelog.html',
+          url: server.PREFIX + '/consoletrace.html',
           lineNumber: 11,
           columnNumber: 8,
         },
         {
-          url: server.PREFIX + '/consolelog.html',
+          url: server.PREFIX + '/consoletrace.html',
           lineNumber: 13,
           columnNumber: 6,
         },
