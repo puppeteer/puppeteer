@@ -178,7 +178,7 @@ describe('cooperative request interception', function () {
       page.on('request', request => {
         const headers = Object.assign({}, request.headers(), {
           foo: 'bar',
-          origin: undefined, // remove "origin" header
+          accept: undefined, // remove "accept" header
         });
         void request.continue({headers}, 0);
       });
@@ -188,7 +188,7 @@ describe('cooperative request interception', function () {
         page.goto(server.PREFIX + '/empty.html'),
       ]);
 
-      expect(serverRequest.headers.origin).toBe(undefined);
+      expect(serverRequest.headers.accept).toBe(undefined);
     });
     it('should contain referer header', async () => {
       const {page, server} = await getTestState();
