@@ -731,13 +731,6 @@
     "comment": "BiDi spec expect the request to not trim the hash"
   },
   {
-    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Request.continue should redirect in a way non-observable to page",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Firefox needs support for the url parameter of continueRequest"
-  },
-  {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Request.resourceType should work for document type",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -799,13 +792,6 @@
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "`HTTPRequest.resourceType()` has no eqivalent in BiDi spec"
-  },
-  {
-    "testIdPattern": "[requestinterception.spec] request interception Request.continue should redirect in a way non-observable to page",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Firefox needs support for the url parameter of continueRequest"
   },
   {
     "testIdPattern": "[requestinterception.spec] request interception Request.resourceType should work for document type",
@@ -2653,12 +2639,6 @@
     "comment": "When navigating to page with authentication the command response (error) never comes without interception"
   },
   {
-    "testIdPattern": "[network.spec] network Page.setExtraHTTPHeaders should throw for non-string header values",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
     "testIdPattern": "[network.spec] network Page.setExtraHTTPHeaders should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -3441,10 +3421,11 @@
     "comment": "Test requires CDP"
   },
   {
-    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Request.continue should work",
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Request.continue should redirect in a way non-observable to page",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL"],
+    "comment": "Firefox needs support for the url parameter of continueRequest"
   },
   {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Request.respond should indicate already-handled if an intercept has been handled",
@@ -3593,10 +3574,11 @@
     "comment": "CDP specific issue, maybe we can support it from BiDi+"
   },
   {
-    "testIdPattern": "[requestinterception.spec] request interception Request.continue should work",
+    "testIdPattern": "[requestinterception.spec] request interception Request.continue should redirect in a way non-observable to page",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL"],
+    "comment": "Firefox needs support for the url parameter of continueRequest"
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Cdp should use scale for clip",
