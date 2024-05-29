@@ -241,7 +241,11 @@ Description
 
 </td><td>
 
-Runs `document.querySelector` within the page. If no element matches the selector, the return value resolves to `null`.
+Finds the first element that matches the selector. If no element matches the selector, the return value resolves to `null`.
+
+**Remarks:**
+
+Shortcut for [Page.mainFrame().$(selector)](./puppeteer.frame._.md).
 
 </td></tr>
 <tr><td>
@@ -252,7 +256,7 @@ Runs `document.querySelector` within the page. If no element matches the selecto
 
 </td><td>
 
-The method runs `document.querySelectorAll` within the page. If no elements match the selector, the return value resolves to `[]`.
+Finds elements on the page that match the selector. If no elements match the selector, the return value resolves to `[]`.
 
 **Remarks:**
 
@@ -267,7 +271,7 @@ Shortcut for [Page.mainFrame().$$(selector)](./puppeteer.frame.__.md).
 
 </td><td>
 
-This method runs `Array.from(document.querySelectorAll(selector))` within the page and passes the result as the first argument to the `pageFunction`.
+This method returns all elements matching the selector and passes the resulting array as the first argument to the `pageFunction`.
 
 **Remarks:**
 
@@ -282,7 +286,7 @@ If `pageFunction` returns a promise `$$eval` will wait for the promise to resolv
 
 </td><td>
 
-This method runs `document.querySelector` within the page and passes the result as the first argument to the `pageFunction`.
+This method finds the first element within the page that matches the selector and passes the result as the first argument to the `pageFunction`.
 
 **Remarks:**
 
@@ -337,6 +341,12 @@ Shortcut for [page.mainFrame().addStyleTag(options)](./puppeteer.frame.addstylet
 </td><td>
 
 Provide credentials for `HTTP authentication`.
+
+:::note
+
+Request interception will be turned on behind the scenes to implement authentication. This might affect performance.
+
+:::
 
 **Remarks:**
 
@@ -673,14 +683,6 @@ Maximum time in milliseconds.
 
 This method navigate to the previous page in history.
 
-**Remarks:**
-
-The argument `options` might have the following properties:
-
-- `timeout` : Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the [Page.setDefaultNavigationTimeout()](./puppeteer.page.setdefaultnavigationtimeout.md) or [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) methods.
-
-- `waitUntil` : When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:<br/> - `load` : consider navigation to be finished when the load event is fired.<br/> - `domcontentloaded` : consider navigation to be finished when the DOMContentLoaded event is fired.<br/> - `networkidle0` : consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.<br/> - `networkidle2` : consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
-
 </td></tr>
 <tr><td>
 
@@ -692,14 +694,6 @@ The argument `options` might have the following properties:
 
 This method navigate to the next page in history.
 
-**Remarks:**
-
-The argument `options` might have the following properties:
-
-- `timeout` : Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the [Page.setDefaultNavigationTimeout()](./puppeteer.page.setdefaultnavigationtimeout.md) or [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) methods.
-
-- `waitUntil`: When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:<br/> - `load` : consider navigation to be finished when the load event is fired.<br/> - `domcontentloaded` : consider navigation to be finished when the DOMContentLoaded event is fired.<br/> - `networkidle0` : consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.<br/> - `networkidle2` : consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
-
 </td></tr>
 <tr><td>
 
@@ -709,7 +703,7 @@ The argument `options` might have the following properties:
 
 </td><td>
 
-Navigates the page to the given `url`.
+Navigates the frame or page to the given `url`.
 
 **Remarks:**
 
@@ -717,11 +711,11 @@ Navigation to `about:blank` or navigation to the same URL with a different hash 
 
 :::warning
 
-Headless mode doesn't support navigation to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
+Headless shell mode doesn't support navigation to a PDF document. See the [upstream issue](https://crbug.com/761295).
 
 :::
 
-Shortcut for [page.mainFrame().goto(url, options)](./puppeteer.frame.goto.md).
+In headless shell, this method will not throw an error when any valid HTTP status code is returned by the remote server, including 404 "Not Found" and 500 "Internal Server Error". The status code for such responses can be retrieved by calling [HTTPResponse.status()](./puppeteer.httpresponse.status.md).
 
 </td></tr>
 <tr><td>
@@ -828,10 +822,6 @@ Locators API is experimental and we will not follow semver for breaking change i
 </td><td>
 
 The page's main frame.
-
-**Remarks:**
-
-Page is guaranteed to have a main frame which persists during navigations.
 
 </td></tr>
 <tr><td>
@@ -1008,14 +998,6 @@ Toggles ignoring cache for each request based on the enabled state. By default, 
 </td><td>
 
 Set the content of the page.
-
-**Remarks:**
-
-The parameter `options` might have the following options.
-
-- `timeout` : Maximum time in milliseconds for resources to load, defaults to 30 seconds, pass `0` to disable timeout. The default value can be changed by using the [Page.setDefaultNavigationTimeout()](./puppeteer.page.setdefaultnavigationtimeout.md) or [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) methods.
-
-- `waitUntil`: When to consider setting markup succeeded, defaults to `load`. Given an array of event strings, setting content is considered to be successful after all events have been fired. Events can be either:<br/> - `load` : consider setting content to be finished when the `load` event is fired.<br/> - `domcontentloaded` : consider setting content to be finished when the `DOMContentLoaded` event is fired.<br/> - `networkidle0` : consider setting content to be finished when there are no more than 0 network connections for at least `500` ms.<br/> - `networkidle2` : consider setting content to be finished when there are no more than 2 network connections for at least `500` ms.
 
 </td></tr>
 <tr><td>
@@ -1297,6 +1279,12 @@ This method is typically coupled with an action that triggers file choosing.
 :::caution
 
 This must be called before the file chooser is launched. It will not return a currently active file chooser.
+
+:::
+
+:::caution
+
+Interception of file dialogs triggered via DOM APIs such as window.showOpenFilePicker is currently not supported.
 
 :::
 

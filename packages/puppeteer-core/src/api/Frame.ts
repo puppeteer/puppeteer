@@ -297,11 +297,15 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   /**
    * Is `true` if the frame is an out-of-process (OOP) frame. Otherwise,
    * `false`.
+   *
+   * @deprecated Generally, there should be no difference between local and
+   * out-of-process frames from the Puppeteer API perspective. This is an
+   * implementation detail that should not have been exposed.
    */
   abstract isOOPFrame(): boolean;
 
   /**
-   * Navigates the frame to the given `url`.
+   * Navigates the frame or page to the given `url`.
    *
    * @remarks
    * Navigation to `about:blank` or navigation to the same URL with a different
@@ -309,11 +313,15 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    *
    * :::warning
    *
-   * Headless mode doesn't support navigation to a PDF document. See the {@link
-   * https://bugs.chromium.org/p/chromium/issues/detail?id=761295 | upstream
-   * issue}.
+   * Headless shell mode doesn't support navigation to a PDF document. See the
+   * {@link https://crbug.com/761295 | upstream issue}.
    *
    * :::
+   *
+   * In headless shell, this method will not throw an error when any valid HTTP
+   * status code is returned by the remote server, including 404 "Not Found" and
+   * 500 "Internal Server Error". The status code for such responses can be
+   * retrieved by calling {@link HTTPResponse.status}.
    *
    * @param url - URL to navigate the frame to. The URL should include scheme,
    * e.g. `https://`
@@ -324,15 +332,14 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * @throws If:
    *
    * - there's an SSL error (e.g. in case of self-signed certificates).
-   * - target URL is invalid.
-   * - the timeout is exceeded during navigation.
-   * - the remote server does not respond or is unreachable.
-   * - the main resource failed to load.
    *
-   * This method will not throw an error when any valid HTTP status code is
-   * returned by the remote server, including 404 "Not Found" and 500 "Internal
-   * Server Error". The status code for such responses can be retrieved by
-   * calling {@link HTTPResponse.status}.
+   * - target URL is invalid.
+   *
+   * - the timeout is exceeded during navigation.
+   *
+   * - the remote server does not respond or is unreachable.
+   *
+   * - the main resource failed to load.
    */
   abstract goto(
     url: string,
@@ -508,7 +515,22 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   /**
    * Queries the frame for an element matching the given selector.
    *
-   * @param selector - The selector to query for.
+   * @param selector -
+   * {@link https://pptr.dev/guides/page-interactions#query-selectors | selector}
+   * to query page for.
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
+   * can be passed as-is and a
+   * {@link https://pptr.dev/guides/page-interactions#p-selectors | Puppeteer-specific seletor syntax}
+   * allows quering by
+   * {@link https://pptr.dev/guides/page-interactions#text-selectors--p-text | text},
+   * {@link https://pptr.dev/guides/page-interactions#aria-selectors--p-aria | a11y role and name},
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#-and--combinators | combining these queries across shadow roots}.
+   * Alternatively, you can specify a selector type using a prefix
+   * {@link https://pptr.dev/guides/page-interactions#built-in-selectors | prefix}.
+   *
    * @returns A {@link ElementHandle | element handle} to the first element
    * matching the given selector. Otherwise, `null`.
    */
@@ -524,7 +546,22 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   /**
    * Queries the frame for all elements matching the given selector.
    *
-   * @param selector - The selector to query for.
+   * @param selector -
+   * {@link https://pptr.dev/guides/page-interactions#query-selectors | selector}
+   * to query page for.
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
+   * can be passed as-is and a
+   * {@link https://pptr.dev/guides/page-interactions#p-selectors | Puppeteer-specific seletor syntax}
+   * allows quering by
+   * {@link https://pptr.dev/guides/page-interactions#text-selectors--p-text | text},
+   * {@link https://pptr.dev/guides/page-interactions#aria-selectors--p-aria | a11y role and name},
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#-and--combinators | combining these queries across shadow roots}.
+   * Alternatively, you can specify a selector type using a prefix
+   * {@link https://pptr.dev/guides/page-interactions#built-in-selectors | prefix}.
+   *
    * @returns An array of {@link ElementHandle | element handles} that point to
    * elements matching the given selector.
    */
@@ -550,7 +587,21 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * const searchValue = await frame.$eval('#search', el => el.value);
    * ```
    *
-   * @param selector - The selector to query for.
+   * @param selector -
+   * {@link https://pptr.dev/guides/page-interactions#query-selectors | selector}
+   * to query page for.
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
+   * can be passed as-is and a
+   * {@link https://pptr.dev/guides/page-interactions#p-selectors | Puppeteer-specific seletor syntax}
+   * allows quering by
+   * {@link https://pptr.dev/guides/page-interactions#text-selectors--p-text | text},
+   * {@link https://pptr.dev/guides/page-interactions#aria-selectors--p-aria | a11y role and name},
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#-and--combinators | combining these queries across shadow roots}.
+   * Alternatively, you can specify a selector type using a prefix
+   * {@link https://pptr.dev/guides/page-interactions#built-in-selectors | prefix}.
    * @param pageFunction - The function to be evaluated in the frame's context.
    * The first element matching the selector will be passed to the function as
    * its first argument.
@@ -589,7 +640,21 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * const divsCounts = await frame.$$eval('div', divs => divs.length);
    * ```
    *
-   * @param selector - The selector to query for.
+   * @param selector -
+   * {@link https://pptr.dev/guides/page-interactions#query-selectors | selector}
+   * to query page for.
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
+   * can be passed as-is and a
+   * {@link https://pptr.dev/guides/page-interactions#p-selectors | Puppeteer-specific seletor syntax}
+   * allows quering by
+   * {@link https://pptr.dev/guides/page-interactions#text-selectors--p-text | text},
+   * {@link https://pptr.dev/guides/page-interactions#aria-selectors--p-aria | a11y role and name},
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#-and--combinators | combining these queries across shadow roots}.
+   * Alternatively, you can specify a selector type using a prefix
+   * {@link https://pptr.dev/guides/page-interactions#built-in-selectors | prefix}.
    * @param pageFunction - The function to be evaluated in the frame's context.
    * An array of elements matching the given selector will be passed to the
    * function as its first argument.

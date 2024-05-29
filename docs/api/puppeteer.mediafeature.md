@@ -4,6 +4,8 @@ sidebar_label: MediaFeature
 
 # MediaFeature interface
 
+A media feature to emulate.
+
 #### Signature:
 
 ```typescript
@@ -45,6 +47,8 @@ string
 
 </td><td>
 
+A name of the feature, for example, 'prefers-reduced-motion'.
+
 </td><td>
 
 </td></tr>
@@ -59,6 +63,8 @@ string
 string
 
 </td><td>
+
+A value for the feature, for example, 'reduce'.
 
 </td><td>
 

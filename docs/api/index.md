@@ -1063,6 +1063,8 @@ Generic launch options that can be passed when launching any browser.
 
 </td><td>
 
+A media feature to emulate.
+
 </td></tr>
 <tr><td>
 

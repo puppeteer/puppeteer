@@ -4,7 +4,7 @@ sidebar_label: Frame.goto
 
 # Frame.goto() method
 
-Navigates the frame to the given `url`.
+Navigates the frame or page to the given `url`.
 
 #### Signature:
 
@@ -69,9 +69,15 @@ A promise which resolves to the main resource response. In case of multiple redi
 
 If:
 
-- there's an SSL error (e.g. in case of self-signed certificates). - target URL is invalid. - the timeout is exceeded during navigation. - the remote server does not respond or is unreachable. - the main resource failed to load.
+- there's an SSL error (e.g. in case of self-signed certificates).
 
-This method will not throw an error when any valid HTTP status code is returned by the remote server, including 404 "Not Found" and 500 "Internal Server Error". The status code for such responses can be retrieved by calling [HTTPResponse.status()](./puppeteer.httpresponse.status.md).
+- target URL is invalid.
+
+- the timeout is exceeded during navigation.
+
+- the remote server does not respond or is unreachable.
+
+- the main resource failed to load.
 
 ## Remarks
 
@@ -79,6 +85,8 @@ Navigation to `about:blank` or navigation to the same URL with a different hash 
 
 :::warning
 
-Headless mode doesn't support navigation to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
+Headless shell mode doesn't support navigation to a PDF document. See the [upstream issue](https://crbug.com/761295).
 
 :::
+
+In headless shell, this method will not throw an error when any valid HTTP status code is returned by the remote server, including 404 "Not Found" and 500 "Internal Server Error". The status code for such responses can be retrieved by calling [HTTPResponse.status()](./puppeteer.httpresponse.status.md).

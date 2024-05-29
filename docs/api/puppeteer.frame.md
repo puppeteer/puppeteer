@@ -287,7 +287,7 @@ Focuses the first element that matches the `selector`.
 
 </td><td>
 
-Navigates the frame to the given `url`.
+Navigates the frame or page to the given `url`.
 
 **Remarks:**
 
@@ -295,9 +295,11 @@ Navigation to `about:blank` or navigation to the same URL with a different hash 
 
 :::warning
 
-Headless mode doesn't support navigation to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
+Headless shell mode doesn't support navigation to a PDF document. See the [upstream issue](https://crbug.com/761295).
 
 :::
+
+In headless shell, this method will not throw an error when any valid HTTP status code is returned by the remote server, including 404 "Not Found" and 500 "Internal Server Error". The status code for such responses can be retrieved by calling [HTTPResponse.status()](./puppeteer.httpresponse.status.md).
 
 </td></tr>
 <tr><td>
@@ -334,9 +336,15 @@ Use the `detached` getter.
 
 </td><td>
 
+`deprecated`
+
 </td><td>
 
 Is `true` if the frame is an out-of-process (OOP) frame. Otherwise, `false`.
+
+**Deprecated:**
+
+Generally, there should be no difference between local and out-of-process frames from the Puppeteer API perspective. This is an implementation detail that should not have been exposed.
 
 </td></tr>
 <tr><td>

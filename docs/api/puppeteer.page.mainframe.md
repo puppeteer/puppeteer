@@ -17,7 +17,3 @@ class Page {
 **Returns:**
 
 [Frame](./puppeteer.frame.md)
-
-## Remarks
-
-Page is guaranteed to have a main frame which persists during navigations.
