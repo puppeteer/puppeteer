@@ -379,7 +379,7 @@ describe('cooperative request interception', function () {
         expect(error.message).toContain('NS_ERROR_ABORT');
       }
     });
-    it.only('should work with redirects', async () => {
+    it('should work with redirects', async () => {
       const {page, server} = await getTestState();
 
       await page.setRequestInterception(true);

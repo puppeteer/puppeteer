@@ -32,22 +32,23 @@ export class BidiHTTPRequest extends HTTPRequest {
   static from(
     bidiRequest: Request,
     frame: BidiFrame,
-    redirectChain: BidiHTTPRequest[] = []
+    redirect?: BidiHTTPRequest
   ): BidiHTTPRequest {
-    const request = new BidiHTTPRequest(bidiRequest, frame, redirectChain);
+    const request = new BidiHTTPRequest(bidiRequest, frame, redirect);
     request.#initialize();
     return request;
   }
+
+  #redirectChain: BidiHTTPRequest[];
   #response: BidiHTTPResponse | null = null;
   override readonly id: string;
   readonly #frame: BidiFrame;
   readonly #request: Request;
-  declare _redirectChain: BidiHTTPRequest[];
 
   private constructor(
     request: Request,
     frame: BidiFrame,
-    redirectChain: BidiHTTPRequest[] = []
+    redirect?: BidiHTTPRequest
   ) {
     super();
     requests.set(request, this);
@@ -56,7 +57,7 @@ export class BidiHTTPRequest extends HTTPRequest {
 
     this.#request = request;
     this.#frame = frame;
-    this._redirectChain = redirectChain;
+    this.#redirectChain = redirect ? redirect.#redirectChain : [];
     this.id = request.id;
   }
 
@@ -66,13 +67,8 @@ export class BidiHTTPRequest extends HTTPRequest {
 
   #initialize() {
     this.#request.on('redirect', request => {
-      this._redirectChain.push(this);
-
-      const httpRequest = BidiHTTPRequest.from(
-        request,
-        this.#frame,
-        this._redirectChain
-      );
+      const httpRequest = BidiHTTPRequest.from(request, this.#frame, this);
+      this.#redirectChain.push(this);
 
       request.once('success', () => {
         this.#frame
@@ -177,7 +173,7 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override redirectChain(): BidiHTTPRequest[] {
-    return this._redirectChain.slice();
+    return this.#redirectChain.slice();
   }
 
   override frame(): BidiFrame {
