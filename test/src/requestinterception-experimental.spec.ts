@@ -196,10 +196,10 @@ describe('cooperative request interception', function () {
       await page.setRequestInterception(true);
       const requests: HTTPRequest[] = [];
       page.on('request', request => {
+        void request.continue({}, 0);
         if (!isFavicon(request)) {
           requests.push(request);
         }
-        void request.continue({}, 0);
       });
       await page.goto(server.PREFIX + '/one-style.html');
       expect(requests[1]!.url()).toContain('/one-style.css');
@@ -386,7 +386,9 @@ describe('cooperative request interception', function () {
       const requests: HTTPRequest[] = [];
       page.on('request', request => {
         void request.continue({}, 0);
-        requests.push(request);
+        if (!isFavicon(request)) {
+          requests.push(request);
+        }
       });
       server.setRedirect(
         '/non-existing-page.html',
@@ -526,7 +528,9 @@ describe('cooperative request interception', function () {
       await page.setRequestInterception(true);
       const requests: HTTPRequest[] = [];
       page.on('request', request => {
-        requests.push(request);
+        if (!isFavicon(request)) {
+          requests.push(request);
+        }
         void request.continue({}, 0);
       });
       const dataURL = 'data:text/html,<div>yo</div>';
@@ -542,8 +546,10 @@ describe('cooperative request interception', function () {
       await page.setRequestInterception(true);
       const requests: HTTPRequest[] = [];
       page.on('request', request => {
-        !isFavicon(request) && requests.push(request);
         void request.continue({}, 0);
+        if (!isFavicon(request)) {
+          requests.push(request);
+        }
       });
       const dataURL = 'data:text/html,<div>yo</div>';
       const text = await page.evaluate((url: string) => {
@@ -561,7 +567,9 @@ describe('cooperative request interception', function () {
       await page.setRequestInterception(true);
       const requests: HTTPRequest[] = [];
       page.on('request', request => {
-        requests.push(request);
+        if (!isFavicon(request)) {
+          requests.push(request);
+        }
         void request.continue({}, 0);
       });
       const response = await page.goto(server.EMPTY_PAGE + '#hash');
@@ -606,7 +614,9 @@ describe('cooperative request interception', function () {
       const requests: HTTPRequest[] = [];
       page.on('request', request => {
         void request.continue({}, 0);
-        requests.push(request);
+        if (!isFavicon(request)) {
+          requests.push(request);
+        }
       });
       const response = await page.goto(
         `data:text/html,<link rel="stylesheet" href="${server.PREFIX}/fonts?helvetica|arial"/>`

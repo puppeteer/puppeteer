@@ -38,7 +38,8 @@ export class BidiHTTPRequest extends HTTPRequest {
     request.#initialize();
     return request;
   }
-  #redirectBy: BidiHTTPRequest | undefined;
+
+  #redirectChain: BidiHTTPRequest[];
   #response: BidiHTTPResponse | null = null;
   override readonly id: string;
   readonly #frame: BidiFrame;
@@ -47,7 +48,7 @@ export class BidiHTTPRequest extends HTTPRequest {
   private constructor(
     request: Request,
     frame: BidiFrame,
-    redirectBy?: BidiHTTPRequest
+    redirect?: BidiHTTPRequest
   ) {
     super();
     requests.set(request, this);
@@ -56,7 +57,7 @@ export class BidiHTTPRequest extends HTTPRequest {
 
     this.#request = request;
     this.#frame = frame;
-    this.#redirectBy = redirectBy;
+    this.#redirectChain = redirect ? redirect.#redirectChain : [];
     this.id = request.id;
   }
 
@@ -67,6 +68,8 @@ export class BidiHTTPRequest extends HTTPRequest {
   #initialize() {
     this.#request.on('redirect', request => {
       const httpRequest = BidiHTTPRequest.from(request, this.#frame, this);
+      this.#redirectChain.push(this);
+
       request.once('success', () => {
         this.#frame
           .page()
@@ -170,16 +173,7 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override redirectChain(): BidiHTTPRequest[] {
-    if (this.#redirectBy === undefined) {
-      return [];
-    }
-    const redirects = [this.#redirectBy];
-    for (const redirect of redirects) {
-      if (redirect.#redirectBy !== undefined) {
-        redirects.push(redirect.#redirectBy);
-      }
-    }
-    return redirects;
+    return this.#redirectChain.slice();
   }
 
   override frame(): BidiFrame {
