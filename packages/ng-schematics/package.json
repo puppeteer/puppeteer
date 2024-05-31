@@ -56,7 +56,7 @@
     "@angular-devkit/schematics": "17.2.2"
   },
   "devDependencies": {
-    "@schematics/angular": "17.2.2",
+    "@schematics/angular": "17.3.8",
     "@angular/cli": "17.2.2"
   },
   "files": [
