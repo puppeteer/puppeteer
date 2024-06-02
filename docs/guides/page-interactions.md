@@ -391,7 +391,7 @@ declare global {
 
 :::caution
 
-While we maintin prefixed selectors, the recommended way is to use the selector syntax documented above.
+While we maintain prefixed selectors, the recommended way is to use the selector syntax documented above.
 
 :::
 
