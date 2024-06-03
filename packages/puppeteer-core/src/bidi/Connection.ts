@@ -136,7 +136,7 @@ export class BidiConnection
           this.#callbacks.reject(
             object.id,
             createProtocolError(object),
-            object.message
+            `${object.error}: ${object.message}`
           );
           return;
         case 'event':
