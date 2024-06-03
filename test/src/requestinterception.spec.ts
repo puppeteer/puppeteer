@@ -770,7 +770,9 @@ describe('request interception', function () {
         await request.continue();
       });
       await page.goto(server.PREFIX + '/empty.html');
-      expect(error.message).toMatch(/Invalid header|Expected "header"/);
+      expect(error.message).toMatch(
+        /Invalid header|Expected "header"|invalid argument/
+      );
     });
   });
 
@@ -938,7 +940,9 @@ describe('request interception', function () {
         });
       });
       await page.goto(server.PREFIX + '/empty.html');
-      expect(error.message).toMatch(/Invalid header|Expected "header"/);
+      expect(error.message).toMatch(
+        /Invalid header|Expected "header"|invalid argument/
+      );
     });
   });
 
