@@ -1185,13 +1185,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set cookies from a frame",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set multiple cookies",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],

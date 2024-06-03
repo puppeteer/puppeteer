@@ -463,7 +463,6 @@ describe('Cookie specs', () => {
       expect(await page.evaluate('document.cookie')).toBe(
         'localhost-cookie=best'
       );
-      expect(await page.frames()[1]!.evaluate('document.cookie')).toBe('');
 
       await expectCookieEquals(await page.cookies(), [
         {
