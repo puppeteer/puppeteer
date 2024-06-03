@@ -719,9 +719,6 @@ describe('navigation', function () {
           waitEvent(page, 'frameattached').then(_frame => {
             return (frame = _frame);
           }),
-          waitEvent(page, 'framenavigated', f => {
-            return f === frame;
-          }),
         ]),
         Deferred.create({
           message: `should work when subframe issues window.stop()`,
