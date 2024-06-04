@@ -18,6 +18,7 @@
     "@docsearch/react": "3.6.0",
     "@docusaurus/core": "3.4.0",
     "@docusaurus/plugin-client-redirects": "3.4.0",
+    "@docusaurus/plugin-content-docs": "3.4.0",
     "@docusaurus/preset-classic": "3.4.0",
     "@docusaurus/remark-plugin-npm2yarn": "3.4.0",
     "@docusaurus/theme-common": "3.4.0",
