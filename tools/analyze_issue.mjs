@@ -16,7 +16,8 @@ import {fileURLToPath} from 'url';
 import core from '@actions/core';
 import semver from 'semver';
 
-import packageJson from '../packages/puppeteer-core/package.json' assert {type: 'json'};
+import packageJson from '../packages/puppeteer-core/package.json' assert {type:
+  'json'};
 
 const codifyAndJoinValues = values => {
   return values
