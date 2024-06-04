@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([[97633],{45666:e=>{e.exports=JSON.parse('{"categoryGeneratedIndex":{"title":"Introduction","keywords":["introduction"],"slug":"/category/introduction","permalink":"/category/introduction","sidebar":"docs","navigation":{"next":{"title":"What is Puppeteer?","permalink":"/guides/what-is-puppeteer"}}}}')}}]);
