@@ -214,7 +214,7 @@ describe('Launcher specs', function () {
         } catch {}
       });
       it('tmp profile should be cleaned up', async () => {
-        const {puppeteer} = await getTestState({skipLaunch: true});
+        const {puppeteer, isFirefox} = await getTestState({skipLaunch: true});
 
         // Set a custom test tmp dir so that we can validate that
         // the profile dir is created and then cleaned up.
@@ -231,9 +231,10 @@ describe('Launcher specs', function () {
           // One profile folder should have been created at this moment.
           const profiles = fs.readdirSync(testTmpDir);
           expect(profiles).toHaveLength(1);
-          expect(profiles[0]?.startsWith('puppeteer_dev_chrome_profile-')).toBe(
-            true
-          );
+          const expectedProfile = isFirefox
+            ? 'puppeteer_dev_firefox_profile-'
+            : 'puppeteer_dev_chrome_profile-';
+          expect(profiles[0]?.startsWith(expectedProfile)).toBe(true);
 
           // Open a page to make sure its functional.
           await context.newPage();
