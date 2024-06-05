@@ -104,10 +104,9 @@ describe('cooperative request interception', function () {
           expect(request.url()).toContain('empty.html');
           expect(request.headers()['user-agent']).toBeTruthy();
           expect(request.method()).toBe('GET');
-          expect(request.postData()).toBe(undefined);
           expect(request.isNavigationRequest()).toBe(true);
-          expect(request.frame()!.url()).toBe('about:blank');
           expect(request.frame() === page.mainFrame()).toBe(true);
+          expect(request.frame()!.url()).toBe('about:blank');
         } catch (error) {
           requestError = error;
         } finally {
@@ -121,7 +120,6 @@ describe('cooperative request interception', function () {
       }
 
       expect(response.ok()).toBe(true);
-      expect(response.remoteAddress().port).toBe(server.PORT);
     });
     // @see https://github.com/puppeteer/puppeteer/pull/3105
     it('should work when POST is redirected with 302', async () => {

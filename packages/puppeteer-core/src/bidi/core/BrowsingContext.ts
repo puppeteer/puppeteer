@@ -219,7 +219,8 @@ export class BrowsingContext extends EventEmitter<{
       if (info.context !== this.id) {
         return;
       }
-      this.#url = info.url;
+      // Note: we should not update this.#url at this point since the context
+      // has not finished navigating to the info.url yet.
 
       for (const [id, request] of this.#requests) {
         if (request.disposed) {
