@@ -91,7 +91,7 @@ You can provide arguments to your function:
 ```ts
 const three = await page.evaluate(
   (a, b) => {
-    return 1 + 2;
+    return a + b; // 1 + 2
   },
   1,
   2
