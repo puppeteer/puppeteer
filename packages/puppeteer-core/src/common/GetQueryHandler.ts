@@ -29,6 +29,7 @@ const QUERY_SEPARATORS = ['=', '/'];
  */
 export function getQueryHandlerAndSelector(selector: string): {
   updatedSelector: string;
+  selectorHasPseudoClasses: boolean;
   QueryHandler: typeof QueryHandler;
 } {
   for (const handlerMap of [
@@ -42,20 +43,26 @@ export function getQueryHandlerAndSelector(selector: string): {
         const prefix = `${name}${separator}`;
         if (selector.startsWith(prefix)) {
           selector = selector.slice(prefix.length);
-          return {updatedSelector: selector, QueryHandler};
+          return {
+            updatedSelector: selector,
+            selectorHasPseudoClasses: false,
+            QueryHandler,
+          };
         }
       }
     }
   }
-  const [pSelector, isPureCSS] = parsePSelectors(selector);
+  const [pSelector, isPureCSS, hasPseudoClasses] = parsePSelectors(selector);
   if (isPureCSS) {
     return {
       updatedSelector: selector,
+      selectorHasPseudoClasses: hasPseudoClasses,
       QueryHandler: CSSQueryHandler,
     };
   }
   return {
     updatedSelector: JSON.stringify(pSelector),
+    selectorHasPseudoClasses: hasPseudoClasses,
     QueryHandler: PQueryHandler,
   };
 }

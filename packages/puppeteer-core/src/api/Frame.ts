@@ -18,6 +18,7 @@ import type {PuppeteerLifeCycleEvent} from '../cdp/LifecycleWatcher.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {transposeIterableHandle} from '../common/HandleIterator.js';
+import {PollingOptions} from '../common/QueryHandler.js';
 import type {
   Awaitable,
   EvaluateFunc,
@@ -720,13 +721,12 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
     selector: Selector,
     options: WaitForSelectorOptions = {}
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    const {updatedSelector, QueryHandler} =
+    const {updatedSelector, QueryHandler, selectorHasPseudoClasses} =
       getQueryHandlerAndSelector(selector);
-    return (await QueryHandler.waitFor(
-      this,
-      updatedSelector,
-      options
-    )) as ElementHandle<NodeFor<Selector>> | null;
+    return (await QueryHandler.waitFor(this, updatedSelector, {
+      ...options,
+      polling: selectorHasPseudoClasses ? PollingOptions.RAF : undefined,
+    })) as ElementHandle<NodeFor<Selector>> | null;
   }
 
   /**
