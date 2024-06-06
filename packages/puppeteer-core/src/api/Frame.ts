@@ -394,13 +394,9 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    */
   #document(): Promise<ElementHandle<Document>> {
     if (!this.#_document) {
-      this.#_document = this.isolatedRealm()
-        .evaluateHandle(() => {
-          return document;
-        })
-        .then(handle => {
-          return this.mainRealm().transferHandle(handle);
-        });
+      this.#_document = this.mainRealm().evaluateHandle(() => {
+        return document;
+      });
     }
     return this.#_document;
   }
