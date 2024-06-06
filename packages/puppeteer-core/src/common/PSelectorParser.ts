@@ -4,20 +4,18 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {type Token, tokenize, TOKENS, stringify} from 'parsel-js';
-
-export type CSSSelector = string;
-export interface PPseudoSelector {
-  name: string;
-  value: string;
-}
-export const enum PCombinator {
-  Descendent = '>>>',
-  Child = '>>>>',
-}
-export type CompoundPSelector = Array<CSSSelector | PPseudoSelector>;
-export type ComplexPSelector = Array<CompoundPSelector | PCombinator>;
-export type ComplexPSelectorList = ComplexPSelector[];
+import {
+  type Token,
+  tokenize,
+  TOKENS,
+  stringify,
+} from '../../third_party/parsel-js/parsel-js.js';
+import type {
+  ComplexPSelector,
+  ComplexPSelectorList,
+  CompoundPSelector,
+} from '../injected/PQuerySelector.js';
+import {PCombinator} from '../injected/PQuerySelector.js';
 
 TOKENS['combinator'] = /\s*(>>>>?|[\s>+~])\s*/g;
 
@@ -34,6 +32,9 @@ const unquote = (text: string): string => {
   });
 };
 
+/**
+ * @internal
+ */
 export function parsePSelectors(
   selector: string
 ): [selector: ComplexPSelectorList, isPureCSS: boolean] {
