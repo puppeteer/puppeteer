@@ -1087,6 +1087,17 @@ export abstract class Page extends EventEmitter<PageEvents> {
   }
 
   /**
+   * Same as {@link Page.$$} and offers better performance when
+   * returning many elements but does not run the query in isolation from
+   * the page DOM.
+   */
+  async $$s<Selector extends string>(
+    selector: Selector
+  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
+    return await this.mainFrame().$$s(selector);
+  }
+
+  /**
    * @remarks
    *
    * The only difference between {@link Page.evaluate | page.evaluate} and

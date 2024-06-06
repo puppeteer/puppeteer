@@ -572,6 +572,20 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   }
 
   /**
+   * Same as {@link Frame.$$} and offers better performance when
+   * returning many elements but does not run the query in isolation from
+   * the page DOM.
+   */
+  @throwIfDetached
+  async $$s<Selector extends string>(
+    selector: Selector
+  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
+    // eslint-disable-next-line rulesdir/use-using -- This is cached.
+    const document = await this.#document();
+    return await document.$$s(selector);
+  }
+
+  /**
    * Runs the given function on the first element matching the given selector in
    * the frame.
    *

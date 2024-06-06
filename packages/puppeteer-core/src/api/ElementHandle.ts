@@ -383,6 +383,22 @@ export abstract class ElementHandle<
   }
 
   /**
+   * Same as {@link ElementHandle.$$} and offers better performance when
+   * returning many elements but does not run the query in isolation from
+   * the page DOM.
+   */
+  @throwIfDisposed()
+  async $$s<Selector extends string>(
+    selector: Selector
+  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
+    const {updatedSelector, QueryHandler} =
+      getQueryHandlerAndSelector(selector);
+    return await (AsyncIterableUtil.collect(
+      QueryHandler.queryAll(this, updatedSelector)
+    ) as Promise<Array<ElementHandle<NodeFor<Selector>>>>);
+  }
+
+  /**
    * Runs the given function on the first element matching the given selector in
    * the current element.
    *

@@ -280,6 +280,17 @@ If `pageFunction` returns a promise `$$eval` will wait for the promise to resolv
 </td></tr>
 <tr><td>
 
+<span id="__s">[$$s(selector)](./puppeteer.page.__s.md)</span>
+
+</td><td>
+
+</td><td>
+
+Same as [Page.$$()](./puppeteer.page.__.md) and offers better performance when returning many elements but does not run the query in isolation from the page DOM.
+
+</td></tr>
+<tr><td>
+
 <span id="_eval">[$eval(selector, pageFunction, args)](./puppeteer.page._eval.md)</span>
 
 </td><td>
