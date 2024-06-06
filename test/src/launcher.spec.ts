@@ -833,7 +833,6 @@ describe('Launcher specs', function () {
             protocol: browser.protocol,
           });
           remoteClose = remoteBrowser.close.bind(remoteBrowser);
-          console.log(remoteClose);
           const pages = await remoteBrowser.pages();
           const restoredPage = pages.find(page => {
             return page.url() === server.PREFIX + '/frames/nested-frames.html';
