@@ -599,16 +599,18 @@ describe('network', function () {
 
       const events: string[] = [];
       page.on('request', request => {
-        return events.push(`${request.method()} ${request.url()}`);
+        !isFavicon(request) &&
+          events.push(`${request.method()} ${request.url()}`);
       });
       page.on('response', response => {
-        return events.push(`${response.status()} ${response.url()}`);
+        !isFavicon(response) &&
+          events.push(`${response.status()} ${response.url()}`);
       });
       page.on('requestfinished', request => {
-        return events.push(`DONE ${request.url()}`);
+        !isFavicon(request) && events.push(`DONE ${request.url()}`);
       });
       page.on('requestfailed', request => {
-        return events.push(`FAIL ${request.url()}`);
+        !isFavicon(request) && events.push(`FAIL ${request.url()}`);
       });
       server.setRedirect('/foo.html', '/empty.html');
       const FOO_URL = server.PREFIX + '/foo.html';
