@@ -4,7 +4,7 @@ sidebar_label: PredefinedNetworkConditions
 
 # PredefinedNetworkConditions variable
 
-A list of network conditions to be used with [Page.emulateNetworkConditions()](./puppeteer.page.emulatenetworkconditions.md).
+A list of pre-defined network conditions to be used with [Page.emulateNetworkConditions()](./puppeteer.page.emulatenetworkconditions.md).
 
 #### Signature:
 
@@ -12,6 +12,8 @@ A list of network conditions to be used with [Page.emulateNetworkConditions()](.
 PredefinedNetworkConditions: Readonly<{
   'Slow 3G': NetworkConditions;
   'Fast 3G': NetworkConditions;
+  'Slow 4G': NetworkConditions;
+  'Fast 4G': NetworkConditions;
 }>;
 ```
 
@@ -19,12 +21,16 @@ PredefinedNetworkConditions: Readonly<{
 
 ```ts
 import {PredefinedNetworkConditions} from 'puppeteer';
-const slow3G = PredefinedNetworkConditions['Slow 3G'];
-
 (async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  await page.emulateNetworkConditions(slow3G);
+  await page.emulateNetworkConditions(PredefinedNetworkConditions['Slow 3G']);
+  await page.goto('https://www.google.com');
+  await page.emulateNetworkConditions(PredefinedNetworkConditions['Fast 3G']);
+  await page.goto('https://www.google.com');
+  await page.emulateNetworkConditions(PredefinedNetworkConditions['Slow 4G']); // alias to Fast 3G.
+  await page.goto('https://www.google.com');
+  await page.emulateNetworkConditions(PredefinedNetworkConditions['Fast 4G']);
   await page.goto('https://www.google.com');
   // other actions...
   await browser.close();
