@@ -1342,7 +1342,7 @@ Enum of valid mouse buttons.
 
 </td><td>
 
-A list of network conditions to be used with [Page.emulateNetworkConditions()](./puppeteer.page.emulatenetworkconditions.md).
+A list of pre-defined network conditions to be used with [Page.emulateNetworkConditions()](./puppeteer.page.emulatenetworkconditions.md).
 
 </td></tr>
 <tr><td>
