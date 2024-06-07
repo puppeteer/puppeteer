@@ -222,6 +222,30 @@ describe('Mouse', function () {
       height: 230,
     });
   });
+  it('should set ctrlKey on the wheel event', async () => {
+    const {page, server} = await getTestState();
+    await page.goto(server.EMPTY_PAGE);
+    const ctrlKey = page.evaluate(() => {
+      return new Promise(resolve => {
+        window.addEventListener(
+          'wheel',
+          event => {
+            resolve(event.ctrlKey);
+          },
+          {
+            once: true,
+          }
+        );
+      });
+    });
+    await page.keyboard.down('Control');
+    await page.mouse.wheel({deltaY: -100});
+    // Scroll back to work around
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=1901211.
+    await page.mouse.wheel({deltaY: 100});
+    await page.keyboard.up('Control');
+    expect(await ctrlKey).toBeTruthy();
+  });
   it('should tween mouse movement', async () => {
     const {page} = await getTestState();
 
