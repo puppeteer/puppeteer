@@ -2355,7 +2355,7 @@
     "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work when subframe issues window.stop()",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["SKIP"],
+    "expectations": ["FAIL"],
     "comment": "TODO: evaluating in the frame that was just attached causes an error in chromium-bidi"
   },
   {
