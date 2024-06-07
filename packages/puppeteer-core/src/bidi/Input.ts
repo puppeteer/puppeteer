@@ -643,6 +643,10 @@ export class BidiTouchscreen extends Touchscreen {
           {
             type: ActionType.PointerDown,
             button: 0,
+            width: 0.5 * 2, // 2 times default touch radius.
+            height: 0.5 * 2, // 2 times default touch radius.
+            pressure: 0.5,
+            altitudeAngle: Math.PI / 2,
           },
         ],
       },
@@ -667,6 +671,10 @@ export class BidiTouchscreen extends Touchscreen {
             x: Math.round(x),
             y: Math.round(y),
             origin: options.origin,
+            width: 0.5 * 2, // 2 times default touch radius.
+            height: 0.5 * 2, // 2 times default touch radius.
+            pressure: 0.5,
+            altitudeAngle: Math.PI / 2,
           },
         ],
       },
