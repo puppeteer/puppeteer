@@ -190,11 +190,9 @@ export function bubble<T extends EventType[]>(events?: T) {
         emitter.on('*', handler);
         set.call(this, emitter);
       },
-      // @ts-expect-error -- TypeScript incorrectly types init to require a
-      // return.
       init(emitter) {
         if (emitter === undefined) {
-          return;
+          return emitter;
         }
         const handler = bubbleHandlers.get(this)!.get(events)!;
 
