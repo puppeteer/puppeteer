@@ -158,6 +158,10 @@ export class ExecutionContext
   async #onBindingCalled(
     event: Protocol.Runtime.BindingCalledEvent
   ): Promise<void> {
+    if (event.executionContextId !== this.#id) {
+      return;
+    }
+
     let payload: BindingPayload;
     try {
       payload = JSON.parse(event.payload);
@@ -177,10 +181,6 @@ export class ExecutionContext
     }
 
     try {
-      if (event.executionContextId !== this.#id) {
-        return;
-      }
-
       const binding = this.#bindings.get(name);
       await binding?.run(this, seq, args, isTrivial);
     } catch (err) {
