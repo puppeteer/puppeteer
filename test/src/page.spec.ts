@@ -1193,6 +1193,22 @@ describe('Page', function () {
       });
       expect(result).toBe(36);
     });
+
+    it('should be called once', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.PREFIX + '/frames/nested-frames.html');
+      let calls = 0;
+      await page.exposeFunction('call', function () {
+        calls++;
+      });
+
+      const frame = page.frames()[1]!;
+      await frame.evaluate(async function () {
+        return (globalThis as any).call();
+      });
+      expect(calls).toBe(1);
+    });
   });
 
   describe('Page.removeExposedFunction', function () {
