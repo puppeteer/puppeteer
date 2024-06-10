@@ -48,9 +48,10 @@ export const generateInjectedTask = task({
       entryPoints: ['src/injected/injected.ts'],
       bundle: true,
       format: 'cjs',
-      target: ['chrome117', 'firefox118'],
+      target: ['chrome125', 'firefox125'],
       minify: true,
       write: false,
+      legalComments: 'none',
     });
     const template = await readFile('src/templates/injected.ts.tmpl', 'utf8');
     await mkdir('src/generated', {recursive: true});
@@ -133,6 +134,16 @@ export const buildTask = task({
           case 'mitt':
             license = await readFile(
               path.join(path.dirname(require.resolve('mitt')), '..', 'LICENSE'),
+              'utf-8'
+            );
+            break;
+          case 'parsel-js':
+            license = await readFile(
+              path.join(
+                path.dirname(require.resolve('parsel-js')),
+                '..',
+                'LICENSE'
+              ),
               'utf-8'
             );
             break;

@@ -6,9 +6,11 @@
 
 import {ARIAQueryHandler} from '../cdp/AriaQueryHandler.js';
 
+import {CSSQueryHandler} from './CSSQueryHandler.js';
 import {customQueryHandlers} from './CustomQueryHandler.js';
 import {PierceQueryHandler} from './PierceQueryHandler.js';
 import {PQueryHandler} from './PQueryHandler.js';
+import {parsePSelectors} from './PSelectorParser.js';
 import type {QueryHandler} from './QueryHandler.js';
 import {TextQueryHandler} from './TextQueryHandler.js';
 import {XPathQueryHandler} from './XPathQueryHandler.js';
@@ -45,5 +47,15 @@ export function getQueryHandlerAndSelector(selector: string): {
       }
     }
   }
-  return {updatedSelector: selector, QueryHandler: PQueryHandler};
+  const [pSelector, isPureCSS] = parsePSelectors(selector);
+  if (isPureCSS) {
+    return {
+      updatedSelector: selector,
+      QueryHandler: CSSQueryHandler,
+    };
+  }
+  return {
+    updatedSelector: JSON.stringify(pSelector),
+    QueryHandler: PQueryHandler,
+  };
 }
