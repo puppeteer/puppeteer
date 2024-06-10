@@ -407,6 +407,19 @@ describe('waittask specs', function () {
       await watchdog;
     });
 
+    it('should work for selector with a pseudo class', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      const watchdog = page.waitForSelector('input:focus');
+      await expect(
+        Promise.race([watchdog, createTimeout(40)])
+      ).resolves.toBeFalsy();
+      await page.setContent(`<input></input>`);
+      await page.click('input');
+      await watchdog;
+    });
+
     it('Page.waitForSelector is shortcut for main frame', async () => {
       const {page, server} = await getTestState();
 

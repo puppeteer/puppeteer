@@ -37,11 +37,16 @@ const unquote = (text: string): string => {
  */
 export function parsePSelectors(
   selector: string
-): [selector: ComplexPSelectorList, isPureCSS: boolean] {
+): [
+  selector: ComplexPSelectorList,
+  isPureCSS: boolean,
+  hasPseudoClasses: boolean,
+] {
   let isPureCSS = true;
+  let hasPseudoClasses = false;
   const tokens = tokenize(selector);
   if (tokens.length === 0) {
-    return [[], isPureCSS];
+    return [[], isPureCSS, hasPseudoClasses];
   }
   let compoundSelector: CompoundPSelector = [];
   let complexSelector: ComplexPSelector = [compoundSelector];
@@ -87,6 +92,9 @@ export function parsePSelectors(
           value: unquote(token.argument ?? ''),
         });
         continue;
+      case 'pseudo-class':
+        hasPseudoClasses = true;
+        continue;
       case 'comma':
         if (storage.length) {
           compoundSelector.push(stringify(storage));
@@ -102,5 +110,5 @@ export function parsePSelectors(
   if (storage.length) {
     compoundSelector.push(stringify(storage));
   }
-  return [selectors, isPureCSS];
+  return [selectors, isPureCSS, hasPseudoClasses];
 }

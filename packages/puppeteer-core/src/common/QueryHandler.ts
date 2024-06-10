@@ -37,6 +37,14 @@ export type QuerySelector = (
 /**
  * @internal
  */
+export const enum PollingOptions {
+  RAF = 'raf',
+  MUTATION = 'mutation',
+}
+
+/**
+ * @internal
+ */
 export class QueryHandler {
   // Either one of these may be implemented, but at least one must be.
   static querySelectorAll?: QuerySelectorAll;
@@ -139,7 +147,9 @@ export class QueryHandler {
   static async waitFor(
     elementOrFrame: ElementHandle<Node> | Frame,
     selector: string,
-    options: WaitForSelectorOptions
+    options: WaitForSelectorOptions & {
+      polling?: PollingOptions;
+    }
   ): Promise<ElementHandle<Node> | null> {
     let frame!: Frame;
     using element = await (async () => {
@@ -152,6 +162,9 @@ export class QueryHandler {
     })();
 
     const {visible = false, hidden = false, timeout, signal} = options;
+    const polling =
+      options.polling ??
+      (visible || hidden ? PollingOptions.RAF : PollingOptions.MUTATION);
 
     try {
       signal?.throwIfAborted();
@@ -169,7 +182,7 @@ export class QueryHandler {
           return PuppeteerUtil.checkVisibility(node, visible);
         },
         {
-          polling: visible || hidden ? 'raf' : 'mutation',
+          polling,
           root: element,
           timeout,
           signal,
