@@ -223,7 +223,7 @@ describe('Mouse', function () {
     });
   });
   it('should set ctrlKey on the wheel event', async () => {
-    const {page, server} = await getTestState();
+    const {page, server, isFirefox} = await getTestState();
     await page.goto(server.EMPTY_PAGE);
     const ctrlKey = page.evaluate(() => {
       return new Promise(resolve => {
@@ -242,7 +242,9 @@ describe('Mouse', function () {
     await page.mouse.wheel({deltaY: -100});
     // Scroll back to work around
     // https://bugzilla.mozilla.org/show_bug.cgi?id=1901211.
-    await page.mouse.wheel({deltaY: 100});
+    if (isFirefox) {
+      await page.mouse.wheel({deltaY: 100});
+    }
     await page.keyboard.up('Control');
     expect(await ctrlKey).toBeTruthy();
   });
