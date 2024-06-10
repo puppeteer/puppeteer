@@ -135,7 +135,7 @@ describe('request interception', function () {
       const urls: string[] = [];
       page.on('request', request => {
         void request.continue();
-        if (!isFavicon(request)) {
+        if (isFavicon(request)) {
           return;
         }
         urls.push(request.url());
