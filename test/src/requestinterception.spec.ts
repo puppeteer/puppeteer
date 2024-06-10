@@ -134,8 +134,11 @@ describe('request interception', function () {
       await cdp.send('DOM.enable');
       const urls: string[] = [];
       page.on('request', request => {
+        void request.continue();
+        if (isFavicon(request)) {
+          return;
+        }
         urls.push(request.url());
-        return request.continue();
       });
       // This causes network requests without networkId.
       await cdp.send('CSS.enable');

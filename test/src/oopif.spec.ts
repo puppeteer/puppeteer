@@ -207,14 +207,10 @@ describe('OOPIF', function () {
     );
     const frame = await framePromise;
     await frame.evaluate(() => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      _test = 'Test 123!';
+      (window as any)._test = 'Test 123!';
     });
     const result = await frame.evaluate(() => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      return window._test;
+      return (window as any)._test;
     });
     expect(result).toBe('Test 123!');
   });
