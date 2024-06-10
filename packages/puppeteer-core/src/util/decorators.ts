@@ -152,28 +152,9 @@ const bubbleHandlers = new WeakMap<object, Map<any, any>>();
 export function bubble<T extends EventType[]>(events?: T) {
   return <This extends EventEmitter<any>, Value extends EventEmitter<any>>(
     {set, get}: ClassAccessorDecoratorTarget<This, Value>,
-    context: ClassAccessorDecoratorContext<This, Value>
+    // TODO: Remove arg when updating to TS 5.5 or above
+    _context: ClassAccessorDecoratorContext<This, Value>
   ): ClassAccessorDecoratorResult<This, Value> => {
-    context.addInitializer(function () {
-      const handlers = bubbleHandlers.get(this) ?? new Map();
-      if (handlers.has(events)) {
-        return;
-      }
-
-      const handler =
-        events !== undefined
-          ? (type: EventType, event: unknown) => {
-              if (events.includes(type)) {
-                this.emit(type, event);
-              }
-            }
-          : (type: EventType, event: unknown) => {
-              this.emit(type, event);
-            };
-
-      handlers.set(events, handler);
-      bubbleHandlers.set(this, handlers);
-    });
     return {
       set(emitter) {
         const handler = bubbleHandlers.get(this)!.get(events)!;
@@ -194,9 +175,27 @@ export function bubble<T extends EventType[]>(events?: T) {
         if (emitter === undefined) {
           return emitter;
         }
-        const handler = bubbleHandlers.get(this)!.get(events)!;
 
-        emitter.on('*', handler);
+        const handlers = bubbleHandlers.get(this) ?? new Map();
+        if (handlers.has(events)) {
+          return emitter;
+        }
+
+        const handler =
+          events !== undefined
+            ? (type: EventType, event: unknown) => {
+                if (events.includes(type)) {
+                  this.emit(type, event);
+                }
+              }
+            : (type: EventType, event: unknown) => {
+                this.emit(type, event);
+              };
+
+        handlers.set(events, handler);
+        bubbleHandlers.set(this, handlers);
+
+        emitter.on('*', handler as any);
         return emitter;
       },
     };
