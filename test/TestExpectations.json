@@ -3512,21 +3512,7 @@
   {
     "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.tap should work",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.tap should work",
-    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
