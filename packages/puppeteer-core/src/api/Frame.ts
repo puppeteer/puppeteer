@@ -724,8 +724,8 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
     const {updatedSelector, QueryHandler, selectorHasPseudoClasses} =
       getQueryHandlerAndSelector(selector);
     return (await QueryHandler.waitFor(this, updatedSelector, {
-      ...options,
       polling: selectorHasPseudoClasses ? PollingOptions.RAF : undefined,
+      ...options,
     })) as ElementHandle<NodeFor<Selector>> | null;
   }
 
