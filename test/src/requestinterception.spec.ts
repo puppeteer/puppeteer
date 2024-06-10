@@ -179,14 +179,12 @@ describe('request interception', function () {
       await page.setRequestInterception(true);
       let requestError;
       page.on('request', request => {
-        void request.continue();
-        if (isFavicon(request)) {
-          return;
-        }
         try {
           expect(request.headers()['foo']).toBe('bar');
         } catch (error) {
           requestError = error;
+        } finally {
+          void request.continue();
         }
       });
 
