@@ -20,6 +20,21 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.10.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.10.0...puppeteer-core-v22.10.1) (2024-06-11)
+
+
+### Bug Fixes
+
+* add a way to run page.$$ without the isolation ([#12539](https://github.com/puppeteer/puppeteer/issues/12539)) ([03e10a7](https://github.com/puppeteer/puppeteer/commit/03e10a7559f184f8b1adfef83714f36ee26007ca))
+* align network conditions presets with DevTools ([#12542](https://github.com/puppeteer/puppeteer/issues/12542)) ([ee10745](https://github.com/puppeteer/puppeteer/commit/ee1074559d5290eaa91e7757ecc048e81022fe48))
+* exposed functions should only be called once ([#12560](https://github.com/puppeteer/puppeteer/issues/12560)) ([8aac8b1](https://github.com/puppeteer/puppeteer/commit/8aac8b1ccb1704f0a67165a7e06427c7db0b4b2f))
+* **performance:** use Runtime.getProperties for improved performance ([#12561](https://github.com/puppeteer/puppeteer/issues/12561)) ([8b2059f](https://github.com/puppeteer/puppeteer/commit/8b2059f82a801daaa9d27f48d1925bd1335020c6))
+* roll to Chrome 125.0.6422.141 (r1287751) ([#12509](https://github.com/puppeteer/puppeteer/issues/12509)) ([c4fdd10](https://github.com/puppeteer/puppeteer/commit/c4fdd102e9dd163e5797b2de9024e52ba6efe3bb))
+* waitForSelector should work for pseudo classes ([#12545](https://github.com/puppeteer/puppeteer/issues/12545)) ([0b2999f](https://github.com/puppeteer/puppeteer/commit/0b2999f7b17d54f368f0a03a45c095e879b7245b))
+* **webdriver:** default values for touch events ([#12554](https://github.com/puppeteer/puppeteer/issues/12554)) ([4d62988](https://github.com/puppeteer/puppeteer/commit/4d6298837fa85cce39394bfd63b04358b826db53))
+* **webdriver:** frame url should not be updated on navigationStarted ([#12536](https://github.com/puppeteer/puppeteer/issues/12536)) ([7d0423b](https://github.com/puppeteer/puppeteer/commit/7d0423b12cb5987caf0cc0cd84976986ffc93c98))
+* **webdriver:** HTTPRequest redirect chain from first request ([#12506](https://github.com/puppeteer/puppeteer/issues/12506)) ([68fd771](https://github.com/puppeteer/puppeteer/commit/68fd7712932f94730b6186107a0509c233938084))
+
 ## [22.10.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.9.0...puppeteer-core-v22.10.0) (2024-05-24)
 
 
