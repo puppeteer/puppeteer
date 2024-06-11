@@ -142,7 +142,7 @@ export function guarded<T extends object>(
 }
 
 const bubbleHandlers = new WeakMap<object, Map<any, any>>();
-const initializer = function <
+const bubbleInitializer = function <
   T extends EventType[],
   This extends EventEmitter<any>,
 >(this: This, events?: T) {
@@ -177,7 +177,7 @@ export function bubble<T extends EventType[]>(events?: T) {
     context: ClassAccessorDecoratorContext<This, Value>
   ): ClassAccessorDecoratorResult<This, Value> => {
     context.addInitializer(function () {
-      return initializer.apply(this, [events]);
+      return bubbleInitializer.apply(this, [events]);
     });
     return {
       set(emitter) {
@@ -200,7 +200,7 @@ export function bubble<T extends EventType[]>(events?: T) {
           return emitter;
         }
 
-        initializer.apply(this, [events]);
+        bubbleInitializer.apply(this, [events]);
 
         const handler = bubbleHandlers.get(this)!.get(events)!;
         emitter.on('*', handler as any);
