@@ -142,7 +142,29 @@ export function guarded<T extends object>(
 }
 
 const bubbleHandlers = new WeakMap<object, Map<any, any>>();
+const initializer = function <
+  T extends EventType[],
+  This extends EventEmitter<any>,
+>(this: This, events?: T) {
+  const handlers = bubbleHandlers.get(this) ?? new Map();
+  if (handlers.has(events)) {
+    return;
+  }
 
+  const handler =
+    events !== undefined
+      ? (type: EventType, event: unknown) => {
+          if (events.includes(type)) {
+            this.emit(type, event);
+          }
+        }
+      : (type: EventType, event: unknown) => {
+          this.emit(type, event);
+        };
+
+  handlers.set(events, handler);
+  bubbleHandlers.set(this, handlers);
+};
 /**
  * Event emitter fields marked with `bubble` will have their events bubble up
  * the field owner.
@@ -153,8 +175,11 @@ export function bubble<T extends EventType[]>(events?: T) {
   return <This extends EventEmitter<any>, Value extends EventEmitter<any>>(
     {set, get}: ClassAccessorDecoratorTarget<This, Value>,
     // TODO: Remove arg when updating to TS 5.5 or above
-    _context: ClassAccessorDecoratorContext<This, Value>
+    context: ClassAccessorDecoratorContext<This, Value>
   ): ClassAccessorDecoratorResult<This, Value> => {
+    context.addInitializer(function () {
+      return initializer.apply(this, [events]);
+    });
     return {
       set(emitter) {
         const handler = bubbleHandlers.get(this)!.get(events)!;
@@ -176,25 +201,9 @@ export function bubble<T extends EventType[]>(events?: T) {
           return emitter;
         }
 
-        const handlers = bubbleHandlers.get(this) ?? new Map();
-        if (handlers.has(events)) {
-          return emitter;
-        }
+        initializer.apply(this, [events]);
 
-        const handler =
-          events !== undefined
-            ? (type: EventType, event: unknown) => {
-                if (events.includes(type)) {
-                  this.emit(type, event);
-                }
-              }
-            : (type: EventType, event: unknown) => {
-                this.emit(type, event);
-              };
-
-        handlers.set(events, handler);
-        bubbleHandlers.set(this, handlers);
-
+        const handler = bubbleHandlers.get(this)!.get(events)!;
         emitter.on('*', handler as any);
         return emitter;
       },
