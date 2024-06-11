@@ -174,7 +174,6 @@ const initializer = function <
 export function bubble<T extends EventType[]>(events?: T) {
   return <This extends EventEmitter<any>, Value extends EventEmitter<any>>(
     {set, get}: ClassAccessorDecoratorTarget<This, Value>,
-    // TODO: Remove arg when updating to TS 5.5 or above
     context: ClassAccessorDecoratorContext<This, Value>
   ): ClassAccessorDecoratorResult<This, Value> => {
     context.addInitializer(function () {
