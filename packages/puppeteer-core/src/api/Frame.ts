@@ -10,6 +10,7 @@ import type {ClickOptions, ElementHandle} from '../api/ElementHandle.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {
   Page,
+  QueryOptions,
   WaitForSelectorOptions,
   WaitTimeoutOptions,
 } from '../api/Page.js';
@@ -564,11 +565,12 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    */
   @throwIfDetached
   async $$<Selector extends string>(
-    selector: Selector
+    selector: Selector,
+    options?: QueryOptions
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
     // eslint-disable-next-line rulesdir/use-using -- This is cached.
     const document = await this.#document();
-    return await document.$$(selector);
+    return await document.$$(selector, options);
   }
 
   /**

@@ -125,7 +125,7 @@ Queries the frame for an element matching the given selector.
 </td></tr>
 <tr><td>
 
-<span id="__">[$$(selector)](./puppeteer.frame.__.md)</span>
+<span id="__">[$$(selector, options)](./puppeteer.frame.__.md)</span>
 
 </td><td>
 

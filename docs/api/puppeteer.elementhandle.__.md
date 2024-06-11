@@ -11,7 +11,8 @@ Queries the current element for all elements matching the given selector.
 ```typescript
 class ElementHandle {
   $$<Selector extends string>(
-    selector: Selector
+    selector: Selector,
+    options?: QueryOptions
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>>;
 }
 ```
@@ -42,6 +43,19 @@ Selector
 </td><td>
 
 The selector to query for.
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+[QueryOptions](./puppeteer.queryoptions.md)
+
+</td><td>
+
+_(Optional)_
 
 </td></tr>
 </tbody></table>

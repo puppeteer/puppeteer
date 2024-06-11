@@ -105,7 +105,7 @@ Queries the current element for an element matching the given selector.
 </td></tr>
 <tr><td>
 
-<span id="__">[$$(selector)](./puppeteer.elementhandle.__.md)</span>
+<span id="__">[$$(selector, options)](./puppeteer.elementhandle.__.md)</span>
 
 </td><td>
 

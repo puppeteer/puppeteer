@@ -347,6 +347,21 @@ export interface ScreencastOptions {
 }
 
 /**
+ * @public
+ */
+export interface QueryOptions {
+  /**
+   * Whether to run the query in isolation. When returning many elements
+   * from {@link Page.$$} or similar methods, it might be useful to turn
+   * off the isolation to improve performance. By default, the querying
+   * code will be executed in a separate sandbox realm.
+   *
+   * @defaultValue `true`
+   */
+  isolate: boolean;
+}
+
+/**
  * All the events that a page instance may emit.
  *
  * @public
@@ -1081,9 +1096,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * Shortcut for {@link Frame.$$ | Page.mainFrame().$$(selector) }.
    */
   async $$<Selector extends string>(
-    selector: Selector
+    selector: Selector,
+    options?: QueryOptions
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    return await this.mainFrame().$$(selector);
+    return await this.mainFrame().$$(selector, options);
   }
 
   /**

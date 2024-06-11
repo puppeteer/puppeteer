@@ -250,7 +250,7 @@ Shortcut for [Page.mainFrame().$(selector)](./puppeteer.frame._.md).
 </td></tr>
 <tr><td>
 
-<span id="__">[$$(selector)](./puppeteer.page.__.md)</span>
+<span id="__">[$$(selector, options)](./puppeteer.page.__.md)</span>
 
 </td><td>
 

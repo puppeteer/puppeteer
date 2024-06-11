@@ -31,7 +31,11 @@ import type {
   MouseClickOptions,
 } from './Input.js';
 import {JSHandle} from './JSHandle.js';
-import type {ScreenshotOptions, WaitForSelectorOptions} from './Page.js';
+import type {
+  QueryOptions,
+  ScreenshotOptions,
+  WaitForSelectorOptions,
+} from './Page.js';
 
 /**
  * @public
@@ -371,8 +375,34 @@ export abstract class ElementHandle<
    * elements matching the given selector.
    */
   @throwIfDisposed()
-  @ElementHandle.bindIsolatedHandle
   async $$<Selector extends string>(
+    selector: Selector,
+    options?: QueryOptions
+  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
+    if (options?.isolate === false) {
+      return await this.#$$impl(selector);
+    }
+    return await this.#$$(selector);
+  }
+
+  /**
+   * Isolates {@link ElementHandle.$$} if needed.
+   *
+   * @internal
+   */
+  @ElementHandle.bindIsolatedHandle
+  async #$$<Selector extends string>(
+    selector: Selector
+  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
+    return await this.#$$impl(selector);
+  }
+
+  /**
+   * Implementation for {@link ElementHandle.$$}.
+   *
+   * @internal
+   */
+  async #$$impl<Selector extends string>(
     selector: Selector
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
     const {updatedSelector, QueryHandler} =
