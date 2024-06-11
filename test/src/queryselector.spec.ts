@@ -167,6 +167,23 @@ describe('querySelector', function () {
       });
       expect(await Promise.all(promises)).toEqual(['A', 'B']);
     });
+
+    it('should query existing elements without isolation', async () => {
+      const {page} = await getTestState();
+
+      await page.setContent('<div>A</div><br/><div>B</div>');
+      const elements = await page.$$('div', {
+        isolate: false,
+      });
+      expect(elements).toHaveLength(2);
+      const promises = elements.map(element => {
+        return page.evaluate(e => {
+          return e.textContent;
+        }, element);
+      });
+      expect(await Promise.all(promises)).toEqual(['A', 'B']);
+    });
+
     it('should return empty array if nothing is found', async () => {
       const {page, server} = await getTestState();
 

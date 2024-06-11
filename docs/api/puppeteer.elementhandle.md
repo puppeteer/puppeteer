@@ -105,7 +105,7 @@ Queries the current element for an element matching the given selector.
 </td></tr>
 <tr><td>
 
-<span id="__">[$$(selector)](./puppeteer.elementhandle.__.md)</span>
+<span id="__">[$$(selector, options)](./puppeteer.elementhandle.__.md)</span>
 
 </td><td>
 
@@ -125,17 +125,6 @@ Queries the current element for all elements matching the given selector.
 Runs the given function on an array of elements matching the given selector in the current element.
 
 If the given function returns a promise, then this method will wait till the promise resolves.
-
-</td></tr>
-<tr><td>
-
-<span id="__s">[$$s(selector)](./puppeteer.elementhandle.__s.md)</span>
-
-</td><td>
-
-</td><td>
-
-Same as [ElementHandle.$$()](./puppeteer.elementhandle.__.md) and offers better performance when returning many elements but does not run the query in isolation from the page DOM.
 
 </td></tr>
 <tr><td>

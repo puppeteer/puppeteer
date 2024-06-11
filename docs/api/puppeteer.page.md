@@ -250,7 +250,7 @@ Shortcut for [Page.mainFrame().$(selector)](./puppeteer.frame._.md).
 </td></tr>
 <tr><td>
 
-<span id="__">[$$(selector)](./puppeteer.page.__.md)</span>
+<span id="__">[$$(selector, options)](./puppeteer.page.__.md)</span>
 
 </td><td>
 
@@ -276,17 +276,6 @@ This method returns all elements matching the selector and passes the resulting 
 **Remarks:**
 
 If `pageFunction` returns a promise `$$eval` will wait for the promise to resolve and then return its value.
-
-</td></tr>
-<tr><td>
-
-<span id="__s">[$$s(selector)](./puppeteer.page.__s.md)</span>
-
-</td><td>
-
-</td><td>
-
-Same as [Page.$$()](./puppeteer.page.__.md) and offers better performance when returning many elements but does not run the query in isolation from the page DOM.
 
 </td></tr>
 <tr><td>
