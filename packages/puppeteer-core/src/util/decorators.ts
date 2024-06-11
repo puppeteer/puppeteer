@@ -142,7 +142,29 @@ export function guarded<T extends object>(
 }
 
 const bubbleHandlers = new WeakMap<object, Map<any, any>>();
+const bubbleInitializer = function <
+  T extends EventType[],
+  This extends EventEmitter<any>,
+>(this: This, events?: T) {
+  const handlers = bubbleHandlers.get(this) ?? new Map();
+  if (handlers.has(events)) {
+    return;
+  }
 
+  const handler =
+    events !== undefined
+      ? (type: EventType, event: unknown) => {
+          if (events.includes(type)) {
+            this.emit(type, event);
+          }
+        }
+      : (type: EventType, event: unknown) => {
+          this.emit(type, event);
+        };
+
+  handlers.set(events, handler);
+  bubbleHandlers.set(this, handlers);
+};
 /**
  * Event emitter fields marked with `bubble` will have their events bubble up
  * the field owner.
@@ -155,24 +177,7 @@ export function bubble<T extends EventType[]>(events?: T) {
     context: ClassAccessorDecoratorContext<This, Value>
   ): ClassAccessorDecoratorResult<This, Value> => {
     context.addInitializer(function () {
-      const handlers = bubbleHandlers.get(this) ?? new Map();
-      if (handlers.has(events)) {
-        return;
-      }
-
-      const handler =
-        events !== undefined
-          ? (type: EventType, event: unknown) => {
-              if (events.includes(type)) {
-                this.emit(type, event);
-              }
-            }
-          : (type: EventType, event: unknown) => {
-              this.emit(type, event);
-            };
-
-      handlers.set(events, handler);
-      bubbleHandlers.set(this, handlers);
+      return bubbleInitializer.apply(this, [events]);
     });
     return {
       set(emitter) {
@@ -194,9 +199,11 @@ export function bubble<T extends EventType[]>(events?: T) {
         if (emitter === undefined) {
           return emitter;
         }
-        const handler = bubbleHandlers.get(this)!.get(events)!;
 
-        emitter.on('*', handler);
+        bubbleInitializer.apply(this, [events]);
+
+        const handler = bubbleHandlers.get(this)!.get(events)!;
+        emitter.on('*', handler as any);
         return emitter;
       },
     };

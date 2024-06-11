@@ -87,20 +87,19 @@ describe('decorators', function () {
       }
 
       const t = new Test();
-      let a = false;
-      t.on('a', (value: boolean) => {
-        a = value;
-      });
+      const spy = sinon.spy();
+      t.on('a', spy);
 
       t.field.emit('a', true);
-      expect(a).toBeTruthy();
+      expect(spy.callCount).toBe(1);
+      expect(spy.calledWithExactly(true)).toBeTruthy();
 
       // Set a new emitter.
       t.field = new EventEmitter();
-      a = false;
 
-      t.field.emit('a', true);
-      expect(a).toBeTruthy();
+      t.field.emit('a', false);
+      expect(spy.callCount).toBe(2);
+      expect(spy.calledWithExactly(false)).toBeTruthy();
     });
 
     it('should not bubble down', () => {
@@ -110,16 +109,36 @@ describe('decorators', function () {
       }
 
       const t = new Test();
-      let a = false;
-      t.field.on('a', (value: boolean) => {
-        a = value;
-      });
+      const spy = sinon.spy();
+      t.field.on('a', spy);
 
       t.emit('a', true);
-      expect(a).toBeFalsy();
+      expect(spy.callCount).toBe(0);
 
       t.field.emit('a', true);
-      expect(a).toBeTruthy();
+      expect(spy.callCount).toBe(1);
+    });
+
+    it('should be assignable during construction', () => {
+      class Test extends EventEmitter<any> {
+        @bubble()
+        accessor field: EventEmitter<any>;
+
+        constructor(emitter: EventEmitter<any>) {
+          super();
+          this.field = emitter;
+        }
+      }
+
+      const t = new Test(new EventEmitter());
+      const spy = sinon.spy();
+      t.field.on('a', spy);
+
+      t.emit('a', true);
+      expect(spy.callCount).toBe(0);
+
+      t.field.emit('a', true);
+      expect(spy.callCount).toBe(1);
     });
   });
 });
