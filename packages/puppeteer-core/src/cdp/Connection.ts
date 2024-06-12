@@ -18,7 +18,6 @@ import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {debug} from '../common/Debug.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
-import {assert} from '../util/assert.js';
 import {createProtocolErrorMessage} from '../util/ErrorLike.js';
 
 import {CdpCDPSession} from './CDPSession.js';
@@ -120,8 +119,9 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     sessionId?: string,
     options?: CommandOptions
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
-    assert(!this.#closed, 'Protocol error: Connection closed.');
-
+    if (this.#closed) {
+      return Promise.reject(new Error('Protocol error: Connection closed.'));
+    }
     return callbacks.create(method, options?.timeout ?? this.#timeout, id => {
       const stringifiedMessage = JSON.stringify({
         method,
