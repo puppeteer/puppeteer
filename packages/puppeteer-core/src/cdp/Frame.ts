@@ -79,7 +79,7 @@ export class CdpFrame extends Frame {
       ),
     };
 
-    this.accessibility = new Accessibility(this.worlds[MAIN_WORLD]);
+    this.accessibility = new Accessibility(this.worlds[MAIN_WORLD], frameId);
 
     this.on(FrameEvent.FrameSwappedByActivation, () => {
       // Emulate loading process for swapped frames.

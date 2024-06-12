@@ -114,7 +114,7 @@ export class BidiFrame extends Frame {
         this,
       ),
     };
-    this.accessibility = new Accessibility(this.realms.default);
+    this.accessibility = new Accessibility(this.realms.default, this._id);
   }
 
   #initialize(): void {
