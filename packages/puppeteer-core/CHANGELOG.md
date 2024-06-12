@@ -20,6 +20,19 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.11.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.10.1...puppeteer-core-v22.11.0) (2024-06-12)
+
+
+### Features
+
+* allow creating ElementHandles from the accessibility tree snapshot ([#12233](https://github.com/puppeteer/puppeteer/issues/12233)) ([0057f3f](https://github.com/puppeteer/puppeteer/commit/0057f3fe0a8d179cacb18495c96987310f83d5d9))
+* roll to Chrome 126.0.6478.55 (r1300313) ([#12572](https://github.com/puppeteer/puppeteer/issues/12572)) ([f5bc2b5](https://github.com/puppeteer/puppeteer/commit/f5bc2b53aea0d159dd2b7f4c7a0f7a8a224ae6e8))
+
+
+### Bug Fixes
+
+* do not wait for extension page targets on connect ([#12574](https://github.com/puppeteer/puppeteer/issues/12574)) ([5f2ee98](https://github.com/puppeteer/puppeteer/commit/5f2ee98c5b93b0a52a98a1d8237189b8b0d15a10))
+
 ## [22.10.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.10.0...puppeteer-core-v22.10.1) (2024-06-11)
 
 
