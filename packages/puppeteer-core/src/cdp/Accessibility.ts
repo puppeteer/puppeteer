@@ -6,8 +6,8 @@
 
 import type {Protocol} from 'devtools-protocol';
 
-import type {CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
+import type {Realm} from '../api/Realm.js';
 
 /**
  * Represents a Node and the properties of it that are relevant to Accessibility.
@@ -80,6 +80,14 @@ export interface SerializedAXNode {
    * Children of this node, if there are any.
    */
   children?: SerializedAXNode[];
+
+  /**
+   * Get an ElementHandle for this AXNode if available.
+   *
+   * If the underlying DOM element has been disposed, the method might return an
+   * error.
+   */
+  elementHandle(): Promise<ElementHandle | null>;
 }
 
 /**
@@ -121,20 +129,13 @@ export interface SnapshotOptions {
  * @public
  */
 export class Accessibility {
-  #client: CDPSession;
+  #realm: Realm;
 
   /**
    * @internal
    */
-  constructor(client: CDPSession) {
-    this.#client = client;
-  }
-
-  /**
-   * @internal
-   */
-  updateClient(client: CDPSession): void {
-    this.#client = client;
+  constructor(realm: Realm) {
+    this.#realm = realm;
   }
 
   /**
@@ -180,15 +181,20 @@ export class Accessibility {
     options: SnapshotOptions = {}
   ): Promise<SerializedAXNode | null> {
     const {interestingOnly = true, root = null} = options;
-    const {nodes} = await this.#client.send('Accessibility.getFullAXTree');
+    const {nodes} = await this.#realm.environment.client.send(
+      'Accessibility.getFullAXTree'
+    );
     let backendNodeId: number | undefined;
     if (root) {
-      const {node} = await this.#client.send('DOM.describeNode', {
-        objectId: root.id,
-      });
+      const {node} = await this.#realm.environment.client.send(
+        'DOM.describeNode',
+        {
+          objectId: root.id,
+        }
+      );
       backendNodeId = node.backendNodeId;
     }
-    const defaultRoot = AXNode.createTree(nodes);
+    const defaultRoot = AXNode.createTree(this.#realm, nodes);
     let needle: AXNode | null = defaultRoot;
     if (backendNodeId) {
       needle = defaultRoot.find(node => {
@@ -260,13 +266,14 @@ class AXNode {
   #role: string;
   #ignored: boolean;
   #cachedHasFocusableChild?: boolean;
+  #realm: Realm;
 
-  constructor(payload: Protocol.Accessibility.AXNode) {
+  constructor(realm: Realm, payload: Protocol.Accessibility.AXNode) {
     this.payload = payload;
     this.#name = this.payload.name ? this.payload.name.value : '';
     this.#role = this.payload.role ? this.payload.role.value : 'Unknown';
     this.#ignored = this.payload.ignored;
-
+    this.#realm = realm;
     for (const property of this.payload.properties || []) {
       if (property.name === 'editable') {
         this.#richlyEditable = property.value.value === 'richtext';
@@ -441,6 +448,14 @@ class AXNode {
 
     const node: SerializedAXNode = {
       role: this.#role,
+      elementHandle: async (): Promise<ElementHandle | null> => {
+        if (!this.payload.backendDOMNodeId) {
+          return null;
+        }
+        return (await this.#realm.adoptBackendNode(
+          this.payload.backendDOMNodeId
+        )) as ElementHandle<Element>;
+      },
     };
 
     type UserStringProperty =
@@ -561,10 +576,13 @@ class AXNode {
     return node;
   }
 
-  public static createTree(payloads: Protocol.Accessibility.AXNode[]): AXNode {
+  public static createTree(
+    realm: Realm,
+    payloads: Protocol.Accessibility.AXNode[]
+  ): AXNode {
     const nodeById = new Map<string, AXNode>();
     for (const payload of payloads) {
-      nodeById.set(payload.nodeId, new AXNode(payload));
+      nodeById.set(payload.nodeId, new AXNode(realm, payload));
     }
     for (const node of nodeById.values()) {
       for (const childId of node.payload.childIds || []) {

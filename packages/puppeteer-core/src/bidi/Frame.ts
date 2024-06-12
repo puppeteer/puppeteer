@@ -27,6 +27,7 @@ import {
   type WaitForOptions,
 } from '../api/Frame.js';
 import {PageEvent} from '../api/Page.js';
+import {Accessibility} from '../cdp/Accessibility.js';
 import {
   ConsoleMessage,
   type ConsoleMessageLocation,
@@ -71,6 +72,7 @@ export class BidiFrame extends Frame {
 
   override readonly _id: string;
   override readonly client: BidiCdpSession;
+  override readonly accessibility: Accessibility;
 
   private constructor(
     parent: BidiPage | BidiFrame,
@@ -91,6 +93,7 @@ export class BidiFrame extends Frame {
         this
       ),
     };
+    this.accessibility = new Accessibility(this.realms.default);
   }
 
   #initialize(): void {

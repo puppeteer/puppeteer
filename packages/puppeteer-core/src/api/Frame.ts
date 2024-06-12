@@ -14,6 +14,7 @@ import type {
   WaitForSelectorOptions,
   WaitTimeoutOptions,
 } from '../api/Page.js';
+import type {Accessibility} from '../cdp/Accessibility.js';
 import type {DeviceRequestPrompt} from '../cdp/DeviceRequestPrompt.js';
 import type {PuppeteerLifeCycleEvent} from '../cdp/LifecycleWatcher.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
@@ -378,6 +379,11 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * @internal
    */
   abstract get client(): CDPSession;
+
+  /**
+   * @internal
+   */
+  abstract get accessibility(): Accessibility;
 
   /**
    * @internal

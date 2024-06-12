@@ -294,7 +294,7 @@ describe('Accessibility', function () {
               },
             ],
           };
-      expect(await page.accessibility.snapshot()).toEqual(golden);
+      expect(await page.accessibility.snapshot()).toMatchObject(golden);
     });
     it('rich text editable fields should have children', async () => {
       const {page, isFirefox} = await getTestState();
@@ -386,7 +386,7 @@ describe('Accessibility', function () {
         const snapshot = await page.accessibility.snapshot();
         assert(snapshot);
         assert(snapshot.children);
-        expect(snapshot.children[0]).toEqual({
+        expect(snapshot.children[0]).toMatchObject({
           role: 'textbox',
           name: '',
           value: 'Edit this image:',
@@ -416,7 +416,7 @@ describe('Accessibility', function () {
       const snapshot = await page.accessibility.snapshot();
       assert(snapshot);
       assert(snapshot.children);
-      expect(snapshot.children[0]).toEqual(golden);
+      expect(snapshot.children[0]).toMatchObject(golden);
     });
     it('checkbox with and tabIndex and label should not have children', async () => {
       const {page, isFirefox} = await getTestState();
@@ -440,7 +440,7 @@ describe('Accessibility', function () {
       const snapshot = await page.accessibility.snapshot();
       assert(snapshot);
       assert(snapshot.children);
-      expect(snapshot.children[0]).toEqual(golden);
+      expect(snapshot.children[0]).toMatchObject(golden);
     });
     it('checkbox without label should not have children', async () => {
       const {page, isFirefox} = await getTestState();
@@ -464,7 +464,7 @@ describe('Accessibility', function () {
       const snapshot = await page.accessibility.snapshot();
       assert(snapshot);
       assert(snapshot.children);
-      expect(snapshot.children[0]).toEqual(golden);
+      expect(snapshot.children[0]).toMatchObject(golden);
     });
 
     describe('root option', function () {
@@ -474,10 +474,12 @@ describe('Accessibility', function () {
         await page.setContent(`<button>My Button</button>`);
 
         using button = (await page.$('button'))!;
-        expect(await page.accessibility.snapshot({root: button})).toEqual({
-          role: 'button',
-          name: 'My Button',
-        });
+        expect(await page.accessibility.snapshot({root: button})).toMatchObject(
+          {
+            role: 'button',
+            name: 'My Button',
+          }
+        );
       });
       it('should work an input', async () => {
         const {page} = await getTestState();
@@ -485,7 +487,7 @@ describe('Accessibility', function () {
         await page.setContent(`<input title="My Input" value="My Value">`);
 
         using input = (await page.$('input'))!;
-        expect(await page.accessibility.snapshot({root: input})).toEqual({
+        expect(await page.accessibility.snapshot({root: input})).toMatchObject({
           role: 'textbox',
           name: 'My Input',
           value: 'My Value',
@@ -503,7 +505,7 @@ describe('Accessibility', function () {
           `);
 
         using menu = (await page.$('div[role="menu"]'))!;
-        expect(await page.accessibility.snapshot({root: menu})).toEqual({
+        expect(await page.accessibility.snapshot({root: menu})).toMatchObject({
           role: 'menu',
           name: 'My Menu',
           children: [
@@ -546,6 +548,28 @@ describe('Accessibility', function () {
             },
           ],
         });
+      });
+    });
+
+    describe('elementHandle()', () => {
+      it('should get an ElementHandle from a snapshot item', async () => {
+        const {page} = await getTestState();
+
+        await page.setContent(`<button>My Button</button>`);
+
+        using button = (await page.$('button'))!;
+        const snapshot = await page.accessibility.snapshot({root: button});
+        expect(snapshot).toMatchObject({
+          role: 'button',
+          name: 'My Button',
+        });
+
+        using buttonHandle = await snapshot!.elementHandle();
+        expect(
+          await buttonHandle?.evaluate(button => {
+            return button.innerHTML;
+          })
+        ).toEqual('My Button');
       });
     });
   });

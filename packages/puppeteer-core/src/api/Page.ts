@@ -843,7 +843,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * {@inheritDoc Accessibility}
    */
-  abstract get accessibility(): Accessibility;
+  get accessibility(): Accessibility {
+    return this.mainFrame().accessibility;
+  }
 
   /**
    * An array of all frames attached to the page.
