@@ -3052,20 +3052,6 @@
     "comment": "Chrome-specific test"
   },
   {
-    "testIdPattern": "[pdf.spec] Page.pdf can print to PDF with outline",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "headful"],
-    "expectations": ["FAIL"],
-    "comment": "only works in the old headless code"
-  },
-  {
-    "testIdPattern": "[pdf.spec] Page.pdf can print to PDF with outline",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "headless"],
-    "expectations": ["FAIL"],
-    "comment": "only works in the old headless code"
-  },
-  {
     "testIdPattern": "[proxy.spec] request proxy in incognito browser context should proxy requests when configured at context level",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
