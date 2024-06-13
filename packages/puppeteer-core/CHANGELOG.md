@@ -20,6 +20,13 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.11.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.11.0...puppeteer-core-v22.11.1) (2024-06-13)
+
+
+### Bug Fixes
+
+* connection closed error should be a rejected promise ([#12575](https://github.com/puppeteer/puppeteer/issues/12575)) ([e36ce8b](https://github.com/puppeteer/puppeteer/commit/e36ce8bee18b4a8c7bf4c0692269d0095d186d06))
+
 ## [22.11.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.10.1...puppeteer-core-v22.11.0) (2024-06-12)
 
 
