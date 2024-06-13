@@ -85,7 +85,7 @@ If you encounter this issue, you will see errors like this in the browser stdout
 To workaround the issue, use the icacls utility to set permissions manually:
 
 ```powershell
-icacls $HOME/.cache/puppeteer/chrome /grant "ALL APPLICATION PACKAGES:(OI)(CI)(RX)"
+icacls %USERPROFILE%/.cache/puppeteer/chrome /grant *S-1-15-2-1:(OI)(CI)(RX)
 ```
 
 :::note
