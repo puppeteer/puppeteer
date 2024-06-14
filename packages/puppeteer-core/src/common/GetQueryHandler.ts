@@ -52,17 +52,25 @@ export function getQueryHandlerAndSelector(selector: string): {
       }
     }
   }
-  const [pSelector, isPureCSS, hasPseudoClasses] = parsePSelectors(selector);
-  if (isPureCSS) {
+  try {
+    const [pSelector, isPureCSS, hasPseudoClasses] = parsePSelectors(selector);
+    if (isPureCSS) {
+      return {
+        updatedSelector: selector,
+        selectorHasPseudoClasses: hasPseudoClasses,
+        QueryHandler: CSSQueryHandler,
+      };
+    }
+    return {
+      updatedSelector: JSON.stringify(pSelector),
+      selectorHasPseudoClasses: hasPseudoClasses,
+      QueryHandler: PQueryHandler,
+    };
+  } catch {
     return {
       updatedSelector: selector,
-      selectorHasPseudoClasses: hasPseudoClasses,
+      selectorHasPseudoClasses: false,
       QueryHandler: CSSQueryHandler,
     };
   }
-  return {
-    updatedSelector: JSON.stringify(pSelector),
-    selectorHasPseudoClasses: hasPseudoClasses,
-    QueryHandler: PQueryHandler,
-  };
 }
