@@ -358,12 +358,22 @@ describe('Query handler tests', function () {
         })
       ).toBeTruthy();
 
+      using root = await page.$('div');
+      using button = await root!.$('& > button');
+      assert(button, 'Could not find element');
+      expect(
+        await button.evaluate(element => {
+          return element.id === 'b';
+        })
+      ).toBeTruthy();
+
       // Should parse more complex CSS selectors. Listing a few problematic
       // cases from bug reports.
       for (const selector of [
         '.user_row[data-user-id="\\38 "]:not(.deactivated_user)',
         `input[value='Search']:not([class='hidden'])`,
         `[data-test-id^="test-"]:not([data-test-id^="test-foo"])`,
+        `& > table`,
       ]) {
         await page.$$(selector);
       }
