@@ -12,9 +12,9 @@ import {AngularProjectMulti, AngularProjectSingle} from './projects.mjs';
 
 const {values: args} = parseArgs({
   options: {
-    testRunner: {
+    runner: {
       type: 'string',
-      short: 't',
+      short: 'r',
       default: undefined,
     },
     name: {
@@ -28,6 +28,9 @@ const {values: args} = parseArgs({
 if (process.env.CI) {
   // Need to install in CI
   execSync('npm install -g @angular/cli@latest @angular-devkit/schematics-cli');
+}
+
+if (!args.runner) {
   const runners = ['node', 'jest', 'jasmine', 'mocha'];
   const groups = [];
 
