@@ -45,14 +45,18 @@ jobs:
               - 'tools/mocha-runner/**'
               - '.mocharc.cjs'
               - 'tools/doctest/**'
+              - 'tsconfig.base.json'
             website:
               - '.github/workflows/ci.yml'
               - 'docs/**'
               - 'website/**'
               - 'README.md'
+              - 'tsconfig.base.json'
             ng-schematics:
               - '.github/workflows/ci.yml'
               - 'packages/ng-schematics/**'
+              - 'tsconfig.base.json'
             browsers:
               - '.github/workflows/ci.yml'
               - 'packages/browsers/**'
+              - 'tsconfig.base.json'
