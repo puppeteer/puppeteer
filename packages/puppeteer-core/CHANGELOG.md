@@ -20,6 +20,16 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.11.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.11.0...puppeteer-core-v22.11.1) (2024-06-17)
+
+
+### Bug Fixes
+
+* connection closed error should be a rejected promise ([#12575](https://github.com/puppeteer/puppeteer/issues/12575)) ([e36ce8b](https://github.com/puppeteer/puppeteer/commit/e36ce8bee18b4a8c7bf4c0692269d0095d186d06))
+* ensure selector parser falls back to CSS ([#12585](https://github.com/puppeteer/puppeteer/issues/12585)) ([80783fe](https://github.com/puppeteer/puppeteer/commit/80783fef5a298d2c57f64415f1882d0b051625ef))
+* implement nested selector parsing ([#12587](https://github.com/puppeteer/puppeteer/issues/12587)) ([3874300](https://github.com/puppeteer/puppeteer/commit/38743007159beedcad8571c08c3320235eb93f76))
+* roll to Chrome 126.0.6478.61 (r1300313) ([#12586](https://github.com/puppeteer/puppeteer/issues/12586)) ([772e088](https://github.com/puppeteer/puppeteer/commit/772e088f9cc566832b36066c3a6627b5afd47769))
+
 ## [22.11.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.10.1...puppeteer-core-v22.11.0) (2024-06-12)
 
 
