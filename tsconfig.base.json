@@ -20,6 +20,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "resolveJsonModule": true,
+    "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
     "strictBindCallApply": true,
@@ -27,7 +28,7 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "target": "ES2022",
-    "useUnknownInCatchVariables": true,
-    "skipLibCheck": true
+    "typeRoots": ["./node_modules/@types"],
+    "useUnknownInCatchVariables": true
   }
 }
