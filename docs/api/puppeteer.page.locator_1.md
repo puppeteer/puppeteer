@@ -44,7 +44,3 @@ func
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;Ret&gt;
-
-## Remarks
-
-Locators API is experimental and we will not follow semver for breaking change in the Locators API.

@@ -793,10 +793,6 @@ We no longer support intercepting drag payloads. Use the new drag APIs found on 
 
 Creates a locator for the provided selector. See [Locator](./puppeteer.locator.md) for details and supported actions.
 
-**Remarks:**
-
-Locators API is experimental and we will not follow semver for breaking change in the Locators API.
-
 </td></tr>
 <tr><td>
 
@@ -807,10 +803,6 @@ Locators API is experimental and we will not follow semver for breaking change i
 </td><td>
 
 Creates a locator for the provided function. See [Locator](./puppeteer.locator.md) for details and supported actions.
-
-**Remarks:**
-
-Locators API is experimental and we will not follow semver for breaking change in the Locators API.
 
 </td></tr>
 <tr><td>
