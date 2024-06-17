@@ -516,7 +516,7 @@ describe('Page', function () {
       await page.goto('about:blank');
       const [message] = await Promise.all([
         waitEvent(page, 'console'),
-        page.evaluate(async (url: string) => {
+        page.evaluate(async url => {
           return await fetch(url).catch(() => {});
         }, server.EMPTY_PAGE),
       ]);

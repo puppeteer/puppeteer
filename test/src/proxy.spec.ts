@@ -54,31 +54,26 @@ describe('request proxy', () => {
     proxiedRequestUrls = [];
 
     proxyServer = http
-      .createServer(
-        (
-          originalRequest: IncomingMessage,
-          originalResponse: ServerResponse
-        ) => {
-          proxiedRequestUrls.push(originalRequest.url as string);
+      .createServer((originalRequest, originalResponse) => {
+        proxiedRequestUrls.push(originalRequest.url!);
 
-          const proxyRequest = http.request(
-            originalRequest.url as string,
-            {
-              method: originalRequest.method,
-              headers: originalRequest.headers,
-            },
-            proxyResponse => {
-              originalResponse.writeHead(
-                proxyResponse.statusCode as number,
-                proxyResponse.headers
-              );
-              proxyResponse.pipe(originalResponse, {end: true});
-            }
-          );
+        const proxyRequest = http.request(
+          originalRequest.url!,
+          {
+            method: originalRequest.method,
+            headers: originalRequest.headers,
+          },
+          proxyResponse => {
+            originalResponse.writeHead(
+              proxyResponse.statusCode as number,
+              proxyResponse.headers
+            );
+            proxyResponse.pipe(originalResponse, {end: true});
+          }
+        );
 
-          originalRequest.pipe(proxyRequest, {end: true});
-        }
-      )
+        originalRequest.pipe(proxyRequest, {end: true});
+      })
       .listen();
 
     proxyServerUrl = `http://${HOSTNAME}:${

@@ -180,7 +180,7 @@ describe('Mouse', function () {
       await page.keyboard.down(modifier);
       await page.click('#button-3');
       if (
-        !(await page.evaluate((mod: string) => {
+        !(await page.evaluate(mod => {
           return (globalThis as any).lastEvent[mod];
         }, key))
       ) {
@@ -191,7 +191,7 @@ describe('Mouse', function () {
     await page.click('#button-3');
     for (const [modifier, key] of modifiers) {
       if (
-        await page.evaluate((mod: string) => {
+        await page.evaluate(mod => {
           return (globalThis as any).lastEvent[mod];
         }, key)
       ) {

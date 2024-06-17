@@ -470,7 +470,7 @@ describe('request interception', function () {
         }
       });
       const dataURL = 'data:text/html,<div>yo</div>';
-      const text = await page.evaluate((url: string) => {
+      const text = await page.evaluate(url => {
         return fetch(url).then(r => {
           return r.text();
         });

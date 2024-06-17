@@ -36,19 +36,23 @@ describe('Workers', function () {
   it('should emit created and destroyed events', async () => {
     const {page} = await getTestState();
 
-    const workerCreatedPromise = waitEvent<WebWorker>(page, 'workercreated');
-    using workerObj = await page.evaluateHandle(() => {
-      return new Worker('data:text/javascript,1');
-    });
-    const worker = await workerCreatedPromise;
+    const [worker, workerObj] = await Promise.all([
+      waitEvent<WebWorker>(page, 'workercreated'),
+      page.evaluateHandle(() => {
+        return new Worker('data:text/javascript,1');
+      }),
+    ]);
     using workerThisObj = await worker.evaluateHandle(() => {
       return this;
     });
-    const workerDestroyedPromise = waitEvent(page, 'workerdestroyed');
-    await page.evaluate((workerObj: Worker) => {
-      return workerObj.terminate();
-    }, workerObj);
-    expect(await workerDestroyedPromise).toBe(worker);
+    const [workerDestroyed] = await Promise.all([
+      waitEvent(page, 'workerdestroyed'),
+      page.evaluate(worker => {
+        return worker.terminate();
+      }, workerObj),
+    ]);
+
+    expect(workerDestroyed).toBe(worker);
     const error = await workerThisObj.getProperty('self').catch(error => {
       return error;
     });
