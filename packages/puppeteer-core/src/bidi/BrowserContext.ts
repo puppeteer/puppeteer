@@ -189,6 +189,8 @@ export class BidiBrowserContext extends BrowserContext {
     } catch (error) {
       debugError(error);
     }
+
+    this.#targets.clear();
   }
 
   override browser(): BidiBrowser {
