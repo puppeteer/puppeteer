@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {IncomingMessage, Server, ServerResponse} from 'http';
 import http from 'http';
 import type {AddressInfo} from 'net';
 import os from 'os';
