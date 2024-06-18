@@ -26,7 +26,7 @@ Puppeteer to automatically wait for the element to be present in the DOM and to
 be in the right state for the action. You always instantiate a locator using the
 [`page.locator()`](https://pptr.dev/api/puppeteer.page.locator) or
 [`frame.locator()`](https://pptr.dev/api/puppeteer.frame.locator) function. If
-the locator API does offer a functionality you need, you can still use lower
+the locator API doesn't offer a functionality you need, you can still use lower
 level APIs such as
 [`page.waitForSelector()`](https://pptr.dev/api/puppeteer.page.waitforselector/)
 or [`ElementHandle`](https://pptr.dev/api/puppeteer.elementhandle/).
