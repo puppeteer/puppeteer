@@ -86,7 +86,7 @@ export class BidiBrowserContext extends BrowserContext {
       const page = this.#createPage(browsingContext);
 
       if (browsingContext.originalOpener) {
-        for (const browsingContext of [...this.userContext.browsingContexts]) {
+        for (const browsingContext of this.userContext.browsingContexts) {
           if (browsingContext.id === browsingContext.originalOpener) {
             this.#pages
               .get(browsingContext)!
