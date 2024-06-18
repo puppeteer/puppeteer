@@ -83,7 +83,17 @@ export class BidiBrowserContext extends BrowserContext {
     }
 
     this.userContext.on('browsingcontext', ({browsingContext}) => {
-      this.#createPage(browsingContext);
+      const page = this.#createPage(browsingContext);
+
+      if (browsingContext.originalOpener) {
+        for (const browsingContext of [...this.userContext.browsingContexts]) {
+          if (browsingContext.id === browsingContext.originalOpener) {
+            this.#pages
+              .get(browsingContext)!
+              .trustedEmitter.emit(PageEvent.Popup, page);
+          }
+        }
+      }
     });
     this.userContext.on('closed', () => {
       this.trustedEmitter.removeAllListeners();
