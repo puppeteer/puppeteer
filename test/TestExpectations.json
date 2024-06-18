@@ -637,7 +637,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Deprecated"
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction *",
