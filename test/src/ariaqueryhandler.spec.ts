@@ -24,7 +24,7 @@ describe('AriaQueryHandler', () => {
       );
       const expectFound = async (button: ElementHandle | null) => {
         assert(button);
-        const id = await button.evaluate((button: Element) => {
+        const id = await button.evaluate(button => {
           return button.id;
         });
         expect(id).toBe('btn');
@@ -669,7 +669,7 @@ describe('AriaQueryHandler', () => {
     const getIds = async (elements: ElementHandle[]) => {
       return await Promise.all(
         elements.map(element => {
-          return element.evaluate((element: Element) => {
+          return element.evaluate(element => {
             return element.id;
           });
         })

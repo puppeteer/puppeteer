@@ -587,7 +587,7 @@ describe('navigation', function () {
       await page.goto(server.EMPTY_PAGE);
       const [response] = await Promise.all([
         page.waitForNavigation(),
-        page.evaluate((url: string) => {
+        page.evaluate(url => {
           return (window.location.href = url);
         }, server.PREFIX + '/grid.html'),
       ]);
@@ -867,7 +867,7 @@ describe('navigation', function () {
       const frame = page.frames()[1]!;
       const [response] = await Promise.all([
         frame.waitForNavigation(),
-        frame.evaluate((url: string) => {
+        frame.evaluate(url => {
           return (window.location.href = url);
         }, server.PREFIX + '/grid.html'),
       ]);
