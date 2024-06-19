@@ -16,7 +16,7 @@ jobs:
       contents: read
     steps:
       - name: Check out repository
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - name: Install dependencies
         run: npm ci
         env:
@@ -51,7 +51,7 @@ jobs:
       IMAGE_NAME: ${{ github.repository }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - name: Install dependencies
         run: npm ci
         env:
@@ -77,7 +77,7 @@ jobs:
             type=match,pattern=puppeteer-v(\d+\.\d+\.\d+),group=1
             type=match,pattern=puppeteer-v(\d+)\.\d+\.\d+,group=1
       - name: Build and push the Docker image
-        uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0 # v5.3.0
+        uses: docker/build-push-action@c382f710d39a5bb4e430307530a720f50c2d3318 # v6.0.0
         with:
           context: ./docker
           push: true
