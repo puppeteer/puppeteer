@@ -26,6 +26,10 @@ import {
 } from '../api/Page.js';
 import {Coverage} from '../cdp/Coverage.js';
 import {EmulationManager} from '../cdp/EmulationManager.js';
+import type {
+  InternalNetworkConditions,
+  NetworkConditions,
+} from '../cdp/NetworkManager.js';
 import {Tracing} from '../cdp/Tracing.js';
 import type {
   Cookie,
@@ -88,6 +92,8 @@ export class BidiPage extends Page {
   readonly tracing: Tracing;
   readonly coverage: Coverage;
   readonly #cdpEmulationManager: EmulationManager;
+
+  #emulatedNetworkConditions?: InternalNetworkConditions;
 
   _client(): BidiCdpSession {
     return this.#frame.client;
@@ -645,12 +651,59 @@ export class BidiPage extends Page {
     throw new UnsupportedOperation();
   }
 
-  override setOfflineMode(): never {
-    throw new UnsupportedOperation();
+  override async setOfflineMode(enabled: boolean): Promise<void> {
+    if (!this.#browserContext.browser().cdpSupported) {
+      throw new UnsupportedOperation();
+    }
+
+    if (!this.#emulatedNetworkConditions) {
+      this.#emulatedNetworkConditions = {
+        offline: false,
+        upload: -1,
+        download: -1,
+        latency: 0,
+      };
+    }
+    this.#emulatedNetworkConditions.offline = enabled;
+    return await this.#applyNetworkConditions();
   }
 
-  override emulateNetworkConditions(): never {
-    throw new UnsupportedOperation();
+  override async emulateNetworkConditions(
+    networkConditions: NetworkConditions | null
+  ): Promise<void> {
+    if (!this.#browserContext.browser().cdpSupported) {
+      throw new UnsupportedOperation();
+    }
+    if (!this.#emulatedNetworkConditions) {
+      this.#emulatedNetworkConditions = {
+        offline: false,
+        upload: -1,
+        download: -1,
+        latency: 0,
+      };
+    }
+    this.#emulatedNetworkConditions.upload = networkConditions
+      ? networkConditions.upload
+      : -1;
+    this.#emulatedNetworkConditions.download = networkConditions
+      ? networkConditions.download
+      : -1;
+    this.#emulatedNetworkConditions.latency = networkConditions
+      ? networkConditions.latency
+      : 0;
+    return await this.#applyNetworkConditions();
+  }
+
+  async #applyNetworkConditions(): Promise<void> {
+    if (!this.#emulatedNetworkConditions) {
+      return;
+    }
+    await this._client().send('Network.emulateNetworkConditions', {
+      offline: this.#emulatedNetworkConditions.offline,
+      latency: this.#emulatedNetworkConditions.latency,
+      uploadThroughput: this.#emulatedNetworkConditions.upload,
+      downloadThroughput: this.#emulatedNetworkConditions.download,
+    });
   }
 
   override async setCookie(...cookies: CookieParam[]): Promise<void> {
