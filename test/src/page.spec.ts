@@ -758,6 +758,20 @@ describe('Page', function () {
       ]);
       expect(request.url()).toBe(server.PREFIX + '/digits/2.png');
     });
+
+    it.only('should be cancellable', async () => {
+      const {page, server} = await getTestState();
+
+      const abortController = new AbortController();
+
+      await page.goto(server.EMPTY_PAGE);
+      const task = page.waitForRequest(server.PREFIX + '/abortme', {
+        signal: abortController.signal,
+      });
+
+      abortController.abort();
+      await expect(task).rejects.toThrow(/aborted/);
+    });
   });
 
   describe('Page.waitForResponse', function () {
@@ -851,6 +865,17 @@ describe('Page', function () {
         }),
       ]);
       expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
+    });
+    it.only('should be cancellable', async () => {
+      const {page, server} = await getTestState();
+
+      const abortController = new AbortController();
+      const task = page.waitForResponse(server.PREFIX + '/abortme', {
+        signal: abortController.signal,
+      });
+
+      abortController.abort();
+      await expect(task).rejects.toThrow(/aborted/);
     });
   });
 
@@ -974,6 +999,61 @@ describe('Page', function () {
       expect(t1 - t0).toBeGreaterThan(400);
       // request finished + idle time - request finished.
       expect(t1 - t2).toBeGreaterThanOrEqual(100);
+    });
+
+    it.only('should be cancelable', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.EMPTY_PAGE);
+
+      const abortController = new AbortController();
+
+      const task = page.waitForNetworkIdle({
+        signal: abortController.signal,
+      });
+      const promise = page.evaluate(async () => {
+        await Promise.all([fetch('/digits/1.png')]);
+        await fetch('/digits/2.png');
+      });
+
+      abortController.abort();
+      await expect(task).rejects.toThrow(/aborted/);
+      await promise;
+    });
+  });
+
+  describe.only('Page.waitForFrame', () => {
+    it('should work', async () => {
+      const {server, page} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+
+      const [waitedFrame] = await Promise.all([
+        page.waitForFrame(frame => {
+          return frame.url().endsWith('/title.html');
+        }),
+        attachFrame(page, 'frame2', server.PREFIX + '/title.html'),
+      ]);
+
+      expect(waitedFrame.parentFrame()).toBe(page.mainFrame());
+    });
+
+    it('should be cancellable', async () => {
+      const {server, page} = await getTestState();
+
+      const abortController = new AbortController();
+      await page.goto(server.EMPTY_PAGE);
+
+      const task = page.waitForFrame(
+        frame => {
+          return frame.url().endsWith('/title.html');
+        },
+        {
+          signal: abortController.signal,
+        }
+      );
+
+      abortController.abort();
+      await expect(task).rejects.toThrow(/aborted/);
     });
   });
 

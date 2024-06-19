@@ -68,6 +68,7 @@ import {
   NETWORK_IDLE_TIME,
   timeout,
   withSourcePuppeteerURLIfNone,
+  fromAbortSignal,
 } from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import type {ScreenRecorder} from '../node/ScreenRecorder.js';
@@ -167,9 +168,13 @@ export interface WaitTimeoutOptions {
    * The default value can be changed by using the
    * {@link Page.setDefaultTimeout} method.
    *
-   * @defaultValue `30000`
+   * @defaultValue `30_000`
    */
   timeout?: number;
+  /**
+   * A signal object that allows you to cancel a waitFor call.
+   */
+  signal?: AbortSignal;
 }
 
 /**
@@ -1705,7 +1710,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
     urlOrPredicate: string | AwaitablePredicate<HTTPRequest>,
     options: WaitTimeoutOptions = {}
   ): Promise<HTTPRequest> {
-    const {timeout: ms = this._timeoutSettings.timeout()} = options;
+    const {timeout: ms = this._timeoutSettings.timeout(), signal} = options;
     if (typeof urlOrPredicate === 'string') {
       const url = urlOrPredicate;
       urlOrPredicate = (request: HTTPRequest) => {
@@ -1716,6 +1721,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       filterAsync(urlOrPredicate),
       raceWith(
         timeout(ms),
+        fromAbortSignal(signal),
         fromEmitterEvent(this, PageEvent.Close).pipe(
           map(() => {
             throw new TargetCloseError('Page closed!');
@@ -1757,7 +1763,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
     urlOrPredicate: string | AwaitablePredicate<HTTPResponse>,
     options: WaitTimeoutOptions = {}
   ): Promise<HTTPResponse> {
-    const {timeout: ms = this._timeoutSettings.timeout()} = options;
+    const {timeout: ms = this._timeoutSettings.timeout(), signal} = options;
     if (typeof urlOrPredicate === 'string') {
       const url = urlOrPredicate;
       urlOrPredicate = (response: HTTPResponse) => {
@@ -1768,6 +1774,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       filterAsync(urlOrPredicate),
       raceWith(
         timeout(ms),
+        fromAbortSignal(signal),
         fromEmitterEvent(this, PageEvent.Close).pipe(
           map(() => {
             throw new TargetCloseError('Page closed!');
@@ -1798,6 +1805,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       timeout: ms = this._timeoutSettings.timeout(),
       idleTime = NETWORK_IDLE_TIME,
       concurrency = 0,
+      signal,
     } = options;
 
     return this.#inflight$.pipe(
@@ -1810,6 +1818,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       map(() => {}),
       raceWith(
         timeout(ms),
+        fromAbortSignal(signal),
         fromEmitterEvent(this, PageEvent.Close).pipe(
           map(() => {
             throw new TargetCloseError('Page closed!');
@@ -1834,7 +1843,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
     urlOrPredicate: string | ((frame: Frame) => Awaitable<boolean>),
     options: WaitTimeoutOptions = {}
   ): Promise<Frame> {
-    const {timeout: ms = this.getDefaultTimeout()} = options;
+    const {timeout: ms = this.getDefaultTimeout(), signal} = options;
 
     if (isString(urlOrPredicate)) {
       urlOrPredicate = (frame: Frame) => {
@@ -1852,6 +1861,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
         first(),
         raceWith(
           timeout(ms),
+          fromAbortSignal(signal),
           fromEmitterEvent(this, PageEvent.Close).pipe(
             map(() => {
               throw new TargetCloseError('Page closed.');

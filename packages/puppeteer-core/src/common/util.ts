@@ -10,6 +10,7 @@ import type {OperatorFunction} from '../../third_party/rxjs/rxjs.js';
 import {
   filter,
   from,
+  fromEvent,
   map,
   mergeMap,
   NEVER,
@@ -461,6 +462,19 @@ export function fromEmitterEvent<
       emitter.off(eventName, listener);
     };
   });
+}
+
+/**
+ * @internal
+ */
+export function fromAbortSignal(signal?: AbortSignal): Observable<never> {
+  return signal
+    ? fromEvent(signal, 'abort').pipe(
+        map(() => {
+          throw new Error(`Aborted reason: ${signal.reason}`);
+        })
+      )
+    : NEVER;
 }
 
 /**
