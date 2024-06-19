@@ -29,7 +29,7 @@ describe('Puppeteer CLI', () => {
       shell: process.platform === 'win32',
       cwd: this.sandbox,
     });
-    assert.strictEqual(result.status, 0);
+    assert.strictEqual(result.status, 0, `${result.stdout}\n${result.stderr}`);
     assert.ok(
       result.stdout.toString('utf-8').startsWith('puppeteer <command>')
     );
@@ -50,7 +50,7 @@ describe('Puppeteer CLI', () => {
         },
       }
     );
-    assert.strictEqual(result.status, 0);
+    assert.strictEqual(result.status, 0, `${result.stdout}\n${result.stderr}`);
     const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));
     assert.equal(files.length, 1);
     assert.equal(files[0], 'chrome');
