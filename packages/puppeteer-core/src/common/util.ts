@@ -467,11 +467,19 @@ export function fromEmitterEvent<
 /**
  * @internal
  */
-export function fromAbortSignal(signal?: AbortSignal): Observable<never> {
+export function fromAbortSignal(
+  signal?: AbortSignal,
+  cause?: Error
+): Observable<never> {
   return signal
     ? fromEvent(signal, 'abort').pipe(
         map(() => {
-          throw new Error(`Aborted reason: ${signal.reason}`);
+          if (signal.reason instanceof Error) {
+            signal.reason.cause = cause;
+            throw signal.reason;
+          }
+
+          throw new Error(signal.reason, {cause});
         })
       )
     : NEVER;
