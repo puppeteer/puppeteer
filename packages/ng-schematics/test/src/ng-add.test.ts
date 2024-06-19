@@ -109,7 +109,8 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       expect(tsConfig).toMatchObject({
         extends: '../tsconfig.json',
         compilerOptions: {
-          module: 'CommonJS',
+          module: 'NodeNext',
+          moduleResolution: 'NodeNext',
         },
       });
     });
@@ -222,7 +223,8 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       expect(tsConfig).toMatchObject({
         extends: '../../../tsconfig.json',
         compilerOptions: {
-          module: 'CommonJS',
+          module: 'NodeNext',
+          moduleResolution: 'NodeNext',
         },
       });
     });
