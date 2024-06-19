@@ -759,7 +759,7 @@ describe('Page', function () {
       expect(request.url()).toBe(server.PREFIX + '/digits/2.png');
     });
 
-    it.only('should be cancellable', async () => {
+    it('should be cancellable', async () => {
       const {page, server} = await getTestState();
 
       const abortController = new AbortController();
@@ -866,7 +866,7 @@ describe('Page', function () {
       ]);
       expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
     });
-    it.only('should be cancellable', async () => {
+    it('should be cancellable', async () => {
       const {page, server} = await getTestState();
 
       const abortController = new AbortController();
@@ -1001,7 +1001,7 @@ describe('Page', function () {
       expect(t1 - t2).toBeGreaterThanOrEqual(100);
     });
 
-    it.only('should be cancelable', async () => {
+    it('should be cancelable', async () => {
       const {page, server} = await getTestState();
       await page.goto(server.EMPTY_PAGE);
 
@@ -1021,7 +1021,7 @@ describe('Page', function () {
     });
   });
 
-  describe.only('Page.waitForFrame', () => {
+  describe('Page.waitForFrame', () => {
     it('should work', async () => {
       const {server, page} = await getTestState();
 
