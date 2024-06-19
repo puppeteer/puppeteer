@@ -16,7 +16,6 @@ import {
   first,
   firstValueFrom,
   from,
-  fromEvent,
   identity,
   ignoreElements,
   map,

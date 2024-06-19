@@ -35,6 +35,25 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="signal">signal</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+AbortSignal
+
+</td><td>
+
+A signal object that allows you to cancel a waitFor call.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="timeout">timeout</span>
 
 </td><td>
@@ -53,7 +72,7 @@ The default value can be changed by using the [Page.setDefaultTimeout()](./puppe
 
 </td><td>
 
-`30000`
+`30_000`
 
 </td></tr>
 </tbody></table>
