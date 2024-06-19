@@ -212,8 +212,10 @@ await page.locator('button').setTimeout(3000).click();
 
 ### Getting locator events
 
-Currently, locators support a single event that notifies you when the locator is
-about to perform the action indicating that pre-conditions have been met:
+Currently, locators support [a single
+event](https://pptr.dev/api/puppeteer.locatorevents/) that notifies you when the
+locator is about to perform the action indicating that pre-conditions have been
+met:
 
 ```ts
 let willClick = false;
@@ -334,50 +336,34 @@ await page.locator('::-p-aria([name="Click me"][role="button"])').click();
 
 ### Querying elements in Shadow DOM
 
-#### `>>>` and `>>>>` combinators
-
 CSS selectors do not allow descending into Shadow DOM, therefore, Puppeteer adds
 two combinators to the CSS selector syntax that allow searching inside [shadow
 DOM](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM).
 
+#### The `>>>` combinator
+
+The `>>>` is called the _deep descendent_ combinator. It is analgious to the
+CSS's descendent combinator (denoted with a single space character ` `, for
+example, `div button`) and it selects matching elements under the parent element
+at any depth. For example, `my-custom-element >>> button` would select all
+button elements that are available inside shadow DOM of the `my-custom-element`
+(the shadow host).
+
 :::note
 
-Deep combinators only work on the first "depth" of selectors and open shadow
+Deep combinators only work on the first "depth" of CSS selectors and open shadow
 roots; for example, `:is(div > > a)` will not work.
 
 :::
 
-The `>>>` and `>>>>` are called _deep descendent_ and _deep_ combinators
-respectively. Both combinators have the effect of going into shadow hosts with
-`>>>` going into every shadow host under a node and `>>>>` going into the
-immediate one (if the node is a shadow host; otherwise, it's a no-op).
+#### The `>>>>` combinator
 
-:::note
-
-A common question is when should `>>>>` be chosen over `>>>` considering the
-flexibility of `>>>`. A similar question can be asked about the `>` combinator
-in CSS and a space; choose `>` if you do not need to query all elements under a
-given node and a space otherwise. The same applies to the `>>>>` (`>`) and `>>>`
-(space) combinators.
-
-:::
-
-For example, if we have the following HTML page that puts some content into
-shadow DOM.
-
-```html
-<!doctype html>
-<div id="shadow-host"></div>
-
-<script>
-  const topShadow = document.querySelector('#shadow-host');
-  topShadow.attachShadow({mode: 'open'});
-  topShadow.shadowRoot.innerHTML = `<div id="shadow-dom">CSS selectors cannot access me</div>`;
-</script>
-```
-
-Then using the `#shadow-host >>> #shadow-dom"` selector in Puppeteer will give
-access to the element in the shadow DOM.
+The `>>>>` is called the _deep child_ combinator. It is analgious to the CSS's
+child combinator (denoted with `>`, for example, `div > button`) and it selects
+matching elements under the parent element's immediate shadow root, if the
+element has one. For example,
+`my-custom-element >>>> button` would select all button elements that are available
+inside the immediate shadow root of the `my-custom-element` (the shadow host).
 
 #### Custom selectors
 
