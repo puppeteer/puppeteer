@@ -6,7 +6,14 @@
 
 import {ok} from 'node:assert';
 import {execSync} from 'node:child_process';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
 import {parseArgs} from 'node:util';
+
+const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'ng-schematics-smoke-'));
+console.log('chdir to:', tmp);
+process.chdir(tmp);
 
 import {AngularProjectMulti, AngularProjectSingle} from './projects.mjs';
 
