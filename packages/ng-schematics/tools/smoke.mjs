@@ -70,3 +70,8 @@ if (process.env.CI) {
   await Promise.all([single.create(), multi.create()]);
   await Promise.all([single.runSmoke(), multi.runSmoke()]);
 }
+
+console.log(`
+<---------------->
+Smoke test passed!
+`);
