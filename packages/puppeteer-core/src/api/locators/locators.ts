@@ -16,7 +16,6 @@ import {
   first,
   firstValueFrom,
   from,
-  fromEvent,
   identity,
   ignoreElements,
   map,
@@ -33,7 +32,7 @@ import {
 import type {EventType} from '../../common/EventEmitter.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 import type {Awaitable, HandleFor, NodeFor} from '../../common/types.js';
-import {debugError, timeout} from '../../common/util.js';
+import {debugError, fromAbortSignal, timeout} from '../../common/util.js';
 import type {
   BoundingBox,
   ClickOptions,
@@ -177,16 +176,7 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
     ): OperatorFunction<T, T> => {
       const candidates = [];
       if (signal) {
-        candidates.push(
-          fromEvent(signal, 'abort').pipe(
-            map(() => {
-              if (signal.reason instanceof Error) {
-                signal.reason.cause = cause;
-              }
-              throw signal.reason;
-            })
-          )
-        );
+        candidates.push(fromAbortSignal(signal, cause));
       }
       candidates.push(timeout(this._timeout, cause));
       return pipe(
