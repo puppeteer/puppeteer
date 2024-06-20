@@ -48,7 +48,3 @@ Selector
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt;
-
-## Remarks
-
-Locators API is experimental and we will not follow semver for breaking change in the Locators API.

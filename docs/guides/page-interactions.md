@@ -1,35 +1,128 @@
 # Page interactions
 
-Puppeteer allows you interact with the pages in various ways.
+Puppeteer allows interacting with elements on the page through mouse, touch
+events and keyboard input. Usually you first query a DOM element using a [CSS
+selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_selectors) and
+then invoke an action on the selected element. All of Puppeteer APIs that accept
+a selector, accept a [CSS
+selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_selectors) by
+default. Additionally, Puppeteer offers [custom selector syntax](#selectors) that allows
+finding elements using XPath, Text, Accessibility attributes and accessing
+Shadow DOM without the need to execute JavaScript.
+
+If you want to emit mouse or
+keyboard events without selecting an element first, use the
+[`page.mouse`](https://pptr.dev/api/puppeteer.mouse),
+[`page.keyboard`](https://pptr.dev/api/puppeteer.keyboard) and
+[`page.touchscreen`](https://pptr.dev/api/puppeteer.touchscreen) APIs. The rest
+of this guide, gives an overview on how to select DOM elements and invoke
+actions on them.
 
 ## Locators
 
-Locators is a new, experimental API that combines the functionalities of
-waiting and actions. With additional precondition checks, it
-enables automatic retries for failed actions, resulting in more reliable and
-less flaky automation scripts.
+Locators is the recommended way to select an element and interact with it.
+Locators encapsulate the information on how to select an element and they allow
+Puppeteer to automatically wait for the element to be present in the DOM and to
+be in the right state for the action. You always instantiate a locator using the
+[`page.locator()`](https://pptr.dev/api/puppeteer.page.locator) or
+[`frame.locator()`](https://pptr.dev/api/puppeteer.frame.locator) function. If
+the locator API doesn't offer a functionality you need, you can still use lower
+level APIs such as
+[`page.waitForSelector()`](https://pptr.dev/api/puppeteer.page.waitforselector/)
+or [`ElementHandle`](https://pptr.dev/api/puppeteer.elementhandle/).
 
-:::note
-
-Locators API is experimental and we will not follow semver for breaking changes
-in the Locators API.
-
-:::
-
-### Use cases
-
-#### Waiting for an element
+### Clicking an element using locators
 
 ```ts
-await page.locator('button').wait();
+// 'button' is a CSS selector.
+await page.locator('button').click();
 ```
 
-The following preconditions are automatically checked:
+The locator automatically checks the following before clicking:
+
+- Ensures the element is in the viewport.
+- Waits for the element to become
+  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible/) or hidden.
+- Waits for the element to become enabled.
+- Waits for the element to have a stable bounding box over two consecutive
+  animation frames.
+
+### Filling out an input
+
+```ts
+// 'input' is a CSS selector.
+await page.locator('input').fill('value');
+```
+
+Automatically detects the input type and choose an appropriate way to fill it
+out with the provided value. For example, it will fill out `<select>` elements as
+well as `<input>` elements.
+
+The locator automatically checks the following before typing into the input:
+
+- Ensures the element is in the viewport.
+- Waits for the element to become
+  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible/) or hidden.
+- Waits for the element to become enabled.
+- Waits for the element to have a stable bounding box over two consecutive
+  animation frames.
+
+#### Hover over an element
+
+```ts
+await page.locator('div').hover();
+```
+
+The locator automatically checks the following before hovering:
+
+- Ensures the element is in the viewport.
+- Waits for the element to become
+  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible/) or hidden.
+- Waits for the element to have a stable bounding box over two consecutive
+  animation frames.
+
+#### Scroll an element
+
+The [`.scroll()`] functions uses mouse wheel events to scroll an element.
+
+```ts
+// Scroll the div element by 10px horizontally
+// and by 20 px vertically.
+await page.locator('div').scroll({
+  scrollLeft: 10,
+  scrollTop: 20,
+});
+```
+
+The locator automatically checks the following before hovering:
+
+- Ensures the element is in the viewport.
+- Waits for the element to become
+  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible/) or hidden.
+- Waits for the element to have a stable bounding box over two consecutive
+  animation frames.
+
+### Waiting for element to be visible
+
+Sometimes you only need to wait for the element to be visible.
+
+```ts
+// '.loading' is a CSS selector.
+await page.locator('.loading').wait();
+```
+
+The locator automatically checks the following before returning:
 
 - Waits for the element to become
   [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible/) or hidden.
 
-#### Waiting for a function
+### Waiting for a function
+
+Sometimes it is useful to wait for an arbitrary condition expressed as a
+JavaScript function. In this case, locator can be defined using a function
+instead of a selector. The following example waits until the MutationObserver
+detects a `HTMLCanvasElement` element appearing on the page. You can also call
+other locator functions such as `.click()` or `.fill()` on the function locator.
 
 ```ts
 await page
@@ -51,57 +144,24 @@ await page
   .wait();
 ```
 
-#### Clicking an element
+### Applying filters on locators
 
-```ts
-await page.locator('button').click();
-```
-
-The following preconditions are automatically checked:
-
-- Ensures the element is in the viewport.
-- Waits for the element to become
-  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible/) or hidden.
-- Waits for the element to become enabled.
-- Waits for the element to have a stable bounding box over two consecutive
-  animation frames.
-
-#### Clicking an element matching a criteria
+The following example shows how to add extra conditions to the locator expressed
+as a JavaScript function. The button element will only be clicked if its
+`innerText` is 'My button'.
 
 ```ts
 await page
   .locator('button')
-  .filter(button => !button.disabled)
+  .filter(button => button.innerText === 'My button')
   .click();
 ```
 
-The following preconditions are automatically checked:
+### Returning values from a locator
 
-- Ensures the element is in the viewport.
-- Waits for the element to become
-  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible/) or hidden.
-- Waits for the element to become enabled.
-- Waits for the element to have a stable bounding box over two consecutive
-  animation frames.
-
-#### Filling out an input
-
-```ts
-await page.locator('input').fill('value');
-```
-
-Automatically detects the input type and choose an appropriate way to fill it out with the provided value.
-
-The following preconditions are automatically checked:
-
-- Ensures the element is in the viewport.
-- Waits for the element to become
-  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible/) or hidden.
-- Waits for the element to become enabled.
-- Waits for the element to have a stable bounding box over two consecutive
-  animation frames.
-
-#### Retrieving an element property
+The [`map`](https://pptr.dev/api/puppeteer.locator.map/) function allows mapping
+an element to a JavaScript value. In this case, calling `wait()` will return the
+deserialized JavaScript value.
 
 ```ts
 const enabled = await page
@@ -110,55 +170,52 @@ const enabled = await page
   .wait();
 ```
 
-#### Hover over an element
+### Returning ElementHandles from a locator
+
+The [`waitHandle`](https://pptr.dev/api/puppeteer.locator.waithandle/) function
+allows returning the
+[ElementHandle](https://pptr.dev/api/puppeteer.elementhandle/). It might be
+useful if there is no corresponding locator API for the action you need.
 
 ```ts
-await page.locator('div').hover();
+const buttonHandle = await page.locator('button').waitHandle();
+await buttonHandle.click();
 ```
-
-The following preconditions are automatically checked:
-
-- Ensures the element is in the viewport.
-- Waits for the element to become
-  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible/) or hidden.
-- Waits for the element to have a stable bounding box over two consecutive
-  animation frames.
-
-#### Scroll an element
-
-```ts
-await page.locator('div').scroll({
-  scrollLeft: 10,
-  scrollTop: 20,
-});
-```
-
-The following preconditions are automatically checked:
-
-- Ensures the element is in the viewport.
-- Waits for the element to become
-  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible/) or hidden.
-- Waits for the element to have a stable bounding box over two consecutive
-  animation frames.
 
 ### Configuring locators
 
 Locators can be configured to tune configure the preconditions and other other options:
 
 ```ts
+// Clicks on a button without waiting for any preconditions.
 await page
   .locator('button')
   .setEnsureElementIsInTheViewport(false)
-  .setTimeout(0)
   .setVisibility(null)
   .setWaitForEnabled(false)
   .setWaitForStableBoundingBox(false)
   .click();
 ```
 
+### Locator timeouts
+
+By default, locators inherit the timeout setting from the page. But it is
+possible to set the timeout on the per-locator basis. A
+[TimeoutError](https://pptr.dev/api/puppeteer.timeouterror/) will be thrown if
+the element is not found or the preconditions are not met withing the specified
+time period.
+
+```ts
+// Time out after 3 sec.
+await page.locator('button').setTimeout(3000).click();
+```
+
 ### Getting locator events
 
-Currently, locators support a single event that notifies you when the locator is about to perform the action:
+Currently, locators support [a single
+event](https://pptr.dev/api/puppeteer.locatorevents/) that notifies you when the
+locator is about to perform the action indicating that pre-conditions have been
+met:
 
 ```ts
 let willClick = false;
@@ -173,176 +230,181 @@ await page
 This event can be used for logging/debugging or other purposes. The event might
 fire multiple times if the locator retries the action.
 
-## Query Selectors
+## waitForSelector
 
-Queries are the primary mechanism for interacting with the DOM on your site. For example, a typical workflow goes like:
+[`waitForSelector`](https://pptr.dev/api/puppeteer.page.waitforselector/) is a
+lower-level API compared for locators that allows waiting for an element to be
+available in DOM. It does not automatically retry the action if it fails and
+requires manually disposing the resulting ElementHandle to prevent memory leaks.
+The method exists on the Page, Frame and ElementHandle instances.
 
 ```ts
 // Import puppeteer
 import puppeteer from 'puppeteer';
 
-(async () => {
-  // Launch the browser
-  const browser = await puppeteer.launch();
+// Launch the browser.
+const browser = await puppeteer.launch();
 
-  // Create a page
-  const page = await browser.newPage();
+// Create a page.
+const page = await browser.newPage();
 
-  // Go to your site
-  await page.goto('YOUR_SITE');
+// Go to your site.
+await page.goto('YOUR_SITE');
 
-  // Query for an element handle.
-  const element = await page.waitForSelector('div > .class-name');
+// Query for an element handle.
+const element = await page.waitForSelector('div > .class-name');
 
-  // Do something with element...
-  await element.click(); // Just an example.
+// Do something with element...
+await element.click(); // Just an example.
 
-  // Dispose of handle
-  await element.dispose();
+// Dispose of handle.
+await element.dispose();
 
-  // Close browser.
-  await browser.close();
-})();
+// Close browser.
+await browser.close();
 ```
 
-### `P` Selectors
+Some page level APIs such as `page.click(selector)`, `page.type(selector)`,
+`page.hover(selector)` are implemented using `waitForSelector` for
+backwards-compatiblity reasons.
 
-Puppeteer uses a superset of the CSS selector syntax for querying. We call this syntax _P selectors_ and it's supercharged with extra capabilities such as deep combinators and text selection.
+## Querying without waiting
 
-:::caution
+Sometimes you know that the elements are already on the page. In that case,
+Puppeteer offers multiple ways to find an element or multiple elements matching a
+selector. These methods exist on Page, Frame and ElementHandle instances.
 
-Although P selectors look like real CSS selectors (we intentionally designed it this way), they should not be used for actually CSS styling. They are designed only for Puppeteer.
+- [`page.$()`](https://pptr.dev/api/puppeteer.page._/) returns a single element
+  matching a selector.
+- [`page.$$()`](https://pptr.dev/api/puppeteer.page.__) returns all elements matching a selector.
+- [`page.$eval()`](https://pptr.dev/api/puppeteer.page._eval) returns the result
+  of running a JavaScript function on the first element matching a selector.
+- [`page.$$eval()`](https://pptr.dev/api/puppeteer.page.__eval) returns the
+  result of running a JavaScript function on each element matching a selector.
 
-:::
+## Selectors
 
-:::note
+Puppeteer accepts [CSS
+selectors](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_selectors) in
+every API that accepts a selector. Additionally, you can opt-in into using
+additional selector syntax to do more than CSS selectors offer.
 
-P selectors only work on the first "depth" of selectors; for example, `:is(div >>> a)` will not work.
+### Non-CSS selectors
 
-:::
+Puppeteer extends the CSS syntax with custom
+[pseudo-elements](https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements)
+that define how to select an element using a non-CSS selector. The Puppeteer
+supported pseudo-elements are prefixed with a `-p` vendor prefix.
 
-#### `>>>` and `>>>>` combinators
-
-The `>>>` and `>>>>` are called _deep descendent_ and _deep_ combinators respectively. Both combinators have the effect of going into shadow hosts with `>>>` going into every shadow host under a node and `>>>>` going into the immediate one (if the node is a shadow host; otherwise, it's a no-op).
-
-:::note
-
-A common question is when should `>>>>` be chosen over `>>>` considering the flexibility of `>>>`. A similar question can be asked about `>` and a space; choose `>` if you do not need to query all elements under a given node and a space otherwise. This answer extends to `>>>>` (`>`) and `>>>` (space) naturally.
-
-:::
-
-##### Example
-
-Suppose we have the markup
-
-```html
-<custom-element>
-  <template shadowrootmode="open">
-    <slot></slot>
-  </template>
-  <custom-element>
-    <template shadowrootmode="open">
-      <slot></slot>
-    </template>
-    <custom-element>
-      <template shadowrootmode="open">
-        <slot></slot>
-      </template>
-      <h2>Light content</h2>
-    </custom-element>
-  </custom-element>
-</custom-element>
-```
-
-> Note: `<template shadowrootmode="open">` is not supported on Firefox.
-> You can read more about it [here](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template#attributes).
-
-Then `custom-element >>> h2` will return `h2`, but `custom-element >>>> h2` will return nothing since the inner `h2` is in a deeper shadow root.
-
-#### `P`-elements
-
-`P` elements are [pseudo-elements](https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements) with a `-p` vendor prefix. It allows you to enhance your selectors with Puppeteer-specific query engines such as XPath, text queries, and ARIA.
-
-##### Text selectors (`-p-text`)
-
-Text selectors will select "minimal" elements containing the given text, even within (open) shadow roots. Here, "minimum" means the deepest elements that contain a given text, but not their parents (which technically will also contain the given text).
-
-###### Example
-
-```ts
-const element = await page.waitForSelector('div ::-p-text(My name is Jun)');
-// You can also use escapes.
-const element = await page.waitForSelector(
-  ':scope >>> ::-p-text(My name is Jun \\(pronounced like "June"\\))'
-);
-// or quotes
-const element = await page.waitForSelector(
-  'div >>>> ::-p-text("My name is Jun (pronounced like \\"June\\")"):hover'
-);
-```
-
-##### XPath selectors (`-p-xpath`)
+#### XPath selectors (`-p-xpath`)
 
 XPath selectors will use the browser's native [`Document.evaluate`](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate) to query for elements.
 
-###### Example
-
 ```ts
-const element = await page.waitForSelector('::-p-xpath(h2)');
+// Runs the `//h2` as the XPath expression.
+const element = await page.waitForSelector('::-p-xpath(//h2)');
 ```
 
-##### ARIA selectors (`-p-aria`)
+#### Text selectors (`-p-text`)
 
-ARIA selectors can be used to find elements with a given ARIA label. These labels are computed using Chrome's internal representation.
-
-###### Example
+Text selectors will select "minimal" elements containing the given text, even
+within (open) shadow roots. Here, "minimum" means the deepest elements that
+contain a given text, but not their parents (which technically will also contain
+the given text).
 
 ```ts
-const node = await page.waitForSelector('::-p-aria(Submit)');
-const node = await page.waitForSelector(
-  '::-p-aria([name="Click me"][role="button"])'
-);
+// Click a button inside a div element that has Checkout as the inner text.
+await page.locator('div ::-p-text(Checkout)').click();
+// You need to escape CSS selector syntax such '(', ')' if it is part of the your search text ('Checkout (2 items)').
+await page.locator(':scope >>> ::-p-text(Checkout \\(2 items\\))').click();
+// or use quotes escaping any quotes that are part of the search text ('He said: "Hello"').
+await page.locator(':scope >>> ::-p-text("He said: \\"Hello\\"")').click();
 ```
+
+#### ARIA selectors (`-p-aria`)
+
+ARIA selectors can be used to find elements using the computed accessible name
+and role. These labels are computed using the browsers internal representation
+of the accessibility tree. That means that ARIA relationships such as labeledby
+are resolved before the query is run. The ARIA selectors are useful if you do
+not want to depend on any particular DOM structure or DOM attributes.
+
+```ts
+await page.locator('::-p-aria(Submit)').click();
+await page.locator('::-p-aria([name="Click me"][role="button"])').click();
+```
+
+### Querying elements in Shadow DOM
+
+CSS selectors do not allow descending into Shadow DOM, therefore, Puppeteer adds
+two combinators to the CSS selector syntax that allow searching inside [shadow
+DOM](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM).
+
+#### The `>>>` combinator
+
+The `>>>` is called the _deep descendent_ combinator. It is analgious to the
+CSS's descendent combinator (denoted with a single space character ` `, for
+example, `div button`) and it selects matching elements under the parent element
+at any depth. For example, `my-custom-element >>> button` would select all
+button elements that are available inside shadow DOM of the `my-custom-element`
+(the shadow host).
+
+:::note
+
+Deep combinators only work on the first "depth" of CSS selectors and open shadow
+roots; for example, `:is(div > > a)` will not work.
+
+:::
+
+#### The `>>>>` combinator
+
+The `>>>>` is called the _deep child_ combinator. It is analgious to the CSS's
+child combinator (denoted with `>`, for example, `div > button`) and it selects
+matching elements under the parent element's immediate shadow root, if the
+element has one. For example,
+`my-custom-element >>>> button` would select all button elements that are available
+inside the immediate shadow root of the `my-custom-element` (the shadow host).
 
 #### Custom selectors
 
-Puppeteer provides users the ability to add their own query selectors to Puppeteer using [Puppeteer.registerCustomQueryHandler](../api/puppeteer.registercustomqueryhandler.md). This is useful for creating custom selectors based on framework objects or other vendor-specific objects.
+You can also add your own pseudo element using
+[Puppeteer.registerCustomQueryHandler](../api/puppeteer.registercustomqueryhandler.md).
+This is useful for creating custom selectors based on framework objects or your application.
 
-##### Custom Selectors
-
-You can register a custom query handler that allows you to create custom selectors. For example, define a query handler for `getById` selectors:
+For example, you can write all your selectors using the `react-component` pseudo-element
+and implement a custom logic how to resolve the provided ID.
 
 ```ts
-Puppeteer.registerCustomQueryHandler('getById', {
+Puppeteer.registerCustomQueryHandler('react-component', {
   queryOne: (elementOrDocument, selector) => {
+    // Dummy example just delegates to querySelector but you can find your
+    // React component because this callback runs in the page context.
     return elementOrDocument.querySelector(`[id="${CSS.escape(selector)}"]`);
   },
-  // Note: for demonstation perpose only `id` should be page unique
   queryAll: (elementOrDocument, selector) => {
+    // Dummy example just delegates to querySelector but you can find your
+    // React component because this callback runs in the page context.
     return elementOrDocument.querySelectorAll(`[id="${CSS.escape(selector)}"]`);
   },
 });
 ```
 
-You can now use it as following:
+In your application you can now write selectors as following.
 
 ```ts
-const node = await page.waitForSelector('::-p-getById(elementId)');
-// OR used in conjunction with other selectors
-const moreSpecificNode = await page.waitForSelector(
-  '.side-bar ::-p-getById(elementId)'
-);
+await page.locator('::-p-react-component(MyComponent)').click();
+// OR used in conjunction with other selectors.
+await page.locator('.side-bar ::-p-react-component(MyComponent)').click();
 ```
 
-##### Custom framework components selector
+Another example shows how you can define a custom query handler for locating vue
+components:
 
 :::caution
 
 Be careful when relying on internal APIs of libraries or frameworks. They can change at any time.
 
 :::
-
-Find Vue components by name by using Vue internals for querying:
 
 ```ts
 Puppeteer.registerCustomQueryHandler('vue', {
@@ -363,31 +425,13 @@ Puppeteer.registerCustomQueryHandler('vue', {
 });
 ```
 
-Query the Vue component as following:
+Search for a given view component as following:
 
 ```ts
 const element = await page.$('::-p-vue(MyComponent)');
 ```
 
-##### Web Components
-
-Web Components create their own tag so you can query them by the tag name:
-
-```ts
-const element = await page.$('my-web-component');
-```
-
-Extend `HTMLElementTagNameMap` to define types for custom tags. This allows Puppeteer to infer the return type for the ElementHandle:
-
-```ts
-declare global {
-  interface HTMLElementTagNameMap {
-    'my-web-component': MyWebComponent;
-  }
-}
-```
-
-## Query Selectors (legacy)
+### Prefixed selector syntax.
 
 :::caution
 
@@ -395,119 +439,15 @@ While we maintain prefixed selectors, the recommended way is to use the selector
 
 :::
 
-Queries are the primary mechanism for interacting with the DOM on your site. For example, a typical workflow goes like:
+The following legacy syntax (`${nonCssSelectorName}/${nonCssSelector}`) allows
+running a single non-CSS selector at a time is also supported. Note that this
+syntax does not allow combining multiple selectors.
 
 ```ts
-// Import puppeteer
-import puppeteer from 'puppeteer';
-
-(async () => {
-  // Launch the browser
-  const browser = await puppeteer.launch();
-
-  // Create a page
-  const page = await browser.newPage();
-
-  // Go to your site
-  await page.goto('YOUR_SITE');
-
-  // Query for an element handle.
-  const element = await page.waitForSelector('div > .class-name');
-
-  // Do something with element...
-  await element.click(); // Just an example.
-
-  // Dispose of handle
-  await element.dispose();
-
-  // Close browser.
-  await browser.close();
-})();
+// Same as ::-p-text("My text").
+await page.locator('text/My text').click();
+// Same as ::-p-xpath(//h2).
+await page.locator('xpath///h2').click();
+// Same as ::-p-aria(My label).
+await page.locator('aria/My label').click();
 ```
-
-### CSS
-
-CSS selectors follow the CSS spec of the browser being automated. We provide some basic type deduction for CSS selectors (such as `HTMLInputElement` for `input`), but any selector that contains no type information (such as `.class-name`) will need to be coerced manually using TypeScript's `as` coercion mechanism.
-
-#### Example
-
-```ts
-// Automatic
-const element = await page.waitForSelector('div > input');
-// Manual
-const element = (await page.waitForSelector(
-  'div > .class-name-for-input'
-)) as HTMLInputElement;
-```
-
-### Built-in selectors
-
-Built-in selectors are Puppeteer's own class of selectors for doing things CSS cannot. Every built-in selector starts with a prefix `.../` to assist Puppeteer in distinguishing between CSS selectors and a built-in.
-
-#### Text selectors (`text/`)
-
-Text selectors will select "minimal" elements containing the given text, even within (open) shadow roots. Here, "minimum" means the deepest elements that contain a given text, but not their parents (which technically will also contain the given text).
-
-##### Example
-
-```ts
-// Note we usually need type coercion since the type cannot be deduced, but for text selectors, `instanceof` checks may be better for runtime validation.
-const element = await page.waitForSelector('text/My name is Jun');
-```
-
-#### XPath selectors (`xpath/`)
-
-XPath selectors will use the browser's native [`Document.evaluate`](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate) to query for elements.
-
-##### Example
-
-```ts
-// There is not type deduction for XPaths.
-const node = await page.waitForSelector('xpath/h2');
-```
-
-#### ARIA selectors (`aria/`)
-
-ARIA selectors can be used to find elements with a given ARIA label. These labels are computed using Chrome's internal representation.
-
-##### Example
-
-```ts
-const node = await page.waitForSelector('aria/Button name');
-```
-
-#### Pierce selectors (`pierce/`)
-
-Pierce selectors will run the `querySelector*` API on the document and all shadow roots to find an element.
-
-:::danger
-
-Selectors will **not** _partially_ pierce through shadow roots. See the examples below.
-
-:::
-
-##### Example
-
-Suppose the HTML is
-
-```html
-<div>
-  <custom-element>
-    <div></div>
-  </custom-element>
-</div>
-```
-
-Then
-
-```ts
-// This will be two elements because of the outer and inner div.
-expect((await page.$$('pierce/div')).length).toBe(2);
-
-// Partial piercing doesn't work.
-expect((await page.$$('pierce/div div')).length).toBe(0);
-```
-
-### Custom selectors
-
-Puppeteer provides users the ability to add their own query selectors to Puppeteer using [Puppeteer.registerCustomQueryHandler](../api/puppeteer.registercustomqueryhandler.md). This is useful for creating custom selectors based on framework objects or other vendor-specific objects.
