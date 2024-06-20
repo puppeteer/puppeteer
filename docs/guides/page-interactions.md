@@ -233,7 +233,7 @@ fire multiple times if the locator retries the action.
 ## waitForSelector
 
 [`waitForSelector`](https://pptr.dev/api/puppeteer.page.waitforselector/) is a
-lower-level API compared for locators that allows waiting for an element to be
+lower-level API compared to locators that allows waiting for an element to be
 available in DOM. It does not automatically retry the action if it fails and
 requires manually disposing the resulting ElementHandle to prevent memory leaks.
 The method exists on the Page, Frame and ElementHandle instances.
@@ -343,7 +343,7 @@ DOM](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shado
 #### The `>>>` combinator
 
 The `>>>` is called the _deep descendent_ combinator. It is analgious to the
-CSS's descendent combinator (denoted with a single space character ` `, for
+CSS's descendent combinator (denoted with a single space character <code>&nbsp;</code>, for
 example, `div button`) and it selects matching elements under the parent element
 at any depth. For example, `my-custom-element >>> button` would select all
 button elements that are available inside shadow DOM of the `my-custom-element`
@@ -431,7 +431,7 @@ Search for a given view component as following:
 const element = await page.$('::-p-vue(MyComponent)');
 ```
 
-### Prefixed selector syntax.
+### Prefixed selector syntax
 
 :::caution
 
