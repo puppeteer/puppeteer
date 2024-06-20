@@ -334,6 +334,20 @@ await page.locator('::-p-aria(Submit)').click();
 await page.locator('::-p-aria([name="Click me"][role="button"])').click();
 ```
 
+#### Pierce selector (`pierce/`)
+
+Pierce selector is a selector that returns all elements matching the provided CSS selector in
+all shadow roots in the document. We recommend using [deep
+combinators](#querying-elements-in-shadow-dom) instead because they offer more
+flexibility in combining difference selectors. `pierce/` is only available in
+the [prefixed notation](#prefixed-selector-syntax).
+
+```ts
+await page.locator('pierce/div').click();
+// Same query as the pierce/ one using deep combinators.
+await page.locator('& >>> div').click();
+```
+
 ### Querying elements in Shadow DOM
 
 CSS selectors do not allow descending into Shadow DOM, therefore, Puppeteer adds
@@ -450,4 +464,6 @@ await page.locator('text/My text').click();
 await page.locator('xpath///h2').click();
 // Same as ::-p-aria(My label).
 await page.locator('aria/My label').click();
+
+await page.locator('pierce/div').click();
 ```
