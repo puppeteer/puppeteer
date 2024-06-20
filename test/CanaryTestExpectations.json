@@ -1,16 +1,1 @@
-[
-  {
-    "testIdPattern": "[pdf.spec] Page.pdf can print to PDF with outline",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "headful", "cdp"],
-    "expectations": ["PASS"],
-    "comment": "fixed in canary"
-  },
-  {
-    "testIdPattern": "[pdf.spec] Page.pdf can print to PDF with outline",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "headless", "cdp"],
-    "expectations": ["PASS"],
-    "comment": "fixed in canary"
-  }
-]
+[]
