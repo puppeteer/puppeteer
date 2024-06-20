@@ -843,7 +843,7 @@ describe('request interception', function () {
       expect(response.url()).toBe(server.EMPTY_PAGE);
     });
     it('should allow mocking multiple headers with same key', async () => {
-      const {page, server} = await getTestState();
+      const {isFirefox, page, server} = await getTestState();
 
       await page.setRequestInterception(true);
       page.on('request', request => {
@@ -867,7 +867,14 @@ describe('request interception', function () {
       });
       expect(response.status()).toBe(200);
       expect(response.headers()['foo']).toBe('bar');
-      expect(response.headers()['arr']).toBe('1\n2');
+
+      // The separator used to handle headers with multiple values is browser
+      // specific.
+      if (isFirefox) {
+        expect(response.headers()['arr']).toBe('1, 2');
+      } else {
+        expect(response.headers()['arr']).toBe('1\n2');
+      }
       // request.respond() will not trigger Network.responseReceivedExtraInfo
       // fail to get 'set-cookie' header from response
       expect(firstCookie?.value).toBe('1');
