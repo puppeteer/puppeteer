@@ -2226,13 +2226,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[navigation.spec] navigation Page.goto should navigate to dataURL and fire dataURL requests",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[navigation.spec] navigation Page.goto should navigate to empty page with networkidle0",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -2272,13 +2265,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Page.goto should work when navigating to data url",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
@@ -3075,7 +3061,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: Needs support for data URIs in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1805176"
+    "comment": "TODO: Needs support for data URIs in Firefox in content process https://bugzilla.mozilla.org/show_bug.cgi?id=1903060"
   },
   {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should be abortable with custom error codes",
@@ -3106,13 +3092,6 @@
     "comment": "TODO: Needs support for enabling cache in BiDi without CDP https://github.com/w3c/webdriver-bidi/issues/582"
   },
   {
-    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should navigate to dataURL and fire dataURL requests",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: Needs support for data URIs in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1805176"
-  },
-  {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should not cache if cache disabled",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -3124,7 +3103,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: Needs support for data URIs in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1805176"
+    "comment": "TODO: Needs investigation"
   },
   {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should work with file URLs",
@@ -3186,7 +3165,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: Needs support for data URIs in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1805176"
+    "comment": "TODO: Needs support for data URIs in Firefox in content process https://bugzilla.mozilla.org/show_bug.cgi?id=1903060"
   },
   {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should be abortable with custom error codes",
@@ -3210,13 +3189,6 @@
     "comment": "TODO: Needs support for enabling cache in BiDi without CDP https://github.com/w3c/webdriver-bidi/issues/582"
   },
   {
-    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should navigate to dataURL and fire dataURL requests",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: Needs support for data URIs in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1805176"
-  },
-  {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should navigate to URL with hash and fire requests without hash",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
@@ -3235,7 +3207,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: Needs support for data URIs in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1805176"
+    "comment": "TODO: Needs investigation"
   },
   {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with file URLs",
