@@ -20,6 +20,21 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.12.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.11.2...puppeteer-core-v22.12.0) (2024-06-21)
+
+
+### Features
+
+* support AbortSignal in page.waitForRequest/Response/NetworkIdle/Frame ([#12621](https://github.com/puppeteer/puppeteer/issues/12621)) ([54ecea7](https://github.com/puppeteer/puppeteer/commit/54ecea7db5180ec024d81a7ac14c73387550d1d6))
+* **webdriver:** support for `PageEvent.Popup` ([#12612](https://github.com/puppeteer/puppeteer/issues/12612)) ([293926b](https://github.com/puppeteer/puppeteer/commit/293926b61a3552f9ec7e9a62383688e775f12df0))
+
+
+### Bug Fixes
+
+* **performance:** clear targets on browser context close ([#12609](https://github.com/puppeteer/puppeteer/issues/12609)) ([6609758](https://github.com/puppeteer/puppeteer/commit/660975824ac94b85a260e99b95db0a11bb5a2e07))
+* roll to Chrome 126.0.6478.62 (r1300313) ([#12615](https://github.com/puppeteer/puppeteer/issues/12615)) ([80dd131](https://github.com/puppeteer/puppeteer/commit/80dd1316a09e87dda65f68e5cbe299d335147599))
+* roll to Chrome 126.0.6478.63 (r1300313) ([#12632](https://github.com/puppeteer/puppeteer/issues/12632)) ([20ed8fc](https://github.com/puppeteer/puppeteer/commit/20ed8fcb1415501525368305a9bc509af03d63ff))
+
 ## [22.11.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.11.1...puppeteer-core-v22.11.2) (2024-06-18)
 
 
