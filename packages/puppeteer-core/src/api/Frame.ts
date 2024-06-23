@@ -490,7 +490,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * to query page for.
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
    * can be passed as-is and a
-   * {@link https://pptr.dev/guides/page-interactions#p-selectors | Puppeteer-specific seletor syntax}
+   * {@link https://pptr.dev/guides/page-interactions#p-selectors | Puppeteer-specific seletcor syntax}
    * allows quering by
    * {@link https://pptr.dev/guides/page-interactions#text-selectors--p-text | text},
    * {@link https://pptr.dev/guides/page-interactions#aria-selectors--p-aria | a11y role and name},
@@ -532,7 +532,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * to query page for.
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
    * can be passed as-is and a
-   * {@link https://pptr.dev/guides/page-interactions#p-selectors | Puppeteer-specific seletor syntax}
+   * {@link https://pptr.dev/guides/page-interactions#p-selectors | Puppeteer-specific seletcor syntax}
    * allows quering by
    * {@link https://pptr.dev/guides/page-interactions#text-selectors--p-text | text},
    * {@link https://pptr.dev/guides/page-interactions#aria-selectors--p-aria | a11y role and name},
@@ -563,7 +563,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * to query page for.
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
    * can be passed as-is and a
-   * {@link https://pptr.dev/guides/page-interactions#p-selectors | Puppeteer-specific seletor syntax}
+   * {@link https://pptr.dev/guides/page-interactions#p-selectors | Puppeteer-specific selector syntax}
    * allows quering by
    * {@link https://pptr.dev/guides/page-interactions#text-selectors--p-text | text},
    * {@link https://pptr.dev/guides/page-interactions#aria-selectors--p-aria | a11y role and name},
@@ -605,7 +605,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * to query page for.
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
    * can be passed as-is and a
-   * {@link https://pptr.dev/guides/page-interactions#p-selectors | Puppeteer-specific seletor syntax}
+   * {@link https://pptr.dev/guides/page-interactions#p-selectors | Puppeteer-specific selector syntax}
    * allows quering by
    * {@link https://pptr.dev/guides/page-interactions#text-selectors--p-text | text},
    * {@link https://pptr.dev/guides/page-interactions#aria-selectors--p-aria | a11y role and name},
@@ -658,7 +658,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * to query page for.
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
    * can be passed as-is and a
-   * {@link https://pptr.dev/guides/page-interactions#p-selectors | Puppeteer-specific seletor syntax}
+   * {@link https://pptr.dev/guides/page-interactions#p-selectors | Puppeteer-specific selector syntax}
    * allows quering by
    * {@link https://pptr.dev/guides/page-interactions#text-selectors--p-text | text},
    * {@link https://pptr.dev/guides/page-interactions#aria-selectors--p-aria | a11y role and name},

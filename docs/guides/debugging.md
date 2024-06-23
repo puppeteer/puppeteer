@@ -3,7 +3,7 @@
 Debugging with Puppeteer can be an arduous task. There is no _single_ method for
 debugging all possible issues since Puppeteer touches many distinct components
 of a browser such as network requests and Web APIs. On a high note, Puppeteer
-provides _several_ methods for debugging which hopefully does cover all possible
+provides _several_ methods for debugging which hopefully cover all possible
 issues.
 
 ## Background
