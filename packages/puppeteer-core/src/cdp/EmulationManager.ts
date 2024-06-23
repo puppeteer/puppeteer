@@ -114,7 +114,7 @@ export class EmulatedState<T extends {active: boolean}> {
 /**
  * @internal
  */
-export class EmulationManager {
+export class EmulationManager implements ClientProvider {
   #client: CDPSession;
 
   #emulatingMobile = false;
