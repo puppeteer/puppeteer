@@ -1146,7 +1146,7 @@ See the [Request interception guide](https://pptr.dev/guides/network-interceptio
 
 `page.setViewport` will resize the page. A lot of websites don't expect phones to change size, so you should set the viewport before navigating to the page.
 
-In the case of multiple pages in a single browser, each page can have its own viewport size.
+In the case of multiple pages in a single browser, each page can have its own viewport size. Viewport can be set to null, this will set viewport to its default values.
 
 **Remarks:**
 
