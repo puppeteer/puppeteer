@@ -30,7 +30,7 @@ await browser.close();
 
 ## Browser contexts
 
-If you need to isolate your automation taks, use [BrowserContexts](https://pptr.dev/api/puppeteer.browser.createbrowsercontext/). Cookies and local storage are not shared between browser contexts. Also, you can close all pages in the context by closing the context.
+If you need to isolate your automation tasks, use [BrowserContexts](https://pptr.dev/api/puppeteer.browser.createbrowsercontext/). Cookies and local storage are not shared between browser contexts. Also, you can close all pages in the context by closing the context.
 
 ```ts
 import puppeteer from 'puppeteer';

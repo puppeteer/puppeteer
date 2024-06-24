@@ -184,7 +184,7 @@ await buttonHandle.click();
 
 ### Configuring locators
 
-Locators can be configured to tune configure the preconditions and other other options:
+Locators can be configured to tune configure the preconditions and other options:
 
 ```ts
 // Clicks on a button without waiting for any preconditions.
@@ -202,7 +202,7 @@ await page
 By default, locators inherit the timeout setting from the page. But it is
 possible to set the timeout on the per-locator basis. A
 [TimeoutError](https://pptr.dev/api/puppeteer.timeouterror/) will be thrown if
-the element is not found or the preconditions are not met withing the specified
+the element is not found or the preconditions are not met within the specified
 time period.
 
 ```ts
@@ -266,7 +266,7 @@ await browser.close();
 
 Some page level APIs such as `page.click(selector)`, `page.type(selector)`,
 `page.hover(selector)` are implemented using `waitForSelector` for
-backwards-compatiblity reasons.
+backwards-compatibility reasons.
 
 ## Querying without waiting
 
@@ -356,7 +356,7 @@ DOM](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shado
 
 #### The `>>>` combinator
 
-The `>>>` is called the _deep descendent_ combinator. It is analgious to the
+The `>>>` is called the _deep descendent_ combinator. It is analogous to the
 CSS's descendent combinator (denoted with a single space character <code>&nbsp;</code>, for
 example, `div button`) and it selects matching elements under the parent element
 at any depth. For example, `my-custom-element >>> button` would select all
@@ -372,7 +372,7 @@ roots; for example, `:is(div > > a)` will not work.
 
 #### The `>>>>` combinator
 
-The `>>>>` is called the _deep child_ combinator. It is analgious to the CSS's
+The `>>>>` is called the _deep child_ combinator. It is analogous to the CSS's
 child combinator (denoted with `>`, for example, `div > button`) and it selects
 matching elements under the parent element's immediate shadow root, if the
 element has one. For example,
