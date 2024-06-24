@@ -347,12 +347,13 @@ export class BidiPage extends Page {
   override async setViewport(viewport: Viewport | null): Promise<void> {
     if (!this.browser().cdpSupported) {
       await this.#frame.browsingContext.setViewport({
-        viewport: viewport
-          ? {
-              width: viewport.width,
-              height: viewport.height,
-            }
-          : null,
+        viewport:
+          viewport && viewport.width && viewport.height
+            ? {
+                width: viewport.width,
+                height: viewport.height,
+              }
+            : null,
         devicePixelRatio:
           viewport && viewport.deviceScaleFactor
             ? viewport.deviceScaleFactor
