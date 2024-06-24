@@ -2125,6 +2125,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * In the case of multiple pages in a single browser, each page can have its
    * own viewport size.
+   * Viewport can be set to null, this will set viewport to its default
+   * values.
    * @example
    *
    * ```ts
@@ -2142,7 +2144,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * NOTE: in certain cases, setting viewport will reload the page in order to
    * set the isMobile or hasTouch properties.
    */
-  abstract setViewport(viewport: Viewport): Promise<void>;
+  abstract setViewport(viewport: Viewport | null): Promise<void>;
 
   /**
    * Returns the current page viewport settings without checking the actual page
@@ -2564,14 +2566,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
             ...scrollDimensions,
           });
           stack.defer(async () => {
-            if (viewport) {
-              await this.setViewport(viewport).catch(debugError);
-            } else {
-              await this.setViewport({
-                width: 0,
-                height: 0,
-              }).catch(debugError);
-            }
+            await this.setViewport(viewport).catch(debugError);
           });
         }
       } else {
