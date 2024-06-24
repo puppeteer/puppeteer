@@ -225,10 +225,6 @@ boolean
 
 **_(Experimental)_** Generate document outline.
 
-**Remarks:**
-
-If this is enabled the PDF will also be tagged (accessible) Currently only works in old Headless (headless = 'shell') [Chromium feature request](https://issues.chromium.org/issues/41387522#comment48)
-
 </td><td>
 
 `false`

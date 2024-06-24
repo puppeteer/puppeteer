@@ -6,6 +6,8 @@ sidebar_label: Locator
 
 Locators describe a strategy of locating objects and performing an action on them. If the action fails because the object is not ready for the action, the whole operation is retried. Various preconditions for a successful action are checked automatically.
 
+See [https://pptr.dev/guides/page-interactions\#locators](https://pptr.dev/guides/page-interactions#locators) for details.
+
 #### Signature:
 
 ```typescript
@@ -90,6 +92,8 @@ Description
 
 </td><td>
 
+Clicks the located element.
+
 </td></tr>
 <tr><td>
 
@@ -110,7 +114,7 @@ Clones the locator.
 
 </td><td>
 
-Fills out the input identified by the locator using the provided value. The type of the input is determined at runtime and the appropriate fill-out method is chosen based on the type. contenteditable, selector, inputs are supported.
+Fills out the input identified by the locator using the provided value. The type of the input is determined at runtime and the appropriate fill-out method is chosen based on the type. `contenteditable`, select, textarea and input elements are supported.
 
 </td></tr>
 <tr><td>
@@ -134,6 +138,8 @@ If the expectations do not match, then the locator will retry.
 
 </td><td>
 
+Hovers over the located element.
+
 </td></tr>
 <tr><td>
 
@@ -156,7 +162,7 @@ Maps the locator using the provided mapper.
 
 </td><td>
 
-Creates a race between multiple locators but ensures that only a single one acts.
+Creates a race between multiple locators trying to locate elements in parallel but ensures that only a single element receives the action.
 
 </td></tr>
 <tr><td>
@@ -167,6 +173,8 @@ Creates a race between multiple locators but ensures that only a single one acts
 
 </td><td>
 
+Scrolls the located element.
+
 </td></tr>
 <tr><td>
 
@@ -175,6 +183,8 @@ Creates a race between multiple locators but ensures that only a single one acts
 </td><td>
 
 </td><td>
+
+Creates a new locator instance by cloning the current locator and specifying whether the locator should scroll the element into viewport if it is not in the viewport already.
 
 </td></tr>
 <tr><td>
@@ -185,6 +195,10 @@ Creates a race between multiple locators but ensures that only a single one acts
 
 </td><td>
 
+Creates a new locator instance by cloning the current locator and setting the total timeout for the locator actions.
+
+Pass `0` to disable timeout.
+
 </td></tr>
 <tr><td>
 
@@ -193,6 +207,8 @@ Creates a race between multiple locators but ensures that only a single one acts
 </td><td>
 
 </td><td>
+
+Creates a new locator instance by cloning the current locator with the visibility property changed to the specified value.
 
 </td></tr>
 <tr><td>
@@ -203,6 +219,8 @@ Creates a race between multiple locators but ensures that only a single one acts
 
 </td><td>
 
+Creates a new locator instance by cloning the current locator and specifying whether to wait for input elements to become enabled before the action. Applicable to `click` and `fill` actions.
+
 </td></tr>
 <tr><td>
 
@@ -211,6 +229,8 @@ Creates a race between multiple locators but ensures that only a single one acts
 </td><td>
 
 </td><td>
+
+Creates a new locator instance by cloning the current locator and specifying whether the locator has to wait for the element's bounding box to be same between two consecutive animation frames.
 
 </td></tr>
 <tr><td>

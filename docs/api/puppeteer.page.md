@@ -127,6 +127,8 @@ The Coverage class provides methods to gather information about parts of JavaScr
 
 To output coverage in a form consumable by [Istanbul](https://github.com/istanbuljs), see [puppeteer-to-istanbul](https://github.com/istanbuljs/puppeteer-to-istanbul).
 
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Coverage` class.
+
 </td></tr>
 <tr><td>
 

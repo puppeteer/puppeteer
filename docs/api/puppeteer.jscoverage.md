@@ -10,33 +10,9 @@ sidebar_label: JSCoverage
 export declare class JSCoverage
 ```
 
-## Constructors
+## Remarks
 
-<table><thead><tr><th>
-
-Constructor
-
-</th><th>
-
-Modifiers
-
-</th><th>
-
-Description
-
-</th></tr></thead>
-<tbody><tr><td>
-
-<span id="_constructor_">[(constructor)(client)](./puppeteer.jscoverage._constructor_.md)</span>
-
-</td><td>
-
-</td><td>
-
-Constructs a new instance of the `JSCoverage` class
-
-</td></tr>
-</tbody></table>
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `JSCoverage` class.
 
 ## Methods
 

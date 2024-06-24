@@ -12,33 +12,9 @@ ConsoleMessage objects are dispatched by page via the 'console' event.
 export declare class ConsoleMessage
 ```
 
-## Constructors
+## Remarks
 
-<table><thead><tr><th>
-
-Constructor
-
-</th><th>
-
-Modifiers
-
-</th><th>
-
-Description
-
-</th></tr></thead>
-<tbody><tr><td>
-
-<span id="_constructor_">[(constructor)(type, text, args, stackTraceLocations)](./puppeteer.consolemessage._constructor_.md)</span>
-
-</td><td>
-
-</td><td>
-
-Constructs a new instance of the `ConsoleMessage` class
-
-</td></tr>
-</tbody></table>
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ConsoleMessage` class.
 
 ## Methods
 

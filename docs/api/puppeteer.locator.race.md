@@ -4,7 +4,7 @@ sidebar_label: Locator.race
 
 # Locator.race() method
 
-Creates a race between multiple locators but ensures that only a single one acts.
+Creates a race between multiple locators trying to locate elements in parallel but ensures that only a single element receives the action.
 
 #### Signature:
 

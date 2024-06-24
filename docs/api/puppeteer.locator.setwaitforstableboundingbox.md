@@ -4,6 +4,8 @@ sidebar_label: Locator.setWaitForStableBoundingBox
 
 # Locator.setWaitForStableBoundingBox() method
 
+Creates a new locator instance by cloning the current locator and specifying whether the locator has to wait for the element's bounding box to be same between two consecutive animation frames.
+
 #### Signature:
 
 ```typescript
@@ -56,3 +58,7 @@ boolean
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;ElementType&gt;
+
+#### Default value:
+
+`true`
