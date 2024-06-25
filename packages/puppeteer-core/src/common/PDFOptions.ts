@@ -158,17 +158,13 @@ export interface PDFOptions {
   omitBackground?: boolean;
   /**
    * Generate tagged (accessible) PDF.
+   *
    * @defaultValue `true`
    * @experimental
    */
   tagged?: boolean;
   /**
    * Generate document outline.
-   *
-   * @remarks
-   * If this is enabled the PDF will also be tagged (accessible)
-   * Currently only works in old Headless (headless = 'shell')
-   * {@link https://issues.chromium.org/issues/41387522#comment48 | Chromium feature request}
    *
    * @defaultValue `false`
    * @experimental

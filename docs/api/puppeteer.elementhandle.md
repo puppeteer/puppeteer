@@ -350,7 +350,13 @@ This method scrolls element into view if needed, and then uses [Page.mouse](./pu
 
 </td><td>
 
-Checks if an element is hidden using the same mechanism as [ElementHandle.waitForSelector()](./puppeteer.elementhandle.waitforselector.md).
+An element is considered to be hidden if one of the following is true:
+
+- the element has no \[computed styles\](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle).
+
+- the element has an empty \[bounding client rect\](https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect).
+
+- the element's \[`visibility`\](https://developer.mozilla.org/en-US/docs/Web/CSS/visibility) is `hidden` or `collapse`.
 
 </td></tr>
 <tr><td>
@@ -372,7 +378,13 @@ Resolves to true if the element is visible in the current viewport. If an elemen
 
 </td><td>
 
-Checks if an element is visible using the same mechanism as [ElementHandle.waitForSelector()](./puppeteer.elementhandle.waitforselector.md).
+An element is considered to be visible if all of the following is true:
+
+- the element has \[computed styles\](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle).
+
+- the element has a non-empty \[bounding client rect\](https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect).
+
+- the element's \[`visibility`\](https://developer.mozilla.org/en-US/docs/Web/CSS/visibility) is not `hidden` or `collapse`.
 
 </td></tr>
 <tr><td>

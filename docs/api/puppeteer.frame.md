@@ -247,6 +247,8 @@ The full HTML contents of the frame, including the DOCTYPE.
 
 Behaves identically to [Page.evaluate()](./puppeteer.page.evaluate.md) except it's run within the context of this frame.
 
+See [Page.evaluate()](./puppeteer.page.evaluate.md) for details.
+
 </td></tr>
 <tr><td>
 
@@ -257,6 +259,8 @@ Behaves identically to [Page.evaluate()](./puppeteer.page.evaluate.md) except it
 </td><td>
 
 Behaves identically to [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md) except it's run within the context of this frame.
+
+See [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md) for details.
 
 </td></tr>
 <tr><td>

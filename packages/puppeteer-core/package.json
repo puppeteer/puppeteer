@@ -121,9 +121,9 @@
   "dependencies": {
     "@puppeteer/browsers": "2.2.3",
     "chromium-bidi": "0.5.24",
-    "debug": "4.3.5",
+    "debug": "^4.3.5",
     "devtools-protocol": "0.0.1299070",
-    "ws": "8.17.1"
+    "ws": "^8.17.1"
   },
   "devDependencies": {
     "@types/debug": "4.1.12",

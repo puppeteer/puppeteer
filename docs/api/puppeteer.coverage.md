@@ -16,6 +16,8 @@ export declare class Coverage
 
 To output coverage in a form consumable by [Istanbul](https://github.com/istanbuljs), see [puppeteer-to-istanbul](https://github.com/istanbuljs/puppeteer-to-istanbul).
 
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Coverage` class.
+
 ## Example
 
 An example of using JavaScript and CSS coverage to get percentage of initially executed code:
@@ -42,34 +44,6 @@ for (const entry of coverage) {
 }
 console.log(`Bytes used: ${(usedBytes / totalBytes) * 100}%`);
 ```
-
-## Constructors
-
-<table><thead><tr><th>
-
-Constructor
-
-</th><th>
-
-Modifiers
-
-</th><th>
-
-Description
-
-</th></tr></thead>
-<tbody><tr><td>
-
-<span id="_constructor_">[(constructor)(client)](./puppeteer.coverage._constructor_.md)</span>
-
-</td><td>
-
-</td><td>
-
-Constructs a new instance of the `Coverage` class
-
-</td></tr>
-</tbody></table>
 
 ## Methods
 

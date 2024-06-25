@@ -212,6 +212,7 @@ const config = {
                 'Browser',
                 'BrowserContext',
                 'Page',
+                'Locator',
                 'WebWorker',
                 'Accessibility',
                 'Keyboard',
