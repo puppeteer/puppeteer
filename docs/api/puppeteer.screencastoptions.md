@@ -66,7 +66,7 @@ string
 
 </td><td>
 
-Path to the \[ffmpeg\](https://ffmpeg.org/).
+Path to the [ffmpeg](https://ffmpeg.org/).
 
 Required if `ffmpeg` is not in your PATH.
 

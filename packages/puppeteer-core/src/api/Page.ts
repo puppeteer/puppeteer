@@ -345,7 +345,7 @@ export interface ScreencastOptions {
    */
   speed?: number;
   /**
-   * Path to the [ffmpeg](https://ffmpeg.org/).
+   * Path to the {@link https://ffmpeg.org/ | ffmpeg}.
    *
    * Required if `ffmpeg` is not in your PATH.
    */

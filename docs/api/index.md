@@ -376,7 +376,7 @@ The Mouse class operates in main-frame CSS pixels relative to the top-left corne
 
 **Remarks:**
 
-Every `page` object has its own Mouse, accessible with \[`page.mouse`\](\#pagemouse).
+Every `page` object has its own Mouse, accessible with [Page.mouse](./puppeteer.page.md#mouse).
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Mouse` class.
 
