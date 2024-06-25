@@ -1008,7 +1008,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
    * and
    * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
-   * Alternatively, you can specify a selector type using a
+   * Alternatively, you can specify the selector type using a
    * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}.
    */
   locator<Selector extends string>(
@@ -1032,7 +1032,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
    * and
    * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
-   * Alternatively, you can specify a selector type using a
+   * Alternatively, you can specify the selector type using a
    * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}.
    */
   locator<Ret>(func: () => Awaitable<Ret>): Locator<Ret>;
@@ -1074,7 +1074,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
    * and
    * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
-   * Alternatively, you can specify a selector type using a
+   * Alternatively, you can specify the selector type using a
    * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}.
    *
    * @remarks
@@ -1104,7 +1104,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
    * and
    * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
-   * Alternatively, you can specify a selector type using a
+   * Alternatively, you can specify the selector type using a
    * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}.
    *
    * @remarks
@@ -1279,7 +1279,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
    * and
    * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
-   * Alternatively, you can specify a selector type using a
+   * Alternatively, you can specify the selector type using a
    * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}.
    * @param pageFunction - the function to be evaluated in the page context.
    * Will be passed the result of the element matching the selector as its
@@ -1364,7 +1364,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
    * and
    * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
-   * Alternatively, you can specify a selector type using a
+   * Alternatively, you can specify the selector type using a
    * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}.
    * @param pageFunction - the function to be evaluated in the page context.
    * Will be passed an array of matching elements as its first argument.
