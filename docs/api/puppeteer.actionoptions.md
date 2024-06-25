@@ -47,6 +47,8 @@ AbortSignal
 
 </td><td>
 
+A signal to abort the locator action.
+
 </td><td>
 
 </td></tr>

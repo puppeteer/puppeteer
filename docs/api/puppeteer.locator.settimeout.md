@@ -4,6 +4,10 @@ sidebar_label: Locator.setTimeout
 
 # Locator.setTimeout() method
 
+Creates a new locator instance by cloning the current locator and setting the total timeout for the locator actions.
+
+Pass `0` to disable timeout.
+
 #### Signature:
 
 ```typescript
@@ -42,3 +46,7 @@ number
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;T&gt;
+
+#### Default value:
+
+`Page.getDefaultTimeout()`

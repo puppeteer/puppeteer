@@ -4,6 +4,8 @@ sidebar_label: Locator.setVisibility
 
 # Locator.setVisibility() method
 
+Creates a new locator instance by cloning the current locator with the visibility property changed to the specified value.
+
 #### Signature:
 
 ```typescript

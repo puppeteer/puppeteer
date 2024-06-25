@@ -8,8 +8,7 @@
   "scripts": {
     "build": "wireit",
     "build:tools": "wireit",
-    "check": "npm run check --workspaces --if-present && run-p check:*",
-    "check:pinned-deps": "tsx tools/ensure-pinned-deps",
+    "check": "npm run check --workspaces --if-present",
     "clean": "npm run clean --workspaces --if-present",
     "debug": "mocha --inspect-brk",
     "docs": "wireit",

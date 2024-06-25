@@ -102,6 +102,10 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ConsoleMessage objects are dispatched by page via the 'console' event.
 
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ConsoleMessage` class.
+
 </td></tr>
 <tr><td>
 
@@ -114,6 +118,8 @@ The Coverage class provides methods to gather information about parts of JavaScr
 **Remarks:**
 
 To output coverage in a form consumable by [Istanbul](https://github.com/istanbuljs), see [puppeteer-to-istanbul](https://github.com/istanbuljs/puppeteer-to-istanbul).
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Coverage` class.
 
 </td></tr>
 <tr><td>
@@ -310,6 +316,10 @@ The constructor for this class is marked as internal. Third-party code should no
 
 </td><td>
 
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `JSCoverage` class.
+
 </td></tr>
 <tr><td>
 
@@ -352,6 +362,8 @@ The constructor for this class is marked as internal. Third-party code should no
 </td><td>
 
 Locators describe a strategy of locating objects and performing an action on them. If the action fails because the object is not ready for the action, the whole operation is retried. Various preconditions for a successful action are checked automatically.
+
+See [https://pptr.dev/guides/page-interactions\#locators](https://pptr.dev/guides/page-interactions#locators) for details.
 
 </td></tr>
 <tr><td>
@@ -1045,13 +1057,6 @@ Generic launch options that can be passed when launching any browser.
 </td></tr>
 <tr><td>
 
-<span id="locatoroptions">[LocatorOptions](./puppeteer.locatoroptions.md)</span>
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
 <span id="locatorscrolloptions">[LocatorScrollOptions](./puppeteer.locatorscrolloptions.md)</span>
 
 </td><td>
@@ -1712,6 +1717,8 @@ Resource types for HTTPRequests as perceived by the rendering engine.
 <span id="visibilityoption">[VisibilityOption](./puppeteer.visibilityoption.md)</span>
 
 </td><td>
+
+Whether to wait for the element to be [visible](./puppeteer.elementhandle.isvisible.md) or [hidden](./puppeteer.elementhandle.ishidden.md). `null` to disable visibility checks.
 
 </td></tr>
 </tbody></table>

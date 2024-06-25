@@ -595,7 +595,7 @@ describe('Launcher specs', function () {
           await close();
         }
       });
-      it('should restore to original window size after taking fullPage screenshots when defaultViewport is null', async () => {
+      it('should restore to original viewport size after taking fullPage screenshots when defaultViewport is null', async () => {
         const {server, context, close} = await launch({
           defaultViewport: null,
         });

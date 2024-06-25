@@ -4,6 +4,8 @@ sidebar_label: Locator.click
 
 # Locator.click() method
 
+Clicks the located element.
+
 #### Signature:
 
 ```typescript
