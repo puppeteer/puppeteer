@@ -595,6 +595,30 @@ describe('Launcher specs', function () {
           await close();
         }
       });
+      it('should restore to original window size after taking fullPage screenshots when defaultViewport is null', async () => {
+        const {server, context, close} = await launch({
+          defaultViewport: null,
+        });
+        try {
+          const page = await context.newPage();
+          const originalSize = await page.evaluate(() => {
+            return {width: window.innerWidth, height: window.innerHeight};
+          });
+          await page.goto(server.PREFIX + '/scrollbar.html');
+          await page.screenshot({
+            fullPage: true,
+            captureBeyondViewport: false,
+          });
+          const size = await page.evaluate(() => {
+            return {width: window.innerWidth, height: window.innerHeight};
+          });
+          expect(page.viewport()).toBe(null);
+          expect(size.width).toBe(originalSize.width);
+          expect(size.height).toBe(originalSize.height);
+        } finally {
+          await close();
+        }
+      });
       it('should set the debugging port', async () => {
         const {browser, close} = await launch({
           defaultViewport: null,
