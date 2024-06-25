@@ -47,7 +47,7 @@ boolean
 
 </td><td>
 
-Wait for the selected element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties.
+Wait for the selected element to not be found in the DOM or to be hidden. See [ElementHandle.isHidden()](./puppeteer.elementhandle.ishidden.md) for the definition of element invisibility.
 
 </td><td>
 
@@ -110,7 +110,7 @@ boolean
 
 </td><td>
 
-Wait for the selected element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties.
+Wait for the selected element to be present in DOM and to be visible. See [ElementHandle.isVisible()](./puppeteer.elementhandle.isvisible.md) for the definition of element visibility.
 
 </td><td>
 

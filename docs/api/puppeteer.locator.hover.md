@@ -4,6 +4,8 @@ sidebar_label: Locator.hover
 
 # Locator.hover() method
 
+Hovers over the located element.
+
 #### Signature:
 
 ```typescript

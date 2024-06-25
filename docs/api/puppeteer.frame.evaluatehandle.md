@@ -6,6 +6,8 @@ sidebar_label: Frame.evaluateHandle
 
 Behaves identically to [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md) except it's run within the context of this frame.
 
+See [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md) for details.
+
 #### Signature:
 
 ```typescript

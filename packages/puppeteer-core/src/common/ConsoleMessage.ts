@@ -62,7 +62,7 @@ export class ConsoleMessage {
   #stackTraceLocations: ConsoleMessageLocation[];
 
   /**
-   * @public
+   * @internal
    */
   constructor(
     type: ConsoleMessageType,
