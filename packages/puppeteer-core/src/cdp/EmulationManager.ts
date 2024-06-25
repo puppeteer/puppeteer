@@ -268,7 +268,7 @@ export class EmulationManager implements ClientProvider {
         client.send('Emulation.setTouchEmulationEnabled', {
           enabled: false,
         }),
-      ]);
+      ]).catch(debugError);
       return;
     }
     const {viewport} = viewportState;

@@ -6,7 +6,7 @@ sidebar_label: Page.setViewport
 
 `page.setViewport` will resize the page. A lot of websites don't expect phones to change size, so you should set the viewport before navigating to the page.
 
-In the case of multiple pages in a single browser, each page can have its own viewport size. Viewport can be set to null, this will set viewport to its default values.
+In the case of multiple pages in a single browser, each page can have its own viewport size. Setting the viewport to `null` resets the viewport to its default value.
 
 #### Signature:
 

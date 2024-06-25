@@ -2124,9 +2124,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * the page.
    *
    * In the case of multiple pages in a single browser, each page can have its
-   * own viewport size.
-   * Viewport can be set to null, this will set viewport to its default
-   * values.
+   * own viewport size. Setting the viewport to `null` resets the viewport to
+   * its default value.
+   *
    * @example
    *
    * ```ts
