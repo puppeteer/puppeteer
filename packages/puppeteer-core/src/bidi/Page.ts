@@ -344,17 +344,17 @@ export class BidiPage extends Page {
     return await this.#cdpEmulationManager.emulateVisionDeficiency(type);
   }
 
-  override async setViewport(viewport: Viewport): Promise<void> {
+  override async setViewport(viewport: Viewport | null): Promise<void> {
     if (!this.browser().cdpSupported) {
       await this.#frame.browsingContext.setViewport({
         viewport:
-          viewport.width && viewport.height
+          viewport?.width && viewport?.height
             ? {
                 width: viewport.width,
                 height: viewport.height,
               }
             : null,
-        devicePixelRatio: viewport.deviceScaleFactor
+        devicePixelRatio: viewport?.deviceScaleFactor
           ? viewport.deviceScaleFactor
           : null,
       });

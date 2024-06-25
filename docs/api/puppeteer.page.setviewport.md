@@ -6,13 +6,13 @@ sidebar_label: Page.setViewport
 
 `page.setViewport` will resize the page. A lot of websites don't expect phones to change size, so you should set the viewport before navigating to the page.
 
-In the case of multiple pages in a single browser, each page can have its own viewport size.
+In the case of multiple pages in a single browser, each page can have its own viewport size. Setting the viewport to `null` resets the viewport to its default value.
 
 #### Signature:
 
 ```typescript
 class Page {
-  abstract setViewport(viewport: Viewport): Promise<void>;
+  abstract setViewport(viewport: Viewport | null): Promise<void>;
 }
 ```
 
@@ -37,7 +37,7 @@ viewport
 
 </td><td>
 
-[Viewport](./puppeteer.viewport.md)
+[Viewport](./puppeteer.viewport.md) \| null
 
 </td><td>
 

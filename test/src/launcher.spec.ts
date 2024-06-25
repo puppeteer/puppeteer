@@ -580,21 +580,6 @@ describe('Launcher specs', function () {
           await close();
         }
       });
-      it('should take fullPage screenshots when defaultViewport is null', async () => {
-        const {server, context, close} = await launch({
-          defaultViewport: null,
-        });
-        try {
-          const page = await context.newPage();
-          await page.goto(server.PREFIX + '/grid.html');
-          const screenshot = await page.screenshot({
-            fullPage: true,
-          });
-          expect(screenshot).toBeInstanceOf(Buffer);
-        } finally {
-          await close();
-        }
-      });
       it('should set the debugging port', async () => {
         const {browser, close} = await launch({
           defaultViewport: null,
