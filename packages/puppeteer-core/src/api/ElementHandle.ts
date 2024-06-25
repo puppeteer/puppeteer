@@ -363,7 +363,7 @@ export abstract class ElementHandle<
    * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
    * and
    * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
-   * Alternatively, you can specify a selector type using a
+   * Alternatively, you can specify the selector type using a
    * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}.
    * @returns A {@link ElementHandle | element handle} to the first element
    * matching the given selector. Otherwise, `null`.
@@ -397,7 +397,7 @@ export abstract class ElementHandle<
    * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
    * and
    * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
-   * Alternatively, you can specify a selector type using a
+   * Alternatively, you can specify the selector type using a
    * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}.
    * @returns An array of {@link ElementHandle | element handles} that point to
    * elements matching the given selector.
@@ -472,7 +472,7 @@ export abstract class ElementHandle<
    * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
    * and
    * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
-   * Alternatively, you can specify a selector type using a
+   * Alternatively, you can specify the selector type using a
    * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}.
    * @param pageFunction - The function to be evaluated in this element's page's
    * context. The first element matching the selector will be passed in as the
@@ -541,7 +541,7 @@ export abstract class ElementHandle<
    * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
    * and
    * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
-   * Alternatively, you can specify a selector type using a
+   * Alternatively, you can specify the selector type using a
    * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}.
    * @param pageFunction - The function to be evaluated in the element's page's
    * context. An array of elements matching the given selector will be passed to
@@ -642,18 +642,17 @@ export abstract class ElementHandle<
   }
 
   /**
-   * An element is considered to be visible if all of the following is true:
+   * An element is considered to be visible if all of the following is
+   * true:
    *
-   * - the element has [computed
-   *   styles](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle).
+   * - the element has
+   *   {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle | computed styles}.
    *
-   * - the element has a non-empty [bounding client
-   *   rect](https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect).
+   * - the element has a non-empty
+   *   {@link https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect | bounding client rect}.
    *
-   * - the element's
-   *   [`visibility`](https://developer.mozilla.org/en-US/docs/Web/CSS/visibility)
+   * - the element's {@link https://developer.mozilla.org/en-US/docs/Web/CSS/visibility | visibility}
    *   is not `hidden` or `collapse`.
-   *
    */
   @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
@@ -662,16 +661,15 @@ export abstract class ElementHandle<
   }
 
   /**
-   * An element is considered to be hidden if one of the following is true:
+   * An element is considered to be hidden if at least one of the following is true:
    *
-   * - the element has no [computed
-   *   styles](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle).
+   * - the element has no
+   *   {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle | computed styles}.
    *
-   * - the element has an empty [bounding client
-   *   rect](https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect).
+   * - the element has an empty
+   *   {@link https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect | bounding client rect}.
    *
-   * - the element's
-   *   [`visibility`](https://developer.mozilla.org/en-US/docs/Web/CSS/visibility)
+   * - the element's {@link https://developer.mozilla.org/en-US/docs/Web/CSS/visibility | visibility}
    *   is `hidden` or `collapse`.
    */
   @throwIfDisposed()
