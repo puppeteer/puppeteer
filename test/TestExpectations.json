@@ -3259,13 +3259,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should restore to original viewport size after taking fullPage screenshots when defaultViewport is null",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[stacktrace.spec] Stack trace should work for none error objects",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
