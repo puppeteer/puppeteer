@@ -232,6 +232,10 @@ export class EmulationManager implements ClientProvider {
   }
 
   async emulateViewport(viewport: Viewport | null): Promise<boolean> {
+    const currentState = this.#viewportState.state;
+    if (!viewport && !currentState.active) {
+      return false;
+    }
     await this.#viewportState.setState(
       viewport
         ? {
