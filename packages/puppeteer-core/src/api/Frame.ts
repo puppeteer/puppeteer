@@ -498,7 +498,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
    * and
    * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
-   * Alternatively, you can specify a selector type using a
+   * Alternatively, you can specify the selector type using a
    * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}.
    */
   locator<Selector extends string>(
@@ -540,7 +540,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
    * and
    * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
-   * Alternatively, you can specify a selector type using a
+   * Alternatively, you can specify the selector type using a
    * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}.
    *
    * @returns A {@link ElementHandle | element handle} to the first element
@@ -571,7 +571,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
    * and
    * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
-   * Alternatively, you can specify a selector type using a
+   * Alternatively, you can specify the selector type using a
    * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}.
    *
    * @returns An array of {@link ElementHandle | element handles} that point to
@@ -613,7 +613,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
    * and
    * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
-   * Alternatively, you can specify a selector type using a
+   * Alternatively, you can specify the selector type using a
    * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}.
    * @param pageFunction - The function to be evaluated in the frame's context.
    * The first element matching the selector will be passed to the function as
@@ -666,7 +666,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
    * and
    * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
-   * Alternatively, you can specify a selector type using a
+   * Alternatively, you can specify the selector type using a
    * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}.
    * @param pageFunction - The function to be evaluated in the frame's context.
    * An array of elements matching the given selector will be passed to the
