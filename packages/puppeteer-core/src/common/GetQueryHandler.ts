@@ -12,6 +12,7 @@ import {PierceQueryHandler} from './PierceQueryHandler.js';
 import {PQueryHandler} from './PQueryHandler.js';
 import {parsePSelectors} from './PSelectorParser.js';
 import type {QueryHandler} from './QueryHandler.js';
+import {PollingOptions} from './QueryHandler.js';
 import {TextQueryHandler} from './TextQueryHandler.js';
 import {XPathQueryHandler} from './XPathQueryHandler.js';
 
@@ -29,7 +30,7 @@ const QUERY_SEPARATORS = ['=', '/'];
  */
 export function getQueryHandlerAndSelector(selector: string): {
   updatedSelector: string;
-  selectorHasPseudoClasses: boolean;
+  polling: PollingOptions;
   QueryHandler: typeof QueryHandler;
 } {
   for (const handlerMap of [
@@ -45,7 +46,8 @@ export function getQueryHandlerAndSelector(selector: string): {
           selector = selector.slice(prefix.length);
           return {
             updatedSelector: selector,
-            selectorHasPseudoClasses: false,
+            polling:
+              name === 'aria' ? PollingOptions.RAF : PollingOptions.MUTATION,
             QueryHandler,
           };
         }
@@ -53,23 +55,26 @@ export function getQueryHandlerAndSelector(selector: string): {
     }
   }
   try {
-    const [pSelector, isPureCSS, hasPseudoClasses] = parsePSelectors(selector);
+    const [pSelector, isPureCSS, hasPseudoClasses, hasAria] =
+      parsePSelectors(selector);
     if (isPureCSS) {
       return {
         updatedSelector: selector,
-        selectorHasPseudoClasses: hasPseudoClasses,
+        polling: hasPseudoClasses
+          ? PollingOptions.RAF
+          : PollingOptions.MUTATION,
         QueryHandler: CSSQueryHandler,
       };
     }
     return {
       updatedSelector: JSON.stringify(pSelector),
-      selectorHasPseudoClasses: hasPseudoClasses,
+      polling: hasAria ? PollingOptions.RAF : PollingOptions.MUTATION,
       QueryHandler: PQueryHandler,
     };
   } catch {
     return {
       updatedSelector: selector,
-      selectorHasPseudoClasses: false,
+      polling: PollingOptions.MUTATION,
       QueryHandler: CSSQueryHandler,
     };
   }
