@@ -454,10 +454,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       }
       if (contextPayload.auxData && contextPayload.auxData['isDefault']) {
         world = frame.worlds[MAIN_WORLD];
-      } else if (
-        contextPayload.name === UTILITY_WORLD_NAME &&
-        !frame.worlds[PUPPETEER_WORLD].hasContext()
-      ) {
+      } else if (contextPayload.name === UTILITY_WORLD_NAME) {
         // In case of multiple sessions to the same target, there's a race between
         // connections so we might end up creating multiple isolated worlds.
         // We can use either.
