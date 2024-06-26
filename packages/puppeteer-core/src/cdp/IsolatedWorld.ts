@@ -16,6 +16,7 @@ import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {EvaluateFunc, HandleFor} from '../common/types.js';
 import {
   fromEmitterEvent,
+  timeout,
   withSourcePuppeteerURLIfNone,
 } from '../common/util.js';
 import {disposeSymbol} from '../util/disposable.js';
@@ -143,7 +144,8 @@ export class IsolatedWorld extends Realm {
               // The message has to match the CDP message expected by the WaitTask class.
               throw new Error('Execution context was destroyed');
             })
-          )
+          ),
+          timeout(this.timeoutSettings.timeout())
         )
       )
     );
