@@ -46,5 +46,18 @@ describe('PSelectorParser', () => {
       expect(isPureCSS).toBeFalsy();
       expect(hasPseudoClasses).toBeTruthy();
     });
+
+    describe('hasAria', () => {
+      it('returns false if no aria query is present', () => {
+        const [, , , hasAria] = parsePSelectors('div:focus');
+        expect(hasAria).toEqual(false);
+      });
+      it('returns true if an aria query is present', () => {
+        const [, , , hasAria] = parsePSelectors(
+          'div:focus >>> ::-p-aria(Text)'
+        );
+        expect(hasAria).toEqual(true);
+      });
+    });
   });
 });

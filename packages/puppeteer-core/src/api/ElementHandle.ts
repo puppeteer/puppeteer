@@ -9,7 +9,6 @@ import type {Protocol} from 'devtools-protocol';
 import type {Frame} from '../api/Frame.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {LazyArg} from '../common/LazyArg.js';
-import {PollingOptions} from '../common/QueryHandler.js';
 import type {
   AwaitableIterable,
   ElementFor,
@@ -621,10 +620,10 @@ export abstract class ElementHandle<
     selector: Selector,
     options: WaitForSelectorOptions = {}
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    const {updatedSelector, QueryHandler, selectorHasPseudoClasses} =
+    const {updatedSelector, QueryHandler, polling} =
       getQueryHandlerAndSelector(selector);
     return (await QueryHandler.waitFor(this, updatedSelector, {
-      polling: selectorHasPseudoClasses ? PollingOptions.RAF : undefined,
+      polling,
       ...options,
     })) as ElementHandle<NodeFor<Selector>> | null;
   }
