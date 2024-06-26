@@ -20,6 +20,16 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.12.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.12.0...puppeteer-core-v22.12.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* execution contexts might be created before previous is destroyed ([#12666](https://github.com/puppeteer/puppeteer/issues/12666)) ([db642d1](https://github.com/puppeteer/puppeteer/commit/db642d1d6975a9b12700a471f6cacc8daf6bd04d))
+* reset the viewport after taking a fullPage screenshot if defaultViewport is null ([#12650](https://github.com/puppeteer/puppeteer/issues/12650)) ([0a32283](https://github.com/puppeteer/puppeteer/commit/0a32283cfccba306fa20dc5b5c31487a6d8fb201))
+* roll to Chrome 126.0.6478.126 (r1300313) ([#12656](https://github.com/puppeteer/puppeteer/issues/12656)) ([32ed82c](https://github.com/puppeteer/puppeteer/commit/32ed82c623905755944b1cf2d9e0cd9d952c8f94))
+* use RAF-based polling for ARIA selectors ([#12664](https://github.com/puppeteer/puppeteer/issues/12664)) ([56d1d3f](https://github.com/puppeteer/puppeteer/commit/56d1d3f8b731d18c6aa9cc3d6de9c722b93a7a1e))
+
 ## [22.12.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.11.2...puppeteer-core-v22.12.0) (2024-06-21)
 
 
