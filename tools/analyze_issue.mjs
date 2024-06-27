@@ -184,7 +184,7 @@ This issue has an invalid Puppeteer version: \`${value}\`. Versions must follow 
       runsOn = 'windows-latest';
       break;
     case 'macos':
-      runsOn = 'macos-13';
+      runsOn = 'macos-latest';
       break;
     case 'linux':
       runsOn = 'ubuntu-latest';

@@ -159,7 +159,7 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-          - macos-13
+          - macos-latest
         shard:
           - 1-2
           - 2-2
@@ -167,13 +167,13 @@ jobs:
           - linux-only: true
             os: windows-latest
           - linux-only: true
-            os: macos-13
+            os: macos-latest
           - linux-only: true
             suite: chrome-headful
 
           - os: windows-latest
             suite: chrome-bidi
-          - os: macos-13
+          - os: macos-latest
             suite: chrome-headful
     steps:
       - name: Check out repository
@@ -258,7 +258,7 @@ jobs:
           - firefox-headless
         os:
           - ubuntu-latest
-          - macos-13
+          - macos-latest
           - windows-latest
         shard:
           - 1-4
@@ -269,11 +269,11 @@ jobs:
           - linux-only: true
             os: windows-latest
           - linux-only: true
-            os: macos-13
+            os: macos-latest
 
-          - os: macos-13
+          - os: macos-latest
             suite: firefox-headful
-          - os: macos-13
+          - os: macos-latest
             suite: firefox-headless
           - os: windows-latest
             suite: firefox-headful
@@ -341,12 +341,12 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-          - macos-13
+          - macos-latest
         exclude:
           - linux-only: true
             os: windows-latest
           - linux-only: true
-            os: macos-13
+            os: macos-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
@@ -471,12 +471,12 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-          - macos-13
+          - macos-latest
         exclude:
           - linux-only: true
             os: windows-latest
           - linux-only: true
-            os: macos-13
+            os: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
@@ -525,12 +525,12 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-          - macos-13
+          - macos-latest
         exclude:
           - linux-only: true
             os: windows-latest
           - linux-only: true
-            os: macos-13
+            os: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
