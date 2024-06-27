@@ -376,6 +376,8 @@ number
 
 Timeout in milliseconds. Pass `0` to disable timeout.
 
+The default value can be changed by using [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md)
+
 </td><td>
 
 `30_000`
