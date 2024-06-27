@@ -172,6 +172,9 @@ export interface PDFOptions {
   outline?: boolean;
   /**
    * Timeout in milliseconds. Pass `0` to disable timeout.
+   *
+   * The default value can be changed by using {@link Page.setDefaultTimeout}
+   *
    * @defaultValue `30_000`
    */
   timeout?: number;
