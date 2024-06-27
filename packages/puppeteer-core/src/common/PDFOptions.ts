@@ -178,6 +178,14 @@ export interface PDFOptions {
    * @defaultValue `30_000`
    */
   timeout?: number;
+  /**
+   * If true, waits for `document.fonts.ready` to resolve. This might require
+   * activating the page using {@link Page.bringToFront} if the page is in the
+   * background.
+   *
+   * @defaultValue `true`
+   */
+  waitForFonts?: boolean;
 }
 
 /**
