@@ -124,11 +124,11 @@ export class ExecutionContext
         'Runtime.addBinding',
         this.#name
           ? {
-              name: binding.name,
+              name: '_' + binding.name,
               executionContextName: this.#name,
             }
           : {
-              name: binding.name,
+              name: '_' + binding.name,
               executionContextId: this.#id,
             }
       );

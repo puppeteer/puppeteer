@@ -863,6 +863,13 @@
     "comment": "times out flakily"
   },
   {
+    "testIdPattern": "[bfcache.spec] BFCache can call a function exposed on a page restored from bfcache",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "addBinding is not supported"
+  },
+  {
     "testIdPattern": "[bfcache.spec] BFCache can navigate to a BFCached page containing an OOPIF and a worker",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
