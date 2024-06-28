@@ -621,13 +621,6 @@
   {
     "testIdPattern": "[page.spec] Page Page.Events.Popup *",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Firefox does not support originalOpener yet."
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Popup *",
-    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"],
     "comment": "Deprecated"
