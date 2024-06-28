@@ -363,6 +363,7 @@ export function parsePDFOptions(
     omitBackground: false,
     outline: false,
     tagged: true,
+    waitForFonts: true,
   };
 
   let width = 8.5;
