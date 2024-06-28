@@ -3579,6 +3579,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support ignoreHTTPSErrors option",
+    "platforms": ["darwin"],
+    "parameters": ["cdp", "chrome", "headless"],
+    "expectations": ["SKIP"],
+    "comment": "Started to flake on macos-latest (arm64)"
+  },
+  {
     "testIdPattern": "[network.spec] network Network Events Page.Events.Request",
     "platforms": ["linux"],
     "parameters": ["cdp", "chrome", "headless"],
