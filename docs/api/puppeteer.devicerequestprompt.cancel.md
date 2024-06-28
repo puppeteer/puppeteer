@@ -4,15 +4,15 @@ sidebar_label: DeviceRequestPrompt.cancel
 
 # DeviceRequestPrompt.cancel() method
 
-Cancel the prompt.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class DeviceRequestPrompt {
   cancel(): Promise<void>;
 }
 ```
+
+Cancel the prompt.
 
 **Returns:**
 

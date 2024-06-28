@@ -4,15 +4,15 @@ sidebar_label: Configuration
 
 # Configuration interface
 
-Defines options to configure Puppeteer's behavior during installation and runtime.
-
-See individual properties for more information.
-
-#### Signature:
+### Signature:
 
 ```typescript
 export interface Configuration
 ```
+
+Defines options to configure Puppeteer's behavior during installation and runtime.
+
+See individual properties for more information.
 
 ## Properties
 

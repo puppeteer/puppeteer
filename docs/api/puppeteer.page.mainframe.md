@@ -4,15 +4,15 @@ sidebar_label: Page.mainFrame
 
 # Page.mainFrame() method
 
-The page's main frame.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Page {
   abstract mainFrame(): Frame;
 }
 ```
+
+The page's main frame.
 
 **Returns:**
 

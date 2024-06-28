@@ -4,7 +4,7 @@ sidebar_label: ConnectOptions
 
 # ConnectOptions interface
 
-#### Signature:
+### Signature:
 
 ```typescript
 export interface ConnectOptions extends BrowserConnectOptions

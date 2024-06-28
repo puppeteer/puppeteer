@@ -4,6 +4,14 @@ sidebar_label: BrowserContext
 
 # BrowserContext class
 
+### Signature:
+
+```typescript
+export declare abstract class BrowserContext extends EventEmitter<BrowserContextEvents>
+```
+
+**Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;[BrowserContextEvents](./puppeteer.browsercontextevents.md)&gt;
+
 [BrowserContext](./puppeteer.browsercontext.md) represents individual user contexts within a [browser](./puppeteer.browser.md).
 
 When a [browser](./puppeteer.browser.md) is launched, it has a single [browser context](./puppeteer.browsercontext.md) by default. Others can be created using [Browser.createBrowserContext()](./puppeteer.browser.createbrowsercontext.md). Each context has isolated storage (cookies/localStorage/etc.)
@@ -11,14 +19,6 @@ When a [browser](./puppeteer.browser.md) is launched, it has a single [browser c
 [BrowserContext](./puppeteer.browsercontext.md) [emits](./puppeteer.eventemitter.md) various events which are documented in the [BrowserContextEvent](./puppeteer.browsercontextevent.md) enum.
 
 If a [page](./puppeteer.page.md) opens another [page](./puppeteer.page.md), e.g. using `window.open`, the popup will belong to the parent [page's browser context](./puppeteer.page.browsercontext.md).
-
-#### Signature:
-
-```typescript
-export declare abstract class BrowserContext extends EventEmitter<BrowserContextEvents>
-```
-
-**Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;[BrowserContextEvents](./puppeteer.browsercontextevents.md)&gt;
 
 ## Remarks
 

@@ -4,13 +4,13 @@ sidebar_label: ConsoleMessage
 
 # ConsoleMessage class
 
-ConsoleMessage objects are dispatched by page via the 'console' event.
-
-#### Signature:
+### Signature:
 
 ```typescript
 export declare class ConsoleMessage
 ```
+
+ConsoleMessage objects are dispatched by page via the 'console' event.
 
 ## Remarks
 

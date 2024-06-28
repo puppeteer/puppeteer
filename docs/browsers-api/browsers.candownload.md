@@ -4,7 +4,7 @@ sidebar_label: canDownload
 
 # canDownload() function
 
-#### Signature:
+### Signature:
 
 ```typescript
 export declare function canDownload(options: InstallOptions): Promise<boolean>;

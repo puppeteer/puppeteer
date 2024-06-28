@@ -4,6 +4,14 @@ sidebar_label: Page.setExtraHTTPHeaders
 
 # Page.setExtraHTTPHeaders() method
 
+### Signature:
+
+```typescript
+class Page {
+  abstract setExtraHTTPHeaders(headers: Record<string, string>): Promise<void>;
+}
+```
+
 The extra HTTP headers will be sent with every request the page initiates.
 
 :::tip
@@ -17,14 +25,6 @@ All HTTP header names are lowercased. (HTTP headers are case-insensitive, so thi
 page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
 
 :::
-
-#### Signature:
-
-```typescript
-class Page {
-  abstract setExtraHTTPHeaders(headers: Record<string, string>): Promise<void>;
-}
-```
 
 ## Parameters
 

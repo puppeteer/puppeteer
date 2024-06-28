@@ -4,15 +4,15 @@ sidebar_label: Page.goForward
 
 # Page.goForward() method
 
-This method navigate to the next page in history.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Page {
   abstract goForward(options?: WaitForOptions): Promise<HTTPResponse | null>;
 }
 ```
+
+This method navigate to the next page in history.
 
 ## Parameters
 

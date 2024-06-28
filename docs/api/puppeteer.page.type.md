@@ -4,11 +4,7 @@ sidebar_label: Page.type
 
 # Page.type() method
 
-Sends a `keydown`, `keypress/input`, and `keyup` event for each character in the text.
-
-To press a special key, like `Control` or `ArrowDown`, use [Keyboard.press()](./puppeteer.keyboard.press.md).
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Page {
@@ -19,6 +15,10 @@ class Page {
   ): Promise<void>;
 }
 ```
+
+Sends a `keydown`, `keypress/input`, and `keyup` event for each character in the text.
+
+To press a special key, like `Control` or `ArrowDown`, use [Keyboard.press()](./puppeteer.keyboard.press.md).
 
 ## Parameters
 

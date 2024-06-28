@@ -4,15 +4,15 @@ sidebar_label: Puppeteer.clearCustomQueryHandlers
 
 # Puppeteer.clearCustomQueryHandlers() method
 
-Unregisters all custom query handlers.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Puppeteer {
   static clearCustomQueryHandlers(): void;
 }
 ```
+
+Unregisters all custom query handlers.
 
 **Returns:**
 

@@ -4,9 +4,7 @@ sidebar_label: Locator.setWaitForEnabled
 
 # Locator.setWaitForEnabled() method
 
-Creates a new locator instance by cloning the current locator and specifying whether to wait for input elements to become enabled before the action. Applicable to `click` and `fill` actions.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Locator {
@@ -16,6 +14,8 @@ class Locator {
   ): Locator<NodeType>;
 }
 ```
+
+Creates a new locator instance by cloning the current locator and specifying whether to wait for input elements to become enabled before the action. Applicable to `click` and `fill` actions.
 
 ## Parameters
 

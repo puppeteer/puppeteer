@@ -4,15 +4,15 @@ sidebar_label: CDPSession
 
 # CDPSession class
 
-The `CDPSession` instances are used to talk raw Chrome Devtools Protocol.
-
-#### Signature:
+### Signature:
 
 ```typescript
 export declare abstract class CDPSession extends EventEmitter<CDPSessionEvents>
 ```
 
 **Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;[CDPSessionEvents](./puppeteer.cdpsessionevents.md)&gt;
+
+The `CDPSession` instances are used to talk raw Chrome Devtools Protocol.
 
 ## Remarks
 

@@ -4,17 +4,17 @@ sidebar_label: Frame
 
 # Frame class
 
-Represents a DOM frame.
-
-To understand frames, you can think of frames as `<iframe>` elements. Just like iframes, frames can be nested, and when JavaScript is executed in a frame, the JavaScript does not effect frames inside the ambient frame the JavaScript executes in.
-
-#### Signature:
+### Signature:
 
 ```typescript
 export declare abstract class Frame extends EventEmitter<FrameEvents>
 ```
 
 **Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;[FrameEvents](./puppeteer.frameevents.md)&gt;
+
+Represents a DOM frame.
+
+To understand frames, you can think of frames as `<iframe>` elements. Just like iframes, frames can be nested, and when JavaScript is executed in a frame, the JavaScript does not effect frames inside the ambient frame the JavaScript executes in.
 
 ## Remarks
 
@@ -184,7 +184,7 @@ Adds a `HTMLStyleElement` into the frame with the desired URL
 </td></tr>
 <tr><td>
 
-<span id="addstyletag">[addStyleTag(options)](./puppeteer.frame.addstyletag_1.md)</span>
+<span id="addstyletag">[addStyleTag(options)](./puppeteer.frame.addstyletag.md)</span>
 
 </td><td>
 
@@ -364,7 +364,7 @@ Creates a locator for the provided selector. See [Locator](./puppeteer.locator.m
 </td></tr>
 <tr><td>
 
-<span id="locator">[locator(func)](./puppeteer.frame.locator_1.md)</span>
+<span id="locator">[locator(func)](./puppeteer.frame.locator.md)</span>
 
 </td><td>
 

@@ -4,15 +4,15 @@ sidebar_label: Page.waitForNetworkIdle
 
 # Page.waitForNetworkIdle() method
 
-Waits for the network to be idle.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Page {
   waitForNetworkIdle(options?: WaitForNetworkIdleOptions): Promise<void>;
 }
 ```
+
+Waits for the network to be idle.
 
 ## Parameters
 

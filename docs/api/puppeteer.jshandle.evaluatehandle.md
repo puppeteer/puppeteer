@@ -4,9 +4,7 @@ sidebar_label: JSHandle.evaluateHandle
 
 # JSHandle.evaluateHandle() method
 
-Evaluates the given function with the current handle as its first argument.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class JSHandle {
@@ -19,6 +17,8 @@ class JSHandle {
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
 }
 ```
+
+Evaluates the given function with the current handle as its first argument.
 
 ## Parameters
 

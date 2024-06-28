@@ -4,15 +4,15 @@ sidebar_label: DeviceRequestPrompt.select
 
 # DeviceRequestPrompt.select() method
 
-Select a device in the prompt's list.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class DeviceRequestPrompt {
   select(device: DeviceRequestPromptDevice): Promise<void>;
 }
 ```
+
+Select a device in the prompt's list.
 
 ## Parameters
 

@@ -4,9 +4,7 @@ sidebar_label: Keyboard.type
 
 # Keyboard.type() method
 
-Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Keyboard {
@@ -16,6 +14,8 @@ class Keyboard {
   ): Promise<void>;
 }
 ```
+
+Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
 
 ## Parameters
 

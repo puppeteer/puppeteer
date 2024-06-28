@@ -4,13 +4,13 @@ sidebar_label: CSSCoverageOptions
 
 # CSSCoverageOptions interface
 
-Set of configurable options for CSS coverage.
-
-#### Signature:
+### Signature:
 
 ```typescript
 export interface CSSCoverageOptions
 ```
+
+Set of configurable options for CSS coverage.
 
 ## Properties
 

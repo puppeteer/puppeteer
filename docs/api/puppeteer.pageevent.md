@@ -4,13 +4,13 @@ sidebar_label: PageEvent
 
 # PageEvent enum
 
-All the events that a page instance may emit.
-
-#### Signature:
+### Signature:
 
 ```typescript
 export declare const enum PageEvent
 ```
+
+All the events that a page instance may emit.
 
 ## Enumeration Members
 

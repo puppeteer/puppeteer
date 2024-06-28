@@ -4,7 +4,7 @@ sidebar_label: BoundingBox
 
 # BoundingBox interface
 
-#### Signature:
+### Signature:
 
 ```typescript
 export interface BoundingBox extends Point

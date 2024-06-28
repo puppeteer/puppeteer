@@ -4,7 +4,7 @@ sidebar_label: CLI.run
 
 # CLI.run() method
 
-#### Signature:
+### Signature:
 
 ```typescript
 class CLI {

@@ -4,15 +4,15 @@ sidebar_label: Keyboard.sendCharacter
 
 # Keyboard.sendCharacter() method
 
-Dispatches a `keypress` and `input` event. This does not send a `keydown` or `keyup` event.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Keyboard {
   abstract sendCharacter(char: string): Promise<void>;
 }
 ```
+
+Dispatches a `keypress` and `input` event. This does not send a `keydown` or `keyup` event.
 
 ## Parameters
 

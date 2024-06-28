@@ -4,9 +4,9 @@ sidebar_label: Page.locator
 
 # Page.locator() method
 
-Creates a locator for the provided selector. See [Locator](./puppeteer.locator.md) for details and supported actions.
+<h2 id="overload-0">locator&lt;Selector extends string&gt;(selector: Selector): Locator&lt;NodeFor&lt;Selector&gt;&gt;;</h2>
 
-#### Signature:
+### Signature:
 
 ```typescript
 class Page {
@@ -15,6 +15,8 @@ class Page {
   ): Locator<NodeFor<Selector>>;
 }
 ```
+
+Creates a locator for the provided selector. See [Locator](./puppeteer.locator.md) for details and supported actions.
 
 ## Parameters
 
@@ -48,3 +50,46 @@ Selector
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt;
+
+<h2 id="overload-1">locator&lt;Ret&gt;(func: () =&gt; Awaitable&lt;Ret&gt;): Locator&lt;Ret&gt;;</h2>
+
+### Signature:
+
+```typescript
+class Page {
+  locator<Ret>(func: () => Awaitable<Ret>): Locator<Ret>;
+}
+```
+
+Creates a locator for the provided function. See [Locator](./puppeteer.locator.md) for details and supported actions.
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+func
+
+</td><td>
+
+() =&gt; [Awaitable](./puppeteer.awaitable.md)&lt;Ret&gt;
+
+</td><td>
+
+</td></tr>
+</tbody></table>
+**Returns:**
+
+[Locator](./puppeteer.locator.md)&lt;Ret&gt;

@@ -4,13 +4,13 @@ sidebar_label: Coverage
 
 # Coverage class
 
-The Coverage class provides methods to gather information about parts of JavaScript and CSS that were used by the page.
-
-#### Signature:
+### Signature:
 
 ```typescript
 export declare class Coverage
 ```
+
+The Coverage class provides methods to gather information about parts of JavaScript and CSS that were used by the page.
 
 ## Remarks
 

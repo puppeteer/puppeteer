@@ -4,15 +4,15 @@ sidebar_label: Frame.hover
 
 # Frame.hover() method
 
-Hovers the pointer over the center of the first element that matches the `selector`.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Frame {
   hover(selector: string): Promise<void>;
 }
 ```
+
+Hovers the pointer over the center of the first element that matches the `selector`.
 
 ## Parameters
 

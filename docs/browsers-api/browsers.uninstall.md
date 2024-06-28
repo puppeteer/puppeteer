@@ -4,7 +4,7 @@ sidebar_label: uninstall
 
 # uninstall() function
 
-#### Signature:
+### Signature:
 
 ```typescript
 export declare function uninstall(options: UninstallOptions): Promise<void>;

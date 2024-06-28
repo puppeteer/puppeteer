@@ -4,9 +4,7 @@ sidebar_label: Page.addScriptTag
 
 # Page.addScriptTag() method
 
-Adds a `<script>` tag into the page with the desired URL or content.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Page {
@@ -15,6 +13,8 @@ class Page {
   ): Promise<ElementHandle<HTMLScriptElement>>;
 }
 ```
+
+Adds a `<script>` tag into the page with the desired URL or content.
 
 ## Parameters
 

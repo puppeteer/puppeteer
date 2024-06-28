@@ -4,7 +4,7 @@ sidebar_label: InstalledBrowser.readMetadata
 
 # InstalledBrowser.readMetadata() method
 
-#### Signature:
+### Signature:
 
 ```typescript
 class InstalledBrowser {

@@ -4,13 +4,13 @@ sidebar_label: ResponseForRequest
 
 # ResponseForRequest interface
 
-Required response data to fulfill a request with.
-
-#### Signature:
+### Signature:
 
 ```typescript
 export interface ResponseForRequest
 ```
+
+Required response data to fulfill a request with.
 
 ## Properties
 

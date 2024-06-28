@@ -4,15 +4,15 @@ sidebar_label: Mouse.drop
 
 # Mouse.drop() method
 
-Performs a dragenter, dragover, and drop in sequence.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Mouse {
   abstract drop(target: Point, data: Protocol.Input.DragData): Promise<void>;
 }
 ```
+
+Performs a dragenter, dragover, and drop in sequence.
 
 ## Parameters
 

@@ -4,7 +4,7 @@ sidebar_label: CDPSessionEvent.SessionDetached
 
 # CDPSessionEvent.SessionDetached variable
 
-#### Signature:
+### Signature:
 
 ```typescript
 SessionDetached: 'sessiondetached';

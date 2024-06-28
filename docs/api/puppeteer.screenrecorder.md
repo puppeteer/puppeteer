@@ -4,7 +4,7 @@ sidebar_label: ScreenRecorder
 
 # ScreenRecorder class
 
-#### Signature:
+### Signature:
 
 ```typescript
 export declare class ScreenRecorder extends PassThrough

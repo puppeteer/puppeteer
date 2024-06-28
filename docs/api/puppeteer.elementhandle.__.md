@@ -4,9 +4,7 @@ sidebar_label: ElementHandle.$$
 
 # ElementHandle.$$() method
 
-Queries the current element for all elements matching the given selector.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class ElementHandle {
@@ -16,6 +14,8 @@ class ElementHandle {
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>>;
 }
 ```
+
+Queries the current element for all elements matching the given selector.
 
 ## Parameters
 

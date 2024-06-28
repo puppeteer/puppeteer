@@ -4,15 +4,15 @@ sidebar_label: BrowserContext.pages
 
 # BrowserContext.pages() method
 
-Gets a list of all open [pages](./puppeteer.page.md) inside this [browser context](./puppeteer.browsercontext.md).
-
-#### Signature:
+### Signature:
 
 ```typescript
 class BrowserContext {
   abstract pages(): Promise<Page[]>;
 }
 ```
+
+Gets a list of all open [pages](./puppeteer.page.md) inside this [browser context](./puppeteer.browsercontext.md).
 
 **Returns:**
 

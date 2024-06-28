@@ -4,7 +4,7 @@ sidebar_label: PuppeteerLaunchOptions
 
 # PuppeteerLaunchOptions interface
 
-#### Signature:
+### Signature:
 
 ```typescript
 export interface PuppeteerLaunchOptions extends LaunchOptions, BrowserLaunchArgumentOptions, BrowserConnectOptions

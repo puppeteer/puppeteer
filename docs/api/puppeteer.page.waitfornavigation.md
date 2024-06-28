@@ -4,15 +4,15 @@ sidebar_label: Page.waitForNavigation
 
 # Page.waitForNavigation() method
 
-Waits for the page to navigate to a new URL or to reload. It is useful when you run code that will indirectly cause the page to navigate.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Page {
   waitForNavigation(options?: WaitForOptions): Promise<HTTPResponse | null>;
 }
 ```
+
+Waits for the page to navigate to a new URL or to reload. It is useful when you run code that will indirectly cause the page to navigate.
 
 ## Parameters
 

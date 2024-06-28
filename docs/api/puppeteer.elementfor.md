@@ -4,7 +4,7 @@ sidebar_label: ElementFor
 
 # ElementFor type
 
-#### Signature:
+### Signature:
 
 ```typescript
 export type ElementFor<

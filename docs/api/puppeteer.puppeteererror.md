@@ -4,15 +4,15 @@ sidebar_label: PuppeteerError
 
 # PuppeteerError class
 
-The base class for all Puppeteer-specific errors
-
-#### Signature:
+### Signature:
 
 ```typescript
 export declare class PuppeteerError extends Error
 ```
 
 **Extends:** Error
+
+The base class for all Puppeteer-specific errors
 
 ## Remarks
 

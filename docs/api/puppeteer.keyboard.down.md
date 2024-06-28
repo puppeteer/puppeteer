@@ -4,9 +4,7 @@ sidebar_label: Keyboard.down
 
 # Keyboard.down() method
 
-Dispatches a `keydown` event.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Keyboard {
@@ -16,6 +14,8 @@ class Keyboard {
   ): Promise<void>;
 }
 ```
+
+Dispatches a `keydown` event.
 
 ## Parameters
 

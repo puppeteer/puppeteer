@@ -4,17 +4,17 @@ sidebar_label: Page.setOfflineMode
 
 # Page.setOfflineMode() method
 
-Sets the network connection to offline.
-
-It does not change the parameters used in [Page.emulateNetworkConditions()](./puppeteer.page.emulatenetworkconditions.md)
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Page {
   abstract setOfflineMode(enabled: boolean): Promise<void>;
 }
 ```
+
+Sets the network connection to offline.
+
+It does not change the parameters used in [Page.emulateNetworkConditions()](./puppeteer.page.emulatenetworkconditions.md)
 
 ## Parameters
 

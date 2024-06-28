@@ -4,11 +4,7 @@ sidebar_label: Frame.waitForNavigation
 
 # Frame.waitForNavigation() method
 
-Waits for the frame to navigate. It is useful for when you run code which will indirectly cause the frame to navigate.
-
-Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Frame {
@@ -17,6 +13,10 @@ class Frame {
   ): Promise<HTTPResponse | null>;
 }
 ```
+
+Waits for the frame to navigate. It is useful for when you run code which will indirectly cause the frame to navigate.
+
+Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
 
 ## Parameters
 

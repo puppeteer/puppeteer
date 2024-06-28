@@ -4,7 +4,7 @@ sidebar_label: ElementHandle.touchMove
 
 # ElementHandle.touchMove() method
 
-#### Signature:
+### Signature:
 
 ```typescript
 class ElementHandle {

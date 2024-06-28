@@ -4,9 +4,7 @@ sidebar_label: HTTPRequest.continue
 
 # HTTPRequest.continue() method
 
-Continues request with optional request overrides.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class HTTPRequest {
@@ -16,6 +14,8 @@ class HTTPRequest {
   ): Promise<void>;
 }
 ```
+
+Continues request with optional request overrides.
 
 ## Parameters
 

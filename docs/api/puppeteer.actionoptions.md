@@ -4,7 +4,7 @@ sidebar_label: ActionOptions
 
 # ActionOptions interface
 
-#### Signature:
+### Signature:
 
 ```typescript
 export interface ActionOptions

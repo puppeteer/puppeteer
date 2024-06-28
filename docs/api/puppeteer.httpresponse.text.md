@@ -4,15 +4,15 @@ sidebar_label: HTTPResponse.text
 
 # HTTPResponse.text() method
 
-Promise which resolves to a text (utf8) representation of response body.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class HTTPResponse {
   text(): Promise<string>;
 }
 ```
+
+Promise which resolves to a text (utf8) representation of response body.
 
 **Returns:**
 

@@ -4,7 +4,7 @@ sidebar_label: WaitForNetworkIdleOptions
 
 # WaitForNetworkIdleOptions interface
 
-#### Signature:
+### Signature:
 
 ```typescript
 export interface WaitForNetworkIdleOptions extends WaitTimeoutOptions

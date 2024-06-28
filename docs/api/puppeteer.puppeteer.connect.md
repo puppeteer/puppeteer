@@ -4,15 +4,15 @@ sidebar_label: Puppeteer.connect
 
 # Puppeteer.connect() method
 
-This method attaches Puppeteer to an existing browser instance.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Puppeteer {
   connect(options: ConnectOptions): Promise<Browser>;
 }
 ```
+
+This method attaches Puppeteer to an existing browser instance.
 
 ## Parameters
 

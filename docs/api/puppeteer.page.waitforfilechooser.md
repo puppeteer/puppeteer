@@ -4,6 +4,16 @@ sidebar_label: Page.waitForFileChooser
 
 # Page.waitForFileChooser() method
 
+### Signature:
+
+```typescript
+class Page {
+  abstract waitForFileChooser(
+    options?: WaitTimeoutOptions
+  ): Promise<FileChooser>;
+}
+```
+
 This method is typically coupled with an action that triggers file choosing.
 
 :::caution
@@ -17,16 +27,6 @@ This must be called before the file chooser is launched. It will not return a cu
 Interception of file dialogs triggered via DOM APIs such as window.showOpenFilePicker is currently not supported.
 
 :::
-
-#### Signature:
-
-```typescript
-class Page {
-  abstract waitForFileChooser(
-    options?: WaitTimeoutOptions
-  ): Promise<FileChooser>;
-}
-```
 
 ## Parameters
 

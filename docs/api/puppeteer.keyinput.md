@@ -4,9 +4,7 @@ sidebar_label: KeyInput
 
 # KeyInput type
 
-All the valid keys that can be passed to functions that take user input, such as [keyboard.press](./puppeteer.keyboard.press.md)
-
-#### Signature:
+### Signature:
 
 ```typescript
 export type KeyInput =
@@ -266,3 +264,5 @@ export type KeyInput =
   | 'VolumeDown'
   | 'VolumeUp';
 ```
+
+All the valid keys that can be passed to functions that take user input, such as [keyboard.press](./puppeteer.keyboard.press.md)

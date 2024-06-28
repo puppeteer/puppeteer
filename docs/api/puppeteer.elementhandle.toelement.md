@@ -4,9 +4,7 @@ sidebar_label: ElementHandle.toElement
 
 # ElementHandle.toElement() method
 
-Converts the current handle to the given element type.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class ElementHandle {
@@ -15,6 +13,8 @@ class ElementHandle {
   ): Promise<HandleFor<ElementFor<K>>>;
 }
 ```
+
+Converts the current handle to the given element type.
 
 ## Parameters
 

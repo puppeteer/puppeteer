@@ -4,15 +4,15 @@ sidebar_label: JSCoverageEntry
 
 # JSCoverageEntry interface
 
-The CoverageEntry class for JavaScript
-
-#### Signature:
+### Signature:
 
 ```typescript
 export interface JSCoverageEntry extends CoverageEntry
 ```
 
 **Extends:** [CoverageEntry](./puppeteer.coverageentry.md)
+
+The CoverageEntry class for JavaScript
 
 ## Properties
 

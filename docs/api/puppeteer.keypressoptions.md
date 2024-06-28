@@ -4,7 +4,7 @@ sidebar_label: KeyPressOptions
 
 # KeyPressOptions type
 
-#### Signature:
+### Signature:
 
 ```typescript
 export type KeyPressOptions = KeyDownOptions & KeyboardTypeOptions;

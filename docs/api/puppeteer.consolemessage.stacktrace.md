@@ -4,15 +4,15 @@ sidebar_label: ConsoleMessage.stackTrace
 
 # ConsoleMessage.stackTrace() method
 
-The array of locations on the stack of the console message.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class ConsoleMessage {
   stackTrace(): ConsoleMessageLocation[];
 }
 ```
+
+The array of locations on the stack of the console message.
 
 **Returns:**
 

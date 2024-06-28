@@ -4,9 +4,9 @@ sidebar_label: Page.screenshot
 
 # Page.screenshot() method
 
-Captures a screenshot of this [page](./puppeteer.page.md).
+<h2 id="overload-0">screenshot(options: Readonly&lt;ScreenshotOptions&gt; &amp; &#123; encoding: 'base64'; &#125;): Promise&lt;string&gt;;</h2>
 
-#### Signature:
+### Signature:
 
 ```typescript
 class Page {
@@ -17,6 +17,8 @@ class Page {
   ): Promise<string>;
 }
 ```
+
+Captures a screenshot of this [page](./puppeteer.page.md).
 
 ## Parameters
 
@@ -56,3 +58,46 @@ Promise&lt;string&gt;
 While a screenshot is being taken in a [BrowserContext](./puppeteer.browsercontext.md), the following methods will automatically wait for the screenshot to finish to prevent interference with the screenshot process: [BrowserContext.newPage()](./puppeteer.browsercontext.newpage.md), [Browser.newPage()](./puppeteer.browser.newpage.md), [Page.close()](./puppeteer.page.close.md).
 
 Calling [Page.bringToFront()](./puppeteer.page.bringtofront.md) will not wait for existing screenshot operations.
+
+<h2 id="overload-1">screenshot(options?: Readonly&lt;ScreenshotOptions&gt;): Promise&lt;Buffer&gt;;</h2>
+
+### Signature:
+
+```typescript
+class Page {
+  screenshot(options?: Readonly<ScreenshotOptions>): Promise<Buffer>;
+}
+```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+Readonly&lt;[ScreenshotOptions](./puppeteer.screenshotoptions.md)&gt;
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+</tbody></table>
+**Returns:**
+
+Promise&lt;Buffer&gt;

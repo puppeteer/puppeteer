@@ -4,9 +4,7 @@ sidebar_label: Frame.$$
 
 # Frame.$$() method
 
-Queries the frame for all elements matching the given selector.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Frame {
@@ -16,6 +14,8 @@ class Frame {
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>>;
 }
 ```
+
+Queries the frame for all elements matching the given selector.
 
 ## Parameters
 

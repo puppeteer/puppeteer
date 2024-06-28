@@ -4,15 +4,15 @@ sidebar_label: Page.focus
 
 # Page.focus() method
 
-This method fetches an element with `selector` and focuses it. If there's no element matching `selector`, the method throws an error.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Page {
   focus(selector: string): Promise<void>;
 }
 ```
+
+This method fetches an element with `selector` and focuses it. If there's no element matching `selector`, the method throws an error.
 
 ## Parameters
 

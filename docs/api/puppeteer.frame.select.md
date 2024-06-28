@@ -4,15 +4,15 @@ sidebar_label: Frame.select
 
 # Frame.select() method
 
-Selects a set of value on the first `<select>` element that matches the `selector`.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Frame {
   select(selector: string, ...values: string[]): Promise<string[]>;
 }
 ```
+
+Selects a set of value on the first `<select>` element that matches the `selector`.
 
 ## Parameters
 

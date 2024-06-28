@@ -4,9 +4,7 @@ sidebar_label: Page.waitForSelector
 
 # Page.waitForSelector() method
 
-Wait for the `selector` to appear in page. If at the moment of calling the method the `selector` already exists, the method will return immediately. If the `selector` doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Page {
@@ -16,6 +14,8 @@ class Page {
   ): Promise<ElementHandle<NodeFor<Selector>> | null>;
 }
 ```
+
+Wait for the `selector` to appear in page. If at the moment of calling the method the `selector` already exists, the method will return immediately. If the `selector` doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
 
 ## Parameters
 

@@ -4,15 +4,15 @@ sidebar_label: Locator.clone
 
 # Locator.clone() method
 
-Clones the locator.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Locator {
   clone(): Locator<T>;
 }
 ```
+
+Clones the locator.
 
 **Returns:**
 

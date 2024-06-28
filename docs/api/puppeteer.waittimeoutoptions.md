@@ -4,7 +4,7 @@ sidebar_label: WaitTimeoutOptions
 
 # WaitTimeoutOptions interface
 
-#### Signature:
+### Signature:
 
 ```typescript
 export interface WaitTimeoutOptions

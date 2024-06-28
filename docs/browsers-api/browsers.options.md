@@ -4,7 +4,7 @@ sidebar_label: Options
 
 # Options interface
 
-#### Signature:
+### Signature:
 
 ```typescript
 export interface ComputeExecutablePathOptions

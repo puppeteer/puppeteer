@@ -4,11 +4,7 @@ sidebar_label: Page.emulateNetworkConditions
 
 # Page.emulateNetworkConditions() method
 
-This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644). To set the page offline, you can use [Page.setOfflineMode()](./puppeteer.page.setofflinemode.md).
-
-A list of predefined network conditions can be used by importing [PredefinedNetworkConditions](./puppeteer.predefinednetworkconditions.md).
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Page {
@@ -17,6 +13,10 @@ class Page {
   ): Promise<void>;
 }
 ```
+
+This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644). To set the page offline, you can use [Page.setOfflineMode()](./puppeteer.page.setofflinemode.md).
+
+A list of predefined network conditions can be used by importing [PredefinedNetworkConditions](./puppeteer.predefinednetworkconditions.md).
 
 ## Parameters
 

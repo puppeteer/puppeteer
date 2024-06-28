@@ -4,7 +4,7 @@ sidebar_label: NetworkConditions
 
 # NetworkConditions interface
 
-#### Signature:
+### Signature:
 
 ```typescript
 export interface NetworkConditions

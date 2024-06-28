@@ -4,11 +4,7 @@ sidebar_label: ElementHandle.dragOver
 
 # ElementHandle.dragOver() method
 
-> Warning: This API is now obsolete.
->
-> Do not use. `dragover` will automatically be performed during dragging.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class ElementHandle {
@@ -18,6 +14,10 @@ class ElementHandle {
   ): Promise<void>;
 }
 ```
+
+> Warning: This API is now obsolete.
+>
+> Do not use. `dragover` will automatically be performed during dragging.
 
 ## Parameters
 

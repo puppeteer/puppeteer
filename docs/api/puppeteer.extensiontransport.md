@@ -4,15 +4,15 @@ sidebar_label: ExtensionTransport
 
 # ExtensionTransport class
 
-Experimental ExtensionTransport allows establishing a connection via chrome.debugger API if Puppeteer runs in an extension. Since Chrome DevTools Protocol is restricted for extensions, the transport implements missing commands and events.
-
-#### Signature:
+### Signature:
 
 ```typescript
 export declare class ExtensionTransport implements ConnectionTransport
 ```
 
 **Implements:** [ConnectionTransport](./puppeteer.connectiontransport.md)
+
+Experimental ExtensionTransport allows establishing a connection via chrome.debugger API if Puppeteer runs in an extension. Since Chrome DevTools Protocol is restricted for extensions, the transport implements missing commands and events.
 
 ## Remarks
 

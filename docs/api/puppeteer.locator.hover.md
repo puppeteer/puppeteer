@@ -4,9 +4,7 @@ sidebar_label: Locator.hover
 
 # Locator.hover() method
 
-Hovers over the located element.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Locator {
@@ -16,6 +14,8 @@ class Locator {
   ): Promise<void>;
 }
 ```
+
+Hovers over the located element.
 
 ## Parameters
 

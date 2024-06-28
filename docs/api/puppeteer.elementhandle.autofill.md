@@ -4,15 +4,15 @@ sidebar_label: ElementHandle.autofill
 
 # ElementHandle.autofill() method
 
-If the element is a form input, you can use [ElementHandle.autofill()](./puppeteer.elementhandle.autofill.md) to test if the form is compatible with the browser's autofill implementation. Throws an error if the form cannot be autofilled.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class ElementHandle {
   abstract autofill(data: AutofillData): Promise<void>;
 }
 ```
+
+If the element is a form input, you can use [ElementHandle.autofill()](./puppeteer.elementhandle.autofill.md) to test if the form is compatible with the browser's autofill implementation. Throws an error if the form cannot be autofilled.
 
 ## Parameters
 

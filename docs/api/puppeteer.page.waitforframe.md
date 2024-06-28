@@ -4,9 +4,7 @@ sidebar_label: Page.waitForFrame
 
 # Page.waitForFrame() method
 
-Waits for a frame matching the given conditions to appear.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Page {
@@ -16,6 +14,8 @@ class Page {
   ): Promise<Frame>;
 }
 ```
+
+Waits for a frame matching the given conditions to appear.
 
 ## Parameters
 

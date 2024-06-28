@@ -4,9 +4,7 @@ sidebar_label: Mouse.click
 
 # Mouse.click() method
 
-Shortcut for `mouse.move`, `mouse.down` and `mouse.up`.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Mouse {
@@ -17,6 +15,8 @@ class Mouse {
   ): Promise<void>;
 }
 ```
+
+Shortcut for `mouse.move`, `mouse.down` and `mouse.up`.
 
 ## Parameters
 

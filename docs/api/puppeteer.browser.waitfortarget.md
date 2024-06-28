@@ -4,11 +4,7 @@ sidebar_label: Browser.waitForTarget
 
 # Browser.waitForTarget() method
 
-Waits until a [target](./puppeteer.target.md) matching the given `predicate` appears and returns it.
-
-This will look all open [browser contexts](./puppeteer.browsercontext.md).
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Browser {
@@ -18,6 +14,10 @@ class Browser {
   ): Promise<Target>;
 }
 ```
+
+Waits until a [target](./puppeteer.target.md) matching the given `predicate` appears and returns it.
+
+This will look all open [browser contexts](./puppeteer.browsercontext.md).
 
 ## Parameters
 

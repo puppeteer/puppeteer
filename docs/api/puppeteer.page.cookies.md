@@ -4,15 +4,15 @@ sidebar_label: Page.cookies
 
 # Page.cookies() method
 
-If no URLs are specified, this method returns cookies for the current page URL. If URLs are specified, only cookies for those URLs are returned.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Page {
   abstract cookies(...urls: string[]): Promise<Cookie[]>;
 }
 ```
+
+If no URLs are specified, this method returns cookies for the current page URL. If URLs are specified, only cookies for those URLs are returned.
 
 ## Parameters
 

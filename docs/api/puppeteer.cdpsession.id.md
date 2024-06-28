@@ -4,15 +4,15 @@ sidebar_label: CDPSession.id
 
 # CDPSession.id() method
 
-Returns the session's id.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class CDPSession {
   abstract id(): string;
 }
 ```
+
+Returns the session's id.
 
 **Returns:**
 

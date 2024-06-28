@@ -4,15 +4,15 @@ sidebar_label: EventEmitter.listenerCount
 
 # EventEmitter.listenerCount() method
 
-Gets the number of listeners for a given event.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class EventEmitter {
   listenerCount(type: keyof EventsWithWildcard<Events>): number;
 }
 ```
+
+Gets the number of listeners for a given event.
 
 ## Parameters
 

@@ -4,13 +4,13 @@ sidebar_label: MediaFeature
 
 # MediaFeature interface
 
-A media feature to emulate.
-
-#### Signature:
+### Signature:
 
 ```typescript
 export interface MediaFeature
 ```
+
+A media feature to emulate.
 
 ## Properties
 

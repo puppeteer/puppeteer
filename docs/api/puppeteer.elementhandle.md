@@ -4,15 +4,15 @@ sidebar_label: ElementHandle
 
 # ElementHandle class
 
-ElementHandle represents an in-page DOM element.
-
-#### Signature:
+### Signature:
 
 ```typescript
 export declare abstract class ElementHandle<ElementType extends Node = Element> extends JSHandle<ElementType>
 ```
 
 **Extends:** [JSHandle](./puppeteer.jshandle.md)&lt;ElementType&gt;
+
+ElementHandle represents an in-page DOM element.
 
 ## Remarks
 
@@ -231,7 +231,7 @@ Resolves the frame associated with the element, if any. Always exists for HTMLIF
 </td></tr>
 <tr><td>
 
-<span id="contentframe">[contentFrame()](./puppeteer.elementhandle.contentframe_1.md)</span>
+<span id="contentframe">[contentFrame()](./puppeteer.elementhandle.contentframe.md)</span>
 
 </td><td>
 
@@ -307,7 +307,7 @@ Drops the given element onto the current one.
 </td></tr>
 <tr><td>
 
-<span id="drop">[drop(this, data)](./puppeteer.elementhandle.drop_1.md)</span>
+<span id="drop">[drop(this, data)](./puppeteer.elementhandle.drop.md)</span>
 
 </td><td>
 
@@ -412,12 +412,12 @@ If `key` is a single character and no modifier keys besides `Shift` are being he
 
 </td><td>
 
-This method scrolls element into view if needed, and then uses [Page.screenshot()](./puppeteer.page.screenshot_1.md) to take a screenshot of the element. If the element is detached from DOM, the method throws an error.
+This method scrolls element into view if needed, and then uses [Page.screenshot()](./puppeteer.page.screenshot.md) to take a screenshot of the element. If the element is detached from DOM, the method throws an error.
 
 </td></tr>
 <tr><td>
 
-<span id="screenshot">[screenshot(options)](./puppeteer.elementhandle.screenshot_1.md)</span>
+<span id="screenshot">[screenshot(options)](./puppeteer.elementhandle.screenshot.md)</span>
 
 </td><td>
 

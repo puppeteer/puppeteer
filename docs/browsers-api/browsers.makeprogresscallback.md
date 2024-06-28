@@ -4,7 +4,7 @@ sidebar_label: makeProgressCallback
 
 # makeProgressCallback() function
 
-#### Signature:
+### Signature:
 
 ```typescript
 export declare function makeProgressCallback(

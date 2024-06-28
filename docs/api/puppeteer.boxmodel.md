@@ -4,7 +4,7 @@ sidebar_label: BoxModel
 
 # BoxModel interface
 
-#### Signature:
+### Signature:
 
 ```typescript
 export interface BoxModel

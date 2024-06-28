@@ -4,15 +4,15 @@ sidebar_label: Frame.childFrames
 
 # Frame.childFrames() method
 
-An array of child frames.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Frame {
   abstract childFrames(): Frame[];
 }
 ```
+
+An array of child frames.
 
 **Returns:**
 

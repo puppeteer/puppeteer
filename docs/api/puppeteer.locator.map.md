@@ -4,15 +4,15 @@ sidebar_label: Locator.map
 
 # Locator.map() method
 
-Maps the locator using the provided mapper.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Locator {
   map<To>(mapper: Mapper<T, To>): Locator<To>;
 }
 ```
+
+Maps the locator using the provided mapper.
 
 ## Parameters
 

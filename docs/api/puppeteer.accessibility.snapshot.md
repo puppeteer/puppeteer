@@ -4,15 +4,15 @@ sidebar_label: Accessibility.snapshot
 
 # Accessibility.snapshot() method
 
-Captures the current state of the accessibility tree. The returned object represents the root accessible node of the page.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Accessibility {
   snapshot(options?: SnapshotOptions): Promise<SerializedAXNode | null>;
 }
 ```
+
+Captures the current state of the accessibility tree. The returned object represents the root accessible node of the page.
 
 ## Parameters
 

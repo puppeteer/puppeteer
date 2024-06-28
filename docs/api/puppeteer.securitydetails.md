@@ -4,13 +4,13 @@ sidebar_label: SecurityDetails
 
 # SecurityDetails class
 
-The SecurityDetails class represents the security details of a response that was received over a secure connection.
-
-#### Signature:
+### Signature:
 
 ```typescript
 export declare class SecurityDetails
 ```
+
+The SecurityDetails class represents the security details of a response that was received over a secure connection.
 
 ## Remarks
 

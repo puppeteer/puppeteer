@@ -4,9 +4,7 @@ sidebar_label: WebWorker.evaluateHandle
 
 # WebWorker.evaluateHandle() method
 
-Evaluates a given function in the [worker](./puppeteer.webworker.md).
-
-#### Signature:
+### Signature:
 
 ```typescript
 class WebWorker {
@@ -19,6 +17,8 @@ class WebWorker {
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
 }
 ```
+
+Evaluates a given function in the [worker](./puppeteer.webworker.md).
 
 ## Parameters
 

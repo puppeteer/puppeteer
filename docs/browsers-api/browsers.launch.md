@@ -4,7 +4,7 @@ sidebar_label: launch
 
 # launch() function
 
-#### Signature:
+### Signature:
 
 ```typescript
 export declare function launch(opts: LaunchOptions): Process;

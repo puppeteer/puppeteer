@@ -4,15 +4,15 @@ sidebar_label: getVersionComparator
 
 # getVersionComparator() function
 
-Returns a version comparator for the given browser that can be used to sort browser versions.
-
-#### Signature:
+### Signature:
 
 ```typescript
 export declare function getVersionComparator(
   browser: Browser
 ): (a: string, b: string) => number;
 ```
+
+Returns a version comparator for the given browser that can be used to sort browser versions.
 
 ## Parameters
 

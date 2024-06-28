@@ -4,13 +4,13 @@ sidebar_label: Dialog
 
 # Dialog class
 
-Dialog instances are dispatched by the [Page](./puppeteer.page.md) via the `dialog` event.
-
-#### Signature:
+### Signature:
 
 ```typescript
 export declare abstract class Dialog
 ```
+
+Dialog instances are dispatched by the [Page](./puppeteer.page.md) via the `dialog` event.
 
 ## Remarks
 

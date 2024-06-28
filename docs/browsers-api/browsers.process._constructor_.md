@@ -4,15 +4,15 @@ sidebar_label: Process.(constructor)
 
 # Process.(constructor)
 
-Constructs a new instance of the `Process` class
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Process {
   constructor(opts: LaunchOptions);
 }
 ```
+
+Constructs a new instance of the `Process` class
 
 ## Parameters
 

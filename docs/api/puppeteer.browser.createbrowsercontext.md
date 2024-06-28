@@ -4,11 +4,7 @@ sidebar_label: Browser.createBrowserContext
 
 # Browser.createBrowserContext() method
 
-Creates a new [browser context](./puppeteer.browsercontext.md).
-
-This won't share cookies/cache with other [browser contexts](./puppeteer.browsercontext.md).
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Browser {
@@ -17,6 +13,10 @@ class Browser {
   ): Promise<BrowserContext>;
 }
 ```
+
+Creates a new [browser context](./puppeteer.browsercontext.md).
+
+This won't share cookies/cache with other [browser contexts](./puppeteer.browsercontext.md).
 
 ## Parameters
 

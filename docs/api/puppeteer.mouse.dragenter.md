@@ -4,9 +4,7 @@ sidebar_label: Mouse.dragEnter
 
 # Mouse.dragEnter() method
 
-Dispatches a `dragenter` event.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Mouse {
@@ -16,6 +14,8 @@ class Mouse {
   ): Promise<void>;
 }
 ```
+
+Dispatches a `dragenter` event.
 
 ## Parameters
 

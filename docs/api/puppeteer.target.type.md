@@ -4,15 +4,15 @@ sidebar_label: Target.type
 
 # Target.type() method
 
-Identifies what kind of target this is.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Target {
   abstract type(): TargetType;
 }
 ```
+
+Identifies what kind of target this is.
 
 **Returns:**
 

@@ -4,11 +4,7 @@ sidebar_label: Frame.waitForSelector
 
 # Frame.waitForSelector() method
 
-Waits for an element matching the given selector to appear in the frame.
-
-This method works across navigations.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Frame {
@@ -18,6 +14,10 @@ class Frame {
   ): Promise<ElementHandle<NodeFor<Selector>> | null>;
 }
 ```
+
+Waits for an element matching the given selector to appear in the frame.
+
+This method works across navigations.
 
 ## Parameters
 

@@ -4,15 +4,15 @@ sidebar_label: Page.tap
 
 # Page.tap() method
 
-This method fetches an element with `selector`, scrolls it into view if needed, and then uses [Page.touchscreen](./puppeteer.page.md#touchscreen) to tap in the center of the element. If there's no element matching `selector`, the method throws an error.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Page {
   tap(selector: string): Promise<void>;
 }
 ```
+
+This method fetches an element with `selector`, scrolls it into view if needed, and then uses [Page.touchscreen](./puppeteer.page.md#touchscreen) to tap in the center of the element. If there's no element matching `selector`, the method throws an error.
 
 ## Parameters
 

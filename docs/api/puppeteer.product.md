@@ -4,10 +4,10 @@ sidebar_label: Product
 
 # Product type
 
-Supported products.
-
-#### Signature:
+### Signature:
 
 ```typescript
 export type Product = 'chrome' | 'firefox';
 ```
+
+Supported products.

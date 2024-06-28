@@ -4,13 +4,13 @@ sidebar_label: Touchscreen
 
 # Touchscreen class
 
-The Touchscreen class exposes touchscreen events.
-
-#### Signature:
+### Signature:
 
 ```typescript
 export declare abstract class Touchscreen
 ```
+
+The Touchscreen class exposes touchscreen events.
 
 ## Remarks
 

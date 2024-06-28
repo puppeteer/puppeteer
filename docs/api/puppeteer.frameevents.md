@@ -4,7 +4,7 @@ sidebar_label: FrameEvents
 
 # FrameEvents interface
 
-#### Signature:
+### Signature:
 
 ```typescript
 export interface FrameEvents extends Record<EventType, unknown>

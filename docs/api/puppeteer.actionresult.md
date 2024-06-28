@@ -4,7 +4,7 @@ sidebar_label: ActionResult
 
 # ActionResult type
 
-#### Signature:
+### Signature:
 
 ```typescript
 export type ActionResult = 'continue' | 'abort' | 'respond';

@@ -4,9 +4,7 @@ sidebar_label: Mouse.dragAndDrop
 
 # Mouse.dragAndDrop() method
 
-Performs a drag, dragenter, dragover, and drop in sequence.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Mouse {
@@ -19,6 +17,8 @@ class Mouse {
   ): Promise<void>;
 }
 ```
+
+Performs a drag, dragenter, dragover, and drop in sequence.
 
 ## Parameters
 

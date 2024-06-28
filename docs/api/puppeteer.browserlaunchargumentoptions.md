@@ -4,13 +4,13 @@ sidebar_label: BrowserLaunchArgumentOptions
 
 # BrowserLaunchArgumentOptions interface
 
-Launcher options that only apply to Chrome.
-
-#### Signature:
+### Signature:
 
 ```typescript
 export interface BrowserLaunchArgumentOptions
 ```
+
+Launcher options that only apply to Chrome.
 
 ## Properties
 

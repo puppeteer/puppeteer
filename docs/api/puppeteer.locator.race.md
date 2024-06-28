@@ -4,9 +4,7 @@ sidebar_label: Locator.race
 
 # Locator.race() method
 
-Creates a race between multiple locators trying to locate elements in parallel but ensures that only a single element receives the action.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class Locator {
@@ -15,6 +13,8 @@ class Locator {
   ): Locator<AwaitedLocator<Locators[number]>>;
 }
 ```
+
+Creates a race between multiple locators trying to locate elements in parallel but ensures that only a single element receives the action.
 
 ## Parameters
 

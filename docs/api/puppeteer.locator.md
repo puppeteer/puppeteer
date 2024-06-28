@@ -4,17 +4,17 @@ sidebar_label: Locator
 
 # Locator class
 
-Locators describe a strategy of locating objects and performing an action on them. If the action fails because the object is not ready for the action, the whole operation is retried. Various preconditions for a successful action are checked automatically.
-
-See [https://pptr.dev/guides/page-interactions\#locators](https://pptr.dev/guides/page-interactions#locators) for details.
-
-#### Signature:
+### Signature:
 
 ```typescript
 export declare abstract class Locator<T> extends EventEmitter<LocatorEvents>
 ```
 
 **Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;[LocatorEvents](./puppeteer.locatorevents.md)&gt;
+
+Locators describe a strategy of locating objects and performing an action on them. If the action fails because the object is not ready for the action, the whole operation is retried. Various preconditions for a successful action are checked automatically.
+
+See [https://pptr.dev/guides/page-interactions\#locators](https://pptr.dev/guides/page-interactions#locators) for details.
 
 ## Properties
 

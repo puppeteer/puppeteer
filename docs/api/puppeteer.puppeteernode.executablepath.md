@@ -4,15 +4,15 @@ sidebar_label: PuppeteerNode.executablePath
 
 # PuppeteerNode.executablePath() method
 
-The default executable path.
-
-#### Signature:
+### Signature:
 
 ```typescript
 class PuppeteerNode {
   executablePath(channel?: ChromeReleaseChannel): string;
 }
 ```
+
+The default executable path.
 
 ## Parameters
 

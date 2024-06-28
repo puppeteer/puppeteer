@@ -4,7 +4,7 @@ sidebar_label: computeExecutablePath
 
 # computeExecutablePath() function
 
-#### Signature:
+### Signature:
 
 ```typescript
 export declare function computeExecutablePath(

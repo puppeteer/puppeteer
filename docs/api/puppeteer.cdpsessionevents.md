@@ -4,7 +4,7 @@ sidebar_label: CDPSessionEvents
 
 # CDPSessionEvents interface
 
-#### Signature:
+### Signature:
 
 ```typescript
 export interface CDPSessionEvents extends CDPEvents, Record<EventType, unknown>
