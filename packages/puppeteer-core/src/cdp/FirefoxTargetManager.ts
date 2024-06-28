@@ -121,6 +121,10 @@ export class FirefoxTargetManager
     return this.#availableTargetsByTargetId;
   }
 
+  getChildTargets(_target: CdpTarget): ReadonlySet<CdpTarget> {
+    return new Set();
+  }
+
   dispose(): void {
     this.#connection.off('Target.targetCreated', this.#onTargetCreated);
     this.#connection.off('Target.targetDestroyed', this.#onTargetDestroyed);
