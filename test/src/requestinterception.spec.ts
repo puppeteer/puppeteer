@@ -870,6 +870,12 @@ describe('request interception', function () {
 
       // The separator used to handle headers with multiple values is browser
       // specific.
+      // Per https://www.rfc-editor.org/rfc/rfc9110.html#section-5.2 the default
+      // should be a list of comma separated values with optional whitespace.
+      // Per note in https://www.rfc-editor.org/rfc/rfc9110.html#section-5.3,
+      // clients are also allowed to use other separators for special cases.
+      // However Chrome DevTools do return comma separated values for headers
+      // with multiple values, so this might be a bug.
       if (isFirefox) {
         expect(response.headers()['arr']).toBe('1, 2');
       } else {
