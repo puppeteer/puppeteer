@@ -44,3 +44,17 @@ this
 **Returns:**
 
 Promise&lt;[Frame](./puppeteer.frame.md)&gt;
+
+## ElementHandle.contentFrame() (Overload 1) method
+
+#### Signature:
+
+```typescript
+class ElementHandle {
+  abstract contentFrame(): Promise<Frame | null>;
+}
+```
+
+**Returns:**
+
+Promise&lt;[Frame](./puppeteer.frame.md) \| null&gt;

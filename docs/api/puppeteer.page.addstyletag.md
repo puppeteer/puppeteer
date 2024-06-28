@@ -50,3 +50,46 @@ Omit&lt;[FrameAddStyleTagOptions](./puppeteer.frameaddstyletagoptions.md), 'url'
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLStyleElement&gt;&gt;
 
 An [element handle](./puppeteer.elementhandle.md) to the injected `<link>` or `<style>` element.
+
+## Page.addStyleTag() (Overload 1) method
+
+#### Signature:
+
+```typescript
+class Page {
+  addStyleTag(
+    options: FrameAddStyleTagOptions
+  ): Promise<ElementHandle<HTMLLinkElement>>;
+}
+```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+[FrameAddStyleTagOptions](./puppeteer.frameaddstyletagoptions.md)
+
+</td><td>
+
+</td></tr>
+</tbody></table>
+**Returns:**
+
+Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLLinkElement&gt;&gt;

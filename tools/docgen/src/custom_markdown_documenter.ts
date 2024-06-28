@@ -149,13 +149,19 @@ export class MarkdownDocumenter {
     }
   }
 
-  private _writeApiItemPage(apiItem: ApiItem): void {
+  private _getApiItemPage(apiItem: ApiItem): DocSection {
     const configuration = this._tsdocConfiguration;
     const output = new DocSection({
       configuration,
     });
 
-    const scopedName = apiItem.getScopedNameWithinPackage();
+    let scopedName = apiItem.getScopedNameWithinPackage();
+    if (ApiParameterListMixin.isBaseClassOf(apiItem)) {
+      if (apiItem.overloadIndex > 1) {
+        // Subtract one for compatibility with earlier releases of API Documenter.
+        scopedName += ` (Overload ${apiItem.overloadIndex - 1})`;
+      }
+    }
 
     switch (apiItem.kind) {
       case ApiItemKind.Class:
@@ -363,12 +369,30 @@ export class MarkdownDocumenter {
       this._writeRemarksSection(output, apiItem);
     }
 
+    return output;
+  }
+
+  private _writeApiItemPage(apiItem: ApiItem) {
+    let output = this._getApiItemPage(apiItem);
+    if (ApiParameterListMixin.isBaseClassOf(apiItem)) {
+      if (apiItem.overloadIndex > 1) {
+        return;
+      }
+      const configuration = this._tsdocConfiguration;
+      output = new DocSection({
+        configuration,
+      });
+      for (const item of apiItem.getMergedSiblings()) {
+        const itemOutput = this._getApiItemPage(item);
+        output.appendNodes(itemOutput.nodes);
+      }
+    }
+
     const filename = path.join(
       this._outputFolder,
       this._getFilenameForApiItem(apiItem)
     );
     const stringBuilder = new StringBuilder();
-
     this._markdownEmitter.emit(stringBuilder, output, {
       contextApiItem: apiItem,
       onGetFilenameForApiItem: (apiItemForFilename: ApiItem) => {
