@@ -46,6 +46,6 @@
   ],
   "dependencies": {
     "glob": "10.4.2",
-    "mocha": "10.4.0"
+    "mocha": "10.5.2"
   }
 }
