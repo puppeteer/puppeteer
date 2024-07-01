@@ -59,8 +59,6 @@ element
 
 Promise&lt;void&gt;
 
-## ElementHandle.drop() (Overload 1) method
-
 > Warning: This API is now obsolete.
 >
 > No longer supported.

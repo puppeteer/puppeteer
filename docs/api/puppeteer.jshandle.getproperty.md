@@ -47,8 +47,6 @@ propertyName
 
 Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;T\[K\]&gt;&gt;
 
-## JSHandle.getProperty() (Overload 1) method
-
 #### Signature:
 
 ```typescript

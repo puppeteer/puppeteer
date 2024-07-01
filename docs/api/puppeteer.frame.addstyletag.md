@@ -49,8 +49,6 @@ Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLStyleElement&gt;
 
 An [element handle](./puppeteer.elementhandle.md) to the loaded `<style>` element.
 
-## Frame.addStyleTag() (Overload 1) method
-
 Adds a `HTMLLinkElement` into the frame with the desired URL
 
 #### Signature:

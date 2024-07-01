@@ -49,8 +49,6 @@ Selector
 
 [Locator](./puppeteer.locator.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt;
 
-## Frame.locator() (Overload 1) method
-
 Creates a locator for the provided function. See [Locator](./puppeteer.locator.md) for details and supported actions.
 
 #### Signature:

@@ -45,8 +45,6 @@ options
 
 Promise&lt;[InstalledBrowser](./browsers.installedbrowser.md)&gt;
 
-## install() (Overload 1) function
-
 #### Signature:
 
 ```typescript

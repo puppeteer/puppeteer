@@ -45,8 +45,6 @@ this
 
 Promise&lt;[Frame](./puppeteer.frame.md)&gt;
 
-## ElementHandle.contentFrame() (Overload 1) method
-
 #### Signature:
 
 ```typescript

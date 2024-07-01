@@ -49,8 +49,6 @@ Readonly&lt;[ScreenshotOptions](./puppeteer.screenshotoptions.md)&gt; &amp; &#12
 
 Promise&lt;string&gt;
 
-## ElementHandle.screenshot() (Overload 1) method
-
 #### Signature:
 
 ```typescript

@@ -51,8 +51,6 @@ Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLStyleElement&gt;
 
 An [element handle](./puppeteer.elementhandle.md) to the injected `<link>` or `<style>` element.
 
-## Page.addStyleTag() (Overload 1) method
-
 #### Signature:
 
 ```typescript

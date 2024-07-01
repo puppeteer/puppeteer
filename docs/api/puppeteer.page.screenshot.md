@@ -51,8 +51,6 @@ Configures screenshot behavior.
 
 Promise&lt;string&gt;
 
-## Page.screenshot() (Overload 1) method
-
 #### Signature:
 
 ```typescript

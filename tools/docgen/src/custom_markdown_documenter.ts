@@ -149,20 +149,13 @@ export class MarkdownDocumenter {
     }
   }
 
-  private _getApiItemPage(apiItem: ApiItem): DocSection {
+  private _getBaseApiItemPage(apiItem: ApiItem): DocSection {
     const configuration = this._tsdocConfiguration;
     const output = new DocSection({
       configuration,
     });
 
     let scopedName = apiItem.getScopedNameWithinPackage();
-    if (ApiParameterListMixin.isBaseClassOf(apiItem)) {
-      if (apiItem.overloadIndex > 1) {
-        // Subtract one for compatibility with earlier releases of API Documenter.
-        scopedName += ` (Overload ${apiItem.overloadIndex - 1})`;
-      }
-    }
-
     switch (apiItem.kind) {
       case ApiItemKind.Class:
         output.appendNode(
@@ -176,7 +169,10 @@ export class MarkdownDocumenter {
         break;
       case ApiItemKind.Interface:
         output.appendNode(
-          new DocHeading({configuration, title: `${scopedName} interface`})
+          new DocHeading({
+            configuration,
+            title: `${scopedName} interface`,
+          })
         );
         break;
       case ApiItemKind.Constructor:
@@ -201,7 +197,10 @@ export class MarkdownDocumenter {
         break;
       case ApiItemKind.Namespace:
         output.appendNode(
-          new DocHeading({configuration, title: `${scopedName} namespace`})
+          new DocHeading({
+            configuration,
+            title: `${scopedName} namespace`,
+          })
         );
         break;
       case ApiItemKind.Package:
@@ -232,6 +231,15 @@ export class MarkdownDocumenter {
       default:
         throw new Error('Unsupported API item kind: ' + apiItem.kind);
     }
+
+    return output;
+  }
+
+  private _getApiItemPage(apiItem: ApiItem): DocSection {
+    const configuration = this._tsdocConfiguration;
+    const output = new DocSection({
+      configuration,
+    });
 
     if (ApiReleaseTagMixin.isBaseClassOf(apiItem)) {
       if (apiItem.releaseTag === ReleaseTag.Beta) {
@@ -373,19 +381,19 @@ export class MarkdownDocumenter {
   }
 
   private _writeApiItemPage(apiItem: ApiItem) {
-    let output = this._getApiItemPage(apiItem);
+    const output = this._getBaseApiItemPage(apiItem);
     if (ApiParameterListMixin.isBaseClassOf(apiItem)) {
       if (apiItem.overloadIndex > 1) {
         return;
       }
-      const configuration = this._tsdocConfiguration;
-      output = new DocSection({
-        configuration,
-      });
+
       for (const item of apiItem.getMergedSiblings()) {
         const itemOutput = this._getApiItemPage(item);
         output.appendNodes(itemOutput.nodes);
       }
+    } else {
+      const itemOutput = this._getApiItemPage(apiItem);
+      output.appendNodes(itemOutput.nodes);
     }
 
     const filename = path.join(
