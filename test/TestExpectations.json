@@ -482,6 +482,20 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[network.spec] network Network Events Page.Events.RequestServedFromCache *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[network.spec] network Page.authenticate should not disable caching for *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
     "testIdPattern": "[network.spec] network Request.initiator should return the initiator",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -526,6 +540,20 @@
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "Not implemented for BiDi yet."
+  },
+  {
+    "testIdPattern": "[network.spec] network Response.fromCache should work for *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[network.spec] network Response.fromCache should work for *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
     "testIdPattern": "[network.spec] network Response.fromServiceWorker Response.fromServiceWorker",
@@ -2338,18 +2366,11 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[network.spec] network Network Events Page.Events.RequestServedFromCache",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[network.spec] network Network Events Page.Events.RequestServedFromCache",
+    "testIdPattern": "[network.spec] network Network Events Page.Events.RequestServedFromCache for stylesheet",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "Firefox does not send events for the cached event (bypasses network?)"
+    "comment": "Needs Firefox support for network events for cached stylesheets https://bugzilla.mozilla.org/show_bug.cgi?id=1879438"
   },
   {
     "testIdPattern": "[network.spec] network Network Events Page.Events.Response",
@@ -2408,18 +2429,18 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[network.spec] network Page.authenticate should not disable caching",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[network.spec] network Page.authenticate should not disable caching",
+    "testIdPattern": "[network.spec] network Page.authenticate should not disable caching for script",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Firefox returns `fromCache: false`"
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs investigation, isCached is false for the script request handle via network interception"
+  },
+  {
+    "testIdPattern": "[network.spec] network Page.authenticate should not disable caching for stylesheet",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "Needs Firefox support for network events for cached stylesheets https://bugzilla.mozilla.org/show_bug.cgi?id=1879438"
   },
   {
     "testIdPattern": "[network.spec] network Page.authenticate should work",
@@ -2527,25 +2548,11 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[network.spec] network Response.fromCache should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[network.spec] network Response.fromCache should work",
+    "testIdPattern": "[network.spec] network Response.fromCache should work for stylesheet",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "Needs investigation, it looks like a bug in Puppeteer"
-  },
-  {
-    "testIdPattern": "[network.spec] network Response.fromCache should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Needs Firefox support for network events for cached stylesheets https://bugzilla.mozilla.org/show_bug.cgi?id=1879438"
   },
   {
     "testIdPattern": "[network.spec] network Response.fromServiceWorker Response.fromServiceWorker",
@@ -3048,13 +3055,6 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "TODO: Needs support for enabling cache in BiDi without CDP https://github.com/w3c/webdriver-bidi/issues/582"
-  },
-  {
-    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should cooperatively respond by priority",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: Needs support for arguments in network.provideResponse in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1853882"
   },
   {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should load fonts if cache enabled",
