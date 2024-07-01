@@ -438,6 +438,18 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
                 ]).has(el.type)
               ) {
                 return 'typeable-input';
+              } else if (
+                new Set([
+                  'color',
+                  'date',
+                  'datetime-local',
+                  'month',
+                  'range',
+                  'time',
+                  'week',
+                ]).has(el.type)
+              ) {
+                return 'settable-input';
               } else {
                 return 'other-input';
               }
@@ -498,7 +510,7 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
                       return from(handle.type(textToType));
                     })
                   );
-                case 'other-input':
+                case 'settable-input':
                   return from(handle.focus()).pipe(
                     mergeMap(() => {
                       return from(
@@ -514,6 +526,7 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
                       );
                     })
                   );
+                case 'other-input':
                 case 'unknown':
                   throw new Error(`Element cannot be filled out.`);
               }
