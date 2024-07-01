@@ -247,39 +247,6 @@ export class MarkdownDocumenter {
       }
     }
 
-    const decoratorBlocks: DocBlock[] = [];
-
-    if (apiItem instanceof ApiDocumentedItem) {
-      const tsdocComment: DocComment | undefined = apiItem.tsdocComment;
-
-      if (tsdocComment) {
-        decoratorBlocks.push(
-          ...tsdocComment.customBlocks.filter(block => {
-            return (
-              block.blockTag.tagNameWithUpperCase ===
-              StandardTags.decorator.tagNameWithUpperCase
-            );
-          })
-        );
-
-        if (tsdocComment.deprecatedBlock) {
-          output.appendNode(
-            new DocNoteBox({configuration: this._tsdocConfiguration}, [
-              new DocParagraph({configuration: this._tsdocConfiguration}, [
-                new DocPlainText({
-                  configuration,
-                  text: 'Warning: This API is now obsolete. ',
-                }),
-              ]),
-              ...tsdocComment.deprecatedBlock.content.nodes,
-            ])
-          );
-        }
-
-        this._appendSection(output, tsdocComment.summarySection);
-      }
-    }
-
     if (apiItem instanceof ApiDeclaredItem) {
       if (apiItem.excerpt.text.length > 0) {
         output.appendNode(
@@ -311,6 +278,39 @@ export class MarkdownDocumenter {
       }
 
       this._writeHeritageTypes(output, apiItem);
+    }
+
+    const decoratorBlocks: DocBlock[] = [];
+
+    if (apiItem instanceof ApiDocumentedItem) {
+      const tsdocComment: DocComment | undefined = apiItem.tsdocComment;
+
+      if (tsdocComment) {
+        decoratorBlocks.push(
+          ...tsdocComment.customBlocks.filter(block => {
+            return (
+              block.blockTag.tagNameWithUpperCase ===
+              StandardTags.decorator.tagNameWithUpperCase
+            );
+          })
+        );
+
+        if (tsdocComment.deprecatedBlock) {
+          output.appendNode(
+            new DocNoteBox({configuration: this._tsdocConfiguration}, [
+              new DocParagraph({configuration: this._tsdocConfiguration}, [
+                new DocPlainText({
+                  configuration,
+                  text: 'Warning: This API is now obsolete. ',
+                }),
+              ]),
+              ...tsdocComment.deprecatedBlock.content.nodes,
+            ])
+          );
+        }
+
+        this._appendSection(output, tsdocComment.summarySection);
+      }
     }
 
     if (decoratorBlocks.length > 0) {

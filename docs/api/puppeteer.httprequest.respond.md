@@ -4,8 +4,6 @@ sidebar_label: HTTPRequest.respond
 
 # HTTPRequest.respond() method
 
-Fulfills a request with the given response.
-
 #### Signature:
 
 ```typescript
@@ -16,6 +14,8 @@ class HTTPRequest {
   ): Promise<void>;
 }
 ```
+
+Fulfills a request with the given response.
 
 ## Parameters
 

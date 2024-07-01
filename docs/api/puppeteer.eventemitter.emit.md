@@ -4,8 +4,6 @@ sidebar_label: EventEmitter.emit
 
 # EventEmitter.emit() method
 
-Emit an event and call any associated listeners.
-
 #### Signature:
 
 ```typescript
@@ -16,6 +14,8 @@ class EventEmitter {
   ): boolean;
 }
 ```
+
+Emit an event and call any associated listeners.
 
 ## Parameters
 

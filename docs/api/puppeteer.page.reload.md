@@ -4,8 +4,6 @@ sidebar_label: Page.reload
 
 # Page.reload() method
 
-Reloads the page.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class Page {
   abstract reload(options?: WaitForOptions): Promise<HTTPResponse | null>;
 }
 ```
+
+Reloads the page.
 
 ## Parameters
 

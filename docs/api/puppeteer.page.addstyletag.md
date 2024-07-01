@@ -4,10 +4,6 @@ sidebar_label: Page.addStyleTag
 
 # Page.addStyleTag() method
 
-Adds a `<link rel="stylesheet">` tag into the page with the desired URL or a `<style type="text/css">` tag with the content.
-
-Shortcut for [page.mainFrame().addStyleTag(options)](./puppeteer.frame.addstyletag_1.md).
-
 #### Signature:
 
 ```typescript
@@ -17,6 +13,10 @@ class Page {
   ): Promise<ElementHandle<HTMLStyleElement>>;
 }
 ```
+
+Adds a `<link rel="stylesheet">` tag into the page with the desired URL or a `<style type="text/css">` tag with the content.
+
+Shortcut for [page.mainFrame().addStyleTag(options)](./puppeteer.frame.addstyletag_1.md).
 
 ## Parameters
 

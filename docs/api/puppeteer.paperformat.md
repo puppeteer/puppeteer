@@ -4,8 +4,6 @@ sidebar_label: PaperFormat
 
 # PaperFormat type
 
-All the valid paper format types when printing a PDF.
-
 #### Signature:
 
 ```typescript
@@ -16,6 +14,8 @@ export type PaperFormat =
 ```
 
 **References:** [LowerCasePaperFormat](./puppeteer.lowercasepaperformat.md)
+
+All the valid paper format types when printing a PDF.
 
 ## Remarks
 

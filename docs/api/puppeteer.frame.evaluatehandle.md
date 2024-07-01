@@ -4,10 +4,6 @@ sidebar_label: Frame.evaluateHandle
 
 # Frame.evaluateHandle() method
 
-Behaves identically to [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md) except it's run within the context of this frame.
-
-See [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md) for details.
-
 #### Signature:
 
 ```typescript
@@ -21,6 +17,10 @@ class Frame {
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
 }
 ```
+
+Behaves identically to [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md) except it's run within the context of this frame.
+
+See [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md) for details.
 
 ## Parameters
 

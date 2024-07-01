@@ -4,8 +4,6 @@ sidebar_label: MouseButton
 
 # MouseButton variable
 
-Enum of valid mouse buttons.
-
 #### Signature:
 
 ```typescript
@@ -17,3 +15,5 @@ MouseButton: Readonly<{
   Forward: 'forward';
 }>;
 ```
+
+Enum of valid mouse buttons.

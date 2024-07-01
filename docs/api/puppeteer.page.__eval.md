@@ -4,8 +4,6 @@ sidebar_label: Page.$$eval
 
 # Page.$$eval() method
 
-This method returns all elements matching the selector and passes the resulting array as the first argument to the `pageFunction`.
-
 #### Signature:
 
 ```typescript
@@ -24,6 +22,8 @@ class Page {
   ): Promise<Awaited<ReturnType<Func>>>;
 }
 ```
+
+This method returns all elements matching the selector and passes the resulting array as the first argument to the `pageFunction`.
 
 ## Parameters
 

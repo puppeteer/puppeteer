@@ -4,8 +4,6 @@ sidebar_label: HTTPRequest.redirectChain
 
 # HTTPRequest.redirectChain() method
 
-A `redirectChain` is a chain of requests initiated to fetch a resource.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class HTTPRequest {
   abstract redirectChain(): HTTPRequest[];
 }
 ```
+
+A `redirectChain` is a chain of requests initiated to fetch a resource.
 
 **Returns:**
 

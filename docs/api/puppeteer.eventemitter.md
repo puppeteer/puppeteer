@@ -4,8 +4,6 @@ sidebar_label: EventEmitter
 
 # EventEmitter class
 
-The EventEmitter class that many Puppeteer classes extend.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ export declare class EventEmitter<Events extends Record<EventType, unknown>> imp
 ```
 
 **Implements:** [CommonEventEmitter](./puppeteer.commoneventemitter.md)&lt;[EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt;&gt;
+
+The EventEmitter class that many Puppeteer classes extend.
 
 ## Remarks
 

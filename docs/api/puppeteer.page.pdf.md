@@ -4,8 +4,6 @@ sidebar_label: Page.pdf
 
 # Page.pdf() method
 
-Generates a PDF of the page with the `print` CSS media type.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class Page {
   abstract pdf(options?: PDFOptions): Promise<Buffer>;
 }
 ```
+
+Generates a PDF of the page with the `print` CSS media type.
 
 ## Parameters
 

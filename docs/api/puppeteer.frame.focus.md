@@ -4,8 +4,6 @@ sidebar_label: Frame.focus
 
 # Frame.focus() method
 
-Focuses the first element that matches the `selector`.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class Frame {
   focus(selector: string): Promise<void>;
 }
 ```
+
+Focuses the first element that matches the `selector`.
 
 ## Parameters
 

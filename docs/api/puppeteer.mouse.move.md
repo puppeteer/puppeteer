@@ -4,8 +4,6 @@ sidebar_label: Mouse.move
 
 # Mouse.move() method
 
-Moves the mouse to the given coordinate.
-
 #### Signature:
 
 ```typescript
@@ -17,6 +15,8 @@ class Mouse {
   ): Promise<void>;
 }
 ```
+
+Moves the mouse to the given coordinate.
 
 ## Parameters
 

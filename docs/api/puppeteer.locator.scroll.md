@@ -4,8 +4,6 @@ sidebar_label: Locator.scroll
 
 # Locator.scroll() method
 
-Scrolls the located element.
-
 #### Signature:
 
 ```typescript
@@ -16,6 +14,8 @@ class Locator {
   ): Promise<void>;
 }
 ```
+
+Scrolls the located element.
 
 ## Parameters
 

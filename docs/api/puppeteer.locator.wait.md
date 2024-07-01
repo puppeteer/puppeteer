@@ -4,10 +4,6 @@ sidebar_label: Locator.wait
 
 # Locator.wait() method
 
-Waits for the locator to get the serialized value from the page.
-
-Note this requires the value to be JSON-serializable.
-
 #### Signature:
 
 ```typescript
@@ -15,6 +11,10 @@ class Locator {
   wait(options?: Readonly<ActionOptions>): Promise<T>;
 }
 ```
+
+Waits for the locator to get the serialized value from the page.
+
+Note this requires the value to be JSON-serializable.
 
 ## Parameters
 

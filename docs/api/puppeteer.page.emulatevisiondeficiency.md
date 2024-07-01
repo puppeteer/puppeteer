@@ -4,8 +4,6 @@ sidebar_label: Page.emulateVisionDeficiency
 
 # Page.emulateVisionDeficiency() method
 
-Simulates the given vision deficiency on the page.
-
 #### Signature:
 
 ```typescript
@@ -15,6 +13,8 @@ class Page {
   ): Promise<void>;
 }
 ```
+
+Simulates the given vision deficiency on the page.
 
 ## Parameters
 

@@ -4,8 +4,6 @@ sidebar_label: JSHandle.getProperties
 
 # JSHandle.getProperties() method
 
-Gets a map of handles representing the properties of the current handle.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class JSHandle {
   getProperties(): Promise<Map<string, JSHandle>>;
 }
 ```
+
+Gets a map of handles representing the properties of the current handle.
 
 **Returns:**
 

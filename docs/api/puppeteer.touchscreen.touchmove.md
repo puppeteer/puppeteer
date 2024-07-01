@@ -4,8 +4,6 @@ sidebar_label: Touchscreen.touchMove
 
 # Touchscreen.touchMove() method
 
-Dispatches a `touchMove` event.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class Touchscreen {
   abstract touchMove(x: number, y: number): Promise<void>;
 }
 ```
+
+Dispatches a `touchMove` event.
 
 ## Parameters
 

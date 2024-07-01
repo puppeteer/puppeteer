@@ -4,14 +4,6 @@ sidebar_label: Page
 
 # Page class
 
-Page provides methods to interact with a single tab or [extension background page](https://developer.chrome.com/extensions/background_pages) in the browser.
-
-:::note
-
-One Browser instance might have multiple Page instances.
-
-:::
-
 #### Signature:
 
 ```typescript
@@ -19,6 +11,14 @@ export declare abstract class Page extends EventEmitter<PageEvents>
 ```
 
 **Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;[PageEvents](./puppeteer.pageevents.md)&gt;
+
+Page provides methods to interact with a single tab or [extension background page](https://developer.chrome.com/extensions/background_pages) in the browser.
+
+:::note
+
+One Browser instance might have multiple Page instances.
+
+:::
 
 ## Remarks
 

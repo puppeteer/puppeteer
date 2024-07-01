@@ -4,10 +4,6 @@ sidebar_label: Page.evaluate
 
 # Page.evaluate() method
 
-Evaluates a function in the page's context and returns the result.
-
-If the function passed to `page.evaluate` returns a Promise, the function will wait for the promise to resolve and return its value.
-
 #### Signature:
 
 ```typescript
@@ -21,6 +17,10 @@ class Page {
   ): Promise<Awaited<ReturnType<Func>>>;
 }
 ```
+
+Evaluates a function in the page's context and returns the result.
+
+If the function passed to `page.evaluate` returns a Promise, the function will wait for the promise to resolve and return its value.
 
 ## Parameters
 

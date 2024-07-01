@@ -4,8 +4,6 @@ sidebar_label: Page.goto
 
 # Page.goto() method
 
-Navigates the frame or page to the given `url`.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class Page {
   goto(url: string, options?: GoToOptions): Promise<HTTPResponse | null>;
 }
 ```
+
+Navigates the frame or page to the given `url`.
 
 ## Parameters
 

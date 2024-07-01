@@ -4,8 +4,6 @@ sidebar_label: Page.locator
 
 # Page.locator() method
 
-Creates a locator for the provided selector. See [Locator](./puppeteer.locator.md) for details and supported actions.
-
 #### Signature:
 
 ```typescript
@@ -15,6 +13,8 @@ class Page {
   ): Locator<NodeFor<Selector>>;
 }
 ```
+
+Creates a locator for the provided selector. See [Locator](./puppeteer.locator.md) for details and supported actions.
 
 ## Parameters
 
@@ -49,8 +49,6 @@ Selector
 
 [Locator](./puppeteer.locator.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt;
 
-Creates a locator for the provided function. See [Locator](./puppeteer.locator.md) for details and supported actions.
-
 #### Signature:
 
 ```typescript
@@ -58,6 +56,8 @@ class Page {
   locator<Ret>(func: () => Awaitable<Ret>): Locator<Ret>;
 }
 ```
+
+Creates a locator for the provided function. See [Locator](./puppeteer.locator.md) for details and supported actions.
 
 ## Parameters
 

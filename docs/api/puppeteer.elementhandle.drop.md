@@ -4,8 +4,6 @@ sidebar_label: ElementHandle.drop
 
 # ElementHandle.drop() method
 
-Drops the given element onto the current one.
-
 #### Signature:
 
 ```typescript
@@ -16,6 +14,8 @@ class ElementHandle {
   ): Promise<void>;
 }
 ```
+
+Drops the given element onto the current one.
 
 ## Parameters
 
@@ -59,10 +59,6 @@ element
 
 Promise&lt;void&gt;
 
-> Warning: This API is now obsolete.
->
-> No longer supported.
-
 #### Signature:
 
 ```typescript
@@ -73,6 +69,10 @@ class ElementHandle {
   ): Promise<void>;
 }
 ```
+
+> Warning: This API is now obsolete.
+>
+> No longer supported.
 
 ## Parameters
 

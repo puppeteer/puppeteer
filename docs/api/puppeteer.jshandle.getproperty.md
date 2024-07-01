@@ -4,8 +4,6 @@ sidebar_label: JSHandle.getProperty
 
 # JSHandle.getProperty() method
 
-Fetches a single property from the referenced object.
-
 #### Signature:
 
 ```typescript
@@ -15,6 +13,8 @@ class JSHandle {
   ): Promise<HandleFor<T[K]>>;
 }
 ```
+
+Fetches a single property from the referenced object.
 
 ## Parameters
 

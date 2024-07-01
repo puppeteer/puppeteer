@@ -4,8 +4,6 @@ sidebar_label: HTTPRequest.abort
 
 # HTTPRequest.abort() method
 
-Aborts a request.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class HTTPRequest {
   abort(errorCode?: ErrorCode, priority?: number): Promise<void>;
 }
 ```
+
+Aborts a request.
 
 ## Parameters
 

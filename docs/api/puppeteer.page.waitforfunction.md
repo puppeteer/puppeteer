@@ -4,8 +4,6 @@ sidebar_label: Page.waitForFunction
 
 # Page.waitForFunction() method
 
-Waits for the provided function, `pageFunction`, to return a truthy value when evaluated in the page's context.
-
 #### Signature:
 
 ```typescript
@@ -20,6 +18,8 @@ class Page {
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
 }
 ```
+
+Waits for the provided function, `pageFunction`, to return a truthy value when evaluated in the page's context.
 
 ## Parameters
 

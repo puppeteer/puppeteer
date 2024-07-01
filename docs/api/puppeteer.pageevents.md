@@ -4,10 +4,6 @@ sidebar_label: PageEvents
 
 # PageEvents interface
 
-Denotes the objects received by callback functions for page events.
-
-See [PageEvent](./puppeteer.pageevent.md) for more detail on the events and when they are emitted.
-
 #### Signature:
 
 ```typescript
@@ -15,6 +11,10 @@ export interface PageEvents extends Record<EventType, unknown>
 ```
 
 **Extends:** Record&lt;[EventType](./puppeteer.eventtype.md), unknown&gt;
+
+Denotes the objects received by callback functions for page events.
+
+See [PageEvent](./puppeteer.pageevent.md) for more detail on the events and when they are emitted.
 
 ## Properties
 

@@ -4,8 +4,6 @@ sidebar_label: FileChooser.accept
 
 # FileChooser.accept() method
 
-Accept the file chooser request with the given file paths.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class FileChooser {
   accept(paths: string[]): Promise<void>;
 }
 ```
+
+Accept the file chooser request with the given file paths.
 
 ## Parameters
 

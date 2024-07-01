@@ -4,8 +4,6 @@ sidebar_label: Mouse.dragOver
 
 # Mouse.dragOver() method
 
-Dispatches a `dragover` event.
-
 #### Signature:
 
 ```typescript
@@ -16,6 +14,8 @@ class Mouse {
   ): Promise<void>;
 }
 ```
+
+Dispatches a `dragover` event.
 
 ## Parameters
 

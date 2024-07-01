@@ -4,12 +4,6 @@ sidebar_label: Browser
 
 # Browser class
 
-[Browser](./puppeteer.browser.md) represents a browser instance that is either:
-
-- connected to via [Puppeteer.connect()](./puppeteer.puppeteer.connect.md) or - launched by [PuppeteerNode.launch()](./puppeteer.puppeteernode.launch.md).
-
-[Browser](./puppeteer.browser.md) [emits](./puppeteer.eventemitter.emit.md) various events which are documented in the [BrowserEvent](./puppeteer.browserevent.md) enum.
-
 #### Signature:
 
 ```typescript
@@ -17,6 +11,12 @@ export declare abstract class Browser extends EventEmitter<BrowserEvents>
 ```
 
 **Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;[BrowserEvents](./puppeteer.browserevents.md)&gt;
+
+[Browser](./puppeteer.browser.md) represents a browser instance that is either:
+
+- connected to via [Puppeteer.connect()](./puppeteer.puppeteer.connect.md) or - launched by [PuppeteerNode.launch()](./puppeteer.puppeteernode.launch.md).
+
+[Browser](./puppeteer.browser.md) [emits](./puppeteer.eventemitter.emit.md) various events which are documented in the [BrowserEvent](./puppeteer.browserevent.md) enum.
 
 ## Remarks
 

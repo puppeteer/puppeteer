@@ -4,10 +4,6 @@ sidebar_label: ElementHandle.type
 
 # ElementHandle.type() method
 
-Focuses the element, and then sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
-
-To press a special key, like `Control` or `ArrowDown`, use [ElementHandle.press()](./puppeteer.elementhandle.press.md).
-
 #### Signature:
 
 ```typescript
@@ -15,6 +11,10 @@ class ElementHandle {
   type(text: string, options?: Readonly<KeyboardTypeOptions>): Promise<void>;
 }
 ```
+
+Focuses the element, and then sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
+
+To press a special key, like `Control` or `ArrowDown`, use [ElementHandle.press()](./puppeteer.elementhandle.press.md).
 
 ## Parameters
 

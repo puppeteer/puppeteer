@@ -4,8 +4,6 @@ sidebar_label: HTTPRequest.failure
 
 # HTTPRequest.failure() method
 
-Access information about the request's failure.
-
 #### Signature:
 
 ```typescript
@@ -15,6 +13,8 @@ class HTTPRequest {
   } | null;
 }
 ```
+
+Access information about the request's failure.
 
 **Returns:**
 

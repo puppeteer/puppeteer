@@ -4,8 +4,6 @@ sidebar_label: WebWorker
 
 # WebWorker class
 
-This class represents a [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ export declare abstract class WebWorker extends EventEmitter<Record<EventType, u
 ```
 
 **Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;Record&lt;[EventType](./puppeteer.eventtype.md), unknown&gt;&gt;
+
+This class represents a [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
 
 ## Remarks
 
