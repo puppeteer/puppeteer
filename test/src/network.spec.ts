@@ -177,26 +177,35 @@ describe('network', function () {
       expect(response.fromCache()).toBe(false);
     });
 
-    it('should work', async () => {
-      const {page, server} = await getTestState();
+    // Run this cache test both with a stylesheet and a script.
+    // Firefox currently does not handle network events for cached CSS files.
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=1879438
+    for (const {html, resource, type} of [
+      {html: 'one-style.html', resource: 'one-style.css', type: 'stylesheet'},
+      {html: 'one-script.html', resource: 'one-script.js', type: 'script'},
+    ]) {
+      it(`should work for ${type}`, async () => {
+        const {page, server} = await getTestState();
 
-      const responses = new Map();
-      page.on('response', r => {
-        return (
-          !isFavicon(r.request()) && responses.set(r.url().split('/').pop(), r)
-        );
+        const responses = new Map();
+        page.on('response', r => {
+          return (
+            !isFavicon(r.request()) &&
+            responses.set(r.url().split('/').pop(), r)
+          );
+        });
+
+        // Load and re-load to make sure it's cached.
+        await page.goto(server.PREFIX + '/cached/' + html);
+        await page.reload();
+
+        expect(responses.size).toBe(2);
+        expect(responses.get(resource).status()).toBe(200);
+        expect(responses.get(resource).fromCache()).toBe(true);
+        expect(responses.get(html).status()).toBe(304);
+        expect(responses.get(html).fromCache()).toBe(false);
       });
-
-      // Load and re-load to make sure it's cached.
-      await page.goto(server.PREFIX + '/cached/one-style.html');
-      await page.reload();
-
-      expect(responses.size).toBe(2);
-      expect(responses.get('one-style.css').status()).toBe(200);
-      expect(responses.get('one-style.css').fromCache()).toBe(true);
-      expect(responses.get('one-style.html').status()).toBe(304);
-      expect(responses.get('one-style.html').fromCache()).toBe(false);
-    });
+    }
   });
 
   describe('Response.fromServiceWorker', function () {
@@ -499,22 +508,31 @@ describe('network', function () {
       expect(request.frame() === page.mainFrame()).toBe(true);
       expect(request.frame()!.url()).toBe(server.EMPTY_PAGE);
     });
-    it('Page.Events.RequestServedFromCache', async () => {
-      const {page, server} = await getTestState();
 
-      const cached: string[] = [];
-      page.on('requestservedfromcache', r => {
-        return cached.push(r.url().split('/').pop()!);
-      });
+    // Run this cache test both with a stylesheet and a script.
+    // Firefox currently does not handle network events for cached CSS files.
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=1879438
+    for (const {html, resource, type} of [
+      {html: 'one-style.html', resource: 'one-style.css', type: 'stylesheet'},
+      {html: 'one-script.html', resource: 'one-script.js', type: 'script'},
+    ]) {
+      it(`Page.Events.RequestServedFromCache for ${type}`, async () => {
+        const {page, server} = await getTestState();
 
-      await page.goto(server.PREFIX + '/cached/one-style.html');
-      expect(cached).toEqual([]);
-      await new Promise(res => {
-        setTimeout(res, 1000);
+        const cached: string[] = [];
+        page.on('requestservedfromcache', r => {
+          return cached.push(r.url().split('/').pop()!);
+        });
+
+        await page.goto(server.PREFIX + '/cached/' + html);
+        expect(cached).toEqual([]);
+        await new Promise(res => {
+          setTimeout(res, 1000);
+        });
+        await page.reload();
+        expect(cached).toEqual([resource]);
       });
-      await page.reload();
-      expect(cached).toEqual(['one-style.css']);
-    });
+    }
     it('Page.Events.Response', async () => {
       const {page, server} = await getTestState();
 
@@ -771,31 +789,42 @@ describe('network', function () {
         }
       }
     });
-    it('should not disable caching', async () => {
-      const {page, server} = await getTestState();
 
-      // Use unique user/password since Chrome caches credentials per origin.
-      server.setAuth('/cached/one-style.css', 'user4', 'pass4');
-      server.setAuth('/cached/one-style.html', 'user4', 'pass4');
-      await page.authenticate({
-        username: 'user4',
-        password: 'pass4',
+    // Run this cache test both with a stylesheet and a script.
+    // Firefox currently does not handle network events for cached CSS files.
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=1879438
+    for (const {html, resource, type} of [
+      {html: 'one-style.html', resource: 'one-style.css', type: 'stylesheet'},
+      {html: 'one-script.html', resource: 'one-script.js', type: 'script'},
+    ]) {
+      it(`should not disable caching for ${type}`, async () => {
+        const {page, server} = await getTestState();
+
+        // Use unique user/password since Chrome caches credentials per origin.
+        const user = `user4-${type};`;
+        const pass = `pass4-${type};`;
+        server.setAuth('/cached/' + resource, user, pass);
+        server.setAuth('/cached/' + html, user, pass);
+        await page.authenticate({
+          username: user,
+          password: pass,
+        });
+
+        const responses = new Map();
+        page.on('response', r => {
+          return responses.set(r.url().split('/').pop(), r);
+        });
+
+        // Load and re-load to make sure it's cached.
+        await page.goto(server.PREFIX + '/cached/' + html);
+        await page.reload();
+
+        expect(responses.get(resource).status()).toBe(200);
+        expect(responses.get(resource).fromCache()).toBe(true);
+        expect(responses.get(html).status()).toBe(304);
+        expect(responses.get(html).fromCache()).toBe(false);
       });
-
-      const responses = new Map();
-      page.on('response', r => {
-        return responses.set(r.url().split('/').pop(), r);
-      });
-
-      // Load and re-load to make sure it's cached.
-      await page.goto(server.PREFIX + '/cached/one-style.html');
-      await page.reload();
-
-      expect(responses.get('one-style.css').status()).toBe(200);
-      expect(responses.get('one-style.css').fromCache()).toBe(true);
-      expect(responses.get('one-style.html').status()).toBe(304);
-      expect(responses.get('one-style.html').fromCache()).toBe(false);
-    });
+    }
   });
 
   describe('raw network headers', () => {
