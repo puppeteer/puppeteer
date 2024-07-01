@@ -137,7 +137,7 @@
   },
   "devDependencies": {
     "@actions/core": "1.10.1",
-    "@types/mocha": "10.0.6",
+    "@types/mocha": "10.0.7",
     "@types/node": "20.8.4",
     "@types/semver": "7.5.8",
     "@types/sinon": "17.0.3",
@@ -158,7 +158,7 @@
     "gts": "5.3.1",
     "hereby": "1.8.9",
     "license-checker": "25.0.1",
-    "mocha": "10.4.0",
+    "mocha": "10.5.2",
     "npm-run-all2": "6.2.0",
     "prettier": "3.3.2",
     "semver": "7.6.2",
