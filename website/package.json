@@ -23,7 +23,7 @@
     "@docusaurus/remark-plugin-npm2yarn": "3.4.0",
     "@docusaurus/theme-common": "3.4.0",
     "@mdx-js/react": "3.0.1",
-    "algoliasearch-helper": "3.21.0",
+    "algoliasearch-helper": "3.22.1",
     "clsx": "2.1.1",
     "prism-react-renderer": "2.3.1",
     "react": "18.3.1",
@@ -33,7 +33,7 @@
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.4.0",
     "@docusaurus/types": "3.4.0",
-    "@swc/core": "1.5.25",
+    "@swc/core": "1.6.6",
     "swc-loader": "0.2.6"
   },
   "browserslist": {
