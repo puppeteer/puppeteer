@@ -5,6 +5,7 @@
  */
 
 import assert from 'assert';
+import {spawnSync} from 'child_process';
 import {existsSync} from 'fs';
 import {mkdir, unlink} from 'fs/promises';
 import os from 'os';
@@ -187,7 +188,8 @@ async function installUrl(
   url: URL,
   options: InstallOptions
 ): Promise<InstalledBrowser | string> {
-  options.platform ??= detectBrowserPlatform();
+  const detectedPlatform = detectBrowserPlatform();
+  options.platform ??= detectedPlatform;
   if (!options.platform) {
     throw new Error(
       `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`
@@ -249,6 +251,22 @@ async function installUrl(
     } finally {
       debugTimeEnd('extract');
     }
+
+    // On Windows for Chrome invoke setup.exe to configure sandboxes.
+    if (
+      (detectedPlatform === BrowserPlatform.WIN32 ||
+        detectedPlatform === BrowserPlatform.WIN64) &&
+      options.platform === detectedPlatform &&
+      options.browser === Browser.CHROME
+    ) {
+      try {
+        debugTime('permissions');
+        await runSetup(outputPath);
+      } finally {
+        debugTimeEnd('permissions');
+      }
+    }
+
     const installedBrowser = new InstalledBrowser(
       cache,
       options.browser,
@@ -265,6 +283,21 @@ async function installUrl(
     if (existsSync(archivePath)) {
       await unlink(archivePath);
     }
+  }
+}
+
+async function runSetup(outputPath: string) {
+  const result = spawnSync(
+    path.join(outputPath, 'setup.exe'),
+    ['--configure-browser-in-directory', outputPath],
+    {
+      shell: true,
+    }
+  );
+  if (result.status !== 0) {
+    throw new Error(
+      `Failed to set permissions for ${outputPath}: ${result.stderr.toString('utf8')}`
+    );
   }
 }
 
