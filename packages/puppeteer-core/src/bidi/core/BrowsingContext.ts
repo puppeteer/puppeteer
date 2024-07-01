@@ -423,7 +423,7 @@ export class BrowsingContext extends EventEmitter<{
   })
   async setCacheBypass(enabled: boolean): Promise<void> {
     // @ts-expect-error not in BiDi types yet.
-    await this.#session.send('browsingContext.setCacheBypass', {
+    await this.#session.send('network.setCacheBypass', {
       contexts: [this.id],
       bypass: enabled,
     });
