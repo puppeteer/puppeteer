@@ -155,7 +155,7 @@ export class MarkdownDocumenter {
       configuration,
     });
 
-    let scopedName = apiItem.getScopedNameWithinPackage();
+    const scopedName = apiItem.getScopedNameWithinPackage();
     switch (apiItem.kind) {
       case ApiItemKind.Class:
         output.appendNode(
