@@ -169,7 +169,11 @@ export function valueFromRemoteObject(
 /**
  * @internal
  */
-export function addPageBinding(type: string, name: string): void {
+export function addPageBinding(
+  type: string,
+  name: string,
+  prefix: string
+): void {
   // Depending on the frame loading state either Runtime.evaluate or
   // Page.addScriptToEvaluateOnNewDocument might succeed. Let's check that we
   // don't re-wrap Puppeteer's binding.
@@ -192,7 +196,8 @@ export function addPageBinding(type: string, name: string): void {
       callPuppeteer.args.set(seq, args);
 
       // @ts-expect-error: In a different context.
-      globalThis['_' + name](
+      // Needs to be the same as CDP_BINDING_PREFIX.
+      globalThis[prefix + name](
         JSON.stringify({
           type,
           name,
@@ -223,6 +228,11 @@ export function addPageBinding(type: string, name: string): void {
 /**
  * @internal
  */
+export const CDP_BINDING_PREFIX = 'puppeteer_';
+
+/**
+ * @internal
+ */
 export function pageBindingInitString(type: string, name: string): string {
-  return evaluationString(addPageBinding, type, name);
+  return evaluationString(addPageBinding, type, name, CDP_BINDING_PREFIX);
 }

@@ -34,6 +34,7 @@ import type {IsolatedWorld} from './IsolatedWorld.js';
 import {CdpJSHandle} from './JSHandle.js';
 import {
   addPageBinding,
+  CDP_BINDING_PREFIX,
   createEvaluationError,
   valueFromRemoteObject,
 } from './utils.js';
@@ -124,16 +125,21 @@ export class ExecutionContext
         'Runtime.addBinding',
         this.#name
           ? {
-              name: '_' + binding.name,
+              name: CDP_BINDING_PREFIX + binding.name,
               executionContextName: this.#name,
             }
           : {
-              name: '_' + binding.name,
+              name: CDP_BINDING_PREFIX + binding.name,
               executionContextId: this.#id,
             }
       );
 
-      await this.evaluate(addPageBinding, 'internal', binding.name);
+      await this.evaluate(
+        addPageBinding,
+        'internal',
+        binding.name,
+        CDP_BINDING_PREFIX
+      );
 
       this.#bindings.set(binding.name, binding);
     } catch (error) {
