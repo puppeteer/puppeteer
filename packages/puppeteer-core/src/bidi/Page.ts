@@ -538,7 +538,7 @@ export class BidiPage extends Page {
 
   override async setCacheEnabled(enabled?: boolean): Promise<void> {
     if (!this.#browserContext.browser().cdpSupported) {
-      await this.#frame.browsingContext.setCacheBypass(enabled ?? false);
+      await this.#frame.browsingContext.setCacheBypass(!enabled ?? true);
       return;
     }
     // TODO: handle CDP-specific cases such as mprach.
