@@ -681,46 +681,51 @@ describe('cooperative request interception', function () {
       expect(urls.has('one-style.html')).toBe(true);
       expect(urls.has('one-style.css')).toBe(true);
     });
-    it('should not cache if cache disabled', async () => {
-      const {page, server} = await getTestState();
+    for (const {resourceType, url} of [
+      {url: '/cached/one-style.html', resourceType: 'stylesheet'},
+      {url: '/cached/one-script.html', resourceType: 'script'},
+    ]) {
+      it(`should not cache ${resourceType} if cache disabled`, async () => {
+        const {page, server} = await getTestState();
 
-      // Load and re-load to make sure it's cached.
-      await page.goto(server.PREFIX + '/cached/one-style.html');
+        // Load and re-load to make sure it's cached.
+        await page.goto(server.PREFIX + url);
 
-      await page.setRequestInterception(true);
-      await page.setCacheEnabled(false);
-      page.on('request', request => {
-        return request.continue({}, 0);
+        await page.setRequestInterception(true);
+        await page.setCacheEnabled(false);
+        page.on('request', request => {
+          return request.continue({}, 0);
+        });
+
+        const cached: HTTPRequest[] = [];
+        page.on('requestservedfromcache', r => {
+          return cached.push(r);
+        });
+
+        await page.reload();
+        expect(cached).toHaveLength(0);
       });
+      it(`should cache ${resourceType} if cache enabled`, async () => {
+        const {page, server} = await getTestState();
 
-      const cached: HTTPRequest[] = [];
-      page.on('requestservedfromcache', r => {
-        return cached.push(r);
+        // Load and re-load to make sure it's cached.
+        await page.goto(server.PREFIX + url);
+
+        await page.setRequestInterception(true);
+        await page.setCacheEnabled(true);
+        page.on('request', request => {
+          return request.continue({}, 0);
+        });
+
+        const cached: HTTPRequest[] = [];
+        page.on('requestservedfromcache', r => {
+          return cached.push(r);
+        });
+
+        await page.reload();
+        expect(cached).toHaveLength(1);
       });
-
-      await page.reload();
-      expect(cached).toHaveLength(0);
-    });
-    it('should cache if cache enabled', async () => {
-      const {page, server} = await getTestState();
-
-      // Load and re-load to make sure it's cached.
-      await page.goto(server.PREFIX + '/cached/one-style.html');
-
-      await page.setRequestInterception(true);
-      await page.setCacheEnabled(true);
-      page.on('request', request => {
-        return request.continue({}, 0);
-      });
-
-      const cached: HTTPRequest[] = [];
-      page.on('requestservedfromcache', r => {
-        return cached.push(r);
-      });
-
-      await page.reload();
-      expect(cached).toHaveLength(1);
-    });
+    }
     it('should load fonts if cache enabled', async () => {
       const {page, server} = await getTestState();
 
