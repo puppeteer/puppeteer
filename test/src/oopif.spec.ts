@@ -10,7 +10,7 @@ import {CDPSessionEvent} from 'puppeteer-core/internal/api/CDPSession.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 
 import {getTestState, launch} from './mocha-utils.js';
-import {attachFrame, detachFrame, navigateFrame} from './utils.js';
+import {attachFrame, detachFrame, dumpFrames, navigateFrame} from './utils.js';
 
 describe('OOPIF', function () {
   /* We use a special browser for this test as we need the --site-per-process flag */
@@ -131,6 +131,38 @@ describe('OOPIF', function () {
       })
     ).toMatch(/frames\/frame\.html$/);
   });
+
+  it('should recover cross-origin frames on reconnect', async () => {
+    const {server, page, puppeteer, browser} = state;
+
+    await page.goto(server.EMPTY_PAGE);
+    const frame1Promise = page.waitForFrame(frame => {
+      return page.frames().indexOf(frame) === 1;
+    });
+    const frame2Promise = page.waitForFrame(frame => {
+      return page.frames().indexOf(frame) === 2;
+    });
+    await attachFrame(
+      page,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/frames/one-frame.html'
+    );
+    await Promise.all([frame1Promise, frame2Promise]);
+    const dump1 = await dumpFrames(page.mainFrame());
+
+    using browserTwo = await puppeteer.connect({
+      browserWSEndpoint: browser.wsEndpoint(),
+      protocol: browser.protocol,
+    });
+    const pages = await browserTwo.pages();
+    const emptyPages = pages.filter(page => {
+      return page.url() === server.EMPTY_PAGE;
+    });
+    expect(emptyPages.length).toBe(1);
+    const dump2 = await dumpFrames(emptyPages[0]!.mainFrame());
+    expect(dump1).toEqual(dump2);
+  });
+
   it('should support OOP iframes getting detached', async () => {
     const {server, page} = state;
 

@@ -39,7 +39,7 @@ export class CdpTarget extends Target {
   #sessionFactory:
     | ((isAutoAttachEmulated: boolean) => Promise<CDPSession>)
     | undefined;
-
+  #childTargets = new Set<CdpTarget>();
   _initializedDeferred = Deferred.create<InitializationStatus>();
   _isClosedDeferred = Deferred.create<void>();
   _targetId: string;
@@ -86,6 +86,18 @@ export class CdpTarget extends Target {
 
   _session(): CDPSession | undefined {
     return this.#session;
+  }
+
+  _addChildTarget(target: CdpTarget): void {
+    this.#childTargets.add(target);
+  }
+
+  _removeChildTarget(target: CdpTarget): void {
+    this.#childTargets.delete(target);
+  }
+
+  _childTargets(): ReadonlySet<CdpTarget> {
+    return this.#childTargets;
   }
 
   protected _sessionFactory(): (

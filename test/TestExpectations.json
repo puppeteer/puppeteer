@@ -2653,6 +2653,20 @@
     "comment": "Failed previously and currently times out"
   },
   {
+    "testIdPattern": "[oopif.spec] OOPIF should recover cross-origin frames on reconnect",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "See https://github.com/GoogleChromeLabs/chromium-bidi/issues/2362"
+  },
+  {
+    "testIdPattern": "[oopif.spec] OOPIF should recover cross-origin frames on reconnect",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox does not support multiple sessions in BiDi."
+  },
+  {
     "testIdPattern": "[oopif.spec] OOPIF should support lazy OOP frames",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],

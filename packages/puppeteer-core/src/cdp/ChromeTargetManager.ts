@@ -122,8 +122,9 @@ export class ChromeTargetManager
         this,
         undefined
       );
-      // Targets that will not be auto-attached. Therefore, we should
-      // not add them to #targetsIdsForInit.
+      // Targets from extensions and the browser that will not be
+      // auto-attached. Therefore, we should not add them to
+      // #targetsIdsForInit.
       const skipTarget =
         targetInfo.type === 'browser' ||
         targetInfo.url.startsWith('chrome-extension://');
@@ -159,6 +160,10 @@ export class ChromeTargetManager
     });
     this.#finishInitializationIfReady();
     await this.#initializeDeferred.valueOrThrow();
+  }
+
+  getChildTargets(target: CdpTarget): ReadonlySet<CdpTarget> {
+    return target._childTargets();
   }
 
   dispose(): void {
@@ -376,6 +381,12 @@ export class ChromeTargetManager
       this.#attachedTargetsBySessionId.set(session.id(), target);
     }
 
+    const parentTarget =
+      parentSession instanceof CDPSession
+        ? (parentSession as CdpCDPSession)._target()
+        : null;
+    parentTarget?._addChildTarget(target);
+
     parentSession.emit(CDPSessionEvent.Ready, session);
 
     this.#targetsIdsForInit.delete(target._targetId);
@@ -405,7 +416,7 @@ export class ChromeTargetManager
   }
 
   #onDetachedFromTarget = (
-    _parentSession: Connection | CDPSession,
+    parentSession: Connection | CDPSession,
     event: Protocol.Target.DetachedFromTargetEvent
   ) => {
     const target = this.#attachedTargetsBySessionId.get(event.sessionId);
@@ -416,6 +427,9 @@ export class ChromeTargetManager
       return;
     }
 
+    if (parentSession instanceof CDPSession) {
+      (parentSession as CdpCDPSession)._target()._removeChildTarget(target);
+    }
     this.#attachedTargetsByTargetId.delete(target._targetId);
     this.emit(TargetManagerEvent.TargetGone, target);
   };

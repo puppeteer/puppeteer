@@ -300,6 +300,28 @@ export class CdpPage extends Page {
       .catch(debugError);
 
     this.#setupPrimaryTargetListeners();
+    this.#attachExistingTargets();
+  }
+
+  #attachExistingTargets(): void {
+    const queue = [];
+    for (const childTarget of this.#targetManager.getChildTargets(
+      this.#primaryTarget
+    )) {
+      queue.push(childTarget);
+    }
+    let idx = 0;
+    while (idx < queue.length) {
+      const next = queue[idx] as CdpTarget;
+      idx++;
+      const session = next._session();
+      if (session) {
+        this.#onAttachedToTarget(session);
+      }
+      for (const childTarget of this.#targetManager.getChildTargets(next)) {
+        queue.push(childTarget);
+      }
+    }
   }
 
   async #onActivation(newSession: CDPSession): Promise<void> {
