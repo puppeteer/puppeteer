@@ -525,7 +525,7 @@ describe('request interception', function () {
       ))!;
       expect(response.status()).toBe(200);
     });
-    it('should work with encoded server - 2', async () => {
+    it('should work with missing stylesheets', async () => {
       const {page, server} = await getTestState();
 
       // The requestWillBeSent will report URL as-is, whereas interception will
@@ -538,9 +538,7 @@ describe('request interception', function () {
           requests.push(request);
         }
       });
-      const response = (await page.goto(
-        `data:text/html,<link rel="stylesheet" href="${server.PREFIX}/fonts?helvetica|arial"/>`
-      ))!;
+      const response = (await page.goto(server.PREFIX + '/style-404.html'))!;
       expect(response.status()).toBe(200);
       expect(requests).toHaveLength(2);
       expect(requests[1]!.response()!.status()).toBe(404);
