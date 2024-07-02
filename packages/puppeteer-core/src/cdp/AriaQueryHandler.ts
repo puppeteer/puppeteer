@@ -21,10 +21,6 @@ const isKnownAttribute = (
   return ['name', 'role'].includes(attribute);
 };
 
-const normalizeValue = (value: string): string => {
-  return value.replace(/ +/g, ' ').trim();
-};
-
 /**
  * The selectors consist of an accessible name to query for and optionally
  * further aria attributes on the form `[<attribute>=<value>]`.
@@ -43,17 +39,16 @@ const parseARIASelector = (selector: string): ARIASelector => {
   const defaultName = selector.replace(
     ATTRIBUTE_REGEXP,
     (_, attribute, __, value) => {
-      attribute = attribute.trim();
       assert(
         isKnownAttribute(attribute),
         `Unknown aria attribute "${attribute}" in selector`
       );
-      queryOptions[attribute] = normalizeValue(value);
+      queryOptions[attribute] = value;
       return '';
     }
   );
   if (defaultName && !queryOptions.name) {
-    queryOptions.name = normalizeValue(defaultName);
+    queryOptions.name = defaultName;
   }
   return queryOptions;
 };
