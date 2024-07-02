@@ -8,6 +8,7 @@ import type {
   OperatorFunction,
 } from '../../../third_party/rxjs/rxjs.js';
 import {
+  takeLast,
   EMPTY,
   catchError,
   defaultIfEmpty,
@@ -111,6 +112,18 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
     locators: Locators
   ): Locator<AwaitedLocator<Locators[number]>> {
     return RaceLocator.create(locators);
+  }
+
+  /**
+   * Trying to locate all the elements for locator array in parallel
+   * and return the last locator that locate element.
+   *
+   * @public
+   */
+  static last<Locators extends readonly unknown[] | []>(
+    locators: Locators
+  ): Locator<AwaitedLocator<Locators[number]>> {
+    return LastLocator.create(locators);
   }
 
   /**
@@ -1080,6 +1093,41 @@ export class RaceLocator<T> extends Locator<T> {
         return locator._wait(options);
       })
     );
+  }
+}
+
+/**
+ * @internal
+ */
+export class LastLocator<T> extends Locator<T> {
+  static create<T extends readonly unknown[]>(
+    locators: T
+  ): Locator<AwaitedLocator<T[number]>> {
+    const array = checkLocatorArray(locators);
+    return new LastLocator(array);
+  }
+
+  #locators: ReadonlyArray<Locator<T>>;
+
+  constructor(locators: ReadonlyArray<Locator<T>>) {
+    super();
+    this.#locators = locators;
+  }
+
+  override _clone(): LastLocator<T> {
+    return new LastLocator<T>(
+      this.#locators.map(locator => {
+        return locator.clone();
+      })
+    ).copyOptions(this);
+  }
+
+  override _wait(options?: Readonly<ActionOptions>): Observable<HandleFor<T>> {
+    return merge(
+      ...this.#locators.map(locator => {
+        return locator._wait(options);
+      })
+    ).pipe(takeLast(1));
   }
 }
 
