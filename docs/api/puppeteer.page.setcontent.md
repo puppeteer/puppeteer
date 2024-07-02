@@ -4,8 +4,6 @@ sidebar_label: Page.setContent
 
 # Page.setContent() method
 
-Set the content of the page.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class Page {
   setContent(html: string, options?: WaitForOptions): Promise<void>;
 }
 ```
+
+Set the content of the page.
 
 ## Parameters
 

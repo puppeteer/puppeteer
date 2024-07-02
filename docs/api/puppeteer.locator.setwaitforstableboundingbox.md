@@ -4,8 +4,6 @@ sidebar_label: Locator.setWaitForStableBoundingBox
 
 # Locator.setWaitForStableBoundingBox() method
 
-Creates a new locator instance by cloning the current locator and specifying whether the locator has to wait for the element's bounding box to be same between two consecutive animation frames.
-
 #### Signature:
 
 ```typescript
@@ -16,6 +14,8 @@ class Locator {
   ): Locator<ElementType>;
 }
 ```
+
+Creates a new locator instance by cloning the current locator and specifying whether the locator has to wait for the element's bounding box to be same between two consecutive animation frames.
 
 ## Parameters
 

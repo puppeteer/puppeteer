@@ -4,8 +4,6 @@ sidebar_label: ElementHandle.scrollIntoView
 
 # ElementHandle.scrollIntoView() method
 
-Scrolls the element into view using either the automation protocol client or by calling element.scrollIntoView.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class ElementHandle {
   scrollIntoView(this: ElementHandle<Element>): Promise<void>;
 }
 ```
+
+Scrolls the element into view using either the automation protocol client or by calling element.scrollIntoView.
 
 ## Parameters
 

@@ -4,8 +4,6 @@ sidebar_label: ConsoleMessageType
 
 # ConsoleMessageType type
 
-The supported types for console messages.
-
 #### Signature:
 
 ```typescript
@@ -30,3 +28,5 @@ export type ConsoleMessageType =
   | 'timeEnd'
   | 'verbose';
 ```
+
+The supported types for console messages.

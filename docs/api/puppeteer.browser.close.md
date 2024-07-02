@@ -4,8 +4,6 @@ sidebar_label: Browser.close
 
 # Browser.close() method
 
-Closes this [browser](./puppeteer.browser.md) and all associated [pages](./puppeteer.page.md).
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class Browser {
   abstract close(): Promise<void>;
 }
 ```
+
+Closes this [browser](./puppeteer.browser.md) and all associated [pages](./puppeteer.page.md).
 
 **Returns:**
 

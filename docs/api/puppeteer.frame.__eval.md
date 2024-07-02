@@ -4,10 +4,6 @@ sidebar_label: Frame.$$eval
 
 # Frame.$$eval() method
 
-Runs the given function on an array of elements matching the given selector in the frame.
-
-If the given function returns a promise, then this method will wait till the promise resolves.
-
 #### Signature:
 
 ```typescript
@@ -26,6 +22,10 @@ class Frame {
   ): Promise<Awaited<ReturnType<Func>>>;
 }
 ```
+
+Runs the given function on an array of elements matching the given selector in the frame.
+
+If the given function returns a promise, then this method will wait till the promise resolves.
 
 ## Parameters
 

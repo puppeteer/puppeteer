@@ -4,8 +4,6 @@ sidebar_label: Frame.type
 
 # Frame.type() method
 
-Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
-
 #### Signature:
 
 ```typescript
@@ -17,6 +15,8 @@ class Frame {
   ): Promise<void>;
 }
 ```
+
+Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
 
 ## Parameters
 

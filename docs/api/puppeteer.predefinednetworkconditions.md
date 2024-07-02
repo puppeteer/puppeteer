@@ -4,8 +4,6 @@ sidebar_label: PredefinedNetworkConditions
 
 # PredefinedNetworkConditions variable
 
-A list of pre-defined network conditions to be used with [Page.emulateNetworkConditions()](./puppeteer.page.emulatenetworkconditions.md).
-
 #### Signature:
 
 ```typescript
@@ -16,6 +14,8 @@ PredefinedNetworkConditions: Readonly<{
   'Fast 4G': NetworkConditions;
 }>;
 ```
+
+A list of pre-defined network conditions to be used with [Page.emulateNetworkConditions()](./puppeteer.page.emulatenetworkconditions.md).
 
 ## Example
 

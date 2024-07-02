@@ -4,8 +4,6 @@ sidebar_label: Page.$
 
 # Page.$() method
 
-Finds the first element that matches the selector. If no element matches the selector, the return value resolves to `null`.
-
 #### Signature:
 
 ```typescript
@@ -15,6 +13,8 @@ class Page {
   ): Promise<ElementHandle<NodeFor<Selector>> | null>;
 }
 ```
+
+Finds the first element that matches the selector. If no element matches the selector, the return value resolves to `null`.
 
 ## Parameters
 

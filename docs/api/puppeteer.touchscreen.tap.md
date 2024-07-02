@@ -4,8 +4,6 @@ sidebar_label: Touchscreen.tap
 
 # Touchscreen.tap() method
 
-Dispatches a `touchstart` and `touchend` event.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class Touchscreen {
   tap(x: number, y: number): Promise<void>;
 }
 ```
+
+Dispatches a `touchstart` and `touchend` event.
 
 ## Parameters
 

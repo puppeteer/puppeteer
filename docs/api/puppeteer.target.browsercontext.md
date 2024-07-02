@@ -4,8 +4,6 @@ sidebar_label: Target.browserContext
 
 # Target.browserContext() method
 
-Get the browser context the target belongs to.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class Target {
   abstract browserContext(): BrowserContext;
 }
 ```
+
+Get the browser context the target belongs to.
 
 **Returns:**
 

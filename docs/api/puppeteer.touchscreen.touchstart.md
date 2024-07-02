@@ -4,8 +4,6 @@ sidebar_label: Touchscreen.touchStart
 
 # Touchscreen.touchStart() method
 
-Dispatches a `touchstart` event.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class Touchscreen {
   abstract touchStart(x: number, y: number): Promise<void>;
 }
 ```
+
+Dispatches a `touchstart` event.
 
 ## Parameters
 

@@ -4,8 +4,6 @@ sidebar_label: Locator.waitHandle
 
 # Locator.waitHandle() method
 
-Waits for the locator to get a handle from the page.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class Locator {
   waitHandle(options?: Readonly<ActionOptions>): Promise<HandleFor<T>>;
 }
 ```
+
+Waits for the locator to get a handle from the page.
 
 ## Parameters
 

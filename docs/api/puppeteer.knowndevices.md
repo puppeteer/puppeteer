@@ -4,8 +4,6 @@ sidebar_label: KnownDevices
 
 # KnownDevices variable
 
-A list of devices to be used with [Page.emulate()](./puppeteer.page.emulate.md).
-
 #### Signature:
 
 ```typescript
@@ -130,6 +128,8 @@ KnownDevices: Readonly<
   >
 >;
 ```
+
+A list of devices to be used with [Page.emulate()](./puppeteer.page.emulate.md).
 
 ## Example
 

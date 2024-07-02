@@ -4,10 +4,6 @@ sidebar_label: Page.addStyleTag
 
 # Page.addStyleTag() method
 
-Adds a `<link rel="stylesheet">` tag into the page with the desired URL or a `<style type="text/css">` tag with the content.
-
-Shortcut for [page.mainFrame().addStyleTag(options)](./puppeteer.frame.addstyletag_1.md).
-
 #### Signature:
 
 ```typescript
@@ -17,6 +13,10 @@ class Page {
   ): Promise<ElementHandle<HTMLStyleElement>>;
 }
 ```
+
+Adds a `<link rel="stylesheet">` tag into the page with the desired URL or a `<style type="text/css">` tag with the content.
+
+Shortcut for [page.mainFrame().addStyleTag(options)](./puppeteer.frame.addstyletag_1.md).
 
 ## Parameters
 
@@ -50,3 +50,44 @@ Omit&lt;[FrameAddStyleTagOptions](./puppeteer.frameaddstyletagoptions.md), 'url'
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLStyleElement&gt;&gt;
 
 An [element handle](./puppeteer.elementhandle.md) to the injected `<link>` or `<style>` element.
+
+#### Signature:
+
+```typescript
+class Page {
+  addStyleTag(
+    options: FrameAddStyleTagOptions
+  ): Promise<ElementHandle<HTMLLinkElement>>;
+}
+```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+[FrameAddStyleTagOptions](./puppeteer.frameaddstyletagoptions.md)
+
+</td><td>
+
+</td></tr>
+</tbody></table>
+**Returns:**
+
+Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLLinkElement&gt;&gt;

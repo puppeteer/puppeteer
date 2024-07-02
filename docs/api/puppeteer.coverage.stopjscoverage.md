@@ -4,8 +4,6 @@ sidebar_label: Coverage.stopJSCoverage
 
 # Coverage.stopJSCoverage() method
 
-Promise that resolves to the array of coverage reports for all scripts.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class Coverage {
   stopJSCoverage(): Promise<JSCoverageEntry[]>;
 }
 ```
+
+Promise that resolves to the array of coverage reports for all scripts.
 
 **Returns:**
 

@@ -4,8 +4,6 @@ sidebar_label: Page.url
 
 # Page.url() method
 
-The page's URL.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class Page {
   url(): string;
 }
 ```
+
+The page's URL.
 
 **Returns:**
 

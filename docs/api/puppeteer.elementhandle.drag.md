@@ -4,8 +4,6 @@ sidebar_label: ElementHandle.drag
 
 # ElementHandle.drag() method
 
-Drags an element over the given element or point.
-
 #### Signature:
 
 ```typescript
@@ -16,6 +14,8 @@ class ElementHandle {
   ): Promise<Protocol.Input.DragData | void>;
 }
 ```
+
+Drags an element over the given element or point.
 
 ## Parameters
 

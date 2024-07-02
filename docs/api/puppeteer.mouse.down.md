@@ -4,8 +4,6 @@ sidebar_label: Mouse.down
 
 # Mouse.down() method
 
-Presses the mouse.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class Mouse {
   abstract down(options?: Readonly<MouseOptions>): Promise<void>;
 }
 ```
+
+Presses the mouse.
 
 ## Parameters
 

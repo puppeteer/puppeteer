@@ -4,8 +4,6 @@ sidebar_label: JSHandle.getProperty
 
 # JSHandle.getProperty() method
 
-Fetches a single property from the referenced object.
-
 #### Signature:
 
 ```typescript
@@ -15,6 +13,8 @@ class JSHandle {
   ): Promise<HandleFor<T[K]>>;
 }
 ```
+
+Fetches a single property from the referenced object.
 
 ## Parameters
 
@@ -46,3 +46,42 @@ propertyName
 **Returns:**
 
 Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;T\[K\]&gt;&gt;
+
+#### Signature:
+
+```typescript
+class JSHandle {
+  getProperty(propertyName: string): Promise<JSHandle<unknown>>;
+}
+```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+propertyName
+
+</td><td>
+
+string
+
+</td><td>
+
+</td></tr>
+</tbody></table>
+**Returns:**
+
+Promise&lt;[JSHandle](./puppeteer.jshandle.md)&lt;unknown&gt;&gt;

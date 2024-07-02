@@ -4,8 +4,6 @@ sidebar_label: ElementHandle.clickablePoint
 
 # ElementHandle.clickablePoint() method
 
-Returns the middle point within an element unless a specific offset is provided.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class ElementHandle {
   clickablePoint(offset?: Offset): Promise<Point>;
 }
 ```
+
+Returns the middle point within an element unless a specific offset is provided.
 
 ## Parameters
 

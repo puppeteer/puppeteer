@@ -4,8 +4,6 @@ sidebar_label: Page.screenshot
 
 # Page.screenshot() method
 
-Captures a screenshot of this [page](./puppeteer.page.md).
-
 #### Signature:
 
 ```typescript
@@ -17,6 +15,8 @@ class Page {
   ): Promise<string>;
 }
 ```
+
+Captures a screenshot of this [page](./puppeteer.page.md).
 
 ## Parameters
 
@@ -50,3 +50,44 @@ Configures screenshot behavior.
 **Returns:**
 
 Promise&lt;string&gt;
+
+#### Signature:
+
+```typescript
+class Page {
+  screenshot(options?: Readonly<ScreenshotOptions>): Promise<Buffer>;
+}
+```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+Readonly&lt;[ScreenshotOptions](./puppeteer.screenshotoptions.md)&gt;
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+</tbody></table>
+**Returns:**
+
+Promise&lt;Buffer&gt;

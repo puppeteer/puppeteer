@@ -4,8 +4,6 @@ sidebar_label: Page.screencast
 
 # Page.screencast() method
 
-Captures a screencast of this [page](./puppeteer.page.md).
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class Page {
   screencast(options?: Readonly<ScreencastOptions>): Promise<ScreenRecorder>;
 }
 ```
+
+Captures a screencast of this [page](./puppeteer.page.md).
 
 ## Parameters
 

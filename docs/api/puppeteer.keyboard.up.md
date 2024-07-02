@@ -4,8 +4,6 @@ sidebar_label: Keyboard.up
 
 # Keyboard.up() method
 
-Dispatches a `keyup` event.
-
 #### Signature:
 
 ```typescript
@@ -13,6 +11,8 @@ class Keyboard {
   abstract up(key: KeyInput): Promise<void>;
 }
 ```
+
+Dispatches a `keyup` event.
 
 ## Parameters
 

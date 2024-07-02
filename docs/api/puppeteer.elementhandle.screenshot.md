@@ -4,8 +4,6 @@ sidebar_label: ElementHandle.screenshot
 
 # ElementHandle.screenshot() method
 
-This method scrolls element into view if needed, and then uses [Page.screenshot()](./puppeteer.page.screenshot_1.md) to take a screenshot of the element. If the element is detached from DOM, the method throws an error.
-
 #### Signature:
 
 ```typescript
@@ -17,6 +15,8 @@ class ElementHandle {
   ): Promise<string>;
 }
 ```
+
+This method scrolls element into view if needed, and then uses [Page.screenshot()](./puppeteer.page.screenshot_1.md) to take a screenshot of the element. If the element is detached from DOM, the method throws an error.
 
 ## Parameters
 
@@ -48,3 +48,44 @@ Readonly&lt;[ScreenshotOptions](./puppeteer.screenshotoptions.md)&gt; &amp; &#12
 **Returns:**
 
 Promise&lt;string&gt;
+
+#### Signature:
+
+```typescript
+class ElementHandle {
+  screenshot(options?: Readonly<ScreenshotOptions>): Promise<Buffer>;
+}
+```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+</td><td>
+
+Readonly&lt;[ScreenshotOptions](./puppeteer.screenshotoptions.md)&gt;
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+</tbody></table>
+**Returns:**
+
+Promise&lt;Buffer&gt;

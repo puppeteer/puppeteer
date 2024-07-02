@@ -4,10 +4,6 @@ sidebar_label: registerCustomQueryHandler
 
 # registerCustomQueryHandler() function
 
-> Warning: This API is now obsolete.
->
-> Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppeteer.registerCustomQueryHandler()](./puppeteer.puppeteer.registercustomqueryhandler.md)
-
 #### Signature:
 
 ```typescript
@@ -16,6 +12,10 @@ export declare function registerCustomQueryHandler(
   handler: CustomQueryHandler
 ): void;
 ```
+
+> Warning: This API is now obsolete.
+>
+> Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppeteer.registerCustomQueryHandler()](./puppeteer.puppeteer.registercustomqueryhandler.md)
 
 ## Parameters
 
