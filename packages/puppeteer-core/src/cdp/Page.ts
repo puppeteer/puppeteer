@@ -300,12 +300,14 @@ export class CdpPage extends Page {
       .catch(debugError);
 
     this.#setupPrimaryTargetListeners();
-    this.#attachExistingTargets(this.#primaryTarget);
+    this.#attachExistingTargets();
   }
 
-  #attachExistingTargets(root: CdpTarget): void {
+  #attachExistingTargets(): void {
     const queue = [];
-    for (const childTarget of this.#targetManager.getChildTargets(root)) {
+    for (const childTarget of this.#targetManager.getChildTargets(
+      this.#primaryTarget
+    )) {
       queue.push(childTarget);
     }
     let idx = 0;
