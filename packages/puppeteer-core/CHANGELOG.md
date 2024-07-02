@@ -20,6 +20,15 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.12.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.12.1...puppeteer-core-v22.12.2) (2024-07-02)
+
+
+### Bug Fixes
+
+* add an option to not wait for fonts when pdf printing ([#12675](https://github.com/puppeteer/puppeteer/issues/12675)) ([a573dbd](https://github.com/puppeteer/puppeteer/commit/a573dbd7ed858651b92dc5deafe2ebdbe86b5f4c))
+* ensure existing targets are attached to pages ([#12677](https://github.com/puppeteer/puppeteer/issues/12677)) ([d1d8489](https://github.com/puppeteer/puppeteer/commit/d1d8489a9616375f5195ea226b7123345402030b))
+* make sure bindings are working after a page is restored from bfcache ([#12663](https://github.com/puppeteer/puppeteer/issues/12663)) ([570b1a8](https://github.com/puppeteer/puppeteer/commit/570b1a862eed1ce86dba318e143d7d4191a89c3b))
+
 ## [22.12.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.12.0...puppeteer-core-v22.12.1) (2024-06-26)
 
 
