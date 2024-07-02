@@ -77,6 +77,7 @@ import type {TargetManager} from './TargetManager.js';
 import {TargetManagerEvent} from './TargetManager.js';
 import {Tracing} from './Tracing.js';
 import {
+  CDP_BINDING_PREFIX,
   createClientError,
   pageBindingInitString,
   valueFromRemoteObject,
@@ -678,7 +679,9 @@ export class CdpPage extends Page {
     this.#bindings.set(name, binding);
 
     const expression = pageBindingInitString('exposedFun', name);
-    await this.#primaryTargetClient.send('Runtime.addBinding', {name});
+    await this.#primaryTargetClient.send('Runtime.addBinding', {
+      name: CDP_BINDING_PREFIX + name,
+    });
     // TODO: investigate this as it appears to only apply to the main frame and
     // local subframes instead of the entire frame tree (including future
     // frame).
