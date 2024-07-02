@@ -41,6 +41,7 @@ export {
   throwIfEmpty,
   timer,
   zip,
+  takeLast,
 } from 'rxjs';
 
 export type * from 'rxjs';

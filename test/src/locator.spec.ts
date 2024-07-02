@@ -581,6 +581,38 @@ describe('Locator', function () {
     });
   });
 
+  describe('Locator.last', () => {
+    it('should time out when any one of the locaters do not match', async () => {
+      const clock = sinon.useFakeTimers({
+        shouldClearNativeTimers: true,
+        shouldAdvanceTime: true,
+      });
+      try {
+        const {page} = await getTestState();
+
+        await page.setViewport({width: 500, height: 500});
+        await page.setContent(`
+        <button id="test1">test1</button>
+        <input id="test2">test2</input>
+      `);
+        const result = Locator.last([
+          page.locator('#test1'),
+          page.locator('#test2'),
+          page.locator('#test3'),
+        ])
+          .setTimeout(5000)
+          .waitHandle();
+        clock.tick(5100);
+        await expect(result).rejects.toEqual(
+          new TimeoutError('Timed out after waiting 5000ms')
+        );
+        clock.tick(5100);
+      } finally {
+        clock.restore();
+      }
+    });
+  });
+
   describe('Locator.prototype.map', () => {
     it('should work', async () => {
       const {page} = await getTestState();
