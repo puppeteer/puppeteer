@@ -18,6 +18,7 @@ import {
 } from '../api/HTTPRequest.js';
 import {PageEvent} from '../api/Page.js';
 import {UnsupportedOperation} from '../common/Errors.js';
+import {isString} from '../common/util.js';
 
 import type {Request} from './core/Request.js';
 import type {BidiFrame} from './Frame.js';
@@ -230,12 +231,13 @@ export class BidiHTTPRequest extends HTTPRequest {
     _priority?: number
   ): Promise<void> {
     this.interception.handled = true;
-    const responseBody: string | undefined =
-      response.body && response.body instanceof Uint8Array
-        ? response.body.toString('base64')
-        : response.body
-          ? btoa(response.body)
-          : undefined;
+
+    let responseBodyBase64: string | undefined;
+    if (response.body && isString(response.body)) {
+      responseBodyBase64 = btoa(response.body);
+    } else if (response.body) {
+      responseBodyBase64 = response.body.toString('base64');
+    }
 
     const headers: Bidi.Network.Header[] = getBidiHeaders(response.headers);
     const hasContentLength = headers.some(header => {
@@ -252,13 +254,14 @@ export class BidiHTTPRequest extends HTTPRequest {
       });
     }
 
-    if (responseBody && !hasContentLength) {
-      const encoder = new TextEncoder();
+    if (responseBodyBase64 && !hasContentLength) {
       headers.push({
         name: 'content-length',
         value: {
           type: 'string',
-          value: String(encoder.encode(responseBody).byteLength),
+          value: String(
+            new TextEncoder().encode(responseBodyBase64).byteLength
+          ),
         },
       });
     }
@@ -269,10 +272,10 @@ export class BidiHTTPRequest extends HTTPRequest {
         statusCode: status,
         headers: headers.length > 0 ? headers : undefined,
         reasonPhrase: STATUS_TEXTS[status],
-        body: responseBody
+        body: responseBodyBase64
           ? {
               type: 'base64',
-              value: responseBody,
+              value: responseBodyBase64,
             }
           : undefined,
       })
