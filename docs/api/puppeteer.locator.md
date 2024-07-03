@@ -143,6 +143,19 @@ Hovers over the located element.
 </td></tr>
 <tr><td>
 
+<span id="last">[last(locators)](./puppeteer.locator.last.md)</span>
+
+</td><td>
+
+`static`
+
+</td><td>
+
+Trying to locate all the elements for locator array in parallel and return the last locator that locate element.
+
+</td></tr>
+<tr><td>
+
 <span id="map">[map(mapper)](./puppeteer.locator.map.md)</span>
 
 </td><td>

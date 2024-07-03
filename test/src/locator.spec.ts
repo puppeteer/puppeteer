@@ -611,6 +611,76 @@ describe('Locator', function () {
         clock.restore();
       }
     });
+
+    it('click the last one successfully with multiple clickable elements', async () => {
+      const {page} = await getTestState();
+
+      await page.setViewport({width: 500, height: 500});
+      await page.setContent(`
+        <button id="test1" onclick="window.count++;">test1</button>
+        <div id="test2"></div>
+         <script>
+          setTimeout(() => {
+            const element = document.createElement("button");
+            element.id = "test3";
+            element.onclick = () => {
+              const div = document.getElementById("test2");
+              div.innerText = "test2";
+            };
+            document.body.append(element);
+          }, 50);
+        </script>
+      `);
+      await page.evaluate(() => {
+        // @ts-expect-error different context.
+        window.count = 0;
+      });
+      await Locator.last([
+        page.locator('#test1'),
+        page.locator('#test3'),
+      ]).click();
+      const count = await page.evaluate(() => {
+        // @ts-expect-error different context.
+        return globalThis.count;
+      });
+      const innerText = await page.evaluate(() => {
+        return document.getElementById('test2')?.innerText;
+      });
+      expect(count).toBe(0);
+      expect(innerText).toBe('test2');
+    });
+
+    it('click the last one successfully with only the last one is clikable', async () => {
+      const {page} = await getTestState();
+
+      await page.setViewport({width: 500, height: 500});
+      await page.setContent(`
+        <button id="test1">test1</button>
+         <script>
+          setTimeout(() => {
+            const element = document.createElement("button");
+            element.id = "test2";
+            element.onclick = () => {
+              window.count++;
+            };
+            document.body.append(element);
+          }, 50);
+        </script>
+      `);
+      await page.evaluate(() => {
+        // @ts-expect-error different context.
+        window.count = 0;
+      });
+      await Locator.last([
+        page.locator('#test1'),
+        page.locator('#test2'),
+      ]).click();
+      const count = await page.evaluate(() => {
+        // @ts-expect-error different context.
+        return globalThis.count;
+      });
+      expect(count).toBe(1);
+    });
   });
 
   describe('Locator.prototype.map', () => {
