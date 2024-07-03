@@ -617,9 +617,15 @@ describe('Locator', function () {
 
       await page.setViewport({width: 500, height: 500});
       await page.setContent(`
-        <button id="test1" onclick="window.count++;">test1</button>
+        <button id="test1">test1</button>
         <div id="test2"></div>
+        <div id="test4"></div>
          <script>
+          const button1 = document.getElementById("test1");
+          button1.onclick = () => {
+            const div2 = document.getElementById("test4");
+            div2.innerText = "test4";
+          };
           setTimeout(() => {
             const element = document.createElement("button");
             element.id = "test3";
@@ -631,23 +637,18 @@ describe('Locator', function () {
           }, 50);
         </script>
       `);
-      await page.evaluate(() => {
-        // @ts-expect-error different context.
-        window.count = 0;
-      });
       await Locator.last([
         page.locator('#test1'),
         page.locator('#test3'),
       ]).click();
-      const count = await page.evaluate(() => {
-        // @ts-expect-error different context.
-        return globalThis.count;
-      });
       const innerText = await page.evaluate(() => {
         return document.getElementById('test2')?.innerText;
       });
-      expect(count).toBe(0);
+      const innerText2 = await page.evaluate(() => {
+        return document.getElementById('test4')?.innerText;
+      });
       expect(innerText).toBe('test2');
+      expect(innerText2).toBe('');
     });
 
     it('click the last one successfully with only the last one is clikable', async () => {
