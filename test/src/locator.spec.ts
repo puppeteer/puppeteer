@@ -655,7 +655,7 @@ describe('Locator', function () {
 
       await page.setViewport({width: 500, height: 500});
       await page.setContent(`
-        <button id="test1">test1</button>
+        <div id="test1" style="width: 0px; height: 0px">test1</div>
          <script>
           setTimeout(() => {
             const element = document.createElement("button");
