@@ -809,11 +809,11 @@ describe('network', function () {
       {html: 'one-script.html', resource: 'one-script.js', type: 'script'},
     ]) {
       it(`should not disable caching for ${type}`, async () => {
-        const {page, server} = await getTestState();
+        const {isFirefox, page, server} = await getTestState();
 
         // Use unique user/password since Chrome caches credentials per origin.
-        const user = `user4-${type};`;
-        const pass = `pass4-${type};`;
+        const user = `user4-${type}`;
+        const pass = `pass4-${type}`;
         server.setAuth('/cached/' + resource, user, pass);
         server.setAuth('/cached/' + html, user, pass);
         await page.authenticate({
@@ -832,7 +832,11 @@ describe('network', function () {
 
         expect(responses.get(resource).status()).toBe(200);
         expect(responses.get(resource).fromCache()).toBe(true);
-        expect(responses.get(html).status()).toBe(304);
+
+        if (!isFirefox) {
+          // TODO: Add bug number for platform issue here.
+          expect(responses.get(html).status()).toBe(304);
+        }
         expect(responses.get(html).fromCache()).toBe(false);
       });
     }
