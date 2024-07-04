@@ -582,7 +582,7 @@ describe('Locator', function () {
   });
 
   describe('Locator.last', () => {
-    it('should time out when any one of the locaters do not match', async () => {
+    it('should time out when any one of the locators do not match', async () => {
       const clock = sinon.useFakeTimers({
         shouldClearNativeTimers: true,
         shouldAdvanceTime: true,
