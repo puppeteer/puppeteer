@@ -616,39 +616,35 @@ describe('Locator', function () {
       const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
-      await page.setContent(`
-        <button id="test1">test1</button>
-        <div id="test2"></div>
-        <div id="test4"></div>
-         <script>
-          const button1 = document.getElementById("test1");
-          button1.onclick = () => {
-            const div2 = document.getElementById("test4");
-            div2.innerText = "test4";
-          };
-          setTimeout(() => {
-            const element = document.createElement("button");
-            element.id = "test3";
-            element.onclick = () => {
-              const div = document.getElementById("test2");
-              div.innerText = "test2";
-            };
-            document.body.append(element);
-          }, 50);
-        </script>
-      `);
-      await Locator.last([
+      await page.setContent(
+        `<button id="test1" onclick="this.innerText = 'clicked1'">test1</button>`
+      );
+
+      const clickDone = Locator.last([
         page.locator('#test1'),
-        page.locator('#test3'),
+        page.locator('#test2'),
       ]).click();
-      const innerText = await page.evaluate(() => {
-        return document.getElementById('test2')?.innerText;
+
+      await new Promise(resolve => {
+        setTimeout(resolve, 50);
       });
-      const innerText2 = await page.evaluate(() => {
-        return document.getElementById('test4')?.innerText;
+
+      await page.evaluate(() => {
+        document.body.innerHTML += `<button id="test2" onclick="this.innerText = 'clicked2'">test2</button>`;
       });
-      expect(innerText).toBe('test2');
-      expect(innerText2).toBe('');
+
+      await clickDone;
+
+      expect(
+        await page.$eval('#test1', el => {
+          return (el as HTMLElement).innerText;
+        })
+      ).toBe('test1');
+      expect(
+        await page.$eval('#test2', el => {
+          return (el as HTMLElement).innerText;
+        })
+      ).toBe('clicked2');
     });
 
     it('click the last one successfully with only the last one is clikable', async () => {

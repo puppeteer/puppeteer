@@ -115,9 +115,19 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
   }
 
   /**
-   * Waits for multiple locators to locate elements in DOM and 
+   * Waits for multiple locators to locate elements in DOM and
    * calls the action on the last locator waiting for action-specific preconditions.
-   * If any of the elements identified by locators is not found, the last locator times out.
+   * If any of the elements identified by locators is not found, the last locator
+   * times out.
+   * @example
+   *
+   * ```ts
+   * await Locator.last([
+   *   page.locator('#locator1'),
+   *   page.locator('#locator2'),
+   * ]).wait();
+   * await page.locator('#locator3').click();
+   * ```
    *
    * @public
    */

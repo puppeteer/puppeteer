@@ -4,7 +4,7 @@ sidebar_label: Locator.last
 
 # Locator.last() method
 
-Trying to locate all the elements for locator array in parallel and return the last locator that locate element.
+Waits for multiple locators to locate elements in DOM and calls the action on the last locator waiting for action-specific preconditions. If any of the elements identified by locators is not found, the last locator times out.
 
 #### Signature:
 
@@ -46,3 +46,13 @@ Locators
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;[AwaitedLocator](./puppeteer.awaitedlocator.md)&lt;Locators\[number\]&gt;&gt;
+
+## Example
+
+```ts
+await Locator.last([
+  page.locator('#locator1'),
+  page.locator('#locator2'),
+]).wait();
+await page.locator('#locator3').click();
+```
