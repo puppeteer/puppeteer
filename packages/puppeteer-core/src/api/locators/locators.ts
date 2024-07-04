@@ -115,8 +115,9 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
   }
 
   /**
-   * Trying to locate all the elements for locator array in parallel
-   * and return the last locator that locate element.
+   * Waits for multiple locators to locate elements in DOM and 
+   * calls the action on the last locator waiting for action-specific preconditions.
+   * If any of the elements identified by locators is not found, the last locator times out.
    *
    * @public
    */
