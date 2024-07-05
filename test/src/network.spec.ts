@@ -725,6 +725,17 @@ describe('network', function () {
   describe('Page.authenticate', function () {
     it('should work', async () => {
       const {page, server} = await getTestState();
+      server.setAuth('/empty.html', 'user', 'pass');
+      await page.authenticate({
+        username: 'user',
+        password: 'pass',
+      });
+      const response = (await page.goto(server.EMPTY_PAGE))!;
+      expect(response.status()).toBe(200);
+    });
+
+    it('should error if authentication is required but not enabled', async () => {
+      const {page, server} = await getTestState();
 
       server.setAuth('/empty.html', 'user', 'pass');
       let response;

@@ -2439,8 +2439,29 @@
     "testIdPattern": "[network.spec] network Page.authenticate should allow disable authentication",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "The Puppeteer implementation does not expect 2 responseCompleted events (that AuthRequired triggered)"
+    "expectations": ["SKIP"],
+    "comment": "The Puppeteer implementation does not expect 2 responseCompleted events (that AuthRequired triggered); times out sometimes."
+  },
+  {
+    "testIdPattern": "[network.spec] network Page.authenticate should error if authentication is required but not enabled",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"],
+    "comment": "Not supported"
+  },
+  {
+    "testIdPattern": "[network.spec] network Page.authenticate should error if authentication is required but not enabled",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "Flaky see https://github.com/puppeteer/puppeteer/issues/12253"
+  },
+  {
+    "testIdPattern": "[network.spec] network Page.authenticate should error if authentication is required but not enabled",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "When navigating to a page with authentication the navigate command does not error and never resolves due to the auth dialog being shown https://github.com/w3c/webdriver-bidi/issues/719"
   },
   {
     "testIdPattern": "[network.spec] network Page.authenticate should fail if wrong credentials",
@@ -2468,21 +2489,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[network.spec] network Page.authenticate should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "Flaky see https://github.com/puppeteer/puppeteer/issues/12253"
-  },
-  {
-    "testIdPattern": "[network.spec] network Page.authenticate should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["TIMEOUT"],
-    "comment": "When navigating to page with authentication the command response (error) never comes without interception"
+    "comment": "Not supported"
   },
   {
     "testIdPattern": "[network.spec] network Page.setExtraHTTPHeaders should work",
