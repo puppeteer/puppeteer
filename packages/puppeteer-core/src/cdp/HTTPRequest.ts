@@ -196,10 +196,13 @@ export class CdpHTTPRequest extends HTTPRequest {
   async _respond(response: Partial<ResponseForRequest>): Promise<void> {
     this.interception.handled = true;
 
+    let responseContentLength: number | undefined;
     let responseBodyBase64: string | undefined;
     if (response.body && isString(response.body)) {
+      responseContentLength = new TextEncoder().encode(response.body).length;
       responseBodyBase64 = btoa(response.body);
     } else if (response.body) {
+      responseContentLength = Buffer.byteLength(response.body);
       responseBodyBase64 = response.body.toString('base64');
     }
 
@@ -218,10 +221,8 @@ export class CdpHTTPRequest extends HTTPRequest {
     if (response.contentType) {
       responseHeaders['content-type'] = response.contentType;
     }
-    if (responseBodyBase64 && !('content-length' in responseHeaders)) {
-      responseHeaders['content-length'] = String(
-        new TextEncoder().encode(responseBodyBase64).length
-      );
+    if (responseContentLength && !('content-length' in responseHeaders)) {
+      responseHeaders['content-length'] = String(responseContentLength);
     }
 
     const status = response.status || 200;

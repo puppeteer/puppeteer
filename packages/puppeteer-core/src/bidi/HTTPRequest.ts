@@ -232,10 +232,13 @@ export class BidiHTTPRequest extends HTTPRequest {
   ): Promise<void> {
     this.interception.handled = true;
 
+    let responseContentLength: number | undefined;
     let responseBodyBase64: string | undefined;
     if (response.body && isString(response.body)) {
+      responseContentLength = new TextEncoder().encode(response.body).length;
       responseBodyBase64 = btoa(response.body);
     } else if (response.body) {
+      responseContentLength = Buffer.byteLength(response.body);
       responseBodyBase64 = response.body.toString('base64');
     }
 
@@ -254,14 +257,12 @@ export class BidiHTTPRequest extends HTTPRequest {
       });
     }
 
-    if (responseBodyBase64 && !hasContentLength) {
+    if (responseContentLength && !hasContentLength) {
       headers.push({
         name: 'content-length',
         value: {
           type: 'string',
-          value: String(
-            new TextEncoder().encode(responseBodyBase64).byteLength
-          ),
+          value: String(responseContentLength),
         },
       });
     }
