@@ -3081,22 +3081,15 @@
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should cache if cache enabled",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: Needs support for enabling cache in BiDi without CDP https://github.com/w3c/webdriver-bidi/issues/582"
+    "expectations": ["FAIL"],
+    "comment": "Needs investigation"
   },
   {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should load fonts if cache enabled",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: Needs support for enabling cache in BiDi without CDP https://github.com/w3c/webdriver-bidi/issues/582"
-  },
-  {
-    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should not cache if cache disabled",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: Needs support for enabling cache in BiDi without CDP https://github.com/w3c/webdriver-bidi/issues/582"
+    "expectations": ["TIMEOUT"],
+    "comment": "Needs investigation"
   },
   {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should work with file URLs",
@@ -3165,15 +3158,8 @@
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should cache if cache enabled",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: Needs support for enabling cache in BiDi without CDP https://github.com/w3c/webdriver-bidi/issues/582"
-  },
-  {
-    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should load fonts if cache enabled",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: Needs support for enabling cache in BiDi without CDP https://github.com/w3c/webdriver-bidi/issues/582"
+    "expectations": ["FAIL"],
+    "comment": "Needs investigation"
   },
   {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should navigate to URL with hash and fire requests without hash",
@@ -3181,13 +3167,6 @@
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL", "PASS"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should not cache if cache disabled",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: Needs support for enabling cache in BiDi without CDP https://github.com/w3c/webdriver-bidi/issues/582"
   },
   {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with file URLs",
