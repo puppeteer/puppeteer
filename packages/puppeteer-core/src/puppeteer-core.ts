@@ -6,8 +6,15 @@
 
 export * from './index.js';
 
+import FS from 'fs/promises';
+
+import {environment} from './environment.js';
 import {PuppeteerNode} from './node/PuppeteerNode.js';
 
+// Set up Node-specific environment dependencies.
+environment.value = {
+  fs: FS,
+};
 /**
  * @public
  */

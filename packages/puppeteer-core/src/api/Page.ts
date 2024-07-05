@@ -63,7 +63,6 @@ import {
   debugError,
   fromEmitterEvent,
   filterAsync,
-  importFSPromises,
   isString,
   NETWORK_IDLE_TIME,
   timeout,
@@ -71,6 +70,7 @@ import {
   fromAbortSignal,
 } from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
+import {environment} from '../environment.js';
 import type {ScreenRecorder} from '../node/ScreenRecorder.js';
 import {guarded} from '../util/decorators.js';
 import {
@@ -2286,9 +2286,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       return;
     }
 
-    const fs = await importFSPromises();
-
-    await fs.writeFile(path, buffer);
+    await environment.value.fs.writeFile(path, buffer);
   }
 
   /**
