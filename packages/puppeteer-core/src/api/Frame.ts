@@ -909,7 +909,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
     }
 
     if (path) {
-      content = await environment.value.fs.readFile(path, 'utf8');
+      content = await environment.value.fs.promises.readFile(path, 'utf8');
       content += `//# sourceURL=${path.replace(/\n/g, '')}`;
     }
 
@@ -989,7 +989,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
     }
 
     if (path) {
-      content = await environment.value.fs.readFile(path, 'utf8');
+      content = await environment.value.fs.promises.readFile(path, 'utf8');
       content += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
       options.content = content;
     }

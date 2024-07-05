@@ -199,8 +199,7 @@ export async function getReadableAsBuffer(
   const buffers: Uint8Array[] = [];
   const reader = readable.getReader();
   if (path) {
-    const fs = environment.value.fs;
-    const fileHandle = await fs.open(path, 'w+');
+    const fileHandle = await environment.value.fs.promises.open(path, 'w+');
     try {
       while (true) {
         const {done, value} = await reader.read();

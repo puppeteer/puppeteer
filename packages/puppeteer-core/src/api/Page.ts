@@ -2286,7 +2286,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       return;
     }
 
-    await environment.value.fs.writeFile(path, buffer);
+    await environment.value.fs.promises.writeFile(path, buffer);
   }
 
   /**
@@ -2332,12 +2332,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
   async screencast(
     options: Readonly<ScreencastOptions> = {}
   ): Promise<ScreenRecorder> {
-    const [{ScreenRecorder}, [width, height, devicePixelRatio]] =
-      await Promise.all([
-        import('../node/ScreenRecorder.js'),
-        this.#getNativePixelDimensions(),
-      ]);
-
+    const ScreenRecorder = environment.value.ScreenRecorder;
+    const [width, height, devicePixelRatio] =
+      await this.#getNativePixelDimensions();
     let crop: BoundingBox | undefined;
     if (options.crop) {
       const {
@@ -2396,7 +2393,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       throw error;
     }
     if (options.path) {
-      const {createWriteStream} = await import('fs');
+      const {createWriteStream} = environment.value.fs;
       const stream = createWriteStream(options.path, 'binary');
       recorder.pipe(stream);
     }

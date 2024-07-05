@@ -6,14 +6,18 @@
 
 export * from './index.js';
 
-import FS from 'fs/promises';
+import fs from 'fs';
+import path from 'path';
 
 import {environment} from './environment.js';
 import {PuppeteerNode} from './node/PuppeteerNode.js';
+import {ScreenRecorder} from './node/ScreenRecorder.js';
 
 // Set up Node-specific environment dependencies.
 environment.value = {
-  fs: FS,
+  fs,
+  path,
+  ScreenRecorder,
 };
 /**
  * @public
