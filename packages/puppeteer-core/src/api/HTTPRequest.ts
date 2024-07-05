@@ -6,7 +6,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {ProtocolError} from '../common/Errors.js';
-import {debugError} from '../common/util.js';
+import {debugError, isString} from '../common/util.js';
 import {assert} from '../util/assert.js';
 
 import type {CDPSession} from './CDPSession.js';
@@ -547,6 +547,28 @@ export abstract class HTTPRequest {
       };
       return;
     }
+  }
+
+  /**
+   * @internal
+   */
+  static getResponse(body: string | Buffer): {
+    contentLength: number;
+    base64: string;
+  } {
+    let contentLength: number;
+    let base64: string;
+    if (isString(body)) {
+      contentLength = new TextEncoder().encode(body).byteLength;
+      base64 = btoa(body);
+    } else {
+      contentLength = Buffer.byteLength(body);
+      base64 = body.toString('base64');
+    }
+    return {
+      contentLength,
+      base64,
+    };
   }
 }
 

@@ -232,14 +232,14 @@ export class BidiHTTPRequest extends HTTPRequest {
   ): Promise<void> {
     this.interception.handled = true;
 
-    let responseContentLength: number | undefined;
-    let responseBodyBase64: string | undefined;
-    if (response.body && isString(response.body)) {
-      responseContentLength = new TextEncoder().encode(response.body).length;
-      responseBodyBase64 = btoa(response.body);
-    } else if (response.body) {
-      responseContentLength = Buffer.byteLength(response.body);
-      responseBodyBase64 = response.body.toString('base64');
+    let parsedBody:
+      | {
+          contentLength: number;
+          base64: string;
+        }
+      | undefined;
+    if (response.body) {
+      parsedBody = HTTPRequest.getResponse(response.body);
     }
 
     const headers: Bidi.Network.Header[] = getBidiHeaders(response.headers);
@@ -257,12 +257,12 @@ export class BidiHTTPRequest extends HTTPRequest {
       });
     }
 
-    if (responseContentLength && !hasContentLength) {
+    if (parsedBody?.contentLength && !hasContentLength) {
       headers.push({
         name: 'content-length',
         value: {
           type: 'string',
-          value: String(responseContentLength),
+          value: String(parsedBody.contentLength),
         },
       });
     }
@@ -273,10 +273,10 @@ export class BidiHTTPRequest extends HTTPRequest {
         statusCode: status,
         headers: headers.length > 0 ? headers : undefined,
         reasonPhrase: STATUS_TEXTS[status],
-        body: responseBodyBase64
+        body: parsedBody?.base64
           ? {
               type: 'base64',
-              value: responseBodyBase64,
+              value: parsedBody?.base64,
             }
           : undefined,
       })

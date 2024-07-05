@@ -196,14 +196,14 @@ export class CdpHTTPRequest extends HTTPRequest {
   async _respond(response: Partial<ResponseForRequest>): Promise<void> {
     this.interception.handled = true;
 
-    let responseContentLength: number | undefined;
-    let responseBodyBase64: string | undefined;
-    if (response.body && isString(response.body)) {
-      responseContentLength = new TextEncoder().encode(response.body).length;
-      responseBodyBase64 = btoa(response.body);
-    } else if (response.body) {
-      responseContentLength = Buffer.byteLength(response.body);
-      responseBodyBase64 = response.body.toString('base64');
+    let parsedBody:
+      | {
+          contentLength: number;
+          base64: string;
+        }
+      | undefined;
+    if (response.body) {
+      parsedBody = HTTPRequest.getResponse(response.body);
     }
 
     const responseHeaders: Record<string, string | string[]> = {};
@@ -221,8 +221,8 @@ export class CdpHTTPRequest extends HTTPRequest {
     if (response.contentType) {
       responseHeaders['content-type'] = response.contentType;
     }
-    if (responseContentLength && !('content-length' in responseHeaders)) {
-      responseHeaders['content-length'] = String(responseContentLength);
+    if (parsedBody?.contentLength && !('content-length' in responseHeaders)) {
+      responseHeaders['content-length'] = String(parsedBody.contentLength);
     }
 
     const status = response.status || 200;
@@ -237,7 +237,7 @@ export class CdpHTTPRequest extends HTTPRequest {
         responseCode: status,
         responsePhrase: STATUS_TEXTS[status],
         responseHeaders: headersArray(responseHeaders),
-        body: responseBodyBase64,
+        body: parsedBody?.base64,
       })
       .catch(error => {
         this.interception.handled = false;
