@@ -459,7 +459,7 @@ jobs:
         run: npm run unit --workspace @puppeteer/ng-schematics
 
   ng-schematics-smoke-tests:
-    name: Angular Schematics smoke tests on ${{ matrix.os }}
+    name: Angular Schematics smoke tests on ${{ matrix.os }} ${{ matrix.test-runner }}
     runs-on: ${{ matrix.os }}
     needs: check-changes
     if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'ng-schematics') }}
@@ -472,6 +472,11 @@ jobs:
           - ubuntu-latest
           - windows-latest
           - macos-latest
+        test-runner:
+          - node
+          - jest
+          - jasmine
+          - mocha
         exclude:
           - linux-only: true
             os: windows-latest
@@ -499,7 +504,7 @@ jobs:
       - name: Build Schematics
         run: npm run build -w @puppeteer/ng-schematics
       - name: Run tests
-        run: node tools/smoke.mjs
+        run: node tools/smoke.mjs -r ${{ matrix.test-runner }}
         working-directory: ./packages/ng-schematics
 
   ng-schematics-smoke-tests-required:
