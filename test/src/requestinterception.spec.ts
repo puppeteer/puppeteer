@@ -963,7 +963,7 @@ describe('request interception', function () {
       );
     });
 
-    it.only('should report correct content-length header with string', async () => {
+    it('should report correct content-length header with string', async () => {
       const {page, server} = await getTestState();
 
       await page.setRequestInterception(true);
@@ -978,7 +978,7 @@ describe('request interception', function () {
       expect(headers['content-length']).toBe('20');
     });
 
-    it.only('should report correct content-length header with string', async () => {
+    it('should report correct content-length header with string', async () => {
       const {page, server} = await getTestState();
 
       await page.setRequestInterception(true);
