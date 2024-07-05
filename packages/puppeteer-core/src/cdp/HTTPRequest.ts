@@ -16,7 +16,7 @@ import {
   STATUS_TEXTS,
   handleError,
 } from '../api/HTTPRequest.js';
-import {debugError, isString} from '../common/util.js';
+import {debugError} from '../common/util.js';
 
 import type {CdpHTTPResponse} from './HTTPResponse.js';
 

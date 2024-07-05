@@ -18,7 +18,6 @@ import {
 } from '../api/HTTPRequest.js';
 import {PageEvent} from '../api/Page.js';
 import {UnsupportedOperation} from '../common/Errors.js';
-import {isString} from '../common/util.js';
 
 import type {Request} from './core/Request.js';
 import type {BidiFrame} from './Frame.js';

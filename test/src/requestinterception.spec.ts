@@ -963,34 +963,34 @@ describe('request interception', function () {
       );
     });
 
-    it('should report correct content-length header with string', async () => {
+    it.only('should report correct content-length header with string', async () => {
       const {page, server} = await getTestState();
 
       await page.setRequestInterception(true);
       page.on('request', request => {
         void request.respond({
           status: 200,
-          body: 'Correct length?',
+          body: 'Correct length 📏?',
         });
       });
       const response = (await page.goto(server.EMPTY_PAGE))!;
       const headers = response.headers();
-      expect(headers['content-length']).toBe('15');
+      expect(headers['content-length']).toBe('20');
     });
 
-    it('should report correct content-length header with string', async () => {
+    it.only('should report correct content-length header with string', async () => {
       const {page, server} = await getTestState();
 
       await page.setRequestInterception(true);
       page.on('request', request => {
         void request.respond({
           status: 200,
-          body: Buffer.from('Correct length?'),
+          body: Buffer.from('Correct length 📏?'),
         });
       });
       const response = (await page.goto(server.EMPTY_PAGE))!;
       const headers = response.headers();
-      expect(headers['content-length']).toBe('15');
+      expect(headers['content-length']).toBe('20');
     });
   });
 

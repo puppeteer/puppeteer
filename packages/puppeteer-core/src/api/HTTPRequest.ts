@@ -559,8 +559,14 @@ export abstract class HTTPRequest {
     let contentLength: number;
     let base64: string;
     if (isString(body)) {
-      contentLength = new TextEncoder().encode(body).byteLength;
-      base64 = btoa(body);
+      const encodedBody = new TextEncoder().encode(body);
+      contentLength = encodedBody.byteLength;
+
+      const bytes = [];
+      for (const byte of encodedBody) {
+        bytes.push(String.fromCharCode(byte));
+      }
+      base64 = btoa(bytes.join(''));
     } else {
       contentLength = Buffer.byteLength(body);
       base64 = body.toString('base64');
