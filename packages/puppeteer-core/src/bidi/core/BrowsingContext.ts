@@ -421,6 +421,18 @@ export class BrowsingContext extends EventEmitter<{
     // SAFETY: Disposal implies this exists.
     return context.#reason!;
   })
+  async setCacheBehavior(cacheBehavior: 'default' | 'bypass'): Promise<void> {
+    // @ts-expect-error not in BiDi types yet.
+    await this.#session.send('network.setCacheBehavior', {
+      contexts: [this.id],
+      cacheBehavior,
+    });
+  }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
   async print(options: PrintOptions = {}): Promise<string> {
     const {
       result: {data},
