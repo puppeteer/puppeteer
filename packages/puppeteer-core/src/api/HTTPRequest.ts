@@ -46,7 +46,7 @@ export interface ResponseForRequest {
    */
   headers: Record<string, unknown>;
   contentType: string;
-  body: string | Buffer;
+  body: string | Uint8Array;
 }
 
 /**
@@ -552,28 +552,23 @@ export abstract class HTTPRequest {
   /**
    * @internal
    */
-  static getResponse(body: string | Buffer): {
+  static getResponse(body: string | Uint8Array): {
     contentLength: number;
     base64: string;
   } {
-    let contentLength: number;
-    let base64: string;
-    if (isString(body)) {
-      const encodedBody = new TextEncoder().encode(body);
-      contentLength = encodedBody.byteLength;
+    // Needed to get the correct byteLength
+    const byteBody: Uint8Array = isString(body)
+      ? new TextEncoder().encode(body)
+      : body;
 
-      const bytes = [];
-      for (const byte of encodedBody) {
-        bytes.push(String.fromCharCode(byte));
-      }
-      base64 = btoa(bytes.join(''));
-    } else {
-      contentLength = Buffer.byteLength(body);
-      base64 = body.toString('base64');
+    const bytes = [];
+    for (const byte of byteBody) {
+      bytes.push(String.fromCharCode(byte));
     }
+
     return {
-      contentLength,
-      base64,
+      contentLength: byteBody.byteLength,
+      base64: btoa(bytes.join('')),
     };
   }
 }
