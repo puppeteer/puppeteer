@@ -2912,20 +2912,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[page.spec] Page Page.setCacheEnabled should enable or disable the cache based on the state passed",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.setCacheEnabled should stay disabled when toggling request interception on/off",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[page.spec] Page Page.setCacheEnabled should stay disabled when toggling request interception on/off",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],

@@ -421,11 +421,11 @@ export class BrowsingContext extends EventEmitter<{
     // SAFETY: Disposal implies this exists.
     return context.#reason!;
   })
-  async setCacheBypass(enabled: boolean): Promise<void> {
+  async setCacheBehavior(cacheBehavior: 'default' | 'bypass'): Promise<void> {
     // @ts-expect-error not in BiDi types yet.
-    await this.#session.send('network.setCacheBypass', {
+    await this.#session.send('network.setCacheBehavior', {
       contexts: [this.id],
-      bypass: enabled,
+      cacheBehavior,
     });
   }
 
