@@ -123,7 +123,7 @@
     "chromium-bidi": "0.6.0",
     "debug": "^4.3.5",
     "devtools-protocol": "0.0.1299070",
-    "ws": "^8.17.1"
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@types/debug": "4.1.12",
