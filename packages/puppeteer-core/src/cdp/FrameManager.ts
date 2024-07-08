@@ -8,6 +8,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {FrameEvent} from '../api/Frame.js';
+import type {NewDocumentScriptEvaluation} from '../api/Page.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import {debugError, PuppeteerURL, UTILITY_WORLD_NAME} from '../common/util.js';
@@ -16,6 +17,7 @@ import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
+import {CdpPreloadScript} from './CdpPreloadScript.js';
 import {CdpCDPSession} from './CDPSession.js';
 import {isTargetClosedError} from './Connection.js';
 import {DeviceRequestPromptManager} from './DeviceRequestPrompt.js';
@@ -43,6 +45,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
   #timeoutSettings: TimeoutSettings;
   #isolatedWorlds = new Set<string>();
   #client: CDPSession;
+  #scriptsToEvaluateOnNewDocument = new Map<string, CdpPreloadScript>();
 
   _frameTree = new FrameTree<CdpFrame>();
 
@@ -138,7 +141,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     client.once(CDPSessionEvent.Disconnected, () => {
       this.#onClientDisconnect().catch(debugError);
     });
-    await this.initialize(client);
+    await this.initialize(client, frame);
     await this.#networkManager.addClient(client);
     if (frame) {
       frame.emit(FrameEvent.FrameSwappedByActivation, undefined);
@@ -191,7 +194,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     });
   }
 
-  async initialize(client: CDPSession): Promise<void> {
+  async initialize(client: CDPSession, frame?: CdpFrame | null): Promise<void> {
     try {
       this.#frameTreeHandled?.resolve();
       this.#frameTreeHandled = Deferred.create();
@@ -209,6 +212,12 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
         client.send('Page.setLifecycleEventsEnabled', {enabled: true}),
         client.send('Runtime.enable').then(() => {
           return this.#createIsolatedWorld(client, UTILITY_WORLD_NAME);
+        }),
+        ...(frame
+          ? Array.from(this.#scriptsToEvaluateOnNewDocument.values())
+          : []
+        ).map(script => {
+          return frame?.addPreloadScript(script);
         }),
       ]);
     } catch (error) {
@@ -240,6 +249,58 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     return this._frameTree.getById(frameId) || null;
   }
 
+  async evaluateOnNewDocument(
+    source: string
+  ): Promise<NewDocumentScriptEvaluation> {
+    const {identifier} = await this.mainFrame()
+      ._client()
+      .send('Page.addScriptToEvaluateOnNewDocument', {
+        source,
+      });
+
+    const preloadScript = new CdpPreloadScript(
+      this.mainFrame(),
+      identifier,
+      source
+    );
+
+    this.#scriptsToEvaluateOnNewDocument.set(identifier, preloadScript);
+
+    await Promise.all(
+      this.frames().map(async frame => {
+        return await frame.addPreloadScript(preloadScript);
+      })
+    );
+
+    return {identifier};
+  }
+
+  async removeScriptToEvaluateOnNewDocument(identifier: string): Promise<void> {
+    const preloadScript = this.#scriptsToEvaluateOnNewDocument.get(identifier);
+    if (!preloadScript) {
+      throw new Error(
+        `Script to evaluate on new document with id ${identifier} not found`
+      );
+    }
+
+    this.#scriptsToEvaluateOnNewDocument.delete(identifier);
+
+    await Promise.all(
+      this.frames().map(frame => {
+        const identifier = preloadScript.getIdForFrame(frame);
+        if (!identifier) {
+          return;
+        }
+        return frame
+          ._client()
+          .send('Page.removeScriptToEvaluateOnNewDocument', {
+            identifier,
+          })
+          .catch(debugError);
+      })
+    );
+  }
+
   onAttachedToTarget(target: CdpTarget): void {
     if (target._getTargetInfo().type !== 'iframe') {
       return;
@@ -250,7 +311,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       frame.updateClient(target._session()!);
     }
     this.setupEventListeners(target._session()!);
-    void this.initialize(target._session()!);
+    void this.initialize(target._session()!, frame);
   }
 
   _deviceRequestPromptManager(client: CDPSession): DeviceRequestPromptManager {

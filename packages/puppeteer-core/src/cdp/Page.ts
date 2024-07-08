@@ -704,16 +704,8 @@ export class CdpPage extends Page {
     await this.#primaryTargetClient.send('Runtime.addBinding', {
       name: CDP_BINDING_PREFIX + name,
     });
-    // TODO: investigate this as it appears to only apply to the main frame and
-    // local subframes instead of the entire frame tree (including future
-    // frame).
-    const {identifier} = await this.#primaryTargetClient.send(
-      'Page.addScriptToEvaluateOnNewDocument',
-      {
-        source: expression,
-      }
-    );
-
+    const {identifier} =
+      await this.#frameManager.evaluateOnNewDocument(expression);
     this.#exposedFunctions.set(name, identifier);
 
     await Promise.all(
@@ -729,15 +721,15 @@ export class CdpPage extends Page {
   }
 
   override async removeExposedFunction(name: string): Promise<void> {
-    const exposedFun = this.#exposedFunctions.get(name);
-    if (!exposedFun) {
+    const exposedFunctionId = this.#exposedFunctions.get(name);
+    if (!exposedFunctionId) {
       throw new Error(
         `Failed to remove page binding with name ${name}: window['${name}'] does not exists!`
       );
     }
 
     await this.#primaryTargetClient.send('Runtime.removeBinding', {name});
-    await this.removeScriptToEvaluateOnNewDocument(exposedFun);
+    await this.removeScriptToEvaluateOnNewDocument(exposedFunctionId);
 
     await Promise.all(
       this.frames().map(frame => {
@@ -1019,24 +1011,14 @@ export class CdpPage extends Page {
     ...args: Params
   ): Promise<NewDocumentScriptEvaluation> {
     const source = evaluationString(pageFunction, ...args);
-    const {identifier} = await this.#primaryTargetClient.send(
-      'Page.addScriptToEvaluateOnNewDocument',
-      {
-        source,
-      }
-    );
-
-    return {identifier};
+    return await this.#frameManager.evaluateOnNewDocument(source);
   }
 
   override async removeScriptToEvaluateOnNewDocument(
     identifier: string
   ): Promise<void> {
-    await this.#primaryTargetClient.send(
-      'Page.removeScriptToEvaluateOnNewDocument',
-      {
-        identifier,
-      }
+    return await this.#frameManager.removeScriptToEvaluateOnNewDocument(
+      identifier
     );
   }
 
