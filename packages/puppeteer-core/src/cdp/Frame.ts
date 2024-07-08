@@ -16,6 +16,7 @@ import {disposeSymbol} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {Accessibility} from './Accessibility.js';
+import type {CdpPreloadScript} from './CdpPreloadScript.js';
 import type {
   DeviceRequestPrompt,
   DeviceRequestPromptManager,
@@ -324,6 +325,22 @@ export class CdpFrame extends Frame {
     } else {
       return rootFrame._frameManager._deviceRequestPromptManager(this.#client);
     }
+  }
+
+  async addPreloadScript(preloadScript: CdpPreloadScript): Promise<void> {
+    if (!this.isOOPFrame() && this !== this._frameManager.mainFrame()) {
+      return;
+    }
+    if (preloadScript.getIdForFrame(this)) {
+      return;
+    }
+    const {identifier} = await this.#client.send(
+      'Page.addScriptToEvaluateOnNewDocument',
+      {
+        source: preloadScript.source,
+      }
+    );
+    preloadScript.setIdForFrame(this, identifier);
   }
 
   @throwIfDetached

@@ -488,6 +488,27 @@ describe('OOPIF', function () {
     ]);
   });
 
+  it('should support evaluateOnNewDocument', async () => {
+    const {page, server} = state;
+
+    await page.evaluateOnNewDocument(() => {
+      (window as any).evaluateOnNewDocument = true;
+    });
+    const frame = page.waitForFrame(frame => {
+      return frame.url().endsWith('/oopif.html');
+    });
+    await page.goto(server.PREFIX + '/dynamic-oopif.html');
+    await frame;
+    expect(page.frames()).toHaveLength(2);
+    for (const frame of page.frames()) {
+      expect(
+        await frame.evaluate(() => {
+          return (window as any).evaluateOnNewDocument;
+        })
+      ).toBe(true);
+    }
+  });
+
   describe('waitForFrame', () => {
     it('should resolve immediately if the frame already exists', async () => {
       const {server, page} = state;
