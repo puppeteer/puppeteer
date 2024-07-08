@@ -77,7 +77,6 @@ import type {TargetManager} from './TargetManager.js';
 import {TargetManagerEvent} from './TargetManager.js';
 import {Tracing} from './Tracing.js';
 import {
-  CDP_BINDING_PREFIX,
   createClientError,
   pageBindingInitString,
   valueFromRemoteObject,
@@ -681,75 +680,45 @@ export class CdpPage extends Page {
         `Failed to add page binding with name ${name}: window['${name}'] already exists!`
       );
     }
-
+    const source = pageBindingInitString('exposedFun', name);
     let binding: Binding;
     switch (typeof pptrFunction) {
       case 'function':
         binding = new Binding(
           name,
-          pptrFunction as (...args: unknown[]) => unknown
+          pptrFunction as (...args: unknown[]) => unknown,
+          source
         );
         break;
       default:
         binding = new Binding(
           name,
-          pptrFunction.default as (...args: unknown[]) => unknown
+          pptrFunction.default as (...args: unknown[]) => unknown,
+          source
         );
         break;
     }
-
     this.#bindings.set(name, binding);
-
-    const expression = pageBindingInitString('exposedFun', name);
-    await this.#primaryTargetClient.send('Runtime.addBinding', {
-      name: CDP_BINDING_PREFIX + name,
-    });
-    const {identifier} =
-      await this.#frameManager.evaluateOnNewDocument(expression);
+    const [{identifier}] = await Promise.all([
+      this.#frameManager.evaluateOnNewDocument(source),
+      this.#frameManager.addExposedFunctionBinding(binding),
+    ]);
     this.#exposedFunctions.set(name, identifier);
-
-    await Promise.all(
-      this.frames().map(frame => {
-        // If a frame has not started loading, it might never start. Rely on
-        // addScriptToEvaluateOnNewDocument in that case.
-        if (frame !== this.mainFrame() && !frame._hasStartedLoading) {
-          return;
-        }
-        return frame.evaluate(expression).catch(debugError);
-      })
-    );
   }
 
   override async removeExposedFunction(name: string): Promise<void> {
     const exposedFunctionId = this.#exposedFunctions.get(name);
     if (!exposedFunctionId) {
-      throw new Error(
-        `Failed to remove page binding with name ${name}: window['${name}'] does not exists!`
-      );
+      throw new Error(`Function with name "${name}" does not exist`);
     }
-
-    await this.#primaryTargetClient.send('Runtime.removeBinding', {name});
-    await this.removeScriptToEvaluateOnNewDocument(exposedFunctionId);
-
-    await Promise.all(
-      this.frames().map(frame => {
-        // If a frame has not started loading, it might never start. Rely on
-        // addScriptToEvaluateOnNewDocument in that case.
-        if (frame !== this.mainFrame() && !frame._hasStartedLoading) {
-          return;
-        }
-        return frame
-          .evaluate(name => {
-            // Removes the dangling Puppeteer binding wrapper.
-            // @ts-expect-error: In a different context.
-            globalThis[name] = undefined;
-          }, name)
-          .catch(debugError);
-      })
-    );
-
+    // #bindings must be updated together with #exposedFunctions.
+    const binding = this.#bindings.get(name)!;
     this.#exposedFunctions.delete(name);
     this.#bindings.delete(name);
+    await Promise.all([
+      this.#frameManager.removeScriptToEvaluateOnNewDocument(exposedFunctionId),
+      this.#frameManager.removeExposedFunctionBinding(binding),
+    ]);
   }
 
   override async authenticate(credentials: Credentials | null): Promise<void> {

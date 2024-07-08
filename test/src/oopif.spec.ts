@@ -494,11 +494,10 @@ describe('OOPIF', function () {
     await page.evaluateOnNewDocument(() => {
       (window as any).evaluateOnNewDocument = true;
     });
-    const frame = page.waitForFrame(frame => {
+    await page.goto(server.PREFIX + '/dynamic-oopif.html');
+    await page.waitForFrame(frame => {
       return frame.url().endsWith('/oopif.html');
     });
-    await page.goto(server.PREFIX + '/dynamic-oopif.html');
-    await frame;
     expect(page.frames()).toHaveLength(2);
     for (const frame of page.frames()) {
       expect(
@@ -506,6 +505,72 @@ describe('OOPIF', function () {
           return (window as any).evaluateOnNewDocument;
         })
       ).toBe(true);
+    }
+  });
+
+  it('should support removing evaluateOnNewDocument scripts', async () => {
+    const {page, server} = state;
+
+    const {identifier} = await page.evaluateOnNewDocument(() => {
+      (window as any).evaluateOnNewDocument = true;
+    });
+    await page.goto(server.PREFIX + '/dynamic-oopif.html');
+    await page.waitForFrame(frame => {
+      return frame.url().endsWith('/oopif.html');
+    });
+    expect(page.frames()).toHaveLength(2);
+    for (const frame of page.frames()) {
+      expect(
+        await frame.evaluate(() => {
+          return (window as any).evaluateOnNewDocument;
+        })
+      ).toBe(true);
+    }
+    await page.removeScriptToEvaluateOnNewDocument(identifier);
+    await page.reload();
+    await page.waitForFrame(frame => {
+      return frame.url().endsWith('/oopif.html');
+    });
+  });
+
+  it('should support exposeFunction', async () => {
+    const {page, server} = state;
+
+    let count = 0;
+    await page.exposeFunction('plusOne', async () => {
+      count++;
+    });
+    await page.goto(server.PREFIX + '/dynamic-oopif.html');
+    await page.waitForFrame(frame => {
+      return frame.url().endsWith('/oopif.html');
+    });
+    expect(page.frames()).toHaveLength(2);
+    for (const frame of page.frames()) {
+      await frame.evaluate(async () => {
+        // @ts-expect-error different context
+        return window.plusOne();
+      });
+    }
+    expect(count).toBe(2);
+  });
+
+  it('should support removing exposed function', async () => {
+    const {page, server} = state;
+    await page.exposeFunction('plusOne', () => {});
+    const frame = page.waitForFrame(frame => {
+      return frame.url().endsWith('/oopif.html');
+    });
+    await page.goto(server.PREFIX + '/dynamic-oopif.html');
+    await frame;
+    expect(page.frames()).toHaveLength(2);
+    await page.removeExposedFunction('plusOne');
+    for (const frame of page.frames()) {
+      expect(
+        await frame.evaluate(() => {
+          // @ts-expect-error different context
+          return !!window['plusOne'];
+        })
+      ).toBe(false);
     }
   });
 

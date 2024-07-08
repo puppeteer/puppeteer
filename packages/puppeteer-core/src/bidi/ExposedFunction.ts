@@ -243,6 +243,11 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
             realm.evaluate(name => {
               delete (globalThis as any)[name];
             }, this.name),
+            ...frame.childFrames().map(childFrame => {
+              return childFrame.evaluate(name => {
+                delete (globalThis as any)[name];
+              }, this.name);
+            }),
             frame.browsingContext.removePreloadScript(script),
           ]);
         } catch (error) {

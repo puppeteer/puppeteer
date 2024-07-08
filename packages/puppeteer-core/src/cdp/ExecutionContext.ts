@@ -41,7 +41,8 @@ import {
 
 const ariaQuerySelectorBinding = new Binding(
   '__ariaQuerySelector',
-  ARIAQueryHandler.queryOne as (...args: unknown[]) => unknown
+  ARIAQueryHandler.queryOne as (...args: unknown[]) => unknown,
+  '' // custom init
 );
 
 const ariaQuerySelectorAllBinding = new Binding(
@@ -57,7 +58,8 @@ const ariaQuerySelectorAllBinding = new Binding(
       },
       ...(await AsyncIterableUtil.collect(results))
     );
-  }) as (...args: unknown[]) => unknown
+  }) as (...args: unknown[]) => unknown,
+  '' // custom init
 );
 
 /**
