@@ -17,6 +17,7 @@ import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
+import type {Binding} from './Binding.js';
 import {CdpPreloadScript} from './CdpPreloadScript.js';
 import {CdpCDPSession} from './CDPSession.js';
 import {isTargetClosedError} from './Connection.js';
@@ -46,6 +47,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
   #isolatedWorlds = new Set<string>();
   #client: CDPSession;
   #scriptsToEvaluateOnNewDocument = new Map<string, CdpPreloadScript>();
+  #bindings = new Set<Binding>();
 
   _frameTree = new FrameTree<CdpFrame>();
 
@@ -219,6 +221,9 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
         ).map(script => {
           return frame?.addPreloadScript(script);
         }),
+        ...(frame ? Array.from(this.#bindings.values()) : []).map(binding => {
+          return frame?.addExposedFunctionBinding(binding);
+        }),
       ]);
     } catch (error) {
       this.#frameTreeHandled?.resolve();
@@ -247,6 +252,24 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
 
   frame(frameId: string): CdpFrame | null {
     return this._frameTree.getById(frameId) || null;
+  }
+
+  async addExposedFunctionBinding(binding: Binding): Promise<void> {
+    this.#bindings.add(binding);
+    await Promise.all(
+      this.frames().map(async frame => {
+        return await frame.addExposedFunctionBinding(binding);
+      })
+    );
+  }
+
+  async removeExposedFunctionBinding(binding: Binding): Promise<void> {
+    this.#bindings.delete(binding);
+    await Promise.all(
+      this.frames().map(async frame => {
+        return await frame.removeExposedFunctionBinding(binding);
+      })
+    );
   }
 
   async evaluateOnNewDocument(

@@ -16,13 +16,23 @@ import type {ExecutionContext} from './ExecutionContext.js';
 export class Binding {
   #name: string;
   #fn: (...args: unknown[]) => unknown;
-  constructor(name: string, fn: (...args: unknown[]) => unknown) {
+  #initSource: string;
+  constructor(
+    name: string,
+    fn: (...args: unknown[]) => unknown,
+    initSource: string
+  ) {
     this.#name = name;
     this.#fn = fn;
+    this.#initSource = initSource;
   }
 
   get name(): string {
     return this.#name;
+  }
+
+  get initSource(): string {
+    return this.#initSource;
   }
 
   /**

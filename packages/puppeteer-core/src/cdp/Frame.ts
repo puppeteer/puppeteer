@@ -11,11 +11,13 @@ import {Frame, FrameEvent, throwIfDetached} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {WaitTimeoutOptions} from '../api/Page.js';
 import {UnsupportedOperation} from '../common/Errors.js';
+import {debugError} from '../common/util.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {Accessibility} from './Accessibility.js';
+import type {Binding} from './Binding.js';
 import type {CdpPreloadScript} from './CdpPreloadScript.js';
 import type {
   DeviceRequestPrompt,
@@ -31,6 +33,7 @@ import {
   type PuppeteerLifeCycleEvent,
 } from './LifecycleWatcher.js';
 import type {CdpPage} from './Page.js';
+import {CDP_BINDING_PREFIX} from './utils.js';
 
 /**
  * @internal
@@ -327,6 +330,7 @@ export class CdpFrame extends Frame {
     }
   }
 
+  @throwIfDetached
   async addPreloadScript(preloadScript: CdpPreloadScript): Promise<void> {
     if (!this.isOOPFrame() && this !== this._frameManager.mainFrame()) {
       return;
@@ -341,6 +345,40 @@ export class CdpFrame extends Frame {
       }
     );
     preloadScript.setIdForFrame(this, identifier);
+  }
+
+  @throwIfDetached
+  async addExposedFunctionBinding(binding: Binding): Promise<void> {
+    // If a frame has not started loading, it might never start. Rely on
+    // addScriptToEvaluateOnNewDocument in that case.
+    if (this !== this._frameManager.mainFrame() && !this._hasStartedLoading) {
+      return;
+    }
+    await Promise.all([
+      this.#client.send('Runtime.addBinding', {
+        name: CDP_BINDING_PREFIX + binding.name,
+      }),
+      this.evaluate(binding.initSource).catch(debugError),
+    ]);
+  }
+
+  @throwIfDetached
+  async removeExposedFunctionBinding(binding: Binding): Promise<void> {
+    // If a frame has not started loading, it might never start. Rely on
+    // addScriptToEvaluateOnNewDocument in that case.
+    if (this !== this._frameManager.mainFrame() && !this._hasStartedLoading) {
+      return;
+    }
+    await Promise.all([
+      this.#client.send('Runtime.removeBinding', {
+        name: CDP_BINDING_PREFIX + binding.name,
+      }),
+      this.evaluate(name => {
+        // Removes the dangling Puppeteer binding wrapper.
+        // @ts-expect-error: In a different context.
+        globalThis[name] = undefined;
+      }, binding.name).catch(debugError),
+    ]);
   }
 
   @throwIfDetached
