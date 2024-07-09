@@ -2513,7 +2513,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       }
     }
     if (options.quality !== undefined) {
-      if (options.quality < 0 && options.quality > 100) {
+      if (options.quality < 0 || options.quality > 100) {
         throw new Error(
           `Expected 'quality' (${options.quality}) to be between 0 and 100, inclusive.`
         );
