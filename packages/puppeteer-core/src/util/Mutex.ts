@@ -12,10 +12,13 @@ import {disposeSymbol} from './disposable.js';
 export class Mutex {
   static Guard = class Guard {
     #mutex: Mutex;
-    constructor(mutex: Mutex) {
+    #onRelease?: () => void;
+    constructor(mutex: Mutex, onRelease?: () => void) {
       this.#mutex = mutex;
+      this.#onRelease = onRelease;
     }
     [disposeSymbol](): void {
+      this.#onRelease?.();
       return this.#mutex.release();
     }
   };
@@ -24,7 +27,9 @@ export class Mutex {
   #acquirers: Array<() => void> = [];
 
   // This is FIFO.
-  async acquire(): Promise<InstanceType<typeof Mutex.Guard>> {
+  async acquire(
+    onRelease?: () => void
+  ): Promise<InstanceType<typeof Mutex.Guard>> {
     if (!this.#locked) {
       this.#locked = true;
       return new Mutex.Guard(this);
@@ -32,7 +37,7 @@ export class Mutex {
     const deferred = Deferred.create<void>();
     this.#acquirers.push(deferred.resolve.bind(deferred));
     await deferred.valueOrThrow();
-    return new Mutex.Guard(this);
+    return new Mutex.Guard(this, onRelease);
   }
 
   release(): void {

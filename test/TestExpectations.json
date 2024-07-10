@@ -1066,6 +1066,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[click.spec] Page.click should not throw UnhandledPromiseRejection when page closes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"],
+    "comment": "The timing has changed and now the target is closed early resulting in Firefox not-resolving Input commands which causes the test to time out"
+  },
+  {
     "testIdPattern": "[click.spec] Page.click should scroll and click with disabled javascript",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],

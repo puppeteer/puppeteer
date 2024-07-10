@@ -50,3 +50,9 @@ Configures screenshot behavior.
 **Returns:**
 
 Promise&lt;string&gt;
+
+## Remarks
+
+While a screenshot is being taken in a [BrowserContext](./puppeteer.browsercontext.md), the following methods will automatically wait for the screenshot to finish to prevent interference with the screenshot process: [BrowserContext.newPage()](./puppeteer.browsercontext.newpage.md), [Browser.newPage()](./puppeteer.browser.newpage.md), [Page.close()](./puppeteer.page.close.md).
+
+Calling [Page.bringToFront()](./puppeteer.page.bringtofront.md) will not wait for existing screenshot operations.
