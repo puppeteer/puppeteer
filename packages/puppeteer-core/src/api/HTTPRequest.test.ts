@@ -29,16 +29,16 @@ describe('HTTPRequest', () => {
 
       expect(response.contentLength).toBe(body.byteLength);
     });
-    it('should get body length from empty string', async () => {
+    it('should get base64 from empty string', async () => {
       const response = HTTPRequest.getResponse('');
 
       expect(response.base64).toBe(Buffer.from('').toString('base64'));
     });
-    it('should get body length from latin string', async () => {
+    it('should get base64 from latin string', async () => {
       const body = 'Lorem ipsum dolor sit amet';
       const response = HTTPRequest.getResponse(body);
 
-      expect(response.contentLength).toBe(Buffer.from(body).toString('base64'));
+      expect(response.base64).toBe(Buffer.from(body).toString('base64'));
     });
     it('should get base64 from string with emoji', async () => {
       const body = 'What am I in base64 🤔?';
