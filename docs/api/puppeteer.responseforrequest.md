@@ -43,7 +43,7 @@ Default
 
 </td><td>
 
-string \| Buffer
+string \| Uint8Array
 
 </td><td>
 

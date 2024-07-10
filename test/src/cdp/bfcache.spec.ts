@@ -45,7 +45,6 @@ describe('BFCache', function () {
     try {
       page.setDefaultTimeout(3000);
       await page.exposeFunction('ping', (msg: string) => {
-        console.log('called', msg);
         message = msg;
       });
       await page.goto(httpsServer.PREFIX + '/cached/bfcache/index.html');
