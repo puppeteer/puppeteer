@@ -107,8 +107,6 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
 
   /**
    * If defined, indicates an ongoing screenshot opereation.
-   *
-   * @internal
    */
   #pageScreenshotMutex?: Mutex;
   #screenshotOperationsCount = 0;
