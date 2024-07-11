@@ -20,6 +20,27 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.13.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.12.1...puppeteer-core-v22.13.0) (2024-07-11)
+
+
+### Features
+
+* **webdriver:** implement page.setCacheEnabled ([#12691](https://github.com/puppeteer/puppeteer/issues/12691)) ([e44d900](https://github.com/puppeteer/puppeteer/commit/e44d900c0cb7c725f88a477375f7b9658ef92eb8))
+
+
+### Bug Fixes
+
+* add an option to not wait for fonts when pdf printing ([#12675](https://github.com/puppeteer/puppeteer/issues/12675)) ([a573dbd](https://github.com/puppeteer/puppeteer/commit/a573dbd7ed858651b92dc5deafe2ebdbe86b5f4c))
+* add browser entrypoint to package.json of puppeteer-core ([#12729](https://github.com/puppeteer/puppeteer/issues/12729)) ([669c86b](https://github.com/puppeteer/puppeteer/commit/669c86b203e7ad18e7be3d6fc847872c48d05617))
+* **cli:** puppeteer CLI should read the project configuration ([#12730](https://github.com/puppeteer/puppeteer/issues/12730)) ([bca750a](https://github.com/puppeteer/puppeteer/commit/bca750afe204cc3bafb0a34a0f92b0bac5a6a55f))
+* correct validation of the quality parameter in page.screenshot  ([#12725](https://github.com/puppeteer/puppeteer/issues/12725)) ([2f8abd7](https://github.com/puppeteer/puppeteer/commit/2f8abd7a6c9be7f3ee5123e55da76c51ea132c58))
+* do not allow switching tabs while the screenshot operation is in progress ([#12724](https://github.com/puppeteer/puppeteer/issues/12724)) ([a3345f6](https://github.com/puppeteer/puppeteer/commit/a3345f6686c7634904fbd72df12588f3e230878f))
+* don't rely on Buffer to be present ([#12702](https://github.com/puppeteer/puppeteer/issues/12702)) ([3c02cef](https://github.com/puppeteer/puppeteer/commit/3c02ceffa366f747c84fa38af058c8b2dab7e3c5))
+* ensure existing targets are attached to pages ([#12677](https://github.com/puppeteer/puppeteer/issues/12677)) ([d1d8489](https://github.com/puppeteer/puppeteer/commit/d1d8489a9616375f5195ea226b7123345402030b))
+* make sure bindings are working after a page is restored from bfcache ([#12663](https://github.com/puppeteer/puppeteer/issues/12663)) ([570b1a8](https://github.com/puppeteer/puppeteer/commit/570b1a862eed1ce86dba318e143d7d4191a89c3b))
+* support evaluateOnNewDocument for out-of-process frames ([#12714](https://github.com/puppeteer/puppeteer/issues/12714)) ([eac7cda](https://github.com/puppeteer/puppeteer/commit/eac7cda537255eedb61e4ac689c1c919f892d491))
+* support out-of-process iframes in exposeFunction ([#12722](https://github.com/puppeteer/puppeteer/issues/12722)) ([b6b536b](https://github.com/puppeteer/puppeteer/commit/b6b536bb2f38b052b12a8902be348132c78a04f6))
+
 ## [22.12.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.12.0...puppeteer-core-v22.12.1) (2024-06-26)
 
 
