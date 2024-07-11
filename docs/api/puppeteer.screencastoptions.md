@@ -106,7 +106,7 @@ number
 
 </td><td>
 
-Specifies the video quality to record at
+Specifies the video quality to record at.
 
 The quality value can be from 0-63. Lower values mean better quality.
 
