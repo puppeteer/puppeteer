@@ -93,7 +93,7 @@ Whether to ignore HTTPS errors during navigation.
 
 </td><td>
 
-'cdp'
+'cdp' when launching Chrome and 'webDriverBiDi' when launching Firefox. When connecting to a running browser, defaults to 'cdp'.
 
 </td></tr>
 <tr><td>
