@@ -2393,6 +2393,12 @@ export abstract class Page extends EventEmitter<PageEvents> {
     if (options.scale !== undefined && options.scale <= 0) {
       throw new Error(`\`scale\` must be greater than 0.`);
     }
+    if (
+      options.quality !== undefined &&
+      (options.quality < 0 || options.quality > 63)
+    ) {
+      throw new Error(`\`quality\` must be between 0 and 63, inclusive.`);
+    }
 
     const recorder = new ScreenRecorder(this, width, height, {
       ...options,
