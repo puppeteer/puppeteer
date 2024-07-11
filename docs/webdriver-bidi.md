@@ -1,25 +1,21 @@
-# Experimental WebDriver BiDi support
+# WebDriver BiDi support
 
-[WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) is a new cross-browser
-automation protocol currently under development, aiming to combine the best of both WebDriver “Classic” and CDP. WebDriver BiDi promises bi-directional communication, making it fast by default, and it comes packed with low-level control.
-
-See also:
-
-- [WebDriver BiDi - The future of cross-browser automation](https://developer.chrome.com/articles/webdriver-bidi/)
-- [WebDriver BiDi: 2023 status update](https://developer.chrome.com/blog/webdriver-bidi-2023/)
+[WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) is a new
+cross-browser automation protocol currently under development, aiming to
+combine the best of both WebDriver “Classic” and CDP. WebDriver BiDi
+promises bi-directional communication, making it fast by default, and it
+comes packed with low-level control.
 
 ## Automate with Chrome and Firefox
 
 Puppeteer supports WebDriver BiDi automation with Chrome and Firefox.
-
-Firefox integration is nearing feature parity with its previous CDP-based approach. Learn more in the [dedicated announcement](https://hacks.mozilla.org/2023/12/puppeteer-webdriver-bidi/).
-
-## Measuring progress
-
-To gauge the capabilities of WebDriver BiDi, we utilized the comprehensive [Puppeteer test suite](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/)
-
-- For Firefox, there are currently under [30](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/firefox-delta.json) failing tests compared to the CDP implementation, while over [140](https://puppeteer.github.io/ispuppeteerwebdriverbidiready/firefox-delta.json) new tests successfully utilize WebDriver BiDi, demonstrating its growing potential.
-- For Chrome, around 85% of tests pass with WebDriver BiDi, indicating room for improvement compared to the CDP-based approach.
+When launching Firefox with Puppeteer, the WebDriver BiDi Protocol is
+enabled by default. When launching Chrome, CDP is still used by default
+since not all CDP features are supported by WebDriver BiDi yet. If a
+certain Puppeteer feature is not supported over WebDriver BiDi yet,
+[`UnsupportedOperation`](https://pptr.dev/api/puppeteer.unsupportedoperation/)
+error is thrown. Also see the lists below on what is supported with
+WebDriver BiDi.
 
 ## Get started
 
@@ -28,103 +24,21 @@ Below is an example of launching Firefox or Chrome with WebDriver BiDi:
 ```ts
 import puppeteer from 'puppeteer';
 
-const browser = await puppeteer.launch({
-  product: 'firefox', // or 'chrome'
-  protocol: 'webDriverBiDi',
+const firefoxBrowser = await puppeteer.launch({
+  product: 'firefox', // WebDriver BiDi is used by default.
 });
-const page = await browser.newPage();
+const page = await firefoxBrowser.newPage();
 ...
-await browser.close();
+await firefoxBrowser.close();
+
+const chromeBrowser = await puppeteer.launch({
+  product: 'chrome',
+  protocol: 'webDriverBiDi'
+});
+const page = await chromeBrowser.newPage();
+...
+await chromeBrowser.close();
 ```
-
-This is an exciting step towards a more unified and efficient cross-browser automation experience. We encourage you to explore WebDriver BiDi with Puppeteer and join us in shaping the future of browser automation.
-
-## Puppeteer features supported over WebDriver BiDi
-
-- Browser automation
-
-  - Puppeteer.launch
-  - Browser.close
-  - Browser.userAgent()
-
-- Page automation
-
-  - Page.bringToFront
-  - Page.goBack()
-  - Page.goForward()
-  - Page.goto (except `referer` and `referrerPolicy`)
-  - Frame.goto() (except `referer` and `referrerPolicy`)
-  - Page.reload (except for `ignoreCache` parameter)
-  - Page.setViewport (`width`, `height`, `deviceScaleFactor` only)
-  - Page.cookies()
-  - Page.setCookie()
-  - Page.deleteCookie()
-  - Page.workers()
-  - PageEvent.WorkerCreated
-  - PageEvent.WorkerDestroyed
-  - Page.setExtraHTTPHeaders()
-
-- [Script evaluation](https://pptr.dev/guides/evaluate-javascript):
-
-  - JSHandle.evaluate
-  - JSHandle.evaluateHandle
-  - Page.evaluate
-  - Page.exposeFunction
-
-- [Selectors](https://pptr.dev/guides/query-selectors) and [locators](https://pptr.dev/guides/locators) except for ARIA:
-
-  - Page.$ (ARIA selectors supported in Chrome)
-  - Page.$$ (ARIA selectors supported in Chrome)
-  - Page.$$eval (ARIA selectors supported in Chrome)
-  - Page.$eval (ARIA selectors supported in Chrome)
-  - Page.waitForSelector (ARIA selectors supported in Chrome)
-
-- Input
-
-  - ElementHandle.uploadFile
-  - ElementHandle.click
-  - Keyboard.down
-  - Keyboard.press
-  - Keyboard.sendCharacter
-  - Keyboard.type
-  - Keyboard.up
-  - Mouse events (except for dedicated drag'n'drop API methods)
-  - Page.tap
-  - TouchScreen.\*
-
-- JavaScript dialog interception
-
-  - page.on('dialog')
-  - Dialog.\*
-
-- Screenshots (not all parameters are supported)
-
-  - Page.screenshot (supported parameters `clip`, `encoding`, `fullPage`)
-
-- PDF generation (not all parameters are supported)
-
-  - Page.pdf (only `format`, `height`, `landscape`, `margin`, `pageRanges`, `printBackground`, `scale`, `width` are supported)
-  - Page.createPDFStream (only `format`, `height`, `landscape`, `margin`, `pageRanges`, `printBackground`, `scale`, `width` are supported)
-
-- Permissions (Supported in Chrome only)
-
-  - BrowserContext.clearPermissionOverrides()
-  - BrowserContext.overridePermissions()
-
-- [Request interception](https://pptr.dev/guides/request-interception)
-  - HTTPRequest.abort() (no custom error support)
-  - HTTPRequest.abortErrorReason()
-  - HTTPRequest.continue()
-  - HTTPRequest.continueRequestOverrides()
-  - HTTPRequest.failure()
-  - HTTPRequest.finalizeInterceptions()
-  - HTTPRequest.interceptResolutionState()
-  - HTTPRequest.isInterceptResolutionHandled()
-  - HTTPRequest.respond()
-  - HTTPRequest.responseForRequest()
-  - Page.authenticate()
-  - Page.setRequestInterception()
-  - Page.setUserAgent()
 
 ## Puppeteer features not yet supported over WebDriver BiDi
 
@@ -138,18 +52,17 @@ This is an exciting step towards a more unified and efficient cross-browser auto
   - Page.emulateTimezone() (supported only in Chrome)
   - Page.emulateVisionDeficiency() (supported only in Chrome)
   - Page.setBypassCSP() (supported only in Chrome)
-  - Page.setCacheEnabled() (supported only in Chrome)
   - Page.setGeolocation() (supported only in Chrome)
   - Page.setJavaScriptEnabled() (supported only in Chrome)
 
 - CDP-specific features
 
-  - Page.createCDPSession() (supported only in Chrome)
   - HTTPRequest.client() (supported only in Chrome)
+  - Page.createCDPSession() (supported only in Chrome)
 
-- Tracing (supported only in Chrome)
-- Coverage (supported only in Chrome)
 - Accessibility (supported only in Chrome)
+- Coverage (supported only in Chrome)
+- Tracing (supported only in Chrome)
 
 - Other methods:
 
@@ -175,4 +88,101 @@ This is an exciting step towards a more unified and efficient cross-browser auto
   - Page.waitForDevicePrompt()
   - Page.waitForFileChooser()
   - PageEvent.popup
+
+## Puppeteer features fully supported over WebDriver BiDi
+
+- Browser automation
+
+  - Browser.close()
+  - Browser.userAgent()
+  - Browser.version()
+  - Puppeteer.launch()
+
+- Page automation
+
+  - Page.bringToFront
+  - Page.goBack()
+  - Page.goForward()
+  - Page.goto (except `referer` and `referrerPolicy`)
+  - Frame.goto() (except `referer` and `referrerPolicy`)
+  - Page.reload (except for `ignoreCache` parameter)
+  - Page.setViewport (`width`, `height`, `deviceScaleFactor` only)
+  - Page.cookies()
+  - Page.setCookie()
+  - Page.deleteCookie()
+  - Page.workers()
+  - PageEvent.WorkerCreated
+  - PageEvent.WorkerDestroyed
+  - Page.setExtraHTTPHeaders()
   - Target.opener()
+  - Page 'popup' event
+  - Page.setCacheEnabled()
+
+- [Script evaluation](https://pptr.dev/guides/evaluate-javascript):
+
+  - JSHandle.evaluate
+  - JSHandle.evaluateHandle
+  - Page.evaluate
+  - Page.exposeFunction
+
+- [Selectors](https://pptr.dev/guides/query-selectors) and [locators](https://pptr.dev/guides/locators) except for ARIA:
+
+  - Page.$
+  - Page.$$
+  - Page.$$eval
+  - Page.$eval
+  - Page.waitForSelector
+  - Page.locator.\*
+
+- Input
+
+  - ElementHandle.click
+  - ElementHandle.uploadFile
+  - Keyboard.down
+  - Keyboard.press
+  - Keyboard.sendCharacter
+  - Keyboard.type
+  - Keyboard.up
+  - Mouse events (except for dedicated drag'n'drop API methods)
+  - Page.tap
+  - TouchScreen.\*
+
+- JavaScript dialog interception
+
+  - page.on('dialog')
+  - Dialog.\*
+
+- Screenshots (not all parameters are supported)
+
+  - Page.screenshot (supported parameters are `clip`, `encoding`, `fullPage`)
+
+- PDF generation (not all parameters are supported)
+
+  - Page.pdf (only `format`, `height`, `landscape`, `margin`, `pageRanges`, `printBackground`, `scale`, `width` are supported)
+  - Page.createPDFStream (only `format`, `height`, `landscape`, `margin`, `pageRanges`, `printBackground`, `scale`, `width` are supported)
+
+- Permissions
+
+  - BrowserContext.clearPermissionOverrides()
+  - BrowserContext.overridePermissions()
+
+- [Request interception](https://pptr.dev/guides/request-interception)
+  - HTTPRequest.abort() (no custom error support)
+  - HTTPRequest.abortErrorReason()
+  - HTTPRequest.continue()
+  - HTTPRequest.continueRequestOverrides()
+  - HTTPRequest.failure()
+  - HTTPRequest.finalizeInterceptions()
+  - HTTPRequest.interceptResolutionState()
+  - HTTPRequest.isInterceptResolutionHandled()
+  - HTTPRequest.respond()
+  - HTTPRequest.responseForRequest()
+  - Page.authenticate()
+  - Page.setRequestInterception()
+  - Page.setUserAgent()
+
+## See also
+
+- [WebDriver BiDi - The future of cross-browser automation](https://developer.chrome.com/articles/webdriver-bidi/)
+- [WebDriver BiDi: 2023 status update](https://developer.chrome.com/blog/webdriver-bidi-2023/)
+- [Puppeteer Support for the Cross-Browser WebDriver BiDi Standard](https://hacks.mozilla.org/2023/12/puppeteer-webdriver-bidi/)
