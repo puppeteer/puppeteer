@@ -84,7 +84,11 @@ export class BidiHTTPRequest extends HTTPRequest {
       void httpRequest.finalizeInterceptions();
     });
     this.#request.once('success', data => {
-      this.#response = BidiHTTPResponse.from(data, this);
+      this.#response = BidiHTTPResponse.from(
+        data,
+        this,
+        this.#frame.page().browser().cdpSupported
+      );
     });
     this.#request.on('authenticate', this.#handleAuthentication);
 
