@@ -350,6 +350,14 @@ export interface ScreencastOptions {
    * Required if `ffmpeg` is not in your PATH.
    */
   ffmpegPath?: string;
+  /**
+   * Specifies the video quality to record at
+   *
+   * The quality value can be from 0-63. Lower values mean better quality.
+   *
+   * @defaultValue `30`
+   */
+  quality?: number;
 }
 
 /**

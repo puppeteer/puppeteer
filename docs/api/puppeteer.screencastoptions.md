@@ -94,6 +94,29 @@ File path to save the screencast to.
 </td></tr>
 <tr><td>
 
+<span id="quality">quality</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Specifies the video quality to record at
+
+The quality value can be from 0-63. Lower values mean better quality.
+
+</td><td>
+
+`30`
+
+</td></tr>
+<tr><td>
+
 <span id="scale">scale</span>
 
 </td><td>
