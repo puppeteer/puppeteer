@@ -267,6 +267,7 @@ export class BidiPage extends Page {
   }
 
   override async close(options?: {runBeforeUnload?: boolean}): Promise<void> {
+    using _guard = await this.#browserContext.waitForScreenshotOperations();
     try {
       await this.#frame.browsingContext.close(options?.runBeforeUnload);
     } catch {

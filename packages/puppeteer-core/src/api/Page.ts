@@ -2471,6 +2471,18 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * Captures a screenshot of this {@link Page | page}.
    *
    * @param options - Configures screenshot behavior.
+   *
+   * @remarks
+   *
+   * While a screenshot is being taken in a {@link BrowserContext}, the
+   * following methods will automatically wait for the screenshot to
+   * finish to prevent interference with the screenshot process:
+   * {@link BrowserContext.newPage}, {@link Browser.newPage},
+   * {@link Page.close}.
+   *
+   * Calling {@link Page.bringToFront} will not wait for existing
+   * screenshot operations.
+   *
    */
   async screenshot(
     options: Readonly<ScreenshotOptions> & {encoding: 'base64'}
@@ -2482,6 +2494,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
   async screenshot(
     userOptions: Readonly<ScreenshotOptions> = {}
   ): Promise<Buffer | string> {
+    using _guard = await this.browserContext().startScreenshot();
+
     await this.bringToFront();
 
     // TODO: use structuredClone after Node 16 support is dropped.

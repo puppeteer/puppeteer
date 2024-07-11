@@ -175,6 +175,8 @@ export class BidiBrowserContext extends BrowserContext {
   }
 
   override async newPage(): Promise<Page> {
+    using _guard = await this.waitForScreenshotOperations();
+
     const context = await this.userContext.createBrowsingContext(
       Bidi.BrowsingContext.CreateType.Tab
     );

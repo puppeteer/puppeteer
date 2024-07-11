@@ -1140,6 +1140,7 @@ export class CdpPage extends Page {
   override async close(
     options: {runBeforeUnload?: boolean} = {runBeforeUnload: undefined}
   ): Promise<void> {
+    using _guard = await this.browserContext().waitForScreenshotOperations();
     const connection = this.#primaryTargetClient.connection();
     assert(
       connection,
