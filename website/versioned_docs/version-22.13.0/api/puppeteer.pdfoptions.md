@@ -376,9 +376,32 @@ number
 
 Timeout in milliseconds. Pass `0` to disable timeout.
 
+The default value can be changed by using [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md)
+
 </td><td>
 
 `30_000`
+
+</td></tr>
+<tr><td>
+
+<span id="waitforfonts">waitForFonts</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+If true, waits for `document.fonts.ready` to resolve. This might require activating the page using [Page.bringToFront()](./puppeteer.page.bringtofront.md) if the page is in the background.
+
+</td><td>
+
+`true`
 
 </td></tr>
 <tr><td>
