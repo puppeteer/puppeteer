@@ -4,12 +4,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
-import type Protocol from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
 import type {Frame} from '../api/Frame.js';
 import {HTTPResponse, type RemoteAddress} from '../api/HTTPResponse.js';
 import {PageEvent} from '../api/Page.js';
 import {UnsupportedOperation} from '../common/Errors.js';
+import {SecurityDetails} from '../common/SecurityDetails.js';
 import {invokeAtMostOnceForArguments} from '../util/decorators.js';
 
 import type {BidiHTTPRequest} from './HTTPRequest.js';
@@ -20,23 +21,36 @@ import type {BidiHTTPRequest} from './HTTPRequest.js';
 export class BidiHTTPResponse extends HTTPResponse {
   static from(
     data: Bidi.Network.ResponseData,
-    request: BidiHTTPRequest
+    request: BidiHTTPRequest,
+    cdpSupported: boolean
   ): BidiHTTPResponse {
-    const response = new BidiHTTPResponse(data, request);
+    const response = new BidiHTTPResponse(data, request, cdpSupported);
     response.#initialize();
     return response;
   }
 
   #data: Bidi.Network.ResponseData;
   #request: BidiHTTPRequest;
+  #securityDetails?: SecurityDetails;
+  #cdpSupported = false;
 
   private constructor(
     data: Bidi.Network.ResponseData,
-    request: BidiHTTPRequest
+    request: BidiHTTPRequest,
+    cdpSupported: boolean
   ) {
     super();
     this.#data = data;
     this.#request = request;
+    this.#cdpSupported = cdpSupported;
+
+    // @ts-expect-error non-standard property.
+    const securityDetails = data['goog:securityDetails'];
+    if (cdpSupported && securityDetails) {
+      this.#securityDetails = new SecurityDetails(
+        securityDetails as Protocol.Network.SecurityDetails
+      );
+    }
   }
 
   #initialize() {
@@ -103,8 +117,11 @@ export class BidiHTTPResponse extends HTTPResponse {
     return false;
   }
 
-  override securityDetails(): never {
-    throw new UnsupportedOperation();
+  override securityDetails(): SecurityDetails | null {
+    if (!this.#cdpSupported) {
+      throw new UnsupportedOperation();
+    }
+    return this.#securityDetails ?? null;
   }
 
   override buffer(): never {
