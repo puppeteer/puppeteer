@@ -36,6 +36,9 @@ export abstract class Dialog {
   #type: Protocol.Page.DialogType;
   #message: string;
   #defaultValue: string;
+  /**
+   * @internal
+   */
   protected handled = false;
 
   /**

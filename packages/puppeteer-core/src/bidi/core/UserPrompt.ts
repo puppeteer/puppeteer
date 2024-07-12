@@ -96,10 +96,13 @@ export class UserPrompt extends EventEmitter<{
     return this.closed;
   }
   get handled(): boolean {
-    if (this.info.handler === Bidi.Session.UserPromptHandlerType.Ignore) {
-      return this.#result !== undefined;
+    if (
+      this.info.handler === Bidi.Session.UserPromptHandlerType.Accept ||
+      this.info.handler === Bidi.Session.UserPromptHandlerType.Dismiss
+    ) {
+      return true;
     }
-    return true;
+    return this.#result !== undefined;
   }
   get result(): UserPromptResult | undefined {
     return this.#result;
