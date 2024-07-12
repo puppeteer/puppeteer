@@ -125,7 +125,7 @@ export class BidiHTTPRequest extends HTTPRequest {
     if (!this.#frame.page().browser().cdpSupported) {
       throw new UnsupportedOperation();
     }
-    return this.#request.postData as string;
+    return this.#request.postData;
   }
 
   override hasPostData(): boolean {

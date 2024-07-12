@@ -521,13 +521,6 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[network.spec] network Request.postData should be |undefined| when there is no post data",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Unsupported"
-  },
-  {
     "testIdPattern": "[network.spec] network Request.postData should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -2539,6 +2532,13 @@
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[network.spec] network Request.postData should be |undefined| when there is no post data",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Unsupported"
   },
   {
     "testIdPattern": "[network.spec] network Request.postData should work",
