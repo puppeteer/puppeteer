@@ -169,9 +169,9 @@ export class Request extends EventEmitter<{
     return this.#event['goog:resourceType'] ?? undefined;
   }
 
-  get postData(): string {
+  get postData(): string | undefined {
     // @ts-expect-error non-standard attribute.
-    return this.#event['goog:postData'] ?? '';
+    return this.#event['goog:postData'] ?? undefined;
   }
 
   get hasPostData(): boolean {
