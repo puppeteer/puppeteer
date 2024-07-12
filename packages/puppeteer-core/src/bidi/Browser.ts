@@ -72,6 +72,7 @@ export class BidiBrowser extends Browser {
     const session = await Session.from(opts.connection, {
       alwaysMatch: {
         acceptInsecureCerts: opts.ignoreHTTPSErrors,
+        unhandledPromptBehavior: 'ignore' as any,
         webSocketUrl: true,
       },
     });
