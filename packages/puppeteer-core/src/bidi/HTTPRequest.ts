@@ -111,7 +111,10 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override resourceType(): ResourceType {
-    throw new UnsupportedOperation();
+    if (!this.#frame.page().browser().cdpSupported) {
+      throw new UnsupportedOperation();
+    }
+    return this.#request.resourceType as ResourceType;
   }
 
   override method(): string {
@@ -119,11 +122,17 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override postData(): string | undefined {
-    throw new UnsupportedOperation();
+    if (!this.#frame.page().browser().cdpSupported) {
+      throw new UnsupportedOperation();
+    }
+    return this.#request.postData as string;
   }
 
   override hasPostData(): boolean {
-    throw new UnsupportedOperation();
+    if (!this.#frame.page().browser().cdpSupported) {
+      throw new UnsupportedOperation();
+    }
+    return this.#request.hasPostData;
   }
 
   override async fetchPostData(): Promise<string | undefined> {
