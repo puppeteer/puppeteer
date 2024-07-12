@@ -23,8 +23,8 @@ jobs:
             We're marking this issue as unconfirmed because it has not
             had recent activity and we weren't able to confirm or
             reproduce it. The issue will be closed if no further
-            activity occurs within the next 7 days. cc @OrKoN
-            @Lightning00Blade
+            activity occurs within the next 7 days. 
+            cc @OrKoN @Lightning00Blade
           close-issue-message: >
             We are closing this unconfirmed issue. If the issue still
             persists in the latest version of Puppeteer, please file a
