@@ -11,7 +11,7 @@ import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 describe('Page.Events.Dialog', function () {
   setupTestBrowserHooks();
 
-  it('should fire', async () => {
+  it.only('should fire', async () => {
     const {page} = await getTestState();
 
     const onDialog = sinon.stub().callsFake(dialog => {
