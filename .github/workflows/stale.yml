@@ -1,7 +1,8 @@
 name: 'Close stale issues and PRs'
 on:
   schedule:
-    - cron: '30 1 * * *'
+    # The action processes up to 30 issues at once, so we need to run more frequently.
+    - cron: '*/60 * * * *'
   workflow_dispatch:
 
 # Declare default permissions as read only.
