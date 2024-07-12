@@ -16,16 +16,21 @@ jobs:
     steps:
       - uses: actions/stale@28ca1036281a5e5922ead5184a1bbf96e5fc984e # v9.0.0
         with:
+          days-before-pr-close: -1
+          days-before-stale: 14
           # Issue settings
           stale-issue-message: >
-            We're marking this issue as unconfirmed because it has not had recent activity and 
-            we weren't able to confirm it yet. It will be closed if no further activity occurs
-            within the next 30 days.
+            We're marking this issue as unconfirmed because it has not
+            had recent activity and we weren't able to confirm or
+            reproduce it. The issue will be closed if no further
+            activity occurs within the next 7 days. cc @OrKoN
+            @Lightning00Blade
           close-issue-message: >
-            We are closing this issue. If the issue still persists in the latest version of
-            Puppeteer, please reopen the issue and update the description. We will try our
-            best to accommodate it!
+            We are closing this unconfirmed issue. If the issue still
+            persists in the latest version of Puppeteer, please file a
+            new issue and include a minimal reproducible example or
+            other details that would allow us to reproduce it.
           stale-issue-label: 'unconfirmed'
           exempt-issue-labels: 'confirmed,feature'
           # PR settings
-          days-before-pr-close: -1
+          days-before-close: 7
