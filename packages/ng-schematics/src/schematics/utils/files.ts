@@ -81,7 +81,7 @@ function getProjectBaseUrl(project: AngularProject, port: number): string {
 
   if (project.architect?.serve?.options) {
     const projectOptions = project.architect?.serve?.options;
-    const projectPort = port !== 4200 ? port : projectOptions?.port ?? port;
+    const projectPort = port !== 4200 ? port : (projectOptions?.port ?? port);
     options = {...options, ...projectOptions, port: projectPort};
     options.protocol = projectOptions.ssl ? 'https' : 'http';
   }
