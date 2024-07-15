@@ -18,6 +18,7 @@ import {
   timer,
 } from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
+import {packageVersion} from '../generated/version.js';
 import {assert} from '../util/assert.js';
 
 import {debug} from './Debug.js';
@@ -326,7 +327,8 @@ export function timeout(ms: number, cause?: Error): Observable<never> {
 /**
  * @internal
  */
-export const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
+export const UTILITY_WORLD_NAME =
+  '__puppeteer_utility_world__' + packageVersion;
 
 /**
  * @internal
