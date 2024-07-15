@@ -114,7 +114,9 @@ export class BidiHTTPRequest extends HTTPRequest {
     if (!this.#frame.page().browser().cdpSupported) {
       throw new UnsupportedOperation();
     }
-    return this.#request.resourceType as ResourceType;
+    return (
+      this.#request.resourceType || 'other'
+    ).toLowerCase() as ResourceType;
   }
 
   override method(): string {

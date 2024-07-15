@@ -91,13 +91,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[network.spec] network Request.resourceType *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Bidi does not have equivalent field"
-  },
-  {
     "testIdPattern": "[network.spec] network Response.buffer *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -528,18 +521,18 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[network.spec] network Request.postData should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[network.spec] network Request.postData should work with blobs",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "Not implemented for BiDi yet."
+  },
+  {
+    "testIdPattern": "[network.spec] network Request.resourceType *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Bidi does not have equivalent field"
   },
   {
     "testIdPattern": "[network.spec] network Response.fromCache should work for *",
@@ -710,25 +703,18 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should be abortable with custom error codes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "TODO: BiDi does not support custom errors - https://github.com/w3c/webdriver-bidi/issues/508"
+  },
+  {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should navigate to URL with hash and fire requests without hash",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "BiDi spec expect the request to not trim the hash"
-  },
-  {
-    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Request.resourceType should work for document type",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "`HTTPRequest.resourceType()` has no eqivalent in BiDi spec"
-  },
-  {
-    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Request.resourceType should work for stylesheets",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "`HTTPRequest.resourceType()` has no eqivalent in BiDi spec"
   },
   {
     "testIdPattern": "[requestinterception.spec] *",
@@ -742,7 +728,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "`HTTPRequest.resourceType()` has no eqivalent in BiDi spec"
+    "comment": "https://github.com/w3c/webdriver-bidi/issues/508"
   },
   {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should navigate to URL with hash and fire requests without hash",
@@ -750,20 +736,6 @@
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "BiDi spec and WPT require expect the Hash"
-  },
-  {
-    "testIdPattern": "[requestinterception.spec] request interception Request.resourceType should work for document type",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "`HTTPRequest.resourceType()` has no eqivalent in BiDi spec"
-  },
-  {
-    "testIdPattern": "[requestinterception.spec] request interception Request.resourceType should work for stylesheets",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "`HTTPRequest.resourceType()` has no eqivalent in BiDi spec"
   },
   {
     "testIdPattern": "[screencast.spec] Screencasts Page.screencast should validate options",
@@ -2536,6 +2508,13 @@
   {
     "testIdPattern": "[network.spec] network Request.postData should work",
     "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[network.spec] network Request.postData should work",
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
@@ -3071,13 +3050,6 @@
     "comment": "TODO: Needs support for data URIs in Firefox in content process https://bugzilla.mozilla.org/show_bug.cgi?id=1903060"
   },
   {
-    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should be abortable with custom error codes",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: BiDi does not support custom errors - https://github.com/w3c/webdriver-bidi/issues/508"
-  },
-  {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should cache stylesheet if cache enabled",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -3104,6 +3076,20 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "Firefox needs support for the url parameter of continueRequest"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Request.resourceType should work for document type",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "`HTTPRequest.resourceType()` has no eqivalent in BiDi spec"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Request.resourceType should work for stylesheets",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "`HTTPRequest.resourceType()` has no eqivalent in BiDi spec"
   },
   {
     "testIdPattern": "[requestinterception-experimental.spec] request interception \"after each\" hook in \"request interception\"",
@@ -3188,6 +3174,20 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "Firefox needs support for the url parameter of continueRequest"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.resourceType should work for document type",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "`HTTPRequest.resourceType()` has no eqivalent in BiDi spec"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.resourceType should work for stylesheets",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "`HTTPRequest.resourceType()` has no eqivalent in BiDi spec"
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Cdp should use scale for clip",
@@ -3550,13 +3550,6 @@
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["SKIP"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should be abortable with custom error codes",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "headless", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "`HTTPRequest.resourceType()` has no eqivalent in BiDi spec"
   },
   {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should be abortable",
