@@ -36,7 +36,7 @@
   "devDependencies": {
     "@types/yargs": "17.0.32",
     "c8": "10.1.2",
-    "glob": "10.4.3",
+    "glob": "10.4.5",
     "yargs": "17.7.2",
     "zod": "3.23.8"
   }
