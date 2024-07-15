@@ -17,6 +17,7 @@ export class BidiDialog extends Dialog {
   private constructor(prompt: UserPrompt) {
     super(prompt.info.type, prompt.info.message, prompt.info.defaultValue);
     this.#prompt = prompt;
+    this.handled = prompt.handled;
   }
 
   override async handle(options: {
