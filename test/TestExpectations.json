@@ -300,6 +300,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[dialog.spec] Page.Events.Dialog *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "Firefox reports handler dismiss while we sent unhandledPromptBehavior ignore"
+  },
+  {
     "testIdPattern": "[drag-and-drop.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -2777,6 +2784,13 @@
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "https://github.com/GoogleChromeLabs/chromium-bidi/pull/2412"
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.close should run beforeunload if asked for",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox reports handler dismiss while we sent unhandledPromptBehavior ignore"
   },
   {
     "testIdPattern": "[page.spec] Page Page.close should terminate network waiters",
