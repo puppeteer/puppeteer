@@ -4,17 +4,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {exec as execChildProcess, spawnSync} from 'child_process';
+import {spawnSync} from 'child_process';
 import {createReadStream} from 'fs';
 import {mkdir, readdir} from 'fs/promises';
 import * as path from 'path';
-import {promisify} from 'util';
 
 import extractZip from 'extract-zip';
 import tar from 'tar-fs';
 import bzip from 'unbzip2-stream';
-
-const exec = promisify(execChildProcess);
 
 /**
  * @internal
@@ -64,11 +61,14 @@ function extractTar(tarPath: string, folderPath: string): Promise<void> {
  * @internal
  */
 async function installDMG(dmgPath: string, folderPath: string): Promise<void> {
-  const {stdout} = await exec(
-    `hdiutil attach -nobrowse -noautoopen "${dmgPath}"`
-  );
+  const {stdout} = spawnSync(`hdiutil`, [
+    'attach',
+    '-nobrowse',
+    '-noautoopen',
+    dmgPath,
+  ]);
 
-  const volumes = stdout.match(/\/Volumes\/(.*)/m);
+  const volumes = stdout.toString('utf8').match(/\/Volumes\/(.*)/m);
   if (!volumes) {
     throw new Error(`Could not find volume path in ${stdout}`);
   }
@@ -84,8 +84,8 @@ async function installDMG(dmgPath: string, folderPath: string): Promise<void> {
     }
     const mountedPath = path.join(mountPath!, appName);
 
-    await exec(`cp -R "${mountedPath}" "${folderPath}"`);
+    spawnSync('cp', ['-R', mountedPath, folderPath]);
   } finally {
-    await exec(`hdiutil detach "${mountPath}" -quiet`);
+    spawnSync('hdiutil', ['detach', mountPath, '-quiet']);
   }
 }
