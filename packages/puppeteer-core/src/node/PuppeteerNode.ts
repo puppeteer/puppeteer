@@ -5,7 +5,7 @@
  */
 
 import {
-  Browser as SupportedBrowser,
+  Browser as browsers_SupportedBrowser,
   resolveBuildId,
   detectBrowserPlatform,
   getInstalledBrowsers,
@@ -18,8 +18,8 @@ import type {
   ConnectOptions,
   BrowserConnectOptions,
 } from '../common/ConnectOptions.js';
-import type {Product} from '../common/Product.js';
 import {type CommonPuppeteerSettings, Puppeteer} from '../common/Puppeteer.js';
+import type {SupportedBrowser} from '../common/SupportedBrowser.js';
 import {PUPPETEER_REVISIONS} from '../revisions.js';
 
 import {ChromeLauncher} from './ChromeLauncher.js';
@@ -29,7 +29,7 @@ import type {
   ChromeReleaseChannel,
   LaunchOptions,
 } from './LaunchOptions.js';
-import type {ProductLauncher} from './ProductLauncher.js';
+import type {BrowserLauncher} from './ProductLauncher.js';
 
 /**
  * @public
@@ -38,7 +38,7 @@ export interface PuppeteerLaunchOptions
   extends LaunchOptions,
     BrowserLaunchArgumentOptions,
     BrowserConnectOptions {
-  product?: Product;
+  browser?: SupportedBrowser;
   extraPrefsFirefox?: Record<string, unknown>;
 }
 
@@ -78,8 +78,8 @@ export interface PuppeteerLaunchOptions
  * @public
  */
 export class PuppeteerNode extends Puppeteer {
-  #_launcher?: ProductLauncher;
-  #lastLaunchedProduct?: Product;
+  #_launcher?: BrowserLauncher;
+  #lastLaunchedProduct?: SupportedBrowser;
 
   /**
    * @internal
@@ -104,12 +104,12 @@ export class PuppeteerNode extends Puppeteer {
     if (configuration) {
       this.configuration = configuration;
     }
-    switch (this.configuration.defaultProduct) {
+    switch (this.configuration.defaultBrowser) {
       case 'firefox':
         this.defaultBrowserRevision = PUPPETEER_REVISIONS.firefox;
         break;
       default:
-        this.configuration.defaultProduct = 'chrome';
+        this.configuration.defaultBrowser = 'chrome';
         this.defaultBrowserRevision = PUPPETEER_REVISIONS.chrome;
         break;
     }
@@ -168,7 +168,7 @@ export class PuppeteerNode extends Puppeteer {
    * @param options - Options to configure launching behavior.
    */
   launch(options: PuppeteerLaunchOptions = {}): Promise<Browser> {
-    const {product = this.defaultProduct} = options;
+    const {browser: product = this.defaultProduct} = options;
     this.#lastLaunchedProduct = product;
     return this.#launcher.launch(options);
   }
@@ -176,10 +176,10 @@ export class PuppeteerNode extends Puppeteer {
   /**
    * @internal
    */
-  get #launcher(): ProductLauncher {
+  get #launcher(): BrowserLauncher {
     if (
       this.#_launcher &&
-      this.#_launcher.product === this.lastLaunchedProduct
+      this.#_launcher.browser === this.lastLaunchedProduct
     ) {
       return this.#_launcher;
     }
@@ -229,7 +229,7 @@ export class PuppeteerNode extends Puppeteer {
   /**
    * The name of the browser that was last launched.
    */
-  get lastLaunchedProduct(): Product {
+  get lastLaunchedProduct(): SupportedBrowser {
     return this.#lastLaunchedProduct ?? this.defaultProduct;
   }
 
@@ -238,8 +238,8 @@ export class PuppeteerNode extends Puppeteer {
    * `puppeteer`, this is influenced by your configuration. Otherwise, it's
    * `chrome`.
    */
-  get defaultProduct(): Product {
-    return this.configuration.defaultProduct ?? 'chrome';
+  get defaultProduct(): SupportedBrowser {
+    return this.configuration.defaultBrowser ?? 'chrome';
   }
 
   /**
@@ -251,7 +251,7 @@ export class PuppeteerNode extends Puppeteer {
    * @returns The name of the browser that is under automation.
    */
   get product(): string {
-    return this.#launcher.product;
+    return this.#launcher.browser;
   }
 
   /**
@@ -288,21 +288,21 @@ export class PuppeteerNode extends Puppeteer {
       cacheDir,
     });
 
-    const product = this.configuration.defaultProduct!;
+    const product = this.configuration.defaultBrowser!;
 
     const puppeteerBrowsers: Array<{
-      product: Product;
-      browser: SupportedBrowser;
+      product: SupportedBrowser;
+      browser: browsers_SupportedBrowser;
       currentBuildId: string;
     }> = [
       {
         product: 'chrome',
-        browser: SupportedBrowser.CHROME,
+        browser: browsers_SupportedBrowser.CHROME,
         currentBuildId: '',
       },
       {
         product: 'firefox',
-        browser: SupportedBrowser.FIREFOX,
+        browser: browsers_SupportedBrowser.FIREFOX,
         currentBuildId: '',
       },
     ];

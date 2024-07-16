@@ -45,10 +45,10 @@
   ],
   "parameterDefinitions": {
     "chrome": {
-      "PUPPETEER_PRODUCT": "chrome"
+      "PUPPETEER_BROWSER": "chrome"
     },
     "firefox": {
-      "PUPPETEER_PRODUCT": "firefox"
+      "PUPPETEER_BROWSER": "firefox"
     },
     "headless": {
       "HEADLESS": "true",

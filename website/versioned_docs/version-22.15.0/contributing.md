@@ -33,7 +33,7 @@ again.
    ```bash
    npm install
    # Or to download Firefox by default
-   PUPPETEER_PRODUCT=firefox npm install
+   PUPPETEER_BROWSER=firefox npm install
    ```
 
 3. Build all packages

@@ -106,7 +106,7 @@ jobs:
           key: Firefox-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
       - name: Install Firefox
         env:
-          PUPPETEER_PRODUCT: firefox
+          PUPPETEER_BROWSER: firefox
         run: npm run postinstall
       - name: Run all tests (for non-Linux)
         if: ${{ inputs.os != 'ubuntu-latest' }}

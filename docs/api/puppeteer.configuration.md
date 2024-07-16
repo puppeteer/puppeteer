@@ -87,7 +87,7 @@ Can be overridden by `PUPPETEER_CACHE_DIR`.
 </td></tr>
 <tr><td>
 
-<span id="defaultproduct">defaultProduct</span>
+<span id="defaultbrowser">defaultBrowser</span>
 
 </td><td>
 
@@ -95,13 +95,13 @@ Can be overridden by `PUPPETEER_CACHE_DIR`.
 
 </td><td>
 
-[Product](./puppeteer.product.md)
+[SupportedBrowser](./puppeteer.supportedbrowser.md)
 
 </td><td>
 
 Specifies which browser you'd like Puppeteer to use.
 
-Can be overridden by `PUPPETEER_PRODUCT`.
+Can be overridden by `PUPPETEER_BROWSER`.
 
 </td><td>
 

@@ -27,7 +27,7 @@ import type {Browser, BrowserCloseCallback} from '../api/Browser.js';
 import {CdpBrowser} from '../cdp/Browser.js';
 import {Connection} from '../cdp/Connection.js';
 import {TimeoutError} from '../common/Errors.js';
-import type {Product} from '../common/Product.js';
+import type {SupportedBrowser} from '../common/SupportedBrowser.js';
 import {debugError, DEFAULT_VIEWPORT} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 
@@ -55,8 +55,8 @@ export interface ResolvedLaunchArgs {
  *
  * @public
  */
-export abstract class ProductLauncher {
-  #product: Product;
+export abstract class BrowserLauncher {
+  #browser: SupportedBrowser;
 
   /**
    * @internal
@@ -71,13 +71,13 @@ export abstract class ProductLauncher {
   /**
    * @internal
    */
-  constructor(puppeteer: PuppeteerNode, product: Product) {
+  constructor(puppeteer: PuppeteerNode, browser: SupportedBrowser) {
     this.puppeteer = puppeteer;
-    this.#product = product;
+    this.#browser = browser;
   }
 
-  get product(): Product {
-    return this.#product;
+  get browser(): SupportedBrowser {
+    return this.#browser;
   }
 
   async launch(options: PuppeteerNodeLaunchOptions = {}): Promise<Browser> {
@@ -98,7 +98,7 @@ export abstract class ProductLauncher {
     let {protocol} = options;
 
     // Default to 'webDriverBiDi' for Firefox.
-    if (this.#product === 'firefox' && protocol === undefined) {
+    if (this.#browser === 'firefox' && protocol === undefined) {
       protocol = 'webDriverBiDi';
     }
 
@@ -119,7 +119,7 @@ export abstract class ProductLauncher {
     };
 
     if (
-      this.#product === 'firefox' &&
+      this.#browser === 'firefox' &&
       protocol !== 'webDriverBiDi' &&
       this.puppeteer.configuration.logLevel === 'warn'
     ) {
@@ -155,7 +155,7 @@ export abstract class ProductLauncher {
     };
 
     try {
-      if (this.#product === 'firefox' && protocol === 'webDriverBiDi') {
+      if (this.#browser === 'firefox' && protocol === 'webDriverBiDi') {
         browser = await this.createBiDiBrowser(
           browserProcess,
           browserCloseCallback,
@@ -193,7 +193,7 @@ export abstract class ProductLauncher {
           );
         } else {
           browser = await CdpBrowser._create(
-            this.product,
+            this.browser,
             cdpConnection,
             [],
             ignoreHTTPSErrors,
@@ -403,7 +403,7 @@ export abstract class ProductLauncher {
   protected getProfilePath(): string {
     return join(
       this.puppeteer.configuration.temporaryDirectory ?? tmpdir(),
-      `puppeteer_dev_${this.product}_profile-`
+      `puppeteer_dev_${this.browser}_profile-`
     );
   }
 
@@ -421,8 +421,11 @@ export abstract class ProductLauncher {
       return executablePath;
     }
 
-    function productToBrowser(product?: Product, headless?: boolean | 'shell') {
-      switch (product) {
+    function puppeteerBrowserToInstalledBrowser(
+      browser?: SupportedBrowser,
+      headless?: boolean | 'shell'
+    ) {
+      switch (browser) {
         case 'chrome':
           if (headless === 'shell') {
             return InstalledBrowser.CHROMEHEADLESSSHELL;
@@ -436,7 +439,7 @@ export abstract class ProductLauncher {
 
     executablePath = computeExecutablePath({
       cacheDir: this.puppeteer.defaultDownloadPath!,
-      browser: productToBrowser(this.product, headless),
+      browser: puppeteerBrowserToInstalledBrowser(this.browser, headless),
       buildId: this.puppeteer.browserRevision,
     });
 
@@ -446,7 +449,7 @@ export abstract class ProductLauncher {
           `Tried to find the browser at the configured path (${executablePath}) for revision ${this.puppeteer.browserRevision}, but no executable was found.`
         );
       }
-      switch (this.product) {
+      switch (this.browser) {
         case 'chrome':
           throw new Error(
             `Could not find Chrome (ver. ${this.puppeteer.browserRevision}). This can occur if either\n` +
