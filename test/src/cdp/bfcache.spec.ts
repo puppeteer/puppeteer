@@ -13,7 +13,7 @@ import {waitEvent} from '../utils.js';
 describe('BFCache', function () {
   it('can navigate to a BFCached page', async () => {
     const {httpsServer, page, close} = await launch({
-      ignoreHTTPSErrors: true,
+      acceptInsecureCerts: true,
     });
 
     try {
@@ -39,7 +39,7 @@ describe('BFCache', function () {
 
   it('can call a function exposed on a page restored from bfcache', async () => {
     const {httpsServer, page, close} = await launch({
-      ignoreHTTPSErrors: true,
+      acceptInsecureCerts: true,
     });
     let message = '';
     try {
@@ -80,7 +80,7 @@ describe('BFCache', function () {
 
   it('can navigate to a BFCached page containing an OOPIF and a worker', async () => {
     const {httpsServer, page, close} = await launch({
-      ignoreHTTPSErrors: true,
+      acceptInsecureCerts: true,
     });
     try {
       page.setDefaultTimeout(3000);

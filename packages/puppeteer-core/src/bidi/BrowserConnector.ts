@@ -30,7 +30,7 @@ export async function _connectToBiDiBrowser(
   url: string,
   options: BrowserConnectOptions & ConnectOptions
 ): Promise<BidiBrowser> {
-  const {ignoreHTTPSErrors = false, defaultViewport = DEFAULT_VIEWPORT} =
+  const {acceptInsecureCerts = false, defaultViewport = DEFAULT_VIEWPORT} =
     options;
 
   const {bidiConnection, cdpConnection, closeCallback} =
@@ -42,7 +42,7 @@ export async function _connectToBiDiBrowser(
     closeCallback,
     process: undefined,
     defaultViewport: defaultViewport,
-    ignoreHTTPSErrors: ignoreHTTPSErrors,
+    acceptInsecureCerts: acceptInsecureCerts,
   });
   return bidiBrowser;
 }
@@ -64,7 +64,7 @@ async function getBiDiConnection(
   closeCallback: BrowserCloseCallback;
 }> {
   const BiDi = await import(/* webpackIgnore: true */ './bidi.js');
-  const {ignoreHTTPSErrors = false, slowMo = 0, protocolTimeout} = options;
+  const {acceptInsecureCerts = false, slowMo = 0, protocolTimeout} = options;
 
   // Try pure BiDi first.
   const pureBidiConnection = new BiDi.BidiConnection(
@@ -109,7 +109,7 @@ async function getBiDiConnection(
   }
 
   const bidiOverCdpConnection = await BiDi.connectBidiOverCdp(cdpConnection, {
-    acceptInsecureCerts: ignoreHTTPSErrors,
+    acceptInsecureCerts: acceptInsecureCerts,
   });
   return {
     cdpConnection,

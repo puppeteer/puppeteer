@@ -15,7 +15,7 @@ describe('device request prompt', function () {
     state = await launch(
       {
         args: ['--enable-features=WebBluetoothNewPermissionsBackend'],
-        ignoreHTTPSErrors: true,
+        acceptInsecureCerts: true,
       },
       {
         after: 'all',

@@ -876,7 +876,7 @@ describe('network', function () {
 
     it('Cross-origin set-cookie', async () => {
       const {page, httpsServer, close} = await launch({
-        ignoreHTTPSErrors: true,
+        acceptInsecureCerts: true,
       });
       try {
         await page.goto(httpsServer.PREFIX + '/empty.html');
