@@ -32,10 +32,9 @@
     "test:chrome:headless": "wireit",
     "test:chrome:shell": "wireit",
     "test:firefox": "wireit",
-    "test:firefox:bidi": "wireit",
-    "test:firefox:bidi:headful": "wireit",
     "test:firefox:headful": "wireit",
     "test:firefox:headless": "wireit",
+    "test:firefox:cdp": "wireit",
     "validate-licenses": "tsx tools/third_party/validate-licenses.ts",
     "unit": "npm run unit --workspaces --if-present"
   },
@@ -97,11 +96,8 @@
     "test:chrome:shell": {
       "command": "npm test -- --test-suite chrome-headless-shell"
     },
-    "test:firefox:bidi": {
-      "command": "npm test -- --test-suite firefox-bidi"
-    },
-    "test:firefox:bidi:headful": {
-      "command": "npm test -- --test-suite firefox-bidi-headful"
+    "test:firefox:cdp": {
+      "command": "npm test -- --test-suite firefox-cdp"
     },
     "test:firefox:headful": {
       "command": "npm test -- --test-suite firefox-headful"
@@ -111,10 +107,9 @@
     },
     "test:firefox": {
       "dependencies": [
-        "test:firefox:bidi",
-        "test:firefox:bidi:headful",
         "test:firefox:headful",
-        "test:firefox:headless"
+        "test:firefox:headless",
+        "test:firefox:cdp"
       ]
     },
     "test": {
