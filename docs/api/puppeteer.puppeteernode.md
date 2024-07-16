@@ -71,7 +71,7 @@ Description
 
 </td><td>
 
-[Product](./puppeteer.product.md)
+[SupportedBrowser](./puppeteer.supportedbrowser.md)
 
 </td><td>
 
@@ -88,7 +88,7 @@ The name of the browser that will be launched by default. For `puppeteer`, this 
 
 </td><td>
 
-[Product](./puppeteer.product.md)
+[SupportedBrowser](./puppeteer.supportedbrowser.md)
 
 </td><td>
 

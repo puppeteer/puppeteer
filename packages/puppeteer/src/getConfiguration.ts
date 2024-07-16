@@ -8,7 +8,7 @@ import {homedir} from 'os';
 import {join} from 'path';
 
 import {cosmiconfigSync} from 'cosmiconfig';
-import type {Configuration, Product} from 'puppeteer-core';
+import type {Configuration, SupportedBrowser} from 'puppeteer-core';
 
 function getBooleanEnvVar(name: string) {
   const env = process.env[name];
@@ -29,7 +29,7 @@ function getBooleanEnvVar(name: string) {
 /**
  * @internal
  */
-function isSupportedProduct(product: unknown): product is Product {
+function isSupportedProduct(product: unknown): product is SupportedBrowser {
   switch (product) {
     case 'chrome':
     case 'firefox':
@@ -55,11 +55,11 @@ export const getConfiguration = (): Configuration => {
     'warn') as 'silent' | 'error' | 'warn';
 
   // Merging environment variables.
-  configuration.defaultProduct = (process.env['PUPPETEER_PRODUCT'] ??
-    process.env['npm_config_puppeteer_product'] ??
-    process.env['npm_package_config_puppeteer_product'] ??
-    configuration.defaultProduct ??
-    'chrome') as Product;
+  configuration.defaultBrowser = (process.env['PUPPETEER_BROWSER'] ??
+    process.env['npm_config_puppeteer_browser'] ??
+    process.env['npm_package_config_puppeteer_browser'] ??
+    configuration.defaultBrowser ??
+    'chrome') as SupportedBrowser;
 
   configuration.executablePath =
     process.env['PUPPETEER_EXECUTABLE_PATH'] ??
@@ -153,8 +153,8 @@ export const getConfiguration = (): Configuration => {
   configuration.experiments ??= {};
 
   // Validate configuration.
-  if (!isSupportedProduct(configuration.defaultProduct)) {
-    throw new Error(`Unsupported product ${configuration.defaultProduct}`);
+  if (!isSupportedProduct(configuration.defaultBrowser)) {
+    throw new Error(`Unsupported product ${configuration.defaultBrowser}`);
   }
 
   return configuration;

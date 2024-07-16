@@ -23,7 +23,7 @@ import {readAsset} from './util.js';
       env: cwd => {
         return {
           PUPPETEER_CACHE_DIR: join(cwd, '.cache', 'puppeteer'),
-          PUPPETEER_PRODUCT: 'firefox',
+          PUPPETEER_BROWSER: 'firefox',
         };
       },
     });

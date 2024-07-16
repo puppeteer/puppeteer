@@ -11,7 +11,7 @@ import {
   makeProgressCallback,
   detectBrowserPlatform,
 } from '@puppeteer/browsers';
-import type {Product} from 'puppeteer-core';
+import type {SupportedBrowser} from 'puppeteer-core';
 import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
 
 import {getConfiguration} from '../getConfiguration.js';
@@ -43,8 +43,8 @@ export async function downloadBrowser(): Promise<void> {
     throw new Error('The current platform is not supported.');
   }
 
-  const product = configuration.defaultProduct!;
-  const browser = productToBrowser(product);
+  const product = configuration.defaultBrowser!;
+  const browser = supportedBrowserToBrowser(product);
 
   const unresolvedBuildId =
     configuration.browserRevision || PUPPETEER_REVISIONS[product] || 'latest';
@@ -143,7 +143,7 @@ export async function downloadBrowser(): Promise<void> {
   }
 }
 
-function productToBrowser(product?: Product) {
+function supportedBrowserToBrowser(product?: SupportedBrowser) {
   switch (product) {
     case 'chrome':
       return Browser.CHROME;

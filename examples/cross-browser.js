@@ -8,7 +8,7 @@ const puppeteer = require('puppeteer');
 /**
  * To have Puppeteer fetch a Firefox binary for you, first run:
  *
- * PUPPETEER_PRODUCT=firefox npm install
+ * PUPPETEER_BROWSER=firefox npm install
  *
  * To get additional logging about which browser binary is executed,
  * run this example as:

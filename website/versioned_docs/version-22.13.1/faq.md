@@ -112,7 +112,7 @@ Look for the `chrome` entry in
 ## Q: Which Firefox version does Puppeteer use?
 
 Since Firefox support is experimental, Puppeteer downloads the latest
-[Firefox Nightly](https://wiki.mozilla.org/Nightly) when the `PUPPETEER_PRODUCT`
+[Firefox Nightly](https://wiki.mozilla.org/Nightly) when the `PUPPETEER_BROWSER`
 environment variable is set to `firefox`. That's also why the value of `firefox`
 in
 [revisions.ts](https://github.com/puppeteer/puppeteer/blob/main/packages/puppeteer-core/src/revisions.ts)
@@ -121,7 +121,7 @@ is `latest` -- Puppeteer isn't tied to a particular Firefox version.
 To fetch Firefox Nightly as part of Puppeteer installation:
 
 ```bash npm2yarn
-PUPPETEER_PRODUCT=firefox npm i puppeteer
+PUPPETEER_BROWSER=firefox npm i puppeteer
 ```
 
 To download Firefox Nightly into an existing Puppeteer project:

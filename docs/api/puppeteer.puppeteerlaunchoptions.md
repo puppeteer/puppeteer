@@ -37,6 +37,23 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="browser">browser</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[SupportedBrowser](./puppeteer.supportedbrowser.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="extraprefsfirefox">extraPrefsFirefox</span>
 
 </td><td>
@@ -46,23 +63,6 @@ Default
 </td><td>
 
 Record&lt;string, unknown&gt;
-
-</td><td>
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
-<span id="product">product</span>
-
-</td><td>
-
-`optional`
-
-</td><td>
-
-[Product](./puppeteer.product.md)
 
 </td><td>
 

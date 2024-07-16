@@ -101,7 +101,7 @@ Can be overridden by `PUPPETEER_CACHE_DIR`.
 
 Specifies which browser you'd like Puppeteer to use.
 
-Can be overridden by `PUPPETEER_PRODUCT`.
+Can be overridden by `PUPPETEER_BROWSER`.
 
 </td><td>
 

@@ -72,6 +72,19 @@ The constructor for this class is marked as internal. Third-party code should no
 </td></tr>
 <tr><td>
 
+<span id="browserlauncher">[BrowserLauncher](./puppeteer.browserlauncher.md)</span>
+
+</td><td>
+
+Describes a launcher - a class that is able to create and launch a browser instance.
+
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `BrowserLauncher` class.
+
+</td></tr>
+<tr><td>
+
 <span id="cdpsession">[CDPSession](./puppeteer.cdpsession.md)</span>
 
 </td><td>
@@ -398,19 +411,6 @@ One Browser instance might have multiple Page instances.
 **Remarks:**
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Page` class.
-
-</td></tr>
-<tr><td>
-
-<span id="productlauncher">[ProductLauncher](./puppeteer.productlauncher.md)</span>
-
-</td><td>
-
-Describes a launcher - a class that is able to create and launch a browser instance.
-
-**Remarks:**
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ProductLauncher` class.
 
 </td></tr>
 <tr><td>
@@ -1652,15 +1652,6 @@ The sizes of each format are as follows:
 </td></tr>
 <tr><td>
 
-<span id="product">[Product](./puppeteer.product.md)</span>
-
-</td><td>
-
-Supported products.
-
-</td></tr>
-<tr><td>
-
 <span id="protocollifecycleevent">[ProtocolLifeCycleEvent](./puppeteer.protocollifecycleevent.md)</span>
 
 </td><td>
@@ -1703,6 +1694,15 @@ Utility type exposed to enable users to define options that can be passed to `pu
 </td><td>
 
 Resource types for HTTPRequests as perceived by the rendering engine.
+
+</td></tr>
+<tr><td>
+
+<span id="supportedbrowser">[SupportedBrowser](./puppeteer.supportedbrowser.md)</span>
+
+</td><td>
+
+Browsers supported by Puppeteer.
 
 </td></tr>
 <tr><td>
