@@ -1,13 +1,13 @@
 ---
-sidebar_label: ProductLauncher.executablePath
+sidebar_label: BrowserLauncher.executablePath
 ---
 
-# ProductLauncher.executablePath() method
+# BrowserLauncher.executablePath() method
 
 ### Signature
 
 ```typescript
-class ProductLauncher {
+class BrowserLauncher {
   abstract executablePath(channel?: ChromeReleaseChannel): string;
 }
 ```
