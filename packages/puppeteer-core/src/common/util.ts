@@ -195,8 +195,8 @@ export function evaluationString(
 export async function getReadableAsBuffer(
   readable: ReadableStream<Uint8Array>,
   path?: string
-): Promise<Buffer | null> {
-  const buffers: Uint8Array[] = [];
+): Promise<Uint8Array | null> {
+  const buffers: number[] = [];
   const reader = readable.getReader();
   if (path) {
     const fileHandle = await environment.value.fs.promises.open(path, 'w+');
@@ -206,7 +206,7 @@ export async function getReadableAsBuffer(
         if (done) {
           break;
         }
-        buffers.push(value);
+        buffers.push(...value);
         await fileHandle.writeFile(value);
       }
     } finally {
@@ -218,11 +218,15 @@ export async function getReadableAsBuffer(
       if (done) {
         break;
       }
-      buffers.push(value);
+      buffers.push(...value);
     }
   }
   try {
-    return Buffer.concat(buffers);
+    const concat = new Uint8Array(buffers);
+    if (concat.length === 0) {
+      return null;
+    }
+    return concat;
   } catch (error) {
     debugError(error);
     return null;

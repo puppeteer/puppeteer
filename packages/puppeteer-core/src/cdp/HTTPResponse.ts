@@ -20,7 +20,7 @@ import type {CdpHTTPRequest} from './HTTPRequest.js';
 export class CdpHTTPResponse extends HTTPResponse {
   #client: CDPSession;
   #request: CdpHTTPRequest;
-  #contentPromise: Promise<Buffer> | null = null;
+  #contentPromise: Promise<Uint8Array> | null = null;
   #bodyLoadedDeferred = Deferred.create<void, Error>();
   #remoteAddress: RemoteAddress;
   #status: number;
@@ -121,7 +121,7 @@ export class CdpHTTPResponse extends HTTPResponse {
     return this.#timing;
   }
 
-  override buffer(): Promise<Buffer> {
+  override buffer(): Promise<Uint8Array> {
     if (!this.#contentPromise) {
       this.#contentPromise = this.#bodyLoadedDeferred
         .valueOrThrow()
@@ -133,10 +133,11 @@ export class CdpHTTPResponse extends HTTPResponse {
                 requestId: this.#request.id,
               }
             );
-            return Buffer.from(
-              response.body,
-              response.base64Encoded ? 'base64' : 'utf8'
-            );
+
+            const body = response.base64Encoded
+              ? btoa(response.body)
+              : response.body;
+            return new TextEncoder().encode(body);
           } catch (error) {
             if (
               error instanceof ProtocolError &&

@@ -114,8 +114,8 @@ export class Tracing {
    * Stops a trace started with the `start` method.
    * @returns Promise which resolves to buffer with trace data.
    */
-  async stop(): Promise<Buffer | undefined> {
-    const contentDeferred = Deferred.create<Buffer | undefined>();
+  async stop(): Promise<Uint8Array | undefined> {
+    const contentDeferred = Deferred.create<Uint8Array | undefined>();
     this.#client.once('Tracing.tracingComplete', async event => {
       try {
         assert(event.stream, 'Missing "stream"');

@@ -1097,7 +1097,7 @@ export class CdpPage extends Page {
     );
   }
 
-  override async pdf(options: PDFOptions = {}): Promise<Buffer> {
+  override async pdf(options: PDFOptions = {}): Promise<Uint8Array> {
     const {path = undefined} = options;
     const readable = await this.createPDFStream(options);
     const buffer = await getReadableAsBuffer(readable, path);

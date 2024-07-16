@@ -374,7 +374,7 @@ export class BidiPage extends Page {
     return this.#viewport;
   }
 
-  override async pdf(options: PDFOptions = {}): Promise<Buffer> {
+  override async pdf(options: PDFOptions = {}): Promise<Uint8Array> {
     const {timeout: ms = this._timeoutSettings.timeout(), path = undefined} =
       options;
     const {
@@ -416,7 +416,16 @@ export class BidiPage extends Page {
       ).pipe(raceWith(timeout(ms)))
     );
 
-    const buffer = Buffer.from(data, 'base64');
+    function base64ToArrayBuffer(base64: string) {
+      const binaryString = atob(base64);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      return bytes;
+    }
+
+    const buffer = base64ToArrayBuffer(data);
 
     await this._maybeWriteBufferToFile(path, buffer);
 

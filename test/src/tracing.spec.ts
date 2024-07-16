@@ -124,7 +124,7 @@ describe('Tracing', function () {
             read() {
               if (!this.done) {
                 this.done = true;
-                return {done: false, value: 42};
+                return {done: false, value: null};
               }
               return {done: true};
             },

@@ -179,7 +179,7 @@ describe('Screenshots', function () {
         const screenshot = await page.screenshot({
           fullPage: true,
         });
-        expect(screenshot).toBeInstanceOf(Buffer);
+        expect(screenshot).toBeInstanceOf(Uint8Array);
       } finally {
         await close();
       }
@@ -398,7 +398,7 @@ describe('Screenshots', function () {
         type: 'webp',
       });
 
-      expect(screenshot).toBeInstanceOf(Buffer);
+      expect(screenshot).toBeInstanceOf(Uint8Array);
     });
 
     it('should run in parallel in multiple pages', async () => {

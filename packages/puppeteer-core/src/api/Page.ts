@@ -2280,7 +2280,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    */
   async _maybeWriteBufferToFile(
     path: string | undefined,
-    buffer: Buffer
+    buffer: Uint8Array
   ): Promise<void> {
     if (!path) {
       return;
@@ -2482,13 +2482,13 @@ export abstract class Page extends EventEmitter<PageEvents> {
   async screenshot(
     options: Readonly<ScreenshotOptions> & {encoding: 'base64'}
   ): Promise<string>;
-  async screenshot(options?: Readonly<ScreenshotOptions>): Promise<Buffer>;
+  async screenshot(options?: Readonly<ScreenshotOptions>): Promise<Uint8Array>;
   @guarded(function () {
     return this.browser();
   })
   async screenshot(
     userOptions: Readonly<ScreenshotOptions> = {}
-  ): Promise<Buffer | string> {
+  ): Promise<Uint8Array | string> {
     using _guard = await this.browserContext().startScreenshot();
 
     await this.bringToFront();
@@ -2587,7 +2587,16 @@ export abstract class Page extends EventEmitter<PageEvents> {
     if (options.encoding === 'base64') {
       return data;
     }
-    const buffer = Buffer.from(data, 'base64');
+
+    function base64ToArrayBuffer(base64: string) {
+      const binaryString = atob(base64);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      return bytes;
+    }
+    const buffer = base64ToArrayBuffer(data);
     await this._maybeWriteBufferToFile(options.path, buffer);
     return buffer;
   }
@@ -2620,7 +2629,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * {@inheritDoc Page.createPDFStream}
    */
-  abstract pdf(options?: PDFOptions): Promise<Buffer>;
+  abstract pdf(options?: PDFOptions): Promise<Uint8Array>;
 
   /**
    * The page's title
