@@ -33,6 +33,17 @@ describe('Browser specs', function () {
         expect(userAgent).toContain('Gecko');
       }
     });
+    it('should include Browser name', async () => {
+      const {browser, isChrome} = await getTestState();
+
+      const userAgent = await browser.userAgent();
+      expect(userAgent.length).toBeGreaterThan(0);
+      if (isChrome) {
+        expect(userAgent).toContain('Chrome');
+      } else {
+        expect(userAgent).toContain('Firefox');
+      }
+    });
   });
 
   describe('Browser.target', function () {

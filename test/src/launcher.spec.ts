@@ -620,29 +620,6 @@ describe('Launcher specs', function () {
       });
     });
 
-    describe('Puppeteer.launch', function () {
-      it('should be able to launch Chrome', async () => {
-        const {browser, close} = await launch({product: 'chrome'});
-        try {
-          const userAgent = await browser.userAgent();
-          expect(userAgent).toContain('Chrome');
-        } finally {
-          await close();
-        }
-      });
-
-      it('should be able to launch Firefox', async function () {
-        this.timeout(FIREFOX_TIMEOUT);
-        const {browser, close} = await launch({product: 'firefox'});
-        try {
-          const userAgent = await browser.userAgent();
-          expect(userAgent).toContain('Firefox');
-        } finally {
-          await close();
-        }
-      });
-    });
-
     describe('Puppeteer.connect', function () {
       it('should be able to connect multiple times to the same browser', async () => {
         const {puppeteer, browser, close} = await launch({});
