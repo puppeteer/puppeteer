@@ -21,7 +21,7 @@ describe('Browser specs', function () {
     });
   });
 
-  describe.only('Browser.userAgent', function () {
+  describe('Browser.userAgent', function () {
     it('should include Browser engine', async () => {
       const {browser, isChrome} = await getTestState();
 
@@ -29,9 +29,18 @@ describe('Browser specs', function () {
       expect(userAgent.length).toBeGreaterThan(0);
       if (isChrome) {
         expect(userAgent).toContain('WebKit');
-        expect(userAgent).toContain('Chrome');
       } else {
         expect(userAgent).toContain('Gecko');
+      }
+    });
+    it('should include Browser name', async () => {
+      const {browser, isChrome} = await getTestState();
+
+      const userAgent = await browser.userAgent();
+      expect(userAgent.length).toBeGreaterThan(0);
+      if (isChrome) {
+        expect(userAgent).toContain('Chrome');
+      } else {
         expect(userAgent).toContain('Firefox');
       }
     });
