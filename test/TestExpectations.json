@@ -412,20 +412,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should be able to launch Chrome",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should be able to launch Firefox",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should work with no default arguments",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -2048,20 +2034,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should be able to launch Firefox",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should be able to launch Firefox",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "headless"],
-    "expectations": ["FAIL", "PASS"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
