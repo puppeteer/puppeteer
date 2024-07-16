@@ -33,36 +33,36 @@ await firefoxBrowser.close();
 
 const chromeBrowser = await puppeteer.launch({
   product: 'chrome',
-  protocol: 'webDriverBiDi'
+  protocol: 'webDriverBiDi', // CDP would be used by default for Chrome.
 });
 const page = await chromeBrowser.newPage();
 ...
 await chromeBrowser.close();
 ```
 
-## Puppeteer features not yet supported over WebDriver BiDi
+## Puppeteer features not supported over WebDriver BiDi
 
-- Various emulations (most are supported with Chrome)
+- Various emulations
 
-  - Page.emulate() (supported only in Chrome)
-  - Page.emulateCPUThrottling() (supported only in Chrome)
-  - Page.emulateIdleState() (supported only in Chrome)
-  - Page.emulateMediaFeatures() (supported only in Chrome)
-  - Page.emulateMediaType() (supported only in Chrome)
-  - Page.emulateTimezone() (supported only in Chrome)
-  - Page.emulateVisionDeficiency() (supported only in Chrome)
-  - Page.setBypassCSP() (supported only in Chrome)
-  - Page.setGeolocation() (supported only in Chrome)
-  - Page.setJavaScriptEnabled() (supported only in Chrome)
+  - Page.emulate()
+  - Page.emulateCPUThrottling()
+  - Page.emulateIdleState()
+  - Page.emulateMediaFeatures()
+  - Page.emulateMediaType()
+  - Page.emulateTimezone()
+  - Page.emulateVisionDeficiency()
+  - Page.setBypassCSP()
+  - Page.setGeolocation()
+  - Page.setJavaScriptEnabled()
 
 - CDP-specific features
 
-  - HTTPRequest.client() (supported only in Chrome)
-  - Page.createCDPSession() (supported only in Chrome)
+  - HTTPRequest.client()
+  - Page.createCDPSession()
 
-- Accessibility (supported only in Chrome)
-- Coverage (supported only in Chrome)
-- Tracing (supported only in Chrome)
+- Accessibility
+- Coverage
+- Tracing
 
 - Other methods:
 
@@ -77,11 +77,11 @@ await chromeBrowser.close();
   - Input.drop()
   - Page.emulateNetworkConditions()
   - Page.isDragInterceptionEnabled()
-  - Page.isJavaScriptEnabled() (supported only in Chrome)
+  - Page.isJavaScriptEnabled()
   - Page.isServiceWorkerBypassed()
   - Page.metrics()
-  - Page.queryObjects() (supported only in Chrome)
-  - Page.screencast() (supported only in Chrome)
+  - Page.queryObjects()
+  - Page.screencast()
   - Page.setBypassServiceWorker()
   - Page.setDragInterception()
   - Page.setOfflineMode()
@@ -100,30 +100,31 @@ await chromeBrowser.close();
 
 - Page automation
 
-  - Page.bringToFront
+  - Frame.goto() (except `referer` and `referrerPolicy`)
+  - Page 'popup' event
+  - Page.bringToFront()
+  - Page.cookies()
+  - Page.deleteCookie()
   - Page.goBack()
   - Page.goForward()
   - Page.goto (except `referer` and `referrerPolicy`)
-  - Frame.goto() (except `referer` and `referrerPolicy`)
   - Page.reload (except for `ignoreCache` parameter)
-  - Page.setViewport (`width`, `height`, `deviceScaleFactor` only)
-  - Page.cookies()
+  - Page.setCacheEnabled()
   - Page.setCookie()
-  - Page.deleteCookie()
+  - Page.setExtraHTTPHeaders()
+  - Page.setViewport (`width`, `height`, `deviceScaleFactor` only)
   - Page.workers()
   - PageEvent.WorkerCreated
   - PageEvent.WorkerDestroyed
-  - Page.setExtraHTTPHeaders()
   - Target.opener()
-  - Page 'popup' event
-  - Page.setCacheEnabled()
 
 - [Script evaluation](https://pptr.dev/guides/evaluate-javascript):
 
-  - JSHandle.evaluate
-  - JSHandle.evaluateHandle
-  - Page.evaluate
-  - Page.exposeFunction
+  - JSHandle.evaluate()
+  - JSHandle.evaluateHandle()
+  - Page.evaluate()
+  - Page.evaluateOnNewDocument()
+  - Page.exposeFunction()
 
 - [Selectors](https://pptr.dev/guides/query-selectors) and [locators](https://pptr.dev/guides/locators) except for ARIA:
 
@@ -132,7 +133,7 @@ await chromeBrowser.close();
   - Page.$$eval
   - Page.$eval
   - Page.waitForSelector
-  - Page.locator.\*
+  - Page.locator() and all locator APIs
 
 - Input
 
