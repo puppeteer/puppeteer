@@ -21,52 +21,23 @@ body:
       description: >
         Provide a [minimal, reproducible
         example](https://stackoverflow.com/help/minimal-reproducible-example) of
-        the bug you are facing.
-
-        This must not include external libraries since we will run this in a
-        [hermetic](https://www.oreilly.com/library/view/selenium-design-patterns/9781783982707/ch03s03.html#:~:text=The%20Hermetic%20test%20pattern%20is,be%20avoided%20at%20all%20costs.)
-        environment. You may use Node.js modules.
-
-        *No need for backticks — this automatically gets formatted into code.*
+        the bug you are facing. If possible, embedd the test page content into the
+        Puppeteer script using `page.setContent()`.
       render: TypeScript
       placeholder: |
-        import puppeteer from 'puppeteer'; // TS/ESM are all supported.
+        import puppeteer from 'puppeteer';
 
-        (async () => {
-          const browser = await puppeteer.launch();
-          const page = await browser.newPage();
-          try {
-            // Do something.
-          } catch {
-            throw new Error('Something went wrong');
-          }
-          await browser.close();
-        })();
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+
+        // Set test content.
+        await page.setContent(`<div>test</div>`);
+
+        // Actions to trigger the bug.
+
+        await browser.close();
     validations:
       required: true
-  - id: error
-    type: input
-    attributes:
-      label: Error string
-      description: >
-        Provide the bug's error. For example, `throw new Error('Something went
-        wrong')` would have the error `Something went wrong`.
-
-        **If the script does not throw**, write `no error` (case insensitive).
-      placeholder: Something went wrong
-    validations:
-      required: true
-  - id: behavior
-    type: checkboxes
-    attributes:
-      label: Bug behavior
-      description: >
-        How does the bug behave? Does it happen very rarely (flaky)? If there is
-        a PDF problem, make sure the script writes the PDF somewhere in the
-        current working directory.
-      options:
-        - label: Flaky
-        - label: PDF
   - id: background
     type: textarea
     attributes:
