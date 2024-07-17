@@ -56,9 +56,8 @@ export async function connectBidiOverCdp(
   const bidiServer = await BidiMapper.BidiServer.createAndStart(
     transportBiDi,
     cdpConnectionAdapter,
-    // TODO: most likely need a little bit of refactoring
     cdpConnectionAdapter.browserClient(),
-    '',
+    /* selfTargetId= */ '',
     {
       // Override Mapper's `unhandledPromptBehavior` default value of `dismiss` to
       // `ignore`, so that user can handle the prompt instead of just closing it.

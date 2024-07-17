@@ -105,7 +105,6 @@ export class BidiHTTPResponse extends HTTPResponse {
   }
 
   override timing(): Protocol.Network.ResourceTiming | null {
-    // TODO: File and issue with BiDi spec
     throw new UnsupportedOperation();
   }
 
