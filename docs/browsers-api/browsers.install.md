@@ -4,7 +4,7 @@ sidebar_label: install
 
 # install() function
 
-<h2 id="overload-0">export declare function install(options: InstallOptions &amp; &#123; unpack?: true;&#125;): Promise&lt;InstalledBrowser&gt;;</h2>
+<h2 id="overload-0">install(): Promise&lt;InstalledBrowser&gt;</h2>
 
 ### Signature:
 
@@ -47,7 +47,7 @@ options
 
 Promise&lt;[InstalledBrowser](./browsers.installedbrowser.md)&gt;
 
-<h2 id="overload-1">export declare function install(options: InstallOptions &amp; &#123; unpack: false;&#125;): Promise&lt;string&gt;;</h2>
+<h2 id="overload-1">install(): Promise&lt;string&gt;</h2>
 
 ### Signature:
 

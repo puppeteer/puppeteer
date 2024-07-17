@@ -4,7 +4,7 @@ sidebar_label: Page.screenshot
 
 # Page.screenshot() method
 
-<h2 id="overload-0">screenshot(options: Readonly&lt;ScreenshotOptions&gt; &amp; &#123; encoding: 'base64'; &#125;): Promise&lt;string&gt;;</h2>
+<h2 id="overload-0">screenshot(): Promise&lt;string&gt;</h2>
 
 ### Signature:
 
@@ -59,7 +59,7 @@ While a screenshot is being taken in a [BrowserContext](./puppeteer.browserconte
 
 Calling [Page.bringToFront()](./puppeteer.page.bringtofront.md) will not wait for existing screenshot operations.
 
-<h2 id="overload-1">screenshot(options?: Readonly&lt;ScreenshotOptions&gt;): Promise&lt;Buffer&gt;;</h2>
+<h2 id="overload-1">screenshot(): Promise&lt;Buffer&gt;</h2>
 
 ### Signature:
 

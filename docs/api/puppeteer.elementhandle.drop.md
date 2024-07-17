@@ -4,7 +4,7 @@ sidebar_label: ElementHandle.drop
 
 # ElementHandle.drop() method
 
-<h2 id="overload-0">drop(this: ElementHandle&lt;Element&gt;, element: ElementHandle&lt;Element&gt;): Promise&lt;void&gt;;</h2>
+<h2 id="overload-0">drop(): Promise&lt;void&gt;</h2>
 
 ### Signature:
 
@@ -61,7 +61,7 @@ element
 
 Promise&lt;void&gt;
 
-<h2 id="overload-1">drop(this: ElementHandle&lt;Element&gt;, data?: Protocol.Input.DragData): Promise&lt;void&gt;;</h2>
+<h2 id="overload-1">drop(): Promise&lt;void&gt;</h2>
 
 ### Signature:
 

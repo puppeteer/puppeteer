@@ -4,7 +4,7 @@ sidebar_label: Frame.locator
 
 # Frame.locator() method
 
-<h2 id="overload-0">locator&lt;Selector extends string&gt;(selector: Selector): Locator&lt;NodeFor&lt;Selector&gt;&gt;;</h2>
+<h2 id="overload-0">locator(): Locator&lt;NodeFor&lt;Selector&gt;&gt;</h2>
 
 ### Signature:
 
@@ -51,7 +51,7 @@ Selector
 
 [Locator](./puppeteer.locator.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt;
 
-<h2 id="overload-1">locator&lt;Ret&gt;(func: () =&gt; Awaitable&lt;Ret&gt;): Locator&lt;Ret&gt;;</h2>
+<h2 id="overload-1">locator(): Locator&lt;Ret&gt;</h2>
 
 ### Signature:
 

@@ -245,9 +245,12 @@ export class MarkdownDocumenter {
       apiItem instanceof ApiDeclaredItem &&
       apiItem.excerpt.text.length > 0 &&
       ApiParameterListMixin.isBaseClassOf(apiItem) &&
+      ApiReturnTypeMixin.isBaseClassOf(apiItem) &&
       apiItem.getMergedSiblings().length > 1
     ) {
       const overloadIndex = apiItem.overloadIndex - 1;
+      // TODO: See if we don't need to create all of the on our own.
+      const overLoadHeader = `${apiItem.displayName}(): ${apiItem.returnTypeExcerpt.text}`;
       output.appendNode(
         new DocParagraph({configuration}, [
           new DocHtmlStartTag({
@@ -263,7 +266,7 @@ export class MarkdownDocumenter {
           }),
           new DocPlainText({
             configuration,
-            text: apiItem.getExcerptWithModifiers().replaceAll('\n', ''),
+            text: overLoadHeader,
           }),
           new DocHtmlEndTag({
             configuration,

@@ -4,7 +4,7 @@ sidebar_label: ElementHandle.screenshot
 
 # ElementHandle.screenshot() method
 
-<h2 id="overload-0">screenshot(options: Readonly&lt;ScreenshotOptions&gt; &amp; &#123; encoding: 'base64'; &#125;): Promise&lt;string&gt;;</h2>
+<h2 id="overload-0">screenshot(): Promise&lt;string&gt;</h2>
 
 ### Signature:
 
@@ -51,7 +51,7 @@ Readonly&lt;[ScreenshotOptions](./puppeteer.screenshotoptions.md)&gt; &amp; &#12
 
 Promise&lt;string&gt;
 
-<h2 id="overload-1">screenshot(options?: Readonly&lt;ScreenshotOptions&gt;): Promise&lt;Buffer&gt;;</h2>
+<h2 id="overload-1">screenshot(): Promise&lt;Buffer&gt;</h2>
 
 ### Signature:
 
