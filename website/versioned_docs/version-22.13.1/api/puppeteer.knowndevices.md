@@ -85,6 +85,22 @@ KnownDevices: Readonly<
     | 'iPhone 13 Pro Max landscape'
     | 'iPhone 13 Mini'
     | 'iPhone 13 Mini landscape'
+    | 'iPhone 14'
+    | 'iPhone 14 landscape'
+    | 'iPhone 14 Plus'
+    | 'iPhone 14 Plus landscape'
+    | 'iPhone 14 Pro'
+    | 'iPhone 14 Pro landscape'
+    | 'iPhone 14 Pro Max'
+    | 'iPhone 14 Pro Max landscape'
+    | 'iPhone 15'
+    | 'iPhone 15 landscape'
+    | 'iPhone 15 Plus'
+    | 'iPhone 15 Plus landscape'
+    | 'iPhone 15 Pro'
+    | 'iPhone 15 Pro landscape'
+    | 'iPhone 15 Pro Max'
+    | 'iPhone 15 Pro Max landscape'
     | 'JioPhone 2'
     | 'JioPhone 2 landscape'
     | 'Kindle Fire HDX'
@@ -135,7 +151,7 @@ KnownDevices: Readonly<
 
 ```ts
 import {KnownDevices} from 'puppeteer';
-const iPhone = KnownDevices['iPhone 6'];
+const iPhone = KnownDevices['iPhone 15 Pro'];
 
 (async () => {
   const browser = await puppeteer.launch();
