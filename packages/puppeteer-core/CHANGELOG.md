@@ -20,6 +20,23 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.13.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.13.0...puppeteer-core-v22.13.1) (2024-07-17)
+
+
+### Bug Fixes
+
+* include Puppeteer version into utility world name ([#12754](https://github.com/puppeteer/puppeteer/issues/12754)) ([2e86012](https://github.com/puppeteer/puppeteer/commit/2e860124b94787ec6602212efe78aca2034f2136))
+* roll to Chrome 126.0.6478.182 (r1300313) ([#12764](https://github.com/puppeteer/puppeteer/issues/12764)) ([a98ac2e](https://github.com/puppeteer/puppeteer/commit/a98ac2e6ea052a88e180612375cf087f732603b8))
+* **webdriver:** add postData,hasPostData,resourceType from cdp-over-bidi ([#12739](https://github.com/puppeteer/puppeteer/issues/12739)) ([dc5379e](https://github.com/puppeteer/puppeteer/commit/dc5379e744979c9a58905ed3d939c2722a188c8d))
+* **webdriver:** support securityDetails with cdp-over-bidi ([#12736](https://github.com/puppeteer/puppeteer/issues/12736)) ([4308104](https://github.com/puppeteer/puppeteer/commit/43081045a3af3f4aaeb7595591ac6f774baf21ca))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.2.3 to 2.2.4
+
 ## [22.13.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.12.1...puppeteer-core-v22.13.0) (2024-07-11)
 
 

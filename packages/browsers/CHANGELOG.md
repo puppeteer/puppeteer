@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.4](https://github.com/puppeteer/puppeteer/compare/browsers-v2.2.3...browsers-v2.2.4) (2024-07-17)
+
+
+### Bug Fixes
+
+* use spawn instead of exec in fileUtil ([#12758](https://github.com/puppeteer/puppeteer/issues/12758)) ([9ce6a85](https://github.com/puppeteer/puppeteer/commit/9ce6a8528969f3895899e3556c527ffd0d3f5c1c))
+
 ## [2.2.3](https://github.com/puppeteer/puppeteer/compare/browsers-v2.2.2...browsers-v2.2.3) (2024-04-25)
 
 
