@@ -12,15 +12,13 @@ import actions from '@actions/core';
 import {SemVer} from 'semver';
 
 import packageJson from '../packages/puppeteer-core/package.json' assert {type: 'json'};
-import {versionsPerRelease, lastMaintainedChromeVersion} from '../versions.js';
+import versionData from '../versions.json' assert {type: 'json'};
 
 import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
 
 const execAsync = promisify(exec);
 
 const CHROME_CURRENT_VERSION = PUPPETEER_REVISIONS.chrome;
-const VERSIONS_PER_RELEASE_COMMENT =
-  '// In Chrome roll patches, use `NEXT` for the Puppeteer version.';
 
 const touchedFiles = [];
 
@@ -107,42 +105,58 @@ async function updateDevToolsProtocolVersion(revision) {
   );
 }
 
+async function saveVersionData(data) {
+  await writeFile('./versions.json', JSON.stringify(data, null, 2));
+}
+
 async function updateVersionFileLastMaintained(oldVersion, newVersion) {
-  const versions = [...versionsPerRelease.keys()];
-  if (versions.indexOf(newVersion) !== -1) {
+  const chromeVersions = versionData.versions.map(
+    ([_puppeteerVersion, browserVersions]) => {
+      return browserVersions.chrome;
+    }
+  );
+  if (chromeVersions.indexOf(newVersion) !== -1) {
+    // Already updated.
     return;
   }
+
+  const nextVersionConfig = versionData.versions.find(([puppeteerVersion]) => {
+    return puppeteerVersion === 'NEXT';
+  });
 
   // If we have manually rolled Chrome but not yet released
   // We will have NEXT as value in the Map
-  if (versionsPerRelease.get(oldVersion) === 'NEXT') {
-    await replaceInFile('./versions.js', oldVersion, newVersion);
+  if (nextVersionConfig) {
+    nextVersionConfig[1].chrome = newVersion;
+    await saveVersionData(versionData);
     return;
   }
 
-  await replaceInFile(
-    './versions.js',
-    VERSIONS_PER_RELEASE_COMMENT,
-    `${VERSIONS_PER_RELEASE_COMMENT}\n  ['${version}', 'NEXT'],`
-  );
+  versionData.versions.unshift([
+    'NEXT',
+    {
+      chrome: newVersion,
+    },
+  ]);
 
   const oldSemVer = new SemVer(oldVersion, true);
   const newSemVer = new SemVer(newVersion, true);
 
   if (newSemVer.compareMain(oldSemVer) !== 0) {
-    const lastMaintainedSemVer = new SemVer(lastMaintainedChromeVersion, true);
+    const lastMaintainedSemVer = new SemVer(
+      versionData.lastMaintainedChromeVersion,
+      true
+    );
     const newLastMaintainedMajor = lastMaintainedSemVer.major + 1;
 
-    const nextMaintainedVersion = versions.find(version => {
+    const nextMaintainedVersion = chromeVersions.find(version => {
       return new SemVer(version, true).major === newLastMaintainedMajor;
     });
 
-    await replaceInFile(
-      './versions.js',
-      `const lastMaintainedChromeVersion = '${lastMaintainedChromeVersion}';`,
-      `const lastMaintainedChromeVersion = '${nextMaintainedVersion}';`
-    );
+    versionData.lastMaintainedChromeVersion = nextMaintainedVersion;
   }
+
+  await saveVersionData(versionData);
 }
 
 const {version, revision} = await getVersionAndRevisionForStable();

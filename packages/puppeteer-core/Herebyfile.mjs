@@ -28,12 +28,12 @@ export const generateVersionTask = task({
     );
     if (process.env['PUBLISH']) {
       await writeFile(
-        '../../versions.js',
+        '../../versions.json',
         (
-          await readFile('../../versions.js', {
+          await readFile('../../versions.json', {
             encoding: 'utf-8',
           })
-        ).replace("'NEXT'", `'v${version}'`)
+        ).replace(`"NEXT"`, `"v${version}"`)
       );
     }
   },
