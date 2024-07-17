@@ -136,6 +136,7 @@ async function updateVersionFileLastMaintained(oldVersion, newVersion) {
     'NEXT',
     {
       chrome: newVersion,
+      firefox: 'latest',
     },
   ]);
 
