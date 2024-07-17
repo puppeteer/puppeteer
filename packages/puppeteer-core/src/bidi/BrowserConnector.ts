@@ -109,7 +109,6 @@ async function getBiDiConnection(
     );
   }
 
-  // TODO: use other options too.
   const bidiOverCdpConnection = await BiDi.connectBidiOverCdp(cdpConnection, {
     acceptInsecureCerts: ignoreHTTPSErrors,
   });
