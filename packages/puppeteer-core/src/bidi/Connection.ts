@@ -52,7 +52,7 @@ export class BidiConnection
   #url: string;
   #transport: ConnectionTransport;
   #delay: number;
-  #timeout? = 0;
+  #timeout = 0;
   #closed = false;
   #callbacks = new CallbackRegistry();
   #emitters: Array<EventEmitter<any>> = [];
@@ -79,6 +79,14 @@ export class BidiConnection
 
   get url(): string {
     return this.#url;
+  }
+
+  get delay(): number {
+    return this.#delay;
+  }
+
+  get timeout(): number {
+    return this.#timeout;
   }
 
   pipeTo<Events extends BidiEvents>(emitter: EventEmitter<Events>): void {

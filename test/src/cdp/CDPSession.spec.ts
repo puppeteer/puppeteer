@@ -59,6 +59,7 @@ describe('Target.createCDPSession', function () {
     ]);
     expect(events).toHaveLength(1);
   });
+
   it('should enable and disable domains independently', async () => {
     const {page} = await getTestState();
 

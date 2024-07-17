@@ -940,13 +940,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[CDPSession.spec] Target.createCDPSession should expose the underlying connection",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[CDPSession.spec] Target.createCDPSession should respect custom timeout",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],

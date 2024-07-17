@@ -55,7 +55,7 @@ export async function _connectToBrowser(
  * Establishes a websocket connection by given options and returns both transport and
  * endpoint url the transport is connected to.
  */
-async function getConnectionTransport(
+export async function getConnectionTransport(
   options: BrowserConnectOptions & ConnectOptions
 ): Promise<{connectionTransport: ConnectionTransport; endpointUrl: string}> {
   const {browserWSEndpoint, browserURL, transport, headers = {}} = options;
