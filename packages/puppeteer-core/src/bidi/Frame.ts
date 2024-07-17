@@ -465,13 +465,7 @@ export class BidiFrame extends Frame {
     }
 
     const cdpConnection = this.page().browser().cdpConnection!;
-
-    const result = await cdpConnection.send('Target.attachToTarget', {
-      targetId: this._id,
-      flatten: true,
-    });
-
-    return cdpConnection.session(result.sessionId)!;
+    return await cdpConnection._createSession({targetId: this._id});
   }
 
   @throwIfDetached

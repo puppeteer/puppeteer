@@ -81,14 +81,6 @@ export class BidiConnection
     return this.#url;
   }
 
-  get delay(): number {
-    return this.#delay;
-  }
-
-  get timeout(): number {
-    return this.#timeout;
-  }
-
   pipeTo<Events extends BidiEvents>(emitter: EventEmitter<Events>): void {
     this.#emitters.push(emitter);
   }
