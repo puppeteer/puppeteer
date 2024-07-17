@@ -41,11 +41,9 @@ export class BidiCdpSession extends CDPSession {
     } else {
       (async () => {
         try {
-          const {result} = await connection.send('cdp.getSession', {
-            context: frame._id,
-          });
-          this.#sessionId.resolve(result.session!);
-          BidiCdpSession.sessions.set(result.session!, this);
+          const cdpSession = await frame.createCDPSession();
+          this.#sessionId.resolve(cdpSession.id());
+          BidiCdpSession.sessions.set(cdpSession.id(), this);
         } catch (error) {
           this.#sessionId.reject(error as Error);
         }
