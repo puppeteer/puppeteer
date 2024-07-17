@@ -1,6 +1,6 @@
 {
   "name": "puppeteer",
-  "version": "22.13.0",
+  "version": "22.13.1",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "keywords": [
     "puppeteer",
@@ -124,8 +124,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "cosmiconfig": "^9.0.0",
-    "puppeteer-core": "22.13.0",
-    "@puppeteer/browsers": "2.2.3",
+    "puppeteer-core": "22.13.1",
+    "@puppeteer/browsers": "2.2.4",
     "devtools-protocol": "0.0.1299070"
   },
   "devDependencies": {
