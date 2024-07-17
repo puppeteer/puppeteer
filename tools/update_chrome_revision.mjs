@@ -107,6 +107,7 @@ async function updateDevToolsProtocolVersion(revision) {
 
 async function saveVersionData(data) {
   await writeFile('./versions.json', JSON.stringify(data, null, 2));
+  touchedFiles.push('./versions.json');
 }
 
 async function updateVersionFileLastMaintained(oldVersion, newVersion) {
