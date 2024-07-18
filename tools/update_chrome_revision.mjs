@@ -146,7 +146,7 @@ async function updateVersionFileLastMaintained(oldVersion, newVersion) {
 
   if (newSemVer.compareMain(oldSemVer) !== 0) {
     const lastMaintainedSemVer = new SemVer(
-      versionData.lastMaintainedChromeVersion,
+      versionData.lastMaintainedVersion.chrome,
       true
     );
     const newLastMaintainedMajor = lastMaintainedSemVer.major + 1;
@@ -155,7 +155,7 @@ async function updateVersionFileLastMaintained(oldVersion, newVersion) {
       return new SemVer(version, true).major === newLastMaintainedMajor;
     });
 
-    versionData.lastMaintainedChromeVersion = nextMaintainedVersion;
+    versionData.lastMaintainedVersion.chrome = nextMaintainedVersion;
   }
 
   await saveVersionData(versionData);

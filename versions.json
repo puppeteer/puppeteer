@@ -1,5 +1,8 @@
 {
-  "lastMaintainedChromeVersion": "123.0.6312.122",
+  "lastMaintainedVersion": {
+    "chrome": "123.0.6312.122",
+    "firefox": "latest"
+  },
   "versions": [
     [
       "v22.13.1",

@@ -7,7 +7,7 @@
 import data from '../versions.json' assert {type: 'json'};
 
 const version = data.versions.find(([puppeteerVersion, browserVersions]) => {
-  return browserVersions.chrome === data.lastMaintainedChromeVersion;
+  return browserVersions.chrome === data.lastMaintainedVersion.chrome;
 });
 const puppeteerVersion = version[0];
 if (puppeteerVersion === 'NEXT') {
