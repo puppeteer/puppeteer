@@ -200,7 +200,7 @@ export class CdpPage extends Page {
       this.emit(PageEvent.RequestFailed, request);
     });
     networkManagerEmitter.on(NetworkManagerEvent.RequestFinished, request => {
-      this.emit(PageEvent.RequestFailed, request);
+      this.emit(PageEvent.RequestFinished, request);
     });
 
     this.#tabTargetClient.on(
