@@ -59,19 +59,6 @@ export class Session
     browserEmitter.once('closed', ({reason}) => {
       this.dispose(reason);
     });
-
-    // TODO: Currently, some implementations do not emit navigationStarted event
-    // for fragment navigations (as per spec) and some do. This could emits a
-    // synthetic navigationStarted to work around this inconsistency.
-    const seen = new WeakSet();
-    this.on('browsingContext.fragmentNavigated', info => {
-      if (seen.has(info)) {
-        return;
-      }
-      seen.add(info);
-      this.emit('browsingContext.navigationStarted', info);
-      this.emit('browsingContext.fragmentNavigated', info);
-    });
   }
 
   get capabilities(): Bidi.Session.NewResult['capabilities'] {

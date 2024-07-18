@@ -25,15 +25,13 @@ export interface NavigationInfo {
 export class Navigation extends EventEmitter<{
   /** Emitted when navigation has a request associated with it. */
   request: Request;
-  /** Emitted when fragment navigation occurred. */
-  fragment: NavigationInfo;
   /** Emitted when navigation failed. */
   failed: NavigationInfo;
   /** Emitted when navigation was aborted. */
   aborted: NavigationInfo;
 }> {
-  static from(context: BrowsingContext): Navigation {
-    const navigation = new Navigation(context);
+  static from(context: BrowsingContext, url: string): Navigation {
+    const navigation = new Navigation(context, url);
     navigation.#initialize();
     return navigation;
   }
@@ -43,11 +41,13 @@ export class Navigation extends EventEmitter<{
   readonly #browsingContext: BrowsingContext;
   readonly #disposables = new DisposableStack();
   #id?: string | null;
+  readonly #url: string;
 
-  private constructor(context: BrowsingContext) {
+  private constructor(context: BrowsingContext, url: string) {
     super();
 
     this.#browsingContext = context;
+    this.#url = url;
   }
 
   #initialize() {
@@ -86,35 +86,7 @@ export class Navigation extends EventEmitter<{
     const sessionEmitter = this.#disposables.use(
       new EventEmitter(this.#session)
     );
-    sessionEmitter.on('browsingContext.navigationStarted', info => {
-      if (
-        info.context !== this.#browsingContext.id ||
-        this.#navigation !== undefined
-      ) {
-        return;
-      }
-      this.#navigation = Navigation.from(this.#browsingContext);
-    });
-
-    for (const eventName of [
-      'browsingContext.domContentLoaded',
-      'browsingContext.load',
-    ] as const) {
-      sessionEmitter.on(eventName, info => {
-        if (
-          info.context !== this.#browsingContext.id ||
-          info.navigation === null ||
-          !this.#matches(info.navigation)
-        ) {
-          return;
-        }
-
-        this.dispose();
-      });
-    }
-
     for (const [eventName, event] of [
-      ['browsingContext.fragmentNavigated', 'fragment'],
       ['browsingContext.navigationFailed', 'failed'],
       ['browsingContext.navigationAborted', 'aborted'],
     ] as const) {
@@ -157,12 +129,12 @@ export class Navigation extends EventEmitter<{
   get request(): Request | undefined {
     return this.#request;
   }
-  get navigation(): Navigation | undefined {
-    return this.#navigation;
+  get url(): string {
+    return this.#url;
   }
 
   @inertIfDisposed
-  private dispose(): void {
+  dispose(): void {
     this[disposeSymbol]();
   }
 
