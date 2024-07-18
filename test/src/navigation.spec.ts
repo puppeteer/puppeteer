@@ -55,6 +55,18 @@ describe('navigation', function () {
       const response = await page.goto(server.PREFIX + '/historyapi.html');
       expect(response!.status()).toBe(200);
     });
+    it('should return response when page replaces its state during load', async () => {
+      const {page, server} = await getTestState();
+
+      const response = await page.goto(
+        server.PREFIX + '/historyapi-replaceState.html',
+        {
+          waitUntil: 'networkidle2',
+        }
+      );
+      expect(response!.status()).toBe(200);
+      expect(page.url()).toBe(server.PREFIX + '/historyapi-replaceState.html');
+    });
     it('should work with subframes return 204', async () => {
       const {page, server} = await getTestState();
 
