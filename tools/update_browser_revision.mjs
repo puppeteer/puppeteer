@@ -14,18 +14,30 @@ import {SemVer} from 'semver';
 import packageJson from '../packages/puppeteer-core/package.json' assert {type: 'json'};
 import versionData from '../versions.json' assert {type: 'json'};
 
+import {resolveBuildId} from '@puppeteer/browsers';
 import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
 
 const execAsync = promisify(exec);
 
-const CHROME_CURRENT_VERSION = PUPPETEER_REVISIONS.chrome;
+const BROWSER = process.env.BROWSER_TO_UPDATE;
+
+if (!BROWSER) {
+  console.error('No BROWSER_TO_UPDATE env variable supplied!');
+  process.exit(1);
+}
+
+const BROWSER_CURRENT_VERSION = PUPPETEER_REVISIONS[BROWSER];
 
 const touchedFiles = [];
 
-function checkIfNeedsUpdate(oldVersion, newVersion, newRevision) {
+function getCapitalize(text) {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+function checkIfNeedsUpdate(browser, oldVersion, newVersion) {
   const oldSemVer = new SemVer(oldVersion, true);
   const newSemVer = new SemVer(newVersion, true);
-  let message = `roll to Chrome ${newVersion} (r${newRevision})`;
+  let message = `roll to ${getCapitalize(browser)} ${newVersion}`;
 
   if (newSemVer.compare(oldSemVer) <= 0) {
     // Exit the process without setting up version
@@ -67,7 +79,11 @@ async function replaceInFile(filePath, search, replace) {
   touchedFiles.push(filePath);
 }
 
-async function getVersionAndRevisionForStable() {
+async function getVersionForStable(browser) {
+  return await resolveBuildId(browser, 'linux', 'stable');
+}
+
+async function updateDevToolsProtocolVersion(browserVersion) {
   const result = await fetch(
     'https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json'
   ).then(response => {
@@ -75,14 +91,13 @@ async function getVersionAndRevisionForStable() {
   });
 
   const {version, revision} = result.channels['Stable'];
+  if (browserVersion !== version) {
+    console.error(
+      'The version from CfT website and @puppeteer/browser mismatch.'
+    );
+    process.exit(1);
+  }
 
-  return {
-    version,
-    revision,
-  };
-}
-
-async function updateDevToolsProtocolVersion(revision) {
   const currentProtocol = packageJson.dependencies['devtools-protocol'];
   const command = `npm view "devtools-protocol@<=0.0.${revision}" version | tail -1`;
 
@@ -110,13 +125,17 @@ async function saveVersionData(data) {
   touchedFiles.push('./versions.json');
 }
 
-async function updateVersionFileLastMaintained(oldVersion, newVersion) {
-  const chromeVersions = versionData.versions.map(
+async function updateVersionFileLastMaintained(
+  browser,
+  oldVersion,
+  newVersion
+) {
+  const browserVersions = versionData.versions.map(
     ([_puppeteerVersion, browserVersions]) => {
-      return browserVersions.chrome;
+      return browserVersions[browser];
     }
   );
-  if (chromeVersions.indexOf(newVersion) !== -1) {
+  if (browserVersions.indexOf(newVersion) !== -1) {
     // Already updated.
     return;
   }
@@ -128,7 +147,7 @@ async function updateVersionFileLastMaintained(oldVersion, newVersion) {
   // If we have manually rolled Chrome but not yet released
   // We will have NEXT as value in the Map
   if (nextVersionConfig) {
-    nextVersionConfig[1].chrome = newVersion;
+    nextVersionConfig[1][browser] = newVersion;
     await saveVersionData(versionData);
     return;
   }
@@ -136,8 +155,8 @@ async function updateVersionFileLastMaintained(oldVersion, newVersion) {
   versionData.versions.unshift([
     'NEXT',
     {
-      chrome: newVersion,
-      firefox: 'latest',
+      ...versionData.versions.at(0).at(1),
+      [browser]: newVersion,
     },
   ]);
 
@@ -145,40 +164,43 @@ async function updateVersionFileLastMaintained(oldVersion, newVersion) {
   const newSemVer = new SemVer(newVersion, true);
 
   if (newSemVer.compareMain(oldSemVer) !== 0) {
-    const lastMaintainedSemVer = new SemVer(
-      versionData.lastMaintainedChromeVersion,
-      true
-    );
+    const key = `lastMaintained${getCapitalize(browser)}Version`;
+    const lastMaintainedSemVer = new SemVer(versionData[key], true);
     const newLastMaintainedMajor = lastMaintainedSemVer.major + 1;
 
-    const nextMaintainedVersion = chromeVersions.find(version => {
+    const nextMaintainedVersion = browserVersions.find(version => {
       return new SemVer(version, true).major === newLastMaintainedMajor;
     });
 
-    versionData.lastMaintainedChromeVersion = nextMaintainedVersion;
+    versionData.lastMaintainedVersion[browser] = nextMaintainedVersion;
   }
 
   await saveVersionData(versionData);
 }
 
-const {version, revision} = await getVersionAndRevisionForStable();
+const version = await getVersionForStable(BROWSER);
 
-checkIfNeedsUpdate(CHROME_CURRENT_VERSION, version, revision);
+checkIfNeedsUpdate(BROWSER, BROWSER_CURRENT_VERSION, version);
 
 await replaceInFile(
   './packages/puppeteer-core/src/revisions.ts',
-  CHROME_CURRENT_VERSION,
+  BROWSER_CURRENT_VERSION,
   version
 );
 
-await updateVersionFileLastMaintained(CHROME_CURRENT_VERSION, version);
-await updateDevToolsProtocolVersion(revision);
+if (BROWSER === 'chrome') {
+  await updateVersionFileLastMaintained(
+    BROWSER,
+    BROWSER_CURRENT_VERSION,
+    version
+  );
+  await updateDevToolsProtocolVersion(version);
+  // Create new `package-lock.json` as we update devtools-protocol
+  execSync('npm install --ignore-scripts');
+}
 
-// Create new `package-lock.json` as we update devtools-protocol
-execSync('npm install --ignore-scripts');
 // Make sure we pass CI formatter check by running all the new files though it
 await formatUpdateFiles();
 
 // Keep this as they can be used to debug GitHub Actions if needed
 actions.setOutput('version', version);
-actions.setOutput('revision', revision);
