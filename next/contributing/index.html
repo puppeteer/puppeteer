@@ -6,7 +6,7 @@
 <title data-rh="true">Contributing | Puppeteer</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://pptr.dev/next/contributing"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:counter" content="3"><meta data-rh="true" property="og:title" content="Contributing | Puppeteer"><meta data-rh="true" name="description" content="First of all, thank you for your interest in Puppeteer! We&#x27;d love to accept your"><meta data-rh="true" property="og:description" content="First of all, thank you for your interest in Puppeteer! We&#x27;d love to accept your"><link data-rh="true" rel="icon" href="/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://pptr.dev/next/contributing"><link data-rh="true" rel="alternate" href="https://pptr.dev/next/contributing" hreflang="en"><link data-rh="true" rel="alternate" href="https://pptr.dev/next/contributing" hreflang="x-default"><link data-rh="true" rel="preconnect" href="https://DVKY664LG7-dsn.algolia.net" crossorigin="anonymous"><link rel="search" type="application/opensearchdescription+xml" title="Puppeteer" href="/opensearch.xml">
 
 <script src="/fix-location.js"></script><link rel="stylesheet" href="/assets/css/styles.67634aff.css">
-<script src="/assets/js/runtime~main.5cb8dcd0.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.9048ac58.js" defer="defer"></script>
 <script src="/assets/js/main.5882a7ac.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -200,17 +200,17 @@ ensure this, the main <code>test</code> command runs coverage during testing.</p
 <p>There is a <a href="https://github.com/puppeteer/puppeteer/blob/main/.github/workflows/update-browser-pins.yml" target="_blank" rel="noopener noreferrer">GitHub action</a> that runs once per day.
 The action has a manual trigger that can be found on the <a href="https://github.com/puppeteer/puppeteer/actions/workflows/update-browser-pins.yml" target="_blank" rel="noopener noreferrer">Actions Tab</a>.</p>
 <h3 class="anchor anchorWithStickyNavbar_FNw8" id="manual-instructions">Manual instructions<a class="hash-link" aria-label="Direct link to Manual instructions" title="Direct link to Manual instructions" href="/next/contributing#manual-instructions">​</a></h3>
-<p>You can run the <a href="https://github.com/puppeteer/puppeteer/blob/main/tools/update_chrome_revision.mjs" target="_blank" rel="noopener noreferrer"><code>tools/update_chrome_revision.mjs</code></a> locally
+<p>You can run the <a href="https://github.com/puppeteer/puppeteer/blob/main/tools/update_browser_revision.mjs" target="_blank" rel="noopener noreferrer"><code>tools/update_browser_revision.mjs</code></a> locally
 and try see if any changes need to be committed.</p>
 <blockquote>
-<p>Note: You may need to run <code>node --experimental-fetch tools/update_chrome_revision.mjs</code> as the script relies on <code>fetch</code></p>
+<p>Note: You may need to run <code>node --experimental-fetch tools/update_browser_revision.mjs</code> as the script relies on <code>fetch</code></p>
 </blockquote>
 <p>The following steps are manual version of the script above.</p>
 <ol>
 <li>Find a suitable Chrome <code>revision</code> and <code>version</code> via <a href="https://googlechromelabs.github.io/chrome-for-testing/" target="_blank" rel="noopener noreferrer">https://googlechromelabs.github.io/chrome-for-testing/</a> or <a href="https://chromiumdash.appspot.com/" target="_blank" rel="noopener noreferrer">https://chromiumdash.appspot.com/</a>.</li>
 <li>Update <code>packages/puppeteer-core/src/revisions.ts</code> with the found <code>version</code>
 number.</li>
-<li>Update <code>versions.js</code> with the new Chrome-to-Puppeteer <code>version</code> mapping and
+<li>Update <code>versions.json</code> with the new Chrome-to-Puppeteer <code>version</code> mapping and
 update <code>lastMaintainedChromeVersion</code> with the next one in from the list.</li>
 <li>Run <code>npm run check</code>. If it fails, update
 <code>packages/puppeteer-core/package.json</code>
@@ -222,14 +222,10 @@ either update the test expectations accordingly (if it was an intended
 change) or work around the changes in Puppeteer (if it’s not desirable to
 change Puppeteer’s observable behavior).</li>
 <li>Commit and push your changes and open a pull request. The commit message must
-contain the version in <code>Chrome &lt;version&gt; (r&lt;revision&gt;)</code> format to ensure
+contain the version in <code>Chrome &lt;version&gt;</code> format to ensure
 that <a href="https://pptr.dev/" target="_blank" rel="noopener noreferrer">pptr.dev</a> can parse it correctly, e.g.
-<code>feat(chrome): roll to Chrome 90.0.4427.0 (r856583)</code>.</li>
+<code>feat(chrome): roll to Chrome 90.0.4427.0</code>.</li>
 </ol>
-<blockquote>
-<p>NOTE: Another place you can find version corresponding version is <a href="https://omahaproxy.appspot.com/" target="_blank" rel="noopener noreferrer">omahaproxy.appspot.com</a> by
-searching in <code>Find Releases</code> for <code>r&lt;revision&gt;</code>.</p>
-</blockquote>
 <h3 class="anchor anchorWithStickyNavbar_FNw8" id="bisecting-upstream-changes">Bisecting upstream changes<a class="hash-link" aria-label="Direct link to Bisecting upstream changes" title="Direct link to Bisecting upstream changes" href="/next/contributing#bisecting-upstream-changes">​</a></h3>
 <p>For bisecting Chrome/Chromium changes use <a href="https://www.chromium.org/developers/bisect-builds-py/" target="_blank" rel="noopener noreferrer">https://www.chromium.org/developers/bisect-builds-py/</a>.</p>
 <h2 class="anchor anchorWithStickyNavbar_FNw8" id="releasing-to-npm">Releasing to npm<a class="hash-link" aria-label="Direct link to Releasing to npm" title="Direct link to Releasing to npm" href="/next/contributing#releasing-to-npm">​</a></h2>
