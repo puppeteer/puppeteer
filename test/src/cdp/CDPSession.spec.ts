@@ -59,6 +59,27 @@ describe('Target.createCDPSession', function () {
     ]);
     expect(events).toHaveLength(1);
   });
+
+  it('should not send extra events', async () => {
+    const {page, server} = await getTestState();
+
+    const client = await page.createCDPSession();
+    await client.send('Network.enable');
+    const events = new Set();
+    client.on('*', name => {
+      if (typeof name !== 'string') {
+        return;
+      }
+      events.add((name as string).split('.').shift());
+    });
+    await Promise.all([
+      waitEvent(client, 'Network.requestWillBeSent'),
+      page.goto(server.EMPTY_PAGE),
+    ]);
+    expect(events.size).toBe(1);
+    expect(events).toContain('Network');
+  });
+
   it('should enable and disable domains independently', async () => {
     const {page} = await getTestState();
 

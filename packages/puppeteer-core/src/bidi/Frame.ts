@@ -460,12 +460,12 @@ export class BidiFrame extends Frame {
   }
 
   async createCDPSession(): Promise<CDPSession> {
-    const {sessionId} = await this.client.send('Target.attachToTarget', {
-      targetId: this._id,
-      flatten: true,
-    });
-    await this.browsingContext.subscribe([Bidi.ChromiumBidi.BiDiModule.Cdp]);
-    return new BidiCdpSession(this, sessionId);
+    if (!this.page().browser().cdpSupported) {
+      throw new UnsupportedOperation();
+    }
+
+    const cdpConnection = this.page().browser().cdpConnection!;
+    return await cdpConnection._createSession({targetId: this._id});
   }
 
   @throwIfDetached

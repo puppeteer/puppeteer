@@ -52,7 +52,7 @@ export class BidiConnection
   #url: string;
   #transport: ConnectionTransport;
   #delay: number;
-  #timeout? = 0;
+  #timeout = 0;
   #closed = false;
   #callbacks = new CallbackRegistry();
   #emitters: Array<EventEmitter<any>> = [];

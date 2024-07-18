@@ -940,11 +940,18 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[CDPSession.spec] Target.createCDPSession should expose the underlying connection",
+    "testIdPattern": "[CDPSession.spec] Target.createCDPSession should not send extra events",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Fails with Firefox CDP"
+  },
+  {
+    "testIdPattern": "[CDPSession.spec] Target.createCDPSession should not send extra events",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "https://github.com/GoogleChromeLabs/chromium-bidi/issues/2420"
   },
   {
     "testIdPattern": "[CDPSession.spec] Target.createCDPSession should respect custom timeout",

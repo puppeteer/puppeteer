@@ -33,14 +33,12 @@ export async function _connectToBiDiBrowser(
   const {ignoreHTTPSErrors = false, defaultViewport = DEFAULT_VIEWPORT} =
     options;
 
-  const {bidiConnection, closeCallback} = await getBiDiConnection(
-    connectionTransport,
-    url,
-    options
-  );
+  const {bidiConnection, cdpConnection, closeCallback} =
+    await getBiDiConnection(connectionTransport, url, options);
   const BiDi = await import(/* webpackIgnore: true */ './bidi.js');
   const bidiBrowser = await BiDi.BidiBrowser.create({
     connection: bidiConnection,
+    cdpConnection,
     closeCallback,
     process: undefined,
     defaultViewport: defaultViewport,
@@ -61,6 +59,7 @@ async function getBiDiConnection(
   url: string,
   options: BrowserConnectOptions
 ): Promise<{
+  cdpConnection?: Connection;
   bidiConnection: BidiConnection;
   closeCallback: BrowserCloseCallback;
 }> {
@@ -113,6 +112,7 @@ async function getBiDiConnection(
     acceptInsecureCerts: ignoreHTTPSErrors,
   });
   return {
+    cdpConnection,
     bidiConnection: bidiOverCdpConnection,
     closeCallback: async () => {
       // In case of BiDi over CDP, we need to close browser via CDP.
