@@ -85,8 +85,7 @@ export class BidiHTTPResponse extends HTTPResponse {
 
   override headers(): Record<string, string> {
     const headers: Record<string, string> = {};
-    // TODO: Remove once the Firefox implementation is compliant with https://w3c.github.io/webdriver-bidi/#get-the-response-data.
-    for (const header of this.#data.headers || []) {
+    for (const header of this.#data.headers) {
       // TODO: How to handle Binary Headers
       // https://w3c.github.io/webdriver-bidi/#type-network-Header
       if (header.value.type === 'string') {
