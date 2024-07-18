@@ -234,7 +234,7 @@ jobs:
         linux-only:
           - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
         suite:
-          - firefox-bidi
+          - firefox-cdp
           - firefox-headful
           - firefox-headless
         os:
@@ -253,13 +253,10 @@ jobs:
             os: macos-latest
 
           - os: macos-latest
-            suite: firefox-headful
-          - os: macos-latest
-            suite: firefox-headless
+            suite: firefox-cdp
           - os: windows-latest
-            suite: firefox-headful
-          - os: windows-latest
-            suite: firefox-headless
+            suite: firefox-cdp
+
     steps:
       - name: Checkout
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
