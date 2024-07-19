@@ -98,7 +98,7 @@ export class Puppeteer {
   /**
    * @internal
    */
-  protected _changedProduct = false;
+  protected _changedBrowsers = false;
 
   /**
    * @internal
