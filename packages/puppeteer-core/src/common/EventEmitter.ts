@@ -191,27 +191,3 @@ export class EventEmitter<Events extends Record<EventType, unknown>>
     this.#handlers.clear();
   }
 }
-
-/**
- * @internal
- */
-export class EventSubscription<
-  Target extends CommonEventEmitter<Record<Type, Event>>,
-  Type extends EventType = EventType,
-  Event = unknown,
-> {
-  #target: Target;
-  #type: Type;
-  #handler: Handler<Event>;
-
-  constructor(target: Target, type: Type, handler: Handler<Event>) {
-    this.#target = target;
-    this.#type = type;
-    this.#handler = handler;
-    this.#target.on(this.#type, this.#handler);
-  }
-
-  [disposeSymbol](): void {
-    this.#target.off(this.#type, this.#handler);
-  }
-}
