@@ -28,6 +28,7 @@ import {
 } from '../api/Frame.js';
 import {PageEvent} from '../api/Page.js';
 import {Accessibility} from '../cdp/Accessibility.js';
+import type {ConsoleMessageType} from '../common/ConsoleMessage.js';
 import {
   ConsoleMessage,
   type ConsoleMessageLocation,
@@ -168,7 +169,7 @@ export class BidiFrame extends Frame {
         this.page().trustedEmitter.emit(
           PageEvent.Console,
           new ConsoleMessage(
-            entry.method as any,
+            entry.method as ConsoleMessageType,
             text,
             args,
             getStackTraceLocations(entry.stackTrace)
