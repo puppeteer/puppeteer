@@ -58,7 +58,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
         env:
-          PUPPETEER_SKIP_DOWNLOAD: true
+          PUPPETEER_SKIP_DOWNLOADS: true
       # Set up GitHub Actions caching for Wireit.
       - uses: google/wireit@4aad131006ea85c1e42af927534ebb13426dd730 # setup-github-actions-caching/v1.0.2
       - name: Build packages
@@ -94,7 +94,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
         env:
-          PUPPETEER_SKIP_DOWNLOAD: true
+          PUPPETEER_SKIP_DOWNLOADS: true
       # Set up GitHub Actions caching for Wireit.
       - uses: google/wireit@4aad131006ea85c1e42af927534ebb13426dd730 # setup-github-actions-caching/v1.0.2
       - name: Build packages

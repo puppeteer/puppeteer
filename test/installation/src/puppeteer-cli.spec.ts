@@ -19,7 +19,7 @@ describe('Puppeteer CLI', () => {
     env: cwd => {
       return {
         PUPPETEER_CACHE_DIR: join(cwd, '.cache', 'puppeteer'),
-        PUPPETEER_SKIP_DOWNLOAD: 'true',
+        PUPPETEER_SKIP_DOWNLOADS: 'true',
       };
     },
   });

@@ -24,25 +24,25 @@ void new CLI({
   pinnedBrowsers: {
     [Browser.CHROME]: {
       buildId:
-        puppeteer.configuration.browserRevision ||
+        puppeteer.configuration.chrome?.version ||
         PUPPETEER_REVISIONS['chrome'] ||
         'latest',
-      skipDownload: puppeteer.configuration.skipChromeDownload ?? false,
+      skipDownload: puppeteer.configuration.chrome?.skipDownload ?? false,
     },
     [Browser.FIREFOX]: {
       buildId:
-        puppeteer.configuration.browserRevision ||
+        puppeteer.configuration.firefox?.version ||
         PUPPETEER_REVISIONS['firefox'] ||
         'latest',
-      skipDownload: true,
+      skipDownload: puppeteer.configuration.firefox?.skipDownload ?? true,
     },
     [Browser.CHROMEHEADLESSSHELL]: {
       buildId:
-        puppeteer.configuration.browserRevision ||
-        PUPPETEER_REVISIONS['chrome'] ||
+        puppeteer.configuration.chrome?.version ||
+        PUPPETEER_REVISIONS['chrome-headless-shell'] ||
         'latest',
       skipDownload:
-        puppeteer.configuration.skipChromeHeadlessShellDownload ?? false,
+        puppeteer.configuration.chrome?.skipHeadlessShellDownload ?? false,
     },
   },
 }).run(process.argv);

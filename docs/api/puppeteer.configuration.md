@@ -39,31 +39,6 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="browserrevision">browserRevision</span>
-
-</td><td>
-
-`optional`
-
-</td><td>
-
-string
-
-</td><td>
-
-Specifies a certain version of the browser you'd like Puppeteer to use.
-
-Can be overridden by `PUPPETEER_BROWSER_REVISION`.
-
-See [puppeteer.launch](./puppeteer.puppeteernode.launch.md) on how executable path is inferred.
-
-</td><td>
-
-The pinned browser version supported by the current Puppeteer version.
-
-</td></tr>
-<tr><td>
-
 <span id="cachedirectory">cacheDirectory</span>
 
 </td><td>
@@ -87,6 +62,23 @@ Can be overridden by `PUPPETEER_CACHE_DIR`.
 </td></tr>
 <tr><td>
 
+<span id="chrome">chrome</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[ChromeSettings](./puppeteer.chromesettings.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="defaultbrowser">defaultBrowser</span>
 
 </td><td>
@@ -106,33 +98,6 @@ Can be overridden by `PUPPETEER_BROWSER`.
 </td><td>
 
 `chrome`
-
-</td></tr>
-<tr><td>
-
-<span id="downloadbaseurl">downloadBaseUrl</span>
-
-</td><td>
-
-`optional`
-
-</td><td>
-
-string
-
-</td><td>
-
-Specifies the URL prefix that is used to download the browser.
-
-Can be overridden by `PUPPETEER_DOWNLOAD_BASE_URL`.
-
-**Remarks:**
-
-This must include the protocol and may even need a path prefix.
-
-</td><td>
-
-Either https://storage.googleapis.com/chrome-for-testing-public or https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central, depending on the product.
 
 </td></tr>
 <tr><td>
@@ -179,6 +144,23 @@ Defines experimental options for Puppeteer.
 </td></tr>
 <tr><td>
 
+<span id="firefox">firefox</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[FirefoxSettings](./puppeteer.firefoxsettings.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="loglevel">logLevel</span>
 
 </td><td>
@@ -200,49 +182,7 @@ Tells Puppeteer to log at the given level.
 </td></tr>
 <tr><td>
 
-<span id="skipchromedownload">skipChromeDownload</span>
-
-</td><td>
-
-`optional`
-
-</td><td>
-
-boolean
-
-</td><td>
-
-Tells Puppeteer to not Chrome download during installation.
-
-Can be overridden by `PUPPETEER_SKIP_CHROME_DOWNLOAD`.
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
-<span id="skipchromeheadlessshelldownload">skipChromeHeadlessShellDownload</span>
-
-</td><td>
-
-`optional`
-
-</td><td>
-
-boolean
-
-</td><td>
-
-Tells Puppeteer to not chrome-headless-shell download during installation.
-
-Can be overridden by `PUPPETEER_SKIP_CHROME_HEADLESS_SHELL_DOWNLOAD`.
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
-<span id="skipdownload">skipDownload</span>
+<span id="skipdownloads">skipDownloads</span>
 
 </td><td>
 
@@ -256,7 +196,7 @@ boolean
 
 Tells Puppeteer to not download during installation.
 
-Can be overridden by `PUPPETEER_SKIP_DOWNLOAD`.
+Can be overridden by `PUPPETEER_SKIP_DOWNLOADS`.
 
 </td><td>
 

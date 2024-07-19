@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import type {BrowserPlatform} from '@puppeteer/browsers';
 import {
   install,
   Browser,
@@ -11,146 +12,137 @@ import {
   makeProgressCallback,
   detectBrowserPlatform,
 } from '@puppeteer/browsers';
-import type {SupportedBrowser} from 'puppeteer-core';
 import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
 
 import {getConfiguration} from '../getConfiguration.js';
 
-/**
- * @internal
- */
-const supportedBrowsers = {
-  chrome: 'Chrome',
-  firefox: 'Firefox Nightly',
-} as const;
+async function downloadBrowser({
+  browser,
+  cacheDir,
+  platform,
+  buildId,
+  baseUrl,
+  buildIdAlias,
+}: {
+  browser: Browser;
+  baseUrl?: string;
+  buildId: string;
+  platform: BrowserPlatform;
+  cacheDir: string;
+  buildIdAlias: string | undefined;
+}) {
+  try {
+    const result = await install({
+      browser,
+      cacheDir,
+      platform,
+      buildId,
+      downloadProgressCallback: makeProgressCallback(browser, buildId),
+      baseUrl,
+      buildIdAlias,
+    });
+    logPolitely(`${browser} (${result.buildId}) downloaded to ${result.path}`);
+  } catch (error) {
+    throw new Error(
+      `ERROR: Failed to set up ${browser} v${buildId}! Set "PUPPETEER_SKIP_DOWNLOADS" env variable to skip download.`,
+      {
+        cause: error,
+      }
+    );
+  }
+}
 
 /**
  * @internal
  */
-export async function downloadBrowser(): Promise<void> {
+export async function downloadBrowsers(): Promise<void> {
   overrideProxy();
 
   const configuration = getConfiguration();
-  if (configuration.skipDownload) {
-    logPolitely('**INFO** Skipping browser download as instructed.');
+  if (configuration.skipDownloads) {
+    logPolitely('**INFO** Skipping downloading browsers as instructed.');
     return;
   }
-
-  const downloadBaseUrl = configuration.downloadBaseUrl;
 
   const platform = detectBrowserPlatform();
   if (!platform) {
     throw new Error('The current platform is not supported.');
   }
-
-  const product = configuration.defaultBrowser!;
-  const browser = supportedBrowserToBrowser(product);
-
-  const unresolvedBuildId =
-    configuration.browserRevision || PUPPETEER_REVISIONS[product] || 'latest';
-  const unresolvedShellBuildId =
-    configuration.browserRevision ||
-    PUPPETEER_REVISIONS['chrome-headless-shell'] ||
-    'latest';
-
   const cacheDir = configuration.cacheDirectory!;
 
-  try {
-    const installationJobs = [];
+  const installationJobs = [];
+  if (configuration.chrome?.skipDownload) {
+    logPolitely('**INFO** Skipping Chrome download as instructed.');
+  } else {
+    const buildIdAlias =
+      configuration.chrome?.version || PUPPETEER_REVISIONS.chrome || 'latest';
+    const baseUrl = configuration.chrome?.downloadBaseUrl;
 
-    if (configuration.skipChromeDownload) {
-      logPolitely('**INFO** Skipping Chrome download as instructed.');
-    } else {
-      const buildId = await resolveBuildId(
+    const browser = Browser.CHROME;
+    const buildId = await resolveBuildId(browser, platform, buildIdAlias);
+
+    installationJobs.push(
+      downloadBrowser({
         browser,
+        cacheDir,
         platform,
-        unresolvedBuildId
-      );
-      installationJobs.push(
-        install({
-          browser,
-          cacheDir,
-          platform,
-          buildId,
-          downloadProgressCallback: makeProgressCallback(browser, buildId),
-          baseUrl: downloadBaseUrl,
-          buildIdAlias:
-            buildId !== unresolvedBuildId ? unresolvedBuildId : undefined,
-        })
-          .then(result => {
-            logPolitely(
-              `${supportedBrowsers[product]} (${result.buildId}) downloaded to ${result.path}`
-            );
-          })
-          .catch(error => {
-            throw new Error(
-              `ERROR: Failed to set up ${supportedBrowsers[product]} v${buildId}! Set "PUPPETEER_SKIP_DOWNLOAD" env variable to skip download.`,
-              {
-                cause: error,
-              }
-            );
-          })
-      );
-    }
+        buildId,
+        baseUrl,
+        buildIdAlias,
+      })
+    );
+  }
 
-    if (browser === Browser.CHROME) {
-      if (configuration.skipChromeHeadlessShellDownload) {
-        logPolitely('**INFO** Skipping Chrome download as instructed.');
-      } else {
-        const shellBuildId = await resolveBuildId(
-          browser,
-          platform,
-          unresolvedShellBuildId
-        );
+  if (configuration.chrome?.skipHeadlessShellDownload) {
+    logPolitely('**INFO** Skipping Chrome download as instructed.');
+  } else {
+    const buildIdAlias =
+      configuration.chrome?.version ||
+      PUPPETEER_REVISIONS['chrome-headless-shell'] ||
+      'latest';
+    const browser = Browser.CHROMEHEADLESSSHELL;
+    const baseUrl = configuration.chrome?.downloadBaseUrl;
+    const buildId = await resolveBuildId(browser, platform, buildIdAlias);
 
-        installationJobs.push(
-          install({
-            browser: Browser.CHROMEHEADLESSSHELL,
-            cacheDir,
-            platform,
-            buildId: shellBuildId,
-            downloadProgressCallback: makeProgressCallback(
-              Browser.CHROMEHEADLESSSHELL,
-              shellBuildId
-            ),
-            baseUrl: downloadBaseUrl,
-            buildIdAlias:
-              shellBuildId !== unresolvedShellBuildId
-                ? unresolvedShellBuildId
-                : undefined,
-          })
-            .then(result => {
-              logPolitely(
-                `${Browser.CHROMEHEADLESSSHELL} (${result.buildId}) downloaded to ${result.path}`
-              );
-            })
-            .catch(error => {
-              throw new Error(
-                `ERROR: Failed to set up ${Browser.CHROMEHEADLESSSHELL} v${shellBuildId}! Set "PUPPETEER_SKIP_DOWNLOAD" env variable to skip download.`,
-                {
-                  cause: error,
-                }
-              );
-            })
-        );
-      }
-    }
+    installationJobs.push(
+      downloadBrowser({
+        browser,
+        cacheDir,
+        platform,
+        buildId,
+        baseUrl,
+        buildIdAlias,
+      })
+    );
+  }
 
+  if (configuration.firefox?.skipDownload) {
+    logPolitely('**INFO** Skipping Firefox download as instructed.');
+  } else {
+    const buildIdAlias =
+      configuration.firefox?.version || PUPPETEER_REVISIONS.firefox || 'latest';
+    const browser = Browser.FIREFOX;
+    const baseUrl = configuration.firefox?.downloadBaseUrl;
+    const buildId = await resolveBuildId(browser, platform, buildIdAlias);
+
+    installationJobs.push(
+      downloadBrowser({
+        browser,
+        cacheDir,
+        platform,
+        buildId,
+        baseUrl,
+        buildIdAlias,
+      })
+    );
+  }
+
+  try {
     await Promise.all(installationJobs);
   } catch (error) {
     console.error(error);
     process.exit(1);
   }
-}
-
-function supportedBrowserToBrowser(product?: SupportedBrowser) {
-  switch (product) {
-    case 'chrome':
-      return Browser.CHROME;
-    case 'firefox':
-      return Browser.FIREFOX;
-  }
-  return Browser.CHROME;
 }
 
 /**
