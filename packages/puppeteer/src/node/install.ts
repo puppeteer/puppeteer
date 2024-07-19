@@ -19,7 +19,7 @@ import {getConfiguration} from '../getConfiguration.js';
 /**
  * @internal
  */
-const supportedProducts = {
+const supportedBrowsers = {
   chrome: 'Chrome',
   firefox: 'Firefox Nightly',
 } as const;
@@ -79,12 +79,12 @@ export async function downloadBrowser(): Promise<void> {
         })
           .then(result => {
             logPolitely(
-              `${supportedProducts[product]} (${result.buildId}) downloaded to ${result.path}`
+              `${supportedBrowsers[product]} (${result.buildId}) downloaded to ${result.path}`
             );
           })
           .catch(error => {
             throw new Error(
-              `ERROR: Failed to set up ${supportedProducts[product]} v${buildId}! Set "PUPPETEER_SKIP_DOWNLOAD" env variable to skip download.`,
+              `ERROR: Failed to set up ${supportedBrowsers[product]} v${buildId}! Set "PUPPETEER_SKIP_DOWNLOAD" env variable to skip download.`,
               {
                 cause: error,
               }
