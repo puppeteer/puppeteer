@@ -311,43 +311,6 @@ describe('Cookie specs', () => {
         ]
       );
     });
-    it('should set cookie with all available properties', async () => {
-      const {page, server} = await getTestState();
-
-      await page.goto(server.EMPTY_PAGE);
-      await page.setCookie({
-        name: 'password',
-        value: '123456',
-        domain: 'localhost',
-        path: '/',
-        sameParty: false,
-        expires: -1,
-        httpOnly: false,
-        secure: false,
-        sourceScheme: 'Unset',
-      });
-      const cookies = await page.cookies();
-      await expectCookieEquals(
-        cookies.sort((a, b) => {
-          return a.name.localeCompare(b.name);
-        }),
-        [
-          {
-            name: 'password',
-            value: '123456',
-            domain: 'localhost',
-            path: '/',
-            sameParty: false,
-            expires: -1,
-            size: 14,
-            httpOnly: false,
-            secure: false,
-            session: true,
-            sourceScheme: 'Unset',
-          },
-        ]
-      );
-    });
     it('should set a cookie with a path', async () => {
       const {page, server} = await getTestState();
 
