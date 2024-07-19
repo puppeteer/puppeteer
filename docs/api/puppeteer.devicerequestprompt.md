@@ -21,7 +21,7 @@ The constructor for this class is marked as internal. Third-party code should no
 ## Example
 
 ```ts
-const [deviceRequest] = Promise.all([
+const [devicePrompt] = Promise.all([
   page.waitForDevicePrompt(),
   page.click('#connect-bluetooth'),
 ]);
