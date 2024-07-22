@@ -60,9 +60,9 @@ export interface Configuration {
   /**
    * Tells Puppeteer to not download during installation.
    *
-   * Can be overridden by `PUPPETEER_SKIP_DOWNLOADS`.
+   * Can be overridden by `PUPPETEER_SKIP_DOWNLOAD`.
    */
-  skipDownloads?: boolean;
+  skipDownload?: boolean;
   /**
    * Tells Puppeteer to log at the given level.
    *

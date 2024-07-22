@@ -182,7 +182,7 @@ Tells Puppeteer to log at the given level.
 </td></tr>
 <tr><td>
 
-<span id="skipdownloads">skipDownloads</span>
+<span id="skipdownload">skipDownload</span>
 
 </td><td>
 
@@ -196,7 +196,7 @@ boolean
 
 Tells Puppeteer to not download during installation.
 
-Can be overridden by `PUPPETEER_SKIP_DOWNLOADS`.
+Can be overridden by `PUPPETEER_SKIP_DOWNLOAD`.
 
 </td><td>
 

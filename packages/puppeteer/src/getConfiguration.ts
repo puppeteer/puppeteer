@@ -99,15 +99,15 @@ export const getConfiguration = (): Configuration => {
 
   // Default to skipDownload if executablePath is set
   if (configuration.executablePath) {
-    configuration.skipDownloads = true;
+    configuration.skipDownload = true;
   }
 
   // Set skipDownload explicitly or from default
-  configuration.skipDownloads =
-    getBooleanEnvVar('PUPPETEER_SKIP_DOWNLOADS') ?? configuration.skipDownloads;
+  configuration.skipDownload =
+    getBooleanEnvVar('PUPPETEER_SKIP_DOWNLOAD') ?? configuration.skipDownload;
 
   // Prepare variables used in browser downloading
-  if (!configuration.skipDownloads) {
+  if (!configuration.skipDownload) {
     configuration.chrome.version =
       process.env['PUPPETEER_CHROME_VERSION'] ?? configuration.chrome.version;
     configuration.chrome.downloadBaseUrl =
