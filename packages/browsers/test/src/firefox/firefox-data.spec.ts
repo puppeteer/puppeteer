@@ -131,6 +131,14 @@ describe('Firefox', () => {
       relativeExecutablePath(BrowserPlatform.WIN64, '111.0a1'),
       path.join('firefox', 'firefox.exe')
     );
+    assert.strictEqual(
+      relativeExecutablePath(BrowserPlatform.WIN32, 'beta_111.0a1'),
+      path.join('core', 'firefox.exe')
+    );
+    assert.strictEqual(
+      relativeExecutablePath(BrowserPlatform.WIN64, 'beta_111.0a1'),
+      path.join('core', 'firefox.exe')
+    );
   });
 
   describe('profile', () => {
