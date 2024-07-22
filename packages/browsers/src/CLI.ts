@@ -27,11 +27,12 @@ import {
   launch,
 } from './launch.js';
 
+interface InstallBrowser {
+  name: Browser;
+  buildId: string;
+}
 interface InstallArgs {
-  browser: {
-    name: Browser;
-    buildId: string;
-  };
+  browser?: InstallBrowser;
   path?: string;
   platform?: BrowserPlatform;
   baseUrl?: string;
@@ -152,9 +153,11 @@ export class CLI {
 
   #build(yargs: Yargs.Argv<unknown>): Yargs.Argv<unknown> {
     const latestOrPinned = this.#pinnedBrowsers ? 'pinned' : 'latest';
+    // If there are pinned browser allow the positional arg to be optional
+    const browserArgType = this.#pinnedBrowsers ? '[browser]' : '<browser>';
     return yargs
       .command(
-        'install <browser>',
+        `install ${browserArgType}`,
         'Download and install the specified browser. If successful, the command outputs the actual browser buildId that was installed and the absolute path to the browser executable (format: <browser>@<buildID> <path>).',
         yargs => {
           this.#defineBrowserParameter(yargs);
@@ -261,50 +264,21 @@ export class CLI {
         },
         async argv => {
           const args = argv as unknown as InstallArgs;
-          args.platform ??= detectBrowserPlatform();
-          if (!args.platform) {
-            throw new Error(`Could not resolve the current platform`);
+          if (this.#pinnedBrowsers && !args.browser) {
+            await Promise.all(
+              Object.entries(this.#pinnedBrowsers).map(([browser, buildId]) => {
+                return this.#install({
+                  ...argv,
+                  browser: {
+                    name: browser as Browser,
+                    buildId,
+                  },
+                });
+              })
+            );
+          } else {
+            await this.#install(args);
           }
-          if (args.browser.buildId === 'pinned') {
-            const pinnedVersion = this.#pinnedBrowsers?.[args.browser.name];
-            if (!pinnedVersion) {
-              throw new Error(
-                `No pinned version found for ${args.browser.name}`
-              );
-            }
-            args.browser.buildId = pinnedVersion;
-          }
-          const originalBuildId = args.browser.buildId;
-          args.browser.buildId = await resolveBuildId(
-            args.browser.name,
-            args.platform,
-            args.browser.buildId
-          );
-          await install({
-            browser: args.browser.name,
-            buildId: args.browser.buildId,
-            platform: args.platform,
-            cacheDir: args.path ?? this.#cachePath,
-            downloadProgressCallback: makeProgressCallback(
-              args.browser.name,
-              args.browser.buildId
-            ),
-            baseUrl: args.baseUrl,
-            buildIdAlias:
-              originalBuildId !== args.browser.buildId
-                ? originalBuildId
-                : undefined,
-          });
-          console.log(
-            `${args.browser.name}@${
-              args.browser.buildId
-            } ${computeExecutablePath({
-              browser: args.browser.name,
-              buildId: args.browser.buildId,
-              cacheDir: args.path ?? this.#cachePath,
-              platform: args.platform,
-            })}`
-          );
         }
       )
       .command(
@@ -404,6 +378,50 @@ export class CLI {
       : this.#pinnedBrowsers
         ? 'pinned'
         : 'latest';
+  }
+
+  async #install(args: InstallArgs) {
+    args.platform ??= detectBrowserPlatform();
+    if (!args.browser) {
+      throw new Error(`No browser arg proveded`);
+    }
+    if (!args.platform) {
+      throw new Error(`Could not resolve the current platform`);
+    }
+    if (args.browser.buildId === 'pinned') {
+      const pinnedVersion = this.#pinnedBrowsers?.[args.browser.name];
+      if (!pinnedVersion) {
+        throw new Error(`No pinned version found for ${args.browser.name}`);
+      }
+      args.browser.buildId = pinnedVersion;
+    }
+    const originalBuildId = args.browser.buildId;
+    args.browser.buildId = await resolveBuildId(
+      args.browser.name,
+      args.platform,
+      args.browser.buildId
+    );
+    await install({
+      browser: args.browser.name,
+      buildId: args.browser.buildId,
+      platform: args.platform,
+      cacheDir: args.path ?? this.#cachePath,
+      downloadProgressCallback: makeProgressCallback(
+        args.browser.name,
+        args.browser.buildId
+      ),
+      baseUrl: args.baseUrl,
+      buildIdAlias:
+        originalBuildId !== args.browser.buildId ? originalBuildId : undefined,
+    });
+    console.log(
+      `${args.browser.name}@${args.browser.buildId} ${computeExecutablePath({
+        browser: args.browser.name,
+        buildId: args.browser.buildId,
+        cacheDir: args.path ?? this.#cachePath,
+        platform: args.platform,
+      })}`
+    );
   }
 }
 
