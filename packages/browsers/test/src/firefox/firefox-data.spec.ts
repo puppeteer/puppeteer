@@ -124,6 +124,10 @@ describe('Firefox', () => {
       path.join('Firefox Nightly.app', 'Contents', 'MacOS', 'firefox')
     );
     assert.strictEqual(
+      relativeExecutablePath(BrowserPlatform.MAC_ARM, 'stable_111.0a1'),
+      path.join('Firefox.app', 'Contents', 'MacOS', 'firefox')
+    );
+    assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.WIN32, '111.0a1'),
       path.join('firefox', 'firefox.exe')
     );
