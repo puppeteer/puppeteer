@@ -183,4 +183,10 @@ export interface DeleteCookiesRequest {
    * If specified, deletes only cookies with the exact path.
    */
   path?: string;
+  /**
+   * If specified, deletes only cookies with the the given name
+   * and partitionKey where domain
+   * matches provided URL.
+   */
+  partitionKey?: string;
 }
