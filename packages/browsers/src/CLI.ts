@@ -278,38 +278,30 @@ export class CLI {
         async argv => {
           const args = argv as unknown as InstallArgs;
           if (this.#pinnedBrowsers && !args.browser) {
+            // Use allSettled to avoid scenarios that
+            // a browser may fail early and leave the other
+            // installation in a faulty state
             const result = await Promise.allSettled(
               Object.entries(this.#pinnedBrowsers).map(
                 async ([browser, options]) => {
                   if (options.skipDownload) {
                     return;
                   }
-                  try {
-                    await this.#install({
-                      ...argv,
-                      browser: {
-                        name: browser as Browser,
-                        buildId: options.buildId,
-                      },
-                    });
-                  } catch (error) {
-                    throw new Error(browser, {cause: error});
-                  }
+                  await this.#install({
+                    ...argv,
+                    browser: {
+                      name: browser as Browser,
+                      buildId: options.buildId,
+                    },
+                  });
                 }
               )
             );
-            const failed = result.reduce((acc, value) => {
-              if (value.status === 'rejected') {
-                acc.push(value.reason.message);
+
+            for (const install of result) {
+              if (install.status === 'rejected') {
+                throw install.reason;
               }
-
-              return acc;
-            }, [] as string[]);
-
-            if (failed.length) {
-              throw new Error(
-                `Failed to install browsers: ${failed.join(', ')}`
-              );
             }
           } else {
             await this.#install(args);
@@ -425,7 +417,7 @@ export class CLI {
     }
     if (args.browser.buildId === 'pinned') {
       const options = this.#pinnedBrowsers?.[args.browser.name];
-      if (!options || options.buildId) {
+      if (!options || !options.buildId) {
         throw new Error(`No pinned version found for ${args.browser.name}`);
       }
       args.browser.buildId = options.buildId;
