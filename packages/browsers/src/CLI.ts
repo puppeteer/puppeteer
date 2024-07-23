@@ -27,12 +27,6 @@ import {
   launch,
 } from './launch.js';
 
-type PinnedBrowsers = Partial<{
-  [key in Browser]: {
-    buildId: string;
-    skipDownload: boolean;
-  };
-}>;
 interface InstallBrowser {
   name: Browser;
   buildId: string;
@@ -67,7 +61,12 @@ export class CLI {
   #rl?: readline.Interface;
   #scriptName = '';
   #allowCachePathOverride = true;
-  #pinnedBrowsers?: PinnedBrowsers;
+  #pinnedBrowsers?: Partial<{
+    [key in Browser]: {
+      buildId: string;
+      skipDownload: boolean;
+    };
+  }>;
   #prefixCommand?: {cmd: string; description: string};
 
   constructor(
@@ -78,7 +77,12 @@ export class CLI {
           scriptName?: string;
           prefixCommand?: {cmd: string; description: string};
           allowCachePathOverride?: boolean;
-          pinnedBrowsers?: PinnedBrowsers;
+          pinnedBrowsers?: Partial<{
+            [key in Browser]: {
+              buildId: string;
+              skipDownload: boolean;
+            };
+          }>;
         },
     rl?: readline.Interface
   ) {
