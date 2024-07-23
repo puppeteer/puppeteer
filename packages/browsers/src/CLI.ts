@@ -159,7 +159,7 @@ export class CLI {
 
   #build(yargs: Yargs.Argv<unknown>): Yargs.Argv<unknown> {
     const latestOrPinned = this.#pinnedBrowsers ? 'pinned' : 'latest';
-    // If there are pinned browser allow the positional arg to be optional
+    // If there are pinned browsers allow the positional arg to be optional
     const browserArgType = this.#pinnedBrowsers ? '[browser]' : '<browser>';
     return yargs
       .command(
