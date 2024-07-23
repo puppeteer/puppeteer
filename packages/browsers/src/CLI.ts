@@ -27,6 +27,12 @@ import {
   launch,
 } from './launch.js';
 
+type PinnedBrowsers = Partial<{
+  [key in Browser]: {
+    buildId: string;
+    skipDownload: boolean;
+  };
+}>;
 interface InstallBrowser {
   name: Browser;
   buildId: string;
@@ -61,7 +67,7 @@ export class CLI {
   #rl?: readline.Interface;
   #scriptName = '';
   #allowCachePathOverride = true;
-  #pinnedBrowsers?: Partial<{[key in Browser]: string}>;
+  #pinnedBrowsers?: PinnedBrowsers;
   #prefixCommand?: {cmd: string; description: string};
 
   constructor(
@@ -72,7 +78,7 @@ export class CLI {
           scriptName?: string;
           prefixCommand?: {cmd: string; description: string};
           allowCachePathOverride?: boolean;
-          pinnedBrowsers?: Partial<{[key in Browser]: string}>;
+          pinnedBrowsers?: PinnedBrowsers;
         },
     rl?: readline.Interface
   ) {
@@ -167,6 +173,9 @@ export class CLI {
             type: 'string',
             desc: 'Base URL to download from',
           });
+          if (this.#pinnedBrowsers) {
+            yargs.example('$0 install', 'Install all pinned browsers');
+          }
           yargs.example(
             '$0 install chrome',
             `Install the ${latestOrPinned} available build of the Chrome browser.`
@@ -265,17 +274,39 @@ export class CLI {
         async argv => {
           const args = argv as unknown as InstallArgs;
           if (this.#pinnedBrowsers && !args.browser) {
-            await Promise.all(
-              Object.entries(this.#pinnedBrowsers).map(([browser, buildId]) => {
-                return this.#install({
-                  ...argv,
-                  browser: {
-                    name: browser as Browser,
-                    buildId,
-                  },
-                });
-              })
+            const result = await Promise.allSettled(
+              Object.entries(this.#pinnedBrowsers).map(
+                async ([browser, options]) => {
+                  if (options.skipDownload) {
+                    return;
+                  }
+                  try {
+                    await this.#install({
+                      ...argv,
+                      browser: {
+                        name: browser as Browser,
+                        buildId: options.buildId,
+                      },
+                    });
+                  } catch (error) {
+                    throw new Error(browser, {cause: error});
+                  }
+                }
+              )
             );
+            const failed = result.reduce((acc, value) => {
+              if (value.status === 'rejected') {
+                acc.push(value.reason.message);
+              }
+
+              return acc;
+            }, [] as string[]);
+
+            if (failed.length) {
+              throw new Error(
+                `Failed to install browsers: ${failed.join(', ')}`
+              );
+            }
           } else {
             await this.#install(args);
           }
@@ -389,11 +420,11 @@ export class CLI {
       throw new Error(`Could not resolve the current platform`);
     }
     if (args.browser.buildId === 'pinned') {
-      const pinnedVersion = this.#pinnedBrowsers?.[args.browser.name];
-      if (!pinnedVersion) {
+      const options = this.#pinnedBrowsers?.[args.browser.name];
+      if (!options || options.buildId) {
         throw new Error(`No pinned version found for ${args.browser.name}`);
       }
-      args.browser.buildId = pinnedVersion;
+      args.browser.buildId = options.buildId;
     }
     const originalBuildId = args.browser.buildId;
     args.browser.buildId = await resolveBuildId(
