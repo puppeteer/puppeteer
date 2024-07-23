@@ -47,13 +47,6 @@ Puppeteer will look up the file tree for any of the following formats:
 See the [`Configuration`](../api/puppeteer.configuration) interface for possible
 options.
 
-:::caution
-
-Previous versions of Puppeteer allowed configuration via the `config` key in
-`package.json`. This behavior is now deprecated and will be removed in the future.
-
-:::
-
 ### Changing download options
 
 When the changes to the configuration include changes to download option,
