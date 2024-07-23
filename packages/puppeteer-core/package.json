@@ -121,7 +121,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@puppeteer/browsers": "2.2.4",
-    "chromium-bidi": "0.6.1",
+    "chromium-bidi": "0.6.2",
     "debug": "^4.3.5",
     "devtools-protocol": "0.0.1299070",
     "ws": "^8.18.0"
