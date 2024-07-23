@@ -71,6 +71,25 @@ Name of the cookies to remove.
 </td></tr>
 <tr><td>
 
+<span id="partitionkey">partitionKey</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+If specified, deletes only cookies with the the given name and partitionKey where domain matches provided URL.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="path">path</span>
 
 </td><td>
