@@ -6,7 +6,7 @@
   "scripts": {
     "build": "wireit",
     "clean": "../../tools/clean.mjs",
-    "test": "mocha"
+    "test": "wireit"
   },
   "wireit": {
     "build": {
@@ -36,6 +36,12 @@
       "output": [
         "puppeteer-*.tgz"
       ]
+    },
+    "test": {
+      "command": "mocha",
+      "dependencies": [
+        "build"
+      ]
     }
   },
   "files": [
@@ -44,7 +50,7 @@
     "build",
     "assets"
   ],
-  "dependencies": {
+  "devDependencies": {
     "glob": "10.4.5",
     "mocha": "10.7.0"
   }

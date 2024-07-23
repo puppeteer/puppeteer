@@ -22,17 +22,27 @@ void new CLI({
   },
   allowCachePathOverride: false,
   pinnedBrowsers: {
-    [Browser.CHROME]:
-      puppeteer.configuration.browserRevision ||
-      PUPPETEER_REVISIONS['chrome'] ||
-      'latest',
-    [Browser.FIREFOX]:
-      puppeteer.configuration.browserRevision ||
-      PUPPETEER_REVISIONS['firefox'] ||
-      'latest',
-    [Browser.CHROMEHEADLESSSHELL]:
-      puppeteer.configuration.browserRevision ||
-      PUPPETEER_REVISIONS['chrome-headless-shell'] ||
-      'latest',
+    [Browser.CHROME]: {
+      buildId:
+        puppeteer.configuration.browserRevision ||
+        PUPPETEER_REVISIONS['chrome'] ||
+        'latest',
+      skipDownload: puppeteer.configuration.skipChromeDownload ?? false,
+    },
+    [Browser.FIREFOX]: {
+      buildId:
+        puppeteer.configuration.browserRevision ||
+        PUPPETEER_REVISIONS['firefox'] ||
+        'latest',
+      skipDownload: true,
+    },
+    [Browser.CHROMEHEADLESSSHELL]: {
+      buildId:
+        puppeteer.configuration.browserRevision ||
+        PUPPETEER_REVISIONS['chrome'] ||
+        'latest',
+      skipDownload:
+        puppeteer.configuration.skipChromeHeadlessShellDownload ?? false,
+    },
   },
 }).run(process.argv);
