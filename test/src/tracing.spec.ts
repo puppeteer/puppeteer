@@ -143,7 +143,7 @@ describe('Tracing', function () {
     await page.tracing.start({screenshots: true});
     await page.goto(server.PREFIX + '/grid.html');
     const trace = (await page.tracing.stop())!;
-    expect(trace.toString()).toContain('screenshot');
+    expect(Buffer.from(trace).toString()).toContain('screenshot');
   });
 
   it('should properly fail if readProtocolStream errors out', async () => {

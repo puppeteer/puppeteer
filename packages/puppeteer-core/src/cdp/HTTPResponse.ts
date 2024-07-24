@@ -137,7 +137,11 @@ export class CdpHTTPResponse extends HTTPResponse {
             const body = response.base64Encoded
               ? atob(response.body)
               : response.body;
-            return new TextEncoder().encode(body);
+            const bytes = new Uint8Array(body.length);
+            for (let i = 0; i < body.length; i++) {
+              bytes[i] = body.charCodeAt(i);
+            }
+            return bytes;
           } catch (error) {
             if (
               error instanceof ProtocolError &&

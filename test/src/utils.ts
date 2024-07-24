@@ -33,7 +33,9 @@ export const extendExpectWithToBeGolden = (
       const result = compare(
         goldenDir,
         outputDir,
-        Buffer.from(testScreenshot),
+        typeof testScreenshot === 'string'
+          ? testScreenshot
+          : Buffer.from(testScreenshot),
         goldenFilePath
       );
 

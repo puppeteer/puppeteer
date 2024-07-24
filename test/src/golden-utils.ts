@@ -76,7 +76,10 @@ const compareText = (
   actual: string | Buffer,
   expectedBuffer: string | Buffer
 ): DiffFile | undefined => {
-  assert(typeof actual === 'string');
+  assert(
+    typeof actual === 'string',
+    `Expected type string got ${typeof actual}`
+  );
   const expected = expectedBuffer.toString('utf-8');
   if (expected === actual) {
     return;
