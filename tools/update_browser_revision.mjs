@@ -120,16 +120,12 @@ async function updateDevToolsProtocolVersion(browserVersion) {
   );
 }
 
-async function saveVersionData(data) {
-  await writeFile('./versions.json', JSON.stringify(data, null, 2));
+async function saveVersionData() {
+  await writeFile('./versions.json', JSON.stringify(versionData, null, 2));
   touchedFiles.push('./versions.json');
 }
 
-async function updateVersionFileLastMaintained(
-  browser,
-  oldVersion,
-  newVersion
-) {
+async function updateVersionData(browser, oldVersion, newVersion) {
   const browserVersions = versionData.versions.map(
     ([_puppeteerVersion, browserVersions]) => {
       return browserVersions[browser];
@@ -148,7 +144,6 @@ async function updateVersionFileLastMaintained(
   // We will have NEXT as value in the Map
   if (nextVersionConfig) {
     nextVersionConfig[1][browser] = newVersion;
-    await saveVersionData(versionData);
     return;
   }
 
@@ -159,23 +154,25 @@ async function updateVersionFileLastMaintained(
       [browser]: newVersion,
     },
   ]);
+}
 
+async function updateLastMaintainedChromeVersion(oldVersion, newVersion) {
   const oldSemVer = new SemVer(oldVersion, true);
   const newSemVer = new SemVer(newVersion, true);
 
   if (newSemVer.compareMain(oldSemVer) !== 0) {
-    const key = `lastMaintained${getCapitalize(browser)}Version`;
-    const lastMaintainedSemVer = new SemVer(versionData[key], true);
+    const lastMaintainedSemVer = new SemVer(
+      versionData.lastMaintainedChromeVersion,
+      true
+    );
     const newLastMaintainedMajor = lastMaintainedSemVer.major + 1;
 
     const nextMaintainedVersion = browserVersions.find(version => {
       return new SemVer(version, true).major === newLastMaintainedMajor;
     });
 
-    versionData.lastMaintainedVersion[browser] = nextMaintainedVersion;
+    versionData.lastMaintainedChromeVersion = nextMaintainedVersion;
   }
-
-  await saveVersionData(versionData);
 }
 
 const version = await getVersionForStable(BROWSER);
@@ -188,16 +185,16 @@ await replaceInFile(
   version
 );
 
+await updateVersionData(BROWSER, BROWSER_CURRENT_VERSION, version);
+
 if (BROWSER === 'chrome') {
-  await updateVersionFileLastMaintained(
-    BROWSER,
-    BROWSER_CURRENT_VERSION,
-    version
-  );
+  await updateLastMaintainedChromeVersion(BROWSER_CURRENT_VERSION, version);
   await updateDevToolsProtocolVersion(version);
   // Create new `package-lock.json` as we update devtools-protocol
   execSync('npm install --ignore-scripts');
 }
+
+await saveVersionData();
 
 // Make sure we pass CI formatter check by running all the new files though it
 await formatUpdateFiles();
