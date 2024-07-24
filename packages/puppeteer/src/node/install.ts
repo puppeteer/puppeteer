@@ -110,7 +110,7 @@ export async function downloadBrowser(): Promise<void> {
             platform,
             buildId: shellBuildId,
             downloadProgressCallback: makeProgressCallback(
-              browser,
+              Browser.CHROMEHEADLESSSHELL,
               shellBuildId
             ),
             baseUrl: downloadBaseUrl,
