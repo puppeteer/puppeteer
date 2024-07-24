@@ -1936,7 +1936,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "https://github.com/puppeteer/puppeteer/issues/11849"
+    "comment": "Requires support for multiple sessions"
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to close remote browser",
