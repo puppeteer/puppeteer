@@ -576,7 +576,16 @@ export class CdpPage extends Page {
       }
       return cookie;
     };
-    return originalCookies.map(filterUnsupportedAttributes);
+    return originalCookies.map(filterUnsupportedAttributes).map(cookie => {
+      return {
+        ...cookie,
+        // TODO: a breaking change is needed in Puppeteer types to support other
+        // partition keys.
+        partitionKey: cookie.partitionKey
+          ? cookie.partitionKey.topLevelSite
+          : undefined,
+      };
+    });
   }
 
   override async deleteCookie(
@@ -613,7 +622,19 @@ export class CdpPage extends Page {
     await this.deleteCookie(...items);
     if (items.length) {
       await this.#primaryTargetClient.send('Network.setCookies', {
-        cookies: items,
+        cookies: items.map(cookieParam => {
+          return {
+            ...cookieParam,
+            partitionKey: cookieParam.partitionKey
+              ? {
+                  // TODO: a breaking change neeeded to change the partition key
+                  // type in Puppeteer.
+                  topLevelSite: cookieParam.partitionKey,
+                  hasCrossSiteAncestor: false,
+                }
+              : undefined,
+          };
+        }),
       });
     }
   }
