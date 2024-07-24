@@ -98,7 +98,7 @@ describe('Tracing', function () {
     await page.goto(server.PREFIX + '/grid.html');
     const trace = (await page.tracing.stop())!;
     const buf = fs.readFileSync(outputFile);
-    expect(trace.toString()).toEqual(buf.toString());
+    expect(Buffer.from(trace).toString()).toEqual(buf.toString());
   });
   it('should work without options', async () => {
     const {page, server} = testState;

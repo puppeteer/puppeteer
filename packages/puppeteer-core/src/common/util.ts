@@ -192,11 +192,27 @@ export function evaluationString(
 /**
  * @internal
  */
+function mergeUint8Arrays(mergable: Uint8Array[]): Uint8Array {
+  let length = 0;
+  mergable.forEach(item => {
+    length += item.length;
+  });
+
+  // Create a new array with total length and merge all source arrays.
+  const mergedArray = new Uint8Array(length);
+  let offset = 0;
+  mergable.forEach(item => {
+    mergedArray.set(item, offset);
+    offset += item.length;
+  });
+
+  return mergedArray;
+}
 export async function getReadableAsBuffer(
   readable: ReadableStream<Uint8Array>,
   path?: string
 ): Promise<Uint8Array | null> {
-  const buffers: number[] = [];
+  const buffers: Uint8Array[] = [];
   const reader = readable.getReader();
   if (path) {
     const fileHandle = await environment.value.fs.promises.open(path, 'w+');
@@ -206,7 +222,7 @@ export async function getReadableAsBuffer(
         if (done) {
           break;
         }
-        buffers.push(...value);
+        buffers.push(value);
         await fileHandle.writeFile(value);
       }
     } finally {
@@ -218,11 +234,11 @@ export async function getReadableAsBuffer(
       if (done) {
         break;
       }
-      buffers.push(...value);
+      buffers.push(value);
     }
   }
   try {
-    const concat = new Uint8Array(buffers);
+    const concat = mergeUint8Arrays(buffers);
     if (concat.length === 0) {
       return null;
     }
