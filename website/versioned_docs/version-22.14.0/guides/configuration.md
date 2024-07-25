@@ -13,11 +13,6 @@ You can also use Puppeteer with Firefox. See
 [status of cross-browser support](https://pptr.dev/faq#q-what-is-the-status-of-cross-browser-support) for
 more information.
 
-```mdx-code-block
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-```
-
 All defaults in Puppeteer can be customized in two ways:
 
 1. [Configuration files](#configuration-files) (**recommended**)
@@ -54,17 +49,21 @@ options.
 
 :::caution
 
-After adding a configuration file, you may need to remove and reinstall
-`puppeteer` for it to take effect if the changes affect installation.
-
-:::
-
-:::caution
-
 Previous versions of Puppeteer allowed configuration via the `config` key in
 `package.json`. This behavior is now deprecated and will be removed in the future.
 
 :::
+
+### Changing download options
+
+When the changes to the configuration include changes to download option,
+you will need to re-run postinstall scripts for them to take effect.
+
+This can most easily be done with running:
+
+```bash npm2yarn
+npx puppeteer browsers install
+```
 
 ### Examples
 

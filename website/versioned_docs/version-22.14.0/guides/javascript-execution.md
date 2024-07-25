@@ -32,9 +32,10 @@ import puppeteer from 'puppeteer';
 :::caution
 
 Although the function is defined in your script context, it actually gets
-stringified by Puppeteer, sent to the target page over Chrome DevTools protocol
-and evaluated there. It means that the function cannot access scope variables in
-your script.
+converted to a string by Puppeteer, sent to the target page and evaluated there.
+It means that the function cannot access scope variables or call other functions
+defined in your Puppeteer script, and you need to define the entire function
+logic within the function body.
 
 :::
 
@@ -62,7 +63,9 @@ The functions you evaluate can return values. If the returned value is of a
 primitive type, it gets automatically converted by Puppeteer to a primitive type
 in the script context like in the previous example.
 
-If the script returns an object, Puppeteer serializes it to a JSON and reconstructs it on the script side. This process might not always yield correct results, for example, when you return a DOM node:
+If the script returns an object, Puppeteer serializes it to a JSON and
+reconstructs it on the script side. This process might not always yield correct
+results, for example, when you return a DOM node:
 
 ```ts
 const body = await page.evaluate(() => {
@@ -80,9 +83,23 @@ const body = await page.evaluateHandle(() => {
 console.log(body instanceof ElementHandle); // true
 ```
 
-The returned object is either a `JSHandle` or a `ElementHandle`. `ElementHandle` extends `JSHandle` and it is only created for DOM elements.
+The returned object is either a `JSHandle` or a `ElementHandle`. `ElementHandle`
+extends `JSHandle` and it is only created for DOM elements.
 
 See the [API documentation](https://pptr.dev/api) for more details about what methods are available for handles.
+
+## Returning promises
+
+If you return a Promise from an evaluate call, the promise will be automatically
+awaited. For example,
+
+```ts
+await page.evaluate(() => {
+  // wait for 100ms.
+  return new Promise(resolve => setTimeout(resolve, 100));
+});
+// Execution continues here once the Promise created in the page context resolves.
+```
 
 ## Passing arguments to the evaluate function
 
@@ -102,6 +119,7 @@ The arguments can be primitive values or `JSHandle`s.
 
 :::note
 
-Page, JSHandle and ElementHandle offer several different helpers to evaluate JavaScript but they all follow the basic principles outlined in this guide.
+Page, JSHandle and ElementHandle offer several different helpers to evaluate
+JavaScript but they all follow the basic principles outlined in this guide.
 
 :::
