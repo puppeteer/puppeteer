@@ -604,7 +604,14 @@ export class CdpPage extends Page {
   ): Promise<void> {
     const pageURL = this.url();
     for (const cookie of cookies) {
-      const item = Object.assign({}, cookie);
+      const item = {
+        ...cookie,
+        // TODO: a breaking change neeeded to change the partition key
+        // type in Puppeteer.
+        partitionKey: cookie.partitionKey
+          ? {topLevelSite: cookie.partitionKey, hasCrossSiteAncestor: false}
+          : undefined,
+      };
       if (!cookie.url && pageURL.startsWith('http')) {
         item.url = pageURL;
       }
