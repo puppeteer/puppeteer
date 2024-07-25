@@ -57,9 +57,6 @@ jobs:
         run: npm ci
         env:
           PUPPETEER_BROWSER_REVISION: canary
-      - name: Configure permissions
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: icacls $HOME/.cache/puppeteer/chrome /grant "ALL APPLICATION PACKAGES:(OI)(CI)(RX)"
       - name: Apply Canary expectations
         run: node tools/merge-canary-test-expectations.mjs
       - name: Run all tests (for non-Linux)
