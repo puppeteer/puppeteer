@@ -10,6 +10,7 @@ The following versions of the browsers are supported, mapped to Puppeteer versio
 
 <!-- version-start -->
 
+- [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 127.0.6533.72 - [Puppeteer v22.14.0](https://github.com/puppeteer/puppeteer/blob/puppeteer-v22.14.0/docs/api/index.md)
 - [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 126.0.6478.182 - [Puppeteer v22.13.1](https://github.com/puppeteer/puppeteer/blob/puppeteer-v22.13.1/docs/api/index.md)
 - [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 126.0.6478.126 - [Puppeteer v22.12.1](https://github.com/puppeteer/puppeteer/blob/puppeteer-v22.12.1/docs/api/index.md)
 - [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 126.0.6478.63 - [Puppeteer v22.12.0](https://github.com/puppeteer/puppeteer/blob/puppeteer-v22.12.0/docs/api/index.md)
