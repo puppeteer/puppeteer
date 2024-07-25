@@ -116,8 +116,8 @@ describe('Tracing', function () {
     await page.tracing.start({screenshots: true});
     await page.goto(server.PREFIX + '/grid.html');
 
-    const oldGetReadableAsBuffer = utils.getReadableAsBuffer;
-    sinon.stub(utils, 'getReadableAsBuffer').callsFake(() => {
+    const oldGetReadableAsBuffer = utils.getReadableAsTypedArray;
+    sinon.stub(utils, 'getReadableAsTypedArray').callsFake(() => {
       return oldGetReadableAsBuffer({
         getReader() {
           return {
