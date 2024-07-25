@@ -91,13 +91,14 @@ describe('Tracing', function () {
     expect(error).toBeTruthy();
     await page.tracing.stop();
   });
-  it('should return a buffer', async () => {
+  it('should return a typedArray', async () => {
     const {page, server} = testState;
 
     await page.tracing.start({screenshots: true, path: outputFile});
     await page.goto(server.PREFIX + '/grid.html');
     const trace = (await page.tracing.stop())!;
     const buf = fs.readFileSync(outputFile);
+    expect(trace).toBeInstanceOf(Uint8Array);
     expect(Buffer.from(trace).toString()).toEqual(buf.toString());
   });
   it('should work without options', async () => {
@@ -137,7 +138,7 @@ describe('Tracing', function () {
     expect(trace).toEqual(undefined);
   });
 
-  it('should support a buffer without a path', async () => {
+  it('should support a typedArray without a path', async () => {
     const {page, server} = testState;
 
     await page.tracing.start({screenshots: true});

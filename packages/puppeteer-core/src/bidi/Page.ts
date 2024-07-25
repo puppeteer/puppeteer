@@ -416,7 +416,7 @@ export class BidiPage extends Page {
       ).pipe(raceWith(timeout(ms)))
     );
 
-    function base64ToArrayBuffer(base64: string) {
+    function base64ToTypedArray(base64: string) {
       const binaryString = atob(base64);
       const bytes = new Uint8Array(binaryString.length);
       for (let i = 0; i < binaryString.length; i++) {
@@ -425,21 +425,21 @@ export class BidiPage extends Page {
       return bytes;
     }
 
-    const buffer = base64ToArrayBuffer(data);
+    const typedArray = base64ToTypedArray(data);
 
-    await this._maybeWriteBufferToFile(path, buffer);
+    await this._maybeWriteTypedArrayToFile(path, typedArray);
 
-    return buffer;
+    return typedArray;
   }
 
   override async createPDFStream(
     options?: PDFOptions | undefined
   ): Promise<ReadableStream<Uint8Array>> {
-    const buffer = await this.pdf(options);
+    const typedArray = await this.pdf(options);
 
     return new ReadableStream({
       start(controller) {
-        controller.enqueue(buffer);
+        controller.enqueue(typedArray);
         controller.close();
       },
     });

@@ -208,7 +208,11 @@ function mergeUint8Arrays(mergable: Uint8Array[]): Uint8Array {
 
   return mergedArray;
 }
-export async function getReadableAsBuffer(
+
+/**
+ * @internal
+ */
+export async function getReadableAsTypedArray(
   readable: ReadableStream<Uint8Array>,
   path?: string
 ): Promise<Uint8Array | null> {

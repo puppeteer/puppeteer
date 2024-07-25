@@ -5,7 +5,7 @@
  */
 import type {CDPSession} from '../api/CDPSession.js';
 import {
-  getReadableAsBuffer,
+  getReadableAsTypedArray,
   getReadableFromProtocolStream,
 } from '../common/util.js';
 import {assert} from '../util/assert.js';
@@ -123,8 +123,8 @@ export class Tracing {
           this.#client,
           event.stream
         );
-        const buffer = await getReadableAsBuffer(readable, this.#path);
-        contentDeferred.resolve(buffer ?? undefined);
+        const typedArray = await getReadableAsTypedArray(readable, this.#path);
+        contentDeferred.resolve(typedArray ?? undefined);
       } catch (error) {
         if (isErrorLike(error)) {
           contentDeferred.reject(error);
