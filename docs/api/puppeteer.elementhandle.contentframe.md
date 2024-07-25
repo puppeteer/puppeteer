@@ -4,7 +4,7 @@ sidebar_label: ElementHandle.contentFrame
 
 # ElementHandle.contentFrame() method
 
-<h2 id="overload-0">contentFrame(): Promise&lt;Frame&gt;</h2>
+<h2 id="overload">contentFrame(): Promise&lt;Frame&gt;</h2>
 
 Resolves the frame associated with the element, if any. Always exists for HTMLIFrameElements.
 
@@ -47,7 +47,7 @@ this
 
 Promise&lt;[Frame](./puppeteer.frame.md)&gt;
 
-<h2 id="overload">contentFrame(): Promise&lt;Frame \| null&gt;</h2>
+<h2 id="overload-1">contentFrame(): Promise&lt;Frame \| null&gt;</h2>
 
 ### Signature
 

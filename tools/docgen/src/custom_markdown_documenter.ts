@@ -250,7 +250,7 @@ export class MarkdownDocumenter {
     ) {
       const overloadIndex = apiItem.overloadIndex - 1;
       const overloadId =
-        overloadIndex > 0 ? `"overload"` : `"overload-${overloadIndex}"`;
+        overloadIndex === 0 ? `"overload"` : `"overload-${overloadIndex}"`;
 
       // TODO: See if we don't need to create all of the on our own.
       const overLoadHeader = `${apiItem.displayName}(): ${apiItem.returnTypeExcerpt.text}`;

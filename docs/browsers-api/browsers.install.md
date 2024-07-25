@@ -4,7 +4,7 @@ sidebar_label: install
 
 # install() function
 
-<h2 id="overload-0">install(): Promise&lt;InstalledBrowser&gt;</h2>
+<h2 id="overload">install(): Promise&lt;InstalledBrowser&gt;</h2>
 
 ### Signature
 
@@ -47,7 +47,7 @@ options
 
 Promise&lt;[InstalledBrowser](./browsers.installedbrowser.md)&gt;
 
-<h2 id="overload">install(): Promise&lt;string&gt;</h2>
+<h2 id="overload-1">install(): Promise&lt;string&gt;</h2>
 
 ### Signature
 
