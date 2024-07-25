@@ -4,7 +4,7 @@ sidebar_label: ElementHandle.drop
 
 # ElementHandle.drop() method
 
-<h2 id="overload">drop(): Promise&lt;void&gt;</h2>
+<h2 id="drop">drop(): Promise&lt;void&gt;</h2>
 
 Drops the given element onto the current one.
 
@@ -61,7 +61,7 @@ element
 
 Promise&lt;void&gt;
 
-<h2 id="overload-1">drop(): Promise&lt;void&gt;</h2>
+<h2 id="drop-1">drop(): Promise&lt;void&gt;</h2>
 
 > Warning: This API is now obsolete.
 >

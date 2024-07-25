@@ -248,9 +248,10 @@ export class MarkdownDocumenter {
       ApiReturnTypeMixin.isBaseClassOf(apiItem) &&
       apiItem.getMergedSiblings().length > 1
     ) {
+      const name = apiItem.displayName;
       const overloadIndex = apiItem.overloadIndex - 1;
       const overloadId =
-        overloadIndex === 0 ? `"overload"` : `"overload-${overloadIndex}"`;
+        overloadIndex === 0 ? name : `${name}-${overloadIndex}`;
 
       // TODO: See if we don't need to create all of the on our own.
       const overLoadHeader = `${apiItem.displayName}(): ${apiItem.returnTypeExcerpt.text}`;
@@ -263,7 +264,7 @@ export class MarkdownDocumenter {
               new DocHtmlAttribute({
                 configuration,
                 name: 'id',
-                value: overloadId,
+                value: `"${overloadId}"`,
               }),
             ],
           }),

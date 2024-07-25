@@ -4,7 +4,7 @@ sidebar_label: Frame.addStyleTag
 
 # Frame.addStyleTag() method
 
-<h2 id="overload">addStyleTag(): Promise&lt;ElementHandle&lt;HTMLStyleElement&gt;&gt;</h2>
+<h2 id="addStyleTag">addStyleTag(): Promise&lt;ElementHandle&lt;HTMLStyleElement&gt;&gt;</h2>
 
 Adds a `HTMLStyleElement` into the frame with the desired URL
 
@@ -51,7 +51,7 @@ Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLStyleElement&gt;
 
 An [element handle](./puppeteer.elementhandle.md) to the loaded `<style>` element.
 
-<h2 id="overload-1">addStyleTag(): Promise&lt;ElementHandle&lt;HTMLLinkElement&gt;&gt;</h2>
+<h2 id="addStyleTag-1">addStyleTag(): Promise&lt;ElementHandle&lt;HTMLLinkElement&gt;&gt;</h2>
 
 Adds a `HTMLLinkElement` into the frame with the desired URL
 
