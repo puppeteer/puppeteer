@@ -4,7 +4,7 @@ sidebar_label: TracingOptions
 
 # TracingOptions interface
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface TracingOptions

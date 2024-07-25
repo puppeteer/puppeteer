@@ -4,7 +4,7 @@ sidebar_label: trimCache
 
 # trimCache() function
 
-#### Signature:
+### Signature
 
 ```typescript
 trimCache: () => Promise<void>;

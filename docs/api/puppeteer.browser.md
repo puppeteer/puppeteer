@@ -10,7 +10,7 @@ sidebar_label: Browser
 
 [Browser](./puppeteer.browser.md) [emits](./puppeteer.eventemitter.emit.md) various events which are documented in the [BrowserEvent](./puppeteer.browserevent.md) enum.
 
-#### Signature:
+### Signature
 
 ```typescript
 export declare abstract class Browser extends EventEmitter<BrowserEvents>

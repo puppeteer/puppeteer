@@ -4,7 +4,7 @@ sidebar_label: KeyboardTypeOptions
 
 # KeyboardTypeOptions interface
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface KeyboardTypeOptions

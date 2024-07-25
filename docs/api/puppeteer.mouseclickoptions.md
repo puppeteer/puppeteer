@@ -4,7 +4,7 @@ sidebar_label: MouseClickOptions
 
 # MouseClickOptions interface
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface MouseClickOptions extends MouseOptions

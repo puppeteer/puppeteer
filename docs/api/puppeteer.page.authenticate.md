@@ -12,7 +12,7 @@ Request interception will be turned on behind the scenes to implement authentica
 
 :::
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

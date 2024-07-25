@@ -6,7 +6,7 @@ sidebar_label: Frame.childFrames
 
 An array of child frames.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Frame {

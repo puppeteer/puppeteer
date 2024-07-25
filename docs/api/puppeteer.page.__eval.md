@@ -6,7 +6,7 @@ sidebar_label: Page.$$eval
 
 This method returns all elements matching the selector and passes the resulting array as the first argument to the `pageFunction`.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

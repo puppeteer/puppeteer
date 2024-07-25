@@ -6,7 +6,7 @@ sidebar_label: Touchscreen.touchEnd
 
 Dispatches a `touchend` event.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Touchscreen {

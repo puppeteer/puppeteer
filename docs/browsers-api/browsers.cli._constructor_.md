@@ -6,7 +6,7 @@ sidebar_label: CLI.(constructor)
 
 Constructs a new instance of the `CLI` class
 
-#### Signature:
+### Signature
 
 ```typescript
 class CLI {

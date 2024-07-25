@@ -10,7 +10,7 @@ InterceptResolutionState contains: action: InterceptResolutionAction priority?: 
 
 InterceptResolutionAction is one of: `abort`, `respond`, `continue`, `disabled`, `none`, or `already-handled`.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPRequest {

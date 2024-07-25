@@ -6,7 +6,7 @@ sidebar_label: Frame.title
 
 The frame's title.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Frame {

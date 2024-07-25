@@ -8,7 +8,7 @@ sidebar_label: Page.setViewport
 
 In the case of multiple pages in a single browser, each page can have its own viewport size. Setting the viewport to `null` resets the viewport to its default value.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

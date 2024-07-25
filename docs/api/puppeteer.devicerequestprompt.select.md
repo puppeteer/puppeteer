@@ -6,7 +6,7 @@ sidebar_label: DeviceRequestPrompt.select
 
 Select a device in the prompt's list.
 
-#### Signature:
+### Signature
 
 ```typescript
 class DeviceRequestPrompt {

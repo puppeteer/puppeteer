@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.frame
 
 The frame that initiated the request, or null if navigating to error pages.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPRequest {

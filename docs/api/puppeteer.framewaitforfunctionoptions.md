@@ -4,7 +4,7 @@ sidebar_label: FrameWaitForFunctionOptions
 
 # FrameWaitForFunctionOptions interface
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface FrameWaitForFunctionOptions

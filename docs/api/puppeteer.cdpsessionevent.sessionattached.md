@@ -4,7 +4,7 @@ sidebar_label: CDPSessionEvent.SessionAttached
 
 # CDPSessionEvent.SessionAttached variable
 
-#### Signature:
+### Signature
 
 ```typescript
 SessionAttached: 'sessionattached';

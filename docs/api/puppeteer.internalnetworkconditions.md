@@ -4,7 +4,7 @@ sidebar_label: InternalNetworkConditions
 
 # InternalNetworkConditions interface
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface InternalNetworkConditions extends NetworkConditions

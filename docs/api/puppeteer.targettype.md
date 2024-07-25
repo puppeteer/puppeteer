@@ -4,7 +4,7 @@ sidebar_label: TargetType
 
 # TargetType enum
 
-#### Signature:
+### Signature
 
 ```typescript
 export declare enum TargetType

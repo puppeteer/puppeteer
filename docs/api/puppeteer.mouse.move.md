@@ -6,7 +6,7 @@ sidebar_label: Mouse.move
 
 Moves the mouse to the given coordinate.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Mouse {

@@ -6,7 +6,7 @@ sidebar_label: Dialog.type
 
 The type of the dialog.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Dialog {

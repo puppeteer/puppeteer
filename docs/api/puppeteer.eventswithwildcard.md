@@ -4,7 +4,7 @@ sidebar_label: EventsWithWildcard
 
 # EventsWithWildcard type
 
-#### Signature:
+### Signature
 
 ```typescript
 export type EventsWithWildcard<Events extends Record<EventType, unknown>> =

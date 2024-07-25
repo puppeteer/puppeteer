@@ -6,7 +6,7 @@ sidebar_label: Page.screencast
 
 Captures a screencast of this [page](./puppeteer.page.md).
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

@@ -4,7 +4,7 @@ sidebar_label: WebWorker.close
 
 # WebWorker.close() method
 
-#### Signature:
+### Signature
 
 ```typescript
 class WebWorker {

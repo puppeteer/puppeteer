@@ -6,7 +6,7 @@ sidebar_label: ElementHandle.uploadFile
 
 Sets the value of an [input element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input) to the given file paths.
 
-#### Signature:
+### Signature
 
 ```typescript
 class ElementHandle {

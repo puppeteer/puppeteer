@@ -6,7 +6,7 @@ sidebar_label: JSCoverageEntry
 
 The CoverageEntry class for JavaScript
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface JSCoverageEntry extends CoverageEntry

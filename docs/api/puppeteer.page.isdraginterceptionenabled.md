@@ -10,7 +10,7 @@ sidebar_label: Page.isDragInterceptionEnabled
 
 `true` if drag events are being intercepted, `false` otherwise.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

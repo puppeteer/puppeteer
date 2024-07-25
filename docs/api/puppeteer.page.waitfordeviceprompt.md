@@ -12,7 +12,7 @@ This must be called before the device request is made. It will not return a curr
 
 :::
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

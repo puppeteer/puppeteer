@@ -6,7 +6,7 @@ sidebar_label: Page.removeExposedFunction
 
 The method removes a previously added function via $[Page.exposeFunction()](./puppeteer.page.exposefunction.md) called `name` from the page's `window` object.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

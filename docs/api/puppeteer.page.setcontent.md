@@ -6,7 +6,7 @@ sidebar_label: Page.setContent
 
 Set the content of the page.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

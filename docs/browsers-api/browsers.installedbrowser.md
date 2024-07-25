@@ -4,7 +4,7 @@ sidebar_label: InstalledBrowser
 
 # InstalledBrowser class
 
-#### Signature:
+### Signature
 
 ```typescript
 export declare class InstalledBrowser

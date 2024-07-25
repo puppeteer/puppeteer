@@ -6,7 +6,7 @@ sidebar_label: DeviceRequestPrompt.waitForDevice
 
 Resolve to the first device in the prompt matching a filter.
 
-#### Signature:
+### Signature
 
 ```typescript
 class DeviceRequestPrompt {

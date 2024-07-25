@@ -6,7 +6,7 @@ sidebar_label: Locator.map
 
 Maps the locator using the provided mapper.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Locator {

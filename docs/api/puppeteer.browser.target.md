@@ -6,7 +6,7 @@ sidebar_label: Browser.target
 
 Gets the [target](./puppeteer.target.md) associated with the [default browser context](./puppeteer.browser.defaultbrowsercontext.md)).
 
-#### Signature:
+### Signature
 
 ```typescript
 class Browser {

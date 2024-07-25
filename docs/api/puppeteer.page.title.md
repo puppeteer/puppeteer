@@ -6,7 +6,7 @@ sidebar_label: Page.title
 
 The page's title
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

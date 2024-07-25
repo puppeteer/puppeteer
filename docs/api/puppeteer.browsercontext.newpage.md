@@ -6,7 +6,7 @@ sidebar_label: BrowserContext.newPage
 
 Creates a new [page](./puppeteer.page.md) in this [browser context](./puppeteer.browsercontext.md).
 
-#### Signature:
+### Signature
 
 ```typescript
 class BrowserContext {

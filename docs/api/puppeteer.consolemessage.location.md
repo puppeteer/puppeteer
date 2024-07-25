@@ -6,7 +6,7 @@ sidebar_label: ConsoleMessage.location
 
 The location of the console message.
 
-#### Signature:
+### Signature
 
 ```typescript
 class ConsoleMessage {

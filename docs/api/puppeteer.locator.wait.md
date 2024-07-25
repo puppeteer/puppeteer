@@ -8,7 +8,7 @@ Waits for the locator to get the serialized value from the page.
 
 Note this requires the value to be JSON-serializable.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Locator {

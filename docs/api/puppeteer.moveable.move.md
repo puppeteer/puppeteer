@@ -6,7 +6,7 @@ sidebar_label: Moveable.move
 
 Moves the resource when 'using'.
 
-#### Signature:
+### Signature
 
 ```typescript
 interface Moveable {

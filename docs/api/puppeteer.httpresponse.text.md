@@ -6,7 +6,7 @@ sidebar_label: HTTPResponse.text
 
 Promise which resolves to a text (utf8) representation of response body.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPResponse {

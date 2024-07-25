@@ -12,7 +12,7 @@ When a [browser](./puppeteer.browser.md) is launched, it has a single [browser c
 
 If a [page](./puppeteer.page.md) opens another [page](./puppeteer.page.md), e.g. using `window.open`, the popup will belong to the parent [page's browser context](./puppeteer.page.browsercontext.md).
 
-#### Signature:
+### Signature
 
 ```typescript
 export declare abstract class BrowserContext extends EventEmitter<BrowserContextEvents>

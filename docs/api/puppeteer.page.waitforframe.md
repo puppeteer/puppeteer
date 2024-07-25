@@ -6,7 +6,7 @@ sidebar_label: Page.waitForFrame
 
 Waits for a frame matching the given conditions to appear.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

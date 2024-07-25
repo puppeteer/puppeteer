@@ -6,7 +6,7 @@ sidebar_label: Page.setBypassServiceWorker
 
 Toggles ignoring of service worker for each request.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

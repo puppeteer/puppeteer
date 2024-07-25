@@ -6,7 +6,7 @@ sidebar_label: Dialog.defaultValue
 
 The default value of the prompt, or an empty string if the dialog is not a `prompt`.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Dialog {

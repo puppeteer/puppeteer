@@ -6,7 +6,7 @@ sidebar_label: SecurityDetails.issuer
 
 The name of the issuer of the certificate.
 
-#### Signature:
+### Signature
 
 ```typescript
 class SecurityDetails {

@@ -12,7 +12,7 @@ An element is considered to be visible if all of the following is true:
 
 - the element's [visibility](https://developer.mozilla.org/en-US/docs/Web/CSS/visibility) is not `hidden` or `collapse`.
 
-#### Signature:
+### Signature
 
 ```typescript
 class ElementHandle {

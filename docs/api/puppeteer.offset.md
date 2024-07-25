@@ -4,7 +4,7 @@ sidebar_label: Offset
 
 # Offset interface
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface Offset

@@ -6,7 +6,7 @@ sidebar_label: LaunchOptions
 
 Generic launch options that can be passed when launching any browser.
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface LaunchOptions

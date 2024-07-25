@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.url
 
 The URL of the request
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPRequest {

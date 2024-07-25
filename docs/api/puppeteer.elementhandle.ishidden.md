@@ -12,7 +12,7 @@ An element is considered to be hidden if at least one of the following is true:
 
 - the element's [visibility](https://developer.mozilla.org/en-US/docs/Web/CSS/visibility) is `hidden` or `collapse`.
 
-#### Signature:
+### Signature
 
 ```typescript
 class ElementHandle {

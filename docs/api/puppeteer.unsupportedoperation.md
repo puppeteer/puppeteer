@@ -6,7 +6,7 @@ sidebar_label: UnsupportedOperation
 
 Puppeteer will throw this error if a method is not supported by the currently used protocol
 
-#### Signature:
+### Signature
 
 ```typescript
 export declare class UnsupportedOperation extends PuppeteerError

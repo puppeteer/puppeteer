@@ -4,7 +4,7 @@ sidebar_label: UninstallOptions
 
 # UninstallOptions interface
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface UninstallOptions

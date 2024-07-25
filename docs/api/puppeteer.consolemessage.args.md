@@ -6,7 +6,7 @@ sidebar_label: ConsoleMessage.args
 
 An array of arguments passed to the console.
 
-#### Signature:
+### Signature
 
 ```typescript
 class ConsoleMessage {

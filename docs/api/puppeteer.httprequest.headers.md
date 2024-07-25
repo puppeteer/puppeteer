@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.headers
 
 An object with HTTP headers associated with the request. All header names are lower-case.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPRequest {

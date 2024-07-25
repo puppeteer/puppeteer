@@ -8,7 +8,7 @@ Creates an expectation that is evaluated against located values.
 
 If the expectations do not match, then the locator will retry.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Locator {

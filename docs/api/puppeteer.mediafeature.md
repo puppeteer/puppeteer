@@ -6,7 +6,7 @@ sidebar_label: MediaFeature
 
 A media feature to emulate.
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface MediaFeature

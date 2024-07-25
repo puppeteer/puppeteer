@@ -4,7 +4,7 @@ sidebar_label: Process.close
 
 # Process.close() method
 
-#### Signature:
+### Signature
 
 ```typescript
 class Process {

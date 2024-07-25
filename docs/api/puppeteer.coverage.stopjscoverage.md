@@ -6,7 +6,7 @@ sidebar_label: Coverage.stopJSCoverage
 
 Promise that resolves to the array of coverage reports for all scripts.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Coverage {

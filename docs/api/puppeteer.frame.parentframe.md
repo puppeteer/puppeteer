@@ -6,7 +6,7 @@ sidebar_label: Frame.parentFrame
 
 The parent frame, if any. Detached and main frames return `null`.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Frame {

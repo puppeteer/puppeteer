@@ -4,7 +4,7 @@ sidebar_label: GoToOptions
 
 # GoToOptions interface
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface GoToOptions extends WaitForOptions

@@ -6,7 +6,7 @@ sidebar_label: HTTPResponse.url
 
 The URL of the response.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPResponse {

@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.response
 
 A matching `HTTPResponse` object, or null if the response has not been received yet.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPRequest {

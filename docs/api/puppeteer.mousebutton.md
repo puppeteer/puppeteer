@@ -6,7 +6,7 @@ sidebar_label: MouseButton
 
 Enum of valid mouse buttons.
 
-#### Signature:
+### Signature
 
 ```typescript
 MouseButton: Readonly<{

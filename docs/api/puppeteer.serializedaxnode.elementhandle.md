@@ -8,7 +8,7 @@ Get an ElementHandle for this AXNode if available.
 
 If the underlying DOM element has been disposed, the method might return an error.
 
-#### Signature:
+### Signature
 
 ```typescript
 interface SerializedAXNode {

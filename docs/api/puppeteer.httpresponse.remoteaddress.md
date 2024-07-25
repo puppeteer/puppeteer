@@ -6,7 +6,7 @@ sidebar_label: HTTPResponse.remoteAddress
 
 The IP address and port number used to connect to the remote server.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPResponse {

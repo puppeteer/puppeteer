@@ -6,7 +6,7 @@ sidebar_label: Process.(constructor)
 
 Constructs a new instance of the `Process` class
 
-#### Signature:
+### Signature
 
 ```typescript
 class Process {

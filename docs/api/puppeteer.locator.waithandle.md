@@ -6,7 +6,7 @@ sidebar_label: Locator.waitHandle
 
 Waits for the locator to get a handle from the page.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Locator {

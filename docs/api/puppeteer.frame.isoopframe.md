@@ -10,7 +10,7 @@ sidebar_label: Frame.isOOPFrame
 
 Is `true` if the frame is an out-of-process (OOP) frame. Otherwise, `false`.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Frame {

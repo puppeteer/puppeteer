@@ -6,7 +6,7 @@ sidebar_label: BrowserContext.close
 
 Closes this [browser context](./puppeteer.browsercontext.md) and all associated [pages](./puppeteer.page.md).
 
-#### Signature:
+### Signature
 
 ```typescript
 class BrowserContext {

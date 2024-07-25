@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.isInterceptResolutionHandled
 
 Is `true` if the intercept resolution has already been handled, `false` otherwise.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPRequest {

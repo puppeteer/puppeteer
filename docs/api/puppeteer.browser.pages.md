@@ -8,7 +8,7 @@ Gets a list of all open [pages](./puppeteer.page.md) inside this [Browser](./pup
 
 If there ar multiple [browser contexts](./puppeteer.browsercontext.md), this returns all [pages](./puppeteer.page.md) in all [browser contexts](./puppeteer.browsercontext.md).
 
-#### Signature:
+### Signature
 
 ```typescript
 class Browser {

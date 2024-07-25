@@ -4,9 +4,11 @@ sidebar_label: Frame.locator
 
 # Frame.locator() method
 
+<h2 id="locator">locator(): Locator&lt;NodeFor&lt;Selector&gt;&gt;</h2>
+
 Creates a locator for the provided selector. See [Locator](./puppeteer.locator.md) for details and supported actions.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Frame {
@@ -48,3 +50,46 @@ Selector
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt;
+
+<h2 id="locator-1">locator(): Locator&lt;Ret&gt;</h2>
+
+Creates a locator for the provided function. See [Locator](./puppeteer.locator.md) for details and supported actions.
+
+### Signature
+
+```typescript
+class Frame {
+  locator<Ret>(func: () => Awaitable<Ret>): Locator<Ret>;
+}
+```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+func
+
+</td><td>
+
+() =&gt; [Awaitable](./puppeteer.awaitable.md)&lt;Ret&gt;
+
+</td><td>
+
+</td></tr>
+</tbody></table>
+**Returns:**
+
+[Locator](./puppeteer.locator.md)&lt;Ret&gt;

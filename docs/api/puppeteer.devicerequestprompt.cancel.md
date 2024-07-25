@@ -6,7 +6,7 @@ sidebar_label: DeviceRequestPrompt.cancel
 
 Cancel the prompt.
 
-#### Signature:
+### Signature
 
 ```typescript
 class DeviceRequestPrompt {

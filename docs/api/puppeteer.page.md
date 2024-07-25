@@ -12,7 +12,7 @@ One Browser instance might have multiple Page instances.
 
 :::
 
-#### Signature:
+### Signature
 
 ```typescript
 export declare abstract class Page extends EventEmitter<PageEvents>
@@ -322,12 +322,12 @@ Shortcut for [page.mainFrame().addScriptTag(options)](./puppeteer.frame.addscrip
 
 Adds a `<link rel="stylesheet">` tag into the page with the desired URL or a `<style type="text/css">` tag with the content.
 
-Shortcut for [page.mainFrame().addStyleTag(options)](./puppeteer.frame.addstyletag_1.md).
+Shortcut for [page.mainFrame().addStyleTag(options)](./puppeteer.frame.addstyletag.md).
 
 </td></tr>
 <tr><td>
 
-<span id="addstyletag">[addStyleTag(options)](./puppeteer.page.addstyletag_1.md)</span>
+<span id="addstyletag">[addStyleTag(options)](./puppeteer.page.addstyletag.md)</span>
 
 </td><td>
 
@@ -798,7 +798,7 @@ Creates a locator for the provided selector. See [Locator](./puppeteer.locator.m
 </td></tr>
 <tr><td>
 
-<span id="locator">[locator(func)](./puppeteer.page.locator_1.md)</span>
+<span id="locator">[locator(func)](./puppeteer.page.locator.md)</span>
 
 </td><td>
 
@@ -930,7 +930,7 @@ Calling [Page.bringToFront()](./puppeteer.page.bringtofront.md) will not wait fo
 </td></tr>
 <tr><td>
 
-<span id="screenshot">[screenshot(options)](./puppeteer.page.screenshot_1.md)</span>
+<span id="screenshot">[screenshot(options)](./puppeteer.page.screenshot.md)</span>
 
 </td><td>
 

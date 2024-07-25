@@ -4,7 +4,7 @@ sidebar_label: GetInstalledBrowsersOptions
 
 # GetInstalledBrowsersOptions interface
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface GetInstalledBrowsersOptions

@@ -6,7 +6,7 @@ sidebar_label: Locator.race
 
 Creates a race between multiple locators trying to locate elements in parallel but ensures that only a single element receives the action.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Locator {

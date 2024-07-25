@@ -6,7 +6,7 @@ sidebar_label: ElementHandle.toElement
 
 Converts the current handle to the given element type.
 
-#### Signature:
+### Signature
 
 ```typescript
 class ElementHandle {

@@ -6,7 +6,7 @@ sidebar_label: Cookie
 
 Represents a cookie object.
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface Cookie

@@ -6,7 +6,7 @@ sidebar_label: Dialog.message
 
 The message displayed in the dialog.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Dialog {

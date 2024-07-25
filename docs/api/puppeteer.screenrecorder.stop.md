@@ -6,7 +6,7 @@ sidebar_label: ScreenRecorder.stop
 
 Stops the recorder.
 
-#### Signature:
+### Signature
 
 ```typescript
 class ScreenRecorder {

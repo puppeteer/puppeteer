@@ -6,7 +6,7 @@ sidebar_label: getVersionComparator
 
 Returns a version comparator for the given browser that can be used to sort browser versions.
 
-#### Signature:
+### Signature
 
 ```typescript
 export declare function getVersionComparator(

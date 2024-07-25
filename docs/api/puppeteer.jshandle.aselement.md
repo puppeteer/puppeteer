@@ -6,7 +6,7 @@ sidebar_label: JSHandle.asElement
 
 Either `null` or the handle itself if the handle is an instance of [ElementHandle](./puppeteer.elementhandle.md).
 
-#### Signature:
+### Signature
 
 ```typescript
 class JSHandle {

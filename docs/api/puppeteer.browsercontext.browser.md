@@ -6,7 +6,7 @@ sidebar_label: BrowserContext.browser
 
 Gets the [browser](./puppeteer.browser.md) associated with this [browser context](./puppeteer.browsercontext.md).
 
-#### Signature:
+### Signature
 
 ```typescript
 class BrowserContext {

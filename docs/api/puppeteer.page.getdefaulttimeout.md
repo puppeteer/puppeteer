@@ -6,7 +6,7 @@ sidebar_label: Page.getDefaultTimeout
 
 Maximum time in milliseconds.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

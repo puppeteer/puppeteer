@@ -4,7 +4,7 @@ sidebar_label: Process
 
 # Process class
 
-#### Signature:
+### Signature
 
 ```typescript
 export declare class Process

@@ -4,7 +4,7 @@ sidebar_label: TargetFilterCallback
 
 # TargetFilterCallback type
 
-#### Signature:
+### Signature
 
 ```typescript
 export type TargetFilterCallback = (target: Target) => boolean;

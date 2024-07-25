@@ -6,7 +6,7 @@ sidebar_label: HTTPResponse.timing
 
 Timing information related to the response.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPResponse {

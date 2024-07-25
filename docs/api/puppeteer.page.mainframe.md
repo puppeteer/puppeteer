@@ -6,7 +6,7 @@ sidebar_label: Page.mainFrame
 
 The page's main frame.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

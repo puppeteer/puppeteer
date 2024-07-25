@@ -6,7 +6,7 @@ sidebar_label: CDPSessionEvent
 
 Events that the CDPSession class emits.
 
-#### Signature:
+### Signature
 
 ```typescript
 export declare namespace CDPSessionEvent

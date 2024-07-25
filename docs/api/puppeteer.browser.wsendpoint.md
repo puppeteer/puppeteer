@@ -12,7 +12,7 @@ You can find the debugger URL (`webSocketDebuggerUrl`) from `http://HOST:PORT/js
 
 See [browser endpoint](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target) for more information.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Browser {

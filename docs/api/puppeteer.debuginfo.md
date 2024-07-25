@@ -4,7 +4,7 @@ sidebar_label: DebugInfo
 
 # DebugInfo interface
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface DebugInfo

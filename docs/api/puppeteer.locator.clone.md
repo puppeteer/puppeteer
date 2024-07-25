@@ -6,7 +6,7 @@ sidebar_label: Locator.clone
 
 Clones the locator.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Locator {

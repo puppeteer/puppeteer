@@ -6,7 +6,7 @@ sidebar_label: Dialog.accept
 
 A promise that resolves when the dialog has been accepted.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Dialog {

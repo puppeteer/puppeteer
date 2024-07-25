@@ -8,7 +8,7 @@ Denotes the objects received by callback functions for page events.
 
 See [PageEvent](./puppeteer.pageevent.md) for more detail on the events and when they are emitted.
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface PageEvents extends Record<EventType, unknown>

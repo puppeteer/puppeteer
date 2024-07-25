@@ -6,7 +6,7 @@ sidebar_label: Page.$
 
 Finds the first element that matches the selector. If no element matches the selector, the return value resolves to `null`.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

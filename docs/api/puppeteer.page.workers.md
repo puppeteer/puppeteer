@@ -6,7 +6,7 @@ sidebar_label: Page.workers
 
 All of the dedicated [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) associated with the page.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

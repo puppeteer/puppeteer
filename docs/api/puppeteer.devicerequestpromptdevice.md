@@ -6,7 +6,7 @@ sidebar_label: DeviceRequestPromptDevice
 
 Device in a request prompt.
 
-#### Signature:
+### Signature
 
 ```typescript
 export declare class DeviceRequestPromptDevice

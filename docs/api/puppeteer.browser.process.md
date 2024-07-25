@@ -6,7 +6,7 @@ sidebar_label: Browser.process
 
 Gets the associated [ChildProcess](https://nodejs.org/api/child_process.html#class-childprocess).
 
-#### Signature:
+### Signature
 
 ```typescript
 class Browser {

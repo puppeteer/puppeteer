@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.fetchPostData
 
 Fetches the POST data for the request from the browser.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPRequest {

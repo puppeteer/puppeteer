@@ -4,7 +4,7 @@ sidebar_label: TimeoutError
 
 # TimeoutError class
 
-#### Signature:
+### Signature
 
 ```typescript
 export declare class TimeoutError extends Error

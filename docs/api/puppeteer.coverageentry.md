@@ -6,7 +6,7 @@ sidebar_label: CoverageEntry
 
 The CoverageEntry class represents one entry of the coverage report.
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface CoverageEntry

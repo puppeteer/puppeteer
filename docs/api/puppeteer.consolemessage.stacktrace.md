@@ -6,7 +6,7 @@ sidebar_label: ConsoleMessage.stackTrace
 
 The array of locations on the stack of the console message.
 
-#### Signature:
+### Signature
 
 ```typescript
 class ConsoleMessage {

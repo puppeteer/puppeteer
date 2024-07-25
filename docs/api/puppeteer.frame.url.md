@@ -6,7 +6,7 @@ sidebar_label: Frame.url
 
 The frame's URL.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Frame {

@@ -6,7 +6,7 @@ sidebar_label: Frame.goto
 
 Navigates the frame or page to the given `url`.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Frame {

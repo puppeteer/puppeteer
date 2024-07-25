@@ -6,7 +6,7 @@ sidebar_label: PuppeteerError
 
 The base class for all Puppeteer-specific errors
 
-#### Signature:
+### Signature
 
 ```typescript
 export declare class PuppeteerError extends Error

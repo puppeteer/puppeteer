@@ -8,7 +8,7 @@ Creates a new locator instance by cloning the current locator and setting the to
 
 Pass `0` to disable timeout.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Locator {

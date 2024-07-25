@@ -10,7 +10,7 @@ Once request interception is enabled, every request will stall unless it's conti
 
 See the [Request interception guide](https://pptr.dev/guides/network-interception) for more details.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

@@ -4,7 +4,7 @@ sidebar_label: Device
 
 # Device interface
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface Device

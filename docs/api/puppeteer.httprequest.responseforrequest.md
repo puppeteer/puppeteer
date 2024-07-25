@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.responseForRequest
 
 The `ResponseForRequest` that gets used if the interception is allowed to respond (ie, `abort()` is not called).
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPRequest {

@@ -6,7 +6,7 @@ sidebar_label: Browser.defaultBrowserContext
 
 Gets the default [browser context](./puppeteer.browsercontext.md).
 
-#### Signature:
+### Signature
 
 ```typescript
 class Browser {

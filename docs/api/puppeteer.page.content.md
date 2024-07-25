@@ -6,7 +6,7 @@ sidebar_label: Page.content
 
 The full HTML contents of the page, including the DOCTYPE.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

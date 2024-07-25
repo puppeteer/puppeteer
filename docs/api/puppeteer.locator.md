@@ -8,7 +8,7 @@ Locators describe a strategy of locating objects and performing an action on the
 
 See [https://pptr.dev/guides/page-interactions\#locators](https://pptr.dev/guides/page-interactions#locators) for details.
 
-#### Signature:
+### Signature
 
 ```typescript
 export declare abstract class Locator<T> extends EventEmitter<LocatorEvents>

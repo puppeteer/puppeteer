@@ -6,7 +6,7 @@ sidebar_label: HTTPResponse.securityDetails
 
 [SecurityDetails](./puppeteer.securitydetails.md) if the response was received over the secure connection, or `null` otherwise.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPResponse {

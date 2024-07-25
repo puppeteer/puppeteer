@@ -6,7 +6,7 @@ sidebar_label: Page.frames
 
 An array of all frames attached to the page.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

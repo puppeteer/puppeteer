@@ -6,7 +6,7 @@ sidebar_label: Page.goto
 
 Navigates the frame or page to the given `url`.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

@@ -4,7 +4,7 @@ sidebar_label: GeolocationOptions
 
 # GeolocationOptions interface
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface GeolocationOptions

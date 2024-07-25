@@ -6,7 +6,7 @@ sidebar_label: Page.waitForFunction
 
 Waits for the provided function, `pageFunction`, to return a truthy value when evaluated in the page's context.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

@@ -6,7 +6,7 @@ sidebar_label: BrowserContext.targets
 
 Gets all active [targets](./puppeteer.target.md) inside this [browser context](./puppeteer.browsercontext.md).
 
-#### Signature:
+### Signature
 
 ```typescript
 class BrowserContext {

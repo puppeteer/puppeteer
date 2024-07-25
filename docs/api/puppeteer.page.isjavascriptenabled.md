@@ -6,7 +6,7 @@ sidebar_label: Page.isJavaScriptEnabled
 
 `true` if the page has JavaScript enabled, `false` otherwise.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

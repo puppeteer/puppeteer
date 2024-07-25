@@ -6,7 +6,7 @@ sidebar_label: Frame.page
 
 The page associated with the frame.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Frame {

@@ -4,7 +4,7 @@ sidebar_label: ProfileOptions
 
 # ProfileOptions interface
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface ProfileOptions

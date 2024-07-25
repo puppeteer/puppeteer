@@ -6,7 +6,7 @@ sidebar_label: Browser.disconnect
 
 Disconnects Puppeteer from this [browser](./puppeteer.browser.md), but leaves the process running.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Browser {

@@ -8,7 +8,7 @@ Behaves identically to [Page.evaluate()](./puppeteer.page.evaluate.md) except it
 
 See [Page.evaluate()](./puppeteer.page.evaluate.md) for details.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Frame {

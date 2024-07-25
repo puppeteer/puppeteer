@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.initiator
 
 The initiator of the request.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPRequest {

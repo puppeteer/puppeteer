@@ -6,7 +6,7 @@ sidebar_label: HTTPResponse.fromCache
 
 True if the response was served from either the browser's disk cache or memory cache.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPResponse {

@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.abortErrorReason
 
 The most recent reason for aborting the request
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPRequest {

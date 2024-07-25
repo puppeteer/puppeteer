@@ -8,7 +8,7 @@ sidebar_label: ElementHandle.dragOver
 >
 > Do not use. `dragover` will automatically be performed during dragging.
 
-#### Signature:
+### Signature
 
 ```typescript
 class ElementHandle {

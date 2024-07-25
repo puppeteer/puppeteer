@@ -6,7 +6,7 @@ sidebar_label: SecurityDetails.subjectAlternativeNames
 
 The list of [subject alternative names (SANs)](https://en.wikipedia.org/wiki/Subject_Alternative_Name) of the certificate.
 
-#### Signature:
+### Signature
 
 ```typescript
 class SecurityDetails {

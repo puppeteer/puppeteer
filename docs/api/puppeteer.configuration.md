@@ -8,7 +8,7 @@ Defines options to configure Puppeteer's behavior during installation and runtim
 
 See individual properties for more information.
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface Configuration

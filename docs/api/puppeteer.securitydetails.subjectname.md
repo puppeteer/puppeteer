@@ -6,7 +6,7 @@ sidebar_label: SecurityDetails.subjectName
 
 The name of the subject to which the certificate was issued.
 
-#### Signature:
+### Signature
 
 ```typescript
 class SecurityDetails {

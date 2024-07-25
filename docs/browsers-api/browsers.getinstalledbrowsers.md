@@ -6,7 +6,7 @@ sidebar_label: getInstalledBrowsers
 
 Returns metadata about browsers installed in the cache directory.
 
-#### Signature:
+### Signature
 
 ```typescript
 export declare function getInstalledBrowsers(

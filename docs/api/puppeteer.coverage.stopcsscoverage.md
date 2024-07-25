@@ -6,7 +6,7 @@ sidebar_label: Coverage.stopCSSCoverage
 
 Promise that resolves to the array of coverage reports for all stylesheets.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Coverage {

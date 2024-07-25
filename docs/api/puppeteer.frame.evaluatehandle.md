@@ -8,7 +8,7 @@ Behaves identically to [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.m
 
 See [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md) for details.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Frame {

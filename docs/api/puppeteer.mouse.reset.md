@@ -6,7 +6,7 @@ sidebar_label: Mouse.reset
 
 Resets the mouse to the default state: No buttons pressed; position at (0,0).
 
-#### Signature:
+### Signature
 
 ```typescript
 class Mouse {

@@ -6,7 +6,7 @@ sidebar_label: HTTPResponse.frame
 
 A [Frame](./puppeteer.frame.md) that initiated this response, or `null` if navigating to error pages.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPResponse {

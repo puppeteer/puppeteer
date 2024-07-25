@@ -6,7 +6,7 @@ sidebar_label: HTTPResponse.request
 
 A matching [HTTPRequest](./puppeteer.httprequest.md) object.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPResponse {

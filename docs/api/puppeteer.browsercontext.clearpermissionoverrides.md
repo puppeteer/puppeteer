@@ -6,7 +6,7 @@ sidebar_label: BrowserContext.clearPermissionOverrides
 
 Clears all permission overrides for this [browser context](./puppeteer.browsercontext.md).
 
-#### Signature:
+### Signature
 
 ```typescript
 class BrowserContext {

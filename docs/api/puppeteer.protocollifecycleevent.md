@@ -4,7 +4,7 @@ sidebar_label: ProtocolLifeCycleEvent
 
 # ProtocolLifeCycleEvent type
 
-#### Signature:
+### Signature
 
 ```typescript
 export type ProtocolLifeCycleEvent =

@@ -6,7 +6,7 @@ sidebar_label: Mouse.down
 
 Presses the mouse.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Mouse {

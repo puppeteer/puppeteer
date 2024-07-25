@@ -6,7 +6,7 @@ sidebar_label: CSSCoverageOptions
 
 Set of configurable options for CSS coverage.
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface CSSCoverageOptions

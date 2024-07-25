@@ -6,7 +6,7 @@ sidebar_label: JSHandle.jsonValue
 
 A vanilla object representing the serializable portions of the referenced object.
 
-#### Signature:
+### Signature
 
 ```typescript
 class JSHandle {

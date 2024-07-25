@@ -6,7 +6,7 @@ sidebar_label: HTTPResponse.json
 
 Promise which resolves to a JSON representation of response body.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPResponse {

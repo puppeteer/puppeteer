@@ -6,7 +6,7 @@ sidebar_label: CookieSameSite
 
 Represents the cookie's 'SameSite' status: https://tools.ietf.org/html/draft-west-first-party-cookies
 
-#### Signature:
+### Signature
 
 ```typescript
 export type CookieSameSite = 'Strict' | 'Lax' | 'None';

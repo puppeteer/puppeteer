@@ -4,7 +4,7 @@ sidebar_label: ExtensionTransport.close
 
 # ExtensionTransport.close() method
 
-#### Signature:
+### Signature
 
 ```typescript
 class ExtensionTransport {

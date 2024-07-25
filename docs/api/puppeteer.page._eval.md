@@ -6,7 +6,7 @@ sidebar_label: Page.$eval
 
 This method finds the first element within the page that matches the selector and passes the result as the first argument to the `pageFunction`.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

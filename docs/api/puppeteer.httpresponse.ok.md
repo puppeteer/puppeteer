@@ -6,7 +6,7 @@ sidebar_label: HTTPResponse.ok
 
 True if the response was successful (status in the range 200-299).
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPResponse {

@@ -6,7 +6,7 @@ sidebar_label: Locator.scroll
 
 Scrolls the located element.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Locator {

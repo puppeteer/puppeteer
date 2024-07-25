@@ -4,7 +4,7 @@ sidebar_label: Process.waitForLineOutput
 
 # Process.waitForLineOutput() method
 
-#### Signature:
+### Signature
 
 ```typescript
 class Process {

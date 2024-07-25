@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.continueRequestOverrides
 
 The `ContinueRequestOverrides` that will be used if the interception is allowed to continue (ie, `abort()` and `respond()` aren't called).
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPRequest {

@@ -4,7 +4,7 @@ sidebar_label: CLI
 
 # CLI class
 
-#### Signature:
+### Signature
 
 ```typescript
 export declare class CLI

@@ -14,7 +14,7 @@ Functions installed via `page.exposeFunction` survive navigations.
 
 :::
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

@@ -6,7 +6,7 @@ sidebar_label: WebWorker.url
 
 The URL of this web worker.
 
-#### Signature:
+### Signature
 
 ```typescript
 class WebWorker {

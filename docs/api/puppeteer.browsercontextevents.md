@@ -4,7 +4,7 @@ sidebar_label: BrowserContextEvents
 
 # BrowserContextEvents interface
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface BrowserContextEvents extends Record<EventType, unknown>

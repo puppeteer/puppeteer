@@ -4,7 +4,7 @@ sidebar_label: LaunchOptions
 
 # LaunchOptions interface
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface LaunchOptions

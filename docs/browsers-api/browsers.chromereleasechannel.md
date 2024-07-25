@@ -4,7 +4,7 @@ sidebar_label: ChromeReleaseChannel
 
 # ChromeReleaseChannel enum
 
-#### Signature:
+### Signature
 
 ```typescript
 export declare enum ChromeReleaseChannel

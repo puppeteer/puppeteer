@@ -12,7 +12,7 @@ Whether this [browser context](./puppeteer.browsercontext.md) is incognito.
 
 In Chrome, the [default browser context](./puppeteer.browser.defaultbrowsercontext.md) is the only non-incognito browser context.
 
-#### Signature:
+### Signature
 
 ```typescript
 class BrowserContext {

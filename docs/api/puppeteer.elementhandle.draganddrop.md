@@ -8,7 +8,7 @@ sidebar_label: ElementHandle.dragAndDrop
 >
 > Use `ElementHandle.drop` instead.
 
-#### Signature:
+### Signature
 
 ```typescript
 class ElementHandle {

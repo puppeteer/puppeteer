@@ -8,7 +8,7 @@ Extends the main [Puppeteer](./puppeteer.puppeteer.md) class with Node specific 
 
 If you're using Puppeteer in a Node environment, this is the class you'll get when you run `require('puppeteer')` (or the equivalent ES `import`).
 
-#### Signature:
+### Signature
 
 ```typescript
 export declare class PuppeteerNode extends Puppeteer

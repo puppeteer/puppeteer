@@ -4,7 +4,7 @@ sidebar_label: resolveBuildId
 
 # resolveBuildId() function
 
-#### Signature:
+### Signature
 
 ```typescript
 export declare function resolveBuildId(

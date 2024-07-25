@@ -6,7 +6,7 @@ sidebar_label: Browser.close
 
 Closes this [browser](./puppeteer.browser.md) and all associated [pages](./puppeteer.page.md).
 
-#### Signature:
+### Signature
 
 ```typescript
 class Browser {

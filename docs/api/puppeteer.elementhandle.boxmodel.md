@@ -6,7 +6,7 @@ sidebar_label: ElementHandle.boxModel
 
 This method returns boxes of the element, or `null` if the element is [not part of the layout](https://drafts.csswg.org/css-display-4/#box-generation) (example: `display: none`).
 
-#### Signature:
+### Signature
 
 ```typescript
 class ElementHandle {

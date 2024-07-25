@@ -6,7 +6,7 @@ sidebar_label: PuppeteerNode.trimCache
 
 Removes all non-current Firefox and Chrome binaries in the cache directory identified by the provided Puppeteer configuration. The current browser version is determined by resolving PUPPETEER_REVISIONS from Puppeteer unless `configuration.browserRevision` is provided.
 
-#### Signature:
+### Signature
 
 ```typescript
 class PuppeteerNode {

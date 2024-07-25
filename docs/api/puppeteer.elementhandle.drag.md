@@ -6,7 +6,7 @@ sidebar_label: ElementHandle.drag
 
 Drags an element over the given element or point.
 
-#### Signature:
+### Signature
 
 ```typescript
 class ElementHandle {

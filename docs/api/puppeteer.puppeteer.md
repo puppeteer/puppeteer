@@ -4,7 +4,7 @@ sidebar_label: puppeteer
 
 # puppeteer variable
 
-#### Signature:
+### Signature
 
 ```typescript
 puppeteer: PuppeteerNode;

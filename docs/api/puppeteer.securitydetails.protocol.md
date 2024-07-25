@@ -6,7 +6,7 @@ sidebar_label: SecurityDetails.protocol
 
 The security protocol being used, e.g. "TLS 1.2".
 
-#### Signature:
+### Signature
 
 ```typescript
 class SecurityDetails {

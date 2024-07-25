@@ -6,7 +6,7 @@ sidebar_label: Touchscreen.touchStart
 
 Dispatches a `touchstart` event.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Touchscreen {

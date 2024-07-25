@@ -8,7 +8,7 @@ sidebar_label: Page.setDragInterception
 >
 > We no longer support intercepting drag payloads. Use the new drag APIs found on [ElementHandle](./puppeteer.elementhandle.md) to drag (or just use the [Page.mouse](./puppeteer.page.md#mouse)).
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

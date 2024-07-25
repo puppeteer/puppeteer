@@ -6,7 +6,7 @@ sidebar_label: Page.url
 
 The page's URL.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

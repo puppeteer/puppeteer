@@ -6,7 +6,7 @@ sidebar_label: WebWorker.evaluateHandle
 
 Evaluates a given function in the [worker](./puppeteer.webworker.md).
 
-#### Signature:
+### Signature
 
 ```typescript
 class WebWorker {

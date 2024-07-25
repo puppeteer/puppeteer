@@ -15,7 +15,7 @@ sidebar_label: Frame.name
 
 The frame's `name` attribute as specified in the tag.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Frame {

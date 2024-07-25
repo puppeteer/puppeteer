@@ -4,7 +4,7 @@ sidebar_label: CDPEvents
 
 # CDPEvents type
 
-#### Signature:
+### Signature
 
 ```typescript
 export type CDPEvents = {

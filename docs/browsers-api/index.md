@@ -209,7 +209,7 @@ Returns a version comparator for the given browser that can be used to sort brow
 </td></tr>
 <tr><td>
 
-<span id="install">[install(options)](./browsers.install_1.md)</span>
+<span id="install">[install(options)](./browsers.install.md)</span>
 
 </td><td>
 

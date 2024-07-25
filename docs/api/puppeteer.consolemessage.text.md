@@ -6,7 +6,7 @@ sidebar_label: ConsoleMessage.text
 
 The text of the console message.
 
-#### Signature:
+### Signature
 
 ```typescript
 class ConsoleMessage {

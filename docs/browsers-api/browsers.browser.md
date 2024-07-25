@@ -6,7 +6,7 @@ sidebar_label: Browser
 
 Supported browsers.
 
-#### Signature:
+### Signature
 
 ```typescript
 export declare enum Browser

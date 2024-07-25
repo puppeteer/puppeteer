@@ -6,7 +6,7 @@ sidebar_label: ResponseForRequest
 
 Required response data to fulfill a request with.
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface ResponseForRequest

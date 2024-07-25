@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.method
 
 The method used (`GET`, `POST`, etc.)
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPRequest {

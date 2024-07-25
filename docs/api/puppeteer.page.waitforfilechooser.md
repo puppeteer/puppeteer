@@ -18,7 +18,7 @@ Interception of file dialogs triggered via DOM APIs such as window.showOpenFileP
 
 :::
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

@@ -6,7 +6,7 @@ sidebar_label: Page.$$
 
 Finds elements on the page that match the selector. If no elements match the selector, the return value resolves to `[]`.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

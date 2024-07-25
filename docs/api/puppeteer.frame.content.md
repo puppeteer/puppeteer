@@ -6,7 +6,7 @@ sidebar_label: Frame.content
 
 The full HTML contents of the frame, including the DOCTYPE.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Frame {

@@ -6,7 +6,7 @@ sidebar_label: Page.createCDPSession
 
 Creates a Chrome Devtools Protocol session attached to the page.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

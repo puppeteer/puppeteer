@@ -4,7 +4,7 @@ sidebar_label: LocatorClickOptions
 
 # LocatorClickOptions type
 
-#### Signature:
+### Signature
 
 ```typescript
 export type LocatorClickOptions = ClickOptions & ActionOptions;

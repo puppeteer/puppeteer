@@ -6,7 +6,7 @@ sidebar_label: HTTPResponse.headers
 
 An object with HTTP headers associated with the response. All header names are lower-case.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPResponse {

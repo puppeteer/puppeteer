@@ -6,7 +6,7 @@ sidebar_label: HTTPResponse.buffer
 
 Promise which resolves to a buffer with response body.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPResponse {

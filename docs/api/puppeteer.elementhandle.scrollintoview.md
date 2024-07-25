@@ -6,7 +6,7 @@ sidebar_label: ElementHandle.scrollIntoView
 
 Scrolls the element into view using either the automation protocol client or by calling element.scrollIntoView.
 
-#### Signature:
+### Signature
 
 ```typescript
 class ElementHandle {

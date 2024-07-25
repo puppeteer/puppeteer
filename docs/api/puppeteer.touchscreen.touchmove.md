@@ -6,7 +6,7 @@ sidebar_label: Touchscreen.touchMove
 
 Dispatches a `touchMove` event.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Touchscreen {

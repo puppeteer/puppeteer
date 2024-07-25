@@ -10,7 +10,7 @@ sidebar_label: Page.target
 
 A target this page was created from.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

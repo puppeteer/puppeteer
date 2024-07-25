@@ -6,7 +6,7 @@ sidebar_label: Mouse.up
 
 Releases the mouse.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Mouse {

@@ -6,7 +6,7 @@ sidebar_label: Page.metrics
 
 Object containing metrics as key/value pairs.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

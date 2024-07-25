@@ -6,7 +6,7 @@ sidebar_label: Locator.click
 
 Clicks the located element.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Locator {

@@ -6,7 +6,7 @@ sidebar_label: Page.waitForNetworkIdle
 
 Waits for the network to be idle.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

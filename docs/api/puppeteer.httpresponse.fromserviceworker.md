@@ -6,7 +6,7 @@ sidebar_label: HTTPResponse.fromServiceWorker
 
 True if the response was served by a service worker.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPResponse {

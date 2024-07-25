@@ -6,7 +6,7 @@ sidebar_label: Page.isServiceWorkerBypassed
 
 `true` if the service worker are being bypassed, `false` otherwise.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

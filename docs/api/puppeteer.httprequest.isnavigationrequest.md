@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.isNavigationRequest
 
 True if the request is the driver of the current frame's navigation.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPRequest {

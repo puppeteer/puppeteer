@@ -10,7 +10,7 @@ For headless browser, this is similar to `"HeadlessChrome/61.0.3153.0"`. For non
 
 The format of [Browser.version()](./puppeteer.browser.version.md) might change with future releases of browsers.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Browser {

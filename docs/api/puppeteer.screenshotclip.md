@@ -4,7 +4,7 @@ sidebar_label: ScreenshotClip
 
 # ScreenshotClip interface
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface ScreenshotClip extends BoundingBox

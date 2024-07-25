@@ -6,7 +6,7 @@ sidebar_label: Locator.hover
 
 Hovers over the located element.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Locator {

@@ -6,7 +6,7 @@ sidebar_label: Dialog.dismiss
 
 A promise which will resolve once the dialog has been dismissed
 
-#### Signature:
+### Signature
 
 ```typescript
 class Dialog {

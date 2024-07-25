@@ -6,7 +6,7 @@ sidebar_label: Page.reload
 
 Reloads the page.
 
-#### Signature:
+### Signature
 
 ```typescript
 class Page {

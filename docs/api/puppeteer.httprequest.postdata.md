@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.postData
 
 The request's post body, if any.
 
-#### Signature:
+### Signature
 
 ```typescript
 class HTTPRequest {
