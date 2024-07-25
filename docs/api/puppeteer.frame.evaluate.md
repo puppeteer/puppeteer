@@ -4,7 +4,11 @@ sidebar_label: Frame.evaluate
 
 # Frame.evaluate() method
 
-### Signature:
+Behaves identically to [Page.evaluate()](./puppeteer.page.evaluate.md) except it's run within the context of this frame.
+
+See [Page.evaluate()](./puppeteer.page.evaluate.md) for details.
+
+### Signature
 
 ```typescript
 class Frame {
@@ -17,10 +21,6 @@ class Frame {
   ): Promise<Awaited<ReturnType<Func>>>;
 }
 ```
-
-Behaves identically to [Page.evaluate()](./puppeteer.page.evaluate.md) except it's run within the context of this frame.
-
-See [Page.evaluate()](./puppeteer.page.evaluate.md) for details.
 
 ## Parameters
 

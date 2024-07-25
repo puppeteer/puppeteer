@@ -6,15 +6,15 @@ sidebar_label: ElementHandle.contentFrame
 
 <h2 id="overload-0">contentFrame(): Promise&lt;Frame&gt;</h2>
 
-### Signature:
+Resolves the frame associated with the element, if any. Always exists for HTMLIFrameElements.
+
+### Signature
 
 ```typescript
 class ElementHandle {
   abstract contentFrame(this: ElementHandle<HTMLIFrameElement>): Promise<Frame>;
 }
 ```
-
-Resolves the frame associated with the element, if any. Always exists for HTMLIFrameElements.
 
 ## Parameters
 
@@ -47,9 +47,9 @@ this
 
 Promise&lt;[Frame](./puppeteer.frame.md)&gt;
 
-<h2 id="overload-1">contentFrame(): Promise&lt;Frame \| null&gt;</h2>
+<h2 id="overload">contentFrame(): Promise&lt;Frame \| null&gt;</h2>
 
-### Signature:
+### Signature
 
 ```typescript
 class ElementHandle {

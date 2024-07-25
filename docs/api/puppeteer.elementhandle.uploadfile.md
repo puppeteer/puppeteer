@@ -4,7 +4,9 @@ sidebar_label: ElementHandle.uploadFile
 
 # ElementHandle.uploadFile() method
 
-### Signature:
+Sets the value of an [input element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input) to the given file paths.
+
+### Signature
 
 ```typescript
 class ElementHandle {
@@ -14,8 +16,6 @@ class ElementHandle {
   ): Promise<void>;
 }
 ```
-
-Sets the value of an [input element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input) to the given file paths.
 
 ## Parameters
 

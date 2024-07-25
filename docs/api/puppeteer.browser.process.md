@@ -4,15 +4,15 @@ sidebar_label: Browser.process
 
 # Browser.process() method
 
-### Signature:
+Gets the associated [ChildProcess](https://nodejs.org/api/child_process.html#class-childprocess).
+
+### Signature
 
 ```typescript
 class Browser {
   abstract process(): ChildProcess | null;
 }
 ```
-
-Gets the associated [ChildProcess](https://nodejs.org/api/child_process.html#class-childprocess).
 
 **Returns:**
 

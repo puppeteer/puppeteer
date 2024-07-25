@@ -4,15 +4,15 @@ sidebar_label: Page.metrics
 
 # Page.metrics() method
 
-### Signature:
+Object containing metrics as key/value pairs.
+
+### Signature
 
 ```typescript
 class Page {
   abstract metrics(): Promise<Metrics>;
 }
 ```
-
-Object containing metrics as key/value pairs.
 
 **Returns:**
 

@@ -4,15 +4,15 @@ sidebar_label: Mouse.wheel
 
 # Mouse.wheel() method
 
-### Signature:
+Dispatches a `mousewheel` event.
+
+### Signature
 
 ```typescript
 class Mouse {
   abstract wheel(options?: Readonly<MouseWheelOptions>): Promise<void>;
 }
 ```
-
-Dispatches a `mousewheel` event.
 
 ## Parameters
 

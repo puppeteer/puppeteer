@@ -249,6 +249,9 @@ export class MarkdownDocumenter {
       apiItem.getMergedSiblings().length > 1
     ) {
       const overloadIndex = apiItem.overloadIndex - 1;
+      const overloadId =
+        overloadIndex > 0 ? `"overload"` : `"overload-${overloadIndex}"`;
+
       // TODO: See if we don't need to create all of the on our own.
       const overLoadHeader = `${apiItem.displayName}(): ${apiItem.returnTypeExcerpt.text}`;
       output.appendNode(
@@ -260,7 +263,7 @@ export class MarkdownDocumenter {
               new DocHtmlAttribute({
                 configuration,
                 name: 'id',
-                value: `"overload-${overloadIndex}"`,
+                value: overloadId,
               }),
             ],
           }),
@@ -280,42 +283,6 @@ export class MarkdownDocumenter {
       if (apiItem.releaseTag === ReleaseTag.Beta) {
         this._writeBetaWarning(output);
       }
-    }
-
-    if (apiItem instanceof ApiDeclaredItem && apiItem.excerpt.text.length > 0) {
-      let code: string | undefined;
-      switch (apiItem.parent?.kind) {
-        case ApiItemKind.Class:
-          code = `class ${
-            apiItem.parent.displayName
-          } {${apiItem.getExcerptWithModifiers()}}`;
-          break;
-        case ApiItemKind.Interface:
-          code = `interface ${
-            apiItem.parent.displayName
-          } {${apiItem.getExcerptWithModifiers()}}`;
-          break;
-        default:
-          code = apiItem.getExcerptWithModifiers();
-      }
-      if (code) {
-        output.appendNode(
-          new DocHeading({
-            configuration,
-            title: 'Signature:',
-            level: 3,
-          })
-        );
-        output.appendNode(
-          new DocFencedCode({
-            configuration,
-            code: code,
-            language: 'typescript',
-          })
-        );
-      }
-
-      this._writeHeritageTypes(output, apiItem);
     }
 
     const decoratorBlocks: DocBlock[] = [];
@@ -349,6 +316,42 @@ export class MarkdownDocumenter {
 
         this._appendSection(output, tsdocComment.summarySection);
       }
+    }
+
+    if (apiItem instanceof ApiDeclaredItem && apiItem.excerpt.text.length > 0) {
+      let code: string | undefined;
+      switch (apiItem.parent?.kind) {
+        case ApiItemKind.Class:
+          code = `class ${
+            apiItem.parent.displayName
+          } {${apiItem.getExcerptWithModifiers()}}`;
+          break;
+        case ApiItemKind.Interface:
+          code = `interface ${
+            apiItem.parent.displayName
+          } {${apiItem.getExcerptWithModifiers()}}`;
+          break;
+        default:
+          code = apiItem.getExcerptWithModifiers();
+      }
+      if (code) {
+        output.appendNode(
+          new DocHeading({
+            configuration,
+            title: 'Signature',
+            level: 3,
+          })
+        );
+        output.appendNode(
+          new DocFencedCode({
+            configuration,
+            code: code,
+            language: 'typescript',
+          })
+        );
+      }
+
+      this._writeHeritageTypes(output, apiItem);
     }
 
     if (decoratorBlocks.length > 0) {

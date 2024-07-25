@@ -4,15 +4,15 @@ sidebar_label: Mouse.drag
 
 # Mouse.drag() method
 
-### Signature:
+Dispatches a `drag` event.
+
+### Signature
 
 ```typescript
 class Mouse {
   abstract drag(start: Point, target: Point): Promise<Protocol.Input.DragData>;
 }
 ```
-
-Dispatches a `drag` event.
 
 ## Parameters
 

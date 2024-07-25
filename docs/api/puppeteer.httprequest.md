@@ -4,13 +4,13 @@ sidebar_label: HTTPRequest
 
 # HTTPRequest class
 
-### Signature:
+Represents an HTTP request sent by a page.
+
+### Signature
 
 ```typescript
 export declare abstract class HTTPRequest
 ```
-
-Represents an HTTP request sent by a page.
 
 ## Remarks
 

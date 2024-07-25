@@ -4,7 +4,9 @@ sidebar_label: Page.$eval
 
 # Page.$eval() method
 
-### Signature:
+This method finds the first element within the page that matches the selector and passes the result as the first argument to the `pageFunction`.
+
+### Signature
 
 ```typescript
 class Page {
@@ -22,8 +24,6 @@ class Page {
   ): Promise<Awaited<ReturnType<Func>>>;
 }
 ```
-
-This method finds the first element within the page that matches the selector and passes the result as the first argument to the `pageFunction`.
 
 ## Parameters
 

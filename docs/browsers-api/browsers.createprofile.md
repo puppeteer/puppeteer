@@ -4,7 +4,7 @@ sidebar_label: createProfile
 
 # createProfile() function
 
-### Signature:
+### Signature
 
 ```typescript
 export declare function createProfile(

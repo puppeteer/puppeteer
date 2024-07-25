@@ -4,7 +4,7 @@ sidebar_label: defaultArgs
 
 # defaultArgs() function
 
-### Signature:
+### Signature
 
 ```typescript
 defaultArgs: (options?: import("puppeteer-core/internal/puppeteer-core.js").BrowserLaunchArgumentOptions | undefined) => string[]

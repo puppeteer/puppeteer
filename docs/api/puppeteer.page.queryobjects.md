@@ -4,7 +4,9 @@ sidebar_label: Page.queryObjects
 
 # Page.queryObjects() method
 
-### Signature:
+This method iterates the JavaScript heap and finds all objects with the given prototype.
+
+### Signature
 
 ```typescript
 class Page {
@@ -13,8 +15,6 @@ class Page {
   ): Promise<JSHandle<Prototype[]>>;
 }
 ```
-
-This method iterates the JavaScript heap and finds all objects with the given prototype.
 
 ## Parameters
 

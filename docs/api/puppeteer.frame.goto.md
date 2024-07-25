@@ -4,7 +4,9 @@ sidebar_label: Frame.goto
 
 # Frame.goto() method
 
-### Signature:
+Navigates the frame or page to the given `url`.
+
+### Signature
 
 ```typescript
 class Frame {
@@ -14,8 +16,6 @@ class Frame {
   ): Promise<HTTPResponse | null>;
 }
 ```
-
-Navigates the frame or page to the given `url`.
 
 ## Parameters
 

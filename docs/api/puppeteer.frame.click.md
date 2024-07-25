@@ -4,15 +4,15 @@ sidebar_label: Frame.click
 
 # Frame.click() method
 
-### Signature:
+Clicks the first element found that matches `selector`.
+
+### Signature
 
 ```typescript
 class Frame {
   click(selector: string, options?: Readonly<ClickOptions>): Promise<void>;
 }
 ```
-
-Clicks the first element found that matches `selector`.
 
 ## Parameters
 

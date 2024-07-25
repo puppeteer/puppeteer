@@ -4,14 +4,6 @@ sidebar_label: Frame.name
 
 # Frame.name() method
 
-### Signature:
-
-```typescript
-class Frame {
-  name(): string;
-}
-```
-
 > Warning: This API is now obsolete.
 >
 > Use
@@ -22,6 +14,14 @@ class Frame {
 > ```
 
 The frame's `name` attribute as specified in the tag.
+
+### Signature
+
+```typescript
+class Frame {
+  name(): string;
+}
+```
 
 **Returns:**
 

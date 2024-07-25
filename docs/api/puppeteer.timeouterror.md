@@ -4,15 +4,15 @@ sidebar_label: TimeoutError
 
 # TimeoutError class
 
-### Signature:
+TimeoutError is emitted whenever certain operations are terminated due to timeout.
+
+### Signature
 
 ```typescript
 export declare class TimeoutError extends PuppeteerError
 ```
 
 **Extends:** [PuppeteerError](./puppeteer.puppeteererror.md)
-
-TimeoutError is emitted whenever certain operations are terminated due to timeout.
 
 ## Remarks
 

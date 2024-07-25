@@ -4,7 +4,9 @@ sidebar_label: Connection.(constructor)
 
 # Connection.(constructor)
 
-### Signature:
+Constructs a new instance of the `Connection` class
+
+### Signature
 
 ```typescript
 class Connection {
@@ -16,8 +18,6 @@ class Connection {
   );
 }
 ```
-
-Constructs a new instance of the `Connection` class
 
 ## Parameters
 

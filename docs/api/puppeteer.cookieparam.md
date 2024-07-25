@@ -4,13 +4,13 @@ sidebar_label: CookieParam
 
 # CookieParam interface
 
-### Signature:
+Cookie parameter object
+
+### Signature
 
 ```typescript
 export interface CookieParam
 ```
-
-Cookie parameter object
 
 ## Properties
 

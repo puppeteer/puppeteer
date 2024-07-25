@@ -4,15 +4,15 @@ sidebar_label: HTTPRequest.fetchPostData
 
 # HTTPRequest.fetchPostData() method
 
-### Signature:
+Fetches the POST data for the request from the browser.
+
+### Signature
 
 ```typescript
 class HTTPRequest {
   abstract fetchPostData(): Promise<string | undefined>;
 }
 ```
-
-Fetches the POST data for the request from the browser.
 
 **Returns:**
 

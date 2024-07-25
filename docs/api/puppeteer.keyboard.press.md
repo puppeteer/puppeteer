@@ -4,7 +4,9 @@ sidebar_label: Keyboard.press
 
 # Keyboard.press() method
 
-### Signature:
+Shortcut for [Keyboard.down()](./puppeteer.keyboard.down.md) and [Keyboard.up()](./puppeteer.keyboard.up.md).
+
+### Signature
 
 ```typescript
 class Keyboard {
@@ -14,8 +16,6 @@ class Keyboard {
   ): Promise<void>;
 }
 ```
-
-Shortcut for [Keyboard.down()](./puppeteer.keyboard.down.md) and [Keyboard.up()](./puppeteer.keyboard.up.md).
 
 ## Parameters
 

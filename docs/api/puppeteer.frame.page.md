@@ -4,15 +4,15 @@ sidebar_label: Frame.page
 
 # Frame.page() method
 
-### Signature:
+The page associated with the frame.
+
+### Signature
 
 ```typescript
 class Frame {
   abstract page(): Page;
 }
 ```
-
-The page associated with the frame.
 
 **Returns:**
 

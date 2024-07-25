@@ -4,13 +4,13 @@ sidebar_label: ProductLauncher
 
 # ProductLauncher class
 
-### Signature:
+Describes a launcher - a class that is able to create and launch a browser instance.
+
+### Signature
 
 ```typescript
 export declare abstract class ProductLauncher
 ```
-
-Describes a launcher - a class that is able to create and launch a browser instance.
 
 ## Remarks
 

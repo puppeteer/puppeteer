@@ -4,17 +4,17 @@ sidebar_label: PuppeteerNode.launch
 
 # PuppeteerNode.launch() method
 
-### Signature:
+Launches a browser instance with given arguments and options when specified.
+
+When using with `puppeteer-core`, [options.executablePath](./puppeteer.launchoptions.md#executablepath) or [options.channel](./puppeteer.launchoptions.md#channel) must be provided.
+
+### Signature
 
 ```typescript
 class PuppeteerNode {
   launch(options?: PuppeteerLaunchOptions): Promise<Browser>;
 }
 ```
-
-Launches a browser instance with given arguments and options when specified.
-
-When using with `puppeteer-core`, [options.executablePath](./puppeteer.launchoptions.md#executablepath) or [options.channel](./puppeteer.launchoptions.md#channel) must be provided.
 
 ## Parameters
 

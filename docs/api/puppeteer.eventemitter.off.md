@@ -4,7 +4,9 @@ sidebar_label: EventEmitter.off
 
 # EventEmitter.off() method
 
-### Signature:
+Remove an event listener from firing.
+
+### Signature
 
 ```typescript
 class EventEmitter {
@@ -14,8 +16,6 @@ class EventEmitter {
   ): this;
 }
 ```
-
-Remove an event listener from firing.
 
 ## Parameters
 

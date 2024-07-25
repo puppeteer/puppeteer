@@ -4,15 +4,15 @@ sidebar_label: Page.setBypassServiceWorker
 
 # Page.setBypassServiceWorker() method
 
-### Signature:
+Toggles ignoring of service worker for each request.
+
+### Signature
 
 ```typescript
 class Page {
   abstract setBypassServiceWorker(bypass: boolean): Promise<void>;
 }
 ```
-
-Toggles ignoring of service worker for each request.
 
 ## Parameters
 

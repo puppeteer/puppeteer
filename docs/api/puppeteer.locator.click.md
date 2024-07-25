@@ -4,7 +4,9 @@ sidebar_label: Locator.click
 
 # Locator.click() method
 
-### Signature:
+Clicks the located element.
+
+### Signature
 
 ```typescript
 class Locator {
@@ -14,8 +16,6 @@ class Locator {
   ): Promise<void>;
 }
 ```
-
-Clicks the located element.
 
 ## Parameters
 

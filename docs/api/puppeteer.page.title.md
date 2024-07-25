@@ -4,15 +4,15 @@ sidebar_label: Page.title
 
 # Page.title() method
 
-### Signature:
+The page's title
+
+### Signature
 
 ```typescript
 class Page {
   title(): Promise<string>;
 }
 ```
-
-The page's title
 
 **Returns:**
 

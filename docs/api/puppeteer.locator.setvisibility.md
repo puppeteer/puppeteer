@@ -4,7 +4,9 @@ sidebar_label: Locator.setVisibility
 
 # Locator.setVisibility() method
 
-### Signature:
+Creates a new locator instance by cloning the current locator with the visibility property changed to the specified value.
+
+### Signature
 
 ```typescript
 class Locator {
@@ -14,8 +16,6 @@ class Locator {
   ): Locator<NodeType>;
 }
 ```
-
-Creates a new locator instance by cloning the current locator with the visibility property changed to the specified value.
 
 ## Parameters
 

@@ -4,15 +4,15 @@ sidebar_label: Dialog.type
 
 # Dialog.type() method
 
-### Signature:
+The type of the dialog.
+
+### Signature
 
 ```typescript
 class Dialog {
   type(): Protocol.Page.DialogType;
 }
 ```
-
-The type of the dialog.
 
 **Returns:**
 

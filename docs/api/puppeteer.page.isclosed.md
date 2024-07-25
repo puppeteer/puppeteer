@@ -4,15 +4,15 @@ sidebar_label: Page.isClosed
 
 # Page.isClosed() method
 
-### Signature:
+Indicates that the page has been closed.
+
+### Signature
 
 ```typescript
 class Page {
   abstract isClosed(): boolean;
 }
 ```
-
-Indicates that the page has been closed.
 
 **Returns:**
 

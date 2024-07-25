@@ -4,17 +4,17 @@ sidebar_label: Frame
 
 # Frame class
 
-### Signature:
+Represents a DOM frame.
+
+To understand frames, you can think of frames as `<iframe>` elements. Just like iframes, frames can be nested, and when JavaScript is executed in a frame, the JavaScript does not effect frames inside the ambient frame the JavaScript executes in.
+
+### Signature
 
 ```typescript
 export declare abstract class Frame extends EventEmitter<FrameEvents>
 ```
 
 **Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;[FrameEvents](./puppeteer.frameevents.md)&gt;
-
-Represents a DOM frame.
-
-To understand frames, you can think of frames as `<iframe>` elements. Just like iframes, frames can be nested, and when JavaScript is executed in a frame, the JavaScript does not effect frames inside the ambient frame the JavaScript executes in.
 
 ## Remarks
 

@@ -4,15 +4,15 @@ sidebar_label: Frame.setContent
 
 # Frame.setContent() method
 
-### Signature:
+Set the content of the frame.
+
+### Signature
 
 ```typescript
 class Frame {
   abstract setContent(html: string, options?: WaitForOptions): Promise<void>;
 }
 ```
-
-Set the content of the frame.
 
 ## Parameters
 

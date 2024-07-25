@@ -4,13 +4,13 @@ sidebar_label: Mouse
 
 # Mouse class
 
-### Signature:
+The Mouse class operates in main-frame CSS pixels relative to the top-left corner of the viewport.
+
+### Signature
 
 ```typescript
 export declare abstract class Mouse
 ```
-
-The Mouse class operates in main-frame CSS pixels relative to the top-left corner of the viewport.
 
 ## Remarks
 

@@ -4,7 +4,9 @@ sidebar_label: HTTPRequest.enqueueInterceptAction
 
 # HTTPRequest.enqueueInterceptAction() method
 
-### Signature:
+Adds an async request handler to the processing queue. Deferred handlers are not guaranteed to execute in any particular order, but they are guaranteed to resolve before the request interception is finalized.
+
+### Signature
 
 ```typescript
 class HTTPRequest {
@@ -13,8 +15,6 @@ class HTTPRequest {
   ): void;
 }
 ```
-
-Adds an async request handler to the processing queue. Deferred handlers are not guaranteed to execute in any particular order, but they are guaranteed to resolve before the request interception is finalized.
 
 ## Parameters
 

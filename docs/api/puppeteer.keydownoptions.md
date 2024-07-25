@@ -4,7 +4,7 @@ sidebar_label: KeyDownOptions
 
 # KeyDownOptions interface
 
-### Signature:
+### Signature
 
 ```typescript
 export interface KeyDownOptions

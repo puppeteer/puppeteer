@@ -4,15 +4,15 @@ sidebar_label: SecurityDetails.subjectName
 
 # SecurityDetails.subjectName() method
 
-### Signature:
+The name of the subject to which the certificate was issued.
+
+### Signature
 
 ```typescript
 class SecurityDetails {
   subjectName(): string;
 }
 ```
-
-The name of the subject to which the certificate was issued.
 
 **Returns:**
 

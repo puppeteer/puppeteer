@@ -4,17 +4,17 @@ sidebar_label: Locator.setTimeout
 
 # Locator.setTimeout() method
 
-### Signature:
+Creates a new locator instance by cloning the current locator and setting the total timeout for the locator actions.
+
+Pass `0` to disable timeout.
+
+### Signature
 
 ```typescript
 class Locator {
   setTimeout(timeout: number): Locator<T>;
 }
 ```
-
-Creates a new locator instance by cloning the current locator and setting the total timeout for the locator actions.
-
-Pass `0` to disable timeout.
 
 ## Parameters
 

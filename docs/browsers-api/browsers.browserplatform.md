@@ -4,13 +4,13 @@ sidebar_label: BrowserPlatform
 
 # BrowserPlatform enum
 
-### Signature:
+Platform names used to identify a OS platform x architecture combination in the way that is relevant for the browser download.
+
+### Signature
 
 ```typescript
 export declare enum BrowserPlatform
 ```
-
-Platform names used to identify a OS platform x architecture combination in the way that is relevant for the browser download.
 
 ## Enumeration Members
 

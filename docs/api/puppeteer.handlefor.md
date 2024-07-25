@@ -4,7 +4,7 @@ sidebar_label: HandleFor
 
 # HandleFor type
 
-### Signature:
+### Signature
 
 ```typescript
 export type HandleFor<T> = T extends Node ? ElementHandle<T> : JSHandle<T>;

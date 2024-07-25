@@ -4,15 +4,15 @@ sidebar_label: Page.isServiceWorkerBypassed
 
 # Page.isServiceWorkerBypassed() method
 
-### Signature:
+`true` if the service worker are being bypassed, `false` otherwise.
+
+### Signature
 
 ```typescript
 class Page {
   abstract isServiceWorkerBypassed(): boolean;
 }
 ```
-
-`true` if the service worker are being bypassed, `false` otherwise.
 
 **Returns:**
 

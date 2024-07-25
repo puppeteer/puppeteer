@@ -4,7 +4,7 @@ sidebar_label: ExtensionTransport.send
 
 # ExtensionTransport.send() method
 
-### Signature:
+### Signature
 
 ```typescript
 class ExtensionTransport {

@@ -4,7 +4,7 @@ sidebar_label: ElementScreenshotOptions
 
 # ElementScreenshotOptions interface
 
-### Signature:
+### Signature
 
 ```typescript
 export interface ElementScreenshotOptions extends ScreenshotOptions

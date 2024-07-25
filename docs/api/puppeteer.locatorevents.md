@@ -4,7 +4,7 @@ sidebar_label: LocatorEvents
 
 # LocatorEvents interface
 
-### Signature:
+### Signature
 
 ```typescript
 export interface LocatorEvents extends Record<EventType, unknown>

@@ -4,7 +4,7 @@ sidebar_label: QueryOptions
 
 # QueryOptions interface
 
-### Signature:
+### Signature
 
 ```typescript
 export interface QueryOptions

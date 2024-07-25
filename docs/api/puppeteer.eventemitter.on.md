@@ -4,7 +4,9 @@ sidebar_label: EventEmitter.on
 
 # EventEmitter.on() method
 
-### Signature:
+Bind an event listener to fire when an event occurs.
+
+### Signature
 
 ```typescript
 class EventEmitter {
@@ -14,8 +16,6 @@ class EventEmitter {
   ): this;
 }
 ```
-
-Bind an event listener to fire when an event occurs.
 
 ## Parameters
 

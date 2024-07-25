@@ -4,7 +4,9 @@ sidebar_label: EventEmitter.once
 
 # EventEmitter.once() method
 
-### Signature:
+Like `on` but the listener will only be fired once and then it will be removed.
+
+### Signature
 
 ```typescript
 class EventEmitter {
@@ -14,8 +16,6 @@ class EventEmitter {
   ): this;
 }
 ```
-
-Like `on` but the listener will only be fired once and then it will be removed.
 
 ## Parameters
 

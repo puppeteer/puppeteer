@@ -4,7 +4,7 @@ sidebar_label: SystemOptions
 
 # SystemOptions interface
 
-### Signature:
+### Signature
 
 ```typescript
 export interface SystemOptions

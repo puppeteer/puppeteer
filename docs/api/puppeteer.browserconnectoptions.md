@@ -4,13 +4,13 @@ sidebar_label: BrowserConnectOptions
 
 # BrowserConnectOptions interface
 
-### Signature:
+Generic browser options that can be passed when launching any browser or when connecting to an existing browser instance.
+
+### Signature
 
 ```typescript
 export interface BrowserConnectOptions
 ```
-
-Generic browser options that can be passed when launching any browser or when connecting to an existing browser instance.
 
 ## Properties
 

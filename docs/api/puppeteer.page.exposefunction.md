@@ -4,7 +4,17 @@ sidebar_label: Page.exposeFunction
 
 # Page.exposeFunction() method
 
-### Signature:
+The method adds a function called `name` on the page's `window` object. When called, the function executes `puppeteerFunction` in node.js and returns a `Promise` which resolves to the return value of `puppeteerFunction`.
+
+If the puppeteerFunction returns a `Promise`, it will be awaited.
+
+:::note
+
+Functions installed via `page.exposeFunction` survive navigations.
+
+:::
+
+### Signature
 
 ```typescript
 class Page {
@@ -18,16 +28,6 @@ class Page {
   ): Promise<void>;
 }
 ```
-
-The method adds a function called `name` on the page's `window` object. When called, the function executes `puppeteerFunction` in node.js and returns a `Promise` which resolves to the return value of `puppeteerFunction`.
-
-If the puppeteerFunction returns a `Promise`, it will be awaited.
-
-:::note
-
-Functions installed via `page.exposeFunction` survive navigations.
-
-:::
 
 ## Parameters
 

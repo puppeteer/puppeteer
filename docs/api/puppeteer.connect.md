@@ -4,7 +4,7 @@ sidebar_label: connect
 
 # connect() function
 
-### Signature:
+### Signature
 
 ```typescript
 connect: (

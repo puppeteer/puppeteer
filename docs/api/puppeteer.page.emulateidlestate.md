@@ -4,7 +4,9 @@ sidebar_label: Page.emulateIdleState
 
 # Page.emulateIdleState() method
 
-### Signature:
+Emulates the idle state. If no arguments set, clears idle state emulation.
+
+### Signature
 
 ```typescript
 class Page {
@@ -14,8 +16,6 @@ class Page {
   }): Promise<void>;
 }
 ```
-
-Emulates the idle state. If no arguments set, clears idle state emulation.
 
 ## Parameters
 

@@ -4,15 +4,15 @@ sidebar_label: JSHandle.jsonValue
 
 # JSHandle.jsonValue() method
 
-### Signature:
+A vanilla object representing the serializable portions of the referenced object.
+
+### Signature
 
 ```typescript
 class JSHandle {
   abstract jsonValue(): Promise<T>;
 }
 ```
-
-A vanilla object representing the serializable portions of the referenced object.
 
 **Returns:**
 

@@ -6,7 +6,9 @@ sidebar_label: Page.screenshot
 
 <h2 id="overload-0">screenshot(): Promise&lt;string&gt;</h2>
 
-### Signature:
+Captures a screenshot of this [page](./puppeteer.page.md).
+
+### Signature
 
 ```typescript
 class Page {
@@ -17,8 +19,6 @@ class Page {
   ): Promise<string>;
 }
 ```
-
-Captures a screenshot of this [page](./puppeteer.page.md).
 
 ## Parameters
 
@@ -59,9 +59,9 @@ While a screenshot is being taken in a [BrowserContext](./puppeteer.browserconte
 
 Calling [Page.bringToFront()](./puppeteer.page.bringtofront.md) will not wait for existing screenshot operations.
 
-<h2 id="overload-1">screenshot(): Promise&lt;Buffer&gt;</h2>
+<h2 id="overload">screenshot(): Promise&lt;Buffer&gt;</h2>
 
-### Signature:
+### Signature
 
 ```typescript
 class Page {

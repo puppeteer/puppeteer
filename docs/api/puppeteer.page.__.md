@@ -4,7 +4,9 @@ sidebar_label: Page.$$
 
 # Page.$$() method
 
-### Signature:
+Finds elements on the page that match the selector. If no elements match the selector, the return value resolves to `[]`.
+
+### Signature
 
 ```typescript
 class Page {
@@ -14,8 +16,6 @@ class Page {
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>>;
 }
 ```
-
-Finds elements on the page that match the selector. If no elements match the selector, the return value resolves to `[]`.
 
 ## Parameters
 

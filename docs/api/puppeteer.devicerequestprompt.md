@@ -4,13 +4,13 @@ sidebar_label: DeviceRequestPrompt
 
 # DeviceRequestPrompt class
 
-### Signature:
+Device request prompts let you respond to the page requesting for a device through an API like WebBluetooth.
+
+### Signature
 
 ```typescript
 export declare class DeviceRequestPrompt
 ```
-
-Device request prompts let you respond to the page requesting for a device through an API like WebBluetooth.
 
 ## Remarks
 

@@ -4,13 +4,13 @@ sidebar_label: JSCoverageOptions
 
 # JSCoverageOptions interface
 
-### Signature:
+Set of configurable options for JS coverage.
+
+### Signature
 
 ```typescript
 export interface JSCoverageOptions
 ```
-
-Set of configurable options for JS coverage.
 
 ## Properties
 

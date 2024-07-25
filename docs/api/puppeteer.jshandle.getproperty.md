@@ -6,7 +6,9 @@ sidebar_label: JSHandle.getProperty
 
 <h2 id="overload-0">getProperty(): Promise&lt;HandleFor&lt;T\[K\]&gt;&gt;</h2>
 
-### Signature:
+Fetches a single property from the referenced object.
+
+### Signature
 
 ```typescript
 class JSHandle {
@@ -15,8 +17,6 @@ class JSHandle {
   ): Promise<HandleFor<T[K]>>;
 }
 ```
-
-Fetches a single property from the referenced object.
 
 ## Parameters
 
@@ -49,9 +49,9 @@ propertyName
 
 Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;T\[K\]&gt;&gt;
 
-<h2 id="overload-1">getProperty(): Promise&lt;JSHandle&lt;unknown&gt;&gt;</h2>
+<h2 id="overload">getProperty(): Promise&lt;JSHandle&lt;unknown&gt;&gt;</h2>
 
-### Signature:
+### Signature
 
 ```typescript
 class JSHandle {

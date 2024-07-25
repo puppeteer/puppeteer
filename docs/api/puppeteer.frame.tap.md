@@ -4,15 +4,15 @@ sidebar_label: Frame.tap
 
 # Frame.tap() method
 
-### Signature:
+Taps the first element that matches the `selector`.
+
+### Signature
 
 ```typescript
 class Frame {
   tap(selector: string): Promise<void>;
 }
 ```
-
-Taps the first element that matches the `selector`.
 
 ## Parameters
 

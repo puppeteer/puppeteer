@@ -4,7 +4,7 @@ sidebar_label: CustomQueryHandler
 
 # CustomQueryHandler interface
 
-### Signature:
+### Signature
 
 ```typescript
 export interface CustomQueryHandler

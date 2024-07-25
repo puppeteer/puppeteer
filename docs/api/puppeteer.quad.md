@@ -4,7 +4,7 @@ sidebar_label: Quad
 
 # Quad type
 
-### Signature:
+### Signature
 
 ```typescript
 export type Quad = [Point, Point, Point, Point];

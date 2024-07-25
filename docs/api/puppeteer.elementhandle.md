@@ -4,15 +4,15 @@ sidebar_label: ElementHandle
 
 # ElementHandle class
 
-### Signature:
+ElementHandle represents an in-page DOM element.
+
+### Signature
 
 ```typescript
 export declare abstract class ElementHandle<ElementType extends Node = Element> extends JSHandle<ElementType>
 ```
 
 **Extends:** [JSHandle](./puppeteer.jshandle.md)&lt;ElementType&gt;
-
-ElementHandle represents an in-page DOM element.
 
 ## Remarks
 

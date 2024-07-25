@@ -4,7 +4,9 @@ sidebar_label: ElementHandle.isIntersectingViewport
 
 # ElementHandle.isIntersectingViewport() method
 
-### Signature:
+Resolves to true if the element is visible in the current viewport. If an element is an SVG, we check if the svg owner element is in the viewport instead. See https://crbug.com/963246.
+
+### Signature
 
 ```typescript
 class ElementHandle {
@@ -16,8 +18,6 @@ class ElementHandle {
   ): Promise<boolean>;
 }
 ```
-
-Resolves to true if the element is visible in the current viewport. If an element is an SVG, we check if the svg owner element is in the viewport instead. See https://crbug.com/963246.
 
 ## Parameters
 

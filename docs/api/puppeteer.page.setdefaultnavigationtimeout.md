@@ -4,14 +4,6 @@ sidebar_label: Page.setDefaultNavigationTimeout
 
 # Page.setDefaultNavigationTimeout() method
 
-### Signature:
-
-```typescript
-class Page {
-  abstract setDefaultNavigationTimeout(timeout: number): void;
-}
-```
-
 This setting will change the default maximum navigation time for the following methods and related shortcuts:
 
 - [page.goBack(options)](./puppeteer.page.goback.md)
@@ -25,6 +17,14 @@ This setting will change the default maximum navigation time for the following m
 - [page.setContent(html,options)](./puppeteer.page.setcontent.md)
 
 - [page.waitForNavigation(options)](./puppeteer.page.waitfornavigation.md)
+
+### Signature
+
+```typescript
+class Page {
+  abstract setDefaultNavigationTimeout(timeout: number): void;
+}
+```
 
 ## Parameters
 

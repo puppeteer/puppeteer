@@ -4,14 +4,6 @@ sidebar_label: Page.authenticate
 
 # Page.authenticate() method
 
-### Signature:
-
-```typescript
-class Page {
-  abstract authenticate(credentials: Credentials | null): Promise<void>;
-}
-```
-
 Provide credentials for `HTTP authentication`.
 
 :::note
@@ -19,6 +11,14 @@ Provide credentials for `HTTP authentication`.
 Request interception will be turned on behind the scenes to implement authentication. This might affect performance.
 
 :::
+
+### Signature
+
+```typescript
+class Page {
+  abstract authenticate(credentials: Credentials | null): Promise<void>;
+}
+```
 
 ## Parameters
 

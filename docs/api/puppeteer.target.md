@@ -4,13 +4,13 @@ sidebar_label: Target
 
 # Target class
 
-### Signature:
+Target represents a [CDP target](https://chromedevtools.github.io/devtools-protocol/tot/Target/). In CDP a target is something that can be debugged such a frame, a page or a worker.
+
+### Signature
 
 ```typescript
 export declare abstract class Target
 ```
-
-Target represents a [CDP target](https://chromedevtools.github.io/devtools-protocol/tot/Target/). In CDP a target is something that can be debugged such a frame, a page or a worker.
 
 ## Remarks
 

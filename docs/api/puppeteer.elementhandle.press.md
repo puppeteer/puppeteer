@@ -4,15 +4,15 @@ sidebar_label: ElementHandle.press
 
 # ElementHandle.press() method
 
-### Signature:
+Focuses the element, and then uses [Keyboard.down()](./puppeteer.keyboard.down.md) and [Keyboard.up()](./puppeteer.keyboard.up.md).
+
+### Signature
 
 ```typescript
 class ElementHandle {
   press(key: KeyInput, options?: Readonly<KeyPressOptions>): Promise<void>;
 }
 ```
-
-Focuses the element, and then uses [Keyboard.down()](./puppeteer.keyboard.down.md) and [Keyboard.up()](./puppeteer.keyboard.up.md).
 
 ## Parameters
 

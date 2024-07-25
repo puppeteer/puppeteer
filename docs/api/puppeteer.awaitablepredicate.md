@@ -4,7 +4,7 @@ sidebar_label: AwaitablePredicate
 
 # AwaitablePredicate type
 
-### Signature:
+### Signature
 
 ```typescript
 export type AwaitablePredicate<T> = (value: T) => Awaitable<boolean>;

@@ -4,15 +4,15 @@ sidebar_label: FileChooser.cancel
 
 # FileChooser.cancel() method
 
-### Signature:
+Closes the file chooser without selecting any files.
+
+### Signature
 
 ```typescript
 class FileChooser {
   cancel(): Promise<void>;
 }
 ```
-
-Closes the file chooser without selecting any files.
 
 **Returns:**
 

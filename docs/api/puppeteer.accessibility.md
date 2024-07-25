@@ -4,13 +4,13 @@ sidebar_label: Accessibility
 
 # Accessibility class
 
-### Signature:
+The Accessibility class provides methods for inspecting the browser's accessibility tree. The accessibility tree is used by assistive technology such as [screen readers](https://en.wikipedia.org/wiki/Screen_reader) or [switches](https://en.wikipedia.org/wiki/Switch_access).
+
+### Signature
 
 ```typescript
 export declare class Accessibility
 ```
-
-The Accessibility class provides methods for inspecting the browser's accessibility tree. The accessibility tree is used by assistive technology such as [screen readers](https://en.wikipedia.org/wiki/Screen_reader) or [switches](https://en.wikipedia.org/wiki/Switch_access).
 
 ## Remarks
 

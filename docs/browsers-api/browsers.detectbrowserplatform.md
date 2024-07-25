@@ -4,7 +4,7 @@ sidebar_label: detectBrowserPlatform
 
 # detectBrowserPlatform() function
 
-### Signature:
+### Signature
 
 ```typescript
 export declare function detectBrowserPlatform(): BrowserPlatform | undefined;

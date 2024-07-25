@@ -4,7 +4,7 @@ sidebar_label: Predicate
 
 # Predicate type
 
-### Signature:
+### Signature
 
 ```typescript
 export type Predicate<From, To extends From = From> =

@@ -4,15 +4,15 @@ sidebar_label: Tracing.stop
 
 # Tracing.stop() method
 
-### Signature:
+Stops a trace started with the `start` method.
+
+### Signature
 
 ```typescript
 class Tracing {
   stop(): Promise<Buffer | undefined>;
 }
 ```
-
-Stops a trace started with the `start` method.
 
 **Returns:**
 

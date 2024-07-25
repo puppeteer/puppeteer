@@ -4,13 +4,13 @@ sidebar_label: PDFOptions
 
 # PDFOptions interface
 
-### Signature:
+Valid options to configure PDF generation via [Page.pdf()](./puppeteer.page.pdf.md).
+
+### Signature
 
 ```typescript
 export interface PDFOptions
 ```
-
-Valid options to configure PDF generation via [Page.pdf()](./puppeteer.page.pdf.md).
 
 ## Properties
 

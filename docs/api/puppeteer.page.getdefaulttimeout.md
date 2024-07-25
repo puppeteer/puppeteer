@@ -4,15 +4,15 @@ sidebar_label: Page.getDefaultTimeout
 
 # Page.getDefaultTimeout() method
 
-### Signature:
+Maximum time in milliseconds.
+
+### Signature
 
 ```typescript
 class Page {
   abstract getDefaultTimeout(): number;
 }
 ```
-
-Maximum time in milliseconds.
 
 **Returns:**
 

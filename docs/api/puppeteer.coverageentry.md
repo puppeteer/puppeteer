@@ -4,13 +4,13 @@ sidebar_label: CoverageEntry
 
 # CoverageEntry interface
 
-### Signature:
+The CoverageEntry class represents one entry of the coverage report.
+
+### Signature
 
 ```typescript
 export interface CoverageEntry
 ```
-
-The CoverageEntry class represents one entry of the coverage report.
 
 ## Properties
 

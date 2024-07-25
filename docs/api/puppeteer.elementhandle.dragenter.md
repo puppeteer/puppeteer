@@ -4,7 +4,11 @@ sidebar_label: ElementHandle.dragEnter
 
 # ElementHandle.dragEnter() method
 
-### Signature:
+> Warning: This API is now obsolete.
+>
+> Do not use. `dragenter` will automatically be performed during dragging.
+
+### Signature
 
 ```typescript
 class ElementHandle {
@@ -14,10 +18,6 @@ class ElementHandle {
   ): Promise<void>;
 }
 ```
-
-> Warning: This API is now obsolete.
->
-> Do not use. `dragenter` will automatically be performed during dragging.
 
 ## Parameters
 

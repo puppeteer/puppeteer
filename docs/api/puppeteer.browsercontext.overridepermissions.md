@@ -4,7 +4,9 @@ sidebar_label: BrowserContext.overridePermissions
 
 # BrowserContext.overridePermissions() method
 
-### Signature:
+Grants this [browser context](./puppeteer.browsercontext.md) the given `permissions` within the given `origin`.
+
+### Signature
 
 ```typescript
 class BrowserContext {
@@ -14,8 +16,6 @@ class BrowserContext {
   ): Promise<void>;
 }
 ```
-
-Grants this [browser context](./puppeteer.browsercontext.md) the given `permissions` within the given `origin`.
 
 ## Parameters
 

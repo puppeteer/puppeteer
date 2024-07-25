@@ -4,15 +4,15 @@ sidebar_label: ConsoleMessage.text
 
 # ConsoleMessage.text() method
 
-### Signature:
+The text of the console message.
+
+### Signature
 
 ```typescript
 class ConsoleMessage {
   text(): string;
 }
 ```
-
-The text of the console message.
 
 **Returns:**
 

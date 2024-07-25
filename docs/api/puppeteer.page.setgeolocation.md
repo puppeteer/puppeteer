@@ -4,15 +4,15 @@ sidebar_label: Page.setGeolocation
 
 # Page.setGeolocation() method
 
-### Signature:
+Sets the page's geolocation.
+
+### Signature
 
 ```typescript
 class Page {
   abstract setGeolocation(options: GeolocationOptions): Promise<void>;
 }
 ```
-
-Sets the page's geolocation.
 
 ## Parameters
 

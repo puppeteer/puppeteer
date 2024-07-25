@@ -4,7 +4,15 @@ sidebar_label: Page.evaluateOnNewDocument
 
 # Page.evaluateOnNewDocument() method
 
-### Signature:
+Adds a function which would be invoked in one of the following scenarios:
+
+- whenever the page is navigated
+
+- whenever the child frame is attached or navigated. In this case, the function is invoked in the context of the newly attached frame.
+
+The function is invoked after the document was created but before any of its scripts were run. This is useful to amend the JavaScript environment, e.g. to seed `Math.random`.
+
+### Signature
 
 ```typescript
 class Page {
@@ -17,14 +25,6 @@ class Page {
   ): Promise<NewDocumentScriptEvaluation>;
 }
 ```
-
-Adds a function which would be invoked in one of the following scenarios:
-
-- whenever the page is navigated
-
-- whenever the child frame is attached or navigated. In this case, the function is invoked in the context of the newly attached frame.
-
-The function is invoked after the document was created but before any of its scripts were run. This is useful to amend the JavaScript environment, e.g. to seed `Math.random`.
 
 ## Parameters
 

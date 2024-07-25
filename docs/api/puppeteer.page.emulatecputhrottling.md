@@ -4,15 +4,15 @@ sidebar_label: Page.emulateCPUThrottling
 
 # Page.emulateCPUThrottling() method
 
-### Signature:
+Enables CPU throttling to emulate slow CPUs.
+
+### Signature
 
 ```typescript
 class Page {
   abstract emulateCPUThrottling(factor: number | null): Promise<void>;
 }
 ```
-
-Enables CPU throttling to emulate slow CPUs.
 
 ## Parameters
 

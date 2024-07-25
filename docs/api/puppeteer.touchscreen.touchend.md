@@ -4,15 +4,15 @@ sidebar_label: Touchscreen.touchEnd
 
 # Touchscreen.touchEnd() method
 
-### Signature:
+Dispatches a `touchend` event.
+
+### Signature
 
 ```typescript
 class Touchscreen {
   abstract touchEnd(): Promise<void>;
 }
 ```
-
-Dispatches a `touchend` event.
 
 **Returns:**
 

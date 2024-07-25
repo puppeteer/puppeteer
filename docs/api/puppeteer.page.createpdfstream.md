@@ -4,7 +4,9 @@ sidebar_label: Page.createPDFStream
 
 # Page.createPDFStream() method
 
-### Signature:
+Generates a PDF of the page with the `print` CSS media type.
+
+### Signature
 
 ```typescript
 class Page {
@@ -13,8 +15,6 @@ class Page {
   ): Promise<ReadableStream<Uint8Array>>;
 }
 ```
-
-Generates a PDF of the page with the `print` CSS media type.
 
 ## Parameters
 

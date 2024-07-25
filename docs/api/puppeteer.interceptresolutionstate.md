@@ -4,7 +4,7 @@ sidebar_label: InterceptResolutionState
 
 # InterceptResolutionState interface
 
-### Signature:
+### Signature
 
 ```typescript
 export interface InterceptResolutionState

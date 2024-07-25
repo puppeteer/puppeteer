@@ -4,7 +4,7 @@ sidebar_label: ElementHandle.touchEnd
 
 # ElementHandle.touchEnd() method
 
-### Signature:
+### Signature
 
 ```typescript
 class ElementHandle {

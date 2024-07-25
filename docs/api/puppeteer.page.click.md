@@ -4,15 +4,15 @@ sidebar_label: Page.click
 
 # Page.click() method
 
-### Signature:
+This method fetches an element with `selector`, scrolls it into view if needed, and then uses [Page.mouse](./puppeteer.page.md#mouse) to click in the center of the element. If there's no element matching `selector`, the method throws an error.
+
+### Signature
 
 ```typescript
 class Page {
   click(selector: string, options?: Readonly<ClickOptions>): Promise<void>;
 }
 ```
-
-This method fetches an element with `selector`, scrolls it into view if needed, and then uses [Page.mouse](./puppeteer.page.md#mouse) to click in the center of the element. If there's no element matching `selector`, the method throws an error.
 
 ## Parameters
 

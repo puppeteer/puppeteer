@@ -4,13 +4,13 @@ sidebar_label: LocatorEvent
 
 # LocatorEvent enum
 
-### Signature:
+All the events that a locator instance may emit.
+
+### Signature
 
 ```typescript
 export declare enum LocatorEvent
 ```
-
-All the events that a locator instance may emit.
 
 ## Enumeration Members
 

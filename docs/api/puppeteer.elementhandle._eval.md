@@ -4,7 +4,11 @@ sidebar_label: ElementHandle.$eval
 
 # ElementHandle.$eval() method
 
-### Signature:
+Runs the given function on the first element matching the given selector in the current element.
+
+If the given function returns a promise, then this method will wait till the promise resolves.
+
+### Signature
 
 ```typescript
 class ElementHandle {
@@ -22,10 +26,6 @@ class ElementHandle {
   ): Promise<Awaited<ReturnType<Func>>>;
 }
 ```
-
-Runs the given function on the first element matching the given selector in the current element.
-
-If the given function returns a promise, then this method will wait till the promise resolves.
 
 ## Parameters
 

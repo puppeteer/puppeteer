@@ -4,7 +4,7 @@ sidebar_label: AwaitedLocator
 
 # AwaitedLocator type
 
-### Signature:
+### Signature
 
 ```typescript
 export type AwaitedLocator<T> = T extends Locator<infer S> ? S : never;

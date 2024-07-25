@@ -4,7 +4,9 @@ sidebar_label: Frame.addScriptTag
 
 # Frame.addScriptTag() method
 
-### Signature:
+Adds a `<script>` tag into the page with the desired url or content.
+
+### Signature
 
 ```typescript
 class Frame {
@@ -13,8 +15,6 @@ class Frame {
   ): Promise<ElementHandle<HTMLScriptElement>>;
 }
 ```
-
-Adds a `<script>` tag into the page with the desired url or content.
 
 ## Parameters
 

@@ -4,7 +4,7 @@ sidebar_label: LocatorScrollOptions
 
 # LocatorScrollOptions interface
 
-### Signature:
+### Signature
 
 ```typescript
 export interface LocatorScrollOptions extends ActionOptions

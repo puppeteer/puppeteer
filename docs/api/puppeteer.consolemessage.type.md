@@ -4,15 +4,15 @@ sidebar_label: ConsoleMessage.type
 
 # ConsoleMessage.type() method
 
-### Signature:
+The type of the console message.
+
+### Signature
 
 ```typescript
 class ConsoleMessage {
   type(): ConsoleMessageType;
 }
 ```
-
-The type of the console message.
 
 **Returns:**
 

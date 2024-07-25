@@ -4,7 +4,9 @@ sidebar_label: WebWorker.evaluate
 
 # WebWorker.evaluate() method
 
-### Signature:
+Evaluates a given function in the [worker](./puppeteer.webworker.md).
+
+### Signature
 
 ```typescript
 class WebWorker {
@@ -14,8 +16,6 @@ class WebWorker {
   >(func: Func | string, ...args: Params): Promise<Awaited<ReturnType<Func>>>;
 }
 ```
-
-Evaluates a given function in the [worker](./puppeteer.webworker.md).
 
 ## Parameters
 

@@ -6,7 +6,9 @@ sidebar_label: ElementHandle.drop
 
 <h2 id="overload-0">drop(): Promise&lt;void&gt;</h2>
 
-### Signature:
+Drops the given element onto the current one.
+
+### Signature
 
 ```typescript
 class ElementHandle {
@@ -16,8 +18,6 @@ class ElementHandle {
   ): Promise<void>;
 }
 ```
-
-Drops the given element onto the current one.
 
 ## Parameters
 
@@ -61,9 +61,13 @@ element
 
 Promise&lt;void&gt;
 
-<h2 id="overload-1">drop(): Promise&lt;void&gt;</h2>
+<h2 id="overload">drop(): Promise&lt;void&gt;</h2>
 
-### Signature:
+> Warning: This API is now obsolete.
+>
+> No longer supported.
+
+### Signature
 
 ```typescript
 class ElementHandle {
@@ -73,10 +77,6 @@ class ElementHandle {
   ): Promise<void>;
 }
 ```
-
-> Warning: This API is now obsolete.
->
-> No longer supported.
 
 ## Parameters
 

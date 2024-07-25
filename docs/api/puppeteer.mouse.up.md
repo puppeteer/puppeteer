@@ -4,15 +4,15 @@ sidebar_label: Mouse.up
 
 # Mouse.up() method
 
-### Signature:
+Releases the mouse.
+
+### Signature
 
 ```typescript
 class Mouse {
   abstract up(options?: Readonly<MouseOptions>): Promise<void>;
 }
 ```
-
-Releases the mouse.
 
 ## Parameters
 

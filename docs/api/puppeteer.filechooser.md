@@ -4,13 +4,13 @@ sidebar_label: FileChooser
 
 # FileChooser class
 
-### Signature:
+File choosers let you react to the page requesting for a file.
+
+### Signature
 
 ```typescript
 export declare class FileChooser
 ```
-
-File choosers let you react to the page requesting for a file.
 
 ## Remarks
 

@@ -4,7 +4,7 @@ sidebar_label: AutofillData
 
 # AutofillData interface
 
-### Signature:
+### Signature
 
 ```typescript
 export interface AutofillData

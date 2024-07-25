@@ -4,7 +4,15 @@ sidebar_label: Page.waitForDevicePrompt
 
 # Page.waitForDevicePrompt() method
 
-### Signature:
+This method is typically coupled with an action that triggers a device request from an api such as WebBluetooth.
+
+:::caution
+
+This must be called before the device request is made. It will not return a currently active device prompt.
+
+:::
+
+### Signature
 
 ```typescript
 class Page {
@@ -13,14 +21,6 @@ class Page {
   ): Promise<DeviceRequestPrompt>;
 }
 ```
-
-This method is typically coupled with an action that triggers a device request from an api such as WebBluetooth.
-
-:::caution
-
-This must be called before the device request is made. It will not return a currently active device prompt.
-
-:::
 
 ## Parameters
 

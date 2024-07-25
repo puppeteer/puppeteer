@@ -4,7 +4,7 @@ sidebar_label: SnapshotOptions
 
 # SnapshotOptions interface
 
-### Signature:
+### Signature
 
 ```typescript
 export interface SnapshotOptions

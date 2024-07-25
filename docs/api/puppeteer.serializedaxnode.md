@@ -4,13 +4,13 @@ sidebar_label: SerializedAXNode
 
 # SerializedAXNode interface
 
-### Signature:
+Represents a Node and the properties of it that are relevant to Accessibility.
+
+### Signature
 
 ```typescript
 export interface SerializedAXNode
 ```
-
-Represents a Node and the properties of it that are relevant to Accessibility.
 
 ## Properties
 

@@ -4,15 +4,15 @@ sidebar_label: HTTPResponse.request
 
 # HTTPResponse.request() method
 
-### Signature:
+A matching [HTTPRequest](./puppeteer.httprequest.md) object.
+
+### Signature
 
 ```typescript
 class HTTPResponse {
   abstract request(): HTTPRequest;
 }
 ```
-
-A matching [HTTPRequest](./puppeteer.httprequest.md) object.
 
 **Returns:**
 

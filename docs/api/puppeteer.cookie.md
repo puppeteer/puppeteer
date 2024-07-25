@@ -4,13 +4,13 @@ sidebar_label: Cookie
 
 # Cookie interface
 
-### Signature:
+Represents a cookie object.
+
+### Signature
 
 ```typescript
 export interface Cookie
 ```
-
-Represents a cookie object.
 
 ## Properties
 

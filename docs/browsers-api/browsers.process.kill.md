@@ -4,7 +4,7 @@ sidebar_label: Process.kill
 
 # Process.kill() method
 
-### Signature:
+### Signature
 
 ```typescript
 class Process {

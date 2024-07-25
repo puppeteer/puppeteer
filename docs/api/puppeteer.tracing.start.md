@@ -4,15 +4,15 @@ sidebar_label: Tracing.start
 
 # Tracing.start() method
 
-### Signature:
+Starts a trace for the current page.
+
+### Signature
 
 ```typescript
 class Tracing {
   start(options?: TracingOptions): Promise<void>;
 }
 ```
-
-Starts a trace for the current page.
 
 ## Parameters
 

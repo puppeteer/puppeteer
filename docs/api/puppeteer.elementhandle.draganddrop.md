@@ -4,7 +4,11 @@ sidebar_label: ElementHandle.dragAndDrop
 
 # ElementHandle.dragAndDrop() method
 
-### Signature:
+> Warning: This API is now obsolete.
+>
+> Use `ElementHandle.drop` instead.
+
+### Signature
 
 ```typescript
 class ElementHandle {
@@ -17,10 +21,6 @@ class ElementHandle {
   ): Promise<void>;
 }
 ```
-
-> Warning: This API is now obsolete.
->
-> Use `ElementHandle.drop` instead.
 
 ## Parameters
 

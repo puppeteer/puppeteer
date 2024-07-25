@@ -4,7 +4,7 @@ sidebar_label: NewDocumentScriptEvaluation
 
 # NewDocumentScriptEvaluation interface
 
-### Signature:
+### Signature
 
 ```typescript
 export interface NewDocumentScriptEvaluation

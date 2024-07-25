@@ -4,15 +4,15 @@ sidebar_label: Browser.defaultBrowserContext
 
 # Browser.defaultBrowserContext() method
 
-### Signature:
+Gets the default [browser context](./puppeteer.browsercontext.md).
+
+### Signature
 
 ```typescript
 class Browser {
   abstract defaultBrowserContext(): BrowserContext;
 }
 ```
-
-Gets the default [browser context](./puppeteer.browsercontext.md).
 
 **Returns:**
 

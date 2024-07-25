@@ -4,15 +4,15 @@ sidebar_label: Page.hover
 
 # Page.hover() method
 
-### Signature:
+This method fetches an element with `selector`, scrolls it into view if needed, and then uses [Page.mouse](./puppeteer.page.md#mouse) to hover over the center of the element. If there's no element matching `selector`, the method throws an error.
+
+### Signature
 
 ```typescript
 class Page {
   hover(selector: string): Promise<void>;
 }
 ```
-
-This method fetches an element with `selector`, scrolls it into view if needed, and then uses [Page.mouse](./puppeteer.page.md#mouse) to hover over the center of the element. If there's no element matching `selector`, the method throws an error.
 
 ## Parameters
 

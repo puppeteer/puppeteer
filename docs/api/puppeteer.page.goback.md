@@ -4,15 +4,15 @@ sidebar_label: Page.goBack
 
 # Page.goBack() method
 
-### Signature:
+This method navigate to the previous page in history.
+
+### Signature
 
 ```typescript
 class Page {
   abstract goBack(options?: WaitForOptions): Promise<HTTPResponse | null>;
 }
 ```
-
-This method navigate to the previous page in history.
 
 ## Parameters
 

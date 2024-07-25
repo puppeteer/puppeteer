@@ -4,15 +4,15 @@ sidebar_label: Page.browserContext
 
 # Page.browserContext() method
 
-### Signature:
+Get the browser context that the page belongs to.
+
+### Signature
 
 ```typescript
 class Page {
   abstract browserContext(): BrowserContext;
 }
 ```
-
-Get the browser context that the page belongs to.
 
 **Returns:**
 

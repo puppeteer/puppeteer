@@ -4,15 +4,15 @@ sidebar_label: ConsoleMessage.location
 
 # ConsoleMessage.location() method
 
-### Signature:
+The location of the console message.
+
+### Signature
 
 ```typescript
 class ConsoleMessage {
   location(): ConsoleMessageLocation;
 }
 ```
-
-The location of the console message.
 
 **Returns:**
 

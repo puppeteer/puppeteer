@@ -4,7 +4,7 @@ sidebar_label: ElementHandle.touchStart
 
 # ElementHandle.touchStart() method
 
-### Signature:
+### Signature
 
 ```typescript
 class ElementHandle {

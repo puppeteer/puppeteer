@@ -4,7 +4,7 @@ sidebar_label: executablePath
 
 # executablePath() function
 
-### Signature:
+### Signature
 
 ```typescript
 executablePath: (

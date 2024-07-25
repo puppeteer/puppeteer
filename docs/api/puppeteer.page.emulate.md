@@ -4,17 +4,17 @@ sidebar_label: Page.emulate
 
 # Page.emulate() method
 
-### Signature:
+Emulates a given device's metrics and user agent.
+
+To aid emulation, Puppeteer provides a list of known devices that can be via [KnownDevices](./puppeteer.knowndevices.md).
+
+### Signature
 
 ```typescript
 class Page {
   emulate(device: Device): Promise<void>;
 }
 ```
-
-Emulates a given device's metrics and user agent.
-
-To aid emulation, Puppeteer provides a list of known devices that can be via [KnownDevices](./puppeteer.knowndevices.md).
 
 ## Parameters
 

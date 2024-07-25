@@ -4,15 +4,15 @@ sidebar_label: CSSCoverage.(constructor)
 
 # CSSCoverage.(constructor)
 
-### Signature:
+Constructs a new instance of the `CSSCoverage` class
+
+### Signature
 
 ```typescript
 class CSSCoverage {
   constructor(client: CDPSession);
 }
 ```
-
-Constructs a new instance of the `CSSCoverage` class
 
 ## Parameters
 

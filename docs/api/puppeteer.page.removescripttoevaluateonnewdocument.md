@@ -4,7 +4,9 @@ sidebar_label: Page.removeScriptToEvaluateOnNewDocument
 
 # Page.removeScriptToEvaluateOnNewDocument() method
 
-### Signature:
+Removes script that injected into page by Page.evaluateOnNewDocument.
+
+### Signature
 
 ```typescript
 class Page {
@@ -13,8 +15,6 @@ class Page {
   ): Promise<void>;
 }
 ```
-
-Removes script that injected into page by Page.evaluateOnNewDocument.
 
 ## Parameters
 
