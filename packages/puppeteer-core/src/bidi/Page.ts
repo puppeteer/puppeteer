@@ -51,6 +51,7 @@ import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
 import {bubble} from '../util/decorators.js';
 import {isErrorLike} from '../util/ErrorLike.js';
+import {stringToTypedArray} from '../util/typedArray.js';
 
 import type {BidiBrowser} from './Browser.js';
 import type {BidiBrowserContext} from './BrowserContext.js';
@@ -416,16 +417,7 @@ export class BidiPage extends Page {
       ).pipe(raceWith(timeout(ms)))
     );
 
-    function base64ToTypedArray(base64: string) {
-      const binaryString = atob(base64);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-      return bytes;
-    }
-
-    const typedArray = base64ToTypedArray(data);
+    const typedArray = stringToTypedArray(data, true);
 
     await this._maybeWriteTypedArrayToFile(path, typedArray);
 

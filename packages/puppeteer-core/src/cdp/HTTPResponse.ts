@@ -11,6 +11,7 @@ import {HTTPResponse, type RemoteAddress} from '../api/HTTPResponse.js';
 import {ProtocolError} from '../common/Errors.js';
 import {SecurityDetails} from '../common/SecurityDetails.js';
 import {Deferred} from '../util/Deferred.js';
+import {stringToTypedArray} from '../util/typedArray.js';
 
 import type {CdpHTTPRequest} from './HTTPRequest.js';
 
@@ -134,14 +135,7 @@ export class CdpHTTPResponse extends HTTPResponse {
               }
             );
 
-            const body = response.base64Encoded
-              ? atob(response.body)
-              : response.body;
-            const bytes = new Uint8Array(body.length);
-            for (let i = 0; i < body.length; i++) {
-              bytes[i] = body.charCodeAt(i);
-            }
-            return bytes;
+            return stringToTypedArray(response.body, response.base64Encoded);
           } catch (error) {
             if (
               error instanceof ProtocolError &&

@@ -79,6 +79,7 @@ import {
   DisposableStack,
   disposeSymbol,
 } from '../util/disposable.js';
+import {stringToTypedArray} from '../util/typedArray.js';
 
 import type {Browser} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';
@@ -2588,15 +2589,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       return data;
     }
 
-    function base64ToTypedArray(base64: string) {
-      const binaryString = atob(base64);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-      return bytes;
-    }
-    const typedArray = base64ToTypedArray(data);
+    const typedArray = stringToTypedArray(data);
     await this._maybeWriteTypedArrayToFile(options.path, typedArray);
     return typedArray;
   }
