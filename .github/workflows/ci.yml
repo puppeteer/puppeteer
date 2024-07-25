@@ -198,9 +198,6 @@ jobs:
           key: Chrome-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
       - name: Install Chrome
         run: npm run postinstall
-      - name: Configure permissions
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: icacls $HOME/.cache/puppeteer/chrome /grant "ALL APPLICATION PACKAGES:(OI)(CI)(RX)"
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
         run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json

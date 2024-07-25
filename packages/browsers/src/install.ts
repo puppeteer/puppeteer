@@ -5,6 +5,7 @@
  */
 
 import assert from 'assert';
+import {spawnSync} from 'child_process';
 import {existsSync} from 'fs';
 import {mkdir, unlink} from 'fs/promises';
 import os from 'os';
@@ -232,6 +233,7 @@ async function installUrl(
           `The browser folder (${outputPath}) exists but the executable (${installedBrowser.executablePath}) is missing`
         );
       }
+      await runSetup(installedBrowser);
       return installedBrowser;
     }
     debugInstall(`Downloading binary from ${url}`);
@@ -249,6 +251,7 @@ async function installUrl(
     } finally {
       debugTimeEnd('extract');
     }
+
     const installedBrowser = new InstalledBrowser(
       cache,
       options.browser,
@@ -260,10 +263,42 @@ async function installUrl(
       metadata.aliases[options.buildIdAlias] = options.buildId;
       installedBrowser.writeMetadata(metadata);
     }
+
+    await runSetup(installedBrowser);
     return installedBrowser;
   } finally {
     if (existsSync(archivePath)) {
       await unlink(archivePath);
+    }
+  }
+}
+
+async function runSetup(installedBrowser: InstalledBrowser): Promise<void> {
+  // On Windows for Chrome invoke setup.exe to configure sandboxes.
+  if (
+    (installedBrowser.platform === BrowserPlatform.WIN32 ||
+      installedBrowser.platform === BrowserPlatform.WIN64) &&
+    installedBrowser.browser === Browser.CHROME &&
+    installedBrowser.platform === detectBrowserPlatform()
+  ) {
+    try {
+      debugTime('permissions');
+      const browserDir = path.dirname(installedBrowser.executablePath);
+      const setupExePath = path.join(browserDir, 'setup.exe');
+      if (!existsSync(setupExePath)) {
+        return;
+      }
+      spawnSync(
+        path.join(browserDir, 'setup.exe'),
+        [`--configure-browser-in-directory=` + browserDir],
+        {
+          shell: true,
+        }
+      );
+      // TODO: Handle error here. Currently the setup.exe sometimes
+      // errors although it sets the permissions correctly.
+    } finally {
+      debugTimeEnd('permissions');
     }
   }
 }
