@@ -647,31 +647,9 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="clearcustomqueryhandlers">[clearCustomQueryHandlers()](./puppeteer.clearcustomqueryhandlers.md)</span>
-
-</td><td>
-
-**Deprecated:**
-
-Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppeteer.clearCustomQueryHandlers()](./puppeteer.puppeteer.clearcustomqueryhandlers.md)
-
-</td></tr>
-<tr><td>
-
 <span id="connect">[connect(options)](./puppeteer.connect.md)</span>
 
 </td><td>
-
-</td></tr>
-<tr><td>
-
-<span id="customqueryhandlernames">[customQueryHandlerNames()](./puppeteer.customqueryhandlernames.md)</span>
-
-</td><td>
-
-**Deprecated:**
-
-Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppeteer.customQueryHandlerNames()](./puppeteer.puppeteer.customqueryhandlernames.md)
 
 </td></tr>
 <tr><td>
@@ -697,31 +675,9 @@ Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppetee
 </td></tr>
 <tr><td>
 
-<span id="registercustomqueryhandler">[registerCustomQueryHandler(name, handler)](./puppeteer.registercustomqueryhandler.md)</span>
-
-</td><td>
-
-**Deprecated:**
-
-Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppeteer.registerCustomQueryHandler()](./puppeteer.puppeteer.registercustomqueryhandler.md)
-
-</td></tr>
-<tr><td>
-
 <span id="trimcache">[trimCache()](./puppeteer.trimcache.md)</span>
 
 </td><td>
-
-</td></tr>
-<tr><td>
-
-<span id="unregistercustomqueryhandler">[unregisterCustomQueryHandler(name)](./puppeteer.unregistercustomqueryhandler.md)</span>
-
-</td><td>
-
-**Deprecated:**
-
-Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppeteer.unregisterCustomQueryHandler()](./puppeteer.puppeteer.unregistercustomqueryhandler.md)
 
 </td></tr>
 </tbody></table>
