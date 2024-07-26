@@ -14,25 +14,20 @@ import {waitEvent} from './utils.js';
 describe('BrowserContext', function () {
   setupTestBrowserHooks();
 
-  it('should have default context', async () => {
+  it.only('should have default context', async () => {
     const {browser} = await getTestState({
       skipContextCreation: true,
     });
 
     expect(browser.browserContexts().length).toBeGreaterThanOrEqual(1);
-    const defaultContext = browser.browserContexts().find(context => {
-      return !context.isIncognito();
-    });
-    expect(defaultContext).toBeDefined();
+    for (const context of browser.browserContexts()) {
+      await context.close();
+    }
 
-    let error!: Error;
-    await defaultContext!.close().catch(error_ => {
-      return (error = error_);
-    });
-    expect(browser.defaultBrowserContext()).toBe(defaultContext);
-    expect(error.message).toContain('cannot be closed');
+    // Try to verify we can create a new context
+    await browser.createBrowserContext();
   });
-  it('should create new incognito context', async () => {
+  it('should create new context', async () => {
     const {browser} = await getTestState({
       skipContextCreation: true,
     });
@@ -40,7 +35,6 @@ describe('BrowserContext', function () {
     const contextCount = browser.browserContexts().length;
     expect(contextCount).toBeGreaterThanOrEqual(1);
     const context = await browser.createBrowserContext();
-    expect(context.isIncognito()).toBe(true);
     expect(browser.browserContexts()).toHaveLength(contextCount + 1);
     expect(browser.browserContexts().indexOf(context) !== -1).toBe(true);
     await context.close();

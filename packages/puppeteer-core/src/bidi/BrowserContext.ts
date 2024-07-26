@@ -196,10 +196,6 @@ export class BidiBrowserContext extends BrowserContext {
   }
 
   override async close(): Promise<void> {
-    if (!this.isIncognito()) {
-      throw new Error('Default context cannot be closed!');
-    }
-
     try {
       await this.userContext.remove();
     } catch (error) {
@@ -217,10 +213,6 @@ export class BidiBrowserContext extends BrowserContext {
     return [...this.userContext.browsingContexts].map(context => {
       return this.#pages.get(context)!;
     });
-  }
-
-  override isIncognito(): boolean {
-    return this.userContext.id !== UserContext.DEFAULT;
   }
 
   override async overridePermissions(
