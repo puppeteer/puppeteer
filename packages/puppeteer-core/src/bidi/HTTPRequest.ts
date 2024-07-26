@@ -322,6 +322,10 @@ export class BidiHTTPRequest extends HTTPRequest {
       });
     }
   };
+
+  timing(): Bidi.Network.FetchTimingInfo {
+    return this.#request.timing();
+  }
 }
 
 function getBidiHeaders(rawHeaders?: Record<string, unknown>) {
