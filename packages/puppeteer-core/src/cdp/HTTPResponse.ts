@@ -122,7 +122,7 @@ export class CdpHTTPResponse extends HTTPResponse {
     return this.#timing;
   }
 
-  override buffer(): Promise<Uint8Array> {
+  override content(): Promise<Uint8Array> {
     if (!this.#contentPromise) {
       this.#contentPromise = this.#bodyLoadedDeferred
         .valueOrThrow()

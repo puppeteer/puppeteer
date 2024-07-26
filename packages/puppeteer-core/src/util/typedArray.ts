@@ -9,26 +9,22 @@ export function stringToTypedArray(
   base64Encoded = false
 ): Uint8Array {
   const parsedString = base64Encoded ? atob(string) : string;
-  return Uint8Array.from(
-    [...parsedString].map(char => {
-      return char.charCodeAt(0);
-    })
-  );
+  return new TextEncoder().encode(parsedString);
 }
 
-export function mergeUint8Arrays(mergables: Uint8Array[]): Uint8Array {
+export function mergeUint8Arrays(items: Uint8Array[]): Uint8Array {
   let length = 0;
-  mergables.forEach(item => {
+  for (const item of items) {
     length += item.length;
-  });
+  }
 
   // Create a new array with total length and merge all source arrays.
-  const mergedArray = new Uint8Array(length);
+  const result = new Uint8Array(length);
   let offset = 0;
-  mergables.forEach(item => {
-    mergedArray.set(item, offset);
+  for (const item of items) {
+    result.set(item, offset);
     offset += item.length;
-  });
+  }
 
-  return mergedArray;
+  return result;
 }
