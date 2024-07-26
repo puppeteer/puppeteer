@@ -70,6 +70,8 @@ After registration, the handler can be used everywhere where a selector is expec
 ## Example
 
 ```
+import {Puppeteer}, puppeteer from 'puppeteer';
+
 Puppeteer.registerCustomQueryHandler('text', { … });
 const aHandle = await page.$('text/…');
 ```
