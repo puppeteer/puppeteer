@@ -8,8 +8,15 @@ export function stringToTypedArray(
   string: string,
   base64Encoded = false
 ): Uint8Array {
-  const parsedString = base64Encoded ? atob(string) : string;
-  return new TextEncoder().encode(parsedString);
+  if (base64Encoded) {
+    const binaryString = atob(string);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+  }
+  return new TextEncoder().encode(string);
 }
 
 export function mergeUint8Arrays(items: Uint8Array[]): Uint8Array {
