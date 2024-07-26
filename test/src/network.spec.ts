@@ -521,7 +521,7 @@ describe('network', function () {
 
         const cached: string[] = [];
         page.on('requestservedfromcache', r => {
-          return cached.push(r.url().split('/').pop()!);
+          return !isFavicon(r) && cached.push(r.url().split('/').pop()!);
         });
 
         await page.goto(server.PREFIX + '/cached/' + html);
