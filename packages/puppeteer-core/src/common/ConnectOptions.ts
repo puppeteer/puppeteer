@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+
 import type {
   IsPageTargetCallback,
   TargetFilterCallback,
@@ -16,6 +18,11 @@ import type {Viewport} from './Viewport.js';
  * @public
  */
 export type ProtocolType = 'cdp' | 'webDriverBiDi';
+
+/**
+ * @public
+ */
+export type Capabilities = Bidi.Session.CapabilitiesRequest;
 
 /**
  * Generic browser options that can be passed when launching any browser or when
@@ -59,6 +66,14 @@ export interface BrowserConnectOptions {
    * @defaultValue `180_000`
    */
   protocolTimeout?: number;
+
+  /**
+   * Capabilities passed to BiDi `session.new`.
+   *
+   * @remarks
+   * Only works for `protocol="webDriverBiDi"`
+   */
+  capabilities?: Capabilities;
 }
 
 /**
