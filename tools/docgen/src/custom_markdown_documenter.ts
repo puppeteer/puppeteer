@@ -1574,14 +1574,6 @@ export class MarkdownDocumenter {
       const qualifiedName = Utilities.getSafeFilenameForName(
         hierarchyItem.displayName
       );
-      // TODO: Remove this and add suffix #hash to the header
-      if (ApiParameterListMixin.isBaseClassOf(hierarchyItem)) {
-        if (hierarchyItem.overloadIndex > 1) {
-          // Subtract one for compatibility with earlier releases of API Documenter.
-          // (This will get revamped when we fix GitHub issue #1308)
-          // qualifiedName += `_${hierarchyItem.overloadIndex - 1}`;
-        }
-      }
 
       switch (hierarchyItem.kind) {
         case ApiItemKind.Model:
