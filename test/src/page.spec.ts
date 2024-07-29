@@ -1037,6 +1037,19 @@ describe('Page', function () {
       expect(waitedFrame.parentFrame()).toBe(page.mainFrame());
     });
 
+    it('should work with a URL predicate', async () => {
+      const {server, page} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+
+      const [waitedFrame] = await Promise.all([
+        page.waitForFrame(server.PREFIX + '/title.html'),
+        attachFrame(page, 'frame2', server.PREFIX + '/title.html'),
+      ]);
+
+      expect(waitedFrame.parentFrame()).toBe(page.mainFrame());
+    });
+
     it('should be cancellable', async () => {
       const {server, page} = await getTestState();
 

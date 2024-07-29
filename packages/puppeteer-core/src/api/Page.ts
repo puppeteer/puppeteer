@@ -1854,11 +1854,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
   ): Promise<Frame> {
     const {timeout: ms = this.getDefaultTimeout(), signal} = options;
 
-    if (isString(urlOrPredicate)) {
-      urlOrPredicate = (frame: Frame) => {
-        return urlOrPredicate === frame.url();
-      };
-    }
+    const predicate = isString(urlOrPredicate)
+      ? (frame: Frame) => {
+          return urlOrPredicate === frame.url();
+        }
+      : urlOrPredicate;
 
     return await firstValueFrom(
       merge(
@@ -1866,7 +1866,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
         fromEmitterEvent(this, PageEvent.FrameNavigated),
         from(this.frames())
       ).pipe(
-        filterAsync(urlOrPredicate),
+        filterAsync(predicate),
         first(),
         raceWith(
           timeout(ms),
