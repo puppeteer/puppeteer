@@ -68,6 +68,10 @@ export interface WaitForOptions {
    * @internal
    */
   ignoreSameDocumentNavigation?: boolean;
+  /**
+   * A signal object that allows you to cancel a waitForFunction call.
+   */
+  signal?: AbortSignal;
 }
 
 /**

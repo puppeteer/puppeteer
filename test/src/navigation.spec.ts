@@ -753,6 +753,17 @@ describe('navigation', function () {
         navigationPromise,
       ]);
     });
+    it('should be cancellable', async () => {
+      const {page} = await getTestState();
+
+      const abortController = new AbortController();
+      const task = page.waitForNavigation({
+        signal: abortController.signal,
+      });
+
+      abortController.abort();
+      await expect(task).rejects.toThrow(/aborted/);
+    });
   });
 
   describe('Page.goBack', function () {

@@ -109,9 +109,8 @@ export async function navigateFrame(
 
 export const dumpFrames = async (
   frame: Frame,
-  indentation?: string
+  indentation = ''
 ): Promise<string[]> => {
-  indentation = indentation || '';
   let description = frame.url().replace(/:\d{4,5}\//, ':<PORT>/');
   using element = await frame.frameElement();
   if (element) {
