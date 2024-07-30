@@ -217,7 +217,7 @@ export class FirefoxLauncher extends ProductLauncher {
       userDataDir = null,
     } = options;
 
-    const firefoxArguments = ['--no-remote'];
+    const firefoxArguments = [];
 
     switch (os.platform()) {
       case 'darwin':
