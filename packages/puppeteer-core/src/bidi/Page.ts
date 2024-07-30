@@ -915,6 +915,22 @@ function testUrlMatchCookie(cookie: Cookie, url: URL): boolean {
 }
 
 function bidiToPuppeteerCookie(bidiCookie: Bidi.Network.Cookie): Cookie {
+  const partitionKey = bidiCookie[CDP_SPECIFIC_PREFIX + 'partitionKey'];
+
+  function getParitionKey(): {partitionKey?: string} {
+    if (typeof partitionKey === 'string') {
+      return {partitionKey};
+    }
+    if (typeof partitionKey === 'object' && partitionKey !== null) {
+      return {
+        // TODO: a breaking change in Puppeteer is required to change
+        // partitionKey type and report the composite partition key.
+        partitionKey: partitionKey.topLevelSite,
+      };
+    }
+    return {};
+  }
+
   return {
     name: bidiCookie.name,
     // Presents binary value as base64 string.
@@ -932,10 +948,10 @@ function bidiToPuppeteerCookie(bidiCookie: Bidi.Network.Cookie): Cookie {
       bidiCookie,
       'sameParty',
       'sourceScheme',
-      'partitionKey',
       'partitionKeyOpaque',
       'priority'
     ),
+    ...getParitionKey(),
   };
 }
 
