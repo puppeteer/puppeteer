@@ -2674,7 +2674,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * Shortcut for {@link Frame.click | page.mainFrame().click(selector[, options]) }.
    * @param selector - A
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
-   * of an element to type into. If there are multiple elements satisfying the
+   * of an element to click. If there are multiple elements satisfying the
    * selector, the first will be clicked.
    * @param options - `Object`
    * @returns Promise which resolves when the element matching `selector` is
