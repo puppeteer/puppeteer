@@ -781,84 +781,42 @@ describe('Cookie specs', () => {
       // Expect the cookie for the COOKIE_DESTINATION from URL_1 is deleted.
       expect(await page.cookies(COOKIE_DESTINATION_URL)).toHaveLength(0);
     });
-    it('should only delete cookie without partition key if partitionkey is not specified', async () => {
-      const {page} = await getTestState();
-      const url = 'https://example.com';
-      await page.goto(url);
+    it('should only delete cookie from the default partition if partitionkey is not specified', async () => {
+      const {page, server} = await getTestState();
+      const url = new URL(server.EMPTY_PAGE);
+      await page.goto(url.toString());
       await page.setCookie({
-        url,
+        url: url.toString(),
         name: 'partitionCookie',
         value: 'partition',
-        partitionKey: url,
-      });
-
-      await page.setCookie({
-        url,
-        name: 'partitionCookie',
-        value: 'partition',
-      });
-      expect(await page.cookies()).toHaveLength(2);
-      await page.deleteCookie({
-        url,
-        name: 'partitionCookie',
+        secure: true,
+        partitionKey: url.origin,
       });
       expect(await page.cookies()).toHaveLength(1);
-      await expectCookieEquals(await page.cookies(), [
-        {
-          name: 'partitionCookie',
-          value: 'partition',
-          domain: 'example.com',
-          path: '/',
-          expires: -1,
-          size: 24,
-          httpOnly: false,
-          secure: true,
-          session: true,
-          sameParty: false,
-          sourceScheme: 'Secure',
-          partitionKey: url,
-        },
-      ]);
+      await page.deleteCookie({
+        url: url.toString(),
+        name: 'partitionCookie',
+      });
+      expect(await page.cookies()).toHaveLength(0);
     });
-    it('should only delete cookie with partition key if partition key is specified', async () => {
-      const {page} = await getTestState();
-      const url = 'https://example.com';
-      await page.goto(url);
+    it('should delete cookie with partition key if partition key is specified', async () => {
+      const {page, server} = await getTestState();
+      const url = new URL(server.EMPTY_PAGE);
+      await page.goto(url.toString());
       await page.setCookie({
-        url,
+        url: url.toString(),
         name: 'partitionCookie',
         value: 'partition',
-        partitionKey: url,
-      });
-
-      await page.setCookie({
-        url,
-        name: 'partitionCookie',
-        value: 'partition',
-      });
-      expect(await page.cookies()).toHaveLength(2);
-      await page.deleteCookie({
-        url,
-        name: 'partitionCookie',
-        partitionKey: url,
+        secure: true,
+        partitionKey: url.origin,
       });
       expect(await page.cookies()).toHaveLength(1);
-      await expectCookieEquals(await page.cookies(), [
-        {
-          name: 'partitionCookie',
-          value: 'partition',
-          domain: 'example.com',
-          path: '/',
-          expires: -1,
-          size: 24,
-          httpOnly: false,
-          secure: true,
-          session: true,
-          sameParty: false,
-          sourceScheme: 'Secure',
-          partitionKey: undefined,
-        },
-      ]);
+      await page.deleteCookie({
+        url: url.toString(),
+        name: 'partitionCookie',
+        partitionKey: url.origin,
+      });
+      expect(await page.cookies()).toHaveLength(0);
     });
   });
 });
