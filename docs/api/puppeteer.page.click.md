@@ -39,7 +39,7 @@ string
 
 </td><td>
 
-A [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) of an element to type into. If there are multiple elements satisfying the selector, the first will be used.
+A [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) of an element to click. If there are multiple elements satisfying the selector, the first will be clicked.
 
 </td></tr>
 <tr><td>
