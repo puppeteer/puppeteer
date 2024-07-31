@@ -46,7 +46,8 @@ export async function downloadBrowser(): Promise<void> {
     return;
   }
 
-  const downloadBaseUrl = stripTrailingSlash(`${configuration.downloadBaseUrl}`);
+  // Only check for trailing / if configuration.downloadBaseUrl has been overridden and is not undefined.
+  const downloadBaseUrl = typeof configuration.downloadBaseUrl === 'string' ? stripTrailingSlash(`${configuration.downloadBaseUrl}`) : configuration.downloadBaseUrl;
 
   const platform = detectBrowserPlatform();
   if (!platform) {
