@@ -27,6 +27,16 @@ const supportedProducts = {
 /**
  * @internal
  */
+function stripTrailingSlash(url: string) {
+  while (url.endsWith('/')) {
+    url = url.slice(0, -1);
+  }
+  return url;
+}
+
+/**
+ * @internal
+ */
 export async function downloadBrowser(): Promise<void> {
   overrideProxy();
 
@@ -36,7 +46,7 @@ export async function downloadBrowser(): Promise<void> {
     return;
   }
 
-  const downloadBaseUrl = configuration.downloadBaseUrl;
+  const downloadBaseUrl = stripTrailingSlash(`${configuration.downloadBaseUrl}`);
 
   const platform = detectBrowserPlatform();
   if (!platform) {
