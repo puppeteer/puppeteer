@@ -122,12 +122,15 @@ export class ChromeTargetManager
         this,
         undefined
       );
-      // Targets from extensions and the browser that will not be
-      // auto-attached. Therefore, we should not add them to
-      // #targetsIdsForInit.
+      // Targets from extensions, the browser target and lazy loaded
+      // iframes that will not be auto-attached. Therefore, we should
+      // not add them to #targetsIdsForInit.
       const skipTarget =
         targetInfo.type === 'browser' ||
-        targetInfo.url.startsWith('chrome-extension://');
+        targetInfo.url.startsWith('chrome-extension://') ||
+        // lazy loading iframes have no url if they have not started
+        // loading.
+        (targetInfo.type === 'iframe' && targetInfo.url === '');
       if (
         (!this.#targetFilterCallback ||
           this.#targetFilterCallback(targetForFilter)) &&

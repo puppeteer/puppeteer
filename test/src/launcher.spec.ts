@@ -645,6 +645,20 @@ describe('Launcher specs', function () {
           await close();
         }
       });
+      it('should be able to connect when a page has a lazy-loading iframe', async () => {
+        const {puppeteer, browser, page, server, close} = await launch({});
+        try {
+          await page.setViewport({width: 1000, height: 1000});
+          await page.goto(server.PREFIX + '/frames/lazy-frame.html');
+          using otherBrowser = await puppeteer.connect({
+            browserWSEndpoint: browser.wsEndpoint(),
+            protocol: browser.protocol,
+          });
+          await otherBrowser.disconnect();
+        } finally {
+          await close();
+        }
+      });
       it('should be able to close remote browser', async () => {
         const {puppeteer, browser, close} = await launch({});
         try {
