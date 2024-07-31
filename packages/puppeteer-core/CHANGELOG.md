@@ -20,6 +20,20 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [22.15.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.14.0...puppeteer-core-v22.15.0) (2024-07-31)
+
+
+### Features
+
+* support AbortSignal in waitForNavigation ([#12852](https://github.com/puppeteer/puppeteer/issues/12852)) ([9a35f7b](https://github.com/puppeteer/puppeteer/commit/9a35f7ba189e3a0250a4bd2e3b40efee9c6e2b18))
+
+
+### Bug Fixes
+
+* handle the string predicate in waitForFrame ([#12849](https://github.com/puppeteer/puppeteer/issues/12849)) ([9ec5f25](https://github.com/puppeteer/puppeteer/commit/9ec5f25ea6f9e60d250c7413e122a5c32faeb3f9))
+* roll to Chrome 127.0.6533.88 ([#12858](https://github.com/puppeteer/puppeteer/issues/12858)) ([4b0e889](https://github.com/puppeteer/puppeteer/commit/4b0e8890ef9fd4e581da49072f1a04118087a2a2))
+* **webdriver:** implement request timings ([#12831](https://github.com/puppeteer/puppeteer/issues/12831)) ([409d244](https://github.com/puppeteer/puppeteer/commit/409d244aed480fbb5254f852afb16bd101692f9a))
+
 ## [22.14.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.13.1...puppeteer-core-v22.14.0) (2024-07-25)
 
 
