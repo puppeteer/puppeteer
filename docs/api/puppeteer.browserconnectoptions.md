@@ -93,7 +93,13 @@ Whether to ignore HTTPS errors during navigation.
 
 </td><td>
 
-'cdp'
+Determined at run time:
+
+- Launching Chrome - 'cdp'.
+
+- Launching Firefox - 'webDriverBiDi'.
+
+- Connecting to a browser - 'cdp'.
 
 </td></tr>
 <tr><td>

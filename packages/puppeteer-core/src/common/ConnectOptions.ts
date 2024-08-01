@@ -49,7 +49,14 @@ export interface BrowserConnectOptions {
   _isPageTarget?: IsPageTargetCallback;
 
   /**
-   * @defaultValue 'cdp'
+   * @defaultValue Determined at run time:
+   *
+   * - Launching Chrome - 'cdp'.
+   *
+   * - Launching Firefox - 'webDriverBiDi'.
+   *
+   * - Connecting to a browser - 'cdp'.
+   *
    * @public
    */
   protocol?: ProtocolType;

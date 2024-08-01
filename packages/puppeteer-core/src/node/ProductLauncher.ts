@@ -93,8 +93,14 @@ export abstract class ProductLauncher {
       timeout = 30000,
       waitForInitialPage = true,
       protocolTimeout,
-      protocol,
     } = options;
+
+    let {protocol} = options;
+
+    // Default to 'webDriverBiDi' for Firefox.
+    if (this.#product === 'firefox' && protocol === undefined) {
+      protocol = 'webDriverBiDi';
+    }
 
     const launchArgs = await this.computeLaunchArguments(options);
 
