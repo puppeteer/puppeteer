@@ -115,10 +115,10 @@ describe('`puppeteer`', () => {
     });
 
     it('evaluates', async function () {
-      assert.equal(
-        readdirSync(join(this.sandbox, '.cache', 'puppeteer', 'chrome')).length,
-        1
+      const dir = readdirSync(
+        join(this.sandbox, '.cache', 'puppeteer', 'chrome')
       );
+      assert.equal(dir.length, 1, dir.join());
 
       await this.runScript(
         await readAsset('puppeteer', 'installCanary.js'),

@@ -23,7 +23,9 @@ import {readAsset} from './util.js';
       env: cwd => {
         return {
           PUPPETEER_CACHE_DIR: join(cwd, '.cache', 'puppeteer'),
-          PUPPETEER_BROWSER: 'firefox',
+          PUPPETEER_CHROME_SKIP_DOWNLOAD: 'true',
+          PUPPETEER_CHROME_SKIP_HEADLESS_SHELL_DOWNLOAD: 'true',
+          PUPPETEER_FIREFOX_SKIP_DOWNLOAD: 'false',
         };
       },
     });
@@ -31,7 +33,7 @@ import {readAsset} from './util.js';
     describe('with CDP', () => {
       it('evaluates CommonJS', async function () {
         const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));
-        assert.equal(files.length, 1);
+        assert.equal(files.length, 1, files.join());
         assert.equal(files[0], 'firefox');
         const script = await readAsset('puppeteer-core', 'requires.cjs');
         await this.runScript(script, 'cjs');

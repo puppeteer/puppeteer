@@ -74,12 +74,12 @@ export async function downloadBrowsers(): Promise<void> {
   if (configuration.chrome?.skipDownload) {
     logPolitely('**INFO** Skipping Chrome download as instructed.');
   } else {
-    const buildIdAlias =
+    const unresolvedBuildId =
       configuration.chrome?.version || PUPPETEER_REVISIONS.chrome || 'latest';
     const baseUrl = configuration.chrome?.downloadBaseUrl;
 
     const browser = Browser.CHROME;
-    const buildId = await resolveBuildId(browser, platform, buildIdAlias);
+    const buildId = await resolveBuildId(browser, platform, unresolvedBuildId);
 
     installationJobs.push(
       downloadBrowser({
@@ -88,7 +88,8 @@ export async function downloadBrowsers(): Promise<void> {
         platform,
         buildId,
         baseUrl,
-        buildIdAlias,
+        buildIdAlias:
+          buildId !== unresolvedBuildId ? unresolvedBuildId : undefined,
       })
     );
   }
@@ -96,13 +97,13 @@ export async function downloadBrowsers(): Promise<void> {
   if (configuration.chrome?.skipHeadlessShellDownload) {
     logPolitely('**INFO** Skipping Chrome download as instructed.');
   } else {
-    const buildIdAlias =
+    const unresolvedBuildId =
       configuration.chrome?.version ||
       PUPPETEER_REVISIONS['chrome-headless-shell'] ||
       'latest';
     const browser = Browser.CHROMEHEADLESSSHELL;
     const baseUrl = configuration.chrome?.downloadBaseUrl;
-    const buildId = await resolveBuildId(browser, platform, buildIdAlias);
+    const buildId = await resolveBuildId(browser, platform, unresolvedBuildId);
 
     installationJobs.push(
       downloadBrowser({
@@ -111,7 +112,8 @@ export async function downloadBrowsers(): Promise<void> {
         platform,
         buildId,
         baseUrl,
-        buildIdAlias,
+        buildIdAlias:
+          buildId !== unresolvedBuildId ? unresolvedBuildId : undefined,
       })
     );
   }
@@ -119,11 +121,11 @@ export async function downloadBrowsers(): Promise<void> {
   if (configuration.firefox?.skipDownload) {
     logPolitely('**INFO** Skipping Firefox download as instructed.');
   } else {
-    const buildIdAlias =
+    const unresolvedBuildId =
       configuration.firefox?.version || PUPPETEER_REVISIONS.firefox || 'latest';
     const browser = Browser.FIREFOX;
     const baseUrl = configuration.firefox?.downloadBaseUrl;
-    const buildId = await resolveBuildId(browser, platform, buildIdAlias);
+    const buildId = await resolveBuildId(browser, platform, unresolvedBuildId);
 
     installationJobs.push(
       downloadBrowser({
@@ -132,7 +134,8 @@ export async function downloadBrowsers(): Promise<void> {
         platform,
         buildId,
         baseUrl,
-        buildIdAlias,
+        buildIdAlias:
+          buildId !== unresolvedBuildId ? unresolvedBuildId : undefined,
       })
     );
   }
