@@ -82,7 +82,9 @@ export const getConfiguration = (): Configuration => {
     configuration.chrome = {};
   }
   if (!configuration.firefox) {
-    configuration.firefox = {};
+    configuration.firefox = {
+      skipDownload: true,
+    };
   }
 
   configuration.logLevel = getLogLevel(
