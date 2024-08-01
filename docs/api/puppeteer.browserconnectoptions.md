@@ -93,7 +93,13 @@ Whether to ignore HTTPS errors during navigation.
 
 </td><td>
 
-'cdp' when launching Chrome and 'webDriverBiDi' when launching Firefox. When connecting to a running browser, defaults to 'cdp'.
+Determined at run time:
+
+- Launching Chrome - 'cdp'.
+
+- Launching Firefox - 'webDriverBiDi'.
+
+- Connecting to a browser - 'cdp'.
 
 </td></tr>
 <tr><td>
