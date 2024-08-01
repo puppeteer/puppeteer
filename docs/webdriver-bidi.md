@@ -66,7 +66,6 @@ await chromeBrowser.close();
 
 - Other methods:
 
-  - Frame.isOOPFrame()
   - Frame.waitForDevicePrompt()
   - HTTPResponse.buffer()
   - HTTPResponse.fromServiceWorker()
