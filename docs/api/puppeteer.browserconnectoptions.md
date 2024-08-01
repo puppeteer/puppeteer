@@ -37,6 +37,27 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="acceptinsecurecerts">acceptInsecureCerts</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether to ignore HTTPS errors during navigation.
+
+</td><td>
+
+`false`
+
+</td></tr>
+<tr><td>
+
 <span id="defaultviewport">defaultViewport</span>
 
 </td><td>
@@ -54,27 +75,6 @@ Sets the viewport for each page.
 </td><td>
 
 '&#123;width: 800, height: 600&#125;'
-
-</td></tr>
-<tr><td>
-
-<span id="ignorehttpserrors">ignoreHTTPSErrors</span>
-
-</td><td>
-
-`optional`
-
-</td><td>
-
-boolean
-
-</td><td>
-
-Whether to ignore HTTPS errors during navigation.
-
-</td><td>
-
-`false`
 
 </td></tr>
 <tr><td>

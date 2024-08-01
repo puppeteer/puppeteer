@@ -41,7 +41,7 @@ export interface BidiBrowserOptions {
   connection: BidiConnection;
   cdpConnection?: CdpConnection;
   defaultViewport: Viewport | null;
-  ignoreHTTPSErrors?: boolean;
+  acceptInsecureCerts?: boolean;
 }
 
 /**
@@ -72,7 +72,7 @@ export class BidiBrowser extends Browser {
   static async create(opts: BidiBrowserOptions): Promise<BidiBrowser> {
     const session = await Session.from(opts.connection, {
       alwaysMatch: {
-        acceptInsecureCerts: opts.ignoreHTTPSErrors,
+        acceptInsecureCerts: opts.acceptInsecureCerts,
         unhandledPromptBehavior: {
           default: Bidi.Session.UserPromptHandlerType.Ignore,
         },

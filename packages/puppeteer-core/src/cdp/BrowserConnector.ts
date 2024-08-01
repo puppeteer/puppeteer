@@ -26,7 +26,7 @@ export async function _connectToCdpBrowser(
   options: BrowserConnectOptions & ConnectOptions
 ): Promise<CdpBrowser> {
   const {
-    ignoreHTTPSErrors = false,
+    acceptInsecureCerts = false,
     defaultViewport = DEFAULT_VIEWPORT,
     targetFilter,
     _isPageTarget: isPageTarget,
@@ -53,7 +53,7 @@ export async function _connectToCdpBrowser(
     product || 'chrome',
     connection,
     browserContextIds,
-    ignoreHTTPSErrors,
+    acceptInsecureCerts,
     defaultViewport,
     undefined,
     () => {

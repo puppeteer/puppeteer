@@ -11,16 +11,16 @@ import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 
 import {launch} from './mocha-utils.js';
 
-describe('ignoreHTTPSErrors', function () {
+describe('acceptInsecureCerts', function () {
   /* Note that this test creates its own browser rather than use
    * the one provided by the test set-up as we need one
-   * with ignoreHTTPSErrors set to true
+   * with acceptInsecureCerts set to true
    */
   let state: Awaited<ReturnType<typeof launch>>;
 
   before(async () => {
     state = await launch(
-      {ignoreHTTPSErrors: true},
+      {acceptInsecureCerts: true},
       {
         after: 'all',
       }

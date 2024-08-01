@@ -27,7 +27,7 @@ export interface BrowserConnectOptions {
    * Whether to ignore HTTPS errors during navigation.
    * @defaultValue `false`
    */
-  ignoreHTTPSErrors?: boolean;
+  acceptInsecureCerts?: boolean;
   /**
    * Sets the viewport for each page.
    *
