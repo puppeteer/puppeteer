@@ -8,8 +8,6 @@ export * from './index-browser.js';
 
 import {Puppeteer} from './common/Puppeteer.js';
 
-// Set up browser-specific environment dependencies here.
-
 /**
  * @public
  */
