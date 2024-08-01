@@ -8,6 +8,7 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {ElementHandle, type AutofillData} from '../api/ElementHandle.js';
 import type {AwaitableIterable} from '../common/types.js';
+import {environment} from '../environment.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {throwIfDisposed} from '../util/decorators.js';
 
@@ -96,19 +97,7 @@ export class BidiElementHandle<
     ...files: string[]
   ): Promise<void> {
     // Locate all files and confirm that they exist.
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    let path: typeof import('path');
-    try {
-      path = await import('path');
-    } catch (error) {
-      if (error instanceof TypeError) {
-        throw new Error(
-          `JSHandle#uploadFile can only be used in Node-like environments.`
-        );
-      }
-      throw error;
-    }
-
+    const path = environment.value.path;
     files = files.map(file => {
       if (path.win32.isAbsolute(file) || path.posix.isAbsolute(file)) {
         return file;
