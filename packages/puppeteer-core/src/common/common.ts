@@ -24,7 +24,7 @@ export * from './NetworkManagerEvents.js';
 export * from './PDFOptions.js';
 export * from './PierceQueryHandler.js';
 export * from './PQueryHandler.js';
-export * from './Product.js';
+export * from './SupportedBrowser.js';
 export * from './PSelectorParser.js';
 export * from './Puppeteer.js';
 export * from './QueryHandler.js';

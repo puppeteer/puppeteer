@@ -1,13 +1,13 @@
 ---
-sidebar_label: ProductLauncher.launch
+sidebar_label: BrowserLauncher.launch
 ---
 
-# ProductLauncher.launch() method
+# BrowserLauncher.launch() method
 
 ### Signature
 
 ```typescript
-class ProductLauncher {
+class BrowserLauncher {
   launch(options?: PuppeteerNodeLaunchOptions): Promise<Browser>;
 }
 ```

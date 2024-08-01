@@ -5,7 +5,8 @@
  */
 
 /**
- * Supported products.
+ * Browsers supported by Puppeteer.
+ *
  * @public
  */
-export type Product = 'chrome' | 'firefox';
+export type SupportedBrowser = 'chrome' | 'firefox';

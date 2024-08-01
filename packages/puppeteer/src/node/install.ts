@@ -11,7 +11,7 @@ import {
   makeProgressCallback,
   detectBrowserPlatform,
 } from '@puppeteer/browsers';
-import type {Product} from 'puppeteer-core';
+import type {SupportedBrowser} from 'puppeteer-core';
 import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
 
 import {getConfiguration} from '../getConfiguration.js';
@@ -19,7 +19,7 @@ import {getConfiguration} from '../getConfiguration.js';
 /**
  * @internal
  */
-const supportedProducts = {
+const supportedBrowsers = {
   chrome: 'Chrome',
   firefox: 'Firefox Nightly',
 } as const;
@@ -43,8 +43,8 @@ export async function downloadBrowser(): Promise<void> {
     throw new Error('The current platform is not supported.');
   }
 
-  const product = configuration.defaultProduct!;
-  const browser = productToBrowser(product);
+  const product = configuration.defaultBrowser!;
+  const browser = supportedBrowserToBrowser(product);
 
   const unresolvedBuildId =
     configuration.browserRevision || PUPPETEER_REVISIONS[product] || 'latest';
@@ -79,12 +79,12 @@ export async function downloadBrowser(): Promise<void> {
         })
           .then(result => {
             logPolitely(
-              `${supportedProducts[product]} (${result.buildId}) downloaded to ${result.path}`
+              `${supportedBrowsers[product]} (${result.buildId}) downloaded to ${result.path}`
             );
           })
           .catch(error => {
             throw new Error(
-              `ERROR: Failed to set up ${supportedProducts[product]} v${buildId}! Set "PUPPETEER_SKIP_DOWNLOAD" env variable to skip download.`,
+              `ERROR: Failed to set up ${supportedBrowsers[product]} v${buildId}! Set "PUPPETEER_SKIP_DOWNLOAD" env variable to skip download.`,
               {
                 cause: error,
               }
@@ -143,7 +143,7 @@ export async function downloadBrowser(): Promise<void> {
   }
 }
 
-function productToBrowser(product?: Product) {
+function supportedBrowserToBrowser(product?: SupportedBrowser) {
   switch (product) {
     case 'chrome':
       return Browser.CHROME;

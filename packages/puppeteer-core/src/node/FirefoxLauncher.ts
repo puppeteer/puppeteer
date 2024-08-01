@@ -20,18 +20,18 @@ import {
 import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 
+import {BrowserLauncher, type ResolvedLaunchArgs} from './BrowserLauncher.js';
 import type {
   BrowserLaunchArgumentOptions,
   PuppeteerNodeLaunchOptions,
 } from './LaunchOptions.js';
-import {ProductLauncher, type ResolvedLaunchArgs} from './ProductLauncher.js';
 import type {PuppeteerNode} from './PuppeteerNode.js';
 import {rm} from './util/fs.js';
 
 /**
  * @internal
  */
-export class FirefoxLauncher extends ProductLauncher {
+export class FirefoxLauncher extends BrowserLauncher {
   constructor(puppeteer: PuppeteerNode) {
     super(puppeteer, 'firefox');
   }

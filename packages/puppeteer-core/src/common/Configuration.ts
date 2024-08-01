@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {Product} from './Product.js';
+import type {SupportedBrowser} from './SupportedBrowser.js';
 
 /**
  * Defines experiment options for Puppeteer.
@@ -70,11 +70,11 @@ export interface Configuration {
   /**
    * Specifies which browser you'd like Puppeteer to use.
    *
-   * Can be overridden by `PUPPETEER_PRODUCT`.
+   * Can be overridden by `PUPPETEER_BROWSER`.
    *
    * @defaultValue `chrome`
    */
-  defaultProduct?: Product;
+  defaultBrowser?: SupportedBrowser;
   /**
    * Defines the directory to be used by Puppeteer for creating temporary files.
    *
