@@ -10,7 +10,7 @@ import {join} from 'path';
 import {cosmiconfigSync} from 'cosmiconfig';
 import type {Configuration, SupportedBrowser} from 'puppeteer-core';
 
-function getBooleanEnvVar(name: string) {
+function getBooleanEnvVar(name: string): boolean | undefined {
   const env = process.env[name];
   if (env === undefined) {
     return;
@@ -29,7 +29,7 @@ function getBooleanEnvVar(name: string) {
 /**
  * @internal
  */
-function isSupportedProduct(product: unknown): product is SupportedBrowser {
+function isSupportedBrowser(product: unknown): product is SupportedBrowser {
   switch (product) {
     case 'chrome':
     case 'firefox':
@@ -42,30 +42,53 @@ function isSupportedProduct(product: unknown): product is SupportedBrowser {
 /**
  * @internal
  */
+function getDefaultBrowser(browser: unknown): SupportedBrowser {
+  // Validate configuration.
+  if (browser && !isSupportedBrowser(browser)) {
+    throw new Error(`Unsupported browser ${browser}`);
+  }
+  switch (browser) {
+    case 'firefox':
+      return 'firefox';
+    default:
+      return 'chrome';
+  }
+}
+
+/**
+ * @internal
+ */
+function getLogLevel(logLevel: unknown): 'silent' | 'error' | 'warn' {
+  switch (logLevel) {
+    case 'silent':
+      return 'silent';
+    case 'error':
+      return 'error';
+    default:
+      return 'warn';
+  }
+}
+
+/**
+ * @internal
+ */
 export const getConfiguration = (): Configuration => {
   const result = cosmiconfigSync('puppeteer', {
     searchStrategy: 'global',
   }).search();
   const configuration: Configuration = result ? result.config : {};
 
-  configuration.logLevel = (process.env['PUPPETEER_LOGLEVEL'] ??
-    process.env['npm_config_LOGLEVEL'] ??
-    process.env['npm_package_config_LOGLEVEL'] ??
-    configuration.logLevel ??
-    'warn') as 'silent' | 'error' | 'warn';
+  configuration.logLevel = getLogLevel(
+    process.env['PUPPETEER_LOGLEVEL'] ?? configuration.logLevel
+  );
 
   // Merging environment variables.
-  configuration.defaultBrowser = (process.env['PUPPETEER_BROWSER'] ??
-    process.env['npm_config_puppeteer_browser'] ??
-    process.env['npm_package_config_puppeteer_browser'] ??
-    configuration.defaultBrowser ??
-    'chrome') as SupportedBrowser;
+  configuration.defaultBrowser = getDefaultBrowser(
+    process.env['PUPPETEER_BROWSER'] ?? configuration.defaultBrowser
+  );
 
   configuration.executablePath =
-    process.env['PUPPETEER_EXECUTABLE_PATH'] ??
-    process.env['npm_config_puppeteer_executable_path'] ??
-    process.env['npm_package_config_puppeteer_executable_path'] ??
-    configuration.executablePath;
+    process.env['PUPPETEER_EXECUTABLE_PATH'] ?? configuration.executablePath;
 
   // Default to skipDownload if executablePath is set
   if (configuration.executablePath) {
@@ -73,89 +96,38 @@ export const getConfiguration = (): Configuration => {
   }
 
   // Set skipDownload explicitly or from default
-  configuration.skipDownload = Boolean(
-    getBooleanEnvVar('PUPPETEER_SKIP_DOWNLOAD') ??
-      getBooleanEnvVar('npm_config_puppeteer_skip_download') ??
-      getBooleanEnvVar('npm_package_config_puppeteer_skip_download') ??
-      configuration.skipDownload
-  );
+  configuration.skipDownload =
+    getBooleanEnvVar('PUPPETEER_SKIP_DOWNLOAD') ?? configuration.skipDownload;
 
   // Set skipChromeDownload explicitly or from default
-  configuration.skipChromeDownload = Boolean(
+  configuration.skipChromeDownload =
     getBooleanEnvVar('PUPPETEER_SKIP_CHROME_DOWNLOAD') ??
-      getBooleanEnvVar('npm_config_puppeteer_skip_chrome_download') ??
-      getBooleanEnvVar('npm_package_config_puppeteer_skip_chrome_download') ??
-      configuration.skipChromeDownload
-  );
+    configuration.skipChromeDownload;
 
   // Set skipChromeDownload explicitly or from default
-  configuration.skipChromeHeadlessShellDownload = Boolean(
+  configuration.skipChromeHeadlessShellDownload =
     getBooleanEnvVar('PUPPETEER_SKIP_CHROME_HEADLESS_SHELL_DOWNLOAD') ??
-      getBooleanEnvVar(
-        'npm_config_puppeteer_skip_chrome_headless_shell_download'
-      ) ??
-      getBooleanEnvVar(
-        'npm_package_config_puppeteer_skip_chrome_headless_shell_download'
-      ) ??
-      configuration.skipChromeHeadlessShellDownload
-  );
+    configuration.skipChromeHeadlessShellDownload;
 
   // Prepare variables used in browser downloading
   if (!configuration.skipDownload) {
     configuration.browserRevision =
       process.env['PUPPETEER_BROWSER_REVISION'] ??
-      process.env['npm_config_puppeteer_browser_revision'] ??
-      process.env['npm_package_config_puppeteer_browser_revision'] ??
       configuration.browserRevision;
-
-    const downloadHost =
-      process.env['PUPPETEER_DOWNLOAD_HOST'] ??
-      process.env['npm_config_puppeteer_download_host'] ??
-      process.env['npm_package_config_puppeteer_download_host'];
-
-    if (downloadHost && configuration.logLevel === 'warn') {
-      console.warn(
-        `PUPPETEER_DOWNLOAD_HOST is deprecated. Use PUPPETEER_DOWNLOAD_BASE_URL instead.`
-      );
-    }
 
     configuration.downloadBaseUrl =
       process.env['PUPPETEER_DOWNLOAD_BASE_URL'] ??
-      process.env['npm_config_puppeteer_download_base_url'] ??
-      process.env['npm_package_config_puppeteer_download_base_url'] ??
-      configuration.downloadBaseUrl ??
-      downloadHost;
-  }
-
-  if (
-    Object.keys(process.env).some(key => {
-      return key.startsWith('npm_package_config_puppeteer_');
-    }) &&
-    configuration.logLevel === 'warn'
-  ) {
-    console.warn(
-      `Configuring Puppeteer via npm/package.json is deprecated. Use https://pptr.dev/guides/configuration instead.`
-    );
+      configuration.downloadBaseUrl;
   }
 
   configuration.cacheDirectory =
     process.env['PUPPETEER_CACHE_DIR'] ??
-    process.env['npm_config_puppeteer_cache_dir'] ??
-    process.env['npm_package_config_puppeteer_cache_dir'] ??
     configuration.cacheDirectory ??
     join(homedir(), '.cache', 'puppeteer');
   configuration.temporaryDirectory =
-    process.env['PUPPETEER_TMP_DIR'] ??
-    process.env['npm_config_puppeteer_tmp_dir'] ??
-    process.env['npm_package_config_puppeteer_tmp_dir'] ??
-    configuration.temporaryDirectory;
+    process.env['PUPPETEER_TMP_DIR'] ?? configuration.temporaryDirectory;
 
   configuration.experiments ??= {};
-
-  // Validate configuration.
-  if (!isSupportedProduct(configuration.defaultBrowser)) {
-    throw new Error(`Unsupported product ${configuration.defaultBrowser}`);
-  }
 
   return configuration;
 };

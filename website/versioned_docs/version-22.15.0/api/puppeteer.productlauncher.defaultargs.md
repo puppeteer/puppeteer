@@ -1,13 +1,13 @@
 ---
-sidebar_label: ProductLauncher.defaultArgs
+sidebar_label: BrowserLauncher.defaultArgs
 ---
 
-# ProductLauncher.defaultArgs() method
+# BrowserLauncher.defaultArgs() method
 
 ### Signature
 
 ```typescript
-class ProductLauncher {
+class BrowserLauncher {
   abstract defaultArgs(object: BrowserLaunchArgumentOptions): string[];
 }
 ```

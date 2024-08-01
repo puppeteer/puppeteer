@@ -1,20 +1,20 @@
 ---
-sidebar_label: ProductLauncher
+sidebar_label: BrowserLauncher
 ---
 
-# ProductLauncher class
+# BrowserLauncher class
 
 Describes a launcher - a class that is able to create and launch a browser instance.
 
 ### Signature
 
 ```typescript
-export declare abstract class ProductLauncher
+export declare abstract class BrowserLauncher
 ```
 
 ## Remarks
 
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ProductLauncher` class.
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `BrowserLauncher` class.
 
 ## Properties
 
@@ -37,7 +37,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="product">product</span>
+<span id="browser">browser</span>
 
 </td><td>
 
@@ -45,7 +45,7 @@ Description
 
 </td><td>
 
-[Product](./puppeteer.product.md)
+[SupportedBrowser](./puppeteer.supportedbrowser.md)
 
 </td><td>
 
@@ -69,7 +69,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="defaultargs">[defaultArgs(object)](./puppeteer.productlauncher.defaultargs.md)</span>
+<span id="defaultargs">[defaultArgs(object)](./puppeteer.browserlauncher.defaultargs.md)</span>
 
 </td><td>
 
@@ -78,7 +78,7 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="executablepath">[executablePath(channel)](./puppeteer.productlauncher.executablepath.md)</span>
+<span id="executablepath">[executablePath(channel)](./puppeteer.browserlauncher.executablepath.md)</span>
 
 </td><td>
 
@@ -87,7 +87,7 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="launch">[launch(options)](./puppeteer.productlauncher.launch.md)</span>
+<span id="launch">[launch(options)](./puppeteer.browserlauncher.launch.md)</span>
 
 </td><td>
 
