@@ -39,6 +39,23 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="_chrome-headless-shell_">"chrome-headless-shell"</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[ChromeHeadlessShellSettings](./puppeteer.chromeheadlessshellsettings.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="cachedirectory">cacheDirectory</span>
 
 </td><td>

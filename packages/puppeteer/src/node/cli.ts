@@ -38,7 +38,7 @@ void new CLI({
     },
     [Browser.CHROMEHEADLESSSHELL]: {
       buildId:
-        puppeteer.configuration.chrome?.version ||
+        puppeteer.configuration['chrome-headless-shell']?.version ||
         PUPPETEER_REVISIONS['chrome-headless-shell'] ||
         'latest',
       skipDownload:

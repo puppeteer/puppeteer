@@ -130,7 +130,7 @@ export const getConfiguration = (): Configuration => {
       process.env['PUPPETEER_CHROME_HEADLESS_DOWNLOAD_BASE_URL'] ??
       configuration['chrome-headless-shell'].downloadBaseUrl;
     configuration['chrome-headless-shell'].skipDownload =
-      getBooleanEnvVar('PUPPETEER_CHROME_SKIP_HEADLESS_SHELL_DOWNLOAD') ??
+      getBooleanEnvVar('PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD') ??
       getBooleanEnvVar('PUPPETEER_SKIP_CHROME_HEADLESS_SHELL_DOWNLOAD') ??
       configuration['chrome-headless-shell'].skipDownload;
 

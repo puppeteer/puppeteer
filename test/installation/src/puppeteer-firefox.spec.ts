@@ -25,7 +25,7 @@ import {readAsset} from './util.js';
           PUPPETEER_BROWSER: 'firefox',
           PUPPETEER_CACHE_DIR: join(cwd, '.cache', 'puppeteer'),
           PUPPETEER_CHROME_SKIP_DOWNLOAD: 'true',
-          PUPPETEER_CHROME_SKIP_HEADLESS_SHELL_DOWNLOAD: 'true',
+          PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD: 'true',
           PUPPETEER_FIREFOX_SKIP_DOWNLOAD: 'false',
         };
       },

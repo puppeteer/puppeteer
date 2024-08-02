@@ -49,7 +49,7 @@ string
 
 Specifies the URL prefix that is used to download the browser.
 
-Can be overridden by `PUPPETEER_CHROME_BASE_URL`.
+Can be overridden by `PUPPETEER_CHROME_DOWNLOAD_BASE_URL`.
 
 **Remarks:**
 
@@ -85,29 +85,6 @@ false
 </td></tr>
 <tr><td>
 
-<span id="skipheadlessshelldownload">skipHeadlessShellDownload</span>
-
-</td><td>
-
-`optional`
-
-</td><td>
-
-boolean
-
-</td><td>
-
-Tells Puppeteer to not chrome-headless-shell download during installation.
-
-Can be overridden by `PUPPETEER_CHROME_SKIP_HEADLESS_SHELL_DOWNLOAD`.
-
-</td><td>
-
-false
-
-</td></tr>
-<tr><td>
-
 <span id="version">version</span>
 
 </td><td>
@@ -122,7 +99,7 @@ string
 
 Specifies a certain version of the browser you'd like Puppeteer to use.
 
-Can be overridden by `PUPPETEER_CHROME_VERSION`.
+Can be overridden by `PUPPETEER_CHROME_VERSION` or `PUPPETEER_SKIP_CHROME_DOWNLOAD`.
 
 See [puppeteer.launch](./puppeteer.puppeteernode.launch.md) on how executable path is inferred.
 

@@ -769,6 +769,13 @@ Launcher options that only apply to Chrome.
 </td></tr>
 <tr><td>
 
+<span id="chromeheadlessshellsettings">[ChromeHeadlessShellSettings](./puppeteer.chromeheadlessshellsettings.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="chromesettings">[ChromeSettings](./puppeteer.chromesettings.md)</span>
 
 </td><td>
