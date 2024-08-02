@@ -6,7 +6,7 @@
 <title data-rh="true">Troubleshooting | Puppeteer</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://pptr.dev/next/troubleshooting"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:counter" content="3"><meta data-rh="true" property="og:title" content="Troubleshooting | Puppeteer"><meta data-rh="true" name="description" content="To keep this page up-to-date we largely rely on community contributions."><meta data-rh="true" property="og:description" content="To keep this page up-to-date we largely rely on community contributions."><link data-rh="true" rel="icon" href="/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://pptr.dev/next/troubleshooting"><link data-rh="true" rel="alternate" href="https://pptr.dev/next/troubleshooting" hreflang="en"><link data-rh="true" rel="alternate" href="https://pptr.dev/next/troubleshooting" hreflang="x-default"><link data-rh="true" rel="preconnect" href="https://DVKY664LG7-dsn.algolia.net" crossorigin="anonymous"><link rel="search" type="application/opensearchdescription+xml" title="Puppeteer" href="/opensearch.xml">
 
 <script src="/fix-location.js"></script><link rel="stylesheet" href="/assets/css/styles.67634aff.css">
-<script src="/assets/js/runtime~main.f4b0428b.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.4d6252a9.js" defer="defer"></script>
 <script src="/assets/js/main.02cbd054.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -191,6 +191,10 @@ the command:</p>
 <p>There&#x27;s a full example at <a href="https://github.com/ebidel/try-puppeteer" target="_blank" rel="noopener noreferrer">https://github.com/ebidel/try-puppeteer</a> that shows how
 to run this Dockerfile from a webserver running on App Engine Flex (Node).</p>
 <h3 class="anchor anchorWithStickyNavbar_FNw8" id="running-on-alpine">Running on Alpine<a class="hash-link" aria-label="Direct link to Running on Alpine" title="Direct link to Running on Alpine" href="/next/troubleshooting#running-on-alpine">​</a></h3>
+<blockquote>
+<p>[!CAUTION]
+The current Chromium version in Alpine 3.20 is causing timeout issues (see #11640, #12637, #12189) with Puppeteer. Downgrading to Alpine 3.19 fixes the issue.</p>
+</blockquote>
 <p>The
 <a href="https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium" target="_blank" rel="noopener noreferrer">newest Chromium package</a>
 supported on Alpine is 100, which corresponds to
