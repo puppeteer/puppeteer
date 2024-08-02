@@ -193,26 +193,6 @@ export function evaluationString(
 /**
  * @internal
  */
-function mergeUint8Arrays(mergable: Uint8Array[]): Uint8Array {
-  let length = 0;
-  mergable.forEach(item => {
-    length += item.length;
-  });
-
-  // Create a new array with total length and merge all source arrays.
-  const mergedArray = new Uint8Array(length);
-  let offset = 0;
-  mergable.forEach(item => {
-    mergedArray.set(item, offset);
-    offset += item.length;
-  });
-
-  return mergedArray;
-}
-
-/**
- * @internal
- */
 export async function getReadableAsTypedArray(
   readable: ReadableStream<Uint8Array>,
   path?: string
