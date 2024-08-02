@@ -8,7 +8,13 @@ import {homedir} from 'os';
 import {join} from 'path';
 
 import {cosmiconfigSync} from 'cosmiconfig';
-import type {Configuration, SupportedBrowser} from 'puppeteer-core';
+import type {
+  ChromeHeadlessShellSettings,
+  ChromeSettings,
+  Configuration,
+  FirefoxSettings,
+  SupportedBrowser,
+} from 'puppeteer-core';
 
 function getBooleanEnvVar(name: string): boolean | undefined {
   const env = process.env[name];
@@ -69,6 +75,38 @@ function getLogLevel(logLevel: unknown): 'silent' | 'error' | 'warn' {
   }
 }
 
+function getBrowserSetting(
+  browser: 'chrome' | 'chrome-headless-shell' | 'firefox',
+  skipDownload = false,
+  defaultConfig:
+    | ChromeSettings
+    | ChromeHeadlessShellSettings
+    | FirefoxSettings = {}
+): ChromeSettings | ChromeHeadlessShellSettings | FirefoxSettings {
+  if (!skipDownload) {
+    return defaultConfig;
+  }
+  const browserSetting:
+    | ChromeSettings
+    | ChromeHeadlessShellSettings
+    | FirefoxSettings = {};
+  const browserEnvName = browser.replaceAll('-', '_').toLocaleUpperCase();
+
+  browserSetting.version =
+    process.env[`PUPPETEER_${browserEnvName}_VERSION`] ??
+    browserSetting.version;
+  browserSetting.downloadBaseUrl =
+    process.env[`PUPPETEER_${browserEnvName}_DOWNLOAD_BASE_URL`] ??
+    browserSetting.downloadBaseUrl;
+  browserSetting.skipDownload =
+    getBooleanEnvVar(`PUPPETEER_${browserEnvName}_SKIP_DOWNLOAD`) ??
+    getBooleanEnvVar(`PUPPETEER_SKIP_${browserEnvName}_DOWNLOAD`) ??
+    browserSetting.skipDownload ??
+    defaultConfig.skipDownload;
+
+  return browserSetting;
+}
+
 /**
  * @internal
  */
@@ -77,18 +115,6 @@ export const getConfiguration = (): Configuration => {
     searchStrategy: 'global',
   }).search();
   const configuration: Configuration = result ? result.config : {};
-
-  if (!configuration.chrome) {
-    configuration.chrome = {};
-  }
-  if (!configuration['chrome-headless-shell']) {
-    configuration['chrome-headless-shell'] = {};
-  }
-  if (!configuration.firefox) {
-    configuration.firefox = {
-      skipDownload: true,
-    };
-  }
 
   configuration.logLevel = getLogLevel(
     process.env['PUPPETEER_LOGLEVEL'] ?? configuration.logLevel
@@ -112,37 +138,21 @@ export const getConfiguration = (): Configuration => {
     getBooleanEnvVar('PUPPETEER_SKIP_DOWNLOAD') ?? configuration.skipDownload;
 
   // Prepare variables used in browser downloading
-  if (!configuration.skipDownload) {
-    configuration.chrome.version =
-      process.env['PUPPETEER_CHROME_VERSION'] ?? configuration.chrome.version;
-    configuration.chrome.downloadBaseUrl =
-      process.env['PUPPETEER_CHROME_DOWNLOAD_BASE_URL'] ??
-      configuration.chrome.downloadBaseUrl;
-    configuration.chrome.skipDownload =
-      getBooleanEnvVar('PUPPETEER_CHROME_SKIP_DOWNLOAD') ??
-      getBooleanEnvVar('PUPPETEER_SKIP_CHROME_DOWNLOAD') ??
-      configuration.chrome.skipDownload;
-
-    configuration['chrome-headless-shell'].version =
-      process.env['PUPPETEER_CHROME_HEADLESS_VERSION'] ??
-      configuration['chrome-headless-shell'].version;
-    configuration['chrome-headless-shell'].downloadBaseUrl =
-      process.env['PUPPETEER_CHROME_HEADLESS_DOWNLOAD_BASE_URL'] ??
-      configuration['chrome-headless-shell'].downloadBaseUrl;
-    configuration['chrome-headless-shell'].skipDownload =
-      getBooleanEnvVar('PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD') ??
-      getBooleanEnvVar('PUPPETEER_SKIP_CHROME_HEADLESS_SHELL_DOWNLOAD') ??
-      configuration['chrome-headless-shell'].skipDownload;
-
-    configuration.firefox.version =
-      process.env['PUPPETEER_FIREFOX_VERSION'] ?? configuration.firefox.version;
-    configuration.firefox.downloadBaseUrl =
-      process.env['PUPPETEER_FIREFOX_DOWNLOAD_BASE_URL'] ??
-      configuration.firefox.downloadBaseUrl;
-    configuration.firefox.skipDownload =
-      getBooleanEnvVar('PUPPETEER_FIREFOX_SKIP_DOWNLOAD') ??
-      configuration.firefox.skipDownload;
-  }
+  configuration.chrome = getBrowserSetting(
+    'chrome',
+    configuration.skipDownload
+  );
+  configuration['chrome-headless-shell'] = getBrowserSetting(
+    'chrome-headless-shell',
+    configuration.skipDownload
+  );
+  configuration.firefox = getBrowserSetting(
+    'firefox',
+    configuration.skipDownload,
+    {
+      skipDownload: true,
+    }
+  );
 
   configuration.cacheDirectory =
     process.env['PUPPETEER_CACHE_DIR'] ??
