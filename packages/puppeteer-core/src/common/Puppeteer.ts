@@ -52,7 +52,9 @@ export class Puppeteer {
    * @example
    *
    * ```
-   * puppeteer.registerCustomQueryHandler('text', { … });
+   * import {Puppeteer}, puppeteer from 'puppeteer';
+   *
+   * Puppeteer.registerCustomQueryHandler('text', { … });
    * const aHandle = await page.$('text/…');
    * ```
    *

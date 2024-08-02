@@ -808,9 +808,7 @@ describe('ElementHandle specs', function () {
       ).toStrictEqual('bar1');
     });
 
-    it('should wait correctly with waitFor', async () => {
-      /* page.waitFor is deprecated so we silence the warning to avoid test noise */
-      sinon.stub(console, 'warn').callsFake(() => {});
+    it('should wait correctly with waitForSelector', async () => {
       const {page} = await getTestState();
       Puppeteer.registerCustomQueryHandler('getByClass', {
         queryOne: (element, selector) => {
