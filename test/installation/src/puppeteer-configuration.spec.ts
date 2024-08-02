@@ -32,7 +32,7 @@ describe('`puppeteer` with configuration', () => {
 
     it('evaluates', async function () {
       const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));
-      assert.equal(files.length, 2);
+      assert.equal(files.length, 2, files.join());
       assert(files.includes('chrome'));
       assert(files.includes('chrome-headless-shell'));
 

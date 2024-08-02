@@ -15,13 +15,14 @@ import {configureSandbox} from './sandbox.js';
 import {readAsset} from './util.js';
 
 // Skipping this test on Windows as windows runners are much slower.
-(platform() === 'win32' ? describe.skip : describe)(
+(platform() === 'win32' ? describe.skip : describe.only)(
   '`puppeteer` with Firefox',
   () => {
     configureSandbox({
       dependencies: ['@puppeteer/browsers', 'puppeteer-core', 'puppeteer'],
       env: cwd => {
         return {
+          PUPPETEER_BROWSER: 'firefox',
           PUPPETEER_CACHE_DIR: join(cwd, '.cache', 'puppeteer'),
           PUPPETEER_CHROME_SKIP_DOWNLOAD: 'true',
           PUPPETEER_CHROME_SKIP_HEADLESS_SHELL_DOWNLOAD: 'true',
@@ -30,7 +31,7 @@ import {readAsset} from './util.js';
       },
     });
 
-    describe('with CDP', () => {
+    describe('with WebDriverBiDi', () => {
       it('evaluates CommonJS', async function () {
         const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));
         assert.equal(files.length, 1, files.join());
@@ -40,14 +41,17 @@ import {readAsset} from './util.js';
       });
 
       it('evaluates ES modules', async function () {
+        const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));
+        assert.equal(files.length, 1, files.join());
+        assert.equal(files[0], 'firefox');
         const script = await readAsset('puppeteer-core', 'imports.js');
         await this.runScript(script, 'mjs');
       });
     });
 
-    describe('with WebDriverBiDi', () => {
+    describe('with CDP', () => {
       it('evaluates ES modules', async function () {
-        const script = await readAsset('puppeteer', 'bidi.js');
+        const script = await readAsset('puppeteer', 'cdp.js');
         await this.runScript(script, 'mjs');
       });
     });

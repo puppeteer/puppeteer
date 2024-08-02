@@ -42,7 +42,7 @@ void new CLI({
         PUPPETEER_REVISIONS['chrome-headless-shell'] ||
         'latest',
       skipDownload:
-        puppeteer.configuration.chrome?.skipHeadlessShellDownload ?? false,
+        puppeteer.configuration['chrome-headless-shell']?.skipDownload ?? false,
     },
   },
 }).run(process.argv);

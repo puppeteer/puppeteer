@@ -81,6 +81,9 @@ export const getConfiguration = (): Configuration => {
   if (!configuration.chrome) {
     configuration.chrome = {};
   }
+  if (!configuration['chrome-headless-shell']) {
+    configuration['chrome-headless-shell'] = {};
+  }
   if (!configuration.firefox) {
     configuration.firefox = {
       skipDownload: true,
@@ -113,19 +116,28 @@ export const getConfiguration = (): Configuration => {
     configuration.chrome.version =
       process.env['PUPPETEER_CHROME_VERSION'] ?? configuration.chrome.version;
     configuration.chrome.downloadBaseUrl =
-      process.env['PUPPETEER_CHROME_BASE_URL'] ??
+      process.env['PUPPETEER_CHROME_DOWNLOAD_BASE_URL'] ??
       configuration.chrome.downloadBaseUrl;
     configuration.chrome.skipDownload =
       getBooleanEnvVar('PUPPETEER_CHROME_SKIP_DOWNLOAD') ??
+      getBooleanEnvVar('PUPPETEER_SKIP_CHROME_DOWNLOAD') ??
       configuration.chrome.skipDownload;
-    configuration.chrome.skipHeadlessShellDownload =
+
+    configuration['chrome-headless-shell'].version =
+      process.env['PUPPETEER_CHROME_HEADLESS_VERSION'] ??
+      configuration['chrome-headless-shell'].version;
+    configuration['chrome-headless-shell'].downloadBaseUrl =
+      process.env['PUPPETEER_CHROME_HEADLESS_DOWNLOAD_BASE_URL'] ??
+      configuration['chrome-headless-shell'].downloadBaseUrl;
+    configuration['chrome-headless-shell'].skipDownload =
       getBooleanEnvVar('PUPPETEER_CHROME_SKIP_HEADLESS_SHELL_DOWNLOAD') ??
-      configuration.chrome.skipHeadlessShellDownload;
+      getBooleanEnvVar('PUPPETEER_SKIP_CHROME_HEADLESS_SHELL_DOWNLOAD') ??
+      configuration['chrome-headless-shell'].skipDownload;
 
     configuration.firefox.version =
       process.env['PUPPETEER_FIREFOX_VERSION'] ?? configuration.firefox.version;
     configuration.firefox.downloadBaseUrl =
-      process.env['PUPPETEER_FIREFOX_BASE_URL'] ??
+      process.env['PUPPETEER_FIREFOX_DOWNLOAD_BASE_URL'] ??
       configuration.firefox.downloadBaseUrl;
     configuration.firefox.skipDownload =
       getBooleanEnvVar('PUPPETEER_FIREFOX_SKIP_DOWNLOAD') ??

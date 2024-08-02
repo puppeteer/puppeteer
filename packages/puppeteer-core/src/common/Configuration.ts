@@ -75,6 +75,7 @@ export interface Configuration {
   experiments?: ExperimentsConfiguration;
 
   chrome?: ChromeSettings;
+  ['chrome-headless-shell']?: ChromeHeadlessShellSettings;
   firefox?: FirefoxSettings;
 }
 
@@ -91,17 +92,9 @@ export interface ChromeSettings {
    */
   skipDownload?: boolean;
   /**
-   * Tells Puppeteer to not chrome-headless-shell download during installation.
-   *
-   * Can be overridden by `PUPPETEER_CHROME_SKIP_HEADLESS_SHELL_DOWNLOAD`.
-   *
-   * @defaultValue false
-   */
-  skipHeadlessShellDownload?: boolean;
-  /**
    * Specifies the URL prefix that is used to download the browser.
    *
-   * Can be overridden by `PUPPETEER_CHROME_BASE_URL`.
+   * Can be overridden by `PUPPETEER_CHROME_DOWNLOAD_BASE_URL`.
    *
    * @remarks
    * This must include the protocol and may even need a path prefix.
@@ -112,7 +105,47 @@ export interface ChromeSettings {
   /**
    * Specifies a certain version of the browser you'd like Puppeteer to use.
    *
-   * Can be overridden by `PUPPETEER_CHROME_VERSION`.
+   * Can be overridden by `PUPPETEER_CHROME_VERSION`
+   * or `PUPPETEER_SKIP_CHROME_DOWNLOAD`.
+   *
+   * See {@link PuppeteerNode.launch | puppeteer.launch} on how executable path
+   * is inferred.
+   *
+   * @example 119.0.6045.105
+   * @defaultValue The pinned browser version supported by the current Puppeteer
+   * version.
+   */
+  version?: string;
+}
+
+/**
+ * @public
+ */
+export interface ChromeHeadlessShellSettings {
+  /**
+   * Tells Puppeteer to not download the browser during installation.
+   *
+   * Can be overridden by `PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD`
+   * or `PUPPETEER_SKIP_CHROME_HEADLESS_SHELL_DOWNLOAD`.
+   *
+   * @defaultValue false
+   */
+  skipDownload?: boolean;
+  /**
+   * Specifies the URL prefix that is used to download the browser.
+   *
+   * Can be overridden by `PUPPETEER_CHROME_HEADLESS_SHELL_DOWNLOAD_BASE_URL`.
+   *
+   * @remarks
+   * This must include the protocol and may even need a path prefix.
+   *
+   * @defaultValue https://storage.googleapis.com/chrome-for-testing-public
+   */
+  downloadBaseUrl?: string;
+  /**
+   * Specifies a certain version of the browser you'd like Puppeteer to use.
+   *
+   * Can be overridden by `PUPPETEER_CHROME_HEADLESS_SHELL_VERSION`.
    *
    * See {@link PuppeteerNode.launch | puppeteer.launch} on how executable path
    * is inferred.
@@ -139,7 +172,7 @@ export interface FirefoxSettings {
   /**
    * Specifies the URL prefix that is used to download the browser.
    *
-   * Can be overridden by `PUPPETEER_FIREFOX_BASE_URL`.
+   * Can be overridden by `PUPPETEER_FIREFOX_DOWNLOAD_BASE_URL`.
    *
    * @remarks
    * This must include the protocol and may even need a path prefix.
