@@ -209,11 +209,7 @@ export class PuppeteerNode extends Puppeteer {
    * @internal
    */
   get browserRevision(): string {
-    return (
-      this.#_launcher?.getActualBrowserRevision() ??
-      this.configuration.browserRevision ??
-      this.defaultBrowserRevision!
-    );
+    return this.configuration.browserRevision ?? this.defaultBrowserRevision!;
   }
 
   /**
