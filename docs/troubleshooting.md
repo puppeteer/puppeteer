@@ -447,6 +447,9 @@ to run this Dockerfile from a webserver running on App Engine Flex (Node).
 
 ### Running on Alpine
 
+> [!CAUTION]
+> The current Chromium version in Alpine 3.20 is causing timeout issues (see #11640, #12637, #12189) with Puppeteer. Downgrading to Alpine 3.19 fixes the issue.
+
 The
 [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium)
 supported on Alpine is 100, which corresponds to
