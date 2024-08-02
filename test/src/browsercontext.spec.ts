@@ -14,7 +14,7 @@ import {waitEvent} from './utils.js';
 describe('BrowserContext', function () {
   setupTestBrowserHooks();
 
-  it.only('should have default context', async () => {
+  it('should have default context', async () => {
     const {browser} = await getTestState({
       skipContextCreation: true,
     });

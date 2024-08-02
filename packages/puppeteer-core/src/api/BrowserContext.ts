@@ -63,8 +63,8 @@ export interface BrowserContextEvents extends Record<EventType, unknown> {
  * {@link BrowserContext} represents individual user contexts within a
  * {@link Browser | browser}.
  *
- * When a {@link Browser | browser} is launched, it has a single
- * {@link BrowserContext | browser context} by default. Others can be created
+ * When a {@link Browser | browser} is launched, it has at least one default
+ * {@link BrowserContext | browser context}. Others can be created
  * using {@link Browser.createBrowserContext}. Each context has isolated storage
  * (cookies/localStorage/etc.)
  *
@@ -87,6 +87,13 @@ export interface BrowserContextEvents extends Record<EventType, unknown> {
  * // Dispose context once it's no longer needed.
  * await context.close();
  * ```
+ *
+ * @remarks
+ *
+ * In Chrome all non-default contexts are incognito,
+ * and {@link Browser.defaultBrowserContext | default browser context}
+ * might be incognito if you provide the `--incognito` argument when launching
+ * the browser.
  *
  * @public
  */
