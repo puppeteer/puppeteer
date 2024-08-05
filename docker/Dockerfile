@@ -1,4 +1,4 @@
-FROM node:20@sha256:383ffd6aa27c8e1306abaa608746f2b3d5e152c791c126bc4b54b37a04560b6f
+FROM node:20@sha256:1ae9ba874435551280e95c8a8e74adf8a48d72b564bf9dfe4718231f2144c88f
 
 # Configure default locale (important for chrome-headless-shell). 
 ENV LANG en_US.UTF-8
