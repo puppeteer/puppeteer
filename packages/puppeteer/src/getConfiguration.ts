@@ -77,13 +77,13 @@ function getLogLevel(logLevel: unknown): 'silent' | 'error' | 'warn' {
 
 function getBrowserSetting(
   browser: 'chrome' | 'chrome-headless-shell' | 'firefox',
-  skipDownload = false,
+  configuration: Configuration,
   defaultConfig:
     | ChromeSettings
     | ChromeHeadlessShellSettings
     | FirefoxSettings = {}
 ): ChromeSettings | ChromeHeadlessShellSettings | FirefoxSettings {
-  if (skipDownload) {
+  if (configuration.skipDownload) {
     return {
       skipDownload: true,
     };
@@ -96,14 +96,17 @@ function getBrowserSetting(
 
   browserSetting.version =
     process.env[`PUPPETEER_${browserEnvName}_VERSION`] ??
-    browserSetting.version;
+    configuration[browser]?.version ??
+    defaultConfig.version;
   browserSetting.downloadBaseUrl =
     process.env[`PUPPETEER_${browserEnvName}_DOWNLOAD_BASE_URL`] ??
-    browserSetting.downloadBaseUrl;
+    configuration[browser]?.downloadBaseUrl ??
+    defaultConfig.downloadBaseUrl;
+
   browserSetting.skipDownload =
     getBooleanEnvVar(`PUPPETEER_${browserEnvName}_SKIP_DOWNLOAD`) ??
     getBooleanEnvVar(`PUPPETEER_SKIP_${browserEnvName}_DOWNLOAD`) ??
-    browserSetting.skipDownload ??
+    configuration[browser]?.skipDownload ??
     defaultConfig.skipDownload;
 
   return browserSetting;
@@ -140,21 +143,14 @@ export const getConfiguration = (): Configuration => {
     getBooleanEnvVar('PUPPETEER_SKIP_DOWNLOAD') ?? configuration.skipDownload;
 
   // Prepare variables used in browser downloading
-  configuration.chrome = getBrowserSetting(
-    'chrome',
-    configuration.skipDownload
-  );
+  configuration.chrome = getBrowserSetting('chrome', configuration);
   configuration['chrome-headless-shell'] = getBrowserSetting(
     'chrome-headless-shell',
-    configuration.skipDownload
+    configuration
   );
-  configuration.firefox = getBrowserSetting(
-    'firefox',
-    configuration.skipDownload,
-    {
-      skipDownload: true,
-    }
-  );
+  configuration.firefox = getBrowserSetting('firefox', configuration, {
+    skipDownload: true,
+  });
 
   configuration.cacheDirectory =
     process.env['PUPPETEER_CACHE_DIR'] ??
