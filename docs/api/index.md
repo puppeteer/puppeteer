@@ -59,13 +59,15 @@ The constructor for this class is marked as internal. Third-party code should no
 
 [BrowserContext](./puppeteer.browsercontext.md) represents individual user contexts within a [browser](./puppeteer.browser.md).
 
-When a [browser](./puppeteer.browser.md) is launched, it has a single [browser context](./puppeteer.browsercontext.md) by default. Others can be created using [Browser.createBrowserContext()](./puppeteer.browser.createbrowsercontext.md). Each context has isolated storage (cookies/localStorage/etc.)
+When a [browser](./puppeteer.browser.md) is launched, it has at least one default [browser context](./puppeteer.browsercontext.md). Others can be created using [Browser.createBrowserContext()](./puppeteer.browser.createbrowsercontext.md). Each context has isolated storage (cookies/localStorage/etc.)
 
 [BrowserContext](./puppeteer.browsercontext.md) [emits](./puppeteer.eventemitter.md) various events which are documented in the [BrowserContextEvent](./puppeteer.browsercontextevent.md) enum.
 
 If a [page](./puppeteer.page.md) opens another [page](./puppeteer.page.md), e.g. using `window.open`, the popup will belong to the parent [page's browser context](./puppeteer.page.browsercontext.md).
 
 **Remarks:**
+
+In Chrome all non-default contexts are incognito, and [default browser context](./puppeteer.browser.defaultbrowsercontext.md) might be incognito if you provide the `--incognito` argument when launching the browser.
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `BrowserContext` class.
 
