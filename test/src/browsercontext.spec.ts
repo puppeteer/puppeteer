@@ -25,7 +25,8 @@ describe('BrowserContext', function () {
     }
 
     // Try to verify we can create a new context
-    await browser.createBrowserContext();
+    const context = await browser.createBrowserContext();
+    await context.close();
   });
   it('should create new context', async () => {
     const {browser} = await getTestState({
