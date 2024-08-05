@@ -11,7 +11,7 @@ import type {Page} from 'puppeteer-core/internal/api/Page.js';
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
 
-describe.only('BrowserContext', function () {
+describe('BrowserContext', function () {
   setupTestBrowserHooks();
 
   it('should have default context', async () => {
