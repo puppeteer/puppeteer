@@ -1195,6 +1195,15 @@ Represents a Node and the properties of it that are relevant to Accessibility.
 </td></tr>
 <tr><td>
 
+<span id="supportedwebdrivercapabilities">[SupportedWebDriverCapabilities](./puppeteer.supportedwebdrivercapabilities.md)</span>
+
+</td><td>
+
+WebDriver BiDi capabilities that are not set by Puppeteer itself.
+
+</td></tr>
+<tr><td>
+
 <span id="tracingoptions">[TracingOptions](./puppeteer.tracingoptions.md)</span>
 
 </td><td>
@@ -1659,6 +1668,13 @@ Resource types for HTTPRequests as perceived by the rendering engine.
 </td><td>
 
 Browsers supported by Puppeteer.
+
+</td></tr>
+<tr><td>
+
+<span id="supportedwebdrivercapability">[SupportedWebDriverCapability](./puppeteer.supportedwebdrivercapability.md)</span>
+
+</td><td>
 
 </td></tr>
 <tr><td>

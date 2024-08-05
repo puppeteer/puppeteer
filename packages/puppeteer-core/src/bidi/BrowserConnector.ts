@@ -43,6 +43,7 @@ export async function _connectToBiDiBrowser(
     process: undefined,
     defaultViewport: defaultViewport,
     acceptInsecureCerts: acceptInsecureCerts,
+    capabilities: options.capabilities,
   });
   return bidiBrowser;
 }
