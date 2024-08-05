@@ -334,9 +334,7 @@ export abstract class BrowserLauncher {
     }
   ): Promise<Browser> {
     const BiDi = await import(/* webpackIgnore: true */ '../bidi/bidi.js');
-    const bidiConnection = await BiDi.connectBidiOverCdp(connection, {
-      acceptInsecureCerts: opts.acceptInsecureCerts ?? false,
-    });
+    const bidiConnection = await BiDi.connectBidiOverCdp(connection);
     return await BiDi.BidiBrowser.create({
       connection: bidiConnection,
       cdpConnection: connection,

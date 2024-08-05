@@ -64,7 +64,7 @@ async function getBiDiConnection(
   closeCallback: BrowserCloseCallback;
 }> {
   const BiDi = await import(/* webpackIgnore: true */ './bidi.js');
-  const {acceptInsecureCerts = false, slowMo = 0, protocolTimeout} = options;
+  const {slowMo = 0, protocolTimeout} = options;
 
   // Try pure BiDi first.
   const pureBidiConnection = new BiDi.BidiConnection(
@@ -108,9 +108,7 @@ async function getBiDiConnection(
     );
   }
 
-  const bidiOverCdpConnection = await BiDi.connectBidiOverCdp(cdpConnection, {
-    acceptInsecureCerts: acceptInsecureCerts,
-  });
+  const bidiOverCdpConnection = await BiDi.connectBidiOverCdp(cdpConnection);
   return {
     cdpConnection,
     bidiConnection: bidiOverCdpConnection,

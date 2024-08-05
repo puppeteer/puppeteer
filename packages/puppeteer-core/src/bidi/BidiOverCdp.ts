@@ -5,7 +5,7 @@
  */
 
 import * as BidiMapper from 'chromium-bidi/lib/cjs/bidiMapper/BidiMapper.js';
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 import type {CDPEvents, CDPSession} from '../api/CDPSession.js';
@@ -24,8 +24,7 @@ const bidiServerLogger = (prefix: string, ...args: unknown[]): void => {
  * @internal
  */
 export async function connectBidiOverCdp(
-  cdp: CdpConnection,
-  options: BidiMapper.MapperOptions
+  cdp: CdpConnection
 ): Promise<BidiConnection> {
   const transportBiDi = new NoOpTransport();
   const cdpConnectionAdapter = new CdpConnectionAdapter(cdp);
@@ -58,14 +57,6 @@ export async function connectBidiOverCdp(
     cdpConnectionAdapter,
     cdpConnectionAdapter.browserClient(),
     /* selfTargetId= */ '',
-    {
-      // Override Mapper's `unhandledPromptBehavior` default value of `dismiss` to
-      // `ignore`, so that user can handle the prompt instead of just closing it.
-      unhandledPromptBehavior: {
-        default: Bidi.Session.UserPromptHandlerType.Ignore,
-      },
-      ...options,
-    },
     undefined,
     bidiServerLogger
   );
