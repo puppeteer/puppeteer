@@ -83,14 +83,16 @@ function getBrowserSetting(
     | ChromeHeadlessShellSettings
     | FirefoxSettings = {}
 ): ChromeSettings | ChromeHeadlessShellSettings | FirefoxSettings {
-  if (!skipDownload) {
-    return defaultConfig;
+  if (skipDownload) {
+    return {
+      skipDownload: true,
+    };
   }
   const browserSetting:
     | ChromeSettings
     | ChromeHeadlessShellSettings
     | FirefoxSettings = {};
-  const browserEnvName = browser.replaceAll('-', '_').toLocaleUpperCase();
+  const browserEnvName = browser.replaceAll('-', '_').toUpperCase();
 
   browserSetting.version =
     process.env[`PUPPETEER_${browserEnvName}_VERSION`] ??
