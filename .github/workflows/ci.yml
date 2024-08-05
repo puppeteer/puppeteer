@@ -198,6 +198,10 @@ jobs:
           key: Chrome-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
       - name: Install Chrome
         run: npm run postinstall
+        env:
+          PUPPETEER_CHROME_SKIP_DOWNLOAD: 'false'
+          PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD: 'false'
+          PUPPETEER_FIREFOX_SKIP_DOWNLOAD: 'true'
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
         run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
@@ -277,7 +281,9 @@ jobs:
           key: Firefox-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
       - name: Install Firefox
         env:
-          PUPPETEER_BROWSER: firefox
+          PUPPETEER_CHROME_SKIP_DOWNLOAD: 'true'
+          PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD: 'true'
+          PUPPETEER_FIREFOX_SKIP_DOWNLOAD: 'false'
         run: npm run postinstall
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
@@ -343,6 +349,10 @@ jobs:
           key: Chrome-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
       - name: Install Chrome
         run: npm run postinstall
+        env:
+          PUPPETEER_CHROME_SKIP_DOWNLOAD: 'false'
+          PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD: 'false'
+          PUPPETEER_FIREFOX_SKIP_DOWNLOAD: 'true'
       - name: Test install
         env:
           PKG_MANAGER: ${{ matrix.pkg_manager }}
@@ -474,6 +484,10 @@ jobs:
           key: Chrome-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
       - name: Install Chrome
         run: npm run postinstall
+        env:
+          PUPPETEER_CHROME_SKIP_DOWNLOAD: 'false'
+          PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD: 'false'
+          PUPPETEER_FIREFOX_SKIP_DOWNLOAD: 'true'
       - name: Build Schematics
         run: npm run build -w @puppeteer/ng-schematics
       - name: Run tests

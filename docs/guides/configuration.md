@@ -60,6 +60,35 @@ npx puppeteer browsers install
 
 ### Examples
 
+#### Downloading multiple browsers
+
+Starting with v23.0.0, Puppeteer allows downloading multiple browser
+without the need to run multiple commands.
+
+Update the Puppeteer configuration file:
+
+```js title="project-directory/.puppeteerrc.cjs"
+/**
+ * @type {import("puppeteer").Configuration}
+ */
+module.exports = {
+  // Download Chrome (default `skipDownload: false`).
+  chrome: {
+    skipDownload: false,
+  },
+  // Download Firefox (default `skipDownload: true`).
+  firefox: {
+    skipDownload: false,
+  },
+};
+```
+
+Run CLI to download the new configuration:
+
+```bash npm2yarn
+npx puppeteer browsers install
+```
+
 #### Changing the default cache directory
 
 Starting in v19.0.0, Puppeteer stores browsers in `~/.cache/puppeteer` to

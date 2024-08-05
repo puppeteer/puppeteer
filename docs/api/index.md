@@ -769,6 +769,20 @@ Launcher options that only apply to Chrome.
 </td></tr>
 <tr><td>
 
+<span id="chromeheadlessshellsettings">[ChromeHeadlessShellSettings](./puppeteer.chromeheadlessshellsettings.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="chromesettings">[ChromeSettings](./puppeteer.chromesettings.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="clickoptions">[ClickOptions](./puppeteer.clickoptions.md)</span>
 
 </td><td>
@@ -903,6 +917,13 @@ Set of configurable options for CSS coverage.
 <tr><td>
 
 <span id="elementscreenshotoptions">[ElementScreenshotOptions](./puppeteer.elementscreenshotoptions.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="firefoxsettings">[FirefoxSettings](./puppeteer.firefoxsettings.md)</span>
 
 </td><td>
 

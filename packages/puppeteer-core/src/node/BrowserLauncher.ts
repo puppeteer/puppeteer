@@ -424,26 +424,28 @@ export abstract class BrowserLauncher {
     executablePath = computeExecutablePath({
       cacheDir: this.puppeteer.defaultDownloadPath!,
       browser: puppeteerBrowserToInstalledBrowser(this.browser, headless),
-      buildId: this.puppeteer.browserRevision,
+      buildId: this.puppeteer.browserVersion,
     });
 
     if (!existsSync(executablePath)) {
-      if (this.puppeteer.configuration.browserRevision) {
+      const configVersion =
+        this.puppeteer.configuration?.[this.browser]?.version;
+      if (configVersion) {
         throw new Error(
-          `Tried to find the browser at the configured path (${executablePath}) for revision ${this.puppeteer.browserRevision}, but no executable was found.`
+          `Tried to find the browser at the configured path (${executablePath}) for version ${configVersion}, but no executable was found.`
         );
       }
       switch (this.browser) {
         case 'chrome':
           throw new Error(
-            `Could not find Chrome (ver. ${this.puppeteer.browserRevision}). This can occur if either\n` +
+            `Could not find Chrome (ver. ${this.puppeteer.browserVersion}). This can occur if either\n` +
               ' 1. you did not perform an installation before running the script (e.g. `npx puppeteer browsers install chrome`) or\n' +
               ` 2. your cache path is incorrectly configured (which is: ${this.puppeteer.configuration.cacheDirectory}).\n` +
               'For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.'
           );
         case 'firefox':
           throw new Error(
-            `Could not find Firefox (rev. ${this.puppeteer.browserRevision}). This can occur if either\n` +
+            `Could not find Firefox (rev. ${this.puppeteer.browserVersion}). This can occur if either\n` +
               ' 1. you did not perform an installation for Firefox before running the script (e.g. `npx puppeteer browsers install firefox`) or\n' +
               ` 2. your cache path is incorrectly configured (which is: ${this.puppeteer.configuration.cacheDirectory}).\n` +
               'For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.'

@@ -8,7 +8,13 @@ import {homedir} from 'os';
 import {join} from 'path';
 
 import {cosmiconfigSync} from 'cosmiconfig';
-import type {Configuration, SupportedBrowser} from 'puppeteer-core';
+import type {
+  ChromeHeadlessShellSettings,
+  ChromeSettings,
+  Configuration,
+  FirefoxSettings,
+  SupportedBrowser,
+} from 'puppeteer-core';
 
 function getBooleanEnvVar(name: string): boolean | undefined {
   const env = process.env[name];
@@ -69,6 +75,43 @@ function getLogLevel(logLevel: unknown): 'silent' | 'error' | 'warn' {
   }
 }
 
+function getBrowserSetting(
+  browser: 'chrome' | 'chrome-headless-shell' | 'firefox',
+  configuration: Configuration,
+  defaultConfig:
+    | ChromeSettings
+    | ChromeHeadlessShellSettings
+    | FirefoxSettings = {}
+): ChromeSettings | ChromeHeadlessShellSettings | FirefoxSettings {
+  if (configuration.skipDownload) {
+    return {
+      skipDownload: true,
+    };
+  }
+  const browserSetting:
+    | ChromeSettings
+    | ChromeHeadlessShellSettings
+    | FirefoxSettings = {};
+  const browserEnvName = browser.replaceAll('-', '_').toUpperCase();
+
+  browserSetting.version =
+    process.env[`PUPPETEER_${browserEnvName}_VERSION`] ??
+    configuration[browser]?.version ??
+    defaultConfig.version;
+  browserSetting.downloadBaseUrl =
+    process.env[`PUPPETEER_${browserEnvName}_DOWNLOAD_BASE_URL`] ??
+    configuration[browser]?.downloadBaseUrl ??
+    defaultConfig.downloadBaseUrl;
+
+  browserSetting.skipDownload =
+    getBooleanEnvVar(`PUPPETEER_${browserEnvName}_SKIP_DOWNLOAD`) ??
+    getBooleanEnvVar(`PUPPETEER_SKIP_${browserEnvName}_DOWNLOAD`) ??
+    configuration[browser]?.skipDownload ??
+    defaultConfig.skipDownload;
+
+  return browserSetting;
+}
+
 /**
  * @internal
  */
@@ -99,31 +142,21 @@ export const getConfiguration = (): Configuration => {
   configuration.skipDownload =
     getBooleanEnvVar('PUPPETEER_SKIP_DOWNLOAD') ?? configuration.skipDownload;
 
-  // Set skipChromeDownload explicitly or from default
-  configuration.skipChromeDownload =
-    getBooleanEnvVar('PUPPETEER_SKIP_CHROME_DOWNLOAD') ??
-    configuration.skipChromeDownload;
-
-  // Set skipChromeDownload explicitly or from default
-  configuration.skipChromeHeadlessShellDownload =
-    getBooleanEnvVar('PUPPETEER_SKIP_CHROME_HEADLESS_SHELL_DOWNLOAD') ??
-    configuration.skipChromeHeadlessShellDownload;
-
   // Prepare variables used in browser downloading
-  if (!configuration.skipDownload) {
-    configuration.browserRevision =
-      process.env['PUPPETEER_BROWSER_REVISION'] ??
-      configuration.browserRevision;
-
-    configuration.downloadBaseUrl =
-      process.env['PUPPETEER_DOWNLOAD_BASE_URL'] ??
-      configuration.downloadBaseUrl;
-  }
+  configuration.chrome = getBrowserSetting('chrome', configuration);
+  configuration['chrome-headless-shell'] = getBrowserSetting(
+    'chrome-headless-shell',
+    configuration
+  );
+  configuration.firefox = getBrowserSetting('firefox', configuration, {
+    skipDownload: true,
+  });
 
   configuration.cacheDirectory =
     process.env['PUPPETEER_CACHE_DIR'] ??
     configuration.cacheDirectory ??
     join(homedir(), '.cache', 'puppeteer');
+
   configuration.temporaryDirectory =
     process.env['PUPPETEER_TMP_DIR'] ?? configuration.temporaryDirectory;
 

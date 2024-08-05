@@ -208,8 +208,11 @@ export class PuppeteerNode extends Puppeteer {
   /**
    * @internal
    */
-  get browserRevision(): string {
-    return this.configuration.browserRevision ?? this.defaultBrowserRevision!;
+  get browserVersion(): string {
+    return (
+      this.configuration?.[this.lastLaunchedBrowser]?.version ??
+      this.defaultBrowserRevision!
+    );
   }
 
   /**
@@ -284,8 +287,6 @@ export class PuppeteerNode extends Puppeteer {
       cacheDir,
     });
 
-    const product = this.configuration.defaultBrowser!;
-
     const puppeteerBrowsers: Array<{
       product: SupportedBrowser;
       browser: browsers_SupportedBrowser;
@@ -305,13 +306,11 @@ export class PuppeteerNode extends Puppeteer {
 
     // Resolve current buildIds.
     for (const item of puppeteerBrowsers) {
-      item.currentBuildId = await resolveBuildId(
-        item.browser,
-        platform,
-        (product === item.product
-          ? this.configuration.browserRevision
-          : null) || PUPPETEER_REVISIONS[item.product]
-      );
+      const tag =
+        this.configuration?.[item.product]?.version ??
+        PUPPETEER_REVISIONS[item.product];
+
+      item.currentBuildId = await resolveBuildId(item.browser, platform, tag);
     }
 
     const currentBrowserBuilds = new Set(

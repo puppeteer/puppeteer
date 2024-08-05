@@ -16,6 +16,9 @@
  * necessary.
  */
 
+/**
+ * @returns {import("puppeteer/internal/node/install.js")}
+ */
 async function importInstaller() {
   try {
     return await import('puppeteer/internal/node/install.js');
@@ -28,8 +31,8 @@ async function importInstaller() {
 }
 
 try {
-  const {downloadBrowser} = await importInstaller();
-  downloadBrowser();
+  const {downloadBrowsers} = await importInstaller();
+  downloadBrowsers();
 } catch (error) {
   console.warn('Browser download failed', error);
 }
