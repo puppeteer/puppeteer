@@ -71,6 +71,29 @@ string
 </td></tr>
 <tr><td>
 
+<span id="capabilities">capabilities</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[SupportedWebDriverCapabilities](./puppeteer.supportedwebdrivercapabilities.md)
+
+</td><td>
+
+WebDriver BiDi capabilities passed to BiDi `session.new`.
+
+**Remarks:**
+
+Only works for `protocol="webDriverBiDi"` and [Puppeteer.connect()](./puppeteer.puppeteer.connect.md).
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="headers">headers</span>
 
 </td><td>

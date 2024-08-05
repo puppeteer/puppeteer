@@ -20,6 +20,7 @@ import {BrowserContextEvent} from '../api/BrowserContext.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {Connection as CdpConnection} from '../cdp/Connection.js';
+import type {SupportedWebDriverCapabilities} from '../common/ConnectOptions.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -42,6 +43,7 @@ export interface BidiBrowserOptions {
   cdpConnection?: CdpConnection;
   defaultViewport: Viewport | null;
   acceptInsecureCerts?: boolean;
+  capabilities?: SupportedWebDriverCapabilities;
 }
 
 /**
@@ -71,7 +73,10 @@ export class BidiBrowser extends Browser {
 
   static async create(opts: BidiBrowserOptions): Promise<BidiBrowser> {
     const session = await Session.from(opts.connection, {
+      firstMatch: opts.capabilities?.firstMatch,
       alwaysMatch: {
+        ...opts.capabilities?.alwaysMatch,
+        // Capabilities that come from Puppeteer's API take precedence.
         acceptInsecureCerts: opts.acceptInsecureCerts,
         unhandledPromptBehavior: {
           default: Bidi.Session.UserPromptHandlerType.Ignore,

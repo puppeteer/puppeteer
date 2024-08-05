@@ -123,6 +123,7 @@
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "dependencies": {
+    "chromium-bidi": "0.6.4",
     "cosmiconfig": "^9.0.0",
     "puppeteer-core": "22.15.0",
     "@puppeteer/browsers": "2.3.0",
