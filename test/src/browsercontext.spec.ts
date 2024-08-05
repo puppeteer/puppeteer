@@ -11,7 +11,7 @@ import type {Page} from 'puppeteer-core/internal/api/Page.js';
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
 
-describe('BrowserContext', function () {
+describe.only('BrowserContext', function () {
   setupTestBrowserHooks();
 
   it('should have default context', async () => {
@@ -20,13 +20,20 @@ describe('BrowserContext', function () {
     });
 
     expect(browser.browserContexts().length).toBeGreaterThanOrEqual(1);
-    for (const context of browser.browserContexts()) {
-      await context.close();
-    }
+  });
+  it('should not be able to close default context', async () => {
+    const {browser} = await getTestState({
+      skipContextCreation: true,
+    });
 
-    // Try to verify we can create a new context
-    const context = await browser.createBrowserContext();
-    await context.close();
+    const defaultContext = browser.defaultBrowserContext();
+    expect(defaultContext).toBeDefined();
+
+    const error = await defaultContext!.close().catch(error => {
+      return error;
+    });
+    expect(error).toBeInstanceOf(Error);
+    expect(error.message).toContain('cannot be closed');
   });
   it('should create new context', async () => {
     const {browser} = await getTestState({

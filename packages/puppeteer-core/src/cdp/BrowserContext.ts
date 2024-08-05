@@ -10,6 +10,7 @@ import {
 } from '../api/Browser.js';
 import {BrowserContext} from '../api/BrowserContext.js';
 import type {Page} from '../api/Page.js';
+import {assert} from '../util/assert.js';
 
 import type {CdpBrowser} from './Browser.js';
 import type {Connection} from './Connection.js';
@@ -94,6 +95,7 @@ export class CdpBrowserContext extends BrowserContext {
   }
 
   override async close(): Promise<void> {
+    assert(this.#id, 'Default BrowserContext cannot be closed!');
     await this.#browser._disposeContext(this.#id);
   }
 }

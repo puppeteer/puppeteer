@@ -221,7 +221,10 @@ export class CdpBrowser extends BrowserBase {
   }
 
   override browserContexts(): CdpBrowserContext[] {
-    return [this.#defaultContext, ...Array.from(this.#contexts.values())];
+    return [
+      ...(this.#defaultContext ? [this.#defaultContext] : []),
+      ...Array.from(this.#contexts.values()),
+    ];
   }
 
   override defaultBrowserContext(): CdpBrowserContext {
