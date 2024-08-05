@@ -43,7 +43,7 @@ updates:
         patterns:
           - '*'
   - package-ecosystem: docker
-    directory: /
+    directory: /docker
     schedule:
       interval: weekly
       day: 'sunday'
