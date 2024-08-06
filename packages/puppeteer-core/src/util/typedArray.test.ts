@@ -8,9 +8,9 @@ import {describe, it} from 'node:test';
 
 import expect from 'expect';
 
-import {stringToTypedArray} from './typedArray.js';
+import {mergeUint8Arrays, stringToTypedArray} from './typedArray.js';
 
-describe('Function', function () {
+describe('Typed Array helpers', function () {
   describe('stringToTypedArray', function () {
     it('should get body length from empty string', async () => {
       const result = stringToTypedArray('');
@@ -35,6 +35,18 @@ describe('Function', function () {
       const result = stringToTypedArray(body, true);
 
       expect(Buffer.from(body, 'base64').compare(Buffer.from(result))).toBe(0);
+    });
+  });
+
+  describe('mergeUint8Arrays', () => {
+    it('should work', () => {
+      const one = new Uint8Array([1]);
+      const two = new Uint8Array([12]);
+      const three = new Uint8Array([123]);
+
+      expect(mergeUint8Arrays([one, two, three])).toEqual(
+        new Uint8Array([1, 12, 123])
+      );
     });
   });
 });
