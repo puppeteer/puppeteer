@@ -10,12 +10,12 @@ Stops a trace started with the `start` method.
 
 ```typescript
 class Tracing {
-  stop(): Promise<Buffer | undefined>;
+  stop(): Promise<Uint8Array | undefined>;
 }
 ```
 
 **Returns:**
 
-Promise&lt;Buffer \| undefined&gt;
+Promise&lt;Uint8Array \| undefined&gt;
 
 Promise which resolves to buffer with trace data.

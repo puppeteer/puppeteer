@@ -10,7 +10,7 @@ Generates a PDF of the page with the `print` CSS media type.
 
 ```typescript
 class Page {
-  abstract pdf(options?: PDFOptions): Promise<Buffer>;
+  abstract pdf(options?: PDFOptions): Promise<Uint8Array>;
 }
 ```
 
@@ -45,7 +45,7 @@ _(Optional)_ options for generating the PDF.
 </tbody></table>
 **Returns:**
 
-Promise&lt;Buffer&gt;
+Promise&lt;Uint8Array&gt;
 
 ## Remarks
 
