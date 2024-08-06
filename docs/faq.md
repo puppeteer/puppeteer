@@ -62,7 +62,7 @@ The Selenium project goes beyond what Puppeteer offers in multiple aspects: it p
 bindings for more languages than just JavaScript and for example it also offers tooling
 to orchestrate automation at large, like Selenium Grid. Both is beyond Puppeteer's scope.
 
-There are community projects that add capabilities to Puppeteer beyond its core, 
+There are community projects that add capabilities to Puppeteer beyond its core,
 making things like testing more convenient. For example see:
 
 - [jest-puppeteer](https://github.com/smooth-code/jest-puppeteer) or
