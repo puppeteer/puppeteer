@@ -6,7 +6,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {ProtocolError} from '../common/Errors.js';
-import {debugError} from '../common/util.js';
+import {debugError, isString} from '../common/util.js';
 import {assert} from '../util/assert.js';
 
 import type {CDPSession} from './CDPSession.js';
@@ -46,7 +46,7 @@ export interface ResponseForRequest {
    */
   headers: Record<string, unknown>;
   contentType: string;
-  body: string | Buffer;
+  body: string | Uint8Array;
 }
 
 /**
@@ -254,7 +254,7 @@ export abstract class HTTPRequest {
     await this.interception.handlers.reduce((promiseChain, interceptAction) => {
       return promiseChain.then(interceptAction);
     }, Promise.resolve());
-    this.interception.handlers = []; // TODO: verify this is correct top let gc run
+    this.interception.handlers = [];
     const {action} = this.interceptResolutionState();
     switch (action) {
       case 'abort':
@@ -548,6 +548,29 @@ export abstract class HTTPRequest {
       return;
     }
   }
+
+  /**
+   * @internal
+   */
+  static getResponse(body: string | Uint8Array): {
+    contentLength: number;
+    base64: string;
+  } {
+    // Needed to get the correct byteLength
+    const byteBody: Uint8Array = isString(body)
+      ? new TextEncoder().encode(body)
+      : body;
+
+    const bytes = [];
+    for (const byte of byteBody) {
+      bytes.push(String.fromCharCode(byte));
+    }
+
+    return {
+      contentLength: byteBody.byteLength,
+      base64: btoa(bytes.join('')),
+    };
+  }
 }
 
 /**
@@ -703,7 +726,14 @@ const errorReasons: Record<ErrorCode, Protocol.Network.ErrorReason> = {
  * @internal
  */
 export function handleError(error: ProtocolError): void {
-  if (error.originalMessage.includes('Invalid header')) {
+  // Firefox throws an invalid argument error with a message starting with
+  // 'Expected "header" [...]'.
+  if (
+    error.originalMessage.includes('Invalid header') ||
+    error.originalMessage.includes('Expected "header"') ||
+    // WebDriver BiDi error for invalid values, for example, headers.
+    error.originalMessage.includes('invalid argument')
+  ) {
     throw error;
   }
   // In certain cases, protocol will return error if the request was

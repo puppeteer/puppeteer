@@ -222,7 +222,7 @@ describe('Frame specs', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.PREFIX + '/shadow.html');
-      await page.evaluate(async (url: string) => {
+      await page.evaluate(async url => {
         const frame = document.createElement('iframe');
         frame.src = url;
         document.body.shadowRoot!.appendChild(frame);

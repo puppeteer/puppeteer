@@ -1,6 +1,6 @@
 {
   "name": "@pptr/testserver",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "testing server",
   "main": "lib/index.js",
   "scripts": {
@@ -28,7 +28,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "mime": "3.0.0",
-    "ws": "8.17.0"
+    "ws": "8.18.0"
   },
   "devDependencies": {
     "@types/mime": "3.0.4"

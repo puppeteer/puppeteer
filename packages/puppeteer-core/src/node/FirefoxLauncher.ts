@@ -9,29 +9,23 @@ import {rename, unlink, mkdtemp} from 'fs/promises';
 import os from 'os';
 import path from 'path';
 
-import {
-  Browser as SupportedBrowsers,
-  createProfile,
-  Cache,
-  detectBrowserPlatform,
-  Browser,
-} from '@puppeteer/browsers';
+import {Browser as SupportedBrowsers, createProfile} from '@puppeteer/browsers';
 
 import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 
+import {BrowserLauncher, type ResolvedLaunchArgs} from './BrowserLauncher.js';
 import type {
   BrowserLaunchArgumentOptions,
   PuppeteerNodeLaunchOptions,
 } from './LaunchOptions.js';
-import {ProductLauncher, type ResolvedLaunchArgs} from './ProductLauncher.js';
 import type {PuppeteerNode} from './PuppeteerNode.js';
 import {rm} from './util/fs.js';
 
 /**
  * @internal
  */
-export class FirefoxLauncher extends ProductLauncher {
+export class FirefoxLauncher extends BrowserLauncher {
   constructor(puppeteer: PuppeteerNode) {
     super(puppeteer, 'firefox');
   }
@@ -120,8 +114,8 @@ export class FirefoxLauncher extends ProductLauncher {
 
     if (profileArgIndex !== -1) {
       userDataDir = firefoxArguments[profileArgIndex + 1];
-      if (!userDataDir || !fs.existsSync(userDataDir)) {
-        throw new Error(`Firefox profile not found at '${userDataDir}'`);
+      if (!userDataDir) {
+        throw new Error(`Missing value for profile command line argument`);
       }
 
       // When using a custom Firefox profile it needs to be populated
@@ -193,19 +187,6 @@ export class FirefoxLauncher extends ProductLauncher {
   }
 
   override executablePath(): string {
-    // replace 'latest' placeholder with actual downloaded revision
-    if (this.puppeteer.browserRevision === 'latest') {
-      const cache = new Cache(this.puppeteer.defaultDownloadPath!);
-      const installedFirefox = cache.getInstalledBrowsers().find(browser => {
-        return (
-          browser.platform === detectBrowserPlatform() &&
-          browser.browser === Browser.FIREFOX
-        );
-      });
-      if (installedFirefox) {
-        this.actualBrowserRevision = installedFirefox.buildId;
-      }
-    }
     return this.resolveExecutablePath();
   }
 
@@ -217,7 +198,7 @@ export class FirefoxLauncher extends ProductLauncher {
       userDataDir = null,
     } = options;
 
-    const firefoxArguments = ['--no-remote'];
+    const firefoxArguments = [];
 
     switch (os.platform()) {
       case 'darwin':

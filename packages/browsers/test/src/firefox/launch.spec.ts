@@ -59,7 +59,7 @@ describe('Firefox', () => {
     it('should launch a Firefox browser', async () => {
       const userDataDir = path.join(tmpDir, 'profile');
       function getArgs(): string[] {
-        const firefoxArguments = ['--no-remote'];
+        const firefoxArguments = [];
         switch (os.platform()) {
           case 'darwin':
             firefoxArguments.push('--foreground');

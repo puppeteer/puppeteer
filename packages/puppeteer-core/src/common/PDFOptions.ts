@@ -158,6 +158,7 @@ export interface PDFOptions {
   omitBackground?: boolean;
   /**
    * Generate tagged (accessible) PDF.
+   *
    * @defaultValue `true`
    * @experimental
    */
@@ -165,20 +166,26 @@ export interface PDFOptions {
   /**
    * Generate document outline.
    *
-   * @remarks
-   * If this is enabled the PDF will also be tagged (accessible)
-   * Currently only works in old Headless (headless = 'shell')
-   * {@link https://issues.chromium.org/issues/41387522#comment48 | Chromium feature request}
-   *
    * @defaultValue `false`
    * @experimental
    */
   outline?: boolean;
   /**
    * Timeout in milliseconds. Pass `0` to disable timeout.
+   *
+   * The default value can be changed by using {@link Page.setDefaultTimeout}
+   *
    * @defaultValue `30_000`
    */
   timeout?: number;
+  /**
+   * If true, waits for `document.fonts.ready` to resolve. This might require
+   * activating the page using {@link Page.bringToFront} if the page is in the
+   * background.
+   *
+   * @defaultValue `true`
+   */
+  waitForFonts?: boolean;
 }
 
 /**

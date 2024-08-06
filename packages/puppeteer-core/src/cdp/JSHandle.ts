@@ -87,6 +87,23 @@ export class CdpJSHandle<T = unknown> extends JSHandle<T> {
   override remoteObject(): Protocol.Runtime.RemoteObject {
     return this.#remoteObject;
   }
+
+  override async getProperties(): Promise<Map<string, JSHandle<unknown>>> {
+    // We use Runtime.getProperties rather than iterative version for
+    // improved performance as it allows getting everything at once.
+    const response = await this.client.send('Runtime.getProperties', {
+      objectId: this.#remoteObject.objectId!,
+      ownProperties: true,
+    });
+    const result = new Map<string, JSHandle>();
+    for (const property of response.result) {
+      if (!property.enumerable || !property.value) {
+        continue;
+      }
+      result.set(property.name, this.#world.createCdpHandle(property.value));
+    }
+    return result;
+  }
 }
 
 /**

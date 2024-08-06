@@ -1,0 +1,537 @@
+{
+  "lastMaintainedChromeVersion": "124.0.6367.207",
+  "versions": [
+    [
+      "v22.15.0",
+      {
+        "chrome": "127.0.6533.88",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.14.0",
+      {
+        "chrome": "127.0.6533.72",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.13.1",
+      {
+        "chrome": "126.0.6478.182",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.12.1",
+      {
+        "chrome": "126.0.6478.126",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.12.0",
+      {
+        "chrome": "126.0.6478.63",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.11.1",
+      {
+        "chrome": "126.0.6478.61",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.11.0",
+      {
+        "chrome": "126.0.6478.55",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.10.1",
+      {
+        "chrome": "125.0.6422.141",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.10.0",
+      {
+        "chrome": "125.0.6422.78",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.9.0",
+      {
+        "chrome": "125.0.6422.60",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.8.2",
+      {
+        "chrome": "124.0.6367.207",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.8.1",
+      {
+        "chrome": "124.0.6367.201",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.8.0",
+      {
+        "chrome": "124.0.6367.91",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.7.1",
+      {
+        "chrome": "124.0.6367.78",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.7.0",
+      {
+        "chrome": "124.0.6367.60",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.6.4",
+      {
+        "chrome": "123.0.6312.122",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.6.3",
+      {
+        "chrome": "123.0.6312.105",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.6.2",
+      {
+        "chrome": "123.0.6312.86",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.6.0",
+      {
+        "chrome": "123.0.6312.58",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.5.0",
+      {
+        "chrome": "122.0.6261.128",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.4.1",
+      {
+        "chrome": "122.0.6261.111",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.4.0",
+      {
+        "chrome": "122.0.6261.94",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.3.0",
+      {
+        "chrome": "122.0.6261.69",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v22.2.0",
+      {
+        "chrome": "122.0.6261.57",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v21.9.0",
+      {
+        "chrome": "121.0.6167.85",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v21.8.0",
+      {
+        "chrome": "120.0.6099.109",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v21.5.0",
+      {
+        "chrome": "119.0.6045.105",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v21.4.0",
+      {
+        "chrome": "118.0.5993.70",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v21.3.7",
+      {
+        "chrome": "117.0.5938.149",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v21.3.2",
+      {
+        "chrome": "117.0.5938.92",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v21.3.0",
+      {
+        "chrome": "117.0.5938.62",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v21.1.0",
+      {
+        "chrome": "116.0.5845.96",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v21.0.2",
+      {
+        "chrome": "115.0.5790.170",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v21.0.0",
+      {
+        "chrome": "115.0.5790.102",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v20.9.0",
+      {
+        "chrome": "115.0.5790.98",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v20.7.2",
+      {
+        "chrome": "114.0.5735.133",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v20.6.0",
+      {
+        "chrome": "114.0.5735.90",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v20.1.0",
+      {
+        "chrome": "113.0.5672.63",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v20.0.0",
+      {
+        "chrome": "112.0.5615.121",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v19.8.0",
+      {
+        "chrome": "112.0.5614.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v19.7.0",
+      {
+        "chrome": "111.0.5556.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v19.6.0",
+      {
+        "chrome": "110.0.5479.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v19.4.0",
+      {
+        "chrome": "109.0.5412.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v19.2.0",
+      {
+        "chrome": "108.0.5351.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v18.1.0",
+      {
+        "chrome": "107.0.5296.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v17.1.0",
+      {
+        "chrome": "106.0.5249.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v15.5.0",
+      {
+        "chrome": "105.0.5173.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v15.1.0",
+      {
+        "chrome": "104.0.5109.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v14.2.0",
+      {
+        "chrome": "103.0.5059.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v14.0.0",
+      {
+        "chrome": "102.0.5002.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v13.6.0",
+      {
+        "chrome": "101.0.4950.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v13.5.0",
+      {
+        "chrome": "100.0.4889.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v13.2.0",
+      {
+        "chrome": "99.0.4844.16",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v13.1.0",
+      {
+        "chrome": "98.0.4758.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v12.0.0",
+      {
+        "chrome": "97.0.4692.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v10.2.0",
+      {
+        "chrome": "93.0.4577.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v10.0.0",
+      {
+        "chrome": "92.0.4512.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v9.0.0",
+      {
+        "chrome": "91.0.4469.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v8.0.0",
+      {
+        "chrome": "90.0.4427.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v7.0.0",
+      {
+        "chrome": "90.0.4403.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v6.0.0",
+      {
+        "chrome": "89.0.4389.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v5.5.0",
+      {
+        "chrome": "88.0.4298.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v5.4.0",
+      {
+        "chrome": "87.0.4272.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v5.3.0",
+      {
+        "chrome": "86.0.4240.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v5.2.1",
+      {
+        "chrome": "85.0.4182.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v5.1.0",
+      {
+        "chrome": "84.0.4147.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v3.1.0",
+      {
+        "chrome": "83.0.4103.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v3.0.0",
+      {
+        "chrome": "81.0.4044.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v2.1.0",
+      {
+        "chrome": "80.0.3987.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v2.0.0",
+      {
+        "chrome": "79.0.3942.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v1.20.0",
+      {
+        "chrome": "78.0.3882.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v1.19.0",
+      {
+        "chrome": "77.0.3803.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v1.17.0",
+      {
+        "chrome": "76.0.3803.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v1.15.0",
+      {
+        "chrome": "75.0.3765.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v1.13.0",
+      {
+        "chrome": "74.0.3723.0",
+        "firefox": "latest"
+      }
+    ],
+    [
+      "v1.12.2",
+      {
+        "chrome": "73.0.3679.0",
+        "firefox": "latest"
+      }
+    ]
+  ]
+}

@@ -5,14 +5,10 @@
  */
 
 export type {Protocol} from 'devtools-protocol';
+export type {Session} from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 export * from './api/api.js';
 export * from './cdp/cdp.js';
 export * from './common/common.js';
 export * from './revisions.js';
 export * from './util/util.js';
-
-/**
- * @deprecated Use the query handler API defined on {@link Puppeteer}
- */
-export * from './common/CustomQueryHandler.js';

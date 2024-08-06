@@ -20,7 +20,7 @@ jobs:
       changes: ${{ steps.changes.outputs.changes }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           fetch-depth: 2
       - name: Check if branch is out of date
@@ -45,14 +45,18 @@ jobs:
               - 'tools/mocha-runner/**'
               - '.mocharc.cjs'
               - 'tools/doctest/**'
+              - 'tsconfig.base.json'
             website:
               - '.github/workflows/ci.yml'
               - 'docs/**'
               - 'website/**'
               - 'README.md'
+              - 'tsconfig.base.json'
             ng-schematics:
               - '.github/workflows/ci.yml'
               - 'packages/ng-schematics/**'
+              - 'tsconfig.base.json'
             browsers:
               - '.github/workflows/ci.yml'
               - 'packages/browsers/**'
+              - 'tsconfig.base.json'

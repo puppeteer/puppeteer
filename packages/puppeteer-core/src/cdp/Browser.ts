@@ -47,7 +47,7 @@ export class CdpBrowser extends BrowserBase {
     product: 'firefox' | 'chrome' | undefined,
     connection: Connection,
     contextIds: string[],
-    ignoreHTTPSErrors: boolean,
+    acceptInsecureCerts: boolean,
     defaultViewport?: Viewport | null,
     process?: ChildProcess,
     closeCallback?: BrowserCloseCallback,
@@ -66,7 +66,7 @@ export class CdpBrowser extends BrowserBase {
       isPageTargetCallback,
       waitForInitiallyDiscoveredTargets
     );
-    if (ignoreHTTPSErrors) {
+    if (acceptInsecureCerts) {
       await connection.send('Security.setIgnoreCertificateErrors', {
         ignore: true,
       });

@@ -8,7 +8,7 @@ Extends the main [Puppeteer](./puppeteer.puppeteer.md) class with Node specific 
 
 If you're using Puppeteer in a Node environment, this is the class you'll get when you run `require('puppeteer')` (or the equivalent ES `import`).
 
-#### Signature:
+### Signature
 
 ```typescript
 export declare class PuppeteerNode extends Puppeteer
@@ -63,7 +63,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="defaultproduct">defaultProduct</span>
+<span id="defaultbrowser">defaultBrowser</span>
 
 </td><td>
 
@@ -71,7 +71,7 @@ Description
 
 </td><td>
 
-[Product](./puppeteer.product.md)
+[SupportedBrowser](./puppeteer.supportedbrowser.md)
 
 </td><td>
 
@@ -80,7 +80,7 @@ The name of the browser that will be launched by default. For `puppeteer`, this 
 </td></tr>
 <tr><td>
 
-<span id="lastlaunchedproduct">lastLaunchedProduct</span>
+<span id="lastlaunchedbrowser">lastLaunchedBrowser</span>
 
 </td><td>
 
@@ -88,7 +88,7 @@ The name of the browser that will be launched by default. For `puppeteer`, this 
 
 </td><td>
 
-[Product](./puppeteer.product.md)
+[SupportedBrowser](./puppeteer.supportedbrowser.md)
 
 </td><td>
 
@@ -111,7 +111,7 @@ string
 
 **Deprecated:**
 
-Do not use as this field as it does not take into account multiple browsers of different types. Use [defaultProduct](./puppeteer.puppeteernode.md#defaultproduct) or [lastLaunchedProduct](./puppeteer.puppeteernode.md#lastlaunchedproduct).
+Do not use as this field as it does not take into account multiple browsers of different types. Use [defaultBrowser](./puppeteer.puppeteernode.md#defaultbrowser) or [lastLaunchedBrowser](./puppeteer.puppeteernode.md#lastlaunchedbrowser).
 
 </td></tr>
 </tbody></table>

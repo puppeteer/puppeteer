@@ -122,10 +122,16 @@ export class ChromeTargetManager
         this,
         undefined
       );
+      // Only wait for pages and frames (except those from extensions)
+      // to auto-attach.
+      const isPageOrFrame =
+        targetInfo.type === 'page' || targetInfo.type === 'iframe';
+      const isExtension = targetInfo.url.startsWith('chrome-extension://');
       if (
         (!this.#targetFilterCallback ||
           this.#targetFilterCallback(targetForFilter)) &&
-        targetInfo.type !== 'browser'
+        isPageOrFrame &&
+        !isExtension
       ) {
         this.#targetsIdsForInit.add(targetId);
       }
@@ -154,6 +160,10 @@ export class ChromeTargetManager
     });
     this.#finishInitializationIfReady();
     await this.#initializeDeferred.valueOrThrow();
+  }
+
+  getChildTargets(target: CdpTarget): ReadonlySet<CdpTarget> {
+    return target._childTargets();
   }
 
   dispose(): void {
@@ -371,6 +381,12 @@ export class ChromeTargetManager
       this.#attachedTargetsBySessionId.set(session.id(), target);
     }
 
+    const parentTarget =
+      parentSession instanceof CDPSession
+        ? (parentSession as CdpCDPSession)._target()
+        : null;
+    parentTarget?._addChildTarget(target);
+
     parentSession.emit(CDPSessionEvent.Ready, session);
 
     this.#targetsIdsForInit.delete(target._targetId);
@@ -400,7 +416,7 @@ export class ChromeTargetManager
   }
 
   #onDetachedFromTarget = (
-    _parentSession: Connection | CDPSession,
+    parentSession: Connection | CDPSession,
     event: Protocol.Target.DetachedFromTargetEvent
   ) => {
     const target = this.#attachedTargetsBySessionId.get(event.sessionId);
@@ -411,6 +427,9 @@ export class ChromeTargetManager
       return;
     }
 
+    if (parentSession instanceof CDPSession) {
+      (parentSession as CdpCDPSession)._target()._removeChildTarget(target);
+    }
     this.#attachedTargetsByTargetId.delete(target._targetId);
     this.emit(TargetManagerEvent.TargetGone, target);
   };

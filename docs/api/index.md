@@ -72,6 +72,19 @@ The constructor for this class is marked as internal. Third-party code should no
 </td></tr>
 <tr><td>
 
+<span id="browserlauncher">[BrowserLauncher](./puppeteer.browserlauncher.md)</span>
+
+</td><td>
+
+Describes a launcher - a class that is able to create and launch a browser instance.
+
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `BrowserLauncher` class.
+
+</td></tr>
+<tr><td>
+
 <span id="cdpsession">[CDPSession](./puppeteer.cdpsession.md)</span>
 
 </td><td>
@@ -102,6 +115,10 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ConsoleMessage objects are dispatched by page via the 'console' event.
 
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ConsoleMessage` class.
+
 </td></tr>
 <tr><td>
 
@@ -114,6 +131,8 @@ The Coverage class provides methods to gather information about parts of JavaScr
 **Remarks:**
 
 To output coverage in a form consumable by [Istanbul](https://github.com/istanbuljs), see [puppeteer-to-istanbul](https://github.com/istanbuljs/puppeteer-to-istanbul).
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Coverage` class.
 
 </td></tr>
 <tr><td>
@@ -310,6 +329,10 @@ The constructor for this class is marked as internal. Third-party code should no
 
 </td><td>
 
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `JSCoverage` class.
+
 </td></tr>
 <tr><td>
 
@@ -353,6 +376,8 @@ The constructor for this class is marked as internal. Third-party code should no
 
 Locators describe a strategy of locating objects and performing an action on them. If the action fails because the object is not ready for the action, the whole operation is retried. Various preconditions for a successful action are checked automatically.
 
+See [https://pptr.dev/guides/page-interactions\#locators](https://pptr.dev/guides/page-interactions#locators) for details.
+
 </td></tr>
 <tr><td>
 
@@ -364,7 +389,7 @@ The Mouse class operates in main-frame CSS pixels relative to the top-left corne
 
 **Remarks:**
 
-Every `page` object has its own Mouse, accessible with \[`page.mouse`\](\#pagemouse).
+Every `page` object has its own Mouse, accessible with [Page.mouse](./puppeteer.page.md#mouse).
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Mouse` class.
 
@@ -386,19 +411,6 @@ One Browser instance might have multiple Page instances.
 **Remarks:**
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Page` class.
-
-</td></tr>
-<tr><td>
-
-<span id="productlauncher">[ProductLauncher](./puppeteer.productlauncher.md)</span>
-
-</td><td>
-
-Describes a launcher - a class that is able to create and launch a browser instance.
-
-**Remarks:**
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ProductLauncher` class.
 
 </td></tr>
 <tr><td>
@@ -635,31 +647,9 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="clearcustomqueryhandlers">[clearCustomQueryHandlers()](./puppeteer.clearcustomqueryhandlers.md)</span>
-
-</td><td>
-
-**Deprecated:**
-
-Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppeteer.clearCustomQueryHandlers()](./puppeteer.puppeteer.clearcustomqueryhandlers.md)
-
-</td></tr>
-<tr><td>
-
 <span id="connect">[connect(options)](./puppeteer.connect.md)</span>
 
 </td><td>
-
-</td></tr>
-<tr><td>
-
-<span id="customqueryhandlernames">[customQueryHandlerNames()](./puppeteer.customqueryhandlernames.md)</span>
-
-</td><td>
-
-**Deprecated:**
-
-Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppeteer.customQueryHandlerNames()](./puppeteer.puppeteer.customqueryhandlernames.md)
 
 </td></tr>
 <tr><td>
@@ -685,31 +675,9 @@ Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppetee
 </td></tr>
 <tr><td>
 
-<span id="registercustomqueryhandler">[registerCustomQueryHandler(name, handler)](./puppeteer.registercustomqueryhandler.md)</span>
-
-</td><td>
-
-**Deprecated:**
-
-Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppeteer.registerCustomQueryHandler()](./puppeteer.puppeteer.registercustomqueryhandler.md)
-
-</td></tr>
-<tr><td>
-
 <span id="trimcache">[trimCache()](./puppeteer.trimcache.md)</span>
 
 </td><td>
-
-</td></tr>
-<tr><td>
-
-<span id="unregistercustomqueryhandler">[unregisterCustomQueryHandler(name)](./puppeteer.unregistercustomqueryhandler.md)</span>
-
-</td><td>
-
-**Deprecated:**
-
-Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppeteer.unregisterCustomQueryHandler()](./puppeteer.puppeteer.unregistercustomqueryhandler.md)
 
 </td></tr>
 </tbody></table>
@@ -795,6 +763,20 @@ Launcher options that only apply to Chrome.
 <tr><td>
 
 <span id="cdpsessionevents">[CDPSessionEvents](./puppeteer.cdpsessionevents.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="chromeheadlessshellsettings">[ChromeHeadlessShellSettings](./puppeteer.chromeheadlessshellsettings.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="chromesettings">[ChromeSettings](./puppeteer.chromesettings.md)</span>
 
 </td><td>
 
@@ -941,6 +923,13 @@ Set of configurable options for CSS coverage.
 </td></tr>
 <tr><td>
 
+<span id="firefoxsettings">[FirefoxSettings](./puppeteer.firefoxsettings.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="frameaddscripttagoptions">[FrameAddScriptTagOptions](./puppeteer.frameaddscripttagoptions.md)</span>
 
 </td><td>
@@ -1045,13 +1034,6 @@ Generic launch options that can be passed when launching any browser.
 </td></tr>
 <tr><td>
 
-<span id="locatoroptions">[LocatorOptions](./puppeteer.locatoroptions.md)</span>
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
 <span id="locatorscrolloptions">[LocatorScrollOptions](./puppeteer.locatorscrolloptions.md)</span>
 
 </td><td>
@@ -1062,6 +1044,8 @@ Generic launch options that can be passed when launching any browser.
 <span id="mediafeature">[MediaFeature](./puppeteer.mediafeature.md)</span>
 
 </td><td>
+
+A media feature to emulate.
 
 </td></tr>
 <tr><td>
@@ -1170,6 +1154,13 @@ Valid options to configure PDF generation via [Page.pdf()](./puppeteer.page.pdf.
 </td></tr>
 <tr><td>
 
+<span id="queryoptions">[QueryOptions](./puppeteer.queryoptions.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="remoteaddress">[RemoteAddress](./puppeteer.remoteaddress.md)</span>
 
 </td><td>
@@ -1221,6 +1212,15 @@ Represents a Node and the properties of it that are relevant to Accessibility.
 <span id="snapshotoptions">[SnapshotOptions](./puppeteer.snapshotoptions.md)</span>
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="supportedwebdrivercapabilities">[SupportedWebDriverCapabilities](./puppeteer.supportedwebdrivercapabilities.md)</span>
+
+</td><td>
+
+WebDriver BiDi capabilities that are not set by Puppeteer itself.
 
 </td></tr>
 <tr><td>
@@ -1340,7 +1340,7 @@ Enum of valid mouse buttons.
 
 </td><td>
 
-A list of network conditions to be used with [Page.emulateNetworkConditions()](./puppeteer.page.emulatenetworkconditions.md).
+A list of pre-defined network conditions to be used with [Page.emulateNetworkConditions()](./puppeteer.page.emulatenetworkconditions.md).
 
 </td></tr>
 <tr><td>
@@ -1638,15 +1638,6 @@ The sizes of each format are as follows:
 </td></tr>
 <tr><td>
 
-<span id="product">[Product](./puppeteer.product.md)</span>
-
-</td><td>
-
-Supported products.
-
-</td></tr>
-<tr><td>
-
 <span id="protocollifecycleevent">[ProtocolLifeCycleEvent](./puppeteer.protocollifecycleevent.md)</span>
 
 </td><td>
@@ -1693,6 +1684,22 @@ Resource types for HTTPRequests as perceived by the rendering engine.
 </td></tr>
 <tr><td>
 
+<span id="supportedbrowser">[SupportedBrowser](./puppeteer.supportedbrowser.md)</span>
+
+</td><td>
+
+Browsers supported by Puppeteer.
+
+</td></tr>
+<tr><td>
+
+<span id="supportedwebdrivercapability">[SupportedWebDriverCapability](./puppeteer.supportedwebdrivercapability.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="targetfiltercallback">[TargetFilterCallback](./puppeteer.targetfiltercallback.md)</span>
 
 </td><td>
@@ -1703,6 +1710,8 @@ Resource types for HTTPRequests as perceived by the rendering engine.
 <span id="visibilityoption">[VisibilityOption](./puppeteer.visibilityoption.md)</span>
 
 </td><td>
+
+Whether to wait for the element to be [visible](./puppeteer.elementhandle.isvisible.md) or [hidden](./puppeteer.elementhandle.ishidden.md). `null` to disable visibility checks.
 
 </td></tr>
 </tbody></table>

@@ -71,7 +71,10 @@ export class UserContext extends EventEmitter<{
       new EventEmitter(this.browser)
     );
     browserEmitter.once('closed', ({reason}) => {
-      this.dispose(`User context already closed: ${reason}`);
+      this.dispose(`User context was closed: ${reason}`);
+    });
+    browserEmitter.once('disconnected', ({reason}) => {
+      this.dispose(`User context was closed: ${reason}`);
     });
 
     const sessionEmitter = this.#disposables.use(
@@ -90,7 +93,8 @@ export class UserContext extends EventEmitter<{
         this,
         undefined,
         info.context,
-        info.url
+        info.url,
+        info.originalOpener
       );
       this.#browsingContexts.set(browsingContext.id, browsingContext);
 

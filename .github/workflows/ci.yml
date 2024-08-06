@@ -30,11 +30,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           fetch-depth: 2
       - name: Set up Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
           cache: npm
           node-version-file: '.nvmrc'
@@ -82,9 +82,9 @@ jobs:
       contents: write
     steps:
       - name: Check out repository
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - name: Set up Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
           cache: npm
           node-version-file: '.nvmrc'
@@ -128,9 +128,9 @@ jobs:
     if: ${{ false && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - name: Set up Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
           cache: npm
           node-version-file: '.nvmrc'
@@ -159,7 +159,7 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-          - macos-13
+          - macos-latest
         shard:
           - 1-2
           - 2-2
@@ -167,19 +167,19 @@ jobs:
           - linux-only: true
             os: windows-latest
           - linux-only: true
-            os: macos-13
+            os: macos-latest
           - linux-only: true
             suite: chrome-headful
 
           - os: windows-latest
             suite: chrome-bidi
-          - os: macos-13
+          - os: macos-latest
             suite: chrome-headful
     steps:
       - name: Check out repository
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - name: Set up Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
           cache: npm
           node-version-file: '.nvmrc'
@@ -192,41 +192,23 @@ jobs:
       - name: Build packages
         run: npm run build --workspace @puppeteer-test/test
       - name: Setup cache for Chrome binary
-        if: ${{ matrix.suite != 'chrome-bidi' }}
         uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: ~/.cache/puppeteer/chrome
           key: Chrome-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
       - name: Install Chrome
-        if: ${{ matrix.suite != 'chrome-bidi' }}
         run: npm run postinstall
-      - name: Configure permissions
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: icacls $HOME/.cache/puppeteer/chrome /grant "ALL APPLICATION PACKAGES:(OI)(CI)(RX)"
-      - name: Setup cache for Chrome Canary binary
-        if: ${{ matrix.suite == 'chrome-bidi' }}
-        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
-        with:
-          path: ~/.cache/puppeteer/chrome-canary
-          key: Chrome-Canary-${{ runner.os }}-${{ hashFiles('package.json') }}
-      - name: Install Chrome Canary
-        if: ${{ matrix.suite == 'chrome-bidi' }}
-        id: browser
-        run: node tools/download_chrome_bidi.mjs $HOME/.cache/puppeteer/chrome-canary
-      - name: Configure permissions
-        if: ${{ matrix.suite == 'chrome-bidi' && matrix.os == 'windows-latest' }}
-        run: icacls $HOME/.cache/puppeteer/chrome-canary /grant "ALL APPLICATION PACKAGES:(OI)(CI)(RX)"
+        env:
+          PUPPETEER_CHROME_SKIP_DOWNLOAD: 'false'
+          PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD: 'false'
+          PUPPETEER_FIREFOX_SKIP_DOWNLOAD: 'true'
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
         run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
-        env:
-          PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
       - name: Run all tests (for Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
-        env:
-          PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
-      - uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+      - uses: actions/upload-artifact@89ef406dd8d7e03cfd12d9e0a4a378f454709029 # v4.3.5
         if: always()
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.suite }}-${{ matrix.shard }}
@@ -253,12 +235,12 @@ jobs:
         linux-only:
           - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
         suite:
-          - firefox-bidi
+          - firefox-cdp
           - firefox-headful
           - firefox-headless
         os:
           - ubuntu-latest
-          - macos-13
+          - macos-latest
           - windows-latest
         shard:
           - 1-4
@@ -269,21 +251,18 @@ jobs:
           - linux-only: true
             os: windows-latest
           - linux-only: true
-            os: macos-13
+            os: macos-latest
 
-          - os: macos-13
-            suite: firefox-headful
-          - os: macos-13
-            suite: firefox-headless
+          - os: macos-latest
+            suite: firefox-cdp
           - os: windows-latest
-            suite: firefox-headful
-          - os: windows-latest
-            suite: firefox-headless
+            suite: firefox-cdp
+
     steps:
       - name: Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - name: Set up Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
           cache: npm
           node-version-file: '.nvmrc'
@@ -302,7 +281,9 @@ jobs:
           key: Firefox-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
       - name: Install Firefox
         env:
-          PUPPETEER_PRODUCT: firefox
+          PUPPETEER_CHROME_SKIP_DOWNLOAD: 'true'
+          PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD: 'true'
+          PUPPETEER_FIREFOX_SKIP_DOWNLOAD: 'false'
         run: npm run postinstall
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
@@ -310,7 +291,7 @@ jobs:
       - name: Run all tests (for Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
-      - uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+      - uses: actions/upload-artifact@89ef406dd8d7e03cfd12d9e0a4a378f454709029 # v4.3.5
         if: always()
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.suite }}-${{ matrix.shard }}
@@ -341,17 +322,17 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-          - macos-13
+          - macos-latest
         exclude:
           - linux-only: true
             os: windows-latest
           - linux-only: true
-            os: macos-13
+            os: macos-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - name: Set up Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
           cache: npm
           node-version-file: '.nvmrc'
@@ -361,8 +342,6 @@ jobs:
           PUPPETEER_SKIP_DOWNLOAD: true
       # Set up GitHub Actions caching for Wireit.
       - uses: google/wireit@4aad131006ea85c1e42af927534ebb13426dd730 # setup-github-actions-caching/v1.0.2
-      - name: Build packages
-        run: npm run build --workspace @puppeteer-test/test
       - name: Setup cache for Chrome binary
         uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
@@ -370,8 +349,10 @@ jobs:
           key: Chrome-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
       - name: Install Chrome
         run: npm run postinstall
-      - name: Build installation test
-        run: npm run build --workspace @puppeteer-test/installation
+        env:
+          PUPPETEER_CHROME_SKIP_DOWNLOAD: 'false'
+          PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD: 'false'
+          PUPPETEER_FIREFOX_SKIP_DOWNLOAD: 'true'
       - name: Test install
         env:
           PKG_MANAGER: ${{ matrix.pkg_manager }}
@@ -394,11 +375,11 @@ jobs:
     if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           fetch-depth: 2
       - name: Set up Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
           cache: npm
           node-version-file: '.nvmrc'
@@ -426,9 +407,9 @@ jobs:
     if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - name: Set up Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
           cache: npm
           node-version-file: '.nvmrc'
@@ -447,9 +428,9 @@ jobs:
     if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'ng-schematics') }}
     steps:
       - name: Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - name: Set up Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
           cache: npm
           node-version-file: '.nvmrc'
@@ -461,7 +442,7 @@ jobs:
         run: npm run unit --workspace @puppeteer/ng-schematics
 
   ng-schematics-smoke-tests:
-    name: Angular Schematics smoke tests on ${{ matrix.os }}
+    name: Angular Schematics smoke tests on ${{ matrix.os }} ${{ matrix.test-runner }}
     runs-on: ${{ matrix.os }}
     needs: check-changes
     if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'ng-schematics') }}
@@ -473,17 +454,22 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-          - macos-13
+          - macos-latest
+        test-runner:
+          - node
+          - jest
+          - jasmine
+          - mocha
         exclude:
           - linux-only: true
             os: windows-latest
           - linux-only: true
-            os: macos-13
+            os: macos-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - name: Set up Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
           cache: npm
           node-version-file: '.nvmrc'
@@ -498,10 +484,14 @@ jobs:
           key: Chrome-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
       - name: Install Chrome
         run: npm run postinstall
+        env:
+          PUPPETEER_CHROME_SKIP_DOWNLOAD: 'false'
+          PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD: 'false'
+          PUPPETEER_FIREFOX_SKIP_DOWNLOAD: 'true'
       - name: Build Schematics
         run: npm run build -w @puppeteer/ng-schematics
       - name: Run tests
-        run: node tools/smoke.mjs
+        run: node tools/smoke.mjs -r ${{ matrix.test-runner }}
         working-directory: ./packages/ng-schematics
 
   ng-schematics-smoke-tests-required:
@@ -527,17 +517,17 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-          - macos-13
+          - macos-latest
         exclude:
           - linux-only: true
             os: windows-latest
           - linux-only: true
-            os: macos-13
+            os: macos-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - name: Set up Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
           cache: npm
           node-version-file: '.nvmrc'

@@ -83,7 +83,21 @@ export class BidiBrowserContext extends BrowserContext {
     }
 
     this.userContext.on('browsingcontext', ({browsingContext}) => {
-      this.#createPage(browsingContext);
+      const page = this.#createPage(browsingContext);
+
+      // We need to wait for the DOMContentLoaded as the
+      // browsingContext still may be navigating from the about:blank
+      browsingContext.once('DOMContentLoaded', () => {
+        if (browsingContext.originalOpener) {
+          for (const context of this.userContext.browsingContexts) {
+            if (context.id === browsingContext.originalOpener) {
+              this.#pages
+                .get(context)!
+                .trustedEmitter.emit(PageEvent.Popup, page);
+            }
+          }
+        }
+      });
     });
     this.userContext.on('closed', () => {
       this.trustedEmitter.removeAllListeners();
@@ -161,6 +175,8 @@ export class BidiBrowserContext extends BrowserContext {
   }
 
   override async newPage(): Promise<Page> {
+    using _guard = await this.waitForScreenshotOperations();
+
     const context = await this.userContext.createBrowsingContext(
       Bidi.BrowsingContext.CreateType.Tab
     );
@@ -189,6 +205,8 @@ export class BidiBrowserContext extends BrowserContext {
     } catch (error) {
       debugError(error);
     }
+
+    this.#targets.clear();
   }
 
   override browser(): BidiBrowser {

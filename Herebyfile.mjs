@@ -8,6 +8,8 @@
 
 import {readFile, writeFile} from 'fs/promises';
 
+import versionData from './versions.json' assert {type: 'json'};
+
 import {docgen, spliceIntoSection} from '@puppeteer/docgen';
 import {execa} from 'execa';
 import {task} from 'hereby';
@@ -42,27 +44,27 @@ export const docsNgSchematicsTask = task({
   },
 });
 
-export const docsChromiumSupportTask = task({
+export const docsBrowserSupportTask = task({
   name: 'docs:supported-browsers',
   run: async () => {
     const content = await readFile('docs/supported-browsers.md', {
       encoding: 'utf8',
     });
-    const {versionsPerRelease} = await import('./versions.js');
     const buffer = [];
-    for (const [chromiumVersion, puppeteerVersion] of versionsPerRelease) {
+    for (const [puppeteerVersion, browserVersions] of versionData.versions) {
       if (puppeteerVersion === 'NEXT') {
         continue;
       }
+      // TODO: add Firefox.
       if (semver.gte(puppeteerVersion, '20.0.0')) {
         buffer.push(
-          `  * [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](${getApiUrl(
+          `  * [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) ${browserVersions.chrome} - [Puppeteer ${puppeteerVersion}](${getApiUrl(
             puppeteerVersion
           )})`
         );
       } else {
         buffer.push(
-          `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](${getApiUrl(
+          `  * Chromium ${browserVersions.chrome} - [Puppeteer ${puppeteerVersion}](${getApiUrl(
             puppeteerVersion
           )})`
         );
@@ -77,7 +79,7 @@ export const docsChromiumSupportTask = task({
 
 export const docsTask = task({
   name: 'docs',
-  dependencies: [docsNgSchematicsTask, docsChromiumSupportTask],
+  dependencies: [docsNgSchematicsTask, docsBrowserSupportTask],
   run: async () => {
     // Copy main page.
     const mainPage = await readFile('README.md', 'utf-8');

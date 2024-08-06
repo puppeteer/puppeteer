@@ -4,14 +4,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type Path from 'path';
-
 import type {Protocol} from 'devtools-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
 import {ElementHandle, type AutofillData} from '../api/ElementHandle.js';
 import type {AwaitableIterable} from '../common/types.js';
 import {debugError} from '../common/util.js';
+import {environment} from '../environment.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {throwIfDisposed} from '../util/decorators.js';
@@ -109,17 +108,7 @@ export class CdpElementHandle<
     );
 
     // Locate all files and confirm that they exist.
-    let path: typeof Path;
-    try {
-      path = await import('path');
-    } catch (error) {
-      if (error instanceof TypeError) {
-        throw new Error(
-          `JSHandle#uploadFile can only be used in Node-like environments.`
-        );
-      }
-      throw error;
-    }
+    const path = environment.value.path;
     const files = filePaths.map(filePath => {
       if (path.win32.isAbsolute(filePath) || path.posix.isAbsolute(filePath)) {
         return filePath;

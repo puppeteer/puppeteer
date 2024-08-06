@@ -6,7 +6,7 @@ sidebar_label: BrowserConnectOptions
 
 Generic browser options that can be passed when launching any browser or when connecting to an existing browser instance.
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface BrowserConnectOptions
@@ -37,6 +37,27 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="acceptinsecurecerts">acceptInsecureCerts</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether to ignore HTTPS errors during navigation.
+
+</td><td>
+
+`false`
+
+</td></tr>
+<tr><td>
+
 <span id="defaultviewport">defaultViewport</span>
 
 </td><td>
@@ -58,27 +79,6 @@ Sets the viewport for each page.
 </td></tr>
 <tr><td>
 
-<span id="ignorehttpserrors">ignoreHTTPSErrors</span>
-
-</td><td>
-
-`optional`
-
-</td><td>
-
-boolean
-
-</td><td>
-
-Whether to ignore HTTPS errors during navigation.
-
-</td><td>
-
-`false`
-
-</td></tr>
-<tr><td>
-
 <span id="protocol">protocol</span>
 
 </td><td>
@@ -93,7 +93,13 @@ Whether to ignore HTTPS errors during navigation.
 
 </td><td>
 
-'cdp'
+Determined at run time:
+
+- Launching Chrome - 'cdp'.
+
+- Launching Firefox - 'webDriverBiDi'.
+
+- Connecting to a browser - 'cdp'.
 
 </td></tr>
 <tr><td>

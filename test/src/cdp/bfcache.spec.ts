@@ -13,7 +13,7 @@ import {waitEvent} from '../utils.js';
 describe('BFCache', function () {
   it('can navigate to a BFCached page', async () => {
     const {httpsServer, page, close} = await launch({
-      ignoreHTTPSErrors: true,
+      acceptInsecureCerts: true,
     });
 
     try {
@@ -37,9 +37,50 @@ describe('BFCache', function () {
     }
   });
 
+  it('can call a function exposed on a page restored from bfcache', async () => {
+    const {httpsServer, page, close} = await launch({
+      acceptInsecureCerts: true,
+    });
+    let message = '';
+    try {
+      page.setDefaultTimeout(3000);
+      await page.exposeFunction('ping', (msg: string) => {
+        message = msg;
+      });
+      await page.goto(httpsServer.PREFIX + '/cached/bfcache/index.html');
+
+      await page.evaluate(async () => {
+        await (window as any).ping('1');
+      });
+      expect(message).toBe('1');
+
+      await Promise.all([page.waitForNavigation(), page.locator('a').click()]);
+
+      expect(page.url()).toContain('target.html');
+
+      await page.evaluate(async () => {
+        await (window as any).ping('2');
+      });
+      expect(message).toBe('2');
+
+      await Promise.all([page.waitForNavigation(), page.goBack()]);
+      await page.evaluate(async () => {
+        await (window as any).ping('3');
+      });
+      expect(message).toBe('3');
+      expect(
+        await page.evaluate(() => {
+          return document.body.innerText;
+        })
+      ).toBe('BFCachednext');
+    } finally {
+      await close();
+    }
+  });
+
   it('can navigate to a BFCached page containing an OOPIF and a worker', async () => {
     const {httpsServer, page, close} = await launch({
-      ignoreHTTPSErrors: true,
+      acceptInsecureCerts: true,
     });
     try {
       page.setDefaultTimeout(3000);

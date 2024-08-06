@@ -49,6 +49,10 @@ const config = {
   },
   scripts: [
     {
+      src: 'https://www.googletagmanager.com/gtag/js?id=G-J15CTWBVHX',
+      async: true,
+    },
+    {
       src: '/fix-location.js',
       async: false,
       defer: false,
@@ -212,6 +216,7 @@ const config = {
                 'Browser',
                 'BrowserContext',
                 'Page',
+                'Locator',
                 'WebWorker',
                 'Accessibility',
                 'Keyboard',
@@ -353,6 +358,19 @@ const config = {
               {
                 label: 'YouTube',
                 href: 'https://goo.gle/devtools-youtube',
+              },
+            ],
+          },
+          {
+            title: 'Other',
+            items: [
+              {
+                label: 'Privacy policy',
+                href: 'https://policies.google.com/technologies/cookies',
+              },
+              {
+                label: 'Cookie policy',
+                href: 'https://www.cookiechoices.org/',
               },
             ],
           },

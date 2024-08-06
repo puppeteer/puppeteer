@@ -87,7 +87,8 @@ export class LifecycleWatcher {
     networkManager: NetworkManager,
     frame: CdpFrame,
     waitUntil: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[],
-    timeout: number
+    timeout: number,
+    signal?: AbortSignal
   ) {
     if (Array.isArray(waitUntil)) {
       waitUntil = waitUntil.slice();
@@ -99,6 +100,10 @@ export class LifecycleWatcher {
       const protocolEvent = puppeteerToProtocolLifecycle.get(value);
       assert(protocolEvent, 'Unknown value for options.waitUntil: ' + value);
       return protocolEvent as ProtocolLifeCycleEvent;
+    });
+
+    signal?.addEventListener('abort', () => {
+      this.#terminationDeferred.reject(signal.reason);
     });
 
     this.#frame = frame;
@@ -248,10 +253,6 @@ export class LifecycleWatcher {
           return false;
         }
       }
-      // TODO(#1): Its possible we don't need this check
-      // CDP provided the correct order for Loading Events
-      // And NetworkIdle is a global state
-      // Consider removing
       for (const child of frame.childFrames()) {
         if (
           child._hasStartedLoading &&

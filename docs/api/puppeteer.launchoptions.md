@@ -6,7 +6,7 @@ sidebar_label: LaunchOptions
 
 Generic launch options that can be passed when launching any browser.
 
-#### Signature:
+### Signature
 
 ```typescript
 export interface LaunchOptions
@@ -36,6 +36,27 @@ Default
 
 </th></tr></thead>
 <tbody><tr><td>
+
+<span id="browser">browser</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[SupportedBrowser](./puppeteer.supportedbrowser.md)
+
+</td><td>
+
+Which browser to launch.
+
+</td><td>
+
+`chrome`
+
+</td></tr>
+<tr><td>
 
 <span id="channel">channel</span>
 
@@ -237,27 +258,6 @@ Connect to a browser over a pipe instead of a WebSocket.
 </td><td>
 
 `false`
-
-</td></tr>
-<tr><td>
-
-<span id="product">product</span>
-
-</td><td>
-
-`optional`
-
-</td><td>
-
-[Product](./puppeteer.product.md)
-
-</td><td>
-
-Which browser to launch.
-
-</td><td>
-
-`chrome`
 
 </td></tr>
 <tr><td>

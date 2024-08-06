@@ -85,7 +85,7 @@ If you encounter this issue, you will see errors like this in the browser stdout
 To workaround the issue, use the icacls utility to set permissions manually:
 
 ```powershell
-icacls $HOME/.cache/puppeteer/chrome /grant "ALL APPLICATION PACKAGES:(OI)(CI)(RX)"
+icacls %USERPROFILE%/.cache/puppeteer/chrome /grant *S-1-15-2-1:(OI)(CI)(RX)
 ```
 
 :::note
@@ -446,6 +446,9 @@ There's a full example at https://github.com/ebidel/try-puppeteer that shows how
 to run this Dockerfile from a webserver running on App Engine Flex (Node).
 
 ### Running on Alpine
+
+> [!CAUTION]
+> The current Chromium version in Alpine 3.20 is causing timeout issues (see #11640, #12637, #12189) with Puppeteer. Downgrading to Alpine 3.19 fixes the issue.
 
 The
 [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium)

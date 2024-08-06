@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.3.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.2.4...browsers-v2.3.0) (2024-07-25)
+
+
+### Features
+
+* allow downloading of all pinned browsers ([#12806](https://github.com/puppeteer/puppeteer/issues/12806)) ([e72e7ab](https://github.com/puppeteer/puppeteer/commit/e72e7ab515f31d805f89860bbac6aced5a63a868))
+
+
+### Bug Fixes
+
+* configure sandbox permissions for Chrome on Windows ([#12430](https://github.com/puppeteer/puppeteer/issues/12430)) ([b1bf89d](https://github.com/puppeteer/puppeteer/commit/b1bf89d482a830aa7d43af7b53779f6c9988f0d9))
+
+## [2.2.4](https://github.com/puppeteer/puppeteer/compare/browsers-v2.2.3...browsers-v2.2.4) (2024-07-17)
+
+
+### Bug Fixes
+
+* use spawn instead of exec in fileUtil ([#12758](https://github.com/puppeteer/puppeteer/issues/12758)) ([9ce6a85](https://github.com/puppeteer/puppeteer/commit/9ce6a8528969f3895899e3556c527ffd0d3f5c1c))
+
 ## [2.2.3](https://github.com/puppeteer/puppeteer/compare/browsers-v2.2.2...browsers-v2.2.3) (2024-04-25)
 
 

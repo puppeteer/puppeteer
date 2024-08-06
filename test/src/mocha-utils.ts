@@ -63,7 +63,7 @@ declare global {
 }
 
 const product =
-  process.env['PRODUCT'] || process.env['PUPPETEER_PRODUCT'] || 'chrome';
+  process.env['PRODUCT'] || process.env['PUPPETEER_BROWSER'] || 'chrome';
 
 const headless = (process.env['HEADLESS'] || 'true').trim().toLowerCase() as
   | 'true'

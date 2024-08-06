@@ -1,6 +1,6 @@
 {
   "name": "@puppeteer/ng-schematics",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Puppeteer Angular schematics",
   "scripts": {
     "build": "wireit",
@@ -51,13 +51,13 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@angular-devkit/architect": "0.1702.2",
-    "@angular-devkit/core": "17.2.2",
-    "@angular-devkit/schematics": "17.2.2"
+    "@angular-devkit/architect": "0.1800.4",
+    "@angular-devkit/core": "18.0.4",
+    "@angular-devkit/schematics": "18.0.4"
   },
   "devDependencies": {
-    "@schematics/angular": "17.2.2",
-    "@angular/cli": "17.2.2"
+    "@schematics/angular": "18.0.4",
+    "@angular/cli": "18.0.4"
   },
   "files": [
     "lib",

@@ -1216,7 +1216,10 @@ describe('NetworkManager', () => {
       statusCode: 200,
       headersText:
         'HTTP/1.1 200 OK\\r\\nContent-Type: text/html; charset=utf-8\\r\\nCache-Control: max-age=5\\r\\nDate: Wed, 05 Apr 2023 12:39:13 GMT\\r\\nConnection: keep-alive\\r\\nKeep-Alive: timeout=5\\r\\nTransfer-Encoding: chunked\\r\\n\\r\\n',
-      cookiePartitionKey: 'http://localhost',
+      cookiePartitionKey: {
+        topLevelSite: 'http://localhost',
+        hasCrossSiteAncestor: false,
+      },
       cookiePartitionKeyOpaque: false,
     });
 
@@ -1359,7 +1362,10 @@ describe('NetworkManager', () => {
       statusCode: 302,
       headersText:
         'HTTP/1.1 302 Found\\r\\nLocation: http://localhost:3000/#from-redirect\\r\\nDate: Wed, 05 Apr 2023 12:39:13 GMT\\r\\nConnection: keep-alive\\r\\nKeep-Alive: timeout=5\\r\\nTransfer-Encoding: chunked\\r\\n\\r\\n',
-      cookiePartitionKey: 'http://localhost',
+      cookiePartitionKey: {
+        topLevelSite: 'http://localhost',
+        hasCrossSiteAncestor: false,
+      },
       cookiePartitionKeyOpaque: false,
     });
     mockCDPSession.emit('Network.requestWillBeSent', {
@@ -1525,7 +1531,10 @@ describe('NetworkManager', () => {
       statusCode: 302,
       headersText:
         'HTTP/1.1 302 Found\\r\\nLocation: http://localhost:3000/#from-redirect\\r\\nDate: Wed, 05 Apr 2023 12:39:13 GMT\\r\\nConnection: keep-alive\\r\\nKeep-Alive: timeout=5\\r\\nTransfer-Encoding: chunked\\r\\n\\r\\n',
-      cookiePartitionKey: 'http://localhost',
+      cookiePartitionKey: {
+        topLevelSite: 'http://localhost',
+        hasCrossSiteAncestor: false,
+      },
       cookiePartitionKeyOpaque: false,
     });
     mockCDPSession.emit('Network.loadingFinished', {

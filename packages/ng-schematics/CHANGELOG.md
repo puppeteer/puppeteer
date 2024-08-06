@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.6.0...ng-schematics-v0.6.1) (2024-06-20)
+
+
+### Bug Fixes
+
+* use NodeNext in ng-schematics default tsconfig ([#12622](https://github.com/puppeteer/puppeteer/issues/12622)) ([8d40b27](https://github.com/puppeteer/puppeteer/commit/8d40b2748347db11ee119c6fd5aa56f72824450b))
+
 ## [0.6.0](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.5.6...ng-schematics-v0.6.0) (2024-02-05)
 
 

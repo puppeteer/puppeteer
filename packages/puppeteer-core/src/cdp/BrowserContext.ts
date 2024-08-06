@@ -89,8 +89,9 @@ export class CdpBrowserContext extends BrowserContext {
     });
   }
 
-  override newPage(): Promise<Page> {
-    return this.#browser._createPageInContext(this.#id);
+  override async newPage(): Promise<Page> {
+    using _guard = await this.waitForScreenshotOperations();
+    return await this.#browser._createPageInContext(this.#id);
   }
 
   override browser(): CdpBrowser {

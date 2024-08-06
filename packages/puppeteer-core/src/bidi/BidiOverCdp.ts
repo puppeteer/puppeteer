@@ -24,8 +24,7 @@ const bidiServerLogger = (prefix: string, ...args: unknown[]): void => {
  * @internal
  */
 export async function connectBidiOverCdp(
-  cdp: CdpConnection,
-  options: BidiMapper.MapperOptions
+  cdp: CdpConnection
 ): Promise<BidiConnection> {
   const transportBiDi = new NoOpTransport();
   const cdpConnectionAdapter = new CdpConnectionAdapter(cdp);
@@ -56,10 +55,8 @@ export async function connectBidiOverCdp(
   const bidiServer = await BidiMapper.BidiServer.createAndStart(
     transportBiDi,
     cdpConnectionAdapter,
-    // TODO: most likely need a little bit of refactoring
     cdpConnectionAdapter.browserClient(),
-    '',
-    options,
+    /* selfTargetId= */ '',
     undefined,
     bidiServerLogger
   );

@@ -168,6 +168,47 @@ describe('Screenshots', function () {
         'screenshot-sanity.png'
       );
     });
+
+    it('should take fullPage screenshots when defaultViewport is null', async () => {
+      const {server, context, close} = await launch({
+        defaultViewport: null,
+      });
+      try {
+        const page = await context.newPage();
+        await page.goto(server.PREFIX + '/grid.html');
+        const screenshot = await page.screenshot({
+          fullPage: true,
+        });
+        expect(screenshot).toBeInstanceOf(Buffer);
+      } finally {
+        await close();
+      }
+    });
+
+    it('should restore to original viewport size after taking fullPage screenshots when defaultViewport is null', async () => {
+      const {server, context, close} = await launch({
+        defaultViewport: null,
+      });
+      try {
+        const page = await context.newPage();
+        const originalSize = await page.evaluate(() => {
+          return {width: window.innerWidth, height: window.innerHeight};
+        });
+        await page.goto(server.PREFIX + '/scrollbar.html');
+        await page.screenshot({
+          fullPage: true,
+          captureBeyondViewport: false,
+        });
+        const size = await page.evaluate(() => {
+          return {width: window.innerWidth, height: window.innerHeight};
+        });
+        expect(page.viewport()).toBe(null);
+        expect(size.width).toBe(originalSize.width);
+        expect(size.height).toBe(originalSize.height);
+      } finally {
+        await close();
+      }
+    });
   });
 
   describe('ElementHandle.screenshot', function () {
@@ -394,6 +435,31 @@ describe('Screenshots', function () {
       );
 
       await context.close();
+    });
+
+    it('should run in parallel with page.close()', async () => {
+      const {browser} = await getTestState();
+
+      using context = await browser.createBrowserContext();
+
+      const page1 = await context.newPage();
+      const page2 = await context.newPage();
+
+      const screen1 = page1.screenshot();
+      const screen2 = page2.screenshot();
+
+      const close1 = screen1.then(() => {
+        return page1.close();
+      });
+      const close2 = screen2.then(() => {
+        return page2.close();
+      });
+      await screen1;
+      const page3 = await browser.newPage();
+      await page3.screenshot();
+      const close3 = page3.close();
+
+      await Promise.all([close1, close2, close3]);
     });
 
     it('should use element clip', async () => {

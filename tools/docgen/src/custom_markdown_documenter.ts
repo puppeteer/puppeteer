@@ -149,14 +149,13 @@ export class MarkdownDocumenter {
     }
   }
 
-  private _writeApiItemPage(apiItem: ApiItem): void {
+  private _getBaseApiItemPage(apiItem: ApiItem): DocSection {
     const configuration = this._tsdocConfiguration;
     const output = new DocSection({
       configuration,
     });
 
     const scopedName = apiItem.getScopedNameWithinPackage();
-
     switch (apiItem.kind) {
       case ApiItemKind.Class:
         output.appendNode(
@@ -170,7 +169,10 @@ export class MarkdownDocumenter {
         break;
       case ApiItemKind.Interface:
         output.appendNode(
-          new DocHeading({configuration, title: `${scopedName} interface`})
+          new DocHeading({
+            configuration,
+            title: `${scopedName} interface`,
+          })
         );
         break;
       case ApiItemKind.Constructor:
@@ -195,7 +197,10 @@ export class MarkdownDocumenter {
         break;
       case ApiItemKind.Namespace:
         output.appendNode(
-          new DocHeading({configuration, title: `${scopedName} namespace`})
+          new DocHeading({
+            configuration,
+            title: `${scopedName} namespace`,
+          })
         );
         break;
       case ApiItemKind.Package:
@@ -225,6 +230,54 @@ export class MarkdownDocumenter {
         break;
       default:
         throw new Error('Unsupported API item kind: ' + apiItem.kind);
+    }
+
+    return output;
+  }
+
+  private _getApiItemPage(apiItem: ApiItem): DocSection {
+    const configuration = this._tsdocConfiguration;
+    const output = new DocSection({
+      configuration,
+    });
+
+    if (
+      apiItem instanceof ApiDeclaredItem &&
+      apiItem.excerpt.text.length > 0 &&
+      ApiParameterListMixin.isBaseClassOf(apiItem) &&
+      ApiReturnTypeMixin.isBaseClassOf(apiItem) &&
+      apiItem.getMergedSiblings().length > 1
+    ) {
+      const name = apiItem.displayName;
+      const overloadIndex = apiItem.overloadIndex - 1;
+      const overloadId =
+        overloadIndex === 0 ? name : `${name}-${overloadIndex}`;
+
+      // TODO: See if we don't need to create all of the on our own.
+      const overLoadHeader = `${apiItem.displayName}(): ${apiItem.returnTypeExcerpt.text}`;
+      output.appendNode(
+        new DocParagraph({configuration}, [
+          new DocHtmlStartTag({
+            configuration,
+            name: 'h2',
+            htmlAttributes: [
+              new DocHtmlAttribute({
+                configuration,
+                name: 'id',
+                value: `"${overloadId}"`,
+              }),
+            ],
+          }),
+          new DocPlainText({
+            configuration,
+            text: overLoadHeader,
+          }),
+          new DocHtmlEndTag({
+            configuration,
+            name: 'h2',
+          }),
+        ])
+      );
     }
 
     if (ApiReleaseTagMixin.isBaseClassOf(apiItem)) {
@@ -266,27 +319,30 @@ export class MarkdownDocumenter {
       }
     }
 
-    if (apiItem instanceof ApiDeclaredItem) {
-      if (apiItem.excerpt.text.length > 0) {
+    if (apiItem instanceof ApiDeclaredItem && apiItem.excerpt.text.length > 0) {
+      let code: string | undefined;
+      switch (apiItem.parent?.kind) {
+        case ApiItemKind.Class:
+          code = `class ${
+            apiItem.parent.displayName
+          } {${apiItem.getExcerptWithModifiers()}}`;
+          break;
+        case ApiItemKind.Interface:
+          code = `interface ${
+            apiItem.parent.displayName
+          } {${apiItem.getExcerptWithModifiers()}}`;
+          break;
+        default:
+          code = apiItem.getExcerptWithModifiers();
+      }
+      if (code) {
         output.appendNode(
-          new DocHeading({configuration, title: 'Signature:', level: 4})
+          new DocHeading({
+            configuration,
+            title: 'Signature',
+            level: 3,
+          })
         );
-
-        let code: string;
-        switch (apiItem.parent?.kind) {
-          case ApiItemKind.Class:
-            code = `class ${
-              apiItem.parent.displayName
-            } {${apiItem.getExcerptWithModifiers()}}`;
-            break;
-          case ApiItemKind.Interface:
-            code = `interface ${
-              apiItem.parent.displayName
-            } {${apiItem.getExcerptWithModifiers()}}`;
-            break;
-          default:
-            code = apiItem.getExcerptWithModifiers();
-        }
         output.appendNode(
           new DocFencedCode({
             configuration,
@@ -363,12 +419,30 @@ export class MarkdownDocumenter {
       this._writeRemarksSection(output, apiItem);
     }
 
+    return output;
+  }
+
+  private _writeApiItemPage(apiItem: ApiItem) {
+    const output = this._getBaseApiItemPage(apiItem);
+    if (ApiParameterListMixin.isBaseClassOf(apiItem)) {
+      if (apiItem.overloadIndex > 1) {
+        return;
+      }
+
+      for (const item of apiItem.getMergedSiblings()) {
+        const itemOutput = this._getApiItemPage(item);
+        output.appendNodes(itemOutput.nodes);
+      }
+    } else {
+      const itemOutput = this._getApiItemPage(apiItem);
+      output.appendNodes(itemOutput.nodes);
+    }
+
     const filename = path.join(
       this._outputFolder,
       this._getFilenameForApiItem(apiItem)
     );
     const stringBuilder = new StringBuilder();
-
     this._markdownEmitter.emit(stringBuilder, output, {
       contextApiItem: apiItem,
       onGetFilenameForApiItem: (apiItemForFilename: ApiItem) => {
@@ -1497,16 +1571,9 @@ export class MarkdownDocumenter {
     let suffix = '';
     for (const hierarchyItem of apiItem.getHierarchy()) {
       // For overloaded methods, add a suffix such as "MyClass.myMethod_2".
-      let qualifiedName = Utilities.getSafeFilenameForName(
+      const qualifiedName = Utilities.getSafeFilenameForName(
         hierarchyItem.displayName
       );
-      if (ApiParameterListMixin.isBaseClassOf(hierarchyItem)) {
-        if (hierarchyItem.overloadIndex > 1) {
-          // Subtract one for compatibility with earlier releases of API Documenter.
-          // (This will get revamped when we fix GitHub issue #1308)
-          qualifiedName += `_${hierarchyItem.overloadIndex - 1}`;
-        }
-      }
 
       switch (hierarchyItem.kind) {
         case ApiItemKind.Model:

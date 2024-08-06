@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
@@ -96,6 +96,12 @@ export class UserPrompt extends EventEmitter<{
     return this.closed;
   }
   get handled(): boolean {
+    if (
+      this.info.handler === Bidi.Session.UserPromptHandlerType.Accept ||
+      this.info.handler === Bidi.Session.UserPromptHandlerType.Dismiss
+    ) {
+      return true;
+    }
     return this.#result !== undefined;
   }
   get result(): UserPromptResult | undefined {

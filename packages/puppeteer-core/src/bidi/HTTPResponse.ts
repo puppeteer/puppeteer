@@ -4,12 +4,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
-import type Protocol from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
 import type {Frame} from '../api/Frame.js';
 import {HTTPResponse, type RemoteAddress} from '../api/HTTPResponse.js';
 import {PageEvent} from '../api/Page.js';
 import {UnsupportedOperation} from '../common/Errors.js';
+import {SecurityDetails} from '../common/SecurityDetails.js';
 import {invokeAtMostOnceForArguments} from '../util/decorators.js';
 
 import type {BidiHTTPRequest} from './HTTPRequest.js';
@@ -20,23 +21,36 @@ import type {BidiHTTPRequest} from './HTTPRequest.js';
 export class BidiHTTPResponse extends HTTPResponse {
   static from(
     data: Bidi.Network.ResponseData,
-    request: BidiHTTPRequest
+    request: BidiHTTPRequest,
+    cdpSupported: boolean
   ): BidiHTTPResponse {
-    const response = new BidiHTTPResponse(data, request);
+    const response = new BidiHTTPResponse(data, request, cdpSupported);
     response.#initialize();
     return response;
   }
 
   #data: Bidi.Network.ResponseData;
   #request: BidiHTTPRequest;
+  #securityDetails?: SecurityDetails;
+  #cdpSupported = false;
 
   private constructor(
     data: Bidi.Network.ResponseData,
-    request: BidiHTTPRequest
+    request: BidiHTTPRequest,
+    cdpSupported: boolean
   ) {
     super();
     this.#data = data;
     this.#request = request;
+    this.#cdpSupported = cdpSupported;
+
+    // @ts-expect-error non-standard property.
+    const securityDetails = data['goog:securityDetails'];
+    if (cdpSupported && securityDetails) {
+      this.#securityDetails = new SecurityDetails(
+        securityDetails as Protocol.Network.SecurityDetails
+      );
+    }
   }
 
   #initialize() {
@@ -71,8 +85,7 @@ export class BidiHTTPResponse extends HTTPResponse {
 
   override headers(): Record<string, string> {
     const headers: Record<string, string> = {};
-    // TODO: Remove once the Firefox implementation is compliant with https://w3c.github.io/webdriver-bidi/#get-the-response-data.
-    for (const header of this.#data.headers || []) {
+    for (const header of this.#data.headers) {
       // TODO: How to handle Binary Headers
       // https://w3c.github.io/webdriver-bidi/#type-network-Header
       if (header.value.type === 'string') {
@@ -91,8 +104,30 @@ export class BidiHTTPResponse extends HTTPResponse {
   }
 
   override timing(): Protocol.Network.ResourceTiming | null {
-    // TODO: File and issue with BiDi spec
-    throw new UnsupportedOperation();
+    const bidiTiming = this.#request.timing();
+    return {
+      requestTime: bidiTiming.requestTime,
+      proxyStart: -1,
+      proxyEnd: -1,
+      dnsStart: bidiTiming.dnsStart,
+      dnsEnd: bidiTiming.dnsEnd,
+      connectStart: bidiTiming.connectStart,
+      connectEnd: bidiTiming.connectEnd,
+      sslStart: bidiTiming.tlsStart,
+      sslEnd: -1,
+      workerStart: -1,
+      workerReady: -1,
+      workerFetchStart: -1,
+      workerRespondWithSettled: -1,
+      workerRouterEvaluationStart: -1,
+      workerCacheLookupStart: -1,
+      sendStart: bidiTiming.requestStart,
+      sendEnd: -1,
+      pushStart: -1,
+      pushEnd: -1,
+      receiveHeadersStart: bidiTiming.responseStart,
+      receiveHeadersEnd: bidiTiming.responseEnd,
+    };
   }
 
   override frame(): Frame | null {
@@ -103,8 +138,11 @@ export class BidiHTTPResponse extends HTTPResponse {
     return false;
   }
 
-  override securityDetails(): never {
-    throw new UnsupportedOperation();
+  override securityDetails(): SecurityDetails | null {
+    if (!this.#cdpSupported) {
+      throw new UnsupportedOperation();
+    }
+    return this.#securityDetails ?? null;
   }
 
   override buffer(): never {

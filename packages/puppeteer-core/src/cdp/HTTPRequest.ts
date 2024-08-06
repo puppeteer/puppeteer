@@ -16,7 +16,7 @@ import {
   STATUS_TEXTS,
   handleError,
 } from '../api/HTTPRequest.js';
-import {debugError, isString} from '../common/util.js';
+import {debugError} from '../common/util.js';
 
 import type {CdpHTTPResponse} from './HTTPResponse.js';
 
@@ -172,9 +172,7 @@ export class CdpHTTPRequest extends HTTPRequest {
     const {url, method, postData, headers} = overrides;
     this.interception.handled = true;
 
-    const postDataBinaryBase64 = postData
-      ? Buffer.from(postData).toString('base64')
-      : undefined;
+    const postDataBinaryBase64 = postData ? btoa(postData) : undefined;
 
     if (this._interceptionId === undefined) {
       throw new Error(
@@ -198,10 +196,15 @@ export class CdpHTTPRequest extends HTTPRequest {
   async _respond(response: Partial<ResponseForRequest>): Promise<void> {
     this.interception.handled = true;
 
-    const responseBody: Buffer | null =
-      response.body && isString(response.body)
-        ? Buffer.from(response.body)
-        : (response.body as Buffer) || null;
+    let parsedBody:
+      | {
+          contentLength: number;
+          base64: string;
+        }
+      | undefined;
+    if (response.body) {
+      parsedBody = HTTPRequest.getResponse(response.body);
+    }
 
     const responseHeaders: Record<string, string | string[]> = {};
     if (response.headers) {
@@ -218,10 +221,8 @@ export class CdpHTTPRequest extends HTTPRequest {
     if (response.contentType) {
       responseHeaders['content-type'] = response.contentType;
     }
-    if (responseBody && !('content-length' in responseHeaders)) {
-      responseHeaders['content-length'] = String(
-        Buffer.byteLength(responseBody)
-      );
+    if (parsedBody?.contentLength && !('content-length' in responseHeaders)) {
+      responseHeaders['content-length'] = String(parsedBody.contentLength);
     }
 
     const status = response.status || 200;
@@ -236,7 +237,7 @@ export class CdpHTTPRequest extends HTTPRequest {
         responseCode: status,
         responsePhrase: STATUS_TEXTS[status],
         responseHeaders: headersArray(responseHeaders),
-        body: responseBody ? responseBody.toString('base64') : undefined,
+        body: parsedBody?.base64,
       })
       .catch(error => {
         this.interception.handled = false;

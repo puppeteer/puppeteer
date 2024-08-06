@@ -21,26 +21,20 @@
     {
       "id": "firefox-headless",
       "platforms": ["linux", "darwin"],
-      "parameters": ["firefox", "headless", "cdp"],
-      "expectedLineCoverage": 80
-    },
-    {
-      "id": "firefox-headful",
-      "platforms": ["linux"],
-      "parameters": ["firefox", "headful", "cdp"],
-      "expectedLineCoverage": 80
-    },
-    {
-      "id": "firefox-bidi",
-      "platforms": ["linux"],
       "parameters": ["firefox", "headless", "webDriverBiDi"],
       "expectedLineCoverage": 56
     },
     {
-      "id": "firefox-bidi-headful",
+      "id": "firefox-headful",
       "platforms": ["linux"],
       "parameters": ["firefox", "headful", "webDriverBiDi"],
       "expectedLineCoverage": 56
+    },
+    {
+      "id": "firefox-cdp",
+      "platforms": ["linux"],
+      "parameters": ["firefox", "headless", "cdp"],
+      "expectedLineCoverage": 80
     },
     {
       "id": "chrome-bidi",
@@ -51,10 +45,10 @@
   ],
   "parameterDefinitions": {
     "chrome": {
-      "PUPPETEER_PRODUCT": "chrome"
+      "PUPPETEER_BROWSER": "chrome"
     },
     "firefox": {
-      "PUPPETEER_PRODUCT": "firefox"
+      "PUPPETEER_BROWSER": "firefox"
     },
     "headless": {
       "HEADLESS": "true",

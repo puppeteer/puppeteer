@@ -10,7 +10,7 @@ import {CDPSessionEvent} from 'puppeteer-core/internal/api/CDPSession.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 
 import {getTestState, launch} from './mocha-utils.js';
-import {attachFrame, detachFrame, navigateFrame} from './utils.js';
+import {attachFrame, detachFrame, dumpFrames, navigateFrame} from './utils.js';
 
 describe('OOPIF', function () {
   /* We use a special browser for this test as we need the --site-per-process flag */
@@ -131,6 +131,38 @@ describe('OOPIF', function () {
       })
     ).toMatch(/frames\/frame\.html$/);
   });
+
+  it('should recover cross-origin frames on reconnect', async () => {
+    const {server, page, puppeteer, browser} = state;
+
+    await page.goto(server.EMPTY_PAGE);
+    const frame1Promise = page.waitForFrame(frame => {
+      return page.frames().indexOf(frame) === 1;
+    });
+    const frame2Promise = page.waitForFrame(frame => {
+      return page.frames().indexOf(frame) === 2;
+    });
+    await attachFrame(
+      page,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/frames/one-frame.html'
+    );
+    await Promise.all([frame1Promise, frame2Promise]);
+    const dump1 = await dumpFrames(page.mainFrame());
+
+    using browserTwo = await puppeteer.connect({
+      browserWSEndpoint: browser.wsEndpoint(),
+      protocol: browser.protocol,
+    });
+    const pages = await browserTwo.pages();
+    const emptyPages = pages.filter(page => {
+      return page.url() === server.EMPTY_PAGE;
+    });
+    expect(emptyPages.length).toBe(1);
+    const dump2 = await dumpFrames(emptyPages[0]!.mainFrame());
+    expect(dump1).toEqual(dump2);
+  });
+
   it('should support OOP iframes getting detached', async () => {
     const {server, page} = state;
 
@@ -207,14 +239,10 @@ describe('OOPIF', function () {
     );
     const frame = await framePromise;
     await frame.evaluate(() => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      _test = 'Test 123!';
+      (window as any)._test = 'Test 123!';
     });
     const result = await frame.evaluate(() => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      return window._test;
+      return (window as any)._test;
     });
     expect(result).toBe('Test 123!');
   });
@@ -458,6 +486,92 @@ describe('OOPIF', function () {
       '/index.html',
       '/sample.pdf',
     ]);
+  });
+
+  it('should support evaluateOnNewDocument', async () => {
+    const {page, server} = state;
+
+    await page.evaluateOnNewDocument(() => {
+      (window as any).evaluateOnNewDocument = true;
+    });
+    await page.goto(server.PREFIX + '/dynamic-oopif.html');
+    await page.waitForFrame(frame => {
+      return frame.url().endsWith('/oopif.html');
+    });
+    expect(page.frames()).toHaveLength(2);
+    for (const frame of page.frames()) {
+      expect(
+        await frame.evaluate(() => {
+          return (window as any).evaluateOnNewDocument;
+        })
+      ).toBe(true);
+    }
+  });
+
+  it('should support removing evaluateOnNewDocument scripts', async () => {
+    const {page, server} = state;
+
+    const {identifier} = await page.evaluateOnNewDocument(() => {
+      (window as any).evaluateOnNewDocument = true;
+    });
+    await page.goto(server.PREFIX + '/dynamic-oopif.html');
+    await page.waitForFrame(frame => {
+      return frame.url().endsWith('/oopif.html');
+    });
+    expect(page.frames()).toHaveLength(2);
+    for (const frame of page.frames()) {
+      expect(
+        await frame.evaluate(() => {
+          return (window as any).evaluateOnNewDocument;
+        })
+      ).toBe(true);
+    }
+    await page.removeScriptToEvaluateOnNewDocument(identifier);
+    await page.reload();
+    await page.waitForFrame(frame => {
+      return frame.url().endsWith('/oopif.html');
+    });
+  });
+
+  it('should support exposeFunction', async () => {
+    const {page, server} = state;
+
+    let count = 0;
+    await page.exposeFunction('plusOne', async () => {
+      count++;
+    });
+    await page.goto(server.PREFIX + '/dynamic-oopif.html');
+    await page.waitForFrame(frame => {
+      return frame.url().endsWith('/oopif.html');
+    });
+    expect(page.frames()).toHaveLength(2);
+    for (const frame of page.frames()) {
+      await frame.evaluate(async () => {
+        // @ts-expect-error different context
+        return window.plusOne();
+      });
+    }
+    expect(count).toBe(2);
+  });
+
+  it('should support removing exposed function', async () => {
+    const {page, server} = state;
+    await page.exposeFunction('plusOne', () => {});
+    const frame = page.waitForFrame(frame => {
+      return frame.url().endsWith('/oopif.html');
+    });
+    await page.goto(server.PREFIX + '/dynamic-oopif.html');
+    await frame;
+    expect(page.frames()).toHaveLength(2);
+    await page.removeExposedFunction('plusOne');
+    for (const frame of page.frames()) {
+      expect(
+        await frame.evaluate(() => {
+          // @ts-expect-error different context
+          return !!window['plusOne'];
+        })
+      ).toBe(false);
+    }
   });
 
   describe('waitForFrame', () => {

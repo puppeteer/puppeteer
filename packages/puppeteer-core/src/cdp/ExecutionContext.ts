@@ -34,13 +34,15 @@ import type {IsolatedWorld} from './IsolatedWorld.js';
 import {CdpJSHandle} from './JSHandle.js';
 import {
   addPageBinding,
+  CDP_BINDING_PREFIX,
   createEvaluationError,
   valueFromRemoteObject,
 } from './utils.js';
 
 const ariaQuerySelectorBinding = new Binding(
   '__ariaQuerySelector',
-  ARIAQueryHandler.queryOne as (...args: unknown[]) => unknown
+  ARIAQueryHandler.queryOne as (...args: unknown[]) => unknown,
+  '' // custom init
 );
 
 const ariaQuerySelectorAllBinding = new Binding(
@@ -56,7 +58,8 @@ const ariaQuerySelectorAllBinding = new Binding(
       },
       ...(await AsyncIterableUtil.collect(results))
     );
-  }) as (...args: unknown[]) => unknown
+  }) as (...args: unknown[]) => unknown,
+  '' // custom init
 );
 
 /**
@@ -124,16 +127,21 @@ export class ExecutionContext
         'Runtime.addBinding',
         this.#name
           ? {
-              name: binding.name,
+              name: CDP_BINDING_PREFIX + binding.name,
               executionContextName: this.#name,
             }
           : {
-              name: binding.name,
+              name: CDP_BINDING_PREFIX + binding.name,
               executionContextId: this.#id,
             }
       );
 
-      await this.evaluate(addPageBinding, 'internal', binding.name);
+      await this.evaluate(
+        addPageBinding,
+        'internal',
+        binding.name,
+        CDP_BINDING_PREFIX
+      );
 
       this.#bindings.set(binding.name, binding);
     } catch (error) {
@@ -158,6 +166,10 @@ export class ExecutionContext
   async #onBindingCalled(
     event: Protocol.Runtime.BindingCalledEvent
   ): Promise<void> {
+    if (event.executionContextId !== this.#id) {
+      return;
+    }
+
     let payload: BindingPayload;
     try {
       payload = JSON.parse(event.payload);
@@ -177,10 +189,6 @@ export class ExecutionContext
     }
 
     try {
-      if (event.executionContextId !== this.#id) {
-        return;
-      }
-
       const binding = this.#bindings.get(name);
       await binding?.run(this, seq, args, isTrivial);
     } catch (err) {
@@ -409,9 +417,19 @@ export class ExecutionContext
       callFunctionOnPromise = this.#client.send('Runtime.callFunctionOn', {
         functionDeclaration: functionDeclarationWithSourceUrl,
         executionContextId: this.#id,
-        arguments: args.length
-          ? await Promise.all(args.map(convertArgument.bind(this)))
-          : [],
+        // LazyArgs are used only internally and should not affect the order
+        // evaluate calls for the public APIs.
+        arguments: args.some(arg => {
+          return arg instanceof LazyArg;
+        })
+          ? await Promise.all(
+              args.map(arg => {
+                return convertArgumentAsync(this, arg);
+              })
+            )
+          : args.map(arg => {
+              return convertArgument(this, arg);
+            }),
         returnByValue,
         awaitPromise: true,
         userGesture: true,
@@ -434,13 +452,20 @@ export class ExecutionContext
       ? valueFromRemoteObject(remoteObject)
       : this.#world.createCdpHandle(remoteObject);
 
-    async function convertArgument(
-      this: ExecutionContext,
+    async function convertArgumentAsync(
+      context: ExecutionContext,
       arg: unknown
-    ): Promise<Protocol.Runtime.CallArgument> {
+    ) {
       if (arg instanceof LazyArg) {
-        arg = await arg.get(this);
+        arg = await arg.get(context);
       }
+      return convertArgument(context, arg);
+    }
+
+    function convertArgument(
+      context: ExecutionContext,
+      arg: unknown
+    ): Protocol.Runtime.CallArgument {
       if (typeof arg === 'bigint') {
         // eslint-disable-line valid-typeof
         return {unserializableValue: `${arg.toString()}n`};
@@ -462,7 +487,7 @@ export class ExecutionContext
           ? arg
           : null;
       if (objectHandle) {
-        if (objectHandle.realm !== this.#world) {
+        if (objectHandle.realm !== context.#world) {
           throw new Error(
             'JSHandles can be evaluated only in the context they were created!'
           );

@@ -43,12 +43,18 @@ updates:
         patterns:
           - '*'
   - package-ecosystem: docker
-    directory: /
+    directory: /docker
     schedule:
       interval: weekly
       day: 'sunday'
       time: '05:00'
       timezone: Europe/Berlin
+    ignore:
+      - dependency-name: node
+        versions:
+          # Remove once NodeJS v22 is LTS
+          - '22'
+          - '21'
     groups:
       all:
         patterns:

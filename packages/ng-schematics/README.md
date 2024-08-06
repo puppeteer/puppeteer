@@ -46,7 +46,7 @@ ng generate @puppeteer/ng-schematics:e2e "<TestName>"
 ### Running test server and dev server at the same time
 
 By default the E2E test will run the app on the same port as `ng start`.
-To avoid this you can specify the port the an the `angular.json`
+To avoid this you can specify the port in the `angular.json`
 Update either `e2e` or `puppeteer` (depending on the initial setup) to:
 
 ```json
@@ -75,7 +75,7 @@ Check out our [contributing guide](https://pptr.dev/contributing) to get an over
 
 ### Sandbox smoke tests
 
-To make integration easier smoke test can be run with a single command, that will create a fresh install of Angular (single application and a milti application projects). Then it will install the schematics inside them and run the initial e2e tests:
+To make integration easier smoke test can be run with a single command, that will create a fresh install of Angular (single application and a multi application projects). Then it will install the schematics inside them and run the initial e2e tests:
 
 ```bash
 node tools/smoke.mjs
@@ -94,7 +94,7 @@ npm run test
 ### Entry point
 
 Puppeteer has its own [`browser`](https://pptr.dev/api/puppeteer.browser) that exposes the browser process.
-A more closes comparison for Protractor's `browser` would be Puppeteer's [`page`](https://pptr.dev/api/puppeteer.page).
+A more close comparison for Protractor's `browser` would be Puppeteer's [`page`](https://pptr.dev/api/puppeteer.page).
 
 ```ts
 // Testing framework specific imports

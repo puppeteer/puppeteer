@@ -55,6 +55,18 @@ describe('navigation', function () {
       const response = await page.goto(server.PREFIX + '/historyapi.html');
       expect(response!.status()).toBe(200);
     });
+    it('should return response when page replaces its state during load', async () => {
+      const {page, server} = await getTestState();
+
+      const response = await page.goto(
+        server.PREFIX + '/historyapi-replaceState.html',
+        {
+          waitUntil: 'networkidle2',
+        }
+      );
+      expect(response!.status()).toBe(200);
+      expect(page.url()).toBe(server.PREFIX + '/historyapi-replaceState.html');
+    });
     it('should work with subframes return 204', async () => {
       const {page, server} = await getTestState();
 
@@ -587,7 +599,7 @@ describe('navigation', function () {
       await page.goto(server.EMPTY_PAGE);
       const [response] = await Promise.all([
         page.waitForNavigation(),
-        page.evaluate((url: string) => {
+        page.evaluate(url => {
           return (window.location.href = url);
         }, server.PREFIX + '/grid.html'),
       ]);
@@ -719,9 +731,6 @@ describe('navigation', function () {
           waitEvent(page, 'frameattached').then(_frame => {
             return (frame = _frame);
           }),
-          waitEvent(page, 'framenavigated', f => {
-            return f === frame;
-          }),
         ]),
         Deferred.create({
           message: `should work when subframe issues window.stop()`,
@@ -743,6 +752,17 @@ describe('navigation', function () {
         }),
         navigationPromise,
       ]);
+    });
+    it('should be cancellable', async () => {
+      const {page} = await getTestState();
+
+      const abortController = new AbortController();
+      const task = page.waitForNavigation({
+        signal: abortController.signal,
+      });
+
+      abortController.abort();
+      await expect(task).rejects.toThrow(/aborted/);
     });
   });
 
@@ -870,7 +890,7 @@ describe('navigation', function () {
       const frame = page.frames()[1]!;
       const [response] = await Promise.all([
         frame.waitForNavigation(),
-        frame.evaluate((url: string) => {
+        frame.evaluate(url => {
           return (window.location.href = url);
         }, server.PREFIX + '/grid.html'),
       ]);

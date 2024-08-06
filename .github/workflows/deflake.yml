@@ -25,7 +25,7 @@ on:
           - chrome-bidi
           - firefox-headful
           - firefox-headless
-          - firefox-bidi
+          - firefox-cdp
       os:
         description: On which OS to run?
         required: true
@@ -33,7 +33,7 @@ on:
         options:
           - ubuntu-latest
           - windows-latest
-          - macos-13
+          - macos-latest
       retries:
         description: Number of retries per test
         required: false
@@ -49,9 +49,9 @@ jobs:
       fail-fast: false
     steps:
       - name: Check out repository
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - name: Set up Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
           cache: npm
           node-version-file: '.nvmrc'
@@ -63,36 +63,17 @@ jobs:
       - uses: google/wireit@4aad131006ea85c1e42af927534ebb13426dd730 # setup-github-actions-caching/v1.0.2
       - name: Build packages
         run: npm run build -w @puppeteer-test/test
-      - name: Setup cache for Chrome binary
-        if: ${{ inputs.suite != 'chrome-bidi' }}
-        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
-        with:
-          path: ~/.cache/puppeteer/chrome
-          key: Chrome-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
       - name: Install Chrome
-        if: ${{ inputs.suite != 'chrome-bidi' }}
         run: npm run postinstall
-      - name: Setup cache for Chrome Canary binary
-        if: ${{ inputs.suite == 'chrome-bidi' }}
-        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
-        with:
-          path: ~/.cache/puppeteer/chrome-canary
-          key: Chrome-Canary-${{ runner.os }}-${{ hashFiles('package.json') }}
-      - name: Install Chrome Canary
-        if: ${{ inputs.suite == 'chrome-bidi' }}
-        id: browser
-        run: node tools/download_chrome_bidi.mjs ~/.cache/puppeteer/chrome-canary
       - name: Run all tests (for non-Linux)
         if: ${{ inputs.os != 'ubuntu-latest' }}
         run: npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
-          PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
           PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
       - name: Run all tests (for Linux)
         if: ${{ inputs.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
-          PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
           PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
           PUPPETEER_DEFLAKE_RETRIES: ${{ inputs.retries }}
 
@@ -104,9 +85,9 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - name: Set up Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
           cache: npm
           node-version-file: '.nvmrc'
@@ -125,7 +106,7 @@ jobs:
           key: Firefox-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
       - name: Install Firefox
         env:
-          PUPPETEER_PRODUCT: firefox
+          PUPPETEER_BROWSER: firefox
         run: npm run postinstall
       - name: Run all tests (for non-Linux)
         if: ${{ inputs.os != 'ubuntu-latest' }}
