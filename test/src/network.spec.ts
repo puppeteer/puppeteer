@@ -483,6 +483,9 @@ describe('network', function () {
       const {page, server} = await getTestState();
       const responses: HTTPResponse[] = [];
       page.on('response', response => {
+        if (isFavicon(response)) {
+          return;
+        }
         return responses.push(response);
       });
       await page.goto(server.EMPTY_PAGE);
