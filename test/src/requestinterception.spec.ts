@@ -14,7 +14,7 @@ import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {isFavicon, waitEvent} from './utils.js';
 
-describe.only('request interception', function () {
+describe('request interception', function () {
   setupTestBrowserHooks();
 
   describe('Page.setRequestInterception', function () {

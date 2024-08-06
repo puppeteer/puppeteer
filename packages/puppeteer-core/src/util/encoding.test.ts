@@ -58,5 +58,13 @@ describe('Typed Array helpers', function () {
         new Uint8Array([1, 12, 123])
       );
     });
+
+    it('should work with empty arrays', () => {
+      const one = new Uint8Array([1]);
+      const two = new Uint8Array([]);
+      const three = new Uint8Array([]);
+
+      expect(mergeUint8Arrays([one, two, three])).toEqual(new Uint8Array([1]));
+    });
   });
 });
