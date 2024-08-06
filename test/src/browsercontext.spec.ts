@@ -20,19 +20,22 @@ describe('BrowserContext', function () {
     });
 
     expect(browser.browserContexts().length).toBeGreaterThanOrEqual(1);
-    const defaultContext = browser.browserContexts().find(context => {
-      return !context.isIncognito();
+  });
+  it('should not be able to close default context', async () => {
+    const {browser} = await getTestState({
+      skipContextCreation: true,
     });
+
+    const defaultContext = browser.defaultBrowserContext();
     expect(defaultContext).toBeDefined();
 
-    let error!: Error;
-    await defaultContext!.close().catch(error_ => {
-      return (error = error_);
+    const error = await defaultContext!.close().catch(error => {
+      return error;
     });
-    expect(browser.defaultBrowserContext()).toBe(defaultContext);
+    expect(error).toBeInstanceOf(Error);
     expect(error.message).toContain('cannot be closed');
   });
-  it('should create new incognito context', async () => {
+  it('should create new context', async () => {
     const {browser} = await getTestState({
       skipContextCreation: true,
     });
@@ -40,7 +43,6 @@ describe('BrowserContext', function () {
     const contextCount = browser.browserContexts().length;
     expect(contextCount).toBeGreaterThanOrEqual(1);
     const context = await browser.createBrowserContext();
-    expect(context.isIncognito()).toBe(true);
     expect(browser.browserContexts()).toHaveLength(contextCount + 1);
     expect(browser.browserContexts().indexOf(context) !== -1).toBe(true);
     await context.close();

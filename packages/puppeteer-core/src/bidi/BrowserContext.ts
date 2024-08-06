@@ -15,6 +15,7 @@ import type {Target} from '../api/Target.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
+import {assert} from '../util/assert.js';
 import {bubble} from '../util/decorators.js';
 
 import type {BidiBrowser} from './Browser.js';
@@ -196,9 +197,10 @@ export class BidiBrowserContext extends BrowserContext {
   }
 
   override async close(): Promise<void> {
-    if (!this.isIncognito()) {
-      throw new Error('Default context cannot be closed!');
-    }
+    assert(
+      this.userContext.id !== UserContext.DEFAULT,
+      'Default BrowserContext cannot be closed!'
+    );
 
     try {
       await this.userContext.remove();
@@ -217,10 +219,6 @@ export class BidiBrowserContext extends BrowserContext {
     return [...this.userContext.browsingContexts].map(context => {
       return this.#pages.get(context)!;
     });
-  }
-
-  override isIncognito(): boolean {
-    return this.userContext.id !== UserContext.DEFAULT;
   }
 
   override async overridePermissions(
