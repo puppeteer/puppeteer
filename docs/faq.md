@@ -8,34 +8,25 @@ expertise on the project! See our
 
 ## Q: What is the status of cross-browser support?
 
-Official Firefox support is currently experimental. The ongoing collaboration
-with Mozilla aims to support common end-to-end testing use cases, for which
-developers expect cross-browser coverage. The Puppeteer team needs input from
-users to stabilize Firefox support and to bring missing APIs to our attention.
+From Puppeteer v23.0.0 onwards Puppeteer provides support for both Chrome and Firefox.
 
-From Puppeteer v2.1.0 onwards you can specify
-[`puppeteer.launch({product: 'firefox'})`](./api/puppeteer.puppeteernode.launch)
-to run your Puppeteer scripts in Firefox Nightly, without any additional custom
-patches. While
-[an older experiment](https://www.npmjs.com/package/puppeteer-firefox) required
-a patched version of Firefox,
-[the current approach](https://wiki.mozilla.org/Remote) works with “stock”
-Firefox.
+To automate Chrome Puppeteer uses the Chrome DevTools Protocol (CDP) by default, but it can
+also be automated using WebDriver BiDi which is the default for automating Firefox.
 
-We will continue to collaborate with other browser vendors to bring Puppeteer
-support to browsers such as Safari. This effort includes exploration of a
-standard for executing cross-browser commands (instead of relying on the
-non-standard DevTools Protocol used by Chrome).
-
-Update 2023-11-17: Puppeteer has experimental support for the new
-[WebDriverBiDi](https://w3c.github.io/webdriver-bidi/) protocol that can be used
-to automate Firefox. The WebDriver BiDi implementation in Firefox will replace
-the current CDP implementation in Firefox in the future. See
-https://pptr.dev/webdriver-bidi for more details.
+To understand the subtle differences in API support refer to our
+[WebDriver BiDi guide](https://pptr.dev/webdriver-bidi).
 
 ## Q: Does Puppeteer support WebDriver BiDi?
 
-Puppeteer has experimental support for WebDriver BiDi. See https://pptr.dev/webdriver-bidi.
+From Puppeteer v23.0.0 and up Puppeteer has production-ready support for WebDriver BiDi
+to automate both Chrome and Firefox.
+
+## Q: Will keep Puppeteer supporting CDP?
+
+We are not going to stop supporting automation of Chrome with CDP - despite
+Puppeteer's support for WebDriver BiDi. To not break existing automations relying on CDP,
+but also to keep enabling automation use-cases unique to Chrome and not standardized
+with WebDriver BiDi.
 
 ## Q: What are Puppeteer’s goals and principles?
 
@@ -61,74 +52,34 @@ help us drive product decisions:
 - **Simplicity**: Puppeteer provides a high-level API that’s easy to use,
   understand, and debug.
 
-## Q: Is Puppeteer a replacement for Selenium WebDriver?
+## Q: Is Puppeteer a replacement for Selenium?
 
-**No**. Both projects are valuable for very different reasons:
+Puppeteer is a Node.js based reference implementation of how to automate browsers
+with CDP and WebDriver BiDi - the same web standard the Selenium project is also
+contributing to.
 
-- Selenium WebDriver focuses on cross-browser automation and provides bindings for
-  multiple languages; Puppeteer is only for JavaScript.
-- Puppeteer focuses on Chromium; its value proposition is richer functionality
-  for Chromium-based browsers.
+The Selenium project goes beyond what Puppeteer offers in multiple aspects: it provides
+bindings for more languages than just JavaScript and for example it also offers tooling
+to orchestrate automation at large, like Selenium Grid. Both is beyond Puppeteer's scope.
 
-That said, you **can** use Puppeteer to run tests against Chromium, e.g. using
-the community-driven
-[jest-puppeteer](https://github.com/smooth-code/jest-puppeteer) or
-[Puppeteer's Angular integration](https://pptr.dev/integrations/ng-schematics). While this
-probably shouldn’t be your only testing solution, it does have a few good points
-compared to WebDriver classic:
+There are community projects that add capabilities to Puppeteer beyond its core,
+making things like testing more convenient. For example see:
 
-- Puppeteer requires zero setup and comes bundled with the Chrome version it
-  works best with, making it
-  [very easy to start with](https://github.com/puppeteer/puppeteer/#getting-started).
-- Puppeteer has event-driven architecture, which removes a lot of potential
-  flakiness. There’s no need for “sleep(1000)” calls in puppeteer scripts.
-- Puppeteer exposes browser contexts, making it possible to efficiently
-  parallelize test execution.
-- Puppeteer shines when it comes to debugging: flip the “headless” bit to false,
-  add “slowMo”, and you’ll see what the browser is doing. You can even open
-  Chrome DevTools to inspect the test environment.
+- [jest-puppeteer](https://github.com/smooth-code/jest-puppeteer) or
+- [Puppeteer's Angular integration](https://pptr.dev/integrations/ng-schematics)
 
-## Q: Why doesn’t Puppeteer v.XXX work with Chromium v.YYY?
+## Q: Why doesn’t Puppeteer v.XXX work with a certain version of Chrome or Firefox?
 
-We see Puppeteer as an **indivisible entity** with Chromium. Each version of
-Puppeteer bundles a specific version of Chromium – **the only** version it is
-guaranteed to work with.
+Every Puppeteer release is tightly bundled with a specific browser release
+to ensure compatibility with the implementation of the underlying protocols,
+the Chrome DevTools Protocol and WebDriver BiDi.
 
-This is not an artificial constraint: A lot of work on Puppeteer is actually
-taking place in the Chromium repository. Here’s a typical story:
+This is to prevent changes in either Chrome or Firefox not unexpectedly break Puppeteer.
 
-- A Puppeteer bug is reported:
-  https://github.com/puppeteer/puppeteer/issues/2709
-- It turned out this is an issue with the DevTools protocol, so we’re fixing it
-  in Chromium: https://chromium-review.googlesource.com/c/chromium/src/+/1102154
-- Once the upstream fix is landed, we roll updated Chromium into Puppeteer:
-  https://github.com/puppeteer/puppeteer/pull/2769
+## Q: Which Chrome and Firefox version does Puppeteer use?
 
-## Q: Which Chrome version does Puppeteer use?
-
-Look for the `chrome` entry in
+Look for the `chrome` and `firefox` entries in
 [revisions.ts](https://github.com/puppeteer/puppeteer/blob/main/packages/puppeteer-core/src/revisions.ts).
-
-## Q: Which Firefox version does Puppeteer use?
-
-Since Firefox support is experimental, Puppeteer downloads the latest
-[Firefox Nightly](https://wiki.mozilla.org/Nightly) when the `PUPPETEER_BROWSER`
-environment variable is set to `firefox`. That's also why the value of `firefox`
-in
-[revisions.ts](https://github.com/puppeteer/puppeteer/blob/main/packages/puppeteer-core/src/revisions.ts)
-is `latest` -- Puppeteer isn't tied to a particular Firefox version.
-
-To fetch Firefox Nightly as part of Puppeteer installation:
-
-```bash npm2yarn
-PUPPETEER_BROWSER=firefox npm i puppeteer
-```
-
-To download Firefox Nightly into an existing Puppeteer project:
-
-```bash
-npx puppeteer browsers install firefox
-```
 
 ## Q: What’s considered a “Navigation”?
 
