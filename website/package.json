@@ -27,6 +27,7 @@
     "clsx": "2.1.1",
     "prism-react-renderer": "2.3.1",
     "react": "18.3.1",
+    "react-cookie-consent": "9.0.0",
     "react-dom": "18.3.1",
     "semver": "7.6.3"
   },
