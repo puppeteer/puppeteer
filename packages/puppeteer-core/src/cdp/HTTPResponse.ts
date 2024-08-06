@@ -11,6 +11,7 @@ import {HTTPResponse, type RemoteAddress} from '../api/HTTPResponse.js';
 import {ProtocolError} from '../common/Errors.js';
 import {SecurityDetails} from '../common/SecurityDetails.js';
 import {Deferred} from '../util/Deferred.js';
+import {stringToTypedArray} from '../util/encoding.js';
 
 import type {CdpHTTPRequest} from './HTTPRequest.js';
 
@@ -20,7 +21,7 @@ import type {CdpHTTPRequest} from './HTTPRequest.js';
 export class CdpHTTPResponse extends HTTPResponse {
   #client: CDPSession;
   #request: CdpHTTPRequest;
-  #contentPromise: Promise<Buffer> | null = null;
+  #contentPromise: Promise<Uint8Array> | null = null;
   #bodyLoadedDeferred = Deferred.create<void, Error>();
   #remoteAddress: RemoteAddress;
   #status: number;
@@ -121,7 +122,7 @@ export class CdpHTTPResponse extends HTTPResponse {
     return this.#timing;
   }
 
-  override buffer(): Promise<Buffer> {
+  override content(): Promise<Uint8Array> {
     if (!this.#contentPromise) {
       this.#contentPromise = this.#bodyLoadedDeferred
         .valueOrThrow()
@@ -133,10 +134,8 @@ export class CdpHTTPResponse extends HTTPResponse {
                 requestId: this.#request.id,
               }
             );
-            return Buffer.from(
-              response.body,
-              response.base64Encoded ? 'base64' : 'utf8'
-            );
+
+            return stringToTypedArray(response.body, response.base64Encoded);
           } catch (error) {
             if (
               error instanceof ProtocolError &&

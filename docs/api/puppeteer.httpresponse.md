@@ -48,6 +48,21 @@ The buffer might be re-encoded by the browser based on HTTP-headers or other heu
 </td></tr>
 <tr><td>
 
+<span id="content">[content()](./puppeteer.httpresponse.content.md)</span>
+
+</td><td>
+
+</td><td>
+
+Promise which resolves to a buffer with response body.
+
+**Remarks:**
+
+The buffer might be re-encoded by the browser based on HTTP-headers or other heuristics. If the browser failed to detect the correct encoding, the buffer might be encoded incorrectly. See https://github.com/puppeteer/puppeteer/issues/6478.
+
+</td></tr>
+<tr><td>
+
 <span id="frame">[frame()](./puppeteer.httpresponse.frame.md)</span>
 
 </td><td>

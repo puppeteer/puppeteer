@@ -19,6 +19,7 @@ import type {CDPSession} from '../api/CDPSession.js';
 import {environment} from '../environment.js';
 import {packageVersion} from '../generated/version.js';
 import {assert} from '../util/assert.js';
+import {mergeUint8Arrays} from '../util/encoding.js';
 
 import {debug} from './Debug.js';
 import {TimeoutError} from './Errors.js';
@@ -192,10 +193,10 @@ export function evaluationString(
 /**
  * @internal
  */
-export async function getReadableAsBuffer(
+export async function getReadableAsTypedArray(
   readable: ReadableStream<Uint8Array>,
   path?: string
-): Promise<Buffer | null> {
+): Promise<Uint8Array | null> {
   const buffers: Uint8Array[] = [];
   const reader = readable.getReader();
   if (path) {
@@ -222,7 +223,11 @@ export async function getReadableAsBuffer(
     }
   }
   try {
-    return Buffer.concat(buffers);
+    const concat = mergeUint8Arrays(buffers);
+    if (concat.length === 0) {
+      return null;
+    }
+    return concat;
   } catch (error) {
     debugError(error);
     return null;

@@ -733,29 +733,29 @@ describe('request interception', function () {
 
       await page.setRequestInterception(true);
       page.on('request', request => {
-        void request.continue({postData: 'doggo'});
+        void request.continue({postData: '🐶'});
       });
       const [serverRequest] = await Promise.all([
         server.waitForRequest('/sleep.zzz'),
         page.evaluate(() => {
-          return fetch('/sleep.zzz', {method: 'POST', body: 'birdy'});
+          return fetch('/sleep.zzz', {method: 'POST', body: '🐦'});
         }),
       ]);
-      expect(await serverRequest.postBody).toBe('doggo');
+      expect(await serverRequest.postBody).toBe('🐶');
     });
     it('should amend both post data and method on navigation', async () => {
       const {page, server} = await getTestState();
 
       await page.setRequestInterception(true);
       page.on('request', request => {
-        void request.continue({method: 'POST', postData: 'doggo'});
+        void request.continue({method: 'POST', postData: '🐶'});
       });
       const [serverRequest] = await Promise.all([
         server.waitForRequest('/empty.html'),
         page.goto(server.EMPTY_PAGE),
       ]);
       expect(serverRequest.method).toBe('POST');
-      expect(await serverRequest.postBody).toBe('doggo');
+      expect(await serverRequest.postBody).toBe('🐶');
     });
     it('should fail if the header value is invalid', async () => {
       const {page, server} = await getTestState();
@@ -858,7 +858,7 @@ describe('request interception', function () {
             arr: ['1', '2'],
             'set-cookie': ['first=1', 'second=2'],
           },
-          body: 'Hello world',
+          body: 'Hello 🌐',
         });
       });
       const response = (await page.goto(server.EMPTY_PAGE))!;
@@ -954,7 +954,7 @@ describe('request interception', function () {
           });
         await request.respond({
           status: 200,
-          body: 'Hello World',
+          body: 'Hello 🌐',
         });
       });
       await page.goto(server.PREFIX + '/empty.html');

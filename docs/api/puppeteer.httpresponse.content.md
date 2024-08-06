@@ -1,8 +1,8 @@
 ---
-sidebar_label: HTTPResponse.buffer
+sidebar_label: HTTPResponse.content
 ---
 
-# HTTPResponse.buffer() method
+# HTTPResponse.content() method
 
 Promise which resolves to a buffer with response body.
 
@@ -10,13 +10,13 @@ Promise which resolves to a buffer with response body.
 
 ```typescript
 class HTTPResponse {
-  buffer(): Promise<Buffer>;
+  abstract content(): Promise<Uint8Array>;
 }
 ```
 
 **Returns:**
 
-Promise&lt;Buffer&gt;
+Promise&lt;Uint8Array&gt;
 
 ## Remarks
 

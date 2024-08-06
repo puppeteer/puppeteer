@@ -403,7 +403,8 @@ describe('network', function () {
         path.join(__dirname, '../assets', 'pptr.png')
       );
       const responseBuffer = await response.buffer();
-      expect(responseBuffer.equals(imageBuffer)).toBe(true);
+
+      expect(Buffer.from(responseBuffer).equals(imageBuffer)).toBe(true);
     });
     it('should work with compression', async () => {
       const {page, server} = await getTestState();
@@ -414,7 +415,7 @@ describe('network', function () {
         path.join(__dirname, '../assets', 'pptr.png')
       );
       const responseBuffer = await response.buffer();
-      expect(responseBuffer.equals(imageBuffer)).toBe(true);
+      expect(Buffer.from(responseBuffer).equals(imageBuffer)).toBe(true);
     });
     it('should throw if the response does not have a body', async () => {
       const {page, server} = await getTestState();

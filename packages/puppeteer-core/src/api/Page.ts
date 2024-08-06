@@ -79,6 +79,7 @@ import {
   DisposableStack,
   disposeSymbol,
 } from '../util/disposable.js';
+import {stringToTypedArray} from '../util/encoding.js';
 
 import type {Browser} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';
@@ -2278,15 +2279,15 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * @internal
    */
-  async _maybeWriteBufferToFile(
+  async _maybeWriteTypedArrayToFile(
     path: string | undefined,
-    buffer: Buffer
+    typedArray: Uint8Array
   ): Promise<void> {
     if (!path) {
       return;
     }
 
-    await environment.value.fs.promises.writeFile(path, buffer);
+    await environment.value.fs.promises.writeFile(path, typedArray);
   }
 
   /**
@@ -2482,13 +2483,13 @@ export abstract class Page extends EventEmitter<PageEvents> {
   async screenshot(
     options: Readonly<ScreenshotOptions> & {encoding: 'base64'}
   ): Promise<string>;
-  async screenshot(options?: Readonly<ScreenshotOptions>): Promise<Buffer>;
+  async screenshot(options?: Readonly<ScreenshotOptions>): Promise<Uint8Array>;
   @guarded(function () {
     return this.browser();
   })
   async screenshot(
     userOptions: Readonly<ScreenshotOptions> = {}
-  ): Promise<Buffer | string> {
+  ): Promise<Uint8Array | string> {
     using _guard = await this.browserContext().startScreenshot();
 
     await this.bringToFront();
@@ -2587,9 +2588,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
     if (options.encoding === 'base64') {
       return data;
     }
-    const buffer = Buffer.from(data, 'base64');
-    await this._maybeWriteBufferToFile(options.path, buffer);
-    return buffer;
+
+    const typedArray = stringToTypedArray(data, true);
+    await this._maybeWriteTypedArrayToFile(options.path, typedArray);
+    return typedArray;
   }
 
   /**
@@ -2620,7 +2622,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * {@inheritDoc Page.createPDFStream}
    */
-  abstract pdf(options?: PDFOptions): Promise<Buffer>;
+  abstract pdf(options?: PDFOptions): Promise<Uint8Array>;
 
   /**
    * The page's title

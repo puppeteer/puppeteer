@@ -89,14 +89,21 @@ export abstract class HTTPResponse {
    * failed to detect the correct encoding, the buffer might
    * be encoded incorrectly. See https://github.com/puppeteer/puppeteer/issues/6478.
    */
-  abstract buffer(): Promise<Buffer>;
+  abstract content(): Promise<Uint8Array>;
 
+  /**
+   * {@inheritDoc HTTPResponse.content}
+   */
+  async buffer(): Promise<Buffer> {
+    const content = await this.content();
+    return Buffer.from(content);
+  }
   /**
    * Promise which resolves to a text (utf8) representation of response body.
    */
   async text(): Promise<string> {
-    const content = await this.buffer();
-    return content.toString('utf8');
+    const content = await this.content();
+    return new TextDecoder().decode(content);
   }
 
   /**

@@ -1354,13 +1354,13 @@ export abstract class ElementHandle<
   async screenshot(
     options: Readonly<ScreenshotOptions> & {encoding: 'base64'}
   ): Promise<string>;
-  async screenshot(options?: Readonly<ScreenshotOptions>): Promise<Buffer>;
+  async screenshot(options?: Readonly<ScreenshotOptions>): Promise<Uint8Array>;
   @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async screenshot(
     this: ElementHandle<Element>,
     options: Readonly<ElementScreenshotOptions> = {}
-  ): Promise<string | Buffer> {
+  ): Promise<string | Uint8Array> {
     const {scrollIntoView = true, clip} = options;
 
     const page = this.frame.page();

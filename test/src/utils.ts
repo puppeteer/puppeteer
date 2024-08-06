@@ -26,11 +26,16 @@ export const extendExpectWithToBeGolden = (
   outputDir: string
 ): void => {
   expect.extend({
-    toBeGolden: (testScreenshot: string | Buffer, goldenFilePath: string) => {
+    toBeGolden: (
+      testScreenshot: string | Uint8Array,
+      goldenFilePath: string
+    ) => {
       const result = compare(
         goldenDir,
         outputDir,
-        testScreenshot,
+        typeof testScreenshot === 'string'
+          ? testScreenshot
+          : Buffer.from(testScreenshot),
         goldenFilePath
       );
 

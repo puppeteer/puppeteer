@@ -50,6 +50,7 @@ import {
 import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
 import {bubble} from '../util/decorators.js';
+import {stringToTypedArray} from '../util/encoding.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {BidiBrowser} from './Browser.js';
@@ -374,7 +375,7 @@ export class BidiPage extends Page {
     return this.#viewport;
   }
 
-  override async pdf(options: PDFOptions = {}): Promise<Buffer> {
+  override async pdf(options: PDFOptions = {}): Promise<Uint8Array> {
     const {timeout: ms = this._timeoutSettings.timeout(), path = undefined} =
       options;
     const {
@@ -416,21 +417,21 @@ export class BidiPage extends Page {
       ).pipe(raceWith(timeout(ms)))
     );
 
-    const buffer = Buffer.from(data, 'base64');
+    const typedArray = stringToTypedArray(data, true);
 
-    await this._maybeWriteBufferToFile(path, buffer);
+    await this._maybeWriteTypedArrayToFile(path, typedArray);
 
-    return buffer;
+    return typedArray;
   }
 
   override async createPDFStream(
     options?: PDFOptions | undefined
   ): Promise<ReadableStream<Uint8Array>> {
-    const buffer = await this.pdf(options);
+    const typedArray = await this.pdf(options);
 
     return new ReadableStream({
       start(controller) {
-        controller.enqueue(buffer);
+        controller.enqueue(typedArray);
         controller.close();
       },
     });

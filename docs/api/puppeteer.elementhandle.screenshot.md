@@ -51,13 +51,13 @@ Readonly&lt;[ScreenshotOptions](./puppeteer.screenshotoptions.md)&gt; &amp; &#12
 
 Promise&lt;string&gt;
 
-<h2 id="screenshot-1">screenshot(): Promise&lt;Buffer&gt;</h2>
+<h2 id="screenshot-1">screenshot(): Promise&lt;Uint8Array&gt;</h2>
 
 ### Signature
 
 ```typescript
 class ElementHandle {
-  screenshot(options?: Readonly<ScreenshotOptions>): Promise<Buffer>;
+  screenshot(options?: Readonly<ScreenshotOptions>): Promise<Uint8Array>;
 }
 ```
 
@@ -92,4 +92,4 @@ _(Optional)_
 </tbody></table>
 **Returns:**
 
-Promise&lt;Buffer&gt;
+Promise&lt;Uint8Array&gt;

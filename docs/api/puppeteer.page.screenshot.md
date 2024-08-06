@@ -59,13 +59,13 @@ While a screenshot is being taken in a [BrowserContext](./puppeteer.browserconte
 
 Calling [Page.bringToFront()](./puppeteer.page.bringtofront.md) will not wait for existing screenshot operations.
 
-<h2 id="screenshot-1">screenshot(): Promise&lt;Buffer&gt;</h2>
+<h2 id="screenshot-1">screenshot(): Promise&lt;Uint8Array&gt;</h2>
 
 ### Signature
 
 ```typescript
 class Page {
-  screenshot(options?: Readonly<ScreenshotOptions>): Promise<Buffer>;
+  screenshot(options?: Readonly<ScreenshotOptions>): Promise<Uint8Array>;
 }
 ```
 
@@ -100,4 +100,4 @@ _(Optional)_
 </tbody></table>
 **Returns:**
 
-Promise&lt;Buffer&gt;
+Promise&lt;Uint8Array&gt;
