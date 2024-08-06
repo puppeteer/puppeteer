@@ -17,6 +17,7 @@ import {
   handleError,
 } from '../api/HTTPRequest.js';
 import {debugError} from '../common/util.js';
+import {stringToBase64} from '../util/encoding.js';
 
 import type {CdpHTTPResponse} from './HTTPResponse.js';
 
@@ -172,7 +173,9 @@ export class CdpHTTPRequest extends HTTPRequest {
     const {url, method, postData, headers} = overrides;
     this.interception.handled = true;
 
-    const postDataBinaryBase64 = postData ? btoa(postData) : undefined;
+    const postDataBinaryBase64 = postData
+      ? stringToBase64(postData)
+      : undefined;
 
     if (this._interceptionId === undefined) {
       throw new Error(

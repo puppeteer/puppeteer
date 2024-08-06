@@ -8,6 +8,7 @@ import type {Protocol} from 'devtools-protocol';
 import type {ProtocolError} from '../common/Errors.js';
 import {debugError, isString} from '../common/util.js';
 import {assert} from '../util/assert.js';
+import {typedArrayToBase64} from '../util/encoding.js';
 
 import type {CDPSession} from './CDPSession.js';
 import type {Frame} from './Frame.js';
@@ -561,14 +562,9 @@ export abstract class HTTPRequest {
       ? new TextEncoder().encode(body)
       : body;
 
-    const bytes = [];
-    for (const byte of byteBody) {
-      bytes.push(String.fromCharCode(byte));
-    }
-
     return {
       contentLength: byteBody.byteLength,
-      base64: btoa(bytes.join('')),
+      base64: typedArrayToBase64(byteBody),
     };
   }
 }

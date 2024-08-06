@@ -79,7 +79,7 @@ import {
   DisposableStack,
   disposeSymbol,
 } from '../util/disposable.js';
-import {stringToTypedArray} from '../util/typedArray.js';
+import {stringToTypedArray} from '../util/encoding.js';
 
 import type {Browser} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';

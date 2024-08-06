@@ -50,8 +50,8 @@ import {
 import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
 import {bubble} from '../util/decorators.js';
+import {stringToTypedArray} from '../util/encoding.js';
 import {isErrorLike} from '../util/ErrorLike.js';
-import {stringToTypedArray} from '../util/typedArray.js';
 
 import type {BidiBrowser} from './Browser.js';
 import type {BidiBrowserContext} from './BrowserContext.js';

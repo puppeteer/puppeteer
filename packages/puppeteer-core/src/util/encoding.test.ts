@@ -8,7 +8,7 @@ import {describe, it} from 'node:test';
 
 import expect from 'expect';
 
-import {mergeUint8Arrays, stringToTypedArray} from './typedArray.js';
+import {mergeUint8Arrays, stringToTypedArray} from './encoding.js';
 
 describe('Typed Array helpers', function () {
   describe('stringToTypedArray', function () {
@@ -35,6 +35,16 @@ describe('Typed Array helpers', function () {
       const result = stringToTypedArray(body, true);
 
       expect(Buffer.from(body, 'base64').compare(Buffer.from(result))).toBe(0);
+    });
+
+    it('should get body length from base64 containing emoji', async () => {
+      // 'How Long is this string in bytes 📏?';
+      const base64 = 'SG93IExvbmcgaXMgdGhpcyBzdHJpbmcgaW4gYnl0ZXMg8J+Tjz8=';
+      const result = stringToTypedArray(base64, true);
+
+      expect(Buffer.from(base64, 'base64').compare(Buffer.from(result))).toBe(
+        0
+      );
     });
   });
 

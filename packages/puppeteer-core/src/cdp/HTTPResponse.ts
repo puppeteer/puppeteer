@@ -11,7 +11,7 @@ import {HTTPResponse, type RemoteAddress} from '../api/HTTPResponse.js';
 import {ProtocolError} from '../common/Errors.js';
 import {SecurityDetails} from '../common/SecurityDetails.js';
 import {Deferred} from '../util/Deferred.js';
-import {stringToTypedArray} from '../util/typedArray.js';
+import {stringToTypedArray} from '../util/encoding.js';
 
 import type {CdpHTTPRequest} from './HTTPRequest.js';
 

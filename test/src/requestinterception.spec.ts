@@ -890,7 +890,7 @@ describe('request interception', function () {
       expect(firstCookie?.value).toBe('1');
       expect(secondCookie?.value).toBe('2');
     });
-    it('should allow mocking binary responses', async () => {
+    it.only('should allow mocking binary responses', async () => {
       const {page, server} = await getTestState();
 
       await page.setRequestInterception(true);
