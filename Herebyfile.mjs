@@ -50,25 +50,37 @@ export const docsBrowserSupportTask = task({
     const content = await readFile('docs/supported-browsers.md', {
       encoding: 'utf8',
     });
-    const buffer = [];
+    // Create table view
+    const buffer = [
+      '| Puppeteer Version | Chrome | Firefox |',
+      '| ----------------- | ------ | ------- |',
+    ];
     for (const [puppeteerVersion, browserVersions] of versionData.versions) {
       if (puppeteerVersion === 'NEXT') {
         continue;
       }
-      // TODO: add Firefox.
-      if (semver.gte(puppeteerVersion, '20.0.0')) {
-        buffer.push(
-          `  * [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) ${browserVersions.chrome} - [Puppeteer ${puppeteerVersion}](${getApiUrl(
-            puppeteerVersion
-          )})`
-        );
+
+      const puppeteerVer = `[Puppeteer ${puppeteerVersion}](${getApiUrl(
+        puppeteerVersion
+      )})`;
+
+      let firefoxVer = '';
+      if (semver.gte(puppeteerVersion, '23.0.0')) {
+        firefoxVer = `Firefox ${browserVersions.firefox}`;
+      } else if (semver.gte(puppeteerVersion, '2.1.0')) {
+        firefoxVer = `Firefox Nightly (at the time)`;
       } else {
-        buffer.push(
-          `  * Chromium ${browserVersions.chrome} - [Puppeteer ${puppeteerVersion}](${getApiUrl(
-            puppeteerVersion
-          )})`
-        );
+        firefoxVer = `Firefox not supported`;
       }
+
+      let chromeVer = '';
+      if (semver.gte(puppeteerVersion, '20.0.0')) {
+        chromeVer = `[Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) ${browserVersions.chrome}`;
+      } else {
+        chromeVer = `Chromium ${browserVersions.chrome}`;
+      }
+
+      buffer.push(`| ${puppeteerVer} | ${chromeVer} | ${firefoxVer} |`);
     }
     await writeFile(
       'docs/supported-browsers.md',
