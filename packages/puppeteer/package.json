@@ -9,7 +9,7 @@
     "automation"
   ],
   "type": "commonjs",
-  "bin": "./lib/esm/puppeteer/node/cli.js",
+  "bin": "./lib/cjs/puppeteer/node/cli.js",
   "main": "./lib/cjs/puppeteer/puppeteer.js",
   "types": "./lib/types.d.ts",
   "exports": {
