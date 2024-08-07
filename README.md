@@ -9,7 +9,6 @@
 > Chrome or Firefox over the
 > [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/) or [WebDriver BiDi](https://pptr.dev/webdriver-bidi).
 > Puppeteer runs in the headless (no visible UI) by default
-> but can be configured to run in a visible ("headful") browser.
 
 ## [Get started](https://pptr.dev/docs) | [API](https://pptr.dev/api) | [FAQ](https://pptr.dev/faq) | [Contributing](https://pptr.dev/contributing) | [Troubleshooting](https://pptr.dev/troubleshooting)
 

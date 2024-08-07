@@ -998,7 +998,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @param selector -
    * {@link https://pptr.dev/guides/page-interactions#selectors | selector}
-   * to query page for.
+   * to query the page for.
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
    * can be passed as-is and a
    * {@link https://pptr.dev/guides/page-interactions#non-css-selectors | Puppeteer-specific selector syntax}
@@ -1022,7 +1022,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @param selector -
    * {@link https://pptr.dev/guides/page-interactions#selectors | selector}
-   * to query page for.
+   * to query the page for.
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
    * can be passed as-is and a
    * {@link https://pptr.dev/guides/page-interactions#non-css-selectors | Puppeteer-specific selector syntax}
@@ -1064,7 +1064,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @param selector -
    * {@link https://pptr.dev/guides/page-interactions#selectors | selector}
-   * to query page for.
+   * to query the page for.
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
    * can be passed as-is and a
    * {@link https://pptr.dev/guides/page-interactions#non-css-selectors | Puppeteer-specific selector syntax}
@@ -1094,7 +1094,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @param selector -
    * {@link https://pptr.dev/guides/page-interactions#selectors | selector}
-   * to query page for.
+   * to query the page for.
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
    * can be passed as-is and a
    * {@link https://pptr.dev/guides/page-interactions#non-css-selectors | Puppeteer-specific selector syntax}
@@ -1269,7 +1269,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @param selector -
    * {@link https://pptr.dev/guides/page-interactions#selectors | selector}
-   * to query page for.
+   * to query the page for.
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
    * can be passed as-is and a
    * {@link https://pptr.dev/guides/page-interactions#non-css-selectors | Puppeteer-specific selector syntax}
@@ -1354,7 +1354,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @param selector -
    * {@link https://pptr.dev/guides/page-interactions#selectors | selector}
-   * to query page for.
+   * to query the page for.
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
    * can be passed as-is and a
    * {@link https://pptr.dev/guides/page-interactions#non-css-selectors | Puppeteer-specific selector syntax}
@@ -2669,7 +2669,21 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```
    *
    * Shortcut for {@link Frame.click | page.mainFrame().click(selector[, options]) }.
-   * @param selector - A `selector` to search for element to click. If there are
+   * @param selector -
+   * {@link https://pptr.dev/guides/page-interactions#selectors | selector}
+   * to query the page for.
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
+   * can be passed as-is and a
+   * {@link https://pptr.dev/guides/page-interactions#non-css-selectors | Puppeteer-specific selector syntax}
+   * allows quering by
+   * {@link https://pptr.dev/guides/page-interactions#text-selectors--p-text | text},
+   * {@link https://pptr.dev/guides/page-interactions#aria-selectors--p-aria | a11y role and name},
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
+   * Alternatively, you can specify the selector type using a
+   * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}. If there are
    * multiple elements satisfying the `selector`, the first will be clicked
    * @param options - `Object`
    * @returns Promise which resolves when the element matching `selector` is
@@ -2681,19 +2695,33 @@ export abstract class Page extends EventEmitter<PageEvents> {
   }
 
   /**
-   * This method fetches an element with `selector` and focuses it. If there's no
-   * element matching `selector`, the method throws an error.
-   * @param selector - A
-   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector }
-   * of an element to focus. If there are multiple elements satisfying the
-   * selector, the first will be focused.
-   * @returns Promise which resolves when the element matching selector is
-   * successfully focused. The promise will be rejected if there is no element
-   * matching selector.
+   * This method fetches an element with `selector` and focuses it. If
+   * there's no element matching `selector`, the method throws an error.
+   * @param selector -
+   * {@link https://pptr.dev/guides/page-interactions#selectors | selector}
+   * to query the page for.
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
+   * can be passed as-is and a
+   * {@link https://pptr.dev/guides/page-interactions#non-css-selectors | Puppeteer-specific selector syntax}
+   * allows quering by
+   * {@link https://pptr.dev/guides/page-interactions#text-selectors--p-text | text},
+   * {@link https://pptr.dev/guides/page-interactions#aria-selectors--p-aria | a11y role and name},
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
+   * Alternatively, you can specify the selector type using a
+   * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}.
+   * If there are multiple elements satisfying the selector, the first
+   * will be focused.
+   * @returns Promise which resolves when the element matching selector
+   * is successfully focused. The promise will be rejected if there is
+   * no element matching selector.
    *
    * @remarks
    *
-   * Shortcut for {@link Frame.focus | page.mainFrame().focus(selector)}.
+   * Shortcut for
+   * {@link Frame.focus | page.mainFrame().focus(selector)}.
    */
   focus(selector: string): Promise<void> {
     return this.mainFrame().focus(selector);
@@ -2704,10 +2732,22 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * needed, and then uses {@link Page.mouse}
    * to hover over the center of the element.
    * If there's no element matching `selector`, the method throws an error.
-   * @param selector - A
-   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
-   * to search for element to hover. If there are multiple elements satisfying
-   * the selector, the first will be hovered.
+   * @param selector -
+   * {@link https://pptr.dev/guides/page-interactions#selectors | selector}
+   * to query the page for.
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
+   * can be passed as-is and a
+   * {@link https://pptr.dev/guides/page-interactions#non-css-selectors | Puppeteer-specific selector syntax}
+   * allows quering by
+   * {@link https://pptr.dev/guides/page-interactions#text-selectors--p-text | text},
+   * {@link https://pptr.dev/guides/page-interactions#aria-selectors--p-aria | a11y role and name},
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
+   * Alternatively, you can specify the selector type using a
+   * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}. If there are
+   * multiple elements satisfying the `selector`, the first will be hovered.
    * @returns Promise which resolves when the element matching `selector` is
    * successfully hovered. Promise gets rejected if there's no element matching
    * `selector`.
@@ -2732,9 +2772,21 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
    * ```
    *
-   * @param selector - A
-   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | Selector}
-   * to query the page for
+   * @param selector -
+   * {@link https://pptr.dev/guides/page-interactions#selectors | selector}
+   * to query the page for.
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
+   * can be passed as-is and a
+   * {@link https://pptr.dev/guides/page-interactions#non-css-selectors | Puppeteer-specific selector syntax}
+   * allows quering by
+   * {@link https://pptr.dev/guides/page-interactions#text-selectors--p-text | text},
+   * {@link https://pptr.dev/guides/page-interactions#aria-selectors--p-aria | a11y role and name},
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
+   * Alternatively, you can specify the selector type using a
+   * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}.
    * @param values - Values of options to select. If the `<select>` has the
    * `multiple` attribute, all values are considered, otherwise only the first one
    * is taken into account.
@@ -2753,9 +2805,21 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * needed, and then uses {@link Page.touchscreen}
    * to tap in the center of the element.
    * If there's no element matching `selector`, the method throws an error.
-   * @param selector - A
-   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | Selector}
-   * to search for element to tap. If there are multiple elements satisfying the
+   * @param selector -
+   * {@link https://pptr.dev/guides/page-interactions#selectors | selector}
+   * to query the page for.
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
+   * can be passed as-is and a
+   * {@link https://pptr.dev/guides/page-interactions#non-css-selectors | Puppeteer-specific selector syntax}
+   * allows quering by
+   * {@link https://pptr.dev/guides/page-interactions#text-selectors--p-text | text},
+   * {@link https://pptr.dev/guides/page-interactions#aria-selectors--p-aria | a11y role and name},
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
+   * Alternatively, you can specify the selector type using a
+   * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}. If there are multiple elements satisfying the
    * selector, the first will be tapped.
    *
    * @remarks
@@ -2780,10 +2844,21 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * // Types slower, like a user
    * ```
    *
-   * @param selector - A
-   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
-   * of an element to type into. If there are multiple elements satisfying the
-   * selector, the first will be used.
+   * @param selector -
+   * {@link https://pptr.dev/guides/page-interactions#selectors | selector}
+   * to query the page for.
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
+   * can be passed as-is and a
+   * {@link https://pptr.dev/guides/page-interactions#non-css-selectors | Puppeteer-specific selector syntax}
+   * allows quering by
+   * {@link https://pptr.dev/guides/page-interactions#text-selectors--p-text | text},
+   * {@link https://pptr.dev/guides/page-interactions#aria-selectors--p-aria | a11y role and name},
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
+   * Alternatively, you can specify the selector type using a
+   * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}.
    * @param text - A text to type into a focused element.
    * @param options - have property `delay` which is the Time to wait between
    * key presses in milliseconds. Defaults to `0`.
@@ -2826,9 +2901,21 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * })();
    * ```
    *
-   * @param selector - A
-   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
-   * of an element to wait for
+   * @param selector -
+   * {@link https://pptr.dev/guides/page-interactions#selectors | selector}
+   * to query the page for.
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
+   * can be passed as-is and a
+   * {@link https://pptr.dev/guides/page-interactions#non-css-selectors | Puppeteer-specific selector syntax}
+   * allows quering by
+   * {@link https://pptr.dev/guides/page-interactions#text-selectors--p-text | text},
+   * {@link https://pptr.dev/guides/page-interactions#aria-selectors--p-aria | a11y role and name},
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#xpath-selectors--p-xpath | xpath}
+   * and
+   * {@link https://pptr.dev/guides/page-interactions#querying-elements-in-shadow-dom | combining these queries across shadow roots}.
+   * Alternatively, you can specify the selector type using a
+   * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}.
    * @param options - Optional waiting parameters
    * @returns Promise which resolves when element specified by selector string
    * is added to DOM. Resolves to `null` if waiting for hidden: `true` and
