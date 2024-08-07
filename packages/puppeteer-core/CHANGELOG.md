@@ -20,6 +20,13 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [23.0.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.0.0...puppeteer-core-v23.0.1) (2024-08-07)
+
+
+### Bug Fixes
+
+* **webdriver:** fix default protocol for Firefox ([#12902](https://github.com/puppeteer/puppeteer/issues/12902)) ([054916b](https://github.com/puppeteer/puppeteer/commit/054916b50cd943759d2ff1b33b397d6cd5e8687e))
+
 ## [23.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.15.0...puppeteer-core-v23.0.0) (2024-08-07)
 
 
