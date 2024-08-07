@@ -29,6 +29,33 @@ All notable changes to this project will be documented in this file. See [standa
     * puppeteer-core bumped from 21.0.2 to 21.0.3
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [23.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v22.15.0...puppeteer-v23.0.0) (2024-08-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* support multiple browser downloads for Puppeteer ([#12795](https://github.com/puppeteer/puppeteer/issues/12795))
+* remove support for NPM configuration ([#12792](https://github.com/puppeteer/puppeteer/issues/12792))
+* rename product to browser ([#12757](https://github.com/puppeteer/puppeteer/issues/12757))
+
+### Features
+
+* rename product to browser ([#12757](https://github.com/puppeteer/puppeteer/issues/12757)) ([ca82e8e](https://github.com/puppeteer/puppeteer/commit/ca82e8e070dd1ddb627d034888782133d8cad49c))
+* support multiple browser downloads for Puppeteer ([#12795](https://github.com/puppeteer/puppeteer/issues/12795)) ([4d4b358](https://github.com/puppeteer/puppeteer/commit/4d4b358dca34ab23df075efd08a62947e6feb98c))
+* **webdriver:** support WebDriver capabilities in puppeteer.connect ([#12877](https://github.com/puppeteer/puppeteer/issues/12877)) ([897df47](https://github.com/puppeteer/puppeteer/commit/897df478b4b64ac9b146378d32b1f1b8347c6263))
+
+
+### Code Refactoring
+
+* remove support for NPM configuration ([#12792](https://github.com/puppeteer/puppeteer/issues/12792)) ([8ab71fb](https://github.com/puppeteer/puppeteer/commit/8ab71fb4ea64e4e08e3fabf0c227fcb2a42ae2cd))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 22.15.0 to 23.0.0
+
 ## [22.15.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v22.14.0...puppeteer-v22.15.0) (2024-07-31)
 
 

@@ -20,6 +20,46 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [23.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.15.0...puppeteer-core-v23.0.0) (2024-08-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove deprecated Frame.isOOPFrame() ([#12897](https://github.com/puppeteer/puppeteer/issues/12897))
+* use Uint8Array instead of Buffer for browser compatibility ([#12823](https://github.com/puppeteer/puppeteer/issues/12823))
+* remove isIncognito ([#12830](https://github.com/puppeteer/puppeteer/issues/12830))
+* support multiple browser downloads for Puppeteer ([#12795](https://github.com/puppeteer/puppeteer/issues/12795))
+* remove deprecated functions for CustomQueryHandler ([#12824](https://github.com/puppeteer/puppeteer/issues/12824))
+* rename ignoreHttpsErrors to acceptInsecureCerts ([#12756](https://github.com/puppeteer/puppeteer/issues/12756))
+* rename product to browser ([#12757](https://github.com/puppeteer/puppeteer/issues/12757))
+* default to WebDriver BiDi for Firefox ([#12732](https://github.com/puppeteer/puppeteer/issues/12732))
+* replace dynamic imports with static dependency injection ([#12710](https://github.com/puppeteer/puppeteer/issues/12710))
+* remove whitespace normalization from a11y selectors ([#12693](https://github.com/puppeteer/puppeteer/issues/12693))
+
+### Features
+
+* default to WebDriver BiDi for Firefox ([#12732](https://github.com/puppeteer/puppeteer/issues/12732)) ([6422dc2](https://github.com/puppeteer/puppeteer/commit/6422dc230aa4205e9ca1aada47cf46f0a44f0bb3))
+* pin Firefox to stable_129.0 ([#12890](https://github.com/puppeteer/puppeteer/issues/12890)) ([311b57b](https://github.com/puppeteer/puppeteer/commit/311b57b96d213a804e084ff8f62f10ecc950bb11))
+* rename ignoreHttpsErrors to acceptInsecureCerts ([#12756](https://github.com/puppeteer/puppeteer/issues/12756)) ([04e2263](https://github.com/puppeteer/puppeteer/commit/04e2263d4bfeb6ad396a4312c79b502a73b35e31))
+* rename product to browser ([#12757](https://github.com/puppeteer/puppeteer/issues/12757)) ([ca82e8e](https://github.com/puppeteer/puppeteer/commit/ca82e8e070dd1ddb627d034888782133d8cad49c))
+* support multiple browser downloads for Puppeteer ([#12795](https://github.com/puppeteer/puppeteer/issues/12795)) ([4d4b358](https://github.com/puppeteer/puppeteer/commit/4d4b358dca34ab23df075efd08a62947e6feb98c))
+* **webdriver:** support WebDriver capabilities in puppeteer.connect ([#12877](https://github.com/puppeteer/puppeteer/issues/12877)) ([897df47](https://github.com/puppeteer/puppeteer/commit/897df478b4b64ac9b146378d32b1f1b8347c6263))
+
+
+### Bug Fixes
+
+* only wait for page and frame targets when connecting ([#12888](https://github.com/puppeteer/puppeteer/issues/12888)) ([22f67d4](https://github.com/puppeteer/puppeteer/commit/22f67d4fb446f2d4553b4d4101038c79cbffbf0e))
+* remove whitespace normalization from a11y selectors ([#12693](https://github.com/puppeteer/puppeteer/issues/12693)) ([d5f9a33](https://github.com/puppeteer/puppeteer/commit/d5f9a333c1d2052f41bdcd0ad773f5dbb202ef09))
+
+
+### Code Refactoring
+
+* remove deprecated Frame.isOOPFrame() ([#12897](https://github.com/puppeteer/puppeteer/issues/12897)) ([88cd5e4](https://github.com/puppeteer/puppeteer/commit/88cd5e4d37d2056dad7c5d80c627d5760c05d77d))
+* remove deprecated functions for CustomQueryHandler ([#12824](https://github.com/puppeteer/puppeteer/issues/12824)) ([5e2043d](https://github.com/puppeteer/puppeteer/commit/5e2043df7ff6230c1cd6f2b126087232d91c66d5))
+* remove isIncognito ([#12830](https://github.com/puppeteer/puppeteer/issues/12830)) ([9e82e2b](https://github.com/puppeteer/puppeteer/commit/9e82e2b640378314e1ea5102727bdd4274baf57b))
+* replace dynamic imports with static dependency injection ([#12710](https://github.com/puppeteer/puppeteer/issues/12710)) ([3aacc1c](https://github.com/puppeteer/puppeteer/commit/3aacc1c80792dee34ebbaa3cbf9d32d2baf2b139))
+* use Uint8Array instead of Buffer for browser compatibility ([#12823](https://github.com/puppeteer/puppeteer/issues/12823)) ([f3377e1](https://github.com/puppeteer/puppeteer/commit/f3377e1708a72f7f4395678492755f577dd57936))
+
 ## [22.15.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v22.14.0...puppeteer-core-v22.15.0) (2024-07-31)
 
 
