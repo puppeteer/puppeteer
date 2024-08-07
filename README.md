@@ -5,11 +5,10 @@
 
 <img src="https://user-images.githubusercontent.com/10379601/29446482-04f7036a-841f-11e7-9872-91d1fc2ea683.png" height="200" align="right"/>
 
-> Puppeteer is a Node.js library which provides a high-level API to control
+> Puppeteer is a JavaScript library which provides a high-level API to control
 > Chrome or Firefox over the
 > [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/) or [WebDriver BiDi](https://pptr.dev/webdriver-bidi).
 > Puppeteer runs in the headless (no visible UI) by default
-> but can be configured to run in a visible ("headful") browser.
 
 ## [Get started](https://pptr.dev/docs) | [API](https://pptr.dev/api) | [FAQ](https://pptr.dev/faq) | [Contributing](https://pptr.dev/contributing) | [Troubleshooting](https://pptr.dev/troubleshooting)
 
