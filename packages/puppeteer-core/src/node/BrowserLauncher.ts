@@ -97,7 +97,10 @@ export abstract class BrowserLauncher {
       protocol = 'webDriverBiDi';
     }
 
-    const launchArgs = await this.computeLaunchArguments(options);
+    const launchArgs = await this.computeLaunchArguments({
+      ...options,
+      protocol,
+    });
 
     if (!existsSync(launchArgs.executablePath)) {
       throw new Error(
