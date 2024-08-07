@@ -299,16 +299,6 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   abstract page(): Page;
 
   /**
-   * Is `true` if the frame is an out-of-process (OOP) frame. Otherwise,
-   * `false`.
-   *
-   * @deprecated Generally, there should be no difference between local and
-   * out-of-process frames from the Puppeteer API perspective. This is an
-   * implementation detail that should not have been exposed.
-   */
-  abstract isOOPFrame(): boolean;
-
-  /**
    * Navigates the frame or page to the given `url`.
    *
    * @remarks

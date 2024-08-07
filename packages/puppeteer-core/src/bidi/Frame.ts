@@ -260,10 +260,6 @@ export class BidiFrame extends Frame {
     return parent;
   }
 
-  override isOOPFrame(): never {
-    throw new UnsupportedOperation();
-  }
-
   override url(): string {
     return this.browsingContext.url;
   }

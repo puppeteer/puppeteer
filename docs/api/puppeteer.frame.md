@@ -336,23 +336,6 @@ Use the `detached` getter.
 </td></tr>
 <tr><td>
 
-<span id="isoopframe">[isOOPFrame()](./puppeteer.frame.isoopframe.md)</span>
-
-</td><td>
-
-`deprecated`
-
-</td><td>
-
-Is `true` if the frame is an out-of-process (OOP) frame. Otherwise, `false`.
-
-**Deprecated:**
-
-Generally, there should be no difference between local and out-of-process frames from the Puppeteer API perspective. This is an implementation detail that should not have been exposed.
-
-</td></tr>
-<tr><td>
-
 <span id="locator">[locator(selector)](./puppeteer.frame.locator.md)</span>
 
 </td><td>

@@ -90,16 +90,13 @@ describe('OOPIF', function () {
     });
     await attachFrame(page, 'frame1', server.EMPTY_PAGE);
 
-    const frame = await framePromise;
-    expect(frame.isOOPFrame()).toBe(false);
+    await framePromise;
     await navigateFrame(
       page,
       'frame1',
       server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
-    expect(frame.isOOPFrame()).toBe(true);
     await navigateFrame(page, 'frame1', server.EMPTY_PAGE);
-    expect(frame.isOOPFrame()).toBe(false);
     expect(page.frames()).toHaveLength(2);
   });
   it('should support frames within OOP frames', async () => {
@@ -172,14 +169,12 @@ describe('OOPIF', function () {
     });
     await attachFrame(page, 'frame1', server.EMPTY_PAGE);
 
-    const frame = await framePromise;
-    expect(frame.isOOPFrame()).toBe(false);
+    await framePromise;
     await navigateFrame(
       page,
       'frame1',
       server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
-    expect(frame.isOOPFrame()).toBe(true);
     await detachFrame(page, 'frame1');
     expect(page.frames()).toHaveLength(1);
   });
@@ -194,7 +189,6 @@ describe('OOPIF', function () {
     await attachFrame(page, 'frame1', server.EMPTY_PAGE);
 
     const frame = await framePromise;
-    expect(frame.isOOPFrame()).toBe(false);
     const nav = frame.waitForNavigation();
     await navigateFrame(
       page,
@@ -202,7 +196,6 @@ describe('OOPIF', function () {
       server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
     await nav;
-    expect(frame.isOOPFrame()).toBe(true);
     await detachFrame(page, 'frame1');
     expect(page.frames()).toHaveLength(1);
   });
@@ -311,11 +304,7 @@ describe('OOPIF', function () {
       return frame.url().endsWith('inner-frame2.html');
     });
     expect(await iframes(page)).toHaveLength(2);
-    expect(
-      page.frames().filter(frame => {
-        return frame.isOOPFrame();
-      })
-    ).toHaveLength(2);
+    expect(page.frames()).toHaveLength(3);
     expect(
       await frame2.evaluate(() => {
         return document.querySelectorAll('button').length;
