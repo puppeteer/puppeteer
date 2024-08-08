@@ -15,6 +15,65 @@ import {
 describe('Cookie specs', () => {
   setupTestBrowserHooks();
 
+  describe.only('BrowserContext.cookies', function () {
+    it('should return no cookies in pristine browser context', async () => {
+      const {page, server, context} = await getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      await expectCookieEquals(await context.cookies(), []);
+    });
+
+    it('should get a cookie', async () => {
+      const {page, context, server} = await getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        document.cookie = 'username=John Doe';
+      });
+
+      await expectCookieEquals(await context.cookies(), [
+        {
+          name: 'username',
+          value: 'John Doe',
+          domain: 'localhost',
+          path: '/',
+          sameParty: false,
+          expires: -1,
+          size: 16,
+          httpOnly: false,
+          secure: false,
+          session: true,
+          sourceScheme: 'NonSecure',
+        },
+      ]);
+    });
+  });
+
+  describe('BrowserContext.setCookie', function () {
+    it('should work', async () => {
+      const {page, context, server} = await getTestState();
+      await context.setCookie({
+        name: 'username',
+        value: 'John Doe',
+        domain: 'localhost',
+        path: '/',
+        sameParty: false,
+        expires: -1,
+        size: 16,
+        httpOnly: false,
+        secure: false,
+        session: true,
+        sourceScheme: 'NonSecure',
+      });
+
+      await page.goto(server.EMPTY_PAGE);
+
+      expect(
+        await page.evaluate(() => {
+          return document.cookie;
+        })
+      ).toEqual('password=123456');
+    });
+  });
+
   describe('Page.cookies', function () {
     it('should return no cookies in pristine browser context', async () => {
       const {page, server} = await getTestState();

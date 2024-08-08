@@ -150,6 +150,26 @@ The [default browser context](./puppeteer.browser.defaultbrowsercontext.md) cann
 </td></tr>
 <tr><td>
 
+<span id="cookies">[cookies()](./puppeteer.browsercontext.cookies.md)</span>
+
+</td><td>
+
+</td><td>
+
+Gets cookies in this browser context.
+
+</td></tr>
+<tr><td>
+
+<span id="deletecookie">[deleteCookie(cookies)](./puppeteer.browsercontext.deletecookie.md)</span>
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="newpage">[newPage()](./puppeteer.browsercontext.newpage.md)</span>
 
 </td><td>
@@ -183,6 +203,15 @@ Gets a list of all open [pages](./puppeteer.page.md) inside this [browser contex
 **Remarks:**
 
 Non-visible [pages](./puppeteer.page.md), such as `"background_page"`, will not be listed here. You can find them using [Target.page()](./puppeteer.target.page.md).
+
+</td></tr>
+<tr><td>
+
+<span id="setcookie">[setCookie(cookies)](./puppeteer.browsercontext.setcookie.md)</span>
+
+</td><td>
+
+</td><td>
 
 </td></tr>
 <tr><td>

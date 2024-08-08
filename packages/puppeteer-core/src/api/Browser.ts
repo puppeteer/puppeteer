@@ -15,6 +15,7 @@ import {
   raceWith,
 } from '../../third_party/rxjs/rxjs.js';
 import type {ProtocolType} from '../common/ConnectOptions.js';
+import type {Cookie} from '../common/Cookie.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {
   debugError,
@@ -401,6 +402,26 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * {@link Page | pages}.
    */
   abstract close(): Promise<void>;
+
+  /**
+   * Returns all cookies in the default {@link BrowserContext}.
+   */
+  async cookies(): Promise<Cookie[]> {
+    return await this.defaultBrowserContext().cookies();
+  }
+  /**
+   * Sets cookies in the default {@link BrowserContext}.
+   */
+  async setCookie(...cookies: Cookie[]): Promise<void> {
+    return await this.defaultBrowserContext().setCookie(...cookies);
+  }
+
+  /**
+   * Sets cookies in the default {@link BrowserContext}.
+   */
+  async deleteCookie(...cookies: Cookie[]): Promise<void> {
+    return await this.defaultBrowserContext().deleteCookie(...cookies);
+  }
 
   /**
    * Disconnects Puppeteer from this {@link Browser | browser}, but leaves the
