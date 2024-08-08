@@ -10,6 +10,7 @@ import expect from 'expect';
 import type {SerializedAXNode} from 'puppeteer-core/internal/cdp/Accessibility.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import { attachFrame } from './utils.js';
 
 describe('Accessibility', function () {
   setupTestBrowserHooks();
@@ -242,6 +243,24 @@ describe('Accessibility', function () {
     assert(snapshot.children[0]);
     expect(snapshot.children[0]!.multiselectable).toEqual(true);
   });
+
+  it.only('iframes', async () => {
+    const {page, server} = await getTestState();
+
+    await attachFrame(page, 'frame1', server.EMPTY_PAGE);
+    const frame1 = page.frames()[1];
+    await frame1!.evaluate(() => {
+      const button = document.createElement('button');
+      button.innerText = 'value1';
+      document.body.appendChild(button)
+    });
+    const snapshot = await page.accessibility.snapshot();
+    console.log(JSON.stringify(snapshot, null, 2))
+    expect(snapshot).toMatchObject({
+
+    });
+  });
+
   it('keyshortcuts', async () => {
     const {page} = await getTestState();
 

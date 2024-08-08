@@ -195,6 +195,34 @@ export class Accessibility {
       backendNodeId = node.backendNodeId;
     }
     const defaultRoot = AXNode.createTree(this.#realm, nodes);
+
+    const resolveIframes = async (root: AXNode): Promise<void> => {
+      if (root.payload.role?.value === 'Iframe') {
+        if (!root.payload.backendDOMNodeId) {
+          return;
+        }
+        console.log(root.payload)
+        using handle = await this.#realm.adoptBackendNode(
+          root.payload.backendDOMNodeId
+        ) as ElementHandle<Element>;
+        if (!handle || !('contentFrame' in handle)) {
+          return;
+        }
+        const frame = await handle.contentFrame();
+        if (!frame) {
+          return;
+        }
+        const iframeSnapshot = await frame.accessibility.snapshot(options);
+        root.iframeSnapshot = iframeSnapshot ?? undefined;
+        console.log('iframe', root.iframeSnapshot)
+      }
+      for (const child of root.children) {
+        await resolveIframes(child);
+      }
+    }
+
+    await resolveIframes(defaultRoot);
+
     let needle: AXNode | null = defaultRoot;
     if (backendNodeId) {
       needle = defaultRoot.find(node => {
@@ -233,6 +261,12 @@ export class Accessibility {
     if (children.length) {
       serializedNode.children = children;
     }
+    if (node.iframeSnapshot) {
+      if (!serializedNode.children) {
+        serializedNode.children = [];
+      }
+      serializedNode.children.push(node.iframeSnapshot);
+    }
     return [serializedNode];
   }
 
@@ -257,6 +291,7 @@ export class Accessibility {
 class AXNode {
   public payload: Protocol.Accessibility.AXNode;
   public children: AXNode[] = [];
+  public iframeSnapshot?: SerializedAXNode;
 
   #richlyEditable = false;
   #editable = false;
