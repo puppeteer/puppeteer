@@ -29,6 +29,20 @@ All notable changes to this project will be documented in this file. See [standa
     * puppeteer-core bumped from 21.0.2 to 21.0.3
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [23.0.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-v23.0.1...puppeteer-v23.0.2) (2024-08-08)
+
+
+### Bug Fixes
+
+* use CJS for Puppeteer CLI ([#12904](https://github.com/puppeteer/puppeteer/issues/12904)) ([e63051a](https://github.com/puppeteer/puppeteer/commit/e63051a4102254149dc1aebe143dc2be8b60e661))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 23.0.1 to 23.0.2
+
 ## [23.0.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v23.0.0...puppeteer-v23.0.1) (2024-08-07)
 
 
