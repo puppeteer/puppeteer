@@ -18,10 +18,9 @@ const confirmation = new Promise((res, rej) => {
 });
 
 if (process.env.npm_command !== 'run-script') {
-  console.log(
-    'Running command outside from non Puppeteer directory may result in data loss'
-  );
+  console.log('Running command directly may result in data loss.');
   console.log('Ref: https://github.com/puppeteer/puppeteer/issues/12917');
+  console.log('Please use the provided npm scripts!');
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
