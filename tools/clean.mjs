@@ -8,48 +8,34 @@
 
 import {exec} from 'child_process';
 import {readdirSync} from 'fs';
-import readline from 'node:readline';
+import path from 'path';
+import url from 'url';
+import {promisify} from 'util';
 
-let resolver;
-let rejector;
-const confirmation = new Promise((res, rej) => {
-  resolver = res;
-  rejector = rej;
-});
+const execAsync = promisify(exec);
 
-if (process.env.npm_command !== 'run-script') {
-  console.log('Running command directly may result in data loss.');
-  console.log('Ref: https://github.com/puppeteer/puppeteer/issues/12917');
-  console.log('Please use the provided npm scripts!');
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+const puppeteerRoot = path.join(__dirname, '../');
 
-  rl.question('Do you want to proceed? (y/N) ', answer => {
-    rl.close();
-    if (
-      answer.localeCompare('y', undefined, {
-        sensitivity: 'base',
-      }) === 'y' ||
-      answer === 'yes'
-    ) {
-      resolver();
-    } else {
-      rejector('Canceled');
-    }
-  });
-} else {
-  resolver();
+const {stdout} = await execAsync('git rev-parse --show-toplevel');
+const gitTopLevel = stdout.replaceAll('\n', '').trim();
+
+// https://github.com/puppeteer/puppeteer/issues/12917
+if (path.relative(gitTopLevel, puppeteerRoot) !== '') {
+  console.log('Top level .git is not Puppeteer');
+  process.exit(1);
 }
 
-try {
-  await confirmation;
-  exec(
-    `git clean -Xf ${readdirSync(process.cwd())
-      .filter(file => {
-        return file !== 'node_modules';
-      })
-      .join(' ')}`
-  );
-} catch {}
+// Prevents cleaning config files such as in `.vscode`
+if (path.relative(puppeteerRoot, process.cwd()) === '') {
+  console.log('Trying to execute from Puppeteer root');
+  process.exit(1);
+}
+
+await execAsync(
+  `git clean -Xf ${readdirSync(process.cwd())
+    .filter(file => {
+      return file !== 'node_modules';
+    })
+    .join(' ')}`
+);
