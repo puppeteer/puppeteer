@@ -2320,8 +2320,7 @@
     "testIdPattern": "[network.spec] network Network Events Page.Events.RequestServedFromCache for script",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "On Firefox, the responseCompleted event for the cached script might be emitted too late (Bug 1907589)"
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[network.spec] network Network Events Page.Events.RequestServedFromCache for stylesheet",
@@ -2530,8 +2529,7 @@
     "testIdPattern": "[network.spec] network Response.fromCache should work for script",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "On Firefox, the responseCompleted event for the cached script might be emitted too late (Bug 1907589)"
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[network.spec] network Response.fromCache should work for stylesheet",
@@ -2976,8 +2974,7 @@
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should cache script if cache enabled",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "On Firefox, the responseCompleted event for the cached script might be emitted too late (Bug 1907589)"
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should cache stylesheet if cache enabled",
@@ -2997,8 +2994,7 @@
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should work with missing stylesheets",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "On Firefox, the responseCompleted event for the missing stylesheet might be emitted too late (Bug 1907589)"
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should work with requests without networkId",
@@ -3074,8 +3070,7 @@
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should cache script if cache enabled",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "On Firefox, the responseCompleted event for the cached script might be emitted too late (Bug 1907589)"
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should cache stylesheet if cache enabled",
@@ -3102,8 +3097,7 @@
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with missing stylesheets",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "On Firefox, the responseCompleted event for the missing stylesheet might be emitted too late (Bug 1907589)"
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with requests without networkId",
