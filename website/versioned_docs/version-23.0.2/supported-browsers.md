@@ -12,7 +12,8 @@ The following versions of the browsers are supported, mapped to Puppeteer versio
 
 | Puppeteer Version                                                                                      | Chrome                                                                                     | Firefox                       |
 | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ----------------------------- |
-| [Puppeteer v23.0.0](https://github.com/puppeteer/puppeteer/blob/puppeteer-v23.0.0/docs/api/index.md)   | [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 127.0.6533.88  | Firefox stable_129.0          |
+| [Puppeteer v23.0.2](https://github.com/puppeteer/puppeteer/blob/puppeteer-v23.0.2/docs/api/index.md)   | [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 127.0.6533.99  | Firefox 129.0                 |
+| [Puppeteer v23.0.0](https://github.com/puppeteer/puppeteer/blob/puppeteer-v23.0.0/docs/api/index.md)   | [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 127.0.6533.88  | Firefox 129.0                 |
 | [Puppeteer v22.15.0](https://github.com/puppeteer/puppeteer/blob/puppeteer-v22.15.0/docs/api/index.md) | [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 127.0.6533.88  | Firefox Nightly (at the time) |
 | [Puppeteer v22.14.0](https://github.com/puppeteer/puppeteer/blob/puppeteer-v22.14.0/docs/api/index.md) | [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 127.0.6533.72  | Firefox Nightly (at the time) |
 | [Puppeteer v22.13.1](https://github.com/puppeteer/puppeteer/blob/puppeteer-v22.13.1/docs/api/index.md) | [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 126.0.6478.182 | Firefox Nightly (at the time) |
