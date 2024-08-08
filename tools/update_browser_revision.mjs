@@ -34,9 +34,39 @@ function getCapitalize(text) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
+/**
+ *
+ * @param {string} version
+ * @returns {string}
+ */
+function normalizeVersionToSemVer(browser, version) {
+  switch (browser) {
+    case 'firefox':
+      // Splits the prefix of `stable_` for Firefox
+      version = version.split('_').at(-1);
+      // Firefox reports 129.0 instead of 129.0.0
+      // Patch have the correct number 128.0.2
+      if (version.split('.').length <= 2) {
+        return `${version}.0`;
+      }
+
+      return numbers;
+    case 'chrome':
+      return version;
+  }
+
+  throw new Error(`Unrecognized browser ${browser}`);
+}
+
 function checkIfNeedsUpdate(browser, oldVersion, newVersion) {
-  const oldSemVer = new SemVer(oldVersion, true);
-  const newSemVer = new SemVer(newVersion, true);
+  const oldSemVer = new SemVer(
+    normalizeVersionToSemVer(browser, oldVersion),
+    true
+  );
+  const newSemVer = new SemVer(
+    normalizeVersionToSemVer(browser, newVersion),
+    true
+  );
   let message = `roll to ${getCapitalize(browser)} ${newVersion}`;
 
   if (newSemVer.compare(oldSemVer) <= 0) {
