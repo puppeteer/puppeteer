@@ -66,7 +66,9 @@ export const docsBrowserSupportTask = task({
 
       let firefoxVer = '';
       if (semver.gte(puppeteerVersion, '23.0.0')) {
-        firefoxVer = `Firefox ${browserVersions.firefox}`;
+        // Firefox pin need a prefix of `stable_` to be downloaded
+        // For the user that is not relaxant on this page
+        firefoxVer = `Firefox ${browserVersions.firefox.split('_').at(-1)}`;
       } else if (semver.gte(puppeteerVersion, '2.1.0')) {
         firefoxVer = `Firefox Nightly (at the time)`;
       } else {
