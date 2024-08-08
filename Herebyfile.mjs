@@ -52,8 +52,8 @@ export const docsBrowserSupportTask = task({
     });
     // Create table view
     const buffer = [
-      '| Puppeteer Version | Chrome | Firefox |',
-      '| ----------------- | ------ | ------- |',
+      '| Puppeteer | Chrome | Firefox |',
+      '| --------- | ------ | ------- |',
     ];
     for (const [puppeteerVersion, browserVersions] of versionData.versions) {
       if (puppeteerVersion === 'NEXT') {
@@ -68,7 +68,7 @@ export const docsBrowserSupportTask = task({
       if (semver.gte(puppeteerVersion, '23.0.0')) {
         // Firefox pin need a prefix of `stable_` to be downloaded
         // For the user that is not relaxant on this page
-        firefoxVer = `Firefox ${browserVersions.firefox.split('_').at(-1)}`;
+        firefoxVer = `[Firefox](https://www.mozilla.org/en-US/firefox/) ${browserVersions.firefox.split('_').at(-1)}`;
       } else if (semver.gte(puppeteerVersion, '2.1.0')) {
         firefoxVer = `Firefox Nightly (at the time)`;
       } else {
