@@ -98,6 +98,7 @@ export interface ChromeSettings {
    *
    * @remarks
    * This must include the protocol and may even need a path prefix.
+   * This must **not** include a trailing slash similar to the default.
    *
    * @defaultValue https://storage.googleapis.com/chrome-for-testing-public
    */
@@ -138,6 +139,7 @@ export interface ChromeHeadlessShellSettings {
    *
    * @remarks
    * This must include the protocol and may even need a path prefix.
+   * This must **not** include a trailing slash similar to the default.
    *
    * @defaultValue https://storage.googleapis.com/chrome-for-testing-public
    */
@@ -176,6 +178,7 @@ export interface FirefoxSettings {
    *
    * @remarks
    * This must include the protocol and may even need a path prefix.
+   * This must **not** include a trailing slash similar to the default.
    *
    * @defaultValue https://archive.mozilla.org/pub/firefox/releases
    */

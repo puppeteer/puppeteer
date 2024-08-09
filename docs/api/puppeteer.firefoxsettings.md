@@ -53,7 +53,7 @@ Can be overridden by `PUPPETEER_FIREFOX_DOWNLOAD_BASE_URL`.
 
 **Remarks:**
 
-This must include the protocol and may even need a path prefix.
+This must include the protocol and may even need a path prefix. This must **not** include a trailing slash similar to the default.
 
 </td><td>
 
