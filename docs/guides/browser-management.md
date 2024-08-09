@@ -16,7 +16,7 @@ const page = await browser.newPage();
 
 ## Closing a browser
 
-To gracefully close the browser, you the [`browser.close()`](https://pptr.dev/api/puppeteer.browser.close) method:
+To gracefully close the browser, you use the [`browser.close()`](https://pptr.dev/api/puppeteer.browser.close) method:
 
 ```ts
 import puppeteer from 'puppeteer';
