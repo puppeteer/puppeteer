@@ -828,14 +828,19 @@ export class BidiPage extends Page {
     delta: number,
     options: WaitForOptions
   ): Promise<HTTPResponse | null> {
+    const controller = new AbortController();
+
     try {
       const [response] = await Promise.all([
-        this.waitForNavigation(options),
+        this.waitForNavigation({
+          ...options,
+          signal: controller.signal,
+        }),
         this.#frame.browsingContext.traverseHistory(delta),
       ]);
       return response;
     } catch (error) {
-      // TODO: waitForNavigation should be cancelled if an error happens.
+      controller.abort();
       if (isErrorLike(error)) {
         if (error.message.includes('no such history entry')) {
           return null;
