@@ -12,4 +12,5 @@ export interface PuppeteerBuilderOptions extends JsonObject {
   testRunner: TestRunner;
   devServerTarget: string;
   port: number | null;
+  baseUrl: string | null;
 }
