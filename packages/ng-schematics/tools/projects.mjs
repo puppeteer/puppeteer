@@ -152,7 +152,13 @@ export class AngularProjectSingle extends AngularProject {
 
   async createProject() {
     await this.executeCommand(
-      `ng new ${this.name} --directory=sandbox/${this.name} --defaults --skip-git`
+      `ng new ${this.name} --directory=sandbox/${this.name} --defaults --skip-git`,
+      {
+        env: {
+          PUPPETEER_SKIP_DOWNLOAD: 'true',
+          ...process.env,
+        },
+      }
     );
   }
 }
@@ -162,7 +168,13 @@ export class AngularProjectMulti extends AngularProject {
 
   async createProject() {
     await this.executeCommand(
-      `ng new ${this.name} --create-application=false --directory=sandbox/${this.name} --defaults --skip-git`
+      `ng new ${this.name} --create-application=false --directory=sandbox/${this.name} --defaults --skip-git`,
+      {
+        env: {
+          PUPPETEER_SKIP_DOWNLOAD: 'true',
+          ...process.env,
+        },
+      }
     );
 
     await this.executeCommand(
