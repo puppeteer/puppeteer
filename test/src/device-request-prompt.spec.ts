@@ -51,7 +51,7 @@ describe('device request prompt', function () {
     ).rejects.toThrow(TimeoutError);
   });
 
-  it.only('can be aborted', async function () {
+  it('can be aborted', async function () {
     const {page} = state;
 
     const abortController = new AbortController();
