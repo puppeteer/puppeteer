@@ -169,6 +169,29 @@ async function startServer(
   return server;
 }
 
+async function getServerAndUrl(
+  options: PuppeteerBuilderOptions,
+  context: BuilderContext
+): Promise<{
+  baseUrl: string;
+  server: BuilderRun | null;
+}> {
+  if (options.baseUrl) {
+    return {
+      baseUrl: options.baseUrl,
+      server: null,
+    };
+  }
+
+  const server = await startServer(options, context);
+  const result = await server.result;
+
+  return {
+    baseUrl: result['baseUrl'],
+    server,
+  };
+}
+
 async function executeE2ETest(
   options: PuppeteerBuilderOptions,
   context: BuilderContext
@@ -178,13 +201,13 @@ async function executeE2ETest(
     message('\n Building tests 🛠️ ... \n', context);
     await executeCommand(context, [`tsc`, '-p', 'e2e/tsconfig.json']);
 
-    server = await startServer(options, context);
-    const result = await server.result;
+    const result = await getServerAndUrl(options, context);
+    server = result.server;
 
     message('\n Running tests 🧪 ... \n', context);
     const testRunnerCommand = getCommandForRunner(options.testRunner);
     await executeCommand(context, testRunnerCommand, {
-      baseUrl: result['baseUrl'],
+      baseUrl: result.baseUrl,
     });
 
     message('\n 🚀 Test ran successfully! 🚀 ', context, 'success');
