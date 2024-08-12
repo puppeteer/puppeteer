@@ -482,14 +482,10 @@ jobs:
         with:
           path: ~/.cache/puppeteer/chrome
           key: Chrome-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
-      - name: Install Chrome
+      - name: Build all and schematics
+        run: npm run build
+      - name: Install Browsers
         run: npm run postinstall
-        env:
-          PUPPETEER_CHROME_SKIP_DOWNLOAD: 'false'
-          PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD: 'false'
-          PUPPETEER_FIREFOX_SKIP_DOWNLOAD: 'true'
-      - name: Build Schematics
-        run: npm run build -w @puppeteer/ng-schematics
       - name: Run tests
         run: node tools/smoke.mjs -r ${{ matrix.test-runner }}
         working-directory: ./packages/ng-schematics

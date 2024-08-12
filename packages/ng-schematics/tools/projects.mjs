@@ -73,7 +73,7 @@ class AngularProject {
         ...options,
       });
 
-      createProcess.stdout.on('data', data => {
+      const onData = data => {
         data = data
           .toString()
           // Replace new lines with a prefix including the test runner
@@ -82,7 +82,10 @@ class AngularProject {
             `\n${this.#runner}:${this.type} - `
           );
         console.log(`${this.#runner}:${this.type} - ${data}`);
-      });
+      };
+
+      createProcess.stdout.on('data', onData);
+      createProcess.stderr.on('data', onData);
 
       createProcess.on('error', message => {
         console.error(`Running ${command} exited with error:`, message);
@@ -149,7 +152,13 @@ export class AngularProjectSingle extends AngularProject {
 
   async createProject() {
     await this.executeCommand(
-      `ng new ${this.name} --directory=sandbox/${this.name} --defaults --skip-git`
+      `ng new ${this.name} --directory=sandbox/${this.name} --defaults --skip-git`,
+      {
+        env: {
+          PUPPETEER_SKIP_DOWNLOAD: 'true',
+          ...process.env,
+        },
+      }
     );
   }
 }
@@ -159,7 +168,13 @@ export class AngularProjectMulti extends AngularProject {
 
   async createProject() {
     await this.executeCommand(
-      `ng new ${this.name} --create-application=false --directory=sandbox/${this.name} --defaults --skip-git`
+      `ng new ${this.name} --create-application=false --directory=sandbox/${this.name} --defaults --skip-git`,
+      {
+        env: {
+          PUPPETEER_SKIP_DOWNLOAD: 'true',
+          ...process.env,
+        },
+      }
     );
 
     await this.executeCommand(
