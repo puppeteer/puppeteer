@@ -92,7 +92,11 @@ if (!args.runner) {
       smokeResults.every(project => {
         return project.status === 'fulfilled';
       }),
-      `Smoke test for ${runnerGroup[0].runner} failed!`
+      `Smoke test for ${runnerGroup[0].runner} failed! ${smokeResults.map(
+        project => {
+          return project.reason;
+        }
+      )}`
     );
   }
 } else {

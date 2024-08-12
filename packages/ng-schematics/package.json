@@ -51,13 +51,13 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@angular-devkit/architect": "0.1800.4",
-    "@angular-devkit/core": "18.0.4",
-    "@angular-devkit/schematics": "18.0.4"
+    "@angular-devkit/architect": "0.1801.4",
+    "@angular-devkit/core": "18.1.4",
+    "@angular-devkit/schematics": "18.1.4"
   },
   "devDependencies": {
-    "@schematics/angular": "18.0.4",
-    "@angular/cli": "18.0.4"
+    "@schematics/angular": "18.1.4",
+    "@angular/cli": "18.1.4"
   },
   "files": [
     "lib",
