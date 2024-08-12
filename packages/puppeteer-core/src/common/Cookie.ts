@@ -89,8 +89,10 @@ export interface Cookie {
    */
   sourceScheme?: CookieSourceScheme;
   /**
-   * Cookie partition key. The site of the top-level URL the browser was visiting at the
-   * start of the request to the endpoint that set the cookie. Supported only in Chrome.
+   * Cookie partition key. In Chrome, it is the top-level site the
+   * partitioned cookie is available in. In Firefox, it matches the
+   * source origin
+   * (https://w3c.github.io/webdriver-bidi/#type-storage-PartitionKey).
    */
   partitionKey?: string;
   /**
@@ -155,9 +157,10 @@ export interface CookieParam {
    */
   sourceScheme?: CookieSourceScheme;
   /**
-   * Cookie partition key. The site of the top-level URL the browser was visiting at the
-   * start of the request to the endpoint that set the cookie. If not set, the cookie will
-   * be set as not partitioned.
+   * Cookie partition key. In Chrome, it matches the top-level site the
+   * partitioned cookie is available in. In Firefox, it matches the
+   * source origin
+   * (https://w3c.github.io/webdriver-bidi/#type-storage-PartitionKey).
    */
   partitionKey?: string;
 }
@@ -183,4 +186,11 @@ export interface DeleteCookiesRequest {
    * If specified, deletes only cookies with the exact path.
    */
   path?: string;
+  /**
+   * If specified, deletes cookies in the given partition key. In
+   * Chrome, partitionKey matches the top-level site the partitioned
+   * cookie is available in. In Firefox, it matches the source origin
+   * (https://w3c.github.io/webdriver-bidi/#type-storage-PartitionKey).
+   */
+  partitionKey?: string;
 }
