@@ -132,8 +132,8 @@
     "@types/node": "20.8.4",
     "@types/semver": "7.5.8",
     "@types/sinon": "17.0.3",
-    "@typescript-eslint/eslint-plugin": "7.17.0",
-    "@typescript-eslint/parser": "7.17.0",
+    "@typescript-eslint/eslint-plugin": "8.0.1",
+    "@typescript-eslint/parser": "8.0.1",
     "esbuild": "0.23.0",
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.1.0",
@@ -149,7 +149,7 @@
     "gts": "5.3.1",
     "hereby": "1.9.0",
     "license-checker": "25.0.1",
-    "mocha": "10.7.0",
+    "mocha": "10.7.3",
     "npm-run-all2": "6.2.2",
     "prettier": "3.3.3",
     "semver": "7.6.3",
@@ -157,9 +157,9 @@
     "source-map-support": "0.5.21",
     "spdx-satisfies": "5.0.1",
     "tsd": "0.31.1",
-    "tsx": "4.16.2",
+    "tsx": "4.17.0",
     "typescript": "5.4.5",
-    "wireit": "0.14.5"
+    "wireit": "0.14.7"
   },
   "overrides": {
     "@microsoft/api-extractor": {
