@@ -172,7 +172,7 @@ export async function createProfile(options: ProfileOptions): Promise<void> {
       recursive: true,
     });
   }
-  await writePreferences({
+  await syncPreferences({
     preferences: {
       ...defaultProfilePreferences(options.preferences),
       ...options.preferences,
@@ -395,36 +395,34 @@ function defaultProfilePreferences(
   return Object.assign(defaultPrefs, extraPrefs);
 }
 
+async function backupFile(input: string): Promise<void> {
+  if (!fs.existsSync(input)) {
+    return;
+  }
+  await fs.promises.copyFile(input, input + '.puppeteer');
+}
+
 /**
  * Populates the user.js file with custom preferences as needed to allow
- * Firefox's CDP support to properly function. These preferences will be
+ * Firefox's support to properly function. These preferences will be
  * automatically copied over to prefs.js during startup of Firefox. To be
  * able to restore the original values of preferences a backup of prefs.js
  * will be created.
- *
- * @param prefs - List of preferences to add.
- * @param profilePath - Firefox profile to write the preferences to.
  */
-async function writePreferences(options: ProfileOptions): Promise<void> {
+async function syncPreferences(options: ProfileOptions): Promise<void> {
   const prefsPath = path.join(options.path, 'prefs.js');
+  const userPath = path.join(options.path, 'user.js');
+
   const lines = Object.entries(options.preferences).map(([key, value]) => {
     return `user_pref(${JSON.stringify(key)}, ${JSON.stringify(value)});`;
   });
 
-  // Use allSettled to prevent corruption
+  // Use allSettled to prevent corruption.
   const result = await Promise.allSettled([
-    fs.promises.writeFile(path.join(options.path, 'user.js'), lines.join('\n')),
-    // Create a backup of the preferences file if it already exitsts.
-    fs.promises.access(prefsPath, fs.constants.F_OK).then(
-      async () => {
-        await fs.promises.copyFile(
-          prefsPath,
-          path.join(options.path, 'prefs.js.puppeteer')
-        );
-      },
-      // Swallow only if file does not exist
-      () => {}
-    ),
+    backupFile(userPath).then(async () => {
+      await fs.promises.writeFile(userPath, lines.join('\n'));
+    }),
+    backupFile(prefsPath),
   ]);
   for (const command of result) {
     if (command.status === 'rejected') {
