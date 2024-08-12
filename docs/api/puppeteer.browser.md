@@ -154,6 +154,17 @@ Closes this [browser](./puppeteer.browser.md) and all associated [pages](./puppe
 </td></tr>
 <tr><td>
 
+<span id="cookies">[cookies()](./puppeteer.browser.cookies.md)</span>
+
+</td><td>
+
+</td><td>
+
+Returns all cookies in the default [BrowserContext](./puppeteer.browsercontext.md).
+
+</td></tr>
+<tr><td>
+
 <span id="createbrowsercontext">[createBrowserContext(options)](./puppeteer.browser.createbrowsercontext.md)</span>
 
 </td><td>
@@ -178,6 +189,17 @@ Gets the default [browser context](./puppeteer.browsercontext.md).
 **Remarks:**
 
 The default [browser context](./puppeteer.browsercontext.md) cannot be closed.
+
+</td></tr>
+<tr><td>
+
+<span id="deletecookie">[deleteCookie(cookies)](./puppeteer.browser.deletecookie.md)</span>
+
+</td><td>
+
+</td><td>
+
+Sets cookies in the default [BrowserContext](./puppeteer.browsercontext.md).
 
 </td></tr>
 <tr><td>
@@ -245,6 +267,17 @@ Non-visible [pages](./puppeteer.page.md), such as `"background_page"`, will not 
 </td><td>
 
 Gets the associated [ChildProcess](https://nodejs.org/api/child_process.html#class-childprocess).
+
+</td></tr>
+<tr><td>
+
+<span id="setcookie">[setCookie(cookies)](./puppeteer.browser.setcookie.md)</span>
+
+</td><td>
+
+</td><td>
+
+Sets cookies in the default [BrowserContext](./puppeteer.browsercontext.md).
 
 </td></tr>
 <tr><td>

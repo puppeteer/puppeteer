@@ -10,6 +10,7 @@ import {
   merge,
   raceWith,
 } from '../../third_party/rxjs/rxjs.js';
+import type {Cookie} from '../common/Cookie.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {
   debugError,
@@ -232,6 +233,24 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * {@link BrowserContext | browser context}.
    */
   abstract browser(): Browser;
+
+  /**
+   * Gets cookies in this browser context.
+   */
+  abstract cookies(): Promise<Cookie[]>;
+
+  abstract setCookie(...cookies: Cookie[]): Promise<void>;
+
+  async deleteCookie(...cookies: Cookie[]): Promise<void> {
+    return await this.setCookie(
+      ...cookies.map(cookie => {
+        return {
+          ...cookie,
+          expires: 1,
+        };
+      })
+    );
+  }
 
   /**
    * Closes this {@link BrowserContext | browser context} and all associated
