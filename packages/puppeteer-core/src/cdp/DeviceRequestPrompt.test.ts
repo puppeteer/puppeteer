@@ -343,6 +343,25 @@ describe('DeviceRequestPrompt', function () {
       expect(device).toBeInstanceOf(DeviceRequestPromptDevice);
     });
 
+    it('should be able to abort', async () => {
+      const client = new MockCDPSession();
+      const timeoutSettings = new TimeoutSettings();
+      const prompt = new DeviceRequestPrompt(client, timeoutSettings, {
+        id: '00000000000000000000000000000000',
+        devices: [],
+      });
+      const abortController = new AbortController();
+
+      const task = prompt.waitForDevice(
+        () => {
+          return false;
+        },
+        {signal: abortController.signal}
+      );
+      abortController.abort();
+      await expect(task).rejects.toThrow(/aborted/);
+    });
+
     it('should return same device from multiple watchdogs', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
