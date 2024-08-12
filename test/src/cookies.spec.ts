@@ -800,21 +800,24 @@ describe('Cookie specs', () => {
       expect(await page.cookies()).toHaveLength(0);
     });
     it('should delete cookie with partition key if partition key is specified', async () => {
-      const {page, server} = await getTestState();
+      const {page, server, isChrome} = await getTestState();
       const url = new URL(server.EMPTY_PAGE);
       await page.goto(url.toString());
+      const origin = isChrome
+        ? url.origin.replace(`:${url.port}`, '')
+        : url.origin;
       await page.setCookie({
         url: url.toString(),
         name: 'partitionCookie',
         value: 'partition',
         secure: true,
-        partitionKey: url.origin,
+        partitionKey: origin,
       });
       expect(await page.cookies()).toHaveLength(1);
       await page.deleteCookie({
         url: url.toString(),
         name: 'partitionCookie',
-        partitionKey: url.origin,
+        partitionKey: origin,
       });
       expect(await page.cookies()).toHaveLength(0);
     });

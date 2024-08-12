@@ -616,6 +616,17 @@ export class CdpPage extends Page {
         item.url = pageURL;
       }
       await this.#primaryTargetClient.send('Network.deleteCookies', item);
+      if (pageURL.startsWith('http') && !item.partitionKey) {
+        const url = new URL(pageURL);
+        // Delete also cookies from the page's partition.
+        await this.#primaryTargetClient.send('Network.deleteCookies', {
+          ...item,
+          partitionKey: {
+            topLevelSite: url.origin.replace(`:${url.port}`, ''),
+            hasCrossSiteAncestor: false,
+          },
+        });
+      }
     }
   }
 
