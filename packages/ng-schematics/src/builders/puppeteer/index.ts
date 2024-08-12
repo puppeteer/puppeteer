@@ -176,7 +176,6 @@ async function getServerAndUrl(
   baseUrl: string;
   server: BuilderRun | null;
 }> {
-  console.log(options);
   if (options.baseUrl) {
     return {
       baseUrl: options.baseUrl,
