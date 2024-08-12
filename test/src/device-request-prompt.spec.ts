@@ -50,4 +50,16 @@ describe('device request prompt', function () {
       })
     ).rejects.toThrow(TimeoutError);
   });
+
+  it.only('can be aborted', async function () {
+    const {page} = state;
+
+    const abortController = new AbortController();
+    const task = page.waitForDevicePrompt({
+      signal: abortController.signal,
+    });
+
+    abortController.abort();
+    await expect(task).rejects.toThrow(/aborted/);
+  });
 });

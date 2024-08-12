@@ -387,5 +387,20 @@ describe('Target', function () {
         });
       expect(error).toBeInstanceOf(TimeoutError);
     });
+    it('should be able to abort', async () => {
+      const {browser} = await getTestState();
+      const abortController = new AbortController();
+      const task = browser.waitForTarget(
+        () => {
+          return false;
+        },
+        {
+          signal: abortController.signal,
+        }
+      );
+
+      abortController.abort();
+      await expect(task).rejects.toThrow(/aborted/);
+    });
   });
 });

@@ -173,6 +173,16 @@ describe('input tests', function () {
       ]);
       expect(fileChooser1 === fileChooser2).toBe(true);
     });
+
+    it('should be able to abort', async () => {
+      const {page} = await getTestState();
+
+      const abortController = new AbortController();
+      const task = page.waitForFileChooser({signal: abortController.signal});
+
+      abortController.abort();
+      await expect(task).rejects.toThrow(/aborted/);
+    });
   });
 
   describe('FileChooser.accept', function () {
