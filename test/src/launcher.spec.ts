@@ -253,8 +253,10 @@ describe('Launcher specs', function () {
         const userDataDir = await mkdtemp(TMP_FOLDER);
 
         const prefsJSPath = path.join(userDataDir, 'prefs.js');
+        const userJSPath = path.join(userDataDir, 'user.js');
         const prefsJSContent = 'user_pref("browser.warnOnQuit", true)';
         await writeFile(prefsJSPath, prefsJSContent);
+        await writeFile(userJSPath, prefsJSContent);
 
         const {context, close} = await launch({userDataDir});
         try {
@@ -265,6 +267,7 @@ describe('Launcher specs', function () {
           expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
 
           expect(await readFile(prefsJSPath, 'utf8')).toBe(prefsJSContent);
+          expect(await readFile(userJSPath, 'utf8')).toBe(prefsJSContent);
         } finally {
           await close();
         }
