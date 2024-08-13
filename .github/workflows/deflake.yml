@@ -60,7 +60,7 @@ jobs:
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
       # Set up GitHub Actions caching for Wireit.
-      - uses: google/wireit@4aad131006ea85c1e42af927534ebb13426dd730 # setup-github-actions-caching/v1.0.2
+      - uses: google/wireit@83d7f8bed70b7bcfc40f4b9f54f4b7485753991b # setup-github-actions-caching/v2.0.1
       - name: Build packages
         run: npm run build -w @puppeteer-test/test
       - name: Setup cache for browsers
@@ -102,7 +102,7 @@ jobs:
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
       # Set up GitHub Actions caching for Wireit.
-      - uses: google/wireit@4aad131006ea85c1e42af927534ebb13426dd730 # setup-github-actions-caching/v1.0.2
+      - uses: google/wireit@83d7f8bed70b7bcfc40f4b9f54f4b7485753991b # setup-github-actions-caching/v2.0.1
       - name: Build packages
         run: npm run build -w @puppeteer-test/test
       - name: Setup cache for browsers
