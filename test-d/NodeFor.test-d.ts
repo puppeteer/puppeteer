@@ -120,6 +120,10 @@ declare const nodeFor: <Selector extends string>(
     expectType<HTMLAnchorElement>(nodeFor('a::-p-text(Hello)'));
     expectNotType<Element>(nodeFor('a::-p-text(Hello)'));
   }
+  {
+    expectType<HTMLAnchorElement>(nodeFor('a:is([href], [href])'));
+    expectNotType<Element>(nodeFor('a:is([href], [href])'));
+  }
 }
 {
   {
