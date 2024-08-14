@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1](https://github.com/puppeteer/puppeteer/compare/browsers-v2.3.0...browsers-v2.3.1) (2024-08-14)
+
+
+### Bug Fixes
+
+* **firefox:** back up user.js as well ([#12943](https://github.com/puppeteer/puppeteer/issues/12943)) ([9feda9c](https://github.com/puppeteer/puppeteer/commit/9feda9cdfce81cb375193d0efa9efa0c13b2818d))
+
 ## [2.3.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.2.4...browsers-v2.3.0) (2024-07-25)
 
 

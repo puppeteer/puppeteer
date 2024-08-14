@@ -71,6 +71,25 @@ Name of the cookies to remove.
 </td></tr>
 <tr><td>
 
+<span id="partitionkey">partitionKey</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+If specified, deletes cookies in the given partition key. In Chrome, partitionKey matches the top-level site the partitioned cookie is available in. In Firefox, it matches the source origin (https://w3c.github.io/webdriver-bidi/\#type-storage-PartitionKey).
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="path">path</span>
 
 </td><td>

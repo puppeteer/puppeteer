@@ -253,7 +253,7 @@ boolean
 
 </td><td>
 
-Connect to a browser over a pipe instead of a WebSocket.
+Connect to a browser over a pipe instead of a WebSocket. Only supported with Chrome.
 
 </td><td>
 
