@@ -1,15 +1,15 @@
 ---
-sidebar_label: CookieParam
+sidebar_label: Cookie
 ---
 
-# CookieParam interface
+# Cookie interface
 
-Cookie parameter object
+Represents a cookie object.
 
 ### Signature
 
 ```typescript
-export interface CookieParam
+export interface Cookie
 ```
 
 ## Properties
@@ -41,8 +41,6 @@ Default
 
 </td><td>
 
-`optional`
-
 </td><td>
 
 string
@@ -60,15 +58,13 @@ Cookie domain.
 
 </td><td>
 
-`optional`
-
 </td><td>
 
 number
 
 </td><td>
 
-Cookie expiration date, session cookie if not set
+Cookie expiration date as the number of seconds since the UNIX epoch. Set to `-1` for session cookies
 
 </td><td>
 
@@ -78,8 +74,6 @@ Cookie expiration date, session cookie if not set
 <span id="httponly">httpOnly</span>
 
 </td><td>
-
-`optional`
 
 </td><td>
 
@@ -123,7 +117,26 @@ string
 
 </td><td>
 
-Cookie partition key. The site of the top-level URL the browser was visiting at the start of the request to the endpoint that set the cookie. If not set, the cookie will be set as not partitioned.
+Cookie partition key. In Chrome, it is the top-level site the partitioned cookie is available in. In Firefox, it matches the source origin (https://w3c.github.io/webdriver-bidi/\#type-storage-PartitionKey).
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="partitionkeyopaque">partitionKeyOpaque</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+True if cookie partition key is opaque. Supported only in Chrome.
 
 </td><td>
 
@@ -133,8 +146,6 @@ Cookie partition key. The site of the top-level URL the browser was visiting at 
 <span id="path">path</span>
 
 </td><td>
-
-`optional`
 
 </td><td>
 
@@ -210,8 +221,6 @@ Cookie SameSite type.
 
 </td><td>
 
-`optional`
-
 </td><td>
 
 boolean
@@ -219,6 +228,40 @@ boolean
 </td><td>
 
 True if cookie is secure.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="session">session</span>
+
+</td><td>
+
+</td><td>
+
+boolean
+
+</td><td>
+
+True in case of session cookie.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="size">size</span>
+
+</td><td>
+
+</td><td>
+
+number
+
+</td><td>
+
+Cookie size.
 
 </td><td>
 
@@ -238,25 +281,6 @@ True if cookie is secure.
 </td><td>
 
 Cookie source scheme type. Supported only in Chrome.
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
-<span id="url">url</span>
-
-</td><td>
-
-`optional`
-
-</td><td>
-
-string
-
-</td><td>
-
-The request-URI to associate with the setting of the cookie. This value can affect the default domain, path, and source scheme values of the created cookie.
 
 </td><td>
 

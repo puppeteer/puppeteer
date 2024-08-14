@@ -1,13 +1,13 @@
 ---
-sidebar_label: ChromeHeadlessShellSettings
+sidebar_label: FirefoxSettings
 ---
 
-# ChromeHeadlessShellSettings interface
+# FirefoxSettings interface
 
 ### Signature
 
 ```typescript
-export interface ChromeHeadlessShellSettings
+export interface FirefoxSettings
 ```
 
 ## Properties
@@ -49,15 +49,15 @@ string
 
 Specifies the URL prefix that is used to download the browser.
 
-Can be overridden by `PUPPETEER_CHROME_HEADLESS_SHELL_DOWNLOAD_BASE_URL`.
+Can be overridden by `PUPPETEER_FIREFOX_DOWNLOAD_BASE_URL`.
 
 **Remarks:**
 
-This must include the protocol and may even need a path prefix.
+This must include the protocol and may even need a path prefix. This must **not** include a trailing slash similar to the default.
 
 </td><td>
 
-https://storage.googleapis.com/chrome-for-testing-public
+https://archive.mozilla.org/pub/firefox/releases
 
 </td></tr>
 <tr><td>
@@ -76,11 +76,11 @@ boolean
 
 Tells Puppeteer to not download the browser during installation.
 
-Can be overridden by `PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD` or `PUPPETEER_SKIP_CHROME_HEADLESS_SHELL_DOWNLOAD`.
+Can be overridden by `PUPPETEER_FIREFOX_SKIP_DOWNLOAD`.
 
 </td><td>
 
-false
+true
 
 </td></tr>
 <tr><td>
@@ -99,7 +99,7 @@ string
 
 Specifies a certain version of the browser you'd like Puppeteer to use.
 
-Can be overridden by `PUPPETEER_CHROME_HEADLESS_SHELL_VERSION`.
+Can be overridden by `PUPPETEER_FIREFOX_VERSION`.
 
 See [puppeteer.launch](./puppeteer.puppeteernode.launch.md) on how executable path is inferred.
 

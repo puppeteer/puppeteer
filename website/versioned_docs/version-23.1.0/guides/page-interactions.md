@@ -382,7 +382,7 @@ inside the immediate shadow root of the `my-custom-element` (the shadow host).
 #### Custom selectors
 
 You can also add your own pseudo element using
-[Puppeteer.registerCustomQueryHandler](../api/puppeteer.registercustomqueryhandler.md).
+[Puppeteer.registerCustomQueryHandler](../api/puppeteer.puppeteer.registercustomqueryhandler.md).
 This is useful for creating custom selectors based on framework objects or your application.
 
 For example, you can write all your selectors using the `react-component` pseudo-element
