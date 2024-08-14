@@ -379,6 +379,18 @@ describe('Query handler tests', function () {
       }
     });
 
+    it('should work with puppeteer pseudo classes', async () => {
+      const {server, page} = await getTestState();
+      await page.goto(`${server.PREFIX}/p-selectors.html`);
+      using element = await page.$('button::-p-text(world)');
+      assert(element, 'Could not find element');
+      expect(
+        await element.evaluate(element => {
+          return element.id === 'b';
+        })
+      ).toBeTruthy();
+    });
+
     it('should work with deep combinators', async () => {
       const {server, page} = await getTestState();
       await page.goto(`${server.PREFIX}/p-selectors.html`);

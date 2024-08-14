@@ -104,6 +104,22 @@ declare const nodeFor: <Selector extends string>(
       nodeFor('ignored ignored > ignored + ignored | a#ignore')
     );
   }
+  {
+    expectType<HTMLAnchorElement>(nodeFor('custom-element >>> a'));
+    expectNotType<Element>(nodeFor('custom-element >>> a'));
+  }
+  {
+    expectType<Element>(nodeFor('div ::-p-text(world)'));
+    expectNotType<HTMLDivElement>(nodeFor('div ::-p-text(world)'));
+  }
+  {
+    expectType<HTMLDivElement>(nodeFor('div ::-p-text(world) >>>> div'));
+    expectNotType<Element>(nodeFor('div ::-p-text(world) >>>> div'));
+  }
+  {
+    expectType<HTMLAnchorElement>(nodeFor('a::-p-text(Hello)'));
+    expectNotType<Element>(nodeFor('a::-p-text(Hello)'));
+  }
 }
 {
   {
