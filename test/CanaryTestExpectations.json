@@ -5,5 +5,12 @@
     "parameters": ["cdp", "chrome"],
     "expectations": ["SKIP"],
     "comment": "See https://github.com/puppeteer/puppeteer/issues/12866"
+  },
+  {
+    "testIdPattern": "[extensions.spec] extensions background_page target type should be available",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["SKIP"],
+    "comment": "See https://github.com/puppeteer/puppeteer/issues/12866"
   }
 ]
