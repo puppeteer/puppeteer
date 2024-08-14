@@ -124,7 +124,7 @@
     "chromium-bidi": "0.6.4",
     "debug": "^4.3.6",
     "devtools-protocol": "0.0.1312386",
-    "typed-query-selector": "^2.11.4",
+    "typed-query-selector": "^2.12.0",
     "ws": "^8.18.0"
   },
   "devDependencies": {
