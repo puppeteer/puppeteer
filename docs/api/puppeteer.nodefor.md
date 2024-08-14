@@ -8,13 +8,5 @@ sidebar_label: NodeFor
 
 ```typescript
 export type NodeFor<ComplexSelector extends string> =
-  TypeSelectorOfComplexSelector<ComplexSelector> extends infer TypeSelector
-    ? TypeSelector extends
-        | keyof HTMLElementTagNameMap
-        | keyof SVGElementTagNameMap
-      ? ElementFor<TypeSelector>
-      : Element
-    : never;
+  ParseSelector<ComplexSelector>;
 ```
-
-**References:** [ElementFor](./puppeteer.elementfor.md)
