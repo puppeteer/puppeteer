@@ -50,7 +50,7 @@ function normalizeVersionToSemVer(browser, version) {
         return `${version}.0`;
       }
 
-      return numbers;
+      return version;
     case 'chrome':
       // For Chrome (example: 127.0.6533.99) is allowed as SemVer
       // as long as we use the loose option.
