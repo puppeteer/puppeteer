@@ -227,7 +227,7 @@ export class TestServer {
     });
     assert(request.url);
     const url = new URL(request.url, `https://${request.headers.host}`);
-    const path = url.pathname + url.search;
+    const path = url.pathname;
     const auth = this.#auths.get(path);
     if (auth) {
       const credentials = Buffer.from(
