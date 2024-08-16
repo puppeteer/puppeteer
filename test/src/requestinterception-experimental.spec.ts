@@ -590,7 +590,7 @@ describe('cooperative request interception', function () {
       );
       expect(response!.status()).toBe(404);
     });
-    it.only('should work with badly encoded server', async () => {
+    it('should work with badly encoded server', async () => {
       const {page, server} = await getTestState();
 
       await page.setRequestInterception(true);
