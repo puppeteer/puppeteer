@@ -514,7 +514,7 @@ describe('request interception', function () {
       const {page, server} = await getTestState();
 
       await page.setRequestInterception(true);
-      server.setRoute('/malformed?rnd=%911', (_req, res) => {
+      server.setRoute('/malformed', (_req, res) => {
         return res.end();
       });
       page.on('request', request => {
