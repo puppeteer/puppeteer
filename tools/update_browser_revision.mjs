@@ -77,7 +77,7 @@ function checkIfNeedsUpdate(browser, oldVersion, newVersion) {
       `Version ${newVersion} is older or the same as the current ${oldVersion}`
     );
     process.exit(0);
-  } else if (newSemVer.compareMain(oldSemVer) === 0) {
+  } else if (newSemVer.major === oldSemVer.major) {
     message = `fix: ${message}`;
   } else {
     message = `feat: ${message}`;
