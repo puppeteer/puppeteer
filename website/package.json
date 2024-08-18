@@ -16,12 +16,12 @@
   },
   "dependencies": {
     "@docsearch/react": "3.6.1",
-    "@docusaurus/core": "3.4.0",
-    "@docusaurus/plugin-client-redirects": "3.4.0",
-    "@docusaurus/plugin-content-docs": "3.4.0",
-    "@docusaurus/preset-classic": "3.4.0",
-    "@docusaurus/remark-plugin-npm2yarn": "3.4.0",
-    "@docusaurus/theme-common": "3.4.0",
+    "@docusaurus/core": "3.5.2",
+    "@docusaurus/plugin-client-redirects": "3.5.2",
+    "@docusaurus/plugin-content-docs": "3.5.2",
+    "@docusaurus/preset-classic": "3.5.2",
+    "@docusaurus/remark-plugin-npm2yarn": "3.5.2",
+    "@docusaurus/theme-common": "3.5.2",
     "@mdx-js/react": "3.0.1",
     "algoliasearch-helper": "3.22.3",
     "clsx": "2.1.1",
@@ -32,9 +32,9 @@
     "semver": "7.6.3"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.4.0",
-    "@docusaurus/types": "3.4.0",
-    "@swc/core": "1.7.6",
+    "@docusaurus/module-type-aliases": "3.5.2",
+    "@docusaurus/types": "3.5.2",
+    "@swc/core": "1.7.11",
     "swc-loader": "0.2.6"
   },
   "browserslist": {
