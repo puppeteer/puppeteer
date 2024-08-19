@@ -179,11 +179,17 @@ export class AngularProjectMulti extends AngularProject {
 
     await this.executeCommand(
       `ng generate application core --style=css --routing=true`,
-      this.commandOptions
+      {
+        PUPPETEER_SKIP_DOWNLOAD: 'true',
+        ...this.commandOptions,
+      }
     );
     await this.executeCommand(
       `ng generate application admin --style=css --routing=false`,
-      this.commandOptions
+      {
+        PUPPETEER_SKIP_DOWNLOAD: 'true',
+        ...this.commandOptions,
+      }
     );
   }
 }
