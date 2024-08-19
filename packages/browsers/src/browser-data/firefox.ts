@@ -104,7 +104,7 @@ export function resolveDownloadPath(
     case FirefoxChannel.BETA:
     case FirefoxChannel.STABLE:
     case FirefoxChannel.ESR:
-      return [archive(platform, buildId)];
+      return ['en-US', archive(platform, buildId)];
   }
 }
 
