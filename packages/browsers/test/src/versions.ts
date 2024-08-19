@@ -6,6 +6,6 @@
 
 export const testChromeBuildId = '127.0.6533.72';
 export const testChromiumBuildId = '1083080';
-export const testFirefoxBuildId = '131.0a1';
+export const testFirefoxBuildId = 'stable_129.0';
 export const testChromeDriverBuildId = '127.0.6533.72';
 export const testChromeHeadlessShellBuildId = '127.0.6533.72';

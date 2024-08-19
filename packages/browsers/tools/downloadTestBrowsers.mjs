@@ -65,6 +65,20 @@ for (const version of Object.keys(versions)) {
       recursive: true,
     });
     copyFileSync(archivePath, targetPath);
+
+    // Needed to test Firefox nightly build download
+    if (browser === 'firefox' && platform === 'linux') {
+      const nightlyTarget = join(
+        cacheDir,
+        'server',
+        ...downloadPaths.firefox(
+          'linux',
+          versions.testFirefoxBuildId.split('_').at(-1)
+        )
+      );
+
+      copyFileSync(archivePath, nightlyTarget);
+    }
   }
 }
 
