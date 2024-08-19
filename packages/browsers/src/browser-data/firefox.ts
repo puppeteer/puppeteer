@@ -96,7 +96,16 @@ export function resolveDownloadPath(
   platform: BrowserPlatform,
   buildId: string
 ): string[] {
-  return [archiveNightly(platform, buildId)];
+  const [channel] = parseBuildId(buildId);
+  switch (channel) {
+    case FirefoxChannel.NIGHTLY:
+      return [archiveNightly(platform, buildId)];
+    case FirefoxChannel.DEVEDITION:
+    case FirefoxChannel.BETA:
+    case FirefoxChannel.STABLE:
+    case FirefoxChannel.ESR:
+      return [archive(platform, buildId)];
+  }
 }
 
 export function relativeExecutablePath(
