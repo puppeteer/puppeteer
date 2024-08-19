@@ -63,7 +63,9 @@ describe('Firefox CLI', function () {
   it('should download latest Firefox binaries', async () => {
     sinon
       .stub(httpUtil, 'getJSON')
-      .returns(Promise.resolve({FIREFOX_NIGHTLY: testFirefoxBuildId}));
+      .returns(
+        Promise.resolve({FIREFOX_NIGHTLY: testFirefoxBuildId.split('_').at(-1)})
+      );
     await new CLI(tmpDir).run([
       'npx',
       '@puppeteer/browsers',

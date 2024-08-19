@@ -12,7 +12,7 @@
 import {existsSync, mkdirSync, copyFileSync, rmSync} from 'fs';
 import {normalize, join, dirname} from 'path';
 
-import {downloadPaths} from '../lib/esm/browser-data/browser-data.js';
+import {downloadUrls} from '../lib/esm/browser-data/browser-data.js';
 import * as versions from '../test/build/versions.js';
 
 import {BrowserPlatform, install} from '@puppeteer/browsers';
@@ -46,7 +46,7 @@ for (const version of Object.keys(versions)) {
     const targetPath = join(
       cacheDir,
       'server',
-      ...downloadPaths[browser](platform, buildId)
+      downloadUrls[browser](platform, buildId, '')
     );
 
     if (existsSync(targetPath)) {
@@ -65,6 +65,21 @@ for (const version of Object.keys(versions)) {
       recursive: true,
     });
     copyFileSync(archivePath, targetPath);
+
+    // Needed to test Firefox nightly build download
+    if (browser === 'firefox' && platform === 'linux') {
+      const nightlyTarget = join(
+        cacheDir,
+        'server',
+        downloadUrls.firefox(
+          'linux',
+          versions.testFirefoxBuildId.split('_').at(-1),
+          ''
+        )
+      );
+
+      copyFileSync(archivePath, nightlyTarget);
+    }
   }
 }
 
