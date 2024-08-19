@@ -39,6 +39,23 @@ function getCapitalize(text) {
  * @param {string} version
  * @returns {string}
  */
+function normalizeVersionForCommit(browser, version) {
+  switch (browser) {
+    case 'firefox':
+      // Splits the prefix of `stable_` for Firefox
+      return version.split('_').at(-1);
+    case 'chrome':
+      return version;
+  }
+
+  throw new Error(`Unrecognized browser ${browser}`);
+}
+
+/**
+ *
+ * @param {string} version
+ * @returns {string}
+ */
 function normalizeVersionToSemVer(browser, version) {
   switch (browser) {
     case 'firefox':
@@ -69,7 +86,7 @@ function checkIfNeedsUpdate(browser, oldVersion, newVersion) {
     normalizeVersionToSemVer(browser, newVersion),
     true
   );
-  let message = `roll to ${getCapitalize(browser)} ${newVersion}`;
+  let message = `roll to ${getCapitalize(browser)} ${normalizeVersionForCommit(newVersion)}`;
 
   if (newSemVer.compare(oldSemVer) <= 0) {
     // Exit the process without setting up version
