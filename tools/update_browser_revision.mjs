@@ -86,7 +86,7 @@ function checkIfNeedsUpdate(browser, oldVersion, newVersion) {
     normalizeVersionToSemVer(browser, newVersion),
     true
   );
-  let message = `roll to ${getCapitalize(browser)} ${normalizeVersionForCommit(newVersion)}`;
+  let message = `roll to ${getCapitalize(browser)} ${normalizeVersionForCommit(browser, newVersion)}`;
 
   if (newSemVer.compare(oldSemVer) <= 0) {
     // Exit the process without setting up version
