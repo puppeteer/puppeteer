@@ -66,7 +66,7 @@ export function resolveDownloadUrl(
   buildId: string,
   baseUrl?: string
 ): string {
-  const [channel, resolvedBuildId] = parseBuildId(buildId);
+  const [channel] = parseBuildId(buildId);
   switch (channel) {
     case FirefoxChannel.NIGHTLY:
       baseUrl ??=
@@ -81,30 +81,27 @@ export function resolveDownloadUrl(
       baseUrl ??= 'https://archive.mozilla.org/pub/firefox/releases';
       break;
   }
-  switch (channel) {
-    case FirefoxChannel.NIGHTLY:
-      return `${baseUrl}/${resolveDownloadPath(platform, resolvedBuildId).join('/')}`;
-    case FirefoxChannel.DEVEDITION:
-    case FirefoxChannel.BETA:
-    case FirefoxChannel.STABLE:
-    case FirefoxChannel.ESR:
-      return `${baseUrl}/${resolvedBuildId}/${platformName(platform)}/en-US/${archive(platform, resolvedBuildId)}`;
-  }
+  return `${baseUrl}/${resolveDownloadPath(platform, buildId).join('/')}`;
 }
 
 export function resolveDownloadPath(
   platform: BrowserPlatform,
   buildId: string
 ): string[] {
-  const [channel] = parseBuildId(buildId);
+  const [channel, resolvedBuildId] = parseBuildId(buildId);
   switch (channel) {
     case FirefoxChannel.NIGHTLY:
-      return [archiveNightly(platform, buildId)];
+      return [archiveNightly(platform, resolvedBuildId)];
     case FirefoxChannel.DEVEDITION:
     case FirefoxChannel.BETA:
     case FirefoxChannel.STABLE:
     case FirefoxChannel.ESR:
-      return ['en-US', archive(platform, buildId)];
+      return [
+        resolvedBuildId,
+        platformName(platform),
+        'en-US',
+        archive(platform, resolvedBuildId),
+      ];
   }
 }
 
