@@ -103,7 +103,16 @@ if (!args.runner) {
   const single = new AngularProjectSingle(args.testRunner, args.name);
   const multi = new AngularProjectMulti(args.testRunner, args.name);
 
+  // Create Angular projects
   await Promise.all([single.create(), multi.create()]);
+
+  // Add schematic to projects
+  // Note we can't use Promise.all
+  // As it will try to install browser and fail
+  await single.runNgAdd();
+  await multi.runNgAdd();
+
+  // Run Angular E2E smoke tests
   await Promise.all([single.runSmoke(), multi.runSmoke()]);
 }
 

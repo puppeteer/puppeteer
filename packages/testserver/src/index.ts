@@ -260,6 +260,7 @@ export class TestServer {
     response: ServerResponse,
     pathName: string
   ): void {
+    pathName = decodeURIComponent(pathName);
     if (pathName === '/') {
       pathName = '/index.html';
     }
