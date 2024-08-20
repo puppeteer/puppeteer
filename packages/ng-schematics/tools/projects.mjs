@@ -146,10 +146,7 @@ class AngularProject {
 
   async runNgAdd() {
     await this.runNpmScripts(
-      `schematics:add -- --port=${AngularProject.port()}`,
-      {
-        PUPPETEER_NG_SCHEMATICS_SKIP_INSTALL: true,
-      }
+      `schematics:add -- --port=${AngularProject.port()}`
     );
   }
 
