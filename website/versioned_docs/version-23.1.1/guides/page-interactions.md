@@ -379,7 +379,7 @@ element has one. For example,
 `my-custom-element >>>> button` would select all button elements that are available
 inside the immediate shadow root of the `my-custom-element` (the shadow host).
 
-#### Custom selectors
+### Custom selectors
 
 You can also add your own pseudo element using
 [Puppeteer.registerCustomQueryHandler](../api/puppeteer.puppeteer.registercustomqueryhandler.md).
