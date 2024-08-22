@@ -154,15 +154,23 @@ const setupServer = async () => {
   return {server, httpsServer};
 };
 
+let browserPromise: Promise<Browser> | null = null;
 export const setupTestBrowserHooks = (): void => {
   before(async function () {
+    const defaultTimeout = this.timeout() ?? 0;
+    // Double
+    this.timeout(defaultTimeout * 2);
     try {
       if (!state.browser) {
-        state.browser = await puppeteer.launch({
-          ...processVariables.defaultBrowserOptions,
-          timeout: this.timeout() - 1_000,
-          protocolTimeout: this.timeout() * 2,
-        });
+        if (!browserPromise) {
+          browserPromise = puppeteer.launch({
+            ...processVariables.defaultBrowserOptions,
+            timeout: defaultTimeout - 1_000,
+            protocolTimeout: defaultTimeout * 2,
+          });
+        }
+
+        state.browser = await browserPromise;
       }
     } catch (error) {
       console.error(error);
@@ -283,8 +291,8 @@ const browserNotClosedError = new Error(
   'A manually launched browser was not closed!'
 );
 
-export const mochaHooks = {
-  async beforeAll(): Promise<void> {
+export const mochaHooks: Mocha.RootHookObject = {
+  async beforeAll(this: Mocha.Context): Promise<void> {
     async function setUpDefaultState() {
       const {server, httpsServer} = await setupServer();
 
@@ -305,14 +313,14 @@ export const mochaHooks = {
         setUpDefaultState(),
         Deferred.create({
           message: `Failed in after Hook`,
-          timeout: (this as any).timeout() - 1000,
+          timeout: this.timeout() - 1000,
         }),
       ]);
     } catch {}
   },
 
-  async afterAll(): Promise<void> {
-    (this as any).timeout(0);
+  async afterAll(this: Mocha.Context): Promise<void> {
+    this.timeout(0);
     const lastTestFile = (this as any)?.test?.parent?.suites?.[0]?.file
       ?.split('/')
       ?.at(-1);
@@ -333,14 +341,14 @@ export const mochaHooks = {
     }
   },
 
-  async afterEach(): Promise<void> {
+  async afterEach(this: Mocha.Context): Promise<void> {
     if (browserCleanups.length > 0) {
-      (this as any).test.error(browserNotClosedError);
+      (this.test as Mocha.Hook).error(browserNotClosedError);
       await Deferred.race([
         closeLaunched(browserCleanups)(),
         Deferred.create({
           message: `Failed in after Hook`,
-          timeout: (this as any).timeout() - 1000,
+          timeout: this.timeout() - 1000,
         }),
       ]);
     }
