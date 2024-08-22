@@ -447,6 +447,8 @@ to run this Dockerfile from a webserver running on App Engine Flex (Node).
 
 ### Running on Alpine
 
+Note that Chrome does not support Alpine out of the box so make sure you have compatible system dependencies installed on Alpine and test the image before using it. See https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/rpm/dist_package_provides.json and https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/debian/dist_package_versions.json for the list of system packages required on supported distros.
+
 > **CAUTION**
 >
 > The current Chromium version in Alpine 3.20 is causing timeout issues with Puppeteer. Downgrading to Alpine 3.19 fixes the issue.
