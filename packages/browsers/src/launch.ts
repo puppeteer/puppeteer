@@ -104,19 +104,69 @@ export function computeSystemExecutablePath(options: SystemOptions): string {
  * @public
  */
 export interface LaunchOptions {
+  /**
+   * Absolute path to the browser's executable.
+   */
   executablePath: string;
+  /**
+   * Configures stdio streams to open two additional streams for automation over
+   * those streams instead of WebSocket.
+   *
+   * @defaultValue `false`.
+   */
   pipe?: boolean;
+  /**
+   * If true, forwards the browser's process stdout and stderr to the Node's
+   * process stdout and stderr.
+   *
+   * @defaultValue `false`.
+   */
   dumpio?: boolean;
+  /**
+   * Additional arguments to pass to the executable when launching.
+   */
   args?: string[];
+  /**
+   * Environment variables to set for the browser process.
+   */
   env?: Record<string, string | undefined>;
+  /**
+   * Handles SIGINT in the Node process and tries to kill the browser process.
+   *
+   * @defaultValue `true`.
+   */
   handleSIGINT?: boolean;
+  /**
+   * Handles SIGTERM in the Node process and tries to gracefully close the browser
+   * process.
+   *
+   * @defaultValue `true`.
+   */
   handleSIGTERM?: boolean;
+  /**
+   * Handles SIGHUP in the Node process and tries to gracefully close the browser process.
+   *
+   * @defaultValue `true`.
+   */
   handleSIGHUP?: boolean;
+  /**
+   * Whether to spawn process in the {@link https://nodejs.org/api/child_process.html#optionsdetached | detached}
+   * mode.
+   *
+   * @defaultValue `true` except on Windows.
+   */
   detached?: boolean;
+  /**
+   * A callback to run after the browser process exits or before the process
+   * will be closed via the {@link Process.close} call (including when handling
+   * signals). The callback is only run once.
+   */
   onExit?: () => Promise<void>;
 }
 
 /**
+ * Launches a browser process according to {@link LaunchOptions}.
+ *
  * @public
  */
 export function launch(opts: LaunchOptions): Process {
