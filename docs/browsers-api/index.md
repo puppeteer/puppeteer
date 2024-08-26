@@ -220,6 +220,8 @@ Returns a version comparator for the given browser that can be used to sort brow
 
 </td><td>
 
+Launches a browser process according to [LaunchOptions](./browsers.launchoptions.md).
+
 </td></tr>
 <tr><td>
 
