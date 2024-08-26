@@ -206,6 +206,16 @@ async function updateVersionData(browser, oldVersion, newVersion) {
 }
 
 async function updateLastMaintainedChromeVersion(oldVersion, newVersion) {
+  const browserVersions = versionData.versions.map(
+    ([_puppeteerVersion, browserVersions]) => {
+      return browserVersions['chrome'];
+    }
+  );
+  if (browserVersions.indexOf(newVersion) !== -1) {
+    // Already updated.
+    return;
+  }
+
   const oldSemVer = new SemVer(oldVersion, true);
   const newSemVer = new SemVer(newVersion, true);
 
