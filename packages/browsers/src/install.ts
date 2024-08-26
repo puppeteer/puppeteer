@@ -101,12 +101,22 @@ export interface InstallOptions {
 }
 
 /**
+ * Downloads and unpacks the browser archive according to the
+ * {@link InstallOptions}.
+ *
+ * @returns a {@link InstalledBrowser} instance.
+ *
  * @public
  */
 export function install(
   options: InstallOptions & {unpack?: true}
 ): Promise<InstalledBrowser>;
 /**
+ * Downloads the browser archive according to the {@link InstallOptions} without
+ * unpacking.
+ *
+ * @returns the absolute path to the archive.
+ *
  * @public
  */
 export function install(
