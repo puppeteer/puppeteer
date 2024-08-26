@@ -157,9 +157,9 @@
     "source-map-support": "0.5.21",
     "spdx-satisfies": "5.0.1",
     "tsd": "0.31.1",
-    "tsx": "4.17.0",
+    "tsx": "4.18.0",
     "typescript": "5.4.5",
-    "wireit": "0.14.7"
+    "wireit": "0.14.8"
   },
   "overrides": {
     "@microsoft/api-extractor": {
