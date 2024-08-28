@@ -6,7 +6,7 @@
 
 import assert from 'assert';
 import {spawnSync} from 'child_process';
-import {existsSync} from 'fs';
+import {existsSync, readFileSync} from 'fs';
 import {mkdir, unlink} from 'fs/promises';
 import os from 'os';
 import path from 'path';
@@ -98,6 +98,17 @@ export interface InstallOptions {
    * @defaultValue `false`
    */
   forceFallbackForTesting?: boolean;
+
+  /**
+   * Whether to attempt to install system-level dependencies required
+   * for the browser.
+   *
+   * Currently, only supported for Debian and Ubuntu and only for Chrome.
+   * Requires root privileges.
+   *
+   * @defaultValue `false`
+   */
+  installDeps?: boolean;
 }
 
 /**
@@ -194,6 +205,47 @@ export async function install(
   }
 }
 
+async function installDeps(installedBrowser: InstalledBrowser) {
+  if (
+    process.platform !== 'linux' ||
+    installedBrowser.platform !== BrowserPlatform.LINUX
+  ) {
+    return;
+  }
+  // Currently, only Debian-like deps are supported.
+  const depsPath = path.join(
+    path.dirname(installedBrowser.executablePath),
+    'deb.deps'
+  );
+  if (existsSync(depsPath)) {
+    debugInstall(`deb.deps file was not found at ${depsPath}`);
+    return;
+  }
+  const data = readFileSync(depsPath, 'utf-8').split('\n').join(',');
+  if (process.getuid?.() !== 0) {
+    throw new Error('Installing system dependencies requires root privileges');
+  }
+  let result = spawnSync('apt-get', ['-v']);
+  if (result.status !== 0) {
+    throw new Error(
+      'Failed to install system dependencies: apt-get does not seem to be available'
+    );
+  }
+  debugInstall(`Trying to install dependencies: ${data}`);
+  result = spawnSync('apt-get', [
+    'satisfy',
+    '-y',
+    data,
+    '--no-install-recommends',
+  ]);
+  if (result.status !== 0) {
+    throw new Error(
+      `Failed to install system dependencies: status=${result.status},error=${result.error},stdout=${result.stdout.toString('utf8')},stderr=${result.stderr.toString('utf8')}`
+    );
+  }
+  debugInstall(`Installed system dependencies ${data}`);
+}
+
 async function installUrl(
   url: URL,
   options: InstallOptions
@@ -244,6 +296,9 @@ async function installUrl(
         );
       }
       await runSetup(installedBrowser);
+      if (options.installDeps) {
+        await installDeps(installedBrowser);
+      }
       return installedBrowser;
     }
     debugInstall(`Downloading binary from ${url}`);
@@ -275,6 +330,9 @@ async function installUrl(
     }
 
     await runSetup(installedBrowser);
+    if (options.installDeps) {
+      await installDeps(installedBrowser);
+    }
     return installedBrowser;
   } finally {
     if (existsSync(archivePath)) {
