@@ -103,8 +103,8 @@ export interface InstallOptions {
    * Whether to attempt to install system-level dependencies required
    * for the browser.
    *
-   * Currently, only supported for Debian and Ubuntu and only for Chrome.
-   * Requires root privileges.
+   * Only supported for Chrome on Debian or Ubuntu.
+   * Requires system-level privileges to run `apt-get`.
    *
    * @defaultValue `false`
    */
@@ -217,7 +217,7 @@ async function installDeps(installedBrowser: InstalledBrowser) {
     path.dirname(installedBrowser.executablePath),
     'deb.deps'
   );
-  if (existsSync(depsPath)) {
+  if (!existsSync(depsPath)) {
     debugInstall(`deb.deps file was not found at ${depsPath}`);
     return;
   }
