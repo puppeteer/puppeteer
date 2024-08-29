@@ -47,6 +47,8 @@ string\[\]
 
 </td><td>
 
+Additional arguments to pass to the executable when launching.
+
 </td><td>
 
 </td></tr>
@@ -64,7 +66,11 @@ boolean
 
 </td><td>
 
+Whether to spawn process in the [detached](https://nodejs.org/api/child_process.html#optionsdetached) mode.
+
 </td><td>
+
+`true` except on Windows.
 
 </td></tr>
 <tr><td>
@@ -81,7 +87,11 @@ boolean
 
 </td><td>
 
+If true, forwards the browser's process stdout and stderr to the Node's process stdout and stderr.
+
 </td><td>
+
+`false`.
 
 </td></tr>
 <tr><td>
@@ -98,6 +108,8 @@ Record&lt;string, string \| undefined&gt;
 
 </td><td>
 
+Environment variables to set for the browser process.
+
 </td><td>
 
 </td></tr>
@@ -112,6 +124,8 @@ Record&lt;string, string \| undefined&gt;
 string
 
 </td><td>
+
+Absolute path to the browser's executable.
 
 </td><td>
 
@@ -130,7 +144,11 @@ boolean
 
 </td><td>
 
+Handles SIGHUP in the Node process and tries to gracefully close the browser process.
+
 </td><td>
+
+`true`.
 
 </td></tr>
 <tr><td>
@@ -147,7 +165,11 @@ boolean
 
 </td><td>
 
+Handles SIGINT in the Node process and tries to kill the browser process.
+
 </td><td>
+
+`true`.
 
 </td></tr>
 <tr><td>
@@ -164,7 +186,11 @@ boolean
 
 </td><td>
 
+Handles SIGTERM in the Node process and tries to gracefully close the browser process.
+
 </td><td>
+
+`true`.
 
 </td></tr>
 <tr><td>
@@ -180,6 +206,8 @@ boolean
 () =&gt; Promise&lt;void&gt;
 
 </td><td>
+
+A callback to run after the browser process exits or before the process will be closed via the [Process.close()](./browsers.process.close.md) call (including when handling signals). The callback is only run once.
 
 </td><td>
 
@@ -198,7 +226,11 @@ boolean
 
 </td><td>
 
+Configures stdio streams to open two additional streams for automation over those streams instead of WebSocket.
+
 </td><td>
+
+`false`.
 
 </td></tr>
 </tbody></table>

@@ -4,6 +4,8 @@ sidebar_label: launch
 
 # launch() function
 
+Launches a browser process according to [LaunchOptions](./browsers.launchoptions.md).
+
 ### Signature
 
 ```typescript

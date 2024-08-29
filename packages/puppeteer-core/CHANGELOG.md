@@ -20,6 +20,13 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [23.2.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.2.0...puppeteer-core-v23.2.1) (2024-08-29)
+
+
+### Bug Fixes
+
+* roll to Chrome 128.0.6613.86 ([#13013](https://github.com/puppeteer/puppeteer/issues/13013)) ([d41cc51](https://github.com/puppeteer/puppeteer/commit/d41cc5136ce5d431a0a522cbc4238b6c08383e2f))
+
 ## [23.2.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.1.1...puppeteer-core-v23.2.0) (2024-08-26)
 
 
