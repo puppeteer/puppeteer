@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export type {Protocol} from 'puppeteer-core';
+
 
 export * from 'puppeteer-core/internal/puppeteer-core.js';
 
