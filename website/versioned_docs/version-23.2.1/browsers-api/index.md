@@ -206,6 +206,8 @@ Returns a version comparator for the given browser that can be used to sort brow
 
 </td><td>
 
+Downloads and unpacks the browser archive according to the [InstallOptions](./browsers.installoptions.md).
+
 </td></tr>
 <tr><td>
 
@@ -213,12 +215,16 @@ Returns a version comparator for the given browser that can be used to sort brow
 
 </td><td>
 
+Downloads the browser archive according to the [InstallOptions](./browsers.installoptions.md) without unpacking.
+
 </td></tr>
 <tr><td>
 
 <span id="launch">[launch(opts)](./browsers.launch.md)</span>
 
 </td><td>
+
+Launches a browser process according to [LaunchOptions](./browsers.launchoptions.md).
 
 </td></tr>
 <tr><td>

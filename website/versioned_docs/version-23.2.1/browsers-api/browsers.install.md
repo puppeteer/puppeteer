@@ -6,6 +6,8 @@ sidebar_label: install
 
 <h2 id="install">install(): Promise&lt;InstalledBrowser&gt;</h2>
 
+Downloads and unpacks the browser archive according to the [InstallOptions](./browsers.installoptions.md).
+
 ### Signature
 
 ```typescript
@@ -47,7 +49,11 @@ options
 
 Promise&lt;[InstalledBrowser](./browsers.installedbrowser.md)&gt;
 
+a [InstalledBrowser](./browsers.installedbrowser.md) instance.
+
 <h2 id="install-1">install(): Promise&lt;string&gt;</h2>
+
+Downloads the browser archive according to the [InstallOptions](./browsers.installoptions.md) without unpacking.
 
 ### Signature
 
@@ -89,3 +95,5 @@ options
 **Returns:**
 
 Promise&lt;string&gt;
+
+the absolute path to the archive.
