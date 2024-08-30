@@ -58,6 +58,7 @@ module.exports = {
         'guides/running-puppeteer-in-extensions',
       ],
     },
+    'examples',
     {
       type: 'category',
       label: 'Integrations',
