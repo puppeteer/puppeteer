@@ -11,13 +11,13 @@ Check out this repository and and install the package dependencies, using the fo
 npm install
 ```
 
-To build a version of Puppeteer to be used with the examples, run the following command:
+Then build a version of Puppeteer to be used with the examples:
 
 ```bash
 npm run build
 ```
 
-After both commands have succeeded, run an individual example using the following command:
+After both commands have succeeded, run an individual example like so:
 
 ```bash
 NODE_PATH=../ node examples/search.js
