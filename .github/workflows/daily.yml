@@ -53,9 +53,11 @@ jobs:
       - name: Build packages
         run: npm run build
       - name: Install browsers
-        run: |
-          npx puppeteer browsers install chrome@canary
-          npx puppeteer browsers install chrome-headless-shell@canary
+        run: npm run postinstall
+        env:
+          PUPPETEER_CHROME_VERSION: canary
+          PUPPETEER_CHROME_HEADLESS_SHELL_VERSION: canary
+          PUPPETEER_FIREFOX_SKIP_DOWNLOAD: true
       - name: Apply Canary expectations
         run: node tools/merge-canary-test-expectations.mjs
       - name: Run all tests (for non-Linux)
@@ -64,6 +66,7 @@ jobs:
         env:
           PUPPETEER_CHROME_VERSION: canary
           PUPPETEER_CHROME_HEADLESS_SHELL_VERSION: canary
+          PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD: true
           PUPPETEER_TEST_EXPERIMENTAL_CHROME_FEATURES: ${{ matrix.configs == 'experimental' }}
       - name: Run all tests (for Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -113,8 +116,11 @@ jobs:
       - name: Build packages
         run: npm run build
       - name: Install browsers
-        run: |
-          npx puppeteer browsers install firefox@nightly
+        run: npm run postinstall
+        env:
+          PUPPETEER_CHROME_SKIP_DOWNLOAD: true
+          PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD: true
+          PUPPETEER_FIREFOX_VERSION: nightly
       - name: Apply Canary expectations
         run: node tools/merge-canary-test-expectations.mjs
       - name: Run all tests (for non-Linux)
