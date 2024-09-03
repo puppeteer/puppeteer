@@ -36,6 +36,7 @@ interface InstallArgs {
   path?: string;
   platform?: BrowserPlatform;
   baseUrl?: string;
+  installDeps?: boolean;
 }
 
 interface LaunchArgs {
@@ -180,6 +181,11 @@ export class CLI {
           if (this.#pinnedBrowsers) {
             yargs.example('$0 install', 'Install all pinned browsers');
           }
+          yargs.option('install-deps', {
+            type: 'boolean',
+            desc: 'Whether to attempt installing system dependencies (only supported on Linux, requires root privileges).',
+            default: false,
+          });
           yargs.example(
             '$0 install chrome',
             `Install the ${latestOrPinned} available build of the Chrome browser.`
@@ -440,6 +446,7 @@ export class CLI {
       baseUrl: args.baseUrl,
       buildIdAlias:
         originalBuildId !== args.browser.buildId ? originalBuildId : undefined,
+      installDeps: args.installDeps,
     });
     console.log(
       `${args.browser.name}@${args.browser.buildId} ${computeExecutablePath({
