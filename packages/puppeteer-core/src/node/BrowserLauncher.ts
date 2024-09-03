@@ -434,7 +434,10 @@ export abstract class BrowserLauncher {
       return InstalledBrowser.CHROME;
     }
 
-    const browserType = puppeteerBrowserToInstalledBrowser(this.browser, headless);
+    const browserType = puppeteerBrowserToInstalledBrowser(
+      this.browser,
+      headless
+    );
 
     executablePath = computeExecutablePath({
       cacheDir: this.puppeteer.defaultDownloadPath!,
