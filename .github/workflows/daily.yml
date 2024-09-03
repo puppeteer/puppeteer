@@ -181,3 +181,4 @@ jobs:
           # Try to find the same comment this day
           comment-id: ${{ steps.find-comment.outputs.comment-id }}
           body: ${{ steps.genearate-comment-body.outputs.body }}
+          edit-mode: replace
