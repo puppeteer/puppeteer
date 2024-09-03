@@ -164,11 +164,20 @@ jobs:
         env:
           CHROME_RUN_STATUS: ${{ needs.chrome-canary-tests.result }}
           FIREFOX_RUN_STATUS: ${{ needs.firefox-nightly-tests.result }}
-
+      - name: Find Comment
+        uses: peter-evans/find-comment@v3
+        id: find-comment
+        with:
+          # https://github.com/puppeteer/puppeteer/issues/12379
+          issue-number: 12379
+          body-includes: ${{ steps.genearate-comment-body.outputs.today }}
+          direction: last
       - name: Post comment
         uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4.0.0
         if: ${{ needs.chrome-canary-tests.result}}
         with:
           # https://github.com/puppeteer/puppeteer/issues/12379
           issue-number: 12379
+          # Try to find the same comment this day
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
           body: ${{ steps.genearate-comment-body.outputs.body }}
