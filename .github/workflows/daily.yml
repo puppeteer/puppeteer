@@ -165,7 +165,7 @@ jobs:
           CHROME_RUN_STATUS: ${{ needs.chrome-canary-tests.result }}
           FIREFOX_RUN_STATUS: ${{ needs.firefox-nightly-tests.result }}
       - name: Find Comment
-        uses: peter-evans/find-comment@v3
+        uses: peter-evans/find-comment@3eae4d37986fb5a8592848f6a574fdf654e61f9e # v3.1.0
         id: find-comment
         with:
           # https://github.com/puppeteer/puppeteer/issues/12379
