@@ -407,11 +407,10 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
   ): void {
     let frame = this.frame(frameId);
     if (frame) {
-      if (session && frame.client !== this.#client) {
-        // TODO: check this condition. It might not be correct for
-        // nested frames.
+      const parentFrame = this.frame(parentFrameId);
+      if (session && parentFrame && frame.client !== parentFrame?.client) {
         // If an OOP iframes becomes a normal iframe
-        // again it is first attached to the parent page before the
+        // again it is first attached to the parent frame before the
         // target is removed.
         frame.updateClient(session);
       }

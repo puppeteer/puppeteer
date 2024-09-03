@@ -322,12 +322,8 @@ export class CdpFrame extends Frame {
 
   @throwIfDetached
   async addPreloadScript(preloadScript: CdpPreloadScript): Promise<void> {
-    // TODO: this might be not correct and we might be adding a preload
-    // script multiple times to the nested frames.
-    if (
-      this.#client === this._frameManager.client &&
-      this !== this._frameManager.mainFrame()
-    ) {
+    const parentFrame = this.parentFrame();
+    if (parentFrame && this.#client === parentFrame.client) {
       return;
     }
     if (preloadScript.getIdForFrame(this)) {
