@@ -22,9 +22,18 @@ function getStatus(result) {
   return '❌ Tests failed';
 }
 
+const options = {
+  year: 'numeric',
+  month: 'numeric',
+  day: 'numeric',
+};
+const today = new Date().toLocaleDateString('en-GB', options);
+
 const chromeStatus = getStatus(process.env.CHROME_RUN_STATUS);
 const firefoxStatus = getStatus(process.env.FIREFOX_RUN_STATUS);
 const body = `
+Date: ${today}
+
 | Browser | Status | 
 | ------- | ------ | 
 | Chrome Canary | ${chromeStatus} |
@@ -35,4 +44,5 @@ const footer = `
 ---
 [Link](${getGitHubEnvVariable('server_url')}/${getGitHubEnvVariable('repository')}/actions/runs/${getGitHubEnvVariable('run_id')})`;
 
+actions.setOutput('today', today);
 actions.setOutput('body', `${body}${footer}`);
