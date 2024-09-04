@@ -6,6 +6,7 @@
 
 import expect from 'expect';
 import {Puppeteer} from 'puppeteer';
+import type {Point, Quad} from 'puppeteer-core/internal/api/ElementHandle.js';
 import {ElementHandle} from 'puppeteer-core/internal/api/ElementHandle.js';
 import {
   asyncDisposeSymbol,
@@ -148,40 +149,86 @@ describe('ElementHandle specs', function () {
       expect(await element.boxModel()).toBe(null);
     });
 
-    it('should correctly compute y-coordinates', async () => {
+    it('should correctly compute box model with offsets', async () => {
       const {page} = await getTestState();
-
-      await page.setContent(`<body style='margin: 0'>
-        <div style='width: 200px; height: 100px'></div>
-        <div style='width: 200px; height: 100px' id='box'></div>
-      </body>`);
+      const border = 10;
+      const padding = 11;
+      const margin = 12;
+      const width = 200;
+      const height = 100;
+      const verticalOffset = 100;
+      const horizontalOffset = 100;
+      await page.setContent(`<div
+        style='position:absolute; left: ${horizontalOffset}px; top: ${verticalOffset}px; width: ${width}px; height: ${height}px; border: ${border}px solid green; padding: ${padding}px; margin: ${margin}px;'
+        id='box'>
+      </div>`);
       using element = (await page.$('#box'))!;
       const boxModel = await element.boxModel();
-      const expectedQuad = [
-        {
-          x: 0,
-          y: 100,
-        },
-        {
-          x: 200,
-          y: 100,
-        },
-        {
-          x: 200,
-          y: 200,
-        },
-        {
-          x: 0,
-          y: 200,
-        },
-      ];
+
+      function makeQuad(topLeft: Point, bottomRight: Point): Quad {
+        return [
+          {
+            x: topLeft.x,
+            y: topLeft.y,
+          },
+          {
+            x: bottomRight.x,
+            y: topLeft.y,
+          },
+          {
+            x: bottomRight.x,
+            y: bottomRight.y,
+          },
+          {
+            x: topLeft.x,
+            y: bottomRight.y,
+          },
+        ];
+      }
+
       expect(boxModel).toEqual({
-        content: expectedQuad,
-        padding: expectedQuad,
-        border: expectedQuad,
-        margin: expectedQuad,
-        width: 200,
-        height: 100,
+        content: makeQuad(
+          {
+            x: horizontalOffset + padding + margin + border,
+            y: verticalOffset + padding + margin + border,
+          },
+          {
+            x: horizontalOffset + width + padding + margin + border,
+            y: verticalOffset + height + padding + margin + border,
+          }
+        ),
+        padding: makeQuad(
+          {
+            x: horizontalOffset + margin + border,
+            y: verticalOffset + margin + border,
+          },
+          {
+            x: horizontalOffset + width + padding * 2 + margin + border,
+            y: verticalOffset + padding * 2 + height + margin + border,
+          }
+        ),
+        border: makeQuad(
+          {
+            x: horizontalOffset + margin,
+            y: verticalOffset + margin,
+          },
+          {
+            x: horizontalOffset + width + padding * 2 + margin + border * 2,
+            y: verticalOffset + padding * 2 + height + margin + border * 2,
+          }
+        ),
+        margin: makeQuad(
+          {
+            x: horizontalOffset,
+            y: verticalOffset,
+          },
+          {
+            x: horizontalOffset + width + padding * 2 + margin * 2 + border * 2,
+            y: verticalOffset + padding * 2 + height + margin * 2 + border * 2,
+          }
+        ),
+        width: width + padding * 2 + border * 2,
+        height: height + padding * 2 + border * 2,
       });
     });
   });
