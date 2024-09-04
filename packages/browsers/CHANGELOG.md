@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.3.1...browsers-v2.4.0) (2024-09-04)
+
+
+### Features
+
+* support --install-deps flag in the browsers CLI ([#12580](https://github.com/puppeteer/puppeteer/issues/12580)) ([b832417](https://github.com/puppeteer/puppeteer/commit/b832417eede8506b0fb70d4e4fceb0fa9655cdf5))
+
 ## [2.3.1](https://github.com/puppeteer/puppeteer/compare/browsers-v2.3.0...browsers-v2.3.1) (2024-08-14)
 
 
