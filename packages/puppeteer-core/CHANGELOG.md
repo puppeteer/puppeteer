@@ -20,6 +20,26 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [23.3.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.2.2...puppeteer-core-v23.3.0) (2024-09-04)
+
+
+### Features
+
+* roll to Firefox 130.0 ([#13046](https://github.com/puppeteer/puppeteer/issues/13046)) ([f311a65](https://github.com/puppeteer/puppeteer/commit/f311a65f6b5d15ece791844959d6cd18165c2474))
+
+
+### Bug Fixes
+
+* incorrect y-coordinate in ElementHandle.boxModel() ([#13045](https://github.com/puppeteer/puppeteer/issues/13045)) ([afe77af](https://github.com/puppeteer/puppeteer/commit/afe77af53ba672dda487c6ceccf66ea7c7908105))
+* revert the use of structuredClone ([#13044](https://github.com/puppeteer/puppeteer/issues/13044)) ([96b3a8b](https://github.com/puppeteer/puppeteer/commit/96b3a8b33f648fdae43179ab237182683836b8ec))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.3.1 to 2.4.0
+
 ## [23.2.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.2.1...puppeteer-core-v23.2.2) (2024-09-03)
 
 
