@@ -147,6 +147,29 @@ Provides information about the progress of the download.
 </td></tr>
 <tr><td>
 
+<span id="installdeps">installDeps</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether to attempt to install system-level dependencies required for the browser.
+
+Only supported for Chrome on Debian or Ubuntu. Requires system-level privileges to run `apt-get`.
+
+</td><td>
+
+`false`
+
+</td></tr>
+<tr><td>
+
 <span id="platform">platform</span>
 
 </td><td>
