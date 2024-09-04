@@ -147,6 +147,43 @@ describe('ElementHandle specs', function () {
       using element = (await page.$('div'))!;
       expect(await element.boxModel()).toBe(null);
     });
+
+    it('should correctly compute y-coordinates', async () => {
+      const {page} = await getTestState();
+
+      await page.setContent(`<body style='margin: 0'>
+        <div style='width: 200px; height: 100px'></div>
+        <div style='width: 200px; height: 100px' id='box'></div>
+      </body>`);
+      using element = (await page.$('#box'))!;
+      const boxModel = await element.boxModel();
+      const expectedQuad = [
+        {
+          x: 0,
+          y: 100,
+        },
+        {
+          x: 200,
+          y: 100,
+        },
+        {
+          x: 200,
+          y: 200,
+        },
+        {
+          x: 0,
+          y: 200,
+        },
+      ];
+      expect(boxModel).toEqual({
+        content: expectedQuad,
+        padding: expectedQuad,
+        border: expectedQuad,
+        margin: expectedQuad,
+        width: 200,
+        height: 100,
+      });
+    });
   });
 
   describe('ElementHandle.contentFrame', function () {

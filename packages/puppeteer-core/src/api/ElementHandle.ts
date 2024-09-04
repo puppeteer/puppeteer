@@ -1249,8 +1249,8 @@ export abstract class ElementHandle<
       const border: Quad = [
         {x: rect.left, y: rect.top},
         {x: rect.left + rect.width, y: rect.top},
-        {x: rect.left + rect.width, y: rect.top + rect.bottom},
-        {x: rect.left, y: rect.top + rect.bottom},
+        {x: rect.left + rect.width, y: rect.top + rect.height},
+        {x: rect.left, y: rect.top + rect.height},
       ];
       const padding = transformQuadWithOffsets(border, offsets.border);
       const content = transformQuadWithOffsets(padding, offsets.padding);
