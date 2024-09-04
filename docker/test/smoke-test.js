@@ -11,6 +11,9 @@ const puppeteer = require('puppeteer');
   });
   const page = await browser.newPage();
   await page.goto('https://example.com');
+  await page.screenshot({
+    path: 'test.png',
+  });
   await browser.close();
   console.log('done');
 })();
