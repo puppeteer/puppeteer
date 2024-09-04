@@ -2494,7 +2494,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
     await this.bringToFront();
 
-    // TODO: use structuredClone after Node 16 support is dropped.
     const options = {
       ...userOptions,
       clip: userOptions.clip
