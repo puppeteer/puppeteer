@@ -2494,7 +2494,15 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
     await this.bringToFront();
 
-    const options = structuredClone(userOptions) as ScreenshotOptions;
+    // TODO: use structuredClone after Node 16 support is dropped.
+    const options = {
+      ...userOptions,
+      clip: userOptions.clip
+        ? {
+            ...userOptions.clip,
+          }
+        : undefined,
+    };
     if (options.type === undefined && options.path !== undefined) {
       const filePath = options.path;
       // Note we cannot use Node.js here due to browser compatibility.
