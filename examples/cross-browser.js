@@ -19,7 +19,7 @@ const puppeteer = require('puppeteer');
  */
 
 const firefoxOptions = {
-  product: 'firefox',
+  browser: 'firefox',
   extraPrefsFirefox: {
     // Enable additional Firefox logging from its protocol implementation
     // 'remote.log.level': 'Trace',
