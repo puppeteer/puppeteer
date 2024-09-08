@@ -138,7 +138,7 @@
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-import-resolver-typescript": "3.6.3",
-    "eslint-plugin-import": "2.29.1",
+    "eslint-plugin-import": "2.30.0",
     "eslint-plugin-mocha": "10.5.0",
     "eslint-plugin-prettier": "5.2.1",
     "eslint-plugin-rulesdir": "0.2.2",
@@ -156,10 +156,10 @@
     "sinon": "18.0.0",
     "source-map-support": "0.5.21",
     "spdx-satisfies": "5.0.1",
-    "tsd": "0.31.1",
+    "tsd": "0.31.2",
     "tsx": "4.19.0",
     "typescript": "5.4.5",
-    "wireit": "0.14.8"
+    "wireit": "0.14.9"
   },
   "overrides": {
     "@microsoft/api-extractor": {
