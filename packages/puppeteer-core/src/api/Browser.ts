@@ -364,7 +364,7 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
   /**
    * Gets a list of all open {@link Page | pages} inside this {@link Browser}.
    *
-   * If there ar multiple {@link BrowserContext | browser contexts}, this
+   * If there are multiple {@link BrowserContext | browser contexts}, this
    * returns all {@link Page | pages} in all
    * {@link BrowserContext | browser contexts}.
    *
