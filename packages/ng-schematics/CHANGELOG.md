@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.6.1...ng-schematics-v0.7.0) (2024-09-11)
+
+
+### Features
+
+* support custom baseUrl ([#12928](https://github.com/puppeteer/puppeteer/issues/12928)) ([4452c57](https://github.com/puppeteer/puppeteer/commit/4452c57dc4b1faba1f2432a8041517f0791935bd))
+
 ## [0.6.1](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.6.0...ng-schematics-v0.6.1) (2024-06-20)
 
 
