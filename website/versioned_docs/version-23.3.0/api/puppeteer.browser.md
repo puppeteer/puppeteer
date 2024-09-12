@@ -229,7 +229,7 @@ Creates a new [page](./puppeteer.page.md) in the [default browser context](./pup
 
 Gets a list of all open [pages](./puppeteer.page.md) inside this [Browser](./puppeteer.browser.md).
 
-If there ar multiple [browser contexts](./puppeteer.browsercontext.md), this returns all [pages](./puppeteer.page.md) in all [browser contexts](./puppeteer.browsercontext.md).
+If there are multiple [browser contexts](./puppeteer.browsercontext.md), this returns all [pages](./puppeteer.page.md) in all [browser contexts](./puppeteer.browsercontext.md).
 
 **Remarks:**
 
