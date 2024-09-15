@@ -34,7 +34,7 @@ jobs:
           BROWSER_TO_UPDATE: 'chrome'
       - name: Create Pull Request
         if: ${{ steps.update.outputs.commit }}
-        uses: peter-evans/create-pull-request@8867c4aba1b742c39f8d0ba35429c2dfa4b6cb20 # v7.0.1
+        uses: peter-evans/create-pull-request@d121e62763d8cc35b5fb1710e887d6e69a52d3a4 # v7.0.2
         with:
           token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN }}
           branch: browser-automation-bot/update-browser-version-chrome
@@ -69,7 +69,7 @@ jobs:
           BROWSER_TO_UPDATE: 'firefox'
       - name: Create Pull Request
         if: ${{ steps.update.outputs.commit }}
-        uses: peter-evans/create-pull-request@8867c4aba1b742c39f8d0ba35429c2dfa4b6cb20 # v7.0.1
+        uses: peter-evans/create-pull-request@d121e62763d8cc35b5fb1710e887d6e69a52d3a4 # v7.0.2
         with:
           token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN }}
           branch: browser-automation-bot/update-browser-version-firefox
