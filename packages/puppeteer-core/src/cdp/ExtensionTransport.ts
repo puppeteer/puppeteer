@@ -130,6 +130,13 @@ export class ExtensionTransport implements ConnectionTransport {
               sessionId: 'pageTargetSessionId',
             },
           });
+          this.#dispatchResponse({
+            id: parsed.id,
+            sessionId: parsed.sessionId,
+            method: parsed.method,
+            result: {},
+          });
+          return;
         } else if (!parsed.sessionId) {
           this.#dispatchResponse({
             method: 'Target.attachedToTarget',
@@ -138,14 +145,14 @@ export class ExtensionTransport implements ConnectionTransport {
               sessionId: 'tabTargetSessionId',
             },
           });
+          this.#dispatchResponse({
+            id: parsed.id,
+            sessionId: parsed.sessionId,
+            method: parsed.method,
+            result: {},
+          });
+          return;
         }
-        this.#dispatchResponse({
-          id: parsed.id,
-          sessionId: parsed.sessionId,
-          method: parsed.method,
-          result: {},
-        });
-        return;
       }
     }
     if (parsed.sessionId === 'pageTargetSessionId') {

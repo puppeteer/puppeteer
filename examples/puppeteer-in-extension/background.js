@@ -31,6 +31,11 @@ globalThis.testConnect = async url => {
   const title = await page.evaluate(() => {
     return document.title;
   });
-  await browser.disconnect();
-  return title;
+  const frame = await page.waitForFrame(frame => {
+    return frame.url().endsWith('iframe.html');
+  });
+  const frameTitle = await frame.evaluate(() => {
+    return document.title;
+  });
+  return title + '|' + frameTitle;
 };
