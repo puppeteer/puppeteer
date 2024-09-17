@@ -33,8 +33,10 @@ try {
     return await globalThis.testConnect(url);
   }, `http://localhost:${port}/playground.html`);
 
-  if (result !== 'Playground') {
-    throw new Error('Unexpected playground.html page title: ' + result);
+  if (result !== 'Playground|Iframe') {
+    throw new Error(
+      'Unexpected playground.html+iframe.html page titles: ' + result
+    );
   }
 } finally {
   await browser.close();
