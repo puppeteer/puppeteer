@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rm -rf out && rollup -c"
+    "build": "rm -rf out && rollup -c && node patch.mjs"
   },
   "keywords": [],
   "author": "",
