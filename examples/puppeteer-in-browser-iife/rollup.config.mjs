@@ -43,6 +43,7 @@ export default {
         '@babel/plugin-transform-modules-commonjs',
       ],
       allowAllFormats: true,
+      compact: false,
     }),
     // getBabelOutputPlugin({
     //   "presets": [
