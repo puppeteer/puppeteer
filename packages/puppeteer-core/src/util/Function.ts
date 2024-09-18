@@ -5,6 +5,8 @@
  */
 const createdFunctions = new Map<string, (...args: unknown[]) => unknown>();
 
+const F = Function;
+
 /**
  * Creates a function from a string.
  *
@@ -17,9 +19,7 @@ export const createFunction = (
   if (fn) {
     return fn;
   }
-  fn = new Function(`return ${functionValue}`)() as (
-    ...args: unknown[]
-  ) => unknown;
+  fn = new F(`return ${functionValue}`)() as (...args: unknown[]) => unknown;
   createdFunctions.set(functionValue, fn);
   return fn;
 };
@@ -30,7 +30,7 @@ export const createFunction = (
 export function stringifyFunction(fn: (...args: never) => unknown): string {
   let value = fn.toString();
   try {
-    new Function(`(${value})`);
+    new F(`(${value})`);
   } catch (err) {
     if (
       (err as Error).message.includes(
@@ -50,7 +50,7 @@ export function stringifyFunction(fn: (...args: never) => unknown): string {
     }
     value = `${prefix}${value}`;
     try {
-      new Function(`(${value})`);
+      new F(`(${value})`);
     } catch {
       // We tried hard to serialize, but there's a weird beast here.
       throw new Error('Passed function cannot be serialized!');

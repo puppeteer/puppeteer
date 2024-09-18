@@ -34,6 +34,7 @@ import {throwIfDisposed} from '../util/decorators.js';
 
 import type {CDPSession} from './CDPSession.js';
 import type {KeyboardTypeOptions} from './Input.js';
+import type {JSHandle} from './JSHandle.js';
 import {
   FunctionLocator,
   NodeLocator,
@@ -815,11 +816,18 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * @internal
    */
   async setFrameContent(content: string): Promise<void> {
-    return await this.evaluate(html => {
+    using functionHandle = (await this.evaluateHandle(`(html) => {
       document.open();
       document.write(html);
       document.close();
-    }, content);
+    }`)) as JSHandle<Function>;
+    return await this.evaluate(
+      (functionHandle, html) => {
+        functionHandle(html);
+      },
+      functionHandle,
+      content
+    );
   }
 
   /**
@@ -905,42 +913,48 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
 
     type = type ?? 'text/javascript';
 
-    return await this.mainRealm().transferHandle(
-      await this.isolatedRealm().evaluateHandle(
-        async ({url, id, type, content}) => {
-          return await new Promise<HTMLScriptElement>((resolve, reject) => {
-            const script = document.createElement('script');
-            script.type = type;
-            script.text = content;
-            script.addEventListener(
-              'error',
-              event => {
-                reject(new Error(event.message ?? 'Could not load script'));
-              },
-              {once: true}
-            );
-            if (id) {
-              script.id = id;
-            }
-            if (url) {
-              script.src = url;
-              script.addEventListener(
-                'load',
-                () => {
-                  resolve(script);
-                },
-                {once: true}
-              );
-              document.head.appendChild(script);
-            } else {
-              document.head.appendChild(script);
+    using functionHandle = (await this.isolatedRealm()
+      .evaluateHandle(`async ({url, id, type, content}) => {
+      return await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.type = type;
+        script.text = content;
+        script.addEventListener(
+          'error',
+          event => {
+            reject(new Error(event.message ?? 'Could not load script'));
+          },
+          {once: true}
+        );
+        if (id) {
+          script.id = id;
+        }
+        if (url) {
+          script.src = url;
+          script.addEventListener(
+            'load',
+            () => {
               resolve(script);
-            }
-          });
+            },
+            {once: true}
+          );
+          document.head.appendChild(script);
+        } else {
+          document.head.appendChild(script);
+          resolve(script);
+        }
+      });
+    }`)) as JSHandle<Function>;
+
+    return (await this.mainRealm().transferHandle(
+      await this.isolatedRealm().evaluateHandle(
+        (fn, opts) => {
+          return fn(opts);
         },
+        functionHandle,
         {...options, type, content}
       )
-    );
+    )) as ElementHandle<HTMLScriptElement>;
   }
 
   /**
@@ -984,14 +998,14 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
       options.content = content;
     }
 
-    return await this.mainRealm().transferHandle(
-      await this.isolatedRealm().evaluateHandle(async ({url, content}) => {
-        return await new Promise<HTMLStyleElement | HTMLLinkElement>(
+    using functionHandle = (await this.isolatedRealm()
+      .evaluateHandle(`async ({url, content}) => {
+        return await new Promise(
           (resolve, reject) => {
-            let element: HTMLStyleElement | HTMLLinkElement;
+            let element;
             if (!url) {
               element = document.createElement('style');
-              element.appendChild(document.createTextNode(content!));
+              element.appendChild(document.createTextNode(content));
             } else {
               const link = document.createElement('link');
               link.rel = 'stylesheet';
@@ -1010,7 +1024,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
               event => {
                 reject(
                   new Error(
-                    (event as ErrorEvent).message ?? 'Could not load style'
+                    event.message ?? 'Could not load style'
                   )
                 );
               },
@@ -1020,8 +1034,17 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
             return element;
           }
         );
-      }, options)
-    );
+      }`)) as JSHandle<Function>;
+
+    return (await this.mainRealm().transferHandle(
+      await this.isolatedRealm().evaluateHandle(
+        (fn, opts) => {
+          return fn(opts);
+        },
+        functionHandle,
+        options
+      )
+    )) as ElementHandle<HTMLStyleElement | HTMLLinkElement>;
   }
 
   /**

@@ -3,8 +3,8 @@
  * Copyright 2024 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import { getBabelOutputPlugin } from '@rollup/plugin-babel';
-import { nodeResolve } from '@rollup/plugin-node-resolve';
+import {getBabelOutputPlugin} from '@rollup/plugin-babel';
+import {nodeResolve} from '@rollup/plugin-node-resolve';
 
 export default {
   input: 'main.mjs',
@@ -35,12 +35,12 @@ export default {
     // Only-specific transforms.
     getBabelOutputPlugin({
       plugins: [
-        "@babel/plugin-transform-class-static-block",
-        "@babel/plugin-transform-private-methods",
-        "@babel/plugin-transform-private-property-in-object",
-        "@babel/plugin-transform-class-properties",
-        "@babel/plugin-transform-dynamic-import",
-        "@babel/plugin-transform-modules-commonjs"
+        '@babel/plugin-transform-class-static-block',
+        '@babel/plugin-transform-private-methods',
+        '@babel/plugin-transform-private-property-in-object',
+        '@babel/plugin-transform-class-properties',
+        '@babel/plugin-transform-dynamic-import',
+        '@babel/plugin-transform-modules-commonjs',
       ],
       allowAllFormats: true,
     }),
