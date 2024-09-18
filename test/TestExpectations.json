@@ -1466,6 +1466,13 @@
   {
     "testIdPattern": "[extensions.spec] extensions background_page target type should be available",
     "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["SKIP"],
+    "comment": "See https://github.com/puppeteer/puppeteer/issues/12866"
+  },
+  {
+    "testIdPattern": "[extensions.spec] extensions background_page target type should be available",
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
@@ -1480,15 +1487,15 @@
   {
     "testIdPattern": "[extensions.spec] extensions target.page() should return a background_page",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
+    "parameters": ["cdp", "chrome"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "See https://github.com/puppeteer/puppeteer/issues/12866"
   },
   {
     "testIdPattern": "[extensions.spec] extensions target.page() should return a background_page",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL", "PASS"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
@@ -3342,21 +3349,7 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[extensions.spec] extensions background_page target type should be available",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[extensions.spec] extensions service_worker target type should be available",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[extensions.spec] extensions target.page() should return a background_page",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["SKIP"],
