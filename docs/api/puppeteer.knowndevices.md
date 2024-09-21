@@ -140,6 +140,18 @@ KnownDevices: Readonly<
     | 'Pixel 4a (5G) landscape'
     | 'Pixel 5'
     | 'Pixel 5 landscape'
+    | 'Pixel 6'
+    | 'Pixel 6 landscape'
+    | 'Pixel 6 Pro'
+    | 'Pixel 6 Pro landscape'
+    | 'Pixel 7'
+    | 'Pixel 7 landscape'
+    | 'Pixel 7 Pro'
+    | 'Pixel 7 Pro landscape'
+    | 'Pixel 8'
+    | 'Pixel 8 landscape'
+    | 'Pixel 8 Pro'
+    | 'Pixel 8 Pro landscape'
     | 'Moto G4'
     | 'Moto G4 landscape',
     Device
