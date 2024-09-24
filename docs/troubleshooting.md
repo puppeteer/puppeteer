@@ -300,7 +300,7 @@ ENV CHROME_DEVEL_SANDBOX /usr/local/sbin/chrome-devel-sandbox
 Tips-n-tricks:
 
 - [xvfb](https://en.wikipedia.org/wiki/Xvfb) service should be launched in order
-  to run Chromium in non-headless mode
+  to run Chrome for Testing in non-headless mode
 - Runs on Xenial Linux on Travis by default
 - Runs `npm install` by default
 - `node_modules` is cached by default
@@ -377,17 +377,17 @@ Running Puppeteer smoothly on CircleCI requires the following steps:
 > instructions below might be still helpful if you are building your own image.
 
 Getting headless Chrome up and running in Docker can be tricky. The bundled
-Chromium that Puppeteer installs is missing the necessary shared library
+Chrome for Testing that Puppeteer installs is missing the necessary shared library
 dependencies.
 
-To fix, you'll need to install the missing dependencies and the latest Chromium
+To fix, you'll need to install the missing dependencies and the latest Chrome for Testing
 package in your Dockerfile:
 
 ```Dockerfile
 FROM node:14-slim
 
 # Install latest chrome dev package and fonts to support major charsets (Chinese, Japanese, Arabic, Hebrew, Thai and a few others)
-# Note: this installs the necessary libs to make the bundled version of Chromium that Puppeteer
+# Note: this installs the necessary libs to make the bundled version of Chrome for Testing that Puppeteer
 # installs, work.
 RUN apt-get update \
     && apt-get install -y wget gnupg \
@@ -404,7 +404,7 @@ RUN apt-get update \
 # RUN chmod +x /usr/local/bin/dumb-init
 # ENTRYPOINT ["dumb-init", "--"]
 
-# Uncomment to skip the chromium download when installing puppeteer. If you do,
+# Uncomment to skip the Chrome for Testing download when installing puppeteer. If you do,
 # you'll need to launch puppeteer with:
 #     browser.launch({executablePath: 'google-chrome-stable'})
 # ENV PUPPETEER_SKIP_DOWNLOAD true
@@ -704,9 +704,6 @@ Chrome (and therefore Puppeteer) on Lambda. The community has put together a few
 resources that work around the issues:
 
 - https://github.com/sparticuz/chromium (a vendor and framework agnostic library that supports modern versions of `chromium`)
-- https://github.com/alixaxel/chrome-aws-lambda (supports up to puppeteer 10.1 - outdated)
-- https://github.com/adieuadieu/serverless-chrome/blob/HEAD/docs/chrome.md
-  (serverless plugin - outdated)
 
 ### Running Puppeteer on AWS EC2 instance running Amazon-Linux
 

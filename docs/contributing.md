@@ -96,7 +96,7 @@ usually check through CI:
   properly and are functional.
 - `test-types` - Tests the TypeScript types in `puppeteer` using
   [`tsd`](https://github.com/SamVerschueren/tsd).
-- `test:chrome:**` - Tests `puppeteer` on Chromium.
+- `test:chrome:**` - Tests `puppeteer` on Chrome.
 - `test:firefox:**` - Tests `puppeteer` on Firefox.
 - `unit` - Runs unit tests.
 
