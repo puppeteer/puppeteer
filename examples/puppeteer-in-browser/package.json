@@ -11,7 +11,7 @@
   "license": "MIT",
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.2.3",
-    "rollup": "^4.14.3",
+    "rollup": "^4.22.4",
     "terser": "^5.30.4"
   }
 }
