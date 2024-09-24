@@ -2660,6 +2660,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[page.spec] Page Page.Events.Console should work for different console API calls with group functions",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "We don't normalize the values for CDP as it's being deprecated"
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.Events.Console should work for different console API calls with logging functions",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -3410,12 +3417,5 @@
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["FAIL", "PASS"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Console should work for different console API calls with group functions",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "cdp"],
-    "expectations": ["FAIL"],
-    "comment": "We don't normalize the values for CDP as it's being deprecated"
   }
 ]
