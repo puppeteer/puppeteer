@@ -13,6 +13,7 @@ import {
   Mouse,
   MouseButton,
   Touchscreen,
+  type Touch,
   type KeyDownOptions,
   type KeyPressOptions,
   type KeyboardTypeOptions,
@@ -564,7 +565,7 @@ export class CdpTouchscreen extends Touchscreen {
     this.#client = client;
   }
 
-  override async touchStart(x: number, y: number): Promise<void> {
+  override async touchStart(x: number, y: number): Promise<Touch> {
     await this.#client.send('Input.dispatchTouchEvent', {
       type: 'touchStart',
       touchPoints: [
@@ -578,6 +579,17 @@ export class CdpTouchscreen extends Touchscreen {
       ],
       modifiers: this.#keyboard._modifiers,
     });
+
+    const touch: Touch = {
+      move: async (x: number, y: number): Promise<void> => {
+        await this.touchMove(x, y);
+      },
+      end: async (): Promise<void> => {
+        await this.touchEnd();
+      }
+    };
+
+    return touch;
   }
 
   override async touchMove(x: number, y: number): Promise<void> {

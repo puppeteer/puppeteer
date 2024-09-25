@@ -34,6 +34,14 @@ export interface KeyboardTypeOptions {
 /**
  * @public
  */
+export interface Touch {
+  move(x: number, y: number): Promise<void>;
+  end(): Promise<void>;
+}
+
+/**
+ * @public
+ */
 export type KeyPressOptions = KeyDownOptions & KeyboardTypeOptions;
 
 /**
@@ -495,7 +503,7 @@ export abstract class Touchscreen {
    * @param x - Horizontal position of the tap.
    * @param y - Vertical position of the tap.
    */
-  abstract touchStart(x: number, y: number): Promise<void>;
+  abstract touchStart(x: number, y: number): Promise<Touch>;
 
   /**
    * Dispatches a `touchMove` event.

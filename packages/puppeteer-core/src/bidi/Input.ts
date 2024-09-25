@@ -12,6 +12,7 @@ import {
   Mouse,
   MouseButton,
   Touchscreen,
+  type Touch,
   type KeyboardTypeOptions,
   type KeyDownOptions,
   type KeyPressOptions,
@@ -625,7 +626,7 @@ export class BidiTouchscreen extends Touchscreen {
     x: number,
     y: number,
     options: BidiTouchMoveOptions = {}
-  ): Promise<void> {
+  ): Promise<Touch> {
     await this.#page.mainFrame().browsingContext.performActions([
       {
         type: SourceActionsType.Pointer,
@@ -651,6 +652,17 @@ export class BidiTouchscreen extends Touchscreen {
         ],
       },
     ]);
+
+    const touch: Touch = {
+      move: async (x: number, y: number): Promise<void> => {
+        await this.touchMove(x, y, options);
+      },
+      end: async (): Promise<void> => {
+        await this.touchEnd();
+      }
+    };
+  
+    return touch;
   }
 
   override async touchMove(
