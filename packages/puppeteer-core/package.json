@@ -55,7 +55,8 @@
     "build": {
       "dependencies": [
         "build:tsc",
-        "build:types"
+        "build:types",
+        "build:es5"
       ]
     },
     "build:docs": {
@@ -83,6 +84,19 @@
       ],
       "output": [
         "lib/{cjs,esm}/**"
+      ]
+    },
+    "build:es5": {
+      "command": "rollup -c && node ../../tools/patch.mjs lib/es5-iife/puppeteer-core-browser.js lib/es5-iife/puppeteer-core-browser.d.ts lib/types.d.ts",
+      "files": [
+        "rollup.config.js"
+      ],
+      "output": [
+        "lib/es5-iife/puppeteer-core-browser.js"
+      ],
+      "dependencies": [
+        "build:tsc",
+        "build:types"
       ]
     },
     "build:types": {
