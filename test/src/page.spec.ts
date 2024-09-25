@@ -478,6 +478,27 @@ describe('Page', function () {
       ).toEqual(['timeEnd']);
       expect(messages[0]!.text()).toContain('calling console.time');
     });
+    it('should work for different console API calls with group functions', async () => {
+      const {page} = await getTestState();
+
+      const messages: ConsoleMessage[] = [];
+      page.on('console', msg => {
+        return messages.push(msg);
+      });
+      // All console events will be reported before `page.evaluate` is finished.
+      await page.evaluate(() => {
+        console.group('calling console.group');
+        console.groupEnd();
+      });
+      expect(
+        messages.map(msg => {
+          return msg.type();
+        })
+      ).toEqual(['startGroup', 'endGroup']);
+
+      // We should be able to check both messages, but Chrome report text
+      expect(messages[0]!.text()).toContain('calling console.group');
+    });
     it('should not fail for window object', async () => {
       const {page} = await getTestState();
 
