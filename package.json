@@ -134,7 +134,7 @@
     "@types/sinon": "17.0.3",
     "@typescript-eslint/eslint-plugin": "7.18.0",
     "@typescript-eslint/parser": "7.18.0",
-    "esbuild": "0.23.1",
+    "esbuild": "0.24.0",
     "eslint": "8.57.1",
     "eslint-config-prettier": "9.1.0",
     "eslint-import-resolver-typescript": "3.6.3",
