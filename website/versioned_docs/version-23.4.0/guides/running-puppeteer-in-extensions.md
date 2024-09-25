@@ -13,7 +13,7 @@ page at a time. Therefore, Puppeteer requires a different transport to be used a
 interact with a single page and its frames and workers but cannot create new pages using Puppeteer. To create a new page you need to use the
 [`chrome.tabs`](https://developer.chrome.com/docs/extensions/reference/api/tabs) API and establish a new Puppeteer connection.
 
-## How to run Puppeteer in the browser
+## How to run Puppeteer in Chrome extensions
 
 :::note
 
