@@ -131,7 +131,11 @@ string
 
 </td><td>
 
-Path to a browser executable to use instead of the bundled Chromium. Note that Puppeteer is only guaranteed to work with the bundled Chromium, so use this setting at your own risk.
+Path to a browser executable to use instead of the bundled browser. Note that Puppeteer is only guaranteed to work with the bundled browser, so use this setting at your own risk.
+
+**Remarks:**
+
+When using this is recommended to set the `browser` property as well as Puppeteer will default to `chrome` by default.
 
 </td><td>
 
