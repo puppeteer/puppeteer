@@ -3,6 +3,8 @@
  * Copyright 2024 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
+import path from 'path';
+
 import {getBabelOutputPlugin} from '@rollup/plugin-babel';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 
@@ -20,10 +22,13 @@ export default {
     if (id.includes('BrowserWebSocketTransport')) {
       return false;
     }
-    if (id.includes('puppeteer/node')) {
+    if (id.includes(`puppeteer${path.sep}node`)) {
       return true;
     }
-    if (id.includes('chromium-bidi') || id.includes('puppeteer/bidi')) {
+    if (
+      id.includes('chromium-bidi') ||
+      id.includes(`puppeteer${path.sep}bidi`)
+    ) {
       return true;
     }
     return false;
