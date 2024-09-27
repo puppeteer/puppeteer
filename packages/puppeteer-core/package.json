@@ -89,7 +89,7 @@
     "build:es5": {
       "command": "rollup -c rollup.config.mjs && node ../../tools/patch.mjs lib/es5-iife/puppeteer-core-browser.js lib/es5-iife/puppeteer-core-browser.d.ts lib/types.d.ts",
       "files": [
-        "rollup.config.js"
+        "rollup.config.mjs"
       ],
       "output": [
         "lib/es5-iife/puppeteer-core-browser.js"

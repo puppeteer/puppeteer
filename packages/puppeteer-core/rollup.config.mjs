@@ -8,6 +8,8 @@ import path from 'path';
 import {getBabelOutputPlugin} from '@rollup/plugin-babel';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 
+const cwd = process.cwd();
+
 export default {
   input: 'lib/esm/puppeteer/puppeteer-core-browser.js',
   output: {
@@ -22,13 +24,13 @@ export default {
     if (id.includes('BrowserWebSocketTransport')) {
       return false;
     }
-    if (id.includes(`puppeteer${path.sep}node`)) {
+    if (id.includes('node_modules')) {
       return true;
     }
-    if (
-      id.includes('chromium-bidi') ||
-      id.includes(`puppeteer${path.sep}bidi`)
-    ) {
+    if (id.startsWith(path.join(cwd, `lib`, `esm`, `puppeteer`, `bidi`))) {
+      return true;
+    }
+    if (id.startsWith(path.join(cwd, `lib`, `esm`, `puppeteer`, `node`))) {
       return true;
     }
     return false;
