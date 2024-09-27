@@ -602,9 +602,17 @@ describe('request interception', function () {
       expect(urls.has('one-style.css')).toBe(true);
     });
 
-    for (const {resourceType, url} of [
-      {url: '/cached/one-style.html', resourceType: 'stylesheet'},
-      {url: '/cached/one-script.html', resourceType: 'script'},
+    for (const {resourceType, url, cachedResourceUrl} of [
+      {
+        url: '/cached/one-style.html',
+        cachedResourceUrl: '/cached/one-style.css',
+        resourceType: 'stylesheet',
+      },
+      {
+        url: '/cached/one-script.html',
+        cachedResourceUrl: '/cached/one-script.js',
+        resourceType: 'script',
+      },
     ]) {
       it(`should not cache ${resourceType} if cache disabled`, async () => {
         const {page, server} = await getTestState();
@@ -634,17 +642,25 @@ describe('request interception', function () {
 
         await page.setRequestInterception(true);
         await page.setCacheEnabled(true);
-        page.on('request', request => {
-          return request.continue();
+        let error: Error | undefined;
+        page.on('request', async request => {
+          await request.continue().catch(_error => {
+            error = _error;
+          });
         });
 
         const cached: HTTPRequest[] = [];
         page.on('requestservedfromcache', r => {
+          if (isFavicon(r)) {
+            return;
+          }
           return cached.push(r);
         });
 
         await page.reload();
+        expect(error).toBeUndefined();
         expect(cached).toHaveLength(1);
+        expect(cached[0]!.url()).toBe(server.PREFIX + cachedResourceUrl);
       });
     }
     it('should load fonts if cache enabled', async () => {

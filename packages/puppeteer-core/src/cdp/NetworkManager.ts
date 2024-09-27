@@ -428,7 +428,8 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   #onRequest(
     client: CDPSession,
     event: Protocol.Network.RequestWillBeSentEvent,
-    fetchRequestId?: FetchRequestId
+    fetchRequestId?: FetchRequestId,
+    fromMemoryCache = false
   ): void {
     let redirectChain: CdpHTTPRequest[] = [];
     if (event.redirectResponse) {
@@ -478,18 +479,36 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       event,
       redirectChain
     );
+    request._fromMemoryCache = fromMemoryCache;
     this.#networkEventManager.storeRequest(event.requestId, request);
     this.emit(NetworkManagerEvent.Request, request);
     void request.finalizeInterceptions();
   }
 
   #onRequestServedFromCache(
-    _client: CDPSession,
+    client: CDPSession,
     event: Protocol.Network.RequestServedFromCacheEvent
   ): void {
-    const request = this.#networkEventManager.getRequest(event.requestId);
+    const requestWillBeSentEvent =
+      this.#networkEventManager.getRequestWillBeSent(event.requestId);
+    let request = this.#networkEventManager.getRequest(event.requestId);
+    // Requests served from memory cannot be intercepted.
     if (request) {
       request._fromMemoryCache = true;
+    }
+    // If request ended up being served from cache, we need to convert
+    // requestWillBeSentEvent to a HTTP request.
+    if (!request && requestWillBeSentEvent) {
+      this.#onRequest(client, requestWillBeSentEvent, undefined, true);
+      request = this.#networkEventManager.getRequest(event.requestId);
+    }
+    if (!request) {
+      debugError(
+        new Error(
+          `Request ${event.requestId} was served from cache but we could not find the corresponding request object`
+        )
+      );
+      return;
     }
     this.emit(NetworkManagerEvent.RequestServedFromCache, request);
   }
