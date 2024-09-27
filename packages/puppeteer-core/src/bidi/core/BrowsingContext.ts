@@ -335,6 +335,9 @@ export class BrowsingContext extends EventEmitter<{
   @inertIfDisposed
   private dispose(reason?: string): void {
     this.#reason = reason;
+    for (const context of this.#children.values()) {
+      context.dispose('Parent browsing context was disposed');
+    }
     this[disposeSymbol]();
   }
 
