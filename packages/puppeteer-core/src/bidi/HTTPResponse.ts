@@ -55,6 +55,7 @@ export class BidiHTTPResponse extends HTTPResponse {
 
   #initialize() {
     if (this.#data.fromCache) {
+      this.#request._fromMemoryCache = true;
       this.#request
         .frame()
         ?.page()

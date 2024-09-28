@@ -6,7 +6,7 @@
 
 import type {Protocol} from 'devtools-protocol';
 
-import type {CdpHTTPRequest} from './HTTPRequest.js';
+import {CdpHTTPRequest} from './HTTPRequest.js';
 
 /**
  * @internal
@@ -213,5 +213,40 @@ export class NetworkEventManager {
 
   forgetQueuedEventGroup(networkRequestId: NetworkRequestId): void {
     this.#queuedEventGroupMap.delete(networkRequestId);
+  }
+
+  printState(): void {
+    function replacer(_key: unknown, value: unknown) {
+      if (value instanceof Map) {
+        return {
+          dataType: 'Map',
+          value: Array.from(value.entries()), // or with spread: value: [...value]
+        };
+      } else if (value instanceof CdpHTTPRequest) {
+        return {
+          dataType: 'CdpHTTPRequest',
+          value: `${value.id}: ${value.url()}`,
+        };
+      }
+      {
+        return value;
+      }
+    }
+    console.log(
+      'httpRequestsMap',
+      JSON.stringify(this.#httpRequestsMap, replacer, 2)
+    );
+    console.log(
+      'requestWillBeSentMap',
+      JSON.stringify(this.#requestWillBeSentMap, replacer, 2)
+    );
+    console.log(
+      'requestWillBeSentMap',
+      JSON.stringify(this.#responseReceivedExtraInfoMap, replacer, 2)
+    );
+    console.log(
+      'requestWillBeSentMap',
+      JSON.stringify(this.#requestPausedMap, replacer, 2)
+    );
   }
 }

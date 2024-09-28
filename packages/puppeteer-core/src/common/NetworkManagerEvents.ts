@@ -31,7 +31,7 @@ export namespace NetworkManagerEvent {
  */
 export interface NetworkManagerEvents extends Record<EventType, unknown> {
   [NetworkManagerEvent.Request]: HTTPRequest;
-  [NetworkManagerEvent.RequestServedFromCache]: HTTPRequest | undefined;
+  [NetworkManagerEvent.RequestServedFromCache]: HTTPRequest;
   [NetworkManagerEvent.Response]: HTTPResponse;
   [NetworkManagerEvent.RequestFailed]: HTTPRequest;
   [NetworkManagerEvent.RequestFinished]: HTTPRequest;
