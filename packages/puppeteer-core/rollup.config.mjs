@@ -13,8 +13,8 @@ const cwd = process.cwd();
 export default {
   input: 'lib/esm/puppeteer/puppeteer-core-browser.js',
   output: {
-    format: 'iife',
-    file: 'lib/es5-iife/puppeteer-core-browser.js',
+    format: 'umd',
+    file: 'lib/es5-umd/puppeteer-core-browser.js',
     name: 'Puppeteer',
   },
   external: (id, parent, isResolved) => {
