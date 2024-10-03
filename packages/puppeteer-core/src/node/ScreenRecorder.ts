@@ -43,6 +43,7 @@ export interface ScreenRecorderOptions {
   format?: 'gif' | 'webm';
   scale?: number;
   path?: string;
+  quality?: number;
 }
 
 /**
@@ -63,7 +64,7 @@ export class ScreenRecorder extends PassThrough {
     page: Page,
     width: number,
     height: number,
-    {speed, scale, crop, format, path}: ScreenRecorderOptions = {}
+    {speed, scale, crop, format, path, quality}: ScreenRecorderOptions = {}
   ) {
     super({allowHalfOpen: false});
 
@@ -104,7 +105,7 @@ export class ScreenRecorder extends PassThrough {
         // Specifies the frame rate we are giving ffmpeg.
         ['-framerate', `${DEFAULT_FPS}`],
         // Specifies the encoding and format we are using.
-        this.#getFormatArgs(format ?? 'webm'),
+        this.#getFormatArgs(format ?? 'webm', quality ?? CRF_VALUE),
         // Disable bitrate.
         ['-b:v', '0'],
         // Filters to ensure the images are piped correctly.
@@ -174,7 +175,7 @@ export class ScreenRecorder extends PassThrough {
     );
   }
 
-  #getFormatArgs(format: 'webm' | 'gif') {
+  #getFormatArgs(format: 'webm' | 'gif', quality: number) {
     switch (format) {
       case 'webm':
         return [
@@ -183,7 +184,7 @@ export class ScreenRecorder extends PassThrough {
           // Sets the format
           ['-f', 'webm'],
           // Sets the quality. Lower the better.
-          ['-crf', `${CRF_VALUE}`],
+          ['-crf', `${quality}`],
           // Sets the quality and how efficient the compression will be.
           ['-deadline', 'realtime', '-cpu-used', '8'],
         ].flat();
