@@ -162,9 +162,7 @@ export class QueryHandler {
     })();
 
     const {visible = false, hidden = false, timeout, signal} = options;
-    const polling =
-      options.polling ??
-      (visible || hidden ? PollingOptions.RAF : PollingOptions.MUTATION);
+    const polling = visible || hidden ? PollingOptions.RAF : options.polling;
 
     try {
       signal?.throwIfAborted();

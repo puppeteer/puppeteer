@@ -368,7 +368,7 @@ describe('waittask specs', function () {
 
       await page.evaluate(() => {
         // @ts-expect-error We want to remove it for the test.
-        return delete window.MutationObserver;
+        delete window.MutationObserver;
       });
       const [handle] = await Promise.all([
         page.waitForSelector('.zombo'),
@@ -405,6 +405,31 @@ describe('waittask specs', function () {
           '<h3><div></div></h3>');
       });
       await watchdog;
+    });
+
+    // MutationPoller currently does not support shadow DOM.
+    it.skip('should work when node is added in a shadow root', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      const watcher = page.waitForSelector('div >>> h1');
+      await page.evaluate(addElement, 'div');
+      await expect(
+        Promise.race([watcher, createTimeout(40)])
+      ).resolves.toBeFalsy();
+      await page.evaluate(() => {
+        const host = document.querySelector('div')!;
+        const shadow = host.attachShadow({mode: 'open'});
+        const h1 = document.createElement('h1');
+        h1.textContent = 'inside';
+        shadow.appendChild(h1);
+      });
+      using element = await watcher;
+      expect(
+        await element!.evaluate(el => {
+          return el.textContent;
+        })
+      ).toBe('inside');
     });
 
     it('should work for selector with a pseudo class', async () => {
@@ -492,6 +517,30 @@ describe('waittask specs', function () {
       ).resolves.toBeFalsy();
       await element.evaluate(e => {
         e.style.removeProperty('display');
+      });
+      await expect(promise).resolves.toBeTruthy();
+    });
+    it('should wait for element to be visible (without DOM mutations)', async () => {
+      const {page} = await getTestState();
+
+      const promise = page.waitForSelector('div', {visible: true});
+      await page.setContent(
+        '<style>div {display: none;}</style><div>text</div>'
+      );
+      using element = await page.evaluateHandle(() => {
+        return document.getElementsByTagName('div')[0]!;
+      });
+      expect(element).toBeTruthy();
+      await expect(
+        Promise.race([promise, createTimeout(40)])
+      ).resolves.toBeFalsy();
+      await page.evaluate(() => {
+        const extraSheet = new CSSStyleSheet();
+        extraSheet.replaceSync('div { display: block; }');
+        document.adoptedStyleSheets = [
+          ...document.adoptedStyleSheets,
+          extraSheet,
+        ];
       });
       await expect(promise).resolves.toBeTruthy();
     });
