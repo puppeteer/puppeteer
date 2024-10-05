@@ -7,6 +7,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
+import type {ElementHandle} from '../api/ElementHandle.js';
 import type {WaitForOptions} from '../api/Frame.js';
 import {Frame, FrameEvent, throwIfDetached} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
@@ -24,6 +25,7 @@ import type {
   DeviceRequestPrompt,
   DeviceRequestPromptManager,
 } from './DeviceRequestPrompt.js';
+import {FirefoxTargetManager} from './FirefoxTargetManager.js';
 import type {FrameManager} from './FrameManager.js';
 import {FrameManagerEvent} from './FrameManagerEvents.js';
 import type {IsolatedWorldChart} from './IsolatedWorld.js';
@@ -422,5 +424,24 @@ export class CdpFrame extends Frame {
 
   exposeFunction(): never {
     throw new UnsupportedOperation();
+  }
+
+  override async frameElement(): Promise<ElementHandle<HTMLIFrameElement> | null> {
+    const isFirefox =
+      this.page().target()._targetManager() instanceof FirefoxTargetManager;
+
+    if (isFirefox) {
+      return await super.frameElement();
+    }
+    const parent = this.parentFrame();
+    if (!parent) {
+      return null;
+    }
+    const {backendNodeId} = await parent.client.send('DOM.getFrameOwner', {
+      frameId: this._id,
+    });
+    return (await parent
+      .mainRealm()
+      .adoptBackendNode(backendNodeId)) as ElementHandle<HTMLIFrameElement>;
   }
 }

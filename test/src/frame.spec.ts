@@ -320,5 +320,26 @@ describe('Frame specs', function () {
       });
       expect(name2).toBe('theFrameName');
     });
+
+    it('should handle shadow roots', async () => {
+      const {page} = await getTestState();
+      await page.setContent(`
+        <div id="shadow-host"></div>
+        <script>
+          const host = document.getElementById('shadow-host');
+          const shadowRoot = host.attachShadow({ mode: 'closed' });
+          const frame = document.createElement('iframe');
+          frame.srcdoc = '<p>Inside frame</p>';
+          shadowRoot.appendChild(frame);
+        </script>
+      `);
+      const frame = page.frames()[1]!;
+      using frameElement = (await frame.frameElement())!;
+      expect(
+        await frameElement.evaluate(el => {
+          return el.tagName.toLocaleLowerCase();
+        })
+      ).toBe('iframe');
+    });
   });
 });
