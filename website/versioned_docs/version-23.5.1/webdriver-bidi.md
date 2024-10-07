@@ -25,14 +25,14 @@ Below is an example of launching Firefox or Chrome with WebDriver BiDi:
 import puppeteer from 'puppeteer';
 
 const firefoxBrowser = await puppeteer.launch({
-  product: 'firefox', // WebDriver BiDi is used by default.
+  browser: 'firefox', // WebDriver BiDi is used by default.
 });
 const page = await firefoxBrowser.newPage();
 ...
 await firefoxBrowser.close();
 
 const chromeBrowser = await puppeteer.launch({
-  product: 'chrome',
+  browser: 'chrome',
   protocol: 'webDriverBiDi', // CDP would be used by default for Chrome.
 });
 const page = await chromeBrowser.newPage();
