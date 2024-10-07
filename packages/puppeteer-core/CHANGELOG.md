@@ -20,6 +20,14 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [23.5.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.5.0...puppeteer-core-v23.5.1) (2024-10-07)
+
+
+### Bug Fixes
+
+* default to RAF polling if visible||hidden is set ([#13153](https://github.com/puppeteer/puppeteer/issues/13153)) ([dd13d5d](https://github.com/puppeteer/puppeteer/commit/dd13d5d65a6d5d1f745ce7cfaa170d0a5f725cfe)), closes [#13152](https://github.com/puppeteer/puppeteer/issues/13152)
+* handle shadow DOM in Frame.frameElement ([#13156](https://github.com/puppeteer/puppeteer/issues/13156)) ([57a8df0](https://github.com/puppeteer/puppeteer/commit/57a8df069b10217174ba494a1cd2b594d966778d)), closes [#13155](https://github.com/puppeteer/puppeteer/issues/13155)
+
 ## [23.5.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.4.1...puppeteer-core-v23.5.0) (2024-10-02)
 
 
