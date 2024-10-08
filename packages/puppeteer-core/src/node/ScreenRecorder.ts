@@ -249,7 +249,7 @@ export class ScreenRecorder extends PassThrough {
   /**
    * @internal
    */
-  async [asyncDisposeSymbol](): Promise<void> {
+  override async [asyncDisposeSymbol](): Promise<void> {
     await this.stop();
   }
 }

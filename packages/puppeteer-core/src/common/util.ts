@@ -313,7 +313,7 @@ export const UTILITY_WORLD_NAME =
 /**
  * @internal
  */
-export const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
+export const SOURCE_URL_REGEX = /^[\x20\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
 /**
  * @internal
  */

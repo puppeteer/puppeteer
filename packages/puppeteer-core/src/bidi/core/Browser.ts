@@ -225,7 +225,7 @@ export class Browser extends EventEmitter<{
     return this.#createUserContext(context);
   }
 
-  [disposeSymbol](): void {
+  override [disposeSymbol](): void {
     this.#reason ??=
       'Browser was disconnected, probably because the session ended.';
     if (this.closed) {

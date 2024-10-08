@@ -151,7 +151,7 @@ export class Session
     }
   }
 
-  [disposeSymbol](): void {
+  override [disposeSymbol](): void {
     this.#reason ??=
       'Session already destroyed, probably because the connection broke.';
     this.emit('ended', {reason: this.#reason});

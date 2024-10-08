@@ -256,7 +256,7 @@ export class IsolatedWorld extends Realm {
     return new CdpJSHandle(this, remoteObject);
   }
 
-  [disposeSymbol](): void {
+  override [disposeSymbol](): void {
     this.#context?.[disposeSymbol]();
     this.#emitter.emit('disposed', undefined);
     super[disposeSymbol]();

@@ -134,7 +134,7 @@ export abstract class Realm extends EventEmitter<{
     return this.executionContextId;
   }
 
-  [disposeSymbol](): void {
+  override [disposeSymbol](): void {
     this.#reason ??=
       'Realm already destroyed, probably because all associated browsing contexts closed.';
     this.emit('destroyed', {reason: this.#reason});
@@ -282,7 +282,7 @@ export class DedicatedWorkerRealm extends Realm {
 
   override get session(): Session {
     // SAFETY: At least one owner will exist.
-    return this.owners.values().next().value.session;
+    return this.owners.values().next().value!.session;
   }
 }
 

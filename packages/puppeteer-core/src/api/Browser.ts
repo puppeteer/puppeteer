@@ -432,7 +432,7 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
   abstract get connected(): boolean;
 
   /** @internal */
-  [disposeSymbol](): void {
+  override [disposeSymbol](): void {
     if (this.process()) {
       return void this.close().catch(debugError);
     }

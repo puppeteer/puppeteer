@@ -166,7 +166,7 @@ export class Navigation extends EventEmitter<{
     this[disposeSymbol]();
   }
 
-  [disposeSymbol](): void {
+  override [disposeSymbol](): void {
     this.#disposables.dispose();
     super[disposeSymbol]();
   }

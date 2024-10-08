@@ -3039,7 +3039,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
   ): Promise<DeviceRequestPrompt>;
 
   /** @internal */
-  [disposeSymbol](): void {
+  override [disposeSymbol](): void {
     return void this.close().catch(debugError);
   }
 
