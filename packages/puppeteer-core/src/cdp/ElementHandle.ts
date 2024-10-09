@@ -7,7 +7,11 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
-import {ElementHandle, type AutofillData} from '../api/ElementHandle.js';
+import {
+  bindIsolatedHandle,
+  ElementHandle,
+  type AutofillData,
+} from '../api/ElementHandle.js';
 import type {AwaitableIterable} from '../common/types.js';
 import {debugError} from '../common/util.js';
 import {environment} from '../environment.js';
@@ -77,7 +81,7 @@ export class CdpElementHandle<
   }
 
   @throwIfDisposed()
-  @ElementHandle.bindIsolatedHandle
+  @bindIsolatedHandle
   override async scrollIntoView(
     this: CdpElementHandle<Element>
   ): Promise<void> {
@@ -94,7 +98,7 @@ export class CdpElementHandle<
   }
 
   @throwIfDisposed()
-  @ElementHandle.bindIsolatedHandle
+  @bindIsolatedHandle
   override async uploadFile(
     this: CdpElementHandle<HTMLInputElement>,
     ...filePaths: string[]
