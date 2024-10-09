@@ -230,7 +230,7 @@ export class UserContext extends EventEmitter<{
     });
   }
 
-  [disposeSymbol](): void {
+  override [disposeSymbol](): void {
     this.#reason ??=
       'User context already closed, probably because the browser disconnected/closed.';
     this.emit('closed', {reason: this.#reason});

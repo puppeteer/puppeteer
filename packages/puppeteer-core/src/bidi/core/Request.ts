@@ -242,7 +242,7 @@ export class Request extends EventEmitter<{
     this[disposeSymbol]();
   }
 
-  [disposeSymbol](): void {
+  override [disposeSymbol](): void {
     this.#disposables.dispose();
     super[disposeSymbol]();
   }

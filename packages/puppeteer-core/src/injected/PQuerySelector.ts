@@ -13,7 +13,7 @@ import {textQuerySelectorAll} from './TextQuerySelector.js';
 import {pierce, pierceAll} from './util.js';
 import {xpathQuerySelectorAll} from './XPathQuerySelector.js';
 
-const IDENT_TOKEN_START = /[-\w\P{ASCII}*]/;
+const IDENT_TOKEN_START = /[-\w\P{ASCII}*]/u;
 
 /**
  * @internal

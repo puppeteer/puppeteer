@@ -510,7 +510,7 @@ export class ExecutionContext
     }
   }
 
-  [disposeSymbol](): void {
+  override [disposeSymbol](): void {
     this.#disposables.dispose();
     this.emit('disposed', undefined);
   }

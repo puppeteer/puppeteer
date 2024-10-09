@@ -127,7 +127,7 @@ export class UserPrompt extends EventEmitter<{
     return this.#result!;
   }
 
-  [disposeSymbol](): void {
+  override [disposeSymbol](): void {
     this.#reason ??=
       'User prompt already closed, probably because the associated browsing context was destroyed.';
     this.emit('closed', {reason: this.#reason});

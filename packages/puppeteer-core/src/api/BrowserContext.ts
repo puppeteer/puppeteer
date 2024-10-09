@@ -258,7 +258,7 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
   }
 
   /** @internal */
-  [disposeSymbol](): void {
+  override [disposeSymbol](): void {
     return void this.close().catch(debugError);
   }
 

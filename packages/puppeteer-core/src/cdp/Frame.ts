@@ -413,7 +413,7 @@ export class CdpFrame extends Frame {
     return this.#detached;
   }
 
-  [disposeSymbol](): void {
+  override [disposeSymbol](): void {
     if (this.#detached) {
       return;
     }
