@@ -6,7 +6,11 @@
 
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import {ElementHandle, type AutofillData} from '../api/ElementHandle.js';
+import {
+  bindIsolatedHandle,
+  ElementHandle,
+  type AutofillData,
+} from '../api/ElementHandle.js';
 import type {AwaitableIterable} from '../common/types.js';
 import {environment} from '../environment.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
@@ -67,7 +71,7 @@ export class BidiElementHandle<
     this: BidiElementHandle<HTMLIFrameElement>
   ): Promise<BidiFrame>;
   @throwIfDisposed()
-  @ElementHandle.bindIsolatedHandle
+  @bindIsolatedHandle
   override async contentFrame(): Promise<BidiFrame | null> {
     using handle = (await this.evaluateHandle(element => {
       if (
