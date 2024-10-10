@@ -440,7 +440,8 @@ export abstract class HTTPRequest {
       ) {
         return;
       }
-      this.interception.resolutionState.action =
+      const propName = 'action';
+      this.interception.resolutionState[propName] =
         InterceptResolutionAction.Continue;
     }
     return;
@@ -505,7 +506,8 @@ export abstract class HTTPRequest {
       if (this.interception.resolutionState.action === 'abort') {
         return;
       }
-      this.interception.resolutionState.action =
+      const propName = 'action';
+      this.interception.resolutionState[propName] =
         InterceptResolutionAction.Respond;
     }
   }

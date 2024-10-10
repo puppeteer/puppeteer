@@ -56,3 +56,5 @@ examples/puppeteer-in-browser/out/**/*
 examples/puppeteer-in-browser/node_modules/**/*
 examples/puppeteer-in-extension/out/**/*
 examples/puppeteer-in-extension/node_modules/**/*
+examples/puppeteer-in-browser-iife/out/**/*
+examples/puppeteer-in-browser-iife/node_modules/**/*
