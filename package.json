@@ -167,7 +167,7 @@
     "spdx-satisfies": "5.0.1",
     "tsd": "0.31.2",
     "tsx": "4.19.1",
-    "typescript": "5.4.5",
+    "typescript": "5.5.4",
     "wireit": "0.14.9"
   },
   "overrides": {
