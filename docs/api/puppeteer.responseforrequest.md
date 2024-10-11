@@ -79,7 +79,7 @@ Record&lt;string, string \| string\[\] \| unknown&gt;
 
 Optional response headers.
 
-The record values will be converted to string following: Arrays' values will be mapped to String (Used when you need multiple headers with same name). Non-arrays will be converted to String.
+The record values will be converted to string following: Arrays' values will be mapped to String (Used when you need multiple headers with the same name). Non-arrays will be converted to String.
 
 </td><td>
 

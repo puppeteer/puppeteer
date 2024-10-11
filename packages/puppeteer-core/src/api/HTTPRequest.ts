@@ -47,7 +47,7 @@ export interface ResponseForRequest {
    *
    * The record values will be converted to string following:
    * Arrays' values will be mapped to String
-   * (Used when you need multiple headers with same name).
+   * (Used when you need multiple headers with the same name).
    * Non-arrays will be converted to String.
    */
   headers: Record<string, string | string[] | unknown>;
