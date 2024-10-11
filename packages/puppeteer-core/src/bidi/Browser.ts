@@ -82,6 +82,10 @@ export class BidiBrowser extends Browser {
           default: Bidi.Session.UserPromptHandlerType.Ignore,
         },
         webSocketUrl: true,
+        // Puppeteer with WebDriver BiDi does not support prerendering
+        // yet because WebDriver BiDi behavior is not specified. See
+        // https://github.com/w3c/webdriver-bidi/issues/321.
+        'goog:prerenderingDisabled': true,
       },
     });
 
