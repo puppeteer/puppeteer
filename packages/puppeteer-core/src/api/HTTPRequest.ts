@@ -43,9 +43,14 @@ export interface InterceptResolutionState {
 export interface ResponseForRequest {
   status: number;
   /**
-   * Optional response headers. All values are converted to strings.
+   * Optional response headers.
+   *
+   * The record values will be converted to string following:
+   * Arrays' values will be mapped to String
+   * (Used when you need multiple headers with the same name).
+   * Non-arrays will be converted to String.
    */
-  headers: Record<string, unknown>;
+  headers: Record<string, string | string[] | unknown>;
   contentType: string;
   body: string | Uint8Array;
 }
