@@ -34,7 +34,7 @@
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.5.2",
     "@docusaurus/types": "3.5.2",
-    "@swc/core": "1.7.26",
+    "@swc/core": "1.7.35",
     "swc-loader": "0.2.6"
   },
   "browserslist": {
