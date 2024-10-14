@@ -39,6 +39,8 @@ jobs:
               - 'packages/puppeteer/**'
               - 'packages/puppeteer-core/**'
               - 'packages/testserver/**'
+              - 'examples/puppeteer-in-extension/**'
+              - 'examples/puppeteer-in-browser/**'
               - 'docker/**'
               - 'test/**'
               - 'test-d/**'

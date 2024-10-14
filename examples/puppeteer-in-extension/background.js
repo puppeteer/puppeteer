@@ -37,5 +37,6 @@ globalThis.testConnect = async url => {
   const frameTitle = await frame.evaluate(() => {
     return document.title;
   });
+  await page.waitForNetworkIdle();
   return title + '|' + frameTitle;
 };
