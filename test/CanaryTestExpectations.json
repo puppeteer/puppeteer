@@ -40,5 +40,19 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["PASS"],
     "comment": "Works in Nightly"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.continue should redirect in a way non-observable to page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"],
+    "comment": "Works in Nightly"
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Request.continue should redirect in a way non-observable to page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"],
+    "comment": "Works in Nightly"
   }
 ]
