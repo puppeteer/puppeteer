@@ -215,26 +215,7 @@ module.exports = {
         ],
         // By default this is a warning but we want it to error.
         '@typescript-eslint/explicit-module-boundary-types': 'error',
-        'no-restricted-syntax': [
-          'error',
-          {
-            // Never use `require` in TypeScript since they are transpiled out.
-            selector: "CallExpression[callee.name='require']",
-            message: '`require` statements are not allowed. Use `import`.',
-          },
-          {
-            // We need this as NodeJS will run until all the timers have resolved
-            message: 'Use method `Deferred.race()` instead.',
-            selector:
-              'MemberExpression[object.name="Promise"][property.name="race"]',
-          },
-          {
-            message:
-              'Deferred `valueOrThrow` should not be called in `Deferred.race()` pass deferred directly',
-            selector:
-              'CallExpression[callee.object.name="Deferred"][callee.property.name="race"] > ArrayExpression > CallExpression[callee.property.name="valueOrThrow"]',
-          },
-        ],
+
         '@typescript-eslint/no-floating-promises': [
           'error',
           {ignoreVoid: true, ignoreIIFE: true},
