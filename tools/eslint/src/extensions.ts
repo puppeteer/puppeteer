@@ -15,7 +15,6 @@ const enforceExtensionRule = createRule<[], 'extensionsRule'>({
   meta: {
     docs: {
       description: 'Requires `.js` for imports',
-      requiresTypeChecking: false,
     },
     messages: {
       extensionsRule: 'Add `.js` to import.',

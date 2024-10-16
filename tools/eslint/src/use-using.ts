@@ -17,7 +17,6 @@ const useUsingRule = createRule<[], 'useUsing' | 'useUsingFix'>({
   meta: {
     docs: {
       description: "Requires 'using' for element/JS handles.",
-      requiresTypeChecking: true,
     },
     hasSuggestions: true,
     messages: {
