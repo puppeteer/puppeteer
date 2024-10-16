@@ -27,7 +27,7 @@ concurrency:
 jobs:
   inspect-code:
     name: '[Required] Inspect code'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
         uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
@@ -77,7 +77,7 @@ jobs:
     needs: check-changes
     name: Deploy docs (if needed)
     if: ${{ github.event_name != 'pull_request' && contains(fromJSON(needs.check-changes.outputs.changes), 'website') }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
@@ -123,7 +123,7 @@ jobs:
 
   doctest:
     name: Doctest
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: check-changes
     if: ${{ false && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
     steps:
@@ -157,7 +157,7 @@ jobs:
           - chrome-headless-shell
           - chrome-bidi
         os:
-          - ubuntu-latest
+          - ubuntu-24.04
           - windows-latest
           - macos-latest
         shard:
@@ -199,10 +199,10 @@ jobs:
       - name: Install browsers
         run: npm run postinstall
       - name: Run all tests (for non-Linux)
-        if: ${{ matrix.os != 'ubuntu-latest' }}
+        if: ${{ matrix.os != 'ubuntu-24.04' }}
         run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
       - name: Run all tests (for Linux)
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-24.04' }}
         run: xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
       - uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         if: always()
@@ -213,7 +213,7 @@ jobs:
   chrome-tests-required:
     name: '[Required] Chrome tests'
     needs: [check-changes, chrome-tests]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: ${{ always() }}
     steps:
       - if: ${{ needs.chrome-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
@@ -235,7 +235,7 @@ jobs:
           - firefox-headful
           - firefox-headless
         os:
-          - ubuntu-latest
+          - ubuntu-24.04
           - macos-latest
           - windows-latest
         shard:
@@ -278,10 +278,10 @@ jobs:
       - name: Install browsers
         run: npm run postinstall
       - name: Run all tests (for non-Linux)
-        if: ${{ matrix.os != 'ubuntu-latest' }}
+        if: ${{ matrix.os != 'ubuntu-24.04' }}
         run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
       - name: Run all tests (for Linux)
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-24.04' }}
         run: xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
       - uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         if: always()
@@ -292,7 +292,7 @@ jobs:
   firefox-tests-required:
     name: '[Required] Firefox tests'
     needs: [check-changes, firefox-tests]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: ${{ always() }}
     steps:
       - if: ${{ needs.firefox-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
@@ -312,7 +312,7 @@ jobs:
         pkg_manager:
           - npm
         os:
-          - ubuntu-latest
+          - ubuntu-24.04
           - windows-latest
           - macos-latest
         exclude:
@@ -349,7 +349,7 @@ jobs:
   installation-test-required:
     name: '[Required] Installation tests'
     needs: [check-changes, installation-test]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: ${{ always() }}
     steps:
       - if: ${{ needs.installation-test.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
@@ -358,7 +358,7 @@ jobs:
 
   docker-tests:
     name: '[Required] Docker image test'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: check-changes
     if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
     steps:
@@ -390,7 +390,7 @@ jobs:
 
   unit-tests:
     name: '[Required] Puppeteer Unit tests'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: check-changes
     if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
     steps:
@@ -411,7 +411,7 @@ jobs:
 
   ng-schematics-unit:
     name: '[Required] Angular Schematics tests'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: check-changes
     if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'ng-schematics') }}
     steps:
@@ -440,7 +440,7 @@ jobs:
         linux-only:
           - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
         os:
-          - ubuntu-latest
+          - ubuntu-24.04
           - windows-latest
           - macos-latest
         test-runner:
@@ -476,7 +476,7 @@ jobs:
   ng-schematics-smoke-tests-required:
     name: '[Required] Angular Schematics smoke tests'
     needs: [check-changes, ng-schematics-smoke-tests]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: ${{ always() }}
     steps:
       - if: ${{ needs.ng-schematics-smoke-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'ng-schematics') }}
@@ -494,7 +494,7 @@ jobs:
         linux-only:
           - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
         os:
-          - ubuntu-latest
+          - ubuntu-24.04
           - windows-latest
           - macos-latest
         exclude:
@@ -525,7 +525,7 @@ jobs:
   browsers-tests-required:
     name: '[Required] Test the browsers packages'
     needs: [check-changes, browsers-tests]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: ${{ always() }}
     steps:
       - if: ${{ needs.browsers-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'browsers') }}
