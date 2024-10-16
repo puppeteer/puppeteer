@@ -100,9 +100,9 @@
       ]
     },
     "build:types": {
-      "command": "api-extractor run --local && eslint --cache-location .eslintcache --cache --no-ignore --no-config-lookup -c=../../.eslintrc.types.cjs --fix lib/types.d.ts",
+      "command": "api-extractor run --local && eslint --cache-location .eslintcache --cache --no-ignore --no-config-lookup -c=../../eslint.types.config.mjs --fix lib/types.d.ts",
       "files": [
-        "../../.eslintrc.types.cjs",
+        "../../eslint.types.config.mjs",
         "api-extractor.json",
         "lib/esm/puppeteer/types.d.ts",
         "tsconfig.json"
@@ -144,7 +144,7 @@
   "devDependencies": {
     "@types/chrome": "0.0.277",
     "@types/debug": "4.1.12",
-    "@types/node": "18.17.15",
+    "@types/node": "^18.17.15",
     "@types/ws": "8.5.12",
     "mitt": "3.0.1",
     "parsel-js": "1.1.2",
