@@ -230,6 +230,15 @@ For this to work properly, the host should be configured first. If there's no
 good sandbox for Chrome to use, it will crash with the error
 `No usable sandbox!`.
 
+Ubuntu 23.10+ (or possibly other Linux distros in the future) ship an
+AppArmor profile that applies to Chrome stable binaries installed at
+/opt/google/chrome/chrome (the default installation path). This policy
+is stored at /etc/apparmor.d/chrome. This AppArmor policy prevents
+Chrome for Testing binaries downloaded by Puppeteer from using user namespaces
+resulting in the `No usable sandbox!` error when trying to launch the
+browser. For workarounds, see
+https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md
+
 If you **absolutely trust** the content you open in Chrome, you can launch
 Chrome with the `--no-sandbox` argument:
 
