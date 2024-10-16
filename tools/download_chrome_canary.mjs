@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/* eslint-disable no-console */
-
 /**
  * @fileoverview Installs the latest Chrome Canary using
  * `@puppeteer/browsers` to the directory provided as the first argument
@@ -18,7 +16,6 @@
  * - `node tools/download_chrome_canary.mjs /tmp/cache`
  */
 import actions from '@actions/core';
-
 import {
   Browser,
   computeExecutablePath,
