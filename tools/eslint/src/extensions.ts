@@ -6,7 +6,9 @@
 
 import {ESLintUtils} from '@typescript-eslint/utils';
 
-const createRule = ESLintUtils.RuleCreator(name => {
+const createRule = ESLintUtils.RuleCreator<{
+  requiresTypeChecking: boolean;
+}>(name => {
   return `https://github.com/puppeteer/puppeteer/tree/main/tools/eslint/${name}.js`;
 });
 
@@ -15,6 +17,7 @@ const enforceExtensionRule = createRule<[], 'extensionsRule'>({
   meta: {
     docs: {
       description: 'Requires `.js` for imports',
+      requiresTypeChecking: false,
     },
     messages: {
       extensionsRule: 'Add `.js` to import.',
