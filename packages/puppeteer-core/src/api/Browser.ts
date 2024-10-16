@@ -3,7 +3,7 @@
  * Copyright 2017 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-
+/// <reference types="node"  preserve="true"/>
 import type {ChildProcess} from 'child_process';
 
 import type {Protocol} from 'devtools-protocol';
