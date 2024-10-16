@@ -1,3 +1,8 @@
+/**
+ * @license
+ * Copyright 2024 Google Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 module.exports = {
   plugins: ['unused-imports'],
   parser: '@typescript-eslint/parser',
