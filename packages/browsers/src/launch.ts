@@ -92,7 +92,7 @@ export function computeSystemExecutablePath(options: SystemOptions): string {
   );
   try {
     accessSync(path);
-  } catch (error) {
+  } catch {
     throw new Error(
       `Could not find Google Chrome executable for channel '${options.channel}' at '${path}'.`
     );
