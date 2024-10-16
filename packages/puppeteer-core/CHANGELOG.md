@@ -20,6 +20,20 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [23.6.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.5.3...puppeteer-core-v23.6.0) (2024-10-16)
+
+
+### Features
+
+* remove --disable-component-update from default args ([#13201](https://github.com/puppeteer/puppeteer/issues/13201)) ([19dd9c3](https://github.com/puppeteer/puppeteer/commit/19dd9c385a34c01cf6aad4c207165962d888e63f))
+* roll to Chrome 130.0.6723.58 ([#13195](https://github.com/puppeteer/puppeteer/issues/13195)) ([1cf5116](https://github.com/puppeteer/puppeteer/commit/1cf5116a2d3dd817cf38e46363e483fee58ed5bc))
+
+
+### Bug Fixes
+
+* re-export node reference removed by TS 5.5 ([#13200](https://github.com/puppeteer/puppeteer/issues/13200)) ([1300e59](https://github.com/puppeteer/puppeteer/commit/1300e595cdea37e09f28d68bb06ead47b0883059))
+* roll to Firefox 131.0.3 ([#13189](https://github.com/puppeteer/puppeteer/issues/13189)) ([d7bc66e](https://github.com/puppeteer/puppeteer/commit/d7bc66ef9c58e124b61ab20cc4508ca659a4541a))
+
 ## [23.5.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.5.2...puppeteer-core-v23.5.3) (2024-10-10)
 
 
