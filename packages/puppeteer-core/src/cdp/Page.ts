@@ -670,6 +670,7 @@ export class CdpPage extends Page {
 
   override async exposeFunction(
     name: string,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     pptrFunction: Function | {default: Function}
   ): Promise<void> {
     if (this.#bindings.has(name)) {

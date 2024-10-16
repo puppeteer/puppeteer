@@ -162,6 +162,7 @@ function customBDDInterface(suite: Mocha.Suite) {
       };
 
       function wrapDeflake(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
         func: Function
       ): (repeats: number, title: string, fn: Mocha.AsyncFunc) => void {
         return (repeats: number, title: string, fn: Mocha.AsyncFunc): void => {
