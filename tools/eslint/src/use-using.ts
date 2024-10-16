@@ -8,7 +8,9 @@ import {ESLintUtils, TSESTree} from '@typescript-eslint/utils';
 
 const usingSymbols = ['ElementHandle', 'JSHandle'];
 
-const createRule = ESLintUtils.RuleCreator(name => {
+const createRule = ESLintUtils.RuleCreator<{
+  requiresTypeChecking: boolean;
+}>(name => {
   return `https://github.com/puppeteer/puppeteer/tree/main/tools/eslint/${name}.js`;
 });
 
@@ -17,6 +19,7 @@ const useUsingRule = createRule<[], 'useUsing' | 'useUsingFix'>({
   meta: {
     docs: {
       description: "Requires 'using' for element/JS handles.",
+      requiresTypeChecking: true,
     },
     hasSuggestions: true,
     messages: {

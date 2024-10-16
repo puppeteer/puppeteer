@@ -7,7 +7,9 @@
 import type {TSESTree} from '@typescript-eslint/utils';
 import {ESLintUtils} from '@typescript-eslint/utils';
 
-const createRule = ESLintUtils.RuleCreator(name => {
+const createRule = ESLintUtils.RuleCreator<{
+  requiresTypeChecking: boolean;
+}>(name => {
   return `https://github.com/puppeteer/puppeteer/tree/main/tools/eslint/${name}.ts`;
 });
 
@@ -28,6 +30,7 @@ const enforceLicenseRule = createRule<[], 'licenseRule'>({
     type: 'layout',
     docs: {
       description: 'Validate existence of license header',
+      requiresTypeChecking: false,
     },
     fixable: 'code',
     schema: [],
