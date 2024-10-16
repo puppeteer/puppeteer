@@ -57,7 +57,7 @@ module.exports = {
       'error',
       'always',
       {
-        markers: ['*'],
+        markers: ['*', '/'],
       },
     ],
     eqeqeq: ['error'],
