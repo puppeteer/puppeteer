@@ -100,7 +100,7 @@
       ]
     },
     "build:types": {
-      "command": "api-extractor run --local && eslint --cache-location .eslintcache --cache --ext=ts --no-ignore --no-eslintrc -c=../../.eslintrc.types.cjs --fix lib/types.d.ts",
+      "command": "api-extractor run --local && node ../../tools/patchTypes.mjs lib/types.d.ts && eslint --cache-location .eslintcache --cache --ext=ts --no-ignore --no-eslintrc -c=../../.eslintrc.types.cjs --fix lib/types.d.ts",
       "files": [
         "../../.eslintrc.types.cjs",
         "api-extractor.json",
