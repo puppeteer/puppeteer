@@ -134,6 +134,8 @@ jobs:
         with:
           cache: npm
           node-version-file: '.nvmrc'
+      - name: Disable AppArmor
+        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
       - name: Install dependencies
         run: npm ci
         env:
@@ -183,6 +185,9 @@ jobs:
         with:
           cache: npm
           node-version-file: '.nvmrc'
+      - name: Disable AppArmor
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
       - name: Install dependencies
         run: npm ci
         env:
@@ -262,6 +267,9 @@ jobs:
         with:
           cache: npm
           node-version-file: '.nvmrc'
+      - name: Disable AppArmor
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
       - name: Install dependencies
         run: npm ci
         env:
@@ -328,6 +336,9 @@ jobs:
         with:
           cache: npm
           node-version-file: '.nvmrc'
+      - name: Disable AppArmor
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
       - name: Install dependencies
         run: npm ci
         env:
@@ -461,6 +472,9 @@ jobs:
         with:
           cache: npm
           node-version-file: '.nvmrc'
+      - name: Disable AppArmor
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
       - name: Install dependencies
         run: npm ci
         env:
@@ -510,6 +524,9 @@ jobs:
         with:
           cache: npm
           node-version-file: '.nvmrc'
+      - name: Disable AppArmor
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
       - name: Install dependencies
         run: npm ci
         env:
