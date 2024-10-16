@@ -28,7 +28,6 @@ const enforceLicenseRule = createRule<[], 'licenseRule'>({
     type: 'layout',
     docs: {
       description: 'Validate existence of license header',
-      requiresTypeChecking: false,
     },
     fixable: 'code',
     schema: [],
