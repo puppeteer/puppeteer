@@ -6,7 +6,7 @@
 
 export * from './Browser.js';
 export * from './BrowsingContext.js';
-export * from './Connection.js';
+export type * from './Connection.js';
 export * from './Navigation.js';
 export * from './Realm.js';
 export * from './Request.js';
