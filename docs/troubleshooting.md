@@ -225,19 +225,10 @@ For additional tips, see the following blog post https://developer.chrome.com/bl
 ## Setting Up Chrome Linux Sandbox
 
 In order to protect the host environment from untrusted web content, Chrome uses
-[multiple layers of sandboxing](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux/sandboxing.md).
+[multiple layers of sandboxing](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md).
 For this to work properly, the host should be configured first. If there's no
 good sandbox for Chrome to use, it will crash with the error
 `No usable sandbox!`.
-
-Ubuntu 23.10+ (or possibly other Linux distros in the future) ship an
-AppArmor profile that applies to Chrome stable binaries installed at
-/opt/google/chrome/chrome (the default installation path). This policy
-is stored at /etc/apparmor.d/chrome. This AppArmor policy prevents
-Chrome for Testing binaries downloaded by Puppeteer from using user namespaces
-resulting in the `No usable sandbox!` error when trying to launch the
-browser. For workarounds, see
-https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md
 
 If you **absolutely trust** the content you open in Chrome, you can launch
 Chrome with the `--no-sandbox` argument:
@@ -255,20 +246,27 @@ sandbox instead.
 
 :::
 
-There are 2 ways to configure a sandbox in Chromium.
+**The recommended way to run Chrome is using sandboxes**
 
-### [recommended] Enable [user namespace cloning](http://man7.org/linux/man-pages/man7/user_namespaces.7.html)
+### Issues AppArmor on Ubuntu
 
-User namespace cloning is only supported by modern kernels. Unprivileged user
-namespaces are generally fine to enable, but in some cases they open up more
-kernel attack surface for (unsandboxed) non-root processes to elevate to kernel
-privileges.
+Ubuntu 23.10+ (or possibly other Linux distros in the future) ship an
+AppArmor profile that applies to Chrome stable binaries installed at
+/opt/google/chrome/chrome (the default installation path). This policy
+is stored at /etc/apparmor.d/chrome. This AppArmor policy prevents
+Chrome for Testing binaries downloaded by Puppeteer from using user namespaces
+resulting in the `No usable sandbox!` error when trying to launch the
+browser. 
 
-```bash
-sudo sysctl -w kernel.unprivileged_userns_clone=1
-```
+For workarounds, see https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md.
 
-### [alternative] Setup [setuid sandbox](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux/suid_sandbox_development.md)
+### Using [setuid sandbox](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux/suid_sandbox_development.md)
+
+:::caution
+
+IMPORTANT NOTE: The Linux SUID sandbox is almost but not completely removed. See https://bugs.chromium.org/p/chromium/issues/detail?id=598454 This section is mostly out-of-date.
+
+:::
 
 The setuid sandbox comes as a standalone executable and is located next to the
 Chrome that Puppeteer downloads. It is fine to re-use the same sandbox
