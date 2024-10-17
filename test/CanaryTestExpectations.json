@@ -54,5 +54,12 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["PASS"],
     "comment": "Works in Nightly"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch userDataDir option should restore cookies",
+    "platforms": ["darwin"],
+    "parameters": ["cdp", "chrome-headless-shell"],
+    "expectations": ["PASS"],
+    "comment": "Seems to be passing in 132 after being broken in 130."
   }
 ]
