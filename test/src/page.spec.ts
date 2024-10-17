@@ -1430,14 +1430,12 @@ describe('Page', function () {
       ]);
       expect(
         await page.evaluate(() => {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-expect-error: userAgentData not yet in TypeScript DOM API
           return navigator.userAgentData.mobile;
         })
       ).toBe(false);
 
       const uaData = await page.evaluate(() => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error: userAgentData not yet in TypeScript DOM API
         return navigator.userAgentData.getHighEntropyValues([
           'architecture',

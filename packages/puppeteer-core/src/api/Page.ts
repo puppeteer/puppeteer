@@ -1519,6 +1519,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    */
   abstract exposeFunction(
     name: string,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     pptrFunction: Function | {default: Function}
   ): Promise<void>;
 

@@ -172,6 +172,7 @@ export const isDate = (obj: unknown): obj is Date => {
  * @internal
  */
 export function evaluationString(
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   fun: Function | string,
   ...args: unknown[]
 ): string {

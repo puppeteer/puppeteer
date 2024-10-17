@@ -3,9 +3,8 @@
  * Copyright 2024 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import {expectNotType, expectType} from 'tsd';
-
 import type {ElementHandle} from 'puppeteer';
+import {expectNotType, expectType} from 'tsd';
 
 declare const handle: ElementHandle;
 

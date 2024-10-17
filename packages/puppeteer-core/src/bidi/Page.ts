@@ -855,6 +855,7 @@ export class BidiPage extends Page {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 function evaluationExpression(fun: Function | string, ...args: unknown[]) {
   return `() => {${evaluationString(fun, ...args)}}`;
 }

@@ -9,7 +9,6 @@ if (!!process.env.DEBUGGER_ATTACHED) {
   timeout = 0;
 }
 module.exports = {
-  reporter: 'dot',
   logLevel: 'debug',
   require: ['./test/build/mocha-utils.js', 'source-map-support/register'],
   exit: !!process.env.CI,

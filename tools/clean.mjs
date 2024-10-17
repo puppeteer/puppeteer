@@ -16,7 +16,7 @@ const execAsync = promisify(exec);
 
 try {
   await execAsync('git status');
-} catch (e) {
+} catch {
   // If `git status` threw an error, we are not in a git repository, bail out.
   console.log('Not inside a .git repository');
   process.exit(0);

@@ -33,6 +33,7 @@ import type {CdpWebWorker} from './WebWorker.js';
  */
 export interface PageBinding {
   name: string;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   pptrFunction: Function;
 }
 
@@ -48,7 +49,7 @@ export interface IsolatedWorldChart {
 /**
  * @internal
  */
-type IsolatedWorldEmitter = EventEmitter<{
+export type IsolatedWorldEmitter = EventEmitter<{
   // Emitted when the isolated world gets a new execution context.
   context: ExecutionContext;
   // Emitted when the isolated world is disposed.
