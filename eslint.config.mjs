@@ -94,6 +94,7 @@ export default [
     compat.extends('plugin:prettier/recommended', 'plugin:import/typescript')
   ),
   {
+    name: 'JavaScript rules',
     plugins: {
       mocha,
       '@typescript-eslint': typescriptEslint,
@@ -145,6 +146,14 @@ export default [
       'max-len': [
         'error',
         {
+          /* this setting doesn't impact things as we use Prettier to format
+           * our code and hence dictate the line length.
+           * Prettier aims for 80 but sometimes makes the decision to go just
+           * over 80 chars as it decides that's better than wrapping. ESLint's
+           * rule defaults to 80 but therefore conflicts with Prettier. So we
+           * set it to something far higher than Prettier would allow to avoid
+           * it causing issues and conflicting with Prettier.
+           */
           code: 200,
           comments: 90,
           ignoreTemplateLiterals: true,
@@ -209,9 +218,11 @@ export default [
         },
       ],
 
-      'no-restricted-syntax': ['error'],
+      // Keeps comments formatted.
       'rulesdir/prettier-comments': 'error',
+      // Enforces consistent file extension
       'rulesdir/extensions': 'error',
+      // Enforces license headers on files
       'rulesdir/check-license': 'error',
     },
   },
@@ -228,6 +239,7 @@ export default [
       };
     }),
   {
+    name: 'TypeScript rules',
     files: ['**/*.ts'],
 
     plugins: {
@@ -245,9 +257,8 @@ export default [
     },
 
     rules: {
+      // Enforces clean up of used resources.
       'rulesdir/use-using': 'error',
-      curly: ['error', 'all'],
-      'arrow-body-style': ['error', 'always'],
 
       '@typescript-eslint/array-type': [
         'error',
@@ -267,16 +278,25 @@ export default [
       ],
 
       'func-call-spacing': 'off',
+
+      // TODO: Look up https://eslint.style/t
+      // '@typescript-eslint/func-call-spacing': 'error',
+      // '@typescript-eslint/semi': 'error',
       semi: 'off',
       '@typescript-eslint/no-empty-function': 'off',
       '@typescript-eslint/no-use-before-define': 'off',
+      // We have to use any on some types so the warning isn't valuable.
       '@typescript-eslint/no-explicit-any': 'off',
+      // We don't require explicit return types on basic functions or
+      // dummy functions in tests, for example
       '@typescript-eslint/explicit-function-return-type': 'off',
+      // We allow non-null assertions if the value was asserted using `assert` API.
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/no-unnecessary-template-expression': 'error',
       '@typescript-eslint/no-unsafe-function-type': 'error',
       '@typescript-eslint/no-wrapper-object-types': 'error',
 
+      // By default this is a warning but we want it to error.
       '@typescript-eslint/explicit-module-boundary-types': 'error',
 
       'no-restricted-syntax': [
