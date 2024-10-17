@@ -327,6 +327,7 @@ export default [
     },
   },
   {
+    name: 'Puppeteer Core syntax',
     files: ['packages/puppeteer-core/src/**/*.ts'],
     rules: {
       'no-restricted-syntax': [
@@ -353,6 +354,7 @@ export default [
     },
   },
   {
+    name: 'Packages',
     files: [
       'packages/puppeteer-core/src/**/*.test.ts',
       'tools/mocha-runner/src/test.ts',
@@ -368,6 +370,56 @@ export default [
 
     rules: {
       'tsdoc/syntax': 'error',
+    },
+  },
+  {
+    name: 'Mocha',
+    files: ['test/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          /**
+           * The mocha tests run on the compiled output in the /lib directory
+           * so we should avoid importing from src.
+           */
+          patterns: ['*src*'],
+        },
+      ],
+    },
+  },
+  {
+    name: 'Mocha Tests',
+    files: ['test/**/*.spec.ts'],
+
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
+
+      'no-restricted-syntax': [
+        'error',
+        {
+          message:
+            'Use helper command `launch` to make sure the browsers get cleaned',
+          selector:
+            'MemberExpression[object.name="puppeteer"][property.name="launch"]',
+        },
+        {
+          message: 'Unexpected debugging mocha test.',
+          selector:
+            'CallExpression[callee.object.name="it"] > MemberExpression > Identifier[name="deflake"], CallExpression[callee.object.name="it"] > MemberExpression > Identifier[name="deflakeOnly"]',
+        },
+        {
+          message: 'No `expect` in EventHandler. They will never throw errors',
+          selector:
+            'CallExpression[callee.property.name="on"] BlockStatement > :not(TryStatement) > ExpressionStatement > CallExpression[callee.object.callee.name="expect"]',
+        },
+      ],
     },
   },
 ];
