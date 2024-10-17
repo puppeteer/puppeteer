@@ -248,7 +248,7 @@ sandbox instead.
 
 **The recommended way to run Chrome is using sandboxes**
 
-### Issues AppArmor on Ubuntu
+### Issues with AppArmor on Ubuntu
 
 Ubuntu 23.10+ (or possibly other Linux distros in the future) ship an
 AppArmor profile that applies to Chrome stable binaries installed at
@@ -256,7 +256,7 @@ AppArmor profile that applies to Chrome stable binaries installed at
 is stored at /etc/apparmor.d/chrome. This AppArmor policy prevents
 Chrome for Testing binaries downloaded by Puppeteer from using user namespaces
 resulting in the `No usable sandbox!` error when trying to launch the
-browser. 
+browser.
 
 For workarounds, see https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md.
 
