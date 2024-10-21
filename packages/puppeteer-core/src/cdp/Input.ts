@@ -557,6 +557,7 @@ class CdpTouch {
   constructor(
     client: CDPSession,
     keyboard: CdpKeyboard,
+    public id: number,
     touchPoint: Protocol.Input.TouchPoint
   ) {
     this.#client = client;
@@ -622,15 +623,16 @@ export class CdpTouchscreen extends Touchscreen {
   }
 
   override async touchStart(x: number, y: number): Promise<void> {
+    const id = this.#idRepository.getId();
     const touchPoint: Protocol.Input.TouchPoint = {
       x: Math.round(x),
       y: Math.round(y),
       radiusX: 0.5,
       radiusY: 0.5,
       force: 0.5,
-      id: this.#idRepository.getId(),
+      id,
     };
-    const touch = new CdpTouch(this.#client, this.#keyboard, touchPoint);
+    const touch = new CdpTouch(this.#client, this.#keyboard, id, touchPoint);
     await touch.start();
     this.#touches.push(touch);
   }
@@ -643,11 +645,12 @@ export class CdpTouchscreen extends Touchscreen {
     return touch.move(x, y);
   }
 
-  override touchEnd(): Promise<void> {
+  override async touchEnd(): Promise<void> {
     const touch = this.#touches.shift();
     if (!touch) {
-      return Promise.resolve();
+      return;
     }
-    return touch.end();
+    await touch.end();
+    this.#idRepository.releaseId(touch.id);
   }
 }

@@ -21,6 +21,7 @@ import {
   type MouseWheelOptions,
 } from '../api/Input.js';
 import {UnsupportedOperation} from '../common/Errors.js';
+import {TouchPointIdRepository} from '../common/TouchPointIdRepository.js';
 import type {KeyInput} from '../common/USKeyboardLayout.js';
 
 import type {BidiPage} from './Page.js';
@@ -610,82 +611,83 @@ export class BidiMouse extends Mouse {
   }
 }
 
-/**
- * @internal
- */
-export class BidiTouchscreen extends Touchscreen {
+class BidiTouch {
+  #started = false;
+  #x: number;
+  #y: number;
+  #bidiId: string;
   #page: BidiPage;
+  #properties: Bidi.Input.PointerCommonProperties;
 
-  constructor(page: BidiPage) {
-    super();
-    this.#page = page;
-  }
-
-  override async touchStart(
+  constructor(
+    page: BidiPage,
+    public id: number,
     x: number,
     y: number,
-    options: BidiTouchMoveOptions = {}
-  ): Promise<void> {
+    properties: Bidi.Input.PointerCommonProperties
+  ) {
+    this.#page = page;
+    this.#x = Math.round(x);
+    this.#y = Math.round(y);
+    this.#properties = properties;
+    this.#bidiId = `__puppeteer_finger${id}`;
+  }
+
+  public async start(): Promise<void> {
+    if (this.#started) {
+      return;
+    }
     await this.#page.mainFrame().browsingContext.performActions([
       {
         type: SourceActionsType.Pointer,
-        id: InputId.Finger,
+        id: this.#bidiId,
         parameters: {
           pointerType: Bidi.Input.PointerType.Touch,
         },
         actions: [
           {
             type: ActionType.PointerMove,
-            x: Math.round(x),
-            y: Math.round(y),
-            origin: options.origin,
+            x: this.#x,
+            y: this.#y,
           },
           {
+            ...this.#properties,
             type: ActionType.PointerDown,
             button: 0,
-            width: 0.5 * 2, // 2 times default touch radius.
-            height: 0.5 * 2, // 2 times default touch radius.
-            pressure: 0.5,
-            altitudeAngle: Math.PI / 2,
           },
         ],
       },
     ]);
+    this.#started = true;
   }
 
-  override async touchMove(
-    x: number,
-    y: number,
-    options: BidiTouchMoveOptions = {}
-  ): Promise<void> {
+  public async move(x: number, y: number): Promise<void> {
+    const newX = Math.round(x);
+    const newY = Math.round(y);
     await this.#page.mainFrame().browsingContext.performActions([
       {
         type: SourceActionsType.Pointer,
-        id: InputId.Finger,
+        id: this.#bidiId,
         parameters: {
           pointerType: Bidi.Input.PointerType.Touch,
         },
         actions: [
           {
+            ...this.#properties,
             type: ActionType.PointerMove,
-            x: Math.round(x),
-            y: Math.round(y),
-            origin: options.origin,
-            width: 0.5 * 2, // 2 times default touch radius.
-            height: 0.5 * 2, // 2 times default touch radius.
-            pressure: 0.5,
-            altitudeAngle: Math.PI / 2,
+            x: newX,
+            y: newY,
           },
         ],
       },
     ]);
   }
 
-  override async touchEnd(): Promise<void> {
-    await this.#page.mainFrame().browsingContext.performActions([
+  public end(): Promise<void> {
+    return this.#page.mainFrame().browsingContext.performActions([
       {
         type: SourceActionsType.Pointer,
-        id: InputId.Finger,
+        id: this.#bidiId,
         parameters: {
           pointerType: Bidi.Input.PointerType.Touch,
         },
@@ -697,5 +699,48 @@ export class BidiTouchscreen extends Touchscreen {
         ],
       },
     ]);
+  }
+}
+/**
+ * @internal
+ */
+export class BidiTouchscreen extends Touchscreen {
+  #page: BidiPage;
+  #idRepository = new TouchPointIdRepository();
+  #touches: BidiTouch[] = [];
+
+  constructor(page: BidiPage) {
+    super();
+    this.#page = page;
+  }
+
+  override async touchStart(x: number, y: number): Promise<void> {
+    const id = this.#idRepository.getId();
+    const properties: Bidi.Input.PointerCommonProperties = {
+      width: 0.5 * 2, // 2 times default touch radius.
+      height: 0.5 * 2, // 2 times default touch radius.
+      pressure: 0.5,
+      altitudeAngle: Math.PI / 2,
+    };
+    const touch = new BidiTouch(this.#page, id, x, y, properties);
+    await touch.start();
+    this.#touches.push(touch);
+  }
+
+  override async touchMove(x: number, y: number): Promise<void> {
+    const touch = this.#touches[0];
+    if (!touch) {
+      return await Promise.resolve();
+    }
+    return await touch.move(x, y);
+  }
+
+  override async touchEnd(): Promise<void> {
+    const touch = this.#touches.shift();
+    if (!touch) {
+      return;
+    }
+    await touch.end();
+    this.#idRepository.releaseId(touch.id);
   }
 }
