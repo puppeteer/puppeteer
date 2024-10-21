@@ -21,6 +21,7 @@ import {
   type MouseOptions,
   type MouseWheelOptions,
 } from '../api/Input.js';
+import {TouchPointIdRepository} from '../common/TouchPointIdRepository.js';
 import {
   _keyDefinitions,
   type KeyDefinition,
@@ -553,6 +554,8 @@ export class CdpMouse extends Mouse {
 export class CdpTouchscreen extends Touchscreen {
   #client: CDPSession;
   #keyboard: CdpKeyboard;
+  #touchPoints: Protocol.Input.TouchPoint[] = [];
+  #idRepository = new TouchPointIdRepository();
 
   constructor(client: CDPSession, keyboard: CdpKeyboard) {
     super();
@@ -565,41 +568,48 @@ export class CdpTouchscreen extends Touchscreen {
   }
 
   override async touchStart(x: number, y: number): Promise<void> {
+    const touchPoint: Protocol.Input.TouchPoint = {
+      x: Math.round(x),
+      y: Math.round(y),
+      radiusX: 0.5,
+      radiusY: 0.5,
+      force: 0.5,
+      id: this.#idRepository.getId(),
+    };
     await this.#client.send('Input.dispatchTouchEvent', {
       type: 'touchStart',
-      touchPoints: [
-        {
-          x: Math.round(x),
-          y: Math.round(y),
-          radiusX: 0.5,
-          radiusY: 0.5,
-          force: 0.5,
-        },
-      ],
+      touchPoints: [touchPoint],
       modifiers: this.#keyboard._modifiers,
     });
+    this.#touchPoints.push(touchPoint);
   }
 
   override async touchMove(x: number, y: number): Promise<void> {
+    const touchPoint = this.#touchPoints.shift();
+    if (!touchPoint) {
+      return;
+    }
+    const updatedTouchPoint: Protocol.Input.TouchPoint = {
+      ...touchPoint,
+      x: Math.round(x),
+      y: Math.round(y),
+    };
     await this.#client.send('Input.dispatchTouchEvent', {
       type: 'touchMove',
-      touchPoints: [
-        {
-          x: Math.round(x),
-          y: Math.round(y),
-          radiusX: 0.5,
-          radiusY: 0.5,
-          force: 0.5,
-        },
-      ],
+      touchPoints: [updatedTouchPoint],
       modifiers: this.#keyboard._modifiers,
     });
+    this.#touchPoints.push(updatedTouchPoint);
   }
 
   override async touchEnd(): Promise<void> {
+    const touchPoint = this.#touchPoints.shift();
+    if (!touchPoint) {
+      return;
+    }
     await this.#client.send('Input.dispatchTouchEvent', {
       type: 'touchEnd',
-      touchPoints: [],
+      touchPoints: [touchPoint],
       modifiers: this.#keyboard._modifiers,
     });
   }
