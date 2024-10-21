@@ -12,6 +12,7 @@ import {
   Mouse,
   MouseButton,
   Touchscreen,
+  type Touch,
   type KeyboardTypeOptions,
   type KeyDownOptions,
   type KeyPressOptions,
@@ -611,7 +612,7 @@ export class BidiMouse extends Mouse {
   }
 }
 
-class BidiTouch {
+class BidiTouch implements Touch {
   #started = false;
   #x: number;
   #y: number;
@@ -714,7 +715,7 @@ export class BidiTouchscreen extends Touchscreen {
     this.#page = page;
   }
 
-  override async touchStart(x: number, y: number): Promise<void> {
+  override async touchStart(x: number, y: number): Promise<Touch> {
     const id = this.#idRepository.getId();
     const properties: Bidi.Input.PointerCommonProperties = {
       width: 0.5 * 2, // 2 times default touch radius.
@@ -725,6 +726,7 @@ export class BidiTouchscreen extends Touchscreen {
     const touch = new BidiTouch(this.#page, id, x, y, properties);
     await touch.start();
     this.#touches.push(touch);
+    return touch;
   }
 
   override async touchMove(x: number, y: number): Promise<void> {

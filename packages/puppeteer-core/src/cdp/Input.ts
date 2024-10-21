@@ -13,6 +13,7 @@ import {
   Mouse,
   MouseButton,
   Touchscreen,
+  type Touch,
   type KeyDownOptions,
   type KeyPressOptions,
   type KeyboardTypeOptions,
@@ -548,7 +549,7 @@ export class CdpMouse extends Mouse {
   }
 }
 
-class CdpTouch {
+class CdpTouch implements Touch {
   #started = false;
   #touchPoint: Protocol.Input.TouchPoint;
   #client: CDPSession;
@@ -622,7 +623,7 @@ export class CdpTouchscreen extends Touchscreen {
     });
   }
 
-  override async touchStart(x: number, y: number): Promise<void> {
+  override async touchStart(x: number, y: number): Promise<Touch> {
     const id = this.#idRepository.getId();
     const touchPoint: Protocol.Input.TouchPoint = {
       x: Math.round(x),
@@ -635,6 +636,7 @@ export class CdpTouchscreen extends Touchscreen {
     const touch = new CdpTouch(this.#client, this.#keyboard, id, touchPoint);
     await touch.start();
     this.#touches.push(touch);
+    return touch;
   }
 
   override touchMove(x: number, y: number): Promise<void> {
