@@ -343,5 +343,148 @@ describe('Touchscreen', () => {
         },
       ]);
     });
+
+    it('should work with two touches', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.PREFIX + '/input/touchscreen.html');
+
+      await page.touchscreen.touchStart(0, 0);
+      await page.touchscreen.touchStart(30, 10);
+      await page.touchscreen.touchMove(15, 15);
+
+      expect(
+        await page.evaluate(() => {
+          return allEvents;
+        })
+      ).toMatchObject([
+        {
+          type: 'pointerdown',
+          x: 0,
+          y: 0,
+          width: 1,
+          height: 1,
+          altitudeAngle: 1.5707963267948966,
+          azimuthAngle: 0,
+          pressure: 0.5,
+          pointerType: 'touch',
+          twist: 0,
+          tiltX: 0,
+          tiltY: 0,
+        },
+        {
+          type: 'touchstart',
+          changedTouches: [
+            {
+              clientX: 0,
+              clientY: 0,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 0,
+            },
+          ],
+          activeTouches: [
+            {
+              clientX: 0,
+              clientY: 0,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 0,
+            },
+          ],
+        },
+        {
+          type: 'pointerdown',
+          x: 30,
+          y: 10,
+          width: 1,
+          height: 1,
+          altitudeAngle: 1.5707963267948966,
+          azimuthAngle: 0,
+          pressure: 0.5,
+          pointerType: 'touch',
+          twist: 0,
+          tiltX: 0,
+          tiltY: 0,
+        },
+        {
+          type: 'touchstart',
+          changedTouches: [
+            {
+              clientX: 30,
+              clientY: 10,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 1,
+            },
+          ],
+          activeTouches: [
+            {
+              clientX: 0,
+              clientY: 0,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 0,
+            },
+            {
+              clientX: 30,
+              clientY: 10,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 1,
+            },
+          ],
+        },
+        {
+          type: 'pointermove',
+          x: 15,
+          y: 15,
+          width: 1,
+          height: 1,
+          altitudeAngle: 1.5707963267948966,
+          azimuthAngle: 0,
+          pressure: 0.5,
+          pointerType: 'touch',
+          twist: 0,
+          tiltX: 0,
+          tiltY: 0,
+        },
+        {
+          type: 'touchmove',
+          changedTouches: [
+            {
+              clientX: 15,
+              clientY: 15,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 0,
+            },
+          ],
+          activeTouches: [
+            {
+              clientX: 15,
+              clientY: 15,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 0,
+            },
+            {
+              clientX: 30,
+              clientY: 10,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 1,
+            },
+          ],
+        },
+      ]);
+    });
   });
 });
