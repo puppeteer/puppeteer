@@ -41,10 +41,24 @@ describe('Touchscreen', () => {
         {
           type: 'touchstart',
           changedTouches: [
-            {clientX: 5, clientY: 5, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+            {
+              clientX: 5,
+              clientY: 5,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 0,
+            },
           ],
           activeTouches: [
-            {clientX: 5, clientY: 5, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+            {
+              clientX: 5,
+              clientY: 5,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 0,
+            },
           ],
         },
         {
@@ -64,7 +78,14 @@ describe('Touchscreen', () => {
         {
           type: 'touchend',
           changedTouches: [
-            {clientX: 5, clientY: 5, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+            {
+              clientX: 5,
+              clientY: 5,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 0,
+            },
           ],
           activeTouches: [],
         },
@@ -124,10 +145,24 @@ describe('Touchscreen', () => {
         {
           type: 'touchstart',
           changedTouches: [
-            {clientX: 0, clientY: 0, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+            {
+              clientX: 0,
+              clientY: 0,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 0,
+            },
           ],
           activeTouches: [
-            {clientX: 0, clientY: 0, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+            {
+              clientX: 0,
+              clientY: 0,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 0,
+            },
           ],
         },
         {
@@ -147,10 +182,24 @@ describe('Touchscreen', () => {
         {
           type: 'touchmove',
           changedTouches: [
-            {clientX: 15, clientY: 15, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+            {
+              clientX: 15,
+              clientY: 15,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 0,
+            },
           ],
           activeTouches: [
-            {clientX: 15, clientY: 15, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+            {
+              clientX: 15,
+              clientY: 15,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 0,
+            },
           ],
         },
         {
@@ -170,10 +219,24 @@ describe('Touchscreen', () => {
         {
           type: 'touchmove',
           changedTouches: [
-            {clientX: 31, clientY: 30, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+            {
+              clientX: 31,
+              clientY: 30,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 0,
+            },
           ],
           activeTouches: [
-            {clientX: 31, clientY: 30, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+            {
+              clientX: 31,
+              clientY: 30,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 0,
+            },
           ],
         },
         {
@@ -193,10 +256,24 @@ describe('Touchscreen', () => {
         {
           type: 'touchmove',
           changedTouches: [
-            {clientX: 50, clientY: 45, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+            {
+              clientX: 50,
+              clientY: 45,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 0,
+            },
           ],
           activeTouches: [
-            {clientX: 50, clientY: 45, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+            {
+              clientX: 50,
+              clientY: 45,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 0,
+            },
           ],
         },
         {
@@ -216,10 +293,24 @@ describe('Touchscreen', () => {
         {
           type: 'touchmove',
           changedTouches: [
-            {clientX: 80, clientY: 50, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+            {
+              clientX: 80,
+              clientY: 50,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 0,
+            },
           ],
           activeTouches: [
-            {clientX: 80, clientY: 50, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+            {
+              clientX: 80,
+              clientY: 50,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 0,
+            },
           ],
         },
         {
@@ -239,7 +330,14 @@ describe('Touchscreen', () => {
         {
           type: 'touchend',
           changedTouches: [
-            {clientX: 80, clientY: 50, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+            {
+              clientX: 80,
+              clientY: 50,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+              identifier: 0,
+            },
           ],
           activeTouches: [],
         },
