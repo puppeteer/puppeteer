@@ -32,6 +32,7 @@
                 radiusX: touch.radiusX,
                 radiusY: touch.radiusY,
                 force: touch.force,
+                identifier: touch.identifier
               })),
               activeTouches: [...event.touches].map((touch) => ({
                 clientX: touch.clientX,
@@ -39,6 +40,7 @@
                 radiusX: touch.radiusX,
                 radiusY: touch.radiusY,
                 force: touch.force,
+                identifier: touch.identifier
               })),
             });
           },
