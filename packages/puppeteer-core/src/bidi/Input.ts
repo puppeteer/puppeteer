@@ -662,10 +662,10 @@ class BidiTouch implements Touch {
     this.#started = true;
   }
 
-  public async move(x: number, y: number): Promise<void> {
+  public move(x: number, y: number): Promise<void> {
     const newX = Math.round(x);
     const newY = Math.round(y);
-    await this.#page.mainFrame().browsingContext.performActions([
+    return this.#page.mainFrame().browsingContext.performActions([
       {
         type: SourceActionsType.Pointer,
         id: this.#bidiId,
@@ -729,12 +729,12 @@ export class BidiTouchscreen extends Touchscreen {
     return touch;
   }
 
-  override async touchMove(x: number, y: number): Promise<void> {
+  override touchMove(x: number, y: number): Promise<void> {
     const touch = this.#touches[0];
     if (!touch) {
-      return await Promise.resolve();
+      return Promise.resolve();
     }
-    return await touch.move(x, y);
+    return touch.move(x, y);
   }
 
   override async touchEnd(): Promise<void> {

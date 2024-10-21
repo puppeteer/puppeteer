@@ -582,10 +582,10 @@ class CdpTouch implements Touch {
     this.#started = true;
   }
 
-  public async move(x: number, y: number): Promise<void> {
+  public move(x: number, y: number): Promise<void> {
     this.#touchPoint.x = Math.round(x);
     this.#touchPoint.y = Math.round(y);
-    await this.#client.send('Input.dispatchTouchEvent', {
+    return this.#client.send('Input.dispatchTouchEvent', {
       type: 'touchMove',
       touchPoints: [this.#touchPoint],
       modifiers: this.#keyboard._modifiers,
