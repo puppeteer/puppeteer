@@ -17,7 +17,7 @@ class ElementHandle {
     target: ElementHandle<Node>,
     options?: {
       delay: number;
-    }
+    },
   ): Promise<void>;
 }
 ```

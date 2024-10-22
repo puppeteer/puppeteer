@@ -8,8 +8,8 @@ sidebar_label: launch
 
 ```typescript
 launch: (
-  options?: import('puppeteer-core/internal/puppeteer-core.js').PuppeteerLaunchOptions
-) => Promise<import('puppeteer-core/internal/puppeteer-core.js').Browser>;
+  options?: import('puppeteer-core/internal/index.js').PuppeteerLaunchOptions,
+) => Promise<import('puppeteer-core/internal/index-browser.js').Browser>;
 ```
 
 ## Parameters
@@ -33,7 +33,7 @@ options
 
 </td><td>
 
-import("puppeteer-core/internal/puppeteer-core.js").[PuppeteerLaunchOptions](./puppeteer.puppeteerlaunchoptions.md)
+import("puppeteer-core/internal/index.js").[PuppeteerLaunchOptions](./puppeteer.puppeteerlaunchoptions.md)
 
 </td><td>
 
@@ -43,4 +43,4 @@ _(Optional)_
 </tbody></table>
 **Returns:**
 
-Promise&lt;import("puppeteer-core/internal/puppeteer-core.js").[Browser](./puppeteer.browser.md)&gt;
+Promise&lt;import("puppeteer-core/internal/index-browser.js").[Browser](./puppeteer.browser.md)&gt;

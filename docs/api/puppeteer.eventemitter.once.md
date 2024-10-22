@@ -12,7 +12,7 @@ Like `on` but the listener will only be fired once and then it will be removed.
 class EventEmitter {
   once<Key extends keyof EventsWithWildcard<Events>>(
     type: Key,
-    handler: Handler<EventsWithWildcard<Events>[Key]>
+    handler: Handler<EventsWithWildcard<Events>[Key]>,
   ): this;
 }
 ```

@@ -12,7 +12,7 @@ Navigates the frame or page to the given `url`.
 class Frame {
   abstract goto(
     url: string,
-    options?: GoToOptions
+    options?: GoToOptions,
   ): Promise<HTTPResponse | null>;
 }
 ```

@@ -13,7 +13,7 @@ Creates a locator for the provided selector. See [Locator](./puppeteer.locator.m
 ```typescript
 class Frame {
   locator<Selector extends string>(
-    selector: Selector
+    selector: Selector,
   ): Locator<NodeFor<Selector>>;
 }
 ```

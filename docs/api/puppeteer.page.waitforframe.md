@@ -12,7 +12,7 @@ Waits for a frame matching the given conditions to appear.
 class Page {
   waitForFrame(
     urlOrPredicate: string | ((frame: Frame) => Awaitable<boolean>),
-    options?: WaitTimeoutOptions
+    options?: WaitTimeoutOptions,
   ): Promise<Frame>;
 }
 ```

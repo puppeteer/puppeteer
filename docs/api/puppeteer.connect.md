@@ -8,8 +8,8 @@ sidebar_label: connect
 
 ```typescript
 connect: (
-  options: import('puppeteer-core/internal/puppeteer-core.js').ConnectOptions
-) => Promise<import('puppeteer-core/internal/puppeteer-core.js').Browser>;
+  options: import('puppeteer-core/internal/index-browser.js').ConnectOptions,
+) => Promise<import('puppeteer-core/internal/index-browser.js').Browser>;
 ```
 
 ## Parameters
@@ -33,7 +33,7 @@ options
 
 </td><td>
 
-import("puppeteer-core/internal/puppeteer-core.js").[ConnectOptions](./puppeteer.connectoptions.md)
+import("puppeteer-core/internal/index-browser.js").[ConnectOptions](./puppeteer.connectoptions.md)
 
 </td><td>
 
@@ -41,4 +41,4 @@ import("puppeteer-core/internal/puppeteer-core.js").[ConnectOptions](./puppeteer
 </tbody></table>
 **Returns:**
 
-Promise&lt;import("puppeteer-core/internal/puppeteer-core.js").[Browser](./puppeteer.browser.md)&gt;
+Promise&lt;import("puppeteer-core/internal/index-browser.js").[Browser](./puppeteer.browser.md)&gt;

@@ -12,7 +12,7 @@ Creates a new locator instance by cloning the current locator with the visibilit
 class Locator {
   setVisibility<NodeType extends Node>(
     this: Locator<NodeType>,
-    visibility: VisibilityOption
+    visibility: VisibilityOption,
   ): Locator<NodeType>;
 }
 ```

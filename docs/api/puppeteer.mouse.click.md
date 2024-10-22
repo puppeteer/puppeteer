@@ -13,7 +13,7 @@ class Mouse {
   abstract click(
     x: number,
     y: number,
-    options?: Readonly<MouseClickOptions>
+    options?: Readonly<MouseClickOptions>,
   ): Promise<void>;
 }
 ```

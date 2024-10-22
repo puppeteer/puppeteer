@@ -11,7 +11,7 @@ This method iterates the JavaScript heap and finds all objects with the given pr
 ```typescript
 class Page {
   abstract queryObjects<Prototype>(
-    prototypeHandle: JSHandle<Prototype>
+    prototypeHandle: JSHandle<Prototype>,
   ): Promise<JSHandle<Prototype[]>>;
 }
 ```
