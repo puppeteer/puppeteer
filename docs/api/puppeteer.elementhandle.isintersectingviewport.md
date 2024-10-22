@@ -14,7 +14,7 @@ class ElementHandle {
     this: ElementHandle<Element>,
     options?: {
       threshold?: number;
-    }
+    },
   ): Promise<boolean>;
 }
 ```

@@ -12,7 +12,7 @@ Hovers over the located element.
 class Locator {
   hover<ElementType extends Element>(
     this: Locator<ElementType>,
-    options?: Readonly<ActionOptions>
+    options?: Readonly<ActionOptions>,
   ): Promise<void>;
 }
 ```

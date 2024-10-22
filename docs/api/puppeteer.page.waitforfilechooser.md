@@ -23,7 +23,7 @@ Interception of file dialogs triggered via DOM APIs such as window.showOpenFileP
 ```typescript
 class Page {
   abstract waitForFileChooser(
-    options?: WaitTimeoutOptions
+    options?: WaitTimeoutOptions,
   ): Promise<FileChooser>;
 }
 ```

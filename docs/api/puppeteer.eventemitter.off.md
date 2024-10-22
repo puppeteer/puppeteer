@@ -12,7 +12,7 @@ Remove an event listener from firing.
 class EventEmitter {
   off<Key extends keyof EventsWithWildcard<Events>>(
     type: Key,
-    handler?: Handler<EventsWithWildcard<Events>[Key]>
+    handler?: Handler<EventsWithWildcard<Events>[Key]>,
   ): this;
 }
 ```

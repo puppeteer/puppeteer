@@ -12,7 +12,7 @@ Creates a new locator instance by cloning the current locator and specifying whe
 class Locator {
   setWaitForStableBoundingBox<ElementType extends Element>(
     this: Locator<ElementType>,
-    value: boolean
+    value: boolean,
   ): Locator<ElementType>;
 }
 ```

@@ -103,7 +103,7 @@ const selector = '.foo';
 await page.waitForFunction(
   selector => !!document.querySelector(selector),
   {},
-  selector
+  selector,
 );
 ```
 
@@ -116,7 +116,7 @@ const username = 'github-username';
 await page.waitForFunction(
   async username => {
     const githubResponse = await fetch(
-      `https://api.github.com/users/${username}`
+      `https://api.github.com/users/${username}`,
     );
     const githubUser = await githubResponse.json();
     // show the avatar
@@ -127,6 +127,6 @@ await page.waitForFunction(
     img.remove();
   },
   {},
-  username
+  username,
 );
 ```

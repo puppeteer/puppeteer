@@ -10,7 +10,7 @@ sidebar_label: Page.waitForRequest
 class Page {
   waitForRequest(
     urlOrPredicate: string | AwaitablePredicate<HTTPRequest>,
-    options?: WaitTimeoutOptions
+    options?: WaitTimeoutOptions,
   ): Promise<HTTPRequest>;
 }
 ```
@@ -74,7 +74,7 @@ Optional Waiting Parameters have:
 ```ts
 const firstRequest = await page.waitForRequest('https://example.com/resource');
 const finalRequest = await page.waitForRequest(
-  request => request.url() === 'https://example.com'
+  request => request.url() === 'https://example.com',
 );
 return finalRequest.response()?.ok();
 ```

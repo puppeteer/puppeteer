@@ -28,7 +28,7 @@ class CLI {
             };
           }>;
         },
-    rl?: readline.Interface
+    rl?: readline.Interface,
   );
 }
 ```
