@@ -330,7 +330,7 @@ export const mochaHooks: Mocha.RootHookObject = {
         state.httpsServer?.stop(),
         state.browser?.close(),
       ]);
-    } catch (error) {
+    } catch {
       throw new Error(
         `Closing defaults (HTTP TestServer, HTTPS TestServer, Browser ) failed in ${lastTestFile}}`
       );
@@ -373,7 +373,7 @@ expect.extend({
             return '';
           },
         };
-      } catch (err) {}
+      } catch {}
     }
 
     return {

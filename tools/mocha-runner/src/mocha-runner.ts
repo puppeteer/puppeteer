@@ -20,7 +20,6 @@ import {
   zPlatform,
   zTestSuiteFile,
   type MochaResults,
-  type Platform,
   type TestExpectation,
   type TestSuite,
   type TestSuiteFile,
@@ -89,14 +88,11 @@ const {
   })
   .parseSync();
 
-function getApplicableTestSuites(
-  parsedSuitesFile: TestSuiteFile,
-  platform: Platform
-): TestSuite[] {
+function getApplicableTestSuites(parsedSuitesFile: TestSuiteFile): TestSuite[] {
   let applicableSuites: TestSuite[] = [];
 
   if (!testSuiteId) {
-    applicableSuites = filterByPlatform(parsedSuitesFile.testSuites, platform);
+    applicableSuites = parsedSuitesFile.testSuites;
   } else {
     const testSuite = parsedSuitesFile.testSuites.find(suite => {
       return suite.id === testSuiteId;
@@ -105,12 +101,6 @@ function getApplicableTestSuites(
     if (!testSuite) {
       console.error(`Test suite ${testSuiteId} is not defined`);
       process.exit(1);
-    }
-
-    if (!testSuite.platforms.includes(platform)) {
-      console.warn(
-        `Test suite ${testSuiteId} is not enabled for your platform. Running it anyway.`
-      );
     }
 
     applicableSuites = [testSuite];
@@ -135,7 +125,7 @@ async function main() {
     readJSON(path.join(process.cwd(), 'test', 'TestSuites.json'))
   );
 
-  const applicableSuites = getApplicableTestSuites(parsedSuitesFile, platform);
+  const applicableSuites = getApplicableTestSuites(parsedSuitesFile);
 
   console.log('Planning to run the following test suites', applicableSuites);
   if (statsPath) {
@@ -238,13 +228,7 @@ async function main() {
         'npx',
         [
           ...(useCoverage
-            ? [
-                'c8',
-                '--check-coverage',
-                '--lines',
-                String(suite.expectedLineCoverage),
-                'npx',
-              ]
+            ? ['c8', '--check-coverage', '--lines', '90', 'npx']
             : []),
           'mocha',
           ...mochaArgs.map(String),

@@ -170,7 +170,6 @@ const bubbleInitializer = function <
  * the field owner.
  */
 // The type is too complicated to type.
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function bubble<T extends EventType[]>(events?: T) {
   return <This extends EventEmitter<any>, Value extends EventEmitter<any>>(
     {set, get}: ClassAccessorDecoratorTarget<This, Value>,
