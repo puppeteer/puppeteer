@@ -467,7 +467,6 @@ export class ExecutionContext
       arg: unknown
     ): Protocol.Runtime.CallArgument {
       if (typeof arg === 'bigint') {
-        // eslint-disable-line valid-typeof
         return {unserializableValue: `${arg.toString()}n`};
       }
       if (Object.is(arg, -0)) {

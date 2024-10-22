@@ -644,8 +644,9 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     const interceptionId = request._interceptionId;
 
     this.#networkEventManager.forgetRequest(requestId);
-    interceptionId !== undefined &&
+    if (interceptionId !== undefined) {
       this.#attemptedAuthentications.delete(interceptionId);
+    }
 
     if (events) {
       this.#networkEventManager.forget(requestId);

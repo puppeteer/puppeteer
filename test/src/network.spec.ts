@@ -621,18 +621,24 @@ describe('network', function () {
 
       const events: string[] = [];
       page.on('request', request => {
-        !isFavicon(request) &&
+        if (!isFavicon(request)) {
           events.push(`${request.method()} ${request.url()}`);
+        }
       });
       page.on('response', response => {
-        !isFavicon(response) &&
+        if (!isFavicon(response)) {
           events.push(`${response.status()} ${response.url()}`);
+        }
       });
       page.on('requestfinished', request => {
-        !isFavicon(request) && events.push(`DONE ${request.url()}`);
+        if (!isFavicon(request)) {
+          events.push(`DONE ${request.url()}`);
+        }
       });
       page.on('requestfailed', request => {
-        !isFavicon(request) && events.push(`FAIL ${request.url()}`);
+        if (!isFavicon(request)) {
+          events.push(`FAIL ${request.url()}`);
+        }
       });
       server.setRedirect('/foo.html', '/empty.html');
       const FOO_URL = server.PREFIX + '/foo.html';
