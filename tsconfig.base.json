@@ -28,7 +28,11 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "target": "ES2022",
-    "typeRoots": ["./node_modules/@types"],
+    "typeRoots": [
+      "./node_modules/@types",
+      "${configDir}/node_modules/@types",
+      "${configDir}/../node_modules/@types"
+    ],
     "useUnknownInCatchVariables": true
   }
 }
