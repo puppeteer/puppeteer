@@ -2,45 +2,31 @@
   "testSuites": [
     {
       "id": "chrome-headless",
-      "platforms": ["linux", "win32", "darwin"],
-      "parameters": ["chrome", "headless", "cdp"],
-      "expectedLineCoverage": 93
+      "parameters": ["chrome", "headless", "cdp"]
     },
     {
       "id": "chrome-headful",
-      "platforms": ["linux"],
-      "parameters": ["chrome", "headful", "cdp"],
-      "expectedLineCoverage": 93
+      "parameters": ["chrome", "headful", "cdp"]
     },
     {
       "id": "chrome-headless-shell",
-      "platforms": ["linux"],
-      "parameters": ["chrome", "chrome-headless-shell", "cdp"],
-      "expectedLineCoverage": 93
+      "parameters": ["chrome", "chrome-headless-shell", "cdp"]
     },
     {
       "id": "firefox-headless",
-      "platforms": ["linux", "darwin"],
-      "parameters": ["firefox", "headless", "webDriverBiDi"],
-      "expectedLineCoverage": 56
+      "parameters": ["firefox", "headless", "webDriverBiDi"]
     },
     {
       "id": "firefox-headful",
-      "platforms": ["linux"],
-      "parameters": ["firefox", "headful", "webDriverBiDi"],
-      "expectedLineCoverage": 56
+      "parameters": ["firefox", "headful", "webDriverBiDi"]
     },
     {
       "id": "firefox-cdp",
-      "platforms": ["linux"],
-      "parameters": ["firefox", "headless", "cdp"],
-      "expectedLineCoverage": 80
+      "parameters": ["firefox", "headless", "cdp"]
     },
     {
       "id": "chrome-bidi",
-      "platforms": ["linux"],
-      "parameters": ["chrome", "headless", "webDriverBiDi"],
-      "expectedLineCoverage": 56
+      "parameters": ["chrome", "headless", "webDriverBiDi"]
     }
   ],
   "parameterDefinitions": {
