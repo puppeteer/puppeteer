@@ -549,6 +549,9 @@ export class CdpMouse extends Mouse {
   }
 }
 
+/**
+ * @internal
+ */
 class CdpTouch implements Touch {
   #started = false;
   #touchPoint: Protocol.Input.TouchPoint;

@@ -469,9 +469,20 @@ export abstract class Mouse {
     options?: {delay?: number}
   ): Promise<void>;
 }
-
+/**
+ * The Touch interface exposes methods to manipulate touches that have been started
+ * @public
+ */
 export interface Touch {
+  /**
+   * Dispatches a `touchMove` event for this touch.
+   * @param x - Horizontal position of the move.
+   * @param y - Vertical position of the move.
+   */
   move(x: number, y: number): Promise<void>;
+  /**
+   * Dispatches a `touchend` event for this touch.
+   */
   end(): Promise<void>;
 }
 /**
@@ -498,6 +509,7 @@ export abstract class Touchscreen {
    * Dispatches a `touchstart` event.
    * @param x - Horizontal position of the tap.
    * @param y - Vertical position of the tap.
+   * @returns The touch that was started.
    */
   abstract touchStart(x: number, y: number): Promise<Touch>;
 

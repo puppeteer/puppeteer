@@ -612,6 +612,9 @@ export class BidiMouse extends Mouse {
   }
 }
 
+/**
+ * @internal
+ */
 class BidiTouch implements Touch {
   #started = false;
   #x: number;

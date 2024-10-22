@@ -10,7 +10,7 @@ Dispatches a `touchstart` event.
 
 ```typescript
 class Touchscreen {
-  abstract touchStart(x: number, y: number): Promise<void>;
+  abstract touchStart(x: number, y: number): Promise<Touch>;
 }
 ```
 
@@ -58,4 +58,6 @@ Vertical position of the tap.
 </tbody></table>
 **Returns:**
 
-Promise&lt;void&gt;
+Promise&lt;[Touch](./puppeteer.touch_2.md)&gt;
+
+The touch that was started.
