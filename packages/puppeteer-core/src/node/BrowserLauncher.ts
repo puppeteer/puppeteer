@@ -302,7 +302,11 @@ export abstract class BrowserLauncher {
    */
   protected async createCdpSocketConnection(
     browserProcess: ReturnType<typeof launch>,
-    opts: {timeout: number; protocolTimeout: number | undefined; slowMo: number}
+    opts: {
+      timeout: number;
+      protocolTimeout: number | undefined;
+      slowMo: number;
+    }
   ): Promise<Connection> {
     const browserWSEndpoint = await browserProcess.waitForLineOutput(
       CDP_WEBSOCKET_ENDPOINT_REGEX,
@@ -322,7 +326,11 @@ export abstract class BrowserLauncher {
    */
   protected async createCdpPipeConnection(
     browserProcess: ReturnType<typeof launch>,
-    opts: {timeout: number; protocolTimeout: number | undefined; slowMo: number}
+    opts: {
+      timeout: number;
+      protocolTimeout: number | undefined;
+      slowMo: number;
+    }
   ): Promise<Connection> {
     // stdio was assigned during start(), and the 'pipe' option there adds the
     // 4th and 5th items to stdio array

@@ -24,7 +24,6 @@
     }
   },
   "devDependencies": {
-    "@microsoft/api-extractor": "7.47.11",
     "@microsoft/api-documenter": "7.25.20",
     "@microsoft/api-extractor-model": "7.29.8",
     "@microsoft/tsdoc": "0.15.0",

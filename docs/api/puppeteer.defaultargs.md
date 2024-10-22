@@ -7,7 +7,7 @@ sidebar_label: defaultArgs
 ### Signature
 
 ```typescript
-defaultArgs: (options?: import("puppeteer-core/internal/puppeteer-core.js").BrowserLaunchArgumentOptions) => string[]
+defaultArgs: (options?: PuppeteerCore.BrowserLaunchArgumentOptions) => string[]
 ```
 
 ## Parameters
@@ -31,7 +31,7 @@ options
 
 </td><td>
 
-import("puppeteer-core/internal/puppeteer-core.js").[BrowserLaunchArgumentOptions](./puppeteer.browserlaunchargumentoptions.md)
+[PuppeteerCore.BrowserLaunchArgumentOptions](./puppeteer.browserlaunchargumentoptions.md)
 
 </td><td>
 
