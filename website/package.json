@@ -22,7 +22,7 @@
     "@docusaurus/preset-classic": "3.5.2",
     "@docusaurus/remark-plugin-npm2yarn": "3.5.2",
     "@docusaurus/theme-common": "3.5.2",
-    "@mdx-js/react": "3.0.1",
+    "@mdx-js/react": "3.1.0",
     "algoliasearch-helper": "3.22.5",
     "clsx": "2.1.1",
     "prism-react-renderer": "2.4.0",
@@ -34,7 +34,7 @@
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.5.2",
     "@docusaurus/types": "3.5.2",
-    "@swc/core": "1.7.35",
+    "@swc/core": "1.7.36",
     "swc-loader": "0.2.6"
   },
   "browserslist": {
