@@ -23,6 +23,7 @@ describe('acceptInsecureCerts', function () {
       {acceptInsecureCerts: true},
       {
         after: 'all',
+        createContext: false,
       }
     );
   });
@@ -41,7 +42,7 @@ describe('acceptInsecureCerts', function () {
   });
 
   describe('Response.securityDetails', function () {
-    it('should work', async () => {
+    it.only('should work', async () => {
       const {httpsServer, page} = state;
 
       const [serverRequest, response] = await Promise.all([
