@@ -7,9 +7,7 @@ sidebar_label: executablePath
 ### Signature
 
 ```typescript
-executablePath: (
-  channel?: import('puppeteer-core/internal/index.js').ChromeReleaseChannel
-) => string;
+executablePath: (channel?: PuppeteerCore.ChromeReleaseChannel) => string;
 ```
 
 ## Parameters
@@ -33,7 +31,7 @@ channel
 
 </td><td>
 
-import("puppeteer-core/internal/index.js").[ChromeReleaseChannel](./puppeteer.chromereleasechannel.md)
+[PuppeteerCore.ChromeReleaseChannel](./puppeteer.chromereleasechannel.md)
 
 </td><td>
 

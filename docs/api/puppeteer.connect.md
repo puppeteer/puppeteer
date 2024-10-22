@@ -7,9 +7,8 @@ sidebar_label: connect
 ### Signature
 
 ```typescript
-connect: (
-  options: import('puppeteer-core/internal/index-browser.js').ConnectOptions
-) => Promise<import('puppeteer-core/internal/index-browser.js').Browser>;
+connect: (options: PuppeteerCore.ConnectOptions) =>
+  Promise<PuppeteerCore.Browser>;
 ```
 
 ## Parameters
@@ -33,7 +32,7 @@ options
 
 </td><td>
 
-import("puppeteer-core/internal/index-browser.js").[ConnectOptions](./puppeteer.connectoptions.md)
+[PuppeteerCore.ConnectOptions](./puppeteer.connectoptions.md)
 
 </td><td>
 
@@ -41,4 +40,4 @@ import("puppeteer-core/internal/index-browser.js").[ConnectOptions](./puppeteer.
 </tbody></table>
 **Returns:**
 
-Promise&lt;import("puppeteer-core/internal/index-browser.js").[Browser](./puppeteer.browser.md)&gt;
+Promise&lt;[PuppeteerCore.Browser](./puppeteer.browser.md)&gt;
