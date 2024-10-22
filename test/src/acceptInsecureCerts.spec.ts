@@ -23,6 +23,7 @@ describe('acceptInsecureCerts', function () {
       {acceptInsecureCerts: true},
       {
         after: 'all',
+        createContext: false,
       }
     );
   });
