@@ -13,7 +13,7 @@ import {assert} from '../util/assert.js';
  * @internal
  */
 export function createEvaluationError(
-  details: Protocol.Runtime.ExceptionDetails,
+  details: Protocol.Runtime.ExceptionDetails
 ): unknown {
   let name: string;
   let message: string;
@@ -51,13 +51,13 @@ export function createEvaluationError(
             url.functionName
           } at ${url.siteString}, <anonymous>:${frame.lineNumber}:${
             frame.columnNumber
-          })`,
+          })`
         );
       } else {
         stackLines.push(
           `    at ${frame.functionName || '<anonymous>'} (${frame.url}:${
             frame.lineNumber
-          }:${frame.columnNumber})`,
+          }:${frame.columnNumber})`
         );
       }
       if (stackLines.length >= Error.stackTraceLimit) {
@@ -76,7 +76,7 @@ const getErrorDetails = (details: Protocol.Runtime.ExceptionDetails) => {
   const lines = details.exception?.description?.split('\n    at ') ?? [];
   const size = Math.min(
     details.stackTrace?.callFrames.length ?? 0,
-    lines.length - 1,
+    lines.length - 1
   );
   lines.splice(-size, size);
   if (details.exception?.className) {
@@ -93,7 +93,7 @@ const getErrorDetails = (details: Protocol.Runtime.ExceptionDetails) => {
  * @internal
  */
 export function createClientError(
-  details: Protocol.Runtime.ExceptionDetails,
+  details: Protocol.Runtime.ExceptionDetails
 ): Error {
   let name: string;
   let message: string;
@@ -124,7 +124,7 @@ export function createClientError(
       stackLines.push(
         `    at ${frame.functionName || '<anonymous>'} (${frame.url}:${
           frame.lineNumber + 1
-        }:${frame.columnNumber + 1})`,
+        }:${frame.columnNumber + 1})`
       );
       if (stackLines.length >= Error.stackTraceLimit) {
         break;
@@ -140,7 +140,7 @@ export function createClientError(
  * @internal
  */
 export function valueFromRemoteObject(
-  remoteObject: Protocol.Runtime.RemoteObject,
+  remoteObject: Protocol.Runtime.RemoteObject
 ): any {
   assert(!remoteObject.objectId, 'Cannot extract value when objectId is given');
   if (remoteObject.unserializableValue) {
@@ -159,7 +159,7 @@ export function valueFromRemoteObject(
       default:
         throw new Error(
           'Unsupported unserializable value: ' +
-            remoteObject.unserializableValue,
+            remoteObject.unserializableValue
         );
     }
   }
@@ -172,7 +172,7 @@ export function valueFromRemoteObject(
 export function addPageBinding(
   type: string,
   name: string,
-  prefix: string,
+  prefix: string
 ): void {
   // Depending on the frame loading state either Runtime.evaluate or
   // Page.addScriptToEvaluateOnNewDocument might succeed. Let's check that we
@@ -206,7 +206,7 @@ export function addPageBinding(
           isTrivial: !args.some(value => {
             return value instanceof Node;
           }),
-        }),
+        })
       );
 
       return new Promise((resolve, reject) => {

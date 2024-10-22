@@ -14,7 +14,7 @@ sidebar_label: ElementHandle.dragOver
 class ElementHandle {
   dragOver(
     this: ElementHandle<Element>,
-    data?: Protocol.Input.DragData,
+    data?: Protocol.Input.DragData
   ): Promise<void>;
 }
 ```

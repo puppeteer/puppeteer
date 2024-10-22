@@ -15,7 +15,7 @@ Shortcut for [page.mainFrame().addStyleTag(options)](./puppeteer.frame.addstylet
 ```typescript
 class Page {
   addStyleTag(
-    options: Omit<FrameAddStyleTagOptions, 'url'>,
+    options: Omit<FrameAddStyleTagOptions, 'url'>
   ): Promise<ElementHandle<HTMLStyleElement>>;
 }
 ```
@@ -60,7 +60,7 @@ An [element handle](./puppeteer.elementhandle.md) to the injected `<link>` or `<
 ```typescript
 class Page {
   addStyleTag(
-    options: FrameAddStyleTagOptions,
+    options: FrameAddStyleTagOptions
   ): Promise<ElementHandle<HTMLLinkElement>>;
 }
 ```

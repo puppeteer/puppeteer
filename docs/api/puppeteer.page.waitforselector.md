@@ -12,7 +12,7 @@ Wait for the `selector` to appear in page. If at the moment of calling the metho
 class Page {
   waitForSelector<Selector extends string>(
     selector: Selector,
-    options?: WaitForSelectorOptions,
+    options?: WaitForSelectorOptions
   ): Promise<ElementHandle<NodeFor<Selector>> | null>;
 }
 ```

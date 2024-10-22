@@ -50,7 +50,7 @@ describe('waittask specs', function () {
         () => {
           return (globalThis as any).__FOO === 'hit';
         },
-        {polling},
+        {polling}
       );
       await page.evaluate(() => {
         setTimeout(() => {
@@ -71,7 +71,7 @@ describe('waittask specs', function () {
           },
           {
             polling: 'mutation',
-          },
+          }
         )
         .then(() => {
           return (success = true);
@@ -96,7 +96,7 @@ describe('waittask specs', function () {
           },
           {
             polling: 'mutation',
-          },
+          }
         )
         .then(() => {
           return (success = true);
@@ -119,7 +119,7 @@ describe('waittask specs', function () {
         },
         {
           polling: 'raf',
-        },
+        }
       );
       await page.evaluate(() => {
         return ((globalThis as any).__FOO = 'hit');
@@ -135,7 +135,7 @@ describe('waittask specs', function () {
         },
         {
           polling: 'raf',
-        },
+        }
       );
       await page.evaluate(async () => {
         return ((globalThis as any).__FOO = 'hit');
@@ -156,7 +156,7 @@ describe('waittask specs', function () {
             },
             {
               polling: 'raf',
-            },
+            }
           )
           .catch(error_ => {
             return (error = error_);
@@ -176,7 +176,7 @@ describe('waittask specs', function () {
           () => {
             return !!document.body;
           },
-          {polling: -10},
+          {polling: -10}
         );
       } catch (error_) {
         if (isErrorLike(error_)) {
@@ -184,7 +184,7 @@ describe('waittask specs', function () {
         }
       }
       expect(error?.message).toContain(
-        'Cannot poll with non-positive interval',
+        'Cannot poll with non-positive interval'
       );
     });
     it('should return the success value as a JSHandle', async () => {
@@ -195,7 +195,7 @@ describe('waittask specs', function () {
           await page.waitForFunction(() => {
             return 5;
           })
-        ).jsonValue(),
+        ).jsonValue()
       ).toBe(5);
     });
     it('should return the window as a success value', async () => {
@@ -204,7 +204,7 @@ describe('waittask specs', function () {
       expect(
         await page.waitForFunction(() => {
           return window;
-        }),
+        })
       ).toBeTruthy();
     });
     it('should accept ElementHandle arguments', async () => {
@@ -219,7 +219,7 @@ describe('waittask specs', function () {
             return element.localName === 'div' && !element.parentElement;
           },
           {},
-          div,
+          div
         )
         .then(() => {
           return (resolved = true);
@@ -239,7 +239,7 @@ describe('waittask specs', function () {
           () => {
             return false;
           },
-          {timeout: 10},
+          {timeout: 10}
         )
         .catch(error_ => {
           return (error = error_);
@@ -272,7 +272,7 @@ describe('waittask specs', function () {
             ((globalThis as any).__counter || 0) + 1;
           return (globalThis as any).__injected;
         },
-        {timeout: 0, polling: 10},
+        {timeout: 0, polling: 10}
       );
       await page.waitForFunction(() => {
         return (globalThis as any).__counter > 10;
@@ -329,7 +329,7 @@ describe('waittask specs', function () {
         },
         {
           signal: abortController.signal,
-        },
+        }
       );
       abortController.abort();
       await expect(task).rejects.toThrow(/aborted/);
@@ -377,7 +377,7 @@ describe('waittask specs', function () {
       expect(
         await page.evaluate(x => {
           return x?.textContent;
-        }, handle),
+        }, handle)
       ).toBe('anything');
     });
 
@@ -416,7 +416,7 @@ describe('waittask specs', function () {
       const watcher = page.waitForSelector('div >>> h1');
       await page.evaluate(addElement, 'div');
       await expect(
-        Promise.race([watcher, createTimeout(40)]),
+        Promise.race([watcher, createTimeout(40)])
       ).resolves.toBeFalsy();
       await page.evaluate(() => {
         const host = document.querySelector('div')!;
@@ -429,7 +429,7 @@ describe('waittask specs', function () {
       expect(
         await element!.evaluate(el => {
           return el.textContent;
-        }),
+        })
       ).toBe('inside');
     });
 
@@ -439,7 +439,7 @@ describe('waittask specs', function () {
       await page.goto(server.EMPTY_PAGE);
       const watchdog = page.waitForSelector('input:focus');
       await expect(
-        Promise.race([watchdog, createTimeout(40)]),
+        Promise.race([watchdog, createTimeout(40)])
       ).resolves.toBeFalsy();
       await page.setContent(`<input></input>`);
       await page.click('input');
@@ -514,7 +514,7 @@ describe('waittask specs', function () {
         return document.getElementsByTagName('div')[0]!;
       });
       await expect(
-        Promise.race([promise, createTimeout(40)]),
+        Promise.race([promise, createTimeout(40)])
       ).resolves.toBeFalsy();
       await element.evaluate(e => {
         e.style.removeProperty('display');
@@ -526,14 +526,14 @@ describe('waittask specs', function () {
 
       const promise = page.waitForSelector('div', {visible: true});
       await page.setContent(
-        '<style>div {display: none;}</style><div>text</div>',
+        '<style>div {display: none;}</style><div>text</div>'
       );
       using element = await page.evaluateHandle(() => {
         return document.getElementsByTagName('div')[0]!;
       });
       expect(element).toBeTruthy();
       await expect(
-        Promise.race([promise, createTimeout(40)]),
+        Promise.race([promise, createTimeout(40)])
       ).resolves.toBeFalsy();
       await page.evaluate(() => {
         const extraSheet = new CSSStyleSheet();
@@ -554,13 +554,13 @@ describe('waittask specs', function () {
         return document.getElementsByTagName('div')[0]!;
       });
       await expect(
-        Promise.race([promise, createTimeout(40)]),
+        Promise.race([promise, createTimeout(40)])
       ).resolves.toBeFalsy();
       await element.evaluate(e => {
         e.style.setProperty('visibility', 'collapse');
       });
       await expect(
-        Promise.race([promise, createTimeout(40)]),
+        Promise.race([promise, createTimeout(40)])
       ).resolves.toBeFalsy();
       await element.evaluate(e => {
         e.style.removeProperty('visibility');
@@ -576,14 +576,14 @@ describe('waittask specs', function () {
         return document.getElementsByTagName('div')[0]!;
       });
       await expect(
-        Promise.race([promise, createTimeout(40)]),
+        Promise.race([promise, createTimeout(40)])
       ).resolves.toBeFalsy();
       await element.evaluate(e => {
         e.style.setProperty('height', '0');
         e.style.removeProperty('width');
       });
       await expect(
-        Promise.race([promise, createTimeout(40)]),
+        Promise.race([promise, createTimeout(40)])
       ).resolves.toBeFalsy();
       await element.evaluate(e => {
         e.style.removeProperty('height');
@@ -597,19 +597,19 @@ describe('waittask specs', function () {
         visible: true,
       });
       await page.setContent(
-        `<div style='display: none; visibility: hidden;'><div id="inner">hi</div></div>`,
+        `<div style='display: none; visibility: hidden;'><div id="inner">hi</div></div>`
       );
       using element = await page.evaluateHandle(() => {
         return document.getElementsByTagName('div')[0]!;
       });
       await expect(
-        Promise.race([promise, createTimeout(40)]),
+        Promise.race([promise, createTimeout(40)])
       ).resolves.toBeFalsy();
       await element.evaluate(e => {
         return e.style.removeProperty('display');
       });
       await expect(
-        Promise.race([promise, createTimeout(40)]),
+        Promise.race([promise, createTimeout(40)])
       ).resolves.toBeFalsy();
       await element.evaluate(e => {
         return e.style.removeProperty('visibility');
@@ -625,7 +625,7 @@ describe('waittask specs', function () {
         return document.getElementsByTagName('div')[0]!;
       });
       await expect(
-        Promise.race([promise, createTimeout(40)]),
+        Promise.race([promise, createTimeout(40)])
       ).resolves.toBeFalsy();
       await element.evaluate(e => {
         return e.style.setProperty('visibility', 'hidden');
@@ -641,7 +641,7 @@ describe('waittask specs', function () {
         return document.getElementsByTagName('div')[0]!;
       });
       await expect(
-        Promise.race([promise, createTimeout(40)]),
+        Promise.race([promise, createTimeout(40)])
       ).resolves.toBeFalsy();
       await element.evaluate(e => {
         return e.style.setProperty('display', 'none');
@@ -657,7 +657,7 @@ describe('waittask specs', function () {
         return document.getElementsByTagName('div')[0]!;
       });
       await expect(
-        Promise.race([promise, createTimeout(40)]),
+        Promise.race([promise, createTimeout(40)])
       ).resolves.toBeFalsy();
       await element.evaluate(e => {
         e.style.setProperty('height', '0');
@@ -673,7 +673,7 @@ describe('waittask specs', function () {
         return document.getElementsByTagName('div')[0]!;
       });
       await expect(
-        Promise.race([promise, createTimeout(40, true)]),
+        Promise.race([promise, createTimeout(40, true)])
       ).resolves.toBeTruthy();
       await element.evaluate(e => {
         e.remove();
@@ -697,7 +697,7 @@ describe('waittask specs', function () {
       });
       expect(error).toBeInstanceOf(TimeoutError);
       expect(error?.message).toContain(
-        'Waiting for selector `div` failed: Waiting failed: 10ms exceeded',
+        'Waiting for selector `div` failed: Waiting failed: 10ms exceeded'
       );
     });
     it('should have an error message specifically for awaiting an element to be hidden', async () => {
@@ -712,7 +712,7 @@ describe('waittask specs', function () {
         });
       expect(error).toBeTruthy();
       expect(error?.message).toContain(
-        'Waiting for selector `div` failed: Waiting failed: 10ms exceeded',
+        'Waiting for selector `div` failed: Waiting failed: 10ms exceeded'
       );
     });
 
@@ -740,8 +740,8 @@ describe('waittask specs', function () {
           x => {
             return x?.textContent;
           },
-          await waitForSelector,
-        ),
+          await waitForSelector
+        )
       ).toBe('anything');
     });
     it('should have correct stack trace for timeout', async () => {
@@ -752,7 +752,7 @@ describe('waittask specs', function () {
         return (error = error_);
       });
       expect(error?.stack).toContain(
-        'Waiting for selector `.zombo` failed: Waiting failed: 10ms exceeded',
+        'Waiting for selector `.zombo` failed: Waiting failed: 10ms exceeded'
       );
       // The extension is ts here as Mocha maps back via sourcemaps.
       expect(error?.stack).toContain('WaitTask.ts');
@@ -768,15 +768,15 @@ describe('waittask specs', function () {
 
         await page.setContent(`<p>red herring</p><p>hello  world  </p>`);
         const waitForSelector = page.waitForSelector(
-          'xpath/.//p[normalize-space(.)="hello world"]',
+          'xpath/.//p[normalize-space(.)="hello world"]'
         );
         expect(
           await page.evaluate(
             x => {
               return x?.textContent;
             },
-            await waitForSelector,
-          ),
+            await waitForSelector
+          )
         ).toBe('hello  world  ');
       });
       it('should respect timeout', async () => {
@@ -867,7 +867,7 @@ describe('waittask specs', function () {
         const {page} = await getTestState();
 
         const waitForSelector = page.waitForSelector(
-          'xpath/.//*[@class="zombo"]',
+          'xpath/.//*[@class="zombo"]'
         );
         await page.setContent(`<div class='zombo'>anything</div>`);
         expect(
@@ -875,8 +875,8 @@ describe('waittask specs', function () {
             x => {
               return x?.textContent;
             },
-            await waitForSelector,
-          ),
+            await waitForSelector
+          )
         ).toBe('anything');
       });
       it('should allow you to select a text node', async () => {
@@ -885,7 +885,7 @@ describe('waittask specs', function () {
         await page.setContent(`<div>some text</div>`);
         using text = await page.waitForSelector('xpath/.//div/text()');
         expect(await (await text!.getProperty('nodeType')!).jsonValue()).toBe(
-          3 /* Node.TEXT_NODE */,
+          3 /* Node.TEXT_NODE */
         );
       });
       it('should allow you to select an element with single slash', async () => {
@@ -898,8 +898,8 @@ describe('waittask specs', function () {
             x => {
               return x?.textContent;
             },
-            await waitForSelector,
-          ),
+            await waitForSelector
+          )
         ).toBe('some text');
       });
     });

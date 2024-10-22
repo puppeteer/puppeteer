@@ -95,7 +95,7 @@ Most of the time this function returns a [JSHandle](./puppeteer.jshandle.md), bu
 
 ```ts
 const button = await page.evaluateHandle(() =>
-  document.querySelector('button'),
+  document.querySelector('button')
 );
 // can call `click` because `button` is an `ElementHandle`
 await button.click();

@@ -88,7 +88,7 @@ export class LifecycleWatcher {
     frame: CdpFrame,
     waitUntil: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[],
     timeout: number,
-    signal?: AbortSignal,
+    signal?: AbortSignal
   ) {
     if (Array.isArray(waitUntil)) {
       waitUntil = waitUntil.slice();
@@ -109,40 +109,40 @@ export class LifecycleWatcher {
     this.#frame = frame;
     this.#timeout = timeout;
     const frameManagerEmitter = this.#subscriptions.use(
-      new EventEmitter(frame._frameManager),
+      new EventEmitter(frame._frameManager)
     );
     frameManagerEmitter.on(
       FrameManagerEvent.LifecycleEvent,
-      this.#checkLifecycleComplete.bind(this),
+      this.#checkLifecycleComplete.bind(this)
     );
 
     const frameEmitter = this.#subscriptions.use(new EventEmitter(frame));
     frameEmitter.on(
       FrameEvent.FrameNavigatedWithinDocument,
-      this.#navigatedWithinDocument.bind(this),
+      this.#navigatedWithinDocument.bind(this)
     );
     frameEmitter.on(FrameEvent.FrameNavigated, this.#navigated.bind(this));
     frameEmitter.on(FrameEvent.FrameSwapped, this.#frameSwapped.bind(this));
     frameEmitter.on(
       FrameEvent.FrameSwappedByActivation,
-      this.#frameSwapped.bind(this),
+      this.#frameSwapped.bind(this)
     );
     frameEmitter.on(FrameEvent.FrameDetached, this.#onFrameDetached.bind(this));
 
     const networkManagerEmitter = this.#subscriptions.use(
-      new EventEmitter(networkManager),
+      new EventEmitter(networkManager)
     );
     networkManagerEmitter.on(
       NetworkManagerEvent.Request,
-      this.#onRequest.bind(this),
+      this.#onRequest.bind(this)
     );
     networkManagerEmitter.on(
       NetworkManagerEvent.Response,
-      this.#onResponse.bind(this),
+      this.#onResponse.bind(this)
     );
     networkManagerEmitter.on(
       NetworkManagerEvent.RequestFailed,
-      this.#onRequestFailed.bind(this),
+      this.#onRequestFailed.bind(this)
     );
 
     this.#terminationDeferred = Deferred.create<Error>({
@@ -185,7 +185,7 @@ export class LifecycleWatcher {
   #onFrameDetached(frame: Frame): void {
     if (this.#frame === frame) {
       this.#terminationDeferred.resolve(
-        new Error('Navigating frame was detached'),
+        new Error('Navigating frame was detached')
       );
       return;
     }
@@ -246,7 +246,7 @@ export class LifecycleWatcher {
 
     function checkLifecycle(
       frame: CdpFrame,
-      expectedLifecycle: ProtocolLifeCycleEvent[],
+      expectedLifecycle: ProtocolLifeCycleEvent[]
     ): boolean {
       for (const event of expectedLifecycle) {
         if (!frame._lifecycleEvents.has(event)) {

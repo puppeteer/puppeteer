@@ -11,7 +11,7 @@ const createdFunctions = new Map<string, (...args: unknown[]) => unknown>();
  * @internal
  */
 export const createFunction = (
-  functionValue: string,
+  functionValue: string
 ): ((...args: unknown[]) => unknown) => {
   let fn = createdFunctions.get(functionValue);
   if (fn) {
@@ -34,7 +34,7 @@ export function stringifyFunction(fn: (...args: never) => unknown): string {
   } catch (err) {
     if (
       (err as Error).message.includes(
-        `Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive`,
+        `Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive`
       )
     ) {
       // The content security policy does not allow Function eval. Let's
@@ -75,7 +75,7 @@ export function stringifyFunction(fn: (...args: never) => unknown): string {
  */
 export const interpolateFunction = <T extends (...args: never[]) => unknown>(
   fn: T,
-  replacements: Record<string, string>,
+  replacements: Record<string, string>
 ): T => {
   let value = stringifyFunction(fn);
   for (const [name, jsValue] of Object.entries(replacements)) {
@@ -84,7 +84,7 @@ export const interpolateFunction = <T extends (...args: never[]) => unknown>(
       // Wrapping this ensures tersers that accidentally inline PLACEHOLDER calls
       // are still valid. Without, we may get calls like ()=>{...}() which is
       // not valid.
-      `(${jsValue})`,
+      `(${jsValue})`
     );
   }
   return createFunction(value) as unknown as T;

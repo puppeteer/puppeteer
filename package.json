@@ -159,7 +159,7 @@
     "execa": "9.4.1",
     "expect": "29.7.0",
     "globals": "15.11.0",
-    "gts": "6.0.0",
+    "gts": "5.3.1",
     "hereby": "1.10.0",
     "license-checker": "25.0.1",
     "mocha": "10.7.3",

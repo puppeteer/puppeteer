@@ -14,7 +14,7 @@ This method works across navigations.
 class Frame {
   waitForSelector<Selector extends string>(
     selector: Selector,
-    options?: WaitForSelectorOptions,
+    options?: WaitForSelectorOptions
   ): Promise<ElementHandle<NodeFor<Selector>> | null>;
 }
 ```

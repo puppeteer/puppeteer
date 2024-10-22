@@ -12,7 +12,7 @@ Finds elements on the page that match the selector. If no elements match the sel
 class Page {
   $$<Selector extends string>(
     selector: Selector,
-    options?: QueryOptions,
+    options?: QueryOptions
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>>;
 }
 ```

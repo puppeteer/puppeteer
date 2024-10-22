@@ -9,7 +9,7 @@ sidebar_label: createProfile
 ```typescript
 export declare function createProfile(
   browser: Browser,
-  opts: ProfileOptions,
+  opts: ProfileOptions
 ): Promise<void>;
 ```
 

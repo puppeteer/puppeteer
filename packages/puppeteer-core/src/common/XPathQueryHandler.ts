@@ -17,7 +17,7 @@ export class XPathQueryHandler extends QueryHandler {
   static override querySelectorAll: QuerySelectorAll = (
     element,
     selector,
-    {xpathQuerySelectorAll},
+    {xpathQuerySelectorAll}
   ) => {
     return xpathQuerySelectorAll(element, selector);
   };
@@ -25,7 +25,7 @@ export class XPathQueryHandler extends QueryHandler {
   static override querySelector: QuerySelector = (
     element: Node,
     selector: string,
-    {xpathQuerySelectorAll},
+    {xpathQuerySelectorAll}
   ) => {
     for (const result of xpathQuerySelectorAll(element, selector, 1)) {
       return result;

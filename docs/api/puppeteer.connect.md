@@ -8,7 +8,7 @@ sidebar_label: connect
 
 ```typescript
 connect: (
-  options: import('puppeteer-core/internal/index-browser.js').ConnectOptions,
+  options: import('puppeteer-core/internal/index-browser.js').ConnectOptions
 ) => Promise<import('puppeteer-core/internal/index-browser.js').Browser>;
 ```
 

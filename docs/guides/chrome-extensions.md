@@ -31,7 +31,7 @@ const browser = await puppeteer.launch({
   ],
 });
 const backgroundPageTarget = await browser.waitForTarget(
-  target => target.type() === 'background_page',
+  target => target.type() === 'background_page'
 );
 const backgroundPage = await backgroundPageTarget.page();
 // Test the background page as you would any other page.
@@ -60,8 +60,7 @@ const browser = await puppeteer.launch({
 const workerTarget = await browser.waitForTarget(
   // Assumes that there is only one service worker created by the extension and its URL ends with background.js.
   target =>
-    target.type() === 'service_worker' &&
-    target.url().endsWith('background.js'),
+    target.type() === 'service_worker' && target.url().endsWith('background.js')
 );
 
 const worker = await workerTarget.worker();
@@ -71,7 +70,7 @@ await worker.evaluate('chrome.action.openPopup();');
 
 const popupTarget = await browser.waitForTarget(
   // Assumes that there is only one page with the URL ending with popup.html and that is the popup created by the extension.
-  target => target.type() === 'page' && target.url().endsWith('popup.html'),
+  target => target.type() === 'page' && target.url().endsWith('popup.html')
 );
 
 const popupPage = popupTarget.asPage();

@@ -6,14 +6,14 @@
 
 export const cssQuerySelector = (
   root: Node,
-  selector: string,
+  selector: string
 ): Element | null => {
   // @ts-expect-error assume element root
   return root.querySelector(selector);
 };
 export const cssQuerySelectorAll = function (
   root: Node,
-  selector: string,
+  selector: string
 ): Iterable<Element> {
   // @ts-expect-error assume element root
   return root.querySelectorAll(selector);

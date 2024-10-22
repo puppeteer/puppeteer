@@ -12,7 +12,7 @@ Dispatches a `dragenter` event.
 class Mouse {
   abstract dragEnter(
     target: Point,
-    data: Protocol.Input.DragData,
+    data: Protocol.Input.DragData
   ): Promise<void>;
 }
 ```

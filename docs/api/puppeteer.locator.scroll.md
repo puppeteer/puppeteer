@@ -12,7 +12,7 @@ Scrolls the located element.
 class Locator {
   scroll<ElementType extends Element>(
     this: Locator<ElementType>,
-    options?: Readonly<LocatorScrollOptions>,
+    options?: Readonly<LocatorScrollOptions>
   ): Promise<void>;
 }
 ```

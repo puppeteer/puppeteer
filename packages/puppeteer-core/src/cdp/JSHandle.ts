@@ -24,7 +24,7 @@ export class CdpJSHandle<T = unknown> extends JSHandle<T> {
 
   constructor(
     world: IsolatedWorld,
-    remoteObject: Protocol.Runtime.RemoteObject,
+    remoteObject: Protocol.Runtime.RemoteObject
   ) {
     super();
     this.#world = world;
@@ -111,7 +111,7 @@ export class CdpJSHandle<T = unknown> extends JSHandle<T> {
  */
 export async function releaseObject(
   client: CDPSession,
-  remoteObject: Protocol.Runtime.RemoteObject,
+  remoteObject: Protocol.Runtime.RemoteObject
 ): Promise<void> {
   if (!remoteObject.objectId) {
     return;

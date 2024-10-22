@@ -8,7 +8,7 @@ sidebar_label: launch
 
 ```typescript
 launch: (
-  options?: import('puppeteer-core/internal/index.js').PuppeteerLaunchOptions,
+  options?: import('puppeteer-core/internal/index.js').PuppeteerLaunchOptions
 ) => Promise<import('puppeteer-core/internal/index-browser.js').Browser>;
 ```
 

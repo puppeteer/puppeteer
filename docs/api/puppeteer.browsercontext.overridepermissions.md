@@ -12,7 +12,7 @@ Grants this [browser context](./puppeteer.browsercontext.md) the given `permissi
 class BrowserContext {
   abstract overridePermissions(
     origin: string,
-    permissions: Permission[],
+    permissions: Permission[]
   ): Promise<void>;
 }
 ```

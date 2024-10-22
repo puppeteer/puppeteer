@@ -82,7 +82,7 @@ export abstract class Realm implements Disposable {
       pageFunction as unknown as
         | ((...args: unknown[]) => Promise<Awaited<ReturnType<Func>>>)
         | string,
-      ...args,
+      ...args
     );
     return await waitTask.result;
   }
@@ -98,7 +98,7 @@ export abstract class Realm implements Disposable {
   dispose(): void {
     this.#disposed = true;
     this.taskManager.terminateAll(
-      new Error('waitForFunction failed: frame got detached.'),
+      new Error('waitForFunction failed: frame got detached.')
     );
   }
   /** @internal */

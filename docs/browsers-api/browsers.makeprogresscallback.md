@@ -9,7 +9,7 @@ sidebar_label: makeProgressCallback
 ```typescript
 export declare function makeProgressCallback(
   browser: Browser,
-  buildId: string,
+  buildId: string
 ): (downloadedBytes: number, totalBytes: number) => void;
 ```
 

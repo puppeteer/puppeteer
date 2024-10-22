@@ -120,7 +120,7 @@ export class BidiSerializer {
     }
 
     throw new UnserializableError(
-      'Custom object serialization not possible. Use plain objects instead.',
+      'Custom object serialization not possible. Use plain objects instead.'
     );
   }
 }

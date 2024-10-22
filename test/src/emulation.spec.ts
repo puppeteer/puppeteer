@@ -30,19 +30,19 @@ describe('Emulation', () => {
       expect(
         await page.evaluate(() => {
           return window.innerWidth;
-        }),
+        })
       ).toBe(800);
       await page.setViewport(iPhone.viewport);
       expect(
         await page.evaluate(() => {
           return window.innerWidth;
-        }),
+        })
       ).toBe(375);
       await page.setViewport({width: 400, height: 300});
       expect(
         await page.evaluate(() => {
           return window.innerWidth;
-        }),
+        })
       ).toBe(400);
     });
     it('should support touch emulation', async () => {
@@ -52,20 +52,20 @@ describe('Emulation', () => {
       expect(
         await page.evaluate(() => {
           return 'ontouchstart' in window;
-        }),
+        })
       ).toBe(false);
       await page.setViewport(iPhone.viewport);
       expect(
         await page.evaluate(() => {
           return 'ontouchstart' in window;
-        }),
+        })
       ).toBe(true);
       expect(await page.evaluate(dispatchTouch)).toBe('Received touch');
       await page.setViewport({width: 100, height: 100});
       expect(
         await page.evaluate(() => {
           return 'ontouchstart' in window;
-        }),
+        })
       ).toBe(false);
 
       function dispatchTouch() {
@@ -90,14 +90,14 @@ describe('Emulation', () => {
       expect(
         await page.evaluate(() => {
           return document.body.textContent!.trim();
-        }),
+        })
       ).toBe('NO');
       await page.setViewport(iPhone.viewport);
       await page.goto(server.PREFIX + '/detect-touch.html');
       expect(
         await page.evaluate(() => {
           return document.body.textContent!.trim();
-        }),
+        })
       ).toBe('YES');
     });
     it('should detect touch when applying viewport with touches', async () => {
@@ -108,7 +108,7 @@ describe('Emulation', () => {
       expect(
         await page.evaluate(() => {
           return (globalThis as any).Modernizr.touchevents;
-        }),
+        })
       ).toBe(true);
     });
     it('should support landscape emulation', async () => {
@@ -118,19 +118,19 @@ describe('Emulation', () => {
       expect(
         await page.evaluate(() => {
           return screen.orientation.type;
-        }),
+        })
       ).toBe('portrait-primary');
       await page.setViewport(iPhoneLandscape.viewport);
       expect(
         await page.evaluate(() => {
           return screen.orientation.type;
-        }),
+        })
       ).toBe('landscape-primary');
       await page.setViewport({width: 100, height: 100});
       expect(
         await page.evaluate(() => {
           return screen.orientation.type;
-        }),
+        })
       ).toBe('portrait-primary');
     });
     it('should update media queries when resoltion changes', async () => {
@@ -140,7 +140,7 @@ describe('Emulation', () => {
         return await page.evaluate(() => {
           return parseInt(
             window.getComputedStyle(document.querySelector('p')!).fontSize,
-            10,
+            10
           );
         });
       }
@@ -181,7 +181,7 @@ describe('Emulation', () => {
         await page.goto(server.PREFIX + '/picture.html');
 
         await expect(getCurrentSrc()).resolves.toMatch(
-          new RegExp(`logo-${dpr}x.png`),
+          new RegExp(`logo-${dpr}x.png`)
         );
       }
     });
@@ -196,12 +196,12 @@ describe('Emulation', () => {
       expect(
         await page.evaluate(() => {
           return window.innerWidth;
-        }),
+        })
       ).toBe(375);
       expect(
         await page.evaluate(() => {
           return navigator.userAgent;
-        }),
+        })
       ).toContain('iPhone');
     });
     it('should support clicking', async () => {
@@ -217,7 +217,7 @@ describe('Emulation', () => {
       expect(
         await page.evaluate(() => {
           return (globalThis as any).result;
-        }),
+        })
       ).toBe('Clicked');
     });
   });
@@ -229,34 +229,34 @@ describe('Emulation', () => {
       expect(
         await page.evaluate(() => {
           return matchMedia('screen').matches;
-        }),
+        })
       ).toBe(true);
       expect(
         await page.evaluate(() => {
           return matchMedia('print').matches;
-        }),
+        })
       ).toBe(false);
       await page.emulateMediaType('print');
       expect(
         await page.evaluate(() => {
           return matchMedia('screen').matches;
-        }),
+        })
       ).toBe(false);
       expect(
         await page.evaluate(() => {
           return matchMedia('print').matches;
-        }),
+        })
       ).toBe(true);
       await page.emulateMediaType();
       expect(
         await page.evaluate(() => {
           return matchMedia('screen').matches;
-        }),
+        })
       ).toBe(true);
       expect(
         await page.evaluate(() => {
           return matchMedia('print').matches;
-        }),
+        })
       ).toBe(false);
     });
     it('should throw in case of bad argument', async () => {
@@ -280,12 +280,12 @@ describe('Emulation', () => {
       expect(
         await page.evaluate(() => {
           return matchMedia('(prefers-reduced-motion: reduce)').matches;
-        }),
+        })
       ).toBe(true);
       expect(
         await page.evaluate(() => {
           return matchMedia('(prefers-reduced-motion: no-preference)').matches;
-        }),
+        })
       ).toBe(false);
       await page.emulateMediaFeatures([
         {name: 'prefers-color-scheme', value: 'light'},
@@ -293,12 +293,12 @@ describe('Emulation', () => {
       expect(
         await page.evaluate(() => {
           return matchMedia('(prefers-color-scheme: light)').matches;
-        }),
+        })
       ).toBe(true);
       expect(
         await page.evaluate(() => {
           return matchMedia('(prefers-color-scheme: dark)').matches;
-        }),
+        })
       ).toBe(false);
       await page.emulateMediaFeatures([
         {name: 'prefers-color-scheme', value: 'dark'},
@@ -306,12 +306,12 @@ describe('Emulation', () => {
       expect(
         await page.evaluate(() => {
           return matchMedia('(prefers-color-scheme: dark)').matches;
-        }),
+        })
       ).toBe(true);
       expect(
         await page.evaluate(() => {
           return matchMedia('(prefers-color-scheme: light)').matches;
-        }),
+        })
       ).toBe(false);
       await page.emulateMediaFeatures([
         {name: 'prefers-reduced-motion', value: 'reduce'},
@@ -320,54 +320,54 @@ describe('Emulation', () => {
       expect(
         await page.evaluate(() => {
           return matchMedia('(prefers-reduced-motion: reduce)').matches;
-        }),
+        })
       ).toBe(true);
       expect(
         await page.evaluate(() => {
           return matchMedia('(prefers-reduced-motion: no-preference)').matches;
-        }),
+        })
       ).toBe(false);
       expect(
         await page.evaluate(() => {
           return matchMedia('(prefers-color-scheme: light)').matches;
-        }),
+        })
       ).toBe(true);
       expect(
         await page.evaluate(() => {
           return matchMedia('(prefers-color-scheme: dark)').matches;
-        }),
+        })
       ).toBe(false);
       await page.emulateMediaFeatures([{name: 'color-gamut', value: 'srgb'}]);
       expect(
         await page.evaluate(() => {
           return matchMedia('(color-gamut: p3)').matches;
-        }),
+        })
       ).toBe(false);
       expect(
         await page.evaluate(() => {
           return matchMedia('(color-gamut: srgb)').matches;
-        }),
+        })
       ).toBe(true);
       expect(
         await page.evaluate(() => {
           return matchMedia('(color-gamut: rec2020)').matches;
-        }),
+        })
       ).toBe(false);
       await page.emulateMediaFeatures([{name: 'color-gamut', value: 'p3'}]);
       expect(
         await page.evaluate(() => {
           return matchMedia('(color-gamut: p3)').matches;
-        }),
+        })
       ).toBe(true);
       expect(
         await page.evaluate(() => {
           return matchMedia('(color-gamut: srgb)').matches;
-        }),
+        })
       ).toBe(true);
       expect(
         await page.evaluate(() => {
           return matchMedia('(color-gamut: rec2020)').matches;
-        }),
+        })
       ).toBe(false);
       await page.emulateMediaFeatures([
         {name: 'color-gamut', value: 'rec2020'},
@@ -375,17 +375,17 @@ describe('Emulation', () => {
       expect(
         await page.evaluate(() => {
           return matchMedia('(color-gamut: p3)').matches;
-        }),
+        })
       ).toBe(true);
       expect(
         await page.evaluate(() => {
           return matchMedia('(color-gamut: srgb)').matches;
-        }),
+        })
       ).toBe(true);
       expect(
         await page.evaluate(() => {
           return matchMedia('(color-gamut: rec2020)').matches;
-        }),
+        })
       ).toBe(true);
     });
     it('should throw in case of bad argument', async () => {
@@ -412,32 +412,32 @@ describe('Emulation', () => {
       expect(
         await page.evaluate(() => {
           return (globalThis as any).date.toString();
-        }),
+        })
       ).toBe('Sat Nov 19 2016 13:12:34 GMT-0500 (Eastern Standard Time)');
 
       await page.emulateTimezone('Pacific/Honolulu');
       expect(
         await page.evaluate(() => {
           return (globalThis as any).date.toString();
-        }),
+        })
       ).toBe(
-        'Sat Nov 19 2016 08:12:34 GMT-1000 (Hawaii-Aleutian Standard Time)',
+        'Sat Nov 19 2016 08:12:34 GMT-1000 (Hawaii-Aleutian Standard Time)'
       );
 
       await page.emulateTimezone('America/Buenos_Aires');
       expect(
         await page.evaluate(() => {
           return (globalThis as any).date.toString();
-        }),
+        })
       ).toBe('Sat Nov 19 2016 15:12:34 GMT-0300 (Argentina Standard Time)');
 
       await page.emulateTimezone('Europe/Berlin');
       expect(
         await page.evaluate(() => {
           return (globalThis as any).date.toString();
-        }),
+        })
       ).toBe(
-        'Sat Nov 19 2016 19:12:34 GMT+0100 (Central European Standard Time)',
+        'Sat Nov 19 2016 19:12:34 GMT+0100 (Central European Standard Time)'
       );
     });
 
@@ -528,15 +528,15 @@ describe('Emulation', () => {
       const fast3G = PredefinedNetworkConditions['Fast 3G']!;
 
       expect(
-        await page.evaluate('window.navigator.connection.effectiveType'),
+        await page.evaluate('window.navigator.connection.effectiveType')
       ).toBe('4g');
       await page.emulateNetworkConditions(fast3G);
       expect(
-        await page.evaluate('window.navigator.connection.effectiveType'),
+        await page.evaluate('window.navigator.connection.effectiveType')
       ).toBe('3g');
       await page.emulateNetworkConditions(slow3G);
       expect(
-        await page.evaluate('window.navigator.connection.effectiveType'),
+        await page.evaluate('window.navigator.connection.effectiveType')
       ).toBe('2g');
       await page.emulateNetworkConditions(null);
     });

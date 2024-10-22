@@ -65,7 +65,7 @@ export class BidiPageTarget extends Target {
   override async asPage(): Promise<BidiPage> {
     return BidiPage.from(
       this.browserContext(),
-      this.#page.mainFrame().browsingContext,
+      this.#page.mainFrame().browsingContext
     );
   }
   override url(): string {
@@ -104,7 +104,7 @@ export class BidiFrameTarget extends Target {
     if (this.#page === undefined) {
       this.#page = BidiPage.from(
         this.browserContext(),
-        this.#frame.browsingContext,
+        this.#frame.browsingContext
       );
     }
     return this.#page;

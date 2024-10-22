@@ -10,14 +10,14 @@
 export const xpathQuerySelectorAll = function* (
   root: Node,
   selector: string,
-  maxResults = -1,
+  maxResults = -1
 ): Iterable<Node> {
   const doc = root.ownerDocument || document;
   const iterator = doc.evaluate(
     selector,
     root,
     null,
-    XPathResult.ORDERED_NODE_ITERATOR_TYPE,
+    XPathResult.ORDERED_NODE_ITERATOR_TYPE
   );
   const items = [];
   let item;

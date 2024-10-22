@@ -49,7 +49,7 @@ describe('Tracing', function () {
     await page.tracing.stop();
 
     const traceJson = JSON.parse(
-      fs.readFileSync(outputFile, {encoding: 'utf8'}),
+      fs.readFileSync(outputFile, {encoding: 'utf8'})
     );
     const traceConfig = JSON.parse(traceJson.metadata['trace-config']);
     expect(traceConfig.included_categories).toEqual([
@@ -59,7 +59,7 @@ describe('Tracing', function () {
     expect(traceJson.traceEvents).not.toContainEqual(
       expect.objectContaining({
         cat: 'toplevel',
-      }),
+      })
     );
   });
 
@@ -71,12 +71,12 @@ describe('Tracing', function () {
     await page.tracing.stop();
 
     const traceJson = JSON.parse(
-      fs.readFileSync(outputFile, {encoding: 'utf8'}),
+      fs.readFileSync(outputFile, {encoding: 'utf8'})
     );
     expect(traceJson.traceEvents).toContainEqual(
       expect.objectContaining({
         cat: 'toplevel',
-      }),
+      })
     );
   });
   it('should throw if tracing on two pages', async () => {

@@ -12,7 +12,7 @@ Queries the current element for all elements matching the given selector.
 class ElementHandle {
   $$<Selector extends string>(
     selector: Selector,
-    options?: QueryOptions,
+    options?: QueryOptions
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>>;
 }
 ```

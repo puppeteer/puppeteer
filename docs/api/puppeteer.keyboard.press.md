@@ -12,7 +12,7 @@ Shortcut for [Keyboard.down()](./puppeteer.keyboard.down.md) and [Keyboard.up()]
 class Keyboard {
   abstract press(
     key: KeyInput,
-    options?: Readonly<KeyPressOptions>,
+    options?: Readonly<KeyPressOptions>
   ): Promise<void>;
 }
 ```

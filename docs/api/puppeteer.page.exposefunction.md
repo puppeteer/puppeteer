@@ -24,7 +24,7 @@ class Page {
       | Function
       | {
           default: Function;
-        },
+        }
   ): Promise<void>;
 }
 ```
@@ -88,7 +88,7 @@ import crypto from 'crypto';
   const page = await browser.newPage();
   page.on('console', msg => console.log(msg.text()));
   await page.exposeFunction('md5', text =>
-    crypto.createHash('md5').update(text).digest('hex'),
+    crypto.createHash('md5').update(text).digest('hex')
   );
   await page.evaluate(async () => {
     // use window.md5 to compute hashes

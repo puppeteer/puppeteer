@@ -12,7 +12,7 @@ Clicks the located element.
 class Locator {
   click<ElementType extends Element>(
     this: Locator<ElementType>,
-    options?: Readonly<LocatorClickOptions>,
+    options?: Readonly<LocatorClickOptions>
   ): Promise<void>;
 }
 ```

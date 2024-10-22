@@ -13,7 +13,7 @@ Adds a `HTMLStyleElement` into the frame with the desired URL
 ```typescript
 class Frame {
   addStyleTag(
-    options: Omit<FrameAddStyleTagOptions, 'url'>,
+    options: Omit<FrameAddStyleTagOptions, 'url'>
   ): Promise<ElementHandle<HTMLStyleElement>>;
 }
 ```
@@ -60,7 +60,7 @@ Adds a `HTMLLinkElement` into the frame with the desired URL
 ```typescript
 class Frame {
   addStyleTag(
-    options: FrameAddStyleTagOptions,
+    options: FrameAddStyleTagOptions
   ): Promise<ElementHandle<HTMLLinkElement>>;
 }
 ```

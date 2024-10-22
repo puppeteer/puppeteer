@@ -55,7 +55,7 @@ import {readAsset} from './util.js';
         await this.runScript(script, 'mjs');
       });
     });
-  },
+  }
 );
 
 describe('Firefox download', () => {
@@ -82,7 +82,7 @@ describe('Firefox download', () => {
           ...process.env,
           PUPPETEER_CACHE_DIR: join(this.sandbox, '.cache', 'puppeteer'),
         },
-      },
+      }
     );
     assert.strictEqual(result.status, 0);
     const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));

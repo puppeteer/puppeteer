@@ -12,7 +12,7 @@ Fulfills a request with the given response.
 class HTTPRequest {
   respond(
     response: Partial<ResponseForRequest>,
-    priority?: number,
+    priority?: number
   ): Promise<void>;
 }
 ```

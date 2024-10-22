@@ -17,7 +17,7 @@ describe('FirefoxLauncher', function () {
         {
           test: 1,
         },
-        undefined,
+        undefined
       );
       expect(prefs['test']).toBe(1);
       expect(prefs['fission.bfcacheInParent']).toBe(false);
@@ -27,8 +27,8 @@ describe('FirefoxLauncher', function () {
           {
             test: 1,
           },
-          'cdp',
-        ),
+          'cdp'
+        )
       );
     });
 
@@ -37,7 +37,7 @@ describe('FirefoxLauncher', function () {
         {
           test: 1,
         },
-        'webDriverBiDi',
+        'webDriverBiDi'
       );
       expect(prefs['test']).toBe(1);
       expect(prefs['fission.bfcacheInParent']).toBe(undefined);

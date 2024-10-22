@@ -136,7 +136,7 @@ function main(): Promise<number> {
               console.error(`${pkg.id}: ${JSON.stringify(pkg.licenses)}`);
             });
             console.error(
-              `\n${badLicensePackages.length} total packages with invalid licenses.`,
+              `\n${badLicensePackages.length} total packages with invalid licenses.`
             );
             resolve(2);
           } else {
@@ -144,7 +144,7 @@ function main(): Promise<number> {
             resolve(0);
           }
         }
-      },
+      }
     );
   });
 }

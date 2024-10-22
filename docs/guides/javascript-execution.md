@@ -111,7 +111,7 @@ const three = await page.evaluate(
     return a + b; // 1 + 2
   },
   1,
-  2,
+  2
 );
 ```
 

@@ -50,7 +50,7 @@ export interface ComputeExecutablePathOptions {
  * @public
  */
 export function computeExecutablePath(
-  options: ComputeExecutablePathOptions,
+  options: ComputeExecutablePathOptions
 ): string {
   return new Cache(options.cacheDir).computeExecutablePath(options);
 }
@@ -82,19 +82,19 @@ export function computeSystemExecutablePath(options: SystemOptions): string {
   options.platform ??= detectBrowserPlatform();
   if (!options.platform) {
     throw new Error(
-      `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`,
+      `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`
     );
   }
   const path = resolveSystemExecutablePath(
     options.browser,
     options.platform,
-    options.channel,
+    options.channel
   );
   try {
     accessSync(path);
   } catch {
     throw new Error(
-      `Could not find Google Chrome executable for channel '${options.channel}' at '${path}'.`,
+      `Could not find Google Chrome executable for channel '${options.channel}' at '${path}'.`
     );
   }
   return path;
@@ -212,7 +212,7 @@ const dispatchers = {
 
 function subscribeToProcessEvent(
   event: 'exit' | 'SIGINT' | 'SIGHUP' | 'SIGTERM',
-  handler: EventHandler,
+  handler: EventHandler
 ): void {
   const listeners = processListeners.get(event) || [];
   if (listeners.length === 0) {
@@ -224,7 +224,7 @@ function subscribeToProcessEvent(
 
 function unsubscribeFromProcessEvent(
   event: 'exit' | 'SIGINT' | 'SIGHUP' | 'SIGTERM',
-  handler: EventHandler,
+  handler: EventHandler
 ): void {
   const listeners = processListeners.get(event) || [];
   const existingListenerIdx = listeners.indexOf(handler);
@@ -284,7 +284,7 @@ export class Process {
           }
           return res;
         },
-        {},
+        {}
       ),
       stdio,
     });
@@ -296,7 +296,7 @@ export class Process {
         detached: opts.detached,
         env,
         stdio,
-      },
+      }
     );
 
     debugLaunch(`Launched ${this.#browserProcess.pid}`);
@@ -414,12 +414,12 @@ export class Process {
         if (process.platform === 'win32') {
           try {
             childProcess.execSync(
-              `taskkill /pid ${this.#browserProcess.pid} /T /F`,
+              `taskkill /pid ${this.#browserProcess.pid} /T /F`
             );
           } catch (error) {
             debugLaunch(
               `Killing ${this.#browserProcess.pid} using taskkill failed`,
-              error,
+              error
             );
             // taskkill can fail to kill the process e.g. due to missing permissions.
             // Let's kill the process via Node API. This delays killing of all child
@@ -436,7 +436,7 @@ export class Process {
           } catch (error) {
             debugLaunch(
               `Killing ${this.#browserProcess.pid} using process.kill failed`,
-              error,
+              error
             );
             // Killing the process group can fail due e.g. to missing permissions.
             // Let's kill the process via Node API. This delays killing of all child
@@ -448,7 +448,7 @@ export class Process {
         throw new Error(
           `${PROCESS_ERROR_EXPLANATION}\nError cause: ${
             isErrorLike(error) ? error.stack : error
-          }`,
+          }`
         );
       }
     }
@@ -492,8 +492,8 @@ export class Process {
               '',
               'TROUBLESHOOTING: https://pptr.dev/troubleshooting',
               '',
-            ].join('\n'),
-          ),
+            ].join('\n')
+          )
         );
       }
 
@@ -501,8 +501,8 @@ export class Process {
         cleanup();
         reject(
           new TimeoutError(
-            `Timed out after ${timeout} ms while waiting for the WS endpoint URL to appear in stdout!`,
-          ),
+            `Timed out after ${timeout} ms while waiting for the WS endpoint URL to appear in stdout!`
+          )
         );
       }
 

@@ -10,7 +10,7 @@ Returns a version comparator for the given browser that can be used to sort brow
 
 ```typescript
 export declare function getVersionComparator(
-  browser: Browser,
+  browser: Browser
 ): (a: string, b: string) => number;
 ```
 

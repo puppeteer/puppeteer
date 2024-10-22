@@ -11,7 +11,7 @@ Generates a PDF of the page with the `print` CSS media type.
 ```typescript
 class Page {
   abstract createPDFStream(
-    options?: PDFOptions,
+    options?: PDFOptions
   ): Promise<ReadableStream<Uint8Array>>;
 }
 ```

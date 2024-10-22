@@ -91,7 +91,7 @@ export default [
     ],
   },
   ...fixupConfigRules(
-    compat.extends('plugin:prettier/recommended', 'plugin:import/typescript'),
+    compat.extends('plugin:prettier/recommended', 'plugin:import/typescript')
   ),
   {
     name: 'JavaScript rules',
@@ -230,7 +230,7 @@ export default [
     .extends(
       'plugin:@typescript-eslint/eslint-recommended',
       'plugin:@typescript-eslint/recommended',
-      'plugin:@typescript-eslint/stylistic',
+      'plugin:@typescript-eslint/stylistic'
     )
     .map(config => {
       return {

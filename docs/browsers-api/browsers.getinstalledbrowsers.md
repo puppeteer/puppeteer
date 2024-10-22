@@ -10,7 +10,7 @@ Returns metadata about browsers installed in the cache directory.
 
 ```typescript
 export declare function getInstalledBrowsers(
-  options: GetInstalledBrowsersOptions,
+  options: GetInstalledBrowsersOptions
 ): Promise<InstalledBrowser[]>;
 ```
 

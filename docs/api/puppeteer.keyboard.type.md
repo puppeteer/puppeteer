@@ -12,7 +12,7 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 class Keyboard {
   abstract type(
     text: string,
-    options?: Readonly<KeyboardTypeOptions>,
+    options?: Readonly<KeyboardTypeOptions>
   ): Promise<void>;
 }
 ```

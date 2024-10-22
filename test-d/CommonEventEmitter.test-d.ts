@@ -14,7 +14,7 @@ declare const emitter: EventEmitter<Record<EventType, any>>;
 {
   {
     expectAssignable<CommonEventEmitter<Record<EventType, any>>>(
-      new NodeEventEmitter(),
+      new NodeEventEmitter()
     );
   }
   {

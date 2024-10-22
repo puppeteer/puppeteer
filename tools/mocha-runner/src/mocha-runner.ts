@@ -118,11 +118,11 @@ async function main() {
   const platform = zPlatform.parse(os.platform());
 
   const expectations = readJSON(
-    path.join(process.cwd(), 'test', 'TestExpectations.json'),
+    path.join(process.cwd(), 'test', 'TestExpectations.json')
   ) as TestExpectation[];
 
   const parsedSuitesFile = zTestSuiteFile.parse(
-    readJSON(path.join(process.cwd(), 'test', 'TestSuites.json')),
+    readJSON(path.join(process.cwd(), 'test', 'TestSuites.json'))
   );
 
   const applicableSuites = getApplicableTestSuites(parsedSuitesFile);
@@ -140,7 +140,7 @@ async function main() {
 
       const applicableExpectations = filterByParameters(
         filterByPlatform(expectations, platform),
-        parameters,
+        parameters
       ).reverse();
 
       // Add more logging when the GitHub Action Debugging option is set
@@ -168,14 +168,14 @@ async function main() {
                 testIdPattern: ex.testIdPattern,
                 skip: ex.expectations.includes('SKIP'),
               };
-            }),
+            })
           ),
         },
         githubActionDebugging,
       ]);
 
       const tmpDir = fs.mkdtempSync(
-        path.join(os.tmpdir(), 'puppeteer-test-runner-'),
+        path.join(os.tmpdir(), 'puppeteer-test-runner-')
       );
       const tmpFilename = statsPath
         ? statsPath
@@ -219,7 +219,7 @@ async function main() {
         console.log(
           `Running shard ${shardId}-${shards}. Picked ${
             args.length - argsLength
-          } files out of ${specs.length}.`,
+          } files out of ${specs.length}.`
         );
       } else {
         args.push(...specs);
@@ -239,7 +239,7 @@ async function main() {
           cwd: process.cwd(),
           stdio: 'inherit',
           env,
-        },
+        }
       );
       await new Promise<void>((resolve, reject) => {
         handle.on('error', err => {
@@ -269,7 +269,7 @@ async function main() {
           if (!shard && totalTests < minTests) {
             fail = true;
             console.log(
-              `Test run matches expectations but the number of discovered tests is too low (expected: ${minTests}, actual: ${totalTests}).`,
+              `Test run matches expectations but the number of discovered tests is too low (expected: ${minTests}, actual: ${totalTests}).`
             );
             writeJSON(tmpFilename, results);
             continue;
@@ -291,17 +291,17 @@ async function main() {
       printSuggestions(
         recommendations,
         'add',
-        'Add the following to TestExpectations.json to ignore the error:',
+        'Add the following to TestExpectations.json to ignore the error:'
       );
       printSuggestions(
         recommendations,
         'remove',
-        'Remove the following from the TestExpectations.json to ignore the error:',
+        'Remove the following from the TestExpectations.json to ignore the error:'
       );
       printSuggestions(
         recommendations,
         'update',
-        'Update the following expectations in the TestExpectations.json to ignore the error:',
+        'Update the following expectations in the TestExpectations.json to ignore the error:'
       );
     }
     process.exit(fail ? 1 : 0);

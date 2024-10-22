@@ -12,7 +12,7 @@ Resolve to the first device in the prompt matching a filter.
 class DeviceRequestPrompt {
   waitForDevice(
     filter: (device: DeviceRequestPromptDevice) => boolean,
-    options?: WaitTimeoutOptions,
+    options?: WaitTimeoutOptions
   ): Promise<DeviceRequestPromptDevice>;
 }
 ```

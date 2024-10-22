@@ -364,7 +364,7 @@ page.on('request', interceptedRequest => {
   else
     interceptedRequest.continue(
       interceptedRequest.continueRequestOverrides(),
-      0,
+      0
     );
 });
 ```
@@ -416,7 +416,7 @@ page.on('request', interceptedRequest => {
   else
     interceptedRequest.continue(
       interceptedRequest.continueRequestOverrides(),
-      DEFAULT_INTERCEPT_RESOLUTION_PRIORITY, // Unopinionated continuation
+      DEFAULT_INTERCEPT_RESOLUTION_PRIORITY // Unopinionated continuation
     );
 });
 ```
@@ -442,7 +442,7 @@ const DEFAULT_CONFIG: InterceptResolutionConfig = {
 let _config: Partial<InterceptResolutionConfig> = {};
 
 export const setInterceptResolutionConfig = (
-  config: InterceptResolutionConfig,
+  config: InterceptResolutionConfig
 ) => (_config = {...DEFAULT_CONFIG, ...config});
 
 page.on('request', interceptedRequest => {
@@ -459,7 +459,7 @@ page.on('request', interceptedRequest => {
     // some use cases required Opinionated continuation.
     interceptedRequest.continue(
       interceptedRequest.continueRequestOverrides(),
-      _config.continuePriority, // Why would we ever want priority!==0 here?
+      _config.continuePriority // Why would we ever want priority!==0 here?
     );
   }
 });

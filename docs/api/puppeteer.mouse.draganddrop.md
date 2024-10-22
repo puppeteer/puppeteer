@@ -15,7 +15,7 @@ class Mouse {
     target: Point,
     options?: {
       delay?: number;
-    },
+    }
   ): Promise<void>;
 }
 ```

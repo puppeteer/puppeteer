@@ -10,7 +10,7 @@ sidebar_label: CommonEventEmitter.off
 interface CommonEventEmitter {
   off<Key extends keyof Events>(
     type: Key,
-    handler?: Handler<Events[Key]>,
+    handler?: Handler<Events[Key]>
   ): this;
 }
 ```

@@ -15,7 +15,7 @@ import {BidiDeserializer} from './Deserializer.js';
  * @internal
  */
 export function createEvaluationError(
-  details: Bidi.Script.ExceptionDetails,
+  details: Bidi.Script.ExceptionDetails
 ): unknown {
   if (details.exception.type !== 'error') {
     return BidiDeserializer.deserialize(details.exception);
@@ -39,13 +39,13 @@ export function createEvaluationError(
             url.functionName
           } at ${url.siteString}, <anonymous>:${frame.lineNumber}:${
             frame.columnNumber
-          })`,
+          })`
         );
       } else {
         stackLines.push(
           `    at ${frame.functionName || '<anonymous>'} (${frame.url}:${
             frame.lineNumber
-          }:${frame.columnNumber})`,
+          }:${frame.columnNumber})`
         );
       }
       if (stackLines.length >= Error.stackTraceLimit) {
@@ -63,7 +63,7 @@ export function createEvaluationError(
  */
 export function rewriteNavigationError(
   message: string,
-  ms: number,
+  ms: number
 ): (error: unknown) => never {
   return error => {
     if (error instanceof ProtocolError) {

@@ -12,7 +12,7 @@ This method scrolls element into view if needed, and then uses [Page.mouse](./pu
 class ElementHandle {
   click(
     this: ElementHandle<Element>,
-    options?: Readonly<ClickOptions>,
+    options?: Readonly<ClickOptions>
   ): Promise<void>;
 }
 ```

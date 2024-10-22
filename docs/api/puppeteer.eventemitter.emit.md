@@ -12,7 +12,7 @@ Emit an event and call any associated listeners.
 class EventEmitter {
   emit<Key extends keyof EventsWithWildcard<Events>>(
     type: Key,
-    event: EventsWithWildcard<Events>[Key],
+    event: EventsWithWildcard<Events>[Key]
   ): boolean;
 }
 ```

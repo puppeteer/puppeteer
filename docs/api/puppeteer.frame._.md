@@ -11,7 +11,7 @@ Queries the frame for an element matching the given selector.
 ```typescript
 class Frame {
   $<Selector extends string>(
-    selector: Selector,
+    selector: Selector
   ): Promise<ElementHandle<NodeFor<Selector>> | null>;
 }
 ```

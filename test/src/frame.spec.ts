@@ -267,7 +267,7 @@ describe('Frame specs', function () {
 
       expect(page.frames()).toHaveLength(2);
       expect(page.frames()[1]!.url()).toBe(
-        server.PREFIX + '/frames/frame.html?param=value#fragment',
+        server.PREFIX + '/frames/frame.html?param=value#fragment'
       );
     });
     it('should support lazy frames', async () => {
@@ -279,7 +279,7 @@ describe('Frame specs', function () {
       expect(
         page.frames().map(frame => {
           return frame._hasStartedLoading;
-        }),
+        })
       ).toEqual([true, true, false]);
     });
   });
@@ -338,7 +338,7 @@ describe('Frame specs', function () {
       expect(
         await frameElement.evaluate(el => {
           return el.tagName.toLocaleLowerCase();
-        }),
+        })
       ).toBe('iframe');
     });
   });

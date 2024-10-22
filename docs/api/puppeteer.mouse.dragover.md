@@ -12,7 +12,7 @@ Dispatches a `dragover` event.
 class Mouse {
   abstract dragOver(
     target: Point,
-    data: Protocol.Input.DragData,
+    data: Protocol.Input.DragData
   ): Promise<void>;
 }
 ```

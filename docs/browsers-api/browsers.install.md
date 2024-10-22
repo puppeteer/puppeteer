@@ -14,7 +14,7 @@ Downloads and unpacks the browser archive according to the [InstallOptions](./br
 export declare function install(
   options: InstallOptions & {
     unpack?: true;
-  },
+  }
 ): Promise<InstalledBrowser>;
 ```
 
@@ -61,7 +61,7 @@ Downloads the browser archive according to the [InstallOptions](./browsers.insta
 export declare function install(
   options: InstallOptions & {
     unpack: false;
-  },
+  }
 ): Promise<string>;
 ```
 

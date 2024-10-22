@@ -70,7 +70,7 @@ const useUsingRule = createRule<[], 'useUsing' | 'useUsingFix'>({
                     fix(fixer) {
                       return fixer.replaceTextRange(
                         [node.range[0], node.range[0] + node.kind.length],
-                        'using',
+                        'using'
                       );
                     },
                   },

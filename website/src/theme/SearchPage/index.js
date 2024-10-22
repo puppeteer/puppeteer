@@ -40,8 +40,8 @@ function useDocumentsFoundPlural() {
             'Pluralized label for "{count} documents found". Use as much plural forms (separated by "|") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)',
           message: 'One document found|{count} documents found',
         },
-        {count},
-      ),
+        {count}
+      )
     );
   };
 }
@@ -76,7 +76,7 @@ function useDocsSearchVersionsHelpers() {
 // We want to display one select per versioned docs plugin instance
 function SearchVersionSelectList({docsSearchVersionsHelpers}) {
   const versionedPluginEntries = Object.entries(
-    docsSearchVersionsHelpers.allDocsData,
+    docsSearchVersionsHelpers.allDocsData
   )
     // Do not show a version select for unversioned docs plugin instances
     .filter(([, docsData]) => {
@@ -88,7 +88,7 @@ function SearchVersionSelectList({docsSearchVersionsHelpers}) {
         'col',
         'col--3',
         'padding-left--none',
-        styles.searchVersionColumn,
+        styles.searchVersionColumn
       )}
     >
       {versionedPluginEntries.map(([pluginId, docsData]) => {
@@ -100,7 +100,7 @@ function SearchVersionSelectList({docsSearchVersionsHelpers}) {
             onChange={e => {
               return docsSearchVersionsHelpers.setSearchVersion(
                 pluginId,
-                e.target.value,
+                e.target.value
               );
             }}
             defaultValue={docsSearchVersionsHelpers.searchVersions[pluginId]}
@@ -174,7 +174,7 @@ function SearchPageContent() {
           return prevState;
       }
     },
-    initialSearchResultState,
+    initialSearchResultState
   );
   const algoliaClient = algoliaSearch(appId, apiKey);
   const algoliaHelper = algoliaSearchHelper(algoliaClient, indexName, {
@@ -192,7 +192,7 @@ function SearchPageContent() {
       const sanitizeValue = value => {
         return value.replace(
           /algolia-docsearch-suggestion--highlight/g,
-          'search-result-match',
+          'search-result-match'
         );
       };
       const items = hits.map(
@@ -215,7 +215,7 @@ function SearchPageContent() {
               : '',
             breadcrumbs: titles,
           };
-        },
+        }
       );
       searchResultStateDispatcher({
         type: 'update',
@@ -229,7 +229,7 @@ function SearchPageContent() {
           loading: false,
         },
       });
-    },
+    }
   );
   const [loaderRef, setLoaderRef] = useState(null);
   const prevY = useRef(0);
@@ -246,8 +246,8 @@ function SearchPageContent() {
           }
           prevY.current = currentY;
         },
-        {threshold: 1},
-      ),
+        {threshold: 1}
+      )
   );
   const getTitle = () => {
     return searchQuery
@@ -259,7 +259,7 @@ function SearchPageContent() {
           },
           {
             query: searchQuery,
-          },
+          }
         )
       : translate({
           id: 'theme.SearchPage.emptyResultsTitle',
@@ -270,16 +270,16 @@ function SearchPageContent() {
   const makeSearch = useEvent((page = 0) => {
     algoliaHelper.addDisjunctiveFacetRefinement(
       'counter',
-      tagToCounter.get('default'),
+      tagToCounter.get('default')
     );
     algoliaHelper.addDisjunctiveFacetRefinement('language', currentLocale);
     Object.entries(docsSearchVersionsHelpers.searchVersions).forEach(
       ([pluginId, searchVersion]) => {
         algoliaHelper.addDisjunctiveFacetRefinement(
           'counter',
-          tagToCounter.get(`docs-${pluginId}-${searchVersion}`),
+          tagToCounter.get(`docs-${pluginId}-${searchVersion}`)
         );
-      },
+      }
     );
     algoliaHelper.setQuery(searchQuery).setPage(page).search();
   });
@@ -380,7 +380,7 @@ function SearchPageContent() {
               'col',
               'col--4',
               'text--right',
-              styles.searchLogoColumn,
+              styles.searchLogoColumn
             )}
           >
             <a
@@ -431,7 +431,7 @@ function SearchPageContent() {
                         <ul
                           className={clsx(
                             'breadcrumbs',
-                            styles.searchResultItemPath,
+                            styles.searchResultItemPath
                           )}
                         >
                           {breadcrumbs.map((html, index) => {
@@ -457,7 +457,7 @@ function SearchPageContent() {
                     )}
                   </article>
                 );
-              },
+              }
             )}
           </main>
         ) : (

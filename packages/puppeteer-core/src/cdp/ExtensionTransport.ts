@@ -54,7 +54,7 @@ export class ExtensionTransport implements ConnectionTransport {
   #debuggerEventHandler = (
     source: chrome.debugger.Debuggee,
     method: string,
-    params?: object | undefined,
+    params?: object | undefined
   ): void => {
     if (source.tabId !== this.#tabId) {
       return;
@@ -163,7 +163,7 @@ export class ExtensionTransport implements ConnectionTransport {
         // @ts-expect-error sessionId is not in stable yet.
         {tabId: this.#tabId, sessionId: parsed.sessionId},
         parsed.method,
-        parsed.params,
+        parsed.params
       )
       .then(response => {
         this.#dispatchResponse({

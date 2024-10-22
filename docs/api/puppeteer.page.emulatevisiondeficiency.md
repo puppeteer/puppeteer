@@ -11,7 +11,7 @@ Simulates the given vision deficiency on the page.
 ```typescript
 class Page {
   abstract emulateVisionDeficiency(
-    type?: Protocol.Emulation.SetEmulatedVisionDeficiencyRequest['type'],
+    type?: Protocol.Emulation.SetEmulatedVisionDeficiencyRequest['type']
   ): Promise<void>;
 }
 ```

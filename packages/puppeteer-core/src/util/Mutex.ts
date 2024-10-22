@@ -28,7 +28,7 @@ export class Mutex {
 
   // This is FIFO.
   async acquire(
-    onRelease?: () => void,
+    onRelease?: () => void
   ): Promise<InstanceType<typeof Mutex.Guard>> {
     if (!this.#locked) {
       this.#locked = true;

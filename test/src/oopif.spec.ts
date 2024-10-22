@@ -27,7 +27,7 @@ describe('OOPIF', function () {
           '--host-rules=MAP * 127.0.0.1',
         ]),
       }),
-      {after: 'all'},
+      {after: 'all'}
     );
   });
 
@@ -55,7 +55,7 @@ describe('OOPIF', function () {
     await attachFrame(
       page,
       'frame2',
-      server.CROSS_PROCESS_PREFIX + '/empty.html',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
     await framePromise;
     expect(page.mainFrame().childFrames()).toHaveLength(2);
@@ -70,14 +70,14 @@ describe('OOPIF', function () {
     await attachFrame(
       page,
       'frame1',
-      server.CROSS_PROCESS_PREFIX + '/empty.html',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
     const frame = await framePromise;
     expect(frame.url()).toContain('/empty.html');
     await navigateFrame(
       page,
       'frame1',
-      server.CROSS_PROCESS_PREFIX + '/assets/frame.html',
+      server.CROSS_PROCESS_PREFIX + '/assets/frame.html'
     );
     expect(frame.url()).toContain('/assets/frame.html');
   });
@@ -94,7 +94,7 @@ describe('OOPIF', function () {
     await navigateFrame(
       page,
       'frame1',
-      server.CROSS_PROCESS_PREFIX + '/empty.html',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
     await navigateFrame(page, 'frame1', server.EMPTY_PAGE);
     expect(page.frames()).toHaveLength(2);
@@ -112,7 +112,7 @@ describe('OOPIF', function () {
     await attachFrame(
       page,
       'frame1',
-      server.CROSS_PROCESS_PREFIX + '/frames/one-frame.html',
+      server.CROSS_PROCESS_PREFIX + '/frames/one-frame.html'
     );
 
     const [frame1, frame2] = await Promise.all([frame1Promise, frame2Promise]);
@@ -120,12 +120,12 @@ describe('OOPIF', function () {
     expect(
       await frame1.evaluate(() => {
         return document.location.href;
-      }),
+      })
     ).toMatch(/one-frame\.html$/);
     expect(
       await frame2.evaluate(() => {
         return document.location.href;
-      }),
+      })
     ).toMatch(/frames\/frame\.html$/);
   });
 
@@ -142,7 +142,7 @@ describe('OOPIF', function () {
     await attachFrame(
       page,
       'frame1',
-      server.CROSS_PROCESS_PREFIX + '/frames/one-frame.html',
+      server.CROSS_PROCESS_PREFIX + '/frames/one-frame.html'
     );
     await Promise.all([frame1Promise, frame2Promise]);
     const dump1 = await dumpFrames(page.mainFrame());
@@ -173,7 +173,7 @@ describe('OOPIF', function () {
     await navigateFrame(
       page,
       'frame1',
-      server.CROSS_PROCESS_PREFIX + '/empty.html',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
     await detachFrame(page, 'frame1');
     expect(page.frames()).toHaveLength(1);
@@ -193,7 +193,7 @@ describe('OOPIF', function () {
     await navigateFrame(
       page,
       'frame1',
-      server.CROSS_PROCESS_PREFIX + '/empty.html',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
     await nav;
     await detachFrame(page, 'frame1');
@@ -210,7 +210,7 @@ describe('OOPIF', function () {
     await attachFrame(
       page,
       'frame1',
-      server.CROSS_PROCESS_PREFIX + '/empty.html',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
     const frame = await framePromise;
     expect(frame.url()).toContain('/empty.html');
@@ -228,7 +228,7 @@ describe('OOPIF', function () {
     await attachFrame(
       page,
       'frame1',
-      server.CROSS_PROCESS_PREFIX + '/empty.html',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
     const frame = await framePromise;
     await frame.evaluate(() => {
@@ -263,7 +263,7 @@ describe('OOPIF', function () {
     await attachFrame(
       page,
       'frame1',
-      server.CROSS_PROCESS_PREFIX + '/empty.html',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
 
     const frame = await framePromise;
@@ -308,7 +308,7 @@ describe('OOPIF', function () {
     expect(
       await frame2.evaluate(() => {
         return document.querySelectorAll('button').length;
-      }),
+      })
     ).toStrictEqual(1);
   });
 
@@ -343,7 +343,7 @@ describe('OOPIF', function () {
     await attachFrame(
       oopIframe,
       'frame1',
-      server.CROSS_PROCESS_PREFIX + '/empty.html',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
 
     const frame1 = oopIframe.childFrames()[0]!;
@@ -351,12 +351,12 @@ describe('OOPIF', function () {
     await navigateFrame(
       oopIframe,
       'frame1',
-      server.CROSS_PROCESS_PREFIX + '/oopif.html',
+      server.CROSS_PROCESS_PREFIX + '/oopif.html'
     );
     expect(frame1.url()).toMatch(/oopif.html$/);
     await frame1.goto(
       server.CROSS_PROCESS_PREFIX + '/oopif.html#navigate-within-document',
-      {waitUntil: 'load'},
+      {waitUntil: 'load'}
     );
     expect(frame1.url()).toMatch(/oopif.html#navigate-within-document$/);
     await detachFrame(oopIframe, 'frame1');
@@ -372,7 +372,7 @@ describe('OOPIF', function () {
     await attachFrame(
       page,
       'frame1',
-      server.CROSS_PROCESS_PREFIX + '/empty.html',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
     const frame = await framePromise;
     await page.evaluate(() => {
@@ -438,7 +438,7 @@ describe('OOPIF', function () {
     expect(
       page.frames().map(frame => {
         return frame._hasStartedLoading;
-      }),
+      })
     ).toEqual([true, true, false]);
   });
 
@@ -467,8 +467,8 @@ describe('OOPIF', function () {
           return await frame.evaluate(() => {
             return window.location.pathname;
           });
-        }),
-      ),
+        })
+      )
     ).toEqual([
       '/pdf-viewer.html',
       '/sample.pdf',
@@ -492,7 +492,7 @@ describe('OOPIF', function () {
       expect(
         await frame.evaluate(() => {
           return (window as any).evaluateOnNewDocument;
-        }),
+        })
       ).toBe(true);
     }
   });
@@ -512,7 +512,7 @@ describe('OOPIF', function () {
       expect(
         await frame.evaluate(() => {
           return (window as any).evaluateOnNewDocument;
-        }),
+        })
       ).toBe(true);
     }
     await page.removeScriptToEvaluateOnNewDocument(identifier);
@@ -558,7 +558,7 @@ describe('OOPIF', function () {
         await frame.evaluate(() => {
           // @ts-expect-error different context
           return !!window['plusOne'];
-        }),
+        })
       ).toBe(false);
     }
   });
@@ -571,7 +571,7 @@ describe('OOPIF', function () {
       await attachFrame(
         page,
         'frame2',
-        server.CROSS_PROCESS_PREFIX + '/empty.html',
+        server.CROSS_PROCESS_PREFIX + '/empty.html'
       );
 
       await page.waitForFrame(frame => {
@@ -639,7 +639,7 @@ describe('OOPIF', function () {
           frame.onerror = y;
         });
       },
-      server.PREFIX.replace('localhost', 'oopifdomain') + '/one-style.html',
+      server.PREFIX.replace('localhost', 'oopifdomain') + '/one-style.html'
     );
     await page.waitForSelector('iframe');
 
@@ -661,7 +661,7 @@ async function iframes(page: Page) {
   const iframes = await Promise.all(
     page.frames().map(async frame => {
       return await frame.frameElement();
-    }),
+    })
   );
   return iframes.filter(frame => {
     return frame !== null;

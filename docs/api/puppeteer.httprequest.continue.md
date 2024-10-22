@@ -12,7 +12,7 @@ Continues request with optional request overrides.
 class HTTPRequest {
   continue(
     overrides?: ContinueRequestOverrides,
-    priority?: number,
+    priority?: number
   ): Promise<void>;
 }
 ```

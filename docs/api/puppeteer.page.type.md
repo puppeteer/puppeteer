@@ -15,7 +15,7 @@ class Page {
   type(
     selector: string,
     text: string,
-    options?: Readonly<KeyboardTypeOptions>,
+    options?: Readonly<KeyboardTypeOptions>
   ): Promise<void>;
 }
 ```

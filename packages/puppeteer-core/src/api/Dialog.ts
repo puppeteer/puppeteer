@@ -47,7 +47,7 @@ export abstract class Dialog {
   constructor(
     type: Protocol.Page.DialogType,
     message: string,
-    defaultValue = '',
+    defaultValue = ''
   ) {
     this.#type = type;
     this.#message = message;

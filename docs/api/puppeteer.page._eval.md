@@ -109,7 +109,7 @@ If you are using TypeScript, you may have to provide an explicit type to the fir
 // as `value` is not on `Element`
 const searchValue = await page.$eval(
   '#search',
-  (el: HTMLInputElement) => el.value,
+  (el: HTMLInputElement) => el.value
 );
 ```
 
@@ -122,6 +122,6 @@ The compiler should be able to infer the return type from the `pageFunction` you
 // or if you want to be more explicit, provide it as the generic type.
 const searchValue = await page.$eval<string>(
   '#search',
-  (el: HTMLInputElement) => el.value,
+  (el: HTMLInputElement) => el.value
 );
 ```

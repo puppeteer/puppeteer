@@ -81,7 +81,7 @@ describe('Screenshots', function () {
               width: 50,
               height: 50,
             },
-          }),
+          })
         );
       }
       const screenshots = await Promise.all(promises);
@@ -120,14 +120,14 @@ describe('Screenshots', function () {
             const page = await context.newPage();
             await page.goto(server.PREFIX + '/grid.html');
             return page;
-          }),
+          })
       );
       const promises = [];
       for (let i = 0; i < N; ++i) {
         promises.push(
           pages[i]!.screenshot({
             clip: {x: 50 * i, y: 0, width: 50, height: 50},
-          }),
+          })
         );
       }
       const screenshots = await Promise.all(promises);
@@ -137,7 +137,7 @@ describe('Screenshots', function () {
       await Promise.all(
         pages.map(page => {
           return page.close();
-        }),
+        })
       );
     });
     it('should work with odd clip size on Retina displays', async () => {
@@ -165,7 +165,7 @@ describe('Screenshots', function () {
         encoding: 'base64',
       });
       expect(Buffer.from(screenshot, 'base64')).toBeGolden(
-        'screenshot-sanity.png',
+        'screenshot-sanity.png'
       );
     });
 
@@ -288,7 +288,7 @@ describe('Screenshots', function () {
       using elementHandle = (await page.$('div.to-screenshot'))!;
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden(
-        'screenshot-element-larger-than-viewport.png',
+        'screenshot-element-larger-than-viewport.png'
       );
 
       expect(
@@ -297,7 +297,7 @@ describe('Screenshots', function () {
             w: window.innerWidth,
             h: window.innerHeight,
           };
-        }),
+        })
       ).toEqual({w: 500, h: 500});
     });
     it('should scroll element into view', async () => {
@@ -324,7 +324,7 @@ describe('Screenshots', function () {
       using elementHandle = (await page.$('div.to-screenshot'))!;
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden(
-        'screenshot-element-scrolled-into-view.png',
+        'screenshot-element-scrolled-into-view.png'
       );
     });
     it('should work with a rotated element', async () => {
@@ -356,7 +356,7 @@ describe('Screenshots', function () {
       });
       expect(screenshotError).toBeInstanceOf(Error);
       expect(screenshotError.message).toMatch(
-        /Node is either not visible or not an HTMLElement|Node is detached from document/,
+        /Node is either not visible or not an HTMLElement|Node is detached from document/
       );
     });
     it('should not hang with zero width/height element', async () => {
@@ -373,7 +373,7 @@ describe('Screenshots', function () {
       const {page} = await getTestState();
 
       await page.setContent(
-        '<div style="width:48.51px;height:19.8px;border:1px solid black;"></div>',
+        '<div style="width:48.51px;height:19.8px;border:1px solid black;"></div>'
       );
       using elementHandle = (await page.$('div'))!;
       const screenshot = await elementHandle.screenshot();
@@ -383,7 +383,7 @@ describe('Screenshots', function () {
       const {page} = await getTestState();
 
       await page.setContent(
-        '<!DOCTYPE html><div style="position:absolute; top: 10.3px; left: 20.4px;width:50.3px;height:20.2px;border:1px solid black;"></div>',
+        '<!DOCTYPE html><div style="position:absolute; top: 10.3px; left: 20.4px;width:50.3px;height:20.2px;border:1px solid black;"></div>'
       );
       using elementHandle = (await page.$('div'))!;
       const screenshot = await elementHandle.screenshot();
@@ -414,14 +414,14 @@ describe('Screenshots', function () {
             const page = await context.newPage();
             await page.goto(server.PREFIX + '/grid.html');
             return page;
-          }),
+          })
       );
       const promises = [];
       for (let i = 0; i < N; ++i) {
         promises.push(
           pages[i]!.screenshot({
             clip: {x: 50 * i, y: 0, width: 50, height: 50},
-          }),
+          })
         );
       }
       const screenshots = await Promise.all(promises);
@@ -431,7 +431,7 @@ describe('Screenshots', function () {
       await Promise.all(
         pages.map(page => {
           return page.close();
-        }),
+        })
       );
 
       await context.close();

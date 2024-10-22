@@ -13,7 +13,7 @@ class Mouse {
   abstract move(
     x: number,
     y: number,
-    options?: Readonly<MouseMoveOptions>,
+    options?: Readonly<MouseMoveOptions>
   ): Promise<void>;
 }
 ```

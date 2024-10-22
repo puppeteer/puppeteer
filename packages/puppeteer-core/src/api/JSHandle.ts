@@ -71,7 +71,7 @@ export abstract class JSHandle<T = unknown> {
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(
       this.evaluate.name,
-      pageFunction,
+      pageFunction
     );
     return await this.realm.evaluate(pageFunction, this, ...args);
   }
@@ -89,7 +89,7 @@ export abstract class JSHandle<T = unknown> {
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     pageFunction = withSourcePuppeteerURLIfNone(
       this.evaluateHandle.name,
-      pageFunction,
+      pageFunction
     );
     return await this.realm.evaluateHandle(pageFunction, this, ...args);
   }
@@ -98,7 +98,7 @@ export abstract class JSHandle<T = unknown> {
    * Fetches a single property from the referenced object.
    */
   getProperty<K extends keyof T>(
-    propertyName: HandleOr<K>,
+    propertyName: HandleOr<K>
   ): Promise<HandleFor<T[K]>>;
   getProperty(propertyName: string): Promise<JSHandle<unknown>>;
 
@@ -107,7 +107,7 @@ export abstract class JSHandle<T = unknown> {
    */
   @throwIfDisposed()
   async getProperty<K extends keyof T>(
-    propertyName: HandleOr<K>,
+    propertyName: HandleOr<K>
   ): Promise<HandleFor<T[K]>> {
     return await this.evaluateHandle((object, propertyName) => {
       return object[propertyName as K];
@@ -148,7 +148,7 @@ export abstract class JSHandle<T = unknown> {
     const results = await Promise.all(
       propertyNames.map(key => {
         return this.getProperty(key);
-      }),
+      })
     );
     for (const [key, value] of Object.entries(propertyNames)) {
       using handle = results[key as any];

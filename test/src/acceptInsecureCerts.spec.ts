@@ -24,7 +24,7 @@ describe('acceptInsecureCerts', function () {
       {
         after: 'all',
         createContext: false,
-      },
+      }
     );
   });
 

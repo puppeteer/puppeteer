@@ -11,7 +11,7 @@ Converts the current handle to the given element type.
 ```typescript
 class ElementHandle {
   toElement<K extends keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap>(
-    tagName: K,
+    tagName: K
   ): Promise<HandleFor<ElementFor<K>>>;
 }
 ```

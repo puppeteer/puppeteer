@@ -19,7 +19,7 @@ import type {BidiRealm} from './Realm.js';
 export class BidiJSHandle<T = unknown> extends JSHandle<T> {
   static from<T>(
     value: Bidi.Script.RemoteValue,
-    realm: BidiRealm,
+    realm: BidiRealm
   ): BidiJSHandle<T> {
     return new BidiJSHandle(value, realm);
   }

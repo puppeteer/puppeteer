@@ -30,7 +30,7 @@ describe('BFCache', function () {
       expect(
         await page.evaluate(() => {
           return document.body.innerText;
-        }),
+        })
       ).toBe('BFCachednext');
     } finally {
       await close();
@@ -71,7 +71,7 @@ describe('BFCache', function () {
       expect(
         await page.evaluate(() => {
           return document.body.innerText;
-        }),
+        })
       ).toBe('BFCachednext');
     } finally {
       await close();
@@ -87,7 +87,7 @@ describe('BFCache', function () {
       const [worker1] = await Promise.all([
         waitEvent(page, PageEvent.WorkerCreated),
         page.goto(
-          httpsServer.PREFIX + '/cached/bfcache/worker-iframe-container.html',
+          httpsServer.PREFIX + '/cached/bfcache/worker-iframe-container.html'
         ),
       ]);
       expect(await worker1.evaluate('1 + 1')).toBe(2);

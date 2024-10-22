@@ -33,7 +33,7 @@ describe('cooperative request interception', function () {
           if (request.url().endsWith('.css')) {
             void request.continue(
               {headers: {...request.headers(), xaction: 'continue'}},
-              expectedAction === 'continue' ? 1 : 0,
+              expectedAction === 'continue' ? 1 : 0
             );
           } else {
             void request.continue({}, 0);
@@ -43,7 +43,7 @@ describe('cooperative request interception', function () {
           if (request.url().endsWith('.css')) {
             void request.respond(
               {headers: {xaction: 'respond'}},
-              expectedAction === 'respond' ? 1 : 0,
+              expectedAction === 'respond' ? 1 : 0
             );
           } else {
             void request.continue({}, 0);
@@ -75,7 +75,7 @@ describe('cooperative request interception', function () {
               page.goto(server.PREFIX + '/one-style.html'),
             ]);
             actionResults.push(
-              serverRequest.headers['xaction'] as ActionResult,
+              serverRequest.headers['xaction'] as ActionResult
             );
             return response;
           } else {
@@ -340,7 +340,7 @@ describe('cooperative request interception', function () {
       ]);
       expect(failedRequest).toBeTruthy();
       expect(failedRequest.failure()!.errorText).toBe(
-        'net::ERR_INTERNET_DISCONNECTED',
+        'net::ERR_INTERNET_DISCONNECTED'
       );
     });
     it('should send referer', async () => {
@@ -390,19 +390,19 @@ describe('cooperative request interception', function () {
       });
       server.setRedirect(
         '/non-existing-page.html',
-        '/non-existing-page-2.html',
+        '/non-existing-page-2.html'
       );
       server.setRedirect(
         '/non-existing-page-2.html',
-        '/non-existing-page-3.html',
+        '/non-existing-page-3.html'
       );
       server.setRedirect(
         '/non-existing-page-3.html',
-        '/non-existing-page-4.html',
+        '/non-existing-page-4.html'
       );
       server.setRedirect('/non-existing-page-4.html', '/empty.html');
       const response = await page.goto(
-        server.PREFIX + '/non-existing-page.html',
+        server.PREFIX + '/non-existing-page.html'
       );
       expect(response!.status()).toBe(200);
       expect(response!.url()).toContain('empty.html');
@@ -586,7 +586,7 @@ describe('cooperative request interception', function () {
         return request.continue({}, 0);
       });
       const response = await page.goto(
-        server.PREFIX + '/some nonexisting page',
+        server.PREFIX + '/some nonexisting page'
       );
       expect(response!.status()).toBe(404);
     });
@@ -635,7 +635,7 @@ describe('cooperative request interception', function () {
         (frame, url) => {
           return (frame.src = url as string);
         },
-        server.EMPTY_PAGE,
+        server.EMPTY_PAGE
       ),
       // Wait for request interception.
       await waitEvent(page, 'request'));
@@ -673,7 +673,7 @@ describe('cooperative request interception', function () {
         void request.continue({}, 0);
       });
       await page.goto(
-        pathToFileURL(path.join(__dirname, '../assets', 'one-style.html')),
+        pathToFileURL(path.join(__dirname, '../assets', 'one-style.html'))
       );
       expect(urls.size).toBe(2);
       expect(urls.has('one-style.html')).toBe(true);
@@ -851,7 +851,7 @@ describe('cooperative request interception', function () {
             },
             body: 'Yo, page!',
           },
-          0,
+          0
         );
       });
       const response = await page.goto(server.EMPTY_PAGE);
@@ -860,7 +860,7 @@ describe('cooperative request interception', function () {
       expect(
         await page.evaluate(() => {
           return document.body.textContent;
-        }),
+        })
       ).toBe('Yo, page!');
     });
     it('should be able to access the response', async () => {
@@ -873,7 +873,7 @@ describe('cooperative request interception', function () {
             status: 200,
             body: 'Yo, page!',
           },
-          0,
+          0
         );
       });
       let response = null;
@@ -894,7 +894,7 @@ describe('cooperative request interception', function () {
             status: 422,
             body: 'Yo, page!',
           },
-          0,
+          0
         );
       });
       const response = await page.goto(server.EMPTY_PAGE);
@@ -903,7 +903,7 @@ describe('cooperative request interception', function () {
       expect(
         await page.evaluate(() => {
           return document.body.textContent;
-        }),
+        })
       ).toBe('Yo, page!');
     });
     it('should redirect', async () => {
@@ -922,13 +922,13 @@ describe('cooperative request interception', function () {
               location: server.EMPTY_PAGE,
             },
           },
-          0,
+          0
         );
       });
       const response = await page.goto(server.PREFIX + '/rrredirect');
       expect(response!.request().redirectChain()).toHaveLength(1);
       expect(response!.request().redirectChain()[0]!.url()).toBe(
-        server.PREFIX + '/rrredirect',
+        server.PREFIX + '/rrredirect'
       );
       expect(response!.url()).toBe(server.EMPTY_PAGE);
     });
@@ -938,14 +938,14 @@ describe('cooperative request interception', function () {
       await page.setRequestInterception(true);
       page.on('request', request => {
         const imageBuffer = fs.readFileSync(
-          path.join(__dirname, '../assets', 'pptr.png'),
+          path.join(__dirname, '../assets', 'pptr.png')
         );
         void request.respond(
           {
             contentType: 'image/png',
             body: imageBuffer,
           },
-          0,
+          0
         );
       });
       await page.evaluate(PREFIX => {
@@ -972,7 +972,7 @@ describe('cooperative request interception', function () {
             },
             body: 'Yo, page!',
           },
-          0,
+          0
         );
       });
       const response = await page.goto(server.EMPTY_PAGE);
@@ -982,7 +982,7 @@ describe('cooperative request interception', function () {
       expect(
         await page.evaluate(() => {
           return document.body.textContent;
-        }),
+        })
       ).toBe('Yo, page!');
     });
     it('should indicate already-handled if an intercept has been handled', async () => {

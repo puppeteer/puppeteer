@@ -10,7 +10,7 @@ sidebar_label: resolveBuildId
 export declare function resolveBuildId(
   browser: Browser,
   platform: BrowserPlatform,
-  tag: string,
+  tag: string
 ): Promise<string>;
 ```
 

@@ -11,7 +11,7 @@ Removes script that injected into page by Page.evaluateOnNewDocument.
 ```typescript
 class Page {
   abstract removeScriptToEvaluateOnNewDocument(
-    identifier: string,
+    identifier: string
   ): Promise<void>;
 }
 ```

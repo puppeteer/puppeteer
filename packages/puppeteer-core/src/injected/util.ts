@@ -10,7 +10,7 @@ const HIDDEN_VISIBILITY_VALUES = ['hidden', 'collapse'];
  */
 export const checkVisibility = (
   node: Node | null,
-  visible?: boolean,
+  visible?: boolean
 ): Node | boolean => {
   if (!node) {
     return visible === false;
@@ -65,7 +65,7 @@ export function* pierceAll(root: Node): IterableIterator<Node | ShadowRoot> {
       }
       yield node.shadowRoot;
       walkers.push(
-        document.createTreeWalker(node.shadowRoot, NodeFilter.SHOW_ELEMENT),
+        document.createTreeWalker(node.shadowRoot, NodeFilter.SHOW_ELEMENT)
       );
     }
   }

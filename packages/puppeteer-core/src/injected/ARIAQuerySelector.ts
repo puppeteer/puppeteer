@@ -19,18 +19,18 @@ declare global {
 
 export const ariaQuerySelector = (
   root: Node,
-  selector: string,
+  selector: string
 ): Promise<Node | null> => {
   // In Firefox sandboxes globalThis !== window and we expose bindings on globalThis.
   return (globalThis as unknown as Window).__ariaQuerySelector(root, selector);
 };
 export const ariaQuerySelectorAll = async function* (
   root: Node,
-  selector: string,
+  selector: string
 ): AsyncIterable<Node> {
   // In Firefox sandboxes globalThis !== window and we expose bindings on globalThis.
   yield* await (globalThis as unknown as Window).__ariaQuerySelectorAll(
     root,
-    selector,
+    selector
   );
 };

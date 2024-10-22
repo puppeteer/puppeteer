@@ -219,7 +219,7 @@ export class JSCoverage {
       reportAnonymousScripts?: boolean;
       includeRawScriptCoverage?: boolean;
       useBlockCoverage?: boolean;
-    } = {},
+    } = {}
   ): Promise<void> {
     assert(!this.#enabled, 'JSCoverage is already enabled');
     const {
@@ -236,12 +236,12 @@ export class JSCoverage {
     this.#scriptSources.clear();
     this.#subscriptions = new DisposableStack();
     const clientEmitter = this.#subscriptions.use(
-      new EventEmitter(this.#client),
+      new EventEmitter(this.#client)
     );
     clientEmitter.on('Debugger.scriptParsed', this.#onScriptParsed.bind(this));
     clientEmitter.on(
       'Runtime.executionContextsCleared',
-      this.#onExecutionContextsCleared.bind(this),
+      this.#onExecutionContextsCleared.bind(this)
     );
     await Promise.all([
       this.#client.send('Profiler.enable'),
@@ -263,7 +263,7 @@ export class JSCoverage {
   }
 
   async #onScriptParsed(
-    event: Protocol.Debugger.ScriptParsedEvent,
+    event: Protocol.Debugger.ScriptParsedEvent
   ): Promise<void> {
     // Ignore puppeteer-injected scripts
     if (PuppeteerURL.isPuppeteerURL(event.url)) {
@@ -356,12 +356,12 @@ export class CSSCoverage {
     this.#stylesheetSources.clear();
     this.#eventListeners = new DisposableStack();
     const clientEmitter = this.#eventListeners.use(
-      new EventEmitter(this.#client),
+      new EventEmitter(this.#client)
     );
     clientEmitter.on('CSS.styleSheetAdded', this.#onStyleSheet.bind(this));
     clientEmitter.on(
       'Runtime.executionContextsCleared',
-      this.#onExecutionContextsCleared.bind(this),
+      this.#onExecutionContextsCleared.bind(this)
     );
 
     await Promise.all([
@@ -401,7 +401,7 @@ export class CSSCoverage {
     assert(this.#enabled, 'CSSCoverage is not enabled');
     this.#enabled = false;
     const ruleTrackingResponse = await this.#client.send(
-      'CSS.stopRuleUsageTracking',
+      'CSS.stopRuleUsageTracking'
     );
     await Promise.all([
       this.#client.send('CSS.disable'),
@@ -429,15 +429,15 @@ export class CSSCoverage {
       const url = this.#stylesheetURLs.get(styleSheetId);
       assert(
         typeof url !== 'undefined',
-        `Stylesheet URL is undefined (styleSheetId=${styleSheetId})`,
+        `Stylesheet URL is undefined (styleSheetId=${styleSheetId})`
       );
       const text = this.#stylesheetSources.get(styleSheetId);
       assert(
         typeof text !== 'undefined',
-        `Stylesheet text is undefined (styleSheetId=${styleSheetId})`,
+        `Stylesheet text is undefined (styleSheetId=${styleSheetId})`
       );
       const ranges = convertToDisjointRanges(
-        styleSheetIdToCoverage.get(styleSheetId) || [],
+        styleSheetIdToCoverage.get(styleSheetId) || []
       );
       coverage.push({url, ranges, text});
     }
@@ -447,7 +447,7 @@ export class CSSCoverage {
 }
 
 function convertToDisjointRanges(
-  nestedRanges: Array<{startOffset: number; endOffset: number; count: number}>,
+  nestedRanges: Array<{startOffset: number; endOffset: number; count: number}>
 ): Array<{start: number; end: number}> {
   const points = [];
   for (const range of nestedRanges) {

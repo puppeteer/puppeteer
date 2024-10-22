@@ -14,7 +14,7 @@ class Connection {
     url: string,
     transport: ConnectionTransport,
     delay?: number,
-    timeout?: number,
+    timeout?: number
   );
 }
 ```

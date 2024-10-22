@@ -10,7 +10,7 @@ sidebar_label: Page.setUserAgent
 class Page {
   abstract setUserAgent(
     userAgent: string,
-    userAgentMetadata?: Protocol.Emulation.UserAgentMetadata,
+    userAgentMetadata?: Protocol.Emulation.UserAgentMetadata
   ): Promise<void>;
 }
 ```

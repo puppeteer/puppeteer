@@ -40,7 +40,7 @@ function verifyAngularCliInstalled() {
   if (process.env.CI) {
     // Need to install in CI
     execSync(
-      'npm install -g @angular/cli@latest @angular-devkit/schematics-cli',
+      'npm install -g @angular/cli@latest @angular-devkit/schematics-cli'
     );
     return;
   }
@@ -51,7 +51,7 @@ function verifyAngularCliInstalled() {
     !userDeps.includes('@angular-devkit/schematics-cli')
   ) {
     console.error(
-      'Angular CLI not installed run `npm install -g @angular/cli @angular-devkit/schematics-cli`',
+      'Angular CLI not installed run `npm install -g @angular/cli @angular-devkit/schematics-cli`'
     );
     process.exit(1);
   }
@@ -73,20 +73,20 @@ if (!args.runner) {
   const angularProjects = await Promise.allSettled(
     groups.flat().map(async project => {
       return await project.create();
-    }),
+    })
   );
   ok(
     angularProjects.every(project => {
       return project.status === 'fulfilled';
     }),
-    'Building of 1 or more projects failed!',
+    'Building of 1 or more projects failed!'
   );
 
   for await (const runnerGroup of groups) {
     const smokeResults = await Promise.allSettled(
       runnerGroup.map(async project => {
         return await project.runSmoke();
-      }),
+      })
     );
     ok(
       smokeResults.every(project => {
@@ -95,8 +95,8 @@ if (!args.runner) {
       `Smoke test for ${runnerGroup[0].runner} failed! ${smokeResults.map(
         project => {
           return project.reason;
-        },
-      )}`,
+        }
+      )}`
     );
   }
 } else {

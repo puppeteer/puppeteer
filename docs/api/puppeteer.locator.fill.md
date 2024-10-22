@@ -13,7 +13,7 @@ class Locator {
   fill<ElementType extends Element>(
     this: Locator<ElementType>,
     value: string,
-    options?: Readonly<ActionOptions>,
+    options?: Readonly<ActionOptions>
   ): Promise<void>;
 }
 ```

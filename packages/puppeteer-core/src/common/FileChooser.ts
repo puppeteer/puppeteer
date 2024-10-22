@@ -41,7 +41,7 @@ export class FileChooser {
    */
   constructor(
     element: ElementHandle<HTMLInputElement>,
-    event: Protocol.Page.FileChooserOpenedEvent,
+    event: Protocol.Page.FileChooserOpenedEvent
   ) {
     this.#element = element;
     this.#multiple = event.mode !== 'selectSingle';
@@ -68,7 +68,7 @@ export class FileChooser {
   async accept(paths: string[]): Promise<void> {
     assert(
       !this.#handled,
-      'Cannot accept FileChooser which is already handled!',
+      'Cannot accept FileChooser which is already handled!'
     );
     this.#handled = true;
     await this.#element.uploadFile(...paths);
@@ -80,7 +80,7 @@ export class FileChooser {
   async cancel(): Promise<void> {
     assert(
       !this.#handled,
-      'Cannot cancel FileChooser which is already handled!',
+      'Cannot cancel FileChooser which is already handled!'
     );
     this.#handled = true;
     // XXX: These events should converted to trusted events. Perhaps do this

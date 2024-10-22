@@ -11,7 +11,7 @@ Adds an async request handler to the processing queue. Deferred handlers are not
 ```typescript
 class HTTPRequest {
   enqueueInterceptAction(
-    pendingHandler: () => void | PromiseLike<unknown>,
+    pendingHandler: () => void | PromiseLike<unknown>
   ): void;
 }
 ```

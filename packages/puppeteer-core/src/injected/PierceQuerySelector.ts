@@ -9,7 +9,7 @@
  */
 export const pierceQuerySelector = (
   root: Node,
-  selector: string,
+  selector: string
 ): Element | null => {
   let found: Node | null = null;
   const search = (root: Node) => {
@@ -39,7 +39,7 @@ export const pierceQuerySelector = (
  */
 export const pierceQuerySelectorAll = (
   element: Node,
-  selector: string,
+  selector: string
 ): Element[] => {
   const result: Element[] = [];
   const collect = (root: Node) => {

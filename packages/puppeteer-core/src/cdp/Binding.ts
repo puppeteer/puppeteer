@@ -20,7 +20,7 @@ export class Binding {
   constructor(
     name: string,
     fn: (...args: unknown[]) => unknown,
-    initSource: string,
+    initSource: string
   ) {
     this.#name = name;
     this.#fn = fn;
@@ -46,7 +46,7 @@ export class Binding {
     context: ExecutionContext,
     id: number,
     args: unknown[],
-    isTrivial: boolean,
+    isTrivial: boolean
   ): Promise<void> {
     const stack = new DisposableStack();
     try {
@@ -58,7 +58,7 @@ export class Binding {
             return globalThis[name].args.get(seq);
           },
           this.#name,
-          id,
+          id
         );
         const properties = await handles.getProperties();
         for (const [index, handle] of properties) {
@@ -87,7 +87,7 @@ export class Binding {
         },
         this.#name,
         id,
-        await this.#fn(...args),
+        await this.#fn(...args)
       );
 
       for (const arg of args) {
@@ -110,7 +110,7 @@ export class Binding {
             this.#name,
             id,
             error.message,
-            error.stack,
+            error.stack
           )
           .catch(debugError);
       } else {
@@ -124,7 +124,7 @@ export class Binding {
             },
             this.#name,
             id,
-            error,
+            error
           )
           .catch(debugError);
       }

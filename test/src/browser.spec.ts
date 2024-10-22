@@ -81,7 +81,7 @@ describe('Browser specs', function () {
         await Promise.all(
           pages.map(page => {
             return page.close();
-          }),
+          })
         );
         // Verify the browser is still connected.
         expect(browser.connected).toBe(true);

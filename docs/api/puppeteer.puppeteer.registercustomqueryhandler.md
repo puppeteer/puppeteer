@@ -12,7 +12,7 @@ Registers a [custom query handler](./puppeteer.customqueryhandler.md).
 class Puppeteer {
   static registerCustomQueryHandler(
     name: string,
-    queryHandler: CustomQueryHandler,
+    queryHandler: CustomQueryHandler
   ): void;
 }
 ```

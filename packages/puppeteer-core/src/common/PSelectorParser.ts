@@ -37,7 +37,7 @@ const unquote = (text: string): string => {
  * @internal
  */
 export function parsePSelectors(
-  selector: string,
+  selector: string
 ): [
   selector: ComplexPSelectorList,
   isPureCSS: boolean,

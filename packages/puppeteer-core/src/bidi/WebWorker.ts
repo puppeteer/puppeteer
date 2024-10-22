@@ -17,7 +17,7 @@ import {BidiWorkerRealm} from './Realm.js';
 export class BidiWebWorker extends WebWorker {
   static from(
     frame: BidiFrame,
-    realm: DedicatedWorkerRealm | SharedWorkerRealm,
+    realm: DedicatedWorkerRealm | SharedWorkerRealm
   ): BidiWebWorker {
     const worker = new BidiWebWorker(frame, realm);
     return worker;
@@ -27,7 +27,7 @@ export class BidiWebWorker extends WebWorker {
   readonly #realm: BidiWorkerRealm;
   private constructor(
     frame: BidiFrame,
-    realm: DedicatedWorkerRealm | SharedWorkerRealm,
+    realm: DedicatedWorkerRealm | SharedWorkerRealm
   ) {
     super(realm.origin);
     this.#frame = frame;

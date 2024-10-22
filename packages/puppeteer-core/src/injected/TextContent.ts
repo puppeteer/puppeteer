@@ -108,7 +108,7 @@ export const createTextContent = (root: Node): TextContent => {
       event => {
         eraseFromCache(event.target as HTMLInputElement);
       },
-      {once: true, capture: true},
+      {once: true, capture: true}
     );
   } else {
     for (let child = root.firstChild; child; child = child.nextSibling) {

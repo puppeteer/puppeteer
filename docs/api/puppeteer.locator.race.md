@@ -11,7 +11,7 @@ Creates a race between multiple locators trying to locate elements in parallel b
 ```typescript
 class Locator {
   static race<Locators extends readonly unknown[] | []>(
-    locators: Locators,
+    locators: Locators
   ): Locator<AwaitedLocator<Locators[number]>>;
 }
 ```

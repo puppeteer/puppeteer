@@ -13,7 +13,7 @@ This won't share cookies/cache with other [browser contexts](./puppeteer.browser
 ```typescript
 class Browser {
   abstract createBrowserContext(
-    options?: BrowserContextOptions,
+    options?: BrowserContextOptions
   ): Promise<BrowserContext>;
 }
 ```

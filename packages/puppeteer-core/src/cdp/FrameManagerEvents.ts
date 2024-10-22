@@ -25,7 +25,7 @@ export namespace FrameManagerEvent {
   export const FrameSwapped = Symbol('FrameManager.FrameSwapped');
   export const LifecycleEvent = Symbol('FrameManager.LifecycleEvent');
   export const FrameNavigatedWithinDocument = Symbol(
-    'FrameManager.FrameNavigatedWithinDocument',
+    'FrameManager.FrameNavigatedWithinDocument'
   );
   export const ConsoleApiCalled = Symbol('FrameManager.ConsoleApiCalled');
   export const BindingCalled = Symbol('FrameManager.BindingCalled');

@@ -15,14 +15,14 @@ export class CSSQueryHandler extends QueryHandler {
   static override querySelector = (
     element: Node,
     selector: string,
-    {cssQuerySelector}: PuppeteerUtil,
+    {cssQuerySelector}: PuppeteerUtil
   ): Node | null => {
     return cssQuerySelector(element, selector);
   };
   static override querySelectorAll = (
     element: Node,
     selector: string,
-    {cssQuerySelectorAll}: PuppeteerUtil,
+    {cssQuerySelectorAll}: PuppeteerUtil
   ): Iterable<Node> => {
     return cssQuerySelectorAll(element, selector);
   };
