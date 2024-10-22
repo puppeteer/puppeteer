@@ -10,19 +10,19 @@ import fs from 'fs';
 import path from 'path';
 
 import {environment} from './environment.js';
-import {PuppeteerNode} from './node/PuppeteerNode.js';
-import {ScreenRecorder} from './node/ScreenRecorder.js';
+
+import * as Puppeteer from './index.js';
 
 // Set up Node-specific environment dependencies.
 environment.value = {
   fs,
   path,
-  ScreenRecorder,
+  ScreenRecorder: Puppeteer.ScreenRecorder,
 };
 /**
  * @public
  */
-const puppeteer = new PuppeteerNode({
+const puppeteer = new Puppeteer.PuppeteerNode({
   isPuppeteerCore: true,
 });
 
