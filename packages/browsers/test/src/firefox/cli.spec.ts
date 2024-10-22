@@ -55,17 +55,17 @@ describe('Firefox CLI', function () {
     ]);
     assert.ok(
       fs.existsSync(
-        path.join(tmpDir, 'firefox', `linux-${testFirefoxBuildId}`, 'firefox')
-      )
+        path.join(tmpDir, 'firefox', `linux-${testFirefoxBuildId}`, 'firefox'),
+      ),
     );
   });
 
   it('should download latest Firefox binaries', async () => {
-    sinon
-      .stub(httpUtil, 'getJSON')
-      .returns(
-        Promise.resolve({FIREFOX_NIGHTLY: testFirefoxBuildId.split('_').at(-1)})
-      );
+    sinon.stub(httpUtil, 'getJSON').returns(
+      Promise.resolve({
+        FIREFOX_NIGHTLY: testFirefoxBuildId.split('_').at(-1),
+      }),
+    );
     await new CLI(tmpDir).run([
       'npx',
       '@puppeteer/browsers',

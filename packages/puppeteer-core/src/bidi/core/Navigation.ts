@@ -52,7 +52,7 @@ export class Navigation extends EventEmitter<{
 
   #initialize() {
     const browsingContextEmitter = this.#disposables.use(
-      new EventEmitter(this.#browsingContext)
+      new EventEmitter(this.#browsingContext),
     );
     browsingContextEmitter.once('closed', () => {
       this.emit('failed', {
@@ -75,7 +75,7 @@ export class Navigation extends EventEmitter<{
       this.#request = request;
       this.emit('request', request);
       const requestEmitter = this.#disposables.use(
-        new EventEmitter(this.#request)
+        new EventEmitter(this.#request),
       );
 
       requestEmitter.on('redirect', request => {
@@ -84,7 +84,7 @@ export class Navigation extends EventEmitter<{
     });
 
     const sessionEmitter = this.#disposables.use(
-      new EventEmitter(this.#session)
+      new EventEmitter(this.#session),
     );
     sessionEmitter.on('browsingContext.navigationStarted', info => {
       if (

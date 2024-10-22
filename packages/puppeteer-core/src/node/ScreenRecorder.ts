@@ -63,7 +63,7 @@ export class ScreenRecorder extends PassThrough {
     page: Page,
     width: number,
     height: number,
-    {speed, scale, crop, format, path}: ScreenRecorderOptions = {}
+    {speed, scale, crop, format, path}: ScreenRecorderOptions = {},
   ) {
     super({allowHalfOpen: false});
 
@@ -118,7 +118,7 @@ export class ScreenRecorder extends PassThrough {
         ],
         'pipe:1',
       ].flat(),
-      {stdio: ['pipe', 'pipe', 'pipe']}
+      {stdio: ['pipe', 'pipe', 'pipe']},
     );
     this.#process.stdout.pipe(this);
     this.#process.stderr.on('data', (data: Buffer) => {
@@ -159,18 +159,18 @@ export class ScreenRecorder extends PassThrough {
           return from(
             Array<Buffer>(
               Math.round(
-                DEFAULT_FPS * Math.max(timestamp - previousTimestamp, 0)
-              )
-            ).fill(buffer)
+                DEFAULT_FPS * Math.max(timestamp - previousTimestamp, 0),
+              ),
+            ).fill(buffer),
           );
         }),
         map(buffer => {
           void this.#writeFrame(buffer);
           return [buffer, performance.now()] as const;
         }),
-        takeUntil(fromEvent(this.#controller.signal, 'abort'))
+        takeUntil(fromEvent(this.#controller.signal, 'abort')),
       ),
-      {defaultValue: [Buffer.from([]), performance.now()] as const}
+      {defaultValue: [Buffer.from([]), performance.now()] as const},
     );
   }
 
@@ -232,11 +232,11 @@ export class ScreenRecorder extends PassThrough {
       Array<Buffer>(
         Math.max(
           1,
-          Math.round((DEFAULT_FPS * (performance.now() - timestamp)) / 1000)
-        )
+          Math.round((DEFAULT_FPS * (performance.now() - timestamp)) / 1000),
+        ),
       )
         .fill(buffer)
-        .map(this.#writeFrame.bind(this))
+        .map(this.#writeFrame.bind(this)),
     );
 
     // Close stdin to notify FFmpeg we are done.

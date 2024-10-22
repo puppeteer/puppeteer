@@ -64,7 +64,7 @@ function parseBuildId(buildId: string): [FirefoxChannel, string] {
 export function resolveDownloadUrl(
   platform: BrowserPlatform,
   buildId: string,
-  baseUrl?: string
+  baseUrl?: string,
 ): string {
   const [channel] = parseBuildId(buildId);
   switch (channel) {
@@ -86,7 +86,7 @@ export function resolveDownloadUrl(
 
 export function resolveDownloadPath(
   platform: BrowserPlatform,
-  buildId: string
+  buildId: string,
 ): string[] {
   const [channel, resolvedBuildId] = parseBuildId(buildId);
   switch (channel) {
@@ -107,7 +107,7 @@ export function resolveDownloadPath(
 
 export function relativeExecutablePath(
   platform: BrowserPlatform,
-  buildId: string
+  buildId: string,
 ): string {
   const [channel] = parseBuildId(buildId);
   switch (channel) {
@@ -119,7 +119,7 @@ export function relativeExecutablePath(
             'Firefox Nightly.app',
             'Contents',
             'MacOS',
-            'firefox'
+            'firefox',
           );
         case BrowserPlatform.LINUX:
           return path.join('firefox', 'firefox');
@@ -153,7 +153,7 @@ export enum FirefoxChannel {
 }
 
 export async function resolveBuildId(
-  channel: FirefoxChannel = FirefoxChannel.NIGHTLY
+  channel: FirefoxChannel = FirefoxChannel.NIGHTLY,
 ): Promise<string> {
   const channelToVersionKey = {
     [FirefoxChannel.ESR]: 'FIREFOX_ESR',
@@ -163,7 +163,7 @@ export async function resolveBuildId(
     [FirefoxChannel.NIGHTLY]: 'FIREFOX_NIGHTLY',
   };
   const versions = (await getJSON(
-    new URL('https://product-details.mozilla.org/1.0/firefox_versions.json')
+    new URL('https://product-details.mozilla.org/1.0/firefox_versions.json'),
   )) as Record<string, string>;
   const version = versions[channelToVersionKey[channel]];
   if (!version) {
@@ -188,7 +188,7 @@ export async function createProfile(options: ProfileOptions): Promise<void> {
 }
 
 function defaultProfilePreferences(
-  extraPrefs: Record<string, unknown>
+  extraPrefs: Record<string, unknown>,
 ): Record<string, unknown> {
   const server = 'dummy.test';
 

@@ -129,13 +129,13 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       const {builder, configurations} = getAngularJsonScripts(tree);
 
       expect(tree.files).toContain(
-        getMultiApplicationFile('e2e/tsconfig.json')
+        getMultiApplicationFile('e2e/tsconfig.json'),
       );
       expect(tree.files).toContain(
-        getMultiApplicationFile('e2e/tests/app.e2e.ts')
+        getMultiApplicationFile('e2e/tests/app.e2e.ts'),
       );
       expect(tree.files).toContain(
-        getMultiApplicationFile('e2e/tests/utils.ts')
+        getMultiApplicationFile('e2e/tests/utils.ts'),
       );
       expect(devDependencies).toContain('puppeteer');
       expect(scripts['e2e']).toBe('ng e2e');
@@ -181,7 +181,7 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       const {options} = getAngularJsonScripts(tree);
 
       expect(tree.files).toContain(
-        getMultiApplicationFile('e2e/jest.config.js')
+        getMultiApplicationFile('e2e/jest.config.js'),
       );
       expect(devDependencies).toContain('jest');
       expect(devDependencies).toContain('@types/jest');
@@ -207,10 +207,10 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
 
       expect(tree.files).toContain(getMultiApplicationFile('e2e/.gitignore'));
       expect(tree.files).not.toContain(
-        getMultiApplicationFile('e2e/tests/app.e2e.ts')
+        getMultiApplicationFile('e2e/tests/app.e2e.ts'),
       );
       expect(tree.files).toContain(
-        getMultiApplicationFile('e2e/tests/app.test.ts')
+        getMultiApplicationFile('e2e/tests/app.test.ts'),
       );
       expect(options['testRunner']).toBe('node');
     });
@@ -242,17 +242,17 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       const config = getAngularJsonScripts(
         tree,
         true,
-        MULTI_LIBRARY_OPTIONS.name
+        MULTI_LIBRARY_OPTIONS.name,
       );
 
       expect(tree.files).not.toContain(
-        getMultiLibraryFile('e2e/tsconfig.json')
+        getMultiLibraryFile('e2e/tsconfig.json'),
       );
       expect(tree.files).not.toContain(
-        getMultiLibraryFile('e2e/tests/app.e2e.ts')
+        getMultiLibraryFile('e2e/tests/app.e2e.ts'),
       );
       expect(tree.files).not.toContain(
-        getMultiLibraryFile('e2e/tests/utils.ts')
+        getMultiLibraryFile('e2e/tests/utils.ts'),
       );
       expect(config).toBeUndefined();
     });

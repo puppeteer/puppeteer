@@ -15,7 +15,7 @@ import puppeteer from 'puppeteer-core';
   } catch (error) {
     if (
       error.message.includes(
-        'Browser was not found at the configured executablePath (node)'
+        'Browser was not found at the configured executablePath (node)',
       )
     ) {
       process.exit(0);

@@ -93,7 +93,7 @@ describe('Coverage specs', function () {
       expect(entry.text.substring(range1.start, range1.end)).toBe('\n');
       const range2 = entry.ranges[1]!;
       expect(entry.text.substring(range2.start, range2.end)).toBe(
-        `console.log('used!');if(true===false)`
+        `console.log('used!');if(true===false)`,
       );
     });
     it('should report right ranges for "per function" scope', async () => {
@@ -113,7 +113,7 @@ describe('Coverage specs', function () {
       expect(entry.text.substring(range1.start, range1.end)).toBe('\n');
       const range2 = entry.ranges[1]!;
       expect(entry.text.substring(range2.start, range2.end)).toBe(
-        `console.log('used!');if(true===false)console.log('unused!');`
+        `console.log('used!');if(true===false)console.log('unused!');`,
       );
     });
     it('should report scripts that have no coverage', async () => {
@@ -134,7 +134,7 @@ describe('Coverage specs', function () {
       await page.goto(server.PREFIX + '/jscoverage/involved.html');
       const coverage = await page.coverage.stopJSCoverage();
       expect(
-        JSON.stringify(coverage, null, 2).replace(/:\d{4,5}\//g, ':<PORT>/')
+        JSON.stringify(coverage, null, 2).replace(/:\d{4,5}\//g, ':<PORT>/'),
       ).toBeGolden('jscoverage-involved.txt');
     });
     // @see https://crbug.com/990945
@@ -220,7 +220,7 @@ describe('Coverage specs', function () {
       expect(coverage[0]!.ranges).toEqual([{start: 1, end: 22}]);
       const range = coverage[0]!.ranges[0]!;
       expect(coverage[0]!.text.substring(range.start, range.end)).toBe(
-        'div { color: green; }'
+        'div { color: green; }',
       );
     });
     it('should report sourceURLs', async () => {
@@ -275,7 +275,7 @@ describe('Coverage specs', function () {
       await page.goto(server.PREFIX + '/csscoverage/involved.html');
       const coverage = await page.coverage.stopCSSCoverage();
       expect(
-        JSON.stringify(coverage, null, 2).replace(/:\d{4,5}\//g, ':<PORT>/')
+        JSON.stringify(coverage, null, 2).replace(/:\d{4,5}\//g, ':<PORT>/'),
       ).toBeGolden('csscoverage-involved.txt');
     });
     it('should work with empty stylesheets', async () => {

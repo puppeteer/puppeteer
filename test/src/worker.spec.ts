@@ -27,7 +27,7 @@ describe('Workers', function () {
     expect(
       await worker?.evaluate(() => {
         return (globalThis as any).workerFunction();
-      })
+      }),
     ).toBe('worker function result');
 
     await page.goto(server.EMPTY_PAGE);
@@ -104,7 +104,7 @@ describe('Workers', function () {
     const errorPromise = waitEvent<Error>(page, 'pageerror');
     await page.evaluate(() => {
       return new Worker(
-        `data:text/javascript, throw new Error('this is my error');`
+        `data:text/javascript, throw new Error('this is my error');`,
       );
     });
     const errorLog = await errorPromise;

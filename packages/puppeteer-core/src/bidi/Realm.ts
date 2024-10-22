@@ -125,7 +125,7 @@ export abstract class BidiRealm extends Realm {
   ): Promise<HandleFor<Awaited<ReturnType<Func>>> | Awaited<ReturnType<Func>>> {
     const sourceUrlComment = getSourceUrlComment(
       getSourcePuppeteerURLIfAvailable(pageFunction)?.toString() ??
-        PuppeteerURL.INTERNAL_URL
+        PuppeteerURL.INTERNAL_URL,
     );
 
     let responsePromise;
@@ -165,7 +165,7 @@ export abstract class BidiRealm extends Realm {
             ? await Promise.all(
                 args.map(arg => {
                   return this.serializeAsync(arg);
-                })
+                }),
               )
             : args.map(arg => {
                 return this.serialize(arg);
@@ -173,7 +173,7 @@ export abstract class BidiRealm extends Realm {
           resultOwnership,
           userActivation: true,
           serializationOptions,
-        }
+        },
       );
     }
 
@@ -189,7 +189,7 @@ export abstract class BidiRealm extends Realm {
   }
 
   createHandle(
-    result: Bidi.Script.RemoteValue
+    result: Bidi.Script.RemoteValue,
   ): BidiJSHandle<unknown> | BidiElementHandle<Node> {
     if (
       (result.type === 'node' || result.type === 'window') &&
@@ -215,12 +215,12 @@ export abstract class BidiRealm extends Realm {
           !(this instanceof BidiFrameRealm)
         ) {
           throw new Error(
-            "Trying to evaluate JSHandle from different global types. Usually this means you're using a handle from a worker in a page or vice versa."
+            "Trying to evaluate JSHandle from different global types. Usually this means you're using a handle from a worker in a page or vice versa.",
           );
         }
         if (arg.realm.environment !== this.environment) {
           throw new Error(
-            "Trying to evaluate JSHandle from different frames. Usually this means you're using a handle from a page on a different page."
+            "Trying to evaluate JSHandle from different frames. Usually this means you're using a handle from a page on a different page.",
           );
         }
       }
@@ -264,7 +264,7 @@ export abstract class BidiRealm extends Realm {
   }
 
   override async transferHandle<T extends JSHandle<Node>>(
-    handle: T
+    handle: T,
   ): Promise<T> {
     if (handle.realm === this) {
       return handle;
@@ -312,24 +312,24 @@ export class BidiFrameRealm extends BidiRealm {
           this.environment as BidiFrame,
           '__ariaQuerySelector',
           ARIAQueryHandler.queryOne,
-          !!this.sandbox
+          !!this.sandbox,
         ),
         ExposeableFunction.from(
           this.environment as BidiFrame,
           '__ariaQuerySelectorAll',
           async (
             element: BidiElementHandle<Node>,
-            selector: string
+            selector: string,
           ): Promise<JSHandle<Node[]>> => {
             const results = ARIAQueryHandler.queryAll(element, selector);
             return await element.realm.evaluateHandle(
               (...elements) => {
                 return elements;
               },
-              ...(await AsyncIterableUtil.collect(results))
+              ...(await AsyncIterableUtil.collect(results)),
             );
           },
-          !!this.sandbox
+          !!this.sandbox,
         ),
       ]);
       this.#bindingsInstalled = true;
@@ -348,7 +348,7 @@ export class BidiFrameRealm extends BidiRealm {
   }
 
   override async adoptBackendNode(
-    backendNodeId?: number | undefined
+    backendNodeId?: number | undefined,
   ): Promise<JSHandle<Node>> {
     const {object} = await this.#frame.client.send('DOM.resolveNode', {
       backendNodeId,
@@ -359,7 +359,7 @@ export class BidiFrameRealm extends BidiRealm {
         handle: object.objectId,
         type: 'node',
       },
-      this
+      this,
     );
     // We need the sharedId, so we perform the following to obtain it.
     return await handle.evaluateHandle(element => {
@@ -374,7 +374,7 @@ export class BidiFrameRealm extends BidiRealm {
 export class BidiWorkerRealm extends BidiRealm {
   static from(
     realm: DedicatedWorkerRealm | SharedWorkerRealm,
-    worker: BidiWebWorker
+    worker: BidiWebWorker,
   ): BidiWorkerRealm {
     const workerRealm = new BidiWorkerRealm(realm, worker);
     workerRealm.initialize();
@@ -386,7 +386,7 @@ export class BidiWorkerRealm extends BidiRealm {
 
   private constructor(
     realm: DedicatedWorkerRealm | SharedWorkerRealm,
-    frame: BidiWebWorker
+    frame: BidiWebWorker,
   ) {
     super(realm, frame.timeoutSettings);
     this.#worker = frame;

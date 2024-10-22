@@ -19,7 +19,7 @@ import type {EventType} from './EventEmitter.js';
 export namespace NetworkManagerEvent {
   export const Request = Symbol('NetworkManager.Request');
   export const RequestServedFromCache = Symbol(
-    'NetworkManager.RequestServedFromCache'
+    'NetworkManager.RequestServedFromCache',
   );
   export const Response = Symbol('NetworkManager.Response');
   export const RequestFailed = Symbol('NetworkManager.RequestFailed');

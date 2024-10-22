@@ -25,21 +25,21 @@ function folder(platform: BrowserPlatform): string {
 export function resolveDownloadUrl(
   platform: BrowserPlatform,
   buildId: string,
-  baseUrl = 'https://storage.googleapis.com/chrome-for-testing-public'
+  baseUrl = 'https://storage.googleapis.com/chrome-for-testing-public',
 ): string {
   return `${baseUrl}/${resolveDownloadPath(platform, buildId).join('/')}`;
 }
 
 export function resolveDownloadPath(
   platform: BrowserPlatform,
-  buildId: string
+  buildId: string,
 ): string[] {
   return [buildId, folder(platform), `chromedriver-${folder(platform)}.zip`];
 }
 
 export function relativeExecutablePath(
   platform: BrowserPlatform,
-  _buildId: string
+  _buildId: string,
 ): string {
   switch (platform) {
     case BrowserPlatform.MAC:

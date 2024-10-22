@@ -54,7 +54,7 @@ export class PuppeteerURL {
 
   static fromCallSite(
     functionName: string,
-    site: NodeJS.CallSite
+    site: NodeJS.CallSite,
   ): PuppeteerURL {
     const url = new PuppeteerURL();
     url.#functionName = functionName;
@@ -99,7 +99,7 @@ export class PuppeteerURL {
  */
 export const withSourcePuppeteerURLIfNone = <T extends NonNullable<unknown>>(
   functionName: string,
-  object: T
+  object: T,
 ): T => {
   if (Object.prototype.hasOwnProperty.call(object, SOURCE_URL)) {
     return object;
@@ -125,7 +125,7 @@ export const withSourcePuppeteerURLIfNone = <T extends NonNullable<unknown>>(
 export const getSourcePuppeteerURLIfAvailable = <
   T extends NonNullable<unknown>,
 >(
-  object: T
+  object: T,
 ): PuppeteerURL | undefined => {
   if (Object.prototype.hasOwnProperty.call(object, SOURCE_URL)) {
     return object[SOURCE_URL as keyof T] as PuppeteerURL;
@@ -196,7 +196,7 @@ export function evaluationString(
  */
 export async function getReadableAsTypedArray(
   readable: ReadableStream<Uint8Array>,
-  path?: string
+  path?: string,
 ): Promise<Uint8Array | null> {
   const buffers: Uint8Array[] = [];
   const reader = readable.getReader();
@@ -244,7 +244,7 @@ export async function getReadableAsTypedArray(
  */
 export async function getReadableFromProtocolStream(
   client: CDPSession,
-  handle: string
+  handle: string,
 ): Promise<ReadableStream<Uint8Array>> {
   return new ReadableStream({
     async pull(controller) {
@@ -275,7 +275,7 @@ export async function getReadableFromProtocolStream(
  * @internal
  */
 export function validateDialogType(
-  type: string
+  type: string,
 ): 'alert' | 'confirm' | 'prompt' | 'beforeunload' {
   let dialogType = null;
   const validDialogTypes = new Set([
@@ -301,7 +301,7 @@ export function timeout(ms: number, cause?: Error): Observable<never> {
     : timer(ms).pipe(
         map(() => {
           throw new TimeoutError(`Timed out after waiting ${ms}ms`, {cause});
-        })
+        }),
       );
 }
 
@@ -333,7 +333,7 @@ export const NETWORK_IDLE_TIME = 500;
  */
 export function parsePDFOptions(
   options: PDFOptions = {},
-  lengthUnit: 'in' | 'cm' = 'in'
+  lengthUnit: 'in' | 'cm' = 'in',
 ): ParsedPDFOptions {
   const defaults: Omit<ParsedPDFOptions, 'width' | 'height' | 'margin'> = {
     scale: 1,
@@ -399,7 +399,7 @@ export const unitToPixels = {
 
 function convertPrintParameterToInches(
   parameter?: string | number,
-  lengthUnit: 'in' | 'cm' = 'in'
+  lengthUnit: 'in' | 'cm' = 'in',
 ): number | undefined {
   if (typeof parameter === 'undefined') {
     return undefined;
@@ -425,7 +425,7 @@ function convertPrintParameterToInches(
     pixels = value * unitToPixels[unit as keyof typeof unitToPixels];
   } else {
     throw new Error(
-      'page.pdf() Cannot handle parameter type: ' + typeof parameter
+      'page.pdf() Cannot handle parameter type: ' + typeof parameter,
     );
   }
   return pixels / unitToPixels[lengthUnit];
@@ -454,7 +454,7 @@ export function fromEmitterEvent<
  */
 export function fromAbortSignal(
   signal?: AbortSignal,
-  cause?: Error
+  cause?: Error,
 ): Observable<never> {
   return signal
     ? fromEvent(signal, 'abort').pipe(
@@ -465,7 +465,7 @@ export function fromAbortSignal(
           }
 
           throw new Error(signal.reason, {cause});
-        })
+        }),
       )
     : NEVER;
 }
@@ -474,7 +474,7 @@ export function fromAbortSignal(
  * @internal
  */
 export function filterAsync<T>(
-  predicate: (value: T) => boolean | PromiseLike<boolean>
+  predicate: (value: T) => boolean | PromiseLike<boolean>,
 ): OperatorFunction<T, T> {
   return mergeMap<T, Observable<T>>((value): Observable<T> => {
     return from(Promise.resolve(predicate(value))).pipe(
@@ -483,7 +483,7 @@ export function filterAsync<T>(
       }),
       map(() => {
         return value;
-      })
+      }),
     );
   });
 }

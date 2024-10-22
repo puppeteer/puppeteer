@@ -28,7 +28,7 @@ describe('Keyboard', function () {
     expect(
       await page.evaluate(() => {
         return document.querySelector('textarea')!.value;
-      })
+      }),
     ).toBe(text);
   });
   it('should move with the arrow keys', async () => {
@@ -39,7 +39,7 @@ describe('Keyboard', function () {
     expect(
       await page.evaluate(() => {
         return document.querySelector('textarea')!.value;
-      })
+      }),
     ).toBe('Hello World!');
     for (const _ of 'World!') {
       await page.keyboard.press('ArrowLeft');
@@ -48,7 +48,7 @@ describe('Keyboard', function () {
     expect(
       await page.evaluate(() => {
         return document.querySelector('textarea')!.value;
-      })
+      }),
     ).toBe('Hello inserted World!');
     await page.keyboard.down('Shift');
     for (const _ of 'inserted ') {
@@ -59,7 +59,7 @@ describe('Keyboard', function () {
     expect(
       await page.evaluate(() => {
         return document.querySelector('textarea')!.value;
-      })
+      }),
     ).toBe('Hello World!');
   });
   // @see https://github.com/puppeteer/puppeteer/issues/1313
@@ -87,7 +87,7 @@ describe('Keyboard', function () {
     expect(
       await page.evaluate(() => {
         return document.querySelector('textarea')!.value;
-      })
+      }),
     ).toBe('hellohello');
   });
   it('should send a character with ElementHandle.press', async () => {
@@ -99,7 +99,7 @@ describe('Keyboard', function () {
     expect(
       await page.evaluate(() => {
         return document.querySelector('textarea')!.value;
-      })
+      }),
     ).toBe('a');
 
     await page.evaluate(() => {
@@ -108,7 +108,7 @@ describe('Keyboard', function () {
         e => {
           return e.preventDefault();
         },
-        true
+        true,
       );
     });
 
@@ -116,7 +116,7 @@ describe('Keyboard', function () {
     expect(
       await page.evaluate(() => {
         return document.querySelector('textarea')!.value;
-      })
+      }),
     ).toBe('a');
   });
   it('ElementHandle.press should not support |text| option', async () => {
@@ -128,7 +128,7 @@ describe('Keyboard', function () {
     expect(
       await page.evaluate(() => {
         return document.querySelector('textarea')!.value;
-      })
+      }),
     ).toBe('a');
   });
   it('should send a character with sendCharacter', async () => {
@@ -145,14 +145,14 @@ describe('Keyboard', function () {
         () => {
           (globalThis as any).inputCount += 1;
         },
-        true
+        true,
       );
       window.addEventListener(
         'keydown',
         () => {
           (globalThis as any).keyDownCount += 1;
         },
-        true
+        true,
       );
     });
 
@@ -164,7 +164,7 @@ describe('Keyboard', function () {
           inputs: (globalThis as any).inputCount,
           keyDowns: (globalThis as any).keyDownCount,
         };
-      })
+      }),
     ).toMatchObject({value: '嗨', inputs: 1, keyDowns: 0});
 
     await page.keyboard.sendCharacter('a');
@@ -175,7 +175,7 @@ describe('Keyboard', function () {
           inputs: (globalThis as any).inputCount,
           keyDowns: (globalThis as any).keyDownCount,
         };
-      })
+      }),
     ).toMatchObject({value: '嗨a', inputs: 2, keyDowns: 0});
   });
   it('should send a character with sendCharacter in iframe', async () => {
@@ -206,14 +206,14 @@ describe('Keyboard', function () {
         () => {
           (globalThis as any).inputCount += 1;
         },
-        true
+        true,
       );
       window.addEventListener(
         'keydown',
         () => {
           (globalThis as any).keyDownCount += 1;
         },
-        true
+        true,
       );
     });
 
@@ -225,7 +225,7 @@ describe('Keyboard', function () {
           inputs: (globalThis as any).inputCount,
           keyDowns: (globalThis as any).keyDownCount,
         };
-      })
+      }),
     ).toMatchObject({value: '嗨', inputs: 1, keyDowns: 0});
 
     await page.keyboard.sendCharacter('a');
@@ -236,7 +236,7 @@ describe('Keyboard', function () {
           inputs: (globalThis as any).inputCount,
           keyDowns: (globalThis as any).keyDownCount,
         };
-      })
+      }),
     ).toMatchObject({value: '嗨a', inputs: 2, keyDowns: 0});
   });
   it('should report shiftKey', async () => {
@@ -250,22 +250,22 @@ describe('Keyboard', function () {
       expect(
         await page.evaluate(() => {
           return (globalThis as any).getResult();
-        })
+        }),
       ).toBe(`Keydown: ${modifierKey} ${modifierKey}Left [${modifierKey}]`);
       await keyboard.down('!');
       if (modifierKey === 'Shift') {
         expect(
           await page.evaluate(() => {
             return (globalThis as any).getResult();
-          })
+          }),
         ).toBe(
-          `Keydown: ! Digit1 [${modifierKey}]\n` + `input: ! insertText false`
+          `Keydown: ! Digit1 [${modifierKey}]\n` + `input: ! insertText false`,
         );
       } else {
         expect(
           await page.evaluate(() => {
             return (globalThis as any).getResult();
-          })
+          }),
         ).toBe(`Keydown: ! Digit1 [${modifierKey}]`);
       }
 
@@ -273,13 +273,13 @@ describe('Keyboard', function () {
       expect(
         await page.evaluate(() => {
           return (globalThis as any).getResult();
-        })
+        }),
       ).toBe(`Keyup: ! Digit1 [${modifierKey}]`);
       await keyboard.up(modifierKey);
       expect(
         await page.evaluate(() => {
           return (globalThis as any).getResult();
-        })
+        }),
       ).toBe(`Keyup: ${modifierKey} ${modifierKey}Left []`);
     }
   });
@@ -292,37 +292,37 @@ describe('Keyboard', function () {
     expect(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
-      })
+      }),
     ).toBe('Keydown: Control ControlLeft [Control]');
     await keyboard.down('Alt');
     expect(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
-      })
+      }),
     ).toBe('Keydown: Alt AltLeft [Alt Control]');
     await keyboard.down(';');
     expect(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
-      })
+      }),
     ).toBe('Keydown: ; Semicolon [Alt Control]');
     await keyboard.up(';');
     expect(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
-      })
+      }),
     ).toBe('Keyup: ; Semicolon [Alt Control]');
     await keyboard.up('Control');
     expect(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
-      })
+      }),
     ).toBe('Keyup: Control ControlLeft [Alt]');
     await keyboard.up('Alt');
     expect(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
-      })
+      }),
     ).toBe('Keyup: Alt AltLeft []');
   });
   it('should send proper codes while typing', async () => {
@@ -333,25 +333,25 @@ describe('Keyboard', function () {
     expect(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
-      })
+      }),
     ).toBe(
       [
         'Keydown: ! Digit1 []',
         'input: ! insertText false',
         'Keyup: ! Digit1 []',
-      ].join('\n')
+      ].join('\n'),
     );
     await page.keyboard.type('^');
     expect(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
-      })
+      }),
     ).toBe(
       [
         'Keydown: ^ Digit6 []',
         'input: ^ insertText false',
         'Keyup: ^ Digit6 []',
-      ].join('\n')
+      ].join('\n'),
     );
   });
   it('should send proper codes while typing with shift', async () => {
@@ -364,14 +364,14 @@ describe('Keyboard', function () {
     expect(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
-      })
+      }),
     ).toBe(
       [
         'Keydown: Shift ShiftLeft [Shift]',
         'Keydown: ~ Backquote [Shift]',
         'input: ~ insertText false',
         'Keyup: ~ Backquote [Shift]',
-      ].join('\n')
+      ].join('\n'),
     );
     await keyboard.up('Shift');
   });
@@ -393,14 +393,14 @@ describe('Keyboard', function () {
             event.preventDefault();
           }
         },
-        false
+        false,
       );
     });
     await page.keyboard.type('Hello World!');
     expect(
       await page.evaluate(() => {
         return (globalThis as any).textarea.value;
-      })
+      }),
     ).toBe('He Wrd!');
   });
   it('should specify repeat property', async () => {
@@ -414,33 +414,33 @@ describe('Keyboard', function () {
         e => {
           return ((globalThis as any).lastEvent = e);
         },
-        true
+        true,
       );
     });
     await page.keyboard.down('a');
     expect(
       await page.evaluate(() => {
         return (globalThis as any).lastEvent.repeat;
-      })
+      }),
     ).toBe(false);
     await page.keyboard.press('a');
     expect(
       await page.evaluate(() => {
         return (globalThis as any).lastEvent.repeat;
-      })
+      }),
     ).toBe(true);
 
     await page.keyboard.down('b');
     expect(
       await page.evaluate(() => {
         return (globalThis as any).lastEvent.repeat;
-      })
+      }),
     ).toBe(false);
     await page.keyboard.down('b');
     expect(
       await page.evaluate(() => {
         return (globalThis as any).lastEvent.repeat;
-      })
+      }),
     ).toBe(true);
 
     await page.keyboard.up('a');
@@ -448,7 +448,7 @@ describe('Keyboard', function () {
     expect(
       await page.evaluate(() => {
         return (globalThis as any).lastEvent.repeat;
-      })
+      }),
     ).toBe(false);
   });
   it('should type all kinds of characters', async () => {
@@ -470,7 +470,7 @@ describe('Keyboard', function () {
         event => {
           return ((globalThis as any).keyLocation = event.location);
         },
-        true
+        true,
       );
     });
     using textarea = (await page.$('textarea'))!;
@@ -506,7 +506,7 @@ describe('Keyboard', function () {
     expect(
       await page.$eval('textarea', textarea => {
         return textarea.value;
-      })
+      }),
     ).toBe('👹 Tokyo street Japan 🇯🇵');
   });
   it('should type emoji into an iframe', async () => {
@@ -516,7 +516,7 @@ describe('Keyboard', function () {
     await attachFrame(
       page,
       'emoji-test',
-      server.PREFIX + '/input/textarea.html'
+      server.PREFIX + '/input/textarea.html',
     );
     const frame = page.frames()[1]!;
     using textarea = (await frame.$('textarea'))!;
@@ -524,7 +524,7 @@ describe('Keyboard', function () {
     expect(
       await frame.$eval('textarea', textarea => {
         return textarea.value;
-      })
+      }),
     ).toBe('👹 Tokyo street Japan 🇯🇵');
   });
   it('should press the meta key', async () => {

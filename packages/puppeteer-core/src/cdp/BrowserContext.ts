@@ -53,7 +53,7 @@ export class CdpBrowserContext extends BrowserContext {
         })
         .map(target => {
           return target.page();
-        })
+        }),
     );
     return pages.filter((page): page is Page => {
       return !!page;
@@ -62,7 +62,7 @@ export class CdpBrowserContext extends BrowserContext {
 
   override async overridePermissions(
     origin: string,
-    permissions: Permission[]
+    permissions: Permission[],
   ): Promise<void> {
     const protocolPermissions = permissions.map(permission => {
       const protocolPermission =

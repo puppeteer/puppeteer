@@ -144,7 +144,7 @@ describe('Locator', function () {
       expect(
         await button?.evaluate(el => {
           return el.innerText;
-        })
+        }),
       ).toBe('test');
       await button?.evaluate(el => {
         el.style.display = 'block';
@@ -156,7 +156,7 @@ describe('Locator', function () {
       expect(
         await button?.evaluate(el => {
           return el.innerText;
-        })
+        }),
       ).toBe('clicked');
     });
 
@@ -172,7 +172,7 @@ describe('Locator', function () {
       expect(
         await button?.evaluate(el => {
           return el.innerText;
-        })
+        }),
       ).toBe('test');
       await button?.evaluate(el => {
         el.disabled = false;
@@ -181,7 +181,7 @@ describe('Locator', function () {
       expect(
         await button?.evaluate(el => {
           return el.innerText;
-        })
+        }),
       ).toBe('clicked');
     });
 
@@ -197,7 +197,7 @@ describe('Locator', function () {
       expect(
         await button?.evaluate(el => {
           return el.innerText;
-        })
+        }),
       ).toBe('test');
       await button?.evaluate(el => {
         el.disabled = false;
@@ -207,7 +207,7 @@ describe('Locator', function () {
       expect(
         await button?.evaluate(el => {
           return el.innerText;
-        })
+        }),
       ).toBe('clicked');
     });
 
@@ -227,7 +227,7 @@ describe('Locator', function () {
         const result = page.locator('button').click();
         clock.tick(5100);
         await expect(result).rejects.toEqual(
-          new TimeoutError('Timed out after waiting 5000ms')
+          new TimeoutError('Timed out after waiting 5000ms'),
         );
       } finally {
         clock.restore();
@@ -249,7 +249,7 @@ describe('Locator', function () {
         const result = page.locator('button').click();
         clock.tick(5100);
         await expect(result).rejects.toEqual(
-          new TimeoutError('Timed out after waiting 5000ms')
+          new TimeoutError('Timed out after waiting 5000ms'),
         );
       } finally {
         clock.restore();
@@ -377,7 +377,7 @@ describe('Locator', function () {
       expect(
         await page.evaluate(() => {
           return document.querySelector('textarea')?.value === 'test';
-        })
+        }),
       ).toBe(true);
       expect(filled).toBe(true);
     });
@@ -401,7 +401,7 @@ describe('Locator', function () {
       expect(
         await page.evaluate(() => {
           return document.querySelector('select')?.value === 'value2';
-        })
+        }),
       ).toBe(true);
       expect(filled).toBe(true);
     });
@@ -415,7 +415,7 @@ describe('Locator', function () {
       expect(
         await page.evaluate(() => {
           return document.querySelector('input')?.value === 'test';
-        })
+        }),
       ).toBe(true);
     });
 
@@ -430,7 +430,7 @@ describe('Locator', function () {
       expect(
         await input?.evaluate(el => {
           return el.value;
-        })
+        }),
       ).toBe('');
       await input?.evaluate(el => {
         el.disabled = false;
@@ -439,7 +439,7 @@ describe('Locator', function () {
       expect(
         await input?.evaluate(el => {
           return el.value;
-        })
+        }),
       ).toBe('test');
     });
 
@@ -452,7 +452,7 @@ describe('Locator', function () {
       expect(
         await page.evaluate(() => {
           return document.querySelector('div')?.innerText === 'test';
-        })
+        }),
       ).toBe(true);
     });
 
@@ -465,7 +465,7 @@ describe('Locator', function () {
       expect(
         await page.evaluate(() => {
           return document.querySelector('input')?.value === 'test';
-        })
+        }),
       ).toBe(true);
     });
 
@@ -478,7 +478,7 @@ describe('Locator', function () {
       expect(
         await page.evaluate(() => {
           return document.querySelector('input')?.value === 'test';
-        })
+        }),
       ).toBe(true);
     });
 
@@ -491,7 +491,7 @@ describe('Locator', function () {
       expect(
         await page.evaluate(() => {
           return document.querySelector('input')?.value === '#333333';
-        })
+        }),
       ).toBe(true);
     });
   });
@@ -563,7 +563,7 @@ describe('Locator', function () {
           .click();
         clock.tick(5100);
         await expect(result).rejects.toEqual(
-          new TimeoutError('Timed out after waiting 5000ms')
+          new TimeoutError('Timed out after waiting 5000ms'),
         );
       } finally {
         clock.restore();
@@ -591,7 +591,7 @@ describe('Locator', function () {
           .map(element => {
             return element.getAttribute('clickable');
           })
-          .wait()
+          .wait(),
       ).resolves.toEqual(null);
       await page.evaluate(() => {
         document.querySelector('div')?.setAttribute('clickable', 'true');
@@ -602,7 +602,7 @@ describe('Locator', function () {
           .map(element => {
             return element.getAttribute('clickable');
           })
-          .wait()
+          .wait(),
       ).resolves.toEqual('true');
     });
     it('should work with throws', async () => {
@@ -756,7 +756,7 @@ describe('Locator', function () {
       await expect(
         page.evaluate(() => {
           return (window as unknown as {clicked: boolean}).clicked;
-        })
+        }),
       ).resolves.toEqual(true);
     });
   });

@@ -56,7 +56,7 @@ function findTestingOption<
   Property extends keyof PuppeteerSchematicsConfig['options'],
 >(
   [name, project]: [string, AngularProject | undefined],
-  property: Property
+  property: Property,
 ): PuppeteerSchematicsConfig['options'][Property] {
   if (!project) {
     throw new Error(`Project "${name}" not found.`);
@@ -91,7 +91,7 @@ function addE2EFile(options: SchematicsSpec): Rule {
           });
     if (!foundProject) {
       throw new SchematicsException(
-        `Project not found! Please run "ng generate @puppeteer/ng-schematics:test <Test> <Project>"`
+        `Project not found! Please run "ng generate @puppeteer/ng-schematics:test <Test> <Project>"`,
       );
     }
 
@@ -112,7 +112,7 @@ function addE2EFile(options: SchematicsSpec): Rule {
           ext: testRunner === TestRunner.Node ? 'test' : 'e2e',
           port,
         },
-      }
+      },
     );
   };
 }

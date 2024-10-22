@@ -52,12 +52,12 @@ async function copySchemaFiles() {
     moves.map(({to}) => {
       const dir = path.dirname(to);
       return fs.mkdir(dir, {recursive: true});
-    })
+    }),
   );
   await Promise.all(
     moves.map(({from, to}) => {
       return fs.copyFile(from, to);
-    })
+    }),
   );
 }
 

@@ -146,8 +146,8 @@ describe('Accessibility', function () {
         };
     expect(
       findFocusedNode(
-        await page.accessibility.snapshot({interestingOnly: false})
-      )
+        await page.accessibility.snapshot({interestingOnly: false}),
+      ),
     ).toMatchObject(golden);
   });
   it('get snapshots while the tree is re-calculated', async () => {
@@ -185,7 +185,7 @@ describe('Accessibility', function () {
           })
         </script>
       </body>
-      </html>`
+      </html>`,
     );
     async function getAccessibleName(page: any, element: any) {
       return (await page.accessibility.snapshot({root: element})).name;
@@ -199,7 +199,7 @@ describe('Accessibility', function () {
     const {page} = await getTestState();
 
     await page.setContent(
-      '<div tabIndex=-1 aria-roledescription="foo">Hi</div>'
+      '<div tabIndex=-1 aria-roledescription="foo">Hi</div>',
     );
     const snapshot = await page.accessibility.snapshot();
     // See https://chromium-review.googlesource.com/c/chromium/src/+/3088862
@@ -212,7 +212,7 @@ describe('Accessibility', function () {
     const {page} = await getTestState();
 
     await page.setContent(
-      '<a href="" role="slider" aria-orientation="vertical">11</a>'
+      '<a href="" role="slider" aria-orientation="vertical">11</a>',
     );
     const snapshot = await page.accessibility.snapshot();
     assert(snapshot);
@@ -234,7 +234,7 @@ describe('Accessibility', function () {
     const {page} = await getTestState();
 
     await page.setContent(
-      '<div role="grid" tabIndex=-1 aria-multiselectable=true>hey</div>'
+      '<div role="grid" tabIndex=-1 aria-multiselectable=true>hey</div>',
     );
     const snapshot = await page.accessibility.snapshot();
     assert(snapshot);
@@ -246,7 +246,7 @@ describe('Accessibility', function () {
     const {page} = await getTestState();
 
     await page.setContent(
-      '<div role="grid" tabIndex=-1 aria-keyshortcuts="foo">hey</div>'
+      '<div role="grid" tabIndex=-1 aria-keyshortcuts="foo">hey</div>',
     );
     const snapshot = await page.accessibility.snapshot();
     assert(snapshot);
@@ -478,7 +478,7 @@ describe('Accessibility', function () {
           {
             role: 'button',
             name: 'My Button',
-          }
+          },
         );
       });
       it('should work an input', async () => {
@@ -536,7 +536,7 @@ describe('Accessibility', function () {
           await page.accessibility.snapshot({
             root: div,
             interestingOnly: false,
-          })
+          }),
         ).toMatchObject({
           role: 'generic',
           name: '',
@@ -568,14 +568,14 @@ describe('Accessibility', function () {
         expect(
           await buttonHandle?.evaluate(button => {
             return button.innerHTML;
-          })
+          }),
         ).toEqual('My Button');
       });
     });
   });
 
   function findFocusedNode(
-    node: SerializedAXNode | null
+    node: SerializedAXNode | null,
   ): SerializedAXNode | null {
     if (node?.focused) {
       return node;

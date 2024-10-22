@@ -29,13 +29,13 @@ import {execFile, readAsset} from './util.js';
       // Write a Webpack configuration.
       await writeFile(
         join(this.sandbox, 'tsconfig.json'),
-        await readAsset('puppeteer', 'tsconfig.json')
+        await readAsset('puppeteer', 'tsconfig.json'),
       );
 
       // Write the source code.
       await writeFile(
         join(this.sandbox, 'index.ts'),
-        await readAsset('puppeteer', 'basic.ts')
+        await readAsset('puppeteer', 'basic.ts'),
       );
 
       // Compile.
@@ -45,5 +45,5 @@ import {execFile, readAsset} from './util.js';
 
       await this.runScript(script, 'cjs');
     });
-  }
+  },
 );

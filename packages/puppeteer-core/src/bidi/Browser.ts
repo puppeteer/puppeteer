@@ -92,7 +92,7 @@ export class BidiBrowser extends Browser {
     await session.subscribe(
       session.capabilities.browserName.toLocaleLowerCase().includes('firefox')
         ? BidiBrowser.subscribeModules
-        : [...BidiBrowser.subscribeModules, ...BidiBrowser.subscribeCdpEvents]
+        : [...BidiBrowser.subscribeModules, ...BidiBrowser.subscribeCdpEvents],
     );
 
     const browser = new BidiBrowser(session.browser, opts);
@@ -165,19 +165,19 @@ export class BidiBrowser extends Browser {
       BrowserContextEvent.TargetCreated,
       target => {
         this.#trustedEmitter.emit(BrowserEvent.TargetCreated, target);
-      }
+      },
     );
     browserContext.trustedEmitter.on(
       BrowserContextEvent.TargetChanged,
       target => {
         this.#trustedEmitter.emit(BrowserEvent.TargetChanged, target);
-      }
+      },
     );
     browserContext.trustedEmitter.on(
       BrowserContextEvent.TargetDestroyed,
       target => {
         this.#trustedEmitter.emit(BrowserEvent.TargetDestroyed, target);
-      }
+      },
     );
 
     return browserContext;
@@ -217,7 +217,7 @@ export class BidiBrowser extends Browser {
   }
 
   override async createBrowserContext(
-    _options?: BrowserContextOptions
+    _options?: BrowserContextOptions,
   ): Promise<BidiBrowserContext> {
     const userContext = await this.#browserCore.createUserContext();
     return this.#createBrowserContext(userContext);

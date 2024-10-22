@@ -73,26 +73,26 @@ describe('Screencasts', function () {
       await expect(page.screencast({speed: -1})).rejects.toBeDefined();
 
       await expect(
-        page.screencast({crop: {x: 0, y: 0, height: 1, width: 0}})
+        page.screencast({crop: {x: 0, y: 0, height: 1, width: 0}}),
       ).rejects.toBeDefined();
       await expect(
-        page.screencast({crop: {x: 0, y: 0, height: 0, width: 1}})
+        page.screencast({crop: {x: 0, y: 0, height: 0, width: 1}}),
       ).rejects.toBeDefined();
       await expect(
-        page.screencast({crop: {x: -1, y: 0, height: 1, width: 1}})
+        page.screencast({crop: {x: -1, y: 0, height: 1, width: 1}}),
       ).rejects.toBeDefined();
       await expect(
-        page.screencast({crop: {x: 0, y: -1, height: 1, width: 1}})
+        page.screencast({crop: {x: 0, y: -1, height: 1, width: 1}}),
       ).rejects.toBeDefined();
       await expect(
-        page.screencast({crop: {x: 0, y: 0, height: 10000, width: 1}})
+        page.screencast({crop: {x: 0, y: 0, height: 10000, width: 1}}),
       ).rejects.toBeDefined();
       await expect(
-        page.screencast({crop: {x: 0, y: 0, height: 1, width: 10000}})
+        page.screencast({crop: {x: 0, y: 0, height: 1, width: 10000}}),
       ).rejects.toBeDefined();
 
       await expect(
-        page.screencast({ffmpegPath: 'non-existent-path'})
+        page.screencast({ffmpegPath: 'non-existent-path'}),
       ).rejects.toBeDefined();
     });
   });

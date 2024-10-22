@@ -29,7 +29,7 @@ describe('Chrome', () => {
         buildId: '123',
         cacheDir: '.cache',
       }),
-      path.join('.cache', 'chrome', 'linux-123', 'chrome-linux64', 'chrome')
+      path.join('.cache', 'chrome', 'linux-123', 'chrome-linux64', 'chrome'),
     );
   });
 
@@ -42,7 +42,7 @@ describe('Chrome', () => {
 
     beforeEach(async () => {
       tmpDir = fs.mkdtempSync(
-        path.join(os.tmpdir(), 'puppeteer-browsers-test')
+        path.join(os.tmpdir(), 'puppeteer-browsers-test'),
       );
       await install({
         cacheDir: tmpDir,

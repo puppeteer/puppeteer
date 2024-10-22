@@ -77,7 +77,7 @@ export class FirefoxTargetManager
   constructor(
     connection: Connection,
     targetFactory: TargetFactory,
-    targetFilterCallback?: TargetFilterCallback
+    targetFilterCallback?: TargetFilterCallback,
   ) {
     super();
     this.#connection = connection;
@@ -88,7 +88,7 @@ export class FirefoxTargetManager
     this.#connection.on('Target.targetDestroyed', this.#onTargetDestroyed);
     this.#connection.on(
       CDPSessionEvent.SessionDetached,
-      this.#onSessionDetached
+      this.#onSessionDetached,
     );
     this.setupAttachmentListeners(this.#connection);
   }
@@ -111,7 +111,7 @@ export class FirefoxTargetManager
     if (this.#attachedToTargetListenersBySession.has(session)) {
       session.off(
         'Target.attachedToTarget',
-        this.#attachedToTargetListenersBySession.get(session)!
+        this.#attachedToTargetListenersBySession.get(session)!,
       );
       this.#attachedToTargetListenersBySession.delete(session);
     }
@@ -140,7 +140,7 @@ export class FirefoxTargetManager
   }
 
   #onTargetCreated = async (
-    event: Protocol.Target.TargetCreatedEvent
+    event: Protocol.Target.TargetCreatedEvent,
   ): Promise<void> => {
     if (this.#discoveredTargetsByTargetId.has(event.targetInfo.targetId)) {
       return;
@@ -148,7 +148,7 @@ export class FirefoxTargetManager
 
     this.#discoveredTargetsByTargetId.set(
       event.targetInfo.targetId,
-      event.targetInfo
+      event.targetInfo,
     );
 
     if (event.targetInfo.type === 'browser' && event.targetInfo.attached) {
@@ -182,7 +182,7 @@ export class FirefoxTargetManager
 
   #onAttachedToTarget = async (
     parentSession: Connection | CDPSession,
-    event: Protocol.Target.AttachedToTargetEvent
+    event: Protocol.Target.AttachedToTargetEvent,
   ) => {
     const targetInfo = event.targetInfo;
     const session = this.#connection.session(event.sessionId);
@@ -199,7 +199,7 @@ export class FirefoxTargetManager
 
     this.#availableTargetsBySessionId.set(
       session.id(),
-      this.#availableTargetsByTargetId.get(targetInfo.targetId)!
+      this.#availableTargetsByTargetId.get(targetInfo.targetId)!,
     );
 
     parentSession.emit(CDPSessionEvent.Ready, session);

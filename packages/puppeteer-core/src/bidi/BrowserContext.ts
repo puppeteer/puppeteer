@@ -41,7 +41,7 @@ export class BidiBrowserContext extends BrowserContext {
   static from(
     browser: BidiBrowser,
     userContext: UserContext,
-    options: BidiBrowserContextOptions
+    options: BidiBrowserContextOptions,
   ): BidiBrowserContext {
     const context = new BidiBrowserContext(browser, userContext, options);
     context.#initialize();
@@ -69,7 +69,7 @@ export class BidiBrowserContext extends BrowserContext {
   private constructor(
     browser: BidiBrowser,
     userContext: UserContext,
-    options: BidiBrowserContextOptions
+    options: BidiBrowserContextOptions,
   ) {
     super();
     this.#browser = browser;
@@ -179,7 +179,7 @@ export class BidiBrowserContext extends BrowserContext {
     using _guard = await this.waitForScreenshotOperations();
 
     const context = await this.userContext.createBrowsingContext(
-      Bidi.BrowsingContext.CreateType.Tab
+      Bidi.BrowsingContext.CreateType.Tab,
     );
     const page = this.#pages.get(context)!;
     if (!page) {
@@ -199,7 +199,7 @@ export class BidiBrowserContext extends BrowserContext {
   override async close(): Promise<void> {
     assert(
       this.userContext.id !== UserContext.DEFAULT,
-      'Default BrowserContext cannot be closed!'
+      'Default BrowserContext cannot be closed!',
     );
 
     try {
@@ -223,7 +223,7 @@ export class BidiBrowserContext extends BrowserContext {
 
   override async overridePermissions(
     origin: string,
-    permissions: Permission[]
+    permissions: Permission[],
   ): Promise<void> {
     const permissionsSet = new Set(
       permissions.map(permission => {
@@ -233,7 +233,7 @@ export class BidiBrowserContext extends BrowserContext {
           throw new Error('Unknown permission: ' + permission);
         }
         return permission;
-      })
+      }),
     );
     await Promise.all(
       Array.from(WEB_PERMISSION_TO_PROTOCOL_PERMISSION.keys()).map(
@@ -245,7 +245,7 @@ export class BidiBrowserContext extends BrowserContext {
             },
             permissionsSet.has(permission)
               ? Bidi.Permissions.PermissionState.Granted
-              : Bidi.Permissions.PermissionState.Denied
+              : Bidi.Permissions.PermissionState.Denied,
           );
           this.#overrides.push({origin, permission});
           // TODO: some permissions are outdated and setting them to denied does
@@ -254,8 +254,8 @@ export class BidiBrowserContext extends BrowserContext {
             return result.catch(debugError);
           }
           return result;
-        }
-      )
+        },
+      ),
     );
   }
 
@@ -267,7 +267,7 @@ export class BidiBrowserContext extends BrowserContext {
           {
             name: permission,
           },
-          Bidi.Permissions.PermissionState.Prompt
+          Bidi.Permissions.PermissionState.Prompt,
         )
         .catch(debugError);
     });

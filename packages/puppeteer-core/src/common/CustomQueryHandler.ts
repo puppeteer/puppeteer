@@ -74,15 +74,15 @@ export class CustomQueryHandlerRegistry {
   register(name: string, handler: CustomQueryHandler): void {
     assert(
       !this.#handlers.has(name),
-      `Cannot register over existing handler: ${name}`
+      `Cannot register over existing handler: ${name}`,
     );
     assert(
       /^[a-zA-Z]+$/.test(name),
-      `Custom query handler names may only contain [a-zA-Z]`
+      `Custom query handler names may only contain [a-zA-Z]`,
     );
     assert(
       handler.queryAll || handler.queryOne,
-      `At least one query method must be implemented.`
+      `At least one query method must be implemented.`,
     );
 
     const Handler = class extends QueryHandler {
@@ -92,7 +92,7 @@ export class CustomQueryHandlerRegistry {
             .get(PLACEHOLDER('name'))!
             .querySelectorAll(node, selector);
         },
-        {name: JSON.stringify(name)}
+        {name: JSON.stringify(name)},
       );
       static override querySelector: QuerySelector = interpolateFunction(
         (node, selector, PuppeteerUtil) => {
@@ -100,7 +100,7 @@ export class CustomQueryHandlerRegistry {
             .get(PLACEHOLDER('name'))!
             .querySelector(node, selector);
         },
-        {name: JSON.stringify(name)}
+        {name: JSON.stringify(name)},
       );
     };
     const registerScript = interpolateFunction(
@@ -118,7 +118,7 @@ export class CustomQueryHandlerRegistry {
         queryOne: handler.queryOne
           ? stringifyFunction(handler.queryOne)
           : String(undefined),
-      }
+      },
     ).toString();
 
     this.#handlers.set(name, [registerScript, Handler]);

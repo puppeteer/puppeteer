@@ -37,7 +37,7 @@ declare global {
        */
       withDebugLogs: (
         description: string,
-        body: (this: MochaBase.Suite) => void
+        body: (this: MochaBase.Suite) => void,
       ) => void;
     }
     export interface TestFunction {
@@ -48,7 +48,7 @@ declare global {
       deflake: (
         repeats: number,
         title: string,
-        fn: MochaBase.AsyncFunc
+        fn: MochaBase.AsyncFunc,
       ) => void;
       /*
        * Use to rerun a single test and capture logs for the failed attempts
@@ -56,7 +56,7 @@ declare global {
       deflakeOnly: (
         repeats: number,
         title: string,
-        fn: MochaBase.AsyncFunc
+        fn: MochaBase.AsyncFunc,
       ) => void;
     }
   }
@@ -82,7 +82,7 @@ try {
 } catch (error) {
   if (isErrorLike(error)) {
     console.warn(
-      `Error parsing EXTRA_LAUNCH_OPTIONS: ${error.message}. Skipping.`
+      `Error parsing EXTRA_LAUNCH_OPTIONS: ${error.message}. Skipping.`,
     );
   } else {
     throw error;
@@ -97,18 +97,18 @@ const defaultBrowserOptions = Object.assign(
     dumpio: !!process.env['DUMPIO'],
     protocol,
   } satisfies PuppeteerLaunchOptions,
-  extraLaunchOptions
+  extraLaunchOptions,
 );
 
 if (defaultBrowserOptions.executablePath) {
   console.warn(
-    `WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}`
+    `WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}`,
   );
 } else {
   const executablePath = puppeteer.executablePath();
   if (!fs.existsSync(executablePath)) {
     throw new Error(
-      `Browser is not downloaded at ${executablePath}. Run 'npm install' and try to re-run tests`
+      `Browser is not downloaded at ${executablePath}. Run 'npm install' and try to re-run tests`,
     );
   }
 }
@@ -188,7 +188,7 @@ export const setupTestBrowserHooks = (): void => {
         console.log(
           key,
           // @ts-expect-error TS cannot the key type.
-          `${Math.round(((memory[key] / 1024 / 1024) * 100) / 100)} MB`
+          `${Math.round(((memory[key] / 1024 / 1024) * 100) / 100)} MB`,
         );
       }
     }
@@ -207,12 +207,12 @@ export const getTestState = async (
   options: {
     skipLaunch?: boolean;
     skipContextCreation?: boolean;
-  } = {}
+  } = {},
 ): Promise<PuppeteerTestState> => {
   const {skipLaunch = false, skipContextCreation = false} = options;
 
   state.defaultBrowserOptions = JSON.parse(
-    JSON.stringify(processVariables.defaultBrowserOptions)
+    JSON.stringify(processVariables.defaultBrowserOptions),
   );
 
   state.server?.reset();
@@ -283,12 +283,12 @@ if (
         ? '--headless=new'
         : '--headless'
       : 'headful'
-  }`
+  }`,
   );
 }
 
 const browserNotClosedError = new Error(
-  'A manually launched browser was not closed!'
+  'A manually launched browser was not closed!',
 );
 
 export const mochaHooks: Mocha.RootHookObject = {
@@ -304,7 +304,7 @@ export const mochaHooks: Mocha.RootHookObject = {
       state.isHeadless = processVariables.isHeadless;
       state.headless = processVariables.headless;
       state.puppeteerPath = path.resolve(
-        path.join(__dirname, '..', '..', 'packages', 'puppeteer')
+        path.join(__dirname, '..', '..', 'packages', 'puppeteer'),
       );
     }
 
@@ -332,7 +332,7 @@ export const mochaHooks: Mocha.RootHookObject = {
       ]);
     } catch {
       throw new Error(
-        `Closing defaults (HTTP TestServer, HTTPS TestServer, Browser ) failed in ${lastTestFile}}`
+        `Closing defaults (HTTP TestServer, HTTPS TestServer, Browser ) failed in ${lastTestFile}}`,
       );
     }
     if (browserCleanupsAfterAll.length > 0) {
@@ -380,7 +380,7 @@ expect.extend({
       pass: false,
       message: () => {
         return `"${actual}" didn't contain any of the strings ${JSON.stringify(
-          expected
+          expected,
         )}`;
       },
     };
@@ -389,7 +389,7 @@ expect.extend({
 
 export const expectCookieEquals = async (
   cookies: Cookie[],
-  expectedCookies: Array<Partial<Cookie>>
+  expectedCookies: Array<Partial<Cookie>>,
 ): Promise<void> => {
   if (!processVariables.isChrome) {
     // Only keep standard properties when testing on a browser other than Chrome.
@@ -407,7 +407,7 @@ export const expectCookieEquals = async (
             'size',
             'value',
           ].includes(key);
-        })
+        }),
       );
     });
   }
@@ -422,7 +422,7 @@ export const shortWaitForArrayToHaveAtLeastNElements = async (
   data: unknown[],
   minLength: number,
   attempts = 3,
-  timeout = 50
+  timeout = 50,
 ): Promise<void> => {
   for (let i = 0; i < attempts; i++) {
     if (data.length >= minLength) {
@@ -436,7 +436,7 @@ export const shortWaitForArrayToHaveAtLeastNElements = async (
 
 export const createTimeout = <T>(
   n: number,
-  value?: T
+  value?: T,
 ): Promise<T | undefined> => {
   return new Promise(resolve => {
     setTimeout(() => {
@@ -475,7 +475,7 @@ export const launch = async (
     after?: 'each' | 'all';
     createContext?: boolean;
     createPage?: boolean;
-  } = {}
+  } = {},
 ): Promise<
   PuppeteerTestState & {
     close: () => Promise<void>;

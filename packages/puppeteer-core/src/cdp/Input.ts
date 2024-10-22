@@ -55,7 +55,7 @@ export class CdpKeyboard extends Keyboard {
     options: Readonly<KeyDownOptions> = {
       text: undefined,
       commands: [],
-    }
+    },
   ): Promise<void> {
     const description = this.#keyDescriptionForString(key);
 
@@ -174,7 +174,7 @@ export class CdpKeyboard extends Keyboard {
 
   override async type(
     text: string,
-    options: Readonly<KeyboardTypeOptions> = {}
+    options: Readonly<KeyboardTypeOptions> = {},
   ): Promise<void> {
     const delay = options.delay || undefined;
     for (const char of text) {
@@ -193,7 +193,7 @@ export class CdpKeyboard extends Keyboard {
 
   override async press(
     key: KeyInput,
-    options: Readonly<KeyPressOptions> = {}
+    options: Readonly<KeyPressOptions> = {},
   ): Promise<void> {
     const {delay = null} = options;
     await this.down(key, options);
@@ -238,7 +238,7 @@ const getFlag = (button: MouseButton): MouseButtonFlag => {
  * https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:content/browser/renderer_host/input/web_input_event_builders_mac.mm;drc=a61b95c63b0b75c1cfe872d9c8cdf927c226046e;bpv=1;bpt=1;l=221.
  */
 const getButtonFromPressedButtons = (
-  buttons: number
+  buttons: number,
 ): Protocol.Input.MouseButton => {
   if (buttons & MouseButtonFlag.Left) {
     return MouseButton.Left;
@@ -319,7 +319,9 @@ export class CdpMouse extends Mouse {
    * the error of the action.
    */
   async #withTransaction(
-    action: (update: (updates: Partial<MouseState>) => void) => Promise<unknown>
+    action: (
+      update: (updates: Partial<MouseState>) => void,
+    ) => Promise<unknown>,
   ): Promise<void> {
     const {update, commit, rollback} = this.#createTransaction();
     try {
@@ -353,7 +355,7 @@ export class CdpMouse extends Mouse {
   override async move(
     x: number,
     y: number,
-    options: Readonly<MouseMoveOptions> = {}
+    options: Readonly<MouseMoveOptions> = {},
   ): Promise<void> {
     const {steps = 1} = options;
     const from = this.#state.position;
@@ -431,7 +433,7 @@ export class CdpMouse extends Mouse {
   override async click(
     x: number,
     y: number,
-    options: Readonly<MouseClickOptions> = {}
+    options: Readonly<MouseClickOptions> = {},
   ): Promise<void> {
     const {delay, count = 1, clickCount = count} = options;
     if (count < 1) {
@@ -442,7 +444,7 @@ export class CdpMouse extends Mouse {
       for (let i = 1; i < count; ++i) {
         actions.push(
           this.down({...options, clickCount: i}),
-          this.up({...options, clickCount: i})
+          this.up({...options, clickCount: i}),
         );
       }
     }
@@ -459,7 +461,7 @@ export class CdpMouse extends Mouse {
   }
 
   override async wheel(
-    options: Readonly<MouseWheelOptions> = {}
+    options: Readonly<MouseWheelOptions> = {},
   ): Promise<void> {
     const {deltaX = 0, deltaY = 0} = options;
     const {position, buttons} = this.#state;
@@ -476,7 +478,7 @@ export class CdpMouse extends Mouse {
 
   override async drag(
     start: Point,
-    target: Point
+    target: Point,
   ): Promise<Protocol.Input.DragData> {
     const promise = new Promise<Protocol.Input.DragData>(resolve => {
       this.#client.once('Input.dragIntercepted', event => {
@@ -491,7 +493,7 @@ export class CdpMouse extends Mouse {
 
   override async dragEnter(
     target: Point,
-    data: Protocol.Input.DragData
+    data: Protocol.Input.DragData,
   ): Promise<void> {
     await this.#client.send('Input.dispatchDragEvent', {
       type: 'dragEnter',
@@ -504,7 +506,7 @@ export class CdpMouse extends Mouse {
 
   override async dragOver(
     target: Point,
-    data: Protocol.Input.DragData
+    data: Protocol.Input.DragData,
   ): Promise<void> {
     await this.#client.send('Input.dispatchDragEvent', {
       type: 'dragOver',
@@ -517,7 +519,7 @@ export class CdpMouse extends Mouse {
 
   override async drop(
     target: Point,
-    data: Protocol.Input.DragData
+    data: Protocol.Input.DragData,
   ): Promise<void> {
     await this.#client.send('Input.dispatchDragEvent', {
       type: 'drop',
@@ -531,7 +533,7 @@ export class CdpMouse extends Mouse {
   override async dragAndDrop(
     start: Point,
     target: Point,
-    options: {delay?: number} = {}
+    options: {delay?: number} = {},
   ): Promise<void> {
     const {delay = null} = options;
     const data = await this.drag(start, target);

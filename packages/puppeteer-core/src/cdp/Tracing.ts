@@ -66,7 +66,7 @@ export class Tracing {
   async start(options: TracingOptions = {}): Promise<void> {
     assert(
       !this.#recording,
-      'Cannot start recording trace while already recording trace.'
+      'Cannot start recording trace while already recording trace.',
     );
 
     const defaultCategories = [
@@ -121,7 +121,7 @@ export class Tracing {
         assert(event.stream, 'Missing "stream"');
         const readable = await getReadableFromProtocolStream(
           this.#client,
-          event.stream
+          event.stream,
         );
         const typedArray = await getReadableAsTypedArray(readable, this.#path);
         contentDeferred.resolve(typedArray ?? undefined);

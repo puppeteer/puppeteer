@@ -19,7 +19,7 @@ export class CdpDialog extends Dialog {
     client: CDPSession,
     type: Protocol.Page.DialogType,
     message: string,
-    defaultValue = ''
+    defaultValue = '',
   ) {
     super(type, message, defaultValue);
     this.#client = client;

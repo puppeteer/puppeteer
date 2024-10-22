@@ -24,12 +24,12 @@ describe('Target', function () {
     expect(
       targets.some(target => {
         return target.type() === 'page' && target.url() === 'about:blank';
-      })
+      }),
     ).toBeTruthy();
     expect(
       targets.some(target => {
         return target.type() === 'browser';
-      })
+      }),
     ).toBeTruthy();
   });
   it('Browser.pages should return all of the pages', async () => {
@@ -60,7 +60,7 @@ describe('Target', function () {
     expect(
       await originalPage.evaluate(() => {
         return ['Hello', 'world'].join(' ');
-      })
+      }),
     ).toBe('Hello world');
     expect(await originalPage.$('body')).toBeTruthy();
   });
@@ -77,7 +77,7 @@ describe('Target', function () {
               );
             });
           },
-          {timeout: 3000}
+          {timeout: 3000},
         )
         .then(target => {
           return target.page();
@@ -87,7 +87,7 @@ describe('Target', function () {
       }, server.CROSS_PROCESS_PREFIX + '/empty.html'),
     ]);
     expect(otherPage!.url()).toEqual(
-      server.CROSS_PROCESS_PREFIX + '/empty.html'
+      server.CROSS_PROCESS_PREFIX + '/empty.html',
     );
     expect(page).not.toBe(otherPage);
   });
@@ -100,7 +100,7 @@ describe('Target', function () {
           target => {
             return target.url() === server.CROSS_PROCESS_PREFIX + '/empty.html';
           },
-          {timeout: 3000}
+          {timeout: 3000},
         )
         .then(target => {
           return target.page();
@@ -113,7 +113,7 @@ describe('Target', function () {
     expect(
       await otherPage!.evaluate(() => {
         return ['Hello', 'world'].join(' ');
-      })
+      }),
     ).toBe('Hello world');
     expect(await otherPage!.$('body')).toBeTruthy();
 
@@ -130,7 +130,7 @@ describe('Target', function () {
     allPages = (await Promise.all(
       context.targets().map(target => {
         return target.page();
-      })
+      }),
     )) as Page[];
     expect(allPages).toContain(page);
     expect(allPages).not.toContain(otherPage);
@@ -145,7 +145,7 @@ describe('Target', function () {
 
     expect((await createdTarget).type()).toBe('service_worker');
     expect((await createdTarget).url()).toBe(
-      server.PREFIX + '/serviceworkers/empty/sw.js'
+      server.PREFIX + '/serviceworkers/empty/sw.js',
     );
 
     const destroyedTarget = waitEvent(context, 'targetdestroyed');
@@ -169,14 +169,14 @@ describe('Target', function () {
       target => {
         return target.type() === 'service_worker';
       },
-      {timeout: 3000}
+      {timeout: 3000},
     );
     const worker = (await target.worker())!;
 
     expect(
       await worker.evaluate(() => {
         return self.toString();
-      })
+      }),
     ).toBe('[object ServiceWorkerGlobalScope]');
   });
 
@@ -189,7 +189,7 @@ describe('Target', function () {
       target => {
         return target.type() === 'service_worker';
       },
-      {timeout: 3000}
+      {timeout: 3000},
     );
     const worker = (await target.worker())!;
 
@@ -213,13 +213,13 @@ describe('Target', function () {
       target => {
         return target.type() === 'shared_worker';
       },
-      {timeout: 3000}
+      {timeout: 3000},
     );
     const worker = (await target.worker())!;
     expect(
       await worker.evaluate(() => {
         return self.toString();
-      })
+      }),
     ).toBe('[object SharedWorkerGlobalScope]');
   });
 
@@ -234,7 +234,7 @@ describe('Target', function () {
       target => {
         return target.type() === 'shared_worker';
       },
-      {timeout: 3000}
+      {timeout: 3000},
     );
     const worker = (await target.worker())!;
 
@@ -304,7 +304,7 @@ describe('Target', function () {
       target => {
         return target.url().includes('one-style.html');
       },
-      {timeout: 3000}
+      {timeout: 3000},
     );
     const newPage = (await target.page())!;
     const loadEvent = waitEvent(newPage, 'load');
@@ -325,7 +325,7 @@ describe('Target', function () {
       page.goto(server.PREFIX + '/popup/window-open.html'),
     ]);
     expect((await createdTarget.page())!.url()).toBe(
-      server.PREFIX + '/popup/popup.html'
+      server.PREFIX + '/popup/popup.html',
     );
     expect(createdTarget.opener()).toBe(page.target());
     expect(page.target().opener()).toBeUndefined();
@@ -340,7 +340,7 @@ describe('Target', function () {
         target => {
           return target.url() === server.EMPTY_PAGE;
         },
-        {timeout: 3000}
+        {timeout: 3000},
       );
       targetPromise
         .then(() => {
@@ -380,7 +380,7 @@ describe('Target', function () {
           },
           {
             timeout: 1,
-          }
+          },
         )
         .catch(error_ => {
           return (error = error_);
@@ -396,7 +396,7 @@ describe('Target', function () {
         },
         {
           signal: abortController.signal,
-        }
+        },
       );
 
       abortController.abort();

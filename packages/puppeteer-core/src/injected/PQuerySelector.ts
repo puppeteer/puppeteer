@@ -96,7 +96,7 @@ class PQueryEngine {
               if (isQueryableNode(element)) {
                 yield* element.querySelectorAll(selector);
               }
-            }
+            },
           );
         } else {
           this.elements = AsyncIterableUtil.flatMap(
@@ -118,9 +118,9 @@ class PQueryEngine {
                 }
               }
               yield* element.parentElement.querySelectorAll(
-                `:scope>:nth-child(${index})${selector}`
+                `:scope>:nth-child(${index})${selector}`,
               );
-            }
+            },
           );
         }
       } else {
@@ -144,7 +144,7 @@ class PQueryEngine {
                 }
                 yield* querySelector.querySelectorAll(element, selector.value);
             }
-          }
+          },
         );
       }
     }
@@ -247,7 +247,7 @@ const domSort = async function* (elements: AwaitableIterable<Node>) {
  */
 export const pQuerySelectorAll = function (
   root: Node,
-  selector: string
+  selector: string,
 ): AwaitableIterable<Node> {
   const selectors = JSON.parse(selector) as ComplexPSelectorList;
   // If there are any empty elements, then this implies the selector has
@@ -274,7 +274,7 @@ export const pQuerySelectorAll = function (
       const query = new PQueryEngine(root, selectorParts);
       void query.run();
       return query.elements;
-    })
+    }),
   );
 };
 
@@ -285,7 +285,7 @@ export const pQuerySelectorAll = function (
  */
 export const pQuerySelector = async function (
   root: Node,
-  selector: string
+  selector: string,
 ): Promise<Node | null> {
   for await (const element of pQuerySelectorAll(root, selector)) {
     return element;

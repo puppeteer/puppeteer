@@ -17,14 +17,14 @@ export class PQueryHandler extends QueryHandler {
   static override querySelectorAll: QuerySelectorAll = (
     element,
     selector,
-    {pQuerySelectorAll}
+    {pQuerySelectorAll},
   ) => {
     return pQuerySelectorAll(element, selector);
   };
   static override querySelector: QuerySelector = (
     element,
     selector,
-    {pQuerySelector}
+    {pQuerySelector},
   ) => {
     return pQuerySelector(element, selector);
   };

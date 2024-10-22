@@ -68,11 +68,11 @@ function addDependencies(options: SchematicsOptions): Rule {
           new NodePackageInstallTask({
             // Trigger Post-Install hooks to download the browser
             allowScripts: true,
-          })
+          }),
         );
 
         return tree;
-      })
+      }),
     );
   };
 }

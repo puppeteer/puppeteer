@@ -51,7 +51,7 @@ export class ChromeLauncher extends BrowserLauncher {
             'Rosetta translating the Chrome binary, even if Chrome is already arm64. This would',
             'result in huge performance issues. To resolve this, you must run Puppeteer with',
             'a version of Node built for arm64.',
-          ].join('\n  ')
+          ].join('\n  '),
         );
       }
     }
@@ -63,7 +63,7 @@ export class ChromeLauncher extends BrowserLauncher {
    * @internal
    */
   override async computeLaunchArguments(
-    options: PuppeteerNodeLaunchOptions = {}
+    options: PuppeteerNodeLaunchOptions = {},
   ): Promise<ResolvedLaunchArgs> {
     const {
       ignoreDefaultArgs = false,
@@ -81,7 +81,7 @@ export class ChromeLauncher extends BrowserLauncher {
       chromeArguments.push(
         ...this.defaultArgs(options).filter(arg => {
           return !ignoreDefaultArgs.includes(arg);
-        })
+        }),
       );
     } else {
       chromeArguments.push(...args);
@@ -95,7 +95,7 @@ export class ChromeLauncher extends BrowserLauncher {
       if (pipe) {
         assert(
           !debuggingPort,
-          'Browser should be launched with either pipe or debugging port - not both.'
+          'Browser should be launched with either pipe or debugging port - not both.',
         );
         chromeArguments.push('--remote-debugging-pipe');
       } else {
@@ -113,7 +113,7 @@ export class ChromeLauncher extends BrowserLauncher {
     if (userDataDirIndex < 0) {
       isTempUserDataDir = true;
       chromeArguments.push(
-        `--user-data-dir=${await mkdtemp(this.getProfilePath())}`
+        `--user-data-dir=${await mkdtemp(this.getProfilePath())}`,
       );
       userDataDirIndex = chromeArguments.length - 1;
     }
@@ -125,7 +125,7 @@ export class ChromeLauncher extends BrowserLauncher {
     if (!chromeExecutable) {
       assert(
         channel || !this.puppeteer._isPuppeteerCore,
-        `An \`executablePath\` or \`channel\` must be specified for \`puppeteer-core\``
+        `An \`executablePath\` or \`channel\` must be specified for \`puppeteer-core\``,
       );
       chromeExecutable = this.executablePath(channel, options.headless ?? true);
     }
@@ -143,7 +143,7 @@ export class ChromeLauncher extends BrowserLauncher {
    */
   override async cleanUserDataDir(
     path: string,
-    opts: {isTemp: boolean}
+    opts: {isTemp: boolean},
   ): Promise<void> {
     if (opts.isTemp) {
       try {
@@ -160,7 +160,7 @@ export class ChromeLauncher extends BrowserLauncher {
 
     const userDisabledFeatures = getFeatures(
       '--disable-features',
-      options.args
+      options.args,
     );
     if (options.args && userDisabledFeatures.length > 0) {
       removeMatchingFlags(options.args, '--disable-features');
@@ -252,7 +252,7 @@ export class ChromeLauncher extends BrowserLauncher {
       chromeArguments.push(
         headless === 'shell' ? '--headless' : '--headless=new',
         '--hide-scrollbars',
-        '--mute-audio'
+        '--mute-audio',
       );
     }
     if (
@@ -268,7 +268,7 @@ export class ChromeLauncher extends BrowserLauncher {
 
   override executablePath(
     channel?: ChromeReleaseChannel,
-    headless?: boolean | 'shell'
+    headless?: boolean | 'shell',
   ): string {
     if (channel) {
       return computeSystemExecutablePath({
@@ -282,7 +282,7 @@ export class ChromeLauncher extends BrowserLauncher {
 }
 
 function convertPuppeteerChannelToBrowsersChannel(
-  channel: ChromeReleaseChannel
+  channel: ChromeReleaseChannel,
 ): BrowsersChromeReleaseChannel {
   switch (channel) {
     case 'chrome':
