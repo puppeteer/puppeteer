@@ -42,7 +42,7 @@ describe('acceptInsecureCerts', function () {
   });
 
   describe('Response.securityDetails', function () {
-    it.only('should work', async () => {
+    it('should work', async () => {
       const {httpsServer, page} = state;
 
       const [serverRequest, response] = await Promise.all([
