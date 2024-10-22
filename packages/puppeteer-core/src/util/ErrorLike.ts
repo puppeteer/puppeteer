@@ -39,7 +39,7 @@ export function isErrnoException(obj: unknown): obj is NodeJS.ErrnoException {
 export function rewriteError(
   error: ProtocolError,
   message: string,
-  originalMessage?: string
+  originalMessage?: string,
 ): Error {
   error.message = message;
   error.originalMessage = originalMessage ?? error.originalMessage;

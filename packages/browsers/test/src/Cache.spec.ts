@@ -52,7 +52,7 @@ describe('Cache', () => {
 
     assert.deepStrictEqual(
       cache.resolveAlias(Browser.CHROME, 'canary'),
-      '123.0.0.0'
+      '123.0.0.0',
     );
   });
 
@@ -66,7 +66,7 @@ describe('Cache', () => {
 
     assert.deepStrictEqual(
       cache.resolveAlias(Browser.CHROME, 'latest'),
-      '115.0.5789'
+      '115.0.5789',
     );
   });
 });

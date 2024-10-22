@@ -18,23 +18,23 @@ describe('ChromeDriver', () => {
   it('should resolve download URLs', () => {
     assert.strictEqual(
       resolveDownloadUrl(BrowserPlatform.LINUX, '115.0.5763.0'),
-      'https://storage.googleapis.com/chrome-for-testing-public/115.0.5763.0/linux64/chromedriver-linux64.zip'
+      'https://storage.googleapis.com/chrome-for-testing-public/115.0.5763.0/linux64/chromedriver-linux64.zip',
     );
     assert.strictEqual(
       resolveDownloadUrl(BrowserPlatform.MAC, '115.0.5763.0'),
-      'https://storage.googleapis.com/chrome-for-testing-public/115.0.5763.0/mac-x64/chromedriver-mac-x64.zip'
+      'https://storage.googleapis.com/chrome-for-testing-public/115.0.5763.0/mac-x64/chromedriver-mac-x64.zip',
     );
     assert.strictEqual(
       resolveDownloadUrl(BrowserPlatform.MAC_ARM, '115.0.5763.0'),
-      'https://storage.googleapis.com/chrome-for-testing-public/115.0.5763.0/mac-arm64/chromedriver-mac-arm64.zip'
+      'https://storage.googleapis.com/chrome-for-testing-public/115.0.5763.0/mac-arm64/chromedriver-mac-arm64.zip',
     );
     assert.strictEqual(
       resolveDownloadUrl(BrowserPlatform.WIN32, '115.0.5763.0'),
-      'https://storage.googleapis.com/chrome-for-testing-public/115.0.5763.0/win32/chromedriver-win32.zip'
+      'https://storage.googleapis.com/chrome-for-testing-public/115.0.5763.0/win32/chromedriver-win32.zip',
     );
     assert.strictEqual(
       resolveDownloadUrl(BrowserPlatform.WIN64, '115.0.5763.0'),
-      'https://storage.googleapis.com/chrome-for-testing-public/115.0.5763.0/win64/chromedriver-win64.zip'
+      'https://storage.googleapis.com/chrome-for-testing-public/115.0.5763.0/win64/chromedriver-win64.zip',
     );
   });
 
@@ -49,23 +49,23 @@ describe('ChromeDriver', () => {
   it('should resolve executable paths', () => {
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.LINUX, '12372323'),
-      path.join('chromedriver-linux64', 'chromedriver')
+      path.join('chromedriver-linux64', 'chromedriver'),
     );
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.MAC, '12372323'),
-      path.join('chromedriver-mac-x64/', 'chromedriver')
+      path.join('chromedriver-mac-x64/', 'chromedriver'),
     );
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.MAC_ARM, '12372323'),
-      path.join('chromedriver-mac-arm64', 'chromedriver')
+      path.join('chromedriver-mac-arm64', 'chromedriver'),
     );
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.WIN32, '12372323'),
-      path.join('chromedriver-win32', 'chromedriver.exe')
+      path.join('chromedriver-win32', 'chromedriver.exe'),
     );
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.WIN64, '12372323'),
-      path.join('chromedriver-win64', 'chromedriver.exe')
+      path.join('chromedriver-win64', 'chromedriver.exe'),
     );
   });
 });

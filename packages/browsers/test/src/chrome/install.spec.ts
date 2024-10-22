@@ -47,7 +47,7 @@ describe('Chrome install', () => {
         platform: BrowserPlatform.LINUX,
         buildId: testChromeBuildId,
         baseUrl: getServerUrl(),
-      })
+      }),
     );
   });
 
@@ -60,7 +60,7 @@ describe('Chrome install', () => {
         buildId: 'unknown',
         baseUrl: getServerUrl(),
       }),
-      false
+      false,
     );
   });
 
@@ -69,7 +69,7 @@ describe('Chrome install', () => {
     const expectedOutputPath = path.join(
       tmpDir,
       'chrome',
-      `${BrowserPlatform.LINUX}-${testChromeBuildId}`
+      `${BrowserPlatform.LINUX}-${testChromeBuildId}`,
     );
     fs.mkdirSync(expectedOutputPath, {recursive: true});
     assert.strictEqual(fs.existsSync(expectedOutputPath), true);
@@ -94,8 +94,8 @@ describe('Chrome install', () => {
           browser: Browser.CHROME,
           platform: BrowserPlatform.LINUX,
           buildId: testChromeBuildId,
-        }
-      )}) is missing`
+        },
+      )}) is missing`,
     );
     assert.strictEqual(fs.existsSync(expectedOutputPath), true);
   });
@@ -105,7 +105,7 @@ describe('Chrome install', () => {
     const expectedOutputPath = path.join(
       tmpDir,
       'chrome',
-      `${BrowserPlatform.LINUX}-${testChromeBuildId}`
+      `${BrowserPlatform.LINUX}-${testChromeBuildId}`,
     );
     assert.strictEqual(fs.existsSync(expectedOutputPath), false);
     let browser = await install({
@@ -133,7 +133,7 @@ describe('Chrome install', () => {
     assert.deepStrictEqual(browser, installed[0]);
     assert.deepStrictEqual(
       browser!.executablePath,
-      installed[0]?.executablePath
+      installed[0]?.executablePath,
     );
   });
 
@@ -142,7 +142,7 @@ describe('Chrome install', () => {
     const expectedOutputPath = path.join(
       tmpDir,
       'chrome',
-      `${BrowserPlatform.LINUX}-${testChromeBuildId}`
+      `${BrowserPlatform.LINUX}-${testChromeBuildId}`,
     );
     assert.strictEqual(fs.existsSync(expectedOutputPath), false);
     await install({
@@ -169,7 +169,7 @@ describe('Chrome install', () => {
         .createServer(
           (
             originalRequest: http.IncomingMessage,
-            originalResponse: http.ServerResponse
+            originalResponse: http.ServerResponse,
           ) => {
             const url = originalRequest.url as string;
             const proxyRequest = (
@@ -183,15 +183,15 @@ describe('Chrome install', () => {
               proxyResponse => {
                 originalResponse.writeHead(
                   proxyResponse.statusCode as number,
-                  proxyResponse.headers
+                  proxyResponse.headers,
                 );
                 proxyResponse.pipe(originalResponse, {end: true});
-              }
+              },
             );
             originalRequest.pipe(proxyRequest, {end: true});
             proxiedRequestUrls.push(url);
             proxiedRequestHosts.push(originalRequest.headers?.host || '');
-          }
+          },
         )
         .listen({
           port: proxyUrl.port,
@@ -225,7 +225,7 @@ describe('Chrome install', () => {
           buildId: testChromeBuildId,
           baseUrl: getServerUrl(),
         }),
-        true
+        true,
       );
       assert.deepStrictEqual(proxiedRequestUrls, [
         getServerUrl() + `/${testChromeBuildId}/linux64/chrome-linux64.zip`,
@@ -240,7 +240,7 @@ describe('Chrome install', () => {
       const expectedOutputPath = path.join(
         tmpDir,
         'chrome',
-        `${BrowserPlatform.LINUX}-${testChromeBuildId}`
+        `${BrowserPlatform.LINUX}-${testChromeBuildId}`,
       );
       assert.strictEqual(fs.existsSync(expectedOutputPath), false);
       const browser = await install({

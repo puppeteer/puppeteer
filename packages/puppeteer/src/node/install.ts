@@ -57,7 +57,7 @@ async function downloadBrowser({
       `ERROR: Failed to set up ${browser} v${buildId}! Set "PUPPETEER_SKIP_DOWNLOAD" env variable to skip download.`,
       {
         cause: error,
-      }
+      },
     );
   }
 }
@@ -91,7 +91,7 @@ export async function downloadBrowsers(): Promise<void> {
         configuration: configuration[browser] ?? {},
         cacheDir,
         platform,
-      })
+      }),
     );
   }
 
@@ -106,7 +106,7 @@ export async function downloadBrowsers(): Promise<void> {
         configuration: configuration[browser] ?? {},
         cacheDir,
         platform,
-      })
+      }),
     );
   }
 
@@ -121,7 +121,7 @@ export async function downloadBrowsers(): Promise<void> {
         configuration: configuration[browser] ?? {},
         cacheDir,
         platform,
-      })
+      }),
     );
   }
 

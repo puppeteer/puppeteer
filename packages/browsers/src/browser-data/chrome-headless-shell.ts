@@ -25,14 +25,14 @@ function folder(platform: BrowserPlatform): string {
 export function resolveDownloadUrl(
   platform: BrowserPlatform,
   buildId: string,
-  baseUrl = 'https://storage.googleapis.com/chrome-for-testing-public'
+  baseUrl = 'https://storage.googleapis.com/chrome-for-testing-public',
 ): string {
   return `${baseUrl}/${resolveDownloadPath(platform, buildId).join('/')}`;
 }
 
 export function resolveDownloadPath(
   platform: BrowserPlatform,
-  buildId: string
+  buildId: string,
 ): string[] {
   return [
     buildId,
@@ -43,25 +43,25 @@ export function resolveDownloadPath(
 
 export function relativeExecutablePath(
   platform: BrowserPlatform,
-  _buildId: string
+  _buildId: string,
 ): string {
   switch (platform) {
     case BrowserPlatform.MAC:
     case BrowserPlatform.MAC_ARM:
       return path.join(
         'chrome-headless-shell-' + folder(platform),
-        'chrome-headless-shell'
+        'chrome-headless-shell',
       );
     case BrowserPlatform.LINUX:
       return path.join(
         'chrome-headless-shell-linux64',
-        'chrome-headless-shell'
+        'chrome-headless-shell',
       );
     case BrowserPlatform.WIN32:
     case BrowserPlatform.WIN64:
       return path.join(
         'chrome-headless-shell-' + folder(platform),
-        'chrome-headless-shell.exe'
+        'chrome-headless-shell.exe',
       );
   }
 }

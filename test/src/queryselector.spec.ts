@@ -31,7 +31,7 @@ describe('querySelector', function () {
         (e, suffix) => {
           return e.textContent! + suffix;
         },
-        ' world!'
+        ' world!',
       );
       expect(text).toBe('hello world!');
     });
@@ -45,7 +45,7 @@ describe('querySelector', function () {
         (e, div) => {
           return e.textContent! + div.textContent!;
         },
-        divHandle
+        divHandle,
       );
       expect(text).toBe('hello world');
     });
@@ -61,7 +61,7 @@ describe('querySelector', function () {
           return (error = error_);
         });
       expect(error.message).toContain(
-        'failed to find element matching selector "section"'
+        'failed to find element matching selector "section"',
       );
     });
   });
@@ -74,7 +74,7 @@ describe('querySelector', function () {
       const {page} = await getTestState();
 
       await page.setContent(
-        '<div>hello</div><div>beautiful</div><div>world!</div>'
+        '<div>hello</div><div>beautiful</div><div>world!</div>',
       );
       const divsCount = await page.$$eval('div', divs => {
         return divs.length;
@@ -84,7 +84,7 @@ describe('querySelector', function () {
     it('should accept extra arguments', async () => {
       const {page} = await getTestState();
       await page.setContent(
-        '<div>hello</div><div>beautiful</div><div>world!</div>'
+        '<div>hello</div><div>beautiful</div><div>world!</div>',
       );
       const divsCountPlus5 = await page.$$eval(
         'div',
@@ -92,14 +92,14 @@ describe('querySelector', function () {
           return divs.length + (two as number) + (three as number);
         },
         2,
-        3
+        3,
       );
       expect(divsCountPlus5).toBe(8);
     });
     it('should accept ElementHandles as arguments', async () => {
       const {page} = await getTestState();
       await page.setContent(
-        '<section>2</section><section>2</section><section>1</section><div>3</div>'
+        '<section>2</section><section>2</section><section>1</section><div>3</div>',
       );
       using divHandle = (await page.$('div'))!;
       const sum = await page.$$eval(
@@ -111,7 +111,7 @@ describe('querySelector', function () {
             }, 0) + Number(div.textContent)
           );
         },
-        divHandle
+        divHandle,
       );
       expect(sum).toBe(8);
     });
@@ -126,7 +126,7 @@ describe('querySelector', function () {
             section.textContent = i;
             document.body.appendChild(section);
         }
-        `
+        `,
       );
       const sum = await page.$$eval('section', sections => {
         return sections.reduce((acc, section) => {
@@ -223,7 +223,7 @@ describe('querySelector', function () {
 
       await page.goto(server.PREFIX + '/playground.html');
       await page.setContent(
-        '<html><body><div class="second"><div class="inner">A</div></div></body></html>'
+        '<html><body><div class="second"><div class="inner">A</div></div></body></html>',
       );
       using html = (await page.$('html'))!;
       using second = (await html.$('.second'))!;
@@ -238,7 +238,7 @@ describe('querySelector', function () {
       const {page} = await getTestState();
 
       await page.setContent(
-        '<html><body><div class="second"><div class="inner">B</div></div></body></html>'
+        '<html><body><div class="second"><div class="inner">B</div></div></body></html>',
       );
       using html = (await page.$('html'))!;
       using second = await html.$('.third');
@@ -250,7 +250,7 @@ describe('querySelector', function () {
       const {page} = await getTestState();
 
       await page.setContent(
-        '<html><body><div class="tweet"><div class="like">100</div><div class="retweets">10</div></div></body></html>'
+        '<html><body><div class="tweet"><div class="like">100</div><div class="retweets">10</div></div></body></html>',
       );
       using tweet = (await page.$('.tweet'))!;
       const content = await tweet.$eval('.like', node => {
@@ -287,7 +287,7 @@ describe('querySelector', function () {
           return error.message;
         });
       expect(errorMessage).toBe(
-        `Error: failed to find element matching selector ".a"`
+        `Error: failed to find element matching selector ".a"`,
       );
     });
   });
@@ -296,7 +296,7 @@ describe('querySelector', function () {
       const {page} = await getTestState();
 
       await page.setContent(
-        '<html><body><div class="tweet"><div class="like">100</div><div class="like">10</div></div></body></html>'
+        '<html><body><div class="tweet"><div class="like">100</div><div class="like">10</div></div></body></html>',
       );
       using tweet = (await page.$('.tweet'))!;
       const content = await tweet.$$eval('.like', nodes => {
@@ -341,7 +341,7 @@ describe('querySelector', function () {
       const {page} = await getTestState();
 
       await page.setContent(
-        '<html><body><div>A</div><br/><div>B</div></body></html>'
+        '<html><body><div>A</div><br/><div>B</div></body></html>',
       );
       using html = (await page.$('html'))!;
       const elements = await html.$$('div');
@@ -358,7 +358,7 @@ describe('querySelector', function () {
       const {page} = await getTestState();
 
       await page.setContent(
-        '<html><body><span>A</span><br/><span>B</span></body></html>'
+        '<html><body><span>A</span><br/><span>B</span></body></html>',
       );
       using html = (await page.$('html'))!;
       const elements = await html.$$('div');
@@ -371,14 +371,14 @@ describe('querySelector', function () {
 
         await page.goto(server.PREFIX + '/playground.html');
         await page.setContent(
-          '<html><body><div class="second"><div class="inner">A</div></div></body></html>'
+          '<html><body><div class="second"><div class="inner">A</div></div></body></html>',
         );
         using html = (await page.$('html'))!;
         const second = await html.$$(
-          `xpath/./body/div[contains(@class, 'second')]`
+          `xpath/./body/div[contains(@class, 'second')]`,
         );
         const inner = await second[0]!.$$(
-          `xpath/./div[contains(@class, 'inner')]`
+          `xpath/./div[contains(@class, 'inner')]`,
         );
         const content = await page.evaluate(e => {
           return e.textContent;
@@ -390,7 +390,7 @@ describe('querySelector', function () {
         const {page} = await getTestState();
 
         await page.setContent(
-          '<html><body><div class="second"><div class="inner">B</div></div></body></html>'
+          '<html><body><div class="second"><div class="inner">B</div></div></body></html>',
         );
         using html = (await page.$('html'))!;
         const second = await html.$$(`xpath/div[contains(@class, 'third')]`);
@@ -412,14 +412,14 @@ describe('querySelector', function () {
 
     it('should have registered handler', async () => {
       expect(
-        Puppeteer.customQueryHandlerNames().includes('allArray')
+        Puppeteer.customQueryHandlerNames().includes('allArray'),
       ).toBeTruthy();
     });
     it('$$ should query existing elements', async () => {
       const {page} = await getTestState();
 
       await page.setContent(
-        '<html><body><div>A</div><br/><div>B</div></body></html>'
+        '<html><body><div>A</div><br/><div>B</div></body></html>',
       );
       using html = (await page.$('html'))!;
       const elements = await html.$$('allArray/div');
@@ -436,7 +436,7 @@ describe('querySelector', function () {
       const {page} = await getTestState();
 
       await page.setContent(
-        '<html><body><span>A</span><br/><span>B</span></body></html>'
+        '<html><body><span>A</span><br/><span>B</span></body></html>',
       );
       using html = (await page.$('html'))!;
       const elements = await html.$$('allArray/div');
@@ -446,7 +446,7 @@ describe('querySelector', function () {
       const {page} = await getTestState();
 
       await page.setContent(
-        '<div>hello</div><div>beautiful</div><div>world!</div>'
+        '<div>hello</div><div>beautiful</div><div>world!</div>',
       );
       const divsCount = await page.$$eval('allArray/div', divs => {
         return divs.length;
@@ -456,7 +456,7 @@ describe('querySelector', function () {
     it('$$eval should accept extra arguments', async () => {
       const {page} = await getTestState();
       await page.setContent(
-        '<div>hello</div><div>beautiful</div><div>world!</div>'
+        '<div>hello</div><div>beautiful</div><div>world!</div>',
       );
       const divsCountPlus5 = await page.$$eval(
         'allArray/div',
@@ -464,14 +464,14 @@ describe('querySelector', function () {
           return divs.length + (two as number) + (three as number);
         },
         2,
-        3
+        3,
       );
       expect(divsCountPlus5).toBe(8);
     });
     it('$$eval should accept ElementHandles as arguments', async () => {
       const {page} = await getTestState();
       await page.setContent(
-        '<section>2</section><section>2</section><section>1</section><div>3</div>'
+        '<section>2</section><section>2</section><section>1</section><div>3</div>',
       );
       using divHandle = (await page.$('div'))!;
       const sum = await page.$$eval(
@@ -483,7 +483,7 @@ describe('querySelector', function () {
             }, 0) + Number(div.textContent)
           );
         },
-        divHandle
+        divHandle,
       );
       expect(sum).toBe(8);
     });
@@ -498,7 +498,7 @@ describe('querySelector', function () {
             section.textContent = i;
             document.body.appendChild(section);
         }
-        `
+        `,
       );
       const sum = await page.$$eval('allArray/section', sections => {
         return sections.reduce((acc, section) => {

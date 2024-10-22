@@ -58,7 +58,7 @@ describe('DeviceRequestPrompt', function () {
       const manager = new DeviceRequestPromptManager(client, timeoutSettings);
 
       await expect(
-        manager.waitForDevicePrompt({timeout: 1})
+        manager.waitForDevicePrompt({timeout: 1}),
       ).rejects.toBeInstanceOf(TimeoutError);
     });
 
@@ -69,7 +69,7 @@ describe('DeviceRequestPrompt', function () {
 
       timeoutSettings.setDefaultTimeout(1);
       await expect(manager.waitForDevicePrompt()).rejects.toBeInstanceOf(
-        TimeoutError
+        TimeoutError,
       );
     });
 
@@ -80,7 +80,7 @@ describe('DeviceRequestPrompt', function () {
 
       timeoutSettings.setDefaultTimeout(0);
       await expect(
-        manager.waitForDevicePrompt({timeout: 1})
+        manager.waitForDevicePrompt({timeout: 1}),
       ).rejects.toBeInstanceOf(TimeoutError);
     });
 
@@ -268,8 +268,8 @@ describe('DeviceRequestPrompt', function () {
           ({name}) => {
             return name.includes('Device');
           },
-          {timeout: 1}
-        )
+          {timeout: 1},
+        ),
       ).rejects.toBeInstanceOf(TimeoutError);
     });
 
@@ -287,8 +287,8 @@ describe('DeviceRequestPrompt', function () {
           ({name}) => {
             return name.includes('Device');
           },
-          {timeout: 1}
-        )
+          {timeout: 1},
+        ),
       ).rejects.toBeInstanceOf(TimeoutError);
     });
 
@@ -306,8 +306,8 @@ describe('DeviceRequestPrompt', function () {
           ({name}) => {
             return name.includes('Device');
           },
-          {timeout: 1}
-        )
+          {timeout: 1},
+        ),
       ).rejects.toBeInstanceOf(TimeoutError);
     });
 
@@ -324,7 +324,7 @@ describe('DeviceRequestPrompt', function () {
           ({name}) => {
             return name.includes('1');
           },
-          {timeout: 0}
+          {timeout: 0},
         ),
         (() => {
           client.emit('DeviceAccess.deviceRequestPrompted', {
@@ -356,7 +356,7 @@ describe('DeviceRequestPrompt', function () {
         () => {
           return false;
         },
-        {signal: abortController.signal}
+        {signal: abortController.signal},
       );
       abortController.abort();
       await expect(task).rejects.toThrow(/aborted/);
@@ -430,7 +430,7 @@ describe('DeviceRequestPrompt', function () {
       });
 
       await expect(
-        prompt.select(new DeviceRequestPromptDevice('11111111', 'Device 1'))
+        prompt.select(new DeviceRequestPromptDevice('11111111', 'Device 1')),
       ).rejects.toThrowError('Cannot select unknown device!');
     });
 
@@ -458,7 +458,7 @@ describe('DeviceRequestPrompt', function () {
       ]);
       await prompt.select(device);
       await expect(prompt.select(device)).rejects.toThrowError(
-        'Cannot select DeviceRequestPrompt which is already handled!'
+        'Cannot select DeviceRequestPrompt which is already handled!',
       );
     });
   });
@@ -483,7 +483,7 @@ describe('DeviceRequestPrompt', function () {
       });
       await prompt.cancel();
       await expect(prompt.cancel()).rejects.toThrowError(
-        'Cannot cancel DeviceRequestPrompt which is already handled!'
+        'Cannot cancel DeviceRequestPrompt which is already handled!',
       );
     });
   });

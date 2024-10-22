@@ -42,7 +42,7 @@ function sniffDetector() {
     'Sniffed: ' +
       (await page.evaluate(() => {
         return !!navigator.sniffed;
-      }))
+      })),
   );
 
   await browser.close();

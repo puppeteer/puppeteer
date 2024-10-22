@@ -10,7 +10,7 @@ import type {AngularJson, AngularProject} from './types.js';
 
 export function getJsonFileAsObject(
   tree: Tree,
-  path: string
+  path: string,
 ): Record<string, unknown> {
   try {
     const buffer = tree.read(path) as Buffer;
@@ -30,7 +30,7 @@ export function getAngularConfig(tree: Tree): AngularJson {
 }
 
 export function getApplicationProjects(
-  tree: Tree
+  tree: Tree,
 ): Record<string, AngularProject> {
   const {projects} = getAngularConfig(tree);
 

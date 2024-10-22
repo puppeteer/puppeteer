@@ -35,7 +35,7 @@ describe('Firefox install', () => {
     const expectedOutputPath = path.join(
       tmpDir,
       'firefox',
-      `${BrowserPlatform.LINUX}-${testFirefoxBuildId}`
+      `${BrowserPlatform.LINUX}-${testFirefoxBuildId}`,
     );
     assert.strictEqual(fs.existsSync(expectedOutputPath), false);
     const browser = await install({
@@ -53,7 +53,7 @@ describe('Firefox install', () => {
     const expectedOutputPath = path.join(
       tmpDir,
       'chrome',
-      `${BrowserPlatform.LINUX}-${testFirefoxBuildId}`
+      `${BrowserPlatform.LINUX}-${testFirefoxBuildId}`,
     );
     assert.strictEqual(fs.existsSync(expectedOutputPath), false);
 
@@ -84,7 +84,7 @@ describe('Firefox install', () => {
       const expectedOutputPath = path.join(
         tmpDir,
         'firefox',
-        `${BrowserPlatform.MAC}-${testFirefoxBuildId}`
+        `${BrowserPlatform.MAC}-${testFirefoxBuildId}`,
       );
       assert.strictEqual(fs.existsSync(expectedOutputPath), false);
       const browser = await install({
@@ -96,6 +96,6 @@ describe('Firefox install', () => {
       });
       assert.strictEqual(browser.path, expectedOutputPath);
       assert.ok(fs.existsSync(expectedOutputPath));
-    }
+    },
   );
 });

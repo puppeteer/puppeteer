@@ -67,7 +67,7 @@ function updateJsonValues(
   json: Record<string, any>,
   target: string,
   updates: Array<{name: string; value: any}>,
-  overwrite = false
+  overwrite = false,
 ) {
   updates.forEach(({name, value}) => {
     if (!json[target][name] || overwrite) {
@@ -84,7 +84,7 @@ export function addPackageJsonDependencies(
   packages: NodePackage[],
   type: DependencyType,
   overwrite?: boolean,
-  fileLocation = './package.json'
+  fileLocation = './package.json',
 ): Tree {
   const packageJson = getJsonFileAsObject(tree, fileLocation);
 
@@ -94,7 +94,7 @@ export function addPackageJsonDependencies(
     packages.map(({name, version}) => {
       return {name, value: version};
     }),
-    overwrite
+    overwrite,
   );
 
   tree.overwrite(fileLocation, getObjectAsJson(packageJson));
@@ -103,7 +103,7 @@ export function addPackageJsonDependencies(
 }
 
 export function getDependenciesFromOptions(
-  options: SchematicsOptions
+  options: SchematicsOptions,
 ): string[] {
   const dependencies = ['puppeteer'];
 
@@ -129,7 +129,7 @@ export function addPackageJsonScripts(
   tree: Tree,
   scripts: NodeScripts[],
   overwrite?: boolean,
-  fileLocation = './package.json'
+  fileLocation = './package.json',
 ): Tree {
   const packageJson = getJsonFileAsObject(tree, fileLocation);
 
@@ -139,7 +139,7 @@ export function addPackageJsonScripts(
     scripts.map(({name, script}) => {
       return {name, value: script};
     }),
-    overwrite
+    overwrite,
   );
 
   tree.overwrite(fileLocation, getObjectAsJson(packageJson));
@@ -150,7 +150,7 @@ export function addPackageJsonScripts(
 export function updateAngularJsonScripts(
   tree: Tree,
   options: SchematicsOptions,
-  overwrite = true
+  overwrite = true,
 ): Tree {
   const angularJson = getAngularConfig(tree);
   const projects = getApplicationProjects(tree);
@@ -179,7 +179,7 @@ export function updateAngularJsonScripts(
       angularJson['projects'][project]!,
       'architect',
       e2eScript,
-      overwrite
+      overwrite,
     );
   });
 

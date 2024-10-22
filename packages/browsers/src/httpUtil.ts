@@ -21,7 +21,7 @@ export function headHttpRequest(url: URL): Promise<boolean> {
         response.resume();
         resolve(response.statusCode === 200);
       },
-      false
+      false,
     );
     request.on('error', () => {
       resolve(false);
@@ -33,7 +33,7 @@ export function httpRequest(
   url: URL,
   method: string,
   response: (x: http.IncomingMessage) => void,
-  keepAlive = true
+  keepAlive = true,
 ): http.ClientRequest {
   const options: http.RequestOptions = {
     protocol: url.protocol,
@@ -75,7 +75,7 @@ export function httpRequest(
 export function downloadFile(
   url: URL,
   destinationPath: string,
-  progressCallback?: (downloadedBytes: number, totalBytes: number) => void
+  progressCallback?: (downloadedBytes: number, totalBytes: number) => void,
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     let downloadedBytes = 0;
@@ -89,7 +89,7 @@ export function downloadFile(
     const request = httpRequest(url, 'GET', response => {
       if (response.statusCode !== 200) {
         const error = new Error(
-          `Download failed: server returned code ${response.statusCode}. URL: ${url}`
+          `Download failed: server returned code ${response.statusCode}. URL: ${url}`,
         );
         // consume response data to free up memory
         response.resume();
@@ -145,7 +145,7 @@ export function getText(url: URL): Promise<string> {
           }
         });
       },
-      false
+      false,
     );
     request.on('error', err => {
       reject(err);

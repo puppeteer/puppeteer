@@ -38,7 +38,7 @@ describe('PSelectorParser', () => {
 
     it('parses nested selectors with pseudo classes and p-selector syntax', () => {
       const [updatedSelector, isPureCSS, hasPseudoClasses] = parsePSelectors(
-        '& > div:focus >>>> button:focus'
+        '& > div:focus >>>> button:focus',
       );
       expect(updatedSelector).toEqual([
         [['&>div:focus'], '>>>>', ['button:focus']],
@@ -54,7 +54,7 @@ describe('PSelectorParser', () => {
       });
       it('returns true if an aria query is present', () => {
         const [, , , hasAria] = parsePSelectors(
-          'div:focus >>> ::-p-aria(Text)'
+          'div:focus >>> ::-p-aria(Text)',
         );
         expect(hasAria).toEqual(true);
       });

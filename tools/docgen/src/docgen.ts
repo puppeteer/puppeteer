@@ -23,7 +23,7 @@ export function docgen(jsonPath: string, outputDir: string): void {
 export function spliceIntoSection(
   sectionName: string,
   content: string,
-  sectionContent: string
+  sectionContent: string,
 ): string {
   const lines = content.split('\n');
   const offset =

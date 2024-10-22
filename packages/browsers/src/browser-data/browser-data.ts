@@ -59,7 +59,7 @@ export {Browser, BrowserPlatform, ChromeReleaseChannel};
 async function resolveBuildIdForBrowserTag(
   browser: Browser,
   platform: BrowserPlatform,
-  tag: BrowserTag
+  tag: BrowserTag,
 ): Promise<string> {
   switch (browser) {
     case Browser.FIREFOX:
@@ -72,7 +72,7 @@ async function resolveBuildIdForBrowserTag(
           return await firefox.resolveBuildId(firefox.FirefoxChannel.NIGHTLY);
         case BrowserTag.DEVEDITION:
           return await firefox.resolveBuildId(
-            firefox.FirefoxChannel.DEVEDITION
+            firefox.FirefoxChannel.DEVEDITION,
           );
         case BrowserTag.STABLE:
           return await firefox.resolveBuildId(firefox.FirefoxChannel.STABLE);
@@ -115,7 +115,7 @@ async function resolveBuildIdForBrowserTag(
         case BrowserTag.DEVEDITION:
         case BrowserTag.ESR:
           throw new Error(
-            `${tag.toUpperCase()} is not available for ChromeDriver`
+            `${tag.toUpperCase()} is not available for ChromeDriver`,
           );
       }
     }
@@ -124,19 +124,19 @@ async function resolveBuildIdForBrowserTag(
         case BrowserTag.LATEST:
         case BrowserTag.CANARY:
           return await chromeHeadlessShell.resolveBuildId(
-            ChromeReleaseChannel.CANARY
+            ChromeReleaseChannel.CANARY,
           );
         case BrowserTag.BETA:
           return await chromeHeadlessShell.resolveBuildId(
-            ChromeReleaseChannel.BETA
+            ChromeReleaseChannel.BETA,
           );
         case BrowserTag.DEV:
           return await chromeHeadlessShell.resolveBuildId(
-            ChromeReleaseChannel.DEV
+            ChromeReleaseChannel.DEV,
           );
         case BrowserTag.STABLE:
           return await chromeHeadlessShell.resolveBuildId(
-            ChromeReleaseChannel.STABLE
+            ChromeReleaseChannel.STABLE,
           );
         case BrowserTag.NIGHTLY:
         case BrowserTag.DEVEDITION:
@@ -156,7 +156,7 @@ async function resolveBuildIdForBrowserTag(
         case BrowserTag.STABLE:
         case BrowserTag.ESR:
           throw new Error(
-            `${tag} is not supported for Chromium. Use 'latest' instead.`
+            `${tag} is not supported for Chromium. Use 'latest' instead.`,
           );
       }
   }
@@ -168,7 +168,7 @@ async function resolveBuildIdForBrowserTag(
 export async function resolveBuildId(
   browser: Browser,
   platform: BrowserPlatform,
-  tag: string
+  tag: string,
 ): Promise<string> {
   const browserTag = tag as BrowserTag;
   if (Object.values(BrowserTag).includes(browserTag)) {
@@ -207,7 +207,7 @@ export async function resolveBuildId(
  */
 export async function createProfile(
   browser: Browser,
-  opts: ProfileOptions
+  opts: ProfileOptions,
 ): Promise<void> {
   switch (browser) {
     case Browser.FIREFOX:
@@ -224,7 +224,7 @@ export async function createProfile(
 export function resolveSystemExecutablePath(
   browser: Browser,
   platform: BrowserPlatform,
-  channel: ChromeReleaseChannel
+  channel: ChromeReleaseChannel,
 ): string {
   switch (browser) {
     case Browser.CHROMEDRIVER:
@@ -232,7 +232,7 @@ export function resolveSystemExecutablePath(
     case Browser.FIREFOX:
     case Browser.CHROMIUM:
       throw new Error(
-        `System browser detection is not supported for ${browser} yet.`
+        `System browser detection is not supported for ${browser} yet.`,
       );
     case Browser.CHROME:
       return chrome.resolveSystemExecutablePath(platform, channel);
@@ -246,7 +246,7 @@ export function resolveSystemExecutablePath(
  * @public
  */
 export function getVersionComparator(
-  browser: Browser
+  browser: Browser,
 ): (a: string, b: string) => number {
   return versionComparators[browser];
 }

@@ -11,7 +11,7 @@ import type {AwaitableIterable} from '../common/types.js';
 export class AsyncIterableUtil {
   static async *map<T, U>(
     iterable: AwaitableIterable<T>,
-    map: (item: T) => Promise<U>
+    map: (item: T) => Promise<U>,
   ): AsyncIterable<U> {
     for await (const value of iterable) {
       yield await map(value);
@@ -20,7 +20,7 @@ export class AsyncIterableUtil {
 
   static async *flatMap<T, U>(
     iterable: AwaitableIterable<T>,
-    map: (item: T) => AwaitableIterable<U>
+    map: (item: T) => AwaitableIterable<U>,
   ): AsyncIterable<U> {
     for await (const value of iterable) {
       yield* map(value);
@@ -36,7 +36,7 @@ export class AsyncIterableUtil {
   }
 
   static async first<T>(
-    iterable: AwaitableIterable<T>
+    iterable: AwaitableIterable<T>,
   ): Promise<T | undefined> {
     for await (const value of iterable) {
       return value;

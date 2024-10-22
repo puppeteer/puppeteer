@@ -55,9 +55,9 @@ describe('ChromeDriver CLI', function () {
           'chromedriver',
           `linux-${testChromeDriverBuildId}`,
           'chromedriver-linux64',
-          'chromedriver'
-        )
-      )
+          'chromedriver',
+        ),
+      ),
     );
 
     await new CLI(tmpDir, createMockedReadlineInterface('no')).run([
@@ -73,9 +73,9 @@ describe('ChromeDriver CLI', function () {
           'chromedriver',
           `linux-${testChromeDriverBuildId}`,
           'chromedriver-linux64',
-          'chromedriver'
-        )
-      )
+          'chromedriver',
+        ),
+      ),
     );
   });
 });

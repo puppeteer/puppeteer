@@ -147,7 +147,7 @@ const config = {
               let items = categories.get(namespace);
               if (!items) {
                 throw new Error(
-                  `Namespace ${namespace} not found. Did you update the list of sidebar namespaces below?`
+                  `Namespace ${namespace} not found. Did you update the list of sidebar namespaces below?`,
                 );
               }
               items.sort((a, b) => {

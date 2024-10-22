@@ -22,7 +22,7 @@ export class BidiHTTPResponse extends HTTPResponse {
   static from(
     data: Bidi.Network.ResponseData,
     request: BidiHTTPRequest,
-    cdpSupported: boolean
+    cdpSupported: boolean,
   ): BidiHTTPResponse {
     const response = new BidiHTTPResponse(data, request, cdpSupported);
     response.#initialize();
@@ -37,7 +37,7 @@ export class BidiHTTPResponse extends HTTPResponse {
   private constructor(
     data: Bidi.Network.ResponseData,
     request: BidiHTTPRequest,
-    cdpSupported: boolean
+    cdpSupported: boolean,
   ) {
     super();
     this.#data = data;
@@ -48,7 +48,7 @@ export class BidiHTTPResponse extends HTTPResponse {
     const securityDetails = data['goog:securityDetails'];
     if (cdpSupported && securityDetails) {
       this.#securityDetails = new SecurityDetails(
-        securityDetails as Protocol.Network.SecurityDetails
+        securityDetails as Protocol.Network.SecurityDetails,
       );
     }
   }

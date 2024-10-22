@@ -19,7 +19,7 @@ export interface PuppeteerUtilWrapper {
  */
 export class LazyArg<T, Context = PuppeteerUtilWrapper> {
   static create = <T>(
-    get: (context: PuppeteerUtilWrapper) => Promise<T> | T
+    get: (context: PuppeteerUtilWrapper) => Promise<T> | T,
   ): T => {
     // We don't want to introduce LazyArg to the type system, otherwise we would
     // have to make it public.

@@ -26,7 +26,7 @@ describe('`puppeteer-core`', () => {
     it(`\`launch\` for \`${product}\` with a bad \`executablePath\``, async function () {
       const script = (await readAsset('puppeteer-core', 'launch.js')).replace(
         '${product}',
-        product
+        product,
       );
       await this.runScript(script, 'mjs');
     });

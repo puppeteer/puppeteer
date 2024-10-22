@@ -48,7 +48,7 @@ describe('DefaultBrowserContext', function () {
     expect(
       await page.evaluate(() => {
         return document.cookie;
-      })
+      }),
     ).toBe('username=John Doe');
     await expectCookieEquals(await page.cookies(), [
       {
@@ -78,7 +78,7 @@ describe('DefaultBrowserContext', function () {
       {
         name: 'cookie2',
         value: '2',
-      }
+      },
     );
     expect(await page.evaluate('document.cookie')).toBe('cookie1=1; cookie2=2');
     await page.deleteCookie({name: 'cookie2'});

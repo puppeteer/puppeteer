@@ -42,24 +42,24 @@ import {
 const ariaQuerySelectorBinding = new Binding(
   '__ariaQuerySelector',
   ARIAQueryHandler.queryOne as (...args: unknown[]) => unknown,
-  '' // custom init
+  '', // custom init
 );
 
 const ariaQuerySelectorAllBinding = new Binding(
   '__ariaQuerySelectorAll',
   (async (
     element: ElementHandle<Node>,
-    selector: string
+    selector: string,
   ): Promise<JSHandle<Node[]>> => {
     const results = ARIAQueryHandler.queryAll(element, selector);
     return await element.realm.evaluateHandle(
       (...elements) => {
         return elements;
       },
-      ...(await AsyncIterableUtil.collect(results))
+      ...(await AsyncIterableUtil.collect(results)),
     );
   }) as (...args: unknown[]) => unknown,
-  '' // custom init
+  '', // custom init
 );
 
 /**
@@ -85,7 +85,7 @@ export class ExecutionContext
   constructor(
     client: CDPSession,
     contextPayload: Protocol.Runtime.ExecutionContextDescription,
-    world: IsolatedWorld
+    world: IsolatedWorld,
   ) {
     super();
     this.#client = client;
@@ -133,14 +133,14 @@ export class ExecutionContext
           : {
               name: CDP_BINDING_PREFIX + binding.name,
               executionContextId: this.#id,
-            }
+            },
       );
 
       await this.evaluate(
         addPageBinding,
         'internal',
         binding.name,
-        CDP_BINDING_PREFIX
+        CDP_BINDING_PREFIX,
       );
 
       this.#bindings.set(binding.name, binding);
@@ -164,7 +164,7 @@ export class ExecutionContext
   }
 
   async #onBindingCalled(
-    event: Protocol.Runtime.BindingCalledEvent
+    event: Protocol.Runtime.BindingCalledEvent,
   ): Promise<void> {
     if (event.executionContextId !== this.#id) {
       return;
@@ -269,7 +269,7 @@ export class ExecutionContext
    * const result = await executionContext.evaluate(
    *   (a, b) => a + b,
    *   oneHandle,
-   *   twoHandle
+   *   twoHandle,
    * );
    * await oneHandle.dispose();
    * await twoHandle.dispose();
@@ -306,7 +306,7 @@ export class ExecutionContext
    * ```ts
    * const context = await page.mainFrame().executionContext();
    * const handle: JSHandle<typeof globalThis> = await context.evaluateHandle(
-   *   () => Promise.resolve(self)
+   *   () => Promise.resolve(self),
    * );
    * ```
    *
@@ -327,7 +327,7 @@ export class ExecutionContext
    *   });
    * const stringHandle: JSHandle<string> = await context.evaluateHandle(
    *   body => body.innerHTML,
-   *   body
+   *   body,
    * );
    * console.log(await stringHandle.jsonValue()); // prints body's innerHTML
    * // Always dispose your garbage! :)
@@ -377,7 +377,7 @@ export class ExecutionContext
   ): Promise<HandleFor<Awaited<ReturnType<Func>>> | Awaited<ReturnType<Func>>> {
     const sourceUrlComment = getSourceUrlComment(
       getSourcePuppeteerURLIfAvailable(pageFunction)?.toString() ??
-        PuppeteerURL.INTERNAL_URL
+        PuppeteerURL.INTERNAL_URL,
     );
 
     if (isString(pageFunction)) {
@@ -408,7 +408,7 @@ export class ExecutionContext
 
     const functionDeclaration = stringifyFunction(pageFunction);
     const functionDeclarationWithSourceUrl = SOURCE_URL_REGEX.test(
-      functionDeclaration
+      functionDeclaration,
     )
       ? functionDeclaration
       : `${functionDeclaration}\n${sourceUrlComment}\n`;
@@ -425,7 +425,7 @@ export class ExecutionContext
           ? await Promise.all(
               args.map(arg => {
                 return convertArgumentAsync(this, arg);
-              })
+              }),
             )
           : args.map(arg => {
               return convertArgument(this, arg);
@@ -454,7 +454,7 @@ export class ExecutionContext
 
     async function convertArgumentAsync(
       context: ExecutionContext,
-      arg: unknown
+      arg: unknown,
     ) {
       if (arg instanceof LazyArg) {
         arg = await arg.get(context);
@@ -464,7 +464,7 @@ export class ExecutionContext
 
     function convertArgument(
       context: ExecutionContext,
-      arg: unknown
+      arg: unknown,
     ): Protocol.Runtime.CallArgument {
       if (typeof arg === 'bigint') {
         return {unserializableValue: `${arg.toString()}n`};
@@ -488,7 +488,7 @@ export class ExecutionContext
       if (objectHandle) {
         if (objectHandle.realm !== context.#world) {
           throw new Error(
-            'JSHandles can be evaluated only in the context they were created!'
+            'JSHandles can be evaluated only in the context they were created!',
           );
         }
         if (objectHandle.disposed) {
@@ -528,7 +528,7 @@ const rewriteError = (error: Error): Protocol.Runtime.EvaluateResponse => {
     error.message.endsWith('Inspected target navigated or closed')
   ) {
     throw new Error(
-      'Execution context was destroyed, most likely because of a navigation.'
+      'Execution context was destroyed, most likely because of a navigation.',
     );
   }
   throw error;

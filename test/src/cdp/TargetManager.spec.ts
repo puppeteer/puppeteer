@@ -28,7 +28,7 @@ describe('TargetManager', () => {
           '--host-rules=MAP * 127.0.0.1',
         ]),
       }),
-      {createPage: false}
+      {createPage: false},
     )) as Awaited<ReturnType<typeof launch>> & {
       browser: CdpBrowser;
     };
@@ -73,7 +73,7 @@ describe('TargetManager', () => {
     await attachFrame(
       page,
       'frame2',
-      server.CROSS_PROCESS_PREFIX + '/empty.html'
+      server.CROSS_PROCESS_PREFIX + '/empty.html',
     );
     await framePromise;
     expect(await context.pages()).toHaveLength(1);
@@ -86,7 +86,7 @@ describe('TargetManager', () => {
     await attachFrame(
       page,
       'frame3',
-      server.CROSS_PROCESS_PREFIX + '/empty.html'
+      server.CROSS_PROCESS_PREFIX + '/empty.html',
     );
     await framePromise;
     expect(await context.pages()).toHaveLength(1);

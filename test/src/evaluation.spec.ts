@@ -68,7 +68,7 @@ describe('Evaluation specs', function () {
         a => {
           return a;
         },
-        [1, 2, 3]
+        [1, 2, 3],
       );
       expect(result).toEqual([1, 2, 3]);
     });
@@ -79,7 +79,7 @@ describe('Evaluation specs', function () {
         a => {
           return Array.isArray(a);
         },
-        [1, 2, 3]
+        [1, 2, 3],
       );
       expect(result).toBe(true);
     });
@@ -103,7 +103,7 @@ describe('Evaluation specs', function () {
       expect(
         await page.evaluate(() => {
           return [Symbol('foo4'), 'foo'];
-        })
+        }),
       ).toEqual([undefined, 'foo']);
     });
     it('should work with function shorthands', async () => {
@@ -130,7 +130,7 @@ describe('Evaluation specs', function () {
         },
         {
           中文字符: 42,
-        }
+        },
       );
       expect(result).toBe(42);
     });
@@ -180,9 +180,9 @@ describe('Evaluation specs', function () {
               return a * b;
             },
             a,
-            b
+            b,
           );
-        }
+        },
       );
       const result = await page.evaluate(async function () {
         return (globalThis as any).callController(9, 3);
@@ -288,7 +288,7 @@ describe('Evaluation specs', function () {
           return Object.is(a, null) && Object.is(b, 'foo');
         },
         null,
-        'foo'
+        'foo',
       );
       expect(result).toBe(true);
     });
@@ -298,7 +298,7 @@ describe('Evaluation specs', function () {
       expect(
         await page.evaluate(() => {
           return {a: undefined};
-        })
+        }),
       ).toEqual({});
     });
     it('should return undefined for non-serializable objects', async () => {
@@ -307,7 +307,7 @@ describe('Evaluation specs', function () {
       expect(
         await page.evaluate(() => {
           return window;
-        })
+        }),
       ).toBe(undefined);
     });
     it('should return promise as empty object', async () => {
@@ -463,7 +463,7 @@ describe('Evaluation specs', function () {
     it('should return properly serialize objects with unknown type fields', async () => {
       const {page} = await getTestState();
       await page.setContent(
-        "<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='>"
+        "<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='>",
       );
 
       const result = await page.evaluate(async () => {
@@ -494,7 +494,7 @@ describe('Evaluation specs', function () {
       expect(
         await page.evaluate(() => {
           return (globalThis as any).result;
-        })
+        }),
       ).toBe(123);
     });
     it('should work with CSP', async () => {
@@ -508,7 +508,7 @@ describe('Evaluation specs', function () {
       expect(
         await page.evaluate(() => {
           return (globalThis as any).injected;
-        })
+        }),
       ).toBe(123);
 
       // Make sure CSP works.
@@ -518,7 +518,7 @@ describe('Evaluation specs', function () {
       expect(
         await page.evaluate(() => {
           return (window as any).e;
-        })
+        }),
       ).toBe(undefined);
     });
   });
@@ -534,7 +534,7 @@ describe('Evaluation specs', function () {
       expect(
         await page.evaluate(() => {
           return (globalThis as any).result;
-        })
+        }),
       ).toBe(123);
 
       await page.removeScriptToEvaluateOnNewDocument(identifier);
@@ -542,7 +542,7 @@ describe('Evaluation specs', function () {
       expect(
         await page.evaluate(() => {
           return (globalThis as any).result || null;
-        })
+        }),
       ).toBe(null);
     });
   });
@@ -563,12 +563,12 @@ describe('Evaluation specs', function () {
       expect(
         await page.frames()[0]!.evaluate(() => {
           return (globalThis as any).FOO;
-        })
+        }),
       ).toBe('foo');
       expect(
         await page.frames()[1]!.evaluate(() => {
           return (globalThis as any).FOO;
-        })
+        }),
       ).toBe('bar');
     });
     it('should have correct execution contexts', async () => {
@@ -579,12 +579,12 @@ describe('Evaluation specs', function () {
       expect(
         await page.frames()[0]!.evaluate(() => {
           return document.body.textContent!.trim();
-        })
+        }),
       ).toBe('');
       expect(
         await page.frames()[1]!.evaluate(() => {
           return document.body.textContent!.trim();
-        })
+        }),
       ).toBe(`Hi, I'm frame`);
     });
     it('should execute after cross-site navigation', async () => {
@@ -595,13 +595,13 @@ describe('Evaluation specs', function () {
       expect(
         await mainFrame.evaluate(() => {
           return window.location.href;
-        })
+        }),
       ).toContain('localhost');
       await page.goto(server.CROSS_PROCESS_PREFIX + '/empty.html');
       expect(
         await mainFrame.evaluate(() => {
           return window.location.href;
-        })
+        }),
       ).toContain('127');
     });
   });

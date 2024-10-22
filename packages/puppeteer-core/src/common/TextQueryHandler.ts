@@ -13,7 +13,7 @@ export class TextQueryHandler extends QueryHandler {
   static override querySelectorAll: QuerySelectorAll = (
     element,
     selector,
-    {textQuerySelectorAll}
+    {textQuerySelectorAll},
   ) => {
     return textQuerySelectorAll(element, selector);
   };

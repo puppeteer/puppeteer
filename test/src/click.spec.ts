@@ -21,7 +21,7 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => {
         return (globalThis as any).result;
-      })
+      }),
     ).toBe('Clicked');
   });
   it('should click svg', async () => {
@@ -36,7 +36,7 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => {
         return (globalThis as any).__CLICKED;
-      })
+      }),
     ).toBe(42);
   });
   it('should click the button if window.Node is removed', async () => {
@@ -51,7 +51,7 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => {
         return (globalThis as any).result;
-      })
+      }),
     ).toBe('Clicked');
   });
   // @see https://github.com/puppeteer/puppeteer/issues/4281
@@ -70,7 +70,7 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => {
         return (globalThis as any).CLICKED;
-      })
+      }),
     ).toBe(42);
   });
   it('should not throw UnhandledPromiseRejection when page closes', async () => {
@@ -78,7 +78,7 @@ describe('Page.click', function () {
 
     const newPage = await page.browser().newPage();
     await Promise.all([newPage.close(), newPage.mouse.click(1, 2)]).catch(
-      () => {}
+      () => {},
     );
   });
   it('should click the button after navigation', async () => {
@@ -91,7 +91,7 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => {
         return (globalThis as any).result;
-      })
+      }),
     ).toBe('Clicked');
   });
   it('should click with disabled javascript', async () => {
@@ -130,7 +130,7 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => {
         return (globalThis as any).CLICKED;
-      })
+      }),
     ).toBe(42);
   });
   it('should select the text by triple clicking', async () => {
@@ -151,16 +151,16 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => {
         return (window as any).clicks;
-      })
+      }),
     ).toMatchObject({0: 1, 1: 2, 2: 3});
     expect(
       await page.evaluate(() => {
         const textarea = document.querySelector('textarea');
         return textarea!.value.substring(
           textarea!.selectionStart,
-          textarea!.selectionEnd
+          textarea!.selectionEnd,
         );
-      })
+      }),
     ).toBe(text);
   });
   it('should click offscreen buttons', async () => {
@@ -204,7 +204,7 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => {
         return (globalThis as any).__clicked;
-      })
+      }),
     ).toBe(true);
   });
 
@@ -215,18 +215,18 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => {
         return (globalThis as any).result.check;
-      })
+      }),
     ).toBe(null);
     await page.click('input#agree');
     expect(
       await page.evaluate(() => {
         return (globalThis as any).result.check;
-      })
+      }),
     ).toBe(true);
     expect(
       await page.evaluate(() => {
         return (globalThis as any).result.events;
-      })
+      }),
     ).toEqual([
       'mouseover',
       'mouseenter',
@@ -241,7 +241,7 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => {
         return (globalThis as any).result.check;
-      })
+      }),
     ).toBe(false);
   });
 
@@ -252,24 +252,24 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => {
         return (globalThis as any).result.check;
-      })
+      }),
     ).toBe(null);
     await page.click('label[for="agree"]');
     expect(
       await page.evaluate(() => {
         return (globalThis as any).result.check;
-      })
+      }),
     ).toBe(true);
     expect(
       await page.evaluate(() => {
         return (globalThis as any).result.events;
-      })
+      }),
     ).toEqual(['click', 'input', 'change']);
     await page.click('label[for="agree"]');
     expect(
       await page.evaluate(() => {
         return (globalThis as any).result.check;
-      })
+      }),
     ).toBe(false);
   });
 
@@ -282,7 +282,7 @@ describe('Page.click', function () {
       return (error = error_);
     });
     expect(error.message).toBe(
-      'No element found for selector: button.does-not-exist'
+      'No element found for selector: button.does-not-exist',
     );
   });
   // @see https://github.com/puppeteer/puppeteer/issues/161
@@ -302,13 +302,13 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => {
         return document.querySelector('#button-5')!.textContent;
-      })
+      }),
     ).toBe('clicked');
     await page.click('#button-80');
     expect(
       await page.evaluate(() => {
         return document.querySelector('#button-80')!.textContent;
-      })
+      }),
     ).toBe('clicked');
   });
   it('should double click the button', async () => {
@@ -341,7 +341,7 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => {
         return (globalThis as any).result;
-      })
+      }),
     ).toBe('Clicked');
   });
   it('should click a rotated button', async () => {
@@ -352,7 +352,7 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => {
         return (globalThis as any).result;
-      })
+      }),
     ).toBe('Clicked');
   });
   it('should fire contextmenu event on right click', async () => {
@@ -363,7 +363,7 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => {
         return document.querySelector('#button-8')!.textContent;
-      })
+      }),
     ).toBe('context menu');
   });
   it('should fire aux event on middle click', async () => {
@@ -374,7 +374,7 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => {
         return document.querySelector('#button-8')!.textContent;
-      })
+      }),
     ).toBe('aux click');
   });
   it('should fire back click', async () => {
@@ -385,7 +385,7 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => {
         return document.querySelector('#button-8')!.textContent;
-      })
+      }),
     ).toBe('back click');
   });
   it('should fire forward click', async () => {
@@ -396,7 +396,7 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => {
         return document.querySelector('#button-8')!.textContent;
-      })
+      }),
     ).toBe('forward click');
   });
   // @see https://github.com/puppeteer/puppeteer/issues/206
@@ -415,7 +415,7 @@ describe('Page.click', function () {
     await attachFrame(
       page,
       'button-test',
-      server.PREFIX + '/input/button.html'
+      server.PREFIX + '/input/button.html',
     );
     const frame = page.frames()[1];
     using button = await frame!.$('button');
@@ -423,7 +423,7 @@ describe('Page.click', function () {
     expect(
       await frame!.evaluate(() => {
         return (globalThis as any).result;
-      })
+      }),
     ).toBe('Clicked');
   });
   // @see https://github.com/puppeteer/puppeteer/issues/4110
@@ -433,12 +433,12 @@ describe('Page.click', function () {
     await page.goto(server.EMPTY_PAGE);
     await page.setViewport({width: 500, height: 500});
     await page.setContent(
-      '<div style="width:100px;height:2000px">spacer</div>'
+      '<div style="width:100px;height:2000px">spacer</div>',
     );
     await attachFrame(
       page,
       'button-test',
-      server.CROSS_PROCESS_PREFIX + '/input/button.html'
+      server.CROSS_PROCESS_PREFIX + '/input/button.html',
     );
     const frame = page.frames()[1];
     await frame!.$eval('button', button => {
@@ -448,7 +448,7 @@ describe('Page.click', function () {
     expect(
       await frame!.evaluate(() => {
         return (globalThis as any).result;
-      })
+      }),
     ).toBe('Clicked');
   });
   it('should click the button with deviceScaleFactor set', async () => {
@@ -458,13 +458,13 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => {
         return window.devicePixelRatio;
-      })
+      }),
     ).toBe(5);
     await page.setContent('<div style="width:100px;height:100px">spacer</div>');
     await attachFrame(
       page,
       'button-test',
-      server.PREFIX + '/input/button.html'
+      server.PREFIX + '/input/button.html',
     );
     const frame = page.frames()[1];
     using button = await frame!.$('button');
@@ -472,7 +472,7 @@ describe('Page.click', function () {
     expect(
       await frame!.evaluate(() => {
         return (globalThis as any).result;
-      })
+      }),
     ).toBe('Clicked');
   });
 });

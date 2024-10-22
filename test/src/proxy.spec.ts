@@ -66,10 +66,10 @@ describe('request proxy', () => {
           proxyResponse => {
             originalResponse.writeHead(
               proxyResponse.statusCode as number,
-              proxyResponse.headers
+              proxyResponse.headers,
             );
             proxyResponse.pipe(originalResponse, {end: true});
-          }
+          },
         );
 
         originalRequest.pipe(proxyRequest, {end: true});

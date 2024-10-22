@@ -112,7 +112,7 @@ export abstract class Keyboard {
    */
   abstract down(
     key: KeyInput,
-    options?: Readonly<KeyDownOptions>
+    options?: Readonly<KeyDownOptions>,
   ): Promise<void>;
 
   /**
@@ -167,7 +167,7 @@ export abstract class Keyboard {
    */
   abstract type(
     text: string,
-    options?: Readonly<KeyboardTypeOptions>
+    options?: Readonly<KeyboardTypeOptions>,
   ): Promise<void>;
 
   /**
@@ -194,7 +194,7 @@ export abstract class Keyboard {
    */
   abstract press(
     key: KeyInput,
-    options?: Readonly<KeyPressOptions>
+    options?: Readonly<KeyPressOptions>,
   ): Promise<void>;
 }
 
@@ -314,7 +314,7 @@ export type MouseButton = (typeof MouseButton)[keyof typeof MouseButton];
  *     selection.addRange(range);
  *   },
  *   fromJSHandle,
- *   toJSHandle
+ *   toJSHandle,
  * );
  * ```
  *
@@ -367,7 +367,7 @@ export abstract class Mouse {
   abstract move(
     x: number,
     y: number,
-    options?: Readonly<MouseMoveOptions>
+    options?: Readonly<MouseMoveOptions>,
   ): Promise<void>;
 
   /**
@@ -394,7 +394,7 @@ export abstract class Mouse {
   abstract click(
     x: number,
     y: number,
-    options?: Readonly<MouseClickOptions>
+    options?: Readonly<MouseClickOptions>,
   ): Promise<void>;
 
   /**
@@ -406,14 +406,14 @@ export abstract class Mouse {
    *
    * ```ts
    * await page.goto(
-   *   'https://mdn.mozillademos.org/en-US/docs/Web/API/Element/wheel_event$samples/Scaling_an_element_via_the_wheel?revision=1587366'
+   *   'https://mdn.mozillademos.org/en-US/docs/Web/API/Element/wheel_event$samples/Scaling_an_element_via_the_wheel?revision=1587366',
    * );
    *
    * const elem = await page.$('div');
    * const boundingBox = await elem.boundingBox();
    * await page.mouse.move(
    *   boundingBox.x + boundingBox.width / 2,
-   *   boundingBox.y + boundingBox.height / 2
+   *   boundingBox.y + boundingBox.height / 2,
    * );
    *
    * await page.mouse.wheel({deltaY: -100});
@@ -435,7 +435,7 @@ export abstract class Mouse {
    */
   abstract dragEnter(
     target: Point,
-    data: Protocol.Input.DragData
+    data: Protocol.Input.DragData,
   ): Promise<void>;
 
   /**
@@ -445,7 +445,7 @@ export abstract class Mouse {
    */
   abstract dragOver(
     target: Point,
-    data: Protocol.Input.DragData
+    data: Protocol.Input.DragData,
   ): Promise<void>;
 
   /**
@@ -466,7 +466,7 @@ export abstract class Mouse {
   abstract dragAndDrop(
     start: Point,
     target: Point,
-    options?: {delay?: number}
+    options?: {delay?: number},
   ): Promise<void>;
 }
 

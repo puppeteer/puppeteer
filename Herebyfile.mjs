@@ -61,7 +61,7 @@ export const docsBrowserSupportTask = task({
       }
 
       const puppeteerVer = `[Puppeteer ${puppeteerVersion}](${getApiUrl(
-        puppeteerVersion
+        puppeteerVersion,
       )})`;
 
       let firefoxVer = '';
@@ -86,7 +86,7 @@ export const docsBrowserSupportTask = task({
     }
     await writeFile(
       'docs/supported-browsers.md',
-      spliceIntoSection('version', content, buffer.join('\n'))
+      spliceIntoSection('version', content, buffer.join('\n')),
     );
   },
 });
@@ -112,7 +112,7 @@ export const docsTask = task({
     const index = await readFile('docs/browsers-api/index.md', 'utf-8');
     await writeFile(
       'docs/browsers-api/index.md',
-      index.replace('# API Reference', readme)
+      index.replace('# API Reference', readme),
     );
 
     // Format everything.

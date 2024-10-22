@@ -45,5 +45,5 @@ await execAsync(
     .filter(file => {
       return file !== 'node_modules';
     })
-    .join(' ')}`
+    .join(' ')}`,
 );

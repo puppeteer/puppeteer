@@ -83,7 +83,7 @@ const prettierCommentsRule = {
               fix(fixer) {
                 return fixer.replaceText(
                   comment,
-                  buildBlockComment(formattedValue, offset).trimStart()
+                  buildBlockComment(formattedValue, offset).trimStart(),
                 );
               },
             });

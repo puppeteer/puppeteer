@@ -17,7 +17,7 @@ import type {CdpTarget} from './Target.js';
 export type TargetFactory = (
   targetInfo: Protocol.Target.TargetInfo,
   session?: CDPSession,
-  parentSession?: CDPSession
+  parentSession?: CDPSession,
 ) => CdpTarget;
 
 /**

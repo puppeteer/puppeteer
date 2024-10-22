@@ -105,7 +105,7 @@ for await (const file of new Glob(files, {})) {
     });
     const tests = [];
     for (const example of await extractJSDocComments(file).then(
-      extractExampleCode
+      extractExampleCode,
     )) {
       tests.push(
         context.test(
@@ -114,8 +114,8 @@ for await (const file of new Glob(files, {})) {
           }`,
           async () => {
             await run(testDirectory, example);
-          }
-        )
+          },
+        ),
       );
     }
     await Promise.all(tests);
@@ -149,7 +149,7 @@ async function run(tempdir: string, example: Readonly<ExampleCode>) {
 function getTestPath(dir: string, code: string) {
   return join(
     dir,
-    `doctest-${createHash('md5').update(code).digest('hex')}.js`
+    `doctest-${createHash('md5').update(code).digest('hex')}.js`,
   );
 }
 
@@ -157,7 +157,7 @@ async function compile(
   language: Language,
   sourceCode: string,
   filePath: string,
-  location: ExtractedSourceLocation
+  location: ExtractedSourceLocation,
 ) {
   const output = await compileCode(language, sourceCode);
   const map = await getExtractSourceMap(output.map, filePath, location);
@@ -166,14 +166,14 @@ async function compile(
 
 function inlineSourceMap(code: string, sourceMap: RawSourceMap) {
   return `${code}\n//# sourceMappingURL=data:application/json;base64,${Buffer.from(
-    JSON.stringify(sourceMap)
+    JSON.stringify(sourceMap),
   ).toString('base64')}`;
 }
 
 async function getExtractSourceMap(
   map: string,
   generatedFile: string,
-  location: ExtractedSourceLocation
+  location: ExtractedSourceLocation,
 ) {
   const sourceMap = JSON.parse(map) as RawSourceMap;
   sourceMap.file = basename(generatedFile);
@@ -239,7 +239,7 @@ const enum Option {
 }
 
 function* extractExampleCode(
-  comments: Iterable<Readonly<Comment>>
+  comments: Iterable<Readonly<Comment>>,
 ): Iterable<Readonly<ExampleCode>> {
   interface Context {
     language: Language;
@@ -325,7 +325,7 @@ function* extractExampleCode(
             ],
             fail: fail || context.fail,
           };
-        }
+        },
       );
     }
   }

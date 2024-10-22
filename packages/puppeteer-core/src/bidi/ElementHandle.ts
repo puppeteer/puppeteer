@@ -28,7 +28,7 @@ export class BidiElementHandle<
 > extends ElementHandle<ElementType> {
   static from<ElementType extends Node = Element>(
     value: Bidi.Script.RemoteValue,
-    realm: BidiFrameRealm
+    realm: BidiFrameRealm,
   ): BidiElementHandle<ElementType> {
     return new BidiElementHandle(value, realm);
   }
@@ -68,7 +68,7 @@ export class BidiElementHandle<
   }
 
   override async contentFrame(
-    this: BidiElementHandle<HTMLIFrameElement>
+    this: BidiElementHandle<HTMLIFrameElement>,
   ): Promise<BidiFrame>;
   @throwIfDisposed()
   @bindIsolatedHandle
@@ -115,7 +115,7 @@ export class BidiElementHandle<
   override async *queryAXTree(
     this: BidiElementHandle<HTMLElement>,
     name?: string | undefined,
-    role?: string | undefined
+    role?: string | undefined,
   ): AwaitableIterable<ElementHandle<Node>> {
     const results = await this.frame.locateNodes(this, {
       type: 'accessibility',

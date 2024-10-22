@@ -9,7 +9,7 @@
  */
 export function stringToTypedArray(
   string: string,
-  base64Encoded = false
+  base64Encoded = false,
 ): Uint8Array {
   if (base64Encoded) {
     const binaryString = atob(string);

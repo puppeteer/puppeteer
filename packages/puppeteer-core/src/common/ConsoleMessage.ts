@@ -68,7 +68,7 @@ export class ConsoleMessage {
     type: ConsoleMessageType,
     text: string,
     args: JSHandle[],
-    stackTraceLocations: ConsoleMessageLocation[]
+    stackTraceLocations: ConsoleMessageLocation[],
   ) {
     this.#type = type;
     this.#text = text;

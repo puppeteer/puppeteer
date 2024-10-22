@@ -27,7 +27,7 @@ export class Request extends EventEmitter<{
 }> {
   static from(
     browsingContext: BrowsingContext,
-    event: Bidi.Network.BeforeRequestSentParameters
+    event: Bidi.Network.BeforeRequestSentParameters,
   ): Request {
     const request = new Request(browsingContext, event);
     request.#initialize();
@@ -43,7 +43,7 @@ export class Request extends EventEmitter<{
 
   private constructor(
     browsingContext: BrowsingContext,
-    event: Bidi.Network.BeforeRequestSentParameters
+    event: Bidi.Network.BeforeRequestSentParameters,
   ) {
     super();
 
@@ -53,7 +53,7 @@ export class Request extends EventEmitter<{
 
   #initialize() {
     const browsingContextEmitter = this.#disposables.use(
-      new EventEmitter(this.#browsingContext)
+      new EventEmitter(this.#browsingContext),
     );
     browsingContextEmitter.once('closed', ({reason}) => {
       this.#error = reason;
@@ -62,7 +62,7 @@ export class Request extends EventEmitter<{
     });
 
     const sessionEmitter = this.#disposables.use(
-      new EventEmitter(this.#session)
+      new EventEmitter(this.#session),
     );
     sessionEmitter.on('network.beforeRequestSent', event => {
       if (
@@ -221,7 +221,7 @@ export class Request extends EventEmitter<{
   async continueWithAuth(
     parameters:
       | Bidi.Network.ContinueWithAuthCredentials
-      | Bidi.Network.ContinueWithAuthNoCredentials
+      | Bidi.Network.ContinueWithAuthNoCredentials,
   ): Promise<void> {
     if (parameters.action === 'provideCredentials') {
       await this.#session.send('network.continueWithAuth', {

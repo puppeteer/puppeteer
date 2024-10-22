@@ -16,7 +16,7 @@ import {isErrorLike} from '../../lib/cjs/launch.js';
 import {Cache} from '../../lib/cjs/main.js';
 
 export function createMockedReadlineInterface(
-  input: string
+  input: string,
 ): readline.Interface {
   const readable = Readable.from([input]);
   const writable = new Writable({
