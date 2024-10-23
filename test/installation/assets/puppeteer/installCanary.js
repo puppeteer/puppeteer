@@ -18,7 +18,7 @@ import {
     buildId: await resolveBuildId(
       Browser.CHROME,
       detectBrowserPlatform(),
-      'canary'
+      'canary',
     ),
   });
 })();

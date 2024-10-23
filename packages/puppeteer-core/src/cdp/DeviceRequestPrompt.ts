@@ -53,7 +53,7 @@ export class DeviceRequestPromptDevice {
  *   page.click('#connect-bluetooth'),
  * ]);
  * await devicePrompt.select(
- *   await devicePrompt.waitForDevice(({name}) => name.includes('My Device'))
+ *   await devicePrompt.waitForDevice(({name}) => name.includes('My Device')),
  * );
  * ```
  *
@@ -81,7 +81,7 @@ export class DeviceRequestPrompt {
   constructor(
     client: CDPSession,
     timeoutSettings: TimeoutSettings,
-    firstEvent: Protocol.DeviceAccess.DeviceRequestPromptedEvent
+    firstEvent: Protocol.DeviceAccess.DeviceRequestPromptedEvent,
   ) {
     this.#client = client;
     this.#timeoutSettings = timeoutSettings;
@@ -89,7 +89,7 @@ export class DeviceRequestPrompt {
 
     this.#client.on(
       'DeviceAccess.deviceRequestPrompted',
-      this.#updateDevicesHandle
+      this.#updateDevicesHandle,
     );
     this.#client.on('Target.detachedFromTarget', () => {
       this.#client = null;
@@ -114,7 +114,7 @@ export class DeviceRequestPrompt {
 
       const newDevice = new DeviceRequestPromptDevice(
         rawDevice.id,
-        rawDevice.name
+        rawDevice.name,
       );
       this.devices.push(newDevice);
 
@@ -131,7 +131,7 @@ export class DeviceRequestPrompt {
    */
   async waitForDevice(
     filter: (device: DeviceRequestPromptDevice) => boolean,
-    options: WaitTimeoutOptions = {}
+    options: WaitTimeoutOptions = {},
   ): Promise<DeviceRequestPromptDevice> {
     for (const device of this.devices) {
       if (filter(device)) {
@@ -151,7 +151,7 @@ export class DeviceRequestPrompt {
         () => {
           deferred.reject(options.signal?.reason);
         },
-        {once: true}
+        {once: true},
       );
     }
 
@@ -170,16 +170,16 @@ export class DeviceRequestPrompt {
   async select(device: DeviceRequestPromptDevice): Promise<void> {
     assert(
       this.#client !== null,
-      'Cannot select device through detached session!'
+      'Cannot select device through detached session!',
     );
     assert(this.devices.includes(device), 'Cannot select unknown device!');
     assert(
       !this.#handled,
-      'Cannot select DeviceRequestPrompt which is already handled!'
+      'Cannot select DeviceRequestPrompt which is already handled!',
     );
     this.#client.off(
       'DeviceAccess.deviceRequestPrompted',
-      this.#updateDevicesHandle
+      this.#updateDevicesHandle,
     );
     this.#handled = true;
     return await this.#client.send('DeviceAccess.selectPrompt', {
@@ -194,15 +194,15 @@ export class DeviceRequestPrompt {
   async cancel(): Promise<void> {
     assert(
       this.#client !== null,
-      'Cannot cancel prompt through detached session!'
+      'Cannot cancel prompt through detached session!',
     );
     assert(
       !this.#handled,
-      'Cannot cancel DeviceRequestPrompt which is already handled!'
+      'Cannot cancel DeviceRequestPrompt which is already handled!',
     );
     this.#client.off(
       'DeviceAccess.deviceRequestPrompted',
-      this.#updateDevicesHandle
+      this.#updateDevicesHandle,
     );
     this.#handled = true;
     return await this.#client.send('DeviceAccess.cancelPrompt', {id: this.#id});
@@ -237,11 +237,11 @@ export class DeviceRequestPromptManager {
    * requestDevice.
    */
   async waitForDevicePrompt(
-    options: WaitTimeoutOptions = {}
+    options: WaitTimeoutOptions = {},
   ): Promise<DeviceRequestPrompt> {
     assert(
       this.#client !== null,
-      'Cannot wait for device prompt through detached session!'
+      'Cannot wait for device prompt through detached session!',
     );
     const needsEnable = this.#deviceRequestPrompDeferreds.size === 0;
     let enablePromise: Promise<void> | undefined;
@@ -260,7 +260,7 @@ export class DeviceRequestPromptManager {
         () => {
           deferred.reject(options.signal?.reason);
         },
-        {once: true}
+        {once: true},
       );
     }
 
@@ -281,7 +281,7 @@ export class DeviceRequestPromptManager {
    * @internal
    */
   #onDeviceRequestPrompted(
-    event: Protocol.DeviceAccess.DeviceRequestPromptedEvent
+    event: Protocol.DeviceAccess.DeviceRequestPromptedEvent,
   ) {
     if (!this.#deviceRequestPrompDeferreds.size) {
       return;
@@ -291,7 +291,7 @@ export class DeviceRequestPromptManager {
     const devicePrompt = new DeviceRequestPrompt(
       this.#client,
       this.#timeoutSettings,
-      event
+      event,
     );
     for (const promise of this.#deviceRequestPrompDeferreds) {
       promise.resolve(devicePrompt);

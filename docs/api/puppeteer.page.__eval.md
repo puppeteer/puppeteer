@@ -118,6 +118,6 @@ The compiler should be able to infer the return type from the `pageFunction` you
 
 ```ts
 const allInputValues = await page.$$eval('input', elements =>
-  elements.map(e => e.textContent)
+  elements.map(e => e.textContent),
 );
 ```

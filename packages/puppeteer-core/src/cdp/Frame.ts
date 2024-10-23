@@ -60,7 +60,7 @@ export class CdpFrame extends Frame {
     frameManager: FrameManager,
     frameId: string,
     parentFrameId: string | undefined,
-    client: CDPSession
+    client: CDPSession,
   ) {
     super();
     this._frameManager = frameManager;
@@ -75,7 +75,7 @@ export class CdpFrame extends Frame {
       [MAIN_WORLD]: new IsolatedWorld(this, this._frameManager.timeoutSettings),
       [PUPPETEER_WORLD]: new IsolatedWorld(
         this,
-        this._frameManager.timeoutSettings
+        this._frameManager.timeoutSettings,
       ),
     };
 
@@ -89,16 +89,16 @@ export class CdpFrame extends Frame {
 
     this.worlds[MAIN_WORLD].emitter.on(
       'consoleapicalled',
-      this.#onMainWorldConsoleApiCalled.bind(this)
+      this.#onMainWorldConsoleApiCalled.bind(this),
     );
     this.worlds[MAIN_WORLD].emitter.on(
       'bindingcalled',
-      this.#onMainWorldBindingCalled.bind(this)
+      this.#onMainWorldBindingCalled.bind(this),
     );
   }
 
   #onMainWorldConsoleApiCalled(
-    event: Protocol.Runtime.ConsoleAPICalledEvent
+    event: Protocol.Runtime.ConsoleAPICalledEvent,
   ): void {
     this._frameManager.emit(FrameManagerEvent.ConsoleApiCalled, [
       this.worlds[MAIN_WORLD],
@@ -146,7 +146,7 @@ export class CdpFrame extends Frame {
       referrerPolicy?: string;
       timeout?: number;
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    } = {}
+    } = {},
   ): Promise<HTTPResponse | null> {
     const {
       referer = this._frameManager.networkManager.extraHTTPHeaders()['referer'],
@@ -162,7 +162,7 @@ export class CdpFrame extends Frame {
       this._frameManager.networkManager,
       this,
       waitUntil,
-      timeout
+      timeout,
     );
     let error = await Deferred.race([
       navigate(
@@ -170,7 +170,7 @@ export class CdpFrame extends Frame {
         url,
         referer,
         referrerPolicy as Protocol.Page.ReferrerPolicy,
-        this._id
+        this._id,
       ),
       watcher.terminationPromise(),
     ]);
@@ -197,7 +197,7 @@ export class CdpFrame extends Frame {
       url: string,
       referrer: string | undefined,
       referrerPolicy: Protocol.Page.ReferrerPolicy | undefined,
-      frameId: string
+      frameId: string,
     ): Promise<Error | null> {
       try {
         const response = await client.send('Page.navigate', {
@@ -224,7 +224,7 @@ export class CdpFrame extends Frame {
 
   @throwIfDetached
   override async waitForNavigation(
-    options: WaitForOptions = {}
+    options: WaitForOptions = {},
   ): Promise<HTTPResponse | null> {
     const {
       waitUntil = ['load'],
@@ -236,7 +236,7 @@ export class CdpFrame extends Frame {
       this,
       waitUntil,
       timeout,
-      signal
+      signal,
     );
     const error = await Deferred.race([
       watcher.terminationPromise(),
@@ -279,7 +279,7 @@ export class CdpFrame extends Frame {
     options: {
       timeout?: number;
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    } = {}
+    } = {},
   ): Promise<void> {
     const {
       waitUntil = ['load'],
@@ -294,7 +294,7 @@ export class CdpFrame extends Frame {
       this._frameManager.networkManager,
       this,
       waitUntil,
-      timeout
+      timeout,
     );
     const error = await Deferred.race<void | Error | undefined>([
       watcher.terminationPromise(),
@@ -335,7 +335,7 @@ export class CdpFrame extends Frame {
       'Page.addScriptToEvaluateOnNewDocument',
       {
         source: preloadScript.source,
-      }
+      },
     );
     preloadScript.setIdForFrame(this, identifier);
   }
@@ -376,10 +376,10 @@ export class CdpFrame extends Frame {
 
   @throwIfDetached
   override async waitForDevicePrompt(
-    options: WaitTimeoutOptions = {}
+    options: WaitTimeoutOptions = {},
   ): Promise<DeviceRequestPrompt> {
     return await this.#deviceRequestPromptManager().waitForDevicePrompt(
-      options
+      options,
     );
   }
 

@@ -28,7 +28,7 @@ void describe('@puppeteer/ng-schematics: config', () => {
       const tree = await buildTestingTree('config', 'multi');
       expect(tree.files).toContain('/.puppeteerrc.mjs');
       expect(tree.files).not.toContain(
-        getMultiApplicationFile('.puppeteerrc.mjs')
+        getMultiApplicationFile('.puppeteerrc.mjs'),
       );
     });
   });

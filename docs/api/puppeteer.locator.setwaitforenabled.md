@@ -12,7 +12,7 @@ Creates a new locator instance by cloning the current locator and specifying whe
 class Locator {
   setWaitForEnabled<NodeType extends Node>(
     this: Locator<NodeType>,
-    value: boolean
+    value: boolean,
   ): Locator<NodeType>;
 }
 ```

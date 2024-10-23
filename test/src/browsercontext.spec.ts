@@ -143,7 +143,7 @@ describe('BrowserContext', function () {
         },
         {
           timeout: 1,
-        }
+        },
       )
       .catch(error_ => {
         return error_;
@@ -192,22 +192,22 @@ describe('BrowserContext', function () {
     expect(
       await page1.evaluate(() => {
         return localStorage.getItem('name');
-      })
+      }),
     ).toBe('page1');
     expect(
       await page1.evaluate(() => {
         return document.cookie;
-      })
+      }),
     ).toBe('name=page1');
     expect(
       await page2.evaluate(() => {
         return localStorage.getItem('name');
-      })
+      }),
     ).toBe('page2');
     expect(
       await page2.evaluate(() => {
         return document.cookie;
-      })
+      }),
     ).toBe('name=page2');
 
     // Cleanup contexts.
@@ -319,25 +319,25 @@ describe('BrowserContext', function () {
       expect(
         await page.evaluate(() => {
           return (globalThis as any).events;
-        })
+        }),
       ).toEqual(['prompt']);
       await context.overridePermissions(server.EMPTY_PAGE, []);
       expect(
         await page.evaluate(() => {
           return (globalThis as any).events;
-        })
+        }),
       ).toEqual(['prompt', 'denied']);
       await context.overridePermissions(server.EMPTY_PAGE, ['geolocation']);
       expect(
         await page.evaluate(() => {
           return (globalThis as any).events;
-        })
+        }),
       ).toEqual(['prompt', 'denied', 'granted']);
       await context.clearPermissionOverrides();
       expect(
         await page.evaluate(() => {
           return (globalThis as any).events;
-        })
+        }),
       ).toEqual(['prompt', 'denied', 'granted', 'prompt']);
     });
     it('should isolate permissions between browser contexts', async () => {
@@ -368,7 +368,7 @@ describe('BrowserContext', function () {
 
       await page.goto(server.EMPTY_PAGE);
       expect(await getPermission(page, 'persistent-storage')).not.toBe(
-        'granted'
+        'granted',
       );
       await context.overridePermissions(server.EMPTY_PAGE, [
         'persistent-storage',

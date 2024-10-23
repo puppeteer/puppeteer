@@ -80,7 +80,7 @@ class AngularProject {
           // Replace new lines with a prefix including the test runner
           .replace(
             /(?:\r\n?|\n)(?=.*[\r\n])/g,
-            `\n${this.#runner}:${this.type} - `
+            `\n${this.#runner}:${this.type} - `,
           );
         console.log(`${this.#runner}:${this.type} - ${data}`);
       };
@@ -146,13 +146,13 @@ class AngularProject {
 
   async runNgAdd() {
     await this.runNpmScripts(
-      `schematics:add -- --port=${AngularProject.port()}`
+      `schematics:add -- --port=${AngularProject.port()}`,
     );
   }
 
   async runSmoke() {
     await this.runNpmScripts(
-      `schematics:smoke -- --port=${AngularProject.port()}`
+      `schematics:smoke -- --port=${AngularProject.port()}`,
     );
   }
 }
@@ -168,7 +168,7 @@ export class AngularProjectSingle extends AngularProject {
           PUPPETEER_SKIP_DOWNLOAD: 'true',
           ...process.env,
         },
-      }
+      },
     );
   }
 }
@@ -184,7 +184,7 @@ export class AngularProjectMulti extends AngularProject {
           PUPPETEER_SKIP_DOWNLOAD: 'true',
           ...process.env,
         },
-      }
+      },
     );
 
     await this.executeCommand(
@@ -192,14 +192,14 @@ export class AngularProjectMulti extends AngularProject {
       {
         PUPPETEER_SKIP_DOWNLOAD: 'true',
         ...this.commandOptions,
-      }
+      },
     );
     await this.executeCommand(
       `ng generate application admin --style=css --routing=false`,
       {
         PUPPETEER_SKIP_DOWNLOAD: 'true',
         ...this.commandOptions,
-      }
+      },
     );
   }
 }

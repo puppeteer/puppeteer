@@ -30,21 +30,21 @@ function folder(platform: BrowserPlatform): string {
 export function resolveDownloadUrl(
   platform: BrowserPlatform,
   buildId: string,
-  baseUrl = 'https://storage.googleapis.com/chrome-for-testing-public'
+  baseUrl = 'https://storage.googleapis.com/chrome-for-testing-public',
 ): string {
   return `${baseUrl}/${resolveDownloadPath(platform, buildId).join('/')}`;
 }
 
 export function resolveDownloadPath(
   platform: BrowserPlatform,
-  buildId: string
+  buildId: string,
 ): string[] {
   return [buildId, folder(platform), `chrome-${folder(platform)}.zip`];
 }
 
 export function relativeExecutablePath(
   platform: BrowserPlatform,
-  _buildId: string
+  _buildId: string,
 ): string {
   switch (platform) {
     case BrowserPlatform.MAC:
@@ -54,7 +54,7 @@ export function relativeExecutablePath(
         'Google Chrome for Testing.app',
         'Contents',
         'MacOS',
-        'Google Chrome for Testing'
+        'Google Chrome for Testing',
       );
     case BrowserPlatform.LINUX:
       return path.join('chrome-linux64', 'chrome');
@@ -65,12 +65,12 @@ export function relativeExecutablePath(
 }
 
 export async function getLastKnownGoodReleaseForChannel(
-  channel: ChromeReleaseChannel
+  channel: ChromeReleaseChannel,
 ): Promise<{version: string; revision: string}> {
   const data = (await getJSON(
     new URL(
-      'https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json'
-    )
+      'https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json',
+    ),
   )) as {
     channels: Record<string, {version: string}>;
   };
@@ -90,12 +90,12 @@ export async function getLastKnownGoodReleaseForChannel(
 }
 
 export async function getLastKnownGoodReleaseForMilestone(
-  milestone: string
+  milestone: string,
 ): Promise<{version: string; revision: string} | undefined> {
   const data = (await getJSON(
     new URL(
-      'https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json'
-    )
+      'https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json',
+    ),
   )) as {
     milestones: Record<string, {version: string; revision: string}>;
   };
@@ -108,12 +108,12 @@ export async function getLastKnownGoodReleaseForBuild(
   /**
    * @example `112.0.23`,
    */
-  buildPrefix: string
+  buildPrefix: string,
 ): Promise<{version: string; revision: string} | undefined> {
   const data = (await getJSON(
     new URL(
-      'https://googlechromelabs.github.io/chrome-for-testing/latest-patch-versions-per-build.json'
-    )
+      'https://googlechromelabs.github.io/chrome-for-testing/latest-patch-versions-per-build.json',
+    ),
   )) as {
     builds: Record<string, {version: string; revision: string}>;
   };
@@ -123,17 +123,17 @@ export async function getLastKnownGoodReleaseForBuild(
 }
 
 export async function resolveBuildId(
-  channel: ChromeReleaseChannel
+  channel: ChromeReleaseChannel,
 ): Promise<string>;
 export async function resolveBuildId(
-  channel: string
+  channel: string,
 ): Promise<string | undefined>;
 export async function resolveBuildId(
-  channel: ChromeReleaseChannel | string
+  channel: ChromeReleaseChannel | string,
 ): Promise<string | undefined> {
   if (
     Object.values(ChromeReleaseChannel).includes(
-      channel as ChromeReleaseChannel
+      channel as ChromeReleaseChannel,
     )
   ) {
     return (
@@ -153,7 +153,7 @@ export async function resolveBuildId(
 
 export function resolveSystemExecutablePath(
   platform: BrowserPlatform,
-  channel: ChromeReleaseChannel
+  channel: ChromeReleaseChannel,
 ): string {
   switch (platform) {
     case BrowserPlatform.WIN64:
@@ -192,7 +192,7 @@ export function resolveSystemExecutablePath(
   }
 
   throw new Error(
-    `Unable to detect browser executable path for '${channel}' on ${platform}.`
+    `Unable to detect browser executable path for '${channel}' on ${platform}.`,
   );
 }
 

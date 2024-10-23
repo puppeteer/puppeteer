@@ -15,7 +15,7 @@ class Page {
   screenshot(
     options: Readonly<ScreenshotOptions> & {
       encoding: 'base64';
-    }
+    },
   ): Promise<string>;
 }
 ```

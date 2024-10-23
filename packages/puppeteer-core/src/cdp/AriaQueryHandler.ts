@@ -16,7 +16,7 @@ interface ARIASelector {
 }
 
 const isKnownAttribute = (
-  attribute: string
+  attribute: string,
 ): attribute is keyof ARIASelector => {
   return ['name', 'role'].includes(attribute);
 };
@@ -45,11 +45,11 @@ const parseARIASelector = (selector: string): ARIASelector => {
     (_, attribute, __, value) => {
       assert(
         isKnownAttribute(attribute),
-        `Unknown aria attribute "${attribute}" in selector`
+        `Unknown aria attribute "${attribute}" in selector`,
       );
       queryOptions[attribute] = value;
       return '';
-    }
+    },
   );
   if (defaultName && !queryOptions.name) {
     queryOptions.name = defaultName;
@@ -64,14 +64,14 @@ export class ARIAQueryHandler extends QueryHandler {
   static override querySelector: QuerySelector = async (
     node,
     selector,
-    {ariaQuerySelector}
+    {ariaQuerySelector},
   ) => {
     return await ariaQuerySelector(node, selector);
   };
 
   static override async *queryAll(
     element: ElementHandle<Node>,
-    selector: string
+    selector: string,
   ): AwaitableIterable<ElementHandle<Node>> {
     const {name, role} = parseARIASelector(selector);
     yield* element.queryAXTree(name, role);
@@ -79,7 +79,7 @@ export class ARIAQueryHandler extends QueryHandler {
 
   static override queryOne = async (
     element: ElementHandle<Node>,
-    selector: string
+    selector: string,
   ): Promise<ElementHandle<Node> | null> => {
     return (
       (await AsyncIterableUtil.first(this.queryAll(element, selector))) ?? null

@@ -63,16 +63,16 @@ export class BidiCdpSession extends CDPSession {
   override async send<T extends keyof ProtocolMapping.Commands>(
     method: T,
     params?: ProtocolMapping.Commands[T]['paramsType'][0],
-    options?: CommandOptions
+    options?: CommandOptions,
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
     if (this.#connection === undefined) {
       throw new UnsupportedOperation(
-        'CDP support is required for this feature. The current browser does not support CDP.'
+        'CDP support is required for this feature. The current browser does not support CDP.',
       );
     }
     if (this.#detached) {
       throw new TargetCloseError(
-        `Protocol error (${method}): Session closed. Most likely the page has been closed.`
+        `Protocol error (${method}): Session closed. Most likely the page has been closed.`,
       );
     }
     const session = await this.#sessionId.valueOrThrow();
@@ -83,7 +83,7 @@ export class BidiCdpSession extends CDPSession {
         params: params,
         session,
       },
-      options?.timeout
+      options?.timeout,
     );
     return result.result;
   }

@@ -29,7 +29,7 @@ describe('Firefox', () => {
         buildId: '123',
         cacheDir: '.cache',
       }),
-      path.join('.cache', 'firefox', 'linux-123', 'firefox', 'firefox')
+      path.join('.cache', 'firefox', 'linux-123', 'firefox', 'firefox'),
     );
   });
 
@@ -42,7 +42,7 @@ describe('Firefox', () => {
 
     beforeEach(async () => {
       tmpDir = fs.mkdtempSync(
-        path.join(os.tmpdir(), 'puppeteer-browsers-test')
+        path.join(os.tmpdir(), 'puppeteer-browsers-test'),
       );
       await install({
         cacheDir: tmpDir,

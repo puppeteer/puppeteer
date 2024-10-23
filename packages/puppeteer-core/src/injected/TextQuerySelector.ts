@@ -16,7 +16,7 @@ import {
  */
 export const textQuerySelectorAll = function* (
   root: Node,
-  selector: string
+  selector: string,
 ): Generator<Element> {
   let yielded = false;
   for (const node of root.childNodes) {

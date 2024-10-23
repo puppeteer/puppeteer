@@ -23,7 +23,7 @@ import {Connection} from './Connection.js';
 export async function _connectToCdpBrowser(
   connectionTransport: ConnectionTransport,
   url: string,
-  options: BrowserConnectOptions & ConnectOptions
+  options: BrowserConnectOptions & ConnectOptions,
 ): Promise<CdpBrowser> {
   const {
     acceptInsecureCerts = false,
@@ -38,7 +38,7 @@ export async function _connectToCdpBrowser(
     url,
     connectionTransport,
     slowMo,
-    protocolTimeout
+    protocolTimeout,
   );
 
   const version = await connection.send('Browser.getVersion');
@@ -47,7 +47,7 @@ export async function _connectToCdpBrowser(
     : 'chrome';
 
   const {browserContextIds} = await connection.send(
-    'Target.getBrowserContexts'
+    'Target.getBrowserContexts',
   );
   const browser = await CdpBrowser._create(
     product || 'chrome',
@@ -60,7 +60,7 @@ export async function _connectToCdpBrowser(
       return connection.send('Browser.close').catch(debugError);
     },
     targetFilter,
-    isPageTarget
+    isPageTarget,
   );
   return browser;
 }

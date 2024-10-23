@@ -55,9 +55,9 @@ describe('Chrome CLI', function () {
           'chrome',
           `linux-${testChromeBuildId}`,
           'chrome-linux64',
-          'chrome'
-        )
-      )
+          'chrome',
+        ),
+      ),
     );
 
     await new CLI(tmpDir, createMockedReadlineInterface('no')).run([
@@ -73,9 +73,9 @@ describe('Chrome CLI', function () {
           'chrome',
           `linux-${testChromeBuildId}`,
           'chrome-linux64',
-          'chrome'
-        )
-      )
+          'chrome',
+        ),
+      ),
     );
   });
 

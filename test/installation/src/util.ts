@@ -17,7 +17,7 @@ const nodeExecFile = promisify(execFileAsync);
 export const execFile = async (
   file: string,
   args: string[],
-  options: ExecFileOptions
+  options: ExecFileOptions,
 ): Promise<{
   stdout: string;
   stderr: string;

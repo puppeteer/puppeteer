@@ -32,7 +32,7 @@ describe('Puppeteer CLI', () => {
     });
     assert.strictEqual(result.status, 0, `${result.stdout}\n${result.stderr}`);
     assert.ok(
-      result.stdout.toString('utf-8').startsWith('puppeteer <command>')
+      result.stdout.toString('utf-8').startsWith('puppeteer <command>'),
     );
   });
 
@@ -49,7 +49,7 @@ describe('Puppeteer CLI', () => {
           ...process.env,
           PUPPETEER_CACHE_DIR: join(this.sandbox, '.cache', 'puppeteer'),
         },
-      }
+      },
     );
     assert.strictEqual(result.status, 0, `${result.stdout}\n${result.stderr}`);
     const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));

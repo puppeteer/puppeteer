@@ -12,7 +12,7 @@ Bind an event listener to fire when an event occurs.
 class EventEmitter {
   on<Key extends keyof EventsWithWildcard<Events>>(
     type: Key,
-    handler: Handler<EventsWithWildcard<Events>[Key]>
+    handler: Handler<EventsWithWildcard<Events>[Key]>,
   ): this;
 }
 ```

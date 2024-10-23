@@ -43,7 +43,7 @@ describe('Typed Array helpers', function () {
       const result = stringToTypedArray(base64, true);
 
       expect(Buffer.from(base64, 'base64').compare(Buffer.from(result))).toBe(
-        0
+        0,
       );
     });
   });
@@ -55,7 +55,7 @@ describe('Typed Array helpers', function () {
       const three = new Uint8Array([123]);
 
       expect(mergeUint8Arrays([one, two, three])).toEqual(
-        new Uint8Array([1, 12, 123])
+        new Uint8Array([1, 12, 123]),
       );
     });
 

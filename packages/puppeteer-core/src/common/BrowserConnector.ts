@@ -29,7 +29,7 @@ const getWebSocketTransportClass = async () => {
  * @internal
  */
 export async function _connectToBrowser(
-  options: ConnectOptions
+  options: ConnectOptions,
 ): Promise<Browser> {
   const {connectionTransport, endpointUrl} =
     await getConnectionTransport(options);
@@ -38,14 +38,14 @@ export async function _connectToBrowser(
     const bidiBrowser = await _connectToBiDiBrowser(
       connectionTransport,
       endpointUrl,
-      options
+      options,
     );
     return bidiBrowser;
   } else {
     const cdpBrowser = await _connectToCdpBrowser(
       connectionTransport,
       endpointUrl,
-      options
+      options,
     );
     return cdpBrowser;
   }
@@ -56,14 +56,14 @@ export async function _connectToBrowser(
  * endpoint url the transport is connected to.
  */
 async function getConnectionTransport(
-  options: BrowserConnectOptions & ConnectOptions
+  options: BrowserConnectOptions & ConnectOptions,
 ): Promise<{connectionTransport: ConnectionTransport; endpointUrl: string}> {
   const {browserWSEndpoint, browserURL, transport, headers = {}} = options;
 
   assert(
     Number(!!browserWSEndpoint) + Number(!!browserURL) + Number(!!transport) ===
       1,
-    'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect'
+    'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect',
   );
 
   if (transport) {

@@ -42,7 +42,7 @@ export class UserPrompt extends EventEmitter<{
 }> {
   static from(
     browsingContext: BrowsingContext,
-    info: Bidi.BrowsingContext.UserPromptOpenedParameters
+    info: Bidi.BrowsingContext.UserPromptOpenedParameters,
   ): UserPrompt {
     const userPrompt = new UserPrompt(browsingContext, info);
     userPrompt.#initialize();
@@ -57,7 +57,7 @@ export class UserPrompt extends EventEmitter<{
 
   private constructor(
     context: BrowsingContext,
-    info: Bidi.BrowsingContext.UserPromptOpenedParameters
+    info: Bidi.BrowsingContext.UserPromptOpenedParameters,
   ) {
     super();
 
@@ -67,14 +67,14 @@ export class UserPrompt extends EventEmitter<{
 
   #initialize() {
     const browserContextEmitter = this.#disposables.use(
-      new EventEmitter(this.browsingContext)
+      new EventEmitter(this.browsingContext),
     );
     browserContextEmitter.once('closed', ({reason}) => {
       this.dispose(`User prompt already closed: ${reason}`);
     });
 
     const sessionEmitter = this.#disposables.use(
-      new EventEmitter(this.#session)
+      new EventEmitter(this.#session),
     );
     sessionEmitter.on('browsingContext.userPromptClosed', parameters => {
       if (parameters.context !== this.browsingContext.id) {

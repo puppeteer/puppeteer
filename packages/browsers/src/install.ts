@@ -75,7 +75,7 @@ export interface InstallOptions {
    */
   downloadProgressCallback?: (
     downloadedBytes: number,
-    totalBytes: number
+    totalBytes: number,
   ) => void;
   /**
    * Determines the host that will be used for downloading.
@@ -120,7 +120,7 @@ export interface InstallOptions {
  * @public
  */
 export function install(
-  options: InstallOptions & {unpack?: true}
+  options: InstallOptions & {unpack?: true},
 ): Promise<InstalledBrowser>;
 /**
  * Downloads the browser archive according to the {@link InstallOptions} without
@@ -131,23 +131,23 @@ export function install(
  * @public
  */
 export function install(
-  options: InstallOptions & {unpack: false}
+  options: InstallOptions & {unpack: false},
 ): Promise<string>;
 export async function install(
-  options: InstallOptions
+  options: InstallOptions,
 ): Promise<InstalledBrowser | string> {
   options.platform ??= detectBrowserPlatform();
   options.unpack ??= true;
   if (!options.platform) {
     throw new Error(
-      `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`
+      `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`,
     );
   }
   const url = getDownloadUrl(
     options.browser,
     options.platform,
     options.buildId,
-    options.baseUrl
+    options.baseUrl,
   );
   try {
     return await installUrl(url, options);
@@ -162,15 +162,15 @@ export async function install(
       case Browser.CHROMEDRIVER:
       case Browser.CHROMEHEADLESSSHELL: {
         debugInstall(
-          `Trying to find download URL via https://googlechromelabs.github.io/chrome-for-testing.`
+          `Trying to find download URL via https://googlechromelabs.github.io/chrome-for-testing.`,
         );
         interface Version {
           downloads: Record<string, Array<{platform: string; url: string}>>;
         }
         const version = (await getJSON(
           new URL(
-            `https://googlechromelabs.github.io/chrome-for-testing/${options.buildId}.json`
-          )
+            `https://googlechromelabs.github.io/chrome-for-testing/${options.buildId}.json`,
+          ),
         )) as Version;
         let platform = '';
         switch (options.platform) {
@@ -215,7 +215,7 @@ async function installDeps(installedBrowser: InstalledBrowser) {
   // Currently, only Debian-like deps are supported.
   const depsPath = path.join(
     path.dirname(installedBrowser.executablePath),
-    'deb.deps'
+    'deb.deps',
   );
   if (!existsSync(depsPath)) {
     debugInstall(`deb.deps file was not found at ${depsPath}`);
@@ -228,7 +228,7 @@ async function installDeps(installedBrowser: InstalledBrowser) {
   let result = spawnSync('apt-get', ['-v']);
   if (result.status !== 0) {
     throw new Error(
-      'Failed to install system dependencies: apt-get does not seem to be available'
+      'Failed to install system dependencies: apt-get does not seem to be available',
     );
   }
   debugInstall(`Trying to install dependencies: ${data}`);
@@ -240,7 +240,7 @@ async function installDeps(installedBrowser: InstalledBrowser) {
   ]);
   if (result.status !== 0) {
     throw new Error(
-      `Failed to install system dependencies: status=${result.status},error=${result.error},stdout=${result.stdout.toString('utf8')},stderr=${result.stderr.toString('utf8')}`
+      `Failed to install system dependencies: status=${result.status},error=${result.error},stdout=${result.stdout.toString('utf8')},stderr=${result.stderr.toString('utf8')}`,
     );
   }
   debugInstall(`Installed system dependencies ${data}`);
@@ -248,12 +248,12 @@ async function installDeps(installedBrowser: InstalledBrowser) {
 
 async function installUrl(
   url: URL,
-  options: InstallOptions
+  options: InstallOptions,
 ): Promise<InstalledBrowser | string> {
   options.platform ??= detectBrowserPlatform();
   if (!options.platform) {
     throw new Error(
-      `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`
+      `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`,
     );
   }
   const fileName = url.toString().split('/').pop();
@@ -279,7 +279,7 @@ async function installUrl(
   const outputPath = cache.installationDir(
     options.browser,
     options.platform,
-    options.buildId
+    options.buildId,
   );
 
   try {
@@ -288,11 +288,11 @@ async function installUrl(
         cache,
         options.browser,
         options.buildId,
-        options.platform
+        options.platform,
       );
       if (!existsSync(installedBrowser.executablePath)) {
         throw new Error(
-          `The browser folder (${outputPath}) exists but the executable (${installedBrowser.executablePath}) is missing`
+          `The browser folder (${outputPath}) exists but the executable (${installedBrowser.executablePath}) is missing`,
         );
       }
       await runSetup(installedBrowser);
@@ -321,7 +321,7 @@ async function installUrl(
       cache,
       options.browser,
       options.buildId,
-      options.platform
+      options.platform,
     );
     if (options.buildIdAlias) {
       const metadata = installedBrowser.readMetadata();
@@ -361,7 +361,7 @@ async function runSetup(installedBrowser: InstalledBrowser): Promise<void> {
         [`--configure-browser-in-directory=` + browserDir],
         {
           shell: true,
-        }
+        },
       );
       // TODO: Handle error here. Currently the setup.exe sometimes
       // errors although it sets the permissions correctly.
@@ -403,14 +403,14 @@ export async function uninstall(options: UninstallOptions): Promise<void> {
   options.platform ??= detectBrowserPlatform();
   if (!options.platform) {
     throw new Error(
-      `Cannot detect the browser platform for: ${os.platform()} (${os.arch()})`
+      `Cannot detect the browser platform for: ${os.platform()} (${os.arch()})`,
     );
   }
 
   new Cache(options.cacheDir).uninstall(
     options.browser,
     options.platform,
-    options.buildId
+    options.buildId,
   );
 }
 
@@ -430,7 +430,7 @@ export interface GetInstalledBrowsersOptions {
  * @public
  */
 export async function getInstalledBrowsers(
-  options: GetInstalledBrowsersOptions
+  options: GetInstalledBrowsersOptions,
 ): Promise<InstalledBrowser[]> {
   return new Cache(options.cacheDir).getInstalledBrowsers();
 }
@@ -442,7 +442,7 @@ export async function canDownload(options: InstallOptions): Promise<boolean> {
   options.platform ??= detectBrowserPlatform();
   if (!options.platform) {
     throw new Error(
-      `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`
+      `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`,
     );
   }
   return await headHttpRequest(
@@ -450,8 +450,8 @@ export async function canDownload(options: InstallOptions): Promise<boolean> {
       options.browser,
       options.platform,
       options.buildId,
-      options.baseUrl
-    )
+      options.baseUrl,
+    ),
   );
 }
 
@@ -459,7 +459,7 @@ function getDownloadUrl(
   browser: Browser,
   platform: BrowserPlatform,
   buildId: string,
-  baseUrl?: string
+  baseUrl?: string,
 ): URL {
   return new URL(downloadUrls[browser](platform, buildId, baseUrl));
 }

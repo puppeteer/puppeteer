@@ -67,7 +67,7 @@ export class Puppeteer {
    */
   static registerCustomQueryHandler(
     name: string,
-    queryHandler: CustomQueryHandler
+    queryHandler: CustomQueryHandler,
   ): void {
     return this.customQueryHandlers.register(name, queryHandler);
   }

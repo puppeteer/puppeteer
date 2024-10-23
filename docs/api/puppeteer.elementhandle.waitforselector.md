@@ -14,7 +14,7 @@ Unlike [Frame.waitForSelector()](./puppeteer.frame.waitforselector.md), this met
 class ElementHandle {
   waitForSelector<Selector extends string>(
     selector: Selector,
-    options?: WaitForSelectorOptions
+    options?: WaitForSelectorOptions,
   ): Promise<ElementHandle<NodeFor<Selector>> | null>;
 }
 ```

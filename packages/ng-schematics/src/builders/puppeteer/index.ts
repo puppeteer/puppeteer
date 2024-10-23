@@ -46,7 +46,7 @@ export function getCommandForRunner(runner: TestRunner): [string, ...string[]] {
 function getExecutable(command: string[]) {
   const executable = command.shift()!;
   const debugError = `Error running '${executable}' with arguments '${command.join(
-    ' '
+    ' ',
   )}'.`;
 
   return {
@@ -81,7 +81,7 @@ function updateExecutablePath(command: string, root?: string) {
 async function executeCommand(
   context: BuilderContext,
   command: string[],
-  env: NodeJS.ProcessEnv = {}
+  env: NodeJS.ProcessEnv = {},
 ) {
   let project: JsonObject;
   if (context.target) {
@@ -126,7 +126,7 @@ async function executeCommand(
 function message(
   message: string,
   context: BuilderContext,
-  type: 'info' | 'success' | 'error' = 'info'
+  type: 'info' | 'success' | 'error' = 'info',
 ): void {
   let style: string;
   switch (type) {
@@ -141,13 +141,13 @@ function message(
       break;
   }
   context.logger.info(
-    `${terminalStyles.bold}${style}${message}${terminalStyles.clear}`
+    `${terminalStyles.bold}${style}${message}${terminalStyles.clear}`,
   );
 }
 
 async function startServer(
   options: PuppeteerBuilderOptions,
-  context: BuilderContext
+  context: BuilderContext,
 ): Promise<BuilderRun> {
   context.logger.debug('Trying to start server.');
   const target = targetFromTargetString(options.devServerTarget);
@@ -171,7 +171,7 @@ async function startServer(
 
 async function getServerAndUrl(
   options: PuppeteerBuilderOptions,
-  context: BuilderContext
+  context: BuilderContext,
 ): Promise<{
   baseUrl: string;
   server: BuilderRun | null;
@@ -194,7 +194,7 @@ async function getServerAndUrl(
 
 async function executeE2ETest(
   options: PuppeteerBuilderOptions,
-  context: BuilderContext
+  context: BuilderContext,
 ): Promise<BuilderOutput> {
   let server: BuilderRun | null = null;
   try {

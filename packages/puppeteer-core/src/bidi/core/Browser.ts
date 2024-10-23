@@ -66,7 +66,7 @@ export class Browser extends EventEmitter<{
 
   async #initialize() {
     const sessionEmitter = this.#disposables.use(
-      new EventEmitter(this.session)
+      new EventEmitter(this.session),
     );
     sessionEmitter.once('ended', ({reason}) => {
       this.dispose(reason);
@@ -78,7 +78,7 @@ export class Browser extends EventEmitter<{
       }
       this.#sharedWorkers.set(
         info.realm,
-        SharedWorkerRealm.from(this, info.realm, info.origin)
+        SharedWorkerRealm.from(this, info.realm, info.origin),
       );
     });
 
@@ -127,7 +127,7 @@ export class Browser extends EventEmitter<{
     this.#userContexts.set(userContext.id, userContext);
 
     const userContextEmitter = this.#disposables.use(
-      new EventEmitter(userContext)
+      new EventEmitter(userContext),
     );
     userContextEmitter.once('closed', () => {
       userContextEmitter.removeAllListeners();
@@ -180,7 +180,7 @@ export class Browser extends EventEmitter<{
   })
   async addPreloadScript(
     functionDeclaration: string,
-    options: AddPreloadScriptOptions = {}
+    options: AddPreloadScriptOptions = {},
   ): Promise<string> {
     const {
       result: {script},

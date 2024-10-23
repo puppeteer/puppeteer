@@ -24,7 +24,7 @@ describe('`@puppeteer/browsers`', () => {
     assert.ok(
       result.stdout
         .toString('utf-8')
-        .startsWith('@puppeteer/browsers <command>')
+        .startsWith('@puppeteer/browsers <command>'),
     );
   });
 });

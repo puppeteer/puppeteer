@@ -16,7 +16,7 @@ async function getDragState() {
     await page.$eval('#drag-state', element => {
       return element.innerHTML;
     }),
-    10
+    10,
   );
 }
 

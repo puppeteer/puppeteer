@@ -11,7 +11,7 @@ Queries the current element for an element matching the given selector.
 ```typescript
 class ElementHandle {
   $<Selector extends string>(
-    selector: Selector
+    selector: Selector,
   ): Promise<ElementHandle<NodeFor<Selector>> | null>;
 }
 ```

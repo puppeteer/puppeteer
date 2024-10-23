@@ -11,7 +11,7 @@ Finds the first element that matches the selector. If no element matches the sel
 ```typescript
 class Page {
   $<Selector extends string>(
-    selector: Selector
+    selector: Selector,
   ): Promise<ElementHandle<NodeFor<Selector>> | null>;
 }
 ```

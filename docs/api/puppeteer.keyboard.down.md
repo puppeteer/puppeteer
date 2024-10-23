@@ -12,7 +12,7 @@ Dispatches a `keydown` event.
 class Keyboard {
   abstract down(
     key: KeyInput,
-    options?: Readonly<KeyDownOptions>
+    options?: Readonly<KeyDownOptions>,
   ): Promise<void>;
 }
 ```

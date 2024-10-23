@@ -110,9 +110,9 @@ describe('Mouse', function () {
       await handle.evaluate(element => {
         return element.value.substring(
           element.selectionStart,
-          element.selectionEnd
+          element.selectionEnd,
         );
-      })
+      }),
     ).toBe(text);
   });
   it('should trigger hover state', async () => {
@@ -123,19 +123,19 @@ describe('Mouse', function () {
     expect(
       await page.evaluate(() => {
         return document.querySelector('button:hover')!.id;
-      })
+      }),
     ).toBe('button-6');
     await page.hover('#button-2');
     expect(
       await page.evaluate(() => {
         return document.querySelector('button:hover')!.id;
-      })
+      }),
     ).toBe('button-2');
     await page.hover('#button-91');
     expect(
       await page.evaluate(() => {
         return document.querySelector('button:hover')!.id;
-      })
+      }),
     ).toBe('button-91');
   });
   it('should trigger hover state with removed window.Node', async () => {
@@ -150,7 +150,7 @@ describe('Mouse', function () {
     expect(
       await page.evaluate(() => {
         return document.querySelector('button:hover')!.id;
-      })
+      }),
     ).toBe('button-6');
   });
   it('should set modifier keys on click', async () => {
@@ -163,7 +163,7 @@ describe('Mouse', function () {
         e => {
           return ((globalThis as any).lastEvent = e);
         },
-        true
+        true,
       );
     });
     const modifiers = new Map<KeyInput, string>([
@@ -212,7 +212,7 @@ describe('Mouse', function () {
 
     await page.mouse.move(
       boundingBoxBefore.x + boundingBoxBefore.width / 2,
-      boundingBoxBefore.y + boundingBoxBefore.height / 2
+      boundingBoxBefore.y + boundingBoxBefore.height / 2,
     );
 
     await page.mouse.wheel({deltaY: -100});
@@ -234,7 +234,7 @@ describe('Mouse', function () {
           },
           {
             once: true,
-          }
+          },
         );
       });
     });
@@ -299,7 +299,7 @@ describe('Mouse', function () {
 
   const addMouseDataListeners = (
     page: Page,
-    options: AddMouseDataListenersOptions = {}
+    options: AddMouseDataListenersOptions = {},
   ) => {
     return page.evaluate(({includeMove}) => {
       const clicks: ClickData[] = [];

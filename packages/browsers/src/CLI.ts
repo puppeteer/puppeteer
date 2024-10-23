@@ -85,7 +85,7 @@ export class CLI {
             };
           }>;
         },
-    rl?: readline.Interface
+    rl?: readline.Interface,
   ) {
     if (!opts) {
       opts = {};
@@ -150,7 +150,7 @@ export class CLI {
         this.#prefixCommand.description,
         yargs => {
           return this.#build(yargs);
-        }
+        },
       );
     } else {
       target = this.#build(target);
@@ -188,96 +188,96 @@ export class CLI {
           });
           yargs.example(
             '$0 install chrome',
-            `Install the ${latestOrPinned} available build of the Chrome browser.`
+            `Install the ${latestOrPinned} available build of the Chrome browser.`,
           );
           yargs.example(
             '$0 install chrome@latest',
-            'Install the latest available build for the Chrome browser.'
+            'Install the latest available build for the Chrome browser.',
           );
           yargs.example(
             '$0 install chrome@stable',
-            'Install the latest available build for the Chrome browser from the stable channel.'
+            'Install the latest available build for the Chrome browser from the stable channel.',
           );
           yargs.example(
             '$0 install chrome@beta',
-            'Install the latest available build for the Chrome browser from the beta channel.'
+            'Install the latest available build for the Chrome browser from the beta channel.',
           );
           yargs.example(
             '$0 install chrome@dev',
-            'Install the latest available build for the Chrome browser from the dev channel.'
+            'Install the latest available build for the Chrome browser from the dev channel.',
           );
           yargs.example(
             '$0 install chrome@canary',
-            'Install the latest available build for the Chrome Canary browser.'
+            'Install the latest available build for the Chrome Canary browser.',
           );
           yargs.example(
             '$0 install chrome@115',
-            'Install the latest available build for Chrome 115.'
+            'Install the latest available build for Chrome 115.',
           );
           yargs.example(
             '$0 install chromedriver@canary',
-            'Install the latest available build for ChromeDriver Canary.'
+            'Install the latest available build for ChromeDriver Canary.',
           );
           yargs.example(
             '$0 install chromedriver@115',
-            'Install the latest available build for ChromeDriver 115.'
+            'Install the latest available build for ChromeDriver 115.',
           );
           yargs.example(
             '$0 install chromedriver@115.0.5790',
-            'Install the latest available patch (115.0.5790.X) build for ChromeDriver.'
+            'Install the latest available patch (115.0.5790.X) build for ChromeDriver.',
           );
           yargs.example(
             '$0 install chrome-headless-shell',
-            'Install the latest available chrome-headless-shell build.'
+            'Install the latest available chrome-headless-shell build.',
           );
           yargs.example(
             '$0 install chrome-headless-shell@beta',
-            'Install the latest available chrome-headless-shell build corresponding to the Beta channel.'
+            'Install the latest available chrome-headless-shell build corresponding to the Beta channel.',
           );
           yargs.example(
             '$0 install chrome-headless-shell@118',
-            'Install the latest available chrome-headless-shell 118 build.'
+            'Install the latest available chrome-headless-shell 118 build.',
           );
           yargs.example(
             '$0 install chromium@1083080',
-            'Install the revision 1083080 of the Chromium browser.'
+            'Install the revision 1083080 of the Chromium browser.',
           );
           yargs.example(
             '$0 install firefox',
-            'Install the latest nightly available build of the Firefox browser.'
+            'Install the latest nightly available build of the Firefox browser.',
           );
           yargs.example(
             '$0 install firefox@stable',
-            'Install the latest stable build of the Firefox browser.'
+            'Install the latest stable build of the Firefox browser.',
           );
           yargs.example(
             '$0 install firefox@beta',
-            'Install the latest beta build of the Firefox browser.'
+            'Install the latest beta build of the Firefox browser.',
           );
           yargs.example(
             '$0 install firefox@devedition',
-            'Install the latest devedition build of the Firefox browser.'
+            'Install the latest devedition build of the Firefox browser.',
           );
           yargs.example(
             '$0 install firefox@esr',
-            'Install the latest ESR build of the Firefox browser.'
+            'Install the latest ESR build of the Firefox browser.',
           );
           yargs.example(
             '$0 install firefox@nightly',
-            'Install the latest nightly build of the Firefox browser.'
+            'Install the latest nightly build of the Firefox browser.',
           );
           yargs.example(
             '$0 install firefox@stable_111.0.1',
-            'Install a specific version of the Firefox browser.'
+            'Install a specific version of the Firefox browser.',
           );
           yargs.example(
             '$0 install firefox --platform mac',
-            'Install the latest Mac (Intel) build of the Firefox browser.'
+            'Install the latest Mac (Intel) build of the Firefox browser.',
           );
           if (this.#allowCachePathOverride) {
             yargs.example(
               '$0 install firefox --path /tmp/my-browser-cache',
-              'Install to the specified cache directory.'
+              'Install to the specified cache directory.',
             );
           }
         },
@@ -300,8 +300,8 @@ export class CLI {
                       buildId: options.buildId,
                     },
                   });
-                }
-              )
+                },
+              ),
             );
 
             for (const install of result) {
@@ -312,7 +312,7 @@ export class CLI {
           } else {
             await this.#install(args);
           }
-        }
+        },
       )
       .command(
         'launch <browser>',
@@ -333,19 +333,19 @@ export class CLI {
           });
           yargs.example(
             '$0 launch chrome@115.0.5790.170',
-            'Launch Chrome 115.0.5790.170'
+            'Launch Chrome 115.0.5790.170',
           );
           yargs.example(
             '$0 launch firefox@112.0a1',
-            'Launch the Firefox browser identified by the milestone 112.0a1.'
+            'Launch the Firefox browser identified by the milestone 112.0a1.',
           );
           yargs.example(
             '$0 launch chrome@115.0.5790.170 --detached',
-            'Launch the browser but detach the sub-processes.'
+            'Launch the browser but detach the sub-processes.',
           );
           yargs.example(
             '$0 launch chrome@canary --system',
-            'Try to locate the Canary build of Chrome installed on the system and launch it.'
+            'Try to locate the Canary build of Chrome installed on the system and launch it.',
           );
         },
         async argv => {
@@ -367,7 +367,7 @@ export class CLI {
             executablePath,
             detached: args.detached,
           });
-        }
+        },
       )
       .command(
         'clear',
@@ -392,9 +392,9 @@ export class CLI {
               const cache = new Cache(cacheDir);
               cache.clear();
               console.log(`${cacheDir} cleared.`);
-            }
+            },
           );
-        }
+        },
       )
       .demandCommand(1)
       .help();
@@ -432,7 +432,7 @@ export class CLI {
     args.browser.buildId = await resolveBuildId(
       args.browser.name,
       args.platform,
-      args.browser.buildId
+      args.browser.buildId,
     );
     await install({
       browser: args.browser.name,
@@ -441,7 +441,7 @@ export class CLI {
       cacheDir: args.path ?? this.#cachePath,
       downloadProgressCallback: makeProgressCallback(
         args.browser.name,
-        args.browser.buildId
+        args.browser.buildId,
       ),
       baseUrl: args.baseUrl,
       buildIdAlias:
@@ -454,7 +454,7 @@ export class CLI {
         buildId: args.browser.buildId,
         cacheDir: args.path ?? this.#cachePath,
         platform: args.platform,
-      })}`
+      })}`,
     );
   }
 }
@@ -464,7 +464,7 @@ export class CLI {
  */
 export function makeProgressCallback(
   browser: Browser,
-  buildId: string
+  buildId: string,
 ): (downloadedBytes: number, totalBytes: number) => void {
   let progressBar: ProgressBar;
   let lastDownloadedBytes = 0;
@@ -472,14 +472,14 @@ export function makeProgressCallback(
     if (!progressBar) {
       progressBar = new ProgressBar(
         `Downloading ${browser} ${buildId} - ${toMegabytes(
-          totalBytes
+          totalBytes,
         )} [:bar] :percent :etas `,
         {
           complete: '=',
           incomplete: ' ',
           width: 20,
           total: totalBytes,
-        }
+        },
       );
     }
     const delta = downloadedBytes - lastDownloadedBytes;

@@ -50,7 +50,7 @@ await page.evaluate(
     selection.addRange(range);
   },
   fromJSHandle,
-  toJSHandle
+  toJSHandle,
 );
 ```
 

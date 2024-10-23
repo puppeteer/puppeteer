@@ -23,14 +23,14 @@ const GoldenComparators = new Map<
   (
     actualBuffer: string | Buffer,
     expectedBuffer: string | Buffer,
-    mimeType: string
+    mimeType: string,
   ) => DiffFile | undefined
 >();
 
 const addSuffix = (
   filePath: string,
   suffix: string,
-  customExtension?: string
+  customExtension?: string,
 ): string => {
   const dirname = path.dirname(filePath);
   const ext = path.extname(filePath);
@@ -41,7 +41,7 @@ const addSuffix = (
 const compareImages = (
   actualBuffer: string | Buffer,
   expectedBuffer: string | Buffer,
-  mimeType: string
+  mimeType: string,
 ): DiffFile | undefined => {
   assert(typeof actualBuffer !== 'string');
   assert(typeof expectedBuffer !== 'string');
@@ -57,7 +57,7 @@ const compareImages = (
       : jpeg.decode(expectedBuffer);
   if (expected.width !== actual.width || expected.height !== actual.height) {
     throw new Error(
-      `Sizes differ: expected image ${expected.width}px X ${expected.height}px, but got ${actual.width}px X ${actual.height}px.`
+      `Sizes differ: expected image ${expected.width}px X ${expected.height}px, but got ${actual.width}px X ${actual.height}px.`,
     );
   }
   const diff = new PNG({width: expected.width, height: expected.height});
@@ -67,18 +67,18 @@ const compareImages = (
     diff.data,
     expected.width,
     expected.height,
-    {threshold: 0.1}
+    {threshold: 0.1},
   );
   return count > 0 ? {diff: PNG.sync.write(diff)} : undefined;
 };
 
 const compareText = (
   actual: string | Buffer,
-  expectedBuffer: string | Buffer
+  expectedBuffer: string | Buffer,
 ): DiffFile | undefined => {
   assert(
     typeof actual === 'string',
-    `Expected type string got ${typeof actual}`
+    `Expected type string got ${typeof actual}`,
   );
   const expected = expectedBuffer.toString('utf-8');
   if (expected === actual) {
@@ -96,8 +96,8 @@ const compareText = (
     },
     `<link rel="stylesheet" href="file://${path.join(
       __dirname,
-      'diffstyle.css'
-    )}">`
+      'diffstyle.css',
+    )}">`,
   );
   return {
     diff: html,
@@ -113,7 +113,7 @@ export const compare = (
   goldenPath: string,
   outputPath: string,
   actual: string | Buffer,
-  goldenName: string
+  goldenName: string,
 ): {pass: true} | {pass: false; message: string} => {
   goldenPath = path.normalize(goldenPath);
   outputPath = path.normalize(outputPath);
@@ -121,7 +121,7 @@ export const compare = (
   const actualPath = path.join(outputPath, goldenName);
 
   const messageSuffix = `Output is saved in "${path.basename(
-    outputPath + '" directory'
+    outputPath + '" directory',
   )}`;
 
   if (!fs.existsSync(expectedPath)) {

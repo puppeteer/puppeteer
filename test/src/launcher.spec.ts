@@ -52,7 +52,7 @@ describe('Launcher specs', function () {
               'Frame detached',
             ].some(message => {
               return error.message.startsWith(message);
-            })
+            }),
           ).toBeTruthy();
         } finally {
           await close();
@@ -75,7 +75,7 @@ describe('Launcher specs', function () {
           await remote.disconnect();
           const error = await watchdog;
           expect(error.message).toContain(
-            'Waiting for selector `div` failed: waitForFunction failed: frame got detached.'
+            'Waiting for selector `div` failed: waitForFunction failed: frame got detached.',
           );
         } finally {
           await close();
@@ -135,7 +135,7 @@ describe('Launcher specs', function () {
           await Promise.all(
             (await Promise.all(instances)).map(instance => {
               return instance.close();
-            })
+            }),
           );
         } finally {
           process.setMaxListeners(10);
@@ -149,7 +149,7 @@ describe('Launcher specs', function () {
           const pages = (await browser.pages()).map(
             (page: {url: () => any}) => {
               return page.url();
-            }
+            },
           );
           expect(pages).toEqual(['about:blank']);
         } finally {
@@ -159,7 +159,7 @@ describe('Launcher specs', function () {
       it('should close browser with beforeunload page', async () => {
         const {browser, server, close} = await launch(
           {},
-          {createContext: false}
+          {createContext: false},
         );
         try {
           const page = await browser.newPage();
@@ -194,7 +194,7 @@ describe('Launcher specs', function () {
           return (waitError = error);
         });
         expect(waitError.message).toBe(
-          'Browser was not found at the configured executablePath (random-invalid-path)'
+          'Browser was not found at the configured executablePath (random-invalid-path)',
         );
       });
       it('userDataDir option', async () => {
@@ -220,7 +220,7 @@ describe('Launcher specs', function () {
         // Set a custom test tmp dir so that we can validate that
         // the profile dir is created and then cleaned up.
         const testTmpDir = await fs.promises.mkdtemp(
-          path.join(os.tmpdir(), 'puppeteer_test_chrome_profile-')
+          path.join(os.tmpdir(), 'puppeteer_test_chrome_profile-'),
         );
         const oldTmpDir = puppeteer.configuration.temporaryDirectory;
         puppeteer.configuration.temporaryDirectory = testTmpDir;
@@ -350,7 +350,7 @@ describe('Launcher specs', function () {
           expect(
             await page2.evaluate(() => {
               return localStorage['hey'];
-            })
+            }),
           ).toBe('hello');
         } finally {
           await close2();
@@ -382,7 +382,7 @@ describe('Launcher specs', function () {
           expect(
             await page2.evaluate(() => {
               return document.cookie;
-            })
+            }),
           ).toBe('doSomethingOnlyOnce=true');
         } finally {
           await close2();
@@ -402,10 +402,10 @@ describe('Launcher specs', function () {
           expect(puppeteer.defaultArgs()).toContain('--no-first-run');
           expect(puppeteer.defaultArgs()).toContain('--headless=new');
           expect(puppeteer.defaultArgs({headless: false})).not.toContain(
-            '--headless=new'
+            '--headless=new',
           );
           expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
-            `--user-data-dir=${path.resolve('foo')}`
+            `--user-data-dir=${path.resolve('foo')}`,
           );
         } else if (isFirefox) {
           expect(puppeteer.defaultArgs()).toContain('--headless');
@@ -415,22 +415,22 @@ describe('Launcher specs', function () {
             expect(puppeteer.defaultArgs()).not.toContain('--foreground');
           }
           expect(puppeteer.defaultArgs({headless: false})).not.toContain(
-            '--headless'
+            '--headless',
           );
           expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
-            '--profile'
+            '--profile',
           );
           expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain('foo');
         } else {
           expect(puppeteer.defaultArgs()).toContain('-headless');
           expect(puppeteer.defaultArgs({headless: false})).not.toContain(
-            '-headless'
+            '-headless',
           );
           expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
-            '-profile'
+            '-profile',
           );
           expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
-            path.resolve('foo')
+            path.resolve('foo'),
           );
         }
       });
@@ -466,7 +466,7 @@ describe('Launcher specs', function () {
           Object.assign({}, defaultBrowserOptions, {
             // Ignore first and third default argument.
             ignoreDefaultArgs: [defaultArgs[0]!, defaultArgs[2]],
-          })
+          }),
         );
         try {
           const spawnargs = browser.process()!.spawnargs;
@@ -490,7 +490,7 @@ describe('Launcher specs', function () {
           Object.assign({}, defaultBrowserOptions, {
             // All arguments are optional.
             ignoreDefaultArgs: [],
-          })
+          }),
         );
         try {
           const spawnargs = browser.process()!.spawnargs;
@@ -507,7 +507,7 @@ describe('Launcher specs', function () {
           {},
           {
             createContext: false,
-          }
+          },
         );
         try {
           const pages = (await browser.pages()).map(page => {
@@ -617,7 +617,7 @@ describe('Launcher specs', function () {
           return (error = error_);
         });
         expect(error.message).toContain(
-          'Browser was not found at the configured executablePath (/tmp/does-not-exist)'
+          'Browser was not found at the configured executablePath (/tmp/does-not-exist)',
         );
       });
     });
@@ -634,7 +634,7 @@ describe('Launcher specs', function () {
           expect(
             await page.evaluate(() => {
               return 7 * 8;
-            })
+            }),
           ).toBe(56);
           await otherBrowser.disconnect();
 
@@ -642,7 +642,7 @@ describe('Launcher specs', function () {
           expect(
             await secondPage.evaluate(() => {
               return 7 * 6;
-            })
+            }),
           ).toBe(42);
         } finally {
           await close();
@@ -671,7 +671,7 @@ describe('Launcher specs', function () {
           await Promise.all(
             pages.map(page => {
               return page.close();
-            })
+            }),
           );
           using remoteBrowser = await puppeteer.connect({
             browserWSEndpoint: browser.wsEndpoint(),
@@ -690,7 +690,7 @@ describe('Launcher specs', function () {
           {},
           {
             createContext: false,
-          }
+          },
         );
 
         try {
@@ -725,7 +725,7 @@ describe('Launcher specs', function () {
             },
             waitForInitialPage: false,
           },
-          {createContext: false}
+          {createContext: false},
         );
         try {
           const targets = browser.targets();
@@ -733,7 +733,7 @@ describe('Launcher specs', function () {
           expect(
             targets.find(target => {
               return target.type() === 'page';
-            })
+            }),
           ).toBeUndefined();
         } finally {
           await close();
@@ -746,7 +746,7 @@ describe('Launcher specs', function () {
           {},
           {
             createContext: false,
-          }
+          },
         );
         try {
           const browserWSEndpoint = browser.wsEndpoint();
@@ -771,7 +771,7 @@ describe('Launcher specs', function () {
               .map((p: Page) => {
                 return p.url();
               })
-              .sort()
+              .sort(),
           ).toEqual(['about:blank', server.EMPTY_PAGE]);
 
           await page2.close();
@@ -811,7 +811,7 @@ describe('Launcher specs', function () {
           expect(
             await restoredPage.evaluate(() => {
               return 7 * 8;
-            })
+            }),
           ).toBe(56);
         } finally {
           await remoteClose();
@@ -839,12 +839,12 @@ describe('Launcher specs', function () {
           expect(
             await page1.evaluate(() => {
               return 7 * 8;
-            })
+            }),
           ).toBe(56);
           expect(
             await page2.evaluate(() => {
               return 7 * 6;
-            })
+            }),
           ).toBe(42);
         } finally {
           await close();
@@ -926,7 +926,7 @@ describe('Launcher specs', function () {
             puppeteer.executablePath();
           } catch (error) {
             expect((error as Error).message).toContain(
-              'SOME_CUSTOM_EXECUTABLE'
+              'SOME_CUSTOM_EXECUTABLE',
             );
           }
         });
