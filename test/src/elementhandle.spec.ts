@@ -403,6 +403,61 @@ describe('ElementHandle specs', function () {
     });
   });
 
+  describe('ElementHandle.touchStart', () => {
+    it('should work', async () => {
+      const {page} = await getTestState();
+
+      type ReportedTouch = [number, number];
+      interface ReportedTouchEvent {
+        changed: ReportedTouch[];
+        touches: ReportedTouch[];
+      }
+      const touchEvents: ReportedTouchEvent[] = [];
+
+      await page.exposeFunction(
+        'reportTouchEvent',
+        (event: ReportedTouchEvent): void => {
+          touchEvents.push(event);
+        }
+      );
+
+      await page.evaluate(() => {
+        document.body.style.padding = '0';
+        document.body.style.margin = '0';
+        document.body.innerHTML = `
+          <div style="cursor: pointer; width: 120px; height: 60px; margin: 30px; padding: 15px;"></div>
+        `;
+        document.body.addEventListener('touchstart', reportTouchEvent);
+
+        function reportTouchEvent(e: TouchEvent): void {
+          const toReport: ReportedTouchEvent = {
+            changed: getReportableTouchList(e.changedTouches),
+            touches: getReportableTouchList(e.touches),
+          };
+          (window as any).reportTouchEvent(toReport);
+        }
+        function getReportableTouchList(list: TouchList): ReportedTouch[] {
+          return [...list].map(t => {
+            return [t.pageX, t.pageY];
+          });
+        }
+      });
+
+      using divHandle = (await page.$('div'))!;
+      await divHandle.touchStart();
+      await shortWaitForArrayToHaveAtLeastNElements(touchEvents, 1);
+
+      const expectedTouchLocation = [45 + 60, 45 + 30]; // margin + middle point offset
+
+      expect(touchEvents).toEqual([
+        {
+          changed: [expectedTouchLocation],
+          touches: [expectedTouchLocation],
+        },
+      ]);
+    });
+  });
+
   describe('ElementHandle.clickablePoint', function () {
     it('should work', async () => {
       const {page} = await getTestState();
