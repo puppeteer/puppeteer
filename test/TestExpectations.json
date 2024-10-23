@@ -482,6 +482,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should work when navigating to a URL with a client redirect",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "https://github.com/puppeteer/puppeteer/issues/12929"
+  },
+  {
     "testIdPattern": "[network.spec] network Network Events Page.Events.RequestServedFromCache *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
