@@ -19,6 +19,7 @@ import {
   setupTestBrowserHooks,
   shortWaitForArrayToHaveAtLeastNElements,
 } from './mocha-utils.js';
+import {initializeTouchEventReport} from './touch-event-utils.js';
 import {attachFrame} from './utils.js';
 
 describe('ElementHandle specs', function () {
@@ -406,20 +407,7 @@ describe('ElementHandle specs', function () {
   describe('ElementHandle.touchStart', () => {
     it('should work', async () => {
       const {page} = await getTestState();
-
-      type ReportedTouch = [number, number];
-      interface ReportedTouchEvent {
-        changed: ReportedTouch[];
-        touches: ReportedTouch[];
-      }
-      const touchEvents: ReportedTouchEvent[] = [];
-
-      await page.exposeFunction(
-        'reportTouchEvent',
-        (event: ReportedTouchEvent): void => {
-          touchEvents.push(event);
-        }
-      );
+      const {events} = await initializeTouchEventReport(page);
 
       await page.evaluate(() => {
         document.body.style.padding = '0';
@@ -427,32 +415,52 @@ describe('ElementHandle specs', function () {
         document.body.innerHTML = `
           <div style="cursor: pointer; width: 120px; height: 60px; margin: 30px; padding: 15px;"></div>
         `;
-        document.body.addEventListener('touchstart', reportTouchEvent);
-
-        function reportTouchEvent(e: TouchEvent): void {
-          const toReport: ReportedTouchEvent = {
-            changed: getReportableTouchList(e.changedTouches),
-            touches: getReportableTouchList(e.touches),
-          };
-          (window as any).reportTouchEvent(toReport);
-        }
-        function getReportableTouchList(list: TouchList): ReportedTouch[] {
-          return [...list].map(t => {
-            return [t.pageX, t.pageY];
-          });
-        }
       });
 
       using divHandle = (await page.$('div'))!;
       await divHandle.touchStart();
-      await shortWaitForArrayToHaveAtLeastNElements(touchEvents, 1);
+      await shortWaitForArrayToHaveAtLeastNElements(events, 1);
 
       const expectedTouchLocation = [45 + 60, 45 + 30]; // margin + middle point offset
 
-      expect(touchEvents).toEqual([
+      expect(events).toEqual([
         {
           changed: [expectedTouchLocation],
           touches: [expectedTouchLocation],
+        },
+      ]);
+    });
+  });
+
+  describe('ElementHandle.touchMove', () => {
+    it('should work', async () => {
+      const {page} = await getTestState();
+      const {events} = await initializeTouchEventReport(page);
+
+      await page.evaluate(() => {
+        document.body.style.padding = '0';
+        document.body.style.margin = '0';
+        document.body.innerHTML = `
+          <div style="cursor: pointer; width: 120px; height: 60px; margin: 30px; padding: 15px;"></div>
+        `;
+      });
+
+      using divHandle = (await page.$('div'))!;
+
+      await page.touchscreen.touchStart(200, 200);
+      await divHandle.touchMove();
+
+      await shortWaitForArrayToHaveAtLeastNElements(events, 2);
+
+      const expectedDivTouchLocation = [45 + 60, 45 + 30]; // margin + middle point offset
+      expect(events).toEqual([
+        {
+          changed: [[200, 200]],
+          touches: [[200, 200]],
+        },
+        {
+          changed: [expectedDivTouchLocation],
+          touches: [expectedDivTouchLocation],
         },
       ]);
     });
