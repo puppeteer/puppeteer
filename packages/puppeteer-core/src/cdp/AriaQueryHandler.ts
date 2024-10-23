@@ -35,7 +35,7 @@ const isKnownAttribute = (
 const ATTRIBUTE_REGEXP =
   /\[\s*(?<attribute>\w+)\s*=\s*(?<quote>"|')(?<value>\\.|.*?(?=\k<quote>))\k<quote>\s*\]/g;
 const parseARIASelector = (selector: string): ARIASelector => {
-  if (selector.length > 1_000) {
+  if (selector.length > 10_000) {
     throw new Error(`Selector ${selector} is too long`);
   }
 
