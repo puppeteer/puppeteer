@@ -84,6 +84,115 @@ describe('Touchscreen', () => {
         },
       ]);
     });
+
+    it('should work if another touch is already active', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.PREFIX + '/input/touchscreen.html');
+
+      await page.touchscreen.touchStart(100, 100);
+      await page.tap('button');
+
+      expect(
+        await page.evaluate(() => {
+          return allEvents;
+        }),
+      ).toMatchObject([
+        {
+          type: 'pointerdown',
+          x: 100,
+          y: 100,
+          width: 1,
+          height: 1,
+          altitudeAngle: Math.PI / 2,
+          azimuthAngle: 0,
+          pressure: 0.5,
+          pointerType: 'touch',
+          twist: 0,
+          tiltX: 0,
+          tiltY: 0,
+        },
+        {
+          type: 'touchstart',
+          changedTouches: [
+            {
+              clientX: 100,
+              clientY: 100,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+            },
+          ],
+          activeTouches: [
+            {
+              clientX: 100,
+              clientY: 100,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+            },
+          ],
+        },
+        {
+          type: 'pointerdown',
+          x: 5,
+          y: 5,
+          width: 1,
+          height: 1,
+          altitudeAngle: Math.PI / 2,
+          azimuthAngle: 0,
+          pressure: 0.5,
+          pointerType: 'touch',
+          twist: 0,
+          tiltX: 0,
+          tiltY: 0,
+        },
+        {
+          type: 'touchstart',
+          changedTouches: [
+            {clientX: 5, clientY: 5, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+          ],
+          activeTouches: [
+            {
+              clientX: 100,
+              clientY: 100,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+            },
+            {clientX: 5, clientY: 5, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+          ],
+        },
+        {
+          type: 'pointerup',
+          x: 5,
+          y: 5,
+          width: 1,
+          height: 1,
+          altitudeAngle: Math.PI / 2,
+          azimuthAngle: 0,
+          pressure: 0,
+          pointerType: 'touch',
+          twist: 0,
+          tiltX: 0,
+          tiltY: 0,
+        },
+        {
+          type: 'touchend',
+          changedTouches: [
+            {clientX: 5, clientY: 5, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+          ],
+          activeTouches: [
+            {
+              clientX: 100,
+              clientY: 100,
+              radiusX: 0.5,
+              radiusY: 0.5,
+              force: 0.5,
+            },
+          ],
+        },
+      ]);
+    });
   });
 
   describe('Touchscreen.prototype.touchMove', () => {

@@ -501,8 +501,8 @@ export abstract class Touchscreen {
    * @param y - Vertical position of the tap.
    */
   async tap(x: number, y: number): Promise<void> {
-    await this.touchStart(x, y);
-    await this.touchEnd();
+    const touch = await this.touchStart(x, y);
+    await touch.end();
   }
 
   /**
