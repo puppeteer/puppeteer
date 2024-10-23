@@ -109,7 +109,7 @@ function checkIfNeedsUpdate(browser, oldVersion, newVersion) {
 async function formatUpdateFiles() {
   await Promise.all(
     touchedFiles.map(file => {
-      return execAsync(`npx eslint --ext js --ext ts --fix ${file}`);
+      return execAsync(`npx eslint --fix ${file}`);
     })
   );
   await Promise.all(
