@@ -329,6 +329,10 @@ export class BidiFrame extends Frame {
             return;
           }
 
+          if (error.message.includes('navigation canceled')) {
+            return;
+          }
+
           throw error;
         }),
     ]).catch(

@@ -315,6 +315,16 @@ describe('navigation', function () {
       const response = (await page.goto(server.EMPTY_PAGE))!;
       expect(response.ok()).toBe(true);
     });
+
+    it('should work when navigating to a URL with a client redirect', async () => {
+      const {page, server} = await getTestState();
+
+      const response = (await page.goto(
+        server.PREFIX + '/client-redirect.html'
+      ))!;
+      expect(response.ok()).toBe(true);
+      expect(response.url()).toBe(server.EMPTY_PAGE);
+    });
     it('should work when navigating to data url', async () => {
       const {page} = await getTestState();
 
