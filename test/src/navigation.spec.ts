@@ -320,7 +320,7 @@ describe('navigation', function () {
       const {page, server} = await getTestState();
 
       const response = (await page.goto(
-        server.PREFIX + '/client-redirect.html'
+        server.PREFIX + '/client-redirect.html',
       ))!;
       expect(response.ok()).toBe(true);
       expect(response.url()).toBe(server.EMPTY_PAGE);
