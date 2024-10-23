@@ -73,7 +73,7 @@ export class CdpHTTPResponse extends HTTPResponse {
       return;
     }
     const firstLine = extraInfo.headersText.split('\r', 1)[0];
-    if (!firstLine) {
+    if (!firstLine || firstLine.length > 1_000) {
       return;
     }
     const match = firstLine.match(/[^ ]* [^ ]* (.*)/);
