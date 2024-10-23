@@ -466,6 +466,38 @@ describe('ElementHandle specs', function () {
     });
   });
 
+  describe('ElementHandle.touchEnd', () => {
+    it('should work', async () => {
+      const {page} = await getTestState();
+      const {events} = await initializeTouchEventReport(page);
+
+      await page.evaluate(() => {
+        document.body.style.padding = '0';
+        document.body.style.margin = '0';
+        document.body.innerHTML = `
+          <div style="cursor: pointer; width: 120px; height: 60px; margin: 30px; padding: 15px;"></div>
+        `;
+      });
+
+      using divHandle = (await page.$('div'))!;
+
+      await page.touchscreen.touchStart(100, 100);
+      await divHandle.touchEnd();
+      await shortWaitForArrayToHaveAtLeastNElements(events, 2);
+
+      expect(events).toEqual([
+        {
+          changed: [[100, 100]],
+          touches: [[100, 100]],
+        },
+        {
+          changed: [[100, 100]],
+          touches: [],
+        },
+      ]);
+    });
+  });
+
   describe('ElementHandle.clickablePoint', function () {
     it('should work', async () => {
       const {page} = await getTestState();

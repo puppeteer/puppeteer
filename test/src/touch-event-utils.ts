@@ -28,6 +28,7 @@ export async function initializeTouchEventReport(
   await page.evaluate(() => {
     document.body.addEventListener('touchstart', reportTouchEvent);
     document.body.addEventListener('touchmove', reportTouchEvent);
+    document.body.addEventListener('touchend', reportTouchEvent);
     function reportTouchEvent(e: TouchEvent): void {
       const toReport: ReportedTouchEvent = {
         changed: getReportableTouchList(e.changedTouches),
