@@ -16,14 +16,14 @@ export interface TouchEventReport {
 }
 
 export async function initializeTouchEventReport(
-  page: Page
+  page: Page,
 ): Promise<TouchEventReport> {
   const events: ReportedTouchEvent[] = [];
   await page.exposeFunction(
     'reportTouchEvent',
     (event: ReportedTouchEvent): void => {
       events.push(event);
-    }
+    },
   );
   await page.evaluate(() => {
     document.body.addEventListener('touchstart', reportTouchEvent);

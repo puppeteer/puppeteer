@@ -564,7 +564,7 @@ class CdpTouch implements Touch {
     client: CDPSession,
     keyboard: CdpKeyboard,
     public id: number,
-    touchPoint: Protocol.Input.TouchPoint
+    touchPoint: Protocol.Input.TouchPoint,
   ) {
     this.#client = client;
     this.#keyboard = keyboard;

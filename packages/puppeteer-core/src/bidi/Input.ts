@@ -628,7 +628,7 @@ class BidiTouch implements Touch {
     public id: number,
     x: number,
     y: number,
-    properties: Bidi.Input.PointerCommonProperties
+    properties: Bidi.Input.PointerCommonProperties,
   ) {
     this.#page = page;
     this.#x = Math.round(x);

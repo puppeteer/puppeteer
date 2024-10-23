@@ -257,7 +257,7 @@ describe('Touchscreen', () => {
       expect(
         await page.evaluate(() => {
           return allEvents;
-        })
+        }),
       ).toMatchObject([
         {
           type: 'pointerdown',
@@ -395,7 +395,7 @@ describe('Touchscreen', () => {
       expect(
         await page.evaluate(() => {
           return allEvents;
-        })
+        }),
       ).toMatchObject([
         {
           type: 'pointerdown',
