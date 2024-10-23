@@ -134,7 +134,7 @@ describe('Cookie specs', () => {
           url: 'https://baz.com',
           name: 'birdo',
           value: 'tweets',
-        }
+        },
       );
       const cookies = await page.cookies('https://foo.com', 'https://baz.com');
       cookies.sort((a, b) => {
@@ -186,7 +186,7 @@ describe('Cookie specs', () => {
         value: 'woofs',
       });
       const cookies = await page.cookies(
-        'https://foo.com/some_path/nested_path'
+        'https://foo.com/some_path/nested_path',
       );
       expect(cookies).toHaveLength(1);
     });
@@ -199,7 +199,7 @@ describe('Cookie specs', () => {
         value: 'woofs',
       });
       const cookies = await page.cookies(
-        'https://foo.com/some_path_looks_like_nested'
+        'https://foo.com/some_path_looks_like_nested',
       );
       expect(cookies).toHaveLength(0);
     });
@@ -216,7 +216,7 @@ describe('Cookie specs', () => {
       expect(
         await page.evaluate(() => {
           return document.cookie;
-        })
+        }),
       ).toEqual('password=123456');
     });
     it('should isolate cookies in browser contexts', async () => {
@@ -256,7 +256,7 @@ describe('Cookie specs', () => {
         {
           name: 'foo',
           value: 'bar',
-        }
+        },
       );
       const cookieStrings = await page.evaluate(() => {
         const cookies = document.cookie.split(';');
@@ -308,7 +308,7 @@ describe('Cookie specs', () => {
             session: true,
             sourceScheme: 'NonSecure',
           },
-        ]
+        ],
       );
     });
     it('should set cookie with all available properties', async () => {
@@ -345,7 +345,7 @@ describe('Cookie specs', () => {
             session: true,
             sourceScheme: 'Unset',
           },
-        ]
+        ],
       );
     });
     it('should set a cookie with a path', async () => {
@@ -421,7 +421,7 @@ describe('Cookie specs', () => {
         error = error_ as Error;
       }
       expect(error.message).toContain(
-        'At least one of the url and domain needs to be specified'
+        'At least one of the url and domain needs to be specified',
       );
     });
     it('should not set a cookie with blank page URL', async () => {
@@ -432,13 +432,13 @@ describe('Cookie specs', () => {
       try {
         await page.setCookie(
           {name: 'example-cookie', value: 'best'},
-          {url: 'about:blank', name: 'example-cookie-blank', value: 'best'}
+          {url: 'about:blank', name: 'example-cookie-blank', value: 'best'},
         );
       } catch (error_) {
         error = error_ as Error;
       }
       expect(error.message).toEqual(
-        `Blank page can not have cookie "example-cookie-blank"`
+        `Blank page can not have cookie "example-cookie-blank"`,
       );
     });
     it('should not set a cookie on a data URL page', async () => {
@@ -452,7 +452,7 @@ describe('Cookie specs', () => {
         error = error_ as Error;
       }
       expect(error.message).toContain(
-        'At least one of the url and domain needs to be specified'
+        'At least one of the url and domain needs to be specified',
       );
     });
     it('should default to setting secure cookie for HTTPS websites', async () => {
@@ -529,7 +529,7 @@ describe('Cookie specs', () => {
         url: server.CROSS_PROCESS_PREFIX,
       });
       expect(await page.evaluate('document.cookie')).toBe(
-        'localhost-cookie=best'
+        'localhost-cookie=best',
       );
 
       await expectCookieEquals(await page.cookies(), [
@@ -564,7 +564,7 @@ describe('Cookie specs', () => {
             session: true,
             sourceScheme: 'NonSecure',
           },
-        ]
+        ],
       );
     });
     it('should set secure same-site cookies from a frame', async () => {
@@ -594,7 +594,7 @@ describe('Cookie specs', () => {
         });
 
         expect(await page.frames()[1]!.evaluate('document.cookie')).toBe(
-          '127-same-site-cookie=best'
+          '127-same-site-cookie=best',
         );
         await expectCookieEquals(
           await page.cookies(httpsServer.CROSS_PROCESS_PREFIX),
@@ -613,7 +613,7 @@ describe('Cookie specs', () => {
               session: true,
               sourceScheme: 'Secure',
             },
-          ]
+          ],
         );
       } finally {
         await close();
@@ -638,14 +638,14 @@ describe('Cookie specs', () => {
         {
           name: 'cookie3',
           value: '3',
-        }
+        },
       );
       expect(await page.evaluate('document.cookie')).toBe(
-        'cookie1=1; cookie2=2; cookie3=3'
+        'cookie1=1; cookie2=2; cookie3=3',
       );
       await page.deleteCookie({name: 'cookie2'});
       expect(await page.evaluate('document.cookie')).toBe(
-        'cookie1=1; cookie3=3'
+        'cookie1=1; cookie3=3',
       );
     });
     it('should not delete cookie for different domain', async () => {

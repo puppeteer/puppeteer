@@ -35,26 +35,26 @@ export interface FilesOptions {
 
 export function addFilesToProjects(
   projects: Record<string, AngularProject>,
-  options: FilesOptions
+  options: FilesOptions,
 ): Rule {
   return chain(
     Object.keys(projects).map(name => {
       return addFilesSingle(name, projects[name] as AngularProject, options);
-    })
+    }),
   );
 }
 
 export function addFilesSingle(
   name: string,
   project: AngularProject,
-  {options, applyPath, movePath, relativeToWorkspacePath}: FilesOptions
+  {options, applyPath, movePath, relativeToWorkspacePath}: FilesOptions,
 ): Rule {
   const projectPath = resolve(getSystemPath(normalize(project.root)));
   const workspacePath = resolve(getSystemPath(normalize('')));
 
   const relativeToWorkspace = relative(
     `${projectPath}${relativeToWorkspacePath}`,
-    workspacePath
+    workspacePath,
   );
 
   const baseUrl = getProjectBaseUrl(project, options.port);
@@ -72,7 +72,7 @@ export function addFilesSingle(
         project: name,
         relativeToWorkspace,
       }),
-    ])
+    ]),
   );
 }
 
@@ -109,7 +109,7 @@ function getTsConfigPath(project: AngularProject): string {
 
 export function addCommonFiles(
   projects: Record<string, AngularProject>,
-  filesOptions: Omit<FilesOptions, 'applyPath' | 'relativeToWorkspacePath'>
+  filesOptions: Omit<FilesOptions, 'applyPath' | 'relativeToWorkspacePath'>,
 ): Rule {
   const options: FilesOptions = {
     ...filesOptions,
@@ -122,7 +122,7 @@ export function addCommonFiles(
 
 export function addFrameworkFiles(
   projects: Record<string, AngularProject>,
-  filesOptions: Omit<FilesOptions, 'applyPath' | 'relativeToWorkspacePath'>
+  filesOptions: Omit<FilesOptions, 'applyPath' | 'relativeToWorkspacePath'>,
 ): Rule {
   const testRunner = filesOptions.options.testRunner;
   const options: FilesOptions = {
@@ -135,7 +135,7 @@ export function addFrameworkFiles(
 }
 
 export function hasE2ETester(
-  projects: Record<string, AngularProject>
+  projects: Record<string, AngularProject>,
 ): boolean {
   return Object.values(projects).some((project: AngularProject) => {
     return Boolean(project.architect?.e2e);
@@ -143,7 +143,7 @@ export function hasE2ETester(
 }
 
 export function getNgCommandName(
-  projects: Record<string, AngularProject>
+  projects: Record<string, AngularProject>,
 ): string {
   if (!hasE2ETester(projects)) {
     return 'e2e';

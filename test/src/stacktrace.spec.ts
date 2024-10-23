@@ -38,7 +38,7 @@ describe('Stack trace', function () {
     assert(error.stack);
     error.stack = error.stack.replace(new RegExp(FILENAME, 'g'), '<filename>');
     expect(
-      parseStackTrace(error.stack).split('\n    at ').slice(0, 2)
+      parseStackTrace(error.stack).split('\n    at ').slice(0, 2),
     ).toMatchObject({
       ...[
         'Error: Test',
@@ -62,7 +62,7 @@ describe('Stack trace', function () {
     expect(error.message).toEqual('Test');
     assert(error.stack);
     expect(
-      parseStackTrace(error.stack).split('\n    at ').slice(0, 2)
+      parseStackTrace(error.stack).split('\n    at ').slice(0, 2),
     ).toMatchObject({
       ...[
         'Error: Test',
@@ -91,7 +91,7 @@ describe('Stack trace', function () {
     expect(error.message).toEqual('Test');
     assert(error.stack);
     expect(
-      parseStackTrace(error.stack).split('\n    at ').slice(0, 3)
+      parseStackTrace(error.stack).split('\n    at ').slice(0, 3),
     ).toMatchObject({
       ...[
         'Error: Test',
@@ -128,7 +128,7 @@ describe('Stack trace', function () {
     expect(error.message).toEqual('Test');
     assert(error.stack);
     expect(
-      parseStackTrace(error.stack).split('\n    at ').slice(0, 6)
+      parseStackTrace(error.stack).split('\n    at ').slice(0, 6),
     ).toMatchObject({
       ...[
         'Error: Test',

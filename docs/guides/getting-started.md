@@ -33,7 +33,7 @@ import puppeteer from 'puppeteer';
 
   // Locate the full title with a unique string
   const textSelector = await page.waitForSelector(
-    'text/Customize and automate'
+    'text/Customize and automate',
   );
   const fullTitle = await textSelector?.evaluate(el => el.textContent);
 

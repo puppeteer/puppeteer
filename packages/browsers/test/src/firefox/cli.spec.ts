@@ -55,8 +55,8 @@ describe('Firefox CLI', function () {
     ]);
     assert.ok(
       fs.existsSync(
-        path.join(tmpDir, 'firefox', `linux-${testFirefoxBuildId}`, 'firefox')
-      )
+        path.join(tmpDir, 'firefox', `linux-${testFirefoxBuildId}`, 'firefox'),
+      ),
     );
   });
 
@@ -64,7 +64,7 @@ describe('Firefox CLI', function () {
     sinon.stub(httpUtil, 'getJSON').returns(
       Promise.resolve({
         FIREFOX_NIGHTLY: testFirefoxBuildId.split('_').at(-1),
-      })
+      }),
     );
     await new CLI(tmpDir).run([
       'npx',

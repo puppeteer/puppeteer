@@ -12,7 +12,7 @@ Queries the frame for all elements matching the given selector.
 class Frame {
   $$<Selector extends string>(
     selector: Selector,
-    options?: QueryOptions
+    options?: QueryOptions,
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>>;
 }
 ```

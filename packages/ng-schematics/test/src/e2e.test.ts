@@ -42,7 +42,7 @@ void describe('@puppeteer/ng-schematics: e2e', () => {
       });
       expect(tree.files).toContain('/e2e/tests/my-test.e2e.ts');
       expect(tree.readContent('/e2e/tests/my-test.e2e.ts')).toContain(
-        `setupBrowserHooks('${route}');`
+        `setupBrowserHooks('${route}');`,
       );
     });
 
@@ -54,7 +54,7 @@ void describe('@puppeteer/ng-schematics: e2e', () => {
       });
       expect(tree.files).toContain('/e2e/tests/my-test.e2e.ts');
       expect(tree.readContent('/e2e/tests/my-test.e2e.ts')).toContain(
-        `setupBrowserHooks('home');`
+        `setupBrowserHooks('home');`,
       );
     });
   });
@@ -65,10 +65,10 @@ void describe('@puppeteer/ng-schematics: e2e', () => {
         name: 'myTest',
       });
       expect(tree.files).toContain(
-        getMultiApplicationFile('e2e/tests/my-test.e2e.ts')
+        getMultiApplicationFile('e2e/tests/my-test.e2e.ts'),
       );
       expect(tree.files).not.toContain(
-        getMultiApplicationFile('e2e/tests/my-test.test.ts')
+        getMultiApplicationFile('e2e/tests/my-test.test.ts'),
       );
     });
 
@@ -78,10 +78,10 @@ void describe('@puppeteer/ng-schematics: e2e', () => {
         testRunner: 'node',
       });
       expect(tree.files).not.toContain(
-        getMultiApplicationFile('e2e/tests/my-test.e2e.ts')
+        getMultiApplicationFile('e2e/tests/my-test.e2e.ts'),
       );
       expect(tree.files).toContain(
-        getMultiApplicationFile('e2e/tests/my-test.test.ts')
+        getMultiApplicationFile('e2e/tests/my-test.test.ts'),
       );
     });
 
@@ -92,10 +92,10 @@ void describe('@puppeteer/ng-schematics: e2e', () => {
         route,
       });
       expect(tree.files).toContain(
-        getMultiApplicationFile('e2e/tests/my-test.e2e.ts')
+        getMultiApplicationFile('e2e/tests/my-test.e2e.ts'),
       );
       expect(
-        tree.readContent(getMultiApplicationFile('e2e/tests/my-test.e2e.ts'))
+        tree.readContent(getMultiApplicationFile('e2e/tests/my-test.e2e.ts')),
       ).toContain(`setupBrowserHooks('${route}');`);
     });
 
@@ -106,10 +106,10 @@ void describe('@puppeteer/ng-schematics: e2e', () => {
         route,
       });
       expect(tree.files).toContain(
-        getMultiApplicationFile('e2e/tests/my-test.e2e.ts')
+        getMultiApplicationFile('e2e/tests/my-test.e2e.ts'),
       );
       expect(
-        tree.readContent(getMultiApplicationFile('e2e/tests/my-test.e2e.ts'))
+        tree.readContent(getMultiApplicationFile('e2e/tests/my-test.e2e.ts')),
       ).toContain(`setupBrowserHooks('home');`);
     });
   });

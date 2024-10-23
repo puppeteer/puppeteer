@@ -11,7 +11,7 @@ RUN apt-get update \
     fonts-kacst fonts-freefont-ttf dbus dbus-x11
 
 # Add pptruser.
-RUN groupadd -r pptruser && useradd -rm -g pptruser -G audio,video pptruser
+RUN groupadd -r pptruser && useradd -u 10042 -rm -g pptruser -G audio,video pptruser
 
 USER pptruser
 

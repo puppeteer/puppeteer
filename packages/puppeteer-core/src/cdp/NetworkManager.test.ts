@@ -1545,7 +1545,7 @@ describe('NetworkManager', () => {
     expect(
       responses.map(r => {
         return r.status();
-      })
+      }),
     ).toEqual([200, 302, 200]);
   });
 });

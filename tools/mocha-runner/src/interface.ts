@@ -25,7 +25,7 @@ const skippedTests: Array<{testIdPattern: string; skip: true}> = process.env[
 const deflakeRetries = Number(
   process.env['PUPPETEER_DEFLAKE_RETRIES']
     ? process.env['PUPPETEER_DEFLAKE_RETRIES']
-    : 100
+    : 100,
 );
 const deflakeTestPattern: string | undefined =
   process.env['PUPPETEER_DEFLAKE_TESTS'];
@@ -52,7 +52,7 @@ function shouldDeflakeTest(test: Mocha.Test): boolean {
 function dumpLogsIfFail(this: Mocha.Context) {
   if (this.currentTest?.state === 'failed') {
     console.log(
-      `\n"${this.currentTest.fullTitle()}" failed. Here is a debug log:`
+      `\n"${this.currentTest.fullTitle()}" failed. Here is a debug log:`,
     );
     console.log(getCapturedLogs().join('\n') + '\n');
   }
@@ -100,7 +100,7 @@ function customBDDInterface(suite: Mocha.Suite) {
 
       describe.withDebugLogs = function (
         description: string,
-        body: (this: Mocha.Suite) => void
+        body: (this: Mocha.Suite) => void,
       ): void {
         context['describe']('with Debug Logs', () => {
           context['beforeEach'](() => {
@@ -126,7 +126,7 @@ function customBDDInterface(suite: Mocha.Suite) {
           // @ts-expect-error
           suite.parent?._onlySuites.find(child => {
             return child === suite;
-          })
+          }),
         );
         if (shouldDeflakeTest(test)) {
           const deflakeSuit = Mocha.Suite.create(suite, 'with Debug Logs');
@@ -153,7 +153,7 @@ function customBDDInterface(suite: Mocha.Suite) {
       it.only = function (title: string, fn: Mocha.TestFunction) {
         return common.test.only(
           mocha,
-          (context['it'] as unknown as typeof it)(title, fn, true)
+          (context['it'] as unknown as typeof it)(title, fn, true),
         );
       };
 
@@ -163,7 +163,7 @@ function customBDDInterface(suite: Mocha.Suite) {
 
       function wrapDeflake(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-        func: Function
+        func: Function,
       ): (repeats: number, title: string, fn: Mocha.AsyncFunc) => void {
         return (repeats: number, title: string, fn: Mocha.AsyncFunc): void => {
           (context['describe'] as unknown as typeof describe).withDebugLogs(
@@ -172,7 +172,7 @@ function customBDDInterface(suite: Mocha.Suite) {
               for (let i = 1; i <= repeats; i++) {
                 func(`${i}/${title}`, fn);
               }
-            }
+            },
           );
         };
       }
@@ -183,7 +183,7 @@ function customBDDInterface(suite: Mocha.Suite) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
       context.it = it;
-    }
+    },
   );
 }
 

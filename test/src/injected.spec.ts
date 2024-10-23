@@ -22,7 +22,7 @@ describe('PuppeteerUtil tests', function () {
       },
       LazyArg.create(context => {
         return context.puppeteerUtil;
-      })
+      }),
     );
     expect(value).toBeTruthy();
   });
@@ -41,7 +41,7 @@ describe('PuppeteerUtil tests', function () {
         }),
         (() => {
           return 4;
-        }).toString()
+        }).toString(),
       );
       expect(value).toBe(4);
     });

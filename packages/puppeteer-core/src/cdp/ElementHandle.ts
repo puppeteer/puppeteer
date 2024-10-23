@@ -40,7 +40,7 @@ export class CdpElementHandle<
 
   constructor(
     world: IsolatedWorld,
-    remoteObject: Protocol.Runtime.RemoteObject
+    remoteObject: Protocol.Runtime.RemoteObject,
   ) {
     super(new CdpJSHandle(world, remoteObject));
   }
@@ -66,7 +66,7 @@ export class CdpElementHandle<
   }
 
   override async contentFrame(
-    this: ElementHandle<HTMLIFrameElement>
+    this: ElementHandle<HTMLIFrameElement>,
   ): Promise<CdpFrame>;
 
   @throwIfDisposed()
@@ -83,7 +83,7 @@ export class CdpElementHandle<
   @throwIfDisposed()
   @bindIsolatedHandle
   override async scrollIntoView(
-    this: CdpElementHandle<Element>
+    this: CdpElementHandle<Element>,
   ): Promise<void> {
     await this.assertConnectedElement();
     try {
@@ -108,7 +108,7 @@ export class CdpElementHandle<
     });
     assert(
       filePaths.length <= 1 || isMultiple,
-      'Multiple file uploads only work with <input type=file multiple>'
+      'Multiple file uploads only work with <input type=file multiple>',
     );
 
     // Locate all files and confirm that they exist.
@@ -134,7 +134,7 @@ export class CdpElementHandle<
 
         // Dispatch events for this case because it should behave akin to a user action.
         element.dispatchEvent(
-          new Event('input', {bubbles: true, composed: true})
+          new Event('input', {bubbles: true, composed: true}),
         );
         element.dispatchEvent(new Event('change', {bubbles: true}));
       });
@@ -169,7 +169,7 @@ export class CdpElementHandle<
 
   override async *queryAXTree(
     name?: string | undefined,
-    role?: string | undefined
+    role?: string | undefined,
   ): AwaitableIterable<ElementHandle<Node>> {
     const {nodes} = await this.client.send('Accessibility.queryAXTree', {
       objectId: this.id,

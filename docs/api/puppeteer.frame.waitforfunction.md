@@ -104,6 +104,6 @@ const selector = '.foo';
 await frame.waitForFunction(
   selector => !!document.querySelector(selector),
   {}, // empty options object
-  selector
+  selector,
 );
 ```

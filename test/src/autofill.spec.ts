@@ -31,7 +31,7 @@ describe('Autofill', function () {
             result.push(el.value);
           }
           return result.join(',');
-        })
+        }),
       ).toBe('John Smith,4444444444444444,01,2030,Submit');
     });
   });

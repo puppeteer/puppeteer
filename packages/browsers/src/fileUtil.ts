@@ -18,7 +18,7 @@ import bzip from 'unbzip2-stream';
  */
 export async function unpackArchive(
   archivePath: string,
-  folderPath: string
+  folderPath: string,
 ): Promise<void> {
   if (archivePath.endsWith('.zip')) {
     await extractZip(archivePath, {dir: folderPath});
@@ -36,7 +36,7 @@ export async function unpackArchive(
     });
     if (result.status !== 0) {
       throw new Error(
-        `Failed to extract ${archivePath} to ${folderPath}: ${result.output}`
+        `Failed to extract ${archivePath} to ${folderPath}: ${result.output}`,
       );
     }
   } else {

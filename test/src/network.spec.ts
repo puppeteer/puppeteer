@@ -132,7 +132,7 @@ describe('network', function () {
       page.on('request', request => {
         return initiators.set(
           request.url().split('/').pop(),
-          request.initiator()
+          request.initiator(),
         );
       });
       await page.goto(server.PREFIX + '/initiator.html');
@@ -140,31 +140,31 @@ describe('network', function () {
       expect(initiators.get('initiator.html').type).toBe('other');
       expect(initiators.get('initiator.js').type).toBe('parser');
       expect(initiators.get('initiator.js').url).toBe(
-        server.PREFIX + '/initiator.html'
+        server.PREFIX + '/initiator.html',
       );
       expect(initiators.get('frame.html').type).toBe('parser');
       expect(initiators.get('frame.html').url).toBe(
-        server.PREFIX + '/initiator.html'
+        server.PREFIX + '/initiator.html',
       );
       expect(initiators.get('script.js').type).toBe('parser');
       expect(initiators.get('script.js').url).toBe(
-        server.PREFIX + '/frames/frame.html'
+        server.PREFIX + '/frames/frame.html',
       );
       expect(initiators.get('style.css').type).toBe('parser');
       expect(initiators.get('style.css').url).toBe(
-        server.PREFIX + '/frames/frame.html'
+        server.PREFIX + '/frames/frame.html',
       );
       expect(initiators.get('initiator.js').type).toBe('parser');
       expect(initiators.get('injectedfile.js').type).toBe('script');
       expect(initiators.get('injectedfile.js').stack.callFrames[0]!.url).toBe(
-        server.PREFIX + '/initiator.js'
+        server.PREFIX + '/initiator.js',
       );
       expect(initiators.get('injectedstyle.css').type).toBe('script');
       expect(initiators.get('injectedstyle.css').stack.callFrames[0]!.url).toBe(
-        server.PREFIX + '/initiator.js'
+        server.PREFIX + '/initiator.js',
       );
       expect(initiators.get('initiator.js').url).toBe(
-        server.PREFIX + '/initiator.html'
+        server.PREFIX + '/initiator.html',
       );
     });
   });
@@ -333,7 +333,7 @@ describe('network', function () {
         return (error = error_);
       });
       expect(error.message).toContain(
-        'Response body is unavailable for redirect responses'
+        'Response body is unavailable for redirect responses',
       );
     });
     it('should wait until response completes', async () => {
@@ -400,7 +400,7 @@ describe('network', function () {
 
       const response = (await page.goto(server.PREFIX + '/pptr.png'))!;
       const imageBuffer = fs.readFileSync(
-        path.join(__dirname, '../assets', 'pptr.png')
+        path.join(__dirname, '../assets', 'pptr.png'),
       );
       const responseBuffer = await response.buffer();
 
@@ -412,7 +412,7 @@ describe('network', function () {
       server.enableGzip('/pptr.png');
       const response = (await page.goto(server.PREFIX + '/pptr.png'))!;
       const imageBuffer = fs.readFileSync(
-        path.join(__dirname, '../assets', 'pptr.png')
+        path.join(__dirname, '../assets', 'pptr.png'),
       );
       const responseBuffer = await response.buffer();
       expect(Buffer.from(responseBuffer).equals(imageBuffer)).toBe(true);
@@ -436,7 +436,7 @@ describe('network', function () {
           return (
             response.request().method() === 'OPTIONS' && response.url() === url
           );
-        }
+        },
       );
 
       // Trigger a request with a preflight.
@@ -450,7 +450,7 @@ describe('network', function () {
 
       const response = await responsePromise;
       await expect(response.buffer()).rejects.toThrowError(
-        'Could not load body for this request. This might happen if the request is a preflight request.'
+        'Could not load body for this request. This might happen if the request is a preflight request.',
       );
     });
   });
@@ -727,7 +727,7 @@ describe('network', function () {
         error = error_ as Error;
       }
       expect(error.message).toBe(
-        'Expected value of header "foo" to be String, but "number" is found.'
+        'Expected value of header "foo" to be String, but "number" is found.',
       );
     });
   });
@@ -756,7 +756,7 @@ describe('network', function () {
         // In headful, an error is thrown instead of 401.
         if (
           !(error as Error).message?.includes(
-            'net::ERR_INVALID_AUTH_CREDENTIALS'
+            'net::ERR_INVALID_AUTH_CREDENTIALS',
           )
         ) {
           throw error;
@@ -796,14 +796,14 @@ describe('network', function () {
       // Navigate to a different origin to bust Chrome's credential caching.
       try {
         response = (await page.goto(
-          server.CROSS_PROCESS_PREFIX + '/empty.html'
+          server.CROSS_PROCESS_PREFIX + '/empty.html',
         ))!;
         expect(response.status()).toBe(401);
       } catch (error) {
         // In headful, an error is thrown instead of 401.
         if (
           !(error as Error).message?.includes(
-            'net::ERR_INVALID_AUTH_CREDENTIALS'
+            'net::ERR_INVALID_AUTH_CREDENTIALS',
           )
         ) {
           throw error;
@@ -990,7 +990,7 @@ describe('network', function () {
       const remoteAddress = response.remoteAddress();
       // Either IPv6 or IPv4, depending on environment.
       expect(
-        remoteAddress.ip!.includes('::1') || remoteAddress.ip === '127.0.0.1'
+        remoteAddress.ip!.includes('::1') || remoteAddress.ip === '127.0.0.1',
       ).toBe(true);
       expect(remoteAddress.port).toBe(server.PORT);
     });
@@ -1007,7 +1007,7 @@ describe('network', function () {
       expect(redirectChain).toHaveLength(1);
       expect(redirectChain[0]!.url()).toContain('/foo.html');
       expect(redirectChain[0]!.response()!.remoteAddress().port).toBe(
-        server.PORT
+        server.PORT,
       );
     });
   });

@@ -14,7 +14,7 @@ Drops the given element onto the current one.
 class ElementHandle {
   drop(
     this: ElementHandle<Element>,
-    element: ElementHandle<Element>
+    element: ElementHandle<Element>,
   ): Promise<void>;
 }
 ```
@@ -73,7 +73,7 @@ Promise&lt;void&gt;
 class ElementHandle {
   drop(
     this: ElementHandle<Element>,
-    data?: Protocol.Input.DragData
+    data?: Protocol.Input.DragData,
   ): Promise<void>;
 }
 ```

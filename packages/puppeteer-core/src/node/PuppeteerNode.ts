@@ -97,7 +97,7 @@ export class PuppeteerNode extends Puppeteer {
   constructor(
     settings: {
       configuration?: Configuration;
-    } & CommonPuppeteerSettings
+    } & CommonPuppeteerSettings,
   ) {
     const {configuration, ...commonSettings} = settings;
     super(commonSettings);
@@ -316,13 +316,13 @@ export class PuppeteerNode extends Puppeteer {
     const currentBrowserBuilds = new Set(
       puppeteerBrowsers.map(browser => {
         return `${browser.browser}_${browser.currentBuildId}`;
-      })
+      }),
     );
 
     const currentBrowsers = new Set(
       puppeteerBrowsers.map(browser => {
         return browser.browser;
-      })
+      }),
     );
 
     for (const installedBrowser of installedBrowsers) {
@@ -333,7 +333,7 @@ export class PuppeteerNode extends Puppeteer {
       // Keep the browser build used by the current Puppeteer installation.
       if (
         currentBrowserBuilds.has(
-          `${installedBrowser.browser}_${installedBrowser.buildId}`
+          `${installedBrowser.browser}_${installedBrowser.buildId}`,
         )
       ) {
         continue;

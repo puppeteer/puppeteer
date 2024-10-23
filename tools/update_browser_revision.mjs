@@ -80,18 +80,18 @@ function normalizeVersionToSemVer(browser, version) {
 function checkIfNeedsUpdate(browser, oldVersion, newVersion) {
   const oldSemVer = new SemVer(
     normalizeVersionToSemVer(browser, oldVersion),
-    true
+    true,
   );
   const newSemVer = new SemVer(
     normalizeVersionToSemVer(browser, newVersion),
-    true
+    true,
   );
   let message = `roll to ${getCapitalize(browser)} ${normalizeVersionForCommit(browser, newVersion)}`;
 
   if (newSemVer.compare(oldSemVer) <= 0) {
     // Exit the process without setting up version
     console.warn(
-      `Version ${newVersion} is older or the same as the current ${oldVersion}`
+      `Version ${newVersion} is older or the same as the current ${oldVersion}`,
     );
     process.exit(0);
   } else if (newSemVer.major === oldSemVer.major) {
@@ -109,13 +109,13 @@ function checkIfNeedsUpdate(browser, oldVersion, newVersion) {
 async function formatUpdateFiles() {
   await Promise.all(
     touchedFiles.map(file => {
-      return execAsync(`npx eslint --ext js --ext ts --fix ${file}`);
-    })
+      return execAsync(`npx eslint --fix ${file}`);
+    }),
   );
   await Promise.all(
     touchedFiles.map(file => {
       return execAsync(`npx prettier --write ${file}`);
-    })
+    }),
   );
 }
 
@@ -134,7 +134,7 @@ async function getVersionForStable(browser) {
 
 async function updateDevToolsProtocolVersion(browserVersion) {
   const result = await fetch(
-    'https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json'
+    'https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json',
   ).then(response => {
     return response.json();
   });
@@ -142,7 +142,7 @@ async function updateDevToolsProtocolVersion(browserVersion) {
   const {version, revision} = result.channels['Stable'];
   if (browserVersion !== version) {
     console.error(
-      'The version from CfT website and @puppeteer/browser mismatch.'
+      'The version from CfT website and @puppeteer/browser mismatch.',
     );
     process.exit(1);
   }
@@ -159,13 +159,13 @@ async function updateDevToolsProtocolVersion(browserVersion) {
   await replaceInFile(
     './packages/puppeteer-core/package.json',
     `"devtools-protocol": "${currentProtocol}"`,
-    `"devtools-protocol": "${bestNewProtocol}"`
+    `"devtools-protocol": "${bestNewProtocol}"`,
   );
 
   await replaceInFile(
     './packages/puppeteer/package.json',
     `"devtools-protocol": "${currentProtocol}"`,
-    `"devtools-protocol": "${bestNewProtocol}"`
+    `"devtools-protocol": "${bestNewProtocol}"`,
   );
 }
 
@@ -178,7 +178,7 @@ async function updateVersionData(browser, oldVersion, newVersion) {
   const browserVersions = versionData.versions.map(
     ([_puppeteerVersion, browserVersions]) => {
       return browserVersions[browser];
-    }
+    },
   );
   if (browserVersions.indexOf(newVersion) !== -1) {
     // Already updated.
@@ -209,7 +209,7 @@ async function updateLastMaintainedChromeVersion(oldVersion, newVersion) {
   const browserVersions = versionData.versions.map(
     ([_puppeteerVersion, browserVersions]) => {
       return browserVersions['chrome'];
-    }
+    },
   );
   if (browserVersions.indexOf(newVersion) !== -1) {
     // Already updated.
@@ -222,7 +222,7 @@ async function updateLastMaintainedChromeVersion(oldVersion, newVersion) {
   if (newSemVer.compareMain(oldSemVer) !== 0) {
     const lastMaintainedSemVer = new SemVer(
       versionData.lastMaintainedChromeVersion,
-      true
+      true,
     );
     const newLastMaintainedMajor = lastMaintainedSemVer.major + 1;
 
@@ -241,7 +241,7 @@ checkIfNeedsUpdate(BROWSER, BROWSER_CURRENT_VERSION, version);
 await replaceInFile(
   './packages/puppeteer-core/src/revisions.ts',
   BROWSER_CURRENT_VERSION,
-  version
+  version,
 );
 
 await updateVersionData(BROWSER, BROWSER_CURRENT_VERSION, version);

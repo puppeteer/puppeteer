@@ -93,7 +93,7 @@ function DocSearch({contextualSearch, externalUrlRegex, ...props}) {
       searchContainer.current = document.createElement('div');
       document.body.insertBefore(
         searchContainer.current,
-        document.body.firstChild
+        document.body.firstChild,
       );
       setIsOpen(true);
     });
@@ -109,7 +109,7 @@ function DocSearch({contextualSearch, externalUrlRegex, ...props}) {
         setInitialQuery(event.key);
       });
     },
-    [importDocSearchModalIfNeeded, setIsOpen, setInitialQuery]
+    [importDocSearchModalIfNeeded, setIsOpen, setInitialQuery],
   );
   const navigator = useRef({
     navigate({itemUrl}) {
@@ -146,11 +146,11 @@ function DocSearch({contextualSearch, externalUrlRegex, ...props}) {
     searchClient => {
       searchClient.addAlgoliaAgent(
         'docusaurus',
-        siteMetadata.docusaurusVersion
+        siteMetadata.docusaurusVersion,
       );
       return searchClient;
     },
-    [siteMetadata.docusaurusVersion]
+    [siteMetadata.docusaurusVersion],
   );
   useDocSearchKeyboardEvents({
     isOpen,
@@ -201,7 +201,7 @@ function DocSearch({contextualSearch, externalUrlRegex, ...props}) {
             placeholder={translations.placeholder}
             translations={translations.modal}
           />,
-          searchContainer.current
+          searchContainer.current,
         )}
     </>
   );

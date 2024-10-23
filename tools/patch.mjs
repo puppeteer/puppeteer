@@ -28,7 +28,7 @@ file = file.replaceAll(
           document.write(html);
           document.close();
         }, content);`,
-  'throw new Error("unsupported")'
+  'throw new Error("unsupported")',
 );
 file = file.replaceAll('link.href = url;', 'throw new Error("unsupported")');
 file = file.replaceAll('script.src = url;', 'throw new Error("unsupported")');
@@ -43,16 +43,16 @@ file = file.replaceAll('#private;', '');
 
 file = file.replaceAll(
   `import { Session } from 'chromium-bidi/lib/cjs/protocol/protocol.js';`,
-  'type Session = any;'
+  'type Session = any;',
 );
 file = file.replaceAll(
   `import type { ParseSelector } from 'typed-query-selector/parser.js';`,
-  'type ParseSelector<T extends string> = any;'
+  'type ParseSelector<T extends string> = any;',
 );
 
 file = file.replaceAll(
   `export declare type SupportedWebDriverCapability = Exclude<Session.CapabilityRequest, 'unhandledPromptBehavior' | 'acceptInsecureCerts'>;`,
-  'export declare type SupportedWebDriverCapability = any;'
+  'export declare type SupportedWebDriverCapability = any;',
 );
 
 fs.writeFileSync(genTypes, file);

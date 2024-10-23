@@ -11,7 +11,7 @@ Adds a `<script>` tag into the page with the desired URL or content.
 ```typescript
 class Page {
   addScriptTag(
-    options: FrameAddScriptTagOptions
+    options: FrameAddScriptTagOptions,
   ): Promise<ElementHandle<HTMLScriptElement>>;
 }
 ```

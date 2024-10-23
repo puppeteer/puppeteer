@@ -26,7 +26,7 @@ describe('Prerender', function () {
     expect(
       await page.evaluate(() => {
         return document.body.innerText;
-      })
+      }),
     ).toBe('target');
   });
 
@@ -41,7 +41,7 @@ describe('Prerender', function () {
     expect(
       await page.evaluate(() => {
         return document.body.innerText;
-      })
+      }),
     ).toBe('target');
   });
 
@@ -60,7 +60,7 @@ describe('Prerender', function () {
       expect(
         await mainFrame.evaluate(() => {
           return document.body.innerText;
-        })
+        }),
       ).toBe('target');
       expect(mainFrame).toBe(page.mainFrame());
     });
@@ -77,7 +77,7 @@ describe('Prerender', function () {
       expect(
         await mainFrame.evaluate(() => {
           return document.body.innerText;
-        })
+        }),
       ).toBe('target');
       expect(mainFrame).toBe(page.mainFrame());
     });
@@ -129,23 +129,23 @@ describe('Prerender', function () {
       expect(
         await mainFrame.evaluate(() => {
           return document.body.innerText;
-        })
+        }),
       ).toBe('target');
       expect(mainFrame).toBe(page.mainFrame());
       expect(
         urls.find(url => {
           return url.endsWith('prerender/target.html');
-        })
+        }),
       ).toBeTruthy();
       expect(
         urls.find(url => {
           return url.includes('prerender/index.html');
-        })
+        }),
       ).toBeTruthy();
       expect(
         urls.find(url => {
           return url.includes('prerender/target.html?fromPrerendered');
-        })
+        }),
       ).toBeTruthy();
     });
   });

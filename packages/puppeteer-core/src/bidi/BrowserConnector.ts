@@ -28,7 +28,7 @@ import type {BidiConnection} from './Connection.js';
 export async function _connectToBiDiBrowser(
   connectionTransport: ConnectionTransport,
   url: string,
-  options: BrowserConnectOptions & ConnectOptions
+  options: BrowserConnectOptions & ConnectOptions,
 ): Promise<BidiBrowser> {
   const {acceptInsecureCerts = false, defaultViewport = DEFAULT_VIEWPORT} =
     options;
@@ -58,7 +58,7 @@ export async function _connectToBiDiBrowser(
 async function getBiDiConnection(
   connectionTransport: ConnectionTransport,
   url: string,
-  options: BrowserConnectOptions
+  options: BrowserConnectOptions,
 ): Promise<{
   cdpConnection?: Connection;
   bidiConnection: BidiConnection;
@@ -72,7 +72,7 @@ async function getBiDiConnection(
     url,
     connectionTransport,
     slowMo,
-    protocolTimeout
+    protocolTimeout,
   );
   try {
     const result = await pureBidiConnection.send('session.status', {});
@@ -99,13 +99,13 @@ async function getBiDiConnection(
     url,
     connectionTransport,
     slowMo,
-    protocolTimeout
+    protocolTimeout,
   );
 
   const version = await cdpConnection.send('Browser.getVersion');
   if (version.product.toLowerCase().includes('firefox')) {
     throw new UnsupportedOperation(
-      'Firefox is not supported in BiDi over CDP mode.'
+      'Firefox is not supported in BiDi over CDP mode.',
     );
   }
 

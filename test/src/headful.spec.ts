@@ -50,7 +50,7 @@ describe('headful tests', function () {
       browsers.map((close, index) => {
         delete browsers[index];
         return close();
-      })
+      }),
     );
   });
 
@@ -62,7 +62,7 @@ describe('headful tests', function () {
       const userDataDir = await mkdtemp(TMP_FOLDER);
       // Write a cookie in headful chrome
       const headfulBrowser = await launchBrowser(
-        Object.assign({userDataDir}, headfulOptions)
+        Object.assign({userDataDir}, headfulOptions),
       );
       try {
         const headfulPage = await headfulBrowser.newPage();
@@ -76,7 +76,7 @@ describe('headful tests', function () {
       }
       // Read the cookie from headless chrome
       const headlessBrowser = await launchBrowser(
-        Object.assign({userDataDir}, headlessOptions)
+        Object.assign({userDataDir}, headlessOptions),
       );
       let cookie = '';
       try {

@@ -26,7 +26,7 @@ describe('Chromium-Specific Launcher tests', function () {
         expect(
           await page1.evaluate(() => {
             return 7 * 8;
-          })
+          }),
         ).toBe(56);
         await browser1.disconnect();
 
@@ -37,7 +37,7 @@ describe('Chromium-Specific Launcher tests', function () {
         expect(
           await page2.evaluate(() => {
             return 8 * 7;
-          })
+          }),
         ).toBe(56);
       } finally {
         await close();
@@ -60,7 +60,7 @@ describe('Chromium-Specific Launcher tests', function () {
             return (error = error_);
           });
         expect(error.message).toContain(
-          'Exactly one of browserWSEndpoint, browserURL or transport'
+          'Exactly one of browserWSEndpoint, browserURL or transport',
         );
       } finally {
         await close();
@@ -78,7 +78,7 @@ describe('Chromium-Specific Launcher tests', function () {
           return (error = error_);
         });
         expect(error.message).toContain(
-          'Failed to fetch browser webSocket URL from'
+          'Failed to fetch browser webSocket URL from',
         );
       } finally {
         await close();
@@ -161,7 +161,7 @@ describe('Chromium-Specific Page Tests', function () {
     // Check for feature URL substring rather than https://www.chromestatus.com to
     // make it work with Edgium.
     expect(serverRequest!.headers['intervention']).toContain(
-      'feature/5718547946799104'
+      'feature/5718547946799104',
     );
   });
 });

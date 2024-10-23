@@ -178,11 +178,11 @@ export class Accessibility {
    * @returns An AXNode object representing the snapshot.
    */
   public async snapshot(
-    options: SnapshotOptions = {}
+    options: SnapshotOptions = {},
   ): Promise<SerializedAXNode | null> {
     const {interestingOnly = true, root = null} = options;
     const {nodes} = await this.#realm.environment.client.send(
-      'Accessibility.getFullAXTree'
+      'Accessibility.getFullAXTree',
     );
     let backendNodeId: number | undefined;
     if (root) {
@@ -190,7 +190,7 @@ export class Accessibility {
         'DOM.describeNode',
         {
           objectId: root.id,
-        }
+        },
       );
       backendNodeId = node.backendNodeId;
     }
@@ -222,7 +222,7 @@ export class Accessibility {
 
   private serializeTree(
     node: AXNode,
-    interestingNodes?: Set<AXNode>
+    interestingNodes?: Set<AXNode>,
   ): SerializedAXNode[] {
     const children: SerializedAXNode[] = [];
     for (const child of node.children) {
@@ -243,7 +243,7 @@ export class Accessibility {
   private collectInterestingNodes(
     collection: Set<AXNode>,
     node: AXNode,
-    insideControl: boolean
+    insideControl: boolean,
   ): void {
     if (node.isInteresting(insideControl)) {
       collection.add(node);
@@ -457,7 +457,7 @@ class AXNode {
           return null;
         }
         return (await this.#realm.adoptBackendNode(
-          this.payload.backendDOMNodeId
+          this.payload.backendDOMNodeId,
         )) as ElementHandle<Element>;
       },
     };
@@ -582,7 +582,7 @@ class AXNode {
 
   public static createTree(
     realm: Realm,
-    payloads: Protocol.Accessibility.AXNode[]
+    payloads: Protocol.Accessibility.AXNode[],
   ): AXNode | null {
     const nodeById = new Map<string, AXNode>();
     for (const payload of payloads) {

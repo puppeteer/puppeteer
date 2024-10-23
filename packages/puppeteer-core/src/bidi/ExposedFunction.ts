@@ -22,7 +22,7 @@ type CallbackChannel<Args, Ret> = (
     resolve: (ret: FlattenHandle<Awaited<Ret>>) => void,
     reject: (error: unknown) => void,
     args: Args,
-  ]
+  ],
 ) => void;
 
 /**
@@ -33,7 +33,7 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
     frame: BidiFrame,
     name: string,
     apply: (...args: Args) => Awaitable<Ret>,
-    isolate = false
+    isolate = false,
   ): Promise<ExposeableFunction<Args, Ret>> {
     const func = new ExposeableFunction(frame, name, apply, isolate);
     await func.#initialize();
@@ -55,7 +55,7 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
     frame: BidiFrame,
     name: string,
     apply: (...args: Args) => Awaitable<Ret>,
-    isolate = false
+    isolate = false,
   ) {
     this.#frame = frame;
     this.name = name;
@@ -76,11 +76,11 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
     };
 
     const connectionEmitter = this.#disposables.use(
-      new EventEmitter(connection)
+      new EventEmitter(connection),
     );
     connectionEmitter.on(
       Bidi.ChromiumBidi.Script.EventNames.Message,
-      this.#handleMessage
+      this.#handleMessage,
     );
 
     const functionDeclaration = stringifyFunction(
@@ -91,13 +91,13 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
               return new Promise<FlattenHandle<Awaited<Ret>>>(
                 (resolve, reject) => {
                   callback([resolve, reject, args]);
-                }
+                },
               );
             },
           });
         },
-        {name: JSON.stringify(this.name)}
-      )
+        {name: JSON.stringify(this.name)},
+      ),
     );
 
     const frames = [this.#frame];
@@ -124,7 +124,7 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
           // fail gracefully.
           debugError(error);
         }
-      })
+      }),
     );
   }
 
@@ -187,7 +187,7 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
             },
             error.name,
             error.message,
-            error.stack
+            error.stack,
           );
         } else {
           await dataHandle.evaluate(([, reject], error) => {
@@ -253,7 +253,7 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
         } catch (error) {
           debugError(error);
         }
-      })
+      }),
     );
   }
 }

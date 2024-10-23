@@ -26,7 +26,7 @@ export class Session
 {
   static async from(
     connection: Connection,
-    capabilities: Bidi.Session.CapabilitiesRequest
+    capabilities: Bidi.Session.CapabilitiesRequest,
   ): Promise<Session> {
     const {result} = await connection.send('session.new', {
       capabilities,
@@ -106,7 +106,7 @@ export class Session
   })
   async send<T extends keyof Commands>(
     method: T,
-    params: Commands[T]['params']
+    params: Commands[T]['params'],
   ): Promise<{result: Commands[T]['returnType']}> {
     return await this.connection.send(method, params);
   }
@@ -117,7 +117,7 @@ export class Session
   })
   async subscribe(
     events: [string, ...string[]],
-    contexts?: [string, ...string[]]
+    contexts?: [string, ...string[]],
   ): Promise<void> {
     await this.send('session.subscribe', {
       events,
@@ -131,7 +131,7 @@ export class Session
   })
   async addIntercepts(
     events: [string, ...string[]],
-    contexts?: [string, ...string[]]
+    contexts?: [string, ...string[]],
   ): Promise<void> {
     await this.send('session.subscribe', {
       events,

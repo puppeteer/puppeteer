@@ -23,8 +23,8 @@ export const generateVersionTask = task({
       'src/generated/version.ts',
       (await readFile('src/templates/version.ts.tmpl', 'utf8')).replace(
         'PACKAGE_VERSION',
-        version
-      )
+        version,
+      ),
     );
     if (process.env['PUBLISH']) {
       await writeFile(
@@ -33,7 +33,7 @@ export const generateVersionTask = task({
           await readFile('../../versions.json', {
             encoding: 'utf-8',
           })
-        ).replace(`"NEXT"`, `"v${version}"`)
+        ).replace(`"NEXT"`, `"v${version}"`),
       );
     }
   },
@@ -57,7 +57,7 @@ export const generateInjectedTask = task({
     await mkdir('src/generated', {recursive: true});
     await writeFile(
       'src/generated/injected.ts',
-      template.replace('SOURCE_CODE', JSON.stringify(text))
+      template.replace('SOURCE_CODE', JSON.stringify(text)),
     );
   },
 });
@@ -116,7 +116,7 @@ export const buildTask = task({
             // consumers.
             minify: false,
             legalComments: 'inline',
-          })
+          }),
         );
         let license = '';
         switch (name) {
@@ -126,15 +126,15 @@ export const buildTask = task({
                 path.dirname(require.resolve('rxjs')),
                 '..',
                 '..',
-                'LICENSE.txt'
+                'LICENSE.txt',
               ),
-              'utf-8'
+              'utf-8',
             );
             break;
           case 'mitt':
             license = await readFile(
               path.join(path.dirname(require.resolve('mitt')), '..', 'LICENSE'),
-              'utf-8'
+              'utf-8',
             );
             break;
           case 'parsel-js':
@@ -142,9 +142,9 @@ export const buildTask = task({
               path.join(
                 path.dirname(require.resolve('parsel-js')),
                 '..',
-                'LICENSE'
+                'LICENSE',
               ),
-              'utf-8'
+              'utf-8',
             );
             break;
           default:
@@ -157,7 +157,7 @@ export const buildTask = task({
 ${license}
 */
 ${content}`,
-          'utf-8'
+          'utf-8',
         );
       }
     }

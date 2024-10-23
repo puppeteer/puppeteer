@@ -35,7 +35,7 @@ describe('getTestResultForFailure', () => {
   it('should get a test result for a mocha failure', () => {
     assert.equal(
       getTestResultForFailure({err: {code: 'ERR_MOCHA_TIMEOUT'}}),
-      'TIMEOUT'
+      'TIMEOUT',
     );
     assert.equal(getTestResultForFailure({err: {code: 'ERROR'}}), 'FAIL');
   });
@@ -54,12 +54,12 @@ describe('filterByParameters', () => {
     ];
     assert.equal(
       filterByParameters(expectations, ['firefox', 'headless']).length,
-      1
+      1,
     );
     assert.equal(filterByParameters(expectations, ['firefox']).length, 0);
     assert.equal(
       filterByParameters(expectations, ['firefox', 'headless', 'other']).length,
-      1
+      1,
     );
     assert.equal(filterByParameters(expectations, ['other']).length, 0);
   });
@@ -79,7 +79,7 @@ describe('isWildCardPattern', () => {
     assert.equal(isWildCardPattern('[queryHandler.spec] Page *'), true);
     assert.equal(
       isWildCardPattern('[queryHandler.spec] Page Page.goto *'),
-      true
+      true,
     );
   });
 });
@@ -116,7 +116,7 @@ describe('testIdMatchesExpectationPattern', () => {
       assert.equal(
         testIdMatchesExpectationPattern(test, pattern),
         expected,
-        `Expected "${pattern}" to yield "${expected}"`
+        `Expected "${pattern}" to yield "${expected}"`,
       );
     }
   });
@@ -132,7 +132,7 @@ describe('testIdMatchesExpectationPattern', () => {
       assert.equal(
         testIdMatchesExpectationPattern(test, pattern),
         expected,
-        `Expected "${pattern}" to yield "${expected}"`
+        `Expected "${pattern}" to yield "${expected}"`,
       );
     }
   });

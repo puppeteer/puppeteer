@@ -119,7 +119,7 @@ export interface ElementScreenshotOptions extends ScreenshotOptions {
  */
 export function bindIsolatedHandle<This extends ElementHandle<Node>>(
   target: (this: This, ...args: any[]) => Promise<any>,
-  _: unknown
+  _: unknown,
 ): typeof target {
   return async function (...args) {
     // If the handle is already isolated, then we don't need to adopt it
@@ -152,7 +152,7 @@ export function bindIsolatedHandle<This extends ElementHandle<Node>>(
           if (item instanceof JSHandle) {
             result[index] = await this.realm.transferHandle(item);
           }
-        })
+        }),
       );
     }
     if (result instanceof Map) {
@@ -161,7 +161,7 @@ export function bindIsolatedHandle<This extends ElementHandle<Node>>(
           if (value instanceof JSHandle) {
             result.set(key, await this.realm.transferHandle(value));
           }
-        })
+        }),
       );
     }
     return result;
@@ -250,7 +250,7 @@ export abstract class ElementHandle<
   @throwIfDisposed()
   @bindIsolatedHandle
   override async getProperty<K extends keyof ElementType>(
-    propertyName: HandleOr<K>
+    propertyName: HandleOr<K>,
   ): Promise<HandleFor<ElementType[K]>> {
     return await this.handle.getProperty(propertyName);
   }
@@ -279,7 +279,7 @@ export abstract class ElementHandle<
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(
       this.evaluate.name,
-      pageFunction
+      pageFunction,
     );
     return await this.handle.evaluate(pageFunction, ...args);
   }
@@ -299,7 +299,7 @@ export abstract class ElementHandle<
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     pageFunction = withSourcePuppeteerURLIfNone(
       this.evaluateHandle.name,
-      pageFunction
+      pageFunction,
     );
     return await this.handle.evaluateHandle(pageFunction, ...args);
   }
@@ -370,13 +370,13 @@ export abstract class ElementHandle<
   @throwIfDisposed()
   @bindIsolatedHandle
   async $<Selector extends string>(
-    selector: Selector
+    selector: Selector,
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
     const {updatedSelector, QueryHandler} =
       getQueryHandlerAndSelector(selector);
     return (await QueryHandler.queryOne(
       this,
-      updatedSelector
+      updatedSelector,
     )) as ElementHandle<NodeFor<Selector>> | null;
   }
 
@@ -404,7 +404,7 @@ export abstract class ElementHandle<
   @throwIfDisposed()
   async $$<Selector extends string>(
     selector: Selector,
-    options?: QueryOptions
+    options?: QueryOptions,
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
     if (options?.isolate === false) {
       return await this.#$$impl(selector);
@@ -419,7 +419,7 @@ export abstract class ElementHandle<
    */
   @bindIsolatedHandle
   async #$$<Selector extends string>(
-    selector: Selector
+    selector: Selector,
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
     return await this.#$$impl(selector);
   }
@@ -430,12 +430,12 @@ export abstract class ElementHandle<
    * @internal
    */
   async #$$impl<Selector extends string>(
-    selector: Selector
+    selector: Selector,
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
     const {updatedSelector, QueryHandler} =
       getQueryHandlerAndSelector(selector);
     return await (AsyncIterableUtil.collect(
-      QueryHandler.queryAll(this, updatedSelector)
+      QueryHandler.queryAll(this, updatedSelector),
     ) as Promise<Array<ElementHandle<NodeFor<Selector>>>>);
   }
 
@@ -451,10 +451,10 @@ export abstract class ElementHandle<
    * ```ts
    * const tweetHandle = await page.$('.tweet');
    * expect(await tweetHandle.$eval('.like', node => node.innerText)).toBe(
-   *   '100'
+   *   '100',
    * );
    * expect(await tweetHandle.$eval('.retweets', node => node.innerText)).toBe(
-   *   '10'
+   *   '10',
    * );
    * ```
    *
@@ -495,7 +495,7 @@ export abstract class ElementHandle<
     using elementHandle = await this.$(selector);
     if (!elementHandle) {
       throw new Error(
-        `Error: failed to find element matching selector "${selector}"`
+        `Error: failed to find element matching selector "${selector}"`,
       );
     }
     return await elementHandle.evaluate(pageFunction, ...args);
@@ -523,7 +523,7 @@ export abstract class ElementHandle<
    * ```ts
    * const feedHandle = await page.$('.feed');
    * expect(
-   *   await feedHandle.$$eval('.tweet', nodes => nodes.map(n => n.innerText))
+   *   await feedHandle.$$eval('.tweet', nodes => nodes.map(n => n.innerText)),
    * ).toEqual(['Hello!', 'Hi!']);
    * ```
    *
@@ -566,7 +566,7 @@ export abstract class ElementHandle<
       (_, ...elements) => {
         return elements;
       },
-      ...results
+      ...results,
     );
     const [result] = await Promise.all([
       elements.evaluate(pageFunction, ...args),
@@ -618,7 +618,7 @@ export abstract class ElementHandle<
   @bindIsolatedHandle
   async waitForSelector<Selector extends string>(
     selector: Selector,
-    options: WaitForSelectorOptions = {}
+    options: WaitForSelectorOptions = {},
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
     const {updatedSelector, QueryHandler, polling} =
       getQueryHandlerAndSelector(selector);
@@ -636,7 +636,7 @@ export abstract class ElementHandle<
       LazyArg.create(context => {
         return context.puppeteerUtil;
       }),
-      visibility
+      visibility,
     );
   }
 
@@ -684,7 +684,7 @@ export abstract class ElementHandle<
    *
    * ```ts
    * const element: ElementHandle<Element> = await page.$(
-   *   '.class-name-of-anchor'
+   *   '.class-name-of-anchor',
    * );
    * // DO NOT DISPOSE `element`, this will be always be the same handle.
    * const anchor: ElementHandle<HTMLAnchorElement> =
@@ -760,7 +760,7 @@ export abstract class ElementHandle<
   @bindIsolatedHandle
   async click(
     this: ElementHandle<Element>,
-    options: Readonly<ClickOptions> = {}
+    options: Readonly<ClickOptions> = {},
   ): Promise<void> {
     await this.scrollIntoViewIfNeeded();
     const {x, y} = await this.clickablePoint(options.offset);
@@ -777,7 +777,7 @@ export abstract class ElementHandle<
   @bindIsolatedHandle
   async drag(
     this: ElementHandle<Element>,
-    target: Point | ElementHandle<Element>
+    target: Point | ElementHandle<Element>,
   ): Promise<Protocol.Input.DragData | void> {
     await this.scrollIntoViewIfNeeded();
     const page = this.frame.page();
@@ -812,7 +812,7 @@ export abstract class ElementHandle<
   @bindIsolatedHandle
   async dragEnter(
     this: ElementHandle<Element>,
-    data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
+    data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1},
   ): Promise<void> {
     const page = this.frame.page();
     await this.scrollIntoViewIfNeeded();
@@ -827,7 +827,7 @@ export abstract class ElementHandle<
   @bindIsolatedHandle
   async dragOver(
     this: ElementHandle<Element>,
-    data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
+    data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1},
   ): Promise<void> {
     const page = this.frame.page();
     await this.scrollIntoViewIfNeeded();
@@ -840,7 +840,7 @@ export abstract class ElementHandle<
    */
   async drop(
     this: ElementHandle<Element>,
-    element: ElementHandle<Element>
+    element: ElementHandle<Element>,
   ): Promise<void>;
 
   /**
@@ -848,7 +848,7 @@ export abstract class ElementHandle<
    */
   async drop(
     this: ElementHandle<Element>,
-    data?: Protocol.Input.DragData
+    data?: Protocol.Input.DragData,
   ): Promise<void>;
 
   /**
@@ -861,7 +861,7 @@ export abstract class ElementHandle<
     dataOrElement: ElementHandle<Element> | Protocol.Input.DragData = {
       items: [],
       dragOperationsMask: 1,
-    }
+    },
   ): Promise<void> {
     const page = this.frame.page();
     if ('items' in dataOrElement) {
@@ -885,12 +885,12 @@ export abstract class ElementHandle<
   async dragAndDrop(
     this: ElementHandle<Element>,
     target: ElementHandle<Node>,
-    options?: {delay: number}
+    options?: {delay: number},
   ): Promise<void> {
     const page = this.frame.page();
     assert(
       page.isDragInterceptionEnabled(),
-      'Drag Interception is not enabled!'
+      'Drag Interception is not enabled!',
     );
     await this.scrollIntoViewIfNeeded();
     const startPoint = await this.clickablePoint();
@@ -924,7 +924,7 @@ export abstract class ElementHandle<
           value +
           '" of type "' +
           typeof value +
-          '"'
+          '"',
       );
     }
 
@@ -981,7 +981,7 @@ export abstract class ElementHandle<
    */
   abstract queryAXTree(
     name?: string,
-    role?: string
+    role?: string,
   ): AwaitableIterable<ElementHandle<Node>>;
 
   /**
@@ -1063,7 +1063,7 @@ export abstract class ElementHandle<
   @bindIsolatedHandle
   async type(
     text: string,
-    options?: Readonly<KeyboardTypeOptions>
+    options?: Readonly<KeyboardTypeOptions>,
   ): Promise<void> {
     await this.focus();
     await this.frame.page().keyboard.type(text, options);
@@ -1087,7 +1087,7 @@ export abstract class ElementHandle<
   @bindIsolatedHandle
   async press(
     key: KeyInput,
-    options?: Readonly<KeyPressOptions>
+    options?: Readonly<KeyPressOptions>,
   ): Promise<void> {
     await this.focus();
     await this.frame.page().keyboard.press(key, options);
@@ -1266,7 +1266,7 @@ export abstract class ElementHandle<
 
       function transformQuadWithOffsets(
         quad: Quad,
-        offsets: {top: number; left: number; right: number; bottom: number}
+        offsets: {top: number; left: number; right: number; bottom: number},
       ): Quad {
         return [
           {
@@ -1352,14 +1352,14 @@ export abstract class ElementHandle<
    * If the element is detached from DOM, the method throws an error.
    */
   async screenshot(
-    options: Readonly<ScreenshotOptions> & {encoding: 'base64'}
+    options: Readonly<ScreenshotOptions> & {encoding: 'base64'},
   ): Promise<string>;
   async screenshot(options?: Readonly<ScreenshotOptions>): Promise<Uint8Array>;
   @throwIfDisposed()
   @bindIsolatedHandle
   async screenshot(
     this: ElementHandle<Element>,
-    options: Readonly<ElementScreenshotOptions> = {}
+    options: Readonly<ElementScreenshotOptions> = {},
   ): Promise<string | Uint8Array> {
     const {scrollIntoView = true, clip} = options;
 
@@ -1423,7 +1423,7 @@ export abstract class ElementHandle<
    * @internal
    */
   protected async scrollIntoViewIfNeeded(
-    this: ElementHandle<Element>
+    this: ElementHandle<Element>,
   ): Promise<void> {
     if (
       await this.isIntersectingViewport({
@@ -1449,7 +1449,7 @@ export abstract class ElementHandle<
     this: ElementHandle<Element>,
     options: {
       threshold?: number;
-    } = {}
+    } = {},
   ): Promise<boolean> {
     await this.assertConnectedElement();
     // eslint-disable-next-line rulesdir/use-using -- Returns `this`.
@@ -1466,7 +1466,7 @@ export abstract class ElementHandle<
         });
         return threshold === 1 ? visibleRatio === 1 : visibleRatio > threshold;
       },
-      options.threshold ?? 0
+      options.threshold ?? 0,
     );
   }
 
@@ -1492,7 +1492,7 @@ export abstract class ElementHandle<
    * etc.).
    */
   async #asSVGElementHandle(
-    this: ElementHandle<Element>
+    this: ElementHandle<Element>,
   ): Promise<ElementHandle<SVGElement> | null> {
     if (
       await this.evaluate(element => {
@@ -1506,7 +1506,7 @@ export abstract class ElementHandle<
   }
 
   async #getOwnerSVGElement(
-    this: ElementHandle<SVGElement>
+    this: ElementHandle<SVGElement>,
   ): Promise<ElementHandle<SVGSVGElement>> {
     // SVGSVGElement.ownerSVGElement === null.
     return await this.evaluateHandle(element => {
@@ -1562,18 +1562,18 @@ export interface AutofillData {
 function intersectBoundingBox(
   box: BoundingBox,
   width: number,
-  height: number
+  height: number,
 ): void {
   box.width = Math.max(
     box.x >= 0
       ? Math.min(width - box.x, box.width)
       : Math.min(width, box.width + box.x),
-    0
+    0,
   );
   box.height = Math.max(
     box.y >= 0
       ? Math.min(height - box.y, box.height)
       : Math.min(height, box.height + box.y),
-    0
+    0,
   );
 }

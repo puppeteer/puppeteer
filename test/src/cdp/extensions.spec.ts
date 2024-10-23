@@ -16,7 +16,7 @@ const extensionPath = path.join(
   '..',
   '..',
   'assets',
-  'simple-extension'
+  'simple-extension',
 );
 const serviceWorkerExtensionPath = path.join(
   __dirname,
@@ -24,7 +24,7 @@ const serviceWorkerExtensionPath = path.join(
   '..',
   'assets',
   'serviceworkers',
-  'extension'
+  'extension',
 );
 
 describe('extensions', function () {
@@ -62,7 +62,7 @@ describe('extensions', function () {
       browsers.map((close, index) => {
         delete browsers[index];
         return close();
-      })
+      }),
     );
   });
 
@@ -72,7 +72,7 @@ describe('extensions', function () {
     const backgroundPageTarget = await browserWithExtension.waitForTarget(
       target => {
         return target.type() === 'background_page';
-      }
+      },
     );
     await page.close();
     await browserWithExtension.close();
@@ -90,7 +90,7 @@ describe('extensions', function () {
     const serviceWorkerTarget = await browserWithExtension.waitForTarget(
       target => {
         return target.type() === 'service_worker';
-      }
+      },
     );
     await page.close();
     await browserWithExtension.close();
@@ -102,18 +102,18 @@ describe('extensions', function () {
     const backgroundPageTarget = await browserWithExtension.waitForTarget(
       target => {
         return target.type() === 'background_page';
-      }
+      },
     );
     const page = (await backgroundPageTarget.page())!;
     expect(
       await page.evaluate(() => {
         return 2 * 3;
-      })
+      }),
     ).toBe(6);
     expect(
       await page.evaluate(() => {
         return (globalThis as any).MAGIC;
-      })
+      }),
     ).toBe(42);
     await browserWithExtension.close();
   });

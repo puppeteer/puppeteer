@@ -44,7 +44,7 @@ describe('ChromeDriver install', () => {
         platform: BrowserPlatform.LINUX,
         buildId: testChromeDriverBuildId,
         baseUrl: getServerUrl(),
-      })
+      }),
     );
   });
 
@@ -57,7 +57,7 @@ describe('ChromeDriver install', () => {
         buildId: 'unknown',
         baseUrl: getServerUrl(),
       }),
-      false
+      false,
     );
   });
 
@@ -66,7 +66,7 @@ describe('ChromeDriver install', () => {
     const expectedOutputPath = path.join(
       tmpDir,
       'chromedriver',
-      `${BrowserPlatform.LINUX}-${testChromeDriverBuildId}`
+      `${BrowserPlatform.LINUX}-${testChromeDriverBuildId}`,
     );
     assert.strictEqual(fs.existsSync(expectedOutputPath), false);
     let browser = await install({

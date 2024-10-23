@@ -32,7 +32,7 @@ describe('page.queryObjects', function () {
     await expect(
       page.evaluate(objects => {
         return objects.length;
-      }, objectsHandle)
+      }, objectsHandle),
     ).resolves.toBe(1);
 
     // Check that instances.
@@ -40,7 +40,7 @@ describe('page.queryObjects', function () {
       page.evaluate(objects => {
         // @ts-expect-error: Different context.
         return objects[0] === self.customClass;
-      }, objectsHandle)
+      }, objectsHandle),
     ).resolves.toBeTruthy();
   });
   it('should work for non-trivial page', async () => {
@@ -66,7 +66,7 @@ describe('page.queryObjects', function () {
     await expect(
       page.evaluate(objects => {
         return objects.length;
-      }, objectsHandle)
+      }, objectsHandle),
     ).resolves.toBe(1);
 
     // Check that instances.
@@ -74,7 +74,7 @@ describe('page.queryObjects', function () {
       page.evaluate(objects => {
         // @ts-expect-error: Different context.
         return objects[0] === self.customClass;
-      }, objectsHandle)
+      }, objectsHandle),
     ).resolves.toBeTruthy();
   });
   it('should fail for disposed handles', async () => {
@@ -102,7 +102,7 @@ describe('page.queryObjects', function () {
       return (error = error_);
     });
     expect(error.message).toBe(
-      'Prototype JSHandle must not be referencing primitive value'
+      'Prototype JSHandle must not be referencing primitive value',
     );
   });
 });

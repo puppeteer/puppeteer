@@ -79,7 +79,7 @@ function convertConsoleMessageLevel(method: string): ConsoleMessageType {
 export class BidiFrame extends Frame {
   static from(
     parent: BidiPage | BidiFrame,
-    browsingContext: BrowsingContext
+    browsingContext: BrowsingContext,
   ): BidiFrame {
     const frame = new BidiFrame(parent, browsingContext);
     frame.#initialize();
@@ -97,7 +97,7 @@ export class BidiFrame extends Frame {
 
   private constructor(
     parent: BidiPage | BidiFrame,
-    browsingContext: BrowsingContext
+    browsingContext: BrowsingContext,
   ) {
     super();
     this.#parent = parent;
@@ -109,9 +109,9 @@ export class BidiFrame extends Frame {
       default: BidiFrameRealm.from(this.browsingContext.defaultRealm, this),
       internal: BidiFrameRealm.from(
         this.browsingContext.createWindowRealm(
-          `__puppeteer_internal_${Math.ceil(Math.random() * 10000)}`
+          `__puppeteer_internal_${Math.ceil(Math.random() * 10000)}`,
         ),
-        this
+        this,
       ),
     };
     this.accessibility = new Accessibility(this.realms.default);
@@ -163,7 +163,7 @@ export class BidiFrame extends Frame {
     this.browsingContext.on('userprompt', ({userPrompt}) => {
       this.page().trustedEmitter.emit(
         PageEvent.Dialog,
-        BidiDialog.from(userPrompt)
+        BidiDialog.from(userPrompt),
       );
     });
 
@@ -192,8 +192,8 @@ export class BidiFrame extends Frame {
             convertConsoleMessageLevel(entry.method),
             text,
             args,
-            getStackTraceLocations(entry.stackTrace)
-          )
+            getStackTraceLocations(entry.stackTrace),
+          ),
         );
       } else if (isJavaScriptLogEntry(entry)) {
         const error = new Error(entry.text ?? '');
@@ -208,7 +208,7 @@ export class BidiFrame extends Frame {
             stackLines.push(
               `    at ${frame.functionName || '<anonymous>'} (${frame.url}:${
                 frame.lineNumber + 1
-              }:${frame.columnNumber + 1})`
+              }:${frame.columnNumber + 1})`,
             );
             if (stackLines.length >= Error.stackTraceLimit) {
               break;
@@ -220,7 +220,7 @@ export class BidiFrame extends Frame {
         this.page().trustedEmitter.emit(PageEvent.PageError, error);
       } else {
         debugError(
-          `Unhandled LogEntry with type "${entry.type}", text "${entry.text}" and level "${entry.level}"`
+          `Unhandled LogEntry with type "${entry.type}", text "${entry.text}" and level "${entry.level}"`,
         );
       }
     });
@@ -299,11 +299,11 @@ export class BidiFrame extends Frame {
       }
       return fromEmitterEvent(
         this.page().trustedEmitter,
-        PageEvent.FrameDetached
+        PageEvent.FrameDetached,
       ).pipe(
         filter(detachedFrame => {
           return detachedFrame === this;
-        })
+        }),
       );
     });
   }
@@ -311,7 +311,7 @@ export class BidiFrame extends Frame {
   @throwIfDetached
   override async goto(
     url: string,
-    options: GoToOptions = {}
+    options: GoToOptions = {},
   ): Promise<BidiHTTPResponse | null> {
     const [response] = await Promise.all([
       this.waitForNavigation(options),
@@ -329,13 +329,17 @@ export class BidiFrame extends Frame {
             return;
           }
 
+          if (error.message.includes('navigation canceled')) {
+            return;
+          }
+
           throw error;
         }),
     ]).catch(
       rewriteNavigationError(
         url,
-        options.timeout ?? this.timeoutSettings.navigationTimeout()
-      )
+        options.timeout ?? this.timeoutSettings.navigationTimeout(),
+      ),
     );
     return response;
   }
@@ -343,7 +347,7 @@ export class BidiFrame extends Frame {
   @throwIfDetached
   override async setContent(
     html: string,
-    options: WaitForOptions = {}
+    options: WaitForOptions = {},
   ): Promise<void> {
     await Promise.all([
       this.setFrameContent(html),
@@ -351,14 +355,14 @@ export class BidiFrame extends Frame {
         combineLatest([
           this.#waitForLoad$(options),
           this.#waitForNetworkIdle$(options),
-        ])
+        ]),
       ),
     ]);
   }
 
   @throwIfDetached
   override async waitForNavigation(
-    options: WaitForOptions = {}
+    options: WaitForOptions = {},
   ): Promise<BidiHTTPResponse | null> {
     const {timeout: ms = this.timeoutSettings.navigationTimeout(), signal} =
       options;
@@ -385,13 +389,13 @@ export class BidiFrame extends Frame {
                   fromEmitterEvent(navigation, 'aborted').pipe(
                     map(({url}) => {
                       throw new Error(`Navigation aborted: ${url}`);
-                    })
-                  )
+                    }),
+                  ),
                 ),
                 switchMap(() => {
                   if (navigation.request) {
                     function requestFinished$(
-                      request: Request
+                      request: Request,
                     ): Observable<Navigation> {
                       // Reduces flakiness if the response events arrive after
                       // the load event.
@@ -405,20 +409,20 @@ export class BidiFrame extends Frame {
                       return fromEmitterEvent(request, 'success')
                         .pipe(
                           raceWith(fromEmitterEvent(request, 'error')),
-                          raceWith(fromEmitterEvent(request, 'redirect'))
+                          raceWith(fromEmitterEvent(request, 'redirect')),
                         )
                         .pipe(
                           switchMap(() => {
                             return requestFinished$(request);
-                          })
+                          }),
                         );
                     }
                     return requestFinished$(navigation.request);
                   }
                   return of(navigation);
-                })
+                }),
               );
-            })
+            }),
           ),
         this.#waitForNetworkIdle$(options),
       ]).pipe(
@@ -437,10 +441,10 @@ export class BidiFrame extends Frame {
           this.#detached$().pipe(
             map(() => {
               throw new TargetCloseError('Frame detached.');
-            })
-          )
-        )
-      )
+            }),
+          ),
+        ),
+      ),
     );
   }
 
@@ -455,11 +459,11 @@ export class BidiFrame extends Frame {
   #exposedFunctions = new Map<string, ExposeableFunction<never[], unknown>>();
   async exposeFunction<Args extends unknown[], Ret>(
     name: string,
-    apply: (...args: Args) => Awaitable<Ret>
+    apply: (...args: Args) => Awaitable<Ret>,
   ): Promise<void> {
     if (this.#exposedFunctions.has(name)) {
       throw new Error(
-        `Failed to add page binding with name ${name}: globalThis['${name}'] already exists!`
+        `Failed to add page binding with name ${name}: globalThis['${name}'] already exists!`,
       );
     }
     const exposeable = await ExposeableFunction.from(this, name, apply);
@@ -470,7 +474,7 @@ export class BidiFrame extends Frame {
     const exposedFunction = this.#exposedFunctions.get(name);
     if (!exposedFunction) {
       throw new Error(
-        `Failed to remove page binding with name ${name}: window['${name}'] does not exists!`
+        `Failed to remove page binding with name ${name}: window['${name}'] does not exists!`,
       );
     }
 
@@ -516,7 +520,7 @@ export class BidiFrame extends Frame {
     return combineLatest(
       [...events].map(event => {
         return fromEmitterEvent(this.browsingContext, event);
-      })
+      }),
     ).pipe(
       map(() => {}),
       first(),
@@ -525,9 +529,9 @@ export class BidiFrame extends Frame {
         this.#detached$().pipe(
           map(() => {
             throw new Error('Frame detached.');
-          })
-        )
-      )
+          }),
+        ),
+      ),
     );
   }
 
@@ -567,37 +571,37 @@ export class BidiFrame extends Frame {
     await this.browsingContext.setFiles(
       // SAFETY: ElementHandles are always remote references.
       element.remoteValue() as Bidi.Script.SharedReference,
-      files
+      files,
     );
   }
 
   @throwIfDetached
   async locateNodes(
     element: BidiElementHandle,
-    locator: Bidi.BrowsingContext.Locator
+    locator: Bidi.BrowsingContext.Locator,
   ): Promise<Bidi.Script.NodeRemoteValue[]> {
     return await this.browsingContext.locateNodes(
       locator,
       // SAFETY: ElementHandles are always remote references.
-      [element.remoteValue() as Bidi.Script.SharedReference]
+      [element.remoteValue() as Bidi.Script.SharedReference],
     );
   }
 }
 
 function isConsoleLogEntry(
-  event: Bidi.Log.Entry
+  event: Bidi.Log.Entry,
 ): event is Bidi.Log.ConsoleLogEntry {
   return event.type === 'console';
 }
 
 function isJavaScriptLogEntry(
-  event: Bidi.Log.Entry
+  event: Bidi.Log.Entry,
 ): event is Bidi.Log.JavascriptLogEntry {
   return event.type === 'javascript';
 }
 
 function getStackTraceLocations(
-  stackTrace?: Bidi.Script.StackTrace
+  stackTrace?: Bidi.Script.StackTrace,
 ): ConsoleMessageLocation[] {
   const stackTraceLocations: ConsoleMessageLocation[] = [];
   if (stackTrace) {

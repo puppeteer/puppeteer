@@ -50,7 +50,7 @@ describe('`puppeteer`', () => {
       puppeteerInBrowserPath,
       {
         recursive: true,
-      }
+      },
     );
     spawnSync('npm', ['ci'], {
       cwd: puppeteerInBrowserPath,
@@ -91,13 +91,13 @@ describe('`puppeteer`', () => {
       try {
         const script = await readAsset(
           'puppeteer',
-          'puppeteer-in-extension.js'
+          'puppeteer-in-extension.js',
         );
         await this.runScript(script, 'mjs', [String(server.port)]);
       } finally {
         await server.stop();
       }
-    }
+    },
   );
 });
 
@@ -116,26 +116,26 @@ describe('`puppeteer`', () => {
 
     it('evaluates', async function () {
       const dir = readdirSync(
-        join(this.sandbox, '.cache', 'puppeteer', 'chrome')
+        join(this.sandbox, '.cache', 'puppeteer', 'chrome'),
       );
       assert.equal(dir.length, 1, dir.join());
 
       await this.runScript(
         await readAsset('puppeteer', 'installCanary.js'),
-        'mjs'
+        'mjs',
       );
 
       assert.equal(
         readdirSync(join(this.sandbox, '.cache', 'puppeteer', 'chrome')).length,
-        2
+        2,
       );
 
       await this.runScript(await readAsset('puppeteer', 'trimCache.js'), 'mjs');
 
       assert.equal(
         readdirSync(join(this.sandbox, '.cache', 'puppeteer', 'chrome')).length,
-        1
+        1,
       );
     });
-  }
+  },
 );

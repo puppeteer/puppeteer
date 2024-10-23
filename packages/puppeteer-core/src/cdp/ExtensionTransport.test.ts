@@ -14,7 +14,7 @@ import {ExtensionTransport} from './ExtensionTransport.js';
 type EventListenerFunction = (
   source: chrome.debugger.Debuggee,
   method: string,
-  params?: object | undefined
+  params?: object | undefined,
 ) => void;
 
 describe('ExtensionTransport', function () {
@@ -103,7 +103,7 @@ describe('ExtensionTransport', function () {
         await testTranportResponse({
           id: 1,
           method: 'Browser.getVersion',
-        })
+        }),
       ).toStrictEqual([
         '{"id":1,"method":"Browser.getVersion","result":{"protocolVersion":"1.3","product":"chrome","revision":"unknown","userAgent":"chrome","jsVersion":"unknown"}}',
       ]);
@@ -114,7 +114,7 @@ describe('ExtensionTransport', function () {
         await testTranportResponse({
           id: 1,
           method: 'Target.getBrowserContexts',
-        })
+        }),
       ).toStrictEqual([
         '{"id":1,"method":"Target.getBrowserContexts","result":{"browserContextIds":[]}}',
       ]);
@@ -125,7 +125,7 @@ describe('ExtensionTransport', function () {
         await testTranportResponse({
           id: 1,
           method: 'Target.setDiscoverTargets',
-        })
+        }),
       ).toStrictEqual([
         '{"method":"Target.targetCreated","params":{"targetInfo":{"targetId":"tabTargetId","type":"tab","title":"tab","url":"about:blank","attached":false,"canAccessOpener":false}}}',
         '{"method":"Target.targetCreated","params":{"targetInfo":{"targetId":"pageTargetId","type":"page","title":"page","url":"about:blank","attached":false,"canAccessOpener":false}}}',
@@ -138,7 +138,7 @@ describe('ExtensionTransport', function () {
         await testTranportResponse({
           id: 1,
           method: 'Target.setAutoAttach',
-        })
+        }),
       ).toStrictEqual([
         '{"method":"Target.attachedToTarget","params":{"targetInfo":{"targetId":"tabTargetId","type":"tab","title":"tab","url":"about:blank","attached":false,"canAccessOpener":false},"sessionId":"tabTargetSessionId"}}',
         '{"id":1,"method":"Target.setAutoAttach","result":{}}',
@@ -151,7 +151,7 @@ describe('ExtensionTransport', function () {
           id: 1,
           method: 'Target.setAutoAttach',
           sessionId: 'tabTargetSessionId',
-        })
+        }),
       ).toStrictEqual([
         '{"method":"Target.attachedToTarget","params":{"targetInfo":{"targetId":"pageTargetId","type":"page","title":"page","url":"about:blank","attached":false,"canAccessOpener":false},"sessionId":"pageTargetSessionId"}}',
         '{"id":1,"sessionId":"tabTargetSessionId","method":"Target.setAutoAttach","result":{}}',
@@ -167,7 +167,7 @@ describe('ExtensionTransport', function () {
           method: 'Runtime.evaluate',
           params: {},
           sessionId: 'pageTargetSessionId',
-        })
+        }),
       );
       expect(fakeSendCommand.calledOnce).toBeTruthy();
       expect(fakeSendCommand.lastCall.args).toStrictEqual([

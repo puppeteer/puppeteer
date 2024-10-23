@@ -54,7 +54,7 @@ export function setupHttpHooks(): void {
 export function getAngularJsonScripts(
   tree: UnitTestTree,
   isDefault = true,
-  name = SINGLE_APPLICATION_OPTIONS.name
+  name = SINGLE_APPLICATION_OPTIONS.name,
 ): {
   builder: string;
   configurations: Record<string, any>;
@@ -73,7 +73,7 @@ export function getPackageJson(tree: UnitTestTree): {
   return {
     scripts: packageJson['scripts'] as any,
     devDependencies: Object.keys(
-      packageJson['devDependencies'] as Record<string, string>
+      packageJson['devDependencies'] as Record<string, string>,
     ),
   };
 }
@@ -88,11 +88,11 @@ export function getMultiLibraryFile(file: string): string {
 export async function buildTestingTree(
   command: 'ng-add' | 'e2e' | 'config',
   type: 'single' | 'multi' = 'single',
-  userOptions?: Record<string, unknown>
+  userOptions?: Record<string, unknown>,
 ): Promise<UnitTestTree> {
   const runner = new SchematicTestRunner(
     'schematics',
-    join(__dirname, '../../lib/schematics/collection.json')
+    join(__dirname, '../../lib/schematics/collection.json'),
   );
   const options = {
     testRunner: 'jasmine',
@@ -105,28 +105,28 @@ export async function buildTestingTree(
     workingTree = await runner.runExternalSchematic(
       '@schematics/angular',
       'ng-new',
-      SINGLE_APPLICATION_OPTIONS
+      SINGLE_APPLICATION_OPTIONS,
     );
   } else {
     // Build workspace
     workingTree = await runner.runExternalSchematic(
       '@schematics/angular',
       'workspace',
-      WORKSPACE_OPTIONS
+      WORKSPACE_OPTIONS,
     );
     // Build dummy application
     workingTree = await runner.runExternalSchematic(
       '@schematics/angular',
       'application',
       MULTI_APPLICATION_OPTIONS,
-      workingTree
+      workingTree,
     );
     // Build dummy library
     workingTree = await runner.runExternalSchematic(
       '@schematics/angular',
       'library',
       MULTI_LIBRARY_OPTIONS,
-      workingTree
+      workingTree,
     );
   }
 
@@ -142,11 +142,11 @@ export async function buildTestingTree(
 export async function runSchematic(
   tree: UnitTestTree,
   command: 'ng-add' | 'test',
-  options?: Record<string, any>
+  options?: Record<string, any>,
 ): Promise<UnitTestTree> {
   const runner = new SchematicTestRunner(
     'schematics',
-    join(__dirname, '../../lib/schematics/collection.json')
+    join(__dirname, '../../lib/schematics/collection.json'),
   );
   return await runner.runSchematic(command, options, tree);
 }

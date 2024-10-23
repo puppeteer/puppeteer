@@ -19,7 +19,7 @@ describe('device request prompt', function () {
       },
       {
         after: 'all',
-      }
+      },
     );
   });
 
@@ -47,7 +47,7 @@ describe('device request prompt', function () {
     await expect(
       page.waitForDevicePrompt({
         timeout: 10,
-      })
+      }),
     ).rejects.toThrow(TimeoutError);
   });
 

@@ -42,21 +42,21 @@ function folder(platform: BrowserPlatform): string {
 export function resolveDownloadUrl(
   platform: BrowserPlatform,
   buildId: string,
-  baseUrl = 'https://storage.googleapis.com/chromium-browser-snapshots'
+  baseUrl = 'https://storage.googleapis.com/chromium-browser-snapshots',
 ): string {
   return `${baseUrl}/${resolveDownloadPath(platform, buildId).join('/')}`;
 }
 
 export function resolveDownloadPath(
   platform: BrowserPlatform,
-  buildId: string
+  buildId: string,
 ): string[] {
   return [folder(platform), buildId, `${archive(platform, buildId)}.zip`];
 }
 
 export function relativeExecutablePath(
   platform: BrowserPlatform,
-  _buildId: string
+  _buildId: string,
 ): string {
   switch (platform) {
     case BrowserPlatform.MAC:
@@ -66,7 +66,7 @@ export function relativeExecutablePath(
         'Chromium.app',
         'Contents',
         'MacOS',
-        'Chromium'
+        'Chromium',
       );
     case BrowserPlatform.LINUX:
       return path.join('chrome-linux', 'chrome');
@@ -76,14 +76,14 @@ export function relativeExecutablePath(
   }
 }
 export async function resolveBuildId(
-  platform: BrowserPlatform
+  platform: BrowserPlatform,
 ): Promise<string> {
   return await getText(
     new URL(
       `https://storage.googleapis.com/chromium-browser-snapshots/${folder(
-        platform
-      )}/LAST_CHANGE`
-    )
+        platform,
+      )}/LAST_CHANGE`,
+    ),
   );
 }
 

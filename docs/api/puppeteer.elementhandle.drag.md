@@ -12,7 +12,7 @@ Drags an element over the given element or point.
 class ElementHandle {
   drag(
     this: ElementHandle<Element>,
-    target: Point | ElementHandle<Element>
+    target: Point | ElementHandle<Element>,
   ): Promise<Protocol.Input.DragData | void>;
 }
 ```

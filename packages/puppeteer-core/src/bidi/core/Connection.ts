@@ -197,6 +197,6 @@ export interface Connection<Events extends BidiEvents = BidiEvents>
   extends EventEmitter<Events> {
   send<T extends keyof Commands>(
     method: T,
-    params: Commands[T]['params']
+    params: Commands[T]['params'],
   ): Promise<{result: Commands[T]['returnType']}>;
 }

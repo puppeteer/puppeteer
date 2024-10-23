@@ -30,7 +30,7 @@ export interface ItEvaluatesFn {
   (
     title: string,
     options: ItEvaluatesOptions,
-    getScriptContent: (cwd: string) => Promise<string>
+    getScriptContent: (cwd: string) => Promise<string>,
   ): void;
   (title: string, getScriptContent: (cwd: string) => Promise<string>): void;
 }
@@ -56,7 +56,7 @@ declare module 'mocha' {
     runScript: (
       content: string,
       type: 'cjs' | 'mjs',
-      args?: string[]
+      args?: string[],
     ) => Promise<void>;
   }
 }
@@ -113,7 +113,7 @@ export const configureSandbox = (options: SandboxOptions): void => {
           cwd: sandbox,
           env,
           shell: true,
-        }
+        },
       );
     }
 
@@ -122,7 +122,7 @@ export const configureSandbox = (options: SandboxOptions): void => {
     this.runScript = async (
       content: string,
       type: 'cjs' | 'mjs',
-      args?: string[]
+      args?: string[],
     ) => {
       const script = join(sandbox, `script-${crypto.randomUUID()}.${type}`);
       await writeFile(script, content);

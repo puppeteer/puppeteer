@@ -55,9 +55,9 @@ describe('chrome-headless-shell CLI', function () {
           'chrome-headless-shell',
           `linux-${testChromeHeadlessShellBuildId}`,
           'chrome-headless-shell-linux64',
-          'chrome-headless-shell'
-        )
-      )
+          'chrome-headless-shell',
+        ),
+      ),
     );
 
     await new CLI(tmpDir, createMockedReadlineInterface('no')).run([
@@ -73,9 +73,9 @@ describe('chrome-headless-shell CLI', function () {
           'chrome-headless-shell',
           `linux-${testChromeHeadlessShellBuildId}`,
           'chrome-headless-shell-linux64',
-          'chrome-headless-shell'
-        )
-      )
+          'chrome-headless-shell',
+        ),
+      ),
     );
   });
 });

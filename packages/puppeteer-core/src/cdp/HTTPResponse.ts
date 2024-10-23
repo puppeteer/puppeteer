@@ -37,7 +37,7 @@ export class CdpHTTPResponse extends HTTPResponse {
     client: CDPSession,
     request: CdpHTTPRequest,
     responsePayload: Protocol.Network.Response,
-    extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null
+    extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null,
   ) {
     super();
     this.#client = client;
@@ -67,13 +67,13 @@ export class CdpHTTPResponse extends HTTPResponse {
   }
 
   #parseStatusTextFromExtraInfo(
-    extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null
+    extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null,
   ): string | undefined {
     if (!extraInfo || !extraInfo.headersText) {
       return;
     }
     const firstLine = extraInfo.headersText.split('\r', 1)[0];
-    if (!firstLine) {
+    if (!firstLine || firstLine.length > 1_000) {
       return;
     }
     const match = firstLine.match(/[^ ]* [^ ]* (.*)/);
@@ -132,7 +132,7 @@ export class CdpHTTPResponse extends HTTPResponse {
               'Network.getResponseBody',
               {
                 requestId: this.#request.id,
-              }
+              },
             );
 
             return stringToTypedArray(response.body, response.base64Encoded);
@@ -143,7 +143,7 @@ export class CdpHTTPResponse extends HTTPResponse {
                 'No resource with given identifier found'
             ) {
               throw new ProtocolError(
-                'Could not load body for this request. This might happen if the request is a preflight request.'
+                'Could not load body for this request. This might happen if the request is a preflight request.',
               );
             }
 

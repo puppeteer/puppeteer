@@ -39,17 +39,17 @@ describe('input tests', function () {
       expect(
         await input.evaluate(e => {
           return e.files?.[0]?.name;
-        })
+        }),
       ).toBe('file-to-upload.txt');
       expect(
         await input.evaluate(e => {
           return e.files?.[0]?.type;
-        })
+        }),
       ).toBe('text/plain');
       expect(
         await page.evaluate(() => {
           return (globalThis as any)._inputEvents;
-        })
+        }),
       ).toEqual(['input', 'change']);
     });
 
@@ -87,7 +87,7 @@ describe('input tests', function () {
           return promise.then(() => {
             return reader.result;
           });
-        })
+        }),
       ).toBe('contents of the file');
     });
   });
@@ -190,7 +190,7 @@ describe('input tests', function () {
       const {page} = await getTestState();
 
       await page.setContent(
-        `<input type=file oninput='javascript:console.timeStamp()'>`
+        `<input type=file oninput='javascript:console.timeStamp()'>`,
       );
       const [chooser] = await Promise.all([
         page.waitForFileChooser(),
@@ -203,12 +203,12 @@ describe('input tests', function () {
       expect(
         await page.$eval('input', input => {
           return input.files!.length;
-        })
+        }),
       ).toBe(1);
       expect(
         await page.$eval('input', input => {
           return input.files![0]!.name;
-        })
+        }),
       ).toBe('file-to-upload.txt');
     });
     it('should be able to read selected file', async () => {
@@ -232,7 +232,7 @@ describe('input tests', function () {
           return await promise.then(() => {
             return reader.result;
           });
-        })
+        }),
       ).toBe('contents of the file');
     });
     it('should be able to reset selected files with empty file list', async () => {
@@ -249,7 +249,7 @@ describe('input tests', function () {
             return (pick.oninput = x);
           });
           return pick.files!.length;
-        })
+        }),
       ).toBe(1);
       void page.waitForFileChooser().then(chooser => {
         return chooser.accept([]);
@@ -261,7 +261,7 @@ describe('input tests', function () {
             return (pick.oninput = x);
           });
           return pick.files!.length;
-        })
+        }),
       ).toBe(0);
     });
     it('should not accept multiple files for single-file input', async () => {
@@ -277,7 +277,7 @@ describe('input tests', function () {
         .accept([
           path.relative(
             process.cwd(),
-            __dirname + '/../assets/file-to-upload.txt'
+            __dirname + '/../assets/file-to-upload.txt',
           ),
           path.relative(process.cwd(), __dirname + '/../assets/pptr.png'),
         ])
@@ -321,7 +321,7 @@ describe('input tests', function () {
           return await promise.then(() => {
             return false;
           });
-        })
+        }),
       ).toBeFalsy();
     });
     it('should fail when accepting file chooser twice', async () => {
@@ -340,7 +340,7 @@ describe('input tests', function () {
         return (error = error_);
       });
       expect(error.message).toBe(
-        'Cannot accept FileChooser which is already handled!'
+        'Cannot accept FileChooser which is already handled!',
       );
     });
   });
@@ -388,7 +388,7 @@ describe('input tests', function () {
       }
 
       expect(error.message).toBe(
-        'Cannot cancel FileChooser which is already handled!'
+        'Cannot cancel FileChooser which is already handled!',
       );
     });
   });

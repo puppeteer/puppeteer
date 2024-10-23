@@ -154,21 +154,21 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * ```ts
    * await page.evaluate(() => window.open('https://www.example.com/'));
    * const newWindowTarget = await browserContext.waitForTarget(
-   *   target => target.url() === 'https://www.example.com/'
+   *   target => target.url() === 'https://www.example.com/',
    * );
    * ```
    */
   async waitForTarget(
     predicate: (x: Target) => boolean | Promise<boolean>,
-    options: WaitForTargetOptions = {}
+    options: WaitForTargetOptions = {},
   ): Promise<Target> {
     const {timeout: ms = 30000} = options;
     return await firstValueFrom(
       merge(
         fromEmitterEvent(this, BrowserContextEvent.TargetCreated),
         fromEmitterEvent(this, BrowserContextEvent.TargetChanged),
-        from(this.targets())
-      ).pipe(filterAsync(predicate), raceWith(timeout(ms)))
+        from(this.targets()),
+      ).pipe(filterAsync(predicate), raceWith(timeout(ms))),
     );
   }
 
@@ -202,7 +202,7 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    */
   abstract overridePermissions(
     origin: string,
-    permissions: Permission[]
+    permissions: Permission[],
   ): Promise<void>;
 
   /**

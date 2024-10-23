@@ -18,7 +18,7 @@ describe('Function', function () {
           const test = PLACEHOLDER('test') as () => number;
           return test();
         },
-        {test: `() => 5`}
+        {test: `() => 5`},
       );
       expect(test()).toBe(5);
     });
@@ -28,7 +28,7 @@ describe('Function', function () {
           // Note the parenthesis will be removed by the typescript compiler.
           return (PLACEHOLDER('test') as () => number)();
         },
-        {test: `() => 5`}
+        {test: `() => 5`},
       );
       expect(test()).toBe(5);
     });

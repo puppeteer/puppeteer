@@ -10,7 +10,7 @@ sidebar_label: Page.waitForResponse
 class Page {
   waitForResponse(
     urlOrPredicate: string | AwaitablePredicate<HTTPResponse>,
-    options?: WaitTimeoutOptions
+    options?: WaitTimeoutOptions,
   ): Promise<HTTPResponse>;
 }
 ```
@@ -73,11 +73,11 @@ Optional Parameter have:
 
 ```ts
 const firstResponse = await page.waitForResponse(
-  'https://example.com/resource'
+  'https://example.com/resource',
 );
 const finalResponse = await page.waitForResponse(
   response =>
-    response.url() === 'https://example.com' && response.status() === 200
+    response.url() === 'https://example.com' && response.status() === 200,
 );
 const finalResponse = await page.waitForResponse(async response => {
   return (await response.text()).includes('<html>');

@@ -20,7 +20,7 @@ const DEFAULT_BATCH_SIZE = 20;
  */
 async function* fastTransposeIteratorHandle<T>(
   iterator: JSHandle<AwaitableIterator<T>>,
-  size: number
+  size: number,
 ) {
   using array = await iterator.evaluateHandle(async (iterator, size) => {
     const results = [];
@@ -51,7 +51,7 @@ async function* fastTransposeIteratorHandle<T>(
  */
 
 async function* transposeIteratorHandle<T>(
-  iterator: JSHandle<AwaitableIterator<T>>
+  iterator: JSHandle<AwaitableIterator<T>>,
 ) {
   let size = DEFAULT_BATCH_SIZE;
   while (!(yield* fastTransposeIteratorHandle(iterator, size))) {
@@ -65,7 +65,7 @@ type AwaitableIterator<T> = Iterator<T> | AsyncIterator<T>;
  * @internal
  */
 export async function* transposeIterableHandle<T>(
-  handle: JSHandle<AwaitableIterable<T>>
+  handle: JSHandle<AwaitableIterable<T>>,
 ): AsyncIterableIterator<HandleFor<T>> {
   using generatorHandle = await handle.evaluateHandle(iterable => {
     return (async function* () {

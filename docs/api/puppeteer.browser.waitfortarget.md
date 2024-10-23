@@ -14,7 +14,7 @@ This will look all open [browser contexts](./puppeteer.browsercontext.md).
 class Browser {
   waitForTarget(
     predicate: (x: Target) => boolean | Promise<boolean>,
-    options?: WaitForTargetOptions
+    options?: WaitForTargetOptions,
   ): Promise<Target>;
 }
 ```
@@ -70,6 +70,6 @@ Finding a target for a page opened via `window.open`:
 ```ts
 await page.evaluate(() => window.open('https://www.example.com/'));
 const newWindowTarget = await browser.waitForTarget(
-  target => target.url() === 'https://www.example.com/'
+  target => target.url() === 'https://www.example.com/',
 );
 ```

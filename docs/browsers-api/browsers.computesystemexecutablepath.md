@@ -8,7 +8,7 @@ sidebar_label: computeSystemExecutablePath
 
 ```typescript
 export declare function computeSystemExecutablePath(
-  options: SystemOptions
+  options: SystemOptions,
 ): string;
 ```
 

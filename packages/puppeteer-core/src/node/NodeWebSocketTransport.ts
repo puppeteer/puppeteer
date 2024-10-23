@@ -14,7 +14,7 @@ import {packageVersion} from '../generated/version.js';
 export class NodeWebSocketTransport implements ConnectionTransport {
   static create(
     url: string,
-    headers?: Record<string, string>
+    headers?: Record<string, string>,
   ): Promise<NodeWebSocketTransport> {
     return new Promise((resolve, reject) => {
       const ws = new NodeWebSocket(url, [], {

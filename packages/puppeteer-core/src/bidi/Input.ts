@@ -287,7 +287,7 @@ export class BidiKeyboard extends Keyboard {
 
   override async down(
     key: KeyInput,
-    _options?: Readonly<KeyDownOptions>
+    _options?: Readonly<KeyDownOptions>,
   ): Promise<void> {
     await this.#page.mainFrame().browsingContext.performActions([
       {
@@ -320,7 +320,7 @@ export class BidiKeyboard extends Keyboard {
 
   override async press(
     key: KeyInput,
-    options: Readonly<KeyPressOptions> = {}
+    options: Readonly<KeyPressOptions> = {},
   ): Promise<void> {
     const {delay = 0} = options;
     const actions: Bidi.Input.KeySourceAction[] = [
@@ -350,7 +350,7 @@ export class BidiKeyboard extends Keyboard {
 
   override async type(
     text: string,
-    options: Readonly<KeyboardTypeOptions> = {}
+    options: Readonly<KeyboardTypeOptions> = {},
   ): Promise<void> {
     const {delay = 0} = options;
     // This spread separates the characters into code points rather than UTF-16
@@ -367,7 +367,7 @@ export class BidiKeyboard extends Keyboard {
           {
             type: ActionType.KeyUp,
             value,
-          }
+          },
         );
       }
     } else {
@@ -384,7 +384,7 @@ export class BidiKeyboard extends Keyboard {
           {
             type: ActionType.KeyUp,
             value,
-          }
+          },
         );
       }
     }
@@ -465,7 +465,7 @@ export class BidiMouse extends Mouse {
   override async move(
     x: number,
     y: number,
-    options: Readonly<BidiMouseMoveOptions> = {}
+    options: Readonly<BidiMouseMoveOptions> = {},
   ): Promise<void> {
     const from = this.#lastMovePoint;
     const to = {
@@ -531,7 +531,7 @@ export class BidiMouse extends Mouse {
   override async click(
     x: number,
     y: number,
-    options: Readonly<BidiMouseClickOptions> = {}
+    options: Readonly<BidiMouseClickOptions> = {},
   ): Promise<void> {
     const actions: Bidi.Input.PointerSourceAction[] = [
       {
@@ -570,7 +570,7 @@ export class BidiMouse extends Mouse {
   }
 
   override async wheel(
-    options: Readonly<MouseWheelOptions> = {}
+    options: Readonly<MouseWheelOptions> = {},
   ): Promise<void> {
     await this.#page.mainFrame().browsingContext.performActions([
       {

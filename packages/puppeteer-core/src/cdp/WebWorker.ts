@@ -22,14 +22,14 @@ import {CdpJSHandle} from './JSHandle.js';
 export type ConsoleAPICalledCallback = (
   eventType: string,
   handles: CdpJSHandle[],
-  trace?: Protocol.Runtime.StackTrace
+  trace?: Protocol.Runtime.StackTrace,
 ) => void;
 
 /**
  * @internal
  */
 export type ExceptionThrownCallback = (
-  event: Protocol.Runtime.ExceptionThrownEvent
+  event: Protocol.Runtime.ExceptionThrownEvent,
 ) => void;
 
 /**
@@ -47,7 +47,7 @@ export class CdpWebWorker extends WebWorker {
     targetId: string,
     targetType: TargetType,
     consoleAPICalled: ConsoleAPICalledCallback,
-    exceptionThrown: ExceptionThrownCallback
+    exceptionThrown: ExceptionThrownCallback,
   ) {
     super(url);
     this.#id = targetId;
@@ -57,7 +57,7 @@ export class CdpWebWorker extends WebWorker {
 
     this.#client.once('Runtime.executionContextCreated', async event => {
       this.#world.setContext(
-        new ExecutionContext(client, event.context, this.#world)
+        new ExecutionContext(client, event.context, this.#world),
       );
     });
     this.#world.emitter.on('consoleapicalled', async event => {
@@ -67,7 +67,7 @@ export class CdpWebWorker extends WebWorker {
           event.args.map((object: Protocol.Runtime.RemoteObject) => {
             return new CdpJSHandle(this.#world, object);
           }),
-          event.stackTrace
+          event.stackTrace,
         );
       } catch (err) {
         debugError(err);

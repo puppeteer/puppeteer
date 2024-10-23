@@ -230,7 +230,7 @@ export abstract class HTTPRequest {
    * is finalized.
    */
   enqueueInterceptAction(
-    pendingHandler: () => void | PromiseLike<unknown>
+    pendingHandler: () => void | PromiseLike<unknown>,
   ): void {
     this.interception.handlers.push(pendingHandler);
   }
@@ -239,7 +239,7 @@ export abstract class HTTPRequest {
    * @internal
    */
   abstract _abort(
-    errorReason: Protocol.Network.ErrorReason | null
+    errorReason: Protocol.Network.ErrorReason | null,
   ): Promise<void>;
 
   /**
@@ -417,7 +417,7 @@ export abstract class HTTPRequest {
    */
   async continue(
     overrides: ContinueRequestOverrides = {},
-    priority?: number
+    priority?: number,
   ): Promise<void> {
     if (!this.#canBeIntercepted()) {
       return;
@@ -485,7 +485,7 @@ export abstract class HTTPRequest {
    */
   async respond(
     response: Partial<ResponseForRequest>,
-    priority?: number
+    priority?: number,
   ): Promise<void> {
     if (!this.#canBeIntercepted()) {
       return;
@@ -531,7 +531,7 @@ export abstract class HTTPRequest {
    */
   async abort(
     errorCode: ErrorCode = 'failed',
-    priority?: number
+    priority?: number,
   ): Promise<void> {
     if (!this.#canBeIntercepted()) {
       return;
@@ -615,7 +615,7 @@ export type ActionResult = 'continue' | 'abort' | 'respond';
  * @internal
  */
 export function headersArray(
-  headers: Record<string, string | string[]>
+  headers: Record<string, string | string[]>,
 ): Array<{name: string; value: string}> {
   const result = [];
   for (const name in headers) {
@@ -627,7 +627,7 @@ export function headersArray(
       result.push(
         ...values.map(value => {
           return {name, value: value + ''};
-        })
+        }),
       );
     }
   }

@@ -273,7 +273,7 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * ```
    */
   abstract createBrowserContext(
-    options?: BrowserContextOptions
+    options?: BrowserContextOptions,
   ): Promise<BrowserContext>;
 
   /**
@@ -340,24 +340,24 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * ```ts
    * await page.evaluate(() => window.open('https://www.example.com/'));
    * const newWindowTarget = await browser.waitForTarget(
-   *   target => target.url() === 'https://www.example.com/'
+   *   target => target.url() === 'https://www.example.com/',
    * );
    * ```
    */
   async waitForTarget(
     predicate: (x: Target) => boolean | Promise<boolean>,
-    options: WaitForTargetOptions = {}
+    options: WaitForTargetOptions = {},
   ): Promise<Target> {
     const {timeout: ms = 30000, signal} = options;
     return await firstValueFrom(
       merge(
         fromEmitterEvent(this, BrowserEvent.TargetCreated),
         fromEmitterEvent(this, BrowserEvent.TargetChanged),
-        from(this.targets())
+        from(this.targets()),
       ).pipe(
         filterAsync(predicate),
-        raceWith(fromAbortSignal(signal), timeout(ms))
-      )
+        raceWith(fromAbortSignal(signal), timeout(ms)),
+      ),
     );
   }
 
@@ -375,7 +375,7 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
     const contextPages = await Promise.all(
       this.browserContexts().map(context => {
         return context.pages();
-      })
+      }),
     );
     // Flatten array.
     return contextPages.reduce((acc, x) => {

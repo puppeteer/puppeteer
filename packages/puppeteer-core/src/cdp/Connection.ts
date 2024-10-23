@@ -42,7 +42,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     url: string,
     transport: ConnectionTransport,
     delay = 0,
-    timeout?: number
+    timeout?: number,
   ) {
     super();
     this.#url = url;
@@ -98,7 +98,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
   send<T extends keyof ProtocolMapping.Commands>(
     method: T,
     params?: ProtocolMapping.Commands[T]['paramsType'][0],
-    options?: CommandOptions
+    options?: CommandOptions,
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
     // There is only ever 1 param arg passed, but the Protocol defines it as an
     // array of 0 or 1 items See this comment:
@@ -117,7 +117,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     method: T,
     params: ProtocolMapping.Commands[T]['paramsType'][0],
     sessionId?: string,
-    options?: CommandOptions
+    options?: CommandOptions,
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
     if (this.#closed) {
       return Promise.reject(new Error('Protocol error: Connection closed.'));
@@ -158,7 +158,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
         this,
         object.params.targetInfo.type,
         sessionId,
-        object.sessionId
+        object.sessionId,
       );
       this.#sessions.set(sessionId, session);
       this.emit(CDPSessionEvent.SessionAttached, session);
@@ -188,7 +188,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
         this.#callbacks.reject(
           object.id,
           createProtocolErrorMessage(object),
-          object.error.message
+          object.error.message,
         );
       } else {
         this.#callbacks.resolve(object.id, object.result);
@@ -230,7 +230,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
    */
   async _createSession(
     targetInfo: {targetId: string},
-    isAutoAttachEmulated = true
+    isAutoAttachEmulated = true,
   ): Promise<CDPSession> {
     if (!isAutoAttachEmulated) {
       this.#manuallyAttached.add(targetInfo.targetId);
@@ -252,7 +252,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
    * @returns The CDP session that is created
    */
   async createSession(
-    targetInfo: Protocol.Target.TargetInfo
+    targetInfo: Protocol.Target.TargetInfo,
   ): Promise<CDPSession> {
     return await this._createSession(targetInfo, false);
   }

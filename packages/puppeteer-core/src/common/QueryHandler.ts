@@ -22,7 +22,7 @@ import type {Awaitable, AwaitableIterable} from './types.js';
 export type QuerySelectorAll = (
   node: Node,
   selector: string,
-  PuppeteerUtil: PuppeteerUtil
+  PuppeteerUtil: PuppeteerUtil,
 ) => AwaitableIterable<Node>;
 
 /**
@@ -31,7 +31,7 @@ export type QuerySelectorAll = (
 export type QuerySelector = (
   node: Node,
   selector: string,
-  PuppeteerUtil: PuppeteerUtil
+  PuppeteerUtil: PuppeteerUtil,
 ) => Awaitable<Node | null>;
 
 /**
@@ -70,7 +70,7 @@ export class QueryHandler {
       },
       {
         querySelectorAll: stringifyFunction(this.querySelectorAll),
-      }
+      },
     ));
   }
 
@@ -92,7 +92,7 @@ export class QueryHandler {
       },
       {
         querySelector: stringifyFunction(this.querySelector),
-      }
+      },
     ));
   }
 
@@ -103,14 +103,14 @@ export class QueryHandler {
    */
   static async *queryAll(
     element: ElementHandle<Node>,
-    selector: string
+    selector: string,
   ): AwaitableIterable<ElementHandle<Node>> {
     using handle = await element.evaluateHandle(
       this._querySelectorAll,
       selector,
       LazyArg.create(context => {
         return context.puppeteerUtil;
-      })
+      }),
     );
     yield* transposeIterableHandle(handle);
   }
@@ -122,14 +122,14 @@ export class QueryHandler {
    */
   static async queryOne(
     element: ElementHandle<Node>,
-    selector: string
+    selector: string,
   ): Promise<ElementHandle<Node> | null> {
     using result = await element.evaluateHandle(
       this._querySelector,
       selector,
       LazyArg.create(context => {
         return context.puppeteerUtil;
-      })
+      }),
     );
     if (!(_isElementHandle in result)) {
       return null;
@@ -149,7 +149,7 @@ export class QueryHandler {
     selector: string,
     options: WaitForSelectorOptions & {
       polling?: PollingOptions;
-    }
+    },
   ): Promise<ElementHandle<Node> | null> {
     let frame!: Frame;
     using element = await (async () => {
@@ -170,12 +170,12 @@ export class QueryHandler {
       using handle = await frame.isolatedRealm().waitForFunction(
         async (PuppeteerUtil, query, selector, root, visible) => {
           const querySelector = PuppeteerUtil.createFunction(
-            query
+            query,
           ) as QuerySelector;
           const node = await querySelector(
             root ?? document,
             selector,
-            PuppeteerUtil
+            PuppeteerUtil,
           );
           return PuppeteerUtil.checkVisibility(node, visible);
         },
@@ -191,7 +191,7 @@ export class QueryHandler {
         stringifyFunction(this._querySelector),
         selector,
         element,
-        visible ? true : hidden ? false : undefined
+        visible ? true : hidden ? false : undefined,
       );
 
       if (signal?.aborted) {
