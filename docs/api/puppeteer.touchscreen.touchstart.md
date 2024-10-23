@@ -60,4 +60,4 @@ Vertical position of the tap.
 
 Promise&lt;[Touch](./puppeteer.touch_2.md)&gt;
 
-The touch that was started.
+The Touch that was started.

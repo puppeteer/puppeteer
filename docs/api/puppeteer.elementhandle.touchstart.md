@@ -4,11 +4,13 @@ sidebar_label: ElementHandle.touchStart
 
 # ElementHandle.touchStart() method
 
+This method scrolls the element into view if needed, and then starts a touch in the center of the element.
+
 ### Signature
 
 ```typescript
 class ElementHandle {
-  touchStart(this: ElementHandle<Element>): Promise<void>;
+  touchStart(this: ElementHandle<Element>): Promise<Touch>;
 }
 ```
 
@@ -41,4 +43,6 @@ this
 </tbody></table>
 **Returns:**
 
-Promise&lt;void&gt;
+Promise&lt;[Touch](./puppeteer.touch_2.md)&gt;
+
+The Touch that was started

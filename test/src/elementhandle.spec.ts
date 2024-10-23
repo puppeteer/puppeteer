@@ -430,6 +430,38 @@ describe('ElementHandle specs', function () {
         },
       ]);
     });
+
+    it('should work with the returned Touch', async () => {
+      const {page} = await getTestState();
+      const {events} = await initializeTouchEventReport(page);
+
+      await page.evaluate(() => {
+        document.body.style.padding = '0';
+        document.body.style.margin = '0';
+        document.body.innerHTML = `
+          <div style="cursor: pointer; width: 120px; height: 60px; margin: 30px; padding: 15px;"></div>
+        `;
+      });
+
+      using divHandle = (await page.$('div'))!;
+      const touch = await divHandle.touchStart();
+      await touch.move(150, 150);
+
+      await shortWaitForArrayToHaveAtLeastNElements(events, 2);
+
+      const expectedTouchLocation = [45 + 60, 45 + 30]; // margin + middle point offset
+
+      expect(events).toEqual([
+        {
+          changed: [expectedTouchLocation],
+          touches: [expectedTouchLocation],
+        },
+        {
+          changed: [[150, 150]],
+          touches: [[150, 150]],
+        },
+      ]);
+    });
   });
 
   describe('ElementHandle.touchMove', () => {
@@ -461,6 +493,46 @@ describe('ElementHandle specs', function () {
         {
           changed: [expectedDivTouchLocation],
           touches: [expectedDivTouchLocation],
+        },
+      ]);
+    });
+
+    it('should work with a pre-existing Touch', async () => {
+      const {page} = await getTestState();
+      const {events} = await initializeTouchEventReport(page);
+
+      await page.evaluate(() => {
+        document.body.style.padding = '0';
+        document.body.style.margin = '0';
+        document.body.innerHTML = `
+          <div style="cursor: pointer; width: 120px; height: 60px; margin: 30px; padding: 15px;"></div>
+        `;
+      });
+
+      using divHandle = (await page.$('div'))!;
+      await page.touchscreen.touchStart(200, 200);
+      const secondTouch = await page.touchscreen.touchStart(200, 100);
+      await divHandle.touchMove(secondTouch);
+
+      await shortWaitForArrayToHaveAtLeastNElements(events, 3);
+
+      const expectedDivTouchLocation = [45 + 60, 45 + 30]; // margin + middle point offset
+
+      expect(events).toEqual([
+        {
+          changed: [[200, 200]],
+          touches: [[200, 200]],
+        },
+        {
+          changed: [[200, 100]],
+          touches: [
+            [200, 200],
+            [200, 100],
+          ],
+        },
+        {
+          changed: [expectedDivTouchLocation],
+          touches: [[200, 200], expectedDivTouchLocation],
         },
       ]);
     });

@@ -509,12 +509,12 @@ export abstract class Touchscreen {
    * Dispatches a `touchstart` event.
    * @param x - Horizontal position of the tap.
    * @param y - Vertical position of the tap.
-   * @returns The touch that was started.
+   * @returns The Touch that was started.
    */
   abstract touchStart(x: number, y: number): Promise<Touch>;
 
   /**
-   * Dispatches a `touchMove` event.
+   * Dispatches a `touchMove` event on the first touch that is active.
    * @param x - Horizontal position of the move.
    * @param y - Vertical position of the move.
    *
@@ -528,7 +528,7 @@ export abstract class Touchscreen {
   abstract touchMove(x: number, y: number): Promise<void>;
 
   /**
-   * Dispatches a `touchend` event.
+   * Dispatches a `touchend` event on the first touch that is active.
    */
   abstract touchEnd(): Promise<void>;
 }
