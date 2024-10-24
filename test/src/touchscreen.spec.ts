@@ -245,5 +245,16 @@ describe('Touchscreen', () => {
         },
       ]);
     });
+
+    it('should throw if no touch was started', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.PREFIX + '/input/touchscreen.html');
+
+      await expect(async () => {
+        await page.touchscreen.touchMove(15, 15);
+      }).rejects.toThrow(
+        'Protocol error (Input.dispatchTouchEvent): Must send a TouchStart first to start a new touch.',
+      );
+    });
   });
 });
