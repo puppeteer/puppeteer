@@ -75,7 +75,7 @@ describe('Browser specs', function () {
       expect(remoteBrowser.process()).toBe(null);
     });
     it('should keep connected after the last page is closed', async () => {
-      const {browser, close} = await launch({}, {createContext: false});
+      const {browser, close} = await launch({});
       try {
         const pages = await browser.pages();
         await Promise.all(

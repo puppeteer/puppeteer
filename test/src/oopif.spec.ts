@@ -9,40 +9,21 @@ import type {CDPSession} from 'puppeteer-core/internal/api/CDPSession.js';
 import {CDPSessionEvent} from 'puppeteer-core/internal/api/CDPSession.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 
-import {getTestState, launch} from './mocha-utils.js';
+import {setupSeparateTestBrowserHooks} from './mocha-utils.js';
 import {attachFrame, detachFrame, dumpFrames, navigateFrame} from './utils.js';
 
 describe('OOPIF', function () {
   /* We use a special browser for this test as we need the --site-per-process flag */
-  let state: Awaited<ReturnType<typeof launch>>;
-
-  before(async () => {
-    const {defaultBrowserOptions} = await getTestState({skipLaunch: true});
-
-    state = await launch(
-      Object.assign({}, defaultBrowserOptions, {
-        args: (defaultBrowserOptions.args || []).concat([
-          '--site-per-process',
-          '--remote-debugging-port=21222',
-          '--host-rules=MAP * 127.0.0.1',
-        ]),
-      }),
-      {after: 'all'},
-    );
-  });
-
-  beforeEach(async () => {
-    state.context = await state.browser.createBrowserContext();
-    state.page = await state.context.newPage();
-  });
-
-  afterEach(async () => {
-    await state.context.close();
-  });
-
-  after(async () => {
-    await state.close();
-  });
+  const state = setupSeparateTestBrowserHooks(
+    {
+      args: [
+        '--site-per-process',
+        '--remote-debugging-port=21222',
+        '--host-rules=MAP * 127.0.0.1',
+      ],
+    },
+    {createContext: true},
+  );
 
   it('should treat OOP iframes and normal iframes the same', async () => {
     const {server, page} = state;

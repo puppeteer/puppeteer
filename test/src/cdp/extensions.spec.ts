@@ -52,7 +52,7 @@ describe('extensions', function () {
   });
 
   async function launchBrowser(options: typeof extensionOptions) {
-    const {browser, close} = await launch(options, {createContext: false});
+    const {browser, close} = await launch(options);
     browsers.push(close);
     return browser;
   }

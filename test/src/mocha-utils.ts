@@ -203,6 +203,54 @@ export const setupTestBrowserHooks = (): void => {
   });
 };
 
+export const setupSeparateTestBrowserHooks = (
+  launchOptions: Readonly<PuppeteerLaunchOptions>,
+  options: {
+    createContext?: boolean;
+    createPage?: boolean;
+    mergeArgs?: boolean;
+  } = {},
+): Awaited<ReturnType<typeof launch>> => {
+  const {createContext = true, createPage = true} = options;
+
+  const state: Awaited<ReturnType<typeof launch>> = {} as any;
+  before(async () => {
+    const browserState = await launch(launchOptions, {
+      after: 'all',
+      ...options,
+    });
+    // Trick to keep the correct reference
+    const props = Object.entries(browserState).reduce((acc, entries) => {
+      const [key, value] = entries;
+      acc[key] = {
+        value,
+        writable: true,
+      };
+      return acc;
+    }, {} as PropertyDescriptorMap);
+    Object.defineProperties(state, props);
+  });
+
+  if (createContext) {
+    beforeEach(async () => {
+      state.context = await state.browser.createBrowserContext();
+      if (createPage) {
+        state.page = await state.context.newPage();
+      }
+    });
+
+    afterEach(async () => {
+      await state.context.close();
+    });
+  }
+
+  after(async () => {
+    await state.close();
+  });
+
+  return state;
+};
+
 export const getTestState = async (
   options: {
     skipLaunch?: boolean;
@@ -342,13 +390,15 @@ export const mochaHooks: Mocha.RootHookObject = {
   },
 
   async afterEach(this: Mocha.Context): Promise<void> {
+    const timeout = this.timeout();
+    this.timeout(0);
     if (browserCleanups.length > 0) {
       (this.test as Mocha.Hook).error(browserNotClosedError);
       await Deferred.race([
         closeLaunched(browserCleanups)(),
         Deferred.create({
           message: `Failed in after Hook`,
-          timeout: this.timeout() - 1000,
+          timeout: timeout - 1000,
         }),
       ]);
     }
@@ -475,22 +525,28 @@ export const launch = async (
     after?: 'each' | 'all';
     createContext?: boolean;
     createPage?: boolean;
+    mergeArgs?: boolean;
   } = {},
 ): Promise<
   PuppeteerTestState & {
     close: () => Promise<void>;
   }
 > => {
-  const {after = 'each', createContext = true, createPage = true} = options;
+  const {after = 'each', createContext = false, createPage = true} = options;
   const initState = await getTestState({
     skipLaunch: true,
   });
   const cleanupStorage =
     after === 'each' ? browserCleanups : browserCleanupsAfterAll;
   try {
+    const args = [
+      ...(initState.defaultBrowserOptions.args ?? []),
+      ...(launchOptions.args ?? []),
+    ];
     const browser = await puppeteer.launch({
       ...initState.defaultBrowserOptions,
       ...launchOptions,
+      args,
     });
     cleanupStorage.push(() => {
       return browser.close();
