@@ -50,7 +50,7 @@ Dispatches a `touchstart` and `touchend` event.
 
 </td><td>
 
-Dispatches a `touchend` event.
+Dispatches a `touchend` event on the first touch that is active.
 
 </td></tr>
 <tr><td>
@@ -61,7 +61,7 @@ Dispatches a `touchend` event.
 
 </td><td>
 
-Dispatches a `touchMove` event.
+Dispatches a `touchMove` event on the first touch that is active.
 
 **Remarks:**
 

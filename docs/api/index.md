@@ -1227,6 +1227,15 @@ WebDriver BiDi capabilities that are not set by Puppeteer itself.
 </td></tr>
 <tr><td>
 
+<span id="touch_2">[Touch_2](./puppeteer.touch_2.md)</span>
+
+</td><td>
+
+The Touch interface exposes methods to manipulate touches that have been started
+
+</td></tr>
+<tr><td>
+
 <span id="tracingoptions">[TracingOptions](./puppeteer.tracingoptions.md)</span>
 
 </td><td>
