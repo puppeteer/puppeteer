@@ -11,11 +11,11 @@ interface IdRecord {
 export class TouchPointIdRepository {
   #ids: IdRecord[] = [];
 
-  private generateNewId(): number {
+  #generateNewId(): number {
     return this.#ids.length;
   }
 
-  public getId(): number {
+  getId(): number {
     const notInUse = this.#ids.find(id => {
       return !id.inUse;
     });
@@ -23,7 +23,7 @@ export class TouchPointIdRepository {
       notInUse.inUse = true;
       return notInUse.id;
     }
-    const newOne: IdRecord = {id: this.generateNewId(), inUse: true};
+    const newOne: IdRecord = {id: this.#generateNewId(), inUse: true};
     this.#ids.push(newOne);
     return newOne.id;
   }
