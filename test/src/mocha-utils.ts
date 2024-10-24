@@ -208,11 +208,18 @@ export const setupSeparateTestBrowserHooks = (
   options: {
     createContext?: boolean;
     createPage?: boolean;
+    mergeArgs?: boolean;
   } = {},
 ): Awaited<ReturnType<typeof launch>> => {
-  const {createContext = true, createPage = true} = options;
+  const {createContext = true, createPage = true, mergeArgs = true} = options;
+
   const state: Awaited<ReturnType<typeof launch>> = {} as any;
   before(async () => {
+    const {defaultBrowserOptions} = await getTestState({
+      skipLaunch: true,
+    });
+    const launchOptionsMerged = {};
+
     const browserState = await launch(launchOptions, {
       after: 'all',
       ...options,
@@ -523,6 +530,7 @@ export const launch = async (
     after?: 'each' | 'all';
     createContext?: boolean;
     createPage?: boolean;
+    mergeArgs?: boolean;
   } = {},
 ): Promise<
   PuppeteerTestState & {
@@ -536,9 +544,14 @@ export const launch = async (
   const cleanupStorage =
     after === 'each' ? browserCleanups : browserCleanupsAfterAll;
   try {
+    const args = [
+      ...(initState.defaultBrowserOptions.args ?? []),
+      ...(launchOptions.args ?? []),
+    ];
     const browser = await puppeteer.launch({
       ...initState.defaultBrowserOptions,
       ...launchOptions,
+      args,
     });
     cleanupStorage.push(() => {
       return browser.close();
