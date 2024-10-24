@@ -22,7 +22,7 @@ describe('TargetManager', () => {
       ],
     },
     {
-      createContext: false,
+      createPage: false,
     },
   ) as Awaited<ReturnType<typeof launch>> & {
     browser: CdpBrowser;
