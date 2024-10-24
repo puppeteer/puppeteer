@@ -634,7 +634,7 @@ class BidiTouch implements Touch {
     this.#x = Math.round(x);
     this.#y = Math.round(y);
     this.#properties = properties;
-    this.#bidiId = `__puppeteer_finger${id}`;
+    this.#bidiId = `${InputId.Finger}_${id}`;
   }
 
   public async start(): Promise<void> {

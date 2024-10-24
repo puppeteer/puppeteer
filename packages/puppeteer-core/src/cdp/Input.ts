@@ -644,12 +644,12 @@ export class CdpTouchscreen extends Touchscreen {
     return touch;
   }
 
-  override touchMove(x: number, y: number): Promise<void> {
+  override async touchMove(x: number, y: number): Promise<void> {
     const touch = this.#touches[0];
     if (!touch) {
-      return Promise.resolve();
+      return;
     }
-    return touch.move(x, y);
+    return await touch.move(x, y);
   }
 
   override async touchEnd(): Promise<void> {
