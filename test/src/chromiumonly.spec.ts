@@ -88,7 +88,7 @@ describe('Chromium-Specific Launcher tests', function () {
 
   describe('Puppeteer.launch |pipe| option', function () {
     it('should support the pipe option', async () => {
-      const {browser, close} = await launch({pipe: true}, {createPage: false});
+      const {browser, close} = await launch({pipe: true});
       try {
         expect(await browser.pages()).toHaveLength(1);
         expect(browser.wsEndpoint()).toBe('');

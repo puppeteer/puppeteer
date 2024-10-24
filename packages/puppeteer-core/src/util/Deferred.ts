@@ -62,6 +62,7 @@ export class Deferred<T, V extends Error = Error> {
   #value: T | V | TimeoutError | undefined;
   // SAFETY: This is ensured by #taskPromise.
   #resolve!: (value: void) => void;
+  // TODO: Switch to Promise.withResolvers with Node 22
   #taskPromise = new Promise<void>(resolve => {
     this.#resolve = resolve;
   });

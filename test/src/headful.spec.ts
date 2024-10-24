@@ -40,7 +40,7 @@ describe('headful tests', function () {
   });
 
   async function launchBrowser(options: any) {
-    const {browser, close} = await launch(options, {createContext: false});
+    const {browser, close} = await launch(options);
     browsers.push(close);
     return browser;
   }
