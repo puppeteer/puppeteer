@@ -22,6 +22,7 @@ import {
   type MouseOptions,
   type MouseWheelOptions,
 } from '../api/Input.js';
+import {TouchError} from '../common/TouchError.js';
 import {TouchPointIdRepository} from '../common/TouchPointIdRepository.js';
 import {
   _keyDefinitions,
@@ -647,7 +648,7 @@ export class CdpTouchscreen extends Touchscreen {
   override async touchMove(x: number, y: number): Promise<void> {
     const touch = this.#touches[0];
     if (!touch) {
-      return;
+      throw new TouchError('Must start a new Touch first');
     }
     return await touch.move(x, y);
   }

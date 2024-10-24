@@ -731,9 +731,7 @@ describe('Touchscreen', () => {
 
       await expect(async () => {
         await page.touchscreen.touchMove(15, 15);
-      }).rejects.toThrow(
-        'Protocol error (Input.dispatchTouchEvent): Must send a TouchStart first to start a new touch.',
-      );
+      }).rejects.toThrow('Must start a new Touch first');
     });
   });
 });

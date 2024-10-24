@@ -22,6 +22,7 @@ import {
   type MouseWheelOptions,
 } from '../api/Input.js';
 import {UnsupportedOperation} from '../common/Errors.js';
+import {TouchError} from '../common/TouchError.js';
 import {TouchPointIdRepository} from '../common/TouchPointIdRepository.js';
 import type {KeyInput} from '../common/USKeyboardLayout.js';
 
@@ -735,7 +736,7 @@ export class BidiTouchscreen extends Touchscreen {
   override async touchMove(x: number, y: number): Promise<void> {
     const touch = this.#touches[0];
     if (!touch) {
-      return;
+      throw new TouchError('Must start a new Touch first');
     }
     return await touch.move(x, y);
   }
