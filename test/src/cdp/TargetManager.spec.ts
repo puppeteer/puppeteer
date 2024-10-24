@@ -13,13 +13,18 @@ import {attachFrame} from '../utils.js';
 
 describe('TargetManager', () => {
   /* We use a special browser for this test as we need the --site-per-process flag */
-  const state = setupSeparateTestBrowserHooks({
-    args: [
-      '--site-per-process',
-      '--remote-debugging-port=21222',
-      '--host-rules=MAP * 127.0.0.1',
-    ],
-  }) as Awaited<ReturnType<typeof launch>> & {
+  const state = setupSeparateTestBrowserHooks(
+    {
+      args: [
+        '--site-per-process',
+        '--remote-debugging-port=21222',
+        '--host-rules=MAP * 127.0.0.1',
+      ],
+    },
+    {
+      createContext: false,
+    },
+  ) as Awaited<ReturnType<typeof launch>> & {
     browser: CdpBrowser;
   };
 
