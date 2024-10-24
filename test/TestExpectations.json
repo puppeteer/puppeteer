@@ -328,6 +328,27 @@
     "comment": "Reason: same as '[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work'"
   },
   {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.touchMove should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Same reason as '[touchscreen.spec] *'"
+  },
+  {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.touchStart should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Same reason as '[touchscreen.spec] *'"
+  },
+  {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.touchEnd should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Same reason as '[touchscreen.spec] *'"
+  },
+  {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should replace symbols with undefined",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp"],
