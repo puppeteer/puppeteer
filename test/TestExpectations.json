@@ -321,55 +321,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.touchMove should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Reason: same as '[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work'"
-  },
-  {
-    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.touchMove should work with a pre-existing Touch",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Reason: same as '[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work'"
-  },
-  {
-    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.touchMove should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"],
-    "comment": "Same reason as '[touchscreen.spec] *'"
-  },
-  {
-    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.touchMove should work with a pre-existing Touch",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"],
-    "comment": "Same reason as '[touchscreen.spec] *'"
-  },
-  {
-    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.touchStart should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"],
-    "comment": "Same reason as '[touchscreen.spec] *'"
-  },
-  {
-    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.touchStart should work with the returned Touch",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"],
-    "comment": "Same reason as '[touchscreen.spec] *'"
-  },
-  {
-    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.touchEnd should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"],
-    "comment": "Same reason as '[touchscreen.spec] *'"
-  },
-  {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should replace symbols with undefined",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp"],
@@ -1364,6 +1315,55 @@
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.touchEnd should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Same reason as '[touchscreen.spec] *'"
+  },
+  {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.touchMove should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Reason: same as '[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work'"
+  },
+  {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.touchMove should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Same reason as '[touchscreen.spec] *'"
+  },
+  {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.touchMove should work with a pre-existing Touch",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Reason: same as '[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work'"
+  },
+  {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.touchMove should work with a pre-existing Touch",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Same reason as '[touchscreen.spec] *'"
+  },
+  {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.touchStart should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Same reason as '[touchscreen.spec] *'"
+  },
+  {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.touchStart should work with the returned Touch",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Same reason as '[touchscreen.spec] *'"
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulate should support clicking",
