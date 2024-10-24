@@ -862,10 +862,6 @@ function evaluationExpression(fun: Function | string, ...args: unknown[]) {
 
 /**
  * Check domains match.
- * According to cookies spec, this check should match subdomains as well, but CDP
- * implementation does not do that, so this method matches only the exact domains, not
- * what is written in the spec:
- * https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
  */
 function testUrlMatchCookieHostname(
   cookie: Cookie,
@@ -873,7 +869,14 @@ function testUrlMatchCookieHostname(
 ): boolean {
   const cookieDomain = cookie.domain.toLowerCase();
   const urlHostname = normalizedUrl.hostname.toLowerCase();
-  return cookieDomain === urlHostname;
+  if (cookieDomain === urlHostname) {
+    return true;
+  }
+  // TODO: does not consider additional restrictions w.r.t to IP
+  // addresses which is fine as it is for representation and does not
+  // mean that cookies actually apply that way in the browser.
+  // https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
+  return cookieDomain.startsWith('.') && urlHostname.endsWith(cookieDomain);
 }
 
 /**

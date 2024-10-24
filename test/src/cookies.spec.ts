@@ -167,10 +167,22 @@ describe('Cookie specs', () => {
         },
       ]);
     });
-    it('should not get cookies from subdomain', async () => {
+    it('should get cookies from subdomain if the domain field allows it', async () => {
       const {page} = await getTestState();
       await page.setCookie({
         url: 'https://base_domain.com',
+        domain: '.base_domain.com',
+        name: 'doggo',
+        value: 'woofs',
+      });
+      const cookies = await page.cookies('https://sub_domain.base_domain.com');
+      expect(cookies).toHaveLength(1);
+    });
+    it('should not get cookies from subdomain if the cookie is for top-level domain', async () => {
+      const {page} = await getTestState();
+      await page.setCookie({
+        url: 'https://base_domain.com',
+        domain: 'base_domain.com',
         name: 'doggo',
         value: 'woofs',
       });
