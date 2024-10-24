@@ -21,7 +21,7 @@ describe('Tracing', function () {
    * individual test, which isn't the default behaviour of getTestState()
    */
   beforeEach(async () => {
-    testState = await launch({});
+    testState = await launch({}, {createContext: true});
     outputFile = path.join(__dirname, 'trace.json');
   });
 
