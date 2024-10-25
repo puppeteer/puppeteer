@@ -21,6 +21,7 @@ import {
   type MouseWheelOptions,
 } from '../api/Input.js';
 import {UnsupportedOperation} from '../common/Errors.js';
+import {TouchError} from '../common/Errors.js';
 import {Touchscreen} from '../common/Touchscreen.js';
 import type {KeyInput} from '../common/USKeyboardLayout.js';
 
@@ -641,7 +642,7 @@ class BidiTouch implements TouchHandle {
 
   async start(): Promise<void> {
     if (this.#started) {
-      return;
+      throw new TouchError('Touch has already started');
     }
     await this.#page.mainFrame().browsingContext.performActions([
       {

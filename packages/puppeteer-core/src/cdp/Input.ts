@@ -21,6 +21,7 @@ import {
   type MouseOptions,
   type MouseWheelOptions,
 } from '../api/Input.js';
+import {TouchError} from '../common/Errors.js';
 import {Touchscreen} from '../common/Touchscreen.js';
 import {
   _keyDefinitions,
@@ -579,7 +580,7 @@ class CdpTouch implements TouchHandle {
 
   async start(): Promise<void> {
     if (this.#started) {
-      return;
+      throw new TouchError('Touch has already started');
     }
     await this.#client.send('Input.dispatchTouchEvent', {
       type: 'touchStart',
