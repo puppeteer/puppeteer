@@ -12,7 +12,6 @@ import {
   Keyboard,
   Mouse,
   MouseButton,
-  Touchscreen,
   type TouchHandle,
   type KeyDownOptions,
   type KeyPressOptions,
@@ -22,14 +21,13 @@ import {
   type MouseOptions,
   type MouseWheelOptions,
 } from '../api/Input.js';
-import {TouchError} from '../common/Errors.js';
+import {Touchscreen} from '../common/Touchscreen.js';
 import {
   _keyDefinitions,
   type KeyDefinition,
   type KeyInput,
 } from '../common/USKeyboardLayout.js';
 import {assert} from '../util/assert.js';
-import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
 
 type KeyDescription = Required<
   Pick<KeyDefinition, 'keyCode' | 'key' | 'text' | 'code' | 'location'>
@@ -614,11 +612,9 @@ class CdpTouch implements TouchHandle {
 /**
  * @internal
  */
-export class CdpTouchscreen extends Touchscreen {
+export class CdpTouchscreen extends Touchscreen<CdpTouch> {
   #client: CDPSession;
   #keyboard: CdpKeyboard;
-  #touches: CdpTouch[] = [];
-  #idGenerator = createIncrementalIdGenerator();
 
   constructor(client: CDPSession, keyboard: CdpKeyboard) {
     super();
@@ -628,21 +624,16 @@ export class CdpTouchscreen extends Touchscreen {
 
   updateClient(client: CDPSession): void {
     this.#client = client;
-    this.#touches.forEach(t => {
+    this.touches.forEach(t => {
       t.updateClient(client);
     });
   }
 
-  removeHandle(handle: CdpTouch): void {
-    const index = this.#touches.indexOf(handle);
-    if (index === -1) {
-      return;
-    }
-    this.#touches.splice(index, 1);
-  }
-
-  override async touchStart(x: number, y: number): Promise<TouchHandle> {
-    const id = this.#idGenerator();
+  protected override async createTouch(
+    x: number,
+    y: number,
+    id: number,
+  ): Promise<CdpTouch> {
     const touchPoint: Protocol.Input.TouchPoint = {
       x: Math.round(x),
       y: Math.round(y),
@@ -659,23 +650,6 @@ export class CdpTouchscreen extends Touchscreen {
       touchPoint,
     );
     await touch.start();
-    this.#touches.push(touch);
     return touch;
-  }
-
-  override async touchMove(x: number, y: number): Promise<void> {
-    const touch = this.#touches[0];
-    if (!touch) {
-      throw new TouchError('Must start a new Touch first');
-    }
-    return await touch.move(x, y);
-  }
-
-  override async touchEnd(): Promise<void> {
-    const touch = this.#touches.shift();
-    if (!touch) {
-      throw new TouchError('Must start a new Touch first');
-    }
-    await touch.end();
   }
 }
