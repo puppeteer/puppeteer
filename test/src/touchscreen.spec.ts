@@ -725,6 +725,110 @@ describe('Touchscreen', () => {
       ]);
     });
 
+    it('should work with three touches', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.PREFIX + '/input/touchscreen.html');
+
+      const touch1 = await page.touchscreen.touchStart(50, 50);
+      await touch1.move(50, 100);
+      await page.touchscreen.touchStart(20, 20);
+      await touch1.end();
+      const touch3 = await page.touchscreen.touchStart(20, 100);
+      await touch3.move(60, 100);
+
+      expect(
+        await page.evaluate(() => {
+          return allEvents;
+        }),
+      ).toMatchObject([
+        {
+          type: 'pointerdown',
+          x: 50,
+          y: 50,
+          width: 1,
+          height: 1,
+          altitudeAngle: 1.5707963267948966,
+          azimuthAngle: 0,
+          pressure: 0.5,
+          pointerType: 'touch',
+          twist: 0,
+          tiltX: 0,
+          tiltY: 0,
+        },
+        {
+          type: 'touchstart',
+          changedTouches: [
+            {clientX: 50, clientY: 50, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+          ],
+          activeTouches: [
+            {clientX: 50, clientY: 50, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+          ],
+        },
+        {
+          type: 'pointermove',
+          x: 50,
+          y: 100,
+          width: 1,
+          height: 1,
+          altitudeAngle: 1.5707963267948966,
+          azimuthAngle: 0,
+          pressure: 0.5,
+          pointerType: 'touch',
+          twist: 0,
+          tiltX: 0,
+          tiltY: 0,
+        },
+        {
+          type: 'touchmove',
+          changedTouches: [
+            {clientX: 50, clientY: 100, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+          ],
+          activeTouches: [
+            {clientX: 50, clientY: 100, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+          ],
+        },
+        {
+          type: 'touchstart',
+          changedTouches: [
+            {clientX: 20, clientY: 20, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+          ],
+          activeTouches: [
+            {clientX: 50, clientY: 100, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+            {clientX: 20, clientY: 20, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+          ],
+        },
+        {
+          type: 'touchend',
+          changedTouches: [
+            {clientX: 50, clientY: 100, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+          ],
+          activeTouches: [
+            {clientX: 20, clientY: 20, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+          ],
+        },
+        {
+          type: 'touchstart',
+          changedTouches: [
+            {clientX: 20, clientY: 100, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+          ],
+          activeTouches: [
+            {clientX: 20, clientY: 20, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+            {clientX: 20, clientY: 100, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+          ],
+        },
+        {
+          type: 'touchmove',
+          changedTouches: [
+            {clientX: 60, clientY: 100, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+          ],
+          activeTouches: [
+            {clientX: 20, clientY: 20, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+            {clientX: 60, clientY: 100, radiusX: 0.5, radiusY: 0.5, force: 0.5},
+          ],
+        },
+      ]);
+    });
+
     it('should throw if no touch was started', async () => {
       const {page, server} = await getTestState();
       await page.goto(server.PREFIX + '/input/touchscreen.html');

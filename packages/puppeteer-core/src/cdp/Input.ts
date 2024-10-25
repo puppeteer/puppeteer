@@ -23,13 +23,13 @@ import {
   type MouseWheelOptions,
 } from '../api/Input.js';
 import {TouchError} from '../common/TouchError.js';
-import {TouchPointIdRepository} from '../common/TouchPointIdRepository.js';
 import {
   _keyDefinitions,
   type KeyDefinition,
   type KeyInput,
 } from '../common/USKeyboardLayout.js';
 import {assert} from '../util/assert.js';
+import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
 
 type KeyDescription = Required<
   Pick<KeyDefinition, 'keyCode' | 'key' | 'text' | 'code' | 'location'>
@@ -618,7 +618,7 @@ export class CdpTouchscreen extends Touchscreen {
   #client: CDPSession;
   #keyboard: CdpKeyboard;
   #touches: CdpTouch[] = [];
-  #idRepository = new TouchPointIdRepository();
+  #idGenerator = createIncrementalIdGenerator();
 
   constructor(client: CDPSession, keyboard: CdpKeyboard) {
     super();
@@ -642,7 +642,7 @@ export class CdpTouchscreen extends Touchscreen {
   }
 
   override async touchStart(x: number, y: number): Promise<TouchHandle> {
-    const id = this.#idRepository.getId();
+    const id = this.#idGenerator();
     const touchPoint: Protocol.Input.TouchPoint = {
       x: Math.round(x),
       y: Math.round(y),
@@ -677,6 +677,5 @@ export class CdpTouchscreen extends Touchscreen {
       throw new TouchError('Must start a new Touch first');
     }
     await touch.end();
-    this.#idRepository.releaseId(touch.id);
   }
 }

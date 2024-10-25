@@ -23,8 +23,8 @@ import {
 } from '../api/Input.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {TouchError} from '../common/TouchError.js';
-import {TouchPointIdRepository} from '../common/TouchPointIdRepository.js';
 import type {KeyInput} from '../common/USKeyboardLayout.js';
+import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
 
 import type {BidiPage} from './Page.js';
 
@@ -715,7 +715,7 @@ class BidiTouch implements TouchHandle {
  */
 export class BidiTouchscreen extends Touchscreen {
   #page: BidiPage;
-  #idRepository = new TouchPointIdRepository();
+  #idGenerator = createIncrementalIdGenerator();
   #touches: BidiTouch[] = [];
 
   constructor(page: BidiPage) {
@@ -732,7 +732,7 @@ export class BidiTouchscreen extends Touchscreen {
   }
 
   override async touchStart(x: number, y: number): Promise<TouchHandle> {
-    const id = this.#idRepository.getId();
+    const id = this.#idGenerator();
     const properties: Bidi.Input.PointerCommonProperties = {
       width: 0.5 * 2, // 2 times default touch radius.
       height: 0.5 * 2, // 2 times default touch radius.
@@ -759,6 +759,5 @@ export class BidiTouchscreen extends Touchscreen {
       throw new TouchError('Must start a new Touch first');
     }
     await touch.end();
-    this.#idRepository.releaseId(touch.id);
   }
 }
