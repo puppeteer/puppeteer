@@ -523,6 +523,15 @@ Example operations are [page.waitForSelector](./puppeteer.page.waitforselector.m
 </td></tr>
 <tr><td>
 
+<span id="toucherror">[TouchError](./puppeteer.toucherror.md)</span>
+
+</td><td>
+
+TouchError is thrown when an attempt is made to move or end a touch that does not exist.
+
+</td></tr>
+<tr><td>
+
 <span id="touchscreen">[Touchscreen](./puppeteer.touchscreen.md)</span>
 
 </td><td>

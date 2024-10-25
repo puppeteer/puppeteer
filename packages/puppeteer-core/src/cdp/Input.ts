@@ -22,7 +22,7 @@ import {
   type MouseOptions,
   type MouseWheelOptions,
 } from '../api/Input.js';
-import {TouchError} from '../common/TouchError.js';
+import {TouchError} from '../common/Errors.js';
 import {
   _keyDefinitions,
   type KeyDefinition,

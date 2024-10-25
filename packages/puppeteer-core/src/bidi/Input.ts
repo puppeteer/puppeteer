@@ -22,7 +22,7 @@ import {
   type MouseWheelOptions,
 } from '../api/Input.js';
 import {UnsupportedOperation} from '../common/Errors.js';
-import {TouchError} from '../common/TouchError.js';
+import {TouchError} from '../common/Errors.js';
 import type {KeyInput} from '../common/USKeyboardLayout.js';
 import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
 
