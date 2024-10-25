@@ -3510,6 +3510,12 @@
     "comment": "For some reason service_workers do not close in chrome-headless-shell"
   },
   {
+    "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should throw if no touch was started",
+    "platforms": ["linux"],
+    "parameters": ["cdp", "firefox", "headless"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[worker.spec] Workers Page.workers",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
