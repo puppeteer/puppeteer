@@ -470,10 +470,10 @@ export abstract class Mouse {
   ): Promise<void>;
 }
 /**
- * The Touch interface exposes methods to manipulate touches that have been started
+ * The TouchHandle interface exposes methods to manipulate touches that have been started
  * @public
  */
-export interface Touch {
+export interface TouchHandle {
   /**
    * Dispatches a `touchMove` event for this touch.
    * @param x - Horizontal position of the move.
@@ -509,9 +509,9 @@ export abstract class Touchscreen {
    * Dispatches a `touchstart` event.
    * @param x - Horizontal position of the tap.
    * @param y - Vertical position of the tap.
-   * @returns The Touch that was started.
+   * @returns A handle for the touch that was started.
    */
-  abstract touchStart(x: number, y: number): Promise<Touch>;
+  abstract touchStart(x: number, y: number): Promise<TouchHandle>;
 
   /**
    * Dispatches a `touchMove` event on the first touch that is active.

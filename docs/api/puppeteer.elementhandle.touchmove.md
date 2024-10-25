@@ -10,7 +10,7 @@ This method scrolls the element into view if needed, and then moves the touch to
 
 ```typescript
 class ElementHandle {
-  touchMove(this: ElementHandle<Element>, touch?: Touch): Promise<void>;
+  touchMove(this: ElementHandle<Element>, touch?: TouchHandle): Promise<void>;
 }
 ```
 
@@ -46,11 +46,11 @@ touch
 
 </td><td>
 
-[Touch](./puppeteer.touch_2.md)
+[TouchHandle](./puppeteer.touchhandle.md)
 
 </td><td>
 
-_(Optional)_ An optional Touch. If provided, this touch will be moved. If not provided, the first active touch will be moved.
+_(Optional)_ An optional TouchHandle. If provided, this touch will be moved. If not provided, the first active touch will be moved.
 
 </td></tr>
 </tbody></table>

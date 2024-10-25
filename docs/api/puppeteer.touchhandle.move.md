@@ -1,15 +1,15 @@
 ---
-sidebar_label: Touch_2.move
+sidebar_label: TouchHandle.move
 ---
 
-# Touch_2.move() method
+# TouchHandle.move() method
 
 Dispatches a `touchMove` event for this touch.
 
 ### Signature
 
 ```typescript
-interface Touch_2 {
+interface TouchHandle {
   move(x: number, y: number): Promise<void>;
 }
 ```

@@ -1,15 +1,15 @@
 ---
-sidebar_label: Touch_2
+sidebar_label: TouchHandle
 ---
 
-# Touch_2 interface
+# TouchHandle interface
 
-The Touch interface exposes methods to manipulate touches that have been started
+The TouchHandle interface exposes methods to manipulate touches that have been started
 
 ### Signature
 
 ```typescript
-export interface Touch
+export interface TouchHandle
 ```
 
 ## Methods
@@ -25,7 +25,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="end">[end()](./puppeteer.touch_2.end.md)</span>
+<span id="end">[end()](./puppeteer.touchhandle.end.md)</span>
 
 </td><td>
 
@@ -34,7 +34,7 @@ Dispatches a `touchend` event for this touch.
 </td></tr>
 <tr><td>
 
-<span id="move">[move(x, y)](./puppeteer.touch_2.move.md)</span>
+<span id="move">[move(x, y)](./puppeteer.touchhandle.move.md)</span>
 
 </td><td>
 

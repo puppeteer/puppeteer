@@ -1,15 +1,15 @@
 ---
-sidebar_label: Touch_2.end
+sidebar_label: TouchHandle.end
 ---
 
-# Touch_2.end() method
+# TouchHandle.end() method
 
 Dispatches a `touchend` event for this touch.
 
 ### Signature
 
 ```typescript
-interface Touch_2 {
+interface TouchHandle {
   end(): Promise<void>;
 }
 ```

@@ -10,7 +10,7 @@ This method scrolls the element into view if needed, and then starts a touch in 
 
 ```typescript
 class ElementHandle {
-  touchStart(this: ElementHandle<Element>): Promise<Touch>;
+  touchStart(this: ElementHandle<Element>): Promise<TouchHandle>;
 }
 ```
 
@@ -43,6 +43,6 @@ this
 </tbody></table>
 **Returns:**
 
-Promise&lt;[Touch](./puppeteer.touch_2.md)&gt;
+Promise&lt;[TouchHandle](./puppeteer.touchhandle.md)&gt;
 
-The Touch that was started
+A handle for the touch that was started
