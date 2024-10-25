@@ -557,26 +557,29 @@ export class CdpMouse extends Mouse {
  */
 class CdpTouch implements TouchHandle {
   #started = false;
+  #touchScreen: CdpTouchscreen;
   #touchPoint: Protocol.Input.TouchPoint;
   #client: CDPSession;
   #keyboard: CdpKeyboard;
 
   constructor(
     client: CDPSession,
+    touchScreen: CdpTouchscreen,
     keyboard: CdpKeyboard,
     public id: number,
     touchPoint: Protocol.Input.TouchPoint,
   ) {
     this.#client = client;
+    this.#touchScreen = touchScreen;
     this.#keyboard = keyboard;
     this.#touchPoint = touchPoint;
   }
 
-  public updateClient(client: CDPSession): void {
+  updateClient(client: CDPSession): void {
     this.#client = client;
   }
 
-  public async start(): Promise<void> {
+  async start(): Promise<void> {
     if (this.#started) {
       return;
     }
@@ -588,7 +591,7 @@ class CdpTouch implements TouchHandle {
     this.#started = true;
   }
 
-  public move(x: number, y: number): Promise<void> {
+  move(x: number, y: number): Promise<void> {
     this.#touchPoint.x = Math.round(x);
     this.#touchPoint.y = Math.round(y);
     return this.#client.send('Input.dispatchTouchEvent', {
@@ -598,12 +601,13 @@ class CdpTouch implements TouchHandle {
     });
   }
 
-  public end(): Promise<void> {
-    return this.#client.send('Input.dispatchTouchEvent', {
+  async end(): Promise<void> {
+    await this.#client.send('Input.dispatchTouchEvent', {
       type: 'touchEnd',
       touchPoints: [this.#touchPoint],
       modifiers: this.#keyboard._modifiers,
     });
+    this.#touchScreen.removeHandle(this);
   }
 }
 
@@ -629,6 +633,14 @@ export class CdpTouchscreen extends Touchscreen {
     });
   }
 
+  removeHandle(handle: CdpTouch): void {
+    const index = this.#touches.indexOf(handle);
+    if (index === -1) {
+      return;
+    }
+    this.#touches.splice(index, 1);
+  }
+
   override async touchStart(x: number, y: number): Promise<TouchHandle> {
     const id = this.#idRepository.getId();
     const touchPoint: Protocol.Input.TouchPoint = {
@@ -639,7 +651,13 @@ export class CdpTouchscreen extends Touchscreen {
       force: 0.5,
       id,
     };
-    const touch = new CdpTouch(this.#client, this.#keyboard, id, touchPoint);
+    const touch = new CdpTouch(
+      this.#client,
+      this,
+      this.#keyboard,
+      id,
+      touchPoint,
+    );
     await touch.start();
     this.#touches.push(touch);
     return touch;
@@ -656,7 +674,7 @@ export class CdpTouchscreen extends Touchscreen {
   override async touchEnd(): Promise<void> {
     const touch = this.#touches.shift();
     if (!touch) {
-      return;
+      throw new TouchError('Must start a new Touch first');
     }
     await touch.end();
     this.#idRepository.releaseId(touch.id);

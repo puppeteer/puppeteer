@@ -734,4 +734,18 @@ describe('Touchscreen', () => {
       }).rejects.toThrow('Must start a new Touch first');
     });
   });
+
+  describe('Touchscreen.prototype.touchEnd', () => {
+    it('should throw when ending touch through Touchscreeen that was already ended', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.PREFIX + '/input/touchscreen.html');
+
+      const touch = await page.touchscreen.touchStart(100, 100);
+      await touch.move(50, 100);
+      await touch.end();
+      await expect(async () => {
+        await page.touchscreen.touchEnd();
+      }).rejects.toThrow('Must start a new Touch first');
+    });
+  });
 });

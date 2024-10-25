@@ -622,23 +622,26 @@ class BidiTouch implements TouchHandle {
   #y: number;
   #bidiId: string;
   #page: BidiPage;
+  #touchScreen: BidiTouchscreen;
   #properties: Bidi.Input.PointerCommonProperties;
 
   constructor(
     page: BidiPage,
+    touchScreen: BidiTouchscreen,
     public id: number,
     x: number,
     y: number,
     properties: Bidi.Input.PointerCommonProperties,
   ) {
     this.#page = page;
+    this.#touchScreen = touchScreen;
     this.#x = Math.round(x);
     this.#y = Math.round(y);
     this.#properties = properties;
     this.#bidiId = `${InputId.Finger}_${id}`;
   }
 
-  public async start(): Promise<void> {
+  async start(): Promise<void> {
     if (this.#started) {
       return;
     }
@@ -666,7 +669,7 @@ class BidiTouch implements TouchHandle {
     this.#started = true;
   }
 
-  public move(x: number, y: number): Promise<void> {
+  move(x: number, y: number): Promise<void> {
     const newX = Math.round(x);
     const newY = Math.round(y);
     return this.#page.mainFrame().browsingContext.performActions([
@@ -688,8 +691,8 @@ class BidiTouch implements TouchHandle {
     ]);
   }
 
-  public end(): Promise<void> {
-    return this.#page.mainFrame().browsingContext.performActions([
+  async end(): Promise<void> {
+    await this.#page.mainFrame().browsingContext.performActions([
       {
         type: SourceActionsType.Pointer,
         id: this.#bidiId,
@@ -704,6 +707,7 @@ class BidiTouch implements TouchHandle {
         ],
       },
     ]);
+    this.#touchScreen.removeHandle(this);
   }
 }
 /**
@@ -719,6 +723,14 @@ export class BidiTouchscreen extends Touchscreen {
     this.#page = page;
   }
 
+  removeHandle(handle: BidiTouch): void {
+    const index = this.#touches.indexOf(handle);
+    if (index === -1) {
+      return;
+    }
+    this.#touches.splice(index, 1);
+  }
+
   override async touchStart(x: number, y: number): Promise<TouchHandle> {
     const id = this.#idRepository.getId();
     const properties: Bidi.Input.PointerCommonProperties = {
@@ -727,7 +739,7 @@ export class BidiTouchscreen extends Touchscreen {
       pressure: 0.5,
       altitudeAngle: Math.PI / 2,
     };
-    const touch = new BidiTouch(this.#page, id, x, y, properties);
+    const touch = new BidiTouch(this.#page, this, id, x, y, properties);
     await touch.start();
     this.#touches.push(touch);
     return touch;
@@ -744,7 +756,7 @@ export class BidiTouchscreen extends Touchscreen {
   override async touchEnd(): Promise<void> {
     const touch = this.#touches.shift();
     if (!touch) {
-      return;
+      throw new TouchError('Must start a new Touch first');
     }
     await touch.end();
     this.#idRepository.releaseId(touch.id);
