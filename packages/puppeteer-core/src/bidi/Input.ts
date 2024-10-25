@@ -11,6 +11,7 @@ import {
   Keyboard,
   Mouse,
   MouseButton,
+  Touchscreen,
   type TouchHandle,
   type KeyboardTypeOptions,
   type KeyDownOptions,
@@ -22,8 +23,8 @@ import {
 } from '../api/Input.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {TouchError} from '../common/Errors.js';
-import {Touchscreen} from '../common/Touchscreen.js';
 import type {KeyInput} from '../common/USKeyboardLayout.js';
+import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
 
 import type {BidiPage} from './Page.js';
 
@@ -712,19 +713,26 @@ class BidiTouch implements TouchHandle {
 /**
  * @internal
  */
-export class BidiTouchscreen extends Touchscreen<BidiTouch> {
+export class BidiTouchscreen extends Touchscreen {
   #page: BidiPage;
+  #idGenerator = createIncrementalIdGenerator();
+  #touches: BidiTouch[] = [];
 
   constructor(page: BidiPage) {
     super();
     this.#page = page;
   }
 
-  protected override async createTouch(
-    x: number,
-    y: number,
-    id: number,
-  ): Promise<BidiTouch> {
+  removeHandle(handle: BidiTouch): void {
+    const index = this.#touches.indexOf(handle);
+    if (index === -1) {
+      return;
+    }
+    this.#touches.splice(index, 1);
+  }
+
+  override async touchStart(x: number, y: number): Promise<TouchHandle> {
+    const id = this.#idGenerator();
     const properties: Bidi.Input.PointerCommonProperties = {
       width: 0.5 * 2, // 2 times default touch radius.
       height: 0.5 * 2, // 2 times default touch radius.
@@ -733,6 +741,23 @@ export class BidiTouchscreen extends Touchscreen<BidiTouch> {
     };
     const touch = new BidiTouch(this.#page, this, id, x, y, properties);
     await touch.start();
+    this.#touches.push(touch);
     return touch;
+  }
+
+  override async touchMove(x: number, y: number): Promise<void> {
+    const touch = this.#touches[0];
+    if (!touch) {
+      throw new TouchError('Must start a new Touch first');
+    }
+    return await touch.move(x, y);
+  }
+
+  override async touchEnd(): Promise<void> {
+    const touch = this.#touches.shift();
+    if (!touch) {
+      throw new TouchError('Must start a new Touch first');
+    }
+    await touch.end();
   }
 }
