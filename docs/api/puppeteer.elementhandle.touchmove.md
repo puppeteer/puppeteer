@@ -50,7 +50,7 @@ touch
 
 </td><td>
 
-_(Optional)_ An optional TouchHandle. If provided, this touch will be moved. If not provided, the first active touch will be moved.
+_(Optional)_ An optional [TouchHandle](./puppeteer.touchhandle.md). If provided, this touch will be moved. If not provided, the first active touch will be moved.
 
 </td></tr>
 </tbody></table>

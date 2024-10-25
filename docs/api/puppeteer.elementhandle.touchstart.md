@@ -45,4 +45,4 @@ this
 
 Promise&lt;[TouchHandle](./puppeteer.touchhandle.md)&gt;
 
-A handle for the touch that was started
+A [TouchHandle](./puppeteer.touchhandle.md) representing the touch that was started

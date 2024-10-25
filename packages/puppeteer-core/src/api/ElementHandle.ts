@@ -1001,7 +1001,7 @@ export abstract class ElementHandle<
   /**
    * This method scrolls the element into view if needed, and then
    * starts a touch in the center of the element.
-   * @returns A handle for the touch that was started
+   * @returns A {@link TouchHandle} representing the touch that was started
    */
   @throwIfDisposed()
   @bindIsolatedHandle
@@ -1014,7 +1014,7 @@ export abstract class ElementHandle<
   /**
    * This method scrolls the element into view if needed, and then
    * moves the touch to the center of the element.
-   * @param touch - An optional TouchHandle. If provided, this touch
+   * @param touch - An optional {@link TouchHandle}. If provided, this touch
    * will be moved. If not provided, the first active touch will be moved.
    */
   @throwIfDisposed()
