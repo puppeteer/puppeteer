@@ -641,7 +641,7 @@ class BidiTouch implements TouchHandle {
     this.#bidiId = `${InputId.Finger}_${id}`;
   }
 
-  async start(): Promise<void> {
+  async start(options: BidiTouchMoveOptions = {}): Promise<void> {
     if (this.#started) {
       throw new TouchError('Touch has already started');
     }
@@ -657,6 +657,7 @@ class BidiTouch implements TouchHandle {
             type: ActionType.PointerMove,
             x: this.#x,
             y: this.#y,
+            origin: options.origin,
           },
           {
             ...this.#properties,
@@ -669,7 +670,11 @@ class BidiTouch implements TouchHandle {
     this.#started = true;
   }
 
-  move(x: number, y: number): Promise<void> {
+  move(
+    x: number,
+    y: number,
+    options: BidiTouchMoveOptions = {},
+  ): Promise<void> {
     const newX = Math.round(x);
     const newY = Math.round(y);
     return this.#page.mainFrame().browsingContext.performActions([
@@ -685,6 +690,7 @@ class BidiTouch implements TouchHandle {
             type: ActionType.PointerMove,
             x: newX,
             y: newY,
+            origin: options.origin,
           },
         ],
       },
@@ -731,7 +737,11 @@ export class BidiTouchscreen extends Touchscreen {
     this.#touches.splice(index, 1);
   }
 
-  override async touchStart(x: number, y: number): Promise<TouchHandle> {
+  override async touchStart(
+    x: number,
+    y: number,
+    options: BidiTouchMoveOptions = {},
+  ): Promise<TouchHandle> {
     const id = this.#idGenerator();
     const properties: Bidi.Input.PointerCommonProperties = {
       width: 0.5 * 2, // 2 times default touch radius.
@@ -740,17 +750,21 @@ export class BidiTouchscreen extends Touchscreen {
       altitudeAngle: Math.PI / 2,
     };
     const touch = new BidiTouch(this.#page, this, id, x, y, properties);
-    await touch.start();
+    await touch.start(options);
     this.#touches.push(touch);
     return touch;
   }
 
-  override async touchMove(x: number, y: number): Promise<void> {
+  override async touchMove(
+    x: number,
+    y: number,
+    options: BidiTouchMoveOptions = {},
+  ): Promise<void> {
     const touch = this.#touches[0];
     if (!touch) {
       throw new TouchError('Must start a new Touch first');
     }
-    return await touch.move(x, y);
+    return await touch.move(x, y, options);
   }
 
   override async touchEnd(): Promise<void> {
