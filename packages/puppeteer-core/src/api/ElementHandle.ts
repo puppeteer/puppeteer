@@ -28,6 +28,7 @@ import type {
   KeyboardTypeOptions,
   KeyPressOptions,
   MouseClickOptions,
+  TouchHandle,
 } from './Input.js';
 import {JSHandle} from './JSHandle.js';
 import type {
@@ -997,19 +998,36 @@ export abstract class ElementHandle<
     await this.frame.page().touchscreen.tap(x, y);
   }
 
+  /**
+   * This method scrolls the element into view if needed, and then
+   * starts a touch in the center of the element.
+   * @returns A {@link TouchHandle} representing the touch that was started
+   */
   @throwIfDisposed()
   @bindIsolatedHandle
-  async touchStart(this: ElementHandle<Element>): Promise<void> {
+  async touchStart(this: ElementHandle<Element>): Promise<TouchHandle> {
     await this.scrollIntoViewIfNeeded();
     const {x, y} = await this.clickablePoint();
-    await this.frame.page().touchscreen.touchStart(x, y);
+    return await this.frame.page().touchscreen.touchStart(x, y);
   }
 
+  /**
+   * This method scrolls the element into view if needed, and then
+   * moves the touch to the center of the element.
+   * @param touch - An optional {@link TouchHandle}. If provided, this touch
+   * will be moved. If not provided, the first active touch will be moved.
+   */
   @throwIfDisposed()
   @bindIsolatedHandle
-  async touchMove(this: ElementHandle<Element>): Promise<void> {
+  async touchMove(
+    this: ElementHandle<Element>,
+    touch?: TouchHandle,
+  ): Promise<void> {
     await this.scrollIntoViewIfNeeded();
     const {x, y} = await this.clickablePoint();
+    if (touch) {
+      return await touch.move(x, y);
+    }
     await this.frame.page().touchscreen.touchMove(x, y);
   }
 

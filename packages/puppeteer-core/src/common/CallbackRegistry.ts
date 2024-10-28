@@ -6,6 +6,7 @@
 
 import {Deferred} from '../util/Deferred.js';
 import {rewriteError} from '../util/ErrorLike.js';
+import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
 
 import {ProtocolError, TargetCloseError} from './Errors.js';
 import {debugError} from './util.js';
@@ -159,18 +160,3 @@ export class Callback {
     return this.#label;
   }
 }
-
-/**
- * @internal
- */
-export function createIncrementalIdGenerator(): GetIdFn {
-  let id = 0;
-  return (): number => {
-    return ++id;
-  };
-}
-
-/**
- * @internal
- */
-export type GetIdFn = () => number;

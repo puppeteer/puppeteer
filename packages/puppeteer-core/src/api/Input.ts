@@ -469,7 +469,22 @@ export abstract class Mouse {
     options?: {delay?: number},
   ): Promise<void>;
 }
-
+/**
+ * The TouchHandle interface exposes methods to manipulate touches that have been started
+ * @public
+ */
+export interface TouchHandle {
+  /**
+   * Dispatches a `touchMove` event for this touch.
+   * @param x - Horizontal position of the move.
+   * @param y - Vertical position of the move.
+   */
+  move(x: number, y: number): Promise<void>;
+  /**
+   * Dispatches a `touchend` event for this touch.
+   */
+  end(): Promise<void>;
+}
 /**
  * The Touchscreen class exposes touchscreen events.
  * @public
@@ -486,19 +501,20 @@ export abstract class Touchscreen {
    * @param y - Vertical position of the tap.
    */
   async tap(x: number, y: number): Promise<void> {
-    await this.touchStart(x, y);
-    await this.touchEnd();
+    const touch = await this.touchStart(x, y);
+    await touch.end();
   }
 
   /**
    * Dispatches a `touchstart` event.
    * @param x - Horizontal position of the tap.
    * @param y - Vertical position of the tap.
+   * @returns A handle for the touch that was started.
    */
-  abstract touchStart(x: number, y: number): Promise<void>;
+  abstract touchStart(x: number, y: number): Promise<TouchHandle>;
 
   /**
-   * Dispatches a `touchMove` event.
+   * Dispatches a `touchMove` event on the first touch that is active.
    * @param x - Horizontal position of the move.
    * @param y - Vertical position of the move.
    *
@@ -512,7 +528,7 @@ export abstract class Touchscreen {
   abstract touchMove(x: number, y: number): Promise<void>;
 
   /**
-   * Dispatches a `touchend` event.
+   * Dispatches a `touchend` event on the first touch that is active.
    */
   abstract touchEnd(): Promise<void>;
 }
