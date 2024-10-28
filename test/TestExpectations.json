@@ -1031,6 +1031,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[chromiumonly.spec] Chromium-Specific Launcher tests Puppeteer.launch |browserURL| option should throw when trying to connect to non-existing browser",
+    "platforms": ["win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "Suddenly started flaking on the pinned browser version 131.0.3"
+  },
+  {
     "testIdPattern": "[chromiumonly.spec] Chromium-Specific Page Tests Page.setRequestInterception should work with intervention headers",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
