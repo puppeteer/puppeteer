@@ -178,7 +178,11 @@ export class ExtensionTransport implements ConnectionTransport {
           id: parsed.id,
           sessionId: parsed.sessionId ?? 'pageTargetSessionId',
           method: parsed.method,
-          error: err,
+          error: {
+            code: err?.code,
+            data: err?.data,
+            message: err?.message ?? 'CDP error had no message',
+          },
         });
       });
   }
