@@ -20,6 +20,16 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [23.6.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.6.0...puppeteer-core-v23.6.1) (2024-10-28)
+
+
+### Bug Fixes
+
+* correctly handle errors in the ExtensionTransport ([#13244](https://github.com/puppeteer/puppeteer/issues/13244)) ([1fee9ff](https://github.com/puppeteer/puppeteer/commit/1fee9ff269d59e9750b264fe46c9b8be7d36bff1))
+* roll to Chrome 130.0.6723.69 ([#13227](https://github.com/puppeteer/puppeteer/issues/13227)) ([76390bf](https://github.com/puppeteer/puppeteer/commit/76390bf5ac1cb6d70962f3a99cbfd43675ed8e4f))
+* **webdriver:** consider subdomain in cookie filtering ([#13232](https://github.com/puppeteer/puppeteer/issues/13232)) ([98102ec](https://github.com/puppeteer/puppeteer/commit/98102ececf253ef6f0305d4dfb96e23981ea02f2))
+* **webdriver:** partially handle client-side redirects in page.goto ([#13222](https://github.com/puppeteer/puppeteer/issues/13222)) ([442ed05](https://github.com/puppeteer/puppeteer/commit/442ed05b67c806339edf5fffee37fe27e7f410a3))
+
 ## [23.6.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.5.3...puppeteer-core-v23.6.0) (2024-10-16)
 
 
