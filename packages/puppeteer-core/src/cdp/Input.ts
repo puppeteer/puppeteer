@@ -566,7 +566,6 @@ class CdpTouch implements TouchHandle {
     client: CDPSession,
     touchScreen: CdpTouchscreen,
     keyboard: CdpKeyboard,
-    public id: number,
     touchPoint: Protocol.Input.TouchPoint,
   ) {
     this.#client = client;
@@ -651,13 +650,7 @@ export class CdpTouchscreen extends Touchscreen {
       force: 0.5,
       id,
     };
-    const touch = new CdpTouch(
-      this.#client,
-      this,
-      this.#keyboard,
-      id,
-      touchPoint,
-    );
+    const touch = new CdpTouch(this.#client, this, this.#keyboard, touchPoint);
     await touch.start();
     this.#touches.push(touch);
     return touch;

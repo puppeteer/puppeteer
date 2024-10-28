@@ -628,7 +628,7 @@ class BidiTouch implements TouchHandle {
   constructor(
     page: BidiPage,
     touchScreen: BidiTouchscreen,
-    public id: number,
+    id: number,
     x: number,
     y: number,
     properties: Bidi.Input.PointerCommonProperties,
