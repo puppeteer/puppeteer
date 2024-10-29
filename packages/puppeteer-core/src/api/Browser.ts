@@ -300,9 +300,8 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * You can find the debugger URL (`webSocketDebuggerUrl`) from
    * `http://HOST:PORT/json/version`.
    *
-   * See {@link
-   * https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target
-   * | browser endpoint} for more information.
+   * See {@link https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target | browser endpoint}
+   * for more information.
    *
    * @remarks The format is always `ws://HOST:PORT/devtools/browser/<id>`.
    */
