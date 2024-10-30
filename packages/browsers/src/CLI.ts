@@ -9,8 +9,8 @@ import * as readline from 'readline';
 
 import ProgressBar from 'progress';
 import type * as Yargs from 'yargs';
+import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
-import yargs from 'yargs/yargs';
 
 import {
   resolveBuildId,
