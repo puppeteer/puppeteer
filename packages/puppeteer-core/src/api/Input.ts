@@ -6,7 +6,9 @@
 
 import type {Protocol} from 'devtools-protocol';
 
+import {TouchError} from '../common/Errors.js';
 import type {KeyInput} from '../common/USKeyboardLayout.js';
+import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
 
 import type {Point} from './ElementHandle.js';
 
@@ -493,7 +495,26 @@ export abstract class Touchscreen {
   /**
    * @internal
    */
+  idGenerator = createIncrementalIdGenerator();
+  /**
+   * @internal
+   */
+  touches: TouchHandle[] = [];
+  /**
+   * @internal
+   */
   constructor() {}
+
+  /**
+   * @internal
+   */
+  removeHandle(handle: TouchHandle): void {
+    const index = this.touches.indexOf(handle);
+    if (index === -1) {
+      return;
+    }
+    this.touches.splice(index, 1);
+  }
 
   /**
    * Dispatches a `touchstart` and `touchend` event.
@@ -525,10 +546,22 @@ export abstract class Touchscreen {
    * {@link https://developer.chrome.com/blog/a-more-compatible-smoother-touch/#chromes-new-model-the-throttled-async-touchmove-model | throttles}
    * touch move events.
    */
-  abstract touchMove(x: number, y: number): Promise<void>;
+  async touchMove(x: number, y: number): Promise<void> {
+    const touch = this.touches[0];
+    if (!touch) {
+      throw new TouchError('Must start a new Touch first');
+    }
+    return await touch.move(x, y);
+  }
 
   /**
    * Dispatches a `touchend` event on the first touch that is active.
    */
-  abstract touchEnd(): Promise<void>;
+  async touchEnd(): Promise<void> {
+    const touch = this.touches.shift();
+    if (!touch) {
+      throw new TouchError('Must start a new Touch first');
+    }
+    await touch.end();
+  }
 }

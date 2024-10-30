@@ -10,7 +10,7 @@ Dispatches a `touchend` event on the first touch that is active.
 
 ```typescript
 class Touchscreen {
-  abstract touchEnd(): Promise<void>;
+  touchEnd(): Promise<void>;
 }
 ```
 

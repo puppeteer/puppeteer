@@ -10,7 +10,7 @@ Dispatches a `touchMove` event on the first touch that is active.
 
 ```typescript
 class Touchscreen {
-  abstract touchMove(x: number, y: number): Promise<void>;
+  touchMove(x: number, y: number): Promise<void>;
 }
 ```
 
