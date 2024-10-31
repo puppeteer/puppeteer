@@ -1625,13 +1625,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[frame.spec] Frame specs Frame Management should support lazy frames",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[frame.spec] Frame specs Frame.evaluate should throw for detached frames",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -2352,13 +2345,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[network.spec] network Network Events Page.Events.RequestServedFromCache for stylesheet",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Needs Firefox support for network events for cached stylesheets https://bugzilla.mozilla.org/show_bug.cgi?id=1879438"
-  },
-  {
     "testIdPattern": "[network.spec] network Network Events Page.Events.Response",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -2555,13 +2541,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[network.spec] network Response.fromCache should work for stylesheet",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Needs Firefox support for network events for cached stylesheets https://bugzilla.mozilla.org/show_bug.cgi?id=1879438"
-  },
-  {
     "testIdPattern": "[network.spec] network Response.fromServiceWorker Response.fromServiceWorker",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -2658,13 +2637,6 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "Firefox does not support multiple sessions in BiDi."
-  },
-  {
-    "testIdPattern": "[oopif.spec] OOPIF should support lazy OOP frames",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "TIMEOUT"],
-    "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1878166"
   },
   {
     "testIdPattern": "[oopif.spec] OOPIF should wait for inner OOPIFs",
@@ -2987,13 +2959,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should cache stylesheet if cache enabled",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Needs Firefox support for network events for cached stylesheets https://bugzilla.mozilla.org/show_bug.cgi?id=1879438"
-  },
-  {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should work with file URLs",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -3055,13 +3020,6 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "TODO: BiDi does not support custom errors - https://github.com/w3c/webdriver-bidi/issues/508"
-  },
-  {
-    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should cache stylesheet if cache enabled",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Needs Firefox support for network events for cached stylesheets https://bugzilla.mozilla.org/show_bug.cgi?id=1879438"
   },
   {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should navigate to URL with hash and fire requests without hash",
