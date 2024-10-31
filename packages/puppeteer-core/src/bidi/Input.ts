@@ -669,11 +669,7 @@ class BidiTouchHandle implements TouchHandle {
     this.#started = true;
   }
 
-  move(
-    x: number,
-    y: number,
-    options: BidiTouchMoveOptions = {},
-  ): Promise<void> {
+  move(x: number, y: number): Promise<void> {
     const newX = Math.round(x);
     const newY = Math.round(y);
     return this.#page.mainFrame().browsingContext.performActions([
@@ -689,7 +685,6 @@ class BidiTouchHandle implements TouchHandle {
             type: ActionType.PointerMove,
             x: newX,
             y: newY,
-            origin: options.origin,
           },
         ],
       },
