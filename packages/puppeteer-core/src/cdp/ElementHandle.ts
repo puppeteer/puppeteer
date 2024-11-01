@@ -101,25 +101,30 @@ export class CdpElementHandle<
   @bindIsolatedHandle
   override async uploadFile(
     this: CdpElementHandle<HTMLInputElement>,
-    ...filePaths: string[]
+    ...files: string[]
   ): Promise<void> {
     const isMultiple = await this.evaluate(element => {
       return element.multiple;
     });
     assert(
-      filePaths.length <= 1 || isMultiple,
+      files.length <= 1 || isMultiple,
       'Multiple file uploads only work with <input type=file multiple>',
     );
 
     // Locate all files and confirm that they exist.
     const path = environment.value.path;
-    const files = filePaths.map(filePath => {
-      if (path.win32.isAbsolute(filePath) || path.posix.isAbsolute(filePath)) {
-        return filePath;
-      } else {
-        return path.resolve(filePath);
-      }
-    });
+    if (path) {
+      files = files.map(filePath => {
+        if (
+          path.win32.isAbsolute(filePath) ||
+          path.posix.isAbsolute(filePath)
+        ) {
+          return filePath;
+        } else {
+          return path.resolve(filePath);
+        }
+      });
+    }
 
     /**
      * The zero-length array is a special case, it seems that
