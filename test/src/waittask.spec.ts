@@ -334,6 +334,32 @@ describe('waittask specs', function () {
       abortController.abort();
       await expect(task).rejects.toThrow(/aborted/);
     });
+    it('can start multiple tasks without node warnings', async () => {
+      const {page} = await getTestState();
+      let warning: Error | undefined;
+      const warningHandler: NodeJS.WarningListener = w => {
+        warning = w;
+      };
+      process.on('warning', warningHandler);
+      process.setMaxListeners(1);
+      const abortController = new AbortController();
+      try {
+        for (let i = 0; i < 2; i++) {
+          await page.waitForFunction(
+            () => {
+              return true;
+            },
+            {
+              signal: abortController.signal,
+            },
+          );
+        }
+      } finally {
+        process.setMaxListeners(10);
+      }
+      process.off('warning', warningHandler);
+      expect(warning?.stack).toBe(undefined);
+    });
   });
 
   describe('Frame.waitForSelector', function () {

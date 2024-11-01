@@ -56,15 +56,9 @@ export class WaitTask<T = unknown> {
     this.#polling = options.polling;
     this.#root = options.root;
     this.#signal = options.signal;
-    this.#signal?.addEventListener(
-      'abort',
-      () => {
-        void this.terminate(this.#signal?.reason);
-      },
-      {
-        once: true,
-      },
-    );
+    this.#signal?.addEventListener('abort', this.#onAbortSignal, {
+      once: true,
+    });
 
     switch (typeof fn) {
       case 'string':
@@ -176,6 +170,8 @@ export class WaitTask<T = unknown> {
   async terminate(error?: Error): Promise<void> {
     this.#world.taskManager.delete(this);
 
+    this.#signal?.removeEventListener('abort', this.#onAbortSignal);
+
     clearTimeout(this.#timeout);
 
     if (error && !this.#result.finished()) {
@@ -242,6 +238,10 @@ export class WaitTask<T = unknown> {
       cause: error,
     });
   }
+
+  #onAbortSignal = () => {
+    void this.terminate(this.#signal?.reason);
+  };
 }
 
 /**
