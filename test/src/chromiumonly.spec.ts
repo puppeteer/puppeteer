@@ -44,45 +44,33 @@ describe('Chromium-Specific Launcher tests', function () {
       }
     });
     it('should throw when using both browserWSEndpoint and browserURL', async () => {
-      const {browser, close, puppeteer} = await launch({
-        args: ['--remote-debugging-port=21222'],
-      });
-      try {
-        const browserURL = 'http://127.0.0.1:21222';
+      const {puppeteer} = await getTestState({skipLaunch: true});
+      const browserURL = 'http://127.0.0.1:21222';
 
-        let error!: Error;
-        await puppeteer
-          .connect({
-            browserURL,
-            browserWSEndpoint: browser.wsEndpoint(),
-          })
-          .catch(error_ => {
-            return (error = error_);
-          });
-        expect(error.message).toContain(
-          'Exactly one of browserWSEndpoint, browserURL or transport',
-        );
-      } finally {
-        await close();
-      }
-    });
-    it('should throw when trying to connect to non-existing browser', async () => {
-      const {close, puppeteer} = await launch({
-        args: ['--remote-debugging-port=21222'],
-      });
-      try {
-        const browserURL = 'http://127.0.0.1:32333';
-
-        let error!: Error;
-        await puppeteer.connect({browserURL}).catch(error_ => {
+      let error!: Error;
+      await puppeteer
+        .connect({
+          browserURL,
+          browserWSEndpoint: 'ws://127.0.0.1:21222/devtools/browser/',
+        })
+        .catch(error_ => {
           return (error = error_);
         });
-        expect(error.message).toContain(
-          'Failed to fetch browser webSocket URL from',
-        );
-      } finally {
-        await close();
-      }
+      expect(error.message).toContain(
+        'Exactly one of browserWSEndpoint, browserURL or transport',
+      );
+    });
+    it('should throw when trying to connect to non-existing browser', async () => {
+      const {puppeteer} = await getTestState({skipLaunch: true});
+      const browserURL = 'http://127.0.0.1:32333';
+
+      let error!: Error;
+      await puppeteer.connect({browserURL}).catch(error_ => {
+        return (error = error_);
+      });
+      expect(error.message).toContain(
+        'Failed to fetch browser webSocket URL from',
+      );
     });
   });
 
