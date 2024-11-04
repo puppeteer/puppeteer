@@ -4,13 +4,13 @@ sidebar_label: Touchscreen.touchEnd
 
 # Touchscreen.touchEnd() method
 
-Dispatches a `touchend` event.
+Dispatches a `touchend` event on the first touch that is active.
 
 ### Signature
 
 ```typescript
 class Touchscreen {
-  abstract touchEnd(): Promise<void>;
+  touchEnd(): Promise<void>;
 }
 ```
 

@@ -4,13 +4,13 @@ sidebar_label: Touchscreen.touchMove
 
 # Touchscreen.touchMove() method
 
-Dispatches a `touchMove` event.
+Dispatches a `touchMove` event on the first touch that is active.
 
 ### Signature
 
 ```typescript
 class Touchscreen {
-  abstract touchMove(x: number, y: number): Promise<void>;
+  touchMove(x: number, y: number): Promise<void>;
 }
 ```
 

@@ -20,6 +20,28 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [23.7.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.6.1...puppeteer-core-v23.7.0) (2024-11-04)
+
+
+### Features
+
+* distinguish different Touches ([#13231](https://github.com/puppeteer/puppeteer/issues/13231)) ([a2a205c](https://github.com/puppeteer/puppeteer/commit/a2a205c2e8ffbc5b9c73bee0466ac0bf00fb4657))
+* roll to Firefox 132.0 ([#13252](https://github.com/puppeteer/puppeteer/issues/13252)) ([41d3dd9](https://github.com/puppeteer/puppeteer/commit/41d3dd9f0ceec5f551fc111f653645286169209f))
+
+
+### Bug Fixes
+
+* **browser:** omit file path validation in uploadFile() in browser environments ([#13258](https://github.com/puppeteer/puppeteer/issues/13258)) ([a9e6cd1](https://github.com/puppeteer/puppeteer/commit/a9e6cd1ed231c161ba83712b690fa6aab47a87a5))
+* remove event listeners from AbortSignal in WaitTask ([#13257](https://github.com/puppeteer/puppeteer/issues/13257)) ([4e5c0ad](https://github.com/puppeteer/puppeteer/commit/4e5c0ad1c770d6bd1785325cdf5c0a63f285e5c2))
+* roll to Chrome 130.0.6723.91 ([#13255](https://github.com/puppeteer/puppeteer/issues/13255)) ([8295e67](https://github.com/puppeteer/puppeteer/commit/8295e67874a31de43570c04b8608073808e5db0d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.4.0 to 2.4.1
+
 ## [23.6.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.6.0...puppeteer-core-v23.6.1) (2024-10-28)
 
 

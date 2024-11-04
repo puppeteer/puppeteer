@@ -523,6 +523,15 @@ Example operations are [page.waitForSelector](./puppeteer.page.waitforselector.m
 </td></tr>
 <tr><td>
 
+<span id="toucherror">[TouchError](./puppeteer.toucherror.md)</span>
+
+</td><td>
+
+TouchError is thrown when an attempt is made to move or end a touch that does not exist.
+
+</td></tr>
+<tr><td>
+
 <span id="touchscreen">[Touchscreen](./puppeteer.touchscreen.md)</span>
 
 </td><td>
@@ -1223,6 +1232,15 @@ Represents a Node and the properties of it that are relevant to Accessibility.
 </td><td>
 
 WebDriver BiDi capabilities that are not set by Puppeteer itself.
+
+</td></tr>
+<tr><td>
+
+<span id="touchhandle">[TouchHandle](./puppeteer.touchhandle.md)</span>
+
+</td><td>
+
+The TouchHandle interface exposes methods to manipulate touches that have been started
 
 </td></tr>
 <tr><td>
