@@ -16,7 +16,7 @@ export const isNode = !!(typeof process !== 'undefined' && process.version);
 
 export interface EnvironmentDependencies {
   fs: typeof FS;
-  path: typeof Path;
+  path?: typeof Path;
   ScreenRecorder: typeof ScreenRecorder;
 }
 
@@ -30,9 +30,6 @@ export const environment: {
   value: {
     get fs(): typeof FS {
       throw new Error('fs is not available in this environment');
-    },
-    get path(): typeof Path {
-      throw new Error('path is not available in this environment');
     },
     get ScreenRecorder(): typeof ScreenRecorder {
       throw new Error('ScreenRecorder is not available in this environment');
