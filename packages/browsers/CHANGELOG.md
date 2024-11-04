@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.1](https://github.com/puppeteer/puppeteer/compare/browsers-v2.4.0...browsers-v2.4.1) (2024-11-04)
+
+
+### Bug Fixes
+
+* **browsers:** correctly import yargs for esm module ([#13249](https://github.com/puppeteer/puppeteer/issues/13249)) ([694fef9](https://github.com/puppeteer/puppeteer/commit/694fef9f4ea61a9fa65a8dddff73dc6b81e8986a))
+
 ## [2.4.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.3.1...browsers-v2.4.0) (2024-09-04)
 
 
