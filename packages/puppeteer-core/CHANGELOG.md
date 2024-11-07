@@ -20,6 +20,16 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [23.7.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.7.0...puppeteer-core-v23.7.1) (2024-11-07)
+
+
+### Bug Fixes
+
+* roll to Chrome 130.0.6723.116 ([#13274](https://github.com/puppeteer/puppeteer/issues/13274)) ([979af2b](https://github.com/puppeteer/puppeteer/commit/979af2bccdd684bb26f61518cc42e248ad2c8cfb))
+* roll to Chrome 130.0.6723.93 ([#13268](https://github.com/puppeteer/puppeteer/issues/13268)) ([b7c7785](https://github.com/puppeteer/puppeteer/commit/b7c77852911164a1c167cb7cb0906cb27a70e122))
+* roll to Firefox 132.0.1 ([#13265](https://github.com/puppeteer/puppeteer/issues/13265)) ([acd3c72](https://github.com/puppeteer/puppeteer/commit/acd3c7249e06446709830daabd48ce4421496278))
+* **webdriver:** report frame URL as console message location ([#13273](https://github.com/puppeteer/puppeteer/issues/13273)) ([33b4f09](https://github.com/puppeteer/puppeteer/commit/33b4f09021faea6a3c639ff7fa7f96099a02ffd4))
+
 ## [23.7.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.6.1...puppeteer-core-v23.7.0) (2024-11-04)
 
 
