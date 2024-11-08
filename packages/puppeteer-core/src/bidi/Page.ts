@@ -303,6 +303,10 @@ export class BidiPage extends Page {
     return this._timeoutSettings.timeout();
   }
 
+  override getDefaultNavigationTimeout(): number {
+    return this._timeoutSettings.navigationTimeout();
+  }
+
   override isJavaScriptEnabled(): boolean {
     return this.#cdpEmulationManager.javascriptEnabled;
   }
