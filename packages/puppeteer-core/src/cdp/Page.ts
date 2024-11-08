@@ -552,6 +552,10 @@ export class CdpPage extends Page {
     return this._timeoutSettings.timeout();
   }
 
+  override getDefaultNavigationTimeout(): number {
+    return this._timeoutSettings.navigationTimeout();
+  }
+
   override async queryObjects<Prototype>(
     prototypeHandle: JSHandle<Prototype>,
   ): Promise<JSHandle<Prototype[]>> {
