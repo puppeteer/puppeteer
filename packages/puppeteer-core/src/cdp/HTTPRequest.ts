@@ -41,6 +41,7 @@ export class CdpHTTPRequest extends HTTPRequest {
   #headers: Record<string, string> = {};
   #frame: Frame | null;
   #initiator?: Protocol.Network.Initiator;
+  #urlFragment: any;
 
   override get client(): CDPSession {
     return this.#client;
@@ -86,6 +87,7 @@ export class CdpHTTPRequest extends HTTPRequest {
       data.requestId === data.loaderId && data.type === 'Document';
     this._interceptionId = interceptionId;
     this.#url = data.request.url;
+    this.#urlFragment = data.request.urlFragment;
     this.#resourceType = (data.type || 'other').toLowerCase() as ResourceType;
     this.#method = data.request.method;
     this.#postData = data.request.postData;
@@ -101,8 +103,8 @@ export class CdpHTTPRequest extends HTTPRequest {
     }
   }
 
-  override url(): string {
-    return this.#url;
+  override url({ withFragment }: { withFragment?: boolean } = {}): string {
+    return withFragment ? this.#url + this.#urlFragment : this.#url;
   }
 
   override resourceType(): ResourceType {
