@@ -424,7 +424,9 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
     for await (using iframe of transposeIterableHandle(list)) {
       const frame = await iframe.contentFrame();
       if (frame?._id === this._id) {
-        return (iframe as HandleFor<HTMLIFrameElement>).move();
+        return (await parentFrame
+          .mainRealm()
+          .adoptHandle(iframe)) as HandleFor<HTMLIFrameElement>;
       }
     }
     return null;
