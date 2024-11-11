@@ -341,5 +341,23 @@ describe('Frame specs', function () {
         }),
       ).toBe('iframe');
     });
+
+    it('should return ElementHandle in the correct world', async () => {
+      const {page, server} = await getTestState();
+      await attachFrame(page, 'theFrameId', server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        // @ts-expect-error different page context
+        globalThis['isMainWorld'] = true;
+      }, server.EMPTY_PAGE);
+      expect(page.frames()).toHaveLength(2);
+      using frame1 = await page.frames()[1]!.frameElement();
+      assert(frame1);
+      assert(
+        await frame1.evaluate(() => {
+          // @ts-expect-error different page context
+          return globalThis['isMainWorld'];
+        }),
+      );
+    });
   });
 });
