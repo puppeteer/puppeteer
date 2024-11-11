@@ -295,7 +295,8 @@ Represents an HTTP request sent by a page.
 
 Whenever the page sends a request, such as for a network resource, the following events are emitted by Puppeteer's `page`:
 
-- `request`: emitted when the request is issued by the page. - `requestfinished` - emitted when the response body is downloaded and the request is complete.
+- `request`: emitted when the request is issued by the page.
+- `requestfinished` - emitted when the response body is downloaded and the request is complete.
 
 If request fails at some point, then instead of `requestfinished` event the `requestfailed` event is emitted.
 
