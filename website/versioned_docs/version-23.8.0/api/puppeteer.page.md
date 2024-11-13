@@ -666,6 +666,17 @@ An array of all frames attached to the page.
 </td></tr>
 <tr><td>
 
+<span id="getdefaultnavigationtimeout">[getDefaultNavigationTimeout()](./puppeteer.page.getdefaultnavigationtimeout.md)</span>
+
+</td><td>
+
+</td><td>
+
+Maximum navigation time in milliseconds.
+
+</td></tr>
+<tr><td>
+
 <span id="getdefaulttimeout">[getDefaultTimeout()](./puppeteer.page.getdefaulttimeout.md)</span>
 
 </td><td>
