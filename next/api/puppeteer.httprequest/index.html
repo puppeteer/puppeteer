@@ -7,7 +7,7 @@
 
 <script src="https://www.googletagmanager.com/gtag/js?id=G-J15CTWBVHX" async></script>
 <script src="/fix-location.js"></script><link rel="stylesheet" href="/assets/css/styles.a9000ca9.css">
-<script src="/assets/js/runtime~main.93ccbf61.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.52323d11.js" defer="defer"></script>
 <script src="/assets/js/main.a0b3118d.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -18,7 +18,12 @@
 <h2 class="anchor anchorWithStickyNavbar_FNw8" id="remarks">Remarks<a href="#remarks" class="hash-link" aria-label="Direct link to Remarks" title="Direct link to Remarks">​</a></h2>
 <p>Whenever the page sends a request, such as for a network resource, the following events are emitted by Puppeteer&#x27;s <code>page</code>:</p>
 <ul>
-<li><code>request</code>: emitted when the request is issued by the page. - <code>requestfinished</code> - emitted when the response body is downloaded and the request is complete.</li>
+<li>
+<p><code>request</code>: emitted when the request is issued by the page.</p>
+</li>
+<li>
+<p><code>requestfinished</code> - emitted when the response body is downloaded and the request is complete.</p>
+</li>
 </ul>
 <p>If request fails at some point, then instead of <code>requestfinished</code> event the <code>requestfailed</code> event is emitted.</p>
 <p>All of these events provide an instance of <code>HTTPRequest</code> representing the request that occurred:</p>
