@@ -2093,13 +2093,6 @@
     "comment": "For some reason it times out on MacOS. Perhaps it's a bug in chromium-bidi"
   },
   {
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch userDataDir option should restore cookies",
-    "platforms": ["darwin"],
-    "parameters": ["cdp", "chrome-headless-shell"],
-    "expectations": ["FAIL"],
-    "comment": "Started to fail on Mac with Chrome 130. TODO: file an issue."
-  },
-  {
     "testIdPattern": "[locator.spec] Locator Locator.race races multiple locators",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
