@@ -20,6 +20,20 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [23.8.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.7.1...puppeteer-core-v23.8.0) (2024-11-13)
+
+
+### Features
+
+* roll to Chrome 131.0.6778.69 ([#13291](https://github.com/puppeteer/puppeteer/issues/13291)) ([34568e0](https://github.com/puppeteer/puppeteer/commit/34568e0b2d9e8a95050bd60e54d1d21b1cd0558c))
+
+
+### Bug Fixes
+
+* add getDefaultNavigationTimeout to Page ([#13277](https://github.com/puppeteer/puppeteer/issues/13277)) ([8b64c2c](https://github.com/puppeteer/puppeteer/commit/8b64c2cd01f7df44c1b667c4f1f2b676e0fab0a8))
+* roll to Firefox 132.0.2 ([#13293](https://github.com/puppeteer/puppeteer/issues/13293)) ([aae6b33](https://github.com/puppeteer/puppeteer/commit/aae6b33cd0053ce75ad66e91d804f288fa8c9794))
+* **webdriver:** frameElement() should return handles in the main world ([#13287](https://github.com/puppeteer/puppeteer/issues/13287)) ([2fde1ce](https://github.com/puppeteer/puppeteer/commit/2fde1ce4e09c4b084033537baea77fdd58b0c213))
+
 ## [23.7.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.7.0...puppeteer-core-v23.7.1) (2024-11-07)
 
 
