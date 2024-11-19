@@ -185,11 +185,15 @@ export function waitForFileExistence(
 ): Promise<void> {
   return new Promise(async (resolve, reject) => {
     await access(filePath, constants.R_OK)
-      .then(() => resolve())
+      .then(() => {
+        return resolve();
+      })
       .catch();
 
     const timer = setTimeout(() => {
-      reject(new Error(`Exceeded timeout of ${timeout} ms for watching ${filePath}`));
+      reject(
+        new Error(`Exceeded timeout of ${timeout} ms for watching ${filePath}`),
+      );
     }, timeout);
 
     const dir = dirname(filePath);

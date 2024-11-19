@@ -73,13 +73,7 @@ export class CdpBrowser extends BrowserBase {
         ignore: true,
       });
     }
-    if (downloadBehavior) {
-      await connection.send('Browser.setDownloadBehavior', {
-        behavior: downloadBehavior.policy,
-        downloadPath: downloadBehavior.downloadPath,
-      });
-    }
-    await browser._attach();
+    await browser._attach(downloadBehavior);
     return browser;
   }
   #defaultViewport?: Viewport | null;
@@ -142,8 +136,11 @@ export class CdpBrowser extends BrowserBase {
     this.emit(BrowserEvent.Disconnected, undefined);
   };
 
-  async _attach(): Promise<void> {
+  async _attach(downloadBehavior: DownloadBehavior | undefined): Promise<void> {
     this.#connection.on(CDPSessionEvent.Disconnected, this.#emitDisconnected);
+    if (downloadBehavior) {
+      await this.#defaultContext.setDownloadBehavior(downloadBehavior);
+    }
     this.#targetManager.on(
       TargetManagerEvent.TargetAvailable,
       this.#onAttachedToTarget,
@@ -219,16 +216,14 @@ export class CdpBrowser extends BrowserBase {
         proxyBypassList: proxyBypassList && proxyBypassList.join(','),
       },
     );
-    await this.#connection.send('Browser.setDownloadBehavior', {
-      behavior: downloadBehavior?.policy ?? 'default',
-      browserContextId: browserContextId,
-      downloadPath: downloadBehavior?.downloadPath,
-    });
     const context = new CdpBrowserContext(
       this.#connection,
       this,
       browserContextId,
     );
+    if (downloadBehavior) {
+      await context.setDownloadBehavior(downloadBehavior);
+    }
     this.#contexts.set(browserContextId, context);
     return context;
   }
