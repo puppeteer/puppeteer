@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {access, watch} from 'fs';
-import {constants, rm} from 'fs/promises';
+import {access, constants, rm, watch} from 'fs/promises';
 import {tmpdir} from 'os';
 import {basename, dirname} from 'path';
 
@@ -183,30 +182,24 @@ export function rmIfExists(file: string): Promise<void> {
 export function waitForFileExistence(
   filePath: string,
   timeout = 5000,
-): Promise<boolean> {
-  return new Promise((resolve, reject) => {
-    access(filePath, constants.R_OK, err => {
-      if (!err) {
-        resolve(true);
-      }
-    });
+): Promise<void> {
+  return new Promise(async (resolve, reject) => {
+    await access(filePath, constants.R_OK)
+      .then(() => resolve())
+      .catch();
 
     const timer = setTimeout(() => {
-      if (watcher) {
-        watcher.close();
-      }
       reject(new Error(`Exceeded timeout of ${timeout} ms for watching ${filePath}`));
     }, timeout);
 
     const dir = dirname(filePath);
     const fileBasename = basename(filePath);
-    const watcher = watch(dir, (eventType, filename) => {
-      if (eventType === 'rename' && filename === fileBasename) {
-        // NOTE: closing the watcher tends not to happen immediately for some reason.
-        watcher.close();
+    const watcher = watch(dir);
+    for await (const event of watcher) {
+      if (event.eventType === 'rename' && event.filename === fileBasename) {
         clearTimeout(timer);
-        resolve(true);
+        resolve();
       }
-    });
+    }
   });
 }
