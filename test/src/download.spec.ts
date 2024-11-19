@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {mkdtemp, rmdir} from 'fs/promises';
+import {mkdtemp, rm} from 'fs/promises';
 import {tmpdir} from 'os';
 import {join} from 'path';
 
@@ -22,7 +22,7 @@ describe('Download', () => {
   });
 
   afterEach(async () => {
-    await rmdir(tempDir);
+    await rm(tempDir, { recursive: true, force: true });
   });
 
   describe('Browser.createBrowserContext', () => {
