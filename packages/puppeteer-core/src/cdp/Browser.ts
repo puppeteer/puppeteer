@@ -202,7 +202,7 @@ export class CdpBrowser extends BrowserBase {
   override async createBrowserContext(
     options: BrowserContextOptions = {},
   ): Promise<CdpBrowserContext> {
-    const {proxyServer, proxyBypassList} = options;
+    const {proxyServer, proxyBypassList, downloadBehavior} = options;
 
     const {browserContextId} = await this.#connection.send(
       'Target.createBrowserContext',
@@ -211,6 +211,11 @@ export class CdpBrowser extends BrowserBase {
         proxyBypassList: proxyBypassList && proxyBypassList.join(','),
       },
     );
+    await this.#connection.send('Browser.setDownloadBehavior', {
+      behavior: downloadBehavior?.policy ?? 'default',
+      browserContextId: browserContextId,
+      downloadPath: downloadBehavior?.downloadPath,
+    });
     const context = new CdpBrowserContext(
       this.#connection,
       this,

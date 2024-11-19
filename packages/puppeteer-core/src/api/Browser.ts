@@ -15,6 +15,7 @@ import {
   raceWith,
 } from '../../third_party/rxjs/rxjs.js';
 import type {ProtocolType} from '../common/ConnectOptions.js';
+import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {
   debugError,
@@ -41,6 +42,10 @@ export interface BrowserContextOptions {
    * Bypass the proxy for the given list of hosts.
    */
   proxyBypassList?: string[];
+  /**
+   * Behavior definition for when downloading a file
+   */
+  downloadBehavior?: DownloadBehavior;
 }
 
 /**
