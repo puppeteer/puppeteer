@@ -39,3 +39,4 @@ export * from './util.js';
 export type * from './Viewport.js';
 export * from './WaitTask.js';
 export * from './XPathQueryHandler.js';
+export * from './DownloadBehavior.js';

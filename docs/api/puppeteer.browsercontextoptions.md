@@ -43,7 +43,7 @@ Default
 
 </td><td>
 
-DownloadBehavior
+[DownloadBehavior](./puppeteer.downloadbehavior.md)
 
 </td><td>
 

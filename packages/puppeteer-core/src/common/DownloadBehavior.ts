@@ -4,6 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * @public
+ */
 export type DownloadPolicy = 'deny' | 'allow' | 'allowAndName' | 'default';
 
 /**

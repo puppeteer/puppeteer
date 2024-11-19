@@ -87,7 +87,7 @@ Sets the viewport for each page.
 
 </td><td>
 
-DownloadBehavior
+[DownloadBehavior](./puppeteer.downloadbehavior.md)
 
 </td><td>
 
