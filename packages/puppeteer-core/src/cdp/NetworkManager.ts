@@ -725,11 +725,11 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     client: CDPSession,
     request: CdpHTTPRequest,
   ): void {
-    // Document requests for OOPIFs will in the parent frame but are adopted by their
-    // child frame, so loadingFinished and loadingFailed for these requests will be fired
-    // on the child session. In this case we reassign the request CDPSession to ensure all
-    // subsequent actions are called on the correct session (e.g. retrieving response body
-    // in HTTPResponse).
+    // Document requests for OOPIFs start in the parent frame but are adopted by their
+    // child frame, meaning their loadingFinished and loadingFailed events are fired on
+    // the child session. In this case we reassign the request CDPSession to ensure all
+    // subsequent actions use the correct session (e.g. retrieving response body in
+    // HTTPResponse).
     if (client !== request.client && request.isNavigationRequest()) {
       request.client = client;
     }
