@@ -636,6 +636,39 @@ describe('OOPIF', function () {
 
     expect(networkEvents).toContain(`http://oopifdomain:${server.PORT}/fetch`);
   });
+
+  it('should retrieve body for OOPIF document requests', async () => {
+    const {server, page} = state;
+
+    const frameUrl =
+      server.PREFIX.replace('localhost', 'oopifdomain') +
+      '/oopif-response.html';
+
+    expect.assertions(1);
+
+    let testResponse = null;
+
+    page.on('response', async response => {
+      if (response.request().url() === frameUrl) {
+        testResponse = response;
+      }
+    });
+
+    // Navigate to the empty page and add an OOPIF iframe.
+    await page.goto(server.EMPTY_PAGE);
+    await page.evaluate((frameUrl: string) => {
+      const frame = document.createElement('iframe');
+      frame.setAttribute('src', frameUrl);
+      document.body.appendChild(frame);
+      return new Promise((x, y) => {
+        frame.onload = x;
+        frame.onerror = y;
+      });
+    }, frameUrl);
+    await page.waitForSelector('iframe');
+
+    await expect(testResponse!.text()).resolves.toMatch("I'm an OOPIF");
+  });
 });
 
 async function iframes(page: Page) {

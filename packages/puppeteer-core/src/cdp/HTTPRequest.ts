@@ -46,6 +46,10 @@ export class CdpHTTPRequest extends HTTPRequest {
     return this.#client;
   }
 
+  override set client(newClient: CDPSession) {
+    this.#client = newClient;
+  }
+
   constructor(
     client: CDPSession,
     frame: Frame | null,
