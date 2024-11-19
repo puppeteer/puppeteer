@@ -43,7 +43,10 @@ export interface BrowserContextOptions {
    */
   proxyBypassList?: string[];
   /**
-   * Behavior definition for when downloading a file
+   * Behavior definition for when downloading a file.
+   * 
+   * @remarks
+   * If not set, the default behavior will be used.
    */
   downloadBehavior?: DownloadBehavior;
 }

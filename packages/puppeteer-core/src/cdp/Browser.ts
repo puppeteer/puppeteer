@@ -21,6 +21,7 @@ import {BrowserContextEvent} from '../api/BrowserContext.js';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
+import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import type {Viewport} from '../common/Viewport.js';
 
 import {CdpBrowserContext} from './BrowserContext.js';
@@ -49,6 +50,7 @@ export class CdpBrowser extends BrowserBase {
     contextIds: string[],
     acceptInsecureCerts: boolean,
     defaultViewport?: Viewport | null,
+    downloadBehavior?: DownloadBehavior,
     process?: ChildProcess,
     closeCallback?: BrowserCloseCallback,
     targetFilterCallback?: TargetFilterCallback,
@@ -69,6 +71,12 @@ export class CdpBrowser extends BrowserBase {
     if (acceptInsecureCerts) {
       await connection.send('Security.setIgnoreCertificateErrors', {
         ignore: true,
+      });
+    }
+    if (downloadBehavior) {
+      await connection.send('Browser.setDownloadBehavior', {
+        behavior: downloadBehavior.policy,
+        downloadPath: downloadBehavior.downloadPath,
       });
     }
     await browser._attach();
