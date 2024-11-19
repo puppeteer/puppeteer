@@ -35,6 +35,29 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="downloadbehavior">downloadBehavior</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+DownloadBehavior
+
+</td><td>
+
+Behavior definition for when downloading a file.
+
+**Remarks:**
+
+If not set, the default behavior will be used.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="proxybypasslist">proxyBypassList</span>
 
 </td><td>
