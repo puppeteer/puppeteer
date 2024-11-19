@@ -7,10 +7,21 @@
 import expect from 'expect';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {waitForFileExistence} from './utils.js';
+import {rmIfExists, waitForFileExistence} from './utils.js';
+import { mkdtemp } from 'fs/promises';
+import { join } from 'path';
 
 describe("Download", () => {
     setupTestBrowserHooks();
+    let tempDir: string;
+
+    beforeEach(async () => {
+        tempDir = await mkdtemp("");
+    });
+
+    afterEach(async () => {
+        await rmIfExists(tempDir);
+    })
 
     describe("Browser.createBrowserContext", () => {
         it('should download to configured location', async () => {
@@ -19,13 +30,13 @@ describe("Download", () => {
             const context = await browser.createBrowserContext({
               downloadBehavior: {
                 policy: 'allow',
-                downloadPath: '/tmp',
+                downloadPath: tempDir,
               },
             });
             const page = await context.newPage();
             await page.goto(server.PREFIX + '/download.html');
             await page.click('#download');
-            await waitForFileExistence('/tmp/download.txt');
+            await waitForFileExistence(join(tempDir, 'download.txt'));
           });
           it('should not download to location', async () => {
             const {browser, server} = await getTestState();
@@ -39,7 +50,7 @@ describe("Download", () => {
             const page = await context.newPage();
             await page.goto(server.PREFIX + '/download.html');
             await page.click('#download');
-            expect(waitForFileExistence('/tmp/download.txt')).rejects.toThrow();
+            expect(waitForFileExistence(join(tempDir, 'download.txt'))).rejects.toThrow();
           });
     });
 });
