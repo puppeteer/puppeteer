@@ -5,6 +5,7 @@
  */
 
 import {mkdtemp, rmdir} from 'fs/promises';
+import {tmpdir} from 'os';
 import {join} from 'path';
 
 import expect from 'expect';
@@ -17,7 +18,7 @@ describe('Download', () => {
   let tempDir: string;
 
   beforeEach(async () => {
-    tempDir = await mkdtemp('');
+    tempDir = await mkdtemp(join(tmpdir(), 'downloads-'));
   });
 
   afterEach(async () => {
