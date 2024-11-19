@@ -7,7 +7,6 @@
 import expect from 'expect';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {waitForFileExistence} from './utils.js';
 
 describe('Coverage specs', function () {
   setupTestBrowserHooks();
@@ -338,22 +337,6 @@ describe('Coverage specs', function () {
         const coverage = await page.coverage.stopCSSCoverage();
         expect(coverage).toHaveLength(0);
       });
-    });
-  });
-  describe('download behavior', () => {
-    it('should download to configured location', async () => {
-      const {browser, server} = await getTestState();
-
-      const context = await browser.createBrowserContext({
-        downloadBehavior: {
-          policy: 'allow',
-          downloadPath: '/tmp',
-        },
-      });
-      const page = await context.newPage();
-      await page.goto(server.PREFIX + '/download.html');
-      await page.click('#download');
-      await waitForFileExistence('/tmp/download.txt');
     });
   });
 });

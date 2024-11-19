@@ -195,7 +195,7 @@ export function waitForFileExistence(
       if (watcher) {
         watcher.close();
       }
-      reject(`Exceeded timeout of ${timeout} ms for watching ${filePath}`);
+      reject(new Error(`Exceeded timeout of ${timeout} ms for watching ${filePath}`));
     }, timeout);
 
     const dir = dirname(filePath);
