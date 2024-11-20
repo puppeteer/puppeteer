@@ -181,7 +181,7 @@ export function rmIfExists(file: string): Promise<void> {
 
 export async function waitForFileExistence(
   filePath: string,
-  timeout = 5000,
+  timeout = 1000,
 ): Promise<void> {
   try {
     await access(filePath, constants.R_OK);
