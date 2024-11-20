@@ -10,6 +10,7 @@ import {
 } from '../api/Browser.js';
 import {BrowserContext} from '../api/BrowserContext.js';
 import type {Page} from '../api/Page.js';
+import type {Cookie} from '../common/Cookie.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import {assert} from '../util/assert.js';
 
@@ -98,6 +99,40 @@ export class CdpBrowserContext extends BrowserContext {
   override async close(): Promise<void> {
     assert(this.#id, 'Default BrowserContext cannot be closed!');
     await this.#browser._disposeContext(this.#id);
+  }
+
+  override async cookies(): Promise<Cookie[]> {
+    const {cookies} = await this.#connection.send('Storage.getCookies', {
+      browserContextId: this.#id || undefined,
+    });
+    return cookies.map(cookie => {
+      return {
+        ...cookie,
+        // TODO: a breaking change is needed in Puppeteer types to support other
+        // partition keys.
+        partitionKey: cookie.partitionKey
+          ? cookie.partitionKey.topLevelSite
+          : undefined,
+      };
+    });
+  }
+
+  override async setCookie(...cookies: Cookie[]): Promise<void> {
+    return await this.#connection.send('Storage.setCookies', {
+      cookies: cookies.map(cookie => {
+        return {
+          ...cookie,
+          // TODO: a breaking change is needed in Puppeteer types to support other
+          // partition keys.
+          partitionKey: cookie.partitionKey
+            ? {
+                topLevelSite: cookie.partitionKey,
+                hasCrossSiteAncestor: false,
+              }
+            : undefined,
+        };
+      }),
+    });
   }
 
   public async setDownloadBehavior(

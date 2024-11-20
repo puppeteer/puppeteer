@@ -12,6 +12,7 @@ import type {BrowserContextEvents} from '../api/BrowserContext.js';
 import {BrowserContext, BrowserContextEvent} from '../api/BrowserContext.js';
 import {PageEvent, type Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
+import type {Cookie} from '../common/Cookie.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -22,7 +23,12 @@ import type {BidiBrowser} from './Browser.js';
 import type {BrowsingContext} from './core/BrowsingContext.js';
 import {UserContext} from './core/UserContext.js';
 import type {BidiFrame} from './Frame.js';
-import {BidiPage} from './Page.js';
+import {
+  BidiPage,
+  bidiToPuppeteerCookie,
+  cdpSpecificCookiePropertiesFromPuppeteerToBidi,
+  convertCookiesSameSiteCdpToBiDi,
+} from './Page.js';
 import {BidiWorkerTarget} from './Target.js';
 import {BidiFrameTarget, BidiPageTarget} from './Target.js';
 import type {BidiWebWorker} from './WebWorker.js';
@@ -280,5 +286,44 @@ export class BidiBrowserContext extends BrowserContext {
       return undefined;
     }
     return this.userContext.id;
+  }
+
+  override async cookies(): Promise<Cookie[]> {
+    const cookies = await this.userContext.getCookies();
+    return cookies.map(bidiToPuppeteerCookie);
+  }
+
+  override async setCookie(...cookies: Cookie[]): Promise<void> {
+    await Promise.all(
+      cookies.map(async cookie => {
+        const bidiCookie: Bidi.Storage.PartialCookie = {
+          domain: cookie.domain,
+          name: cookie.name,
+          value: {
+            type: 'string',
+            value: cookie.value,
+          },
+          ...(cookie.path !== undefined ? {path: cookie.path} : {}),
+          ...(cookie.httpOnly !== undefined ? {httpOnly: cookie.httpOnly} : {}),
+          ...(cookie.secure !== undefined ? {secure: cookie.secure} : {}),
+          ...(cookie.sameSite !== undefined
+            ? {sameSite: convertCookiesSameSiteCdpToBiDi(cookie.sameSite)}
+            : {}),
+          ...(cookie.expires !== undefined ? {expiry: cookie.expires} : {}),
+          // Chrome-specific properties.
+          ...cdpSpecificCookiePropertiesFromPuppeteerToBidi(
+            cookie,
+            'sameParty',
+            'sourceScheme',
+            'priority',
+            'url',
+          ),
+        };
+        return await this.userContext.setCookie(
+          bidiCookie,
+          cookie.partitionKey,
+        );
+      }),
+    );
   }
 }

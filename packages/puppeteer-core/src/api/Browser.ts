@@ -24,6 +24,7 @@ import {
   timeout,
   fromAbortSignal,
 } from '../common/util.js';
+import type {Cookie} from '../puppeteer-core.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
 import type {BrowserContext} from './BrowserContext.js';
@@ -423,6 +424,26 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * process running.
    */
   abstract disconnect(): Promise<void>;
+
+  /**
+   * Returns all cookies in the default {@link BrowserContext}.
+   */
+  async cookies(): Promise<Cookie[]> {
+    return await this.defaultBrowserContext().cookies();
+  }
+  /**
+   * Sets cookies in the default {@link BrowserContext}.
+   */
+  async setCookie(...cookies: Cookie[]): Promise<void> {
+    return await this.defaultBrowserContext().setCookie(...cookies);
+  }
+
+  /**
+   * Sets cookies in the default {@link BrowserContext}.
+   */
+  async deleteCookie(...cookies: Cookie[]): Promise<void> {
+    return await this.defaultBrowserContext().deleteCookie(...cookies);
+  }
 
   /**
    * Whether Puppeteer is connected to this {@link Browser | browser}.

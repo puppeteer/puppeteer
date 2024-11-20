@@ -922,7 +922,7 @@ function testUrlMatchCookie(cookie: Cookie, url: URL): boolean {
   return testUrlMatchCookiePath(cookie, normalizedUrl);
 }
 
-function bidiToPuppeteerCookie(bidiCookie: Bidi.Network.Cookie): Cookie {
+export function bidiToPuppeteerCookie(bidiCookie: Bidi.Network.Cookie): Cookie {
   const partitionKey = bidiCookie[CDP_SPECIFIC_PREFIX + 'partitionKey'];
 
   function getParitionKey(): {partitionKey?: string} {
@@ -985,7 +985,7 @@ function cdpSpecificCookiePropertiesFromBidiToPuppeteer(
  * Gets CDP-specific properties from the cookie, adds CDP-specific prefixes and returns
  * them as a new object which can be used in BiDi.
  */
-function cdpSpecificCookiePropertiesFromPuppeteerToBidi(
+export function cdpSpecificCookiePropertiesFromPuppeteerToBidi(
   cookieParam: CookieParam,
   ...propertyNames: Array<keyof CookieParam>
 ): Record<string, unknown> {
@@ -1004,7 +1004,7 @@ function convertCookiesSameSiteBiDiToCdp(
   return sameSite === 'strict' ? 'Strict' : sameSite === 'lax' ? 'Lax' : 'None';
 }
 
-function convertCookiesSameSiteCdpToBiDi(
+export function convertCookiesSameSiteCdpToBiDi(
   sameSite: CookieSameSite | undefined,
 ): Bidi.Network.SameSite {
   return sameSite === 'Strict'
