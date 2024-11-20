@@ -3516,7 +3516,7 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[oopif.spec] should retrieve body for OOPIF document requests",
+    "testIdPattern": "[oopif.spec] OOPIF should retrieve body for OOPIF document requests",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
