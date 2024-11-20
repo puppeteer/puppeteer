@@ -179,31 +179,35 @@ export function rmIfExists(file: string): Promise<void> {
   return rm(file).catch(() => {});
 }
 
-export function waitForFileExistence(
+export async function waitForFileExistence(
   filePath: string,
-  timeout = 5000,
+  timeout = 1000,
 ): Promise<void> {
-  return new Promise(async (resolve, reject) => {
-    await access(filePath, constants.R_OK)
-      .then(() => {
-        return resolve();
-      })
-      .catch();
+  try {
+    await access(filePath, constants.R_OK);
+  } catch {
+    return await new Promise(async (resolve, reject) => {
+      const abortController = new AbortController();
+      const timer = setTimeout(() => {
+        abortController.abort();
+        reject(
+          new Error(
+            `Exceeded timeout of ${timeout} ms for watching ${filePath}`,
+          ),
+        );
+      }, timeout);
 
-    const timer = setTimeout(() => {
-      reject(
-        new Error(`Exceeded timeout of ${timeout} ms for watching ${filePath}`),
-      );
-    }, timeout);
+      const dir = dirname(filePath);
+      const fileBasename = basename(filePath);
 
-    const dir = dirname(filePath);
-    const fileBasename = basename(filePath);
-    const watcher = watch(dir);
-    for await (const event of watcher) {
-      if (event.eventType === 'rename' && event.filename === fileBasename) {
-        clearTimeout(timer);
-        resolve();
+      const watcher = watch(dir, {signal: abortController.signal});
+      for await (const event of watcher) {
+        if (event.eventType === 'rename' && event.filename === fileBasename) {
+          clearTimeout(timer);
+          abortController.abort();
+          resolve();
+        }
       }
-    }
-  });
+    });
+  }
 }
