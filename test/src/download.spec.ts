@@ -22,7 +22,7 @@ describe('Download', () => {
   });
 
   afterEach(async () => {
-    await rm(tempDir, { recursive: true, force: true });
+    await rm(tempDir, {recursive: true, force: true});
   });
 
   describe('Browser.createBrowserContext', () => {
@@ -41,9 +41,11 @@ describe('Download', () => {
       await waitForFileExistence(join(tempDir, 'download.txt'));
     });
     it('should not download to location', async () => {
-      const {browser, server} = await getTestState();
+      const {browser, server} = await getTestState({
+        skipContextCreation: true,
+      });
 
-      const context = await browser.createBrowserContext({
+      using context = await browser.createBrowserContext({
         downloadBehavior: {
           policy: 'deny',
           downloadPath: '/tmp',

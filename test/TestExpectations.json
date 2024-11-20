@@ -1298,9 +1298,16 @@
   {
     "testIdPattern": "[download.spec] *",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox", "webDriverBiDi"],
+    "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "This feature has no implementation in Firefox at the moment"
+    "comment": "This feature is not supported by WebDriver BiDi"
+  },
+  {
+    "testIdPattern": "[download.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"],
+    "comment": "CDP support in Firefox is deprecated and will not get new features"
   },
   {
     "testIdPattern": "[drag-and-drop.spec] Drag n' Drop should drag and drop",
