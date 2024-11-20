@@ -27,9 +27,11 @@ describe('Download', () => {
 
   describe('Browser.createBrowserContext', () => {
     it('should download to configured location', async () => {
-      const {browser, server} = await getTestState();
+      const {browser, server} = await getTestState({
+        skipContextCreation: true,
+      });
 
-      const context = await browser.createBrowserContext({
+      using context = await browser.createBrowserContext({
         downloadBehavior: {
           policy: 'allow',
           downloadPath: tempDir,
