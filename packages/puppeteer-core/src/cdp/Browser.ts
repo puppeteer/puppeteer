@@ -21,6 +21,7 @@ import {BrowserContextEvent} from '../api/BrowserContext.js';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
+import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import type {Viewport} from '../common/Viewport.js';
 
 import {CdpBrowserContext} from './BrowserContext.js';
@@ -49,6 +50,7 @@ export class CdpBrowser extends BrowserBase {
     contextIds: string[],
     acceptInsecureCerts: boolean,
     defaultViewport?: Viewport | null,
+    downloadBehavior?: DownloadBehavior,
     process?: ChildProcess,
     closeCallback?: BrowserCloseCallback,
     targetFilterCallback?: TargetFilterCallback,
@@ -71,7 +73,7 @@ export class CdpBrowser extends BrowserBase {
         ignore: true,
       });
     }
-    await browser._attach();
+    await browser._attach(downloadBehavior);
     return browser;
   }
   #defaultViewport?: Viewport | null;
@@ -134,8 +136,11 @@ export class CdpBrowser extends BrowserBase {
     this.emit(BrowserEvent.Disconnected, undefined);
   };
 
-  async _attach(): Promise<void> {
+  async _attach(downloadBehavior: DownloadBehavior | undefined): Promise<void> {
     this.#connection.on(CDPSessionEvent.Disconnected, this.#emitDisconnected);
+    if (downloadBehavior) {
+      await this.#defaultContext.setDownloadBehavior(downloadBehavior);
+    }
     this.#targetManager.on(
       TargetManagerEvent.TargetAvailable,
       this.#onAttachedToTarget,
@@ -202,7 +207,7 @@ export class CdpBrowser extends BrowserBase {
   override async createBrowserContext(
     options: BrowserContextOptions = {},
   ): Promise<CdpBrowserContext> {
-    const {proxyServer, proxyBypassList} = options;
+    const {proxyServer, proxyBypassList, downloadBehavior} = options;
 
     const {browserContextId} = await this.#connection.send(
       'Target.createBrowserContext',
@@ -216,6 +221,9 @@ export class CdpBrowser extends BrowserBase {
       this,
       browserContextId,
     );
+    if (downloadBehavior) {
+      await context.setDownloadBehavior(downloadBehavior);
+    }
     this.#contexts.set(browserContextId, context);
     return context;
   }

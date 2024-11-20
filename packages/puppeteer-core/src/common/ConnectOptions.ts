@@ -12,6 +12,7 @@ import type {
 } from '../api/Browser.js';
 
 import type {ConnectionTransport} from './ConnectionTransport.js';
+import type {DownloadBehavior} from './DownloadBehavior.js';
 import type {Viewport} from './Viewport.js';
 
 /**
@@ -54,6 +55,10 @@ export interface BrowserConnectOptions {
    * @defaultValue '\{width: 800, height: 600\}'
    */
   defaultViewport?: Viewport | null;
+  /**
+   * Sets the download behavior for the context.
+   */
+  downloadBehavior?: DownloadBehavior;
   /**
    * Slows down Puppeteer operations by the specified amount of milliseconds to
    * aid debugging.

@@ -10,6 +10,7 @@ import {
 } from '../api/Browser.js';
 import {BrowserContext} from '../api/BrowserContext.js';
 import type {Page} from '../api/Page.js';
+import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import {assert} from '../util/assert.js';
 
 import type {CdpBrowser} from './Browser.js';
@@ -97,5 +98,15 @@ export class CdpBrowserContext extends BrowserContext {
   override async close(): Promise<void> {
     assert(this.#id, 'Default BrowserContext cannot be closed!');
     await this.#browser._disposeContext(this.#id);
+  }
+
+  public async setDownloadBehavior(
+    downloadBehavior: DownloadBehavior,
+  ): Promise<void> {
+    await this.#connection.send('Browser.setDownloadBehavior', {
+      behavior: downloadBehavior.policy,
+      downloadPath: downloadBehavior.downloadPath,
+      browserContextId: this.#id,
+    });
   }
 }

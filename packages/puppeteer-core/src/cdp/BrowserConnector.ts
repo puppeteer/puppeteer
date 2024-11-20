@@ -28,6 +28,7 @@ export async function _connectToCdpBrowser(
   const {
     acceptInsecureCerts = false,
     defaultViewport = DEFAULT_VIEWPORT,
+    downloadBehavior,
     targetFilter,
     _isPageTarget: isPageTarget,
     slowMo = 0,
@@ -55,6 +56,7 @@ export async function _connectToCdpBrowser(
     browserContextIds,
     acceptInsecureCerts,
     defaultViewport,
+    downloadBehavior,
     undefined,
     () => {
       return connection.send('Browser.close').catch(debugError);

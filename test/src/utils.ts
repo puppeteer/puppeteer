@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {rm} from 'fs/promises';
+import {access, constants, rm, watch} from 'fs/promises';
 import {tmpdir} from 'os';
+import {basename, dirname} from 'path';
 
 import expect from 'expect';
 import type {Frame} from 'puppeteer-core/internal/api/Frame.js';
@@ -176,4 +177,35 @@ export function getUniqueVideoFilePlaceholder(): FilePlaceholder {
 
 export function rmIfExists(file: string): Promise<void> {
   return rm(file).catch(() => {});
+}
+
+export async function waitForFileExistence(
+  filePath: string,
+  timeout = 1000,
+): Promise<void> {
+  try {
+    await access(filePath, constants.R_OK);
+  } catch {
+    return await new Promise(async (resolve, reject) => {
+      const abortController = new AbortController();
+      const timer = setTimeout(() => {
+        abortController.abort();
+        reject(
+          new Error(
+            `Exceeded timeout of ${timeout} ms for watching ${filePath}`,
+          ),
+        );
+      }, timeout);
+      const dir = dirname(filePath);
+      const fileBasename = basename(filePath);
+      const watcher = watch(dir, {signal: abortController.signal});
+      for await (const event of watcher) {
+        if (event.eventType === 'rename' && event.filename === fileBasename) {
+          clearTimeout(timer);
+          abortController.abort();
+          resolve();
+        }
+      }
+    });
+  }
 }
