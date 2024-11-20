@@ -439,7 +439,7 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
   }
 
   /**
-   * Sets cookies in the default {@link BrowserContext}.
+   * Removes cookies from the default {@link BrowserContext}.
    */
   async deleteCookie(...cookies: Cookie[]): Promise<void> {
     return await this.defaultBrowserContext().deleteCookie(...cookies);

@@ -108,8 +108,6 @@ export class CdpBrowserContext extends BrowserContext {
     return cookies.map(cookie => {
       return {
         ...cookie,
-        // TODO: a breaking change is needed in Puppeteer types to support other
-        // partition keys.
         partitionKey: cookie.partitionKey
           ? cookie.partitionKey.topLevelSite
           : undefined,
@@ -122,8 +120,6 @@ export class CdpBrowserContext extends BrowserContext {
       cookies: cookies.map(cookie => {
         return {
           ...cookie,
-          // TODO: a breaking change is needed in Puppeteer types to support other
-          // partition keys.
           partitionKey: cookie.partitionKey
             ? {
                 topLevelSite: cookie.partitionKey,
