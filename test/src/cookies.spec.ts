@@ -834,4 +834,62 @@ describe('Cookie specs', () => {
       expect(await page.cookies()).toHaveLength(0);
     });
   });
+  describe('BrowserContext.cookies', () => {
+    it('should find no cookies in new context', async () => {
+      const {browser} = await getTestState({
+        skipContextCreation: true,
+      });
+      const context = await browser.createBrowserContext();
+      expect(await context.cookies()).toEqual([]);
+    });
+    it('should find cookie created in page', async () => {
+      const {page, server, context} = await getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        document.cookie = 'infoCookie = secret';
+      });
+
+      await expectCookieEquals(await context.cookies(), [
+        {
+          name: 'infoCookie',
+          value: 'secret',
+          domain: 'localhost',
+          path: '/',
+          sameParty: false,
+          expires: -1,
+          size: 16,
+          httpOnly: false,
+          secure: false,
+          session: true,
+          sourceScheme: 'NonSecure',
+        },
+      ]);
+    });
+  });
+  describe('BrowserContext.setCookie', function () {
+    it('should work', async () => {
+      const {page, context, server} = await getTestState();
+      await context.setCookie({
+        name: 'infoCookie',
+        value: 'secret',
+        domain: 'localhost',
+        path: '/',
+        sameParty: false,
+        expires: -1,
+        size: 16,
+        httpOnly: false,
+        secure: false,
+        session: true,
+        sourceScheme: 'NonSecure',
+      });
+
+      await page.goto(server.EMPTY_PAGE);
+
+      expect(
+        await page.evaluate(() => {
+          return document.cookie;
+        }),
+      ).toEqual('infoCookie=secret');
+    });
+  });
 });
