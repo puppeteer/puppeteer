@@ -199,7 +199,7 @@ The default [browser context](./puppeteer.browsercontext.md) cannot be closed.
 
 </td><td>
 
-Sets cookies in the default [BrowserContext](./puppeteer.browsercontext.md).
+Removes cookies from the default [BrowserContext](./puppeteer.browsercontext.md).
 
 </td></tr>
 <tr><td>

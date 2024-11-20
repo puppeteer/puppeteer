@@ -4,7 +4,7 @@ sidebar_label: Browser.deleteCookie
 
 # Browser.deleteCookie() method
 
-Sets cookies in the default [BrowserContext](./puppeteer.browsercontext.md).
+Removes cookies from the default [BrowserContext](./puppeteer.browsercontext.md).
 
 ### Signature
 
