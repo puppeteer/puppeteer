@@ -15,6 +15,7 @@ import {
   raceWith,
 } from '../../third_party/rxjs/rxjs.js';
 import type {ProtocolType} from '../common/ConnectOptions.js';
+import type {Cookie} from '../common/Cookie.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {
@@ -24,7 +25,6 @@ import {
   timeout,
   fromAbortSignal,
 } from '../common/util.js';
-import type {Cookie} from '../puppeteer-core.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
 import type {BrowserContext} from './BrowserContext.js';

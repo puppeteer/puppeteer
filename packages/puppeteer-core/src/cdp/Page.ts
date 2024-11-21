@@ -611,7 +611,9 @@ export class CdpPage extends Page {
     for (const cookie of cookies) {
       const item = {
         ...cookie,
-        partitionKey: convertCookiesPartitionKeyFromPuppeteerToCdp(cookie.partitionKey),
+        partitionKey: convertCookiesPartitionKeyFromPuppeteerToCdp(
+          cookie.partitionKey,
+        ),
       };
       if (!cookie.url && pageURL.startsWith('http')) {
         item.url = pageURL;
