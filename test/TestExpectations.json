@@ -3428,7 +3428,7 @@
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set cookie with all available properties",
     "platforms": ["linux"],
-    "parameters": ["cdp", "firefox", "headless"],
+    "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"],
     "comment": "Firefox CDP does not support cookie settings"
   },
