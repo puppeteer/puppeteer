@@ -929,6 +929,13 @@ Set of configurable options for CSS coverage.
 </td></tr>
 <tr><td>
 
+<span id="downloadbehavior">[DownloadBehavior](./puppeteer.downloadbehavior.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="elementscreenshotoptions">[ElementScreenshotOptions](./puppeteer.elementscreenshotoptions.md)</span>
 
 </td><td>
@@ -1468,6 +1475,13 @@ Represents the cookie's 'SameSite' status: https://tools.ietf.org/html/draft-wes
 </td><td>
 
 Represents the source scheme of the origin that originally set the cookie. A value of "Unset" allows protocol clients to emulate legacy cookie scope for the scheme. This is a temporary ability and it will be removed in the future.
+
+</td></tr>
+<tr><td>
+
+<span id="downloadpolicy">[DownloadPolicy](./puppeteer.downloadpolicy.md)</span>
+
+</td><td>
 
 </td></tr>
 <tr><td>

@@ -79,6 +79,25 @@ Sets the viewport for each page.
 </td></tr>
 <tr><td>
 
+<span id="downloadbehavior">downloadBehavior</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[DownloadBehavior](./puppeteer.downloadbehavior.md)
+
+</td><td>
+
+Sets the download behavior for the context.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="protocol">protocol</span>
 
 </td><td>
