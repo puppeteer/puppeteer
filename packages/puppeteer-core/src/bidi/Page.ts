@@ -758,7 +758,7 @@ export class BidiPage extends Page {
         ...(cookie.sameSite !== undefined
           ? {sameSite: convertCookiesSameSiteCdpToBiDi(cookie.sameSite)}
           : {}),
-        ...(cookie.expires !== undefined ? {expiry: cookie.expires} : {}),
+        ...{expiry: convertCookiesExpiryCdpToBiDi(cookie.expires)},
         // Chrome-specific properties.
         ...cdpSpecificCookiePropertiesFromPuppeteerToBidi(
           cookie,
@@ -1012,4 +1012,10 @@ export function convertCookiesSameSiteCdpToBiDi(
     : sameSite === 'Lax'
       ? Bidi.Network.SameSite.Lax
       : Bidi.Network.SameSite.None;
+}
+
+export function convertCookiesExpiryCdpToBiDi(
+  expiry: number | undefined,
+): number | undefined {
+  return [undefined, -1].includes(expiry) ? undefined : expiry;
 }

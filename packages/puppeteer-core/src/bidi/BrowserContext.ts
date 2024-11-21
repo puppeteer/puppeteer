@@ -27,6 +27,7 @@ import {
   BidiPage,
   bidiToPuppeteerCookie,
   cdpSpecificCookiePropertiesFromPuppeteerToBidi,
+  convertCookiesExpiryCdpToBiDi,
   convertCookiesSameSiteCdpToBiDi,
 } from './Page.js';
 import {BidiWorkerTarget} from './Target.js';
@@ -309,7 +310,7 @@ export class BidiBrowserContext extends BrowserContext {
           ...(cookie.sameSite !== undefined
             ? {sameSite: convertCookiesSameSiteCdpToBiDi(cookie.sameSite)}
             : {}),
-          ...(cookie.expires !== undefined ? {expiry: cookie.expires} : {}),
+          ...{expiry: convertCookiesExpiryCdpToBiDi(cookie.expires)},
           // Chrome-specific properties.
           ...cdpSpecificCookiePropertiesFromPuppeteerToBidi(
             cookie,

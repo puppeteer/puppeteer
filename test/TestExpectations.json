@@ -251,13 +251,6 @@
     "comment": "The test relies on the default page partition key do not contain the source origin. This is not the case for Firefox."
   },
   {
-    "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set cookie with all available properties",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL"],
-    "comment": "Chromium-specific test. The sourceScheme property is chromium-specific."
-  },
-  {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set secure same-site cookies from a frame",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
@@ -1141,13 +1134,6 @@
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"],
     "comment": "Firefox CDP does not support Storage.getCookies (UnknownMethodError)"
-  },
-  {
-    "testIdPattern": "[cookies.spec] Cookie specs BrowserContext.setCookie should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "expiry value `-1` not supported by BiDi"
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs BrowserContext.setCookie should work",
