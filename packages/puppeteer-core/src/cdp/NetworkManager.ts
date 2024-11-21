@@ -514,17 +514,12 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   }
 
   #handleRequestRedirect(
-    client: CDPSession,
+    _client: CDPSession,
     request: CdpHTTPRequest,
     responsePayload: Protocol.Network.Response,
     extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null,
   ): void {
-    const response = new CdpHTTPResponse(
-      client,
-      request,
-      responsePayload,
-      extraInfo,
-    );
+    const response = new CdpHTTPResponse(request, responsePayload, extraInfo);
     request._response = response;
     request._redirectChain.push(request);
     response._resolveBody(
@@ -536,7 +531,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   }
 
   #emitResponseEvent(
-    client: CDPSession,
+    _client: CDPSession,
     responseReceived: Protocol.Network.ResponseReceivedEvent,
     extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null,
   ): void {
@@ -568,7 +563,6 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     }
 
     const response = new CdpHTTPResponse(
-      client,
       request,
       responseReceived.response,
       extraInfo,
@@ -627,10 +621,10 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
         event,
       );
       if (queuedEvents.loadingFinishedEvent) {
-        this.#emitLoadingFinished(queuedEvents.loadingFinishedEvent);
+        this.#emitLoadingFinished(client, queuedEvents.loadingFinishedEvent);
       }
       if (queuedEvents.loadingFailedEvent) {
-        this.#emitLoadingFailed(queuedEvents.loadingFailedEvent);
+        this.#emitLoadingFailed(client, queuedEvents.loadingFailedEvent);
       }
       return;
     }
@@ -654,7 +648,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   }
 
   #onLoadingFinished(
-    _client: CDPSession,
+    client: CDPSession,
     event: Protocol.Network.LoadingFinishedEvent,
   ): void {
     // If the response event for this request is still waiting on a
@@ -665,17 +659,22 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     if (queuedEvents) {
       queuedEvents.loadingFinishedEvent = event;
     } else {
-      this.#emitLoadingFinished(event);
+      this.#emitLoadingFinished(client, event);
     }
   }
 
-  #emitLoadingFinished(event: Protocol.Network.LoadingFinishedEvent): void {
+  #emitLoadingFinished(
+    client: CDPSession,
+    event: Protocol.Network.LoadingFinishedEvent,
+  ): void {
     const request = this.#networkEventManager.getRequest(event.requestId);
     // For certain requestIds we never receive requestWillBeSent event.
     // @see https://crbug.com/750469
     if (!request) {
       return;
     }
+
+    this.#maybeReassignOOPIFRequestClient(client, request);
 
     // Under certain conditions we never get the Network.responseReceived
     // event from protocol. @see https://crbug.com/883475
@@ -687,7 +686,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   }
 
   #onLoadingFailed(
-    _client: CDPSession,
+    client: CDPSession,
     event: Protocol.Network.LoadingFailedEvent,
   ): void {
     // If the response event for this request is still waiting on a
@@ -698,17 +697,21 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     if (queuedEvents) {
       queuedEvents.loadingFailedEvent = event;
     } else {
-      this.#emitLoadingFailed(event);
+      this.#emitLoadingFailed(client, event);
     }
   }
 
-  #emitLoadingFailed(event: Protocol.Network.LoadingFailedEvent): void {
+  #emitLoadingFailed(
+    client: CDPSession,
+    event: Protocol.Network.LoadingFailedEvent,
+  ): void {
     const request = this.#networkEventManager.getRequest(event.requestId);
     // For certain requestIds we never receive requestWillBeSent event.
     // @see https://crbug.com/750469
     if (!request) {
       return;
     }
+    this.#maybeReassignOOPIFRequestClient(client, request);
     request._failureText = event.errorText;
     const response = request.response();
     if (response) {
@@ -716,5 +719,19 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     }
     this.#forgetRequest(request, true);
     this.emit(NetworkManagerEvent.RequestFailed, request);
+  }
+
+  #maybeReassignOOPIFRequestClient(
+    client: CDPSession,
+    request: CdpHTTPRequest,
+  ): void {
+    // Document requests for OOPIFs start in the parent frame but are adopted by their
+    // child frame, meaning their loadingFinished and loadingFailed events are fired on
+    // the child session. In this case we reassign the request CDPSession to ensure all
+    // subsequent actions use the correct session (e.g. retrieving response body in
+    // HTTPResponse).
+    if (client !== request.client && request.isNavigationRequest()) {
+      request.client = client;
+    }
   }
 }

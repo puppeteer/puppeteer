@@ -591,6 +591,13 @@
     "comment": "chrome-headless-shell does not have a PDF viewer"
   },
   {
+    "testIdPattern": "[oopif.spec] OOPIF should retrieve body for OOPIF document requests",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Response body retrieval not yet supported in WebDriver BiDi implementations"
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.addScriptTag should throw when added with content to the CSP page",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -2644,6 +2651,13 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "Firefox does not support multiple sessions in BiDi."
+  },
+  {
+    "testIdPattern": "[oopif.spec] OOPIF should retrieve body for OOPIF document requests",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "Chrome-specific test (uses DNS mapping); does not work with Firefox."
   },
   {
     "testIdPattern": "[oopif.spec] OOPIF should wait for inner OOPIFs",
