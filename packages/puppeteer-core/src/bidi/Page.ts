@@ -735,7 +735,7 @@ export class BidiPage extends Page {
         `Data URL page can not have cookie "${cookie.name}"`,
       );
       assert(
-        typeof cookie.partitionKey === 'string',
+        cookie.partitionKey === undefined || typeof cookie.partitionKey === 'string',
         `BiDi only allows domain partition keys`,
       );
 
