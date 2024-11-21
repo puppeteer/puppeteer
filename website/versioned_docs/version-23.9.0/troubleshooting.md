@@ -582,7 +582,7 @@ app.post('/test-puppeteer', (req, res) => {
 });
 ```
 
-If you want to run the stuff in the background, you need to "enable CPU always" even after responses are sent. That should fix it.
+If you want to run the stuff in the background, you need to "**enable CPU always**" (Go to Google Cloud Run Service > Edit & Deploy Revision > CPU allocation and pricing) even after responses are sent. That should fix it.
 
 #### Tips
 
