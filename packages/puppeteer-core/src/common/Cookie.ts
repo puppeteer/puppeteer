@@ -111,7 +111,7 @@ export interface Cookie {
    * source origin
    * (https://w3c.github.io/webdriver-bidi/#type-storage-PartitionKey).
    */
-  partitionKey?: string;
+  partitionKey?: ChromeCookiePartitionKey | string;
   /**
    * True if cookie partition key is opaque. Supported only in Chrome.
    */

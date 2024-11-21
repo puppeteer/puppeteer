@@ -28,6 +28,7 @@ import {
   bidiToPuppeteerCookie,
   cdpSpecificCookiePropertiesFromPuppeteerToBidi,
   convertCookiesExpiryCdpToBiDi,
+  convertCookiesPartitionKeyFromPuppeteerToBiDi,
   convertCookiesSameSiteCdpToBiDi,
 } from './Page.js';
 import {BidiWorkerTarget} from './Target.js';
@@ -322,7 +323,7 @@ export class BidiBrowserContext extends BrowserContext {
         };
         return await this.userContext.setCookie(
           bidiCookie,
-          cookie.partitionKey,
+          convertCookiesPartitionKeyFromPuppeteerToBiDi(cookie.partitionKey),
         );
       }),
     );

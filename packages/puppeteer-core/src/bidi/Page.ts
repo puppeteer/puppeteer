@@ -32,6 +32,7 @@ import type {
 } from '../cdp/NetworkManager.js';
 import {Tracing} from '../cdp/Tracing.js';
 import type {
+  ChromeCookiePartitionKey,
   Cookie,
   CookieParam,
   CookieSameSite,
@@ -735,7 +736,8 @@ export class BidiPage extends Page {
         `Data URL page can not have cookie "${cookie.name}"`,
       );
       assert(
-        cookie.partitionKey === undefined || typeof cookie.partitionKey === 'string',
+        cookie.partitionKey === undefined ||
+          typeof cookie.partitionKey === 'string',
         `BiDi only allows domain partition keys`,
       );
 
@@ -1022,4 +1024,13 @@ export function convertCookiesExpiryCdpToBiDi(
   expiry: number | undefined,
 ): number | undefined {
   return [undefined, -1].includes(expiry) ? undefined : expiry;
+}
+
+export function convertCookiesPartitionKeyFromPuppeteerToBiDi(
+  partitionKey: ChromeCookiePartitionKey | string | undefined,
+): string | undefined {
+  if (partitionKey === undefined || typeof partitionKey === 'string') {
+    return partitionKey;
+  }
+  return partitionKey.topLevelSite;
 }
