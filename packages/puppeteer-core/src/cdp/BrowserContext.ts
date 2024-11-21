@@ -16,6 +16,7 @@ import {assert} from '../util/assert.js';
 
 import type {CdpBrowser} from './Browser.js';
 import type {Connection} from './Connection.js';
+import {convertCookiesPartitionKeyFromPuppeteerToCdp} from './Page.js';
 import type {CdpTarget} from './Target.js';
 
 /**
@@ -120,12 +121,9 @@ export class CdpBrowserContext extends BrowserContext {
       cookies: cookies.map(cookie => {
         return {
           ...cookie,
-          partitionKey: cookie.partitionKey
-            ? {
-                topLevelSite: cookie.partitionKey,
-                hasCrossSiteAncestor: false,
-              }
-            : undefined,
+          partitionKey: convertCookiesPartitionKeyFromPuppeteerToCdp(
+            cookie.partitionKey,
+          ),
         };
       }),
     });

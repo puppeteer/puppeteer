@@ -30,6 +30,23 @@ export type CookiePriority = 'Low' | 'Medium' | 'High';
 export type CookieSourceScheme = 'Unset' | 'NonSecure' | 'Secure';
 
 /**
+ * Represents a cookie partition key in Chrome.
+ *
+ * @public
+ */
+export interface ChromeCookiePartitionKey {
+  /**
+   * The site of the top-level URL the browser was visiting at the start of the request
+   * to the endpoint that set the cookie.
+   */
+  topLevelSite: string;
+  /**
+   * Indicates if the cookie has any ancestors that are cross-site to the topLevelSite.
+   */
+  hasCrossSiteAncestor?: boolean;
+}
+
+/**
  * Represents a cookie object.
  *
  * @public
@@ -162,7 +179,7 @@ export interface CookieParam {
    * source origin
    * (https://w3c.github.io/webdriver-bidi/#type-storage-PartitionKey).
    */
-  partitionKey?: string;
+  partitionKey?: ChromeCookiePartitionKey | string;
 }
 
 /**
@@ -192,5 +209,5 @@ export interface DeleteCookiesRequest {
    * cookie is available in. In Firefox, it matches the source origin
    * (https://w3c.github.io/webdriver-bidi/#type-storage-PartitionKey).
    */
-  partitionKey?: string;
+  partitionKey?: ChromeCookiePartitionKey | string;
 }

@@ -34,6 +34,7 @@ import type {
   Cookie,
   DeleteCookiesRequest,
   CookieParam,
+  ChromeCookiePartitionKey,
 } from '../common/Cookie.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -610,11 +611,7 @@ export class CdpPage extends Page {
     for (const cookie of cookies) {
       const item = {
         ...cookie,
-        // TODO: a breaking change neeeded to change the partition key
-        // type in Puppeteer.
-        partitionKey: cookie.partitionKey
-          ? {topLevelSite: cookie.partitionKey, hasCrossSiteAncestor: false}
-          : undefined,
+        partitionKey: convertCookiesPartitionKeyFromPuppeteerToCdp(cookie.partitionKey),
       };
       if (!cookie.url && pageURL.startsWith('http')) {
         item.url = pageURL;
@@ -658,14 +655,9 @@ export class CdpPage extends Page {
         cookies: items.map(cookieParam => {
           return {
             ...cookieParam,
-            partitionKey: cookieParam.partitionKey
-              ? {
-                  // TODO: a breaking change neeeded to change the partition key
-                  // type in Puppeteer.
-                  topLevelSite: cookieParam.partitionKey,
-                  hasCrossSiteAncestor: false,
-                }
-              : undefined,
+            partitionKey: convertCookiesPartitionKeyFromPuppeteerToCdp(
+              cookieParam.partitionKey,
+            ),
           };
         }),
       });
@@ -1232,5 +1224,23 @@ function getIntersectionRect(
       Math.min(clip.y + clip.height, viewport.y + viewport.height) - y,
       0,
     ),
+  };
+}
+
+export function convertCookiesPartitionKeyFromPuppeteerToCdp(
+  partitionKey: ChromeCookiePartitionKey | string | undefined,
+): Protocol.Network.CookiePartitionKey | undefined {
+  if (partitionKey === undefined) {
+    return undefined;
+  }
+  if (typeof partitionKey === 'string') {
+    return {
+      topLevelSite: partitionKey,
+      hasCrossSiteAncestor: false,
+    };
+  }
+  return {
+    topLevelSite: partitionKey.topLevelSite,
+    hasCrossSiteAncestor: partitionKey.hasCrossSiteAncestor ?? false,
   };
 }
