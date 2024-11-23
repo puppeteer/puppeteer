@@ -1136,7 +1136,7 @@
     "comment": "Firefox CDP does not support Storage.getCookies (UnknownMethodError)"
   },
   {
-    "testIdPattern": "[cookies.spec] Cookie specs BrowserContext.setCookie should set with undefined partition key",
+    "testIdPattern": "[cookies.spec] Cookie specs BrowserContext.setCookie should set cookie with chrome partition key",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"],
@@ -1150,7 +1150,7 @@
     "comment": "Firefox CDP does not support Storage.setCookies (UnknownMethodError)"
   },
   {
-    "testIdPattern": "[cookies.spec] Cookie specs BrowserContext.setCookie should set cookie with chrome partition key",
+    "testIdPattern": "[cookies.spec] Cookie specs BrowserContext.setCookie should set with undefined partition key",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"],
