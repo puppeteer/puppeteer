@@ -735,10 +735,11 @@ export class BidiPage extends Page {
         !String.prototype.startsWith.call(cookieUrl || '', 'data:'),
         `Data URL page can not have cookie "${cookie.name}"`,
       );
+      // TODO: Support Chrome cookie partition keys
       assert(
         cookie.partitionKey === undefined ||
           typeof cookie.partitionKey === 'string',
-        `BiDi only allows domain partition keys`,
+        'BiDi only allows domain partition keys',
       );
 
       const normalizedUrl = URL.canParse(cookieUrl)
