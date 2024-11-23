@@ -892,4 +892,62 @@ describe('Cookie specs', () => {
       ).toEqual('infoCookie=secret');
     });
   });
+
+  describe('BrowserContext.deleteCookies', () => {
+    it('should delete cookies', async () => {
+      const {page, context, server} = await getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      await context.setCookie(
+        {
+          name: 'cookie1',
+          value: '1',
+          domain: 'localhost',
+          path: '/',
+          sameParty: false,
+          expires: -1,
+          size: 16,
+          httpOnly: false,
+          secure: false,
+          session: true,
+          sourceScheme: 'NonSecure',
+        },
+        {
+          name: 'cookie2',
+          value: '2',
+          domain: 'localhost',
+          path: '/',
+          sameParty: false,
+          expires: -1,
+          size: 16,
+          httpOnly: false,
+          secure: false,
+          session: true,
+          sourceScheme: 'NonSecure',
+        },
+      );
+      expect(
+        await page.evaluate(() => {
+          return document.cookie;
+        }),
+      ).toEqual('cookie1=1; cookie2=2');
+      await context.deleteCookie({
+        name: 'cookie1',
+        value: '1',
+        domain: 'localhost',
+        path: '/',
+        sameParty: false,
+        expires: -1,
+        size: 16,
+        httpOnly: false,
+        secure: false,
+        session: true,
+        sourceScheme: 'NonSecure',
+      });
+      expect(
+        await page.evaluate(() => {
+          return document.cookie;
+        }),
+      ).toEqual('cookie2=2');
+    });
+  });
 });
