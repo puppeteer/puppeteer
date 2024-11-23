@@ -867,7 +867,7 @@ describe('Cookie specs', () => {
     });
   });
   describe('BrowserContext.setCookie', function () {
-    it('should work', async () => {
+    it('should set with undefined partition key', async () => {
       const {page, context, server} = await getTestState();
       await context.setCookie({
         name: 'infoCookie',
@@ -880,6 +880,61 @@ describe('Cookie specs', () => {
         httpOnly: false,
         secure: false,
         session: true,
+        sourceScheme: 'NonSecure',
+      });
+
+      await page.goto(server.EMPTY_PAGE);
+
+      expect(
+        await page.evaluate(() => {
+          return document.cookie;
+        }),
+      ).toEqual('infoCookie=secret');
+    });
+
+    it("should set cookie with string partition key", async () => {
+      const {page, context, server} = await getTestState();
+      await context.setCookie({
+        name: 'infoCookie',
+        value: 'secret',
+        domain: 'localhost',
+        path: '/',
+        sameParty: false,
+        expires: -1,
+        size: 16,
+        httpOnly: false,
+        secure: false,
+        session: true,
+        partitionKey: "https://localhost:8000",
+        sourceScheme: 'NonSecure',
+      });
+
+      await page.goto(server.EMPTY_PAGE);
+
+      expect(
+        await page.evaluate(() => {
+          return document.cookie;
+        }),
+      ).toEqual('infoCookie=secret');
+    });
+
+    it("should set cookie with chrome partition key", async () => {
+      const {page, context, server} = await getTestState();
+      await context.setCookie({
+        name: 'infoCookie',
+        value: 'secret',
+        domain: 'localhost',
+        path: '/',
+        sameParty: false,
+        expires: -1,
+        size: 16,
+        httpOnly: false,
+        secure: false,
+        session: true,
+        partitionKey: {
+          topLevelSite: "https://localhost:8000",
+          hasCrossSiteAncestor: false,
+        },
         sourceScheme: 'NonSecure',
       });
 
