@@ -106,14 +106,7 @@ export class CdpBrowserContext extends BrowserContext {
     const {cookies} = await this.#connection.send('Storage.getCookies', {
       browserContextId: this.#id || undefined,
     });
-    return cookies.map(cookie => {
-      return {
-        ...cookie,
-        partitionKey: cookie.partitionKey
-          ? cookie.partitionKey.topLevelSite
-          : undefined,
-      };
-    });
+    return cookies;
   }
 
   override async setCookie(...cookies: Cookie[]): Promise<void> {
