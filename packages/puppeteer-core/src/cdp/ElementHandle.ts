@@ -204,18 +204,28 @@ export class CdpElementHandle<
   }
 
   override async renderedFonts(): Promise<PlatformFontUsage[]> {
-    await this.client.send('DOM.getDocument', {depth: -1});
-    const nodeInfo = await this.client.send('DOM.requestNode', {
-      objectId: this.id as string,
-    });
-    const nodeId = nodeInfo.nodeId;
-    await this.client.send('CSS.enable');
-    const platformFonts = await this.client.send(
-      'CSS.getPlatformFontsForNode',
-      {
-        nodeId,
-      },
-    );
-    return platformFonts.fonts;
+    try {
+      // In order to request a node and receive its node id, the document must be
+      // requested first
+      await this.client.send('DOM.getDocument', {depth: -1});
+      // In order to use a CSS-domain method, the CSS domain must be enabled
+      await this.client.send('CSS.enable');
+
+      const nodeInfo = await this.client.send('DOM.requestNode', {
+        objectId: this.id as string,
+      });
+      const nodeId = nodeInfo.nodeId;
+
+      const platformFonts = await this.client.send(
+        'CSS.getPlatformFontsForNode',
+        {
+          nodeId,
+        },
+      );
+      return platformFonts.fonts;
+    } finally {
+      await this.client.send('CSS.disable');
+      await this.client.send('DOM.disable');
+    }
   }
 }
