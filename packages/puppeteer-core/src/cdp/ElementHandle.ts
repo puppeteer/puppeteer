@@ -12,6 +12,7 @@ import {
   ElementHandle,
   type AutofillData,
 } from '../api/ElementHandle.js';
+import type {PlatformFontUsage} from '../common/fonts.js';
 import type {AwaitableIterable} from '../common/types.js';
 import {debugError} from '../common/util.js';
 import {environment} from '../environment.js';
@@ -200,5 +201,21 @@ export class CdpElementHandle<
         ElementHandle<Node>
       >;
     });
+  }
+
+  override async renderedFonts(): Promise<PlatformFontUsage[]> {
+    await this.client.send('DOM.getDocument', {depth: -1});
+    const nodeInfo = await this.client.send('DOM.requestNode', {
+      objectId: this.id as string,
+    });
+    const nodeId = nodeInfo.nodeId;
+    await this.client.send('CSS.enable');
+    const platformFonts = await this.client.send(
+      'CSS.getPlatformFontsForNode',
+      {
+        nodeId,
+      },
+    );
+    return platformFonts.fonts;
   }
 }
