@@ -244,6 +244,20 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[cookies.spec] Cookie specs BrowserContext.setCookie should set cookie with chrome partition key",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "BiDi partition key requires refactor (no longer string)"
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs BrowserContext.setCookie should set cookie with string partition key",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "BiDi partition key requires refactor (no longer string)"
+  },
+  {
     "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should delete cookie for specified URL regardless of the current page",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -1136,6 +1150,27 @@
     "comment": "Firefox CDP does not support Storage.getCookies (UnknownMethodError)"
   },
   {
+    "testIdPattern": "[cookies.spec] Cookie specs BrowserContext.deleteCookies should delete cookies",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["FAIL"],
+    "comment": "Fails with fieldtrial testing config in Chrome"
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs BrowserContext.deleteCookies should delete cookies",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox CDP does not support Storage.setCookies (UnknownMethodError)"
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs BrowserContext.setCookie should set cookie with chrome partition key",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["FAIL"],
+    "comment": "Fails with fieldtrial testing config in Chrome"
+  },
+  {
     "testIdPattern": "[cookies.spec] Cookie specs BrowserContext.setCookie should set cookie with chrome partition key",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -1145,9 +1180,23 @@
   {
     "testIdPattern": "[cookies.spec] Cookie specs BrowserContext.setCookie should set cookie with string partition key",
     "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["FAIL"],
+    "comment": "Fails with fieldtrial testing config in Chrome"
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs BrowserContext.setCookie should set cookie with string partition key",
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"],
     "comment": "Firefox CDP does not support Storage.setCookies (UnknownMethodError)"
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs BrowserContext.setCookie should set with undefined partition key",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["FAIL"],
+    "comment": "Fails with fieldtrial testing config in Chrome"
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs BrowserContext.setCookie should set with undefined partition key",
