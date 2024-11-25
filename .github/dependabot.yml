@@ -52,9 +52,9 @@ updates:
     ignore:
       - dependency-name: node
         versions:
-          # Remove once NodeJS v22 is LTS
-          - '22'
-          - '21'
+          # Remove once NodeJS v24 is LTS
+          - '24'
+          - '23'
     groups:
       all:
         patterns:
