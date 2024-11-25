@@ -892,7 +892,7 @@ describe('Cookie specs', () => {
       ).toEqual('infoCookie=secret');
     });
 
-    it("should set cookie with string partition key", async () => {
+    it('should set cookie with string partition key', async () => {
       const {page, context, server} = await getTestState();
       await context.setCookie({
         name: 'infoCookie',
@@ -905,7 +905,7 @@ describe('Cookie specs', () => {
         httpOnly: false,
         secure: false,
         session: true,
-        partitionKey: "https://localhost:8000",
+        partitionKey: 'https://localhost:8000',
         sourceScheme: 'NonSecure',
       });
 
@@ -918,7 +918,7 @@ describe('Cookie specs', () => {
       ).toEqual('infoCookie=secret');
     });
 
-    it("should set cookie with chrome partition key", async () => {
+    it('should set cookie with chrome partition key', async () => {
       const {page, context, server} = await getTestState();
       await context.setCookie({
         name: 'infoCookie',
@@ -932,7 +932,7 @@ describe('Cookie specs', () => {
         secure: false,
         session: true,
         partitionKey: {
-          topLevelSite: "https://localhost:8000",
+          topLevelSite: 'https://localhost:8000',
           hasCrossSiteAncestor: false,
         },
         sourceScheme: 'NonSecure',
