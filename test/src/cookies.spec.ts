@@ -865,6 +865,33 @@ describe('Cookie specs', () => {
         },
       ]);
     });
+    it('should find partitioned cookie', async () => {
+      const {context} = await getTestState();
+      const topLevelSite = 'https://localhost:8000';
+      await context.setCookie({
+        name: 'infoCookie',
+        value: 'secret',
+        domain: 'localhost',
+        path: '/',
+        sameParty: false,
+        expires: -1,
+        size: 16,
+        httpOnly: false,
+        secure: false,
+        session: true,
+        partitionKey: {
+          topLevelSite: topLevelSite,
+          hasCrossSiteAncestor: false,
+        },
+        sourceScheme: 'NonSecure',
+      });
+      const cookies = await context.cookies();
+      expect(cookies.length).toEqual(1);
+      expect(cookies[0]?.partitionKey).toEqual({
+        topLevelSite: topLevelSite,
+        hasCrossSiteAncestor: false,
+      });
+    });
   });
   describe('BrowserContext.setCookie', function () {
     it('should set with undefined partition key', async () => {
