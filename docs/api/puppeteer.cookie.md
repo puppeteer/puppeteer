@@ -113,7 +113,7 @@ Cookie name.
 
 </td><td>
 
-string
+[ChromeCookiePartitionKey](./puppeteer.chromecookiepartitionkey.md) \| string
 
 </td><td>
 

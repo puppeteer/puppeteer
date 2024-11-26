@@ -667,6 +667,13 @@ Description
 </td></tr>
 <tr><td>
 
+<span id="convertcookiespartitionkeyfrompuppeteertocdp">[convertCookiesPartitionKeyFromPuppeteerToCdp(partitionKey)](./puppeteer.convertcookiespartitionkeyfrompuppeteertocdp.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="defaultargs">[defaultArgs(options)](./puppeteer.defaultargs.md)</span>
 
 </td><td>
@@ -778,6 +785,15 @@ Launcher options that only apply to Chrome.
 <span id="cdpsessionevents">[CDPSessionEvents](./puppeteer.cdpsessionevents.md)</span>
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="chromecookiepartitionkey">[ChromeCookiePartitionKey](./puppeteer.chromecookiepartitionkey.md)</span>
+
+</td><td>
+
+Represents a cookie partition key in Chrome.
 
 </td></tr>
 <tr><td>

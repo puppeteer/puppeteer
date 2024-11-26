@@ -32,6 +32,7 @@ import type {
 } from '../cdp/NetworkManager.js';
 import {Tracing} from '../cdp/Tracing.js';
 import type {
+  ChromeCookiePartitionKey,
   Cookie,
   CookieParam,
   CookieSameSite,
@@ -734,6 +735,12 @@ export class BidiPage extends Page {
         !String.prototype.startsWith.call(cookieUrl || '', 'data:'),
         `Data URL page can not have cookie "${cookie.name}"`,
       );
+      // TODO: Support Chrome cookie partition keys
+      assert(
+        cookie.partitionKey === undefined ||
+          typeof cookie.partitionKey === 'string',
+        'BiDi only allows domain partition keys',
+      );
 
       const normalizedUrl = URL.canParse(cookieUrl)
         ? new URL(cookieUrl)
@@ -758,7 +765,7 @@ export class BidiPage extends Page {
         ...(cookie.sameSite !== undefined
           ? {sameSite: convertCookiesSameSiteCdpToBiDi(cookie.sameSite)}
           : {}),
-        ...(cookie.expires !== undefined ? {expiry: cookie.expires} : {}),
+        ...{expiry: convertCookiesExpiryCdpToBiDi(cookie.expires)},
         // Chrome-specific properties.
         ...cdpSpecificCookiePropertiesFromPuppeteerToBidi(
           cookie,
@@ -922,7 +929,7 @@ function testUrlMatchCookie(cookie: Cookie, url: URL): boolean {
   return testUrlMatchCookiePath(cookie, normalizedUrl);
 }
 
-function bidiToPuppeteerCookie(bidiCookie: Bidi.Network.Cookie): Cookie {
+export function bidiToPuppeteerCookie(bidiCookie: Bidi.Network.Cookie): Cookie {
   const partitionKey = bidiCookie[CDP_SPECIFIC_PREFIX + 'partitionKey'];
 
   function getParitionKey(): {partitionKey?: string} {
@@ -985,7 +992,7 @@ function cdpSpecificCookiePropertiesFromBidiToPuppeteer(
  * Gets CDP-specific properties from the cookie, adds CDP-specific prefixes and returns
  * them as a new object which can be used in BiDi.
  */
-function cdpSpecificCookiePropertiesFromPuppeteerToBidi(
+export function cdpSpecificCookiePropertiesFromPuppeteerToBidi(
   cookieParam: CookieParam,
   ...propertyNames: Array<keyof CookieParam>
 ): Record<string, unknown> {
@@ -1004,7 +1011,7 @@ function convertCookiesSameSiteBiDiToCdp(
   return sameSite === 'strict' ? 'Strict' : sameSite === 'lax' ? 'Lax' : 'None';
 }
 
-function convertCookiesSameSiteCdpToBiDi(
+export function convertCookiesSameSiteCdpToBiDi(
   sameSite: CookieSameSite | undefined,
 ): Bidi.Network.SameSite {
   return sameSite === 'Strict'
@@ -1012,4 +1019,19 @@ function convertCookiesSameSiteCdpToBiDi(
     : sameSite === 'Lax'
       ? Bidi.Network.SameSite.Lax
       : Bidi.Network.SameSite.None;
+}
+
+export function convertCookiesExpiryCdpToBiDi(
+  expiry: number | undefined,
+): number | undefined {
+  return [undefined, -1].includes(expiry) ? undefined : expiry;
+}
+
+export function convertCookiesPartitionKeyFromPuppeteerToBiDi(
+  partitionKey: ChromeCookiePartitionKey | string | undefined,
+): string | undefined {
+  if (partitionKey === undefined || typeof partitionKey === 'string') {
+    return partitionKey;
+  }
+  return partitionKey.topLevelSite;
 }
