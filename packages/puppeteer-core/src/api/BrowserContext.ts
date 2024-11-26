@@ -10,7 +10,7 @@ import {
   merge,
   raceWith,
 } from '../../third_party/rxjs/rxjs.js';
-import type {Cookie} from '../common/Cookie.js';
+import type {Cookie, CookieData} from '../common/Cookie.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {
   debugError,
@@ -251,9 +251,8 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
 
   /**
    * Sets a cookie in the browser context.
-   * @param cookies - {@link Cookie | cookie} to set
    */
-  abstract setCookie(...cookies: Cookie[]): Promise<void>;
+  abstract setCookie(...cookies: CookieData[]): Promise<void>;
 
   /**
    * Removes cookie in the browser context

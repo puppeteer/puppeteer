@@ -10,7 +10,7 @@ Sets a cookie in the browser context.
 
 ```typescript
 class BrowserContext {
-  abstract setCookie(...cookies: Cookie[]): Promise<void>;
+  abstract setCookie(...cookies: CookieData[]): Promise<void>;
 }
 ```
 
@@ -35,11 +35,9 @@ cookies
 
 </td><td>
 
-[Cookie](./puppeteer.cookie.md)\[\]
+[CookieData](./puppeteer.cookiedata.md)\[\]
 
 </td><td>
-
-[cookie](./puppeteer.cookie.md) to set
 
 </td></tr>
 </tbody></table>

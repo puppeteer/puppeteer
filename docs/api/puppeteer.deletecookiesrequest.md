@@ -79,7 +79,7 @@ Name of the cookies to remove.
 
 </td><td>
 
-[ChromeCookiePartitionKey](./puppeteer.chromecookiepartitionkey.md) \| string
+[CookiePartitionKey](./puppeteer.cookiepartitionkey.md) \| string
 
 </td><td>
 

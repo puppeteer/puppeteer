@@ -32,7 +32,7 @@ import type {
 } from '../cdp/NetworkManager.js';
 import {Tracing} from '../cdp/Tracing.js';
 import type {
-  ChromeCookiePartitionKey,
+  CookiePartitionKey,
   Cookie,
   CookieParam,
   CookieSameSite,
@@ -929,14 +929,25 @@ function testUrlMatchCookie(cookie: Cookie, url: URL): boolean {
   return testUrlMatchCookiePath(cookie, normalizedUrl);
 }
 
-export function bidiToPuppeteerCookie(bidiCookie: Bidi.Network.Cookie): Cookie {
+export function bidiToPuppeteerCookie(
+  bidiCookie: Bidi.Network.Cookie,
+  returnCompositePartitionKey = false,
+): Cookie {
   const partitionKey = bidiCookie[CDP_SPECIFIC_PREFIX + 'partitionKey'];
 
-  function getParitionKey(): {partitionKey?: string} {
+  function getParitionKey(): {partitionKey?: Cookie['partitionKey']} {
     if (typeof partitionKey === 'string') {
       return {partitionKey};
     }
     if (typeof partitionKey === 'object' && partitionKey !== null) {
+      if (returnCompositePartitionKey) {
+        return {
+          partitionKey: {
+            sourceOrigin: partitionKey.topLevelSite,
+            hasCrossSiteAncestor: partitionKey.hasCrossSiteAncestor ?? false,
+          },
+        };
+      }
       return {
         // TODO: a breaking change in Puppeteer is required to change
         // partitionKey type and report the composite partition key.
@@ -1028,10 +1039,15 @@ export function convertCookiesExpiryCdpToBiDi(
 }
 
 export function convertCookiesPartitionKeyFromPuppeteerToBiDi(
-  partitionKey: ChromeCookiePartitionKey | string | undefined,
+  partitionKey: CookiePartitionKey | string | undefined,
 ): string | undefined {
   if (partitionKey === undefined || typeof partitionKey === 'string') {
     return partitionKey;
   }
-  return partitionKey.topLevelSite;
+  if (partitionKey.hasCrossSiteAncestor) {
+    throw new UnsupportedOperation(
+      'WebDriver BiDi does not support goog:hasCrossSiteAncestor yet.',
+    );
+  }
+  return partitionKey.sourceOrigin;
 }

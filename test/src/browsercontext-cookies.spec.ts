@@ -7,28 +7,26 @@ import expect from 'expect';
 
 import {
   expectCookieEquals,
-  getTestState,
-  setupTestBrowserHooks,
+  setupSeparateTestBrowserHooks,
 } from './mocha-utils.js';
 
 describe('BrowserContext cookies', () => {
-  setupTestBrowserHooks();
+  const state = setupSeparateTestBrowserHooks({
+    acceptInsecureCerts: true,
+  });
 
   describe('BrowserContext.cookies', () => {
     it('should find no cookies in new context', async () => {
-      const {browser} = await getTestState({
-        skipContextCreation: true,
-      });
-      const context = await browser.createBrowserContext();
+      const {browser} = state;
+      using context = await browser.createBrowserContext();
       expect(await context.cookies()).toEqual([]);
     });
     it('should find cookie created in page', async () => {
-      const {page, server, context} = await getTestState();
+      const {page, server, context} = state;
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
         document.cookie = 'infoCookie = secret';
       });
-
       await expectCookieEquals(await context.cookies(), [
         {
           name: 'infoCookie',
@@ -46,36 +44,43 @@ describe('BrowserContext cookies', () => {
       ]);
     });
     it('should find partitioned cookie', async () => {
-      const {context} = await getTestState();
-      const topLevelSite = 'https://localhost:8000';
+      const {context, isChrome} = state;
+      const topLevelSite = 'https://example.test';
       await context.setCookie({
         name: 'infoCookie',
         value: 'secret',
-        domain: 'localhost',
+        domain: new URL(topLevelSite).hostname,
         path: '/',
         sameParty: false,
         expires: -1,
-        size: 16,
         httpOnly: false,
-        secure: false,
-        session: true,
-        partitionKey: {
-          topLevelSite: topLevelSite,
-          hasCrossSiteAncestor: false,
-        },
-        sourceScheme: 'NonSecure',
+        secure: true,
+        partitionKey: isChrome
+          ? {
+              sourceOrigin: topLevelSite,
+              hasCrossSiteAncestor: false,
+            }
+          : {
+              sourceOrigin: topLevelSite,
+            },
       });
       const cookies = await context.cookies();
       expect(cookies.length).toEqual(1);
-      expect(cookies[0]?.partitionKey).toEqual({
-        topLevelSite: topLevelSite,
-        hasCrossSiteAncestor: false,
-      });
+      // In Firefox with WebDriver BiDi, we do not know the actual
+      // partition.
+      expect(cookies[0]?.partitionKey).toEqual(
+        isChrome
+          ? {
+              sourceOrigin: topLevelSite,
+              hasCrossSiteAncestor: false,
+            }
+          : undefined,
+      );
     });
   });
   describe('BrowserContext.setCookie', function () {
     it('should set with undefined partition key', async () => {
-      const {page, context, server} = await getTestState();
+      const {page, context, server} = state;
       await context.setCookie({
         name: 'infoCookie',
         value: 'secret',
@@ -83,10 +88,8 @@ describe('BrowserContext cookies', () => {
         path: '/',
         sameParty: false,
         expires: -1,
-        size: 16,
         httpOnly: false,
         secure: false,
-        session: true,
         sourceScheme: 'NonSecure',
       });
 
@@ -99,53 +102,25 @@ describe('BrowserContext cookies', () => {
       ).toEqual('infoCookie=secret');
     });
 
-    it('should set cookie with string partition key', async () => {
-      const {page, context, server} = await getTestState();
+    it('should set cookie with a partition key', async () => {
+      const {page, context, httpsServer, isChrome} = state;
+      const url = new URL(httpsServer.EMPTY_PAGE);
       await context.setCookie({
         name: 'infoCookie',
         value: 'secret',
-        domain: 'localhost',
-        path: '/',
-        sameParty: false,
-        expires: -1,
-        size: 16,
-        httpOnly: false,
-        secure: false,
-        session: true,
-        partitionKey: 'https://localhost:8000',
-        sourceScheme: 'NonSecure',
+        domain: url.hostname,
+        secure: true,
+        partitionKey: isChrome
+          ? {
+              sourceOrigin: url.origin.replace(`:${url.port}`, ''),
+              hasCrossSiteAncestor: false,
+            }
+          : {
+              sourceOrigin: url.origin,
+            },
       });
 
-      await page.goto(server.EMPTY_PAGE);
-
-      expect(
-        await page.evaluate(() => {
-          return document.cookie;
-        }),
-      ).toEqual('infoCookie=secret');
-    });
-
-    it('should set cookie with chrome partition key', async () => {
-      const {page, context, server} = await getTestState();
-      await context.setCookie({
-        name: 'infoCookie',
-        value: 'secret',
-        domain: 'localhost',
-        path: '/',
-        sameParty: false,
-        expires: -1,
-        size: 16,
-        httpOnly: false,
-        secure: false,
-        session: true,
-        partitionKey: {
-          topLevelSite: 'https://localhost:8000',
-          hasCrossSiteAncestor: false,
-        },
-        sourceScheme: 'NonSecure',
-      });
-
-      await page.goto(server.EMPTY_PAGE);
+      await page.goto(url.toString());
 
       expect(
         await page.evaluate(() => {
@@ -157,7 +132,7 @@ describe('BrowserContext cookies', () => {
 
   describe('BrowserContext.deleteCookies', () => {
     it('should delete cookies', async () => {
-      const {page, context, server} = await getTestState();
+      const {page, context, server} = state;
       await page.goto(server.EMPTY_PAGE);
       await context.setCookie(
         {
@@ -167,10 +142,8 @@ describe('BrowserContext cookies', () => {
           path: '/',
           sameParty: false,
           expires: -1,
-          size: 16,
           httpOnly: false,
           secure: false,
-          session: true,
           sourceScheme: 'NonSecure',
         },
         {
@@ -180,10 +153,8 @@ describe('BrowserContext cookies', () => {
           path: '/',
           sameParty: false,
           expires: -1,
-          size: 16,
           httpOnly: false,
           secure: false,
-          session: true,
           sourceScheme: 'NonSecure',
         },
       );

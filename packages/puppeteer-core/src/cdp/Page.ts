@@ -34,7 +34,7 @@ import type {
   Cookie,
   DeleteCookiesRequest,
   CookieParam,
-  ChromeCookiePartitionKey,
+  CookiePartitionKey,
 } from '../common/Cookie.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -1230,7 +1230,7 @@ function getIntersectionRect(
 }
 
 export function convertCookiesPartitionKeyFromPuppeteerToCdp(
-  partitionKey: ChromeCookiePartitionKey | string | undefined,
+  partitionKey: CookiePartitionKey | string | undefined,
 ): Protocol.Network.CookiePartitionKey | undefined {
   if (partitionKey === undefined) {
     return undefined;
@@ -1242,7 +1242,7 @@ export function convertCookiesPartitionKeyFromPuppeteerToCdp(
     };
   }
   return {
-    topLevelSite: partitionKey.topLevelSite,
+    topLevelSite: partitionKey.sourceOrigin,
     hasCrossSiteAncestor: partitionKey.hasCrossSiteAncestor ?? false,
   };
 }
