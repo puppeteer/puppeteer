@@ -11,6 +11,7 @@ import {
   ElementHandle,
   type AutofillData,
 } from '../api/ElementHandle.js';
+import type {PlatformFontUsage} from '../common/fonts.js';
 import type {AwaitableIterable} from '../common/types.js';
 import {environment} from '../environment.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
@@ -131,5 +132,9 @@ export class BidiElementHandle<
       // TODO: maybe change ownership since the default ownership is probably none.
       return Promise.resolve(BidiElementHandle.from(node, this.realm));
     });
+  }
+
+  override renderedFonts(): Promise<PlatformFontUsage[]> {
+    throw new Error('not supported in BiDi');
   }
 }

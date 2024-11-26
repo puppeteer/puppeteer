@@ -1205,4 +1205,19 @@ describe('ElementHandle specs', function () {
       expect(handle.disposed).toBeFalsy();
     });
   });
+
+  describe('ElementHandle.renderedFonts', () => {
+    it('should work', async () => {
+      const {server, page} = await getTestState();
+      await page.goto(server.PREFIX + '/credit-card.html');
+      using handle = await page.evaluateHandle(() => {
+        return document.querySelector('#cardnumber');
+      });
+
+      expect(handle).toBeInstanceOf(ElementHandle);
+      const fonts = await (handle as ElementHandle).renderedFonts();
+      expect(fonts.length).toEqual(1);
+      expect(fonts[0]?.isCustomFont).toBeFalsy();
+    });
+  });
 });

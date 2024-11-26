@@ -406,6 +406,15 @@ If `key` is a single character and no modifier keys besides `Shift` are being he
 </td></tr>
 <tr><td>
 
+<span id="renderedfonts">[renderedFonts()](./puppeteer.elementhandle.renderedfonts.md)</span>
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="screenshot">[screenshot(options)](./puppeteer.elementhandle.screenshot.md)</span>
 
 </td><td>

@@ -7,6 +7,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {Frame} from '../api/Frame.js';
+import type {PlatformFontUsage} from '../common/fonts.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {LazyArg} from '../common/LazyArg.js';
 import type {
@@ -1561,6 +1562,8 @@ export abstract class ElementHandle<
    * ```
    */
   abstract autofill(data: AutofillData): Promise<void>;
+
+  abstract renderedFonts(): Promise<PlatformFontUsage[]>;
 }
 
 /**
