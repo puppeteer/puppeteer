@@ -11,6 +11,7 @@ import {
   ElementHandle,
   type AutofillData,
 } from '../api/ElementHandle.js';
+import {UnsupportedOperation} from '../common/Errors.js';
 import type {AwaitableIterable} from '../common/types.js';
 import {environment} from '../environment.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
@@ -26,6 +27,8 @@ import type {BidiFrameRealm} from './Realm.js';
 export class BidiElementHandle<
   ElementType extends Node = Element,
 > extends ElementHandle<ElementType> {
+  #backendNodeId?: number;
+
   static from<ElementType extends Node = Element>(
     value: Bidi.Script.RemoteValue,
     realm: BidiFrameRealm,
@@ -131,5 +134,19 @@ export class BidiElementHandle<
       // TODO: maybe change ownership since the default ownership is probably none.
       return Promise.resolve(BidiElementHandle.from(node, this.realm));
     });
+  }
+
+  override async backendNodeId(): Promise<number> {
+    if (!this.frame.page().browser().cdpSupported) {
+      throw new UnsupportedOperation();
+    }
+    if (this.#backendNodeId) {
+      return this.#backendNodeId;
+    }
+    const {node} = await this.frame.client.send('DOM.describeNode', {
+      objectId: this.handle.id,
+    });
+    this.#backendNodeId = node.backendNodeId;
+    return this.#backendNodeId;
   }
 }
