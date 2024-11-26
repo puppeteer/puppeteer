@@ -37,6 +37,7 @@ export class CdpElementHandle<
   ElementType extends Node = Element,
 > extends ElementHandle<ElementType> {
   protected declare readonly handle: CdpJSHandle<ElementType>;
+  #backendNodeId?: number;
 
   constructor(
     world: IsolatedWorld,
@@ -200,5 +201,16 @@ export class CdpElementHandle<
         ElementHandle<Node>
       >;
     });
+  }
+
+  override async backendNodeId(): Promise<number> {
+    if (this.#backendNodeId) {
+      return this.#backendNodeId;
+    }
+    const {node} = await this.client.send('DOM.describeNode', {
+      objectId: this.handle.id,
+    });
+    this.#backendNodeId = node.backendNodeId;
+    return this.#backendNodeId;
   }
 }
