@@ -427,12 +427,23 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
 
   /**
    * Returns all cookies in the default {@link BrowserContext}.
+   *
+   * @remarks
+   *
+   * Shortcut for
+   * {@link BrowserContext.cookies | browser.defaultBrowserContext().cookies()}.
    */
   async cookies(): Promise<Cookie[]> {
     return await this.defaultBrowserContext().cookies();
   }
+
   /**
    * Sets cookies in the default {@link BrowserContext}.
+   *
+   * @remarks
+   *
+   * Shortcut for
+   * {@link BrowserContext.setCookie | browser.defaultBrowserContext().setCookie()}.
    */
   async setCookie(...cookies: Cookie[]): Promise<void> {
     return await this.defaultBrowserContext().setCookie(...cookies);
@@ -440,6 +451,11 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
 
   /**
    * Removes cookies from the default {@link BrowserContext}.
+   *
+   * @remarks
+   *
+   * Shortcut for
+   * {@link BrowserContext.deleteCookie | browser.defaultBrowserContext().deleteCookie()}.
    */
   async deleteCookie(...cookies: Cookie[]): Promise<void> {
     return await this.defaultBrowserContext().deleteCookie(...cookies);

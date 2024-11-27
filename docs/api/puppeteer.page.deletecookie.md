@@ -4,6 +4,10 @@ sidebar_label: Page.deleteCookie
 
 # Page.deleteCookie() method
 
+> Warning: This API is now obsolete.
+>
+> Page-level cookie API is deprecated. Use [Browser.deleteCookie()](./puppeteer.browser.deletecookie.md) or [BrowserContext.deleteCookie()](./puppeteer.browsercontext.deletecookie.md) instead.
+
 ### Signature
 
 ```typescript

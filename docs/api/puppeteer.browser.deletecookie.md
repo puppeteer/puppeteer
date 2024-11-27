@@ -44,3 +44,7 @@ cookies
 **Returns:**
 
 Promise&lt;void&gt;
+
+## Remarks
+
+Shortcut for [browser.defaultBrowserContext().deleteCookie()](./puppeteer.browsercontext.deletecookie.md).

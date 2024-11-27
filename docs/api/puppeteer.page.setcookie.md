@@ -4,6 +4,10 @@ sidebar_label: Page.setCookie
 
 # Page.setCookie() method
 
+> Warning: This API is now obsolete.
+>
+> Page-level cookie API is deprecated. Use [Browser.setCookie()](./puppeteer.browser.setcookie.md) or [BrowserContext.setCookie()](./puppeteer.browsercontext.setcookie.md) instead.
+
 ### Signature
 
 ```typescript

@@ -4,6 +4,10 @@ sidebar_label: Page.cookies
 
 # Page.cookies() method
 
+> Warning: This API is now obsolete.
+>
+> Page-level cookie API is deprecated. Use [Browser.cookies()](./puppeteer.browser.cookies.md) or [BrowserContext.cookies()](./puppeteer.browsercontext.cookies.md) instead.
+
 If no URLs are specified, this method returns cookies for the current page URL. If URLs are specified, only cookies for those URLs are returned.
 
 ### Signature
