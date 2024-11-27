@@ -2511,8 +2511,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
   ): Promise<Uint8Array | string> {
     using _guard = await this.browserContext().startScreenshot();
 
-    await this.bringToFront();
-
     const options = {
       ...userOptions,
       clip: userOptions.clip
