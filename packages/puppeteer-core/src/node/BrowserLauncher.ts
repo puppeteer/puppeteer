@@ -31,11 +31,7 @@ import type {SupportedBrowser} from '../common/SupportedBrowser.js';
 import {debugError, DEFAULT_VIEWPORT} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 
-import type {
-  BrowserLaunchArgumentOptions,
-  ChromeReleaseChannel,
-  PuppeteerNodeLaunchOptions,
-} from './LaunchOptions.js';
+import type {ChromeReleaseChannel, LaunchOptions} from './LaunchOptions.js';
 import {NodeWebSocketTransport as WebSocketTransport} from './NodeWebSocketTransport.js';
 import {PipeTransport} from './PipeTransport.js';
 import type {PuppeteerNode} from './PuppeteerNode.js';
@@ -75,7 +71,7 @@ export abstract class BrowserLauncher {
     return this.#browser;
   }
 
-  async launch(options: PuppeteerNodeLaunchOptions = {}): Promise<Browser> {
+  async launch(options: LaunchOptions = {}): Promise<Browser> {
     const {
       dumpio = false,
       env = process.env,
@@ -231,13 +227,13 @@ export abstract class BrowserLauncher {
 
   abstract executablePath(channel?: ChromeReleaseChannel): string;
 
-  abstract defaultArgs(object: BrowserLaunchArgumentOptions): string[];
+  abstract defaultArgs(object: LaunchOptions): string[];
 
   /**
    * @internal
    */
   protected abstract computeLaunchArguments(
-    options: PuppeteerNodeLaunchOptions,
+    options: LaunchOptions,
   ): Promise<ResolvedLaunchArgs>;
 
   /**

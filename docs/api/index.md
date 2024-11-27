@@ -743,15 +743,6 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="browserconnectoptions">[BrowserConnectOptions](./puppeteer.browserconnectoptions.md)</span>
-
-</td><td>
-
-Generic browser options that can be passed when launching any browser or when connecting to an existing browser instance.
-
-</td></tr>
-<tr><td>
-
 <span id="browsercontextevents">[BrowserContextEvents](./puppeteer.browsercontextevents.md)</span>
 
 </td><td>
@@ -769,15 +760,6 @@ Generic browser options that can be passed when launching any browser or when co
 <span id="browserevents">[BrowserEvents](./puppeteer.browserevents.md)</span>
 
 </td><td>
-
-</td></tr>
-<tr><td>
-
-<span id="browserlaunchargumentoptions">[BrowserLaunchArgumentOptions](./puppeteer.browserlaunchargumentoptions.md)</span>
-
-</td><td>
-
-Launcher options that only apply to Chrome.
 
 </td></tr>
 <tr><td>
@@ -845,6 +827,8 @@ See individual properties for more information.
 <span id="connectoptions">[ConnectOptions](./puppeteer.connectoptions.md)</span>
 
 </td><td>
+
+Generic browser options that can be passed when launching any browser or when connecting to an existing browser instance.
 
 </td></tr>
 <tr><td>
@@ -1192,13 +1176,6 @@ Valid options to configure PDF generation via [Page.pdf()](./puppeteer.page.pdf.
 </td></tr>
 <tr><td>
 
-<span id="puppeteerlaunchoptions">[PuppeteerLaunchOptions](./puppeteer.puppeteerlaunchoptions.md)</span>
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
 <span id="queryoptions">[QueryOptions](./puppeteer.queryoptions.md)</span>
 
 </td><td>
@@ -1450,6 +1427,28 @@ Description
 <span id="awaitedlocator">[AwaitedLocator](./puppeteer.awaitedlocator.md)</span>
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="browserconnectoptions">[BrowserConnectOptions](./puppeteer.browserconnectoptions.md)</span>
+
+</td><td>
+
+**Deprecated:**
+
+Use [ConnectOptions](./puppeteer.connectoptions.md).
+
+</td></tr>
+<tr><td>
+
+<span id="browserlaunchargumentoptions">[BrowserLaunchArgumentOptions](./puppeteer.browserlaunchargumentoptions.md)</span>
+
+</td><td>
+
+**Deprecated:**
+
+Use [LaunchOptions](./puppeteer.launchoptions.md).
 
 </td></tr>
 <tr><td>
@@ -1724,7 +1723,9 @@ The sizes of each format are as follows:
 
 </td><td>
 
-Utility type exposed to enable users to define options that can be passed to `puppeteer.launch` without having to list the set of all types.
+**Deprecated:**
+
+Use [LaunchOptions](./puppeteer.launchoptions.md).
 
 </td></tr>
 <tr><td>

@@ -9,8 +9,10 @@ Generic launch options that can be passed when launching any browser.
 ### Signature
 
 ```typescript
-export interface LaunchOptions
+export interface LaunchOptions extends ConnectOptions
 ```
+
+**Extends:** [ConnectOptions](./puppeteer.connectoptions.md)
 
 ## Properties
 
@@ -36,6 +38,25 @@ Default
 
 </th></tr></thead>
 <tbody><tr><td>
+
+<span id="args">args</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string\[\]
+
+</td><td>
+
+Additional command line arguments to pass to the browser instance.
+
+</td><td>
+
+</td></tr>
+<tr><td>
 
 <span id="browser">browser</span>
 
@@ -73,6 +94,46 @@ Which browser to launch.
 Chrome Release Channel
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="debuggingport">debuggingPort</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Specify the debugging port number to use
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="devtools">devtools</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether to auto-open a DevTools panel for each tab. If this is set to `true`, then `headless` will be forced to `false`.
+
+</td><td>
+
+`false`
 
 </td></tr>
 <tr><td>
@@ -224,6 +285,33 @@ Close the browser process on `SIGTERM`.
 </td></tr>
 <tr><td>
 
+<span id="headless">headless</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean \| 'shell'
+
+</td><td>
+
+Whether to run the browser in headless mode.
+
+**Remarks:**
+
+- `true` launches the browser in the [new headless](https://developer.chrome.com/articles/new-headless/) mode.
+
+- `'shell'` launches [shell](https://developer.chrome.com/blog/chrome-headless-shell) known as the old headless mode.
+
+</td><td>
+
+`true`
+
+</td></tr>
+<tr><td>
+
 <span id="ignoredefaultargs">ignoreDefaultArgs</span>
 
 </td><td>
@@ -283,6 +371,25 @@ Maximum time in milliseconds to wait for the browser to start. Pass `0` to disab
 </td><td>
 
 `30_000` (30 seconds).
+
+</td></tr>
+<tr><td>
+
+<span id="userdatadir">userDataDir</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+Path to a user data directory. [see the Chromium docs](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/user_data_dir.md) for more info.
+
+</td><td>
 
 </td></tr>
 <tr><td>

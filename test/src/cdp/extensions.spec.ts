@@ -7,7 +7,7 @@
 import path from 'path';
 
 import expect from 'expect';
-import type {PuppeteerLaunchOptions} from 'puppeteer-core/internal/node/PuppeteerNode.js';
+import type {LaunchOptions} from 'puppeteer-core/internal/node/LaunchOptions.js';
 
 import {getTestState, launch} from '../mocha-utils.js';
 
@@ -33,9 +33,7 @@ describe('extensions', function () {
    */
   this.timeout(20_000);
 
-  let extensionOptions: PuppeteerLaunchOptions & {
-    args: string[];
-  };
+  let extensionOptions: LaunchOptions;
   const browsers: Array<() => Promise<void>> = [];
 
   beforeEach(async () => {

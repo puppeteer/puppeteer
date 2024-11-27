@@ -7,10 +7,7 @@
 import type {BrowserCloseCallback} from '../api/Browser.js';
 import {Connection} from '../cdp/Connection.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
-import type {
-  BrowserConnectOptions,
-  ConnectOptions,
-} from '../common/ConnectOptions.js';
+import type {ConnectOptions} from '../common/ConnectOptions.js';
 import {ProtocolError, UnsupportedOperation} from '../common/Errors.js';
 import {debugError, DEFAULT_VIEWPORT} from '../common/util.js';
 
@@ -28,7 +25,7 @@ import type {BidiConnection} from './Connection.js';
 export async function _connectToBiDiBrowser(
   connectionTransport: ConnectionTransport,
   url: string,
-  options: BrowserConnectOptions & ConnectOptions,
+  options: ConnectOptions,
 ): Promise<BidiBrowser> {
   const {acceptInsecureCerts = false, defaultViewport = DEFAULT_VIEWPORT} =
     options;
@@ -58,7 +55,7 @@ export async function _connectToBiDiBrowser(
 async function getBiDiConnection(
   connectionTransport: ConnectionTransport,
   url: string,
-  options: BrowserConnectOptions,
+  options: ConnectOptions,
 ): Promise<{
   cdpConnection?: Connection;
   bidiConnection: BidiConnection;

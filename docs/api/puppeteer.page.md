@@ -1257,7 +1257,7 @@ Shortcut for [page.mainFrame().url()](./puppeteer.frame.url.md).
 
 Returns the current page viewport settings without checking the actual page viewport.
 
-This is either the viewport set with the previous [Page.setViewport()](./puppeteer.page.setviewport.md) call or the default viewport set via [BrowserConnectOptions.defaultViewport](./puppeteer.browserconnectoptions.md#defaultviewport).
+This is either the viewport set with the previous [Page.setViewport()](./puppeteer.page.setviewport.md) call or the default viewport set via [ConnectOptions.defaultViewport](./puppeteer.connectoptions.md#defaultviewport).
 
 </td></tr>
 <tr><td>

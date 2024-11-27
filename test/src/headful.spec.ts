@@ -9,7 +9,7 @@ import os from 'os';
 import path from 'path';
 
 import expect from 'expect';
-import type {PuppeteerLaunchOptions} from 'puppeteer-core/internal/node/PuppeteerNode.js';
+import type {LaunchOptions} from 'puppeteer-core/internal/node/LaunchOptions.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 
 import {getTestState, launch} from './mocha-utils.js';
@@ -22,8 +22,8 @@ describe('headful tests', function () {
    */
   this.timeout(20_000);
 
-  let headfulOptions: PuppeteerLaunchOptions & {headless: false};
-  let headlessOptions: PuppeteerLaunchOptions & {headless: true};
+  let headfulOptions: LaunchOptions & {headless: false};
+  let headlessOptions: LaunchOptions & {headless: true};
 
   const browsers: Array<() => Promise<void>> = [];
 

@@ -8,7 +8,7 @@ sidebar_label: BrowserLauncher.launch
 
 ```typescript
 class BrowserLauncher {
-  launch(options?: PuppeteerNodeLaunchOptions): Promise<Browser>;
+  launch(options?: LaunchOptions): Promise<Browser>;
 }
 ```
 
@@ -33,7 +33,7 @@ options
 
 </td><td>
 
-[PuppeteerNodeLaunchOptions](./puppeteer.puppeteernodelaunchoptions.md)
+[LaunchOptions](./puppeteer.launchoptions.md)
 
 </td><td>
 
