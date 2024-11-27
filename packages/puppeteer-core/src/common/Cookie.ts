@@ -34,14 +34,19 @@ export type CookieSourceScheme = 'Unset' | 'NonSecure' | 'Secure';
  *
  * @public
  */
-export interface ChromeCookiePartitionKey {
+export interface CookiePartitionKey {
   /**
    * The site of the top-level URL the browser was visiting at the start of the request
    * to the endpoint that set the cookie.
+   *
+   * In Chrome, maps to the CDP's `topLevelSite` partition key.
    */
-  topLevelSite: string;
+  sourceOrigin: string;
   /**
-   * Indicates if the cookie has any ancestors that are cross-site to the topLevelSite.
+   * Indicates if the cookie has any ancestors that are cross-site to
+   * the topLevelSite.
+   *
+   * Supported only in Chrome.
    */
   hasCrossSiteAncestor?: boolean;
 }
@@ -111,7 +116,7 @@ export interface Cookie {
    * source origin
    * (https://w3c.github.io/webdriver-bidi/#type-storage-PartitionKey).
    */
-  partitionKey?: ChromeCookiePartitionKey | string;
+  partitionKey?: CookiePartitionKey | string;
   /**
    * True if cookie partition key is opaque. Supported only in Chrome.
    */
@@ -119,7 +124,8 @@ export interface Cookie {
 }
 
 /**
- * Cookie parameter object
+ * Cookie parameter object used to set cookies in the page-level cookies
+ * API.
  *
  * @public
  */
@@ -179,7 +185,67 @@ export interface CookieParam {
    * source origin
    * (https://w3c.github.io/webdriver-bidi/#type-storage-PartitionKey).
    */
-  partitionKey?: ChromeCookiePartitionKey | string;
+  partitionKey?: CookiePartitionKey | string;
+}
+
+/**
+ * Cookie parameter object used to set cookies in the browser-level cookies
+ * API.
+ *
+ * @public
+ */
+export interface CookieData {
+  /**
+   * Cookie name.
+   */
+  name: string;
+  /**
+   * Cookie value.
+   */
+  value: string;
+  /**
+   * Cookie domain.
+   */
+  domain: string;
+  /**
+   * Cookie path.
+   */
+  path?: string;
+  /**
+   * True if cookie is secure.
+   */
+  secure?: boolean;
+  /**
+   * True if cookie is http-only.
+   */
+  httpOnly?: boolean;
+  /**
+   * Cookie SameSite type.
+   */
+  sameSite?: CookieSameSite;
+  /**
+   * Cookie expiration date, session cookie if not set
+   */
+  expires?: number;
+  /**
+   * Cookie Priority. Supported only in Chrome.
+   */
+  priority?: CookiePriority;
+  /**
+   * True if cookie is SameParty. Supported only in Chrome.
+   */
+  sameParty?: boolean;
+  /**
+   * Cookie source scheme type. Supported only in Chrome.
+   */
+  sourceScheme?: CookieSourceScheme;
+  /**
+   * Cookie partition key. In Chrome, it matches the top-level site the
+   * partitioned cookie is available in. In Firefox, it matches the
+   * source origin
+   * (https://w3c.github.io/webdriver-bidi/#type-storage-PartitionKey).
+   */
+  partitionKey?: CookiePartitionKey | string;
 }
 
 /**
@@ -209,5 +275,5 @@ export interface DeleteCookiesRequest {
    * cookie is available in. In Firefox, it matches the source origin
    * (https://w3c.github.io/webdriver-bidi/#type-storage-PartitionKey).
    */
-  partitionKey?: ChromeCookiePartitionKey | string;
+  partitionKey?: CookiePartitionKey | string;
 }

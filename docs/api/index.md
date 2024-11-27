@@ -789,15 +789,6 @@ Launcher options that only apply to Chrome.
 </td></tr>
 <tr><td>
 
-<span id="chromecookiepartitionkey">[ChromeCookiePartitionKey](./puppeteer.chromecookiepartitionkey.md)</span>
-
-</td><td>
-
-Represents a cookie partition key in Chrome.
-
-</td></tr>
-<tr><td>
-
 <span id="chromeheadlessshellsettings">[ChromeHeadlessShellSettings](./puppeteer.chromeheadlessshellsettings.md)</span>
 
 </td><td>
@@ -881,11 +872,29 @@ Represents a cookie object.
 </td></tr>
 <tr><td>
 
+<span id="cookiedata">[CookieData](./puppeteer.cookiedata.md)</span>
+
+</td><td>
+
+Cookie parameter object used to set cookies in the browser-level cookies API.
+
+</td></tr>
+<tr><td>
+
 <span id="cookieparam">[CookieParam](./puppeteer.cookieparam.md)</span>
 
 </td><td>
 
-Cookie parameter object
+Cookie parameter object used to set cookies in the page-level cookies API.
+
+</td></tr>
+<tr><td>
+
+<span id="cookiepartitionkey">[CookiePartitionKey](./puppeteer.cookiepartitionkey.md)</span>
+
+</td><td>
+
+Represents a cookie partition key in Chrome.
 
 </td></tr>
 <tr><td>

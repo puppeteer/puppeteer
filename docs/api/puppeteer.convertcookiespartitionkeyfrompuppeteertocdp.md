@@ -8,7 +8,7 @@ sidebar_label: convertCookiesPartitionKeyFromPuppeteerToCdp
 
 ```typescript
 export declare function convertCookiesPartitionKeyFromPuppeteerToCdp(
-  partitionKey: ChromeCookiePartitionKey | string | undefined,
+  partitionKey: CookiePartitionKey | string | undefined,
 ): Protocol.Network.CookiePartitionKey | undefined;
 ```
 
@@ -33,7 +33,7 @@ partitionKey
 
 </td><td>
 
-[ChromeCookiePartitionKey](./puppeteer.chromecookiepartitionkey.md) \| string \| undefined
+[CookiePartitionKey](./puppeteer.cookiepartitionkey.md) \| string \| undefined
 
 </td><td>
 

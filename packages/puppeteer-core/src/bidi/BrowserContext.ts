@@ -12,7 +12,7 @@ import type {BrowserContextEvents} from '../api/BrowserContext.js';
 import {BrowserContext, BrowserContextEvent} from '../api/BrowserContext.js';
 import {PageEvent, type Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
-import type {Cookie} from '../common/Cookie.js';
+import type {Cookie, CookieData} from '../common/Cookie.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -292,10 +292,12 @@ export class BidiBrowserContext extends BrowserContext {
 
   override async cookies(): Promise<Cookie[]> {
     const cookies = await this.userContext.getCookies();
-    return cookies.map(bidiToPuppeteerCookie);
+    return cookies.map(cookie => {
+      return bidiToPuppeteerCookie(cookie, true);
+    });
   }
 
-  override async setCookie(...cookies: Cookie[]): Promise<void> {
+  override async setCookie(...cookies: CookieData[]): Promise<void> {
     await Promise.all(
       cookies.map(async cookie => {
         const bidiCookie: Bidi.Storage.PartialCookie = {

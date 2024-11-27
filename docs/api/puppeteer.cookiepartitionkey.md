@@ -1,15 +1,15 @@
 ---
-sidebar_label: ChromeCookiePartitionKey
+sidebar_label: CookiePartitionKey
 ---
 
-# ChromeCookiePartitionKey interface
+# CookiePartitionKey interface
 
 Represents a cookie partition key in Chrome.
 
 ### Signature
 
 ```typescript
-export interface ChromeCookiePartitionKey
+export interface CookiePartitionKey
 ```
 
 ## Properties
@@ -51,12 +51,14 @@ boolean
 
 Indicates if the cookie has any ancestors that are cross-site to the topLevelSite.
 
+Supported only in Chrome.
+
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<span id="toplevelsite">topLevelSite</span>
+<span id="sourceorigin">sourceOrigin</span>
 
 </td><td>
 
@@ -67,6 +69,8 @@ string
 </td><td>
 
 The site of the top-level URL the browser was visiting at the start of the request to the endpoint that set the cookie.
+
+In Chrome, maps to the CDP's `topLevelSite` partition key.
 
 </td><td>
 
