@@ -1046,7 +1046,7 @@ export function convertCookiesPartitionKeyFromPuppeteerToBiDi(
   }
   if (partitionKey.hasCrossSiteAncestor) {
     throw new UnsupportedOperation(
-      'WebDriver BiDi does not support goog:hasCrossSiteAncestor yet.',
+      'WebDriver BiDi does not support `hasCrossSiteAncestor` yet.',
     );
   }
   return partitionKey.sourceOrigin;
