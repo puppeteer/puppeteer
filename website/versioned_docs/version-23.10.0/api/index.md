@@ -667,6 +667,13 @@ Description
 </td></tr>
 <tr><td>
 
+<span id="convertcookiespartitionkeyfrompuppeteertocdp">[convertCookiesPartitionKeyFromPuppeteerToCdp(partitionKey)](./puppeteer.convertcookiespartitionkeyfrompuppeteertocdp.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="defaultargs">[defaultArgs(options)](./puppeteer.defaultargs.md)</span>
 
 </td><td>
@@ -865,11 +872,29 @@ Represents a cookie object.
 </td></tr>
 <tr><td>
 
+<span id="cookiedata">[CookieData](./puppeteer.cookiedata.md)</span>
+
+</td><td>
+
+Cookie parameter object used to set cookies in the browser-level cookies API.
+
+</td></tr>
+<tr><td>
+
 <span id="cookieparam">[CookieParam](./puppeteer.cookieparam.md)</span>
 
 </td><td>
 
-Cookie parameter object
+Cookie parameter object used to set cookies in the page-level cookies API.
+
+</td></tr>
+<tr><td>
+
+<span id="cookiepartitionkey">[CookiePartitionKey](./puppeteer.cookiepartitionkey.md)</span>
+
+</td><td>
+
+Represents a cookie partition key in Chrome.
 
 </td></tr>
 <tr><td>

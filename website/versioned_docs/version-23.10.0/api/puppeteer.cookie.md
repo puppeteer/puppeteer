@@ -113,7 +113,7 @@ Cookie name.
 
 </td><td>
 
-string
+[CookiePartitionKey](./puppeteer.cookiepartitionkey.md) \| string
 
 </td><td>
 

@@ -172,6 +172,17 @@ await name.autofill({
 </td></tr>
 <tr><td>
 
+<span id="backendnodeid">[backendNodeId()](./puppeteer.elementhandle.backendnodeid.md)</span>
+
+</td><td>
+
+</td><td>
+
+When connected using Chrome DevTools Protocol, it returns a DOM.BackendNodeId for the element.
+
+</td></tr>
+<tr><td>
+
 <span id="boundingbox">[boundingBox()](./puppeteer.elementhandle.boundingbox.md)</span>
 
 </td><td>

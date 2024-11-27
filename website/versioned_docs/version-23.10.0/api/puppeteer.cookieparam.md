@@ -4,7 +4,7 @@ sidebar_label: CookieParam
 
 # CookieParam interface
 
-Cookie parameter object
+Cookie parameter object used to set cookies in the page-level cookies API.
 
 ### Signature
 
@@ -119,7 +119,7 @@ Cookie name.
 
 </td><td>
 
-string
+[CookiePartitionKey](./puppeteer.cookiepartitionkey.md) \| string
 
 </td><td>
 
