@@ -15,10 +15,8 @@ import type {Browser} from 'puppeteer-core/internal/api/Browser.js';
 import type {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 import type {Cookie} from 'puppeteer-core/internal/common/Cookie.js';
-import type {
-  PuppeteerLaunchOptions,
-  PuppeteerNode,
-} from 'puppeteer-core/internal/node/PuppeteerNode.js';
+import type {LaunchOptions} from 'puppeteer-core/internal/node/LaunchOptions.js';
+import type {PuppeteerNode} from 'puppeteer-core/internal/node/PuppeteerNode.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
@@ -96,7 +94,7 @@ const defaultBrowserOptions = Object.assign(
     headless: headless === 'shell' ? ('shell' as const) : isHeadless,
     dumpio: !!process.env['DUMPIO'],
     protocol,
-  } satisfies PuppeteerLaunchOptions,
+  } satisfies LaunchOptions,
   extraLaunchOptions,
 );
 
@@ -120,7 +118,7 @@ const processVariables: {
   isFirefox: boolean;
   isChrome: boolean;
   protocol: 'cdp' | 'webDriverBiDi';
-  defaultBrowserOptions: PuppeteerLaunchOptions;
+  defaultBrowserOptions: LaunchOptions;
 } = {
   product,
   headless,
@@ -204,7 +202,7 @@ export const setupTestBrowserHooks = (): void => {
 };
 
 export const setupSeparateTestBrowserHooks = (
-  launchOptions: Readonly<PuppeteerLaunchOptions>,
+  launchOptions: Readonly<LaunchOptions>,
   options: {
     createContext?: boolean;
     createPage?: boolean;
@@ -303,7 +301,7 @@ export interface PuppeteerTestState {
   context: BrowserContext;
   page: Page;
   puppeteer: PuppeteerNode;
-  defaultBrowserOptions: PuppeteerLaunchOptions;
+  defaultBrowserOptions: LaunchOptions;
   server: TestServer;
   httpsServer: TestServer;
   isFirefox: boolean;
@@ -520,7 +518,7 @@ const closeLaunched = (storage: Array<() => Promise<void>>) => {
 };
 
 export const launch = async (
-  launchOptions: Readonly<PuppeteerLaunchOptions>,
+  launchOptions: Readonly<LaunchOptions>,
   options: {
     after?: 'each' | 'all';
     createContext?: boolean;

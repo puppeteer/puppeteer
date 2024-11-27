@@ -2159,8 +2159,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * This is either the viewport set with the previous {@link Page.setViewport}
    * call or the default viewport set via
-   * {@link BrowserConnectOptions.defaultViewport |
-   * BrowserConnectOptions.defaultViewport}.
+   * {@link ConnectOptions.defaultViewport |
+   * ConnectOptions.defaultViewport}.
    */
   abstract viewport(): Viewport | null;
 

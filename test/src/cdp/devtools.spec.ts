@@ -5,7 +5,7 @@
  */
 
 import expect from 'expect';
-import type {PuppeteerLaunchOptions} from 'puppeteer-core/internal/node/PuppeteerNode.js';
+import type {LaunchOptions} from 'puppeteer-core/internal/node/LaunchOptions.js';
 
 import {getTestState, launch} from '../mocha-utils.js';
 
@@ -15,9 +15,7 @@ describe('DevTools', function () {
    */
   this.timeout(20_000);
 
-  let launchOptions: PuppeteerLaunchOptions & {
-    devtools: boolean;
-  };
+  let launchOptions: LaunchOptions;
   const browsers: Array<() => Promise<void>> = [];
 
   beforeEach(async () => {

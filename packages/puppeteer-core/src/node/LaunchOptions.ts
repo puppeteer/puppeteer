@@ -4,52 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {BrowserConnectOptions} from '../common/ConnectOptions.js';
+import type {ConnectOptions} from '../common/ConnectOptions.js';
 import type {SupportedBrowser} from '../common/SupportedBrowser.js';
 
-/**
- * Launcher options that only apply to Chrome.
- *
- * @public
- */
-export interface BrowserLaunchArgumentOptions {
-  /**
-   * Whether to run the browser in headless mode.
-   *
-   * @remarks
-   *
-   * - `true` launches the browser in the
-   *   {@link https://developer.chrome.com/articles/new-headless/ | new headless}
-   *   mode.
-   *
-   * - `'shell'` launches
-   *   {@link https://developer.chrome.com/blog/chrome-headless-shell | shell}
-   *   known as the old headless mode.
-   *
-   * @defaultValue `true`
-   */
-  headless?: boolean | 'shell';
-  /**
-   * Path to a user data directory.
-   * {@link https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/user_data_dir.md | see the Chromium docs}
-   * for more info.
-   */
-  userDataDir?: string;
-  /**
-   * Whether to auto-open a DevTools panel for each tab. If this is set to
-   * `true`, then `headless` will be forced to `false`.
-   * @defaultValue `false`
-   */
-  devtools?: boolean;
-  /**
-   * Specify the debugging port number to use
-   */
-  debuggingPort?: number;
-  /**
-   * Additional command line arguments to pass to the browser instance.
-   */
-  args?: string[];
-}
 /**
  * @public
  */
@@ -63,7 +20,7 @@ export type ChromeReleaseChannel =
  * Generic launch options that can be passed when launching any browser.
  * @public
  */
-export interface LaunchOptions {
+export interface LaunchOptions extends ConnectOptions {
   /**
    * Chrome Release Channel
    */
@@ -139,13 +96,52 @@ export interface LaunchOptions {
    * @defaultValue `true`
    */
   waitForInitialPage?: boolean;
+  /**
+   * Whether to run the browser in headless mode.
+   *
+   * @remarks
+   *
+   * - `true` launches the browser in the
+   *   {@link https://developer.chrome.com/articles/new-headless/ | new headless}
+   *   mode.
+   *
+   * - `'shell'` launches
+   *   {@link https://developer.chrome.com/blog/chrome-headless-shell | shell}
+   *   known as the old headless mode.
+   *
+   * @defaultValue `true`
+   */
+  headless?: boolean | 'shell';
+  /**
+   * Path to a user data directory.
+   * {@link https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/user_data_dir.md | see the Chromium docs}
+   * for more info.
+   */
+  userDataDir?: string;
+  /**
+   * Whether to auto-open a DevTools panel for each tab. If this is set to
+   * `true`, then `headless` will be forced to `false`.
+   * @defaultValue `false`
+   */
+  devtools?: boolean;
+  /**
+   * Specify the debugging port number to use
+   */
+  debuggingPort?: number;
+  /**
+   * Additional command line arguments to pass to the browser instance.
+   */
+  args?: string[];
 }
 
 /**
- * Utility type exposed to enable users to define options that can be passed to
- * `puppeteer.launch` without having to list the set of all types.
+ * @deprecated Use {@link LaunchOptions}.
  * @public
  */
-export type PuppeteerNodeLaunchOptions = BrowserLaunchArgumentOptions &
-  LaunchOptions &
-  BrowserConnectOptions;
+export type BrowserLaunchArgumentOptions = LaunchOptions;
+
+/**
+ * @deprecated Use {@link LaunchOptions}.
+ * @public
+ */
+export type PuppeteerNodeLaunchOptions = LaunchOptions;

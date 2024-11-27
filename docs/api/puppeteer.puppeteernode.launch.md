@@ -12,7 +12,7 @@ When using with `puppeteer-core`, [options.executablePath](./puppeteer.launchopt
 
 ```typescript
 class PuppeteerNode {
-  launch(options?: PuppeteerLaunchOptions): Promise<Browser>;
+  launch(options?: LaunchOptions): Promise<Browser>;
 }
 ```
 
@@ -37,7 +37,7 @@ options
 
 </td><td>
 
-[PuppeteerLaunchOptions](./puppeteer.puppeteerlaunchoptions.md)
+[LaunchOptions](./puppeteer.launchoptions.md)
 
 </td><td>
 

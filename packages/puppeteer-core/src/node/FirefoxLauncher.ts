@@ -15,10 +15,7 @@ import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 
 import {BrowserLauncher, type ResolvedLaunchArgs} from './BrowserLauncher.js';
-import type {
-  BrowserLaunchArgumentOptions,
-  PuppeteerNodeLaunchOptions,
-} from './LaunchOptions.js';
+import type {LaunchOptions} from './LaunchOptions.js';
 import type {PuppeteerNode} from './PuppeteerNode.js';
 import {rm} from './util/fs.js';
 
@@ -65,7 +62,7 @@ export class FirefoxLauncher extends BrowserLauncher {
    * @internal
    */
   override async computeLaunchArguments(
-    options: PuppeteerNodeLaunchOptions = {},
+    options: LaunchOptions = {},
   ): Promise<ResolvedLaunchArgs> {
     const {
       ignoreDefaultArgs = false,
@@ -198,7 +195,7 @@ export class FirefoxLauncher extends BrowserLauncher {
     return this.resolveExecutablePath();
   }
 
-  override defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
+  override defaultArgs(options: LaunchOptions = {}): string[] {
     const {
       devtools = false,
       headless = !devtools,

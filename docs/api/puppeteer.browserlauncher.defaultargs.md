@@ -8,7 +8,7 @@ sidebar_label: BrowserLauncher.defaultArgs
 
 ```typescript
 class BrowserLauncher {
-  abstract defaultArgs(object: BrowserLaunchArgumentOptions): string[];
+  abstract defaultArgs(object: LaunchOptions): string[];
 }
 ```
 
@@ -33,7 +33,7 @@ object
 
 </td><td>
 
-[BrowserLaunchArgumentOptions](./puppeteer.browserlaunchargumentoptions.md)
+[LaunchOptions](./puppeteer.launchoptions.md)
 
 </td><td>
 

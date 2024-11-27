@@ -13,7 +13,6 @@ import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {ConnectionTransport} from './ConnectionTransport.js';
 import type {ConnectOptions} from './ConnectOptions.js';
-import type {BrowserConnectOptions} from './ConnectOptions.js';
 
 const getWebSocketTransportClass = async () => {
   return isNode
@@ -56,7 +55,7 @@ export async function _connectToBrowser(
  * endpoint url the transport is connected to.
  */
 async function getConnectionTransport(
-  options: BrowserConnectOptions & ConnectOptions,
+  options: ConnectOptions,
 ): Promise<{connectionTransport: ConnectionTransport; endpointUrl: string}> {
   const {browserWSEndpoint, browserURL, transport, headers = {}} = options;
 

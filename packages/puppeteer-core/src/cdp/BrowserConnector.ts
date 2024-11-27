@@ -5,10 +5,7 @@
  */
 
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
-import type {
-  BrowserConnectOptions,
-  ConnectOptions,
-} from '../common/ConnectOptions.js';
+import type {ConnectOptions} from '../common/ConnectOptions.js';
 import {debugError, DEFAULT_VIEWPORT} from '../common/util.js';
 
 import {CdpBrowser} from './Browser.js';
@@ -23,7 +20,7 @@ import {Connection} from './Connection.js';
 export async function _connectToCdpBrowser(
   connectionTransport: ConnectionTransport,
   url: string,
-  options: BrowserConnectOptions & ConnectOptions,
+  options: ConnectOptions,
 ): Promise<CdpBrowser> {
   const {
     acceptInsecureCerts = false,
