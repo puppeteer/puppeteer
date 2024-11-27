@@ -162,6 +162,10 @@ Closes this [browser](./puppeteer.browser.md) and all associated [pages](./puppe
 
 Returns all cookies in the default [BrowserContext](./puppeteer.browsercontext.md).
 
+**Remarks:**
+
+Shortcut for [browser.defaultBrowserContext().cookies()](./puppeteer.browsercontext.cookies.md).
+
 </td></tr>
 <tr><td>
 
@@ -200,6 +204,10 @@ The default [browser context](./puppeteer.browsercontext.md) cannot be closed.
 </td><td>
 
 Removes cookies from the default [BrowserContext](./puppeteer.browsercontext.md).
+
+**Remarks:**
+
+Shortcut for [browser.defaultBrowserContext().deleteCookie()](./puppeteer.browsercontext.deletecookie.md).
 
 </td></tr>
 <tr><td>
@@ -278,6 +286,10 @@ Gets the associated [ChildProcess](https://nodejs.org/api/child_process.html#cla
 </td><td>
 
 Sets cookies in the default [BrowserContext](./puppeteer.browsercontext.md).
+
+**Remarks:**
+
+Shortcut for [browser.defaultBrowserContext().setCookie()](./puppeteer.browsercontext.setcookie.md).
 
 </td></tr>
 <tr><td>

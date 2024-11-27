@@ -17,3 +17,7 @@ class Browser {
 **Returns:**
 
 Promise&lt;[Cookie](./puppeteer.cookie.md)\[\]&gt;
+
+## Remarks
+
+Shortcut for [browser.defaultBrowserContext().cookies()](./puppeteer.browsercontext.cookies.md).

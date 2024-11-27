@@ -44,3 +44,7 @@ cookies
 **Returns:**
 
 Promise&lt;void&gt;
+
+## Remarks
+
+Shortcut for [browser.defaultBrowserContext().setCookie()](./puppeteer.browsercontext.setcookie.md).
