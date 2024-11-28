@@ -169,6 +169,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
       this.emit(CDPSessionEvent.SessionAttached, session);
       const parentSession = this.#sessions.get(object.sessionId);
       if (parentSession) {
+        session.rawErrors = parentSession.rawErrors;
         parentSession.emit(CDPSessionEvent.SessionAttached, session);
       }
     } else if (object.method === 'Target.detachedFromTarget') {
@@ -253,6 +254,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     if (!session) {
       throw new Error('CDPSession creation failed.');
     }
+    session.rawErrors = false;
     return session;
   }
 

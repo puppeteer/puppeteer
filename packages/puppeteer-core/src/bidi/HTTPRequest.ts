@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type {Protocol} from 'devtools-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
 import type {
@@ -184,8 +185,11 @@ export class BidiHTTPRequest extends HTTPRequest {
     return this.#request.navigation !== undefined;
   }
 
-  override initiator(): Bidi.Network.Initiator {
-    return this.#request.initiator;
+  override initiator(): Protocol.Network.Initiator | undefined {
+    return {
+      ...this.#request.initiator,
+      type: this.#request.initiator?.type ?? 'other',
+    };
   }
 
   override redirectChain(): BidiHTTPRequest[] {
