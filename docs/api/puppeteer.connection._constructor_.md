@@ -15,6 +15,7 @@ class Connection {
     transport: ConnectionTransport,
     delay?: number,
     timeout?: number,
+    rawErrors?: boolean,
   );
 }
 ```
@@ -76,6 +77,19 @@ timeout
 </td><td>
 
 number
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+<tr><td>
+
+rawErrors
+
+</td><td>
+
+boolean
 
 </td><td>
 
