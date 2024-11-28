@@ -1,23 +1,26 @@
 [
   {
-    "testIdPattern": "[requestinterception.spec] request interception Request.continue should redirect in a way non-observable to page",
+    "testIdPattern": "[browsercontext-cookies.spec] BrowserContext cookies BrowserContext.setCookie should set cookie with a partition key",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"],
-    "comment": "Works in Nightly"
-  },
-  {
-    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Request.continue should redirect in a way non-observable to page",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"],
-    "comment": "Works in Nightly"
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch userDataDir option should restore cookies",
     "platforms": ["darwin"],
     "parameters": ["cdp", "chrome-headless-shell"],
-    "expectations": ["PASS"],
-    "comment": "Seems to be passing in 132 after being broken in 130."
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Request.continue should redirect in a way non-observable to page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.continue should redirect in a way non-observable to page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
   }
 ]
