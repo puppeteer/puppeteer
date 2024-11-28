@@ -133,7 +133,7 @@ export class Request extends EventEmitter<{
   get id(): string {
     return this.#event.request.request;
   }
-  get initiator(): Bidi.Network.Initiator {
+  get initiator(): Bidi.Network.Initiator | undefined {
     return this.#event.initiator;
   }
   get method(): string {

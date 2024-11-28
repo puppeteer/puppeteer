@@ -16,6 +16,7 @@ import {
   firstValueFrom,
   map,
   of,
+  race,
   raceWith,
   switchMap,
 } from '../../third_party/rxjs/rxjs.js';
@@ -373,10 +374,20 @@ export class BidiFrame extends Frame {
     });
     return await firstValueFrom(
       combineLatest([
-        fromEmitterEvent(this.browsingContext, 'navigation')
+        race(
+          fromEmitterEvent(this.browsingContext, 'navigation'),
+          fromEmitterEvent(this.browsingContext, 'historyUpdated').pipe(
+            map(() => {
+              return {navigation: null};
+            }),
+          ),
+        )
           .pipe(first())
           .pipe(
             switchMap(({navigation}) => {
+              if (navigation === null) {
+                return of(null);
+              }
               return this.#waitForLoad$(options).pipe(
                 delayWhen(() => {
                   if (frames.length === 0) {
@@ -397,7 +408,10 @@ export class BidiFrame extends Frame {
                   if (navigation.request) {
                     function requestFinished$(
                       request: Request,
-                    ): Observable<Navigation> {
+                    ): Observable<Navigation | null> {
+                      if (navigation === null) {
+                        return of(null);
+                      }
                       // Reduces flakiness if the response events arrive after
                       // the load event.
                       // Usually, the response or error is already there at this point.
@@ -428,6 +442,9 @@ export class BidiFrame extends Frame {
         this.#waitForNetworkIdle$(options),
       ]).pipe(
         map(([navigation]) => {
+          if (!navigation) {
+            return null;
+          }
           const request = navigation.request;
           if (!request) {
             return null;
