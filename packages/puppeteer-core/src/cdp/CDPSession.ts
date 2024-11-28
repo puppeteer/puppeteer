@@ -31,6 +31,7 @@ export class CdpCDPSession extends CDPSession {
   #connection?: Connection;
   #parentSessionId?: string;
   #target?: CdpTarget;
+  #rawErrors = false;
 
   /**
    * @internal
@@ -40,12 +41,14 @@ export class CdpCDPSession extends CDPSession {
     targetType: string,
     sessionId: string,
     parentSessionId: string | undefined,
+    rawErrors: boolean,
   ) {
     super();
     this.#connection = connection;
     this.#targetType = targetType;
     this.#sessionId = sessionId;
     this.#parentSessionId = parentSessionId;
+    this.#rawErrors = rawErrors;
   }
 
   /**
@@ -113,11 +116,15 @@ export class CdpCDPSession extends CDPSession {
   }): void {
     if (object.id) {
       if (object.error) {
-        this.#callbacks.reject(
-          object.id,
-          createProtocolErrorMessage(object),
-          object.error.message,
-        );
+        if (this.#rawErrors) {
+          this.#callbacks.rejectRaw(object.id, object.error);
+        } else {
+          this.#callbacks.reject(
+            object.id,
+            createProtocolErrorMessage(object),
+            object.error.message,
+          );
+        }
       } else {
         this.#callbacks.resolve(object.id, object.result);
       }

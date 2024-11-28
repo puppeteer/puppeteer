@@ -36,15 +36,19 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
   #sessions = new Map<string, CdpCDPSession>();
   #closed = false;
   #manuallyAttached = new Set<string>();
-  #callbacks = new CallbackRegistry();
+  #callbacks: CallbackRegistry;
+  #rawErrors = false;
 
   constructor(
     url: string,
     transport: ConnectionTransport,
     delay = 0,
     timeout?: number,
+    rawErrors = false,
   ) {
     super();
+    this.#rawErrors = rawErrors;
+    this.#callbacks = new CallbackRegistry();
     this.#url = url;
     this.#delay = delay;
     this.#timeout = timeout ?? 180_000;
@@ -159,6 +163,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
         object.params.targetInfo.type,
         sessionId,
         object.sessionId,
+        this.#rawErrors,
       );
       this.#sessions.set(sessionId, session);
       this.emit(CDPSessionEvent.SessionAttached, session);
@@ -185,11 +190,15 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
       }
     } else if (object.id) {
       if (object.error) {
-        this.#callbacks.reject(
-          object.id,
-          createProtocolErrorMessage(object),
-          object.error.message,
-        );
+        if (this.#rawErrors) {
+          this.#callbacks.rejectRaw(object.id, object.error);
+        } else {
+          this.#callbacks.reject(
+            object.id,
+            createProtocolErrorMessage(object),
+            object.error.message,
+          );
+        }
       } else {
         this.#callbacks.resolve(object.id, object.result);
       }

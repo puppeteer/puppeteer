@@ -97,6 +97,7 @@ async function getBiDiConnection(
     connectionTransport,
     slowMo,
     protocolTimeout,
+    /* rawErrors= */ true,
   );
 
   const version = await cdpConnection.send('Browser.getVersion');

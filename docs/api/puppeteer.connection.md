@@ -29,7 +29,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="_constructor_">[(constructor)(url, transport, delay, timeout)](./puppeteer.connection._constructor_.md)</span>
+<span id="_constructor_">[(constructor)(url, transport, delay, timeout, rawErrors)](./puppeteer.connection._constructor_.md)</span>
 
 </td><td>
 
