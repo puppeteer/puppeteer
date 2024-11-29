@@ -317,19 +317,29 @@ if (
   process.env['MOCHA_WORKER_ID'] === '0'
 ) {
   console.log(
-    `Running unit tests with:
+    `Running tests with:
   -> product: ${processVariables.product}
   -> binary: ${
     processVariables.defaultBrowserOptions.executablePath ||
-    path.relative(process.cwd(), puppeteer.executablePath())
+    path.relative(
+      process.cwd(),
+      puppeteer.executablePath({
+        headless: isHeadless
+          ? processVariables.headless === 'shell'
+            ? 'shell'
+            : true
+          : false,
+      }),
+    )
   }
   -> mode: ${
-    processVariables.isHeadless
-      ? processVariables.headless === 'true'
-        ? '--headless=new'
-        : '--headless'
+    isHeadless
+      ? processVariables.headless === 'shell'
+        ? 'shell'
+        : 'headless'
       : 'headful'
-  }`,
+  }
+  -> protocol: ${protocol}`,
   );
 }
 

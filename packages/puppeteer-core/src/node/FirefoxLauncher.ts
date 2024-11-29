@@ -140,7 +140,7 @@ export class FirefoxLauncher extends BrowserLauncher {
       );
       firefoxExecutable = executablePath;
     } else {
-      firefoxExecutable = this.executablePath();
+      firefoxExecutable = this.executablePath(undefined);
     }
 
     return {
@@ -191,8 +191,11 @@ export class FirefoxLauncher extends BrowserLauncher {
     }
   }
 
-  override executablePath(): string {
-    return this.resolveExecutablePath();
+  override executablePath(_: unknown, validatePath = true): string {
+    return this.resolveExecutablePath(
+      undefined,
+      /* validatePath=*/ validatePath,
+    );
   }
 
   override defaultArgs(options: LaunchOptions = {}): string[] {

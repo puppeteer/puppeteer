@@ -45,4 +45,4 @@ _(Optional)_ Set of configurable options to set on the browser.
 
 string\[\]
 
-The default flags that Chromium will be launched with.
+The default arguments that the browser will be launched with.

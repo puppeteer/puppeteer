@@ -78,7 +78,7 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="executablepath">[executablePath(channel)](./puppeteer.browserlauncher.executablepath.md)</span>
+<span id="executablepath">[executablePath(channel, validatePath)](./puppeteer.browserlauncher.executablepath.md)</span>
 
 </td><td>
 

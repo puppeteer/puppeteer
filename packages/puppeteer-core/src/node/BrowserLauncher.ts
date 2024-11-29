@@ -225,7 +225,10 @@ export abstract class BrowserLauncher {
     return browser;
   }
 
-  abstract executablePath(channel?: ChromeReleaseChannel): string;
+  abstract executablePath(
+    channel?: ChromeReleaseChannel,
+    validatePath?: boolean,
+  ): string;
 
   abstract defaultArgs(object: LaunchOptions): string[];
 
@@ -413,10 +416,13 @@ export abstract class BrowserLauncher {
   /**
    * @internal
    */
-  protected resolveExecutablePath(headless?: boolean | 'shell'): string {
+  resolveExecutablePath(
+    headless?: boolean | 'shell',
+    validatePath = true,
+  ): string {
     let executablePath = this.puppeteer.configuration.executablePath;
     if (executablePath) {
-      if (!existsSync(executablePath)) {
+      if (validatePath && !existsSync(executablePath)) {
         throw new Error(
           `Tried to find the browser at the configured path (${executablePath}), but no executable was found.`,
         );
@@ -451,7 +457,7 @@ export abstract class BrowserLauncher {
       buildId: this.puppeteer.browserVersion,
     });
 
-    if (!existsSync(executablePath)) {
+    if (validatePath && !existsSync(executablePath)) {
       const configVersion =
         this.puppeteer.configuration?.[this.browser]?.version;
       if (configVersion) {
