@@ -8,7 +8,7 @@
 
 import {readFile, writeFile} from 'fs/promises';
 
-import versionData from './versions.json' assert {type: 'json'};
+import versionData from './versions.json' with {type: 'json'};
 
 import {docgen, spliceIntoSection} from '@puppeteer/docgen';
 import {execa} from 'execa';

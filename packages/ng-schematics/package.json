@@ -29,7 +29,7 @@
       "command": "tsc -b test/tsconfig.json"
     },
     "unit": {
-      "command": "node --test --test-reporter spec test/build",
+      "command": "node --test --test-reporter=spec \"test/build/**/*.test.js\"",
       "dependencies": [
         "build",
         "build:test"
