@@ -8,7 +8,10 @@ sidebar_label: BrowserLauncher.executablePath
 
 ```typescript
 class BrowserLauncher {
-  abstract executablePath(channel?: ChromeReleaseChannel): string;
+  abstract executablePath(
+    channel?: ChromeReleaseChannel,
+    validatePath?: boolean,
+  ): string;
 }
 ```
 
@@ -34,6 +37,19 @@ channel
 </td><td>
 
 [ChromeReleaseChannel](./puppeteer.chromereleasechannel.md)
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+<tr><td>
+
+validatePath
+
+</td><td>
+
+boolean
 
 </td><td>
 

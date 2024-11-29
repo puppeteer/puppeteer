@@ -159,6 +159,28 @@ This method attaches Puppeteer to an existing browser instance.
 
 </td><td>
 
+The default executable path for a given ChromeReleaseChannel.
+
+</td></tr>
+<tr><td>
+
+<span id="executablepath">[executablePath(options)](./puppeteer.puppeteernode.executablepath.md)</span>
+
+</td><td>
+
+</td><td>
+
+The default executable path given LaunchOptions.
+
+</td></tr>
+<tr><td>
+
+<span id="executablepath">[executablePath()](./puppeteer.puppeteernode.executablepath.md)</span>
+
+</td><td>
+
+</td><td>
+
 The default executable path.
 
 </td></tr>

@@ -186,14 +186,12 @@ export function resolveSystemExecutablePath(
           return '/opt/google/chrome/chrome';
         case ChromeReleaseChannel.BETA:
           return '/opt/google/chrome-beta/chrome';
+        case ChromeReleaseChannel.CANARY:
+          return '/opt/google/chrome-canary/chrome';
         case ChromeReleaseChannel.DEV:
           return '/opt/google/chrome-unstable/chrome';
       }
   }
-
-  throw new Error(
-    `Unable to detect browser executable path for '${channel}' on ${platform}.`,
-  );
 }
 
 export function compareVersions(a: string, b: string): number {
