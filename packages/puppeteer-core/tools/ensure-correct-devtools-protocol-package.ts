@@ -25,7 +25,7 @@
 
 import {execSync} from 'child_process';
 
-import packageJson from '../package.json' assert {type: 'json'};
+import packageJson from '../package.json' with {type: 'json'};
 import {PUPPETEER_REVISIONS} from '../src/revisions.js';
 
 async function main() {

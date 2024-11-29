@@ -37,7 +37,13 @@ export function getCommandForRunner(runner: TestRunner): [string, ...string[]] {
     case TestRunner.Mocha:
       return [`mocha`, '--config=./e2e/.mocharc.js'];
     case TestRunner.Node:
-      return ['node', '--test', '--test-reporter', 'spec', 'e2e/build/'];
+      return [
+        'node',
+        '--test',
+        '--test-reporter',
+        'spec',
+        'e2e/build/**/*.e2e.js',
+      ];
   }
 
   throw new Error(`Unknown test runner ${runner}!`);

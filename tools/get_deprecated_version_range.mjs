@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import data from '../versions.json' assert {type: 'json'};
+import data from '../versions.json' with {type: 'json'};
 
 const version = data.versions.find(([puppeteerVersion, browserVersions]) => {
   return browserVersions.chrome === data.lastMaintainedChromeVersion;
