@@ -336,7 +336,7 @@ if (
     isHeadless
       ? processVariables.headless === 'shell'
         ? 'shell'
-        : 'new headless'
+        : 'headless'
       : 'headful'
   }
   -> protocol: ${protocol}`,

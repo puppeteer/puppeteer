@@ -52,8 +52,8 @@ describe('PuppeteerNode', () => {
           cacheDirectory: tmpDir,
         },
       });
-      expect(puppeteer.executablePath('chrome-canary').toLowerCase()).toContain(
-        'canary',
+      expect(puppeteer.executablePath('chrome').toLowerCase()).toContain(
+        'chrome',
       );
     });
 
