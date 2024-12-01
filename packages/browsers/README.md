@@ -40,6 +40,7 @@ npx @puppeteer/browsers install chromedriver@116.0.5793.0
 ## Known limitations
 
 1. Launching the system browsers is only possible for Chrome/Chromium.
+2. If `npx` gets stuck or runs very slowly, you can try `yarn dlx` instead. E.g. `yarn dlx @puppeteer/browsers install ...`
 
 ## API
 
