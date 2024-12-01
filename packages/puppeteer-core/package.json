@@ -142,12 +142,12 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
-    "@types/chrome": "0.0.284",
+    "@types/chrome": "0.0.287",
     "@types/debug": "4.1.12",
     "@types/node": "^18.17.15",
     "@types/ws": "8.5.13",
     "mitt": "3.0.1",
-    "parsel-js": "1.1.2",
+    "parsel-js": "1.2.0",
     "rxjs": "7.8.1"
   }
 }
