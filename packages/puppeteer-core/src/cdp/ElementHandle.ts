@@ -36,7 +36,7 @@ const NON_ELEMENT_NODE_ROLES = new Set(['StaticText', 'InlineTextBox']);
 export class CdpElementHandle<
   ElementType extends Node = Element,
 > extends ElementHandle<ElementType> {
-  protected declare readonly handle: CdpJSHandle<ElementType>;
+  declare protected readonly handle: CdpJSHandle<ElementType>;
   #backendNodeId?: number;
 
   constructor(
