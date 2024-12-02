@@ -1,0 +1,37 @@
+name: Test workflow
+
+# Declare default permissions as read only.
+permissions: read-all
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      # These are the defaults. See
+      # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request
+      - opened
+      - reopened
+      - synchronize
+
+      # Used for `full-ci`
+      - labeled
+    branches:
+      - '**'
+
+jobs:
+  test-code:
+    name: 'test'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - macos-13
+          - windows-latest
+    steps:
+      - name: Install
+        run: npx --yes @puppeteer/browsers install chrome@117.0.5938.149 --path ${GITHUB_WORKSPACE}/browsers
