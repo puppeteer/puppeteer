@@ -121,7 +121,7 @@ describe('navigation', function () {
           false,
         );
       });
-      const response = await page.goto(server.PREFIX + '/grid.html');
+      const response = await page.goto(server.PREFIX + '/title.html');
       expect(response!.status()).toBe(200);
     });
     it('should work when reload causes history API in beforeunload', async () => {

@@ -984,13 +984,6 @@
   {
     "testIdPattern": "[browsercontext.spec] BrowserContext should fire target events",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "In BiDi currently more events than needed are fired (because target is updated more often). We probably need to adjust the test as the behavior is not broken per se"
-  },
-  {
-    "testIdPattern": "[browsercontext.spec] BrowserContext should fire target events",
-    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
@@ -1665,6 +1658,13 @@
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[frame.spec] Frame specs Frame Management should support lazy frames",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "In WebDriver BiDi, we cannot distinguish between about:blank and lazy-loading (paused) frames"
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame.evaluate should throw for detached frames",

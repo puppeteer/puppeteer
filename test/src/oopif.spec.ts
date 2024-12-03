@@ -413,8 +413,8 @@ describe('OOPIF', function () {
   it('should support lazy OOP frames', async () => {
     const {server, page} = state;
 
-    await page.goto(server.PREFIX + '/lazy-oopif-frame.html');
     await page.setViewport({width: 1000, height: 1000});
+    await page.goto(server.PREFIX + '/lazy-oopif-frame.html');
 
     expect(
       page.frames().map(frame => {

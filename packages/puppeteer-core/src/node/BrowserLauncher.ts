@@ -173,17 +173,20 @@ export abstract class BrowserLauncher {
           },
         );
       } else {
+        const rawErrors = protocol === 'webDriverBiDi';
         if (usePipe) {
           cdpConnection = await this.createCdpPipeConnection(browserProcess, {
             timeout,
             protocolTimeout,
             slowMo,
+            rawErrors,
           });
         } else {
           cdpConnection = await this.createCdpSocketConnection(browserProcess, {
             timeout,
             protocolTimeout,
             slowMo,
+            rawErrors,
           });
         }
         if (protocol === 'webDriverBiDi') {
@@ -307,6 +310,7 @@ export abstract class BrowserLauncher {
       timeout: number;
       protocolTimeout: number | undefined;
       slowMo: number;
+      rawErrors: boolean;
     },
   ): Promise<Connection> {
     const browserWSEndpoint = await browserProcess.waitForLineOutput(
@@ -319,6 +323,7 @@ export abstract class BrowserLauncher {
       transport,
       opts.slowMo,
       opts.protocolTimeout,
+      opts.rawErrors,
     );
   }
 
@@ -331,6 +336,7 @@ export abstract class BrowserLauncher {
       timeout: number;
       protocolTimeout: number | undefined;
       slowMo: number;
+      rawErrors: boolean;
     },
   ): Promise<Connection> {
     // stdio was assigned during start(), and the 'pipe' option there adds the
@@ -340,7 +346,13 @@ export abstract class BrowserLauncher {
       pipeWrite as NodeJS.WritableStream,
       pipeRead as NodeJS.ReadableStream,
     );
-    return new Connection('', transport, opts.slowMo, opts.protocolTimeout);
+    return new Connection(
+      '',
+      transport,
+      opts.slowMo,
+      opts.protocolTimeout,
+      opts.rawErrors,
+    );
   }
 
   /**
