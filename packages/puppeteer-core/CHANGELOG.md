@@ -20,6 +20,29 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [23.10.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.9.0...puppeteer-core-v23.10.0) (2024-12-03)
+
+
+### Features
+
+* adjust browser-level cookie API ([#13331](https://github.com/puppeteer/puppeteer/issues/13331)) ([678eaf0](https://github.com/puppeteer/puppeteer/commit/678eaf09f2f018678181c1b115f850cfa33be411))
+* browser level cookies API ([#13316](https://github.com/puppeteer/puppeteer/issues/13316)) ([43dec3b](https://github.com/puppeteer/puppeteer/commit/43dec3b0aa277df0f0b8ed29009d71cd1ba77982))
+* implement ElementHandle.backendNodeId ([#13328](https://github.com/puppeteer/puppeteer/issues/13328)) ([ffb31ca](https://github.com/puppeteer/puppeteer/commit/ffb31cacc53f6ca6991b227807a29aa93305a177))
+* roll to Firefox 133.0 ([#13333](https://github.com/puppeteer/puppeteer/issues/13333)) ([de314e5](https://github.com/puppeteer/puppeteer/commit/de314e53de38c015748ff4c31f0e178512c4e494))
+* support LaunchOptions in executablePath() ([#13340](https://github.com/puppeteer/puppeteer/issues/13340)) ([6acfee6](https://github.com/puppeteer/puppeteer/commit/6acfee6810da378844d4dca7f28d539dd46a3529))
+
+
+### Bug Fixes
+
+* stop calling bringToFront when taking page screenshots ([#13336](https://github.com/puppeteer/puppeteer/issues/13336)) ([6da2cb4](https://github.com/puppeteer/puppeteer/commit/6da2cb490495193fb7fbdb47a71c95033a4a6fab))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.4.1 to 2.5.0
+
 ## [23.9.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.8.0...puppeteer-core-v23.9.0) (2024-11-21)
 
 
