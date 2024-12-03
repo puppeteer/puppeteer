@@ -468,6 +468,8 @@ export function makeProgressCallback(
 ): (downloadedBytes: number, totalBytes: number) => void {
   let progressBar: ProgressBar;
   let lastDownloadedBytes = 0;
+  let isExtracting = false; // Track if we're in the extraction phase
+
   return (downloadedBytes: number, totalBytes: number) => {
     if (!progressBar) {
       progressBar = new ProgressBar(
@@ -482,9 +484,16 @@ export function makeProgressCallback(
         },
       );
     }
-    const delta = downloadedBytes - lastDownloadedBytes;
-    lastDownloadedBytes = downloadedBytes;
-    progressBar.tick(delta);
+    if (downloadedBytes >= totalBytes && !isExtracting) {
+      // Transition to the extraction phase
+      progressBar.terminate(); // Clear download progress bar
+      console.log(`Extracting ${browser} ${buildId}...`); // Simple console message for now
+      isExtracting = true;
+    } else if (!isExtracting) {
+      const delta = downloadedBytes - lastDownloadedBytes;
+      lastDownloadedBytes = downloadedBytes;
+      progressBar.tick(delta);
+    }
   };
 }
 
