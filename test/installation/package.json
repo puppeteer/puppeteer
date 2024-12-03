@@ -52,6 +52,6 @@
   ],
   "devDependencies": {
     "glob": "10.4.5",
-    "mocha": "10.8.2"
+    "mocha": "11.0.1"
   }
 }
