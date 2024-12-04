@@ -206,7 +206,6 @@ export const setupSeparateTestBrowserHooks = (
   options: {
     createContext?: boolean;
     createPage?: boolean;
-    mergeArgs?: boolean;
   } = {},
 ): Awaited<ReturnType<typeof launch>> => {
   const {createContext = true, createPage = true} = options;
@@ -533,7 +532,6 @@ export const launch = async (
     after?: 'each' | 'all';
     createContext?: boolean;
     createPage?: boolean;
-    mergeArgs?: boolean;
   } = {},
 ): Promise<
   PuppeteerTestState & {
