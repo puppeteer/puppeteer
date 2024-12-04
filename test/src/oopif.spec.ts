@@ -13,14 +13,11 @@ import {setupSeparateTestBrowserHooks} from './mocha-utils.js';
 import {attachFrame, detachFrame, dumpFrames, navigateFrame} from './utils.js';
 
 describe('OOPIF', function () {
-  /* We use a special browser for this test as we need the --site-per-process flag */
+  // We start a new browser instance for this test because we need the
+  // --site-per-process flag.
   const state = setupSeparateTestBrowserHooks(
     {
-      args: [
-        '--site-per-process',
-        '--remote-debugging-port=21222',
-        '--host-rules=MAP * 127.0.0.1',
-      ],
+      args: ['--site-per-process'],
     },
     {createContext: true},
   );
@@ -280,7 +277,7 @@ describe('OOPIF', function () {
 
   it('should wait for inner OOPIFs', async () => {
     const {server, page} = state;
-    await page.goto(`http://mainframe:${server.PORT}/main-frame.html`);
+    await page.goto(`http://domain1.test:${server.PORT}/main-frame.html`);
     const frame2 = await page.waitForFrame(frame => {
       return frame.url().endsWith('inner-frame2.html');
     });
@@ -391,7 +388,7 @@ describe('OOPIF', function () {
   });
 
   it('should detect existing OOPIFs when Puppeteer connects to an existing page', async () => {
-    const {server, puppeteer, page} = state;
+    const {server, puppeteer, browser, page} = state;
 
     const frame = page.waitForFrame(frame => {
       return frame.url().endsWith('/oopif.html');
@@ -401,8 +398,9 @@ describe('OOPIF', function () {
     expect(await iframes(page)).toHaveLength(1);
     expect(page.frames()).toHaveLength(2);
 
-    const browserURL = 'http://127.0.0.1:21222';
-    using browser1 = await puppeteer.connect({browserURL});
+    using browser1 = await puppeteer.connect({
+      browserWSEndpoint: browser.wsEndpoint(),
+    });
     const target = await browser1.waitForTarget(target => {
       return target.url().endsWith('dynamic-oopif.html');
     });
@@ -620,7 +618,7 @@ describe('OOPIF', function () {
           frame.onerror = y;
         });
       },
-      server.PREFIX.replace('localhost', 'oopifdomain') + '/one-style.html',
+      server.PREFIX.replace('localhost', 'domain1.test') + '/one-style.html',
     );
     await page.waitForSelector('iframe');
 
@@ -634,14 +632,14 @@ describe('OOPIF', function () {
       awaitPromise: true,
     });
 
-    expect(networkEvents).toContain(`http://oopifdomain:${server.PORT}/fetch`);
+    expect(networkEvents).toContain(`http://domain1.test:${server.PORT}/fetch`);
   });
 
   it('should retrieve body for OOPIF document requests', async () => {
     const {server, page} = state;
 
     const frameUrl =
-      server.PREFIX.replace('localhost', 'oopifdomain') +
+      server.PREFIX.replace('localhost', 'domain1.test') +
       '/oopif-response.html';
 
     expect.assertions(1);

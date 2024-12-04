@@ -94,6 +94,12 @@ const defaultBrowserOptions = Object.assign(
     headless: headless === 'shell' ? ('shell' as const) : isHeadless,
     dumpio: !!process.env['DUMPIO'],
     protocol,
+    args: [
+      `--host-resolver-rules=MAP domain1.test 127.0.0.1,MAP domain2.test 127.0.0.1,MAP domain3.test 127.0.0.1`,
+    ],
+    extraPrefsFirefox: {
+      'network.dns.localDomains': `domain1.test,domain2.test,domain3.test`,
+    },
   } satisfies LaunchOptions,
   extraLaunchOptions,
 );
