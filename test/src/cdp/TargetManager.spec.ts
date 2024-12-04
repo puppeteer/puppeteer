@@ -7,32 +7,26 @@
 import expect from 'expect';
 import type {CdpBrowser} from 'puppeteer-core/internal/cdp/Browser.js';
 
-import type {launch} from '../mocha-utils.js';
 import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
 import {attachFrame} from '../utils.js';
 
 describe('TargetManager', () => {
-  /* We use a special browser for this test as we need the --site-per-process flag */
+  // We start a new browser instance for this test because we need the
+  // --site-per-process flag.
   const state = setupSeparateTestBrowserHooks(
     {
-      args: [
-        '--site-per-process',
-        '--remote-debugging-port=21222',
-        '--host-rules=MAP * 127.0.0.1',
-      ],
+      args: ['--site-per-process'],
     },
     {
       createPage: false,
     },
-  ) as Awaited<ReturnType<typeof launch>> & {
-    browser: CdpBrowser;
-  };
+  );
 
   // CDP-specific test.
   it('should handle targets', async () => {
     const {server, context, browser} = state;
 
-    const targetManager = browser._targetManager();
+    const targetManager = (browser as CdpBrowser)._targetManager();
     expect(targetManager.getAvailableTargets().size).toBe(3);
 
     expect(await context.pages()).toHaveLength(0);
