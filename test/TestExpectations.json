@@ -2674,20 +2674,6 @@
     "comment": "Firefox does not support multiple sessions in BiDi."
   },
   {
-    "testIdPattern": "[oopif.spec] OOPIF should retrieve body for OOPIF document requests",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "Chrome-specific test (uses DNS mapping); does not work with Firefox."
-  },
-  {
-    "testIdPattern": "[oopif.spec] OOPIF should wait for inner OOPIFs",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "Chrome-specific test (uses DNS mapping); does not work with Firefox."
-  },
-  {
     "testIdPattern": "[page.spec] Page Page.addScriptTag should throw when added with content to the CSP page",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],

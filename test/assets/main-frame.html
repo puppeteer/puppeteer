@@ -3,7 +3,7 @@
   window.addEventListener('DOMContentLoaded', () => {
     const iframe = document.createElement('iframe');
     const url = new URL(location.href);
-    url.hostname = 'inner-frame1.test';
+    url.hostname = 'domain2.test';
     url.pathname = '/inner-frame1.html';
     iframe.src = url.toString();
     document.body.appendChild(iframe);
