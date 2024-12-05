@@ -134,7 +134,6 @@
     "@babel/plugin-transform-modules-commonjs": "7.25.9",
     "@babel/plugin-transform-private-methods": "7.25.9",
     "@babel/plugin-transform-private-property-in-object": "7.25.9",
-    "@eslint/compat": "1.2.3",
     "@eslint/eslintrc": "3.2.0",
     "@eslint/js": "9.16.0",
     "@microsoft/api-extractor": "7.48.0",
