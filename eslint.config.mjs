@@ -5,23 +5,20 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import {fileURLToPath} from 'node:url';
 
-import {fixupConfigRules, fixupPluginRules} from '@eslint/compat';
 import {FlatCompat} from '@eslint/eslintrc';
 import js from '@eslint/js';
 import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
-import _import from 'eslint-plugin-import';
+import importPlugin from 'eslint-plugin-import';
 import mocha from 'eslint-plugin-mocha';
+import eslintPrettierPluginRecommended from 'eslint-plugin-prettier/recommended';
 import rulesdir from 'eslint-plugin-rulesdir';
 import tsdoc from 'eslint-plugin-tsdoc';
 import globals from 'globals';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
+  baseDirectory: import.meta.dirname,
   recommendedConfig: js.configs.recommended,
   allConfig: js.configs.all,
 });
@@ -30,9 +27,12 @@ rulesdir.RULES_DIR = 'tools/eslint/lib';
 
 function getThirdPartyPackages() {
   return fs
-    .readdirSync(path.join(__dirname, 'packages/puppeteer-core/third_party'), {
-      withFileTypes: true,
-    })
+    .readdirSync(
+      path.join(import.meta.dirname, 'packages/puppeteer-core/third_party'),
+      {
+        withFileTypes: true,
+      },
+    )
     .filter(dirent => {
       return dirent.isDirectory();
     })
@@ -90,15 +90,14 @@ export default [
       'examples/puppeteer-in-extension/node_modules/**/*',
     ],
   },
-  ...fixupConfigRules(
-    compat.extends('plugin:prettier/recommended', 'plugin:import/typescript'),
-  ),
+  eslintPrettierPluginRecommended,
+  importPlugin.flatConfigs.typescript,
   {
     name: 'JavaScript rules',
     plugins: {
       mocha,
       '@typescript-eslint': typescriptEslint,
-      import: fixupPluginRules(_import),
+      import: importPlugin,
       rulesdir,
     },
 
