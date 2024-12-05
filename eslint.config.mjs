@@ -12,7 +12,7 @@ import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import importPlugin from 'eslint-plugin-import';
 import mocha from 'eslint-plugin-mocha';
-import eslintPluginRecommended from 'eslint-plugin-prettier/recommended';
+import eslintPrettierPluginRecommended from 'eslint-plugin-prettier/recommended';
 import rulesdir from 'eslint-plugin-rulesdir';
 import tsdoc from 'eslint-plugin-tsdoc';
 import globals from 'globals';
@@ -90,7 +90,7 @@ export default [
       'examples/puppeteer-in-extension/node_modules/**/*',
     ],
   },
-  eslintPluginRecommended,
+  eslintPrettierPluginRecommended,
   importPlugin.flatConfigs.typescript,
   {
     name: 'JavaScript rules',
