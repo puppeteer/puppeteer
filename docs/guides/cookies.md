@@ -15,8 +15,6 @@ import puppeteer from 'puppeteer';
 
 const browser = await puppeteer.launch();
 
-const context = await browser.createBrowserContext();
-
 const page = await browser.newPage();
 
 await page.goto('https://example.com');
@@ -27,7 +25,7 @@ await page.evaluate(() => {
   document.cookie = 'myCookie = MyCookieValue';
 });
 
-console.log(await context.cookies()); // print available cookies.
+console.log(await browser.cookies()); // print available cookies.
 ```
 
 ## Setting cookies
@@ -38,8 +36,6 @@ Puppeteer can also write cookies directly into the browser's storage:
 import puppeteer from 'puppeteer';
 
 const browser = await puppeteer.launch();
-
-const context = await browser.createBrowserContext();
 
 // Sets two cookies for the localhost domain.
 await browser.setCookie(
@@ -67,7 +63,7 @@ await browser.setCookie(
   },
 );
 
-console.log(await context.cookies()); // print available cookies.
+console.log(await browser.cookies()); // print available cookies.
 ```
 
 ## Deleting cookies
