@@ -249,9 +249,17 @@ async function main() {
           resolve();
         });
       });
-      console.log('Finished', JSON.stringify(parameters));
       try {
-        const results = readJSON(tmpFilename) as MochaResults;
+        const results = (() => {
+          try {
+            return readJSON(tmpFilename) as MochaResults;
+          } catch (cause) {
+            throw new Error('Test results are not found', {
+              cause,
+            });
+          }
+        })();
+        console.log('Finished', JSON.stringify(parameters));
         const updates = getExpectationUpdates(results, applicableExpectations, {
           platforms: [os.platform()],
           parameters,
