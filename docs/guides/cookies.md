@@ -75,8 +75,6 @@ import puppeteer from 'puppeteer';
 
 const browser = await puppeteer.launch();
 
-const context = await browser.createBrowserContext();
-
 // Deletes two cookies for the localhost domain.
 await browser.deleteCookie(
   {
@@ -103,7 +101,7 @@ await browser.deleteCookie(
   },
 );
 
-console.log(await context.cookies()); // print available cookies.
+console.log(await browser.cookies()); // print available cookies.
 ```
 
 In addition to the `Browser` methods operating on the default browser
