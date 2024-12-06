@@ -15,6 +15,8 @@ import puppeteer from 'puppeteer';
 
 const browser = await puppeteer.launch();
 
+const context = await browser.createBrowserContext();
+
 const page = await browser.newPage();
 
 await page.goto('https://example.com');
@@ -36,6 +38,8 @@ Puppeteer can also write cookies directly into the browser's storage:
 import puppeteer from 'puppeteer';
 
 const browser = await puppeteer.launch();
+
+const context = await browser.createBrowserContext();
 
 // Sets two cookies for the localhost domain.
 await browser.setCookie(
@@ -69,6 +73,42 @@ console.log(await context.cookies()); // print available cookies.
 ## Deleting cookies
 
 [Browser.deleteCookie()](https://pptr.dev/api/puppeteer.browser.deletecookie) method allows deleting cookies from storage.
+
+```ts
+import puppeteer from 'puppeteer';
+
+const browser = await puppeteer.launch();
+
+const context = await browser.createBrowserContext();
+
+// Deletes two cookies for the localhost domain.
+await browser.deleteCookie(
+  {
+    name: 'cookie1',
+    value: '1',
+    domain: 'localhost',
+    path: '/',
+    sameParty: false,
+    expires: -1,
+    httpOnly: false,
+    secure: false,
+    sourceScheme: 'NonSecure',
+  },
+  {
+    name: 'cookie2',
+    value: '2',
+    domain: 'localhost',
+    path: '/',
+    sameParty: false,
+    expires: -1,
+    httpOnly: false,
+    secure: false,
+    sourceScheme: 'NonSecure',
+  },
+);
+
+console.log(await context.cookies()); // print available cookies.
+```
 
 In addition to the `Browser` methods operating on the default browser
 context, the same methods are available on the
