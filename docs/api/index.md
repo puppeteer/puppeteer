@@ -1712,6 +1712,17 @@ The sizes of each format are as follows:
 </td></tr>
 <tr><td>
 
+<span id="puppeteerlaunchoptions">[PuppeteerLaunchOptions](./puppeteer.puppeteerlaunchoptions.md)</span>
+
+</td><td>
+
+**Deprecated:**
+
+Use [LaunchOptions](./puppeteer.launchoptions.md).
+
+</td></tr>
+<tr><td>
+
 <span id="puppeteerlifecycleevent">[PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)</span>
 
 </td><td>
