@@ -73,16 +73,18 @@ const browser = await puppeteer.launch({
 ## Chrome reports sandbox errors on Windows
 
 Chrome uses sandboxes on Windows which require additional permissions on
-the downloaded Chrome files. Currently, Puppeteer is not able to set
-those permissions for you.
+the downloaded Chrome files. Starting from Puppeteer v22.14.0, Puppeteer
+will attempt to configure those permissions by running the `setup.exe`
+tool provided by Chrome during the installation of the browser.
 
-If you encounter this issue, you will see errors like this in the browser stdout:
+If you are using an older Puppeteer version or still seeing the
+following errors in the browser output:
 
 ```
 [24452:59820:0508/113713.058:ERROR:sandbox_win.cc(913)] Sandbox cannot access executable. Check filesystem permissions are valid. See https://bit.ly/31yqMJR.: Access is denied. (0x5)
 ```
 
-To workaround the issue, use the icacls utility to set permissions manually:
+You can use icacls to set permissions manually:
 
 ```powershell
 icacls %USERPROFILE%/.cache/puppeteer/chrome /grant *S-1-15-2-1:(OI)(CI)(RX)
