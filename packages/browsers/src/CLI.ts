@@ -54,6 +54,10 @@ interface ClearArgs {
   path?: string;
 }
 
+interface ListArgs {
+  path?: string;
+}
+
 /**
  * @public
  */
@@ -394,6 +398,35 @@ export class CLI {
               console.log(`${cacheDir} cleared.`);
             },
           );
+        },
+      )
+      .command(
+        'list',
+        'List all installed browsers in the cache directory',
+        yargs => {
+          this.#definePathParameter(yargs);
+          yargs.example(
+            '$0 list',
+            'List all installed browsers in the cache directory',
+          );
+          if (this.#allowCachePathOverride) {
+            yargs.example(
+              '$0 list --path /tmp/my-browser-cache',
+              'List browsers installed in the specified cache directory',
+            );
+          }
+        },
+        async argv => {
+          const args = argv as unknown as ListArgs;
+          const cacheDir = args.path ?? this.#cachePath;
+          const cache = new Cache(cacheDir);
+          const browsers = cache.getInstalledBrowsers();
+
+          for (const browser of browsers) {
+            console.log(
+              `${browser.browser}@${browser.buildId} (${browser.platform}) ${browser.executablePath}`,
+            );
+          }
         },
       )
       .demandCommand(1)

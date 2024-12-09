@@ -19,6 +19,8 @@ Built-in per-command `help` will provide all documentation you need to use the C
 npx @puppeteer/browsers --help # help for all commands
 npx @puppeteer/browsers install --help # help for the install command
 npx @puppeteer/browsers launch --help # help for the launch command
+npx @puppeteer/browsers clear --help # help for the clear command
+npx @puppeteer/browsers list --help # help for the list command
 ```
 
 You can specify the version of the `@puppeteer/browsers` when using
@@ -31,6 +33,18 @@ npx @puppeteer/browsers@latest --help
 npx @puppeteer/browsers@2.4.1 --help
 # Always install the latest version and automatically confirm the installation.
 npx --yes @puppeteer/browsers@latest --help
+```
+
+To clear all installed browsers, use the `clear` command:
+
+```bash
+npx @puppeteer/browsers clear
+```
+
+To list all installed browsers, use the `list` command:
+
+```bash
+npx @puppeteer/browsers list
 ```
 
 Some example to give an idea of what the CLI looks like (use the `--help` command for more examples):
