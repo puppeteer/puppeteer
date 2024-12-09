@@ -20,6 +20,20 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [23.10.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.10.1...puppeteer-core-v23.10.2) (2024-12-09)
+
+
+### Bug Fixes
+
+* export the PuppeteerLaunchOptions type ([#13376](https://github.com/puppeteer/puppeteer/issues/13376)) ([2202ce8](https://github.com/puppeteer/puppeteer/commit/2202ce8b8a11b6bd36743418ade62b6ae56a67b9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.5.0 to 2.6.0
+
 ## [23.10.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.10.0...puppeteer-core-v23.10.1) (2024-12-04)
 
 
