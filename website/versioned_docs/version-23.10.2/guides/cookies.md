@@ -25,7 +25,7 @@ await page.evaluate(() => {
   document.cookie = 'myCookie = MyCookieValue';
 });
 
-console.log(await context.cookies()); // print available cookies.
+console.log(await browser.cookies()); // print available cookies.
 ```
 
 ## Setting cookies
@@ -63,12 +63,46 @@ await browser.setCookie(
   },
 );
 
-console.log(await context.cookies()); // print available cookies.
+console.log(await browser.cookies()); // print available cookies.
 ```
 
 ## Deleting cookies
 
 [Browser.deleteCookie()](https://pptr.dev/api/puppeteer.browser.deletecookie) method allows deleting cookies from storage.
+
+```ts
+import puppeteer from 'puppeteer';
+
+const browser = await puppeteer.launch();
+
+// Deletes two cookies for the localhost domain.
+await browser.deleteCookie(
+  {
+    name: 'cookie1',
+    value: '1',
+    domain: 'localhost',
+    path: '/',
+    sameParty: false,
+    expires: -1,
+    httpOnly: false,
+    secure: false,
+    sourceScheme: 'NonSecure',
+  },
+  {
+    name: 'cookie2',
+    value: '2',
+    domain: 'localhost',
+    path: '/',
+    sameParty: false,
+    expires: -1,
+    httpOnly: false,
+    secure: false,
+    sourceScheme: 'NonSecure',
+  },
+);
+
+console.log(await browser.cookies()); // print available cookies.
+```
 
 In addition to the `Browser` methods operating on the default browser
 context, the same methods are available on the
