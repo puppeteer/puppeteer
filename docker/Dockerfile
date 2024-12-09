@@ -30,7 +30,10 @@ RUN npm i ./puppeteer-browsers-latest.tgz ./puppeteer-core-latest.tgz ./puppetee
 
 # Install system dependencies as root.
 USER root
-RUN npx puppeteer browsers install chrome --install-deps
+# Overriding the cache directory to install the deps for the Chrome
+# version installed for pptruser. 
+RUN PUPPETEER_CACHE_DIR=/home/pptruser/.cache/puppeteer \
+  npx puppeteer browsers install chrome --install-deps
 
 USER $PPTRUSER_UID
 # Generate THIRD_PARTY_NOTICES using chrome --credits.
