@@ -110,7 +110,7 @@ if (defaultBrowserOptions.executablePath) {
   );
   if (!fs.existsSync(defaultBrowserOptions.executablePath)) {
     throw new Error(
-      `Browser not found at ${defaultBrowserOptions.executablePath}`,
+      `Browser executable not found at ${defaultBrowserOptions.executablePath}`,
     );
   }
 } else {
