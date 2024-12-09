@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.5.0...browsers-v2.6.0) (2024-12-09)
+
+
+### Features
+
+* allow listing installed browsers ([#13385](https://github.com/puppeteer/puppeteer/issues/13385)) ([8b814bf](https://github.com/puppeteer/puppeteer/commit/8b814bfd1bfb5156d4d1334c7d2d3292ea17fbfc))
+
 ## [2.5.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.4.1...browsers-v2.5.0) (2024-12-03)
 
 
