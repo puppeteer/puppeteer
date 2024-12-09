@@ -108,6 +108,11 @@ if (defaultBrowserOptions.executablePath) {
   console.warn(
     `WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}`,
   );
+  if (!fs.existsSync(defaultBrowserOptions.executablePath)) {
+    throw new Error(
+      `Browser executable not found at ${defaultBrowserOptions.executablePath}`,
+    );
+  }
 } else {
   const executablePath = puppeteer.executablePath();
   if (!fs.existsSync(executablePath)) {
