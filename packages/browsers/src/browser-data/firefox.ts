@@ -11,10 +11,15 @@ import {getJSON} from '../httpUtil.js';
 
 import {BrowserPlatform, type ProfileOptions} from './types.js';
 
+function getFormat(buildId: string): string {
+  const majorVersion = Number(buildId.split('.').shift()!);
+  return majorVersion >= 135 ? 'xz' : 'bz2';
+}
+
 function archiveNightly(platform: BrowserPlatform, buildId: string): string {
   switch (platform) {
     case BrowserPlatform.LINUX:
-      return `firefox-${buildId}.en-US.${platform}-x86_64.tar.bz2`;
+      return `firefox-${buildId}.en-US.${platform}-x86_64.tar.${getFormat(buildId)}`;
     case BrowserPlatform.MAC_ARM:
     case BrowserPlatform.MAC:
       return `firefox-${buildId}.en-US.mac.dmg`;
@@ -27,7 +32,7 @@ function archiveNightly(platform: BrowserPlatform, buildId: string): string {
 function archive(platform: BrowserPlatform, buildId: string): string {
   switch (platform) {
     case BrowserPlatform.LINUX:
-      return `firefox-${buildId}.tar.bz2`;
+      return `firefox-${buildId}.tar.${getFormat(buildId)}`;
     case BrowserPlatform.MAC_ARM:
     case BrowserPlatform.MAC:
       return `Firefox ${buildId}.dmg`;
