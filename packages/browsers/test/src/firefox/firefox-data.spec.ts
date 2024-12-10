@@ -24,6 +24,14 @@ describe('Firefox', () => {
       'https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-111.0a1.en-US.linux-x86_64.tar.bz2',
     );
     assert.strictEqual(
+      resolveDownloadUrl(BrowserPlatform.LINUX, '135.0a1'),
+      'https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-135.0a1.en-US.linux-x86_64.tar.xz',
+    );
+    assert.strictEqual(
+      resolveDownloadUrl(BrowserPlatform.LINUX, '136.0a1'),
+      'https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-136.0a1.en-US.linux-x86_64.tar.xz',
+    );
+    assert.strictEqual(
       resolveDownloadUrl(BrowserPlatform.MAC, '111.0a1'),
       'https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-111.0a1.en-US.mac.dmg',
     );
