@@ -18,4 +18,4 @@
 - Firefox browser system requirements:
 
   - https://www.mozilla.org/en-US/firefox/system-requirements/
-  - on Linux, the `xz` utility is required to unpack Firefox versions 135+.
+  - The `xz` utility is required to unpack Firefox versions 135+ for Linux.
