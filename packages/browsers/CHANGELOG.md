@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.1](https://github.com/puppeteer/puppeteer/compare/browsers-v2.6.0...browsers-v2.6.1) (2024-12-10)
+
+
+### Bug Fixes
+
+* support .tar.xz archives for Firefox 135+ ([#13391](https://github.com/puppeteer/puppeteer/issues/13391)) ([d247a7f](https://github.com/puppeteer/puppeteer/commit/d247a7fcd4fc01cf0c53d733632a1e9687b8004d))
+
 ## [2.6.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.5.0...browsers-v2.6.0) (2024-12-09)
 
 
