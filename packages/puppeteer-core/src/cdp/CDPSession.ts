@@ -51,6 +51,14 @@ export class CdpCDPSession extends CDPSession {
     this.#rawErrors = rawErrors;
   }
 
+  set rawErrors(value: boolean) {
+    this.#rawErrors = value;
+  }
+
+  get rawErrors(): boolean {
+    return this.#rawErrors;
+  }
+
   /**
    * Sets the {@link CdpTarget} associated with the session instance.
    *
