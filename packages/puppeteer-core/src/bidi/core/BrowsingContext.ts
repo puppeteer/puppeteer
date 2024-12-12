@@ -108,6 +108,8 @@ export class BrowsingContext extends EventEmitter<{
     /** The prompt that was opened. */
     userPrompt: UserPrompt;
   };
+  /** Emitted whenever the frame history is updated. */
+  historyUpdated: void;
   /** Emitted whenever the frame emits `DOMContentLoaded` */
   DOMContentLoaded: void;
   /** Emitted whenever the frame emits `load` */
@@ -208,6 +210,14 @@ export class BrowsingContext extends EventEmitter<{
         return;
       }
       this.dispose('Browsing context already closed.');
+    });
+
+    sessionEmitter.on('browsingContext.historyUpdated', info => {
+      if (info.context !== this.id) {
+        return;
+      }
+      this.#url = info.url;
+      this.emit('historyUpdated', undefined);
     });
 
     sessionEmitter.on('browsingContext.domContentLoaded', info => {
