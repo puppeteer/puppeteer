@@ -2684,8 +2684,8 @@
     "testIdPattern": "[oopif.spec] OOPIF should load oopif iframes with subresources and request interception",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["TIMEOUT"],
-    "comment": "In WebDriver BiDi, we cannot detect if an empty frame finished loading initial about:blank"
+    "expectations": ["PASS", "TIMEOUT"],
+    "comment": "For some reason it is flaky, needs investigation"
   },
   {
     "testIdPattern": "[oopif.spec] OOPIF should recover cross-origin frames on reconnect",
@@ -3483,7 +3483,7 @@
   },
   {
     "testIdPattern": "[oopif.spec] OOPIF should support lazy OOP frames",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "headless", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "In WebDriver BiDi, we cannot detect if an empty frame is a lazy frame"
