@@ -504,6 +504,12 @@ describe('Emulation', () => {
         const screenshot = await page.screenshot();
         expect(screenshot).toBeGolden('screenshot-sanity.png');
       }
+
+      {
+        await page.emulateVisionDeficiency('reducedContrast');
+        const screenshot = await page.screenshot();
+        expect(screenshot).toBeGolden('vision-deficiency-reducedContrast.png');
+      }
     });
 
     it('should throw for invalid vision deficiencies', async () => {

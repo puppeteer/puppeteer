@@ -385,6 +385,7 @@ export class EmulationManager implements ClientProvider {
       'blurredVision',
       'deuteranopia',
       'protanopia',
+      'reducedContrast',
       'tritanopia',
     ]);
     assert(
