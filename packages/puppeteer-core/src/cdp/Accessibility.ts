@@ -100,6 +100,13 @@ export interface SnapshotOptions {
    */
   interestingOnly?: boolean;
   /**
+   * If true, gets accessibility trees for each of the iframes in the frame
+   * subtree.
+   *
+   * @defaultValue `false`
+   */
+  includeIframes?: boolean;
+  /**
    * Root node to get the accessibility tree for
    * @defaultValue The root node of the entire page.
    */
@@ -130,12 +137,14 @@ export interface SnapshotOptions {
  */
 export class Accessibility {
   #realm: Realm;
+  #frameId: string;
 
   /**
    * @internal
    */
-  constructor(realm: Realm) {
+  constructor(realm: Realm, frameId = '') {
     this.#realm = realm;
+    this.#frameId = frameId;
   }
 
   /**
@@ -180,9 +189,16 @@ export class Accessibility {
   public async snapshot(
     options: SnapshotOptions = {},
   ): Promise<SerializedAXNode | null> {
-    const {interestingOnly = true, root = null} = options;
+    const {
+      interestingOnly = true,
+      root = null,
+      includeIframes = false,
+    } = options;
     const {nodes} = await this.#realm.environment.client.send(
       'Accessibility.getFullAXTree',
+      {
+        frameId: this.#frameId,
+      },
     );
     let backendNodeId: number | undefined;
     if (root) {
@@ -195,15 +211,44 @@ export class Accessibility {
       backendNodeId = node.backendNodeId;
     }
     const defaultRoot = AXNode.createTree(this.#realm, nodes);
+    const populateIframes = async (root: AXNode): Promise<void> => {
+      if (root.payload.role?.value === 'Iframe') {
+        if (!root.payload.backendDOMNodeId) {
+          return;
+        }
+        using handle = (await this.#realm.adoptBackendNode(
+          root.payload.backendDOMNodeId,
+        )) as ElementHandle<Element>;
+        if (!handle || !('contentFrame' in handle)) {
+          return;
+        }
+        const frame = await handle.contentFrame();
+        if (!frame) {
+          return;
+        }
+        const iframeSnapshot = await frame.accessibility.snapshot(options);
+        root.iframeSnapshot = iframeSnapshot ?? undefined;
+      }
+      for (const child of root.children) {
+        await populateIframes(child);
+      }
+    };
+
     let needle: AXNode | null = defaultRoot;
     if (!defaultRoot) {
       return null;
     }
+
+    if (includeIframes) {
+      await populateIframes(defaultRoot);
+    }
+
     if (backendNodeId) {
       needle = defaultRoot.find(node => {
         return node.payload.backendDOMNodeId === backendNodeId;
       });
     }
+
     if (!needle) {
       return null;
     }
@@ -237,6 +282,12 @@ export class Accessibility {
     if (children.length) {
       serializedNode.children = children;
     }
+    if (node.iframeSnapshot) {
+      if (!serializedNode.children) {
+        serializedNode.children = [];
+      }
+      serializedNode.children.push(node.iframeSnapshot);
+    }
     return [serializedNode];
   }
 
@@ -245,7 +296,7 @@ export class Accessibility {
     node: AXNode,
     insideControl: boolean,
   ): void {
-    if (node.isInteresting(insideControl)) {
+    if (node.isInteresting(insideControl) || node.iframeSnapshot) {
       collection.add(node);
     }
     if (node.isLeafNode()) {
@@ -261,6 +312,7 @@ export class Accessibility {
 class AXNode {
   public payload: Protocol.Accessibility.AXNode;
   public children: AXNode[] = [];
+  public iframeSnapshot?: SerializedAXNode;
 
   #richlyEditable = false;
   #editable = false;
