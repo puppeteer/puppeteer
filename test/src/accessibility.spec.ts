@@ -10,6 +10,7 @@ import expect from 'expect';
 import type {SerializedAXNode} from 'puppeteer-core/internal/cdp/Accessibility.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {attachFrame} from './utils.js';
 
 describe('Accessibility', function () {
   setupTestBrowserHooks();
@@ -242,6 +243,175 @@ describe('Accessibility', function () {
     assert(snapshot.children[0]);
     expect(snapshot.children[0]!.multiselectable).toEqual(true);
   });
+
+  describe('iframes', () => {
+    it('should not include iframe data if not requested', async () => {
+      const {page, server} = await getTestState();
+      await attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      const frame1 = page.frames()[1];
+      await frame1!.evaluate(() => {
+        const button = document.createElement('button');
+        button.innerText = 'value1';
+        document.body.appendChild(button);
+      });
+      const snapshot = await page.accessibility.snapshot({
+        interestingOnly: true,
+      });
+      expect(snapshot).toMatchObject({
+        role: 'RootWebArea',
+        name: '',
+      });
+    });
+
+    it('same-origin iframe (interesting only)', async () => {
+      const {page, server} = await getTestState();
+      await attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      const frame1 = page.frames()[1];
+      await frame1!.evaluate(() => {
+        const button = document.createElement('button');
+        button.innerText = 'value1';
+        document.body.appendChild(button);
+      });
+      const snapshot = await page.accessibility.snapshot({
+        interestingOnly: true,
+        includeIframes: true,
+      });
+      expect(snapshot).toMatchObject({
+        role: 'RootWebArea',
+        name: '',
+        children: [
+          {
+            role: 'Iframe',
+            name: '',
+            children: [
+              {
+                role: 'RootWebArea',
+                name: '',
+                children: [
+                  {
+                    role: 'button',
+                    name: 'value1',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+    });
+
+    it('cross-origin iframe (interesting only)', async () => {
+      const {page, server} = await getTestState();
+      await attachFrame(
+        page,
+        'frame1',
+        server.CROSS_PROCESS_PREFIX + '/empty.html',
+      );
+      const frame1 = page.frames()[1];
+      await frame1!.evaluate(() => {
+        const button = document.createElement('button');
+        button.innerText = 'value1';
+        document.body.appendChild(button);
+      });
+      const snapshot = await page.accessibility.snapshot({
+        interestingOnly: true,
+        includeIframes: true,
+      });
+      expect(snapshot).toMatchObject({
+        role: 'RootWebArea',
+        name: '',
+        children: [
+          {
+            role: 'Iframe',
+            name: '',
+            children: [
+              {
+                role: 'RootWebArea',
+                name: '',
+                children: [
+                  {
+                    role: 'button',
+                    name: 'value1',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+    });
+
+    it('same-origin iframe (all nodes)', async () => {
+      const {page, server} = await getTestState();
+      await attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      const frame1 = page.frames()[1];
+      await frame1!.evaluate(() => {
+        const button = document.createElement('button');
+        button.innerText = 'value1';
+        document.body.appendChild(button);
+      });
+      const snapshot = await page.accessibility.snapshot({
+        interestingOnly: false,
+        includeIframes: true,
+      });
+      expect(snapshot).toMatchObject({
+        role: 'RootWebArea',
+        name: '',
+        children: [
+          {
+            role: 'none',
+            children: [
+              {
+                role: 'generic',
+                name: '',
+                children: [
+                  {
+                    role: 'Iframe',
+                    name: '',
+                    children: [
+                      {
+                        role: 'RootWebArea',
+                        name: '',
+                        children: [
+                          {
+                            role: 'none',
+                            children: [
+                              {
+                                role: 'generic',
+                                name: '',
+                                children: [
+                                  {
+                                    role: 'button',
+                                    name: 'value1',
+                                    children: [
+                                      {
+                                        role: 'StaticText',
+                                        name: 'value1',
+                                        children: [
+                                          {
+                                            role: 'InlineTextBox',
+                                          },
+                                        ],
+                                      },
+                                    ],
+                                  },
+                                ],
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+    });
+  });
+
   it('keyshortcuts', async () => {
     const {page} = await getTestState();
 
