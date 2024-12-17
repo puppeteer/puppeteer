@@ -1,11 +1,9 @@
 # Troubleshooting
 
-:::note
+> [!NOTE]
+> To keep this page up-to-date we largely rely on community contributions.
+> Please send a PR if you notice something is no longer up-to-date.
 
-To keep this page up-to-date we largely rely on community contributions.
-Please send a PR if you notice something is no longer up-to-date.
-
-:::
 
 ## `Cannot find module 'puppeteer-core/internal/...'`
 
@@ -90,13 +88,10 @@ You can use icacls to set permissions manually:
 icacls %USERPROFILE%/.cache/puppeteer/chrome /grant *S-1-15-2-1:(OI)(CI)(RX)
 ```
 
-:::note
-
-In high security environments a more restrictive SID should be used such
-as one from the
-[installer](https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/setup/install_worker.cc;l=74).
-
-:::
+> [!NOTE]
+> In high security environments a more restrictive SID should be used such
+> as one from the
+> [installer](https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/setup/install_worker.cc;l=74).
 
 See https://bit.ly/31yqMJR for more details.
 
@@ -108,13 +103,11 @@ common ones are provided below. Also, see
 https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/debian/dist_package_versions.json
 for the up-to-date list of dependencies declared by the Chrome installer.
 
-:::caution
-
-Chrome currently does not provide arm64 binaries for Linux.
+> [!CAUTION]
+> Chrome currently does not provide arm64 binaries for Linux.
 There are only arm64 binaries for Mac ARM.
 That means that Linux binaries downloaded by default will not work on Linux arm64.
 
-:::
 
 <details>
 <summary>Debian (e.g. Ubuntu) Dependencies</summary>
@@ -241,12 +234,9 @@ const browser = await puppeteer.launch({
 });
 ```
 
-:::caution
-
-Running without a sandbox is **strongly discouraged**. Consider configuring a
+> [!CAUTION]
+> Running without a sandbox is **strongly discouraged**. Consider configuring a
 sandbox instead.
-
-:::
 
 **The recommended way to run Chrome is using sandboxes**
 
@@ -264,11 +254,8 @@ For workarounds, see https://chromium.googlesource.com/chromium/src/+/main/docs/
 
 ### Using [setuid sandbox](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux/suid_sandbox_development.md)
 
-:::caution
-
-IMPORTANT NOTE: The Linux SUID sandbox is almost but not completely removed. See https://bugs.chromium.org/p/chromium/issues/detail?id=598454 This section is mostly out-of-date.
-
-:::
+> [!CAUTION]
+> IMPORTANT NOTE: The Linux SUID sandbox is almost but not completely removed. See https://bugs.chromium.org/p/chromium/issues/detail?id=598454 This section is mostly out-of-date.
 
 The setuid sandbox comes as a standalone executable and is located next to the
 Chrome that Puppeteer downloads. It is fine to re-use the same sandbox
@@ -334,12 +321,9 @@ either:
 2. Installing required dependencies manually:
    `sudo apt install libgtk-3-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2`.
 
-:::caution
-
-The list of required dependencies might get outdated and depend on what you
+> [!CAUTION]
+> The list of required dependencies might get outdated and depend on what you
 already have installed.
-
-:::
 
 ## Running Puppeteer on CircleCI
 
