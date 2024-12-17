@@ -1,2 +1,2 @@
 // Mock script for background extension
-window.MAGIC = 42;
+globalThis.MAGIC = 42;

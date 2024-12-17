@@ -53,7 +53,14 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "No extensions in WebDriver BiDi so far"
+  },
+  {
+    "testIdPattern": "[extensions.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "Chrome-specific test"
   },
   {
     "testIdPattern": "[headful.spec] *",
@@ -368,6 +375,13 @@
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[extensions.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "chrome-headless-shell"],
+    "expectations": ["SKIP"],
+    "comment": "No extensions in chrome-headless-shell"
   },
   {
     "testIdPattern": "[fixtures.spec] Fixtures dumpio option should work with pipe option",
@@ -1556,41 +1570,6 @@
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work from-inside an exposed function",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[extensions.spec] extensions background_page target type should be available",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["SKIP"],
-    "comment": "See https://github.com/puppeteer/puppeteer/issues/12866"
-  },
-  {
-    "testIdPattern": "[extensions.spec] extensions background_page target type should be available",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[extensions.spec] extensions service_worker target type should be available",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[extensions.spec] extensions target.page() should return a background_page",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["SKIP"],
-    "comment": "See https://github.com/puppeteer/puppeteer/issues/12866"
-  },
-  {
-    "testIdPattern": "[extensions.spec] extensions target.page() should return a background_page",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"],
@@ -3462,13 +3441,6 @@
   },
   {
     "testIdPattern": "[devtools.spec] DevTools target.page() should return Page when calling asPage on DevTools target",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[extensions.spec] extensions service_worker target type should be available",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["SKIP"],

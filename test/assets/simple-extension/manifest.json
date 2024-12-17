@@ -2,7 +2,8 @@
   "name": "Simple extension",
   "version": "0.1",
   "background": {
-    "scripts": ["index.js"]
+    "service_worker": "index.js",
+    "type": "module"
   },
   "content_scripts": [{
     "matches": ["<all_urls>"],
@@ -10,5 +11,5 @@
     "js": ["content-script.js"]
   }],
   "permissions": ["background", "activeTab"],
-  "manifest_version": 2
+  "manifest_version": 3
 }
