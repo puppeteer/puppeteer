@@ -1579,8 +1579,8 @@
     "testIdPattern": "[extensions.spec] extensions can evaluate in the service worker",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL"],
-    "comment": "Flaky or failing on Windows"
+    "expectations": ["SKIP"],
+    "comment": "Flaky or failing on Windows. See https://github.com/puppeteer/puppeteer/issues/13417"
   },
   {
     "testIdPattern": "[fixtures.spec] Fixtures should close the browser when the node process closes",
