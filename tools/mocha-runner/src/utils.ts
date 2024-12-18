@@ -72,27 +72,33 @@ export function prettyPrintJSON(json: unknown): void {
   console.log(JSON.stringify(json, null, 2));
 }
 
-export function printSuggestions(
+export function getSuggestionsForAction(
   recommendations: RecommendedExpectation[],
   action: RecommendedExpectation['action'],
-  message: string,
-): void {
-  const toPrint = recommendations.filter(item => {
+): RecommendedExpectation[] {
+  return recommendations.filter(item => {
     return item.action === action;
   });
-  if (toPrint.length) {
+}
+
+export function printSuggestions(
+  recommendations: RecommendedExpectation[],
+  message: string,
+  printBasedOn = false,
+): void {
+  if (recommendations.length) {
     console.log(message);
     prettyPrintJSON(
-      toPrint.map(item => {
+      recommendations.map(item => {
         return item.expectation;
       }),
     );
-    if (action !== 'remove') {
+    if (printBasedOn) {
       console.log(
         'The recommendations are based on the following applied expectations:',
       );
       prettyPrintJSON(
-        toPrint.map(item => {
+        recommendations.map(item => {
           return item.basedOn;
         }),
       );
