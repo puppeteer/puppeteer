@@ -29,6 +29,7 @@ import {
   filterByParameters,
   filterByPlatform,
   getExpectationUpdates,
+  getSuggestionsForAction,
   printSuggestions,
   readJSON,
   writeJSON,
@@ -295,23 +296,31 @@ async function main() {
     fail = true;
     console.error(err);
   } finally {
+    const added = getSuggestionsForAction(recommendations, 'add');
+    const removed = getSuggestionsForAction(recommendations, 'remove');
+    const updated = getSuggestionsForAction(recommendations, 'update');
     if (!!provideSuggestions) {
       printSuggestions(
-        recommendations,
-        'add',
+        added,
         'Add the following to TestExpectations.json to ignore the error:',
+        true,
       );
       printSuggestions(
-        recommendations,
-        'remove',
+        removed,
         'Remove the following from the TestExpectations.json to ignore the error:',
       );
       printSuggestions(
-        recommendations,
-        'update',
+        updated,
         'Update the following expectations in the TestExpectations.json to ignore the error:',
+        true,
       );
     }
+    const unexpected = added.length + removed.length + updated.length;
+    console.log(
+      fail && Boolean(unexpected)
+        ? `Run failed: ${unexpected} unexpected result(s).`
+        : `Run succeeded.`,
+    );
     process.exit(fail ? 1 : 0);
   }
 }
