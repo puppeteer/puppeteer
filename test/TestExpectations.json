@@ -2184,13 +2184,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[navigation.spec] navigation Page.goBack should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS", "TIMEOUT"],
-    "comment": "Bug in chromium-bidi that causes navigation events to not be emitted. See https://github.com/GoogleChromeLabs/chromium-bidi/issues/2894. PASS|TIMEOUT for chromium-bidi roll."
-  },
-  {
     "testIdPattern": "[navigation.spec] navigation Page.goBack should work with HistoryAPI",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -2292,8 +2285,8 @@
     "testIdPattern": "[navigation.spec] navigation Page.goto should work when reload causes history API in beforeunload",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856 historyUpdated from beforeunload incorrectly comes before navigationStarted. PASS|FAIL for chromium-bidi roll"
+    "expectations": ["FAIL"],
+    "comment": "https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856 historyUpdated from beforeunload incorrectly comes before navigationStarted."
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work with anchor navigation",
