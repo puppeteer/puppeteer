@@ -35,6 +35,27 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="includeiframes">includeIframes</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+If true, gets accessibility trees for each of the iframes in the frame subtree.
+
+</td><td>
+
+`false`
+
+</td></tr>
+<tr><td>
+
 <span id="interestingonly">interestingOnly</span>
 
 </td><td>

@@ -29,6 +29,20 @@ All notable changes to this project will be documented in this file. See [standa
     * puppeteer-core bumped from 21.0.2 to 21.0.3
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [23.11.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v23.10.4...puppeteer-v23.11.0) (2024-12-18)
+
+
+### Bug Fixes
+
+* **deps:** bump chromium-bidi to 0.11.0 ([#13418](https://github.com/puppeteer/puppeteer/issues/13418)) ([771e4b2](https://github.com/puppeteer/puppeteer/commit/771e4b27abf21436dba80d568b82c9235bfb7de3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 23.10.4 to 23.11.0
+
 ## [23.10.4](https://github.com/puppeteer/puppeteer/compare/puppeteer-v23.10.3...puppeteer-v23.10.4) (2024-12-12)
 
 
