@@ -68,6 +68,9 @@ import puppeteer from 'puppeteer';
   await page.emulateVisionDeficiency('blurredVision');
   await page.screenshot({path: 'blurred-vision.png'});
 
+  await page.emulateVisionDeficiency('reducedContrast');
+  await page.screenshot({path: 'reduced-contrast.png'});
+
   await browser.close();
 })();
 ```
