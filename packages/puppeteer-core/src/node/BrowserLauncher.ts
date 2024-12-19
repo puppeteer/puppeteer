@@ -190,7 +190,6 @@ export abstract class BrowserLauncher {
           );
         } else {
           browser = await CdpBrowser._create(
-            this.browser,
             cdpConnection,
             [],
             acceptInsecureCerts,

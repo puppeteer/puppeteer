@@ -11,7 +11,6 @@ export * from './Browser.js';
 export * from './BrowserContext.js';
 export * from './BrowserConnector.js';
 export * from './CDPSession.js';
-export * from './ChromeTargetManager.js';
 export * from './Connection.js';
 export * from './Coverage.js';
 export * from './CdpPreloadScript.js';
