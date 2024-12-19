@@ -30,7 +30,7 @@ on:
         required: true
         type: choice
         options:
-          - ubuntu-latest
+          - ubuntu-24.04
           - windows-latest
           - macos-latest
       retries:
@@ -82,7 +82,7 @@ jobs:
           PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
           PUPPETEER_DEFLAKE_RETRIES: ${{ inputs.retries }}
       - name: Run all tests (Linux)
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-24.04' }}
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
@@ -118,13 +118,13 @@ jobs:
       - name: Install browsers
         run: npm run postinstall
       - name: Run all tests (for non-Linux)
-        if: ${{ inputs.os != 'ubuntu-latest' }}
+        if: ${{ inputs.os != 'ubuntu-24.04' }}
         run: npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
           PUPPETEER_DEFLAKE_RETRIES: ${{ inputs.retries }}
       - name: Run all tests (for Linux)
-        if: ${{ inputs.os == 'ubuntu-latest' }}
+        if: ${{ inputs.os == 'ubuntu-24.04' }}
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'

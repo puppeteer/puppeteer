@@ -10,7 +10,7 @@ permissions: read-all
 
 jobs:
   stale:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       issues: write
       pull-requests: write
@@ -24,7 +24,7 @@ jobs:
             We're marking this issue as unconfirmed because it has not
             had recent activity and we weren't able to confirm or
             reproduce it. The issue will be closed if no further
-            activity occurs within the next 7 days. 
+            activity occurs within the next 7 days.
             cc @puppeteer/bug-triage
           close-issue-message: >
             We are closing this unconfirmed issue. If the issue still

@@ -11,7 +11,7 @@ on:
 jobs:
   npm-publish:
     name: Publish npm packages
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:
@@ -41,7 +41,7 @@ jobs:
           npm deprecate puppeteer@"$version_range" "$version_range is no longer supported" || true
   docker-publish:
     name: Publish Docker image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: ${{ startsWith(github.ref_name, 'puppeteer-v') }}
     permissions:
       contents: read

@@ -15,7 +15,7 @@ on:
 jobs:
   check-changes:
     name: Check which packages changed
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       changes: ${{ steps.changes.outputs.changes }}
     steps:
