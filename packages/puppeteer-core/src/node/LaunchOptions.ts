@@ -133,21 +133,3 @@ export interface LaunchOptions extends ConnectOptions {
    */
   args?: string[];
 }
-
-/**
- * @deprecated Use {@link LaunchOptions}.
- * @public
- */
-export type BrowserLaunchArgumentOptions = LaunchOptions;
-
-/**
- * @deprecated Use {@link LaunchOptions}.
- * @public
- */
-export type PuppeteerNodeLaunchOptions = LaunchOptions;
-
-/**
- * @deprecated Use {@link LaunchOptions}.
- * @public
- */
-export type PuppeteerLaunchOptions = LaunchOptions;
