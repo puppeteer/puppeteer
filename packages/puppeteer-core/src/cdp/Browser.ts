@@ -25,7 +25,6 @@ import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import type {Viewport} from '../common/Viewport.js';
 
 import {CdpBrowserContext} from './BrowserContext.js';
-import {ChromeTargetManager} from './ChromeTargetManager.js';
 import type {Connection} from './Connection.js';
 import {
   DevToolsTarget,
@@ -35,7 +34,8 @@ import {
   WorkerTarget,
   type CdpTarget,
 } from './Target.js';
-import {TargetManagerEvent, type TargetManager} from './TargetManager.js';
+import {TargetManagerEvent} from './TargetManageEvents.js';
+import {TargetManager} from './TargetManager.js';
 
 /**
  * @internal
@@ -44,7 +44,6 @@ export class CdpBrowser extends BrowserBase {
   readonly protocol = 'cdp';
 
   static async _create(
-    product: 'firefox' | 'chrome' | undefined,
     connection: Connection,
     contextIds: string[],
     acceptInsecureCerts: boolean,
@@ -57,7 +56,6 @@ export class CdpBrowser extends BrowserBase {
     waitForInitiallyDiscoveredTargets = true,
   ): Promise<CdpBrowser> {
     const browser = new CdpBrowser(
-      product,
       connection,
       contextIds,
       defaultViewport,
@@ -86,7 +84,6 @@ export class CdpBrowser extends BrowserBase {
   #targetManager: TargetManager;
 
   constructor(
-    product: 'chrome' | 'firefox' | undefined,
     connection: Connection,
     contextIds: string[],
     defaultViewport?: Viewport | null,
@@ -97,7 +94,6 @@ export class CdpBrowser extends BrowserBase {
     waitForInitiallyDiscoveredTargets = true,
   ) {
     super();
-    product = product || 'chrome';
     this.#defaultViewport = defaultViewport;
     this.#process = process;
     this.#connection = connection;
@@ -108,7 +104,7 @@ export class CdpBrowser extends BrowserBase {
         return true;
       });
     this.#setIsPageTargetCallback(isPageTargetCallback);
-    this.#targetManager = new ChromeTargetManager(
+    this.#targetManager = new TargetManager(
       connection,
       this.#createTarget,
       this.#targetFilterCallback,

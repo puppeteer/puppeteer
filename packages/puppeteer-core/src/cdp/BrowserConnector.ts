@@ -39,16 +39,10 @@ export async function _connectToCdpBrowser(
     protocolTimeout,
   );
 
-  const version = await connection.send('Browser.getVersion');
-  const product = version.product.toLowerCase().includes('firefox')
-    ? 'firefox'
-    : 'chrome';
-
   const {browserContextIds} = await connection.send(
     'Target.getBrowserContexts',
   );
   const browser = await CdpBrowser._create(
-    product || 'chrome',
     connection,
     browserContextIds,
     acceptInsecureCerts,
