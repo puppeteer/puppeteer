@@ -25,7 +25,6 @@ on:
           - chrome-bidi
           - firefox-headful
           - firefox-headless
-          - firefox-cdp
       os:
         description: On which OS to run?
         required: true

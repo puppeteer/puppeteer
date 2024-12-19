@@ -81,6 +81,16 @@ for (let i = testExpectations.length - 1; i >= 0; i--) {
   const expectations = new Set(expectation.expectations);
   const platforms = new Set(expectation.platforms);
 
+  if (params.has('cdp') && params.has('firefox')) {
+    console.log(
+      'removing',
+      expectation,
+      'because firefox-cdp is no longer tested',
+    );
+    toBeRemoved.add(expectation);
+    continue;
+  }
+
   let foundMatch = false;
   for (let j = i - 1; j >= 0; j--) {
     const candidate = testExpectations[j];

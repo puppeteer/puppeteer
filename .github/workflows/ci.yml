@@ -239,7 +239,6 @@ jobs:
         linux-only:
           - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
         suite:
-          - firefox-cdp
           - firefox-headful
           - firefox-headless
         os:
@@ -256,11 +255,6 @@ jobs:
             os: windows-latest
           - linux-only: true
             os: macos-latest
-
-          - os: macos-latest
-            suite: firefox-cdp
-          - os: windows-latest
-            suite: firefox-cdp
 
     steps:
       - name: Checkout

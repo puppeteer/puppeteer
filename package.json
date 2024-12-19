@@ -96,9 +96,6 @@
     "test:chrome:shell": {
       "command": "npm test -- --test-suite chrome-headless-shell"
     },
-    "test:firefox:cdp": {
-      "command": "npm test -- --test-suite firefox-cdp"
-    },
     "test:firefox:headful": {
       "command": "npm test -- --test-suite firefox-headful"
     },
