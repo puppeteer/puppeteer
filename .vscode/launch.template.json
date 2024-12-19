@@ -14,7 +14,6 @@
         "chrome-headless-shell",
         "firefox-headless",
         "firefox-headful",
-        "firefox-cdp",
         "chrome-bidi"
       ],
       "default": "chrome-headless"

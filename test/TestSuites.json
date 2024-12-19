@@ -21,10 +21,6 @@
       "parameters": ["firefox", "headful", "webDriverBiDi"]
     },
     {
-      "id": "firefox-cdp",
-      "parameters": ["firefox", "headless", "cdp"]
-    },
-    {
       "id": "chrome-bidi",
       "parameters": ["chrome", "headless", "webDriverBiDi"]
     }
