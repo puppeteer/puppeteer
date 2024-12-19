@@ -48,13 +48,6 @@ import {readAsset} from './util.js';
         await this.runScript(script, 'mjs');
       });
     });
-
-    describe('with CDP', () => {
-      it('evaluates ES modules', async function () {
-        const script = await readAsset('puppeteer', 'cdp.js');
-        await this.runScript(script, 'mjs');
-      });
-    });
   },
 );
 

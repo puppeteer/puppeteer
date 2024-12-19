@@ -29,26 +29,11 @@ export class FirefoxLauncher extends BrowserLauncher {
 
   static getPreferences(
     extraPrefsFirefox?: Record<string, unknown>,
-    protocol?: 'cdp' | 'webDriverBiDi',
   ): Record<string, unknown> {
     return {
       ...extraPrefsFirefox,
-      ...(protocol === 'webDriverBiDi'
-        ? {
-            // Only enable the WebDriver BiDi protocol
-            'remote.active-protocols': 1,
-          }
-        : {
-            // Do not close the window when the last tab gets closed
-            'browser.tabs.closeWindowWithLastTab': false,
-            // Prevent various error message on the console
-            // jest-puppeteer asserts that no error message is emitted by the console
-            'network.cookie.cookieBehavior': 0,
-            // Temporarily force disable BFCache in parent (https://bit.ly/bug-1732263)
-            'fission.bfcacheInParent': false,
-            // Only enable the CDP protocol
-            'remote.active-protocols': 2,
-          }),
+      // Only enable the WebDriver BiDi protocol
+      'remote.active-protocols': 1,
       // Force all web content to use a single content process. TODO: remove
       // this once Firefox supports mouse event dispatch from the main frame
       // context. Once this happens, webContentIsolationStrategy should only
@@ -126,10 +111,7 @@ export class FirefoxLauncher extends BrowserLauncher {
 
     await createProfile(SupportedBrowsers.FIREFOX, {
       path: userDataDir,
-      preferences: FirefoxLauncher.getPreferences(
-        extraPrefsFirefox,
-        options.protocol,
-      ),
+      preferences: FirefoxLauncher.getPreferences(extraPrefsFirefox),
     });
 
     let firefoxExecutable: string;
