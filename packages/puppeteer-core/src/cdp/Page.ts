@@ -64,7 +64,6 @@ import {Coverage} from './Coverage.js';
 import type {DeviceRequestPrompt} from './DeviceRequestPrompt.js';
 import {CdpDialog} from './Dialog.js';
 import {EmulationManager} from './EmulationManager.js';
-import {FirefoxTargetManager} from './FirefoxTargetManager.js';
 import type {CdpFrame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {FrameManagerEvent} from './FrameManagerEvents.js';
@@ -1004,12 +1003,9 @@ export class CdpPage extends Page {
       captureBeyondViewport,
     } = options;
 
-    const isFirefox =
-      this.target()._targetManager() instanceof FirefoxTargetManager;
-
     await using stack = new AsyncDisposableStack();
     // Firefox omits background by default; it's not configurable.
-    if (!isFirefox && omitBackground && (type === 'png' || type === 'webp')) {
+    if (omitBackground && (type === 'png' || type === 'webp')) {
       await this.#emulationManager.setTransparentBackgroundColor();
       stack.defer(async () => {
         await this.#emulationManager

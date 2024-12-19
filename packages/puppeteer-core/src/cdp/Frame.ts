@@ -25,7 +25,6 @@ import type {
   DeviceRequestPrompt,
   DeviceRequestPromptManager,
 } from './DeviceRequestPrompt.js';
-import {FirefoxTargetManager} from './FirefoxTargetManager.js';
 import type {FrameManager} from './FrameManager.js';
 import {FrameManagerEvent} from './FrameManagerEvents.js';
 import type {IsolatedWorldChart} from './IsolatedWorld.js';
@@ -427,12 +426,6 @@ export class CdpFrame extends Frame {
   }
 
   override async frameElement(): Promise<ElementHandle<HTMLIFrameElement> | null> {
-    const isFirefox =
-      this.page().target()._targetManager() instanceof FirefoxTargetManager;
-
-    if (isFirefox) {
-      return await super.frameElement();
-    }
     const parent = this.parentFrame();
     if (!parent) {
       return null;
