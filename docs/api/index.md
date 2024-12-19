@@ -1431,28 +1431,6 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="browserconnectoptions">[BrowserConnectOptions](./puppeteer.browserconnectoptions.md)</span>
-
-</td><td>
-
-**Deprecated:**
-
-Use [ConnectOptions](./puppeteer.connectoptions.md).
-
-</td></tr>
-<tr><td>
-
-<span id="browserlaunchargumentoptions">[BrowserLaunchArgumentOptions](./puppeteer.browserlaunchargumentoptions.md)</span>
-
-</td><td>
-
-**Deprecated:**
-
-Use [LaunchOptions](./puppeteer.launchoptions.md).
-
-</td></tr>
-<tr><td>
-
 <span id="cdpevents">[CDPEvents](./puppeteer.cdpevents.md)</span>
 
 </td><td>
@@ -1712,31 +1690,9 @@ The sizes of each format are as follows:
 </td></tr>
 <tr><td>
 
-<span id="puppeteerlaunchoptions">[PuppeteerLaunchOptions](./puppeteer.puppeteerlaunchoptions.md)</span>
-
-</td><td>
-
-**Deprecated:**
-
-Use [LaunchOptions](./puppeteer.launchoptions.md).
-
-</td></tr>
-<tr><td>
-
 <span id="puppeteerlifecycleevent">[PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)</span>
 
 </td><td>
-
-</td></tr>
-<tr><td>
-
-<span id="puppeteernodelaunchoptions">[PuppeteerNodeLaunchOptions](./puppeteer.puppeteernodelaunchoptions.md)</span>
-
-</td><td>
-
-**Deprecated:**
-
-Use [LaunchOptions](./puppeteer.launchoptions.md).
 
 </td></tr>
 <tr><td>

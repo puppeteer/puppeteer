@@ -110,9 +110,3 @@ export interface ConnectOptions {
    */
   capabilities?: SupportedWebDriverCapabilities;
 }
-
-/**
- * @deprecated Use {@link ConnectOptions}.
- * @public
- */
-export type BrowserConnectOptions = ConnectOptions;
