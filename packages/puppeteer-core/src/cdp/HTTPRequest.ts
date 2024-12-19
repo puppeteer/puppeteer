@@ -89,7 +89,7 @@ export class CdpHTTPRequest extends HTTPRequest {
     this.#isNavigationRequest =
       data.requestId === data.loaderId && data.type === 'Document';
     this._interceptionId = interceptionId;
-    this.#url = data.request.url;
+    this.#url = data.request.url + (data.request.urlFragment ?? '');
     this.#resourceType = (data.type || 'other').toLowerCase() as ResourceType;
     this.#method = data.request.method;
     this.#postData = data.request.postData;

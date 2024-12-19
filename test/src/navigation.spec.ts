@@ -543,9 +543,9 @@ describe('navigation', function () {
       });
       const response = (await page.goto(server.EMPTY_PAGE + '#hash'))!;
       expect(response.status()).toBe(200);
-      expect(response.url()).toBe(server.EMPTY_PAGE);
+      expect(response.url()).toBe(server.EMPTY_PAGE + '#hash');
       expect(requests).toHaveLength(1);
-      expect(requests[0]!.url()).toBe(server.EMPTY_PAGE);
+      expect(requests[0]!.url()).toBe(server.EMPTY_PAGE + '#hash');
     });
     it('should work with self requesting page', async () => {
       const {page, server} = await getTestState();

@@ -24,7 +24,6 @@ export class CdpHTTPResponse extends HTTPResponse {
   #remoteAddress: RemoteAddress;
   #status: number;
   #statusText: string;
-  #url: string;
   #fromDiskCache: boolean;
   #fromServiceWorker: boolean;
   #headers: Record<string, string> = {};
@@ -46,7 +45,6 @@ export class CdpHTTPResponse extends HTTPResponse {
     this.#statusText =
       this.#parseStatusTextFromExtraInfo(extraInfo) ||
       responsePayload.statusText;
-    this.#url = request.url();
     this.#fromDiskCache = !!responsePayload.fromDiskCache;
     this.#fromServiceWorker = !!responsePayload.fromServiceWorker;
 
@@ -95,7 +93,7 @@ export class CdpHTTPResponse extends HTTPResponse {
   }
 
   override url(): string {
-    return this.#url;
+    return this.#request.url();
   }
 
   override status(): number {
