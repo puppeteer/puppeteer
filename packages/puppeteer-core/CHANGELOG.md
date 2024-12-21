@@ -20,6 +20,25 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [24.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.11.1...puppeteer-core-v24.0.0) (2024-12-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove support for Firefox over CDP ([#13427](https://github.com/puppeteer/puppeteer/issues/13427))
+* remove deprecated Launch and Connect options ([#13426](https://github.com/puppeteer/puppeteer/issues/13426))
+* include URL fragment into URL returned by HTTPRequest/Response instances ([#13425](https://github.com/puppeteer/puppeteer/issues/13425))
+
+### Bug Fixes
+
+* include URL fragment into URL returned by HTTPRequest/Response instances ([#13425](https://github.com/puppeteer/puppeteer/issues/13425)) ([8ff26ad](https://github.com/puppeteer/puppeteer/commit/8ff26ad5aff0b366e54e6e85f71577de575ee31d))
+
+
+### Code Refactoring
+
+* remove deprecated Launch and Connect options ([#13426](https://github.com/puppeteer/puppeteer/issues/13426)) ([20f9f15](https://github.com/puppeteer/puppeteer/commit/20f9f15d5f94832bd6f5c0e9807a1a53182c49f8))
+* remove support for Firefox over CDP ([#13427](https://github.com/puppeteer/puppeteer/issues/13427)) ([1a2e91b](https://github.com/puppeteer/puppeteer/commit/1a2e91b04413e2ed90778b2f8e49549a8e63c139))
+
 ## [23.11.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.11.0...puppeteer-core-v23.11.1) (2024-12-19)
 
 
