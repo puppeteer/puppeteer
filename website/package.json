@@ -15,7 +15,7 @@
     "archive": "node archive.js"
   },
   "dependencies": {
-    "@docsearch/react": "3.8.0",
+    "@docsearch/react": "3.8.2",
     "@docusaurus/core": "3.6.3",
     "@docusaurus/plugin-client-redirects": "3.6.3",
     "@docusaurus/plugin-content-docs": "3.6.3",
