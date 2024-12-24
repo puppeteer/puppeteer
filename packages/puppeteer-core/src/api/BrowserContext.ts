@@ -1,5 +1,11 @@
 /**
  * @license
+ * Copyright 2024 Google Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+/* eslint-disable tsdoc/syntax */
+/**
+ * @license
  * Copyright 2017 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -10,6 +16,7 @@ import {
   merge,
   raceWith,
 } from '../../third_party/rxjs/rxjs.js';
+import {BrowserContextCacheManager} from '../common/BrowserContextCache.js';
 import type {Cookie, CookieData} from '../common/Cookie.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {
@@ -291,5 +298,29 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
   /** @internal */
   [asyncDisposeSymbol](): Promise<void> {
     return this.close();
+  }
+
+  /**
+   * Saves the current browser context cache for later use
+   * @param id Unique identifier for the cache
+   */
+  async saveContextCache(id: string): Promise<void> {
+    await BrowserContextCacheManager.saveCache(id, this);
+  }
+
+  /**
+   * Loads a previously saved browser context cache
+   * @param id Unique identifier of the cache to load
+   */
+  async loadContextCache(id: string): Promise<void> {
+    await BrowserContextCacheManager.loadCache(id, this);
+  }
+
+  /**
+   * Deletes a saved browser context cache
+   * @param id Unique identifier of the cache to delete
+   */
+  deleteContextCache(id: string): boolean {
+    return BrowserContextCacheManager.deleteCache(id);
   }
 }
