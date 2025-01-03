@@ -82,9 +82,10 @@ export async function getLastKnownGoodReleaseForChannel(
 
   return (
     data as {
-      channels: {
-        [channel in ChromeReleaseChannel]: {version: string; revision: string};
-      };
+      channels: Record<
+        ChromeReleaseChannel,
+        {version: string; revision: string}
+      >;
     }
   ).channels[channel];
 }

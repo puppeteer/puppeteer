@@ -681,6 +681,13 @@ Description
 </td></tr>
 <tr><td>
 
+<span id="executablepath">[executablePath(channel)](./puppeteer.executablepath.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="launch">[launch(options)](./puppeteer.launch.md)</span>
 
 </td><td>
@@ -1338,13 +1345,6 @@ Description
 </td><td>
 
 The default cooperative request interception resolution priority
-
-</td></tr>
-<tr><td>
-
-<span id="executablepath">[executablePath](./puppeteer.executablepath.md)</span>
-
-</td><td>
 
 </td></tr>
 <tr><td>

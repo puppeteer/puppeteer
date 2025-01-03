@@ -21,12 +21,15 @@ class CLI {
             description: string;
           };
           allowCachePathOverride?: boolean;
-          pinnedBrowsers?: Partial<{
-            [key in Browser]: {
-              buildId: string;
-              skipDownload: boolean;
-            };
-          }>;
+          pinnedBrowsers?: Partial<
+            Record<
+              Browser,
+              {
+                buildId: string;
+                skipDownload: boolean;
+              }
+            >
+          >;
         },
     rl?: readline.Interface,
   );
@@ -54,7 +57,7 @@ opts
 
 </td><td>
 
-string \| &#123; cachePath?: string; scriptName?: string; prefixCommand?: &#123; cmd: string; description: string; &#125;; allowCachePathOverride?: boolean; pinnedBrowsers?: Partial&lt;&#123; \[key in [Browser](./browsers.browser.md)\]: &#123; buildId: string; skipDownload: boolean; &#125;; &#125;&gt;; &#125;
+string \| &#123; cachePath?: string; scriptName?: string; prefixCommand?: &#123; cmd: string; description: string; &#125;; allowCachePathOverride?: boolean; pinnedBrowsers?: Partial&lt;Record&lt;[Browser](./browsers.browser.md), &#123; buildId: string; skipDownload: boolean; &#125;&gt;&gt;; &#125;
 
 </td><td>
 

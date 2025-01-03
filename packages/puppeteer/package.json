@@ -43,7 +43,7 @@
   },
   "wireit": {
     "prepack": {
-      "command": "tsx ../../tools/cp.ts ../../README.md README.md",
+      "command": "node --experimental-strip-types ../../tools/cp.ts ../../README.md README.md",
       "files": [
         "../../README.md"
       ],
@@ -58,7 +58,7 @@
       ]
     },
     "generate:package-json": {
-      "command": "tsx ../../tools/generate_module_package_json.ts lib/esm/package.json",
+      "command": "node --experimental-strip-types ../../tools/generate_module_package_json.ts lib/esm/package.json",
       "files": [
         "../../tools/generate_module_package_json.ts"
       ],
@@ -78,7 +78,7 @@
       ]
     },
     "build:tsc": {
-      "command": "tsc -b && tsx ../../tools/chmod.ts 755 lib/cjs/puppeteer/node/cli.js lib/esm/puppeteer/node/cli.js",
+      "command": "tsc -b && node --experimental-strip-types ../../tools/chmod.ts 755 lib/cjs/puppeteer/node/cli.js lib/esm/puppeteer/node/cli.js",
       "clean": "if-file-deleted",
       "dependencies": [
         "../puppeteer-core:build",
