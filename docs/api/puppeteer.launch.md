@@ -7,7 +7,7 @@ sidebar_label: launch
 ### Signature
 
 ```typescript
-launch: (options?: PuppeteerCore.LaunchOptions) =>
+launch: (options?: PuppeteerCore.PuppeteerLaunchOptions) =>
   Promise<PuppeteerCore.Browser>;
 ```
 
@@ -32,7 +32,7 @@ options
 
 </td><td>
 
-[PuppeteerCore.LaunchOptions](./puppeteer.launchoptions.md)
+PuppeteerCore.PuppeteerLaunchOptions
 
 </td><td>
 
