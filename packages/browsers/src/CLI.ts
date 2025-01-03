@@ -66,12 +66,15 @@ export class CLI {
   #rl?: readline.Interface;
   #scriptName = '';
   #allowCachePathOverride = true;
-  #pinnedBrowsers?: Partial<{
-    [key in Browser]: {
-      buildId: string;
-      skipDownload: boolean;
-    };
-  }>;
+  #pinnedBrowsers?: Partial<
+    Record<
+      Browser,
+      {
+        buildId: string;
+        skipDownload: boolean;
+      }
+    >
+  >;
   #prefixCommand?: {cmd: string; description: string};
 
   constructor(
@@ -82,12 +85,15 @@ export class CLI {
           scriptName?: string;
           prefixCommand?: {cmd: string; description: string};
           allowCachePathOverride?: boolean;
-          pinnedBrowsers?: Partial<{
-            [key in Browser]: {
-              buildId: string;
-              skipDownload: boolean;
-            };
-          }>;
+          pinnedBrowsers?: Partial<
+            Record<
+              Browser,
+              {
+                buildId: string;
+                skipDownload: boolean;
+              }
+            >
+          >;
         },
     rl?: readline.Interface,
   ) {
