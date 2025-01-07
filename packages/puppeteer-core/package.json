@@ -37,14 +37,20 @@
   "scripts": {
     "build:docs": "wireit",
     "build": "wireit",
-    "check": "tsx tools/ensure-correct-devtools-protocol-package",
+    "check": "wireit",
     "clean": "../../tools/clean.mjs",
     "prepack": "wireit",
     "unit": "wireit"
   },
   "wireit": {
+    "check": {
+      "command": "node --experimental-strip-types tools/ensure-correct-devtools-protocol-package.mts",
+      "dependencies": [
+        "build"
+      ]
+    },
     "prepack": {
-      "command": "tsx ../../tools/cp.ts ../../README.md README.md",
+      "command": "node --experimental-strip-types ../../tools/cp.ts ../../README.md README.md",
       "files": [
         "../../README.md"
       ],

@@ -26,7 +26,7 @@
 import {execSync} from 'child_process';
 
 import packageJson from '../package.json' with {type: 'json'};
-import {PUPPETEER_REVISIONS} from '../src/revisions.js';
+import {PUPPETEER_REVISIONS} from '../lib/esm/puppeteer/revisions.js';
 
 async function main() {
   const currentProtocolPackageInstalledVersion =
