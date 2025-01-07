@@ -18,7 +18,7 @@
     "format:expectations": "node tools/sort-test-expectations.mjs",
     "format:prettier": "prettier --write .",
     "lint": "wireit",
-    "lint:eslint": "eslint .",
+    "lint:eslint": "wireit",
     "lint:prettier": "prettier --check .",
     "lint:expectations": "node tools/sort-test-expectations.mjs --lint",
     "postinstall": "npm run postinstall --workspaces --if-present",
@@ -82,6 +82,12 @@
         "lint:expectations"
       ]
     },
+    "lint:eslint": {
+      "command": "eslint .",
+      "dependencies": [
+        "build:tools"
+      ]
+    },
     "format": {
       "dependencies": [
         "format:eslint",
@@ -124,6 +130,7 @@
     "test": {
       "command": "npx ./tools/mocha-runner --min-tests 1003",
       "dependencies": [
+        "build:tools",
         "./test:build",
         "./tools/mocha-runner:build"
       ]
