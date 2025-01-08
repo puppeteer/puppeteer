@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.2](https://github.com/puppeteer/puppeteer/compare/browsers-v2.6.1...browsers-v2.6.2) (2025-01-08)
+
+
+### Bug Fixes
+
+* skip retries for same URL ([#13469](https://github.com/puppeteer/puppeteer/issues/13469)) ([04135ec](https://github.com/puppeteer/puppeteer/commit/04135ec6571312e4dbec0fead182beb8ec9f39d0))
+
 ## [2.6.1](https://github.com/puppeteer/puppeteer/compare/browsers-v2.6.0...browsers-v2.6.1) (2024-12-10)
 
 
