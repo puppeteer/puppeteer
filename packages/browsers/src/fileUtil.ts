@@ -21,6 +21,10 @@ export async function unpackArchive(
   archivePath: string,
   folderPath: string,
 ): Promise<void> {
+  if (!path.isAbsolute(folderPath)) {
+    folderPath = path.resolve(process.cwd(), folderPath);
+  }
+
   if (archivePath.endsWith('.zip')) {
     await extractZip(archivePath, {dir: folderPath});
   } else if (archivePath.endsWith('.tar.bz2')) {
