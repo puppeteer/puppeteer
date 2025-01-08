@@ -8,6 +8,7 @@ import path from 'node:path';
 
 import {FlatCompat} from '@eslint/eslintrc';
 import js from '@eslint/js';
+import stylisticPlugin from '@stylistic/eslint-plugin';
 import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import importPlugin from 'eslint-plugin-import';
@@ -99,6 +100,7 @@ export default [
       '@typescript-eslint': typescriptEslint,
       import: importPlugin,
       rulesdir,
+      '@stylistic': stylisticPlugin,
     },
 
     languageOptions: {
@@ -139,7 +141,7 @@ export default [
       ],
 
       'new-parens': 'error',
-      'func-call-spacing': 'error',
+
       'prefer-const': 'error',
 
       'max-len': [
@@ -217,6 +219,9 @@ export default [
         },
       ],
 
+      '@stylistic/func-call-spacing': 'error',
+      '@stylistic/semi': 'error',
+
       // Keeps comments formatted.
       'rulesdir/prettier-comments': 'error',
       // Enforces consistent file extension
@@ -276,12 +281,6 @@ export default [
         },
       ],
 
-      'func-call-spacing': 'off',
-
-      // TODO: Look up https://eslint.style/t
-      // '@typescript-eslint/func-call-spacing': 'error',
-      // '@typescript-eslint/semi': 'error',
-      semi: 'off',
       '@typescript-eslint/no-empty-function': 'off',
       '@typescript-eslint/no-use-before-define': 'off',
       // We have to use any on some types so the warning isn't valuable.
@@ -323,6 +322,8 @@ export default [
       '@typescript-eslint/consistent-type-exports': 'error',
       // Don't want to trigger unintended side-effects.
       '@typescript-eslint/no-import-type-side-effects': 'error',
+      // Prefer interfaces over types for shape like.
+      '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
     },
   },
   {
