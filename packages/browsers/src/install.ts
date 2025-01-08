@@ -190,12 +190,16 @@ export async function install(
             platform = 'win64';
             break;
         }
-        const url = version.downloads[options.browser]?.find(link => {
+        const backupUrl = version.downloads[options.browser]?.find(link => {
           return link['platform'] === platform;
         })?.url;
-        if (url) {
-          debugInstall(`Falling back to downloading from ${url}.`);
-          return await installUrl(new URL(url), options);
+        if (backupUrl) {
+          // If the URL is the same, skip the retry.
+          if (backupUrl === url.toString()) {
+            throw err;
+          }
+          debugInstall(`Falling back to downloading from ${backupUrl}.`);
+          return await installUrl(new URL(backupUrl), options);
         }
         throw err;
       }
