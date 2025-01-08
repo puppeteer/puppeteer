@@ -116,7 +116,11 @@ export class Cache {
   #rootDir: string;
 
   constructor(rootDir: string) {
-    this.#rootDir = rootDir;
+    if (!path.isAbsolute(rootDir)) {
+      this.#rootDir = path.resolve(process.cwd(), rootDir);
+    } else {
+      this.#rootDir = rootDir;
+    }
   }
 
   /**
