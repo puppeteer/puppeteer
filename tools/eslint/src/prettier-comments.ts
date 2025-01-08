@@ -4,15 +4,21 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// @ts-nocheck
-// TODO: We should convert this to types.
+import prettier from '@prettier/sync';
+import {ESLintUtils} from '@typescript-eslint/utils';
 
-const prettier = require('@prettier/sync');
+const prettierConfigFile = prettier.resolveConfigFile(
+  '../../../.prettierrc.cjs',
+);
+const prettierConfig = prettier.resolveConfig(prettierConfigFile ?? '');
 
-const prettierConfigPath = '../../../.prettierrc.cjs';
-const prettierConfig = require(prettierConfigPath);
+const createRule = ESLintUtils.RuleCreator<{
+  requiresTypeChecking: boolean;
+}>(name => {
+  return `https://github.com/puppeteer/puppeteer/tree/main/tools/eslint/${name}.js`;
+});
 
-const cleanupBlockComment = value => {
+const cleanupBlockComment = (value: string) => {
   return value
     .trim()
     .split('\n')
@@ -30,7 +36,7 @@ const cleanupBlockComment = value => {
     .trim();
 };
 
-const format = (value, offset) => {
+const format = (value: string, offset: number) => {
   return prettier
     .format(value, {
       ...prettierConfig,
@@ -41,7 +47,7 @@ const format = (value, offset) => {
     .trim();
 };
 
-const buildBlockComment = (value, offset) => {
+const buildBlockComment = (value: string, offset: number) => {
   const spaces = ' '.repeat(offset);
   const lines = value.split('\n').map(line => {
     return ` * ${line}`;
@@ -54,21 +60,21 @@ const buildBlockComment = (value, offset) => {
   return lines.join('\n');
 };
 
-/**
- * @type import("eslint").Rule.RuleModule
- */
-const prettierCommentsRule = {
+const prettierCommentsRule = createRule<[], 'prettierComments'>({
+  name: 'prettier-comments',
   meta: {
     type: 'suggestion',
     docs: {
       description: 'Enforce Prettier formatting on comments',
-      recommended: false,
+      requiresTypeChecking: false,
     },
     fixable: 'code',
     schema: [],
-    messages: {},
+    messages: {
+      prettierComments: 'Comment is not formatted correctly.',
+    },
   },
-
+  defaultOptions: [],
   create(context) {
     for (const comment of context.sourceCode.getAllComments()) {
       switch (comment.type) {
@@ -79,7 +85,7 @@ const prettierCommentsRule = {
           if (formattedValue !== value) {
             context.report({
               node: comment,
-              message: `Comment is not formatted correctly.`,
+              messageId: 'prettierComments',
               fix(fixer) {
                 return fixer.replaceText(
                   comment,
@@ -94,6 +100,6 @@ const prettierCommentsRule = {
     }
     return {};
   },
-};
+});
 
-module.exports = prettierCommentsRule;
+export = prettierCommentsRule;
