@@ -323,7 +323,7 @@ describe('navigation', function () {
         server.PREFIX + '/client-redirect.html',
       ))!;
       expect(response.ok()).toBe(true);
-      expect(response.url()).toBe(server.EMPTY_PAGE);
+      expect(response.url()).toBe(server.PREFIX + '/client-redirect.html');
     });
     it('should work when navigating to data url', async () => {
       const {page} = await getTestState();
