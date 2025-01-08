@@ -59,6 +59,9 @@ npx @puppeteer/browsers install chrome@116.0.5793.0
 # Download the latest Chrome for Testing version for the given milestone.
 npx @puppeteer/browsers install chrome@117
 
+# Install as root system-level dependencies required for the browser.
+npx puppeteer browsers install chrome --install-deps
+
 # Download the latest available ChromeDriver version corresponding to the Canary channel.
 npx @puppeteer/browsers install chromedriver@canary
 
