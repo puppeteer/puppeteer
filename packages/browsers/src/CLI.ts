@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import path from 'path';
 import {stdin as input, stdout as output} from 'process';
 import * as readline from 'readline';
 
@@ -293,6 +294,11 @@ export class CLI {
         },
         async argv => {
           const args = argv as unknown as InstallArgs;
+
+          if (args.path && !path.isAbsolute(args.path)) {
+            args.path = path.resolve(process.cwd(), args.path);
+          }
+
           if (this.#pinnedBrowsers && !args.browser) {
             // Use allSettled to avoid scenarios that
             // a browser may fail early and leave the other
@@ -303,6 +309,7 @@ export class CLI {
                   if (options.skipDownload) {
                     return;
                   }
+
                   await this.#install({
                     ...argv,
                     browser: {
