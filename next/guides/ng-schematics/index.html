@@ -7,7 +7,7 @@
 
 <script src="https://www.googletagmanager.com/gtag/js?id=G-J15CTWBVHX" async></script>
 <script src="/fix-location.js"></script><link rel="stylesheet" href="/assets/css/styles.4ce6ba16.css">
-<script src="/assets/js/runtime~main.b591ea76.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.614792aa.js" defer="defer"></script>
 <script src="/assets/js/main.3847eb6b.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -63,7 +63,7 @@ A more close comparison for Protractor&#x27;s <code>browser</code> would be Pupp
 The following table shows Puppeteer&#x27;s equivalents to <a href="https://www.protractortest.org/#/api?view=ProtractorBy" target="_blank" rel="noopener noreferrer">Protractor By</a>.</p>
 <blockquote>
 <p>For improved reliability and reduced flakiness try our
-<strong>Experimental</strong> <a href="https://pptr.dev/guides/locators" target="_blank" rel="noopener noreferrer">Locators API</a></p>
+<strong>Experimental</strong> <a href="https://pptr.dev/guides/page-interactions#locators" target="_blank" rel="noopener noreferrer">Locators API</a></p>
 </blockquote>
 <table><thead><tr><th>By</th><th>Protractor code</th><th>Puppeteer querySelector</th></tr></thead><tbody><tr><td>CSS (Single)</td><td><code>$(by.css(&#x27;&lt;CSS&gt;&#x27;))</code></td><td><code>page.$(&#x27;&lt;CSS&gt;&#x27;)</code></td></tr><tr><td>CSS (Multiple)</td><td><code>$$(by.css(&#x27;&lt;CSS&gt;&#x27;))</code></td><td><code>page.$$(&#x27;&lt;CSS&gt;&#x27;)</code></td></tr><tr><td>Id</td><td><code>$(by.id(&#x27;&lt;ID&gt;&#x27;))</code></td><td><code>page.$(&#x27;#&lt;ID&gt;&#x27;)</code></td></tr><tr><td>CssContainingText</td><td><code>$(by.cssContainingText(&#x27;&lt;CSS&gt;&#x27;, &#x27;&lt;TEXT&gt;&#x27;))</code></td><td><code>page.$(&#x27;&lt;CSS&gt; ::-p-text(&lt;TEXT&gt;)&#x27;)</code> `</td></tr><tr><td>DeepCss</td><td><code>$(by.deepCss(&#x27;&lt;CSS&gt;&#x27;))</code></td><td><code>page.$(&#x27;:scope &gt;&gt;&gt; &lt;CSS&gt;&#x27;)</code></td></tr><tr><td>XPath</td><td><code>$(by.xpath(&#x27;&lt;XPATH&gt;&#x27;))</code></td><td><code>page.$(&#x27;::-p-xpath(&lt;XPATH&gt;)&#x27;)</code></td></tr><tr><td>JS</td><td><code>$(by.js(&#x27;document.querySelector(&quot;&lt;CSS&gt;&quot;)&#x27;))</code></td><td><code>page.evaluateHandle(() =&gt; document.querySelector(&#x27;&lt;CSS&gt;&#x27;))</code></td></tr></tbody></table>
 <blockquote>
