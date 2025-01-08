@@ -309,7 +309,6 @@ export class CLI {
                   if (options.skipDownload) {
                     return;
                   }
-
                   await this.#install({
                     ...argv,
                     browser: {
