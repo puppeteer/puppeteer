@@ -335,6 +335,14 @@ export class BidiFrame extends Frame {
             return;
           }
 
+          if (
+            error.message.includes(
+              'Navigation was aborted by another navigation',
+            )
+          ) {
+            return;
+          }
+
           throw error;
         }),
     ]).catch(
