@@ -1,5 +1,20 @@
 # Changelog
 
+## [24.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v23.11.1...puppeteer-v24.0.0) (2025-01-09)
+
+
+### Bug Fixes
+
+* remove erroneous changelog entry ([#13479](https://github.com/puppeteer/puppeteer/issues/13479)) ([6de3238](https://github.com/puppeteer/puppeteer/commit/6de32386c2294a74eb3df3fbc9b179ffeed083f5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.6.1 to 2.7.0
+    * puppeteer-core bumped from 23.11.1 to 24.0.0
+
 ## [23.11.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v23.11.0...puppeteer-v23.11.1) (2024-12-19)
 
 
