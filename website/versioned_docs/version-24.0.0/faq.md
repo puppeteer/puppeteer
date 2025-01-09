@@ -74,7 +74,7 @@ Every Puppeteer release is tightly bundled with a specific browser release
 to ensure compatibility with the implementation of the underlying protocols,
 the Chrome DevTools Protocol and WebDriver BiDi.
 
-This is to prevent changes in either Chrome or Firefox not unexpectedly break Puppeteer.
+This is to prevent changes in either [Chrome](https://pptr.dev/supported-browsers#chrome) or [Firefox](https://pptr.dev/supported-browsers#firefox) from unexpectedly breaking Puppeteer.
 
 ## Q: Which Chrome and Firefox version does Puppeteer use?
 
