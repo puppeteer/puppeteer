@@ -1,25 +1,5 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
-
-### Dependencies
-
-* The following workspace dependencies were updated
-  * dependencies
-    * @puppeteer/browsers bumped from 1.0.1 to 1.1.0
-
-### Dependencies
-
-* The following workspace dependencies were updated
-  * dependencies
-    * @puppeteer/browsers bumped from 1.4.4 to 1.4.5
-
-### Dependencies
-
-* The following workspace dependencies were updated
-  * dependencies
-    * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
-
 ## [23.11.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.11.0...puppeteer-core-v23.11.1) (2024-12-19)
 
 
