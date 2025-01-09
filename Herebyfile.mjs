@@ -6,7 +6,7 @@
 
 /* eslint-disable import/order */
 
-import {readFile, writeFile} from 'fs/promises';
+import {readFile, writeFile, copyFile} from 'fs/promises';
 
 import versionData from './versions.json' with {type: 'json'};
 
@@ -114,6 +114,9 @@ export const docsTask = task({
       'docs/browsers-api/index.md',
       index.replace('# API Reference', readme),
     );
+
+    // Copy combined changelog.
+    await copyFile('CHANGELOG.md', 'docs/CHANGELOG.md');
 
     // Format everything.
     await execa('prettier', ['--ignore-path', 'none', '--write', 'docs']);

@@ -35,7 +35,8 @@
     "test:firefox:headful": "wireit",
     "test:firefox:headless": "wireit",
     "validate-licenses": "node --experimental-strip-types tools/third_party/validate-licenses.ts",
-    "unit": "npm run unit --workspaces --if-present"
+    "unit": "npm run unit --workspaces --if-present",
+    "changelog": "node --experimental-strip-types tools/merge-changelogs.ts"
   },
   "wireit": {
     "build": {
