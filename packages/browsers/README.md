@@ -64,6 +64,12 @@ npx @puppeteer/browsers install chromedriver@canary
 
 # Download a specific ChromeDriver version.
 npx @puppeteer/browsers install chromedriver@116.0.5793.0
+
+# On Ubuntu/Debian and only for Chrome, install the browser and required system dependencies.
+# If the browser version has already been installed, the command
+# will still attempt to install system dependencies.
+# Requires root privileges.
+npx puppeteer browsers install chrome --install-deps
 ```
 
 ## Known limitations
