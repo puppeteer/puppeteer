@@ -40,6 +40,7 @@ jobs:
         env:
           PUBLISH: 1
         run: |
+          npm run changelog
           npm run docs
       - name: Version docs
         working-directory: ./website
@@ -47,7 +48,6 @@ jobs:
           npm ci
           npm run docusaurus docs:version $(jq -r .version ../packages/puppeteer/package.json)
           npm run archive
-          npm run changelog
       - name: Re-build docs after versioning
         env:
           PUBLISH: 1
