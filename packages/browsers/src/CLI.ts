@@ -142,7 +142,7 @@ export class CLI {
     }
     yargs.option('path', {
       type: 'string',
-      desc: 'Path to the root folder for the browser downloads and installation. The installation folder structure is compatible with the cache structure used by Puppeteer.',
+      desc: 'Path to the root folder for the browser downloads and installation. If a relative path is provided, it will be resolved relative to the current working directory. The installation folder structure is compatible with the cache structure used by Puppeteer.',
       defaultDescription: 'Current working directory',
       ...(required ? {} : {default: process.cwd()}),
     });
