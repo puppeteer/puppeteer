@@ -1375,7 +1375,7 @@ Combined changelog for puppeteer and puppeteer-core.
 
 ### Bug Fixes
 
-- do not pass --{enable,disable}-features twice when user-provided ([#11230](https://github.com/puppeteer/puppeteer/issues/11230)) ([edec7d5](https://github.com/puppeteer/puppeteer/commit/edec7d53f8190381ade7db145ad7e7d6dba2ee13))
+- do not pass --\{enable,disable}-features twice when user-provided ([#11230](https://github.com/puppeteer/puppeteer/issues/11230)) ([edec7d5](https://github.com/puppeteer/puppeteer/commit/edec7d53f8190381ade7db145ad7e7d6dba2ee13))
 - remove circular import in IsolatedWorld ([#11228](https://github.com/puppeteer/puppeteer/issues/11228)) ([3edce3a](https://github.com/puppeteer/puppeteer/commit/3edce3aee9521654d7a285f4068a5e60bfb52245))
 - remove import cycle ([#11227](https://github.com/puppeteer/puppeteer/issues/11227)) ([525f13c](https://github.com/puppeteer/puppeteer/commit/525f13cd18b39cc951a84aa51b2d852758e6f0d2))
 - remove import cycle in connection ([#11225](https://github.com/puppeteer/puppeteer/issues/11225)) ([60f1b78](https://github.com/puppeteer/puppeteer/commit/60f1b788a6304504f504b0be9f02cb768e2803f8))
@@ -1400,7 +1400,7 @@ Combined changelog for puppeteer and puppeteer-core.
 - added tagged (accessible) PDFs option ([#11182](https://github.com/puppeteer/puppeteer/issues/11182)) ([0316863](https://github.com/puppeteer/puppeteer/commit/031686339136873c555a19ffb871f7140a2c39d9))
 - enable tab targets ([#11099](https://github.com/puppeteer/puppeteer/issues/11099)) ([8324c16](https://github.com/puppeteer/puppeteer/commit/8324c1634883d97ed83f32a1e62acc9b5e64e0bd))
 - implement screencasting ([#11084](https://github.com/puppeteer/puppeteer/issues/11084)) ([f060d46](https://github.com/puppeteer/puppeteer/commit/f060d467c00457e6be6878e0789d0df2ac4aae50))
-- merge user-provided --{disable,enable}-features in args ([#11152](https://github.com/puppeteer/puppeteer/issues/11152)) ([2b578e4](https://github.com/puppeteer/puppeteer/commit/2b578e4a096aa94d792cc2da2da41fee061a77b8)), closes [#11072](https://github.com/puppeteer/puppeteer/issues/11072)
+- merge user-provided --\{disable,enable}-features in args ([#11152](https://github.com/puppeteer/puppeteer/issues/11152)) ([2b578e4](https://github.com/puppeteer/puppeteer/commit/2b578e4a096aa94d792cc2da2da41fee061a77b8)), closes [#11072](https://github.com/puppeteer/puppeteer/issues/11072)
 - roll to Chrome 118.0.5993.70 (r1192594) ([#11123](https://github.com/puppeteer/puppeteer/issues/11123)) ([91d14c8](https://github.com/puppeteer/puppeteer/commit/91d14c8c86f5be48c8e0937fd209bea643d60b45))
 
 ### Bug Fixes
