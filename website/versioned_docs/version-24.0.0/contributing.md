@@ -128,7 +128,7 @@ information on using pull requests.
 ## Code Style
 
 Our coding style is fully defined in
-[`.eslintrc`](https://github.com/puppeteer/puppeteer/blob/main/.eslintrc.js)
+[`eslint.config`](https://github.com/puppeteer/puppeteer/blob/main/eslint.config.mjs)
 ([ESLint](https://eslint.org/)) and
 [`.prettierrc.cjs`](https://github.com/puppeteer/puppeteer/blob/main/.prettierrc.cjs)
 ([Prettier](https://prettier.io)).
