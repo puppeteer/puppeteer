@@ -31,7 +31,7 @@ See the following list for use cases and examples from categories like Rendering
 - **[headless-chrome-crawler](https://github.com/yujiosaka/headless-chrome-crawler)**:
   Crawler that provides APIs to manipulate Headless Chrome and lets you crawl
   dynamic websites.
-- **[Puppeteer examples from Checkly](https://www.checklyhq.com/learn/headless/basics-puppeteer-intro/)**:
+- **[Puppeteer examples from Checkly](https://web.archive.org/web/20240811200732/https://www.checklyhq.com/learn/headless/basics-puppeteer-intro/)**:
   E2E Puppeteer examples for real life use cases, such as getting
   useful info from the web pages or common login scenarios.
 - **[browserless](https://github.com/browserless/browserless)**: Headless

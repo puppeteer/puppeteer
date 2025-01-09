@@ -382,7 +382,7 @@ Running Puppeteer smoothly on CircleCI requires the following steps:
 > GitHub registry. The Dockerfile is located
 > [here](https://github.com/puppeteer/puppeteer/blob/main/docker/Dockerfile) and
 > the usage instructions are in the
-> [README.md](https://github.com/puppeteer/puppeteer#running-in-docker). The
+> [Integrations &gt; Docker](./guides/docker). The
 > instructions below might be still helpful if you are building your own image.
 
 Getting headless Chrome up and running in Docker can be tricky. The bundled

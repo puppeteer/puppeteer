@@ -68,6 +68,8 @@ await chromeBrowser.close();
 
   - Frame.waitForDevicePrompt()
   - HTTPResponse.buffer()
+  - HTTPResponse.content()
+  - HTTPResponse.text()
   - HTTPResponse.fromServiceWorker()
   - HTTPResponse.securityDetails()
   - Input.drag()

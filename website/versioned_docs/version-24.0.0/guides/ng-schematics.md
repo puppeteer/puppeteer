@@ -145,7 +145,7 @@ Puppeteer supports multiple types of selectors, namely, the CSS, ARIA, text, XPa
 The following table shows Puppeteer's equivalents to [Protractor By](https://www.protractortest.org/#/api?view=ProtractorBy).
 
 > For improved reliability and reduced flakiness try our
-> **Experimental** [Locators API](https://pptr.dev/guides/locators)
+> **Experimental** [Locators API](https://pptr.dev/guides/page-interactions#locators)
 
 | By                | Protractor code                               | Puppeteer querySelector                                      |
 | ----------------- | --------------------------------------------- | ------------------------------------------------------------ |
