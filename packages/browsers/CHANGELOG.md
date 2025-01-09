@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.7.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.6.1...browsers-v2.7.0) (2025-01-09)
+
+
+### Features
+
+* resolve relative paths to absolute before unpacking ([#13466](https://github.com/puppeteer/puppeteer/issues/13466)) ([f23c391](https://github.com/puppeteer/puppeteer/commit/f23c391e3c22bf9c9e9ff2c400f5a0c6b07effad))
+
+
+### Bug Fixes
+
+* skip retries for same URL ([#13469](https://github.com/puppeteer/puppeteer/issues/13469)) ([04135ec](https://github.com/puppeteer/puppeteer/commit/04135ec6571312e4dbec0fead182beb8ec9f39d0))
+
 ## [2.6.1](https://github.com/puppeteer/puppeteer/compare/browsers-v2.6.0...browsers-v2.6.1) (2024-12-10)
 
 

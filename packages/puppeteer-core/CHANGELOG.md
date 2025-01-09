@@ -20,6 +20,39 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [24.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.11.1...puppeteer-core-v24.0.0) (2025-01-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove support for Firefox over CDP ([#13427](https://github.com/puppeteer/puppeteer/issues/13427))
+* remove deprecated Launch and Connect options ([#13426](https://github.com/puppeteer/puppeteer/issues/13426))
+* include URL fragment into URL returned by HTTPRequest/Response instances ([#13425](https://github.com/puppeteer/puppeteer/issues/13425))
+
+### Features
+
+* roll to Firefox 134.0 ([#13470](https://github.com/puppeteer/puppeteer/issues/13470)) ([3bd3176](https://github.com/puppeteer/puppeteer/commit/3bd31769b5827305dc553cd36ca40387558b3acd))
+
+
+### Bug Fixes
+
+* include URL fragment into URL returned by HTTPRequest/Response instances ([#13425](https://github.com/puppeteer/puppeteer/issues/13425)) ([8ff26ad](https://github.com/puppeteer/puppeteer/commit/8ff26ad5aff0b366e54e6e85f71577de575ee31d))
+* roll to Chrome 131.0.6778.264 ([#13468](https://github.com/puppeteer/puppeteer/issues/13468)) ([aac759b](https://github.com/puppeteer/puppeteer/commit/aac759b82f0f6427b401bee11ab7c454f0ac6d5b))
+* **webdriver:** handle DiscardedBrowsingContextError error ([#13472](https://github.com/puppeteer/puppeteer/issues/13472)) ([b903856](https://github.com/puppeteer/puppeteer/commit/b90385662a7b29e9d36a7cae825e8c0f9f89fac8))
+
+
+### Code Refactoring
+
+* remove deprecated Launch and Connect options ([#13426](https://github.com/puppeteer/puppeteer/issues/13426)) ([20f9f15](https://github.com/puppeteer/puppeteer/commit/20f9f15d5f94832bd6f5c0e9807a1a53182c49f8))
+* remove support for Firefox over CDP ([#13427](https://github.com/puppeteer/puppeteer/issues/13427)) ([1a2e91b](https://github.com/puppeteer/puppeteer/commit/1a2e91b04413e2ed90778b2f8e49549a8e63c139))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.6.1 to 2.7.0
+
 ## [23.11.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v23.11.0...puppeteer-core-v23.11.1) (2024-12-19)
 
 
