@@ -47,6 +47,7 @@ jobs:
           npm ci
           npm run docusaurus docs:version $(jq -r .version ../packages/puppeteer/package.json)
           npm run archive
+          npm run changelog
       - name: Re-build docs after versioning
         env:
           PUBLISH: 1
