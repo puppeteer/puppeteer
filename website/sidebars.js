@@ -93,7 +93,7 @@ module.exports = {
     'webdriver-bidi',
     'supported-browsers',
     'faq',
-    'changelog',
+    'CHANGELOG',
   ],
   api: [
     {
