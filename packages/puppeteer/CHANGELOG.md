@@ -1,5 +1,48 @@
 # Changelog
 
+## [25.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.0.0...puppeteer-v25.0.0) (2025-01-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* support multiple browser downloads for Puppeteer ([#12795](https://github.com/puppeteer/puppeteer/issues/12795))
+* remove support for NPM configuration ([#12792](https://github.com/puppeteer/puppeteer/issues/12792))
+* rename product to browser ([#12757](https://github.com/puppeteer/puppeteer/issues/12757))
+
+### Features
+
+* allow downloading of all pinned browsers ([#12806](https://github.com/puppeteer/puppeteer/issues/12806)) ([e72e7ab](https://github.com/puppeteer/puppeteer/commit/e72e7ab515f31d805f89860bbac6aced5a63a868))
+* improve type inference for selectors by adopting "typed-query-selector" ([#12950](https://github.com/puppeteer/puppeteer/issues/12950)) ([77b729e](https://github.com/puppeteer/puppeteer/commit/77b729e23e7d1c595460e991d2ecf3c1f9786373))
+* rename product to browser ([#12757](https://github.com/puppeteer/puppeteer/issues/12757)) ([ca82e8e](https://github.com/puppeteer/puppeteer/commit/ca82e8e070dd1ddb627d034888782133d8cad49c))
+* roll to Chrome 127.0.6533.72 ([#12821](https://github.com/puppeteer/puppeteer/issues/12821)) ([8e6fd74](https://github.com/puppeteer/puppeteer/commit/8e6fd74de15c773ffd046b313b681a4afd162d38))
+* roll to Chrome 128.0.6613.84 ([#13005](https://github.com/puppeteer/puppeteer/issues/13005)) ([132a7ce](https://github.com/puppeteer/puppeteer/commit/132a7ce624ed8a9529c19c057c486bea2e737cb7))
+* roll to Chrome 129.0.6668.58 ([#13099](https://github.com/puppeteer/puppeteer/issues/13099)) ([6614660](https://github.com/puppeteer/puppeteer/commit/661466031edf730022bce4d706f76dd0b04dea05))
+* roll to Chrome 130.0.6723.58 ([#13195](https://github.com/puppeteer/puppeteer/issues/13195)) ([1cf5116](https://github.com/puppeteer/puppeteer/commit/1cf5116a2d3dd817cf38e46363e483fee58ed5bc))
+* roll to Chrome 131.0.6778.69 ([#13291](https://github.com/puppeteer/puppeteer/issues/13291)) ([34568e0](https://github.com/puppeteer/puppeteer/commit/34568e0b2d9e8a95050bd60e54d1d21b1cd0558c))
+* support multiple browser downloads for Puppeteer ([#12795](https://github.com/puppeteer/puppeteer/issues/12795)) ([4d4b358](https://github.com/puppeteer/puppeteer/commit/4d4b358dca34ab23df075efd08a62947e6feb98c))
+* **webdriver:** support WebDriver capabilities in puppeteer.connect ([#12877](https://github.com/puppeteer/puppeteer/issues/12877)) ([897df47](https://github.com/puppeteer/puppeteer/commit/897df478b4b64ac9b146378d32b1f1b8347c6263))
+
+
+### Bug Fixes
+
+* **cli:** puppeteer CLI should read the project configuration ([#12730](https://github.com/puppeteer/puppeteer/issues/12730)) ([bca750a](https://github.com/puppeteer/puppeteer/commit/bca750afe204cc3bafb0a34a0f92b0bac5a6a55f))
+* **deps:** bump chromium-bidi to 0.11.0 ([#13418](https://github.com/puppeteer/puppeteer/issues/13418)) ([771e4b2](https://github.com/puppeteer/puppeteer/commit/771e4b27abf21436dba80d568b82c9235bfb7de3))
+* remove erroneous changelog entry ([#13479](https://github.com/puppeteer/puppeteer/issues/13479)) ([6de3238](https://github.com/puppeteer/puppeteer/commit/6de32386c2294a74eb3df3fbc9b179ffeed083f5))
+* use CJS for Puppeteer CLI ([#12904](https://github.com/puppeteer/puppeteer/issues/12904)) ([e63051a](https://github.com/puppeteer/puppeteer/commit/e63051a4102254149dc1aebe143dc2be8b60e661))
+
+
+### Code Refactoring
+
+* remove support for NPM configuration ([#12792](https://github.com/puppeteer/puppeteer/issues/12792)) ([8ab71fb](https://github.com/puppeteer/puppeteer/commit/8ab71fb4ea64e4e08e3fabf0c227fcb2a42ae2cd))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.7.0 to 2.8.0
+    * puppeteer-core bumped from 24.0.0 to 25.0.0
+
 ## [24.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v23.11.1...puppeteer-v24.0.0) (2025-01-09)
 
 
