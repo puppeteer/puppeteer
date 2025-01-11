@@ -91,7 +91,7 @@ Which browser to launch.
 
 </td><td>
 
-Chrome Release Channel
+If specified for Chrome, looks for a regular Chrome installation at a known system location instead of using the bundled Chrome binary.
 
 </td><td>
 
