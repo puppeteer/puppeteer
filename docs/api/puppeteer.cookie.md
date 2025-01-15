@@ -117,7 +117,7 @@ Cookie name.
 
 </td><td>
 
-Cookie partition key. In Chrome, it is the top-level site the partitioned cookie is available in. In Firefox, it matches the source origin (https://w3c.github.io/webdriver-bidi/\#type-storage-PartitionKey).
+Cookie partition key. In Chrome, it is the top-level site the partitioned cookie is available in. In Firefox, it matches the source origin (https://w3c.github.io/webdriver-bidi/#type-storage-PartitionKey).
 
 </td><td>
 
