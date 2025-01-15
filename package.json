@@ -35,6 +35,7 @@
     "test:firefox:headful": "wireit",
     "test:firefox:headless": "wireit",
     "validate-licenses": "node --experimental-strip-types tools/third_party/validate-licenses.ts",
+    "validate-deps": "node tools/validate-deps.mjs",
     "unit": "npm run unit --workspaces --if-present",
     "changelog": "node --experimental-strip-types tools/merge-changelogs.ts",
     "release-please-dry-run": "release-please release-pr --token=$GITHUB_TOKEN --repo-url=puppeteer/puppeteer --dry-run"
