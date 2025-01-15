@@ -52,6 +52,8 @@ jobs:
         run: npm run build
       - name: Tests types
         run: npm run test-types
+      - name: Verify packages are synced
+        run: npm run validate-deps
       - name: Lint code
         run: npm run lint
       - name: Generate documents
