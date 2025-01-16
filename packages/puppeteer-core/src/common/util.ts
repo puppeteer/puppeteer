@@ -354,7 +354,9 @@ export function parsePDFOptions(
   let height = 11;
   if (options.format) {
     const format =
-      paperFormats[options.format.toLowerCase() as LowerCasePaperFormat];
+      paperFormats[options.format.toLowerCase() as LowerCasePaperFormat][
+        lengthUnit
+      ];
     assert(format, 'Unknown paper format: ' + options.format);
     width = format.width;
     height = format.height;

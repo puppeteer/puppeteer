@@ -37,27 +37,27 @@ export type LowerCasePaperFormat =
  *
  * The sizes of each format are as follows:
  *
- * - `Letter`: 8.5in x 11in
+ * - `Letter`: 8.5in x 11in / 21.59cm x 27.94cm
  *
- * - `Legal`: 8.5in x 14in
+ * - `Legal`: 8.5in x 14in / 21.59cm x 35.56cm
  *
- * - `Tabloid`: 11in x 17in
+ * - `Tabloid`: 11in x 17in / 27.94cm x 43.18cm
  *
- * - `Ledger`: 17in x 11in
+ * - `Ledger`: 17in x 11in / 43.18cm x 27.94cm
  *
- * - `A0`: 33.1102in x 46.811in
+ * - `A0`: 33.1102in x 46.811in / 84.1cm x 118.9cm
  *
- * - `A1`: 23.3858in x 33.1102in
+ * - `A1`: 23.3858in x 33.1102in / 59.4cm x 84.1cm
  *
- * - `A2`: 16.5354in x 23.3858in
+ * - `A2`: 16.5354in x 23.3858in / 42cm x 59.4cm
  *
- * - `A3`: 11.6929in x 16.5354in
+ * - `A3`: 11.6929in x 16.5354in / 29.7cm x 42cm
  *
- * - `A4`: 8.2677in x 11.6929in
+ * - `A4`: 8.2677in x 11.6929in / 21cm x 29.7cm
  *
- * - `A5`: 5.8268in x 8.2677in
+ * - `A5`: 5.8268in x 8.2677in / 14.8cm x 21cm
  *
- * - `A6`: 4.1339in x 5.8268in
+ * - `A6`: 4.1339in x 5.8268in / 10.5cm x 14.8cm
  *
  * @public
  */
@@ -219,18 +219,56 @@ export type ParsedPDFOptions = Required<
 
 /**
  * @internal
+ *
+ * @remarks All A series paper format sizes in inches are calculated from centimeters
+ * rounded mathematically to four decimal places.
  */
-export const paperFormats: Record<LowerCasePaperFormat, PaperFormatDimensions> =
-  {
-    letter: {width: 8.5, height: 11},
-    legal: {width: 8.5, height: 14},
-    tabloid: {width: 11, height: 17},
-    ledger: {width: 17, height: 11},
-    a0: {width: 33.1102, height: 46.811},
-    a1: {width: 23.3858, height: 33.1102},
-    a2: {width: 16.5354, height: 23.3858},
-    a3: {width: 11.6929, height: 16.5354},
-    a4: {width: 8.2677, height: 11.6929},
-    a5: {width: 5.8268, height: 8.2677},
-    a6: {width: 4.1339, height: 5.8268},
-  } as const;
+export const paperFormats: Record<
+  LowerCasePaperFormat,
+  Record<'cm' | 'in', PaperFormatDimensions>
+> = {
+  letter: {
+    cm: {width: 21.59, height: 27.94},
+    in: {width: 8.5, height: 11},
+  },
+  legal: {
+    cm: {width: 21.59, height: 35.56},
+    in: {width: 8.5, height: 14},
+  },
+  tabloid: {
+    cm: {width: 27.94, height: 43.18},
+    in: {width: 11, height: 17},
+  },
+  ledger: {
+    cm: {width: 43.18, height: 27.94},
+    in: {width: 17, height: 11},
+  },
+  a0: {
+    cm: {width: 84.1, height: 118.9},
+    in: {width: 33.1102, height: 46.811},
+  },
+  a1: {
+    cm: {width: 59.4, height: 84.1},
+    in: {width: 23.3858, height: 33.1102},
+  },
+  a2: {
+    cm: {width: 42, height: 59.4},
+    in: {width: 16.5354, height: 23.3858},
+  },
+  a3: {
+    cm: {width: 29.7, height: 42},
+    in: {width: 11.6929, height: 16.5354},
+  },
+  a4: {
+    cm: {width: 21, height: 29.7},
+    in: {width: 8.2677, height: 11.6929},
+  },
+  a5: {
+    cm: {width: 14.8, height: 21},
+    in: {width: 5.8268, height: 8.2677},
+  },
+  a6: {
+    cm: {width: 10.5, height: 14.8},
+    in: {width: 4.1339, height: 5.8268},
+  },
+} as const;
