@@ -87,21 +87,24 @@ try {
   }
 }
 
-const defaultBrowserOptions = Object.assign(
+const defaultBrowserOptions: LaunchOptions = Object.assign(
   {
     handleSIGINT: true,
     executablePath: process.env['BINARY'],
     headless: headless === 'shell' ? ('shell' as const) : isHeadless,
     dumpio: !!process.env['DUMPIO'],
     protocol,
-    args: [
-      `--host-resolver-rules=MAP domain1.test 127.0.0.1,MAP domain2.test 127.0.0.1,MAP domain3.test 127.0.0.1`,
-    ],
-    extraPrefsFirefox: {
-      'network.dns.localDomains': `domain1.test,domain2.test,domain3.test`,
-    },
+    args: [],
+    extraPrefsFirefox: {},
   } satisfies LaunchOptions,
   extraLaunchOptions,
+);
+
+// Required by tests and cannot be overridden by EXTRA_LAUNCH_OPTIONS.
+defaultBrowserOptions.extraPrefsFirefox!['network.dns.localDomains'] =
+  `domain1.test,domain2.test,domain3.test`;
+defaultBrowserOptions.args!.push(
+  `--host-resolver-rules=MAP domain1.test 127.0.0.1,MAP domain2.test 127.0.0.1,MAP domain3.test 127.0.0.1`,
 );
 
 if (defaultBrowserOptions.executablePath) {
