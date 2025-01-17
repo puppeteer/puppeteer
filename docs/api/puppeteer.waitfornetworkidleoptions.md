@@ -7,7 +7,7 @@ sidebar_label: WaitForNetworkIdleOptions
 ### Signature
 
 ```typescript
-export interface WaitForNetworkIdleOptions extends WaitTimeoutOptions
+export declare interface WaitForNetworkIdleOptions extends WaitTimeoutOptions
 ```
 
 **Extends:** [WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md)

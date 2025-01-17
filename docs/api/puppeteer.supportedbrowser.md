@@ -9,5 +9,5 @@ Browsers supported by Puppeteer.
 ### Signature
 
 ```typescript
-export type SupportedBrowser = 'chrome' | 'firefox';
+export declare type SupportedBrowser = 'chrome' | 'firefox';
 ```

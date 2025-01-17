@@ -11,5 +11,5 @@ See individual properties for more information.
 ### Signature
 
 ```typescript
-export type ExperimentsConfiguration = Record<string, never>;
+export declare type ExperimentsConfiguration = Record<string, never>;
 ```

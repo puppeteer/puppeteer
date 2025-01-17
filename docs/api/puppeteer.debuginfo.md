@@ -7,7 +7,7 @@ sidebar_label: DebugInfo
 ### Signature
 
 ```typescript
-export interface DebugInfo
+export declare interface DebugInfo
 ```
 
 ## Properties

@@ -7,7 +7,7 @@ sidebar_label: ChromeSettings
 ### Signature
 
 ```typescript
-export interface ChromeSettings
+export declare interface ChromeSettings
 ```
 
 ## Properties

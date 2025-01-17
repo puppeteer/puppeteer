@@ -7,5 +7,5 @@ sidebar_label: puppeteer
 ### Signature
 
 ```typescript
-puppeteer: PuppeteerCore.PuppeteerNode;
+puppeteer: PuppeteerNode;
 ```

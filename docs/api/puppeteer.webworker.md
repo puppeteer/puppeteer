@@ -18,8 +18,6 @@ export declare abstract class WebWorker extends EventEmitter<Record<EventType, u
 
 The events `workercreated` and `workerdestroyed` are emitted on the page object to signal the worker lifecycle.
 
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `WebWorker` class.
-
 ## Example
 
 ```ts

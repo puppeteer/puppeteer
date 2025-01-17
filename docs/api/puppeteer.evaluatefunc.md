@@ -7,7 +7,7 @@ sidebar_label: EvaluateFunc
 ### Signature
 
 ```typescript
-export type EvaluateFunc<T extends unknown[]> = (
+export declare type EvaluateFunc<T extends unknown[]> = (
   ...params: InnerParams<T>
 ) => Awaitable<unknown>;
 ```

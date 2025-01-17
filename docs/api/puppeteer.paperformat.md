@@ -9,7 +9,7 @@ All the valid paper format types when printing a PDF.
 ### Signature
 
 ```typescript
-export type PaperFormat =
+export declare type PaperFormat =
   | Uppercase<LowerCasePaperFormat>
   | Capitalize<LowerCasePaperFormat>
   | LowerCasePaperFormat;

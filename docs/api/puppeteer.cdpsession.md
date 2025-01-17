@@ -20,8 +20,6 @@ Protocol methods can be called with [CDPSession.send()](./puppeteer.cdpsession.s
 
 Useful links: [DevTools Protocol Viewer](https://chromedevtools.github.io/devtools-protocol/) and [Getting Started with DevTools Protocol](https://github.com/aslushnikov/getting-started-with-cdp/blob/HEAD/README.md).
 
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `CDPSession` class.
-
 ## Example
 
 ```ts

@@ -9,5 +9,5 @@ Represents the cookie's 'Priority' status: https://tools.ietf.org/html/draft-wes
 ### Signature
 
 ```typescript
-export type CookiePriority = 'Low' | 'Medium' | 'High';
+export declare type CookiePriority = 'Low' | 'Medium' | 'High';
 ```

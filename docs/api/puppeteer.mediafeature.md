@@ -9,7 +9,7 @@ A media feature to emulate.
 ### Signature
 
 ```typescript
-export interface MediaFeature
+export declare interface MediaFeature
 ```
 
 ## Properties

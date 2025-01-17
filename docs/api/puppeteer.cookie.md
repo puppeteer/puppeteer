@@ -9,7 +9,7 @@ Represents a cookie object.
 ### Signature
 
 ```typescript
-export interface Cookie
+export declare interface Cookie
 ```
 
 ## Properties

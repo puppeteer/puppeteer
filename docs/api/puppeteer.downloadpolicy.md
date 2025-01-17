@@ -7,5 +7,9 @@ sidebar_label: DownloadPolicy
 ### Signature
 
 ```typescript
-export type DownloadPolicy = 'deny' | 'allow' | 'allowAndName' | 'default';
+export declare type DownloadPolicy =
+  | 'deny'
+  | 'allow'
+  | 'allowAndName'
+  | 'default';
 ```

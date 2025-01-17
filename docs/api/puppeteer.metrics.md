@@ -7,7 +7,7 @@ sidebar_label: Metrics
 ### Signature
 
 ```typescript
-export interface Metrics
+export declare interface Metrics
 ```
 
 ## Properties

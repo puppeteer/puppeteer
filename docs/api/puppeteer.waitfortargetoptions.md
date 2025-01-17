@@ -7,7 +7,7 @@ sidebar_label: WaitForTargetOptions
 ### Signature
 
 ```typescript
-export interface WaitForTargetOptions
+export declare interface WaitForTargetOptions
 ```
 
 ## Properties

@@ -7,7 +7,7 @@ sidebar_label: BrowserEvents
 ### Signature
 
 ```typescript
-export interface BrowserEvents extends Record<EventType, unknown>
+export declare interface BrowserEvents extends Record<EventType, unknown>
 ```
 
 **Extends:** Record&lt;[EventType](./puppeteer.eventtype.md), unknown&gt;

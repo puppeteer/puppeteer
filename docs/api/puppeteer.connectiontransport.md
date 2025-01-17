@@ -7,7 +7,7 @@ sidebar_label: ConnectionTransport
 ### Signature
 
 ```typescript
-export interface ConnectionTransport
+export declare interface ConnectionTransport
 ```
 
 ## Properties

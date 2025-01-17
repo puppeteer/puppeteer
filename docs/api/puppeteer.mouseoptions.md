@@ -7,7 +7,7 @@ sidebar_label: MouseOptions
 ### Signature
 
 ```typescript
-export interface MouseOptions
+export declare interface MouseOptions
 ```
 
 ## Properties

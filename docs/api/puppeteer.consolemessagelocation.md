@@ -7,7 +7,7 @@ sidebar_label: ConsoleMessageLocation
 ### Signature
 
 ```typescript
-export interface ConsoleMessageLocation
+export declare interface ConsoleMessageLocation
 ```
 
 ## Properties

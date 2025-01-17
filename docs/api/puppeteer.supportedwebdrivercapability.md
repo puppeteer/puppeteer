@@ -7,7 +7,7 @@ sidebar_label: SupportedWebDriverCapability
 ### Signature
 
 ```typescript
-export type SupportedWebDriverCapability = Exclude<
+export declare type SupportedWebDriverCapability = Exclude<
   Session.CapabilityRequest,
   'unhandledPromptBehavior' | 'acceptInsecureCerts'
 >;

@@ -16,8 +16,6 @@ export declare class DeviceRequestPrompt
 
 `DeviceRequestPrompt` instances are returned via the [Page.waitForDevicePrompt()](./puppeteer.page.waitfordeviceprompt.md) method.
 
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `DeviceRequestPrompt` class.
-
 ## Example
 
 ```ts

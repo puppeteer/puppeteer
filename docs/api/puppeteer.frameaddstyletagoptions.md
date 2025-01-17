@@ -7,7 +7,7 @@ sidebar_label: FrameAddStyleTagOptions
 ### Signature
 
 ```typescript
-export interface FrameAddStyleTagOptions
+export declare interface FrameAddStyleTagOptions
 ```
 
 ## Properties

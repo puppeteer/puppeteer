@@ -22,8 +22,6 @@ The most common method to use is [launch](./puppeteer.puppeteernode.launch.md), 
 
 See [the main Puppeteer class](./puppeteer.puppeteer.md) for methods common to all environments, such as [Puppeteer.connect()](./puppeteer.puppeteer.connect.md).
 
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `PuppeteerNode` class.
-
 ## Example
 
 The following is a typical example of using Puppeteer to drive automation:

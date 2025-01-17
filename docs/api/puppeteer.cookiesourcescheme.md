@@ -9,5 +9,5 @@ Represents the source scheme of the origin that originally set the cookie. A val
 ### Signature
 
 ```typescript
-export type CookieSourceScheme = 'Unset' | 'NonSecure' | 'Secure';
+export declare type CookieSourceScheme = 'Unset' | 'NonSecure' | 'Secure';
 ```

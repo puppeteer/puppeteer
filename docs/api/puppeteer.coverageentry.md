@@ -9,7 +9,7 @@ The CoverageEntry class represents one entry of the coverage report.
 ### Signature
 
 ```typescript
-export interface CoverageEntry
+export declare interface CoverageEntry
 ```
 
 ## Properties

@@ -9,7 +9,7 @@ Represents a Node and the properties of it that are relevant to Accessibility.
 ### Signature
 
 ```typescript
-export interface SerializedAXNode
+export declare interface SerializedAXNode
 ```
 
 ## Properties

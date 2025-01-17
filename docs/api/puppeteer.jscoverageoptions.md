@@ -9,7 +9,7 @@ Set of configurable options for JS coverage.
 ### Signature
 
 ```typescript
-export interface JSCoverageOptions
+export declare interface JSCoverageOptions
 ```
 
 ## Properties

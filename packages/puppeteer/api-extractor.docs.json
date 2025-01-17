@@ -1,13 +1,39 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
   "mainEntryPointFilePath": "<projectFolder>/lib/esm/puppeteer/puppeteer.d.ts",
-
-  "extends": "./api-extractor.json",
-
-  "dtsRollup": {
+  "apiReport": {
     "enabled": false
   },
-
+  "tsdocMetadata": {
+    "enabled": false
+  },
+  "dtsRollup": {
+    "enabled": true
+  },
+  "messages": {
+    "compilerMessageReporting": {
+      "default": {
+        "logLevel": "warning"
+      }
+    },
+    "extractorMessageReporting": {
+      "ae-wrong-input-file-type": {
+        "logLevel": "none"
+      },
+      "ae-internal-missing-underscore": {
+        "logLevel": "none"
+      },
+      "default": {
+        "logLevel": "warning"
+      }
+    },
+    "tsdocMessageReporting": {
+      "default": {
+        "logLevel": "warning"
+      }
+    }
+  },
+  "bundledPackages": ["puppeteer-core"],
   "docModel": {
     "enabled": true,
     "apiJsonFilePath": "<projectFolder>/../../docs/<unscopedPackageName>.api.json"

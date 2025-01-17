@@ -7,7 +7,7 @@ sidebar_label: LocatorEvents
 ### Signature
 
 ```typescript
-export interface LocatorEvents extends Record<EventType, unknown>
+export declare interface LocatorEvents extends Record<EventType, unknown>
 ```
 
 **Extends:** Record&lt;[EventType](./puppeteer.eventtype.md), unknown&gt;

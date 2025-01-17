@@ -9,5 +9,5 @@ Whether to wait for the element to be [visible](./puppeteer.elementhandle.isvisi
 ### Signature
 
 ```typescript
-export type VisibilityOption = 'hidden' | 'visible' | null;
+export declare type VisibilityOption = 'hidden' | 'visible' | null;
 ```

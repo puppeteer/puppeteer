@@ -7,7 +7,7 @@ sidebar_label: RemoteAddress
 ### Signature
 
 ```typescript
-export interface RemoteAddress
+export declare interface RemoteAddress
 ```
 
 ## Properties

@@ -7,5 +7,5 @@ sidebar_label: EventType
 ### Signature
 
 ```typescript
-export type EventType = string | symbol;
+export declare type EventType = string | symbol;
 ```

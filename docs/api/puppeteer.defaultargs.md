@@ -7,7 +7,7 @@ sidebar_label: defaultArgs
 ### Signature
 
 ```typescript
-defaultArgs: (options?: PuppeteerCore.LaunchOptions) => string[]
+defaultArgs: (options?: import("puppeteer-core").LaunchOptions) => string[]
 ```
 
 ## Parameters
@@ -31,7 +31,7 @@ options
 
 </td><td>
 
-[PuppeteerCore.LaunchOptions](./puppeteer.launchoptions.md)
+import("puppeteer-core").[LaunchOptions](./puppeteer.launchoptions.md)
 
 </td><td>
 

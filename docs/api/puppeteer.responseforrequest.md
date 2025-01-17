@@ -9,7 +9,7 @@ Required response data to fulfill a request with.
 ### Signature
 
 ```typescript
-export interface ResponseForRequest
+export declare interface ResponseForRequest
 ```
 
 ## Properties

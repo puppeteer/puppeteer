@@ -7,7 +7,7 @@ sidebar_label: ScreenshotOptions
 ### Signature
 
 ```typescript
-export interface ScreenshotOptions
+export declare interface ScreenshotOptions
 ```
 
 ## Properties

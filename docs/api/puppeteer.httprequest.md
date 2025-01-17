@@ -32,8 +32,6 @@ NOTE: HTTP Error responses, such as 404 or 503, are still successful responses f
 
 If request gets a 'redirect' response, the request is successfully finished with the `requestfinished` event, and a new request is issued to a redirected url.
 
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `HTTPRequest` class.
-
 ## Properties
 
 <table><thead><tr><th>

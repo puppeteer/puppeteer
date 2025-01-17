@@ -7,7 +7,7 @@ sidebar_label: Point
 ### Signature
 
 ```typescript
-export interface Point
+export declare interface Point
 ```
 
 ## Properties

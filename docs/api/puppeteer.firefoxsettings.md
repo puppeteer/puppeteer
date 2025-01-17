@@ -7,7 +7,7 @@ sidebar_label: FirefoxSettings
 ### Signature
 
 ```typescript
-export interface FirefoxSettings
+export declare interface FirefoxSettings
 ```
 
 ## Properties

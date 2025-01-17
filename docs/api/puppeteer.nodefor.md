@@ -7,6 +7,6 @@ sidebar_label: NodeFor
 ### Signature
 
 ```typescript
-export type NodeFor<ComplexSelector extends string> =
+export declare type NodeFor<ComplexSelector extends string> =
   ParseSelector<ComplexSelector>;
 ```

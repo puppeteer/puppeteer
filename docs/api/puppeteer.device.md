@@ -7,7 +7,7 @@ sidebar_label: Device
 ### Signature
 
 ```typescript
-export interface Device
+export declare interface Device
 ```
 
 ## Properties

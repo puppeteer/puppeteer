@@ -9,7 +9,7 @@ Represents a cookie partition key in Chrome.
 ### Signature
 
 ```typescript
-export interface CookiePartitionKey
+export declare interface CookiePartitionKey
 ```
 
 ## Properties

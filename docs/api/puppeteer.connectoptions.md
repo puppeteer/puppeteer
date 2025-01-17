@@ -9,7 +9,7 @@ Generic browser options that can be passed when launching any browser or when co
 ### Signature
 
 ```typescript
-export interface ConnectOptions
+export declare interface ConnectOptions
 ```
 
 ## Properties

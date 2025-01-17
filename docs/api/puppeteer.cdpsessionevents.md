@@ -7,7 +7,7 @@ sidebar_label: CDPSessionEvents
 ### Signature
 
 ```typescript
-export interface CDPSessionEvents extends CDPEvents, Record<EventType, unknown>
+export declare interface CDPSessionEvents extends CDPEvents, Record<EventType, unknown>
 ```
 
 **Extends:** [CDPEvents](./puppeteer.cdpevents.md), Record&lt;[EventType](./puppeteer.eventtype.md), unknown&gt;

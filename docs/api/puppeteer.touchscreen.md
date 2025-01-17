@@ -12,10 +12,6 @@ The Touchscreen class exposes touchscreen events.
 export declare abstract class Touchscreen
 ```
 
-## Remarks
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Touchscreen` class.
-
 ## Methods
 
 <table><thead><tr><th>

@@ -7,7 +7,7 @@ sidebar_label: BrowserContextOptions
 ### Signature
 
 ```typescript
-export interface BrowserContextOptions
+export declare interface BrowserContextOptions
 ```
 
 ## Properties

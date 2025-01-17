@@ -7,7 +7,7 @@ sidebar_label: Predicate
 ### Signature
 
 ```typescript
-export type Predicate<From, To extends From = From> =
+export declare type Predicate<From, To extends From = From> =
   | ((value: From) => value is To)
   | ((value: From) => Awaitable<boolean>);
 ```

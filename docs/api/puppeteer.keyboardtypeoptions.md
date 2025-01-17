@@ -7,7 +7,7 @@ sidebar_label: KeyboardTypeOptions
 ### Signature
 
 ```typescript
-export interface KeyboardTypeOptions
+export declare interface KeyboardTypeOptions
 ```
 
 ## Properties

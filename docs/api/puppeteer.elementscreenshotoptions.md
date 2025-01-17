@@ -7,7 +7,7 @@ sidebar_label: ElementScreenshotOptions
 ### Signature
 
 ```typescript
-export interface ElementScreenshotOptions extends ScreenshotOptions
+export declare interface ElementScreenshotOptions extends ScreenshotOptions
 ```
 
 **Extends:** [ScreenshotOptions](./puppeteer.screenshotoptions.md)

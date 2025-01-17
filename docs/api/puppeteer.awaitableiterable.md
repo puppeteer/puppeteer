@@ -7,5 +7,5 @@ sidebar_label: AwaitableIterable
 ### Signature
 
 ```typescript
-export type AwaitableIterable<T> = Iterable<T> | AsyncIterable<T>;
+export declare type AwaitableIterable<T> = Iterable<T> | AsyncIterable<T>;
 ```

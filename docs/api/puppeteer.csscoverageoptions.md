@@ -9,7 +9,7 @@ Set of configurable options for CSS coverage.
 ### Signature
 
 ```typescript
-export interface CSSCoverageOptions
+export declare interface CSSCoverageOptions
 ```
 
 ## Properties

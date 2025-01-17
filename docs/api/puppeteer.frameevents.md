@@ -7,7 +7,7 @@ sidebar_label: FrameEvents
 ### Signature
 
 ```typescript
-export interface FrameEvents extends Record<EventType, unknown>
+export declare interface FrameEvents extends Record<EventType, unknown>
 ```
 
 **Extends:** Record&lt;[EventType](./puppeteer.eventtype.md), unknown&gt;

@@ -7,7 +7,7 @@ sidebar_label: BoundingBox
 ### Signature
 
 ```typescript
-export interface BoundingBox extends Point
+export declare interface BoundingBox extends Point
 ```
 
 **Extends:** [Point](./puppeteer.point.md)

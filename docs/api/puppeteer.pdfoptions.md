@@ -9,7 +9,7 @@ Valid options to configure PDF generation via [Page.pdf()](./puppeteer.page.pdf.
 ### Signature
 
 ```typescript
-export interface PDFOptions
+export declare interface PDFOptions
 ```
 
 ## Properties

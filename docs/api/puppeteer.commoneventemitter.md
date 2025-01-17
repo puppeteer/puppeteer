@@ -7,7 +7,7 @@ sidebar_label: CommonEventEmitter
 ### Signature
 
 ```typescript
-export interface CommonEventEmitter<Events extends Record<EventType, unknown>>
+export declare interface CommonEventEmitter<Events extends Record<EventType, unknown>>
 ```
 
 ## Methods

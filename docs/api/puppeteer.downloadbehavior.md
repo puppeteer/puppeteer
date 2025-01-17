@@ -7,7 +7,7 @@ sidebar_label: DownloadBehavior
 ### Signature
 
 ```typescript
-export interface DownloadBehavior
+export declare interface DownloadBehavior
 ```
 
 ## Properties

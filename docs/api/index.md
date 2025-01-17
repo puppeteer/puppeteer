@@ -31,8 +31,6 @@ Blink - Chrome's rendering engine - has a concept of "accessibility tree", which
 
 Most of the accessibility tree gets filtered out when converting from Blink AX Tree to Platform-specific AX-Tree or by assistive technologies themselves. By default, Puppeteer tries to approximate this filtering, exposing only the "interesting" nodes of the tree.
 
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Accessibility` class.
-
 </td></tr>
 <tr><td>
 
@@ -45,10 +43,6 @@ The constructor for this class is marked as internal. Third-party code should no
 - connected to via [Puppeteer.connect()](./puppeteer.puppeteer.connect.md) or - launched by [PuppeteerNode.launch()](./puppeteer.puppeteernode.launch.md).
 
 [Browser](./puppeteer.browser.md) [emits](./puppeteer.eventemitter.emit.md) various events which are documented in the [BrowserEvent](./puppeteer.browserevent.md) enum.
-
-**Remarks:**
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Browser` class.
 
 </td></tr>
 <tr><td>
@@ -69,8 +63,6 @@ If a [page](./puppeteer.page.md) opens another [page](./puppeteer.page.md), e.g.
 
 In Chrome all non-default contexts are incognito, and [default browser context](./puppeteer.browser.defaultbrowsercontext.md) might be incognito if you provide the `--incognito` argument when launching the browser.
 
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `BrowserContext` class.
-
 </td></tr>
 <tr><td>
 
@@ -79,10 +71,6 @@ The constructor for this class is marked as internal. Third-party code should no
 </td><td>
 
 Describes a launcher - a class that is able to create and launch a browser instance.
-
-**Remarks:**
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `BrowserLauncher` class.
 
 </td></tr>
 <tr><td>
@@ -98,8 +86,6 @@ The `CDPSession` instances are used to talk raw Chrome Devtools Protocol.
 Protocol methods can be called with [CDPSession.send()](./puppeteer.cdpsession.send.md) method and protocol events can be subscribed to with `CDPSession.on` method.
 
 Useful links: [DevTools Protocol Viewer](https://chromedevtools.github.io/devtools-protocol/) and [Getting Started with DevTools Protocol](https://github.com/aslushnikov/getting-started-with-cdp/blob/HEAD/README.md).
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `CDPSession` class.
 
 </td></tr>
 <tr><td>
@@ -117,10 +103,6 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ConsoleMessage objects are dispatched by page via the 'console' event.
 
-**Remarks:**
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ConsoleMessage` class.
-
 </td></tr>
 <tr><td>
 
@@ -133,8 +115,6 @@ The Coverage class provides methods to gather information about parts of JavaScr
 **Remarks:**
 
 To output coverage in a form consumable by [Istanbul](https://github.com/istanbuljs), see [puppeteer-to-istanbul](https://github.com/istanbuljs/puppeteer-to-istanbul).
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Coverage` class.
 
 </td></tr>
 <tr><td>
@@ -156,8 +136,6 @@ Device request prompts let you respond to the page requesting for a device throu
 
 `DeviceRequestPrompt` instances are returned via the [Page.waitForDevicePrompt()](./puppeteer.page.waitfordeviceprompt.md) method.
 
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `DeviceRequestPrompt` class.
-
 </td></tr>
 <tr><td>
 
@@ -166,10 +144,6 @@ The constructor for this class is marked as internal. Third-party code should no
 </td><td>
 
 Device in a request prompt.
-
-**Remarks:**
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `DeviceRequestPromptDevice` class.
 
 </td></tr>
 <tr><td>
@@ -181,8 +155,6 @@ The constructor for this class is marked as internal. Third-party code should no
 Dialog instances are dispatched by the [Page](./puppeteer.page.md) via the `dialog` event.
 
 **Remarks:**
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Dialog` class.
 
 </td></tr>
 <tr><td>
@@ -216,8 +188,6 @@ ElementHandle instances can be used as arguments in [Page.$eval()](./puppeteer.p
 
 If you're using TypeScript, ElementHandle takes a generic argument that denotes the type of element the handle is holding within. For example, if you have a handle to a `<select>` element, you can type it as `ElementHandle<HTMLSelectElement>` and you get some nicer type checks.
 
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ElementHandle` class.
-
 </td></tr>
 <tr><td>
 
@@ -231,8 +201,6 @@ The EventEmitter class that many Puppeteer classes extend.
 
 This allows you to listen to events that Puppeteer classes fire and act accordingly. Therefore you'll mostly use [on](./puppeteer.eventemitter.on.md) and [off](./puppeteer.eventemitter.off.md) to bind and unbind to event listeners.
 
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `EventEmitter` class.
-
 </td></tr>
 <tr><td>
 
@@ -241,10 +209,6 @@ The constructor for this class is marked as internal. Third-party code should no
 </td><td>
 
 **_(Experimental)_** Experimental ExtensionTransport allows establishing a connection via chrome.debugger API if Puppeteer runs in an extension. Since Chrome DevTools Protocol is restricted for extensions, the transport implements missing commands and events.
-
-**Remarks:**
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ExtensionTransport` class.
 
 </td></tr>
 <tr><td>
@@ -260,8 +224,6 @@ File choosers let you react to the page requesting for a file.
 `FileChooser` instances are returned via the [Page.waitForFileChooser()](./puppeteer.page.waitforfilechooser.md) method.
 
 In browsers, only one file chooser can be opened at a time. All file choosers must be accepted or canceled. Not doing so will prevent subsequent file choosers from appearing.
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `FileChooser` class.
 
 </td></tr>
 <tr><td>
@@ -279,8 +241,6 @@ To understand frames, you can think of frames as `<iframe>` elements. Just like 
 Frame lifecycles are controlled by three events that are all dispatched on the parent [page](./puppeteer.frame.page.md):
 
 - [PageEvent.FrameAttached](./puppeteer.pageevent.md) - [PageEvent.FrameNavigated](./puppeteer.pageevent.md) - [PageEvent.FrameDetached](./puppeteer.pageevent.md)
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Frame` class.
 
 </td></tr>
 <tr><td>
@@ -311,8 +271,6 @@ NOTE: HTTP Error responses, such as 404 or 503, are still successful responses f
 
 If request gets a 'redirect' response, the request is successfully finished with the `requestfinished` event, and a new request is issued to a redirected url.
 
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `HTTPRequest` class.
-
 </td></tr>
 <tr><td>
 
@@ -322,20 +280,12 @@ The constructor for this class is marked as internal. Third-party code should no
 
 The HTTPResponse class represents responses which are received by the [Page](./puppeteer.page.md) class.
 
-**Remarks:**
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `HTTPResponse` class.
-
 </td></tr>
 <tr><td>
 
 <span id="jscoverage">[JSCoverage](./puppeteer.jscoverage.md)</span>
 
 </td><td>
-
-**Remarks:**
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `JSCoverage` class.
 
 </td></tr>
 <tr><td>
@@ -349,10 +299,6 @@ Represents a reference to a JavaScript object. Instances can be created using [P
 Handles prevent the referenced JavaScript object from being garbage-collected unless the handle is purposely [disposed](./puppeteer.jshandle.dispose.md). JSHandles are auto-disposed when their associated frame is navigated away or the parent context gets destroyed.
 
 Handles can be used as arguments for any evaluation function such as [Page.$eval()](./puppeteer.page._eval.md), [Page.evaluate()](./puppeteer.page.evaluate.md), and [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md). They are resolved to their referenced object.
-
-**Remarks:**
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `JSHandle` class.
 
 </td></tr>
 <tr><td>
@@ -368,8 +314,6 @@ Keyboard provides an api for managing a virtual keyboard. The high level api is 
 For finer control, you can use [Keyboard.down()](./puppeteer.keyboard.down.md), [Keyboard.up()](./puppeteer.keyboard.up.md), and [Keyboard.sendCharacter()](./puppeteer.keyboard.sendcharacter.md) to manually fire events as if they were generated from a real keyboard.
 
 On macOS, keyboard shortcuts like `⌘ A` -&gt; Select All do not work. See [\#1313](https://github.com/puppeteer/puppeteer/issues/1313).
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Keyboard` class.
 
 </td></tr>
 <tr><td>
@@ -395,8 +339,6 @@ The Mouse class operates in main-frame CSS pixels relative to the top-left corne
 
 Every `page` object has its own Mouse, accessible with [Page.mouse](./puppeteer.page.md#mouse).
 
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Mouse` class.
-
 </td></tr>
 <tr><td>
 
@@ -411,10 +353,6 @@ Page provides methods to interact with a single tab or [extension background pag
 One Browser instance might have multiple Page instances.
 
 :::
-
-**Remarks:**
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Page` class.
 
 </td></tr>
 <tr><td>
@@ -436,10 +374,6 @@ The main Puppeteer class.
 
 IMPORTANT: if you are using Puppeteer in a Node environment, you will get an instance of [PuppeteerNode](./puppeteer.puppeteernode.md) when you import or require `puppeteer`. That class extends `Puppeteer`, so has all the methods documented below as well as all that are defined on [PuppeteerNode](./puppeteer.puppeteernode.md).
 
-**Remarks:**
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Puppeteer` class.
-
 </td></tr>
 <tr><td>
 
@@ -448,10 +382,6 @@ The constructor for this class is marked as internal. Third-party code should no
 </td><td>
 
 The base class for all Puppeteer-specific errors
-
-**Remarks:**
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `PuppeteerError` class.
 
 </td></tr>
 <tr><td>
@@ -470,18 +400,12 @@ The most common method to use is [launch](./puppeteer.puppeteernode.launch.md), 
 
 See [the main Puppeteer class](./puppeteer.puppeteer.md) for methods common to all environments, such as [Puppeteer.connect()](./puppeteer.puppeteer.connect.md).
 
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `PuppeteerNode` class.
-
 </td></tr>
 <tr><td>
 
 <span id="screenrecorder">[ScreenRecorder](./puppeteer.screenrecorder.md)</span>
 
 </td><td>
-
-**Remarks:**
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ScreenRecorder` class.
 
 </td></tr>
 <tr><td>
@@ -492,10 +416,6 @@ The constructor for this class is marked as internal. Third-party code should no
 
 The SecurityDetails class represents the security details of a response that was received over a secure connection.
 
-**Remarks:**
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `SecurityDetails` class.
-
 </td></tr>
 <tr><td>
 
@@ -504,10 +424,6 @@ The constructor for this class is marked as internal. Third-party code should no
 </td><td>
 
 Target represents a [CDP target](https://chromedevtools.github.io/devtools-protocol/tot/Target/). In CDP a target is something that can be debugged such a frame, a page or a worker.
-
-**Remarks:**
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Target` class.
 
 </td></tr>
 <tr><td>
@@ -540,10 +456,6 @@ TouchError is thrown when an attempt is made to move or end a touch that does no
 
 The Touchscreen class exposes touchscreen events.
 
-**Remarks:**
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Touchscreen` class.
-
 </td></tr>
 <tr><td>
 
@@ -556,8 +468,6 @@ The Tracing class exposes the tracing audit interface.
 **Remarks:**
 
 You can use `tracing.start` and `tracing.stop` to create a trace file which can be opened in Chrome DevTools or [timeline viewer](https://chromedevtools.github.io/timeline-viewer/).
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Tracing` class.
 
 </td></tr>
 <tr><td>
@@ -580,8 +490,6 @@ This class represents a [WebWorker](https://developer.mozilla.org/en-US/docs/Web
 **Remarks:**
 
 The events `workercreated` and `workerdestroyed` are emitted on the page object to signal the worker lifecycle.
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `WebWorker` class.
 
 </td></tr>
 </tbody></table>

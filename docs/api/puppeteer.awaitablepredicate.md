@@ -7,7 +7,7 @@ sidebar_label: AwaitablePredicate
 ### Signature
 
 ```typescript
-export type AwaitablePredicate<T> = (value: T) => Awaitable<boolean>;
+export declare type AwaitablePredicate<T> = (value: T) => Awaitable<boolean>;
 ```
 
 **References:** [Awaitable](./puppeteer.awaitable.md)

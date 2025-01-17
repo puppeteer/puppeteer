@@ -7,7 +7,7 @@ sidebar_label: MouseClickOptions
 ### Signature
 
 ```typescript
-export interface MouseClickOptions extends MouseOptions
+export declare interface MouseClickOptions extends MouseOptions
 ```
 
 **Extends:** [MouseOptions](./puppeteer.mouseoptions.md)

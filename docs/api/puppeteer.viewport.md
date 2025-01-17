@@ -7,7 +7,7 @@ sidebar_label: Viewport
 ### Signature
 
 ```typescript
-export interface Viewport
+export declare interface Viewport
 ```
 
 ## Properties

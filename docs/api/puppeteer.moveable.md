@@ -7,7 +7,7 @@ sidebar_label: Moveable
 ### Signature
 
 ```typescript
-export interface Moveable
+export declare interface Moveable
 ```
 
 ## Methods

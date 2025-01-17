@@ -7,8 +7,8 @@ sidebar_label: launch
 ### Signature
 
 ```typescript
-launch: (options?: PuppeteerCore.LaunchOptions) =>
-  Promise<PuppeteerCore.Browser>;
+launch: (options?: import('puppeteer-core').LaunchOptions) =>
+  Promise<import('puppeteer-core').Browser>;
 ```
 
 ## Parameters
@@ -32,7 +32,7 @@ options
 
 </td><td>
 
-[PuppeteerCore.LaunchOptions](./puppeteer.launchoptions.md)
+import("puppeteer-core").[LaunchOptions](./puppeteer.launchoptions.md)
 
 </td><td>
 
@@ -42,4 +42,4 @@ _(Optional)_
 </tbody></table>
 **Returns:**
 
-Promise&lt;[PuppeteerCore.Browser](./puppeteer.browser.md)&gt;
+Promise&lt;import("puppeteer-core").[Browser](./puppeteer.browser.md)&gt;

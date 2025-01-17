@@ -7,7 +7,7 @@ sidebar_label: KeyPressOptions
 ### Signature
 
 ```typescript
-export type KeyPressOptions = KeyDownOptions & KeyboardTypeOptions;
+export declare type KeyPressOptions = KeyDownOptions & KeyboardTypeOptions;
 ```
 
 **References:** [KeyDownOptions](./puppeteer.keydownoptions.md), [KeyboardTypeOptions](./puppeteer.keyboardtypeoptions.md)

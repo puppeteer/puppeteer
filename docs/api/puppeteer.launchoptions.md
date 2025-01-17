@@ -9,7 +9,7 @@ Generic launch options that can be passed when launching any browser.
 ### Signature
 
 ```typescript
-export interface LaunchOptions extends ConnectOptions
+export declare interface LaunchOptions extends ConnectOptions
 ```
 
 **Extends:** [ConnectOptions](./puppeteer.connectoptions.md)

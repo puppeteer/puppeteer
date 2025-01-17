@@ -9,7 +9,7 @@ The TouchHandle interface exposes methods to manipulate touches that have been s
 ### Signature
 
 ```typescript
-export interface TouchHandle
+export declare interface TouchHandle
 ```
 
 ## Methods

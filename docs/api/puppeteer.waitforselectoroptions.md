@@ -7,7 +7,7 @@ sidebar_label: WaitForSelectorOptions
 ### Signature
 
 ```typescript
-export interface WaitForSelectorOptions
+export declare interface WaitForSelectorOptions
 ```
 
 ## Properties

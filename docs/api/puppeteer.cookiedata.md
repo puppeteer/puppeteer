@@ -9,7 +9,7 @@ Cookie parameter object used to set cookies in the browser-level cookies API.
 ### Signature
 
 ```typescript
-export interface CookieData
+export declare interface CookieData
 ```
 
 ## Properties

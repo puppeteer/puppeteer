@@ -10,10 +10,6 @@ sidebar_label: JSCoverage
 export declare class JSCoverage
 ```
 
-## Remarks
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `JSCoverage` class.
-
 ## Methods
 
 <table><thead><tr><th>

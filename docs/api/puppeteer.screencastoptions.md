@@ -7,7 +7,7 @@ sidebar_label: ScreencastOptions
 ### Signature
 
 ```typescript
-export interface ScreencastOptions
+export declare interface ScreencastOptions
 ```
 
 ## Properties

@@ -9,7 +9,7 @@ The CoverageEntry class for JavaScript
 ### Signature
 
 ```typescript
-export interface JSCoverageEntry extends CoverageEntry
+export declare interface JSCoverageEntry extends CoverageEntry
 ```
 
 **Extends:** [CoverageEntry](./puppeteer.coverageentry.md)

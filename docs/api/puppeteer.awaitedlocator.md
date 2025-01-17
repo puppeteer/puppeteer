@@ -7,7 +7,7 @@ sidebar_label: AwaitedLocator
 ### Signature
 
 ```typescript
-export type AwaitedLocator<T> = T extends Locator<infer S> ? S : never;
+export declare type AwaitedLocator<T> = T extends Locator<infer S> ? S : never;
 ```
 
 **References:** [Locator](./puppeteer.locator.md)

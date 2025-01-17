@@ -5,11 +5,10 @@
  */
 
 export type {Protocol} from 'puppeteer-core';
+export * from 'puppeteer-core';
 
-export * from 'puppeteer-core/internal/puppeteer-core.js';
-
+import type {PuppeteerNode} from 'puppeteer-core';
 import * as PuppeteerCore from 'puppeteer-core/internal/puppeteer-core.js';
-
 import {getConfiguration} from './getConfiguration.js';
 
 const configuration = getConfiguration();
@@ -17,10 +16,10 @@ const configuration = getConfiguration();
 /**
  * @public
  */
-const puppeteer = new PuppeteerCore.PuppeteerNode({
+const puppeteer: PuppeteerNode = new PuppeteerCore.PuppeteerNode({
   isPuppeteerCore: false,
   configuration,
-});
+}) as unknown as PuppeteerNode;
 
 export const {
   /**

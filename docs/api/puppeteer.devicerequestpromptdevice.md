@@ -12,10 +12,6 @@ Device in a request prompt.
 export declare class DeviceRequestPromptDevice
 ```
 
-## Remarks
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `DeviceRequestPromptDevice` class.
-
 ## Properties
 
 <table><thead><tr><th>

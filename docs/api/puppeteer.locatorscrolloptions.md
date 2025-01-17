@@ -7,7 +7,7 @@ sidebar_label: LocatorScrollOptions
 ### Signature
 
 ```typescript
-export interface LocatorScrollOptions extends ActionOptions
+export declare interface LocatorScrollOptions extends ActionOptions
 ```
 
 **Extends:** [ActionOptions](./puppeteer.actionoptions.md)

@@ -14,10 +14,6 @@ export declare class ExtensionTransport implements ConnectionTransport
 
 **Implements:** [ConnectionTransport](./puppeteer.connectiontransport.md)
 
-## Remarks
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ExtensionTransport` class.
-
 ## Properties
 
 <table><thead><tr><th>

@@ -18,8 +18,6 @@ For finer control, you can use [Keyboard.down()](./puppeteer.keyboard.down.md), 
 
 On macOS, keyboard shortcuts like `⌘ A` -&gt; Select All do not work. See [\#1313](https://github.com/puppeteer/puppeteer/issues/1313).
 
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Keyboard` class.
-
 ## Example 1
 
 An example of holding down `Shift` in order to select and delete some text:

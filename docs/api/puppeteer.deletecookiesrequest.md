@@ -7,7 +7,7 @@ sidebar_label: DeleteCookiesRequest
 ### Signature
 
 ```typescript
-export interface DeleteCookiesRequest
+export declare interface DeleteCookiesRequest
 ```
 
 ## Properties

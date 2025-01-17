@@ -12,10 +12,6 @@ Target represents a [CDP target](https://chromedevtools.github.io/devtools-proto
 export declare abstract class Target
 ```
 
-## Remarks
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Target` class.
-
 ## Methods
 
 <table><thead><tr><th>

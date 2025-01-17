@@ -7,5 +7,5 @@ sidebar_label: Awaitable
 ### Signature
 
 ```typescript
-export type Awaitable<T> = T | PromiseLike<T>;
+export declare type Awaitable<T> = T | PromiseLike<T>;
 ```

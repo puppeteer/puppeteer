@@ -7,7 +7,7 @@ sidebar_label: ChromeHeadlessShellSettings
 ### Signature
 
 ```typescript
-export interface ChromeHeadlessShellSettings
+export declare interface ChromeHeadlessShellSettings
 ```
 
 ## Properties

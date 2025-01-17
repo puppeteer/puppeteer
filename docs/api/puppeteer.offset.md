@@ -7,7 +7,7 @@ sidebar_label: Offset
 ### Signature
 
 ```typescript
-export interface Offset
+export declare interface Offset
 ```
 
 ## Properties

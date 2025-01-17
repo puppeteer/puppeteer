@@ -7,7 +7,7 @@ sidebar_label: CommandOptions
 ### Signature
 
 ```typescript
-export interface CommandOptions
+export declare interface CommandOptions
 ```
 
 ## Properties

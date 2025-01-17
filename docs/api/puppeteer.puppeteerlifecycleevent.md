@@ -7,7 +7,7 @@ sidebar_label: PuppeteerLifeCycleEvent
 ### Signature
 
 ```typescript
-export type PuppeteerLifeCycleEvent =
+export declare type PuppeteerLifeCycleEvent =
   /**
    * Waits for the 'load' event.
    */

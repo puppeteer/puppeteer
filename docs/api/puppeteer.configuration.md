@@ -11,7 +11,7 @@ See individual properties for more information.
 ### Signature
 
 ```typescript
-export interface Configuration
+export declare interface Configuration
 ```
 
 ## Properties

@@ -18,10 +18,6 @@ export declare abstract class Browser extends EventEmitter<BrowserEvents>
 
 **Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;[BrowserEvents](./puppeteer.browserevents.md)&gt;
 
-## Remarks
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Browser` class.
-
 ## Example 1
 
 Using a [Browser](./puppeteer.browser.md) to create a [Page](./puppeteer.page.md):

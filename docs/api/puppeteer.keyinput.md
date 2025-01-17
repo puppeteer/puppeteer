@@ -9,7 +9,7 @@ All the valid keys that can be passed to functions that take user input, such as
 ### Signature
 
 ```typescript
-export type KeyInput =
+export declare type KeyInput =
   | '0'
   | '1'
   | '2'

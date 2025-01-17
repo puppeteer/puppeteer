@@ -7,7 +7,7 @@ sidebar_label: Credentials
 ### Signature
 
 ```typescript
-export interface Credentials
+export declare interface Credentials
 ```
 
 ## Properties

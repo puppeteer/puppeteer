@@ -7,7 +7,7 @@ sidebar_label: Quad
 ### Signature
 
 ```typescript
-export type Quad = [Point, Point, Point, Point];
+export declare type Quad = [Point, Point, Point, Point];
 ```
 
 **References:** [Point](./puppeteer.point.md)

@@ -7,7 +7,7 @@ sidebar_label: TracingOptions
 ### Signature
 
 ```typescript
-export interface TracingOptions
+export declare interface TracingOptions
 ```
 
 ## Properties

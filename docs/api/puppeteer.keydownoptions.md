@@ -7,7 +7,7 @@ sidebar_label: KeyDownOptions
 ### Signature
 
 ```typescript
-export interface KeyDownOptions
+export declare interface KeyDownOptions
 ```
 
 ## Properties

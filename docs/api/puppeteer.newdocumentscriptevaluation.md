@@ -7,7 +7,7 @@ sidebar_label: NewDocumentScriptEvaluation
 ### Signature
 
 ```typescript
-export interface NewDocumentScriptEvaluation
+export declare interface NewDocumentScriptEvaluation
 ```
 
 ## Properties

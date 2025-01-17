@@ -7,7 +7,7 @@ sidebar_label: InternalNetworkConditions
 ### Signature
 
 ```typescript
-export interface InternalNetworkConditions extends NetworkConditions
+export declare interface InternalNetworkConditions extends NetworkConditions
 ```
 
 **Extends:** [NetworkConditions](./puppeteer.networkconditions.md)

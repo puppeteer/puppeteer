@@ -16,10 +16,6 @@ Handles can be used as arguments for any evaluation function such as [Page.$eval
 export declare abstract class JSHandle<T = unknown>
 ```
 
-## Remarks
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `JSHandle` class.
-
 ## Example
 
 ```ts

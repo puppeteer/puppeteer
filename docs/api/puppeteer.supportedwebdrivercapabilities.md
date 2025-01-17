@@ -9,7 +9,7 @@ WebDriver BiDi capabilities that are not set by Puppeteer itself.
 ### Signature
 
 ```typescript
-export interface SupportedWebDriverCapabilities
+export declare interface SupportedWebDriverCapabilities
 ```
 
 ## Properties

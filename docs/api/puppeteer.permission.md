@@ -7,7 +7,7 @@ sidebar_label: Permission
 ### Signature
 
 ```typescript
-export type Permission =
+export declare type Permission =
   | 'geolocation'
   | 'midi'
   | 'notifications'

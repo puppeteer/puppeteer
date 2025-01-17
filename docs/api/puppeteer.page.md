@@ -20,10 +20,6 @@ export declare abstract class Page extends EventEmitter<PageEvents>
 
 **Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;[PageEvents](./puppeteer.pageevents.md)&gt;
 
-## Remarks
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Page` class.
-
 ## Example 1
 
 This example creates a page, navigates it to a URL, and then saves a screenshot:
@@ -104,8 +100,6 @@ Blink - Chrome's rendering engine - has a concept of "accessibility tree", which
 
 Most of the accessibility tree gets filtered out when converting from Blink AX Tree to Platform-specific AX-Tree or by assistive technologies themselves. By default, Puppeteer tries to approximate this filtering, exposing only the "interesting" nodes of the tree.
 
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Accessibility` class.
-
 </td></tr>
 <tr><td>
 
@@ -126,8 +120,6 @@ The Coverage class provides methods to gather information about parts of JavaScr
 **Remarks:**
 
 To output coverage in a form consumable by [Istanbul](https://github.com/istanbuljs), see [puppeteer-to-istanbul](https://github.com/istanbuljs/puppeteer-to-istanbul).
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Coverage` class.
 
 </td></tr>
 <tr><td>
@@ -152,8 +144,6 @@ For finer control, you can use [Keyboard.down()](./puppeteer.keyboard.down.md), 
 
 On macOS, keyboard shortcuts like `⌘ A` -&gt; Select All do not work. See [\#1313](https://github.com/puppeteer/puppeteer/issues/1313).
 
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Keyboard` class.
-
 </td></tr>
 <tr><td>
 
@@ -174,8 +164,6 @@ The Mouse class operates in main-frame CSS pixels relative to the top-left corne
 **Remarks:**
 
 Every `page` object has its own Mouse, accessible with [Page.mouse](./puppeteer.page.md#mouse).
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Mouse` class.
 
 </td></tr>
 <tr><td>
@@ -214,8 +202,6 @@ The Tracing class exposes the tracing audit interface.
 **Remarks:**
 
 You can use `tracing.start` and `tracing.stop` to create a trace file which can be opened in Chrome DevTools or [timeline viewer](https://chromedevtools.github.io/timeline-viewer/).
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Tracing` class.
 
 </td></tr>
 </tbody></table>

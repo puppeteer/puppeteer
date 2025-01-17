@@ -12,10 +12,6 @@ The HTTPResponse class represents responses which are received by the [Page](./p
 export declare abstract class HTTPResponse
 ```
 
-## Remarks
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `HTTPResponse` class.
-
 ## Methods
 
 <table><thead><tr><th>

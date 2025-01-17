@@ -7,7 +7,7 @@ sidebar_label: PDFMargin
 ### Signature
 
 ```typescript
-export interface PDFMargin
+export declare interface PDFMargin
 ```
 
 ## Properties

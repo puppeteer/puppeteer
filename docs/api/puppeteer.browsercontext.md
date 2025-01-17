@@ -24,8 +24,6 @@ export declare abstract class BrowserContext extends EventEmitter<BrowserContext
 
 In Chrome all non-default contexts are incognito, and [default browser context](./puppeteer.browser.defaultbrowsercontext.md) might be incognito if you provide the `--incognito` argument when launching the browser.
 
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `BrowserContext` class.
-
 ## Example
 
 Creating a new [browser context](./puppeteer.browsercontext.md):

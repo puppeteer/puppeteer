@@ -8,8 +8,11 @@
 
 import {CLI, Browser} from '@puppeteer/browsers';
 import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
+import {PuppeteerNode} from 'puppeteer-core/internal/node/PuppeteerNode.js';
 
-import puppeteer from '../puppeteer.js';
+import puppeteerInstance from '../puppeteer.js';
+
+const puppeteer = puppeteerInstance as unknown as PuppeteerNode;
 
 const cacheDir = puppeteer.configuration.cacheDirectory!;
 

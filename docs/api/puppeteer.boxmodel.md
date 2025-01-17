@@ -7,7 +7,7 @@ sidebar_label: BoxModel
 ### Signature
 
 ```typescript
-export interface BoxModel
+export declare interface BoxModel
 ```
 
 ## Properties

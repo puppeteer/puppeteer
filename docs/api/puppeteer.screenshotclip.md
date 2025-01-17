@@ -7,7 +7,7 @@ sidebar_label: ScreenshotClip
 ### Signature
 
 ```typescript
-export interface ScreenshotClip extends BoundingBox
+export declare interface ScreenshotClip extends BoundingBox
 ```
 
 **Extends:** [BoundingBox](./puppeteer.boundingbox.md)

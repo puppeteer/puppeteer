@@ -7,7 +7,7 @@ sidebar_label: Mapper
 ### Signature
 
 ```typescript
-export type Mapper<From, To> = (value: From) => Awaitable<To>;
+export declare type Mapper<From, To> = (value: From) => Awaitable<To>;
 ```
 
 **References:** [Awaitable](./puppeteer.awaitable.md)

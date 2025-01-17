@@ -12,10 +12,6 @@ Describes a launcher - a class that is able to create and launch a browser insta
 export declare abstract class BrowserLauncher
 ```
 
-## Remarks
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `BrowserLauncher` class.
-
 ## Properties
 
 <table><thead><tr><th>

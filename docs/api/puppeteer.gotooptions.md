@@ -7,7 +7,7 @@ sidebar_label: GoToOptions
 ### Signature
 
 ```typescript
-export interface GoToOptions extends WaitForOptions
+export declare interface GoToOptions extends WaitForOptions
 ```
 
 **Extends:** [WaitForOptions](./puppeteer.waitforoptions.md)

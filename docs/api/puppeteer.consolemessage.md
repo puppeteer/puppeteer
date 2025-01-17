@@ -12,10 +12,6 @@ ConsoleMessage objects are dispatched by page via the 'console' event.
 export declare class ConsoleMessage
 ```
 
-## Remarks
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ConsoleMessage` class.
-
 ## Methods
 
 <table><thead><tr><th>
