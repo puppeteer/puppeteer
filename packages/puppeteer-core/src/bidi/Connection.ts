@@ -28,15 +28,15 @@ const debugProtocolReceive = debug('puppeteer:webDriverBiDi:RECV ◀');
  * @internal
  */
 export interface Commands extends BidiCommands {
-  'cdp.sendCommand': {
+  'goog:cdp.sendCommand': {
     params: Bidi.Cdp.SendCommandParameters;
     returnType: Bidi.Cdp.SendCommandResult;
   };
-  'cdp.getSession': {
+  'goog:cdp.getSession': {
     params: Bidi.Cdp.GetSessionParameters;
     returnType: Bidi.Cdp.GetSessionResult;
   };
-  'cdp.resolveRealm': {
+  'goog:cdp.resolveRealm': {
     params: Bidi.Cdp.ResolveRealmParameters;
     returnType: Bidi.Cdp.ResolveRealmResult;
   };
@@ -141,9 +141,11 @@ export class BidiConnection
           return;
         case 'event':
           if (isCdpEvent(object)) {
+            // Remove `goog:` prefix from BiDi+ events.
+            const eventName = object.params.event.replaceAll('goog:', '');
             BidiCdpSession.sessions
               .get(object.params.session)
-              ?.emit(object.params.event, object.params.params);
+              ?.emit(eventName, object.params.params);
             return;
           }
           // SAFETY: We know the method and parameter still match here.
@@ -208,5 +210,5 @@ function createProtocolError(object: Bidi.ErrorResponse): string {
 }
 
 function isCdpEvent(event: Bidi.ChromiumBidi.Event): event is Bidi.Cdp.Event {
-  return event.method.startsWith('cdp.');
+  return event.method.startsWith('goog:cdp.');
 }
