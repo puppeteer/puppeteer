@@ -435,7 +435,7 @@ describe('waittask specs', function () {
 
     // MutationPoller currently does not support shadow DOM.
     // See https://github.com/puppeteer/puppeteer/issues/13163.
-    it.skip('should work when node is added in a shadow root', async () => {
+    it('should work when node is added in a shadow root', async () => {
       const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
