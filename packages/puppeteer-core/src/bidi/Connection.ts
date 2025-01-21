@@ -15,11 +15,7 @@ import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 
 import {BidiCdpSession} from './CDPSession.js';
-import type {
-  Commands as BidiCommands,
-  BidiEvents,
-  Connection,
-} from './core/Connection.js';
+import type {BidiEvents, Commands as BidiCommands, Connection,} from './core/Connection.js';
 
 const debugProtocolSend = debug('puppeteer:webDriverBiDi:SEND ►');
 const debugProtocolReceive = debug('puppeteer:webDriverBiDi:RECV ◀');
@@ -141,11 +137,9 @@ export class BidiConnection
           return;
         case 'event':
           if (isCdpEvent(object)) {
-            // Remove `goog:` prefix from BiDi+ events.
-            const eventName = object.params.event.replaceAll('goog:', '');
             BidiCdpSession.sessions
               .get(object.params.session)
-              ?.emit(eventName, object.params.params);
+              ?.emit(object.params.event, object.params.params);
             return;
           }
           // SAFETY: We know the method and parameter still match here.
