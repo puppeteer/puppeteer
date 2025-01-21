@@ -15,7 +15,11 @@ import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 
 import {BidiCdpSession} from './CDPSession.js';
-import type {BidiEvents, Commands as BidiCommands, Connection,} from './core/Connection.js';
+import type {
+  BidiEvents,
+  Commands as BidiCommands,
+  Connection,
+} from './core/Connection.js';
 
 const debugProtocolSend = debug('puppeteer:webDriverBiDi:SEND ►');
 const debugProtocolReceive = debug('puppeteer:webDriverBiDi:RECV ◀');
