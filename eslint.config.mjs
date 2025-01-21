@@ -386,6 +386,7 @@ export default [
           patterns: ['*src*'],
         },
       ],
+      'mocha/no-skipped-tests': 'error',
     },
   },
   {

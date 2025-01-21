@@ -203,6 +203,13 @@
     "comment": "See https://github.com/puppeteer/puppeteer/issues/13163"
   },
   {
+    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should not hang when there is a debugger statement",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": [],
+    "expectations": ["SKIP"],
+    "comment": "See https://crbug.com/990945"
+  },
+  {
     "testIdPattern": "[worker.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
