@@ -14,6 +14,13 @@
     "comment": "Chrome-only feature blocked on https://github.com/GoogleChromeLabs/chromium-bidi/issues/2082"
   },
   {
+    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should not hang when there is a debugger statement",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": [],
+    "expectations": ["SKIP"],
+    "comment": "See https://crbug.com/990945"
+  },
+  {
     "testIdPattern": "[device-request-prompt.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -201,13 +208,6 @@
     "parameters": [],
     "expectations": ["SKIP"],
     "comment": "See https://github.com/puppeteer/puppeteer/issues/13163"
-  },
-  {
-    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should not hang when there is a debugger statement",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": [],
-    "expectations": ["SKIP"],
-    "comment": "See https://crbug.com/990945"
   },
   {
     "testIdPattern": "[worker.spec] *",
