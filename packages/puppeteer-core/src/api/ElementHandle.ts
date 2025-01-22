@@ -331,8 +331,11 @@ export abstract class ElementHandle<
   /**
    * @internal
    */
-  override dispose(): Promise<void> {
-    return this.handle.dispose();
+  override async dispose(): Promise<void> {
+    await Promise.all([
+      this.handle.dispose(),
+      this.isolatedHandle?.dispose() ?? Promise.resolve(),
+    ]);
   }
 
   /**
@@ -763,9 +766,10 @@ export abstract class ElementHandle<
     this: ElementHandle<Element>,
     options: Readonly<ClickOptions> = {},
   ): Promise<void> {
-    await this.scrollIntoViewIfNeeded();
-    const {x, y} = await this.clickablePoint(options.offset);
-    await this.frame.page().mouse.click(x, y, options);
+    console.log('clicking');
+    // await this.scrollIntoViewIfNeeded();
+    // const {x, y} = await this.clickablePoint(options.offset);
+    await this.frame.page().mouse.click(0, 0, options);
   }
 
   /**
