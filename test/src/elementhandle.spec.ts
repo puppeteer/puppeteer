@@ -1163,6 +1163,25 @@ describe('ElementHandle specs', function () {
     });
   });
 
+  describe('ElementHandle.dispose', () => {
+    it('should dispose cached isolated handler', async () => {
+      const {page} = await getTestState();
+
+      await page.setContent(`<button>Click me!</button>`);
+
+      using button = (await page.waitForSelector('button'))!;
+
+      // Cache the handle on the isolated world
+      await button.click();
+      const spy = sinon.spy(button['isolatedHandle']!, 'dispose');
+      await button.dispose();
+      expect(button).toBeInstanceOf(ElementHandle);
+      expect(spy.calledOnce).toBeTruthy();
+      expect(button.disposed).toBeTruthy();
+      expect(button['isolatedHandle']?.disposed).toBeTruthy();
+    });
+  });
+
   describe('ElementHandle[Symbol.dispose]', () => {
     it('should work', async () => {
       const {page} = await getTestState();
