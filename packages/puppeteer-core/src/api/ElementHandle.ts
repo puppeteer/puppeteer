@@ -767,9 +767,9 @@ export abstract class ElementHandle<
     options: Readonly<ClickOptions> = {},
   ): Promise<void> {
     console.log('clicking');
-    // await this.scrollIntoViewIfNeeded();
-    // const {x, y} = await this.clickablePoint(options.offset);
-    await this.frame.page().mouse.click(0, 0, options);
+    await this.scrollIntoViewIfNeeded();
+    const {x, y} = await this.clickablePoint(options.offset);
+    await this.frame.page().mouse.click(x, y, options);
   }
 
   /**
