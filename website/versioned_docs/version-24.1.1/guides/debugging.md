@@ -126,6 +126,12 @@ DevTools protocol. You can debug this by setting the `DEBUG` environment
 variable before running your script. This will log internal traffic via
 [`debug`](https://github.com/visionmedia/debug) under the `puppeteer` namespace.
 
+:::warning
+
+The logs may include sensitive information.
+
+:::
+
 ```bash
 # Basic verbose logging
 env DEBUG="puppeteer:*" node script.js
