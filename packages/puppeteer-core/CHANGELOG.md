@@ -1,5 +1,15 @@
 # Changelog
 
+## [24.1.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.1.0...puppeteer-core-v24.1.1) (2025-01-23)
+
+
+### Bug Fixes
+
+* dispose the isolated handle ([#13542](https://github.com/puppeteer/puppeteer/issues/13542)) ([f9ed75e](https://github.com/puppeteer/puppeteer/commit/f9ed75eb39eef825469b82a818b245bc76d6cd93))
+* roll to Chrome 132.0.6834.110 ([#13543](https://github.com/puppeteer/puppeteer/issues/13543)) ([2d2d214](https://github.com/puppeteer/puppeteer/commit/2d2d21483c608e67e848586f912403689863c8e2))
+* roll to Firefox 134.0.2 ([#13538](https://github.com/puppeteer/puppeteer/issues/13538)) ([82ec05d](https://github.com/puppeteer/puppeteer/commit/82ec05d3fcb8ed4be2ccae622ff1ad6c35e00c39))
+* **webdriver:** use correct units for format pdf option ([#13516](https://github.com/puppeteer/puppeteer/issues/13516)) ([c764f82](https://github.com/puppeteer/puppeteer/commit/c764f82c7435bdc10e6a9007892ab8dba111d21c))
+
 ## [24.1.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.0.0...puppeteer-core-v24.1.0) (2025-01-15)
 
 
