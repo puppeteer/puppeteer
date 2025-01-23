@@ -199,7 +199,7 @@ export class IsolatedWorld extends Realm {
   override async adoptBackendNode(
     backendNodeId?: Protocol.DOM.BackendNodeId,
   ): Promise<JSHandle<Node>> {
-    // This code needs to schedule resolveNode call synchroniously (at
+    // This code needs to schedule resolveNode call synchronously (at
     // least when the context is there) so we cannot unconditionally
     // await.
     let context = this.#executionContext();

@@ -22,7 +22,7 @@ const browser = await puppeteer.launch({headless: 'shell'});
 ```
 
 To launch a "headful" version of Chrome, set the
-[`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions) to `false`
+[`headless`](https://pptr.dev/api/puppeteer.launchoptions) to `false`
 option when launching a browser:
 
 ```ts

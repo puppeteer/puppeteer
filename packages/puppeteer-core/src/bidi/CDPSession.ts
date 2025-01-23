@@ -41,7 +41,7 @@ export class BidiCdpSession extends CDPSession {
     } else {
       (async () => {
         try {
-          const {result} = await connection.send('cdp.getSession', {
+          const {result} = await connection.send('goog:cdp.getSession', {
             context: frame._id,
           });
           this.#sessionId.resolve(result.session!);
@@ -77,7 +77,7 @@ export class BidiCdpSession extends CDPSession {
     }
     const session = await this.#sessionId.valueOrThrow();
     const {result} = await this.#connection.send(
-      'cdp.sendCommand',
+      'goog:cdp.sendCommand',
       {
         method: method,
         params: params,

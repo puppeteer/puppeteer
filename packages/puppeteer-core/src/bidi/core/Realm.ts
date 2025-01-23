@@ -125,7 +125,7 @@ export abstract class Realm extends EventEmitter<{
   async resolveExecutionContextId(): Promise<number> {
     if (!this.executionContextId) {
       const {result} = await (this.session.connection as BidiConnection).send(
-        'cdp.resolveRealm',
+        'goog:cdp.resolveRealm',
         {realm: this.id},
       );
       this.executionContextId = result.executionContextId;

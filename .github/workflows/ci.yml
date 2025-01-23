@@ -52,6 +52,8 @@ jobs:
         run: npm run build
       - name: Tests types
         run: npm run test-types
+      - name: Verify packages are synced
+        run: npm run validate-deps
       - name: Lint code
         run: npm run lint
       - name: Generate documents
@@ -212,7 +214,7 @@ jobs:
       - name: Run all tests (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
-      - uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+      - uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         if: always()
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.suite }}-${{ matrix.shard }}
@@ -291,7 +293,7 @@ jobs:
       - name: Run all tests (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
-      - uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+      - uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         if: always()
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.suite }}-${{ matrix.shard }}

@@ -331,8 +331,8 @@ export abstract class ElementHandle<
   /**
    * @internal
    */
-  override dispose(): Promise<void> {
-    return this.handle.dispose();
+  override async dispose(): Promise<void> {
+    await Promise.all([this.handle.dispose(), this.isolatedHandle?.dispose()]);
   }
 
   /**

@@ -180,7 +180,7 @@ export class WaitTask<T = unknown> {
 
     if (this.#poller) {
       try {
-        await this.#poller.evaluateHandle(async poller => {
+        await this.#poller.evaluate(async poller => {
           await poller.stop();
         });
         if (this.#poller) {

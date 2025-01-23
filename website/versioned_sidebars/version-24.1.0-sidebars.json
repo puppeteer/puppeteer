@@ -100,7 +100,8 @@
     },
     "webdriver-bidi",
     "supported-browsers",
-    "faq"
+    "faq",
+    "CHANGELOG"
   ],
   "api": [
     {
