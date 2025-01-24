@@ -386,7 +386,6 @@ export default [
           patterns: ['*src*'],
         },
       ],
-      'mocha/no-skipped-tests': 'error',
     },
   },
   {
@@ -421,6 +420,9 @@ export default [
             'CallExpression[callee.property.name="on"] BlockStatement > :not(TryStatement) > ExpressionStatement > CallExpression[callee.object.callee.name="expect"]',
         },
       ],
+
+      'mocha/no-skipped-tests': 'error',
+      'mocha/no-identical-title': 'error',
     },
   },
 ];

@@ -994,7 +994,7 @@ describe('request interception', function () {
       expect(headers['content-length']).toBe('20');
     });
 
-    it('should report correct content-length header with string', async () => {
+    it('should report correct content-length header with buffer', async () => {
       const {page, server} = await getTestState();
 
       await page.setRequestInterception(true);
@@ -1007,6 +1007,28 @@ describe('request interception', function () {
       const response = (await page.goto(server.EMPTY_PAGE))!;
       const headers = response.headers();
       expect(headers['content-length']).toBe('20');
+    });
+
+    it('should report correct encoding from page when content-type is set', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        void request.respond({
+          status: 200,
+          body: Buffer.from('Correct length 📏?'),
+          headers: {
+            'Content-Type': 'text/plain; charset=utf-8',
+          },
+        });
+      });
+      await page.goto(server.EMPTY_PAGE);
+
+      const content = await page.evaluate(() => {
+        return document.documentElement.innerText;
+      });
+
+      expect(content).toBe('Correct length 📏?');
     });
   });
 
