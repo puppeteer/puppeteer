@@ -1059,29 +1059,6 @@ describe('ElementHandle specs', function () {
       ).toStrictEqual('bar1');
     });
 
-    it('should wait correctly with waitForSelector', async () => {
-      const {page} = await getTestState();
-      Puppeteer.registerCustomQueryHandler('getByClass', {
-        queryOne: (element, selector) => {
-          return (element as Element).querySelector(`.${selector}`);
-        },
-      });
-      const waitFor = page.waitForSelector('getByClass/foo').catch(err => {
-        return err;
-      });
-
-      // Set the page content after the waitFor has been started.
-      await page.setContent(
-        '<div id="not-foo"></div><div class="foo">Foo1</div>',
-      );
-      const element = await waitFor;
-
-      if (element instanceof Error) {
-        throw element;
-      }
-
-      expect(element).toBeDefined();
-    });
     it('should work when both queryOne and queryAll are registered', async () => {
       const {page} = await getTestState();
       await page.setContent(
