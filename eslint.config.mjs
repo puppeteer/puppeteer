@@ -104,6 +104,9 @@ export default [
     },
 
     languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+
       globals: {
         ...globals.node,
       },
@@ -251,8 +254,8 @@ export default [
     },
 
     languageOptions: {
-      ecmaVersion: 5,
-      sourceType: 'script',
+      ecmaVersion: 'latest',
+      sourceType: 'module',
 
       parserOptions: {
         allowAutomaticSingleRunInference: true,
