@@ -6,15 +6,82 @@
 
 import type {ChildProcessByStdio} from 'child_process';
 import {spawnSync, spawn} from 'child_process';
-import {createReadStream} from 'fs';
+import {createReadStream, createWriteStream} from 'fs';
 import {mkdir, readdir} from 'fs/promises';
 import * as path from 'path';
 import type {Readable, Transform, Writable} from 'stream';
 import {Stream} from 'stream';
+import type {ZipFile} from 'yauzl';
 
 import debug from 'debug';
 
 const debugFileUtil = debug('puppeteer:browsers:fileUtil');
+
+async function extractZip(
+  archivePath: string,
+  folderPath: string,
+): Promise<void> {
+  const yauzl = await import('yauzl');
+  const zipfile: ZipFile = await new Promise((resolve, reject) => {
+    yauzl.open(
+      archivePath,
+      {
+        lazyEntries: true,
+      },
+      (err, zipfile) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(zipfile);
+      },
+    );
+  });
+  await mkdir(folderPath, {
+    recursive: true,
+  });
+  let errored = false;
+  zipfile.on('entry', async entry => {
+    const dest = path.join(folderPath, entry.fileName);
+    const mode = (entry.externalFileAttributes >> 16) & 0xffff;
+    if (entry.fileName.endsWith('/')) {
+      // directory
+      await mkdir(dest, {
+        recursive: true,
+        mode: (mode === 0 ? 0o755 : mode) & 0o777,
+      });
+      zipfile.readEntry();
+    } else {
+      // files
+      zipfile.openReadStream(entry, async (err, readStream) => {
+        if (err) {
+          errored = true;
+          zipfile.close();
+          return;
+        }
+        await mkdir(path.dirname(dest), {
+          recursive: true,
+        });
+        const output = createWriteStream(dest, {
+          mode: (mode === 0 ? 0o644 : mode) & 0o777,
+        });
+        readStream.on('end', function () {
+          zipfile.readEntry();
+        });
+        readStream.pipe(output);
+      });
+    }
+  });
+  zipfile.readEntry();
+  await new Promise<void>(resolve => {
+    zipfile.on('end', () => {
+      resolve();
+    });
+  });
+  if (errored) {
+    throw new Error(`Failed to extract ${archivePath} to ${folderPath}`);
+  }
+}
 
 /**
  * @internal
@@ -27,8 +94,7 @@ export async function unpackArchive(
     folderPath = path.resolve(process.cwd(), folderPath);
   }
   if (archivePath.endsWith('.zip')) {
-    const extractZip = await import('extract-zip');
-    await extractZip.default(archivePath, {dir: folderPath});
+    await extractZip(archivePath, folderPath);
   } else if (archivePath.endsWith('.tar.bz2')) {
     await extractTar(archivePath, folderPath, 'bzip2');
   } else if (archivePath.endsWith('.dmg')) {

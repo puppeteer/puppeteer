@@ -96,17 +96,18 @@
   ],
   "dependencies": {
     "debug": "^4.4.0",
-    "extract-zip": "^2.0.1",
     "progress": "^2.0.3",
     "proxy-agent": "^6.5.0",
     "tar-fs": "^3.0.8",
     "yargs": "^17.7.2",
-    "semver": "^7.7.0"
+    "semver": "^7.7.0",
+    "yauzl": "^3.2.0"
   },
   "devDependencies": {
     "@types/debug": "4.1.12",
     "@types/progress": "2.0.7",
     "@types/tar-fs": "2.0.4",
-    "@types/yargs": "17.0.33"
+    "@types/yargs": "17.0.33",
+    "@types/yauzl": "2.10.3"
   }
 }
