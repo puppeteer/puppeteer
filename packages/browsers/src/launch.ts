@@ -476,11 +476,10 @@ export class Process {
         timeout > 0 ? setTimeout(onTimeout, timeout) : undefined;
 
       const cleanup = (): void => {
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-        }
+        clearTimeout(timeoutId);
         rl.off('line', onLine);
         rl.off('close', onClose);
+        rl.close();
         this.#browserProcess.off('exit', onClose);
         this.#browserProcess.off('error', onClose);
       };
