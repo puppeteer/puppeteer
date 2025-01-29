@@ -240,8 +240,8 @@
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set secure same-site cookies from a frame",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
-    "expectations": ["FAIL"],
-    "comment": "Failes with fieldtrial testing config in Chrome"
+    "expectations": ["PASS", "FAIL"],
+    "comment": "Flaky due to fieldtrial testing config in Chrome"
   },
   {
     "testIdPattern": "[coverage.spec] *",
