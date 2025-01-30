@@ -201,7 +201,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       this.#frameTreeHandled?.resolve();
       this.#frameTreeHandled = Deferred.create();
       // We need to schedule all these commands while the target is paused,
-      // therefore, it needs to happen synchroniously. At the same time we
+      // therefore, it needs to happen synchronously. At the same time we
       // should not start processing execution context and frame events before
       // we received the initial information about the frame tree.
       await Promise.all([

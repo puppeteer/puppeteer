@@ -133,7 +133,7 @@ function main(): Promise<number> {
 
           // Report packages with bad licenses
           if (badLicensePackages.length > 0) {
-            console.error('Invalid package licences found:');
+            console.error('Invalid package licenses found:');
             badLicensePackages.forEach(pkg => {
               console.error(`${pkg.id}: ${JSON.stringify(pkg.licenses)}`);
             });

@@ -356,7 +356,7 @@ export abstract class ElementHandle<
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
    * can be passed as-is and a
    * {@link https://pptr.dev/guides/page-interactions#non-css-selectors | Puppeteer-specific selector syntax}
-   * allows quering by
+   * allows querying by
    * {@link https://pptr.dev/guides/page-interactions#text-selectors--p-text | text},
    * {@link https://pptr.dev/guides/page-interactions#aria-selectors--p-aria | a11y role and name},
    * and
@@ -390,7 +390,7 @@ export abstract class ElementHandle<
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
    * can be passed as-is and a
    * {@link https://pptr.dev/guides/page-interactions#non-css-selectors | Puppeteer-specific selector syntax}
-   * allows quering by
+   * allows querying by
    * {@link https://pptr.dev/guides/page-interactions#text-selectors--p-text | text},
    * {@link https://pptr.dev/guides/page-interactions#aria-selectors--p-aria | a11y role and name},
    * and
@@ -465,7 +465,7 @@ export abstract class ElementHandle<
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
    * can be passed as-is and a
    * {@link https://pptr.dev/guides/page-interactions#non-css-selectors | Puppeteer-specific selector syntax}
-   * allows quering by
+   * allows querying by
    * {@link https://pptr.dev/guides/page-interactions#text-selectors--p-text | text},
    * {@link https://pptr.dev/guides/page-interactions#aria-selectors--p-aria | a11y role and name},
    * and
@@ -534,7 +534,7 @@ export abstract class ElementHandle<
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | CSS selectors}
    * can be passed as-is and a
    * {@link https://pptr.dev/guides/page-interactions#non-css-selectors | Puppeteer-specific selector syntax}
-   * allows quering by
+   * allows querying by
    * {@link https://pptr.dev/guides/page-interactions#text-selectors--p-text | text},
    * {@link https://pptr.dev/guides/page-interactions#aria-selectors--p-aria | a11y role and name},
    * and

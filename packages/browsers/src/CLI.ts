@@ -455,7 +455,7 @@ export class CLI {
   async #install(args: InstallArgs) {
     args.platform ??= detectBrowserPlatform();
     if (!args.browser) {
-      throw new Error(`No browser arg proveded`);
+      throw new Error(`No browser arg provided`);
     }
     if (!args.platform) {
       throw new Error(`Could not resolve the current platform`);
