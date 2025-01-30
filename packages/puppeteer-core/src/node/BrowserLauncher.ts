@@ -123,7 +123,7 @@ export abstract class BrowserLauncher {
       usePipe
     ) {
       throw new Error(
-        'Pipe connections are not supported wtih Firefox and WebDriver BiDi',
+        'Pipe connections are not supported with Firefox and WebDriver BiDi',
       );
     }
 

@@ -32,7 +32,7 @@ import type {
 import type {WindowRealm} from './core/Realm.js';
 import {BidiDeserializer} from './Deserializer.js';
 import {BidiElementHandle} from './ElementHandle.js';
-import {ExposeableFunction} from './ExposedFunction.js';
+import {ExposableFunction} from './ExposedFunction.js';
 import type {BidiFrame} from './Frame.js';
 import {BidiJSHandle} from './JSHandle.js';
 import {BidiSerializer} from './Serializer.js';
@@ -308,13 +308,13 @@ export class BidiFrameRealm extends BidiRealm {
     let promise = Promise.resolve() as Promise<unknown>;
     if (!this.#bindingsInstalled) {
       promise = Promise.all([
-        ExposeableFunction.from(
+        ExposableFunction.from(
           this.environment as BidiFrame,
           '__ariaQuerySelector',
           ARIAQueryHandler.queryOne,
           !!this.sandbox,
         ),
-        ExposeableFunction.from(
+        ExposableFunction.from(
           this.environment as BidiFrame,
           '__ariaQuerySelectorAll',
           async (

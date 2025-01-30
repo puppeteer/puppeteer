@@ -28,14 +28,14 @@ type CallbackChannel<Args, Ret> = (
 /**
  * @internal
  */
-export class ExposeableFunction<Args extends unknown[], Ret> {
+export class ExposableFunction<Args extends unknown[], Ret> {
   static async from<Args extends unknown[], Ret>(
     frame: BidiFrame,
     name: string,
     apply: (...args: Args) => Awaitable<Ret>,
     isolate = false,
-  ): Promise<ExposeableFunction<Args, Ret>> {
-    const func = new ExposeableFunction(frame, name, apply, isolate);
+  ): Promise<ExposableFunction<Args, Ret>> {
+    const func = new ExposableFunction(frame, name, apply, isolate);
     await func.#initialize();
     return func;
   }
