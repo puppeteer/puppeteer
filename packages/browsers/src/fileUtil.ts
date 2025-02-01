@@ -118,8 +118,14 @@ async function extractTar(
     recursive: true,
   });
   return await new Promise<void>((fulfill, reject) => {
-    const handleError = (utilityName: string) => {
+    function handleError(utilityName: string) {
       return (error: Error) => {
+        if (tar && tar.exitCode !== null) {
+          tar.kill();
+        }
+        if (unpack && unpack.exitCode !== null) {
+          unpack.kill();
+        }
         if ('code' in error && error.code === 'ENOENT') {
           error = new Error(
             `\`${utilityName}\` utility is required to unpack this archive`,
@@ -131,25 +137,29 @@ async function extractTar(
         reject(error);
       };
     };
+    const tar = spawn(internalConstantsForTesting.tar, ['-x'], {
+      cwd: folderPath,
+      stdio: ['pipe', 'inherit', 'inherit'],
+    })
+      .once('error', handleError('tar'))
+      .once('close', fulfill);
+
+    const unpack = spawn(internalConstantsForTesting[decompressUtilityName], ['-d'], {
+      stdio: ['pipe', 'pipe', 'inherit'],
+    })
+      .once('error', handleError(decompressUtilityName))
+      .once('exit', code => {
+        console.log(decompressUtilityName, code);
+      })
+
     createReadStream(tarPath)
       .pipe(
         createTransformStream(
-          spawn(internalConstantsForTesting[decompressUtilityName], ['-d'], {
-            stdio: ['pipe', 'pipe', 'inherit'],
-          })
-            .once('error', handleError(decompressUtilityName))
-            .once('exit', code => {
-              console.log(decompressUtilityName, code);
-            }),
+          unpack,
         ),
       )
       .pipe(
-        spawn(internalConstantsForTesting.tar, ['-x'], {
-          cwd: folderPath,
-          stdio: ['pipe', 'inherit', 'inherit'],
-        })
-          .once('error', handleError('tar'))
-          .once('close', fulfill).stdin,
+        tar.stdin,
       );
   });
 }

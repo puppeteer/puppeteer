@@ -24,9 +24,14 @@ describe.only('fileUtil', function () {
   });
 
   afterEach(async () => {
-    fs.rmSync(tmpDir, {
-      recursive: true,
-    });
+    try {
+      fs.rmSync(tmpDir, {
+        force: true,
+        recursive: true,
+        maxRetries: 10,
+        retryDelay: 500,
+      });
+    } catch {}
   });
 
   function assertTestArchiveUnpacked(): void {
