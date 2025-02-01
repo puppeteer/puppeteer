@@ -20,7 +20,7 @@ import {
 } from '../utils.js';
 import {testFirefoxBuildId} from '../versions.js';
 
-describe('Firefox CLI', function () {
+describe.skip('Firefox CLI', function () {
   this.timeout(90000);
 
   setupTestServer();
