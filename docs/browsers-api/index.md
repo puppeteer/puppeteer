@@ -6,6 +6,13 @@ sidebar_label: API
 
 Manage and launch browsers/drivers from a CLI or programmatically.
 
+## System requirements
+
+- Node: Latest LTS or newer versions.
+- For Firefox downloads:
+  - Linux builds: `xz` and `tar` utilities are required to unpack `.tar.xz` archives.
+  - MacOS builds: `hdiutil` is required to unpack `.dmg` archives.
+
 ## CLI
 
 Use `npx` to run the CLI:
