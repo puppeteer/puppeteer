@@ -102,7 +102,7 @@
     "tar-fs": "^3.0.8",
     "unbzip2-stream": "^1.4.3",
     "yargs": "^17.7.2",
-    "semver": "^7.6.3"
+    "semver": "^7.7.0"
   },
   "devDependencies": {
     "@types/debug": "4.1.12",
