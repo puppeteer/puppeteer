@@ -155,10 +155,10 @@
     "@babel/plugin-transform-private-property-in-object": "7.25.9",
     "@eslint/eslintrc": "3.2.0",
     "@eslint/js": "9.19.0",
-    "@microsoft/api-extractor": "7.49.1",
+    "@microsoft/api-extractor": "7.49.2",
     "@rollup/plugin-babel": "6.0.4",
     "@rollup/plugin-node-resolve": "16.0.0",
-    "@stylistic/eslint-plugin": "3.0.0",
+    "@stylistic/eslint-plugin": "3.0.1",
     "@types/mocha": "10.0.10",
     "@types/node": "20.8.4",
     "@types/semver": "7.5.8",
@@ -183,14 +183,14 @@
     "license-checker": "25.0.1",
     "mocha": "11.1.0",
     "prettier": "3.4.2",
-    "rollup": "4.32.0",
+    "rollup": "4.34.0",
     "semver": "7.6.3",
     "sinon": "19.0.2",
     "source-map-support": "0.5.21",
     "spdx-satisfies": "5.0.1",
     "tsd": "0.31.2",
     "typescript": "5.7.3",
-    "wireit": "0.14.9"
+    "wireit": "0.14.10"
   },
   "overrides": {
     "@microsoft/api-extractor": {
