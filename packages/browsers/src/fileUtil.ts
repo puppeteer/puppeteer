@@ -4,15 +4,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import type {ChildProcessByStdio} from 'child_process';
 import {spawnSync, spawn} from 'child_process';
 import {createReadStream} from 'fs';
 import {mkdir, readdir} from 'fs/promises';
 import * as path from 'path';
+import type {Readable, Transform, Writable} from 'stream';
 import {Stream} from 'stream';
 
-import extractZip from 'extract-zip';
-import tar from 'tar-fs';
-import bzip from 'unbzip2-stream';
+import debug from 'debug';
+
+const debugFileUtil = debug('puppeteer:browsers:fileUtil');
 
 /**
  * @internal
@@ -24,11 +26,11 @@ export async function unpackArchive(
   if (!path.isAbsolute(folderPath)) {
     folderPath = path.resolve(process.cwd(), folderPath);
   }
-
   if (archivePath.endsWith('.zip')) {
-    await extractZip(archivePath, {dir: folderPath});
+    const extractZip = await import('extract-zip');
+    await extractZip.default(archivePath, {dir: folderPath});
   } else if (archivePath.endsWith('.tar.bz2')) {
-    await extractTar(archivePath, folderPath);
+    await extractTar(archivePath, folderPath, 'bzip2');
   } else if (archivePath.endsWith('.dmg')) {
     await mkdir(folderPath);
     await installDMG(archivePath, folderPath);
@@ -45,30 +47,15 @@ export async function unpackArchive(
       );
     }
   } else if (archivePath.endsWith('.tar.xz')) {
-    await extractTarXz(archivePath, folderPath);
+    await extractTar(archivePath, folderPath, 'xz');
   } else {
     throw new Error(`Unsupported archive format: ${archivePath}`);
   }
 }
 
-/**
- * @internal
- */
-function extractTar(tarPath: string, folderPath: string): Promise<void> {
-  return new Promise((fulfill, reject) => {
-    const tarStream = tar.extract(folderPath);
-    tarStream.on('error', reject);
-    tarStream.on('finish', fulfill);
-    const readStream = createReadStream(tarPath);
-    readStream.pipe(bzip()).pipe(tarStream);
-  });
-}
-
-/**
- * @internal
- */
-function createXzStream() {
-  const child = spawn('xz', ['-d']);
+function createTransformStream(
+  child: ChildProcessByStdio<Writable, Readable, null>,
+): Transform {
   const stream = new Stream.Transform({
     transform(chunk, encoding, callback) {
       if (!child.stdin.write(chunk, encoding)) {
@@ -105,19 +92,60 @@ function createXzStream() {
       return stream.destroy(e);
     });
 
+  child.once('close', () => {
+    return stream.end();
+  });
+
   return stream;
 }
 
 /**
  * @internal
  */
-function extractTarXz(tarPath: string, folderPath: string): Promise<void> {
-  return new Promise((fulfill, reject) => {
-    const tarStream = tar.extract(folderPath);
-    tarStream.on('error', reject);
-    tarStream.on('finish', fulfill);
-    const readStream = createReadStream(tarPath);
-    readStream.pipe(createXzStream()).pipe(tarStream);
+export const internalConstantsForTesting = {
+  xz: 'xz',
+  bzip2: 'bzip2',
+};
+
+/**
+ * @internal
+ */
+async function extractTar(
+  tarPath: string,
+  folderPath: string,
+  decompressUtilityName: keyof typeof internalConstantsForTesting,
+): Promise<void> {
+  const tarFs = await import('tar-fs');
+  return await new Promise<void>((fulfill, reject) => {
+    function handleError(utilityName: string) {
+      return (error: Error) => {
+        if ('code' in error && error.code === 'ENOENT') {
+          error = new Error(
+            `\`${utilityName}\` utility is required to unpack this archive`,
+            {
+              cause: error,
+            },
+          );
+        }
+        reject(error);
+      };
+    }
+    const unpack = spawn(
+      internalConstantsForTesting[decompressUtilityName],
+      ['-d'],
+      {
+        stdio: ['pipe', 'pipe', 'inherit'],
+      },
+    )
+      .once('error', handleError(decompressUtilityName))
+      .once('exit', code => {
+        debugFileUtil(`${decompressUtilityName} exited, code=${code}`);
+      });
+
+    const tar = tarFs.extract(folderPath);
+    tar.once('error', handleError('tar'));
+    tar.once('finish', fulfill);
+    createReadStream(tarPath).pipe(createTransformStream(unpack)).pipe(tar);
   });
 }
 
