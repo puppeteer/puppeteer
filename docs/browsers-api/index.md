@@ -8,9 +8,9 @@ Manage and launch browsers/drivers from a CLI or programmatically.
 
 ## System requirements
 
-- Node: Latest LTS or newer versions.
+- A compatible Node version (see `engines` in `package.json`).
 - For Firefox downloads:
-  - Linux builds: `xz` and `tar` utilities are required to unpack `.tar.xz` archives.
+  - Linux builds: `xz` and `bzip2` utilities are required to unpack `.tar.gz` and `.tar.bz2` archives.
   - MacOS builds: `hdiutil` is required to unpack `.dmg` archives.
 
 ## CLI

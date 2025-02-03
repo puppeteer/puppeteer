@@ -12,11 +12,9 @@ import * as path from 'path';
 import type {Readable, Transform, Writable} from 'stream';
 import {Stream} from 'stream';
 
-import extractZip from 'extract-zip';
-import tarFs from 'tar-fs';
 import debug from 'debug';
 
-const debugTar = debug('puppeteer:browsers:tar');
+const debugFileUtil = debug('puppeteer:browsers:fileUtil');
 
 /**
  * @internal
@@ -28,9 +26,9 @@ export async function unpackArchive(
   if (!path.isAbsolute(folderPath)) {
     folderPath = path.resolve(process.cwd(), folderPath);
   }
-
   if (archivePath.endsWith('.zip')) {
-    await extractZip(archivePath, {dir: folderPath});
+    const extractZip = await import('extract-zip');
+    await extractZip.default(archivePath, {dir: folderPath});
   } else if (archivePath.endsWith('.tar.bz2')) {
     await extractTar(archivePath, folderPath, 'bzip2');
   } else if (archivePath.endsWith('.dmg')) {
@@ -106,7 +104,6 @@ function createTransformStream(
  */
 export const internalConstantsForTesting = {
   xz: 'xz',
-  tar: 'tar',
   bzip2: 'bzip2',
 };
 
@@ -118,18 +115,10 @@ async function extractTar(
   folderPath: string,
   decompressUtilityName: keyof typeof internalConstantsForTesting,
 ): Promise<void> {
-  // await mkdir(folderPath, {
-  //   recursive: true,
-  // });
+  const tarFs = await import('tar-fs');
   return await new Promise<void>((fulfill, reject) => {
     function handleError(utilityName: string) {
       return (error: Error) => {
-        // if (tar && tar.exitCode !== null) {
-        //   tar.kill();
-        // }
-        if (unpack && unpack.exitCode !== null) {
-          unpack.kill();
-        }
         if ('code' in error && error.code === 'ENOENT') {
           error = new Error(
             `\`${utilityName}\` utility is required to unpack this archive`,
@@ -141,16 +130,6 @@ async function extractTar(
         reject(error);
       };
     }
-    // const tar = spawn(internalConstantsForTesting.tar, ['-x'], {
-    //   cwd: folderPath,
-    //   stdio: ['pipe', 'inherit', 'inherit'],
-    // })
-    //   .once('error', handleError('tar'))
-    //   .once('close', fulfill)
-    //   .once('exit', code => {
-    //     debugTar(`tar exited, code=${code}`);
-    //   });
-
     const unpack = spawn(
       internalConstantsForTesting[decompressUtilityName],
       ['-d'],
@@ -160,7 +139,7 @@ async function extractTar(
     )
       .once('error', handleError(decompressUtilityName))
       .once('exit', code => {
-        debugTar(`${decompressUtilityName} exited, code=${code}`);
+        debugFileUtil(`${decompressUtilityName} exited, code=${code}`);
       });
 
     const tar = tarFs.extract(folderPath);

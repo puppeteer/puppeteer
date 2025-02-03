@@ -14,7 +14,7 @@ import {
   unpackArchive,
 } from '../../lib/cjs/fileUtil.js';
 
-describe.only('fileUtil', function () {
+describe('fileUtil', function () {
   let tmpDir = '/tmp/puppeteer-browsers-test';
 
   const fixturesPath = path.join(__dirname, '..', 'fixtures');
@@ -101,24 +101,6 @@ describe.only('fileUtil', function () {
       internalConstantsForTesting.xz = 'xz';
     }
   });
-
-  // it('throws an error if tar is not found', async () => {
-  //   internalConstantsForTesting.tar = 'tar-not-existent';
-  //   try {
-  //     try {
-  //       await unpackArchive(path.join(fixturesPath, 'test.tar.xz'), tmpDir);
-  //       assert.fail('unpacking did not fail');
-  //     } catch (error) {
-  //       assert.equal(
-  //         (error as Error).message,
-  //         '`tar` utility is required to unpack this archive',
-  //       );
-  //     }
-  //     assertTestArchiveEmpty();
-  //   } finally {
-  //     internalConstantsForTesting.tar = 'tar';
-  //   }
-  // });
 
   it('throws an error if bzip2 is not found', async () => {
     internalConstantsForTesting.bzip2 = 'bzip2-not-existent';
