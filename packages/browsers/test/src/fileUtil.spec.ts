@@ -14,7 +14,7 @@ import {
   unpackArchive,
 } from '../../lib/cjs/fileUtil.js';
 
-describe('fileUtil', function () {
+describe('fileUtil', () => {
   let tmpDir = '/tmp/puppeteer-browsers-test';
 
   const fixturesPath = path.join(__dirname, '..', 'fixtures');
@@ -73,6 +73,11 @@ describe('fileUtil', function () {
     });
     assert.deepStrictEqual(dir, []);
   }
+
+  it('unpacks a zip', async () => {
+    await unpackArchive(path.join(fixturesPath, 'test.zip'), tmpDir);
+    assertTestArchiveUnpacked();
+  });
 
   it('unpacks tar.xz', async () => {
     await unpackArchive(path.join(fixturesPath, 'test.tar.xz'), tmpDir);

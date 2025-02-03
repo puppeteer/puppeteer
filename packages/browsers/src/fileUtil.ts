@@ -11,13 +11,16 @@ import {mkdir, readdir} from 'fs/promises';
 import * as path from 'path';
 import type {Readable, Transform, Writable} from 'stream';
 import {Stream} from 'stream';
-import type {ZipFile} from 'yauzl';
 
 import debug from 'debug';
+import type {ZipFile} from 'yauzl';
 
 const debugFileUtil = debug('puppeteer:browsers:fileUtil');
 
-async function extractZip(
+/**
+ * @internal
+ */
+export async function extractZip(
   archivePath: string,
   folderPath: string,
 ): Promise<void> {
@@ -27,6 +30,7 @@ async function extractZip(
       archivePath,
       {
         lazyEntries: true,
+        autoClose: true,
       },
       (err, zipfile) => {
         if (err) {
@@ -37,49 +41,92 @@ async function extractZip(
       },
     );
   });
-  await mkdir(folderPath, {
-    recursive: true,
-  });
-  let errored = false;
-  zipfile.on('entry', async entry => {
-    const dest = path.join(folderPath, entry.fileName);
-    const mode = (entry.externalFileAttributes >> 16) & 0xffff;
-    if (entry.fileName.endsWith('/')) {
-      // directory
-      await mkdir(dest, {
-        recursive: true,
-        mode: (mode === 0 ? 0o755 : mode) & 0o777,
-      });
-      zipfile.readEntry();
-    } else {
-      // files
-      zipfile.openReadStream(entry, async (err, readStream) => {
-        if (err) {
-          errored = true;
-          zipfile.close();
-          return;
-        }
-        await mkdir(path.dirname(dest), {
+  try {
+    let resultError: Error | undefined | null;
+    async function ensureDir(dest: string, mode = 0): Promise<void> {
+      mode = mode === 0 ? 0o755 : mode;
+      try {
+        debugFileUtil(`creating a dir: ${dest} using ${mode.toString(8)}`);
+        await mkdir(dest, {
           recursive: true,
+          mode,
         });
-        const output = createWriteStream(dest, {
-          mode: (mode === 0 ? 0o644 : mode) & 0o777,
-        });
-        readStream.on('end', function () {
-          zipfile.readEntry();
-        });
-        readStream.pipe(output);
-      });
+      } catch (error) {
+        resultError = error as Error;
+        zipfile.close();
+        return;
+      }
     }
-  });
-  zipfile.readEntry();
-  await new Promise<void>(resolve => {
-    zipfile.on('end', () => {
-      resolve();
+    await ensureDir(folderPath);
+    zipfile.on('entry', async entry => {
+      const dest = path.join(folderPath, entry.fileName);
+      const mode = (entry.externalFileAttributes >> 16) & 0o777;
+      debugFileUtil(`processing entry: ${dest} mode=${mode.toString(8)}`);
+      if (entry.fileName.startsWith('__MACOSX/')) {
+        zipfile.readEntry();
+      } else if (entry.fileName.endsWith('/')) {
+        // directory
+        await ensureDir(dest, mode);
+        zipfile.readEntry();
+      } else {
+        // files
+        zipfile.openReadStream(entry, async (err, readStream) => {
+          if (err) {
+            resultError = err;
+            zipfile.close();
+            return;
+          }
+          await ensureDir(path.dirname(dest));
+          try {
+            const fileMode = mode === 0 ? 0o644 : mode;
+            debugFileUtil(
+              `writing a file: ${dest} using ${fileMode.toString(8)}`,
+            );
+            const output = createWriteStream(dest, {
+              mode: fileMode,
+            });
+            readStream.on('end', () => {
+              zipfile.readEntry();
+            });
+            readStream.on('error', err => {
+              debugFileUtil(`error piping content to ${dest}`);
+              resultError = err;
+              zipfile.close();
+            });
+            readStream.pipe(output);
+          } catch (error) {
+            debugFileUtil(`error creating a write stream`, error);
+            resultError = error as Error;
+            zipfile.close();
+            return;
+          }
+        });
+      }
     });
-  });
-  if (errored) {
-    throw new Error(`Failed to extract ${archivePath} to ${folderPath}`);
+    await new Promise<void>((resolve, reject) => {
+      zipfile.once('close', () => {
+        debugFileUtil(`zipfile closed`, resultError);
+        if (resultError) {
+          reject(resultError);
+        } else {
+          resolve();
+        }
+      });
+      zipfile.once('error', error => {
+        debugFileUtil(`zipfile errored`, error);
+        resultError = error;
+        zipfile.close();
+        reject(error);
+      });
+      // Start reading entries.
+      zipfile.readEntry();
+    });
+  } catch (cause) {
+    throw new Error(`Failed to extract ${archivePath} to ${folderPath}`, {
+      cause,
+    });
+  } finally {
+    zipfile.close();
   }
 }
 
