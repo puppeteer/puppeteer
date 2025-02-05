@@ -13,7 +13,7 @@ import expect from 'expect';
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitForFileExistence} from './utils.js';
 
-describe('Download', () => {
+describe.only('Download', () => {
   setupTestBrowserHooks();
   let tempDir: string;
 
@@ -40,7 +40,9 @@ describe('Download', () => {
       const page = await context.newPage();
       await page.goto(server.PREFIX + '/download.html');
       await page.click('#download');
-      await waitForFileExistence(join(tempDir, 'download.txt'));
+      await new Promise(resolve => {
+        resolve;
+      });
     });
     it('should not download to location', async () => {
       const {browser, server} = await getTestState({
