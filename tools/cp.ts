@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import fs from 'fs';
+import fs from 'node:fs';
 
 /**
  * Copies single file in argv[2] to argv[3]

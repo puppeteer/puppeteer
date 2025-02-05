@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {spawn, execSync} from 'child_process';
-import path from 'path';
+import {spawn, execSync} from 'node:child_process';
+import path from 'node:path';
 
 import expect from 'expect';
 

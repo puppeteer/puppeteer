@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {readFile, rm, writeFile} from 'fs/promises';
-import {join} from 'path';
+import {readFile, rm, writeFile} from 'node:fs/promises';
+import {join} from 'node:path';
 
 import {configureSandbox} from './sandbox.js';
 import {execFile, readAsset} from './util.js';

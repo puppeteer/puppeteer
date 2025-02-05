@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import childProcess from 'child_process';
-import {accessSync} from 'fs';
-import os from 'os';
-import readline from 'readline';
+import childProcess from 'node:child_process';
+import {accessSync} from 'node:fs';
+import os from 'node:os';
+import readline from 'node:readline';
 
 import {
   type Browser,
@@ -309,7 +309,7 @@ export class Process {
       this.#browserProcess.stderr?.pipe(process.stderr);
       this.#browserProcess.stdout?.pipe(process.stdout);
     }
-    subscribeToProcessEvent('exit', this.#onDriverProcessExit);
+    // subscribeToProcessEvent('exit', this.#onDriverProcessExit);
     if (opts.handleSIGINT) {
       subscribeToProcessEvent('SIGINT', this.#onDriverProcessSignal);
     }

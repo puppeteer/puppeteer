@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {relative, resolve} from 'path';
+import {relative, resolve} from 'node:path';
 
 import {getSystemPath, normalize, strings} from '@angular-devkit/core';
 import type {Rule} from '@angular-devkit/schematics';

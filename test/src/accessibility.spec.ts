@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import assert from 'assert';
+import assert from 'node:assert';
 
 import expect from 'expect';
 import type {SerializedAXNode} from 'puppeteer-core/internal/cdp/Accessibility.js';

@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {homedir} from 'os';
-import {join} from 'path';
+import {homedir} from 'node:os';
+import {join} from 'node:path';
 
 import {cosmiconfigSync} from 'cosmiconfig';
 import type {

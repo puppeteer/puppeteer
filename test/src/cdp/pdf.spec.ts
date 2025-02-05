@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {readFile, unlink} from 'fs/promises';
+import {readFile, unlink} from 'node:fs/promises';
 
 import expect from 'expect';
 

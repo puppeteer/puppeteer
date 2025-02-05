@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import fs from 'fs';
+import fs from 'node:fs';
 
 /**
  * Calls chmod with the mode in argv[2] on paths in argv[3...length-1].

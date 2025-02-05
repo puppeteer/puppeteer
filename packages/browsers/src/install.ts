@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import assert from 'assert';
-import {spawnSync} from 'child_process';
-import {existsSync, readFileSync} from 'fs';
-import {mkdir, unlink} from 'fs/promises';
-import os from 'os';
-import path from 'path';
+import assert from 'node:assert';
+import {spawnSync} from 'node:child_process';
+import {existsSync, readFileSync} from 'node:fs';
+import {mkdir, unlink} from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
 
 import {
   Browser,

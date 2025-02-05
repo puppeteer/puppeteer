@@ -3,7 +3,7 @@
  * Copyright 2023 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import path from 'path';
+import path from 'node:path';
 
 import {BrowserPlatform} from './types.js';
 

@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {mkdirSync, writeFileSync} from 'fs';
-import {dirname} from 'path';
+import {mkdirSync, writeFileSync} from 'node:fs';
+import {dirname} from 'node:path';
 
 /**
  * Outputs the dummy package.json file to the path specified

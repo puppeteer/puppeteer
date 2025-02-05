@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import os from 'os';
+import os from 'node:os';
 
 import expect from 'expect';
 import type {KeyInput} from 'puppeteer-core/internal/common/USKeyboardLayout.js';

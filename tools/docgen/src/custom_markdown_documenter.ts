@@ -11,7 +11,7 @@
 // https://github.com/microsoft/rushstack/blob/main/apps/api-documenter/src/documenters/MarkdownDocumenter.ts
 // This file has been edited to morph into Docusaurus's expected inputs.
 
-import * as path from 'path';
+import * as path from 'node:path';
 
 import type {DocumenterConfig} from '@microsoft/api-documenter/lib/documenters/DocumenterConfig.js';
 import {CustomMarkdownEmitter as ApiFormatterMarkdownEmitter} from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter.js';
