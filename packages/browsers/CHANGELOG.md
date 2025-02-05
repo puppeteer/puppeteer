@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.1](https://github.com/puppeteer/puppeteer/compare/browsers-v2.7.0...browsers-v2.7.1) (2025-02-05)
+
+
+### Bug Fixes
+
+* close the readline interface ([#13558](https://github.com/puppeteer/puppeteer/issues/13558)) ([7073519](https://github.com/puppeteer/puppeteer/commit/70735190449247774d273e11968d2b07f6c5accd))
+
 ## [2.7.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.6.1...browsers-v2.7.0) (2025-01-09)
 
 
