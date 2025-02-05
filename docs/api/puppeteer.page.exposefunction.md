@@ -106,7 +106,7 @@ An example of adding a `window.readfile` function into the page:
 
 ```ts
 import puppeteer from 'puppeteer';
-import fs from 'fs';
+import fs from 'node:fs';
 
 (async () => {
   const browser = await puppeteer.launch();
