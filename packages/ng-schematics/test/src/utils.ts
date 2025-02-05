@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import https from 'node:https';
-import {before, after} from 'node:test';
 import {join} from 'node:path';
+import {before, after} from 'node:test';
 
 import type {JsonObject} from '@angular-devkit/core';
 import {

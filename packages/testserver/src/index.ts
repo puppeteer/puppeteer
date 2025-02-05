@@ -18,7 +18,7 @@ import {
   type Server as HttpsServer,
   type ServerOptions as HttpsServerOptions,
 } from 'node:https';
-import type {AddressInfo} from 'net';
+import type {AddressInfo} from 'node:net';
 import {join} from 'node:path';
 import type {Duplex} from 'node:stream';
 import {gzip} from 'zlib';

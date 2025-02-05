@@ -6,9 +6,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {spawn} from 'node:child_process';
 import {randomUUID} from 'node:crypto';
 import fs from 'node:fs';
-import {spawn} from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 
