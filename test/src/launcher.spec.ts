@@ -132,8 +132,17 @@ describe('Launcher specs', function () {
           for (let i = 0; i < 2; i++) {
             instances.push(launch({}));
           }
+          const launchedPromises = await Promise.allSettled(instances);
+          const launched: Array<Awaited<ReturnType<typeof launch>>> = [];
+          for (const browserPromise of launchedPromises) {
+            if (browserPromise.status === 'rejected') {
+              warning = new Error('Browser failed to launch');
+            } else {
+              launched.push(browserPromise.value);
+            }
+          }
           await Promise.all(
-            (await Promise.all(instances)).map(instance => {
+            launched.map(instance => {
               return instance.close();
             }),
           );
