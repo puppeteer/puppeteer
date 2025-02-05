@@ -204,6 +204,15 @@ describe('Emulation', () => {
         }),
       ).toContain('iPhone');
     });
+
+    it('should work twice on about:blank', async () => {
+      const {page} = await getTestState();
+
+      await page.goto('about:blank');
+      await page.emulate(KnownDevices['iPhone 13']);
+      await page.emulate(KnownDevices['iPad Pro landscape']);
+    });
+
     it('should support clicking', async () => {
       const {page, server} = await getTestState();
 
