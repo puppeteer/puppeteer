@@ -309,7 +309,7 @@ export class Process {
       this.#browserProcess.stderr?.pipe(process.stderr);
       this.#browserProcess.stdout?.pipe(process.stdout);
     }
-    // subscribeToProcessEvent('exit', this.#onDriverProcessExit);
+    subscribeToProcessEvent('exit', this.#onDriverProcessExit);
     if (opts.handleSIGINT) {
       subscribeToProcessEvent('SIGINT', this.#onDriverProcessSignal);
     }
