@@ -171,6 +171,7 @@ export class BidiPage extends Page {
     const changeUserAgent = (userAgent: string) => {
       Object.defineProperty(navigator, 'userAgent', {
         value: userAgent,
+        configurable: true,
       });
     };
 
@@ -190,7 +191,7 @@ export class BidiPage extends Page {
         : undefined,
       // When we disable the UserAgent we want to
       // evaluate the original value in all Browsing Contexts
-      frames.map(frame => {
+      ...frames.map(frame => {
         return frame.evaluate(changeUserAgent, userAgent);
       }),
     ]);
