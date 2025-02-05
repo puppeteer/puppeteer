@@ -74,24 +74,24 @@ export const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map<
   Permission,
   Protocol.Browser.PermissionType
 >([
+  ['accelerometer', 'sensors'],
+  ['ambient-light-sensor', 'sensors'],
+  ['background-sync', 'backgroundSync'],
+  ['camera', 'videoCapture'],
+  ['clipboard-read', 'clipboardReadWrite'],
+  ['clipboard-sanitized-write', 'clipboardSanitizedWrite'],
+  ['clipboard-write', 'clipboardReadWrite'],
   ['geolocation', 'geolocation'],
+  ['gyroscope', 'sensors'],
+  ['idle-detection', 'idleDetection'],
+  ['keyboard-lock', 'keyboardLock'],
+  ['magnetometer', 'sensors'],
+  ['microphone', 'audioCapture'],
   ['midi', 'midi'],
   ['notifications', 'notifications'],
-  // TODO: push isn't a valid type?
-  // ['push', 'push'],
-  ['camera', 'videoCapture'],
-  ['microphone', 'audioCapture'],
-  ['background-sync', 'backgroundSync'],
-  ['ambient-light-sensor', 'sensors'],
-  ['accelerometer', 'sensors'],
-  ['gyroscope', 'sensors'],
-  ['magnetometer', 'sensors'],
-  ['clipboard-read', 'clipboardReadWrite'],
-  ['clipboard-write', 'clipboardReadWrite'],
-  ['clipboard-sanitized-write', 'clipboardSanitizedWrite'],
   ['payment-handler', 'paymentHandler'],
   ['persistent-storage', 'durableStorage'],
-  ['idle-detection', 'idleDetection'],
+  ['pointer-lock', 'pointerLock'],
   // chrome-specific permissions we have.
   ['midi-sysex', 'midiSysex'],
 ]);
@@ -100,23 +100,25 @@ export const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map<
  * @public
  */
 export type Permission =
+  | 'accelerometer'
+  | 'ambient-light-sensor'
+  | 'background-sync'
+  | 'camera'
+  | 'clipboard-read'
+  | 'clipboard-sanitized-write'
+  | 'clipboard-write'
   | 'geolocation'
+  | 'gyroscope'
+  | 'idle-detection'
+  | 'keyboard-lock'
+  | 'magnetometer'
+  | 'microphone'
+  | 'midi-sysex'
   | 'midi'
   | 'notifications'
-  | 'camera'
-  | 'microphone'
-  | 'background-sync'
-  | 'ambient-light-sensor'
-  | 'accelerometer'
-  | 'gyroscope'
-  | 'magnetometer'
-  | 'clipboard-read'
-  | 'clipboard-write'
-  | 'clipboard-sanitized-write'
   | 'payment-handler'
   | 'persistent-storage'
-  | 'idle-detection'
-  | 'midi-sysex';
+  | 'pointer-lock';
 
 /**
  * @public
