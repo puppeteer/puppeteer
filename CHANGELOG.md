@@ -2,6 +2,29 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.2.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.1.1...puppeteer-v24.2.0) (2025-02-05)
+
+
+### Features
+
+* add keyboard-lock and pointer-lock permissions ([#13586](https://github.com/puppeteer/puppeteer/issues/13586)) ([108cd53](https://github.com/puppeteer/puppeteer/commit/108cd53c21ec31b2383de11510bfbedfacdd5ac2))
+* roll to Chrome 133.0.6943.53 ([#13584](https://github.com/puppeteer/puppeteer/issues/13584)) ([a63d568](https://github.com/puppeteer/puppeteer/commit/a63d5686cbfef782f2e079ce344503ff88c0bb9b))
+* roll to Firefox 135.0 ([#13587](https://github.com/puppeteer/puppeteer/issues/13587)) ([b42c046](https://github.com/puppeteer/puppeteer/commit/b42c0464aa0d8a102856e147d34a1fb048f547c9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.7.0 to 2.7.1
+
+
+### Bug Fixes
+
+* roll to Chrome 132.0.6834.159 ([#13566](https://github.com/puppeteer/puppeteer/issues/13566)) ([416534b](https://github.com/puppeteer/puppeteer/commit/416534bce9575f65b81487e8820e8a3c96fb9b10))
+* **webdriver:** make sure user agent can be set twice ([#13585](https://github.com/puppeteer/puppeteer/issues/13585)) ([411ff95](https://github.com/puppeteer/puppeteer/commit/411ff9510add6ea33fe004036e61a7032fd30de1))
+
+
 ## [24.1.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.1.0...puppeteer-v24.1.1) (2025-01-23)
 
 
