@@ -8,21 +8,23 @@ sidebar_label: Permission
 
 ```typescript
 export type Permission =
+  | 'accelerometer'
+  | 'ambient-light-sensor'
+  | 'background-sync'
+  | 'camera'
+  | 'clipboard-read'
+  | 'clipboard-sanitized-write'
+  | 'clipboard-write'
   | 'geolocation'
+  | 'gyroscope'
+  | 'idle-detection'
+  | 'keyboard-lock'
+  | 'magnetometer'
+  | 'microphone'
+  | 'midi-sysex'
   | 'midi'
   | 'notifications'
-  | 'camera'
-  | 'microphone'
-  | 'background-sync'
-  | 'ambient-light-sensor'
-  | 'accelerometer'
-  | 'gyroscope'
-  | 'magnetometer'
-  | 'clipboard-read'
-  | 'clipboard-write'
-  | 'clipboard-sanitized-write'
   | 'payment-handler'
   | 'persistent-storage'
-  | 'idle-detection'
-  | 'midi-sysex';
+  | 'pointer-lock';
 ```
