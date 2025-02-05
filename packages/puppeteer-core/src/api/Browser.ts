@@ -86,7 +86,6 @@ export const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map<
   ['accelerometer', 'sensors'],
   ['gyroscope', 'sensors'],
   ['magnetometer', 'sensors'],
-  ['accessibility-events', 'accessibilityEvents'],
   ['clipboard-read', 'clipboardReadWrite'],
   ['clipboard-write', 'clipboardReadWrite'],
   ['clipboard-sanitized-write', 'clipboardSanitizedWrite'],
@@ -111,7 +110,6 @@ export type Permission =
   | 'accelerometer'
   | 'gyroscope'
   | 'magnetometer'
-  | 'accessibility-events'
   | 'clipboard-read'
   | 'clipboard-write'
   | 'clipboard-sanitized-write'

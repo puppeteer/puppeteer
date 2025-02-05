@@ -18,7 +18,6 @@ export type Permission =
   | 'accelerometer'
   | 'gyroscope'
   | 'magnetometer'
-  | 'accessibility-events'
   | 'clipboard-read'
   | 'clipboard-write'
   | 'clipboard-sanitized-write'
