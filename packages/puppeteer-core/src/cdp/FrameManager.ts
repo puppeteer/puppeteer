@@ -19,7 +19,7 @@ import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {Binding} from './Binding.js';
 import {CdpPreloadScript} from './CdpPreloadScript.js';
-import {CdpCDPSession} from './CDPSession.js';
+import {CdpCDPSession} from './CdpSession.js';
 import {isTargetClosedError} from './Connection.js';
 import {DeviceRequestPromptManager} from './DeviceRequestPrompt.js';
 import {ExecutionContext} from './ExecutionContext.js';

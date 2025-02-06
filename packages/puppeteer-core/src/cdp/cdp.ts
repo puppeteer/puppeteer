@@ -10,7 +10,7 @@ export * from './Binding.js';
 export * from './Browser.js';
 export * from './BrowserContext.js';
 export * from './BrowserConnector.js';
-export * from './CDPSession.js';
+export * from './CdpSession.js';
 export * from './Connection.js';
 export * from './Coverage.js';
 export * from './CdpPreloadScript.js';
