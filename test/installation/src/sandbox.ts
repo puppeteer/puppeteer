@@ -121,6 +121,14 @@ export const configureSandbox = (options: SandboxOptions): void => {
       );
     }
 
+    if (dependencies.includes('puppeteer')) {
+      await execFile(PKG_MANAGER, ['rebuild', 'puppeteer'], {
+        cwd: sandbox,
+        env,
+        shell: true,
+      });
+    }
+
     this.sandbox = sandbox;
     this.env = env;
     this.runScript = async (
