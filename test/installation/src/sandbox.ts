@@ -130,7 +130,10 @@ export const configureSandbox = (options: SandboxOptions): void => {
     ) => {
       const script = join(sandbox, `script-${crypto.randomUUID()}.${type}`);
       await writeFile(script, content);
-      await execFile('node', [script, ...(args ?? [])], {cwd: sandbox, env});
+      await execFile('node', ['--trace-warnings', script, ...(args ?? [])], {
+        cwd: sandbox,
+        env,
+      });
     };
     console.timeEnd('before');
   });
