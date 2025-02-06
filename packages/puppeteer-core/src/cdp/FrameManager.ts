@@ -99,12 +99,14 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
    * new frame. Therefore, we wait for a swap event.
    */
   async #onClientDisconnect() {
-    if (!this.client.connection()) {
+    const mainFrame = this._frameTree.getMainFrame();
+    if (!mainFrame) {
       return;
     }
 
-    const mainFrame = this._frameTree.getMainFrame();
-    if (!mainFrame) {
+    if (!this.client.connection()) {
+      // On connection disconnected remove all frames
+      this.#removeFramesRecursively(mainFrame);
       return;
     }
 
