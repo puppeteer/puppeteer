@@ -22,7 +22,8 @@
 async function importInstaller() {
   try {
     return await import('puppeteer/internal/node/install.js');
-  } catch {
+  } catch (error) {
+    console.error(error);
     console.warn(
       'Skipping browser installation because the Puppeteer build is not available. Run `npm install` again after you have re-built Puppeteer.',
     );
