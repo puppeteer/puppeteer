@@ -9,8 +9,10 @@ Represents a cookie object.
 ### Signature
 
 ```typescript
-export interface Cookie
+export interface Cookie extends CookieData
 ```
+
+**Extends:** [CookieData](./puppeteer.cookiedata.md)
 
 ## Properties
 
