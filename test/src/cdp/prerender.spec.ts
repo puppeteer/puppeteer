@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {statSync} from 'fs';
+import {statSync} from 'node:fs';
 
 import expect from 'expect';
 

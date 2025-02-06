@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import assert from 'assert';
-import {spawnSync} from 'child_process';
-import {existsSync} from 'fs';
-import {readdir} from 'fs/promises';
-import {platform} from 'os';
-import {join} from 'path';
+import assert from 'node:assert';
+import {spawnSync} from 'node:child_process';
+import {existsSync} from 'node:fs';
+import {readdir} from 'node:fs/promises';
+import {platform} from 'node:os';
+import {join} from 'node:path';
 
 import {configureSandbox} from './sandbox.js';
 import {readAsset} from './util.js';

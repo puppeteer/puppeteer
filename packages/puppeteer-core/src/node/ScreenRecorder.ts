@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {ChildProcessWithoutNullStreams} from 'child_process';
-import {spawn, spawnSync} from 'child_process';
-import {PassThrough} from 'stream';
+import type {ChildProcessWithoutNullStreams} from 'node:child_process';
+import {spawn, spawnSync} from 'node:child_process';
+import {PassThrough} from 'node:stream';
 
 import debug from 'debug';
 

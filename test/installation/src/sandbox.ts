@@ -3,10 +3,10 @@
  * Copyright 2022 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import crypto from 'crypto';
-import {mkdtemp, rm, writeFile} from 'fs/promises';
-import {tmpdir} from 'os';
-import {join} from 'path';
+import crypto from 'node:crypto';
+import {mkdtemp, rm, writeFile} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 
 import {
   PUPPETEER_CORE_PACKAGE_PATH,

@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type FS from 'fs';
-import type Path from 'path';
+import type FS from 'node:fs';
+import type Path from 'node:path';
 
 import type {ScreenRecorder} from './node/ScreenRecorder.js';
 

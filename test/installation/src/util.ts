@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {ExecFileOptions} from 'child_process';
-import {execFile as execFileAsync} from 'child_process';
-import {readFile} from 'fs/promises';
-import {join} from 'path';
+import type {ExecFileOptions} from 'node:child_process';
+import {execFile as execFileAsync} from 'node:child_process';
+import {readFile} from 'node:fs/promises';
+import {join} from 'node:path';
 import {promisify} from 'util';
 
 import {ASSETS_DIR} from './constants.js';

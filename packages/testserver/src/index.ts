@@ -4,23 +4,23 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import assert from 'assert';
-import {readFile, readFileSync} from 'fs';
+import assert from 'node:assert';
+import {readFile, readFileSync} from 'node:fs';
 import {
   createServer as createHttpServer,
   type IncomingMessage,
   type RequestListener,
   type Server as HttpServer,
   type ServerResponse,
-} from 'http';
+} from 'node:http';
 import {
   createServer as createHttpsServer,
   type Server as HttpsServer,
   type ServerOptions as HttpsServerOptions,
-} from 'https';
-import type {AddressInfo} from 'net';
-import {join} from 'path';
-import type {Duplex} from 'stream';
+} from 'node:https';
+import type {AddressInfo} from 'node:net';
+import {join} from 'node:path';
+import type {Duplex} from 'node:stream';
 import {gzip} from 'zlib';
 
 import {getType as getMimeType} from 'mime';

@@ -3,7 +3,7 @@
  * Copyright 2018 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import assert from 'assert';
+import assert from 'node:assert';
 
 import expect from 'expect';
 import {Puppeteer} from 'puppeteer-core';

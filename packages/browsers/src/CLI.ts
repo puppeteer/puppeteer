@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {stdin as input, stdout as output} from 'process';
-import * as readline from 'readline';
+import {stdin as input, stdout as output} from 'node:process';
+import * as readline from 'node:readline';
 
 import ProgressBar from 'progress';
 import type * as Yargs from 'yargs';

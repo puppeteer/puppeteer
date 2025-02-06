@@ -6,11 +6,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {randomUUID} from 'crypto';
-import fs from 'fs';
 import {spawn} from 'node:child_process';
-import os from 'os';
-import path from 'path';
+import {randomUUID} from 'node:crypto';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 import {globSync} from 'glob';
 import yargs from 'yargs';

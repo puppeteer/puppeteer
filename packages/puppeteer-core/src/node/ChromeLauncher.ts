@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {mkdtemp} from 'fs/promises';
-import os from 'os';
-import path from 'path';
+import {mkdtemp} from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
 
 import {
   computeSystemExecutablePath,

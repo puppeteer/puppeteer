@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {ChildProcessByStdio} from 'child_process';
-import {spawnSync, spawn} from 'child_process';
-import {createReadStream} from 'fs';
-import {mkdir, readdir} from 'fs/promises';
-import * as path from 'path';
-import type {Readable, Transform, Writable} from 'stream';
-import {Stream} from 'stream';
+import type {ChildProcessByStdio} from 'node:child_process';
+import {spawnSync, spawn} from 'node:child_process';
+import {createReadStream} from 'node:fs';
+import {mkdir, readdir} from 'node:fs/promises';
+import * as path from 'node:path';
+import type {Readable, Transform, Writable} from 'node:stream';
+import {Stream} from 'node:stream';
 
 import debug from 'debug';
 

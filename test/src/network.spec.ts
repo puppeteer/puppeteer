@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import fs from 'fs';
-import type {ServerResponse} from 'http';
-import path from 'path';
+import fs from 'node:fs';
+import type {ServerResponse} from 'node:http';
+import path from 'node:path';
 
 import expect from 'expect';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';

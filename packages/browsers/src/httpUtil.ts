@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {createWriteStream} from 'fs';
-import * as http from 'http';
-import * as https from 'https';
-import {URL, urlToHttpOptions} from 'url';
+import {createWriteStream} from 'node:fs';
+import * as http from 'node:http';
+import * as https from 'node:https';
+import {URL, urlToHttpOptions} from 'node:url';
 
 import {ProxyAgent} from 'proxy-agent';
 

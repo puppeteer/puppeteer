@@ -222,6 +222,9 @@ export default [
         },
       ],
 
+      // TODO: enable with next version
+      // 'import/enforce-node-protocol-usage': 'error',
+
       '@stylistic/func-call-spacing': 'error',
       '@stylistic/semi': 'error',
 

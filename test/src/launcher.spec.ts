@@ -3,12 +3,12 @@
  * Copyright 2017 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import assert from 'assert';
-import fs from 'fs';
-import {mkdtemp, readFile, writeFile} from 'fs/promises';
-import os from 'os';
-import path from 'path';
-import type {TLSSocket} from 'tls';
+import assert from 'node:assert';
+import fs from 'node:fs';
+import {mkdtemp, readFile, writeFile} from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import type {TLSSocket} from 'node:tls';
 
 import expect from 'expect';
 import {TimeoutError} from 'puppeteer';

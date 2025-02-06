@@ -3,10 +3,10 @@
  * Copyright 2017 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import assert from 'assert';
-import fs from 'fs';
-import type {ServerResponse} from 'http';
-import path from 'path';
+import assert from 'node:assert';
+import fs from 'node:fs';
+import type {ServerResponse} from 'node:http';
+import path from 'node:path';
 
 import expect from 'expect';
 import {KnownDevices, TimeoutError} from 'puppeteer';
