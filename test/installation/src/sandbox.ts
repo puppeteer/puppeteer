@@ -136,6 +136,9 @@ export const configureSandbox = (options: SandboxOptions): void => {
       });
     };
     console.timeEnd('before');
+    await new Promise(res => {
+      return setTimeout(res, 10);
+    });
   });
 
   afterHook(async function () {
