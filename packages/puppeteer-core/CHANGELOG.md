@@ -1,5 +1,12 @@
 # Changelog
 
+## [24.2.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.2.0...puppeteer-core-v24.2.1) (2025-02-06)
+
+
+### Bug Fixes
+
+* change Browser.setCookie type to be CookieData ([#13593](https://github.com/puppeteer/puppeteer/issues/13593)) ([8971cc2](https://github.com/puppeteer/puppeteer/commit/8971cc21ce52ded6cb3c973467fff0319b3f0c95))
+
 ## [24.2.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.1.1...puppeteer-core-v24.2.0) (2025-02-05)
 
 
