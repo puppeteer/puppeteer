@@ -38,7 +38,7 @@
     "build:docs": "wireit",
     "build": "wireit",
     "clean": "../../tools/clean.mjs",
-    "postinstall": "node install.mjs",
+    "postinstall": "node install.mjs --trace-warnings",
     "prepack": "wireit"
   },
   "wireit": {

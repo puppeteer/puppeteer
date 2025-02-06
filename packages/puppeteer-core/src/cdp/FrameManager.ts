@@ -19,7 +19,7 @@ import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {Binding} from './Binding.js';
 import {CdpPreloadScript} from './CdpPreloadScript.js';
-import {CdpCDPSession} from './CDPSession.js';
+import {CdpCDPSession} from './CdpSession.js';
 import {isTargetClosedError} from './Connection.js';
 import {DeviceRequestPromptManager} from './DeviceRequestPrompt.js';
 import {ExecutionContext} from './ExecutionContext.js';
@@ -103,6 +103,13 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     if (!mainFrame) {
       return;
     }
+
+    if (this.client.connection()?._closed) {
+      // On connection disconnected remove all frames
+      this.#removeFramesRecursively(mainFrame);
+      return;
+    }
+
     for (const child of mainFrame.childFrames()) {
       this.#removeFramesRecursively(child);
     }
@@ -133,9 +140,9 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     );
     const frame = this._frameTree.getMainFrame();
     if (frame) {
-      this.#frameNavigatedReceived.add(this.#client._target()._targetId);
+      this.#frameNavigatedReceived.add(this.#client.target()._targetId);
       this._frameTree.removeFrame(frame);
-      frame.updateId(this.#client._target()._targetId);
+      frame.updateId(this.#client.target()._targetId);
       this._frameTree.addFrame(frame);
       frame.updateClient(client);
     }

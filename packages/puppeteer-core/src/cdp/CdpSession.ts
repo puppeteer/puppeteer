@@ -28,11 +28,11 @@ export class CdpCDPSession extends CDPSession {
   #sessionId: string;
   #targetType: string;
   #callbacks = new CallbackRegistry();
-  #connection?: Connection;
+  #connection: Connection;
   #parentSessionId?: string;
   #target?: CdpTarget;
   #rawErrors = false;
-
+  #detached = false;
   /**
    * @internal
    */
@@ -56,7 +56,7 @@ export class CdpCDPSession extends CDPSession {
    *
    * @internal
    */
-  _setTarget(target: CdpTarget): void {
+  setTarget(target: CdpTarget): void {
     this.#target = target;
   }
 
@@ -65,13 +65,17 @@ export class CdpCDPSession extends CDPSession {
    *
    * @internal
    */
-  _target(): CdpTarget {
+  target(): CdpTarget {
     assert(this.#target, 'Target must exist');
     return this.#target;
   }
 
   override connection(): Connection | undefined {
     return this.#connection;
+  }
+
+  get #closed(): boolean {
+    return this.#connection._closed || this.#detached;
   }
 
   override parentSession(): CDPSession | undefined {
@@ -89,7 +93,7 @@ export class CdpCDPSession extends CDPSession {
     params?: ProtocolMapping.Commands[T]['paramsType'][0],
     options?: CommandOptions,
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
-    if (!this.#connection) {
+    if (this.#closed) {
       return Promise.reject(
         new TargetCloseError(
           `Protocol error (${method}): Session closed. Most likely the ${this.#targetType} has been closed.`,
@@ -108,7 +112,7 @@ export class CdpCDPSession extends CDPSession {
   /**
    * @internal
    */
-  _onMessage(object: {
+  onMessage(object: {
     id?: number;
     method: keyof CDPEvents;
     params: CDPEvents[keyof CDPEvents];
@@ -140,7 +144,7 @@ export class CdpCDPSession extends CDPSession {
    * won't emit any events and can't be used to send messages.
    */
   override async detach(): Promise<void> {
-    if (!this.#connection) {
+    if (this.#closed) {
       throw new Error(
         `Session already detached. Most likely the ${this.#targetType} has been closed.`,
       );
@@ -148,14 +152,15 @@ export class CdpCDPSession extends CDPSession {
     await this.#connection.send('Target.detachFromTarget', {
       sessionId: this.#sessionId,
     });
+    this.#detached = true;
   }
 
   /**
    * @internal
    */
-  _onClosed(): void {
+  onClosed(): void {
     this.#callbacks.clear();
-    this.#connection = undefined;
+    this.#detached = true;
     this.emit(CDPSessionEvent.Disconnected, undefined);
   }
 

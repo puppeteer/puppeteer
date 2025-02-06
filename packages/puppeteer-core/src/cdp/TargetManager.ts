@@ -13,7 +13,7 @@ import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
-import type {CdpCDPSession} from './CDPSession.js';
+import type {CdpCDPSession} from './CdpSession.js';
 import type {Connection} from './Connection.js';
 import {CdpTarget, InitializationStatus} from './Target.js';
 import type {TargetManagerEvents} from './TargetManageEvents.js';
@@ -380,7 +380,7 @@ export class TargetManager
     this.#setupAttachmentListeners(session);
 
     if (isExistingTarget) {
-      (session as CdpCDPSession)._setTarget(target);
+      (session as CdpCDPSession).setTarget(target);
       this.#attachedTargetsBySessionId.set(
         session.id(),
         this.#attachedTargetsByTargetId.get(targetInfo.targetId)!,
@@ -393,7 +393,7 @@ export class TargetManager
 
     const parentTarget =
       parentSession instanceof CDPSession
-        ? (parentSession as CdpCDPSession)._target()
+        ? (parentSession as CdpCDPSession).target()
         : null;
     parentTarget?._addChildTarget(target);
 
@@ -440,7 +440,7 @@ export class TargetManager
     }
 
     if (parentSession instanceof CDPSession) {
-      (parentSession as CdpCDPSession)._target()._removeChildTarget(target);
+      (parentSession as CdpCDPSession).target()._removeChildTarget(target);
     }
     this.#attachedTargetsByTargetId.delete(target._targetId);
     this.emit(TargetManagerEvent.TargetGone, target);

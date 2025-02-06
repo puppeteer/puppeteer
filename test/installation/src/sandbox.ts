@@ -99,22 +99,34 @@ export const configureSandbox = (options: SandboxOptions): void => {
 
     await options.before?.(sandbox);
     if (dependencies.length > 0) {
-      await execFile(PKG_MANAGER, [ADD_PKG_SUBCOMMAND, ...dependencies], {
-        cwd: sandbox,
-        env,
-        shell: true,
-      });
-    }
-    if (devDependencies.length > 0) {
       await execFile(
         PKG_MANAGER,
-        [ADD_PKG_SUBCOMMAND, '-D', ...devDependencies],
+        [ADD_PKG_SUBCOMMAND, '--foreground-scripts', ...dependencies],
         {
           cwd: sandbox,
           env,
           shell: true,
         },
       );
+    }
+    if (devDependencies.length > 0) {
+      await execFile(
+        PKG_MANAGER,
+        [ADD_PKG_SUBCOMMAND, '--foreground-scripts', '-D', ...devDependencies],
+        {
+          cwd: sandbox,
+          env,
+          shell: true,
+        },
+      );
+    }
+
+    if (dependencies.includes('puppeteer')) {
+      await execFile(PKG_MANAGER, ['rebuild', 'puppeteer'], {
+        cwd: sandbox,
+        env,
+        shell: true,
+      });
     }
 
     this.sandbox = sandbox;
@@ -126,9 +138,15 @@ export const configureSandbox = (options: SandboxOptions): void => {
     ) => {
       const script = join(sandbox, `script-${crypto.randomUUID()}.${type}`);
       await writeFile(script, content);
-      await execFile('node', [script, ...(args ?? [])], {cwd: sandbox, env});
+      await execFile('node', ['--trace-warnings', script, ...(args ?? [])], {
+        cwd: sandbox,
+        env,
+      });
     };
     console.timeEnd('before');
+    await new Promise(res => {
+      return setTimeout(res, 10);
+    });
   });
 
   afterHook(async function () {
