@@ -15,7 +15,7 @@ import {
   raceWith,
 } from '../../third_party/rxjs/rxjs.js';
 import type {ProtocolType} from '../common/ConnectOptions.js';
-import type {Cookie} from '../common/Cookie.js';
+import type {Cookie, CookieData} from '../common/Cookie.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {
@@ -445,7 +445,7 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * Shortcut for
    * {@link BrowserContext.setCookie | browser.defaultBrowserContext().setCookie()}.
    */
-  async setCookie(...cookies: Cookie[]): Promise<void> {
+  async setCookie(...cookies: CookieData[]): Promise<void> {
     return await this.defaultBrowserContext().setCookie(...cookies);
   }
 

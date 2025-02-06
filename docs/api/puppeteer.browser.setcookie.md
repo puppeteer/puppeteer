@@ -10,7 +10,7 @@ Sets cookies in the default [BrowserContext](./puppeteer.browsercontext.md).
 
 ```typescript
 class Browser {
-  setCookie(...cookies: Cookie[]): Promise<void>;
+  setCookie(...cookies: CookieData[]): Promise<void>;
 }
 ```
 
@@ -35,7 +35,7 @@ cookies
 
 </td><td>
 
-[Cookie](./puppeteer.cookie.md)\[\]
+[CookieData](./puppeteer.cookiedata.md)\[\]
 
 </td><td>
 
