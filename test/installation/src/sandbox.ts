@@ -99,16 +99,20 @@ export const configureSandbox = (options: SandboxOptions): void => {
 
     await options.before?.(sandbox);
     if (dependencies.length > 0) {
-      await execFile(PKG_MANAGER, [ADD_PKG_SUBCOMMAND, ...dependencies], {
-        cwd: sandbox,
-        env,
-        shell: true,
-      });
+      await execFile(
+        PKG_MANAGER,
+        [ADD_PKG_SUBCOMMAND, '--foreground-scripts', ...dependencies],
+        {
+          cwd: sandbox,
+          env,
+          shell: true,
+        },
+      );
     }
     if (devDependencies.length > 0) {
       await execFile(
         PKG_MANAGER,
-        [ADD_PKG_SUBCOMMAND, '-D', ...devDependencies],
+        [ADD_PKG_SUBCOMMAND, '--foreground-scripts', '-D', ...devDependencies],
         {
           cwd: sandbox,
           env,
