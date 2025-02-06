@@ -104,7 +104,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       return;
     }
 
-    if (!this.client.connection()) {
+    if (this.client.connection()?._closed) {
       // On connection disconnected remove all frames
       this.#removeFramesRecursively(mainFrame);
       return;
@@ -140,9 +140,9 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     );
     const frame = this._frameTree.getMainFrame();
     if (frame) {
-      this.#frameNavigatedReceived.add(this.#client._target()._targetId);
+      this.#frameNavigatedReceived.add(this.#client.target()._targetId);
       this._frameTree.removeFrame(frame);
-      frame.updateId(this.#client._target()._targetId);
+      frame.updateId(this.#client.target()._targetId);
       this._frameTree.addFrame(frame);
       frame.updateClient(client);
     }

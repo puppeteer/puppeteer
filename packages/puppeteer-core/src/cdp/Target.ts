@@ -66,7 +66,7 @@ export class CdpTarget extends Target {
     this._targetId = targetInfo.targetId;
     this.#sessionFactory = sessionFactory;
     if (this.#session && this.#session instanceof CdpCDPSession) {
-      this.#session._setTarget(this);
+      this.#session.setTarget(this);
     }
   }
 
@@ -114,7 +114,7 @@ export class CdpTarget extends Target {
       throw new Error('sessionFactory is not initialized');
     }
     return this.#sessionFactory(false).then(session => {
-      (session as CdpCDPSession)._setTarget(this);
+      (session as CdpCDPSession).setTarget(this);
       return session;
     });
   }

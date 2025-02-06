@@ -145,7 +145,7 @@ export class CdpPage extends Page {
     this.#primaryTargetClient = client;
     this.#tabTargetClient = client.parentSession()!;
     assert(this.#tabTargetClient, 'Tab target session is not defined.');
-    this.#tabTarget = (this.#tabTargetClient as CdpCDPSession)._target();
+    this.#tabTarget = (this.#tabTargetClient as CdpCDPSession).target();
     assert(this.#tabTarget, 'Tab target is not defined.');
     this.#primaryTarget = target;
     this.#targetManager = target._targetManager();
@@ -262,7 +262,7 @@ export class CdpPage extends Page {
       this.#primaryTargetClient instanceof CdpCDPSession,
       'CDPSession is not instance of CDPSessionImpl',
     );
-    this.#primaryTarget = this.#primaryTargetClient._target();
+    this.#primaryTarget = this.#primaryTargetClient.target();
     assert(this.#primaryTarget, 'Missing target on swap');
     this.#keyboard.updateClient(newSession);
     this.#mouse.updateClient(newSession);
@@ -276,7 +276,7 @@ export class CdpPage extends Page {
 
   async #onSecondaryTarget(session: CDPSession): Promise<void> {
     assert(session instanceof CdpCDPSession);
-    if (session._target()._subtype() !== 'prerender') {
+    if (session.target()._subtype() !== 'prerender') {
       return;
     }
     this.#frameManager.registerSpeculativeSession(session).catch(debugError);
@@ -327,13 +327,13 @@ export class CdpPage extends Page {
 
   #onAttachedToTarget = (session: CDPSession) => {
     assert(session instanceof CdpCDPSession);
-    this.#frameManager.onAttachedToTarget(session._target());
-    if (session._target()._getTargetInfo().type === 'worker') {
+    this.#frameManager.onAttachedToTarget(session.target());
+    if (session.target()._getTargetInfo().type === 'worker') {
       const worker = new CdpWebWorker(
         session,
-        session._target().url(),
-        session._target()._targetId,
-        session._target().type(),
+        session.target().url(),
+        session.target()._targetId,
+        session.target().type(),
         this.#addConsoleMessage.bind(this),
         this.#handleException.bind(this),
       );
