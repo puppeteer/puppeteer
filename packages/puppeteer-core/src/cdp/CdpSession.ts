@@ -32,7 +32,7 @@ export class CdpCDPSession extends CDPSession {
   #parentSessionId?: string;
   #target?: CdpTarget;
   #rawErrors = false;
-
+  #detached = false;
   /**
    * @internal
    */
@@ -74,8 +74,8 @@ export class CdpCDPSession extends CDPSession {
     return this.#connection;
   }
 
-  get #connectionClosed(): boolean {
-    return this.#connection._closed;
+  get #closed(): boolean {
+    return this.#connection._closed || this.#detached;
   }
 
   override parentSession(): CDPSession | undefined {
@@ -93,7 +93,7 @@ export class CdpCDPSession extends CDPSession {
     params?: ProtocolMapping.Commands[T]['paramsType'][0],
     options?: CommandOptions,
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
-    if (this.#connectionClosed) {
+    if (this.#closed) {
       return Promise.reject(
         new TargetCloseError(
           `Protocol error (${method}): Session closed. Most likely the ${this.#targetType} has been closed.`,
@@ -144,7 +144,7 @@ export class CdpCDPSession extends CDPSession {
    * won't emit any events and can't be used to send messages.
    */
   override async detach(): Promise<void> {
-    if (this.#connectionClosed) {
+    if (this.#closed) {
       throw new Error(
         `Session already detached. Most likely the ${this.#targetType} has been closed.`,
       );
@@ -152,6 +152,7 @@ export class CdpCDPSession extends CDPSession {
     await this.#connection.send('Target.detachFromTarget', {
       sessionId: this.#sessionId,
     });
+    this.#detached = true;
   }
 
   /**
@@ -159,6 +160,7 @@ export class CdpCDPSession extends CDPSession {
    */
   onClosed(): void {
     this.#callbacks.clear();
+    this.#detached = true;
     this.emit(CDPSessionEvent.Disconnected, undefined);
   }
 
