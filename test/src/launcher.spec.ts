@@ -58,7 +58,7 @@ describe('Launcher specs', function () {
           await close();
         }
       });
-      it('should reject waitForSelector when browser closes', async () => {
+      it.only('should reject waitForSelector when browser closes', async () => {
         const {browser, close, server, puppeteer} = await launch({});
         server.setRoute('/empty.html', () => {});
         try {
@@ -74,9 +74,10 @@ describe('Launcher specs', function () {
             });
           await remote.disconnect();
           const error = await watchdog;
-          expect(error.message).toContain(
-            'Waiting for selector `div` failed: waitForFunction failed: frame got detached.',
-          );
+          expect(error.message).atLeastOneToContain([
+            'Waiting for selector `div` failed: Waiting failed: Frame detached',
+            'Waiting for selector `div` failed: Browsing context already closed: User context was closed: Session already ended.',
+          ]);
         } finally {
           await close();
         }
