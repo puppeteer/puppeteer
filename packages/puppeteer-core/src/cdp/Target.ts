@@ -15,7 +15,7 @@ import {debugError} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
 
-import {CdpCDPSession} from './CDPSession.js';
+import {CdpCDPSession} from './CdpSession.js';
 import {CdpPage} from './Page.js';
 import type {TargetManager} from './TargetManager.js';
 import {CdpWebWorker} from './WebWorker.js';

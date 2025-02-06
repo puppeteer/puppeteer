@@ -13,7 +13,7 @@ import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
-import type {CdpCDPSession} from './CDPSession.js';
+import type {CdpCDPSession} from './CdpSession.js';
 import type {Connection} from './Connection.js';
 import {CdpTarget, InitializationStatus} from './Target.js';
 import type {TargetManagerEvents} from './TargetManageEvents.js';
