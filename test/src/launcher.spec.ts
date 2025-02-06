@@ -58,7 +58,7 @@ describe('Launcher specs', function () {
           await close();
         }
       });
-      it.only('should reject waitForSelector when browser closes', async () => {
+      it('should reject waitForSelector when browser closes', async () => {
         const {browser, close, server, puppeteer} = await launch({});
         server.setRoute('/empty.html', () => {});
         try {
