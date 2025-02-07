@@ -49,26 +49,11 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Install dependencies
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
-      # Set up GitHub Actions caching for Wireit.
-      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
-      - name: Build packages
-        run: npm run build -w @puppeteer-test/test
-      - name: Setup cache for browsers
-        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
-        with:
-          path: ~/.cache/puppeteer/
-          key: Browsers-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
-      - name: Install browsers
-        run: npm run postinstall
+          fetch-depth: 2
+
+      - name: Setup Puppeteer GitHub Action
+        uses: ./.github/actions/setup
       - name: Run all tests (MacOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
@@ -95,28 +80,13 @@ jobs:
     strategy:
       fail-fast: false
     steps:
-      - name: Checkout
+      - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Install dependencies
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
-      # Set up GitHub Actions caching for Wireit.
-      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
-      - name: Build packages
-        run: npm run build -w @puppeteer-test/test
-      - name: Setup cache for browsers
-        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
-        with:
-          path: ~/.cache/puppeteer/
-          key: Browsers-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
-      - name: Install browsers
-        run: npm run postinstall
+          fetch-depth: 2
+
+      - name: Setup Puppeteer GitHub Action
+        uses: ./.github/actions/setup
       - name: Run all tests (for non-Linux)
         if: ${{ inputs.os != 'ubuntu-latest' }}
         run: npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json

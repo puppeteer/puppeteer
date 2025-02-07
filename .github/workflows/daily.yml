@@ -39,22 +39,11 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Disable AppArmor
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-      - name: Install dependencies
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
-      # Set up GitHub Actions caching for Wireit.
-      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
-      - name: Build packages
-        run: npm run build -w @puppeteer-test/test
+          fetch-depth: 2
+
+      - name: Setup Puppeteer GitHub Action
+        uses: ./.github/actions/setup
       - name: Install browsers
         run: npm run postinstall
         env:
@@ -114,22 +103,11 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Install dependencies
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
-      - name: Disable AppArmor
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-      # Set up GitHub Actions caching for Wireit.
-      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
-      - name: Build packages
-        run: npm run build -w @puppeteer-test/test
+          fetch-depth: 2
+
+      - name: Setup Puppeteer GitHub Action
+        uses: ./.github/actions/setup
       - name: Install browsers
         run: npm run postinstall
         env:
@@ -167,17 +145,13 @@ jobs:
       issues: write
     if: ${{ !cancelled() }}
     steps:
-      - name: Checkout
+      - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Install dependencies
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
+          fetch-depth: 2
+
+      - name: Setup Puppeteer GitHub Action
+        uses: ./.github/actions/setup
       - name: Generate comment
         id: genearate-comment-body
         run: node tools/build_daily_comment.mjs
