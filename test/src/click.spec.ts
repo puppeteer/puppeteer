@@ -327,6 +327,22 @@ describe('Page.click', function () {
     expect(await page.evaluate('double')).toBe(true);
     expect(await page.evaluate('result')).toBe('Clicked');
   });
+  it('should double multiple times', async () => {
+    const {page, server} = await getTestState();
+
+    await page.goto(server.PREFIX + '/input/button.html');
+    await page.evaluate(() => {
+      (globalThis as any).count = 0;
+      const button = document.querySelector('button');
+      button!.addEventListener('dblclick', () => {
+        (globalThis as any).count++;
+      });
+    });
+    using button = (await page.$('button'))!;
+    await button!.click({count: 2});
+    await button!.click({count: 2});
+    expect(await page.evaluate('count')).toBe(2);
+  });
   it('should click a partially obscured button', async () => {
     const {page, server} = await getTestState();
 
