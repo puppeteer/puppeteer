@@ -61,6 +61,9 @@ declare module 'mocha' {
   }
 }
 
+const githubActionDebuggingFlags = process.env['RUNNER_DEBUG']
+  ? ['--foreground-scripts']
+  : [];
 /**
  * Configures mocha before/after hooks to create a temp folder and install
  * specified dependencies.
@@ -101,7 +104,7 @@ export const configureSandbox = (options: SandboxOptions): void => {
     if (dependencies.length > 0) {
       await execFile(
         PKG_MANAGER,
-        [ADD_PKG_SUBCOMMAND, '--foreground-scripts', ...dependencies],
+        [ADD_PKG_SUBCOMMAND, ...githubActionDebuggingFlags, ...dependencies],
         {
           cwd: sandbox,
           env,
@@ -112,21 +115,18 @@ export const configureSandbox = (options: SandboxOptions): void => {
     if (devDependencies.length > 0) {
       await execFile(
         PKG_MANAGER,
-        [ADD_PKG_SUBCOMMAND, '--foreground-scripts', '-D', ...devDependencies],
+        [
+          ADD_PKG_SUBCOMMAND,
+          ...githubActionDebuggingFlags,
+          '-D',
+          ...devDependencies,
+        ],
         {
           cwd: sandbox,
           env,
           shell: true,
         },
       );
-    }
-
-    if (dependencies.includes('puppeteer')) {
-      await execFile(PKG_MANAGER, ['rebuild', 'puppeteer'], {
-        cwd: sandbox,
-        env,
-        shell: true,
-      });
     }
 
     this.sandbox = sandbox;
@@ -138,15 +138,12 @@ export const configureSandbox = (options: SandboxOptions): void => {
     ) => {
       const script = join(sandbox, `script-${crypto.randomUUID()}.${type}`);
       await writeFile(script, content);
-      await execFile('node', ['--trace-warnings', script, ...(args ?? [])], {
+      await execFile('node', [script, ...(args ?? [])], {
         cwd: sandbox,
         env,
       });
     };
     console.timeEnd('before');
-    await new Promise(res => {
-      return setTimeout(res, 10);
-    });
   });
 
   afterHook(async function () {
