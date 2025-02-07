@@ -1,0 +1,64 @@
+name: Deploy docs on Main
+
+# Declare default permissions as read only.
+permissions: read-all
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: deploy-docs-${{ github.head_ref || github.run_id }}
+
+jobs:
+  check-changes:
+    uses: ./.github/workflows/changed-packages.yml
+
+  deploy-docs:
+    needs: check-changes
+    name: Deploy docs (if needed)
+    if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'website') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Set up Node.js
+        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+        with:
+          cache: npm
+          node-version-file: '.nvmrc'
+      - name: Install dependencies
+        working-directory: ./website
+        run: npm ci
+      - name: Build website
+        working-directory: ./website
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: npm run build
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./website/build
+          user_name: release-please[bot]
+          user_email: 55107282+release-please[bot]@users.noreply.github.com
+      - name: Test Algolia if Crawler is blocked
+        env:
+          CRAWLER_USER_ID: ${{secrets.ALGOLIA_CRAWLER_USER_ID}}
+          CRAWLER_API_KEY: ${{secrets.ALGOLIA_CRAWLER_API_KEY}}
+          CRAWLER_ID: ${{secrets.ALGOLIA_CRAWLER_ID}}
+        run: |
+          RESPONSE=$(curl -H "Content-Type: application/json" -X GET --user "$CRAWLER_USER_ID:$CRAWLER_API_KEY" \
+            "https://crawler.algolia.com/api/1/crawlers/$CRAWLER_ID" | grep "\"blocked\":true" || true ); \
+          if [ ! -z "$RESPONSE" ]; then echo "Please go to https://crawler.algolia.com/" && exit 1; fi
+      - name: Trigger Algolia reindexing
+        env:
+          CRAWLER_USER_ID: ${{secrets.ALGOLIA_CRAWLER_USER_ID}}
+          CRAWLER_API_KEY: ${{secrets.ALGOLIA_CRAWLER_API_KEY}}
+          CRAWLER_ID: ${{secrets.ALGOLIA_CRAWLER_ID}}
+        run: |
+          curl -H "Content-Type: application/json" -X POST --user "$CRAWLER_USER_ID:$CRAWLER_API_KEY" \
+            "https://crawler.algolia.com/api/1/crawlers/$CRAWLER_ID/reindex"
