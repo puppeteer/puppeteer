@@ -22,7 +22,12 @@
 async function importInstaller() {
   try {
     return await import('puppeteer/internal/node/install.js');
-  } catch {
+  } catch (error) {
+    // Add more logging when the GitHub Action Debugging option is set
+    // https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables
+    if (process.env['RUNNER_DEBUG']) {
+      console.error(error);
+    }
     console.warn(
       'Skipping browser installation because the Puppeteer build is not available. Run `npm install` again after you have re-built Puppeteer.',
     );

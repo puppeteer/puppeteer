@@ -54,13 +54,17 @@
     "build": {
       "dependencies": [
         "build:tsc",
-        "build:types"
+        "build:types",
+        "generate:package-json"
       ]
     },
     "generate:package-json": {
       "command": "node --experimental-strip-types ../../tools/generate_module_package_json.ts lib/esm/package.json",
       "files": [
         "../../tools/generate_module_package_json.ts"
+      ],
+      "dependencies": [
+        "build:tsc"
       ],
       "output": [
         "lib/esm/package.json"
@@ -82,8 +86,7 @@
       "clean": "if-file-deleted",
       "dependencies": [
         "../puppeteer-core:build",
-        "../browsers:build",
-        "generate:package-json"
+        "../browsers:build"
       ],
       "files": [
         "src/**"
