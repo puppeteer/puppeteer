@@ -350,6 +350,7 @@ describe('Locator', function () {
         .scroll({
           scrollTop: 500,
           scrollLeft: 500,
+          scrollBehavior: 'smooth'
         });
       using scrollable = await page.$('div');
       const scroll = await scrollable?.evaluate(el => {

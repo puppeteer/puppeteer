@@ -91,6 +91,7 @@ The [`.scroll()`] functions uses mouse wheel events to scroll an element.
 await page.locator('div').scroll({
   scrollLeft: 10,
   scrollTop: 20,
+  scrollBehavior: 'scroll'
 });
 ```
 
