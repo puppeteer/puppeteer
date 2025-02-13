@@ -1,5 +1,19 @@
 # Changelog
 
+## [24.2.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.2.0...puppeteer-v24.2.1) (2025-02-13)
+
+
+### Bug Fixes
+
+* don't wait for activation if the connection is disconnected ([#13591](https://github.com/puppeteer/puppeteer/issues/13591)) ([6b20ac1](https://github.com/puppeteer/puppeteer/commit/6b20ac10b1cc6a54a87eb2f6437727d204acd1c3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.2.0 to 24.2.1
+
 ## [24.2.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.1.1...puppeteer-v24.2.0) (2025-02-05)
 
 
