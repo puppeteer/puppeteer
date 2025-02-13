@@ -70,6 +70,7 @@ export type LocatorClickOptions = ClickOptions & ActionOptions;
 export interface LocatorScrollOptions extends ActionOptions {
   scrollTop?: number;
   scrollLeft?: number;
+  scrollBehaviour?: 'auto' | 'instant' | 'scroll'
 }
 /**
  * All the events that a locator instance may emit.
@@ -579,16 +580,20 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
       mergeMap(handle => {
         return from(
           handle.evaluate(
-            (el, scrollTop, scrollLeft) => {
+            (el, scrollTop, scrollLeft, scrollBehavior) => {
               if (scrollTop !== undefined) {
                 el.scrollTop = scrollTop;
               }
               if (scrollLeft !== undefined) {
                 el.scrollLeft = scrollLeft;
               }
+              if(scrollBehavior !== undefined) {
+                el.scrollBehavior = scrollBehavior
+              }
             },
             options?.scrollTop,
             options?.scrollLeft,
+            options?.scrollBehaviour,
           ),
         ).pipe(
           catchError(err => {
