@@ -9,6 +9,10 @@ on:
         default: false
         type: boolean
     outputs:
+      linux-only:
+        description: 'If the test should be performed only on Linux'
+
+        value: ${{ jobs.check-changes.outputs.linux-only }}
       changes:
         description: 'The packages that were changed for this PR'
         value: ${{ jobs.check-changes.outputs.changes }}
@@ -62,3 +66,8 @@ jobs:
               - '.github/workflows/ci.yml'
               - 'packages/browsers/**'
               - 'tsconfig.base.json'
+
+      - name: Detect full Linux only testing
+        if: ${{github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
+        run: |
+          echo "linux-only=true" >> "$GITHUB_OUTPUT"

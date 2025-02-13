@@ -16,16 +16,11 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
-      - name: Install npm dependencies
-        run: npm ci
-      - name: Build Puppeteer
-        run: npm run build -w puppeteer
+          fetch-depth: 2
+
+      - name: Setup Puppeteer GitHub Action
+        uses: ./.github/actions/setup
       - name: Update Chrome to latest stable version
         id: update
         run: |
@@ -51,16 +46,11 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
-      - name: Install npm dependencies
-        run: npm ci
-      - name: Build Puppeteer
-        run: npm run build -w puppeteer
+          fetch-depth: 2
+
+      - name: Setup Puppeteer GitHub Action
+        uses: ./.github/actions/setup
       - name: Update Firefox to latest stable version
         id: update
         run: |
