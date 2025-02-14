@@ -1,5 +1,15 @@
 # Changelog
 
+## [24.2.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.2.0...puppeteer-core-v24.2.1) (2025-02-13)
+
+
+### Bug Fixes
+
+* change Browser.setCookie type to be CookieData ([#13593](https://github.com/puppeteer/puppeteer/issues/13593)) ([8971cc2](https://github.com/puppeteer/puppeteer/commit/8971cc21ce52ded6cb3c973467fff0319b3f0c95))
+* don't wait for activation if the connection is disconnected ([#13591](https://github.com/puppeteer/puppeteer/issues/13591)) ([6b20ac1](https://github.com/puppeteer/puppeteer/commit/6b20ac10b1cc6a54a87eb2f6437727d204acd1c3))
+* **network:** propagate CDP error in interception ([#13607](https://github.com/puppeteer/puppeteer/issues/13607)) ([2f470cd](https://github.com/puppeteer/puppeteer/commit/2f470cdeddbdae6eb110445acfff011af151ca1d))
+* roll to Chrome 133.0.6943.98 ([#13611](https://github.com/puppeteer/puppeteer/issues/13611)) ([ea11a46](https://github.com/puppeteer/puppeteer/commit/ea11a464460735048cf0e9dc81b28779e39e2e01))
+
 ## [24.2.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.1.1...puppeteer-core-v24.2.0) (2025-02-05)
 
 
