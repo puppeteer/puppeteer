@@ -42,14 +42,36 @@ const {join} = require('path');
 /**
  * @type {import("puppeteer").Configuration}
  */
-module.exports = {
-  cacheDirectory: join(__dirname, '.cache', 'puppeteer'),
-};
+module.exports = {cacheDirectory: join(__dirname, '.cache', 'puppeteer')};
 ```
 
 You will need to reinstall `puppeteer` in order for the configuration to take
 effect. See [Configuring Puppeteer](./guides/configuration) for more
 information.
+
+## `net::ERR_BLOCKED_BY_CLIENT` when navigating to an HTTP URL in Chrome
+
+Chrome is rolling out a feature called `HttpsFirstBalancedModeAutoEnable` that
+displays a warning to the user if the user navigates to an HTTP site. The feature
+is enabled by default in Chrome for Testing builds that Puppeteer uses by
+default.
+
+The feature makes a navigation request to an HTTP URL result in the error
+`net::ERR_BLOCKED_BY_CLIENT` which can be caught and recovered from. When the
+error occurs, a warning page is shown to the user with a button to continue
+navigation. The button is clickable via Puppeteer. Local HTTP hosts do not
+trigger a warning but remote hosts might. For more details see
+https://crbug.com/378022921
+
+It is possible to disable this Chrome feature by passing the
+`--disable-features=HttpsFirstBalancedModeAutoEnable` argument when launching
+Chrome:
+
+```ts
+const browser = await puppeteer.launch({
+  args: ['--disable-features=HttpsFirstBalancedModeAutoEnable'],
+});
+```
 
 ## Chrome doesn't launch on Windows
 
@@ -557,10 +579,7 @@ import express from 'express';
 const app = express();
 
 app.post('/test-puppeteer', (req, res) => {
-  res.json({
-    jobId: 123,
-    acknowledged: true,
-  });
+  res.json({jobId: 123, acknowledged: true});
 
   puppeteer.launch().then(browser => {
     // 2 minutes later...
@@ -576,10 +595,7 @@ It is slow because CPU is disabled on GCR because puppeteer is launched after th
 app.post('/test-puppeteer', (req, res) => {
   puppeteer.launch().then(browser => {
     // A second later...
-    res.json({
-      jobId: 123,
-      acknowledged: true,
-    });
+    res.json({jobId: 123, acknowledged: true});
   });
 });
 ```
@@ -596,9 +612,7 @@ run the container with `docker run --shm-size=1gb` to increase the size of
 browser with the `--disable-dev-shm-usage` flag:
 
 ```ts
-const browser = await puppeteer.launch({
-  args: ['--disable-dev-shm-usage'],
-});
+const browser = await puppeteer.launch({args: ['--disable-dev-shm-usage']});
 ```
 
 This will write shared memory files into `/tmp` instead of `/dev/shm`. See
