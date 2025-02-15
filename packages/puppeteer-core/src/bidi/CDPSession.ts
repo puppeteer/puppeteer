@@ -60,6 +60,10 @@ export class BidiCdpSession extends CDPSession {
     return undefined;
   }
 
+  override get detached(): boolean {
+    return this.#detached;
+  }
+
   override async send<T extends keyof ProtocolMapping.Commands>(
     method: T,
     params?: ProtocolMapping.Commands[T]['paramsType'][0],
