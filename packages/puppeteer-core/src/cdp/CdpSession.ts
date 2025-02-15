@@ -71,6 +71,16 @@ export class CdpCDPSession extends CDPSession {
   }
 
   override connection(): Connection | undefined {
+    if (this.#closed) {
+      return undefined;
+    }
+    return this.#connection;
+  }
+
+  /**
+   * @internal
+   */
+  get _connection(): Connection {
     return this.#connection;
   }
 

@@ -6,6 +6,7 @@
 
 import expect from 'expect';
 import type {Target} from 'puppeteer-core/internal/api/Target.js';
+import {Connection} from 'puppeteer-core/internal/cdp/Connection.js';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 
 import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
@@ -163,5 +164,14 @@ describe('Target.createCDPSession', function () {
 
     const client = await page.createCDPSession();
     expect(client.connection()).toBeTruthy();
+  });
+
+  it('should not return a connection if the session is disposed', async () => {
+    const {page} = await getTestState();
+    const client = await page.createCDPSession();
+    expect(client.connection()).toBeTruthy();
+    await client.detach();
+    expect(client.connection()).toBeUndefined();
+    expect(Connection.fromSession(client)).toBeUndefined();
   });
 });

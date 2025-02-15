@@ -45,7 +45,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
   #networkManager: NetworkManager;
   #timeoutSettings: TimeoutSettings;
   #isolatedWorlds = new Set<string>();
-  #client: CDPSession;
+  #client: CdpCDPSession;
   #scriptsToEvaluateOnNewDocument = new Map<string, CdpPreloadScript>();
   #bindings = new Set<Binding>();
 
@@ -73,7 +73,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     return this.#networkManager;
   }
 
-  get client(): CDPSession {
+  get client(): CdpCDPSession {
     return this.#client;
   }
 
@@ -83,6 +83,10 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     timeoutSettings: TimeoutSettings,
   ) {
     super();
+    assert(
+      client instanceof CdpCDPSession,
+      'client is not an instance of CdpCDPSession.',
+    );
     this.#client = client;
     this.#page = page;
     this.#networkManager = new NetworkManager(this);
@@ -104,7 +108,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       return;
     }
 
-    if (this.client.connection()?._closed) {
+    if (this.#client._connection?._closed) {
       // On connection disconnected remove all frames
       this.#removeFramesRecursively(mainFrame);
       return;
@@ -133,11 +137,11 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
    * its frame tree and ID.
    */
   async swapFrameTree(client: CDPSession): Promise<void> {
-    this.#client = client;
     assert(
-      this.#client instanceof CdpCDPSession,
-      'CDPSession is not an instance of CDPSessionImpl.',
+      client instanceof CdpCDPSession,
+      'client is not an instance of CdpCDPSession.',
     );
+    this.#client = client;
     const frame = this._frameTree.getMainFrame();
     if (frame) {
       this.#frameNavigatedReceived.add(this.#client.target()._targetId);
