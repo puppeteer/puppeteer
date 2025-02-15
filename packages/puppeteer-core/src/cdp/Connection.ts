@@ -83,8 +83,15 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
   /**
    * @internal
    */
-  get _sessions(): Map<string, CDPSession> {
+  get _sessions(): Map<string, CdpCDPSession> {
     return this.#sessions;
+  }
+
+  /**
+   * @internal
+   */
+  _session(sessionId: string): CdpCDPSession | null {
+    return this.#sessions.get(sessionId) || null;
   }
 
   /**
@@ -92,7 +99,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
    * @returns The current CDP session if it exists
    */
   session(sessionId: string): CDPSession | null {
-    return this.#sessions.get(sessionId) || null;
+    return this._session(sessionId);
   }
 
   url(): string {
@@ -240,7 +247,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
   async _createSession(
     targetInfo: {targetId: string},
     isAutoAttachEmulated = true,
-  ): Promise<CDPSession> {
+  ): Promise<CdpCDPSession> {
     if (!isAutoAttachEmulated) {
       this.#manuallyAttached.add(targetInfo.targetId);
     }

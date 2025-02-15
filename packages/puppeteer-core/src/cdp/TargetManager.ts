@@ -13,7 +13,7 @@ import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
-import type {CdpCDPSession} from './CdpSession.js';
+import {CdpCDPSession} from './CdpSession.js';
 import type {Connection} from './Connection.js';
 import {CdpTarget, InitializationStatus} from './Target.js';
 import type {TargetManagerEvents} from './TargetManageEvents.js';
@@ -24,8 +24,8 @@ import {TargetManagerEvent} from './TargetManageEvents.js';
  */
 export type TargetFactory = (
   targetInfo: Protocol.Target.TargetInfo,
-  session?: CDPSession,
-  parentSession?: CDPSession,
+  session?: CdpCDPSession,
+  parentSession?: CdpCDPSession,
 ) => CdpTarget;
 
 function isPageTargetBecomingPrimary(
@@ -318,7 +318,7 @@ export class TargetManager
     event: Protocol.Target.AttachedToTargetEvent,
   ) => {
     const targetInfo = event.targetInfo;
-    const session = this.#connection.session(event.sessionId);
+    const session = this.#connection._session(event.sessionId);
     if (!session) {
       throw new Error(`Session ${event.sessionId} was not created.`);
     }
@@ -367,7 +367,7 @@ export class TargetManager
       : this.#targetFactory(
           targetInfo,
           session,
-          parentSession instanceof CDPSession ? parentSession : undefined,
+          parentSession instanceof CdpCDPSession ? parentSession : undefined,
         );
 
     if (this.#targetFilterCallback && !this.#targetFilterCallback(target)) {
@@ -380,7 +380,7 @@ export class TargetManager
     this.#setupAttachmentListeners(session);
 
     if (isExistingTarget) {
-      (session as CdpCDPSession).setTarget(target);
+      session.setTarget(target);
       this.#attachedTargetsBySessionId.set(
         session.id(),
         this.#attachedTargetsByTargetId.get(targetInfo.targetId)!,

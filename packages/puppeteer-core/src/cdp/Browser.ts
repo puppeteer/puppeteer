@@ -18,13 +18,14 @@ import {
   type TargetFilterCallback,
 } from '../api/Browser.js';
 import {BrowserContextEvent} from '../api/BrowserContext.js';
-import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
+import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import type {Viewport} from '../common/Viewport.js';
 
 import {CdpBrowserContext} from './BrowserContext.js';
+import type {CdpCDPSession} from './CdpSession.js';
 import type {Connection} from './Connection.js';
 import {
   DevToolsTarget,
@@ -235,7 +236,7 @@ export class CdpBrowser extends BrowserBase {
 
   #createTarget = (
     targetInfo: Protocol.Target.TargetInfo,
-    session?: CDPSession,
+    session?: CdpCDPSession,
   ) => {
     const {browserContextId} = targetInfo;
     const context =
