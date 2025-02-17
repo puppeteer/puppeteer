@@ -105,7 +105,8 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     }
 
     if (!this.#page.browser().connected) {
-      // If the browser is isconnected don't waif for activation
+      // If the browser is not connected we know
+      // that activation will not happen
       this.#removeFramesRecursively(mainFrame);
       return;
     }
