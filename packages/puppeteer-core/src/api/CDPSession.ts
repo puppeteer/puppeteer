@@ -96,7 +96,19 @@ export abstract class CDPSession extends EventEmitter<CDPSessionEvents> {
     super();
   }
 
+  /**
+   * The underlying connection for this session, if any.
+   *
+   * @public
+   */
   abstract connection(): Connection | undefined;
+
+  /**
+   * True if the session has been detached, false otherwise.
+   *
+   * @public
+   */
+  abstract get detached(): boolean;
 
   /**
    * Parent session in terms of CDP's auto-attach mechanism.
