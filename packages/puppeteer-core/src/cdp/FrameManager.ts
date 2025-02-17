@@ -104,8 +104,8 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       return;
     }
 
-    if (this.client.connection()?._closed) {
-      // On connection disconnected remove all frames
+    if (!this.#page.browser().connected) {
+      // If the browser is isconnected don't waif for activation
       this.#removeFramesRecursively(mainFrame);
       return;
     }
