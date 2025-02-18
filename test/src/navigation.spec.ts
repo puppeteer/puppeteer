@@ -325,6 +325,14 @@ describe('navigation', function () {
       expect(response.ok()).toBe(true);
       expect(response.url()).toBe(server.PREFIX + '/client-redirect.html');
     });
+    it('should work when a page redirects on DOMContentLoaded', async () => {
+      const {page, server} = await getTestState();
+
+      const response = (await page.goto(
+        server.PREFIX + '/client-redirect-DOMContentLoaded.html',
+      ))!;
+      expect(response.ok()).toBe(true);
+    });
     it('should work when navigating to data url', async () => {
       const {page} = await getTestState();
 
