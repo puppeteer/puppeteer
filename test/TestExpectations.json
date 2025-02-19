@@ -1251,18 +1251,25 @@
     "comment": "https://github.com/w3c/webdriver-bidi/issues/502"
   },
   {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should work when a page redirects on DOMContentLoaded",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "https://github.com/puppeteer/puppeteer/issues/12929 and https://github.com/w3c/webdriver-bidi/issues/763"
+  },
+  {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work when navigating to a URL with a client redirect",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL"],
-    "comment": "In CDP implementation, we sometimes get the client redirect response."
+    "comment": "In CDP implementation, we get the client redirect response."
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work when navigating to a URL with a client redirect",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "https://github.com/puppeteer/puppeteer/issues/12929"
+    "comment": "https://github.com/puppeteer/puppeteer/issues/12929 and https://github.com/w3c/webdriver-bidi/issues/763"
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work when page calls history API in beforeunload",
