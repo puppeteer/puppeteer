@@ -97,7 +97,7 @@ function convertConsoleMessageLevel(method: string): ConsoleMessageType {
  */
 export class CdpPage extends Page {
   static async _create(
-    client: CDPSession,
+    client: CdpCDPSession,
     target: CdpTarget,
     defaultViewport: Viewport | null,
   ): Promise<CdpPage> {
@@ -120,7 +120,7 @@ export class CdpPage extends Page {
   #closed = false;
   readonly #targetManager: TargetManager;
 
-  #primaryTargetClient: CDPSession;
+  #primaryTargetClient: CdpCDPSession;
   #primaryTarget: CdpTarget;
   #tabTargetClient: CDPSession;
   #tabTarget: CdpTarget;
@@ -140,7 +140,7 @@ export class CdpPage extends Page {
   #serviceWorkerBypassed = false;
   #userDragInterceptionEnabled = false;
 
-  constructor(client: CDPSession, target: CdpTarget) {
+  constructor(client: CdpCDPSession, target: CdpTarget) {
     super();
     this.#primaryTargetClient = client;
     this.#tabTargetClient = client.parentSession()!;
@@ -257,12 +257,13 @@ export class CdpPage extends Page {
   }
 
   async #onActivation(newSession: CDPSession): Promise<void> {
-    this.#primaryTargetClient = newSession;
+    // TODO: Remove assert once we have separate Event type for CdpCDPSession.
     assert(
-      this.#primaryTargetClient instanceof CdpCDPSession,
-      'CDPSession is not instance of CDPSessionImpl',
+      newSession instanceof CdpCDPSession,
+      'CDPSession is not instance of CdpCDPSession',
     );
-    this.#primaryTarget = this.#primaryTargetClient.target();
+    this.#primaryTargetClient = newSession;
+    this.#primaryTarget = newSession.target();
     assert(this.#primaryTarget, 'Missing target on swap');
     this.#keyboard.updateClient(newSession);
     this.#mouse.updateClient(newSession);

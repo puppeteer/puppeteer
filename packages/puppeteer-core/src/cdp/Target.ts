@@ -8,14 +8,13 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
-import type {CDPSession} from '../api/CDPSession.js';
 import {PageEvent, type Page} from '../api/Page.js';
 import {Target, TargetType} from '../api/Target.js';
 import {debugError} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
 
-import {CdpCDPSession} from './CdpSession.js';
+import type {CdpCDPSession} from './CdpSession.js';
 import {CdpPage} from './Page.js';
 import type {TargetManager} from './TargetManager.js';
 import {CdpWebWorker} from './WebWorker.js';
@@ -33,11 +32,11 @@ export enum InitializationStatus {
  */
 export class CdpTarget extends Target {
   #browserContext?: BrowserContext;
-  #session?: CDPSession;
+  #session?: CdpCDPSession;
   #targetInfo: Protocol.Target.TargetInfo;
   #targetManager?: TargetManager;
   #sessionFactory:
-    | ((isAutoAttachEmulated: boolean) => Promise<CDPSession>)
+    | ((isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>)
     | undefined;
   #childTargets = new Set<CdpTarget>();
   _initializedDeferred = Deferred.create<InitializationStatus>();
@@ -51,11 +50,11 @@ export class CdpTarget extends Target {
    */
   constructor(
     targetInfo: Protocol.Target.TargetInfo,
-    session: CDPSession | undefined,
+    session: CdpCDPSession | undefined,
     browserContext: BrowserContext | undefined,
     targetManager: TargetManager | undefined,
     sessionFactory:
-      | ((isAutoAttachEmulated: boolean) => Promise<CDPSession>)
+      | ((isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>)
       | undefined,
   ) {
     super();
@@ -65,7 +64,7 @@ export class CdpTarget extends Target {
     this.#browserContext = browserContext;
     this._targetId = targetInfo.targetId;
     this.#sessionFactory = sessionFactory;
-    if (this.#session && this.#session instanceof CdpCDPSession) {
+    if (this.#session) {
       this.#session.setTarget(this);
     }
   }
@@ -84,7 +83,7 @@ export class CdpTarget extends Target {
     return this.#targetInfo.subtype;
   }
 
-  _session(): CDPSession | undefined {
+  _session(): CdpCDPSession | undefined {
     return this.#session;
   }
 
@@ -102,19 +101,19 @@ export class CdpTarget extends Target {
 
   protected _sessionFactory(): (
     isAutoAttachEmulated: boolean,
-  ) => Promise<CDPSession> {
+  ) => Promise<CdpCDPSession> {
     if (!this.#sessionFactory) {
       throw new Error('sessionFactory is not initialized');
     }
     return this.#sessionFactory;
   }
 
-  override createCDPSession(): Promise<CDPSession> {
+  override createCDPSession(): Promise<CdpCDPSession> {
     if (!this.#sessionFactory) {
       throw new Error('sessionFactory is not initialized');
     }
     return this.#sessionFactory(false).then(session => {
-      (session as CdpCDPSession).setTarget(this);
+      session.setTarget(this);
       return session;
     });
   }
@@ -211,10 +210,10 @@ export class PageTarget extends CdpTarget {
 
   constructor(
     targetInfo: Protocol.Target.TargetInfo,
-    session: CDPSession | undefined,
+    session: CdpCDPSession | undefined,
     browserContext: BrowserContext,
     targetManager: TargetManager,
-    sessionFactory: (isAutoAttachEmulated: boolean) => Promise<CDPSession>,
+    sessionFactory: (isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>,
     defaultViewport: Viewport | null,
   ) {
     super(targetInfo, session, browserContext, targetManager, sessionFactory);
