@@ -41,7 +41,7 @@ runs:
     - name: Build workspaces packages
       shell: bash
       if: ${{inputs.build-package != 'all'}}
-      run: npm run build -w ${ inputs.build-package }
+      run: npm run build -w ${{ inputs.build-package }}
 
     - name: Setup cache for browsers
       if: ${{inputs.download-browsers == 'true'}}
