@@ -111,8 +111,7 @@ function customBDDInterface(suite: Mocha.Suite) {
         });
       };
 
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
+      // @ts-expect-error needed to override the method
       context['describe'] = describe;
 
       function it(title: string, fn: Mocha.TestFunction, itOnly = false) {
@@ -122,8 +121,7 @@ function customBDDInterface(suite: Mocha.Suite) {
         test.parent = suite;
 
         const describeOnly = Boolean(
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
+          // @ts-expect-error pokes at internal methods
           suite.parent?._onlySuites.find(child => {
             return child === suite;
           }),
@@ -180,8 +178,7 @@ function customBDDInterface(suite: Mocha.Suite) {
       it.deflake = wrapDeflake(it);
       it.deflakeOnly = wrapDeflake(it.only);
 
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
+      // @ts-expect-error override needed to support custom only logic
       context.it = it;
     },
   );
