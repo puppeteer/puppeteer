@@ -111,7 +111,7 @@ function customBDDInterface(suite: Mocha.Suite) {
         });
       };
 
-      // @ts-expect-error needed to override the method
+      // @ts-expect-error override the method to support custom functionality
       context['describe'] = describe;
 
       function it(title: string, fn: Mocha.TestFunction, itOnly = false) {
@@ -178,7 +178,7 @@ function customBDDInterface(suite: Mocha.Suite) {
       it.deflake = wrapDeflake(it);
       it.deflakeOnly = wrapDeflake(it.only);
 
-      // @ts-expect-error override needed to support custom only logic
+      // @ts-expect-error override the method to support custom functionality
       context.it = it;
     },
   );
