@@ -33,23 +33,15 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 2
-      - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+
+      - name: Setup Puppeteer GitHub Action
+        uses: ./.github/actions/setup
         with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Install dependencies
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
-      # Set up GitHub Actions caching for Wireit.
-      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
+          download-browsers: false
       - name: Check code
         run: npm run check
       - name: Validate licenses
         run: npm run validate-licenses
-      - name: Build every package
-        run: npm run build
       - name: Tests types
         run: npm run test-types
       - name: Verify packages are synced
@@ -75,54 +67,6 @@ jobs:
     with:
       check-mergeable-state: true
 
-  deploy-docs:
-    needs: check-changes
-    name: Deploy docs (if needed)
-    if: ${{ github.event_name != 'pull_request' && contains(fromJSON(needs.check-changes.outputs.changes), 'website') }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
-        with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Install dependencies
-        working-directory: ./website
-        run: npm ci
-      - name: Build website
-        working-directory: ./website
-        env:
-          NODE_OPTIONS: --max-old-space-size=6144
-        run: npm run build
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./website/build
-          user_name: release-please[bot]
-          user_email: 55107282+release-please[bot]@users.noreply.github.com
-      - name: Test Algolia if Crawler is blocked
-        env:
-          CRAWLER_USER_ID: ${{secrets.ALGOLIA_CRAWLER_USER_ID}}
-          CRAWLER_API_KEY: ${{secrets.ALGOLIA_CRAWLER_API_KEY}}
-          CRAWLER_ID: ${{secrets.ALGOLIA_CRAWLER_ID}}
-        run: |
-          RESPONSE=$(curl -H "Content-Type: application/json" -X GET --user "$CRAWLER_USER_ID:$CRAWLER_API_KEY" \
-            "https://crawler.algolia.com/api/1/crawlers/$CRAWLER_ID" | grep "\"blocked\":true" || true ); \
-          if [ ! -z "$RESPONSE" ]; then echo "Please go to https://crawler.algolia.com/" && exit 1; fi
-      - name: Trigger Algolia reindexing
-        env:
-          CRAWLER_USER_ID: ${{secrets.ALGOLIA_CRAWLER_USER_ID}}
-          CRAWLER_API_KEY: ${{secrets.ALGOLIA_CRAWLER_API_KEY}}
-          CRAWLER_ID: ${{secrets.ALGOLIA_CRAWLER_ID}}
-        run: |
-          curl -H "Content-Type: application/json" -X POST --user "$CRAWLER_USER_ID:$CRAWLER_API_KEY" \
-            "https://crawler.algolia.com/api/1/crawlers/$CRAWLER_ID/reindex"
-
   doctest:
     name: Doctest
     runs-on: ubuntu-latest
@@ -131,17 +75,13 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Disable AppArmor
-        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-      - name: Install dependencies
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
+          fetch-depth: 2
+
+      - name: Setup Puppeteer GitHub Action
+        uses: ./.github/actions/setup
+        with:
+          download-browsers: false
       - name: Run tests
         run: npm run doctest
 
@@ -154,7 +94,7 @@ jobs:
       fail-fast: false
       matrix:
         linux-only:
-          - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
+          - ${{ needs.check-changes.outputs.linux-only }}
         suite:
           - chrome-headless
           - chrome-headful
@@ -168,11 +108,11 @@ jobs:
           - 1-2
           - 2-2
         exclude:
-          - linux-only: true
+          - linux-only: 'true'
             os: windows-latest
-          - linux-only: true
+          - linux-only: 'true'
             os: macos-latest
-          - linux-only: true
+          - linux-only: 'true'
             suite: chrome-headful
 
           - os: windows-latest
@@ -182,29 +122,13 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Disable AppArmor
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-      - name: Install dependencies
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
-      # Set up GitHub Actions caching for Wireit.
-      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
-      - name: Build packages
-        run: npm run build --workspace @puppeteer-test/test
-      - name: Setup cache for browsers
-        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+          fetch-depth: 2
+
+      - name: Setup Puppeteer GitHub Action
+        uses: ./.github/actions/setup
         with:
-          path: ~/.cache/puppeteer/
-          key: Browsers-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
-      - name: Install browsers
-        run: npm run postinstall
+          build-package: '@puppeteer-test/test'
       - name: Run all tests (MacOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
@@ -239,7 +163,7 @@ jobs:
       fail-fast: false
       matrix:
         linux-only:
-          - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
+          - ${{ needs.check-changes.outputs.linux-only }}
         suite:
           - firefox-headful
           - firefox-headless
@@ -253,37 +177,21 @@ jobs:
           - 3-4
           - 4-4
         exclude:
-          - linux-only: true
+          - linux-only: 'true'
             os: windows-latest
-          - linux-only: true
+          - linux-only: 'true'
             os: macos-latest
 
     steps:
-      - name: Checkout
+      - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Disable AppArmor
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-      - name: Install dependencies
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
-      # Set up GitHub Actions caching for Wireit.
-      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
-      - name: Build packages
-        run: npm run build --workspace @puppeteer-test/test
-      - name: Setup cache for browsers
-        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+          fetch-depth: 2
+
+      - name: Setup Puppeteer GitHub Action
+        uses: ./.github/actions/setup
         with:
-          path: ~/.cache/puppeteer/
-          key: Browsers-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
-      - name: Install browsers
-        run: npm run postinstall
+          build-package: '@puppeteer-test/test'
       - name: Run all tests (MacOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
@@ -318,7 +226,7 @@ jobs:
       fail-fast: false
       matrix:
         linux-only:
-          - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
+          - ${{ needs.check-changes.outputs.linux-only }}
         pkg_manager:
           - npm
         os:
@@ -326,27 +234,20 @@ jobs:
           - windows-latest
           - macos-latest
         exclude:
-          - linux-only: true
+          - linux-only: 'true'
             os: windows-latest
-          - linux-only: true
+          - linux-only: 'true'
             os: macos-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Disable AppArmor
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-      - name: Install dependencies
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
-      # Set up GitHub Actions caching for Wireit.
-      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
+          fetch-depth: 2
+
+      - name: Setup Puppeteer GitHub Action
+        uses: ./.github/actions/setup
+        with:
+          download-browsers: false
       - name: Test install
         env:
           PKG_MANAGER: ${{ matrix.pkg_manager }}
@@ -372,17 +273,11 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 2
-      - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+
+      - name: Setup Puppeteer GitHub Action
+        uses: ./.github/actions/setup
         with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Install dependencies
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
-      - name: Build packages
-        run: npm run build --workspace puppeteer
+          build-package: puppeteer
       - name: Pack packages
         run: docker/pack.sh
       - name: Build docker image
@@ -402,15 +297,14 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Install dependencies
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
+          fetch-depth: 2
+
+      - name: Setup Puppeteer GitHub Action
+        uses: ./.github/actions/setup
+        with:
+          build-package: '@puppeteer/browsers'
+          download-browsers: false
       - name: Run unit tests
         run: |
           npm run unit -w puppeteer-core -w puppeteer --if-present
@@ -421,17 +315,16 @@ jobs:
     needs: check-changes
     if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'ng-schematics') }}
     steps:
-      - name: Checkout
+      - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Install dependencies
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
+          fetch-depth: 2
+
+      - name: Setup Puppeteer GitHub Action
+        uses: ./.github/actions/setup
+        with:
+          build-package: '@puppeteer/ng-schematics'
+          download-browsers: false
       - name: Run tests
         run: npm run unit --workspace @puppeteer/ng-schematics
 
@@ -444,7 +337,7 @@ jobs:
       fail-fast: false
       matrix:
         linux-only:
-          - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
+          - ${{ needs.check-changes.outputs.linux-only }}
         os:
           - ubuntu-latest
           - windows-latest
@@ -455,29 +348,18 @@ jobs:
           - jasmine
           - mocha
         exclude:
-          - linux-only: true
+          - linux-only: 'true'
             os: windows-latest
-          - linux-only: true
+          - linux-only: 'true'
             os: macos-latest
     steps:
-      - name: Checkout
+      - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Disable AppArmor
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-      - name: Install dependencies
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
-      - name: Build all and schematics
-        run: npm run build
-      - name: Install Browsers
-        run: npm run postinstall
+          fetch-depth: 2
+
+      - name: Setup Puppeteer GitHub Action
+        uses: ./.github/actions/setup
       - name: Run tests
         run: node tools/smoke.mjs -r ${{ matrix.test-runner }}
         working-directory: ./packages/ng-schematics
@@ -501,31 +383,27 @@ jobs:
       fail-fast: false
       matrix:
         linux-only:
-          - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
+          - ${{ needs.check-changes.outputs.linux-only }}
         os:
           - ubuntu-latest
           - windows-latest
           - macos-latest
         exclude:
-          - linux-only: true
+          - linux-only: 'true'
             os: windows-latest
-          - linux-only: true
+          - linux-only: 'true'
             os: macos-latest
     steps:
-      - name: Checkout
+      - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Disable AppArmor
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-      - name: Install dependencies
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
+          fetch-depth: 2
+
+      - name: Setup Puppeteer GitHub Action
+        uses: ./.github/actions/setup
+        with:
+          build-package: '@puppeteer/browsers'
+          download-browsers: false
       - name: Setup cache for browsers
         uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         with:

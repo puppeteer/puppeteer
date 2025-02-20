@@ -1,0 +1,56 @@
+name: 'Setup Puppeteer GitHub Action'
+description: 'Setups GitHub action'
+
+inputs:
+  build-package:
+    description: 'Package(s) to build'
+    required: false
+    default: 'all'
+  download-browsers:
+    description: 'Setup browser caches or not'
+    required: false
+    default: 'true'
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+      with:
+        cache: npm
+        node-version-file: '.nvmrc'
+
+    - name: Disable AppArmor
+      if: ${{ runner.os == 'Linux' }}
+      shell: bash
+      run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
+
+    - name: Install dependencies
+      shell: bash
+      env:
+        PUPPETEER_SKIP_DOWNLOAD: true
+      run: npm ci
+
+    # Set up GitHub Actions caching for Wireit.
+    - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
+
+    - name: Build All packages
+      shell: bash
+      if: ${{inputs.build-package == 'all'}}
+      run: npm run build
+
+    - name: Build workspaces packages
+      shell: bash
+      if: ${{inputs.build-package != 'all'}}
+      run: npm run build -w ${{ inputs.build-package }}
+
+    - name: Setup cache for browsers
+      if: ${{inputs.download-browsers == 'true'}}
+      uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+      with:
+        path: ~/.cache/puppeteer/
+        key: Browsers-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
+
+    - name: Install browsers (if not in cache)
+      if: ${{inputs.download-browsers == 'true'}}
+      shell: bash
+      run: npm run postinstall
