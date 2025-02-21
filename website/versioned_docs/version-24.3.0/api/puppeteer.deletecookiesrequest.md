@@ -83,7 +83,7 @@ Name of the cookies to remove.
 
 </td><td>
 
-If specified, deletes cookies in the given partition key. In Chrome, partitionKey matches the top-level site the partitioned cookie is available in. In Firefox, it matches the source origin (https://w3c.github.io/webdriver-bidi/\#type-storage-PartitionKey).
+If specified, deletes cookies in the given partition key. In Chrome, partitionKey matches the top-level site the partitioned cookie is available in. In Firefox, it matches the source origin in the [PartitionKey](https://w3c.github.io/webdriver-bidi/#type-storage-PartitionKey).
 
 </td><td>
 

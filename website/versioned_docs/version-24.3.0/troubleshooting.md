@@ -51,6 +51,30 @@ You will need to reinstall `puppeteer` in order for the configuration to take
 effect. See [Configuring Puppeteer](./guides/configuration) for more
 information.
 
+## `net::ERR_BLOCKED_BY_CLIENT` when navigating to an HTTP URL in Chrome
+
+Chrome is rolling out a feature called `HttpsFirstBalancedModeAutoEnable` that
+displays a warning to the user if the user navigates to an HTTP site. The feature
+is enabled by default in Chrome for Testing builds that Puppeteer uses by
+default.
+
+The feature makes a navigation request to an HTTP URL result in the error
+`net::ERR_BLOCKED_BY_CLIENT` which can be caught and recovered from. When the
+error occurs, a warning page is shown to the user with a button to continue
+navigation. The button is clickable via Puppeteer. Local HTTP hosts do not
+trigger a warning but remote hosts might. For more details see
+https://crbug.com/378022921
+
+It is possible to disable this Chrome feature by passing the
+`--disable-features=HttpsFirstBalancedModeAutoEnable` argument when launching
+Chrome:
+
+```ts
+const browser = await puppeteer.launch({
+  args: ['--disable-features=HttpsFirstBalancedModeAutoEnable'],
+});
+```
+
 ## Chrome doesn't launch on Windows
 
 Some [chrome policies](https://support.google.com/chrome/a/answer/7532015) might
@@ -87,7 +111,7 @@ following errors in the browser output:
 You can use icacls to set permissions manually:
 
 ```powershell
-icacls %USERPROFILE%/.cache/puppeteer/chrome /grant *S-1-15-2-1:(OI)(CI)(RX)
+icacls "%USERPROFILE%/.cache/puppeteer/chrome" /grant *S-1-15-2-1:(OI)(CI)(RX)
 ```
 
 :::note
