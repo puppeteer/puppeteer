@@ -111,7 +111,7 @@ following errors in the browser output:
 You can use icacls to set permissions manually:
 
 ```powershell
-icacls %USERPROFILE%/.cache/puppeteer/chrome /grant *S-1-15-2-1:(OI)(CI)(RX)
+icacls "%USERPROFILE%/.cache/puppeteer/chrome" /grant *S-1-15-2-1:(OI)(CI)(RX)
 ```
 
 :::note

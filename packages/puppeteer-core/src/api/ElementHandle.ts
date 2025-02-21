@@ -1573,8 +1573,10 @@ export abstract class ElementHandle<
  * @public
  */
 export interface AutofillData {
+  /**
+   * See {@link https://chromedevtools.github.io/devtools-protocol/tot/Autofill/#type-CreditCard | Autofill.CreditCard}.
+   */
   creditCard: {
-    // See https://chromedevtools.github.io/devtools-protocol/tot/Autofill/#type-CreditCard.
     number: string;
     name: string;
     expiryMonth: string;
