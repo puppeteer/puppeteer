@@ -14,12 +14,12 @@
     "docs": "wireit",
     "doctest": "wireit",
     "format": "wireit",
-    "format:eslint": "eslint --fix .",
+    "format:eslint": "eslint --cache --fix .",
     "format:expectations": "node tools/sort-test-expectations.mjs",
-    "format:prettier": "prettier --write .",
+    "format:prettier": "prettier --write --cache . ",
     "lint": "wireit",
     "lint:eslint": "wireit",
-    "lint:prettier": "prettier --check .",
+    "lint:prettier": "prettier --check --cache .",
     "lint:expectations": "node tools/sort-test-expectations.mjs --lint",
     "postinstall": "npm run postinstall --workspaces --if-present",
     "prepare": "npm run prepare --workspaces --if-present",
@@ -86,7 +86,7 @@
       ]
     },
     "lint:eslint": {
-      "command": "eslint .",
+      "command": "eslint --cache .",
       "dependencies": [
         "build:tools"
       ]

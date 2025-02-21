@@ -45,6 +45,8 @@ Default
 
 </td><td>
 
+See [Autofill.CreditCard](https://chromedevtools.github.io/devtools-protocol/tot/Autofill/#type-CreditCard).
+
 </td><td>
 
 </td></tr>
