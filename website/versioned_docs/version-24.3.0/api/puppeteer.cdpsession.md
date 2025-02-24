@@ -37,6 +37,44 @@ await client.send('Animation.setPlaybackRate', {
 });
 ```
 
+## Properties
+
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+<span id="detached">detached</span>
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+True if the session has been detached, false otherwise.
+
+</td></tr>
+</tbody></table>
+
 ## Methods
 
 <table><thead><tr><th>
@@ -59,6 +97,8 @@ Description
 </td><td>
 
 </td><td>
+
+The underlying connection for this session, if any.
 
 </td></tr>
 <tr><td>
