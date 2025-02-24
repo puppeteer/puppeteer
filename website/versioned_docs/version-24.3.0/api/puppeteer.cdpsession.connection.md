@@ -4,6 +4,8 @@ sidebar_label: CDPSession.connection
 
 # CDPSession.connection() method
 
+The underlying connection for this session, if any.
+
 ### Signature
 
 ```typescript

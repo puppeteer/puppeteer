@@ -2,6 +2,33 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.3.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.2.1...puppeteer-v24.3.0) (2025-02-24)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.2.1 to 24.3.0
+
+
+### Features
+
+* expose CDPSession.detached ([#13615](https://github.com/puppeteer/puppeteer/issues/13615)) ([33e3e83](https://github.com/puppeteer/puppeteer/commit/33e3e83d3c47e1fcedbbec186ae3ab98ae7cf025))
+
+
+### Bug Fixes
+
+* do not throw an error when a navigation is aborted ([#13621](https://github.com/puppeteer/puppeteer/issues/13621)) ([89d71a2](https://github.com/puppeteer/puppeteer/commit/89d71a2f8f4bd681a265d06431d00757ba891efa))
+* roll to Chrome 133.0.6943.126 ([#13623](https://github.com/puppeteer/puppeteer/issues/13623)) ([09e4404](https://github.com/puppeteer/puppeteer/commit/09e44049baee33e2ed660fe224c2035b2892b413))
+* roll to Firefox 135.0.1 ([#13622](https://github.com/puppeteer/puppeteer/issues/13622)) ([ce10410](https://github.com/puppeteer/puppeteer/commit/ce10410f0a9603ad9bffae8faad8da70f7383262))
+
+
 ## [24.2.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.2.0...puppeteer-v24.2.1) (2025-02-13)
 
 
