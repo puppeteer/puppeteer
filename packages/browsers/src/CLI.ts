@@ -373,8 +373,15 @@ export class CLI {
                 cacheDir: args.path ?? this.#cachePath,
                 platform: args.platform,
               });
+          // Pass any extra arguments after '--' directly to the browser executable
+          let extraArgs: string[] = [];
+          const extraArgsIndex = process.argv.indexOf('--');
+          if (extraArgsIndex !== -1) {
+            extraArgs = process.argv.splice(extraArgsIndex + 1);
+          }
           launch({
             executablePath,
+            args: extraArgs,
             detached: args.detached,
           });
         },
