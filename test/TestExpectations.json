@@ -1279,13 +1279,6 @@
     "comment": "https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856 historyUpdated from beforeunload incorrectly comes before navigationStarted"
   },
   {
-    "testIdPattern": "[navigation.spec] navigation Page.goto should work when reload causes history API in beforeunload",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856 historyUpdated from beforeunload incorrectly comes before navigationStarted."
-  },
-  {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work with anchor navigation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "chrome-headless-shell"],
