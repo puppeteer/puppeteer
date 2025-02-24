@@ -142,10 +142,10 @@
   "dependencies": {
     "@puppeteer/browsers": "2.7.1",
     "debug": "^4.4.0",
-    "chromium-bidi": "1.3.0",
+    "chromium-bidi": "2.0.0",
     "devtools-protocol": "0.0.1402036",
     "typed-query-selector": "^2.12.0",
-    "ws": "^8.18.0"
+    "ws": "^8.18.1"
   },
   "devDependencies": {
     "@types/chrome": "0.0.306",
