@@ -199,7 +199,7 @@ jobs:
       - name: Build packages
         run: npm run build --workspace @puppeteer-test/test
       - name: Setup cache for browsers
-        uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
         with:
           path: ~/.cache/puppeteer/
           key: Browsers-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
@@ -278,7 +278,7 @@ jobs:
       - name: Build packages
         run: npm run build --workspace @puppeteer-test/test
       - name: Setup cache for browsers
-        uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
         with:
           path: ~/.cache/puppeteer/
           key: Browsers-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
@@ -527,7 +527,7 @@ jobs:
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
       - name: Setup cache for browsers
-        uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
         with:
           path: packages/browsers/test/.cache/server
           key: TestBrowsers-${{ runner.os }}-${{ hashFiles('packages/browsers/test/src/versions.ts') }}-${{ hashFiles('packages/browsers/tools/downloadTestBrowsers.mjs') }}
