@@ -25,6 +25,7 @@ export enum Browser {
  */
 export enum BrowserPlatform {
   LINUX = 'linux',
+  LINUX_ARM = 'linux_arm',
   MAC = 'mac',
   MAC_ARM = 'mac_arm',
   WIN32 = 'win32',

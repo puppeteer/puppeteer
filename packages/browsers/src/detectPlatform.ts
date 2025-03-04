@@ -19,7 +19,9 @@ export function detectBrowserPlatform(): BrowserPlatform | undefined {
         ? BrowserPlatform.MAC_ARM
         : BrowserPlatform.MAC;
     case 'linux':
-      return BrowserPlatform.LINUX;
+      return os.arch() === 'arm64'
+        ? BrowserPlatform.LINUX_ARM
+        : BrowserPlatform.LINUX;
     case 'win32':
       return os.arch() === 'x64' ||
         // Windows 11 for ARM supports x64 emulation

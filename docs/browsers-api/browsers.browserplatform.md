@@ -40,6 +40,17 @@ LINUX
 </td></tr>
 <tr><td>
 
+LINUX_ARM
+
+</td><td>
+
+`"linux_arm"`
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 MAC
 
 </td><td>

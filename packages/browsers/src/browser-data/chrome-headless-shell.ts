@@ -9,6 +9,8 @@ import {BrowserPlatform} from './types.js';
 
 function folder(platform: BrowserPlatform): string {
   switch (platform) {
+    case BrowserPlatform.LINUX_ARM:
+      throw new Error('Linux arm64 is not supported for chrome-headless-shell');
     case BrowserPlatform.LINUX:
       return 'linux64';
     case BrowserPlatform.MAC_ARM:
@@ -52,6 +54,8 @@ export function relativeExecutablePath(
         'chrome-headless-shell-' + folder(platform),
         'chrome-headless-shell',
       );
+    case BrowserPlatform.LINUX_ARM:
+      throw new Error('Linux arm64 is not supported for chrome-headless-shell');
     case BrowserPlatform.LINUX:
       return path.join(
         'chrome-headless-shell-linux64',
