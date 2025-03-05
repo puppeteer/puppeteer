@@ -13,7 +13,6 @@ import {BrowserPlatform} from './types.js';
 function archive(platform: BrowserPlatform, buildId: string): string {
   switch (platform) {
     case BrowserPlatform.LINUX_ARM:
-      throw new Error('Linux arm64 is not supported for chromium');
     case BrowserPlatform.LINUX:
       return 'chrome-linux';
     case BrowserPlatform.MAC_ARM:
@@ -33,7 +32,6 @@ function folder(platform: BrowserPlatform): string {
     case BrowserPlatform.MAC_ARM:
       return 'Mac_Arm';
     case BrowserPlatform.LINUX_ARM:
-      throw new Error('Linux arm64 is not supported for chromium');
     case BrowserPlatform.MAC:
       return 'Mac';
     case BrowserPlatform.WIN32:
@@ -73,7 +71,6 @@ export function relativeExecutablePath(
         'Chromium',
       );
     case BrowserPlatform.LINUX_ARM:
-      throw new Error('Linux arm64 is not supported for chromium');
     case BrowserPlatform.LINUX:
       return path.join('chrome-linux', 'chrome');
     case BrowserPlatform.WIN32:
