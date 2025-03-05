@@ -9,6 +9,7 @@ import {BrowserPlatform} from './types.js';
 
 function folder(platform: BrowserPlatform): string {
   switch (platform) {
+    case BrowserPlatform.LINUX_ARM:
     case BrowserPlatform.LINUX:
       return 'linux64';
     case BrowserPlatform.MAC_ARM:
@@ -45,6 +46,7 @@ export function relativeExecutablePath(
     case BrowserPlatform.MAC:
     case BrowserPlatform.MAC_ARM:
       return path.join('chromedriver-' + folder(platform), 'chromedriver');
+    case BrowserPlatform.LINUX_ARM:
     case BrowserPlatform.LINUX:
       return path.join('chromedriver-linux64', 'chromedriver');
     case BrowserPlatform.WIN32:

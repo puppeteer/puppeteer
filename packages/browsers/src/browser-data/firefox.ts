@@ -19,7 +19,9 @@ function getFormat(buildId: string): string {
 function archiveNightly(platform: BrowserPlatform, buildId: string): string {
   switch (platform) {
     case BrowserPlatform.LINUX:
-      return `firefox-${buildId}.en-US.${platform}-x86_64.tar.${getFormat(buildId)}`;
+      return `firefox-${buildId}.en-US.linux-x86_64.tar.${getFormat(buildId)}`;
+    case BrowserPlatform.LINUX_ARM:
+      return `firefox-${buildId}.en-US.linux-aarch64.tar.${getFormat(buildId)}`;
     case BrowserPlatform.MAC_ARM:
     case BrowserPlatform.MAC:
       return `firefox-${buildId}.en-US.mac.dmg`;
@@ -31,6 +33,7 @@ function archiveNightly(platform: BrowserPlatform, buildId: string): string {
 
 function archive(platform: BrowserPlatform, buildId: string): string {
   switch (platform) {
+    case BrowserPlatform.LINUX_ARM:
     case BrowserPlatform.LINUX:
       return `firefox-${buildId}.tar.${getFormat(buildId)}`;
     case BrowserPlatform.MAC_ARM:
@@ -46,6 +49,8 @@ function platformName(platform: BrowserPlatform): string {
   switch (platform) {
     case BrowserPlatform.LINUX:
       return `linux-x86_64`;
+    case BrowserPlatform.LINUX_ARM:
+      return `linux-aarch64`;
     case BrowserPlatform.MAC_ARM:
     case BrowserPlatform.MAC:
       return `mac`;
@@ -126,6 +131,7 @@ export function relativeExecutablePath(
             'MacOS',
             'firefox',
           );
+        case BrowserPlatform.LINUX_ARM:
         case BrowserPlatform.LINUX:
           return path.join('firefox', 'firefox');
         case BrowserPlatform.WIN32:
@@ -140,6 +146,7 @@ export function relativeExecutablePath(
         case BrowserPlatform.MAC_ARM:
         case BrowserPlatform.MAC:
           return path.join('Firefox.app', 'Contents', 'MacOS', 'firefox');
+        case BrowserPlatform.LINUX_ARM:
         case BrowserPlatform.LINUX:
           return path.join('firefox', 'firefox');
         case BrowserPlatform.WIN32:

@@ -14,6 +14,7 @@ import {BrowserPlatform, ChromeReleaseChannel} from './types.js';
 
 function folder(platform: BrowserPlatform): string {
   switch (platform) {
+    case BrowserPlatform.LINUX_ARM:
     case BrowserPlatform.LINUX:
       return 'linux64';
     case BrowserPlatform.MAC_ARM:
@@ -56,6 +57,7 @@ export function relativeExecutablePath(
         'MacOS',
         'Google Chrome for Testing',
       );
+    case BrowserPlatform.LINUX_ARM:
     case BrowserPlatform.LINUX:
       return path.join('chrome-linux64', 'chrome');
     case BrowserPlatform.WIN32:
@@ -181,6 +183,7 @@ export function resolveSystemExecutablePath(
         case ChromeReleaseChannel.DEV:
           return '/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev';
       }
+    case BrowserPlatform.LINUX_ARM:
     case BrowserPlatform.LINUX:
       switch (channel) {
         case ChromeReleaseChannel.STABLE:

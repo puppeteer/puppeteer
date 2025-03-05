@@ -13,17 +13,18 @@ import {BrowserPlatform} from './browser-data/browser-data.js';
  */
 export function detectBrowserPlatform(): BrowserPlatform | undefined {
   const platform = os.platform();
+  const arch = os.arch();
   switch (platform) {
     case 'darwin':
-      return os.arch() === 'arm64'
-        ? BrowserPlatform.MAC_ARM
-        : BrowserPlatform.MAC;
+      return arch === 'arm64' ? BrowserPlatform.MAC_ARM : BrowserPlatform.MAC;
     case 'linux':
-      return BrowserPlatform.LINUX;
+      return arch === 'arm64'
+        ? BrowserPlatform.LINUX_ARM
+        : BrowserPlatform.LINUX;
     case 'win32':
-      return os.arch() === 'x64' ||
+      return arch === 'x64' ||
         // Windows 11 for ARM supports x64 emulation
-        (os.arch() === 'arm64' && isWindows11(os.release()))
+        (arch === 'arm64' && isWindows11(os.release()))
         ? BrowserPlatform.WIN64
         : BrowserPlatform.WIN32;
     default:
