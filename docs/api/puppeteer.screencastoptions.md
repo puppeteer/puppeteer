@@ -35,6 +35,27 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="colors">colors</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Specifies the maximum number of [palette](https://ffmpeg.org/ffmpeg-filters.html#palettegen) colors to quantize, with GIF limited to `256`. Restrict the palette to only necessary colors to reduce output file size.
+
+</td><td>
+
+`256`
+
+</td></tr>
+<tr><td>
+
 <span id="crop">crop</span>
 
 </td><td>
@@ -50,6 +71,27 @@ Default
 Specifies the region of the viewport to crop.
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="delay">delay</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Specifies the delay between iterations of a loop, in ms. `-1` is a special value to re-use the previous delay.
+
+</td><td>
+
+`-1`
 
 </td></tr>
 <tr><td>
@@ -75,6 +117,69 @@ Required if `ffmpeg` is not in your PATH.
 </td></tr>
 <tr><td>
 
+<span id="format">format</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[FileFormat](./puppeteer.fileformat.md)
+
+</td><td>
+
+Specifies the output file format.
+
+</td><td>
+
+`webm`
+
+</td></tr>
+<tr><td>
+
+<span id="fps">fps</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Specifies the frame rate in frames per second.
+
+</td><td>
+
+`30` (`20` for GIF)
+
+</td></tr>
+<tr><td>
+
+<span id="loop">loop</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Specifies the number of times to loop playback, from `0` to `Infinity`.
+
+</td><td>
+
+`0`
+
+</td></tr>
+<tr><td>
+
 <span id="path">path</span>
 
 </td><td>
@@ -83,13 +188,34 @@ Required if `ffmpeg` is not in your PATH.
 
 </td><td>
 
-\`$&#123;string&#125;.webm\`
+\`$&#123;string&#125;.gif\` \| \`$&#123;string&#125;.webm\` \| \`$&#123;string&#125;.mp4\`
 
 </td><td>
 
 File path to save the screencast to.
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="quality">quality</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Specifies the recording [quality](https://trac.ffmpeg.org/wiki/Encode/VP9#constantq) Constant Rate Factor between `0`–`63`. Lower values mean better quality.
+
+</td><td>
+
+`30`
 
 </td></tr>
 <tr><td>

@@ -1196,8 +1196,6 @@ Required response data to fulfill a request with.
 
 </td><td>
 
-**_(Experimental)_**
-
 </td></tr>
 <tr><td>
 
@@ -1537,6 +1535,15 @@ Represents the source scheme of the origin that originally set the cookie. A val
 Defines experiment options for Puppeteer.
 
 See individual properties for more information.
+
+</td></tr>
+<tr><td>
+
+<span id="fileformat">[FileFormat](./puppeteer.fileformat.md)</span>
+
+</td><td>
+
+**_(Experimental)_**
 
 </td></tr>
 <tr><td>
