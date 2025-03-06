@@ -287,9 +287,7 @@ export class CLI {
               default: false,
             });
         },
-        async argv => {
-          const args = argv;
-
+        async args => {
           if (this.#pinnedBrowsers && !args.browser) {
             // Use allSettled to avoid scenarios that
             // a browser may fail early and leave the other
@@ -301,7 +299,7 @@ export class CLI {
                     return;
                   }
                   await this.#install({
-                    ...argv,
+                    ...args,
                     browser: {
                       name: browser as Browser,
                       buildId: options.buildId,
