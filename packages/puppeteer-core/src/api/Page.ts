@@ -318,13 +318,13 @@ export interface ScreenshotOptions {
  * @public
  * @experimental
  */
-export type FileFormat = 'gif' | 'webm';
+export type FileFormat = 'gif' | 'webm' | 'mp4';
 
 export interface ScreencastOptions {
   /**
    * File path to save the screencast to.
    */
-  path?: `${string}.gif` | `${string}.webm`;
+  path?: `${string}.gif` | `${string}.webm` | `${string}.mp4`;
   /**
    * Specifies the output file format.
    *
