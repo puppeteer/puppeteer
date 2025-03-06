@@ -381,8 +381,6 @@ export class CLI {
           launch({
             executablePath,
             detached: args.detached,
-            // TODO: Remove here for testing
-            dumpio: true,
           });
         },
       )
