@@ -1,5 +1,20 @@
 # Changelog
 
+## [24.4.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.3.1...puppeteer-v24.4.0) (2025-03-05)
+
+
+### Features
+
+* roll to Chrome 134.0.6998.35 ([#13649](https://github.com/puppeteer/puppeteer/issues/13649)) ([cdb175b](https://github.com/puppeteer/puppeteer/commit/cdb175b76c49c53e680515cf635f08e722f3dd52))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.7.1 to 2.8.0
+    * puppeteer-core bumped from 24.3.1 to 24.4.0
+
 ## [24.3.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.3.0...puppeteer-v24.3.1) (2025-03-03)
 
 

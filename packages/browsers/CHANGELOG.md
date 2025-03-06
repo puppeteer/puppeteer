@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.8.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.7.1...browsers-v2.8.0) (2025-03-05)
+
+
+### Features
+
+* add firefox arm64 downloads ([#13646](https://github.com/puppeteer/puppeteer/issues/13646)) ([92ca975](https://github.com/puppeteer/puppeteer/commit/92ca975ffc90968c6759be0481459ecc56f4606c))
+
 ## [2.7.1](https://github.com/puppeteer/puppeteer/compare/browsers-v2.7.0...browsers-v2.7.1) (2025-02-05)
 
 
