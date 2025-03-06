@@ -322,7 +322,13 @@ export interface ScreencastOptions {
   /**
    * File path to save the screencast to.
    */
-  path?: `${string}.webm`;
+  path?: `${string}.gif` | `${string}.webm`;
+  /**
+   * Specifies the output file format.
+   *
+   * @defaultValue `webm`
+   */
+  format?: 'gif' | 'webm';
   /**
    * Specifies the region of the viewport to crop.
    */
