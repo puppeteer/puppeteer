@@ -248,7 +248,7 @@ export class ScreenRecorder extends PassThrough {
         if (loop === Infinity) {
           loop = 0;
         }
-        if (!Math.sign(delay)) {
+        if (delay !== -1) {
           delay /= 10;
         } // ms to cs
         return [
