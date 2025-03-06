@@ -234,7 +234,7 @@ export class ScreenRecorder extends PassThrough {
           // input.
           [
             '-vf',
-            `fps=${fps},split[s0][s1];[s0]palettegen=stats_mode=diff:max_colors=${colors}[p];[s1][p]paletteuse`,
+            `fps=${fps},split[s0][s1];[s0]palettegen=stats_mode=diff:max_colors=${colors}[p];[s1][p]paletteuse=dither=bayer`,
           ],
           // Sets the number of times to loop playback.
           ['-loop', `${loop}`],
