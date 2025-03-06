@@ -125,7 +125,7 @@ export class ScreenRecorder extends PassThrough {
       colors,
     );
     const vf = formatArgs.indexOf('-vf');
-    if (~vf) {
+    if (vf !== -1) {
       filters.push(formatArgs.splice(vf, 2).at(-1) ?? '');
     }
 
