@@ -354,6 +354,42 @@ export interface ScreencastOptions {
    */
   speed?: number;
   /**
+   * Specifies the frame rate in frames per second.
+   *
+   * @defaultValue `30` (`20` for GIF)
+   */
+  fps?: number;
+  /**
+   * Specifies the number of times to loop playback, from `0` to `Infinity`.
+   *
+   * @defaultValue `0`
+   */
+  loop?: number;
+  /**
+   * Specifies the delay between iterations of a loop, in ms.
+   * `-1` is a special value to re-use the previous delay.
+   *
+   * @defaultValue `-1`
+   */
+  delay?: number;
+  /**
+   * Specifies the recording
+   * {@link https://trac.ffmpeg.org/wiki/Encode/VP9#constantq | quality}
+   * Constant Rate Factor between `0`–`63`. Lower values mean better quality.
+   *
+   * @defaultValue `30`
+   */
+  quality?: number;
+  /**
+   * Specifies the maximum number of
+   * {@link https://ffmpeg.org/ffmpeg-filters.html#palettegen | palette}
+   * colors to quantize, with GIF limited to `256`.
+   * Restrict the palette to only necessary colors to reduce output file size.
+   *
+   * @defaultValue `256`
+   */
+  colors?: number;
+  /**
    * Path to the {@link https://ffmpeg.org/ | ffmpeg}.
    *
    * Required if `ffmpeg` is not in your PATH.
@@ -2355,8 +2391,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @remarks
    *
-   * All recordings will be {@link https://www.webmproject.org/ | WebM} format using
-   * the {@link https://www.webmproject.org/vp9/ | VP9} video codec. The FPS is 30.
+   * By default, all recordings will be {@link https://www.webmproject.org/ | WebM} format using
+   * the {@link https://www.webmproject.org/vp9/ | VP9} video codec, with a frame rate of 30 FPS.
    *
    * You must have {@link https://ffmpeg.org/ | ffmpeg} installed on your system.
    */
