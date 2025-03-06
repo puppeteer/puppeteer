@@ -171,11 +171,11 @@ number
 
 </td><td>
 
-Specifies the number of times to loop playback, from `0` to `Infinity`.
+Specifies the number of times to loop playback, from `0` to `Infinity`. A value of `0` or `undefined` will disable looping.
 
 </td><td>
 
-`0`
+`undefined`
 
 </td></tr>
 <tr><td>
