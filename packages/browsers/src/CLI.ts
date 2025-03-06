@@ -339,10 +339,6 @@ export class CLI {
             .example(
               '$0 launch chrome@canary --system',
               'Try to locate the Canary build of Chrome installed on the system and launch it.',
-            )
-            .example(
-              '$0 launch chrome@115.0.5790.170 -- --version',
-              'Launch the browser and pass custom arguments to the binary.',
             );
 
           const yargsWithBrowserParam = this.#defineBrowserParameter(
