@@ -6,8 +6,8 @@
 
 import type {ChildProcessWithoutNullStreams} from 'node:child_process';
 import {spawn, spawnSync} from 'node:child_process';
-import {PassThrough} from 'node:stream';
 import os from 'node:os';
+import {PassThrough} from 'node:stream';
 
 import debug from 'debug';
 
@@ -105,14 +105,29 @@ export class ScreenRecorder extends PassThrough {
     const filters = [
       `crop='min(${width},iw):min(${height},ih):0:0'`,
       `pad=${width}:${height}:0:0`,
-    ]
-    if (speed) filters.push(`setpts=${1 / speed}*PTS`);
-    if (crop) filters.push(`crop=${crop.width}:${crop.height}:${crop.x}:${crop.y}`);
-    if (scale) filters.push(`scale=iw*${scale}:-1:flags=lanczos`);
+    ];
+    if (speed) {
+      filters.push(`setpts=${1 / speed}*PTS`);
+    }
+    if (crop) {
+      filters.push(`crop=${crop.width}:${crop.height}:${crop.x}:${crop.y}`);
+    }
+    if (scale) {
+      filters.push(`scale=iw*${scale}:-1:flags=lanczos`);
+    }
 
-    const formatArgs = this.#getFormatArgs(format, fps, loop, delay, quality, colors);
+    const formatArgs = this.#getFormatArgs(
+      format,
+      fps,
+      loop,
+      delay,
+      quality,
+      colors,
+    );
     const vf = formatArgs.indexOf('-vf');
-    if (~vf) filters.push(formatArgs.splice(vf, 2).at(-1) ?? '');
+    if (~vf) {
+      filters.push(formatArgs.splice(vf, 2).at(-1) ?? '');
+    }
 
     this.#process = spawn(
       path,
@@ -220,7 +235,7 @@ export class ScreenRecorder extends PassThrough {
       ['-crf', `${quality}`],
       // Sets the quality and how efficient the compression will be.
       ['-deadline', 'realtime', '-cpu-used', `${os.cpus().length / 2}`],
-    ]
+    ];
     switch (format) {
       case 'webm':
         return [
@@ -230,8 +245,12 @@ export class ScreenRecorder extends PassThrough {
         ].flat();
       case 'gif':
         fps = DEFAULT_FPS === fps ? 20 : 'source_fps';
-        if (loop === Infinity) loop = 0;
-        if (!Math.sign(delay)) delay /= 10; // ms to cs
+        if (loop === Infinity) {
+          loop = 0;
+        }
+        if (!Math.sign(delay)) {
+          delay /= 10;
+        } // ms to cs
         return [
           // Sets the frame rate and uses a custom palette generated from the
           // input.
