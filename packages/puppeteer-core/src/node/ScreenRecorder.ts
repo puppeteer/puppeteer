@@ -42,6 +42,11 @@ export interface ScreenRecorderOptions {
   speed?: number;
   crop?: BoundingBox;
   format?: FileFormat;
+  fps?: number;
+  loop?: number;
+  delay?: number;
+  quality?: number;
+  colors?: number;
   scale?: number;
   path?: string;
 }
@@ -57,6 +62,8 @@ export class ScreenRecorder extends PassThrough {
   #controller = new AbortController();
   #lastFrame: Promise<readonly [Buffer, number]>;
 
+  #fps: number;
+
   /**
    * @internal
    */
@@ -64,11 +71,30 @@ export class ScreenRecorder extends PassThrough {
     page: Page,
     width: number,
     height: number,
-    {speed, scale, crop, format, path}: ScreenRecorderOptions = {},
+    {
+      speed,
+      scale,
+      crop,
+      format,
+      fps,
+      loop,
+      delay,
+      quality,
+      colors,
+      path,
+    }: ScreenRecorderOptions = {},
   ) {
     super({allowHalfOpen: false});
 
+    format ??= 'webm';
+    fps ??= DEFAULT_FPS;
+    loop ||= -1;
+    delay ??= -1;
+    quality ??= CRF_VALUE;
+    colors ??= 256;
     path ??= 'ffmpeg';
+
+    this.#fps = fps;
 
     // Tests if `ffmpeg` exists.
     const {error} = spawnSync(path);
@@ -84,7 +110,7 @@ export class ScreenRecorder extends PassThrough {
     if (crop) filters.push(`crop=${crop.width}:${crop.height}:${crop.x}:${crop.y}`);
     if (scale) filters.push(`scale=iw*${scale}:-1:flags=lanczos`);
 
-    const formatArgs = this.#getFormatArgs(format ?? 'webm');
+    const formatArgs = this.#getFormatArgs(format, fps, loop, delay, quality, colors);
     const vf = formatArgs.indexOf('-vf');
     if (~vf) filters.push(formatArgs.splice(vf, 2).at(-1) ?? '');
 
@@ -115,7 +141,7 @@ export class ScreenRecorder extends PassThrough {
         // VP9 tries to use all available threads?
         ['-threads', '1'],
         // Specifies the frame rate we are giving ffmpeg.
-        ['-framerate', `${DEFAULT_FPS}`],
+        ['-framerate', `${fps}`],
         // Disable bitrate.
         ['-b:v', '0'],
         // Specifies the encoding and format we are using.
@@ -165,9 +191,7 @@ export class ScreenRecorder extends PassThrough {
         concatMap(([{timestamp: previousTimestamp, buffer}, {timestamp}]) => {
           return from(
             Array<Buffer>(
-              Math.round(
-                DEFAULT_FPS * Math.max(timestamp - previousTimestamp, 0),
-              ),
+              Math.round(fps * Math.max(timestamp - previousTimestamp, 0)),
             ).fill(buffer),
           );
         }),
@@ -181,7 +205,14 @@ export class ScreenRecorder extends PassThrough {
     );
   }
 
-  #getFormatArgs(format: FileFormat) {
+  #getFormatArgs(
+    format: FileFormat,
+    fps: number | 'source_fps',
+    loop: number,
+    delay: number,
+    quality: number,
+    colors: number,
+  ) {
     switch (format) {
       case 'webm':
         return [
@@ -195,13 +226,20 @@ export class ScreenRecorder extends PassThrough {
           ['-deadline', 'realtime', '-cpu-used', `${os.cpus().length / 2}`],
         ].flat();
       case 'gif':
+        fps = DEFAULT_FPS === fps ? 20 : 'source_fps';
+        if (loop === Infinity) loop = 0;
+        if (!Math.sign(delay)) delay /= 10; // ms to cs
         return [
           // Sets the frame rate and uses a custom palette generated from the
           // input.
           [
             '-vf',
-            'fps=5,split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse',
+            `fps=${fps},split[s0][s1];[s0]palettegen=stats_mode=diff:max_colors=${colors}[p];[s1][p]paletteuse`,
           ],
+          // Sets the number of times to loop playback.
+          ['-loop', `${loop}`],
+          // Sets the delay between iterations of a loop.
+          ['-final_delay', `${delay}`],
           // Sets the format
           ['-f', 'gif'],
         ].flat();
@@ -239,7 +277,7 @@ export class ScreenRecorder extends PassThrough {
       Array<Buffer>(
         Math.max(
           1,
-          Math.round((DEFAULT_FPS * (performance.now() - timestamp)) / 1000),
+          Math.round((this.#fps * (performance.now() - timestamp)) / 1000),
         ),
       )
         .fill(buffer)
