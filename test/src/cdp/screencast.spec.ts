@@ -93,6 +93,7 @@ describe('Screencasts', function () {
 
       await expect(page.screencast({format: 'gif'})).rejects.toBeDefined();
       await expect(page.screencast({format: 'webm'})).rejects.toBeDefined();
+      await expect(page.screencast({format: 'mp4'})).rejects.toBeDefined();
 
       await expect(page.screencast({fps: 0})).rejects.toBeDefined();
       await expect(page.screencast({fps: -1})).rejects.toBeDefined();
