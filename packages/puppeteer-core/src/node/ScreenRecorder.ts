@@ -213,17 +213,20 @@ export class ScreenRecorder extends PassThrough {
     quality: number,
     colors: number,
   ) {
+    const libvpx = [
+      // Sets the codec to use.
+      ['-c:v', 'vp9'],
+      // Sets the quality. Lower the better.
+      ['-crf', `${quality}`],
+      // Sets the quality and how efficient the compression will be.
+      ['-deadline', 'realtime', '-cpu-used', `${os.cpus().length / 2}`],
+    ]
     switch (format) {
       case 'webm':
         return [
-          // Sets the codec to use.
-          ['-c:v', 'vp9'],
+          ...libvpx,
           // Sets the format
           ['-f', 'webm'],
-          // Sets the quality. Lower the better.
-          ['-crf', `${CRF_VALUE}`],
-          // Sets the quality and how efficient the compression will be.
-          ['-deadline', 'realtime', '-cpu-used', `${os.cpus().length / 2}`],
         ].flat();
       case 'gif':
         fps = DEFAULT_FPS === fps ? 20 : 'source_fps';
@@ -242,6 +245,14 @@ export class ScreenRecorder extends PassThrough {
           ['-final_delay', `${delay}`],
           // Sets the format
           ['-f', 'gif'],
+        ].flat();
+      case 'mp4':
+        return [
+          ...libvpx,
+          // Fragment file during stream to avoid errors.
+          ['-movflags', 'hybrid_fragmented'],
+          // Sets the format
+          ['-f', 'mp4'],
         ].flat();
     }
   }
