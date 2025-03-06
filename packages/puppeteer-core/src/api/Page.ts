@@ -361,8 +361,9 @@ export interface ScreencastOptions {
   fps?: number;
   /**
    * Specifies the number of times to loop playback, from `0` to `Infinity`.
+   * A value of `0` or `undefined` will disable looping.
    *
-   * @defaultValue `0`
+   * @defaultValue `undefined`
    */
   loop?: number;
   /**
