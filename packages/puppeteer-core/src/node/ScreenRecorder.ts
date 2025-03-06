@@ -25,7 +25,7 @@ import {
 } from '../../third_party/rxjs/rxjs.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
-import type {Page} from '../api/Page.js';
+import type {Page, FileFormat} from '../api/Page.js';
 import {debugError, fromEmitterEvent} from '../common/util.js';
 import {guarded} from '../util/decorators.js';
 import {asyncDisposeSymbol} from '../util/disposable.js';
@@ -41,7 +41,7 @@ const debugFfmpeg = debug('puppeteer:ffmpeg');
 export interface ScreenRecorderOptions {
   speed?: number;
   crop?: BoundingBox;
-  format?: 'gif' | 'webm';
+  format?: FileFormat;
   scale?: number;
   path?: string;
 }
@@ -181,7 +181,7 @@ export class ScreenRecorder extends PassThrough {
     );
   }
 
-  #getFormatArgs(format: 'webm' | 'gif') {
+  #getFormatArgs(format: FileFormat) {
     switch (format) {
       case 'webm':
         return [
