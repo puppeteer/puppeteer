@@ -81,7 +81,7 @@ export class ScreenRecorder extends PassThrough {
     ]
     if (speed) filters.push(`setpts=${1 / speed}*PTS`);
     if (crop) filters.push(`crop=${crop.width}:${crop.height}:${crop.x}:${crop.y}`);
-    if (scale) filters.push(`scale=iw*${scale}:-1`);
+    if (scale) filters.push(`scale=iw*${scale}:-1:flags=lanczos`);
 
     const formatArgs = this.#getFormatArgs(format ?? 'webm');
     const vf = formatArgs.indexOf('-vf');
