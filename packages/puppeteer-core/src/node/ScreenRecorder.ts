@@ -75,6 +75,18 @@ export class ScreenRecorder extends PassThrough {
       throw error;
     }
 
+    const filters = [
+      `crop='min(${width},iw):min(${height},ih):0:0'`,
+      `pad=${width}:${height}:0:0`,
+    ]
+    if (speed) filters.push(`setpts=${1 / speed}*PTS`);
+    if (crop) filters.push(`crop=${crop.width}:${crop.height}:${crop.x}:${crop.y}`);
+    if (scale) filters.push(`scale=iw*${scale}:-1`);
+
+    const formatArgs = this.#getFormatArgs(format ?? 'webm');
+    const vf = formatArgs.indexOf('-vf');
+    if (~vf) filters.push(formatArgs.splice(vf, 2).at(-1) ?? '');
+
     this.#process = spawn(
       path,
       // See https://trac.ffmpeg.org/wiki/Encode/VP9 for more information on flags.
@@ -103,19 +115,13 @@ export class ScreenRecorder extends PassThrough {
         ['-threads', '1'],
         // Specifies the frame rate we are giving ffmpeg.
         ['-framerate', `${DEFAULT_FPS}`],
-        // Specifies the encoding and format we are using.
-        this.#getFormatArgs(format ?? 'webm'),
         // Disable bitrate.
         ['-b:v', '0'],
-        // Filters to ensure the images are piped correctly.
-        [
-          '-vf',
-          `${
-            speed ? `setpts=${1 / speed}*PTS,` : ''
-          }crop='min(${width},iw):min(${height},ih):0:0',pad=${width}:${height}:0:0${
-            crop ? `,crop=${crop.width}:${crop.height}:${crop.x}:${crop.y}` : ''
-          }${scale ? `,scale=iw*${scale}:-1` : ''}`,
-        ],
+        // Specifies the encoding and format we are using.
+        formatArgs,
+        // Filters to ensure the images are piped correctly,
+        // combined with any format-specific filters.
+        ['-vf', filters.join()],
         'pipe:1',
       ].flat(),
       {stdio: ['pipe', 'pipe', 'pipe']},
