@@ -7,6 +7,7 @@
 import type {ChildProcessWithoutNullStreams} from 'node:child_process';
 import {spawn, spawnSync} from 'node:child_process';
 import {PassThrough} from 'node:stream';
+import os from 'node:os';
 
 import debug from 'debug';
 
@@ -191,7 +192,7 @@ export class ScreenRecorder extends PassThrough {
           // Sets the quality. Lower the better.
           ['-crf', `${CRF_VALUE}`],
           // Sets the quality and how efficient the compression will be.
-          ['-deadline', 'realtime', '-cpu-used', '8'],
+          ['-deadline', 'realtime', '-cpu-used', `${os.cpus().length / 2}`],
         ].flat();
       case 'gif':
         return [
