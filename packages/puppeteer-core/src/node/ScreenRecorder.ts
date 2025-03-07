@@ -88,6 +88,7 @@ export class ScreenRecorder extends PassThrough {
 
     format ??= 'webm';
     fps ??= DEFAULT_FPS;
+    // Maps 0 to -1 as ffmpeg maps 0 to infinity.
     loop ||= -1;
     delay ??= -1;
     quality ??= CRF_VALUE;
@@ -249,8 +250,9 @@ export class ScreenRecorder extends PassThrough {
           loop = 0;
         }
         if (delay !== -1) {
+          // ms to cs
           delay /= 10;
-        } // ms to cs
+        }
         return [
           // Sets the frame rate and uses a custom palette generated from the
           // input.
