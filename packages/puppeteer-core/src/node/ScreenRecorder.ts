@@ -235,7 +235,12 @@ export class ScreenRecorder extends PassThrough {
       // Sets the quality. Lower the better.
       ['-crf', `${quality}`],
       // Sets the quality and how efficient the compression will be.
-      ['-deadline', 'realtime', '-cpu-used', `${os.cpus().length / 2}`],
+      [
+        '-deadline',
+        'realtime',
+        '-cpu-used',
+        `${Math.min(os.cpus().length / 2, 8)}`,
+      ],
     ];
     switch (format) {
       case 'webm':
