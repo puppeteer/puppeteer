@@ -358,6 +358,11 @@ export class CLI {
               type: 'boolean',
               desc: 'Search for a browser installed on the system instead of the cache folder.',
               default: false,
+            })
+            .option('dumpio', {
+              type: 'boolean',
+              desc: "Forwards the browser's process stdout and stderr",
+              default: false,
             });
         },
         async args => {
@@ -376,6 +381,7 @@ export class CLI {
               });
           launch({
             executablePath,
+            dumpio: args.dumpio,
             detached: args.detached,
           });
         },
