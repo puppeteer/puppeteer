@@ -1,5 +1,14 @@
 # Changelog
 
+## [24.4.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.4.0...puppeteer-core-v24.4.1) (2025-03-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.8.0 to 2.9.0
+
 ## [24.4.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.3.1...puppeteer-core-v24.4.0) (2025-03-05)
 
 
