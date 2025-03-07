@@ -1,6 +1,7 @@
 {
   "extends": "../../../../tsconfig.base.json",
   "compilerOptions": {
+    "lib": ["ES2024.Promise"],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "outDir": "../build"

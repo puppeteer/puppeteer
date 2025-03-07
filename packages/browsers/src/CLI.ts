@@ -339,10 +339,18 @@ export class CLI {
             .example(
               '$0 launch chrome@canary --system',
               'Try to locate the Canary build of Chrome installed on the system and launch it.',
+            )
+            .example(
+              '$0 launch chrome@115.0.5790.170 -- --version',
+              'Launch Chrome 115.0.5790.170 and pass custom argument to the binary.',
             );
 
+          const yargsWithExtraAgs = yargs.parserConfiguration({
+            'populate--': true,
+            // Yargs does not have the correct overload for this.
+          }) as Yargs.Argv<{'--': Array<string | number>}>;
           const yargsWithBrowserParam = this.#defineBrowserParameter(
-            yargs,
+            yargsWithExtraAgs,
             true,
           );
           const yargsWithPlatformParam = this.#definePlatformParameter(
@@ -366,6 +374,10 @@ export class CLI {
             });
         },
         async args => {
+          const extraArgs = args['--'].filter(arg => {
+            return typeof arg === 'string';
+          });
+
           const executablePath = args.system
             ? computeSystemExecutablePath({
                 browser: args.browser.name,
@@ -380,6 +392,7 @@ export class CLI {
                 platform: args.platform,
               });
           launch({
+            args: extraArgs,
             executablePath,
             dumpio: args.dumpio,
             detached: args.detached,
