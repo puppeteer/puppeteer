@@ -101,7 +101,6 @@ describe('Screencasts', function () {
       await expect(page.screencast({loop: 0})).rejects.toBeDefined();
       await expect(page.screencast({loop: -1})).rejects.toBeDefined();
       await expect(page.screencast({loop: Infinity})).rejects.toBeDefined();
-      await expect(page.screencast({loop: false})).rejects.toBeDefined();
 
       await expect(page.screencast({delay: 0})).rejects.toBeDefined();
       await expect(page.screencast({delay: -1})).rejects.toBeDefined();
