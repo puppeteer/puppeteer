@@ -148,10 +148,10 @@
     "ws": "^8.18.1"
   },
   "devDependencies": {
-    "@types/chrome": "0.0.306",
+    "@types/chrome": "0.0.308",
     "@types/debug": "4.1.12",
     "@types/node": "^18.17.15",
-    "@types/ws": "8.5.14",
+    "@types/ws": "8.18.0",
     "mitt": "3.0.1",
     "parsel-js": "1.2.1",
     "rxjs": "7.8.2"
