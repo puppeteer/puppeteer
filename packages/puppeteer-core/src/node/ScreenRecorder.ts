@@ -6,6 +6,7 @@
 
 import type {ChildProcessWithoutNullStreams} from 'node:child_process';
 import {spawn, spawnSync} from 'node:child_process';
+import os from 'node:os';
 import {PassThrough} from 'node:stream';
 
 import debug from 'debug';
@@ -24,7 +25,7 @@ import {
 } from '../../third_party/rxjs/rxjs.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
-import type {Page} from '../api/Page.js';
+import type {Page, FileFormat} from '../api/Page.js';
 import {debugError, fromEmitterEvent} from '../common/util.js';
 import {guarded} from '../util/decorators.js';
 import {asyncDisposeSymbol} from '../util/disposable.js';
@@ -40,7 +41,12 @@ const debugFfmpeg = debug('puppeteer:ffmpeg');
 export interface ScreenRecorderOptions {
   speed?: number;
   crop?: BoundingBox;
-  format?: 'gif' | 'webm';
+  format?: FileFormat;
+  fps?: number;
+  loop?: number;
+  delay?: number;
+  quality?: number;
+  colors?: number;
   scale?: number;
   path?: string;
 }
@@ -56,6 +62,8 @@ export class ScreenRecorder extends PassThrough {
   #controller = new AbortController();
   #lastFrame: Promise<readonly [Buffer, number]>;
 
+  #fps: number;
+
   /**
    * @internal
    */
@@ -63,16 +71,63 @@ export class ScreenRecorder extends PassThrough {
     page: Page,
     width: number,
     height: number,
-    {speed, scale, crop, format, path}: ScreenRecorderOptions = {},
+    {
+      speed,
+      scale,
+      crop,
+      format,
+      fps,
+      loop,
+      delay,
+      quality,
+      colors,
+      path,
+    }: ScreenRecorderOptions = {},
   ) {
     super({allowHalfOpen: false});
 
+    format ??= 'webm';
+    fps ??= DEFAULT_FPS;
+    // Maps 0 to -1 as ffmpeg maps 0 to infinity.
+    loop ||= -1;
+    delay ??= -1;
+    quality ??= CRF_VALUE;
+    colors ??= 256;
     path ??= 'ffmpeg';
+
+    this.#fps = fps;
 
     // Tests if `ffmpeg` exists.
     const {error} = spawnSync(path);
     if (error) {
       throw error;
+    }
+
+    const filters = [
+      `crop='min(${width},iw):min(${height},ih):0:0'`,
+      `pad=${width}:${height}:0:0`,
+    ];
+    if (speed) {
+      filters.push(`setpts=${1 / speed}*PTS`);
+    }
+    if (crop) {
+      filters.push(`crop=${crop.width}:${crop.height}:${crop.x}:${crop.y}`);
+    }
+    if (scale) {
+      filters.push(`scale=iw*${scale}:-1:flags=lanczos`);
+    }
+
+    const formatArgs = this.#getFormatArgs(
+      format,
+      fps,
+      loop,
+      delay,
+      quality,
+      colors,
+    );
+    const vf = formatArgs.indexOf('-vf');
+    if (vf !== -1) {
+      filters.push(formatArgs.splice(vf, 2).at(-1) ?? '');
     }
 
     this.#process = spawn(
@@ -102,20 +157,14 @@ export class ScreenRecorder extends PassThrough {
         // VP9 tries to use all available threads?
         ['-threads', '1'],
         // Specifies the frame rate we are giving ffmpeg.
-        ['-framerate', `${DEFAULT_FPS}`],
-        // Specifies the encoding and format we are using.
-        this.#getFormatArgs(format ?? 'webm'),
+        ['-framerate', `${fps}`],
         // Disable bitrate.
         ['-b:v', '0'],
-        // Filters to ensure the images are piped correctly.
-        [
-          '-vf',
-          `${
-            speed ? `setpts=${1 / speed}*PTS,` : ''
-          }crop='min(${width},iw):min(${height},ih):0:0',pad=${width}:${height}:0:0${
-            crop ? `,crop=${crop.width}:${crop.height}:${crop.x}:${crop.y}` : ''
-          }${scale ? `,scale=iw*${scale}:-1` : ''}`,
-        ],
+        // Specifies the encoding and format we are using.
+        formatArgs,
+        // Filters to ensure the images are piped correctly,
+        // combined with any format-specific filters.
+        ['-vf', filters.join()],
         'pipe:1',
       ].flat(),
       {stdio: ['pipe', 'pipe', 'pipe']},
@@ -158,9 +207,7 @@ export class ScreenRecorder extends PassThrough {
         concatMap(([{timestamp: previousTimestamp, buffer}, {timestamp}]) => {
           return from(
             Array<Buffer>(
-              Math.round(
-                DEFAULT_FPS * Math.max(timestamp - previousTimestamp, 0),
-              ),
+              Math.round(fps * Math.max(timestamp - previousTimestamp, 0)),
             ).fill(buffer),
           );
         }),
@@ -174,29 +221,64 @@ export class ScreenRecorder extends PassThrough {
     );
   }
 
-  #getFormatArgs(format: 'webm' | 'gif') {
+  #getFormatArgs(
+    format: FileFormat,
+    fps: number | 'source_fps',
+    loop: number,
+    delay: number,
+    quality: number,
+    colors: number,
+  ) {
+    const libvpx = [
+      // Sets the codec to use.
+      ['-c:v', 'vp9'],
+      // Sets the quality. Lower the better.
+      ['-crf', `${quality}`],
+      // Sets the quality and how efficient the compression will be.
+      [
+        '-deadline',
+        'realtime',
+        '-cpu-used',
+        `${Math.min(os.cpus().length / 2, 8)}`,
+      ],
+    ];
     switch (format) {
       case 'webm':
         return [
-          // Sets the codec to use.
-          ['-c:v', 'vp9'],
+          ...libvpx,
           // Sets the format
           ['-f', 'webm'],
-          // Sets the quality. Lower the better.
-          ['-crf', `${CRF_VALUE}`],
-          // Sets the quality and how efficient the compression will be.
-          ['-deadline', 'realtime', '-cpu-used', '8'],
         ].flat();
       case 'gif':
+        fps = DEFAULT_FPS === fps ? 20 : 'source_fps';
+        if (loop === Infinity) {
+          loop = 0;
+        }
+        if (delay !== -1) {
+          // ms to cs
+          delay /= 10;
+        }
         return [
           // Sets the frame rate and uses a custom palette generated from the
           // input.
           [
             '-vf',
-            'fps=5,split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse',
+            `fps=${fps},split[s0][s1];[s0]palettegen=stats_mode=diff:max_colors=${colors}[p];[s1][p]paletteuse=dither=bayer`,
           ],
+          // Sets the number of times to loop playback.
+          ['-loop', `${loop}`],
+          // Sets the delay between iterations of a loop.
+          ['-final_delay', `${delay}`],
           // Sets the format
           ['-f', 'gif'],
+        ].flat();
+      case 'mp4':
+        return [
+          ...libvpx,
+          // Fragment file during stream to avoid errors.
+          ['-movflags', 'hybrid_fragmented'],
+          // Sets the format
+          ['-f', 'mp4'],
         ].flat();
     }
   }
@@ -232,7 +314,7 @@ export class ScreenRecorder extends PassThrough {
       Array<Buffer>(
         Math.max(
           1,
-          Math.round((DEFAULT_FPS * (performance.now() - timestamp)) / 1000),
+          Math.round((this.#fps * (performance.now() - timestamp)) / 1000),
         ),
       )
         .fill(buffer)
