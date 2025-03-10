@@ -276,7 +276,7 @@ export class ScreenRecorder extends PassThrough {
         return [
           ...libvpx,
           // Fragment file during stream to avoid errors.
-          ['-movflags', 'hybrid_fragmented'],
+          ['-movflags', 'delay_moov+hybrid_fragmented'],
           // Sets the format
           ['-f', 'mp4'],
         ].flat();
