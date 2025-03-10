@@ -164,12 +164,18 @@ export interface FilePlaceholder {
   [Symbol.dispose](): void;
 }
 
-export function getUniqueVideoFilePlaceholder(): FilePlaceholder {
+export function getUniqueVideoFilePlaceholder(
+  debugging = false,
+): FilePlaceholder {
+  const name = debugging
+    ? './debugging'
+    : `${tmpdir()}/test-video-${Math.round(Math.random() * 10000)}`;
   return {
-    filename: `${tmpdir()}/test-video-${Math.round(
-      Math.random() * 10000,
-    )}.webm`,
+    filename: `${name}.webm`,
     [Symbol.dispose]() {
+      if (debugging) {
+        return;
+      }
       void rmIfExists(this.filename);
     },
   };
