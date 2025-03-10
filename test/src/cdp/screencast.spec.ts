@@ -91,6 +91,26 @@ describe('Screencasts', function () {
         page.screencast({crop: {x: 0, y: 0, height: 1, width: 10000}}),
       ).rejects.toBeDefined();
 
+      await expect(page.screencast({format: 'gif'})).rejects.toBeDefined();
+      await expect(page.screencast({format: 'webm'})).rejects.toBeDefined();
+      await expect(page.screencast({format: 'mp4'})).rejects.toBeDefined();
+
+      await expect(page.screencast({fps: 0})).rejects.toBeDefined();
+      await expect(page.screencast({fps: -1})).rejects.toBeDefined();
+
+      await expect(page.screencast({loop: 0})).rejects.toBeDefined();
+      await expect(page.screencast({loop: -1})).rejects.toBeDefined();
+      await expect(page.screencast({loop: Infinity})).rejects.toBeDefined();
+
+      await expect(page.screencast({delay: 0})).rejects.toBeDefined();
+      await expect(page.screencast({delay: -1})).rejects.toBeDefined();
+
+      await expect(page.screencast({quality: 0})).rejects.toBeDefined();
+      await expect(page.screencast({quality: -1})).rejects.toBeDefined();
+
+      await expect(page.screencast({colors: 0})).rejects.toBeDefined();
+      await expect(page.screencast({colors: -1})).rejects.toBeDefined();
+
       await expect(
         page.screencast({ffmpegPath: 'non-existent-path'}),
       ).rejects.toBeDefined();
