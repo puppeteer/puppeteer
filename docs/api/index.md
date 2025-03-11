@@ -1196,6 +1196,8 @@ Required response data to fulfill a request with.
 
 </td><td>
 
+**_(Experimental)_**
+
 </td></tr>
 <tr><td>
 
@@ -1542,8 +1544,6 @@ See individual properties for more information.
 <span id="fileformat">[FileFormat](./puppeteer.fileformat.md)</span>
 
 </td><td>
-
-**_(Experimental)_**
 
 </td></tr>
 <tr><td>

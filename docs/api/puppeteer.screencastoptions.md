@@ -188,7 +188,7 @@ Specifies the number of times to loop playback, from `0` to `Infinity`. A value 
 
 </td><td>
 
-\`$&#123;string&#125;.gif\` \| \`$&#123;string&#125;.webm\` \| \`$&#123;string&#125;.mp4\`
+\`$&#123;string&#125;.$&#123;[FileFormat](./puppeteer.fileformat.md)&#125;\`
 
 </td><td>
 
