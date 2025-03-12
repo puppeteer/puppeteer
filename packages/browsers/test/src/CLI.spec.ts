@@ -45,7 +45,6 @@ describe('CLI', function () {
       'install',
       `chrome@${testChromeBuildId}`,
       `--path=${tmpDir}`,
-      '--platform=linux',
       `--base-url=${getServerUrl()}`,
     ]);
 
