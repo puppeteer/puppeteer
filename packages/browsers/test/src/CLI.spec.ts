@@ -39,6 +39,12 @@ describe('CLI', function () {
   });
 
   it('should pass argument to binary', async () => {
+    if (os.platform() === 'win32') {
+      // Windows executable behaves differently
+      // it does not respect the `--version` flag
+      // and spawns the browser directly
+      return;
+    }
     await new CLI(tmpDir).run([
       'npx',
       '@puppeteer/browsers',
