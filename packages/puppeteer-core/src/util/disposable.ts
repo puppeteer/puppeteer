@@ -50,46 +50,41 @@ export class DisposableStack {
   #stack: Disposable[] = [];
 
   /**
-   * Returns a value indicating whether this stack has been disposed.
+   * Gets a value indicating whether the stack has been disposed.
+   * @returns {boolean}
    */
   get disposed(): boolean {
     return this.#disposed;
   }
 
   /**
-   * Disposes each resource in the stack in the reverse order that they were added.
+   * Alias for `[Symbol.dispose]()`.
    */
   dispose(): void {
-    if (this.#disposed) {
-      return;
-    }
-    this.#disposed = true;
-    for (const resource of this.#stack.reverse()) {
-      resource[disposeSymbol]();
-    }
+    this[disposeSymbol]();
   }
 
   /**
-   * Adds a disposable resource to the stack, returning the resource.
-   *
-   * @param value - The resource to add. `null` and `undefined` will not be added,
-   * but will be returned.
-   * @returns The provided `value`.
+   * Adds a disposable resource to the top of stack, returning the resource. Has no effect if provided `null` or `undefined`.
+   * @template {Disposable | null | undefined} T
+   * @param {T} value - A `Disposable` object, `null`, or `undefined`.
+   * `null` and `undefined` will not be added, but will be returned.
+   * @returns {T} The provided `value`.
    */
   use<T extends Disposable | null | undefined>(value: T): T {
-    if (value) {
+    if (value && typeof value[disposeSymbol] === 'function') {
       this.#stack.push(value);
     }
     return value;
   }
 
   /**
-   * Adds a value and associated disposal callback as a resource to the stack.
-   *
-   * @param value - The value to add.
-   * @param onDispose - The callback to use in place of a `[disposeSymbol]()`
-   * method. Will be invoked with `value` as the first parameter.
-   * @returns The provided `value`.
+   * Adds a non-disposable resource and a disposal callback to the top of the stack.
+   * @template T
+   * @param {T} value - A resource to be disposed.
+   * @param {(value: T) => void} onDispose - A callback invoked to dispose the provided value.
+   * Will be invoked with `value` as the first parameter.
+   * @returns {T} The provided `value`.
    */
   adopt<T>(value: T, onDispose: (value: T) => void): T {
     this.#stack.push({
@@ -101,7 +96,9 @@ export class DisposableStack {
   }
 
   /**
-   * Adds a callback to be invoked when the stack is disposed.
+   * Adds a disposal callback to the top of the stack to be invoked when stack is disposed.
+   * @param {() => void} onDispose - A callback to evaluate when this object is disposed.
+   * @returns {void}
    */
   defer(onDispose: () => void): void {
     this.#stack.push({
@@ -114,6 +111,7 @@ export class DisposableStack {
   /**
    * Move all resources out of this stack and into a new `DisposableStack`, and
    * marks this stack as disposed.
+   * @returns {DisposableStack} The new `DisposableStack`.
    *
    * @example
    *
@@ -145,15 +143,40 @@ export class DisposableStack {
    */
   move(): DisposableStack {
     if (this.#disposed) {
-      throw new ReferenceError('a disposed stack can not use anything new'); // step 3
+      throw new ReferenceError('A disposed stack can not use anything new');
     }
-    const stack = new DisposableStack(); // step 4-5
+    const stack = new DisposableStack();
     stack.#stack = this.#stack;
     this.#disposed = true;
     return stack;
   }
 
-  [disposeSymbol] = this.dispose;
+  /**
+   * Disposes each resource in the stack in last-in-first-out (LIFO) manner
+   * @returns {void}
+   */
+  [disposeSymbol](): void {
+    if (this.#disposed) {
+      return;
+    }
+    this.#disposed = true;
+    const errors: unknown[] = [];
+    for (const resource of this.#stack) {
+      try {
+        resource[disposeSymbol]();
+      } catch (e) {
+        errors.push(e);
+      }
+    }
+    if (errors.length === 1) {
+      throw errors[0];
+    } else if (errors.length > 1) {
+      throw new AggregateError(
+        errors,
+        'Multiple errors occurred during disposal',
+      );
+    }
+  }
 
   readonly [Symbol.toStringTag] = 'DisposableStack';
 }
@@ -166,46 +189,41 @@ export class AsyncDisposableStack {
   #stack: AsyncDisposable[] = [];
 
   /**
-   * Returns a value indicating whether this stack has been disposed.
+   * Gets a value indicating whether the stack has been disposed.
+   * @returns {boolean}
    */
   get disposed(): boolean {
     return this.#disposed;
   }
 
   /**
-   * Disposes each resource in the stack in the reverse order that they were added.
+   * Alias for `[Symbol.asyncDispose]()`.
    */
   async dispose(): Promise<void> {
-    if (this.#disposed) {
-      return;
-    }
-    this.#disposed = true;
-    for (const resource of this.#stack.reverse()) {
-      await resource[asyncDisposeSymbol]();
-    }
+    await this[asyncDisposeSymbol]();
   }
 
   /**
-   * Adds a disposable resource to the stack, returning the resource.
-   *
-   * @param value - The resource to add. `null` and `undefined` will not be added,
-   * but will be returned.
-   * @returns The provided `value`.
+   * Adds a AsyncDisposable resource to the top of stack, returning the resource. Has no effect if provided `null` or `undefined`.
+   * @template {AsyncDisposable | null | undefined} T
+   * @param {T} value - A `AsyncDisposable` object, `null`, or `undefined`.
+   * `null` and `undefined` will not be added, but will be returned.
+   * @returns {T} The provided `value`.
    */
   use<T extends AsyncDisposable | null | undefined>(value: T): T {
-    if (value) {
+    if (value && typeof value[asyncDisposeSymbol] === 'function') {
       this.#stack.push(value);
     }
     return value;
   }
 
   /**
-   * Adds a value and associated disposal callback as a resource to the stack.
-   *
-   * @param value - The value to add.
-   * @param onDispose - The callback to use in place of a `[disposeSymbol]()`
-   * method. Will be invoked with `value` as the first parameter.
-   * @returns The provided `value`.
+   * Adds a non-disposable resource and a disposal callback to the top of the stack.
+   * @template T
+   * @param {T} value - A resource to be disposed.
+   * @param {(value: T) => Promise<void>} onDispose - A callback invoked to dispose the provided value.
+   * Will be invoked with `value` as the first parameter.
+   * @returns {T} The provided `value`.
    */
   adopt<T>(value: T, onDispose: (value: T) => Promise<void>): T {
     this.#stack.push({
@@ -217,7 +235,9 @@ export class AsyncDisposableStack {
   }
 
   /**
-   * Adds a callback to be invoked when the stack is disposed.
+   * Adds a disposal callback to the top of the stack to be invoked when stack is disposed.
+   * @param {() => Promise<void>} onDispose - A callback to evaluate when this object is disposed.
+   * @returns {void}
    */
   defer(onDispose: () => Promise<void>): void {
     this.#stack.push({
@@ -230,6 +250,7 @@ export class AsyncDisposableStack {
   /**
    * Move all resources out of this stack and into a new `DisposableStack`, and
    * marks this stack as disposed.
+   * @returns {AsyncDisposableStack} The new `AsyncDisposableStack`.
    *
    * @example
    *
@@ -261,15 +282,40 @@ export class AsyncDisposableStack {
    */
   move(): AsyncDisposableStack {
     if (this.#disposed) {
-      throw new ReferenceError('a disposed stack can not use anything new'); // step 3
+      throw new ReferenceError('A disposed stack can not use anything new');
     }
-    const stack = new AsyncDisposableStack(); // step 4-5
+    const stack = new AsyncDisposableStack();
     stack.#stack = this.#stack;
     this.#disposed = true;
     return stack;
   }
 
-  [asyncDisposeSymbol] = this.dispose;
+  /**
+   * Disposes each resource in the stack in last-in-first-out (LIFO) manner.
+   * @returns {Promise<void>}
+   */
+  async [asyncDisposeSymbol](): Promise<void> {
+    if (this.#disposed) {
+      return;
+    }
+    this.#disposed = true;
+    const errors: unknown[] = [];
+    for (const resource of this.#stack) {
+      try {
+        await resource[asyncDisposeSymbol]();
+      } catch (e) {
+        errors.push(e);
+      }
+    }
+    if (errors.length === 1) {
+      throw errors[0];
+    } else if (errors.length > 1) {
+      throw new AggregateError(
+        errors,
+        'Multiple errors occurred during async disposal',
+      );
+    }
+  }
 
   readonly [Symbol.toStringTag] = 'AsyncDisposableStack';
 }
