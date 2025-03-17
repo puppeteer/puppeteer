@@ -9,6 +9,7 @@ updates:
       timezone: Europe/Berlin
     ignore:
       - dependency-name: devtools-protocol
+      - dependency-name: chromium-bidi
       - dependency-name: '@types/node'
       - dependency-name: '@angular-devkit/*'
     groups:
