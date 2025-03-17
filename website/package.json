@@ -15,26 +15,26 @@
     "archive": "node archive.js"
   },
   "dependencies": {
-    "@docsearch/react": "3.8.2",
-    "@docusaurus/core": "3.6.3",
-    "@docusaurus/plugin-client-redirects": "3.6.3",
-    "@docusaurus/plugin-content-docs": "3.6.3",
-    "@docusaurus/preset-classic": "3.6.3",
-    "@docusaurus/remark-plugin-npm2yarn": "3.6.3",
-    "@docusaurus/theme-common": "3.6.3",
+    "@docsearch/react": "3.9.0",
+    "@docusaurus/core": "3.7.0",
+    "@docusaurus/plugin-client-redirects": "3.7.0",
+    "@docusaurus/plugin-content-docs": "3.7.0",
+    "@docusaurus/preset-classic": "3.7.0",
+    "@docusaurus/remark-plugin-npm2yarn": "3.7.0",
+    "@docusaurus/theme-common": "3.7.0",
     "@mdx-js/react": "3.1.0",
-    "algoliasearch-helper": "3.22.6",
+    "algoliasearch-helper": "3.24.2",
     "clsx": "2.1.1",
     "prism-react-renderer": "2.4.1",
     "react": "18.3.1",
     "react-cookie-consent": "9.0.0",
     "react-dom": "18.3.1",
-    "semver": "7.6.3"
+    "semver": "7.7.1"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.6.3",
-    "@docusaurus/types": "3.6.3",
-    "@swc/core": "1.10.3",
+    "@docusaurus/module-type-aliases": "3.7.0",
+    "@docusaurus/types": "3.7.0",
+    "@swc/core": "1.11.10",
     "swc-loader": "0.2.6"
   },
   "browserslist": {
