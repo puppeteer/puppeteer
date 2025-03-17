@@ -32,6 +32,7 @@
   "devDependencies": {
     "@types/diff": "7.0.1",
     "@types/pixelmatch": "5.2.6",
-    "@types/pngjs": "6.0.5"
+    "@types/pngjs": "6.0.5",
+    "@types/ws": "8.18.0"
   }
 }
