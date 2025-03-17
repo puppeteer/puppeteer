@@ -189,7 +189,7 @@
     "source-map-support": "0.5.21",
     "spdx-satisfies": "5.0.1",
     "tsd": "0.31.2",
-    "typescript": "5.7.3",
+    "typescript": "5.8.2",
     "wireit": "0.14.11"
   },
   "overrides": {
