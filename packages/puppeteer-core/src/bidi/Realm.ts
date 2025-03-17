@@ -183,9 +183,13 @@ export abstract class BidiRealm extends Realm {
       throw createEvaluationError(result.exceptionDetails);
     }
 
-    return returnByValue
-      ? BidiDeserializer.deserialize(result.result)
-      : this.createHandle(result.result);
+    if (returnByValue) {
+      return BidiDeserializer.deserialize(result.result);
+    }
+
+    return this.createHandle(result.result) as unknown as HandleFor<
+      Awaited<ReturnType<Func>>
+    >;
   }
 
   createHandle(
