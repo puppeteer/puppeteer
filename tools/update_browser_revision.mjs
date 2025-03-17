@@ -10,12 +10,11 @@ import {promisify} from 'util';
 
 import actions from '@actions/core';
 import {resolveBuildId} from '@puppeteer/browsers';
+import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
 import {SemVer} from 'semver';
 
 import packageJson from '../packages/puppeteer-core/package.json' with {type: 'json'};
 import versionData from '../versions.json' with {type: 'json'};
-
-import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
 
 const execAsync = promisify(exec);
 
