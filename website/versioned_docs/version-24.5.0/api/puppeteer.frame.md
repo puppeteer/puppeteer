@@ -56,9 +56,18 @@ import puppeteer from 'puppeteer';
 An example of getting text from an iframe element:
 
 ```ts
-const frame = page.frames().find(frame => frame.name() === 'myframe');
-const text = await frame.$eval('.selector', element => element.textContent);
-console.log(text);
+const frame = page.frames().find(async (frame) => {
+  const frameElement = await frame.frameElement();
+  const name = await frameElement.evaluate((el) => el.getAttribute('name'));
+  return name === 'myframe';
+});
+ 
+if (frame) {
+  const text = await frame.$eval('.selector', (element) => element.textContent);
+  console.log(text);
+} else {
+  console.error('Frame with name "myframe" not found.');
+}
 ```
 
 ## Properties
