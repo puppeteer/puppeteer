@@ -4,16 +4,18 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {assert} from 'console';
 import {describe, it, beforeEach} from 'node:test';
+
 import expect from 'expect';
 import sinon from 'sinon';
+
 import {
   DisposableStack,
   disposeSymbol,
   AsyncDisposableStack,
   asyncDisposeSymbol,
-} from './disposable';
-import {assert} from 'console';
+} from './disposable.js';
 
 describe('DisposableStack', () => {
   let stack: DisposableStack;
@@ -67,7 +69,9 @@ describe('DisposableStack', () => {
 
   it('should throw error if moving a disposed stack', () => {
     stack.dispose();
-    expect(() => stack.move()).toThrow(ReferenceError);
+    expect(() => {
+      return stack.move();
+    }).toThrow(ReferenceError);
   });
 
   it('should collect errors from disposals', async () => {
@@ -145,7 +149,9 @@ describe('AsyncDisposableStack', () => {
 
   it('should throw error if moving a disposed stack', () => {
     stack.dispose();
-    expect(() => stack.move()).toThrow(ReferenceError);
+    expect(() => {
+      return stack.move();
+    }).toThrow(ReferenceError);
   });
 
   it('should collect errors from async disposals', async () => {
