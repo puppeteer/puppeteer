@@ -254,18 +254,18 @@ export const throwIfDetached = throwIfDisposed<Frame>(frame => {
  * const frames = page.frames();
  * let frame = null;
  * for (const currentFrame of frames) {
- * const frameElement = await currentFrame.frameElement();
- * const name = await frameElement.evaluate((el) => el.getAttribute('name'));
- * if (name === 'myframe') {
- *   frame = currentFrame;
- *   break; // Exit the loop once the desired frame is found
- * }
+ *   const frameElement = await currentFrame.frameElement();
+ *   const name = await frameElement.evaluate((el) => el.getAttribute('name'));
+ *   if (name === 'myframe') {
+ *     frame = currentFrame;
+ *     break; // Exit the loop once the desired frame is found
+ *   }
  * }
  * if (frame) {
- * const text = await frame.$eval('.selector', (element) => element.textContent);
- *  console.log(text);
+ *   const text = await frame.$eval('.selector', (element) => element.textContent);
+ *   console.log(text);
  * } else {
- * console.error('Frame with name "myframe" not found.');
+ *   console.error('Frame with name "myframe" not found.');
  * }
  * ```
  *
