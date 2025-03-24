@@ -213,7 +213,7 @@ export const throwIfDetached = throwIfDisposed<Frame>(frame => {
   return `Attempted to use detached Frame '${frame._id}'.`;
 });
 
-/**
+ /**
  * Represents a DOM frame.
  *
  * To understand frames, you can think of frames as `<iframe>` elements. Just
