@@ -258,7 +258,7 @@ export const throwIfDetached = throwIfDisposed<Frame>(frame => {
  *   const name = await frameElement.evaluate((el) => el.getAttribute('name'));
  *   if (name === 'myframe') {
  *     frame = currentFrame;
- *     break; // Exit the loop once the desired frame is found
+ *     break;
  *   }
  * }
  * if (frame) {
