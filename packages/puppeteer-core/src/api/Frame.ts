@@ -187,29 +187,29 @@ export interface FrameEvents extends Record<EventType, unknown> {
 }
 
 /**
- * We use symbols to prevent external parties listening to these events.
- * They are internal to Puppeteer.
- *
- * @internal
- */
+* We use symbols to prevent external parties listening to these events.
+* They are internal to Puppeteer.
+*
+* @internal
+*/
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace FrameEvent {
   export const FrameNavigated = Symbol('Frame.FrameNavigated');
   export const FrameSwapped = Symbol('Frame.FrameSwapped');
   export const LifecycleEvent = Symbol('Frame.LifecycleEvent');
   export const FrameNavigatedWithinDocument = Symbol(
-    'Frame.FrameNavigatedWithinDocument',
+    'Frame.FrameNavigatedWithinDocument'
   );
   export const FrameDetached = Symbol('Frame.FrameDetached');
   export const FrameSwappedByActivation = Symbol(
-    'Frame.FrameSwappedByActivation',
+    'Frame.FrameSwappedByActivation'
   );
 }
 
 /**
- * @internal
- */
-export const throwIfDetached = throwIfDisposed<Frame>(frame => {
+* @internal
+*/
+export const throwIfDetached = throwIfDisposed<Frame>((frame) => {
   return `Attempted to use detached Frame '${frame._id}'.`;
 });
 
