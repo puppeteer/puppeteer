@@ -218,7 +218,7 @@ export const throwIfDetached = throwIfDisposed<Frame>(frame => {
  *
  * To understand frames, you can think of frames as `<iframe>` elements. Just
  * like iframes, frames can be nested, and when JavaScript is executed in a
- * frame, the JavaScript does not effect frames inside the ambient frame the
+ * frame, the JavaScript does not affect frames inside the ambient frame the
  * JavaScript executes in.
  *
  * @example
