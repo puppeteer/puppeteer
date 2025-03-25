@@ -279,7 +279,7 @@ export const throwIfDetached = throwIfDisposed<Frame>(frame => {
  *
  * @public
  */
- export abstract class Frame extends EventEmitter<FrameEvents> {
+export abstract class Frame extends EventEmitter<FrameEvents> {
   /**
    * @internal
    */
