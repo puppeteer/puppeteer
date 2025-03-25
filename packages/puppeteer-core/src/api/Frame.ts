@@ -251,35 +251,22 @@ export const throwIfDetached = throwIfDisposed<Frame>(frame => {
  * An example of getting text from an iframe element:
  *
  * ```ts
- * import puppeteer from 'puppeteer';
- *
- * (async () => {
- *   const browser = await puppeteer.launch();
- *   const page = await browser.newPage();
- *   await page.goto('https://example.com');
- *
- *   const frames: puppeteer.Frame[] = page.frames();
- *   let frame: puppeteer.Frame | null = null;
- *
- *   for (const currentFrame of frames) {
- *     const frameElement = await currentFrame.frameElement();
- *     const name = await frameElement.evaluate((el: HTMLIFrameElement) => el.getAttribute('name'));
- *
- *     if (name === 'myframe') {
- *       frame = currentFrame;
- *       break;
- *     }
+ * const frames = page.frames();
+ * let frame = null;
+ * for (const currentFrame of frames) {
+ *   const frameElement = await currentFrame.frameElement();
+ *   const name = await frameElement.evaluate((el) => el.getAttribute('name'));
+ *   if (name === 'myframe') {
+ *     frame = currentFrame;
+ *     break;
  *   }
- *
- *   if (frame) {
- *     const text = await frame.$eval('.selector', (element: Element) => element.textContent);
- *     console.log(text);
- *   } else {
- *     console.error('Frame with name "myframe" not found.');
- *   }
- *
- *   await browser.close();
- * })();
+ * }
+ * if (frame) {
+ *   const text = await frame.$eval('.selector', (element) => element.textContent);
+ *   console.log(text);
+ * } else {
+ *   console.error('Frame with name "myframe" not found.');
+ * }
  * ```
  *
  * @remarks
@@ -291,7 +278,8 @@ export const throwIfDetached = throwIfDisposed<Frame>(frame => {
  * - {@link PageEvent.FrameDetached}
  *
  * @public
- */export abstract class Frame extends EventEmitter<FrameEvents> {
+ */
+ export abstract class Frame extends EventEmitter<FrameEvents> {
   /**
    * @internal
    */
