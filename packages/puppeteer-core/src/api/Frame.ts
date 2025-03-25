@@ -187,33 +187,33 @@ export interface FrameEvents extends Record<EventType, unknown> {
 }
 
 /**
-* We use symbols to prevent external parties listening to these events.
-* They are internal to Puppeteer.
-*
-* @internal
-*/
+ * We use symbols to prevent external parties listening to these events.
+ * They are internal to Puppeteer.
+ *
+ * @internal
+ */
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace FrameEvent {
   export const FrameNavigated = Symbol('Frame.FrameNavigated');
   export const FrameSwapped = Symbol('Frame.FrameSwapped');
   export const LifecycleEvent = Symbol('Frame.LifecycleEvent');
   export const FrameNavigatedWithinDocument = Symbol(
-    'Frame.FrameNavigatedWithinDocument'
+    'Frame.FrameNavigatedWithinDocument',
   );
   export const FrameDetached = Symbol('Frame.FrameDetached');
   export const FrameSwappedByActivation = Symbol(
-    'Frame.FrameSwappedByActivation'
+    'Frame.FrameSwappedByActivation',
   );
 }
 
 /**
-* @internal
-*/
-export const throwIfDetached = throwIfDisposed<Frame>((frame) => {
+ * @internal
+ */
+export const throwIfDetached = throwIfDisposed<Frame>(frame => {
   return `Attempted to use detached Frame '${frame._id}'.`;
 });
 
- /**
+/**
  * Represents a DOM frame.
  *
  * To understand frames, you can think of frames as `<iframe>` elements. Just
@@ -251,22 +251,35 @@ export const throwIfDetached = throwIfDisposed<Frame>((frame) => {
  * An example of getting text from an iframe element:
  *
  * ```ts
- * const frames = page.frames();
- * let frame = null;
- * for (const currentFrame of frames) {
- *   const frameElement = await currentFrame.frameElement();
- *   const name = await frameElement.evaluate((el) => el.getAttribute('name'));
- *   if (name === 'myframe') {
- *     frame = currentFrame;
- *     break;
- *   }
- * }
- * if (frame) {
- *   const text = await frame.$eval('.selector', (element) => element.textContent);
- *   console.log(text);
- * } else {
- *   console.error('Frame with name "myframe" not found.');
- * }
+ * import puppeteer from 'puppeteer';
+*
+* (async () => {
+*   const browser = await puppeteer.launch();
+*   const page = await browser.newPage();
+*   await page.goto('https://example.com');
+*
+*   const frames: puppeteer.Frame[] = page.frames();
+*   let frame: puppeteer.Frame | null = null;
+*
+*   for (const currentFrame of frames) {
+*     const frameElement = await currentFrame.frameElement();
+*     const name = await frameElement.evaluate((el: HTMLIFrameElement) => el.getAttribute('name'));
+*
+*     if (name === 'myframe') {
+*       frame = currentFrame;
+*       break; 
+*     }
+*   }
+*
+*   if (frame) {
+*     const text = await frame.$eval('.selector', (element: Element) => element.textContent);
+*     console.log(text);
+*   } else {
+*     console.error('Frame with name "myframe" not found.');
+*   }
+*
+*   await browser.close();
+* })();
  * ```
  *
  * @remarks
@@ -278,8 +291,7 @@ export const throwIfDetached = throwIfDisposed<Frame>((frame) => {
  * - {@link PageEvent.FrameDetached}
  *
  * @public
- */
-export abstract class Frame extends EventEmitter<FrameEvents> {
+ */export abstract class Frame extends EventEmitter<FrameEvents> {
   /**
    * @internal
    */
