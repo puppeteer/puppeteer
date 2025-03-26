@@ -15,6 +15,7 @@ import {
   disposeSymbol,
   AsyncDisposableStack,
   asyncDisposeSymbol,
+  SuppressedError,
 } from './disposable.js';
 
 describe('DisposableStack', () => {
@@ -75,25 +76,28 @@ describe('DisposableStack', () => {
   });
 
   it('should collect errors from disposals', async () => {
-    const dispose1 = sinon.stub().rejects(new Error('dispose1'));
-    const dispose2 = sinon.stub().rejects(new Error('dispose2'));
+    const dispose1 = sinon.stub().throws(new Error('dispose1'));
+    const dispose2 = sinon.stub().throws(new Error('dispose2'));
+    const dispose3 = sinon.stub().throws(new Error('dispose3'));
     stack.adopt({}, dispose1);
     stack.adopt({}, dispose2);
+    stack.adopt({}, dispose3);
     let error;
     try {
-      await stack.dispose();
+      stack.dispose();
     } catch (e) {
       error = e;
     }
 
-    assert(error instanceof AggregateError);
-    expect((error as AggregateError).message).toContain(
-      'Multiple errors occurred',
+    assert(error instanceof SuppressedError);
+    expect((error as SuppressedError).name).toEqual('SuppressedError');
+    expect((error as SuppressedError).message).toEqual(
+      'An error was suppressed during disposal',
     );
-    expect((error as AggregateError).errors).toEqual([
-      new Error('dispose1'),
-      new Error('dispose2'),
-    ]);
+    expect((error as SuppressedError).error).toEqual(new Error('dispose3'));
+    expect((error as SuppressedError).suppressed).toEqual(
+      new SuppressedError('dispose2', new Error('dispose1')),
+    );
   });
 });
 
@@ -157,8 +161,10 @@ describe('AsyncDisposableStack', () => {
   it('should collect errors from async disposals', async () => {
     const dispose1 = sinon.stub().rejects(new Error('dispose1'));
     const dispose2 = sinon.stub().rejects(new Error('dispose2'));
+    const dispose3 = sinon.stub().rejects(new Error('dispose3'));
     stack.adopt({}, dispose1);
     stack.adopt({}, dispose2);
+    stack.adopt({}, dispose3);
     let error;
     try {
       await stack.dispose();
@@ -166,13 +172,14 @@ describe('AsyncDisposableStack', () => {
       error = e;
     }
 
-    assert(error instanceof AggregateError);
-    expect((error as AggregateError).message).toContain(
-      'Multiple errors occurred',
+    assert(error instanceof SuppressedError);
+    expect((error as SuppressedError).name).toEqual('SuppressedError');
+    expect((error as SuppressedError).message).toEqual(
+      'An error was suppressed during disposal',
     );
-    expect((error as AggregateError).errors).toEqual([
-      new Error('dispose1'),
-      new Error('dispose2'),
-    ]);
+    expect((error as SuppressedError).error).toEqual(new Error('dispose3'));
+    expect((error as SuppressedError).suppressed).toEqual(
+      new SuppressedError('dispose2', new Error('dispose1')),
+    );
   });
 });
