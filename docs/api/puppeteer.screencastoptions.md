@@ -114,6 +114,8 @@ Required if `ffmpeg` is not in your PATH.
 
 </td><td>
 
+`ffmpeg`
+
 </td></tr>
 <tr><td>
 
