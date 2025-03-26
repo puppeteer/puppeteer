@@ -39,6 +39,7 @@ const debugFfmpeg = debug('puppeteer:ffmpeg');
  * @internal
  */
 export interface ScreenRecorderOptions {
+  ffmpegPath?: string;
   speed?: number;
   crop?: BoundingBox;
   format?: FileFormat;
@@ -72,6 +73,7 @@ export class ScreenRecorder extends PassThrough {
     width: number,
     height: number,
     {
+      ffmpegPath,
       speed,
       scale,
       crop,
@@ -81,11 +83,11 @@ export class ScreenRecorder extends PassThrough {
       delay,
       quality,
       colors,
-      path,
     }: ScreenRecorderOptions = {},
   ) {
     super({allowHalfOpen: false});
 
+    ffmpegPath ??= 'ffmpeg';
     format ??= 'webm';
     fps ??= DEFAULT_FPS;
     // Maps 0 to -1 as ffmpeg maps 0 to infinity.
@@ -93,12 +95,11 @@ export class ScreenRecorder extends PassThrough {
     delay ??= -1;
     quality ??= CRF_VALUE;
     colors ??= 256;
-    path ??= 'ffmpeg';
 
     this.#fps = fps;
 
     // Tests if `ffmpeg` exists.
-    const {error} = spawnSync(path);
+    const {error} = spawnSync(ffmpegPath);
     if (error) {
       throw error;
     }
@@ -131,7 +132,7 @@ export class ScreenRecorder extends PassThrough {
     }
 
     this.#process = spawn(
-      path,
+      ffmpegPath,
       // See https://trac.ffmpeg.org/wiki/Encode/VP9 for more information on flags.
       [
         ['-loglevel', 'error'],
