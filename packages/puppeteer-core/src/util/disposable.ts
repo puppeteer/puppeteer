@@ -160,7 +160,7 @@ export class DisposableStack {
     }
     this.#disposed = true;
     const errors: unknown[] = [];
-    for (const resource of this.#stack) {
+    for (const resource of this.#stack.reverse()) {
       try {
         resource[disposeSymbol]();
       } catch (e) {
@@ -303,7 +303,7 @@ export class AsyncDisposableStack {
     }
     this.#disposed = true;
     const errors: unknown[] = [];
-    for (const resource of this.#stack) {
+    for (const resource of this.#stack.reverse()) {
       try {
         await resource[asyncDisposeSymbol]();
       } catch (e) {
@@ -333,9 +333,9 @@ export class AsyncDisposableStack {
  * the disposal of resources. This class encapsulates the primary error and
  * any suppressed errors that occurred subsequently.
  */
-class SuppressedError extends Error {
-  error: unknown;
-  suppressed: unknown;
+export class SuppressedError extends Error {
+  #error: unknown;
+  #suppressed: unknown;
 
   constructor(
     error: unknown,
@@ -344,9 +344,24 @@ class SuppressedError extends Error {
   ) {
     super(message);
     this.name = 'SuppressedError';
-    this.error = error;
-    this.suppressed = suppressed;
+    this.#error = error;
+    this.#suppressed = suppressed;
     // Restore the prototype chain
     Object.setPrototypeOf(this, new.target.prototype);
+  }
+
+  /**
+   * The primary error that occurred during disposal.
+   */
+  get error(): unknown {
+    return this.#error;
+  }
+
+  /**
+   * The suppressed error i.e. the error that was suppressed
+   * because it occurred later in the flow after the original error.
+   */
+  get suppressed(): unknown {
+    return this.#suppressed;
   }
 }
