@@ -329,6 +329,7 @@ export class AsyncDisposableStack {
 }
 
 /**
+ * @internal
  * Represents an error that occurs when multiple errors are thrown during
  * the disposal of resources. This class encapsulates the primary error and
  * any suppressed errors that occurred subsequently.

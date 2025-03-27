@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {assert} from 'console';
 import {describe, it, beforeEach} from 'node:test';
 
 import expect from 'expect';
@@ -89,7 +88,7 @@ describe('DisposableStack', () => {
       error = e;
     }
 
-    assert(error instanceof SuppressedError);
+    expect(error instanceof SuppressedError).toBeTruthy();
     expect((error as SuppressedError).name).toEqual('SuppressedError');
     expect((error as SuppressedError).message).toEqual(
       'An error was suppressed during disposal',
@@ -172,7 +171,7 @@ describe('AsyncDisposableStack', () => {
       error = e;
     }
 
-    assert(error instanceof SuppressedError);
+    expect(error instanceof SuppressedError).toBeTruthy();
     expect((error as SuppressedError).name).toEqual('SuppressedError');
     expect((error as SuppressedError).message).toEqual(
       'An error was suppressed during disposal',
