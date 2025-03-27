@@ -499,15 +499,6 @@ The constructor for this class is marked as internal. Third-party code should no
 </td></tr>
 <tr><td>
 
-<span id="suppressederror">[SuppressedError](./puppeteer.suppressederror.md)</span>
-
-</td><td>
-
-Represents an error that occurs when multiple errors are thrown during the disposal of resources. This class encapsulates the primary error and any suppressed errors that occurred subsequently.
-
-</td></tr>
-<tr><td>
-
 <span id="target">[Target](./puppeteer.target.md)</span>
 
 </td><td>
