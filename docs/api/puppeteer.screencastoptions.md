@@ -114,7 +114,7 @@ Required if `ffmpeg` is not in your PATH.
 
 </td><td>
 
-`ffmpeg`
+`'ffmpeg'`
 
 </td></tr>
 <tr><td>
@@ -135,7 +135,7 @@ Specifies the output file format.
 
 </td><td>
 
-`webm`
+`'webm'`
 
 </td></tr>
 <tr><td>
@@ -190,7 +190,7 @@ Specifies the number of times to loop playback, from `0` to `Infinity`. A value 
 
 </td><td>
 
-\`$&#123;string&#125;.$&#123;[FileFormat](./puppeteer.fileformat.md)&#125;\`
+[FilePath](./puppeteer.filepath.md)
 
 </td><td>
 
