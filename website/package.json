@@ -26,9 +26,9 @@
     "algoliasearch-helper": "3.24.2",
     "clsx": "2.1.1",
     "prism-react-renderer": "2.4.1",
-    "react": "18.3.1",
+    "react": "19.0.0",
     "react-cookie-consent": "9.0.0",
-    "react-dom": "18.3.1",
+    "react-dom": "19.0.0",
     "semver": "7.7.1"
   },
   "devDependencies": {
