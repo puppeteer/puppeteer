@@ -111,6 +111,8 @@ describe('Screencasts', function () {
       await expect(page.screencast({colors: 0})).rejects.toBeDefined();
       await expect(page.screencast({colors: -1})).rejects.toBeDefined();
 
+      await expect(page.screencast({path: 'test.webm'})).rejects.toBeDefined();
+
       await expect(
         page.screencast({ffmpegPath: 'non-existent-path'}),
       ).rejects.toBeDefined();
