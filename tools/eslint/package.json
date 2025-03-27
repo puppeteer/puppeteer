@@ -32,7 +32,7 @@
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@prettier/sync": "0.5.2",
+    "@prettier/sync": "0.5.4",
     "@typescript-eslint/utils": "8.26.1"
   }
 }
