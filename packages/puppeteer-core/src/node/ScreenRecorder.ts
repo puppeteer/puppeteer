@@ -25,7 +25,7 @@ import {
 } from '../../third_party/rxjs/rxjs.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
-import type {Page, FileFormat} from '../api/Page.js';
+import type {Page, FileFormat, FilePath} from '../api/Page.js';
 import {debugError, fromEmitterEvent} from '../common/util.js';
 import {guarded} from '../util/decorators.js';
 import {asyncDisposeSymbol} from '../util/disposable.js';
@@ -49,7 +49,7 @@ export interface ScreenRecorderOptions {
   quality?: number;
   colors?: number;
   scale?: number;
-  path?: string;
+  path?: FilePath;
 }
 
 /**
