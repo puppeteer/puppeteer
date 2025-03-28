@@ -1541,6 +1541,13 @@ See individual properties for more information.
 </td></tr>
 <tr><td>
 
+<span id="fileformat">[FileFormat](./puppeteer.fileformat.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="flattenhandle">[FlattenHandle](./puppeteer.flattenhandle.md)</span>
 
 </td><td>
