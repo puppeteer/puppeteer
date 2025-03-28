@@ -7,6 +7,7 @@
 import type {ChildProcessWithoutNullStreams} from 'node:child_process';
 import {spawn, spawnSync} from 'node:child_process';
 import os from 'node:os';
+import fs from 'node:fs';
 import {dirname} from 'node:path';
 import {PassThrough} from 'node:stream';
 
@@ -138,10 +139,15 @@ export class ScreenRecorder extends PassThrough {
       filters.push(formatArgs.splice(vf, 2).at(-1) ?? '');
     }
 
+    const dir = path ? dirname(path) : format;
+
     if (format in ImageFormat) {
-      const dir = path ? dirname(path) : format
       // Incremental file naming, e.g. 0001-9999.png
       path ??= `${dir}/%04d.${format}`;
+    }
+    // Ensure provided output directory path exists.
+    if (path) {
+      fs.mkdirSync(dir, { recursive: overwrite });
     }
 
     this.#process = spawn(
