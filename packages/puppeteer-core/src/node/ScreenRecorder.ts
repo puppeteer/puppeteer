@@ -6,8 +6,8 @@
 
 import type {ChildProcessWithoutNullStreams} from 'node:child_process';
 import {spawn, spawnSync} from 'node:child_process';
-import os from 'node:os';
 import fs from 'node:fs';
+import os from 'node:os';
 import {dirname} from 'node:path';
 import {PassThrough} from 'node:stream';
 
@@ -150,7 +150,7 @@ export class ScreenRecorder extends PassThrough {
     }
     // Ensure provided output directory path exists.
     if (path) {
-      fs.mkdirSync(dir, { recursive: overwrite });
+      fs.mkdirSync(dir, {recursive: overwrite});
     }
 
     this.#process = spawn(
@@ -274,7 +274,8 @@ export class ScreenRecorder extends PassThrough {
       ['-f', 'image2'],
     ];
     switch (format) {
-      default: return [];
+      default:
+        return [];
       case 'webm':
         return [
           ...libvpx,
@@ -284,13 +285,15 @@ export class ScreenRecorder extends PassThrough {
       case 'webp':
         // Invert quality to match other settings behavior.
         quality &&= 100 - quality;
-        return path ? [
-          ...image,
-          ['-vcodec', 'libwebp'],
-          // Sets the quality. Lower the better.
-          quality ? ['-quality', `${quality}`] : [],
-          quality === 0 ? ['-lossless', '1'] : [],
-        ].flat() : [];
+        return path
+          ? [
+              ...image,
+              ['-vcodec', 'libwebp'],
+              // Sets the quality. Lower the better.
+              quality ? ['-quality', `${quality}`] : [],
+              quality === 0 ? ['-lossless', '1'] : [],
+            ].flat()
+          : [];
       case 'gif':
         fps = DEFAULT_FPS === fps ? 20 : 'source_fps';
         if (loop === Infinity) {
@@ -326,12 +329,14 @@ export class ScreenRecorder extends PassThrough {
         return path ? image.flat() : [];
       case 'jpeg':
         quality ??= 5;
-        return path ? [
-          ...image,
-          // Sets the quality
-          ['-qscale', `${quality}`],
-          quality <= 1 ? ['-qmin', '1'] : [],
-        ].flat() : [];
+        return path
+          ? [
+              ...image,
+              // Sets the quality
+              ['-qscale', `${quality}`],
+              quality <= 1 ? ['-qmin', '1'] : [],
+            ].flat()
+          : [];
     }
   }
 
