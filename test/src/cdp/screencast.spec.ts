@@ -113,6 +113,9 @@ describe('Screencasts', function () {
 
       await expect(page.screencast({path: 'test.webm'})).rejects.toBeDefined();
 
+      await expect(page.screencast({overwrite: true})).rejects.toBeDefined();
+      await expect(page.screencast({overwrite: false})).rejects.toBeDefined();
+
       await expect(
         page.screencast({ffmpegPath: 'non-existent-path'}),
       ).rejects.toBeDefined();
