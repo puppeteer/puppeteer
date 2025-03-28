@@ -7,6 +7,7 @@
 import type {ChildProcessWithoutNullStreams} from 'node:child_process';
 import {spawn, spawnSync} from 'node:child_process';
 import os from 'node:os';
+import {dirname} from 'node:path';
 import {PassThrough} from 'node:stream';
 
 import debug from 'debug';
@@ -25,7 +26,12 @@ import {
 } from '../../third_party/rxjs/rxjs.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
-import type {Page, FileFormat, FilePath} from '../api/Page.js';
+import {
+  type Page,
+  ImageFormat,
+  type FileFormat,
+  type FilePath,
+} from '../api/Page.js';
 import {debugError, fromEmitterEvent} from '../common/util.js';
 import {guarded} from '../util/decorators.js';
 import {asyncDisposeSymbol} from '../util/disposable.js';
@@ -83,6 +89,7 @@ export class ScreenRecorder extends PassThrough {
       delay,
       quality,
       colors,
+      path,
     }: ScreenRecorderOptions = {},
   ) {
     super({allowHalfOpen: false});
@@ -119,6 +126,7 @@ export class ScreenRecorder extends PassThrough {
     }
 
     const formatArgs = this.#getFormatArgs(
+      path !== undefined,
       format,
       fps,
       loop,
@@ -129,6 +137,12 @@ export class ScreenRecorder extends PassThrough {
     const vf = formatArgs.indexOf('-vf');
     if (vf !== -1) {
       filters.push(formatArgs.splice(vf, 2).at(-1) ?? '');
+    }
+
+    if (format in ImageFormat) {
+      const dir = path ? dirname(path) : format
+      // Incremental file naming, e.g. 0001-9999.png
+      path ??= `${dir}/%04d.${format}`;
     }
 
     this.#process = spawn(
@@ -166,7 +180,8 @@ export class ScreenRecorder extends PassThrough {
         // Filters to ensure the images are piped correctly,
         // combined with any format-specific filters.
         ['-vf', filters.join()],
-        'pipe:1',
+        // Write to provided path, else pipe to stdout.
+        path ?? 'pipe:1',
       ].flat(),
       {stdio: ['pipe', 'pipe', 'pipe']},
     );
@@ -223,13 +238,14 @@ export class ScreenRecorder extends PassThrough {
   }
 
   #getFormatArgs(
+    path: boolean,
     format: FileFormat,
     fps: number | 'source_fps',
     loop: number,
     delay: number,
     quality: number,
     colors: number,
-  ) {
+  ): string[] {
     const libvpx = [
       ['-vcodec', 'vp9'],
       // Sets the quality. Lower the better.
@@ -242,13 +258,23 @@ export class ScreenRecorder extends PassThrough {
         `${Math.min(os.cpus().length / 2, 8)}`,
       ],
     ];
+    const image = [
+      // Sets the format
+      ['-f', 'image2'],
+    ];
     switch (format) {
+      default: return [];
       case 'webm':
         return [
           ...libvpx,
           // Sets the format
           ['-f', 'webm'],
         ].flat();
+      case 'webp':
+        return path ? [
+          ...image,
+          ['-vcodec', 'libwebp'],
+        ].flat() : [];
       case 'gif':
         fps = DEFAULT_FPS === fps ? 20 : 'source_fps';
         if (loop === Infinity) {
@@ -280,6 +306,9 @@ export class ScreenRecorder extends PassThrough {
           // Sets the format
           ['-f', 'mp4'],
         ].flat();
+      case 'png':
+      case 'jpeg':
+        return path ? image.flat() : [];
     }
   }
 

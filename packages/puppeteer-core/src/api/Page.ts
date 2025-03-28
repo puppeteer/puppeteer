@@ -326,7 +326,7 @@ export interface ScreenshotOptions {
 /**
  * @public
  */
-export type FileFormat = 'gif' | 'webm' | 'mp4';
+export type FileFormat = ImageFormat | 'gif' | 'webm' | 'mp4';
 
 /**
  * @public
@@ -2478,7 +2478,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       void recorder.stop();
       throw error;
     }
-    if (options.path) {
+    if (options.path && !(options.format ?? '' in ImageFormat)) {
       const {createWriteStream} = environment.value.fs;
       const stream = createWriteStream(options.path, 'binary');
       recorder.pipe(stream);
