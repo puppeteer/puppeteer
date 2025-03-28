@@ -343,6 +343,13 @@ export interface ScreencastOptions {
    */
   path?: FilePath;
   /**
+   * Specifies whether to overwrite output file,
+   * or exit immediately if it already exists.
+   *
+   * @defaultValue `true`
+   */
+  overwrite?: boolean;
+  /**
    * Specifies the output file format.
    *
    * @defaultValue `'webm'`

@@ -57,6 +57,7 @@ export interface ScreenRecorderOptions {
   colors?: number;
   scale?: number;
   path?: FilePath;
+  overwrite?: boolean;
 }
 
 /**
@@ -91,6 +92,7 @@ export class ScreenRecorder extends PassThrough {
       quality,
       colors,
       path,
+      overwrite,
     }: ScreenRecorderOptions = {},
   ) {
     super({allowHalfOpen: false});
@@ -102,6 +104,7 @@ export class ScreenRecorder extends PassThrough {
     loop ||= -1;
     delay ??= -1;
     colors ??= 256;
+    overwrite ??= true;
 
     this.#fps = fps;
 
@@ -171,8 +174,8 @@ export class ScreenRecorder extends PassThrough {
         // Forces input to be read from standard input, and forces png input
         // image format.
         ['-f', 'image2pipe', '-vcodec', 'png', '-i', 'pipe:0'],
-        // Overwrite output and no audio.
-        ['-y', '-an'],
+        // No audio
+        ['-an'],
         // This drastically reduces stalling when cpu is overbooked. By default
         // VP9 tries to use all available threads?
         ['-threads', '1'],
@@ -187,6 +190,8 @@ export class ScreenRecorder extends PassThrough {
         ['-vf', filters.join()],
         // Write to provided path, else pipe to stdout.
         path ?? 'pipe:1',
+        // Overwrite output, or exit immediately if file already exists.
+        [overwrite ? '-y' : '-n'],
       ].flat(),
       {stdio: ['pipe', 'pipe', 'pipe']},
     );
