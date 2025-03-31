@@ -385,15 +385,13 @@ describe('network', function () {
     });
   });
 
-  describe.only('Response.json', function () {
+  describe('Response.json', function () {
     it('should work', async () => {
       const {page, server} = await getTestState();
 
       const response = (await page.goto(server.PREFIX + '/simple.json'))!;
       expect(await response.json()).toEqual({foo: 'bar'});
     });
-
-    it('always passes', async () => {});
   });
 
   describe('Response.buffer', function () {
