@@ -2,6 +2,33 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.5.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.4.0...puppeteer-v24.5.0) (2025-03-31)
+
+### Miscellaneous Chores
+
+- **puppeteer:** Synchronize puppeteer versions
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - @puppeteer/browsers bumped from 2.8.0 to 2.9.0
+
+### Features
+
+- improve `screencast` options ([#13645](https://github.com/puppeteer/puppeteer/issues/13645)) ([22aeab9](https://github.com/puppeteer/puppeteer/commit/22aeab945842fb1875e28da672c28bcca166254a))
+
+### Bug Fixes
+
+- `screencast` mp4 encoding ([#13676](https://github.com/puppeteer/puppeteer/issues/13676)) ([dfc9219](https://github.com/puppeteer/puppeteer/commit/dfc92194c5f2656de7374cafcb73cd283a0976c8))
+- roll to Chrome 134.0.6998.165 ([#13696](https://github.com/puppeteer/puppeteer/issues/13696)) ([ff74c58](https://github.com/puppeteer/puppeteer/commit/ff74c58464f985253b0a986f5fbbe4edc1658a42))
+- roll to Chrome 134.0.6998.88 ([#13666](https://github.com/puppeteer/puppeteer/issues/13666)) ([334d06a](https://github.com/puppeteer/puppeteer/commit/334d06aa546173b924a4754c8968470547cd75a7))
+- roll to Chrome 134.0.6998.90 ([#13693](https://github.com/puppeteer/puppeteer/issues/13693)) ([7433674](https://github.com/puppeteer/puppeteer/commit/7433674f69100128f2a7fe5450e5315a3380b865))
+- roll to Firefox 136.0.1 ([#13672](https://github.com/puppeteer/puppeteer/issues/13672)) ([c900ded](https://github.com/puppeteer/puppeteer/commit/c900ded5125069e9abf796877d4003cdf0392fa9))
+- roll to Firefox 136.0.2 ([#13692](https://github.com/puppeteer/puppeteer/issues/13692)) ([ea8a0ae](https://github.com/puppeteer/puppeteer/commit/ea8a0aee6136a585ee9e9ebe94e1e766144082e8))
+- roll to Firefox 136.0.3 ([#13702](https://github.com/puppeteer/puppeteer/issues/13702)) ([d3a865e](https://github.com/puppeteer/puppeteer/commit/d3a865e4fd742d9b025b8de988a2635e0ca1516d))
+- roll to Firefox 136.0.4 ([#13707](https://github.com/puppeteer/puppeteer/issues/13707)) ([33668c9](https://github.com/puppeteer/puppeteer/commit/33668c983a08f0fedf8f9f85e2f8a71c7a2780f2))
+
 ## [24.4.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.3.1...puppeteer-v24.4.0) (2025-03-05)
 
 ### Features
