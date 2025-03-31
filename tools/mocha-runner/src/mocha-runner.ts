@@ -47,6 +47,7 @@ const {
   shard,
   reporter,
   printMemory,
+  ignoreUnexpectedlyPassing,
 } = yargs(hideBin(process.argv))
   .parserConfiguration({'unknown-options-as-args': true})
   .scriptName('@puppeteer/mocha-runner')
@@ -84,6 +85,10 @@ const {
     requiresArg: true,
   })
   .option('print-memory', {
+    boolean: true,
+    default: false,
+  })
+  .option('ignore-unexpectedly-passing', {
     boolean: true,
     default: false,
   })
@@ -261,10 +266,15 @@ async function main() {
           }
         })();
         console.log('Finished', JSON.stringify(parameters));
-        const updates = getExpectationUpdates(results, applicableExpectations, {
-          platforms: [os.platform()],
-          parameters,
-        });
+        const updates = getExpectationUpdates(
+          results,
+          applicableExpectations,
+          {
+            platforms: [os.platform()],
+            parameters,
+          },
+          ignoreUnexpectedlyPassing,
+        );
         const totalTests = results.stats.tests;
         results.parameters = parameters;
         results.platform = platform;
