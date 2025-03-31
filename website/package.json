@@ -23,18 +23,18 @@
     "@docusaurus/remark-plugin-npm2yarn": "3.7.0",
     "@docusaurus/theme-common": "3.7.0",
     "@mdx-js/react": "3.1.0",
-    "algoliasearch-helper": "3.24.2",
+    "algoliasearch-helper": "3.24.3",
     "clsx": "2.1.1",
     "prism-react-renderer": "2.4.1",
-    "react": "18.3.1",
+    "react": "19.1.0",
     "react-cookie-consent": "9.0.0",
-    "react-dom": "18.3.1",
+    "react-dom": "19.1.0",
     "semver": "7.7.1"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.7.0",
     "@docusaurus/types": "3.7.0",
-    "@swc/core": "1.11.11",
+    "@swc/core": "1.11.13",
     "swc-loader": "0.2.6"
   },
   "browserslist": {
