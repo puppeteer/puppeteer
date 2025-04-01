@@ -227,7 +227,6 @@ export const throwIfDetached = throwIfDisposed<Frame>(frame => {
  *
  * @example
  * An example of dumping frame tree:
- *
  * ```ts
  * import puppeteer from 'puppeteer';
  *
@@ -249,7 +248,6 @@ export const throwIfDetached = throwIfDisposed<Frame>(frame => {
  *
  * @example
  * An example of getting text from an iframe element:
- *
  * ```ts
  * const frames = page.frames();
  * let frame = null;
