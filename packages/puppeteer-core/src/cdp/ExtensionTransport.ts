@@ -160,7 +160,6 @@ export class ExtensionTransport implements ConnectionTransport {
     }
     chrome.debugger
       .sendCommand(
-        // @ts-expect-error sessionId is not in stable yet.
         {tabId: this.#tabId, sessionId: parsed.sessionId},
         parsed.method,
         parsed.params,

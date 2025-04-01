@@ -108,6 +108,6 @@
     "@types/progress": "2.0.7",
     "@types/tar-fs": "2.0.4",
     "@types/yargs": "17.0.33",
-    "@types/ws": "8.18.0"
+    "@types/ws": "8.18.1"
   }
 }
