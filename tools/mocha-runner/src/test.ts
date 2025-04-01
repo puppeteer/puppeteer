@@ -160,10 +160,15 @@ describe('getExpectationUpdates', () => {
         expectations: ['FAIL' as const],
       },
     ];
-    const updates = getExpectationUpdates(mochaResults, expectations, {
-      platforms: ['darwin'] as Platform[],
-      parameters: ['test'],
-    });
+    const updates = getExpectationUpdates(
+      mochaResults,
+      expectations,
+      {
+        platforms: ['darwin'] as Platform[],
+        parameters: ['test'],
+      },
+      false,
+    );
     assert.deepEqual(updates, [
       {
         action: 'remove',
@@ -181,6 +186,39 @@ describe('getExpectationUpdates', () => {
         },
       },
     ]);
+  });
+
+  it('should not generate an update for expectations if a test passed with a fail expectation when passing are ingored', () => {
+    const mochaResults = {
+      stats: {tests: 1},
+      pending: [],
+      passes: [
+        {
+          fullTitle: 'Page Page.setContent should work',
+          title: 'should work',
+          file: 'page.spec.ts',
+        },
+      ],
+      failures: [],
+    };
+    const expectations = [
+      {
+        testIdPattern: '[page.spec] Page Page.setContent should work',
+        platforms: ['darwin'] as Platform[],
+        parameters: ['test'],
+        expectations: ['FAIL' as const],
+      },
+    ];
+    const updates = getExpectationUpdates(
+      mochaResults,
+      expectations,
+      {
+        platforms: ['darwin'] as Platform[],
+        parameters: ['test'],
+      },
+      true,
+    );
+    assert.deepEqual(updates, []);
   });
 
   it('should not generate an update for successful retries', () => {
@@ -203,10 +241,15 @@ describe('getExpectationUpdates', () => {
         },
       ],
     };
-    const updates = getExpectationUpdates(mochaResults, [], {
-      platforms: ['darwin'],
-      parameters: ['test'],
-    });
+    const updates = getExpectationUpdates(
+      mochaResults,
+      [],
+      {
+        platforms: ['darwin'],
+        parameters: ['test'],
+      },
+      false,
+    );
     assert.deepEqual(updates, []);
   });
 });
