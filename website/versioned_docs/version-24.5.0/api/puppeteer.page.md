@@ -929,7 +929,7 @@ Removes script that injected into page by Page.evaluateOnNewDocument.
 
 **Remarks:**
 
-All recordings will be [WebM](https://www.webmproject.org/) format using the [VP9](https://www.webmproject.org/vp9/) video codec. The FPS is 30.
+By default, all recordings will be [WebM](https://www.webmproject.org/) format using the [VP9](https://www.webmproject.org/vp9/) video codec, with a frame rate of 30 FPS.
 
 You must have [ffmpeg](https://ffmpeg.org/) installed on your system.
 

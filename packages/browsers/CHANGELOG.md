@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.9.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.8.0...browsers-v2.9.0) (2025-03-31)
+
+
+### Features
+
+* support dumpio option on launch ([#13656](https://github.com/puppeteer/puppeteer/issues/13656)) ([332af85](https://github.com/puppeteer/puppeteer/commit/332af850bc42fd4df1b4e8ae210f502fb8098f71))
+* support extra args to launch ([#13658](https://github.com/puppeteer/puppeteer/issues/13658)) ([844f013](https://github.com/puppeteer/puppeteer/commit/844f0134d231ed013e8b3f537d9336e6cd0a8e4b))
+
 ## [2.8.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.7.1...browsers-v2.8.0) (2025-03-05)
 
 

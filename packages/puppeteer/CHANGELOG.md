@@ -1,5 +1,20 @@
 # Changelog
 
+## [24.5.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.4.0...puppeteer-v24.5.0) (2025-03-31)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.8.0 to 2.9.0
+    * puppeteer-core bumped from 24.4.0 to 24.5.0
+
 ## [24.4.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.3.1...puppeteer-v24.4.0) (2025-03-05)
 
 
