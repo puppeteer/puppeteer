@@ -78,7 +78,7 @@ jobs:
   deploy-docs:
     needs: check-changes
     name: Deploy docs (if needed)
-    if: ${{ github.event_name != 'pull_request' && contains(fromJSON(needs.check-changes.outputs.changes), 'website') }}
+    if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'website') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -99,6 +99,8 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=6144
         run: npm run build
       - name: Deploy to GitHub Pages
+        # Only change on push to main
+        if: ${{ github.event_name != 'pull_request'}}
         uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -106,6 +108,8 @@ jobs:
           user_name: release-please[bot]
           user_email: 55107282+release-please[bot]@users.noreply.github.com
       - name: Test Algolia if Crawler is blocked
+        # Only change on push to main
+        if: ${{ github.event_name != 'pull_request'}}
         env:
           CRAWLER_USER_ID: ${{secrets.ALGOLIA_CRAWLER_USER_ID}}
           CRAWLER_API_KEY: ${{secrets.ALGOLIA_CRAWLER_API_KEY}}
@@ -115,6 +119,8 @@ jobs:
             "https://crawler.algolia.com/api/1/crawlers/$CRAWLER_ID" | grep "\"blocked\":true" || true ); \
           if [ ! -z "$RESPONSE" ]; then echo "Please go to https://crawler.algolia.com/" && exit 1; fi
       - name: Trigger Algolia reindexing
+        # Only change on push to main
+        if: ${{ github.event_name != 'pull_request'}}
         env:
           CRAWLER_USER_ID: ${{secrets.ALGOLIA_CRAWLER_USER_ID}}
           CRAWLER_API_KEY: ${{secrets.ALGOLIA_CRAWLER_API_KEY}}
