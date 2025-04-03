@@ -1912,7 +1912,12 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * ```ts
    * const frame = await page.waitForFrame(async frame => {
-   *   return frame.name() === 'Test';
+   *   const frameElement = await frame.frameElement();
+   *   if (!frameElement) {
+   *     return false;
+   *   }
+   *   const name = await frameElement.evaluate(el => el.getAttribute('name'));
+   *   return name === 'test';
    * });
    * ```
    */
