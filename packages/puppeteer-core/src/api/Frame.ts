@@ -255,7 +255,7 @@ export const throwIfDetached = throwIfDisposed<Frame>(frame => {
  * let frame = null;
  * for (const currentFrame of frames) {
  *   const frameElement = await currentFrame.frameElement();
- *   const name = await frameElement.evaluate((el) => el.getAttribute('name'));
+ *   const name = await frameElement.evaluate(el => el.getAttribute('name'));
  *   if (name === 'myframe') {
  *     frame = currentFrame;
  *     break;
