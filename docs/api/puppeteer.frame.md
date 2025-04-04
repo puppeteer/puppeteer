@@ -62,7 +62,7 @@ let frame = null;
  
 for (const currentFrame of frames) {
   const frameElement = await currentFrame.frameElement();
-  const name = await frameElement.evaluate((el) => el.getAttribute('name'));
+  const name = await frameElement.evaluate(el => el.getAttribute('name'));
   if (name === 'myframe') {
     frame = currentFrame;
     break; // Exit the loop once the desired frame is found
@@ -70,7 +70,7 @@ for (const currentFrame of frames) {
 }
  
 if (frame) {
-  const text = await frame.$eval('.selector', (element) => element.textContent);
+  const text = await frame.$eval('.selector', element => element.textContent);
   console.log(text);
 } else {
   console.error('Frame with name "myframe" not found.');
