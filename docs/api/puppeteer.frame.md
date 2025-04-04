@@ -6,7 +6,7 @@ sidebar_label: Frame
 
 Represents a DOM frame.
 
-To understand frames, you can think of frames as `<iframe>` elements. Just like iframes, frames can be nested, and when JavaScript is executed in a frame, the JavaScript does not effect frames inside the ambient frame the JavaScript executes in.
+To understand frames, you can think of frames as `<iframe>` elements. Just like iframes, frames can be nested, and when JavaScript is executed in a frame, the JavaScript does not affect frames inside the ambient frame the JavaScript executes in.
 
 ### Signature
 
@@ -57,18 +57,15 @@ An example of getting text from an iframe element:
 
 ```ts
 const frames = page.frames();
- 
 let frame = null;
- 
 for (const currentFrame of frames) {
   const frameElement = await currentFrame.frameElement();
   const name = await frameElement.evaluate(el => el.getAttribute('name'));
   if (name === 'myframe') {
     frame = currentFrame;
-    break; // Exit the loop once the desired frame is found
+    break;
   }
 }
- 
 if (frame) {
   const text = await frame.$eval('.selector', element => element.textContent);
   console.log(text);
