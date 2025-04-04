@@ -262,7 +262,7 @@ export const throwIfDetached = throwIfDisposed<Frame>(frame => {
  *   }
  * }
  * if (frame) {
- *   const text = await frame.$eval('.selector', (element) => element.textContent);
+ *   const text = await frame.$eval('.selector', element => element.textContent);
  *   console.log(text);
  * } else {
  *   console.error('Frame with name "myframe" not found.');
