@@ -250,9 +250,7 @@ export async function getReadableFromProtocolStream(
     async pull(controller) {
       function getUnit8Array(data: string, isBase64: boolean): Uint8Array {
         if (isBase64) {
-          return Uint8Array.from(atob(data), m => {
-            return m.codePointAt(0)!;
-          });
+          return Buffer.from(data, 'base64');
         }
         const encoder = new TextEncoder();
         return encoder.encode(data);
