@@ -974,12 +974,16 @@ describe('network', function () {
       const {page, server} = await getTestState();
 
       const cssRequests: HTTPRequest[] = [];
-      page.on('request', request => {
-        if (request.url().endsWith('css')) {
-          cssRequests.push(request);
-        }
+      const promise = new Promise<void>(resolve => {
+        page.on('request', request => {
+          if (request.url().endsWith('css')) {
+            cssRequests.push(request);
+            resolve();
+          }
+        });
       });
       await page.goto(server.PREFIX + '/one-style.html');
+      await promise;
       expect(cssRequests).toHaveLength(1);
       const request = cssRequests[0]!;
       expect(request.url()).toContain('one-style.css');
