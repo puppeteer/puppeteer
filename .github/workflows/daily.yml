@@ -52,7 +52,7 @@ jobs:
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
       # Set up GitHub Actions caching for Wireit.
-      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
+      # - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
       - name: Build packages
         run: npm run build -w @puppeteer-test/test
       - name: Install browsers
@@ -127,7 +127,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
       # Set up GitHub Actions caching for Wireit.
-      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
+      # - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
       - name: Build packages
         run: npm run build -w @puppeteer-test/test
       - name: Install browsers
