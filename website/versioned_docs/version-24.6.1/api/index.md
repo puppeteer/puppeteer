@@ -272,7 +272,7 @@ The constructor for this class is marked as internal. Third-party code should no
 
 Represents a DOM frame.
 
-To understand frames, you can think of frames as `<iframe>` elements. Just like iframes, frames can be nested, and when JavaScript is executed in a frame, the JavaScript does not effect frames inside the ambient frame the JavaScript executes in.
+To understand frames, you can think of frames as `<iframe>` elements. Just like iframes, frames can be nested, and when JavaScript is executed in a frame, the JavaScript does not affect frames inside the ambient frame the JavaScript executes in.
 
 **Remarks:**
 
