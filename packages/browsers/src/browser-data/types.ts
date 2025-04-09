@@ -33,6 +33,11 @@ export enum BrowserPlatform {
 }
 
 /**
+ * Enum describing a release channel for a browser.
+ *
+ * You can use this in combination with {@link resolveBuildId} to resolve
+ * a build ID based on a release channel.
+ *
  * @public
  */
 export enum BrowserTag {

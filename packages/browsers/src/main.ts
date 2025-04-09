@@ -28,6 +28,7 @@ export {
   getInstalledBrowsers,
   canDownload,
   uninstall,
+  getDownloadUrl,
 } from './install.js';
 export {detectBrowserPlatform} from './detectPlatform.js';
 export type {ProfileOptions} from './browser-data/browser-data.js';
@@ -41,3 +42,4 @@ export {
 } from './browser-data/browser-data.js';
 export {CLI, makeProgressCallback} from './CLI.js';
 export {Cache, InstalledBrowser} from './Cache.js';
+export {BrowserTag} from './browser-data/types.js';

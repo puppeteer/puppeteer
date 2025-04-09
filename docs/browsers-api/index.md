@@ -171,6 +171,17 @@ Platform names used to identify a OS platform x architecture combination in the 
 </td></tr>
 <tr><td>
 
+<span id="browsertag">[BrowserTag](./browsers.browsertag.md)</span>
+
+</td><td>
+
+Enum describing a release channel for a browser.
+
+You can use this in combination with [resolveBuildId()](./browsers.resolvebuildid.md) to resolve a build ID based on a release channel.
+
+</td></tr>
+<tr><td>
+
 <span id="chromereleasechannel">[ChromeReleaseChannel](./browsers.chromereleasechannel.md)</span>
 
 </td><td>
@@ -224,6 +235,17 @@ Returns a path to a system-wide Chrome installation given a release channel name
 <span id="detectbrowserplatform">[detectBrowserPlatform()](./browsers.detectbrowserplatform.md)</span>
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="getdownloadurl">[getDownloadUrl(browser, platform, buildId, baseUrl)](./browsers.getdownloadurl.md)</span>
+
+</td><td>
+
+Retrieves a URL for downloading the binary archive of a given browser.
+
+The archive is bound to the specific platform and build ID specified.
 
 </td></tr>
 <tr><td>

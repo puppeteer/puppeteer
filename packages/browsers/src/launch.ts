@@ -14,6 +14,7 @@ import {
   type BrowserPlatform,
   resolveSystemExecutablePath,
   type ChromeReleaseChannel,
+  executablePathByBrowser,
 } from './browser-data/browser-data.js';
 import {Cache} from './Cache.js';
 import {debug} from './debug.js';
@@ -27,8 +28,11 @@ const debugLaunch = debug('puppeteer:browsers:launcher');
 export interface ComputeExecutablePathOptions {
   /**
    * Root path to the storage directory.
+   *
+   * Can be set to `null` if the executable path should be relative
+   * to the extracted download location. E.g. `./chrome-linux64/chrome`.
    */
-  cacheDir: string;
+  cacheDir: string | null;
   /**
    * Determines which platform the browser will be suited for.
    *
@@ -52,6 +56,19 @@ export interface ComputeExecutablePathOptions {
 export function computeExecutablePath(
   options: ComputeExecutablePathOptions,
 ): string {
+  if (options.cacheDir === null) {
+    options.platform ??= detectBrowserPlatform();
+    if (options.platform === undefined) {
+      throw new Error(
+        `No platform specified. Couldn't auto-detect browser platform.`,
+      );
+    }
+    return executablePathByBrowser[options.browser](
+      options.platform,
+      options.buildId,
+    );
+  }
+
   return new Cache(options.cacheDir).computeExecutablePath(options);
 }
 

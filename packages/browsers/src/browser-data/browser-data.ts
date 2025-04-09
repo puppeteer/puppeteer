@@ -168,7 +168,7 @@ async function resolveBuildIdForBrowserTag(
 export async function resolveBuildId(
   browser: Browser,
   platform: BrowserPlatform,
-  tag: string,
+  tag: string | BrowserTag,
 ): Promise<string> {
   const browserTag = tag as BrowserTag;
   if (Object.values(BrowserTag).includes(browserTag)) {

@@ -459,7 +459,14 @@ export async function canDownload(options: InstallOptions): Promise<boolean> {
   );
 }
 
-function getDownloadUrl(
+/**
+ * Retrieves a URL for downloading the binary archive of a given browser.
+ *
+ * The archive is bound to the specific platform and build ID specified.
+ *
+ * @public
+ */
+export function getDownloadUrl(
   browser: Browser,
   platform: BrowserPlatform,
   buildId: string,
