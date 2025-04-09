@@ -1,17 +1,22 @@
 ---
-sidebar_label: resolveBuildId
+sidebar_label: getDownloadUrl
 ---
 
-# resolveBuildId() function
+# getDownloadUrl() function
+
+Retrieves a URL for downloading the binary archive of a given browser.
+
+The archive is bound to the specific platform and build ID specified.
 
 ### Signature
 
 ```typescript
-export declare function resolveBuildId(
+export declare function getDownloadUrl(
   browser: Browser,
   platform: BrowserPlatform,
-  tag: string,
-): Promise<string>;
+  buildId: string,
+  baseUrl?: string,
+): URL;
 ```
 
 ## Parameters
@@ -53,7 +58,7 @@ platform
 </td></tr>
 <tr><td>
 
-tag
+buildId
 
 </td><td>
 
@@ -62,7 +67,20 @@ string
 </td><td>
 
 </td></tr>
+<tr><td>
+
+baseUrl
+
+</td><td>
+
+string
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
 </tbody></table>
 **Returns:**
 
-Promise&lt;string&gt;
+URL

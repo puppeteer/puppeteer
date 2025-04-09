@@ -75,11 +75,13 @@ Determines which buildId to download. BuildId should uniquely identify binaries 
 
 </td><td>
 
-string
+string \| null
 
 </td><td>
 
 Root path to the storage directory.
+
+Can be set to `null` if the executable path should be relative to the extracted download location. E.g. `./chrome-linux64/chrome`.
 
 </td><td>
 
