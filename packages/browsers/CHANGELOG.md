@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.9.0...browsers-v2.10.0) (2025-04-09)
+
+
+### Features
+
+* expose utilities for managing browser artifacts manually ([#13761](https://github.com/puppeteer/puppeteer/issues/13761)) ([43baf13](https://github.com/puppeteer/puppeteer/commit/43baf1328665212a088f59fc258da53ca60e2a5e))
+
 ## [2.9.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.8.0...browsers-v2.9.0) (2025-03-31)
 
 

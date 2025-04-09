@@ -1,5 +1,22 @@
 # Changelog
 
+## [24.6.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.6.0...puppeteer-core-v24.6.1) (2025-04-09)
+
+
+### Bug Fixes
+
+* optimize base64 decoding ([#13753](https://github.com/puppeteer/puppeteer/issues/13753)) ([8145dd6](https://github.com/puppeteer/puppeteer/commit/8145dd64f21ca7ab917c9c75fe51d04a9463b552))
+* roll to Chrome 135.0.7049.84 ([#13756](https://github.com/puppeteer/puppeteer/issues/13756)) ([ab6459f](https://github.com/puppeteer/puppeteer/commit/ab6459f947471645445a71afbe5d7b4755cb9cf7))
+* roll to Firefox 137.0.1 ([#13758](https://github.com/puppeteer/puppeteer/issues/13758)) ([446a07c](https://github.com/puppeteer/puppeteer/commit/446a07cdc4e56f8a926f74d167cb14eca24a9602))
+* **webdriver:** handle errors if exposed function args are no longer available ([#13759](https://github.com/puppeteer/puppeteer/issues/13759)) ([4013556](https://github.com/puppeteer/puppeteer/commit/401355610874beac23a51dcb75739a4bb4191a2b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.9.0 to 2.10.0
+
 ## [24.6.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.5.0...puppeteer-core-v24.6.0) (2025-04-03)
 
 
