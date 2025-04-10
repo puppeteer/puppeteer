@@ -297,6 +297,7 @@ export class WorkerTarget extends CdpTarget {
           this.type(),
           () => {} /* consoleAPICalled */,
           () => {} /* exceptionThrown */,
+          undefined /* networkManager */,
         );
       });
     }

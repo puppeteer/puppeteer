@@ -15,6 +15,7 @@ import {debugError} from '../common/util.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {CdpJSHandle} from './JSHandle.js';
+import type {NetworkManager} from './NetworkManager.js';
 
 /**
  * @internal
@@ -48,6 +49,7 @@ export class CdpWebWorker extends WebWorker {
     targetType: TargetType,
     consoleAPICalled: ConsoleAPICalledCallback,
     exceptionThrown: ExceptionThrownCallback,
+    networkManager?: NetworkManager,
   ) {
     super(url);
     this.#id = targetId;
@@ -79,6 +81,7 @@ export class CdpWebWorker extends WebWorker {
     });
 
     // This might fail if the target is closed before we receive all execution contexts.
+    networkManager?.addClient(this.#client).catch(debugError);
     this.#client.send('Runtime.enable').catch(debugError);
   }
 

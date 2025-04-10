@@ -123,4 +123,45 @@ describe('Workers', function () {
 
     await Promise.all([waitEvent(page, 'workerdestroyed'), worker?.close()]);
   });
+
+  it('should work with waitForNetworkIdle', async () => {
+    const {page, server} = await getTestState();
+
+    await Promise.all([
+      waitEvent(page, 'workercreated'),
+      page.goto(server.PREFIX + '/worker/worker.html', {
+        waitUntil: 'networkidle0',
+      }),
+    ]);
+
+    await page.waitForNetworkIdle({
+      timeout: 3000,
+    });
+  });
+
+  it('should retrieve body for main worker requests', async () => {
+    const {page, server} = await getTestState();
+
+    let testResponse = null;
+
+    const workerUrl = server.PREFIX + '/worker/worker.js';
+
+    page.on('response', async response => {
+      if (response.request().url() === workerUrl) {
+        testResponse = response;
+      }
+    });
+
+    // Navigate to a page with a worker.
+    await Promise.all([
+      waitEvent(page, 'workercreated'),
+      page.goto(server.PREFIX + '/worker/worker.html', {
+        waitUntil: 'networkidle0',
+      }),
+    ]);
+
+    await expect(testResponse!.text()).resolves.toContain(
+      'hello from the worker',
+    );
+  });
 });
