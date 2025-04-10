@@ -337,6 +337,7 @@ export class CdpPage extends Page {
         session.target().type(),
         this.#addConsoleMessage.bind(this),
         this.#handleException.bind(this),
+        this.#frameManager.networkManager,
       );
       this.#workers.set(session.id(), worker);
       this.emit(PageEvent.WorkerCreated, worker);

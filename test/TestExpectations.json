@@ -1745,6 +1745,13 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[worker.spec] Workers should retrieve body for main worker requests",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Getting request bodies is not supported"
+  },
+  {
     "testIdPattern": "[CDPSession.spec] Target.createCDPSession should send events",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome", "headless"],
