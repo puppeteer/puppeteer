@@ -2,6 +2,22 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.7.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.6.1...puppeteer-v24.7.0) (2025-04-11)
+
+### Miscellaneous Chores
+
+- **puppeteer:** Synchronize puppeteer versions
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - puppeteer-core bumped from 24.6.1 to 24.7.0
+
+### Features
+
+- support network requests for workers ([#13752](https://github.com/puppeteer/puppeteer/issues/13752)) ([4062068](https://github.com/puppeteer/puppeteer/commit/4062068da9fd839008ef78411432de26ad367bda))
+
 ## [24.6.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.6.0...puppeteer-v24.6.1) (2025-04-09)
 
 ### Miscellaneous Chores
