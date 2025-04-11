@@ -52,7 +52,6 @@ await chromeBrowser.close();
   - Page.emulateTimezone()
   - Page.emulateVisionDeficiency()
   - Page.setBypassCSP()
-  - Page.setGeolocation()
   - Page.setJavaScriptEnabled()
 
 - CDP-specific features
@@ -113,6 +112,7 @@ await chromeBrowser.close();
   - Page.setCacheEnabled()
   - Page.setCookie()
   - Page.setExtraHTTPHeaders()
+  - Page.setGeolocation()
   - Page.setViewport (`width`, `height`, `deviceScaleFactor` only)
   - Page.workers()
   - PageEvent.WorkerCreated

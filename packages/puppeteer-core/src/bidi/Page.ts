@@ -314,7 +314,13 @@ export class BidiPage extends Page {
   }
 
   override async setGeolocation(options: GeolocationOptions): Promise<void> {
-    return await this.#cdpEmulationManager.setGeolocation(options);
+    return await this.#frame.browsingContext.setGeolocationOverride({
+      coordinates: {
+        latitude: options.latitude,
+        longitude: options.longitude,
+        accuracy: options.accuracy,
+      },
+    });
   }
 
   override async setJavaScriptEnabled(enabled: boolean): Promise<void> {
