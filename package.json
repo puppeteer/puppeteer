@@ -190,7 +190,7 @@
     "spdx-satisfies": "5.0.1",
     "tsd": "0.31.2",
     "typescript": "5.7.3",
-    "wireit": "0.14.11"
+    "wireit": "0.14.12"
   },
   "overrides": {
     "@microsoft/api-extractor": {
