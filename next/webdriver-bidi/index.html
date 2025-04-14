@@ -7,7 +7,7 @@
 
 <script src="https://www.googletagmanager.com/gtag/js?id=G-J15CTWBVHX" async></script>
 <script src="/fix-location.js"></script><link rel="stylesheet" href="/assets/css/styles.d6eb8095.css">
-<script src="/assets/js/runtime~main.577a488f.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.4b941ae7.js" defer="defer"></script>
 <script src="/assets/js/main.1d60a521.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -42,7 +42,6 @@ WebDriver BiDi.</p>
 <li>Page.emulateTimezone()</li>
 <li>Page.emulateVisionDeficiency()</li>
 <li>Page.setBypassCSP()</li>
-<li>Page.setGeolocation()</li>
 <li>Page.setJavaScriptEnabled()</li>
 </ul>
 </li>
@@ -86,7 +85,6 @@ WebDriver BiDi.</p>
 <li>Page.setDragInterception()</li>
 <li>Page.setOfflineMode()</li>
 <li>Page.waitForDevicePrompt()</li>
-<li>Page.waitForFileChooser()</li>
 <li>PageEvent.popup</li>
 </ul>
 </li>
@@ -116,8 +114,13 @@ WebDriver BiDi.</p>
 <li>Page.reload (except for <code>ignoreCache</code> parameter)</li>
 <li>Page.setCacheEnabled()</li>
 <li>Page.setCookie()</li>
-<li>Page.setExtraHTTPHeaders()</li>
+<li>Page.setExtraHTTPHeaders()<!-- -->
+<ul>
+<li>Page.setGeolocation()</li>
+</ul>
+</li>
 <li>Page.setViewport (<code>width</code>, <code>height</code>, <code>deviceScaleFactor</code> only)</li>
+<li>Page.waitForFileChooser()</li>
 <li>Page.workers()</li>
 <li>PageEvent.WorkerCreated</li>
 <li>PageEvent.WorkerDestroyed</li>
