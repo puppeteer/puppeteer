@@ -17,6 +17,7 @@ import type {
   GeolocationOptions,
   MediaFeature,
   PageEvents,
+  WaitTimeoutOptions,
 } from '../api/Page.js';
 import {
   Page,
@@ -40,6 +41,7 @@ import type {
 } from '../common/Cookie.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
+import {FileChooser} from '../common/FileChooser.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
 import type {Awaitable} from '../common/types.js';
 import {
@@ -51,6 +53,7 @@ import {
 import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
 import {bubble} from '../util/decorators.js';
+import {Deferred} from '../util/Deferred.js';
 import {stringToTypedArray} from '../util/encoding.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
@@ -58,6 +61,7 @@ import type {BidiBrowser} from './Browser.js';
 import type {BidiBrowserContext} from './BrowserContext.js';
 import type {BidiCdpSession} from './CDPSession.js';
 import type {BrowsingContext} from './core/BrowsingContext.js';
+import {BidiElementHandle} from './ElementHandle.js';
 import {BidiFrame} from './Frame.js';
 import type {BidiHTTPResponse} from './HTTPResponse.js';
 import {BidiKeyboard, BidiMouse, BidiTouchscreen} from './Input.js';
@@ -96,6 +100,7 @@ export class BidiPage extends Page {
   readonly #cdpEmulationManager: EmulationManager;
 
   #emulatedNetworkConditions?: InternalNetworkConditions;
+  #fileChooserDeferreds = new Set<Deferred<FileChooser>>();
 
   _client(): BidiCdpSession {
     return this.#frame.client;
@@ -582,8 +587,54 @@ export class BidiPage extends Page {
     throw new UnsupportedOperation();
   }
 
-  override waitForFileChooser(): never {
-    throw new UnsupportedOperation();
+  override async waitForFileChooser(
+    options: WaitTimeoutOptions = {},
+  ): Promise<FileChooser> {
+    const {timeout = this._timeoutSettings.timeout()} = options;
+    const deferred = Deferred.create<FileChooser>({
+      message: `Waiting for \`FileChooser\` failed: ${timeout}ms exceeded`,
+      timeout,
+    });
+
+    this.#fileChooserDeferreds.add(deferred);
+
+    if (options.signal) {
+      options.signal.addEventListener(
+        'abort',
+        () => {
+          deferred.reject(options.signal?.reason);
+        },
+        {once: true},
+      );
+    }
+
+    this.#frame.browsingContext.once('filedialogopened', info => {
+      if (!info.element) {
+        return;
+      }
+      const chooser = new FileChooser(
+        BidiElementHandle.from<HTMLInputElement>(
+          {
+            sharedId: info.element.sharedId,
+            handle: info.element.handle,
+            type: 'node',
+          },
+          this.#frame.mainRealm(),
+        ),
+        info.multiple,
+      );
+      for (const deferred of this.#fileChooserDeferreds) {
+        deferred.resolve(chooser);
+        this.#fileChooserDeferreds.delete(deferred);
+      }
+    });
+
+    try {
+      return await deferred.valueOrThrow();
+    } catch (error) {
+      this.#fileChooserDeferreds.delete(deferred);
+      throw error;
+    }
   }
 
   override workers(): BidiWebWorker[] {
