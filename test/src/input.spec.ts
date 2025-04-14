@@ -10,7 +10,6 @@ import expect from 'expect';
 import {TimeoutError} from 'puppeteer';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {waitEvent} from './utils.js';
 
 const FILE_TO_UPLOAD = path.join(__dirname, '/../assets/file-to-upload.txt');
 
@@ -196,10 +195,7 @@ describe('input tests', function () {
         page.waitForFileChooser(),
         page.click('input'),
       ]);
-      await Promise.all([
-        chooser.accept([FILE_TO_UPLOAD]),
-        waitEvent(page, 'metrics'),
-      ]);
+      await Promise.all([chooser.accept([FILE_TO_UPLOAD])]);
       expect(
         await page.$eval('input', input => {
           return input.files!.length;

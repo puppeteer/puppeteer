@@ -93,6 +93,8 @@ export class BrowsingContext extends EventEmitter<{
     /** The navigation that occurred. */
     navigation: Navigation;
   };
+  /** Emitted whenever a file dialog is opened occurs. */
+  filedialogopened: Bidi.Input.FileDialogInfo;
   /** Emitted whenever a request is made. */
   request: {
     /** The request that was made. */
@@ -180,6 +182,12 @@ export class BrowsingContext extends EventEmitter<{
     const sessionEmitter = this.#disposables.use(
       new EventEmitter(this.#session),
     );
+    sessionEmitter.on('input.fileDialogOpened', info => {
+      if (this.id !== info.context) {
+        return;
+      }
+      this.emit('filedialogopened', info);
+    });
     sessionEmitter.on('browsingContext.contextCreated', info => {
       if (info.parent !== this.id) {
         return;
