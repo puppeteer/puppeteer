@@ -1290,7 +1290,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "The geolocation API is not in stable yet."
   },
   {
     "testIdPattern": "[page.spec] Page Page.setJavaScriptEnabled should work",

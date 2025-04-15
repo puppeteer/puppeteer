@@ -111,7 +111,7 @@ await chromeBrowser.close();
   - Page.setCacheEnabled()
   - Page.setCookie()
   - Page.setExtraHTTPHeaders()
-    - Page.setGeolocation()
+  - Page.setGeolocation()
   - Page.setViewport (`width`, `height`, `deviceScaleFactor` only)
   - Page.waitForFileChooser()
   - Page.workers()
