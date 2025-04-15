@@ -214,10 +214,22 @@ export class AsyncDisposableStack {
    * `null` and `undefined` will not be added, but will be returned.
    * @returns The provided `value`.
    */
-  use<T extends AsyncDisposable | null | undefined>(value: T): T {
-    if (value && typeof value[asyncDisposeSymbol] === 'function') {
-      this.#stack.push(value);
+  use<T extends AsyncDisposable | Disposable | null | undefined>(value: T): T {
+    if (value) {
+      const asyncDispose = (value as AsyncDisposable)[asyncDisposeSymbol];
+      const dispose = (value as Disposable)[disposeSymbol];
+
+      if (typeof asyncDispose === 'function') {
+        this.#stack.push(value as AsyncDisposable);
+      } else if (typeof dispose === 'function') {
+        this.#stack.push({
+          [asyncDisposeSymbol]: async () => {
+            (value as Disposable)[disposeSymbol]();
+          },
+        });
+      }
     }
+
     return value;
   }
 
@@ -347,8 +359,6 @@ export class SuppressedError extends Error {
     this.name = 'SuppressedError';
     this.#error = error;
     this.#suppressed = suppressed;
-    // Restore the prototype chain
-    Object.setPrototypeOf(this, new.target.prototype);
   }
 
   /**
