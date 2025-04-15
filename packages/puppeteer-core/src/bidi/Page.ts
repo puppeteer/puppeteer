@@ -319,7 +319,29 @@ export class BidiPage extends Page {
   }
 
   override async setGeolocation(options: GeolocationOptions): Promise<void> {
-    return await this.#cdpEmulationManager.setGeolocation(options);
+    const {longitude, latitude, accuracy = 0} = options;
+    if (longitude < -180 || longitude > 180) {
+      throw new Error(
+        `Invalid longitude "${longitude}": precondition -180 <= LONGITUDE <= 180 failed.`,
+      );
+    }
+    if (latitude < -90 || latitude > 90) {
+      throw new Error(
+        `Invalid latitude "${latitude}": precondition -90 <= LATITUDE <= 90 failed.`,
+      );
+    }
+    if (accuracy < 0) {
+      throw new Error(
+        `Invalid accuracy "${accuracy}": precondition 0 <= ACCURACY failed.`,
+      );
+    }
+    return await this.#frame.browsingContext.setGeolocationOverride({
+      coordinates: {
+        latitude: options.latitude,
+        longitude: options.longitude,
+        accuracy: options.accuracy,
+      },
+    });
   }
 
   override async setJavaScriptEnabled(enabled: boolean): Promise<void> {

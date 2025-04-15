@@ -77,6 +77,12 @@ export type GetCookiesOptions = Omit<
 /**
  * @internal
  */
+export type SetGeoLocationOverrideOptions =
+  Bidi.Emulation.SetGeolocationOverrideParameters;
+
+/**
+ * @internal
+ */
 export class BrowsingContext extends EventEmitter<{
   /** Emitted when this context is closed. */
   closed: {
@@ -553,6 +559,22 @@ export class BrowsingContext extends EventEmitter<{
   })
   async removePreloadScript(script: string): Promise<void> {
     await this.userContext.browser.removePreloadScript(script);
+  }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
+  async setGeolocationOverride(
+    options: SetGeoLocationOverrideOptions,
+  ): Promise<void> {
+    await this.userContext.browser.session.send(
+      'emulation.setGeolocationOverride',
+      {
+        coordinates: options.coordinates,
+        contexts: [this.id],
+      },
+    );
   }
 
   @throwIfDisposed<BrowsingContext>(context => {
