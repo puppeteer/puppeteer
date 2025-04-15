@@ -59,8 +59,7 @@ const allowedLicenses = [
   'CC0-1.0',
   '0BSD',
 
-  // Combinations.
-  '(AFL-2.1 OR BSD-2-Clause)',
+  'AFL-2.1',
 ];
 
 // Name variations of SPDX licenses that some packages have.
@@ -85,9 +84,10 @@ const ignoredPackages = [
 // Check if a license is accepted by an array of accepted licenses
 function _passesSpdx(licenses: string[], accepted: string[]) {
   try {
-    return spdxSatisfies(licenses.join(' AND '), accepted.join(' OR '));
-  } catch {
-    return false;
+    return spdxSatisfies(licenses.join(' AND '), accepted);
+  } catch (error) {
+    console.error('error while checking licenses:', error);
+    process.exit(1);
   }
 }
 
