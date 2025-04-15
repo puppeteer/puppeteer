@@ -548,8 +548,8 @@
     "testIdPattern": "[pdf.spec] Page.pdf can print to PDF with accessible",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "BiDi does not have option for accessible pdf"
+    "expectations": ["FAIL", "PASS"],
+    "comment": "BiDi does not have option for accessible pdf (sometimes generation is flaky)"
   },
   {
     "testIdPattern": "[pdf.spec] Page.pdf can print to PDF with outline",
