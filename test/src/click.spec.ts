@@ -196,6 +196,28 @@ describe('Page.click', function () {
     ]);
   });
 
+  it.only('it should click elements that do not fit on screen', async () => {
+    const {page} = await getTestState();
+    await page.setViewport({
+      width: 500,
+      height: 300,
+    });
+    await page.setContent(`<!DOCTYPE html>
+      <style>
+        html, body { display: block; margin: 0; padding: 0; width: 4000px; height: 4000px; }
+        div { width: 4000px; height: 4000px; border: 1px solid red; }
+      </style>
+      <div onclick="this.innerText = 'clicked';"></div>
+    `);
+    expect(await page.$eval('div', el => el.innerText)).toBe('');
+    const element = await page.$('div');
+    await element!.click();
+    expect(await page.$eval('div', el => el.innerText)).toBe('clicked');
+    await new Promise(resolve => {
+      resolve;
+    });
+  });
+
   it('should click wrapped links', async () => {
     const {page, server} = await getTestState();
 
