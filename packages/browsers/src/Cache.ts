@@ -8,14 +8,13 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import debug from 'debug';
-
 import {
   Browser,
   type BrowserPlatform,
   executablePathByBrowser,
   getVersionComparator,
 } from './browser-data/browser-data.js';
+import {debug} from './debug.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 
 const debugCache = debug('puppeteer:browsers:cache');

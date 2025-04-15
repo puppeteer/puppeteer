@@ -12,7 +12,7 @@ import * as path from 'node:path';
 import type {Readable, Transform, Writable} from 'node:stream';
 import {Stream} from 'node:stream';
 
-import debug from 'debug';
+import {debug} from './debug.js';
 
 const debugFileUtil = debug('puppeteer:browsers:fileUtil');
 

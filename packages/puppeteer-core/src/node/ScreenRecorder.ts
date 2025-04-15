@@ -9,8 +9,6 @@ import {spawn, spawnSync} from 'node:child_process';
 import os from 'node:os';
 import {PassThrough} from 'node:stream';
 
-import debug from 'debug';
-
 import type {OperatorFunction} from '../../third_party/rxjs/rxjs.js';
 import {
   bufferCount,
@@ -26,6 +24,7 @@ import {
 import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
 import type {Page, FileFormat} from '../api/Page.js';
+import {debug} from '../common/Debug.js';
 import {debugError, fromEmitterEvent} from '../common/util.js';
 import {guarded} from '../util/decorators.js';
 import {asyncDisposeSymbol} from '../util/disposable.js';

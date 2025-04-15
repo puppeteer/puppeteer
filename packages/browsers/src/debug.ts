@@ -4,6 +4,24 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import debug from 'debug';
+import type Debug from 'debug';
 
-export {debug};
+/**
+ * @internal
+ */
+let debugModule: typeof Debug | null = null;
+/**
+ * @internal
+ */
+async function importDebug(): Promise<typeof Debug> {
+  if (!debugModule) {
+    debugModule = (await import('debug')).default;
+  }
+  return debugModule;
+}
+
+export const debug = (prefix: string): ((...args: unknown[]) => void) => {
+  return async (...logArgs: unknown[]) => {
+    (await importDebug())(prefix)(logArgs);
+  };
+};
