@@ -10,7 +10,7 @@ sidebar_label: makeProgressCallback
 export declare function makeProgressCallback(
   browser: Browser,
   buildId: string,
-): (downloadedBytes: number, totalBytes: number) => void;
+): Promise<(downloadedBytes: number, totalBytes: number) => void>;
 ```
 
 ## Parameters
@@ -53,4 +53,4 @@ string
 </tbody></table>
 **Returns:**
 
-(downloadedBytes: number, totalBytes: number) =&gt; void
+Promise&lt;(downloadedBytes: number, totalBytes: number) =&gt; void&gt;

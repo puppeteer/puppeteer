@@ -18,11 +18,18 @@ import {Cache} from '../../lib/cjs/main.js';
 export function createMockedReadlineInterface(
   input: string,
 ): readline.Interface {
-  const readable = Readable.from([input]);
+  const waitForQuestion = Promise.withResolvers<void>();
+  async function* readableGen() {
+    await waitForQuestion.promise;
+    yield input;
+  }
+
+  const readable = Readable.from(readableGen());
   const writable = new Writable({
     write(_chunk, _encoding, callback) {
       // Suppress the output to keep the test clean
       callback();
+      waitForQuestion.resolve();
     },
   });
 

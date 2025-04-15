@@ -46,7 +46,7 @@ async function downloadBrowser({
       cacheDir,
       platform,
       buildId,
-      downloadProgressCallback: makeProgressCallback(browser, buildId),
+      downloadProgressCallback: await makeProgressCallback(browser, buildId),
       baseUrl,
       buildIdAlias:
         buildId !== unresolvedBuildId ? unresolvedBuildId : undefined,

@@ -7,10 +7,8 @@
 import {stdin as input, stdout as output} from 'node:process';
 import * as readline from 'node:readline';
 
-import ProgressBar from 'progress';
+import type * as ProgressBar from 'progress';
 import type * as Yargs from 'yargs';
-import yargs from 'yargs';
-import {hideBin} from 'yargs/helpers';
 
 import {
   resolveBuildId,
@@ -141,6 +139,8 @@ export class CLI {
   }
 
   async run(argv: string[]): Promise<void> {
+    const {default: yargs} = await import('yargs');
+    const {hideBin} = await import('yargs/helpers');
     const yargsInstance = yargs(hideBin(argv));
     let target = yargsInstance.scriptName(this.#scriptName);
     if (this.#prefixCommand) {
@@ -497,7 +497,7 @@ export class CLI {
       buildId: args.browser.buildId,
       platform: args.platform,
       cacheDir: args.path ?? this.#cachePath,
-      downloadProgressCallback: makeProgressCallback(
+      downloadProgressCallback: await makeProgressCallback(
         args.browser.name,
         args.browser.buildId,
       ),
@@ -517,18 +517,32 @@ export class CLI {
   }
 }
 
+let ProgressBarClass: new (
+  format: string,
+  options: ProgressBar.ProgressBarOptions,
+) => ProgressBar;
+const importProgressBarIfNeeded = async () => {
+  if (!ProgressBarClass) {
+    ProgressBarClass = (await import('progress')).default;
+  }
+
+  return ProgressBarClass;
+};
+
 /**
  * @public
  */
-export function makeProgressCallback(
+export async function makeProgressCallback(
   browser: Browser,
   buildId: string,
-): (downloadedBytes: number, totalBytes: number) => void {
+): Promise<(downloadedBytes: number, totalBytes: number) => void> {
+  const ProgressBarClass = await importProgressBarIfNeeded();
   let progressBar: ProgressBar;
+
   let lastDownloadedBytes = 0;
   return (downloadedBytes: number, totalBytes: number) => {
     if (!progressBar) {
-      progressBar = new ProgressBar(
+      progressBar = new ProgressBarClass(
         `Downloading ${browser} ${buildId} - ${toMegabytes(
           totalBytes,
         )} [:bar] :percent :etas `,
