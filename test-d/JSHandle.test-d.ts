@@ -7,8 +7,7 @@ import type {ElementHandle, JSHandle} from 'puppeteer';
 import {expectNotAssignable, expectNotType, expectType} from 'tsd';
 
 declare const handle: JSHandle;
-
-{
+async function runFirst() {
   expectType<unknown>(await handle.evaluate('document'));
   expectType<number>(
     await handle.evaluate(() => {
@@ -34,7 +33,7 @@ declare const handle: JSHandle;
   );
 }
 
-{
+async function runSecond() {
   expectType<JSHandle>(await handle.evaluateHandle('document'));
   expectType<JSHandle<number>>(
     await handle.evaluateHandle(() => {
@@ -62,7 +61,7 @@ declare const handle: JSHandle;
 
 declare const handle2: JSHandle<{test: number}>;
 
-{
+async function runThird() {
   {
     expectType<JSHandle<number>>(await handle2.getProperty('test'));
     expectNotType<JSHandle<unknown>>(await handle2.getProperty('test'));
@@ -86,3 +85,7 @@ declare const handle2: JSHandle<{test: number}>;
     expectType<{test: number}>(other);
   }, handle2);
 }
+
+void runFirst();
+void runSecond();
+void runThird();
