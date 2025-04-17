@@ -8,7 +8,7 @@ import {expectNotType, expectType} from 'tsd';
 
 declare const handle: ElementHandle;
 
-{
+async function runFirst() {
   {
     {
       expectType<ElementHandle<HTMLAnchorElement> | null>(await handle.$('a'));
@@ -449,7 +449,7 @@ declare const handle: ElementHandle;
   }
 }
 
-{
+async function runSecond() {
   {
     {
       expectType<Array<ElementHandle<HTMLAnchorElement>>>(await handle.$$('a'));
@@ -902,7 +902,7 @@ declare const handle: ElementHandle;
   }
 }
 
-{
+async function runThird() {
   expectType<void>(
     await handle.$eval(
       'a',
@@ -953,7 +953,7 @@ declare const handle: ElementHandle;
   expectType<unknown>(await handle.$eval('a', 'document'));
 }
 
-{
+async function runForth() {
   expectType<void>(
     await handle.$$eval(
       'a',
@@ -1004,7 +1004,7 @@ declare const handle: ElementHandle;
   expectType<unknown>(await handle.$$eval('a', 'document'));
 }
 
-{
+async function runFifth() {
   {
     expectType<ElementHandle<HTMLAnchorElement> | null>(
       await handle.waitForSelector('a'),
@@ -1027,3 +1027,9 @@ declare const handle: ElementHandle;
     );
   }
 }
+
+void runFirst();
+void runSecond();
+void runThird();
+void runForth();
+void runFifth();
