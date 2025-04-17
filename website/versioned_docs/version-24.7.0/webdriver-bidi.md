@@ -52,7 +52,6 @@ await chromeBrowser.close();
   - Page.emulateTimezone()
   - Page.emulateVisionDeficiency()
   - Page.setBypassCSP()
-  - Page.setGeolocation()
   - Page.setJavaScriptEnabled()
 
 - CDP-specific features
@@ -87,7 +86,6 @@ await chromeBrowser.close();
   - Page.setDragInterception()
   - Page.setOfflineMode()
   - Page.waitForDevicePrompt()
-  - Page.waitForFileChooser()
   - PageEvent.popup
 
 ## Puppeteer features fully supported over WebDriver BiDi
@@ -113,7 +111,9 @@ await chromeBrowser.close();
   - Page.setCacheEnabled()
   - Page.setCookie()
   - Page.setExtraHTTPHeaders()
+  - Page.setGeolocation()
   - Page.setViewport (`width`, `height`, `deviceScaleFactor` only)
+  - Page.waitForFileChooser()
   - Page.workers()
   - PageEvent.WorkerCreated
   - PageEvent.WorkerDestroyed
