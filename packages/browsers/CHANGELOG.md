@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.1](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.0...browsers-v2.10.1) (2025-04-17)
+
+
+### Bug Fixes
+
+* dynamically import yargs and progress in CLI ([#13781](https://github.com/puppeteer/puppeteer/issues/13781)) ([3cfed9b](https://github.com/puppeteer/puppeteer/commit/3cfed9b71fa3f9dcdf3414a29022e4e64538549d))
+
 ## [2.10.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.9.0...browsers-v2.10.0) (2025-04-09)
 
 
