@@ -22,8 +22,7 @@ on:
 
 concurrency:
   group: ci-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
-
+  cancel-in-progress:puppeteer
 jobs:
   inspect-code:
     name: '[Required] Inspect code'
