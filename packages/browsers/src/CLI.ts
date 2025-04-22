@@ -7,8 +7,6 @@
 import {stdin as input, stdout as output} from 'node:process';
 import * as readline from 'node:readline';
 
-import type * as ProgressBar from 'progress';
-import ProgressBarClass from 'progress';
 import type * as Yargs from 'yargs';
 
 import {
@@ -498,10 +496,7 @@ export class CLI {
       buildId: args.browser.buildId,
       platform: args.platform,
       cacheDir: args.path ?? this.#cachePath,
-      downloadProgressCallback: await makeProgressCallback(
-        args.browser.name,
-        args.browser.buildId,
-      ),
+      downloadProgressCallback: 'default',
       baseUrl: args.baseUrl,
       buildIdAlias:
         originalBuildId !== args.browser.buildId ? originalBuildId : undefined,
@@ -516,39 +511,4 @@ export class CLI {
       })}`,
     );
   }
-}
-
-/**
- * @public
- */
-export function makeProgressCallback(
-  browser: Browser,
-  buildId: string,
-): (downloadedBytes: number, totalBytes: number) => void {
-  let progressBar: ProgressBar;
-
-  let lastDownloadedBytes = 0;
-  return (downloadedBytes: number, totalBytes: number) => {
-    if (!progressBar) {
-      progressBar = new ProgressBarClass(
-        `Downloading ${browser} ${buildId} - ${toMegabytes(
-          totalBytes,
-        )} [:bar] :percent :etas `,
-        {
-          complete: '=',
-          incomplete: ' ',
-          width: 20,
-          total: totalBytes,
-        },
-      );
-    }
-    const delta = downloadedBytes - lastDownloadedBytes;
-    lastDownloadedBytes = downloadedBytes;
-    progressBar.tick(delta);
-  };
-}
-
-function toMegabytes(bytes: number) {
-  const mb = bytes / 1000 / 1000;
-  return `${Math.round(mb * 10) / 10} MB`;
 }
