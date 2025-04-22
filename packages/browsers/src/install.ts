@@ -11,6 +11,9 @@ import {mkdir, unlink} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
+import type * as ProgressBar from 'progress';
+import ProgressBarClass from 'progress';
+
 import {
   Browser,
   BrowserPlatform,
@@ -71,12 +74,13 @@ export interface InstallOptions {
    */
   buildIdAlias?: string;
   /**
-   * Provides information about the progress of the download.
+   * Provides information about the progress of the download. If set to
+   * 'default', the default callback implementing a progress bar will be
+   * used.
    */
-  downloadProgressCallback?: (
-    downloadedBytes: number,
-    totalBytes: number,
-  ) => void;
+  downloadProgressCallback?:
+    | 'default'
+    | ((downloadedBytes: number, totalBytes: number) => void);
   /**
    * Determines the host that will be used for downloading.
    *
@@ -260,6 +264,13 @@ async function installUrl(
       `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`,
     );
   }
+  let downloadProgressCallback = options.downloadProgressCallback;
+  if (downloadProgressCallback === 'default') {
+    downloadProgressCallback = await makeProgressCallback(
+      options.browser,
+      options.buildIdAlias ?? options.buildId,
+    );
+  }
   const fileName = url.toString().split('/').pop();
   assert(fileName, `A malformed download URL was found: ${url}.`);
   const cache = new Cache(options.cacheDir);
@@ -275,7 +286,7 @@ async function installUrl(
     }
     debugInstall(`Downloading binary from ${url}`);
     debugTime('download');
-    await downloadFile(url, archivePath, options.downloadProgressCallback);
+    await downloadFile(url, archivePath, downloadProgressCallback);
     debugTimeEnd('download');
     return archivePath;
   }
@@ -308,7 +319,7 @@ async function installUrl(
     debugInstall(`Downloading binary from ${url}`);
     try {
       debugTime('download');
-      await downloadFile(url, archivePath, options.downloadProgressCallback);
+      await downloadFile(url, archivePath, downloadProgressCallback);
     } finally {
       debugTimeEnd('download');
     }
@@ -473,4 +484,39 @@ export function getDownloadUrl(
   baseUrl?: string,
 ): URL {
   return new URL(downloadUrls[browser](platform, buildId, baseUrl));
+}
+
+/**
+ * @public
+ */
+export function makeProgressCallback(
+  browser: Browser,
+  buildId: string,
+): (downloadedBytes: number, totalBytes: number) => void {
+  let progressBar: ProgressBar;
+
+  let lastDownloadedBytes = 0;
+  return (downloadedBytes: number, totalBytes: number) => {
+    if (!progressBar) {
+      progressBar = new ProgressBarClass(
+        `Downloading ${browser} ${buildId} - ${toMegabytes(
+          totalBytes,
+        )} [:bar] :percent :etas `,
+        {
+          complete: '=',
+          incomplete: ' ',
+          width: 20,
+          total: totalBytes,
+        },
+      );
+    }
+    const delta = downloadedBytes - lastDownloadedBytes;
+    lastDownloadedBytes = downloadedBytes;
+    progressBar.tick(delta);
+  };
+}
+
+function toMegabytes(bytes: number) {
+  const mb = bytes / 1000 / 1000;
+  return `${Math.round(mb * 10) / 10} MB`;
 }
