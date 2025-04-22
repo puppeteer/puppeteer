@@ -2,6 +2,29 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.7.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.6.1...puppeteer-v24.7.0) (2025-04-22)
+
+
+### Bug Fixes
+
+* roll to Chrome 135.0.7049.95 ([#13788](https://github.com/puppeteer/puppeteer/issues/13788)) ([f2f37b5](https://github.com/puppeteer/puppeteer/commit/f2f37b5a3cbfba9a0279f6ff47a424170575ed3c))
+* roll to Firefox 137.0.2 ([#13789](https://github.com/puppeteer/puppeteer/issues/13789)) ([192ce96](https://github.com/puppeteer/puppeteer/commit/192ce9676c312c551b24cd732c15b590c5243fb6))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.10.0 to 2.10.1
+
+
+### Features
+
+* support network requests for workers ([#13752](https://github.com/puppeteer/puppeteer/issues/13752)) ([4062068](https://github.com/puppeteer/puppeteer/commit/4062068da9fd839008ef78411432de26ad367bda))
+* **webdriver:** support FileChooser with WebDriver BiDi ([#13780](https://github.com/puppeteer/puppeteer/issues/13780)) ([a4d0d34](https://github.com/puppeteer/puppeteer/commit/a4d0d34643ef1dce173a0a927a4016ee99521ac4))
+* **webdriver:** support geolocation emulation ([#13773](https://github.com/puppeteer/puppeteer/issues/13773)) ([74eefd8](https://github.com/puppeteer/puppeteer/commit/74eefd82786e6b2b59d4d8ef6989404536d3463f))
+
+
 ## [24.6.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.6.0...puppeteer-v24.6.1) (2025-04-09)
 
 
