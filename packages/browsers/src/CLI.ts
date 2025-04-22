@@ -8,6 +8,7 @@ import {stdin as input, stdout as output} from 'node:process';
 import * as readline from 'node:readline';
 
 import type * as ProgressBar from 'progress';
+import ProgressBarClass from 'progress';
 import type * as Yargs from 'yargs';
 
 import {
@@ -517,26 +518,13 @@ export class CLI {
   }
 }
 
-let ProgressBarClass: new (
-  format: string,
-  options: ProgressBar.ProgressBarOptions,
-) => ProgressBar;
-const importProgressBarIfNeeded = async () => {
-  if (!ProgressBarClass) {
-    ProgressBarClass = (await import('progress')).default;
-  }
-
-  return ProgressBarClass;
-};
-
 /**
  * @public
  */
-export async function makeProgressCallback(
+export function makeProgressCallback(
   browser: Browser,
   buildId: string,
-): Promise<(downloadedBytes: number, totalBytes: number) => void> {
-  const ProgressBarClass = await importProgressBarIfNeeded();
+): (downloadedBytes: number, totalBytes: number) => void {
   let progressBar: ProgressBar;
 
   let lastDownloadedBytes = 0;
