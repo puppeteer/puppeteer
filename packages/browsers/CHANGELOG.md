@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.10.2](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.1...browsers-v2.10.2) (2025-04-22)
+
+
+### Bug Fixes
+
+* revert makeProgressCallback changes ([#13800](https://github.com/puppeteer/puppeteer/issues/13800)) ([f04ef25](https://github.com/puppeteer/puppeteer/commit/f04ef250c191d275942d60851640e69cddba70e2))
+* support default download callback option in install() ([#13801](https://github.com/puppeteer/puppeteer/issues/13801)) ([334e7ff](https://github.com/puppeteer/puppeteer/commit/334e7ff4615ee11dc29abcb94368236c65cf39d1))
+
 ## [2.10.1](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.0...browsers-v2.10.1) (2025-04-22)
 
 
