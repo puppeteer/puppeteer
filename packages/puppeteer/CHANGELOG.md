@@ -1,5 +1,20 @@
 # Changelog
 
+## [24.7.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.7.0...puppeteer-v24.7.1) (2025-04-22)
+
+
+### Bug Fixes
+
+* support default download callback option in install() ([#13801](https://github.com/puppeteer/puppeteer/issues/13801)) ([334e7ff](https://github.com/puppeteer/puppeteer/commit/334e7ff4615ee11dc29abcb94368236c65cf39d1))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.10.1 to 2.10.2
+    * puppeteer-core bumped from 24.7.0 to 24.7.1
+
 ## [24.7.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.6.1...puppeteer-v24.7.0) (2025-04-22)
 
 

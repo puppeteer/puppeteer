@@ -2,6 +2,18 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.7.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.7.0...puppeteer-v24.7.1) (2025-04-22)
+
+### Bug Fixes
+
+- update Disposable polyfill to match TC39 proposal ([#13683](https://github.com/puppeteer/puppeteer/issues/13683)) ([c2b27c4](https://github.com/puppeteer/puppeteer/commit/c2b27c4b2609fb52f0937d34fb55418d4c046fd4))
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - @puppeteer/browsers bumped from 2.10.1 to 2.10.2
+
 ## [24.7.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.6.1...puppeteer-v24.7.0) (2025-04-22)
 
 ### Bug Fixes

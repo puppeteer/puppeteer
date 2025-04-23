@@ -136,11 +136,11 @@ Determines the path to download browsers to.
 
 </td><td>
 
-(downloadedBytes: number, totalBytes: number) =&gt; void
+'default' \| ((downloadedBytes: number, totalBytes: number) =&gt; void)
 
 </td><td>
 
-Provides information about the progress of the download.
+Provides information about the progress of the download. If set to 'default', the default callback implementing a progress bar will be used.
 
 </td><td>
 
