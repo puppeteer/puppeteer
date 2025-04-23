@@ -223,6 +223,17 @@ Disconnects Puppeteer from this [browser](./puppeteer.browser.md), but leaves th
 </td></tr>
 <tr><td>
 
+<span id="installextension">[installExtension(path)](./puppeteer.browser.installextension.md)</span>
+
+</td><td>
+
+</td><td>
+
+Installs an extension and returns the ID. Available if the browser was created using `pipe: true` and the `--enable-unsafe-extension-debugging` flag is set.
+
+</td></tr>
+<tr><td>
+
 <span id="isconnected">[isConnected()](./puppeteer.browser.isconnected.md)</span>
 
 </td><td>
@@ -314,6 +325,17 @@ Gets the [target](./puppeteer.target.md) associated with the [default browser co
 Gets all active [targets](./puppeteer.target.md).
 
 In case of multiple [browser contexts](./puppeteer.browsercontext.md), this returns all [targets](./puppeteer.target.md) in all [browser contexts](./puppeteer.browsercontext.md).
+
+</td></tr>
+<tr><td>
+
+<span id="uninstallextension">[uninstallExtension(id)](./puppeteer.browser.uninstallextension.md)</span>
+
+</td><td>
+
+</td><td>
+
+Uninstalls an extension. Available if the browser was created using `pipe: true` and the `--enable-unsafe-extension-debugging` flag is set.
 
 </td></tr>
 <tr><td>

@@ -183,6 +183,14 @@ export interface Commands {
     params: Bidi.Network.ProvideResponseParameters;
     returnType: Bidi.EmptyResult;
   };
+  'webExtension.install': {
+    params: Bidi.WebExtension.InstallParameters;
+    returnType: Bidi.WebExtension.InstallResult;
+  };
+  'webExtension.uninstall': {
+    params: Bidi.WebExtension.UninstallParameters;
+    returnType: Bidi.EmptyResult;
+  };
 }
 
 /**

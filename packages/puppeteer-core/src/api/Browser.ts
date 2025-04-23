@@ -462,6 +462,19 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
   }
 
   /**
+   * Installs an extension and returns the ID. Available if the browser was
+   * created using `pipe: true` and the `--enable-unsafe-extension-debugging`
+   * flag is set.
+   */
+  abstract installExtension(path: string): Promise<string>;
+
+  /**
+   * Uninstalls an extension. Available if the browser was created using
+   * `pipe: true` and the `--enable-unsafe-extension-debugging` flag is set.
+   */
+  abstract uninstallExtension(id: string): Promise<void>;
+
+  /**
    * Whether Puppeteer is connected to this {@link Browser | browser}.
    *
    * @deprecated Use {@link Browser | Browser.connected}.
