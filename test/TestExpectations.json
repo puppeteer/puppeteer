@@ -1718,7 +1718,7 @@
   },
   {
     "testIdPattern": "[webExtension.spec] webExtension can install and uninstall an extension",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["FAIL"],
     "comment": "Firefox is currently only able to install signed extensions."
