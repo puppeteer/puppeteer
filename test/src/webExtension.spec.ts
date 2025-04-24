@@ -16,7 +16,7 @@ const EXPECTED_ID = 'mbljndkcfjhaffohbnmoedabegpolpmd';
 describe('webExtension', function () {
   setupTestBrowserHooks();
 
-  it.only('can install and uninstall an extension', async () => {
+  it('can install and uninstall an extension', async () => {
     const {defaultBrowserOptions, isChrome} = await getTestState({
       skipLaunch: true,
     });
