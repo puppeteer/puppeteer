@@ -1711,7 +1711,7 @@
   },
   {
     "testIdPattern": "[webExtension.spec] webExtension can install and uninstall an extension",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "chrome-headless-shell", "cdp"],
     "expectations": ["FAIL"],
     "comment": "Extensions are not supported in shell mode."
