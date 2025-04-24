@@ -225,6 +225,27 @@ export class Browser extends EventEmitter<{
     return this.#createUserContext(context);
   }
 
+  @throwIfDisposed<Browser>(browser => {
+    // SAFETY: By definition of `disposed`, `#reason` is defined.
+    return browser.#reason!;
+  })
+  async installExtension(path: string): Promise<string> {
+    const {
+      result: {extension},
+    } = await this.session.send('webExtension.install', {
+      extensionData: {type: 'path', path},
+    });
+    return extension;
+  }
+
+  @throwIfDisposed<Browser>(browser => {
+    // SAFETY: By definition of `disposed`, `#reason` is defined.
+    return browser.#reason!;
+  })
+  async uninstallExtension(id: string): Promise<void> {
+    await this.session.send('webExtension.uninstall', {extension: id});
+  }
+
   override [disposeSymbol](): void {
     this.#reason ??=
       'Browser was disconnected, probably because the session ended.';

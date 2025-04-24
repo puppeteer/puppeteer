@@ -242,6 +242,14 @@ export class BidiBrowser extends Browser {
     return this.defaultBrowserContext().newPage();
   }
 
+  override installExtension(path: string): Promise<string> {
+    return this.#browserCore.installExtension(path);
+  }
+
+  override async uninstallExtension(id: string): Promise<void> {
+    await this.#browserCore.uninstallExtension(id);
+  }
+
   override targets(): Target[] {
     return [
       this.#target,
