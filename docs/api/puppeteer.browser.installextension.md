@@ -4,7 +4,7 @@ sidebar_label: Browser.installExtension
 
 # Browser.installExtension() method
 
-Installs an extension and returns the ID. Available if the browser was created using `pipe: true` and the `--enable-unsafe-extension-debugging` flag is set.
+Installs an extension and returns the ID. In Chrome, this is only available if the browser was created using `pipe: true` and the `--enable-unsafe-extension-debugging` flag is set.
 
 ### Signature
 

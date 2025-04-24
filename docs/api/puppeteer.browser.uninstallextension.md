@@ -4,7 +4,7 @@ sidebar_label: Browser.uninstallExtension
 
 # Browser.uninstallExtension() method
 
-Uninstalls an extension. Available if the browser was created using `pipe: true` and the `--enable-unsafe-extension-debugging` flag is set.
+Uninstalls an extension. In Chrome, this is only available if the browser was created using `pipe: true` and the `--enable-unsafe-extension-debugging` flag is set.
 
 ### Signature
 
