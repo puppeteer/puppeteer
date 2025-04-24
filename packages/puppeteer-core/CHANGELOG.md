@@ -1,5 +1,14 @@
 # Changelog
 
+## [24.7.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.7.1...puppeteer-core-v24.7.2) (2025-04-24)
+
+
+### Bug Fixes
+
+* roll to Chrome 135.0.7049.114 ([#13811](https://github.com/puppeteer/puppeteer/issues/13811)) ([3d32f72](https://github.com/puppeteer/puppeteer/commit/3d32f7232de1d67a23e73ed1119b95ba397b379f))
+* roll to Chrome 135.0.7049.97 ([#13802](https://github.com/puppeteer/puppeteer/issues/13802)) ([d0e6492](https://github.com/puppeteer/puppeteer/commit/d0e649266b244ae3ec153e62f05b40ce819f7049))
+* update chromium-bidi to fix ESM import issue  ([#13813](https://github.com/puppeteer/puppeteer/issues/13813)) ([7ff0719](https://github.com/puppeteer/puppeteer/commit/7ff07196a263a39cf03011aa00c41728d272bbb7))
+
 ## [24.7.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.7.0...puppeteer-core-v24.7.1) (2025-04-22)
 
 
