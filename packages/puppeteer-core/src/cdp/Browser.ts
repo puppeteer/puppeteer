@@ -361,12 +361,12 @@ export class CdpBrowser extends BrowserBase {
   }
 
   override async installExtension(path: string): Promise<string> {
-    const {id} = await this.#connection.send('Extensions.loadUnpacked', { path });
+    const {id} = await this.#connection.send('Extensions.loadUnpacked', {path});
     return id;
   }
 
   override uninstallExtension(id: string): Promise<void> {
-    return this.#connection.send('Extensions.uninstall', { id });
+    return this.#connection.send('Extensions.uninstall', {id});
   }
 
   override targets(): CdpTarget[] {

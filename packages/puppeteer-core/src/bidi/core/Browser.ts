@@ -232,7 +232,9 @@ export class Browser extends EventEmitter<{
   async installExtension(path: string): Promise<string> {
     const {
       result: {extension},
-    } = await this.session.send('webExtension.install', {extensionData: {type: 'path', path}});
+    } = await this.session.send('webExtension.install', {
+      extensionData: {type: 'path', path},
+    });
     return extension;
   }
 
