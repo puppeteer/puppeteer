@@ -1,8 +1,8 @@
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "module": "CommonJS",
-    "moduleResolution": "Node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "outDir": "../lib/cjs/puppeteer"
   },
   "references": [{"path": "../third_party/tsconfig.cjs.json"}]

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type * as Bidi from 'chromium-bidi/protocol/protocol.js';
 
 import type {ElementHandle} from '../api/ElementHandle.js';
 import {JSHandle} from '../api/JSHandle.js';
