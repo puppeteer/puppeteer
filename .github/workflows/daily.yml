@@ -140,7 +140,7 @@ jobs:
         run: node tools/merge-canary-test-expectations.mjs
       - name: Run all tests (MacOS)
         if: ${{ matrix.os == 'macos-latest' }}
-        run: npm run test -- --ignore-unexpectedly-passing --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: npm run test -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_FIREFOX_VERSION: nightly
       - name: Run all tests (Windows)
