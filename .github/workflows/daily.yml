@@ -65,7 +65,7 @@ jobs:
         run: node tools/merge-canary-test-expectations.mjs
       - name: Run all tests (MacOS)
         if: ${{ matrix.os == 'macos-latest' }}
-        run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: npm run test -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_CHROME_VERSION: canary
           PUPPETEER_CHROME_HEADLESS_SHELL_VERSION: canary
@@ -73,7 +73,7 @@ jobs:
           PUPPETEER_TEST_EXPERIMENTAL_CHROME_FEATURES: ${{ matrix.configs == 'experimental' }}
       - name: Run all tests (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
-        run: npm run test -- -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: npm run test -- -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_CHROME_VERSION: canary
           PUPPETEER_CHROME_HEADLESS_SHELL_VERSION: canary
@@ -81,7 +81,7 @@ jobs:
           PUPPETEER_TEST_EXPERIMENTAL_CHROME_FEATURES: ${{ matrix.configs == 'experimental' }}
       - name: Run all tests (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: xvfb-run --auto-servernum npm run test -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_CHROME_VERSION: canary
           PUPPETEER_CHROME_HEADLESS_SHELL_VERSION: canary
@@ -140,17 +140,17 @@ jobs:
         run: node tools/merge-canary-test-expectations.mjs
       - name: Run all tests (MacOS)
         if: ${{ matrix.os == 'macos-latest' }}
-        run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: npm run test -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_FIREFOX_VERSION: nightly
       - name: Run all tests (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
-        run: npm run test -- -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: npm run test -- -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_FIREFOX_VERSION: nightly
       - name: Run all tests (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: xvfb-run --auto-servernum npm run test -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_FIREFOX_VERSION: nightly
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
