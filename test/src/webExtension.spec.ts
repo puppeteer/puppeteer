@@ -24,10 +24,7 @@ describe('webExtension', function () {
     const options = Object.assign({}, defaultBrowserOptions);
 
     if (isChrome) {
-      options.ignoreDefaultArgs = ['--disable-extensions'];
-      options.args = ['--enable-unsafe-extension-debugging'].concat(
-        options.args || [],
-      );
+      options.enableExtensions = true;
       options.pipe = true;
     }
 
