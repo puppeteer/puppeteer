@@ -254,11 +254,18 @@ export class ChromeLauncher extends BrowserLauncher {
         '--mute-audio',
       );
     }
-    chromeArguments.push(
-      enableExtensions
-        ? '--enable-unsafe-extension-debugging'
-        : '--disable-extensions',
-    );
+    if (enableExtensions) {
+      chromeArguments.push('--enable-unsafe-extension-debugging');
+
+      if (Array.isArray(enableExtensions)) {
+        chromeArguments.push(
+          '--disable-extensions',
+          `--disable-extensions-except=${enableExtensions.join(',')}`,
+        );
+      }
+    } else {
+      chromeArguments.push('--disable-extensions');
+    }
     if (
       args.every(arg => {
         return arg.startsWith('-');
