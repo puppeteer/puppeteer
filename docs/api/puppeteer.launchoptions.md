@@ -159,6 +159,25 @@ If true, pipes the browser process stdout and stderr to `process.stdout` and `pr
 </td></tr>
 <tr><td>
 
+<span id="enableextensions">enableExtensions</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean \| string\[\]
+
+</td><td>
+
+If `true`, avoids passing default arguments to the browser that would prevent extensions from being enabled. Passing a list of strings will load the provided paths as unpacked extensions.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="env">env</span>
 
 </td><td>
