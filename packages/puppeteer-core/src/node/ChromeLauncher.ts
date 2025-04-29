@@ -258,10 +258,7 @@ export class ChromeLauncher extends BrowserLauncher {
       chromeArguments.push('--enable-unsafe-extension-debugging');
 
       if (Array.isArray(enableExtensions)) {
-        chromeArguments.push(
-          '--disable-extensions',
-          `--disable-extensions-except=${enableExtensions.join(',')}`,
-        );
+        chromeArguments.push(`--load-extension=${enableExtensions.join(',')}`);
       }
     } else {
       chromeArguments.push('--disable-extensions');
