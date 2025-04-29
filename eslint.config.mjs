@@ -427,7 +427,7 @@ export default [
         },
       ],
 
-      'mocha/no-skipped-tests': 'error',
+      'mocha/no-pending-tests': 'error',
       'mocha/no-identical-title': 'error',
     },
   },
