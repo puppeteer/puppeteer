@@ -21,10 +21,8 @@ const extensionPath = path.join(
 describe('extensions', function () {
   const state = setupSeparateTestBrowserHooks(
     {
-      args: [
-        `--disable-extensions-except=${extensionPath}`,
-        `--load-extension=${extensionPath}`,
-      ],
+      enableExtensions: true,
+      args: [`--load-extension=${extensionPath}`],
     },
     {createContext: false},
   );

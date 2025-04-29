@@ -83,11 +83,11 @@ enforce running Chrome/Chromium with certain extensions.
 Puppeteer passes `--disable-extensions` flag by default and will fail to launch
 when such policies are active.
 
-To work around this, try running without the flag:
+To work around this, set the `enableExtensions` option:
 
 ```ts
 const browser = await puppeteer.launch({
-  ignoreDefaultArgs: ['--disable-extensions'],
+  enableExtensions: true,
 });
 ```
 
