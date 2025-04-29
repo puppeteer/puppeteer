@@ -217,14 +217,11 @@ export abstract class BrowserLauncher {
         );
       }
 
-      // In Chrome, extensions are installed using the default args instead.
-      if (this.#browser !== 'chrome') {
-        await Promise.all([
-          enableExtensions.map(path => {
-            return browser.installExtension(path);
-          }),
-        ]);
-      }
+      await Promise.all([
+        enableExtensions.map(path => {
+          return browser.installExtension(path);
+        }),
+      ]);
     }
 
     if (waitForInitialPage) {
