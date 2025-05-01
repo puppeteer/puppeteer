@@ -1,6 +1,6 @@
 # Browser management
 
-Usually, you start working with Puppeteer by either launching [launching](https://pptr.dev/api/puppeteer.puppeteernode.launch) or [connecting](https://pptr.dev/api/puppeteer.puppeteernode.connect) to a browser.
+Usually, you start working with Puppeteer by either [launching](https://pptr.dev/api/puppeteer.puppeteernode.launch) or [connecting](https://pptr.dev/api/puppeteer.puppeteernode.connect) to a browser.
 
 ## Launching a browser
 
