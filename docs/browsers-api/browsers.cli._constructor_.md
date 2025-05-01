@@ -16,6 +16,7 @@ class CLI {
       | {
           cachePath?: string;
           scriptName?: string;
+          version?: string;
           prefixCommand?: {
             cmd: string;
             description: string;
@@ -57,7 +58,7 @@ opts
 
 </td><td>
 
-string \| &#123; cachePath?: string; scriptName?: string; prefixCommand?: &#123; cmd: string; description: string; &#125;; allowCachePathOverride?: boolean; pinnedBrowsers?: Partial&lt;Record&lt;[Browser](./browsers.browser.md), &#123; buildId: string; skipDownload: boolean; &#125;&gt;&gt;; &#125;
+string \| &#123; cachePath?: string; scriptName?: string; version?: string; prefixCommand?: &#123; cmd: string; description: string; &#125;; allowCachePathOverride?: boolean; pinnedBrowsers?: Partial&lt;Record&lt;[Browser](./browsers.browser.md), &#123; buildId: string; skipDownload: boolean; &#125;&gt;&gt;; &#125;
 
 </td><td>
 

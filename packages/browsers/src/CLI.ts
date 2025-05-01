@@ -17,6 +17,7 @@ import {
 } from './browser-data/browser-data.js';
 import {Cache} from './Cache.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
+import {packageVersion} from './generated/version.js';
 import {install} from './install.js';
 import {
   computeExecutablePath,
@@ -43,6 +44,7 @@ export class CLI {
   #cachePath: string;
   #rl?: readline.Interface;
   #scriptName: string;
+  #version: string;
   #allowCachePathOverride: boolean;
   #pinnedBrowsers?: Partial<
     Record<
@@ -61,6 +63,7 @@ export class CLI {
       | {
           cachePath?: string;
           scriptName?: string;
+          version?: string;
           prefixCommand?: {cmd: string; description: string};
           allowCachePathOverride?: boolean;
           pinnedBrowsers?: Partial<
@@ -86,6 +89,7 @@ export class CLI {
     this.#cachePath = opts.cachePath ?? process.cwd();
     this.#rl = rl;
     this.#scriptName = opts.scriptName ?? '@puppeteer/browsers';
+    this.#version = opts.version ?? packageVersion;
     this.#allowCachePathOverride = opts.allowCachePathOverride ?? true;
     this.#pinnedBrowsers = opts.pinnedBrowsers;
     this.#prefixCommand = opts.prefixCommand;
@@ -141,7 +145,9 @@ export class CLI {
     const {default: yargs} = await import('yargs');
     const {hideBin} = await import('yargs/helpers');
     const yargsInstance = yargs(hideBin(argv));
-    let target = yargsInstance.scriptName(this.#scriptName);
+    let target = yargsInstance
+      .scriptName(this.#scriptName)
+      .version(this.#version);
     if (this.#prefixCommand) {
       target = target.command(
         this.#prefixCommand.cmd,
