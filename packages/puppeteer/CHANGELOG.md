@@ -1,5 +1,25 @@
 # Changelog
 
+## [24.8.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.7.2...puppeteer-v24.8.0) (2025-05-02)
+
+
+### Features
+
+* roll to Chrome 136.0.7103.49 ([#13828](https://github.com/puppeteer/puppeteer/issues/13828)) ([ad4a6e7](https://github.com/puppeteer/puppeteer/commit/ad4a6e76c6846d98d9f6c4e81cbab71c4284a124))
+
+
+### Bug Fixes
+
+* explicitly configure version in yargs ([#13830](https://github.com/puppeteer/puppeteer/issues/13830)) ([6983da9](https://github.com/puppeteer/puppeteer/commit/6983da941ef35dea8c867e112fd6b1585ecb16ee))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.10.2 to 2.10.3
+    * puppeteer-core bumped from 24.7.2 to 24.8.0
+
 ## [24.7.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.7.1...puppeteer-v24.7.2) (2025-04-24)
 
 

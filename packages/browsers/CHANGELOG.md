@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.3](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.2...browsers-v2.10.3) (2025-05-02)
+
+
+### Bug Fixes
+
+* explicitly configure version in yargs ([#13830](https://github.com/puppeteer/puppeteer/issues/13830)) ([6983da9](https://github.com/puppeteer/puppeteer/commit/6983da941ef35dea8c867e112fd6b1585ecb16ee))
+
 ## [2.10.2](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.1...browsers-v2.10.2) (2025-04-22)
 
 

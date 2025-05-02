@@ -1,5 +1,28 @@
 # Changelog
 
+## [24.8.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.7.2...puppeteer-core-v24.8.0) (2025-05-02)
+
+
+### Features
+
+* Add `enableExtensions` launch option ([#13824](https://github.com/puppeteer/puppeteer/issues/13824)) ([fd948cf](https://github.com/puppeteer/puppeteer/commit/fd948cfd9dece93233b8ed636af1447f8fb44f4e))
+* Add Browser.installExtension and Browser.uninstallExtension ([#13810](https://github.com/puppeteer/puppeteer/issues/13810)) ([7b9c72c](https://github.com/puppeteer/puppeteer/commit/7b9c72c984ba14b78d94235bd3ac41e0848a96a0))
+* roll to Chrome 136.0.7103.49 ([#13828](https://github.com/puppeteer/puppeteer/issues/13828)) ([ad4a6e7](https://github.com/puppeteer/puppeteer/commit/ad4a6e76c6846d98d9f6c4e81cbab71c4284a124))
+* roll to Firefox 138.0 ([#13829](https://github.com/puppeteer/puppeteer/issues/13829)) ([b3f04d7](https://github.com/puppeteer/puppeteer/commit/b3f04d7e65319d61f88d04f74d215c452292e222))
+
+
+### Bug Fixes
+
+* roll to Firefox 138.0.1 ([#13832](https://github.com/puppeteer/puppeteer/issues/13832)) ([bfa0e39](https://github.com/puppeteer/puppeteer/commit/bfa0e39a3bdee567e0df87d65d76494139c3a18c))
+* writable stream in PipeTransport should handle errors ([#13825](https://github.com/puppeteer/puppeteer/issues/13825)) ([da97da5](https://github.com/puppeteer/puppeteer/commit/da97da5731a7d246118c74d69baea23eeaf3a7f6))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.10.2 to 2.10.3
+
 ## [24.7.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.7.1...puppeteer-core-v24.7.2) (2025-04-24)
 
 
