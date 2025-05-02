@@ -37,7 +37,6 @@
       "command": "hereby generate:version",
       "clean": "if-file-deleted",
       "files": [
-        "package.json",
         "Herebyfile.mjs"
       ],
       "output": [
