@@ -7,6 +7,7 @@
  */
 
 import {CLI, Browser} from '@puppeteer/browsers';
+import {packageVersion} from 'puppeteer-core/internal/generated/version.js';
 import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
 
 import puppeteer from '../puppeteer.js';
@@ -16,6 +17,7 @@ const cacheDir = puppeteer.configuration.cacheDirectory!;
 void new CLI({
   cachePath: cacheDir,
   scriptName: 'puppeteer',
+  version: packageVersion,
   prefixCommand: {
     cmd: 'browsers',
     description: 'Manage browsers of this Puppeteer installation',
