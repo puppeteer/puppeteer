@@ -150,7 +150,7 @@ export class ScreenRecorder extends PassThrough {
         ],
         // Forces input to be read from standard input, and forces png input
         // image format.
-        ['-f', 'image2pipe', '-c:v', 'png', '-i', 'pipe:0'],
+        ['-f', 'image2pipe', '-vcodec', 'png', '-i', 'pipe:0'],
         // Overwrite output and no audio.
         ['-y', '-an'],
         // This drastically reduces stalling when cpu is overbooked. By default
@@ -230,8 +230,7 @@ export class ScreenRecorder extends PassThrough {
     colors: number,
   ) {
     const libvpx = [
-      // Sets the codec to use.
-      ['-c:v', 'vp9'],
+      ['-vcodec', 'vp9'],
       // Sets the quality. Lower the better.
       ['-crf', `${quality}`],
       // Sets the quality and how efficient the compression will be.
