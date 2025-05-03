@@ -331,7 +331,7 @@ export interface ScreencastOptions {
   /**
    * Specifies the output file format.
    *
-   * @defaultValue `webm`
+   * @defaultValue `'webm'`
    */
   format?: FileFormat;
   /**
@@ -397,6 +397,8 @@ export interface ScreencastOptions {
    * Path to the {@link https://ffmpeg.org/ | ffmpeg}.
    *
    * Required if `ffmpeg` is not in your PATH.
+   *
+   * @defaultValue `'ffmpeg'`
    */
   ffmpegPath?: string;
 }
@@ -2459,7 +2461,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
     const recorder = new ScreenRecorder(this, width, height, {
       ...options,
-      path: options.ffmpegPath,
       crop,
     });
     try {

@@ -114,6 +114,8 @@ Required if `ffmpeg` is not in your PATH.
 
 </td><td>
 
+`'ffmpeg'`
+
 </td></tr>
 <tr><td>
 
@@ -133,7 +135,7 @@ Specifies the output file format.
 
 </td><td>
 
-`webm`
+`'webm'`
 
 </td></tr>
 <tr><td>
