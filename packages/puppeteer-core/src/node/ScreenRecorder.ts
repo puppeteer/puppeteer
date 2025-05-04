@@ -6,7 +6,9 @@
 
 import type {ChildProcessWithoutNullStreams} from 'node:child_process';
 import {spawn, spawnSync} from 'node:child_process';
+import fs from 'node:fs';
 import os from 'node:os';
+import {dirname} from 'node:path';
 import {PassThrough} from 'node:stream';
 
 import debug from 'debug';
@@ -49,6 +51,7 @@ export interface ScreenRecorderOptions {
   quality?: number;
   colors?: number;
   scale?: number;
+  path?: `${string}.${VideoFormat}`;
 }
 
 /**
@@ -82,6 +85,7 @@ export class ScreenRecorder extends PassThrough {
       delay,
       quality,
       colors,
+      path,
     }: ScreenRecorderOptions = {},
   ) {
     super({allowHalfOpen: false});
@@ -128,6 +132,11 @@ export class ScreenRecorder extends PassThrough {
     const vf = formatArgs.indexOf('-vf');
     if (vf !== -1) {
       filters.push(formatArgs.splice(vf, 2).at(-1) ?? '');
+    }
+
+    // Ensure provided output directory path exists.
+    if (path) {
+      fs.mkdirSync(dirname(path), {recursive: true});
     }
 
     this.#process = spawn(
