@@ -25,7 +25,7 @@ import {
 } from '../../third_party/rxjs/rxjs.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
-import type {Page, FileFormat} from '../api/Page.js';
+import type {Page, VideoFormat} from '../api/Page.js';
 import {debugError, fromEmitterEvent} from '../common/util.js';
 import {guarded} from '../util/decorators.js';
 import {asyncDisposeSymbol} from '../util/disposable.js';
@@ -42,7 +42,7 @@ export interface ScreenRecorderOptions {
   ffmpegPath?: string;
   speed?: number;
   crop?: BoundingBox;
-  format?: FileFormat;
+  format?: VideoFormat;
   fps?: number;
   loop?: number;
   delay?: number;
@@ -222,13 +222,13 @@ export class ScreenRecorder extends PassThrough {
   }
 
   #getFormatArgs(
-    format: FileFormat,
+    format: VideoFormat,
     fps: number | 'source_fps',
     loop: number,
     delay: number,
     quality: number,
     colors: number,
-  ) {
+  ): string[] {
     const libvpx = [
       ['-vcodec', 'vp9'],
       // Sets the quality. Lower the better.
