@@ -258,6 +258,16 @@ export interface ScreenshotClip extends BoundingBox {
 /**
  * @public
  */
+export type ImageFormat = 'png' | 'jpeg' | 'webp';
+
+/**
+ * @public
+ */
+export type VideoFormat = 'webm' | 'gif' | 'mp4';
+
+/**
+ * @public
+ */
 export interface ScreenshotOptions {
   /**
    * @defaultValue `false`
@@ -266,7 +276,7 @@ export interface ScreenshotOptions {
   /**
    * @defaultValue `'png'`
    */
-  type?: 'png' | 'jpeg' | 'webp';
+  type?: ImageFormat;
   /**
    * Quality of the image, between 0-100. Not applicable to `png` images.
    */
@@ -295,7 +305,7 @@ export interface ScreenshotOptions {
    * relative to current working directory. If no path is provided, the image
    * won't be saved to the disk.
    */
-  path?: string;
+  path?: `${string}.${ImageFormat}`;
   /**
    * Specifies the region of the page/element to clip.
    */
@@ -316,24 +326,19 @@ export interface ScreenshotOptions {
 
 /**
  * @public
- */
-export type FileFormat = 'gif' | 'webm' | 'mp4';
-
-/**
- * @public
  * @experimental
  */
 export interface ScreencastOptions {
   /**
    * File path to save the screencast to.
    */
-  path?: `${string}.${FileFormat}`;
+  path?: `${string}.${VideoFormat}`;
   /**
    * Specifies the output file format.
    *
    * @defaultValue `'webm'`
    */
-  format?: FileFormat;
+  format?: VideoFormat;
   /**
    * Specifies the region of the viewport to crop.
    */
