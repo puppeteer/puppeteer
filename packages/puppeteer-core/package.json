@@ -145,7 +145,7 @@
     "chromium-bidi": "4.1.1",
     "devtools-protocol": "0.0.1439962",
     "typed-query-selector": "^2.12.0",
-    "ws": "^8.18.1"
+    "ws": "^8.18.2"
   },
   "devDependencies": {
     "@types/chrome": "0.0.317",
