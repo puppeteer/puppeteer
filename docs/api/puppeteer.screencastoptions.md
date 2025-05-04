@@ -127,7 +127,7 @@ Required if `ffmpeg` is not in your PATH.
 
 </td><td>
 
-[FileFormat](./puppeteer.fileformat.md)
+[VideoFormat](./puppeteer.videoformat.md)
 
 </td><td>
 
@@ -190,7 +190,7 @@ Specifies the number of times to loop playback, from `0` to `Infinity`. A value 
 
 </td><td>
 
-\`$&#123;string&#125;.$&#123;[FileFormat](./puppeteer.fileformat.md)&#125;\`
+\`$&#123;string&#125;.$&#123;[VideoFormat](./puppeteer.videoformat.md)&#125;\`
 
 </td><td>
 
