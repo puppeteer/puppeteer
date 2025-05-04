@@ -1541,13 +1541,6 @@ See individual properties for more information.
 </td></tr>
 <tr><td>
 
-<span id="fileformat">[FileFormat](./puppeteer.fileformat.md)</span>
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
 <span id="flattenhandle">[FlattenHandle](./puppeteer.flattenhandle.md)</span>
 
 </td><td>
@@ -1570,6 +1563,13 @@ See individual properties for more information.
 <tr><td>
 
 <span id="handler">[Handler](./puppeteer.handler.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="imageformat">[ImageFormat](./puppeteer.imageformat.md)</span>
 
 </td><td>
 
@@ -1737,6 +1737,13 @@ Browsers supported by Puppeteer.
 <tr><td>
 
 <span id="targetfiltercallback">[TargetFilterCallback](./puppeteer.targetfiltercallback.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="videoformat">[VideoFormat](./puppeteer.videoformat.md)</span>
 
 </td><td>
 
