@@ -27,7 +27,12 @@ import {
 } from '../../third_party/rxjs/rxjs.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
-import type {Page, VideoFormat} from '../api/Page.js';
+import {
+  type Page,
+  ImageFormat,
+  type FileFormat,
+  type FilePath,
+} from '../api/Page.js';
 import {debugError, fromEmitterEvent} from '../common/util.js';
 import {guarded} from '../util/decorators.js';
 import {asyncDisposeSymbol} from '../util/disposable.js';
@@ -44,14 +49,14 @@ export interface ScreenRecorderOptions {
   ffmpegPath?: string;
   speed?: number;
   crop?: BoundingBox;
-  format?: VideoFormat;
+  format?: FileFormat;
   fps?: number;
   loop?: number;
   delay?: number;
   quality?: number;
   colors?: number;
   scale?: number;
-  path?: `${string}.${VideoFormat}`;
+  path?: FilePath;
   overwrite?: boolean;
 }
 
@@ -125,6 +130,7 @@ export class ScreenRecorder extends PassThrough {
     }
 
     const formatArgs = this.#getFormatArgs(
+      path !== undefined,
       format,
       fps,
       loop,
@@ -137,9 +143,15 @@ export class ScreenRecorder extends PassThrough {
       filters.push(formatArgs.splice(vf, 2).at(-1) ?? '');
     }
 
+    const dir = path ? dirname(path) : format;
+
+    if (format in ImageFormat) {
+      // Incremental file naming, e.g. 0001-9999.png
+      path ??= `${dir}/%04d.${format}`;
+    }
     // Ensure provided output directory path exists.
     if (path) {
-      fs.mkdirSync(dirname(path), {recursive: overwrite});
+      fs.mkdirSync(dir, {recursive: overwrite});
     }
 
     this.#process = spawn(
@@ -177,9 +189,10 @@ export class ScreenRecorder extends PassThrough {
         // Filters to ensure the images are piped correctly,
         // combined with any format-specific filters.
         ['-vf', filters.join()],
+        // Write to provided path, else pipe to stdout.
+        path ?? 'pipe:1',
         // Overwrite output, or exit immediately if file already exists.
         [overwrite ? '-y' : '-n'],
-        'pipe:1',
       ].flat(),
       {stdio: ['pipe', 'pipe', 'pipe']},
     );
@@ -236,7 +249,8 @@ export class ScreenRecorder extends PassThrough {
   }
 
   #getFormatArgs(
-    format: VideoFormat,
+    path: boolean,
+    format: FileFormat,
     fps: number | 'source_fps',
     loop: number,
     delay: number,
@@ -255,6 +269,8 @@ export class ScreenRecorder extends PassThrough {
         `${Math.min(os.cpus().length / 2, 8)}`,
       ],
     ];
+    // Sets the format
+    const image = ['-f', 'image2'];
     switch (format) {
       case 'webm':
         return [
@@ -293,6 +309,10 @@ export class ScreenRecorder extends PassThrough {
           // Sets the format
           ['-f', 'mp4'],
         ].flat();
+      case 'png':
+        return path ? image : [];
+      case 'jpeg':
+        return path ? image : [];
     }
   }
 
