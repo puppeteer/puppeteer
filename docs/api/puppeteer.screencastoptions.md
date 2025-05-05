@@ -182,6 +182,27 @@ Specifies the number of times to loop playback, from `0` to `Infinity`. A value 
 </td></tr>
 <tr><td>
 
+<span id="overwrite">overwrite</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Specifies whether to overwrite output file, or exit immediately if it already exists.
+
+</td><td>
+
+`true`
+
+</td></tr>
+<tr><td>
+
 <span id="path">path</span>
 
 </td><td>
