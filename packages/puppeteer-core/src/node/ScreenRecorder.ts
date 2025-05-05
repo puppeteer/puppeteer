@@ -103,7 +103,6 @@ export class ScreenRecorder extends PassThrough {
     // Maps 0 to -1 as ffmpeg maps 0 to infinity.
     loop ||= -1;
     delay ??= -1;
-    quality ??= CRF_VALUE;
     colors ??= 256;
     overwrite ??= true;
 
@@ -254,13 +253,14 @@ export class ScreenRecorder extends PassThrough {
     fps: number | 'source_fps',
     loop: number,
     delay: number,
-    quality: number,
+    quality: number | undefined,
     colors: number,
   ): string[] {
+    const crf = quality ?? CRF_VALUE;
     const libvpx = [
       ['-vcodec', 'vp9'],
       // Sets the quality. Lower the better.
-      ['-crf', `${quality}`],
+      crf ? ['-crf', `${crf}`] : ['-lossless', '1'],
       // Sets the quality and how efficient the compression will be.
       [
         '-deadline',
@@ -269,8 +269,10 @@ export class ScreenRecorder extends PassThrough {
         `${Math.min(os.cpus().length / 2, 8)}`,
       ],
     ];
-    // Sets the format
-    const image = ['-f', 'image2'];
+    const image = [
+      // Sets the format
+      ['-f', 'image2'],
+    ];
     switch (format) {
       default:
         return [];
@@ -312,9 +314,17 @@ export class ScreenRecorder extends PassThrough {
           ['-f', 'mp4'],
         ].flat();
       case 'png':
-        return path ? image : [];
+        return path ? image.flat() : [];
       case 'jpeg':
-        return path ? image : [];
+        quality ??= 5;
+        return path
+          ? [
+              ...image,
+              // Sets the quality
+              ['-qscale', `${quality}`],
+              quality <= 1 ? ['-qmin', '1'] : [],
+            ].flat()
+          : [];
     }
   }
 
