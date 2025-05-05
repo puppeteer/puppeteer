@@ -272,6 +272,8 @@ export class ScreenRecorder extends PassThrough {
     // Sets the format
     const image = ['-f', 'image2'];
     switch (format) {
+      default:
+        return [];
       case 'webm':
         return [
           ...libvpx,
