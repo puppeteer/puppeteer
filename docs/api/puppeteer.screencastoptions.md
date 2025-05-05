@@ -127,7 +127,7 @@ Required if `ffmpeg` is not in your PATH.
 
 </td><td>
 
-[VideoFormat](./puppeteer.videoformat.md)
+[FileFormat](./puppeteer.fileformat.md)
 
 </td><td>
 
@@ -211,7 +211,7 @@ Specifies whether to overwrite output file, or exit immediately if it already ex
 
 </td><td>
 
-\`$&#123;string&#125;.$&#123;[VideoFormat](./puppeteer.videoformat.md)&#125;\`
+[FilePath](./puppeteer.filepath.md)
 
 </td><td>
 
