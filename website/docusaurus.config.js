@@ -43,6 +43,7 @@ const config = {
   favicon: 'img/favicon.ico',
   organizationName: 'puppeteer',
   projectName: 'puppeteer',
+  trailingSlash: false,
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
