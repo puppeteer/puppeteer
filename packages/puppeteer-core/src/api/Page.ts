@@ -258,7 +258,11 @@ export interface ScreenshotClip extends BoundingBox {
 /**
  * @public
  */
-export type ImageFormat = 'png' | 'jpeg' | 'webp';
+export enum ImageFormat {
+  png = 'png',
+  jpeg = 'jpeg',
+  webp = 'webp',
+}
 
 /**
  * @public
@@ -276,7 +280,7 @@ export interface ScreenshotOptions {
   /**
    * @defaultValue `'png'`
    */
-  type?: ImageFormat;
+  type?: `${ImageFormat}`;
   /**
    * Quality of the image, between 0-100. Not applicable to `png` images.
    */
@@ -326,13 +330,23 @@ export interface ScreenshotOptions {
 
 /**
  * @public
+ */
+export type FileFormat = VideoFormat | Exclude<ImageFormat, 'webp'>;
+
+/**
+ * @public
+ */
+export type FilePath = `${string}.${FileFormat}`;
+
+/**
+ * @public
  * @experimental
  */
 export interface ScreencastOptions {
   /**
    * File path to save the screencast to.
    */
-  path?: `${string}.${VideoFormat}`;
+  path?: FilePath;
   /**
    * Specifies whether to overwrite output file,
    * or exit immediately if it already exists.
@@ -345,7 +359,7 @@ export interface ScreencastOptions {
    *
    * @defaultValue `'webm'`
    */
-  format?: VideoFormat;
+  format?: FileFormat;
   /**
    * Specifies the region of the viewport to crop.
    */
@@ -2481,7 +2495,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       void recorder.stop();
       throw error;
     }
-    if (options.path) {
+    if (options.path && !(options.format ?? '' in ImageFormat)) {
       const {createWriteStream} = environment.value.fs;
       const stream = createWriteStream(options.path, 'binary');
       recorder.pipe(stream);
