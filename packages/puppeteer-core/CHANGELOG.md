@@ -1,5 +1,13 @@
 # Changelog
 
+## [24.8.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.8.0...puppeteer-core-v24.8.1) (2025-05-06)
+
+
+### Bug Fixes
+
+* revert "refactor: allow importing chromium-bidi ESM" ([#13849](https://github.com/puppeteer/puppeteer/issues/13849)) ([e7f514a](https://github.com/puppeteer/puppeteer/commit/e7f514ab5a55ffed015cd89bc69feb059bf5da0c))
+* **webdriver:** bump chromium-bidi ([#13844](https://github.com/puppeteer/puppeteer/issues/13844)) ([250cccb](https://github.com/puppeteer/puppeteer/commit/250cccb57a4fd61ad92c5f54ae09e59ea87ec27d))
+
 ## [24.8.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.7.2...puppeteer-core-v24.8.0) (2025-05-02)
 
 
