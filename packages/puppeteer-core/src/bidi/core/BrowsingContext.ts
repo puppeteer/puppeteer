@@ -568,6 +568,9 @@ export class BrowsingContext extends EventEmitter<{
   async setGeolocationOverride(
     options: SetGeoLocationOverrideOptions,
   ): Promise<void> {
+    if (!('coordinates' in options)) {
+      throw new Error('Missing coordinates');
+    }
     await this.userContext.browser.session.send(
       'emulation.setGeolocationOverride',
       {
