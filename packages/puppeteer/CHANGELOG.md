@@ -1,5 +1,19 @@
 # Changelog
 
+## [24.8.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.8.0...puppeteer-v24.8.1) (2025-05-06)
+
+
+### Bug Fixes
+
+* **webdriver:** bump chromium-bidi ([#13844](https://github.com/puppeteer/puppeteer/issues/13844)) ([250cccb](https://github.com/puppeteer/puppeteer/commit/250cccb57a4fd61ad92c5f54ae09e59ea87ec27d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.8.0 to 24.8.1
+
 ## [24.8.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.7.2...puppeteer-v24.8.0) (2025-05-02)
 
 
