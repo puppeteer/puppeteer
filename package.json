@@ -205,10 +205,5 @@
     "tools/doctest",
     "tools/docgen",
     "tools/mocha-runner"
-  ],
-  "tsd": {
-    "compilerOptions": {
-      "module": "NodeNext"
-    }
-  }
+  ]
 }

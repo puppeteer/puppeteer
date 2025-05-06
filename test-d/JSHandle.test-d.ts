@@ -7,8 +7,8 @@ import type {ElementHandle, JSHandle} from 'puppeteer';
 import {expectNotAssignable, expectNotType, expectType} from 'tsd';
 
 declare const handle: JSHandle;
-declare const handle2: JSHandle<{test: number}>;
-const test = async () => {
+
+{
   expectType<unknown>(await handle.evaluate('document'));
   expectType<number>(
     await handle.evaluate(() => {
@@ -32,7 +32,9 @@ const test = async () => {
       return '';
     }, ''),
   );
+}
 
+{
   expectType<JSHandle>(await handle.evaluateHandle('document'));
   expectType<JSHandle<number>>(
     await handle.evaluateHandle(() => {
@@ -56,7 +58,11 @@ const test = async () => {
       return document.body;
     }),
   );
+}
 
+declare const handle2: JSHandle<{test: number}>;
+
+{
   {
     expectType<JSHandle<number>>(await handle2.getProperty('test'));
     expectNotType<JSHandle<unknown>>(await handle2.getProperty('test'));
@@ -72,11 +78,11 @@ const test = async () => {
       await handle2.getProperty('key-doesnt-exist'),
     );
   }
+}
 
+{
   void handle.evaluate((value, other) => {
     expectType<unknown>(value);
     expectType<{test: number}>(other);
   }, handle2);
-};
-
-void test();
+}

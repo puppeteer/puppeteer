@@ -5,7 +5,7 @@
  */
 
 export type {Protocol} from 'devtools-protocol';
-export type {Session} from 'chromium-bidi/protocol/protocol.js';
+export type {Session} from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 export * from './api/api.js';
 export * from './cdp/cdp.js';

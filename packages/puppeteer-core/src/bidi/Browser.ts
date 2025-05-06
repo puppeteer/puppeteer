@@ -6,7 +6,7 @@
 
 import type {ChildProcess} from 'node:child_process';
 
-import * as Bidi from 'chromium-bidi/protocol/protocol.js';
+import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import type {BrowserEvents} from '../api/Browser.js';
 import {
