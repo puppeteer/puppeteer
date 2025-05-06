@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import * as Bidi from 'chromium-bidi/protocol/protocol.js';
+import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import type {Permission} from '../api/Browser.js';
 import {WEB_PERMISSION_TO_PROTOCOL_PERMISSION} from '../api/Browser.js';

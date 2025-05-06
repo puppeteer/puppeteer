@@ -12,8 +12,8 @@ export default {
     dir: 'out',
   },
   // If you do not need to use WebDriver BiDi protocol,
-  // exclude chromium-bidi/* to minimize the bundle size.
-  external: ['chromium-bidi/*'],
+  // exclude chromium-bidi/lib/cjs/bidiMapper/BidiMapper.js to minimize the bundle size.
+  external: ['chromium-bidi/lib/cjs/bidiMapper/BidiMapper.js'],
   plugins: [
     nodeResolve({
       browser: true,
