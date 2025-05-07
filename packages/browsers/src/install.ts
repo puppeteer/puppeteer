@@ -271,7 +271,7 @@ async function installUrl(
       options.buildIdAlias ?? options.buildId,
     );
   }
-  const fileName = url.toString().split('/').pop();
+  const fileName = decodeURIComponent(url.toString()).split('/').pop();
   assert(fileName, `A malformed download URL was found: ${url}.`);
   const cache = new Cache(options.cacheDir);
   const browserRoot = cache.browserRoot(options.browser);
