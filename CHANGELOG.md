@@ -2,6 +2,26 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.8.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.8.1...puppeteer-v24.8.2) (2025-05-07)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.10.3 to 2.10.4
+
+
+### Bug Fixes
+
+* roll to Chrome 136.0.7103.92 ([#13854](https://github.com/puppeteer/puppeteer/issues/13854)) ([a83e6ce](https://github.com/puppeteer/puppeteer/commit/a83e6ce79729a99a4d7c8eb834aa645869185664))
+
+
 ## [24.8.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.8.0...puppeteer-v24.8.1) (2025-05-06)
 
 
