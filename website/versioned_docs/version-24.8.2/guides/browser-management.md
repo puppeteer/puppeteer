@@ -1,6 +1,6 @@
 # Browser management
 
-Usually, you start working with Puppeteer by either launching [launching](https://pptr.dev/api/puppeteer.puppeteernode.launch) or [connecting](https://pptr.dev/api/puppeteer.puppeteernode.connect) to a browser.
+Usually, you start working with Puppeteer by either [launching](https://pptr.dev/api/puppeteer.puppeteernode.launch) or [connecting](https://pptr.dev/api/puppeteer.puppeteernode.connect) to a browser.
 
 ## Launching a browser
 
@@ -60,7 +60,7 @@ await context.overridePermissions('https://html5demos.com', ['geolocation']);
 
 ## Connecting to a running browser
 
-If you launched a browser outside of Puppeteer, you can connect to it using [`connect`](https://pptr.dev/api/puppeteer.puppeteernode.connect/) method. Usually, you can grab a WebSocket endpoint URL from the browser output:
+If you launched a browser outside of Puppeteer, you can connect to it using the [`connect`](https://pptr.dev/api/puppeteer.puppeteernode.connect/) method. Usually, you can grab a WebSocket endpoint URL from the browser output:
 
 ```ts
 const browser = await puppeteer.connect({

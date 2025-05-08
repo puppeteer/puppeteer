@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.4](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.3...browsers-v2.10.4) (2025-05-07)
+
+
+### Bug Fixes
+
+* decode URL before parsing ([#13857](https://github.com/puppeteer/puppeteer/issues/13857)) ([c747eb8](https://github.com/puppeteer/puppeteer/commit/c747eb882ca3825d65167b13ebf1e016ccbbaf9b))
+
 ## [2.10.3](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.2...browsers-v2.10.3) (2025-05-02)
 
 
