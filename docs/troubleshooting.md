@@ -261,7 +261,7 @@ Chrome with the `--no-sandbox` argument:
 
 ```ts
 const browser = await puppeteer.launch({
-  args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  args: ['--no-sandbox'],
 });
 ```
 
@@ -564,10 +564,10 @@ before_script:
     xdg-utils wget
 ```
 
-Next, you have to use `'--no-sandbox'` mode and also
-`'--disable-setuid-sandbox'` when launching Puppeteer. This can be done by
+Next, you have to use `'--no-sandbox'` mode
+when launching Puppeteer. This can be done by
 passing them as an arguments to your `.launch()` call:
-`puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });`.
+`puppeteer.launch({ args: ['--no-sandbox'] });`.
 
 ## Running Puppeteer on Google Cloud Run
 
