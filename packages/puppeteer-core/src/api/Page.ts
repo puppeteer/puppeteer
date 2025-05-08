@@ -258,6 +258,20 @@ export interface ScreenshotClip extends BoundingBox {
 /**
  * @public
  */
+export enum ImageFormat {
+  png = 'png',
+  jpeg = 'jpeg',
+  webp = 'webp',
+}
+
+/**
+ * @public
+ */
+export type VideoFormat = 'webm' | 'gif' | 'mp4';
+
+/**
+ * @public
+ */
 export interface ScreenshotOptions {
   /**
    * @defaultValue `false`
@@ -266,7 +280,7 @@ export interface ScreenshotOptions {
   /**
    * @defaultValue `'png'`
    */
-  type?: 'png' | 'jpeg' | 'webp';
+  type?: `${ImageFormat}`;
   /**
    * Quality of the image, between 0-100. Not applicable to `png` images.
    */
@@ -295,7 +309,7 @@ export interface ScreenshotOptions {
    * relative to current working directory. If no path is provided, the image
    * won't be saved to the disk.
    */
-  path?: string;
+  path?: `${string}.${ImageFormat}`;
   /**
    * Specifies the region of the page/element to clip.
    */
@@ -317,7 +331,12 @@ export interface ScreenshotOptions {
 /**
  * @public
  */
-export type FileFormat = 'gif' | 'webm' | 'mp4';
+export type FileFormat = VideoFormat | Exclude<ImageFormat, 'webp'>;
+
+/**
+ * @public
+ */
+export type FilePath = `${string}.${FileFormat}`;
 
 /**
  * @public
@@ -327,11 +346,18 @@ export interface ScreencastOptions {
   /**
    * File path to save the screencast to.
    */
-  path?: `${string}.${FileFormat}`;
+  path?: FilePath;
+  /**
+   * Specifies whether to overwrite output file,
+   * or exit immediately if it already exists.
+   *
+   * @defaultValue `true`
+   */
+  overwrite?: boolean;
   /**
    * Specifies the output file format.
    *
-   * @defaultValue `webm`
+   * @defaultValue `'webm'`
    */
   format?: FileFormat;
   /**
@@ -397,6 +423,8 @@ export interface ScreencastOptions {
    * Path to the {@link https://ffmpeg.org/ | ffmpeg}.
    *
    * Required if `ffmpeg` is not in your PATH.
+   *
+   * @defaultValue `'ffmpeg'`
    */
   ffmpegPath?: string;
 }
@@ -2459,7 +2487,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
     const recorder = new ScreenRecorder(this, width, height, {
       ...options,
-      path: options.ffmpegPath,
       crop,
     });
     try {
@@ -2468,7 +2495,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       void recorder.stop();
       throw error;
     }
-    if (options.path) {
+    if (options.path && !(options.format ?? '' in ImageFormat)) {
       const {createWriteStream} = environment.value.fs;
       const stream = createWriteStream(options.path, 'binary');
       recorder.pipe(stream);

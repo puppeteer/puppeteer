@@ -114,6 +114,8 @@ Required if `ffmpeg` is not in your PATH.
 
 </td><td>
 
+`'ffmpeg'`
+
 </td></tr>
 <tr><td>
 
@@ -133,7 +135,7 @@ Specifies the output file format.
 
 </td><td>
 
-`webm`
+`'webm'`
 
 </td></tr>
 <tr><td>
@@ -180,6 +182,27 @@ Specifies the number of times to loop playback, from `0` to `Infinity`. A value 
 </td></tr>
 <tr><td>
 
+<span id="overwrite">overwrite</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Specifies whether to overwrite output file, or exit immediately if it already exists.
+
+</td><td>
+
+`true`
+
+</td></tr>
+<tr><td>
+
 <span id="path">path</span>
 
 </td><td>
@@ -188,7 +211,7 @@ Specifies the number of times to loop playback, from `0` to `Infinity`. A value 
 
 </td><td>
 
-\`$&#123;string&#125;.$&#123;[FileFormat](./puppeteer.fileformat.md)&#125;\`
+[FilePath](./puppeteer.filepath.md)
 
 </td><td>
 

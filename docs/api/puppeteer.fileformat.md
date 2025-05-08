@@ -7,5 +7,7 @@ sidebar_label: FileFormat
 ### Signature
 
 ```typescript
-export type FileFormat = 'gif' | 'webm' | 'mp4';
+export type FileFormat = VideoFormat | Exclude<ImageFormat, 'webp'>;
 ```
+
+**References:** [VideoFormat](./puppeteer.videoformat.md), [ImageFormat](./puppeteer.imageformat.md)

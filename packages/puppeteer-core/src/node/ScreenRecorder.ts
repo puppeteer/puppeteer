@@ -6,7 +6,9 @@
 
 import type {ChildProcessWithoutNullStreams} from 'node:child_process';
 import {spawn, spawnSync} from 'node:child_process';
+import fs from 'node:fs';
 import os from 'node:os';
+import {dirname} from 'node:path';
 import {PassThrough} from 'node:stream';
 
 import debug from 'debug';
@@ -25,7 +27,12 @@ import {
 } from '../../third_party/rxjs/rxjs.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
-import type {Page, FileFormat} from '../api/Page.js';
+import {
+  type Page,
+  ImageFormat,
+  type FileFormat,
+  type FilePath,
+} from '../api/Page.js';
 import {debugError, fromEmitterEvent} from '../common/util.js';
 import {guarded} from '../util/decorators.js';
 import {asyncDisposeSymbol} from '../util/disposable.js';
@@ -39,6 +46,7 @@ const debugFfmpeg = debug('puppeteer:ffmpeg');
  * @internal
  */
 export interface ScreenRecorderOptions {
+  ffmpegPath?: string;
   speed?: number;
   crop?: BoundingBox;
   format?: FileFormat;
@@ -48,7 +56,8 @@ export interface ScreenRecorderOptions {
   quality?: number;
   colors?: number;
   scale?: number;
-  path?: string;
+  path?: FilePath;
+  overwrite?: boolean;
 }
 
 /**
@@ -72,6 +81,7 @@ export class ScreenRecorder extends PassThrough {
     width: number,
     height: number,
     {
+      ffmpegPath,
       speed,
       scale,
       crop,
@@ -82,23 +92,24 @@ export class ScreenRecorder extends PassThrough {
       quality,
       colors,
       path,
+      overwrite,
     }: ScreenRecorderOptions = {},
   ) {
     super({allowHalfOpen: false});
 
+    ffmpegPath ??= 'ffmpeg';
     format ??= 'webm';
     fps ??= DEFAULT_FPS;
     // Maps 0 to -1 as ffmpeg maps 0 to infinity.
     loop ||= -1;
     delay ??= -1;
-    quality ??= CRF_VALUE;
     colors ??= 256;
-    path ??= 'ffmpeg';
+    overwrite ??= true;
 
     this.#fps = fps;
 
     // Tests if `ffmpeg` exists.
-    const {error} = spawnSync(path);
+    const {error} = spawnSync(ffmpegPath);
     if (error) {
       throw error;
     }
@@ -118,6 +129,7 @@ export class ScreenRecorder extends PassThrough {
     }
 
     const formatArgs = this.#getFormatArgs(
+      path !== undefined,
       format,
       fps,
       loop,
@@ -130,8 +142,19 @@ export class ScreenRecorder extends PassThrough {
       filters.push(formatArgs.splice(vf, 2).at(-1) ?? '');
     }
 
+    const dir = path ? dirname(path) : format;
+
+    if (format in ImageFormat) {
+      // Incremental file naming, e.g. 0001-9999.png
+      path ??= `${dir}/%04d.${format}`;
+    }
+    // Ensure provided output directory path exists.
+    if (path) {
+      fs.mkdirSync(dir, {recursive: overwrite});
+    }
+
     this.#process = spawn(
-      path,
+      ffmpegPath,
       // See https://trac.ffmpeg.org/wiki/Encode/VP9 for more information on flags.
       [
         ['-loglevel', 'error'],
@@ -150,9 +173,9 @@ export class ScreenRecorder extends PassThrough {
         ],
         // Forces input to be read from standard input, and forces png input
         // image format.
-        ['-f', 'image2pipe', '-c:v', 'png', '-i', 'pipe:0'],
-        // Overwrite output and no audio.
-        ['-y', '-an'],
+        ['-f', 'image2pipe', '-vcodec', 'png', '-i', 'pipe:0'],
+        // No audio
+        ['-an'],
         // This drastically reduces stalling when cpu is overbooked. By default
         // VP9 tries to use all available threads?
         ['-threads', '1'],
@@ -165,7 +188,10 @@ export class ScreenRecorder extends PassThrough {
         // Filters to ensure the images are piped correctly,
         // combined with any format-specific filters.
         ['-vf', filters.join()],
-        'pipe:1',
+        // Write to provided path, else pipe to stdout.
+        path ?? 'pipe:1',
+        // Overwrite output, or exit immediately if file already exists.
+        [overwrite ? '-y' : '-n'],
       ].flat(),
       {stdio: ['pipe', 'pipe', 'pipe']},
     );
@@ -222,18 +248,19 @@ export class ScreenRecorder extends PassThrough {
   }
 
   #getFormatArgs(
+    path: boolean,
     format: FileFormat,
     fps: number | 'source_fps',
     loop: number,
     delay: number,
-    quality: number,
+    quality: number | undefined,
     colors: number,
-  ) {
+  ): string[] {
+    const crf = quality ?? CRF_VALUE;
     const libvpx = [
-      // Sets the codec to use.
-      ['-c:v', 'vp9'],
+      ['-vcodec', 'vp9'],
       // Sets the quality. Lower the better.
-      ['-crf', `${quality}`],
+      crf ? ['-crf', `${crf}`] : ['-lossless', '1'],
       // Sets the quality and how efficient the compression will be.
       [
         '-deadline',
@@ -242,7 +269,13 @@ export class ScreenRecorder extends PassThrough {
         `${Math.min(os.cpus().length / 2, 8)}`,
       ],
     ];
+    const image = [
+      // Sets the format
+      ['-f', 'image2'],
+    ];
     switch (format) {
+      default:
+        return [];
       case 'webm':
         return [
           ...libvpx,
@@ -280,6 +313,18 @@ export class ScreenRecorder extends PassThrough {
           // Sets the format
           ['-f', 'mp4'],
         ].flat();
+      case 'png':
+        return path ? image.flat() : [];
+      case 'jpeg':
+        quality ??= 5;
+        return path
+          ? [
+              ...image,
+              // Sets the quality
+              ['-qscale', `${quality}`],
+              quality <= 1 ? ['-qmin', '1'] : [],
+            ].flat()
+          : [];
     }
   }
 
