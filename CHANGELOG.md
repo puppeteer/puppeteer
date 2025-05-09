@@ -2,6 +2,26 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.9.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.8.2...puppeteer-v24.9.0) (2025-05-09)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.8.2 to 24.9.0
+
+
+### Features
+
+* add `screencast` override options ([#13708](https://github.com/puppeteer/puppeteer/issues/13708)) ([e3586e8](https://github.com/puppeteer/puppeteer/commit/e3586e81521e0d91d4d69990cc44a73504dea3c4))
+
+
 ## [24.8.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.8.1...puppeteer-v24.8.2) (2025-05-07)
 
 

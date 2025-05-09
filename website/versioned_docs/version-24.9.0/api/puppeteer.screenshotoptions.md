@@ -186,7 +186,7 @@ boolean
 
 </td><td>
 
-string
+\`$&#123;string&#125;.$&#123;[ImageFormat](./puppeteer.imageformat.md)&#125;\`
 
 </td><td>
 
@@ -224,7 +224,7 @@ Quality of the image, between 0-100. Not applicable to `png` images.
 
 </td><td>
 
-'png' \| 'jpeg' \| 'webp'
+[ImageFormat](./puppeteer.imageformat.md)
 
 </td><td>
 
