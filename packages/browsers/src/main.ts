@@ -25,7 +25,6 @@ export type {
 } from './install.js';
 export {
   install,
-  makeProgressCallback,
   getInstalledBrowsers,
   canDownload,
   uninstall,

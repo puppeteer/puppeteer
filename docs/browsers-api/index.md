@@ -295,13 +295,6 @@ Launches a browser process according to [LaunchOptions](./browsers.launchoptions
 </td></tr>
 <tr><td>
 
-<span id="makeprogresscallback">[makeProgressCallback(browser, buildId)](./browsers.makeprogresscallback.md)</span>
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
 <span id="resolvebuildid">[resolveBuildId(browser, platform, tag)](./browsers.resolvebuildid.md)</span>
 
 </td><td>

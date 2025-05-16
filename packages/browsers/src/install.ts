@@ -12,7 +12,6 @@ import os from 'node:os';
 import path from 'node:path';
 
 import type * as ProgressBar from 'progress';
-import ProgressBarClass from 'progress';
 
 import {
   Browser,
@@ -486,13 +485,26 @@ export function getDownloadUrl(
   return new URL(downloadUrls[browser](platform, buildId, baseUrl));
 }
 
+let ProgressBarClass: new (
+  format: string,
+  options: ProgressBar.ProgressBarOptions,
+) => ProgressBar;
+const importProgressBarIfNeeded = async () => {
+  if (!ProgressBarClass) {
+    ProgressBarClass = (await import('progress')).default;
+  }
+
+  return ProgressBarClass;
+};
+
 /**
- * @public
+ * @internal
  */
-export function makeProgressCallback(
+export async function makeProgressCallback(
   browser: Browser,
   buildId: string,
-): (downloadedBytes: number, totalBytes: number) => void {
+): Promise<(downloadedBytes: number, totalBytes: number) => void> {
+  const ProgressBarClass = await importProgressBarIfNeeded();
   let progressBar: ProgressBar;
 
   let lastDownloadedBytes = 0;
