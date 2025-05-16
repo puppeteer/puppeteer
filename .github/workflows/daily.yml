@@ -13,6 +13,7 @@ jobs:
   chrome-canary-tests:
     name: ${{ matrix.suite }} tests on ${{ matrix.os }} (${{ matrix.shard }}) ${{ matrix.configs }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -96,6 +97,7 @@ jobs:
   firefox-nightly-tests:
     name: ${{ matrix.suite }} (${{ matrix.shard }}) on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
