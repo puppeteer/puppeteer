@@ -174,7 +174,7 @@ export class ChromeLauncher extends BrowserLauncher {
       'AcceptCHFrame',
       'MediaRouter',
       'OptimizationHints',
-
+      'TabstripComboButton',
       ...(turnOnExperimentalFeaturesForTesting
         ? []
         : [
