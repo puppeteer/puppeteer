@@ -353,7 +353,7 @@ export class CLI {
           const yargsWithExtraAgs = yargs.parserConfiguration({
             'populate--': true,
             // Yargs does not have the correct overload for this.
-          }) as Yargs.Argv<{'--': Array<string | number>}>;
+          }) as Yargs.Argv<{'--'?: Array<string | number>}>;
           const yargsWithBrowserParam = this.#defineBrowserParameter(
             yargsWithExtraAgs,
             true,
@@ -379,7 +379,7 @@ export class CLI {
             });
         },
         async args => {
-          const extraArgs = args['--'].filter(arg => {
+          const extraArgs = args['--']?.filter(arg => {
             return typeof arg === 'string';
           });
 
