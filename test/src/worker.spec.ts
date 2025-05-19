@@ -22,13 +22,22 @@ describe('Workers', function () {
       page.goto(server.PREFIX + '/worker/worker.html'),
     ]);
     const worker = page.workers()[0]!;
-    expect(worker?.url()).toContain('worker.js');
+    expect(worker.url()).toContain('worker.js');
 
-    expect(
-      await worker?.evaluate(() => {
-        return (globalThis as any).workerFunction();
-      }),
-    ).toBe('worker function result');
+    let result = '';
+    // TODO: Chrome is flaky and workerFunction is sometimes not yet
+    // defined. Generally, it should not be the case but it look like
+    // there is a race condition between Runtime.evaluate and the
+    // worker's main script execution.
+    for (let i = 0; i < 5; i++) {
+      try {
+        result = await worker.evaluate(() => {
+          return (globalThis as any).workerFunction();
+        });
+        break;
+      } catch {}
+    }
+    expect(result).toBe('worker function result');
 
     await page.goto(server.EMPTY_PAGE);
     expect(page.workers()).toHaveLength(0);
