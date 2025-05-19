@@ -36,7 +36,9 @@ describe('Workers', function () {
         });
         break;
       } catch {}
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => {
+        return setTimeout(resolve, 200);
+      });
     }
     expect(result).toBe('worker function result');
 
