@@ -29,7 +29,7 @@
     "react": "19.1.0",
     "react-cookie-consent": "9.0.0",
     "react-dom": "19.1.0",
-    "semver": "7.7.1"
+    "semver": "7.7.2"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.7.0",
