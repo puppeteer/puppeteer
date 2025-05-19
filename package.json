@@ -181,7 +181,7 @@
     "mocha": "11.3.0",
     "prettier": "3.5.3",
     "rollup": "4.40.2",
-    "semver": "7.7.1",
+    "semver": "7.7.2",
     "sinon": "20.0.0",
     "source-map-support": "0.5.21",
     "spdx-satisfies": "6.0.0",
