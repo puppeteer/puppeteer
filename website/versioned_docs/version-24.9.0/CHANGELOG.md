@@ -2,6 +2,28 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.9.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.8.2...puppeteer-v24.9.0) (2025-05-20)
+
+### Miscellaneous Chores
+
+- **puppeteer:** Synchronize puppeteer versions
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - @puppeteer/browsers bumped from 2.10.4 to 2.10.5
+
+### Features
+
+- add `screencast` override options ([#13708](https://github.com/puppeteer/puppeteer/issues/13708)) ([e3586e8](https://github.com/puppeteer/puppeteer/commit/e3586e81521e0d91d4d69990cc44a73504dea3c4))
+
+### Bug Fixes
+
+- roll to Chrome 136.0.7103.94 ([#13870](https://github.com/puppeteer/puppeteer/issues/13870)) ([9c6ef13](https://github.com/puppeteer/puppeteer/commit/9c6ef1345633b3576b3ef433dafdc6dcb9c1424f))
+- roll to Firefox 138.0.3 ([#13868](https://github.com/puppeteer/puppeteer/issues/13868)) ([863a3e0](https://github.com/puppeteer/puppeteer/commit/863a3e07dcce874035d851778ae4187e12ef421b))
+- roll to Firefox 138.0.4 ([#13881](https://github.com/puppeteer/puppeteer/issues/13881)) ([29ff2b5](https://github.com/puppeteer/puppeteer/commit/29ff2b59815c543c95e7458b7f8ba7ad72afd71c))
+
 ## [24.8.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.8.1...puppeteer-v24.8.2) (2025-05-07)
 
 ### Miscellaneous Chores
