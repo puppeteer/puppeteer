@@ -174,8 +174,6 @@ export class ChromeLauncher extends BrowserLauncher {
       'AcceptCHFrame',
       'MediaRouter',
       'OptimizationHints',
-      // See crbug.com/418675612.
-      'TabstripComboButton',
       ...(turnOnExperimentalFeaturesForTesting
         ? []
         : [
