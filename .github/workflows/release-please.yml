@@ -1,0 +1,76 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Deprecation Tracking Script
+        run: npx ts-node ./tools/track-deprecations.ts
+
+      - name: Commit Changelog and Deprecation Baseline
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Check if there are changes to commit to the specific files
+          if ! git diff --quiet HEAD -- CHANGELOG.md docs/deprecated-apis.json; then
+            git add CHANGELOG.md docs/deprecated-apis.json
+            git commit -m "chore: update deprecations list and changelog [skip ci]"
+            echo "Pushing changes..."
+            git push
+          else
+            echo "No deprecation changes to commit."
+          fi
+
+      - name: Run release-please
+        id: release
+        uses: google-github-actions/release-please-action@v4
+        with:
+          # The token is implicitly set to GITHUB_TOKEN by default by release-please-action.
+          # If a Personal Access Token (PAT) is needed for specific scenarios (e.g., bypassing branch protections
+          # that GITHUB_TOKEN cannot, or if the GITHUB_TOKEN doesn't have enough permissions for creating a release),
+          # it can be provided here using a secret:
+          # token: ${{ secrets.YOUR_PAT_SECRET_NAME }}
+          config-file: release-please-config.json
+          # The manifest-file tells release-please where to find information about how to group releases.
+          # It's often named .release-please-manifest.json or release-please-config.json itself can define paths.
+          # For this setup, we assume the monorepo nature is handled by release-please-config.json and plugins.
+          # If a separate manifest file is used (e.g., .github/release-please.yml which is unconventional for the manifest itself),
+          # specify it here. Given the setup, release-please will likely use the 'packages' section
+          # in release-please-config.json.
+          # manifest-file: .github/release-please.yml # This would be unusual, typically a .json or part of config.
+          # release-type: node # This is typically defined within the release-please-config.json for each package.
+          # We'll rely on the existing release-please-config.json to handle release types.
+
+          # Adding a step to output the created release version, if any.
+      - name: Output Release Info
+        if: ${{ steps.release.outputs.releases_created }}
+        run: echo "Release created: ${{ steps.release.outputs.tag_name }}"
+
+      - name: Print all outputs from release step
+        if: ${{ steps.release.outputs.releases_created }}
+        run: echo "${{ toJSON(steps.release.outputs) }}"
+
+      - name: No release created
+        if: ${{ !steps.release.outputs.releases_created }}
+        run: echo "No release was created."

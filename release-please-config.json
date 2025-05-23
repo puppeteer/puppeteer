@@ -27,5 +27,19 @@
       "groupName": "puppeteer",
       "components": ["puppeteer", "puppeteer-core"]
     }
+  ],
+  "changelogSections": [
+    {"type": "feat", "section": "Features", "hidden": false},
+    {"type": "fix", "section": "Bug Fixes", "hidden": false},
+    {"type": "perf", "section": "Performance Improvements", "hidden": false},
+    {"type": "revert", "section": "Reverts", "hidden": false},
+    {"type": "docs", "scope": "deprecate", "section": "Deprecations", "hidden": true},
+    {"type": "docs", "hidden": true},
+    {"type": "style", "hidden": true},
+    {"type": "chore", "hidden": true},
+    {"type": "refactor", "hidden": true},
+    {"type": "test", "hidden": true},
+    {"type": "build", "hidden": true},
+    {"type": "ci", "hidden": true}
   ]
 }

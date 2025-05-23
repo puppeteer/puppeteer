@@ -190,6 +190,10 @@ To deliver to a different location, use the "deliver" option:
   `page.pizza({deliver: 'work'})`.
 ```
 
+Commits related to documenting deprecations can use the `docs(deprecate)` scope (e.g., `docs(deprecate): update docs for oldMethod deprecation`). However, the primary method for ensuring an API deprecation is listed in the changelog is by using the TSDoc `@deprecated` tag in the source code comments for that API member.
+
+A script (`tools/track-deprecations.ts`) runs during the release process to automatically collect all `@deprecated` tags, and this information is used to populate the 'Deprecations' section in the `CHANGELOG.md`.
+
 ## Writing documentation
 
 Documentation is generated from TSDoc comments via `npm run docs`. It is automatically
@@ -210,6 +214,27 @@ for information on the exact syntax.
   you if you go over this). If you're a VSCode user the
   [Rewrap plugin](https://marketplace.visualstudio.com/items?itemName=stkb.rewrap)
   is highly recommended!
+
+### Documenting Deprecations
+
+When deprecating an API member:
+*   Add the `@deprecated` TSDoc tag to its documentation block.
+*   The deprecation message should be clear and include:
+    *   The reason for deprecation.
+    *   What alternative API to use.
+    *   Optionally, the version when the API is planned for removal (e.g., `@deprecated Feature X is now deprecated as of vY.Z.W. Please use feature Y instead. This will be removed in vA.B.C.`).
+*   This information will be automatically collected and added to the project's main `CHANGELOG.md` during each release.
+
+Example:
+```typescript
+/**
+ * Summarizes a widget.
+ * @deprecated As of v22.1.0, this method is deprecated. Use {@link NewWidget.summarize | NewWidget.summarize()} instead. This method will be removed in v23.0.0.
+ */
+public oldSummaryMethod(): string {
+  // ...
+}
+```
 
 ## Running the documentation site locally
 
