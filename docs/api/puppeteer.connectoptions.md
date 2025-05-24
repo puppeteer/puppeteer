@@ -178,6 +178,27 @@ Only works in the Node.js environment.
 </td></tr>
 <tr><td>
 
+<span id="networkenabled">networkEnabled</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+**_(Experimental)_** Experimental setting to disable monitoring network events by default. When set to `false`, parts of Puppeteer that depend on network events would not work such as HTTPRequest and HTTPResponse.
+
+</td><td>
+
+`true`
+
+</td></tr>
+<tr><td>
+
 <span id="protocol">protocol</span>
 
 </td><td>

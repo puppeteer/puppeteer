@@ -80,6 +80,7 @@ export abstract class BrowserLauncher {
       handleSIGTERM = true,
       handleSIGHUP = true,
       acceptInsecureCerts = false,
+      networkEnabled = true,
       defaultViewport = DEFAULT_VIEWPORT,
       downloadBehavior,
       slowMo = 0,
@@ -163,6 +164,7 @@ export abstract class BrowserLauncher {
             slowMo,
             defaultViewport,
             acceptInsecureCerts,
+            networkEnabled,
           },
         );
       } else {
@@ -187,6 +189,7 @@ export abstract class BrowserLauncher {
             {
               defaultViewport,
               acceptInsecureCerts,
+              networkEnabled,
             },
           );
         } else {
@@ -199,6 +202,9 @@ export abstract class BrowserLauncher {
             browserProcess.nodeProcess,
             browserCloseCallback,
             options.targetFilter,
+            undefined,
+            undefined,
+            networkEnabled,
           );
         }
       }
@@ -359,6 +365,7 @@ export abstract class BrowserLauncher {
     opts: {
       defaultViewport: Viewport | null;
       acceptInsecureCerts?: boolean;
+      networkEnabled: boolean;
     },
   ): Promise<Browser> {
     const BiDi = await import(/* webpackIgnore: true */ '../bidi/bidi.js');
@@ -370,6 +377,7 @@ export abstract class BrowserLauncher {
       process: browserProcess.nodeProcess,
       defaultViewport: opts.defaultViewport,
       acceptInsecureCerts: opts.acceptInsecureCerts,
+      networkEnabled: opts.networkEnabled,
     });
   }
 
@@ -385,6 +393,7 @@ export abstract class BrowserLauncher {
       slowMo: number;
       defaultViewport: Viewport | null;
       acceptInsecureCerts?: boolean;
+      networkEnabled?: boolean;
     },
   ): Promise<Browser> {
     const browserWSEndpoint =
@@ -406,6 +415,7 @@ export abstract class BrowserLauncher {
       process: browserProcess.nodeProcess,
       defaultViewport: opts.defaultViewport,
       acceptInsecureCerts: opts.acceptInsecureCerts,
+      networkEnabled: opts.networkEnabled ?? true,
     });
   }
 

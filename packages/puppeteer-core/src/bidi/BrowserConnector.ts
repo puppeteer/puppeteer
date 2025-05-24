@@ -27,8 +27,11 @@ export async function _connectToBiDiBrowser(
   url: string,
   options: ConnectOptions,
 ): Promise<BidiBrowser> {
-  const {acceptInsecureCerts = false, defaultViewport = DEFAULT_VIEWPORT} =
-    options;
+  const {
+    acceptInsecureCerts = false,
+    networkEnabled = true,
+    defaultViewport = DEFAULT_VIEWPORT,
+  } = options;
 
   const {bidiConnection, cdpConnection, closeCallback} =
     await getBiDiConnection(connectionTransport, url, options);
@@ -40,6 +43,7 @@ export async function _connectToBiDiBrowser(
     process: undefined,
     defaultViewport: defaultViewport,
     acceptInsecureCerts: acceptInsecureCerts,
+    networkEnabled,
     capabilities: options.capabilities,
   });
   return bidiBrowser;

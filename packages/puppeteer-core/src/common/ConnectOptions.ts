@@ -50,6 +50,15 @@ export interface ConnectOptions {
    */
   acceptInsecureCerts?: boolean;
   /**
+   * Experimental setting to disable monitoring network events by default. When
+   * set to `false`, parts of Puppeteer that depend on network events would not
+   * work such as HTTPRequest and HTTPResponse.
+   *
+   * @experimental
+   * @defaultValue `true`
+   */
+  networkEnabled?: boolean;
+  /**
    * Sets the viewport for each page.
    *
    * @defaultValue '\{width: 800, height: 600\}'
