@@ -24,7 +24,7 @@
     }
   },
   "dependencies": {
-    "diff": "8.0.1",
+    "diff": "8.0.2",
     "jpeg-js": "0.4.4",
     "pixelmatch": "7.1.0",
     "pngjs": "7.0.0"
