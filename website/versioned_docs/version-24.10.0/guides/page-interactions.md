@@ -94,7 +94,7 @@ await page.locator('div').scroll({
 });
 ```
 
-The locator automatically checks the following before hovering:
+The locator automatically checks the following before scrolling:
 
 - Ensures the element is in the viewport.
 - Waits for the element to become
