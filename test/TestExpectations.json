@@ -1300,13 +1300,6 @@
     "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1866749"
   },
   {
-    "testIdPattern": "[page.spec] Page Page.setGeolocation should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "The geolocation API is not in stable yet."
-  },
-  {
     "testIdPattern": "[page.spec] Page Page.setJavaScriptEnabled should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
