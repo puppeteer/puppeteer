@@ -251,6 +251,15 @@ Use [Browser.connected](./puppeteer.browser.md).
 </td></tr>
 <tr><td>
 
+<span id="isnetworkenabled">[isNetworkEnabled()](./puppeteer.browser.isnetworkenabled.md)</span>
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="newpage">[newPage()](./puppeteer.browser.newpage.md)</span>
 
 </td><td>
