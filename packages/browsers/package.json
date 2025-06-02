@@ -111,7 +111,7 @@
     "progress": "^2.0.3",
     "proxy-agent": "^6.5.0",
     "tar-fs": "^3.0.9",
-    "yargs": "^17.7.2",
+    "yargs": "^18.0.0",
     "semver": "^7.7.2"
   },
   "devDependencies": {
