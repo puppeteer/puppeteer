@@ -1,5 +1,20 @@
 # Changelog
 
+## [24.10.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.9.0...puppeteer-core-v24.10.0) (2025-06-02)
+
+
+### Features
+
+* roll to Chrome 137.0.7151.55 ([#13909](https://github.com/puppeteer/puppeteer/issues/13909)) ([1e5a1a8](https://github.com/puppeteer/puppeteer/commit/1e5a1a825166d49aec5c1e8205874ebeeb6c813c))
+* roll to Firefox 139.0 ([#13908](https://github.com/puppeteer/puppeteer/issues/13908)) ([4bd8319](https://github.com/puppeteer/puppeteer/commit/4bd83192c102ee2d2253604f0089c0ba8db51d27))
+
+
+### Bug Fixes
+
+* roll to Chrome 136.0.7103.113 ([#13895](https://github.com/puppeteer/puppeteer/issues/13895)) ([a6b61e7](https://github.com/puppeteer/puppeteer/commit/a6b61e799a0bb2a6fe3c87a5bdbb09f17808f514))
+* roll to Firefox 139.0.1 ([#13911](https://github.com/puppeteer/puppeteer/issues/13911)) ([646a961](https://github.com/puppeteer/puppeteer/commit/646a961982b6180eaaacf95e3cb5433f7ff40a8e))
+* switch to global command id generation ([#13910](https://github.com/puppeteer/puppeteer/issues/13910)) ([c2ebd3f](https://github.com/puppeteer/puppeteer/commit/c2ebd3f7fa2dd0863a1129529865bb8502a4e604))
+
 ## [24.9.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.8.2...puppeteer-core-v24.9.0) (2025-05-20)
 
 
