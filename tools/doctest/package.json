@@ -34,6 +34,6 @@
     "pkg-dir": "8.0.0",
     "source-map-support": "0.5.21",
     "source-map": "0.7.4",
-    "yargs": "17.7.2"
+    "yargs": "18.0.0"
   }
 }
