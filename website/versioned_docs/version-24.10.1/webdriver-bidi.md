@@ -57,6 +57,7 @@ await chromeBrowser.close();
 - CDP-specific features
 
   - HTTPRequest.client()
+  - HTTPRequest.resourceType()
   - Page.createCDPSession()
 
 - Accessibility
