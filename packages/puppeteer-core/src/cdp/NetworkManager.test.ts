@@ -11,6 +11,7 @@ import expect from 'expect';
 import type {CDPSessionEvents} from '../api/CDPSession.js';
 import type {HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
+import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
 
@@ -1548,5 +1549,67 @@ describe('NetworkManager', () => {
         return r.status();
       }),
     ).toEqual([200, 302, 200]);
+  });
+
+  describe('error handling', () => {
+    function createMockSession<E extends ErrorConstructor>(ErrorCls: E) {
+      class MockCDPSession extends EventEmitter<CDPSessionEvents> {
+        async send(): Promise<any> {
+          throw new ErrorCls('error');
+        }
+        connection() {
+          return undefined;
+        }
+        readonly detached = false;
+        async detach() {}
+        id() {
+          return '1';
+        }
+        parentSession() {
+          return undefined;
+        }
+      }
+      return new MockCDPSession();
+    }
+
+    it('should not throw on target close error', async () => {
+      const mockCDPSession = createMockSession(
+        TargetCloseError as unknown as ErrorConstructor,
+      );
+      const manager = new NetworkManager({
+        frame(): CdpFrame | null {
+          return null;
+        },
+      });
+      await manager.addClient(mockCDPSession);
+      await manager.setCacheEnabled(true);
+      await manager.setExtraHTTPHeaders({});
+      await manager.setOfflineMode(true);
+      await manager.setUserAgent('test');
+    });
+
+    it('should throw on non-TargetClose errors', async () => {
+      const mockCDPSession = createMockSession(Error);
+      const manager = new NetworkManager({
+        frame(): CdpFrame | null {
+          return null;
+        },
+      });
+      expect(async () => {
+        await manager.addClient(mockCDPSession);
+      }).rejects.toThrowError();
+      expect(async () => {
+        await manager.setCacheEnabled(true);
+      }).rejects.toThrowError();
+      expect(async () => {
+        await manager.setExtraHTTPHeaders({});
+      }).rejects.toThrowError();
+      expect(async () => {
+        await manager.setOfflineMode(true);
+      }).rejects.toThrowError();
+      expect(async () => {
+        await manager.setUserAgent('test');
+      }).rejects.toThrowError();
+    });
   });
 });
