@@ -534,12 +534,12 @@ describe('Page', function () {
     it('should trigger correct Log', async () => {
       const {page, server, isChrome} = await getTestState();
 
-      await page.goto('about:blank');
+      await page.goto(`http://domain1.test:${server.PORT}/empty.html`);
       const [message] = await Promise.all([
         waitEvent(page, 'console'),
         page.evaluate(async url => {
           return await fetch(url).catch(() => {});
-        }, server.EMPTY_PAGE),
+        }, `http://domain2.test:${server.PORT}/empty.html`),
       ]);
       expect(message.text()).toContain('Access-Control-Allow-Origin');
       if (isChrome) {
