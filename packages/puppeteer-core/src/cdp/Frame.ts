@@ -168,7 +168,7 @@ export class CdpFrame extends Frame {
         this.#client,
         url,
         referer,
-        referrerPolicy as Protocol.Page.ReferrerPolicy,
+        referrerPolicy ? referrerPolicyToProtocol(referrerPolicy) : undefined,
         this._id,
       ),
       watcher.terminationPromise(),
@@ -437,4 +437,18 @@ export class CdpFrame extends Frame {
       .mainRealm()
       .adoptBackendNode(backendNodeId)) as ElementHandle<HTMLIFrameElement>;
   }
+}
+
+/**
+ * @internal
+ */
+export function referrerPolicyToProtocol(
+  referrerPolicy: string,
+): Protocol.Page.ReferrerPolicy {
+  // See
+  // https://chromedevtools.github.io/devtools-protocol/tot/Page/#type-ReferrerPolicy
+  // We need to conver from Web-facing phase to CDP's camelCase.
+  return referrerPolicy.replaceAll(/-./g, match => {
+    return match[1]!.toUpperCase();
+  }) as Protocol.Page.ReferrerPolicy;
 }
