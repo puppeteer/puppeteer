@@ -1,5 +1,14 @@
 # Changelog
 
+## [24.10.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.10.1...puppeteer-core-v24.10.2) (2025-06-18)
+
+
+### Bug Fixes
+
+* correctly conver referrerPolicy to protocol value ([#13954](https://github.com/puppeteer/puppeteer/issues/13954)) ([67ad01f](https://github.com/puppeteer/puppeteer/commit/67ad01fd9ee9f6a8948439d470bf7f2b5b0d47fa))
+* handle target close errors in NetworkManager ([#13946](https://github.com/puppeteer/puppeteer/issues/13946)) ([cd87b53](https://github.com/puppeteer/puppeteer/commit/cd87b533b4488fbbe98eee224ae5e197c0771efb))
+* roll to Chrome 137.0.7151.119 ([#13953](https://github.com/puppeteer/puppeteer/issues/13953)) ([14a61d6](https://github.com/puppeteer/puppeteer/commit/14a61d6e47b86d2823b41f53f76cfe0197594706))
+
 ## [24.10.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.10.0...puppeteer-core-v24.10.1) (2025-06-11)
 
 
