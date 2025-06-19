@@ -615,6 +615,13 @@ All the events a [browser instance](./puppeteer.browser.md) may emit.
 </td></tr>
 <tr><td>
 
+<span id="imageformat">[ImageFormat](./puppeteer.imageformat.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="interceptresolutionaction">[InterceptResolutionAction](./puppeteer.interceptresolutionaction.md)</span>
 
 </td><td>
@@ -1541,6 +1548,20 @@ See individual properties for more information.
 </td></tr>
 <tr><td>
 
+<span id="fileformat">[FileFormat](./puppeteer.fileformat.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="filepath">[FilePath](./puppeteer.filepath.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="flattenhandle">[FlattenHandle](./puppeteer.flattenhandle.md)</span>
 
 </td><td>
@@ -1563,13 +1584,6 @@ See individual properties for more information.
 <tr><td>
 
 <span id="handler">[Handler](./puppeteer.handler.md)</span>
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
-<span id="imageformat">[ImageFormat](./puppeteer.imageformat.md)</span>
 
 </td><td>
 
