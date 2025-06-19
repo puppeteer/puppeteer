@@ -15,7 +15,7 @@ import {
 } from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
 import {isFavicon, waitEvent} from './utils.js';
 
 describe('cooperative request interception', function () {
@@ -704,24 +704,31 @@ describe('cooperative request interception', function () {
         expect(cached).toHaveLength(0);
       });
       it(`should cache ${resourceType} if cache enabled`, async () => {
-        const {page, server} = await getTestState();
-
-        // Load and re-load to make sure it's cached.
-        await page.goto(server.PREFIX + url);
-
-        await page.setRequestInterception(true);
-        await page.setCacheEnabled(true);
-        page.on('request', request => {
-          return request.continue({}, 0);
+        const {page, server, close} = await launch({
+          // Viewport emulation resets memory caches.
+          defaultViewport: null,
         });
 
-        const cached: HTTPRequest[] = [];
-        page.on('requestservedfromcache', r => {
-          return cached.push(r);
-        });
+        try {
+          // Load and re-load to make sure it's cached.
+          await page.goto(server.PREFIX + url);
 
-        await page.reload();
-        expect(cached).toHaveLength(1);
+          await page.setRequestInterception(true);
+          await page.setCacheEnabled(true);
+          page.on('request', request => {
+            return request.continue({}, 0);
+          });
+
+          const cached: HTTPRequest[] = [];
+          page.on('requestservedfromcache', r => {
+            return cached.push(r);
+          });
+
+          await page.reload();
+          expect(cached).toHaveLength(1);
+        } finally {
+          await close();
+        }
       });
     }
     it('should load fonts if cache enabled', async () => {
