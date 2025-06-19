@@ -24,6 +24,7 @@ export async function _connectToCdpBrowser(
 ): Promise<CdpBrowser> {
   const {
     acceptInsecureCerts = false,
+    networkEnabled = true,
     defaultViewport = DEFAULT_VIEWPORT,
     downloadBehavior,
     targetFilter,
@@ -54,6 +55,8 @@ export async function _connectToCdpBrowser(
     },
     targetFilter,
     isPageTarget,
+    undefined,
+    networkEnabled,
   );
   return browser;
 }

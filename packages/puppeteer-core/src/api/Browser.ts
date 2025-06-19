@@ -521,4 +521,6 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * @experimental
    */
   abstract get debugInfo(): DebugInfo;
+
+  abstract isNetworkEnabled(): boolean;
 }

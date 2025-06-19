@@ -178,6 +178,27 @@ Only works in the Node.js environment.
 </td></tr>
 <tr><td>
 
+<span id="networkenabled">networkEnabled</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Is network events enabled?
+
+</td><td>
+
+`true`
+
+</td></tr>
+<tr><td>
+
 <span id="protocol">protocol</span>
 
 </td><td>

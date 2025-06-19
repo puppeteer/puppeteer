@@ -50,6 +50,11 @@ export interface ConnectOptions {
    */
   acceptInsecureCerts?: boolean;
   /**
+   * Is network events enabled?
+   * @defaultValue `true`
+   */
+  networkEnabled?: boolean;
+  /**
    * Sets the viewport for each page.
    *
    * @defaultValue '\{width: 800, height: 600\}'
