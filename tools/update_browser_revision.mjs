@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {execSync, exec} from 'child_process';
-import {writeFile, readFile} from 'fs/promises';
-import {promisify} from 'util';
+import {execSync, exec} from 'node:child_process';
+import {writeFile, readFile} from 'node:fs/promises';
+import {promisify} from 'node:util';
 
 import actions from '@actions/core';
 import {resolveBuildId} from '@puppeteer/browsers';

@@ -3,7 +3,7 @@
  * Copyright 2024 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import fs from 'fs';
+import fs from 'node:fs';
 
 const genJs = process.argv[2];
 const genTypes = process.argv[3];

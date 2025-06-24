@@ -3,10 +3,10 @@
  * Copyright 2024 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import {mkdir, readFile, readdir, writeFile} from 'fs/promises';
+import {mkdir, readFile, readdir, writeFile} from 'node:fs/promises';
 import Module from 'node:module';
-import path from 'path';
-import posixPath from 'path/posix';
+import path from 'node:path';
+import posixPath from 'node:path/posix';
 
 import esbuild from 'esbuild';
 import {execa} from 'execa';

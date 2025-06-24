@@ -21,7 +21,7 @@ import {
 import type {AddressInfo} from 'node:net';
 import {join} from 'node:path';
 import type {Duplex} from 'node:stream';
-import {gzip} from 'zlib';
+import {gzip} from 'node:zlib';
 
 import {getType as getMimeType} from 'mime';
 import {Server as WebSocketServer, type WebSocket} from 'ws';

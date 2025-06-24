@@ -207,8 +207,7 @@ export default defineConfig([
         },
       ],
 
-      // TODO: enable with next version
-      // 'import/enforce-node-protocol-usage': 'error',
+      'import/enforce-node-protocol-usage': ['error', 'always'],
 
       '@stylistic/func-call-spacing': 'error',
       '@stylistic/semi': 'error',

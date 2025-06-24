@@ -3,7 +3,7 @@
  * Copyright 2025 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import {mkdir, readFile, writeFile} from 'fs/promises';
+import {mkdir, readFile, writeFile} from 'node:fs/promises';
 
 import {task} from 'hereby';
 

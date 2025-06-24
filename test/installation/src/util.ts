@@ -8,7 +8,7 @@ import type {ExecFileOptions} from 'node:child_process';
 import {execFile as execFileAsync} from 'node:child_process';
 import {readFile} from 'node:fs/promises';
 import {join} from 'node:path';
-import {promisify} from 'util';
+import {promisify} from 'node:util';
 
 import {ASSETS_DIR} from './constants.js';
 

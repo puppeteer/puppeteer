@@ -9,8 +9,8 @@
  * mirrors the structure of the download server.
  */
 
-import {existsSync, mkdirSync, copyFileSync, rmSync} from 'fs';
-import {normalize, join, dirname} from 'path';
+import {existsSync, mkdirSync, copyFileSync, rmSync} from 'node:fs';
+import {normalize, join, dirname} from 'node:path';
 
 import {BrowserPlatform, install} from '@puppeteer/browsers';
 

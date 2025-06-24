@@ -6,11 +6,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {exec} from 'child_process';
-import {readdirSync} from 'fs';
-import path from 'path';
-import url from 'url';
-import {promisify} from 'util';
+import {exec} from 'node:child_process';
+import {readdirSync} from 'node:fs';
+import path from 'node:path';
+import url from 'node:url';
+import {promisify} from 'node:util';
 
 const execAsync = promisify(exec);
 
