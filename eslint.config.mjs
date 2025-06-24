@@ -84,7 +84,7 @@ export default defineConfig([
     plugins: {
       mocha,
       '@typescript-eslint': typescriptEslint.plugin,
-      import: importPlugin,
+      // import: importPlugin,
       rulesdir,
       '@stylistic': stylisticPlugin,
     },
