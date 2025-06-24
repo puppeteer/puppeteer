@@ -1597,19 +1597,19 @@ describe('NetworkManager', () => {
       });
       expect(async () => {
         await manager.addClient(mockCDPSession);
-      }).rejects.toThrowError();
+      }).rejects.toThrow();
       expect(async () => {
         await manager.setCacheEnabled(true);
-      }).rejects.toThrowError();
+      }).rejects.toThrow();
       expect(async () => {
         await manager.setExtraHTTPHeaders({});
-      }).rejects.toThrowError();
+      }).rejects.toThrow();
       expect(async () => {
         await manager.setOfflineMode(true);
-      }).rejects.toThrowError();
+      }).rejects.toThrow();
       expect(async () => {
         await manager.setUserAgent('test');
-      }).rejects.toThrowError();
+      }).rejects.toThrow();
     });
   });
 });
