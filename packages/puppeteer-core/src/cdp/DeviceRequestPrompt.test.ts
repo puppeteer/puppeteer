@@ -432,7 +432,7 @@ describe('DeviceRequestPrompt', function () {
 
       await expect(
         prompt.select(new DeviceRequestPromptDevice('11111111', 'Device 1')),
-      ).rejects.toThrowError('Cannot select unknown device!');
+      ).rejects.toThrow('Cannot select unknown device!');
     });
 
     it('should fail when selecting prompt twice', async () => {
@@ -458,7 +458,7 @@ describe('DeviceRequestPrompt', function () {
         })(),
       ]);
       await prompt.select(device);
-      await expect(prompt.select(device)).rejects.toThrowError(
+      await expect(prompt.select(device)).rejects.toThrow(
         'Cannot select DeviceRequestPrompt which is already handled!',
       );
     });
@@ -483,7 +483,7 @@ describe('DeviceRequestPrompt', function () {
         devices: [],
       });
       await prompt.cancel();
-      await expect(prompt.cancel()).rejects.toThrowError(
+      await expect(prompt.cancel()).rejects.toThrow(
         'Cannot cancel DeviceRequestPrompt which is already handled!',
       );
     });
