@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {spawn} from 'child_process';
-import {randomUUID} from 'crypto';
-import {readFile, writeFile} from 'fs/promises';
-import {join} from 'path';
-import {cwd} from 'process';
+import {spawn} from 'node:child_process';
+import {randomUUID} from 'node:crypto';
+import {readFile, writeFile} from 'node:fs/promises';
+import {join} from 'node:path';
+import {cwd} from 'node:process';
 
 class AngularProject {
   static ports = new Set();

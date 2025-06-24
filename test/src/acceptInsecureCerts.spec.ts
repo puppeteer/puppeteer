@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {TLSSocket} from 'tls';
+import type {TLSSocket} from 'node:tls';
 
 import expect from 'expect';
 import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';

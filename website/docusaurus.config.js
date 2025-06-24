@@ -7,7 +7,7 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-const assert = require('assert');
+const assert = require('node:assert');
 
 const {themes} = require('prism-react-renderer');
 const darkCodeTheme = themes.dracula;
