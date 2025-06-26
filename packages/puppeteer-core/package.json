@@ -143,7 +143,7 @@
     "@puppeteer/browsers": "2.10.5",
     "debug": "^4.4.1",
     "chromium-bidi": "5.1.0",
-    "devtools-protocol": "0.0.1452169",
+    "devtools-protocol": "0.0.1464554",
     "typed-query-selector": "^2.12.0",
     "ws": "^8.18.2"
   },
