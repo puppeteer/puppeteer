@@ -32,7 +32,7 @@ on:
         options:
           - ubuntu-latest
           - windows-latest
-          - macos-latest
+          - macos-15
       retries:
         description: Number of retries per test
         required: false
@@ -70,7 +70,7 @@ jobs:
       - name: Install browsers
         run: npm run postinstall
       - name: Run all tests (MacOS)
-        if: ${{ matrix.os == 'macos-latest' }}
+        if: ${{ matrix.os == 'macos-15' }}
         run: npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
