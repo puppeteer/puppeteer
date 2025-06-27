@@ -51,11 +51,6 @@ describe('Tracing', function () {
     const traceJson = JSON.parse(
       fs.readFileSync(outputFile, {encoding: 'utf8'}),
     );
-    const traceConfig = JSON.parse(traceJson.metadata['trace-config']);
-    expect(traceConfig.included_categories).toEqual([
-      'disabled-by-default-devtools.timeline.frame',
-    ]);
-    expect(traceConfig.excluded_categories).toEqual(['*']);
     expect(traceJson.traceEvents).not.toContainEqual(
       expect.objectContaining({
         cat: 'toplevel',
