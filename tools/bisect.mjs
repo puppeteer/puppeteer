@@ -55,6 +55,7 @@ const args = [
   good,
   '-b',
   bad,
+  '-cft',
   '-v',
   '--verify-range',
   '--not-interactive',
