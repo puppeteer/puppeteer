@@ -131,7 +131,7 @@
       ]
     },
     "test": {
-      "command": "npx ./tools/mocha-runner --min-tests 1003",
+      "command": "npx ./tools/mocha-runner",
       "dependencies": [
         "build:tools",
         "./test:build",
@@ -187,7 +187,8 @@
     "spdx-satisfies": "6.0.0",
     "tsd": "0.32.0",
     "typescript": "5.8.3",
-    "wireit": "0.14.12"
+    "wireit": "0.14.12",
+    "yargs": "18.0.0"
   },
   "overrides": {
     "@microsoft/api-extractor": {
