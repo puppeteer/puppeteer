@@ -452,18 +452,6 @@ describe('Launcher specs', function () {
           expect(puppeteer.product).toBe('firefox');
         }
       });
-      it('should work with no default arguments', async () => {
-        const {browser, close} = await launch({
-          ignoreDefaultArgs: true,
-        });
-        try {
-          const page = await browser.newPage();
-          expect(await page.evaluate('11 * 11')).toBe(121);
-          await page.close();
-        } finally {
-          await close();
-        }
-      });
       it('should filter out ignored default arguments in Chrome', async () => {
         const {defaultBrowserOptions, puppeteer} = await getTestState({
           skipLaunch: true,
