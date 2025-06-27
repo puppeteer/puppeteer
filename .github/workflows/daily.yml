@@ -30,7 +30,6 @@ jobs:
           - 1-2
           - 2-2
         configs:
-          - experimental
           - stable
         exclude:
           - os: windows-latest
