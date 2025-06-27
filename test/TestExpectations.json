@@ -1031,7 +1031,7 @@
     "platforms": ["darwin"],
     "parameters": ["chrome", "headless"],
     "expectations": ["SKIP"],
-    "comment": "Started to flake on macos-latest (arm64)"
+    "comment": "Started to flake on macos-15 (arm64)"
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option",

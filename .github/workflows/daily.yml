@@ -25,7 +25,7 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-          - macos-latest
+          - macos-15
         shard:
           - 1-2
           - 2-2
@@ -35,7 +35,7 @@ jobs:
         exclude:
           - os: windows-latest
             suite: chrome-bidi
-          - os: macos-latest
+          - os: macos-15
             suite: chrome-headful
     steps:
       - name: Check out repository
@@ -65,7 +65,7 @@ jobs:
       - name: Apply Canary expectations
         run: node tools/merge-canary-test-expectations.mjs
       - name: Run all tests (MacOS)
-        if: ${{ matrix.os == 'macos-latest' }}
+        if: ${{ matrix.os == 'macos-15' }}
         run: npm run test -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_CHROME_VERSION: canary
@@ -106,7 +106,7 @@ jobs:
           - firefox-headless
         os:
           - ubuntu-latest
-          - macos-latest
+          - macos-15
           - windows-latest
         shard:
           - 1-4
@@ -141,7 +141,7 @@ jobs:
       - name: Apply Canary expectations
         run: node tools/merge-canary-test-expectations.mjs
       - name: Run all tests (MacOS)
-        if: ${{ matrix.os == 'macos-latest' }}
+        if: ${{ matrix.os == 'macos-15' }}
         run: npm run test -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_FIREFOX_VERSION: nightly

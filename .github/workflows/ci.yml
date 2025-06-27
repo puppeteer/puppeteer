@@ -169,7 +169,7 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-          - macos-latest
+          - macos-15
         shard:
           - 1-2
           - 2-2
@@ -177,13 +177,13 @@ jobs:
           - linux-only: true
             os: windows-latest
           - linux-only: true
-            os: macos-latest
+            os: macos-15
           - linux-only: true
             suite: chrome-headful
 
           - os: windows-latest
             suite: chrome-bidi
-          - os: macos-latest
+          - os: macos-15
             suite: chrome-headful
     steps:
       - name: Check out repository
@@ -212,7 +212,7 @@ jobs:
       - name: Install browsers
         run: npm run postinstall
       - name: Run all tests (MacOS)
-        if: ${{ matrix.os == 'macos-latest' }}
+        if: ${{ matrix.os == 'macos-15' }}
         run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
       - name: Run all tests (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
@@ -251,7 +251,7 @@ jobs:
           - firefox-headless
         os:
           - ubuntu-latest
-          - macos-latest
+          - macos-15
           - windows-latest
         shard:
           - 1-4
@@ -262,7 +262,7 @@ jobs:
           - linux-only: true
             os: windows-latest
           - linux-only: true
-            os: macos-latest
+            os: macos-15
 
     steps:
       - name: Checkout
@@ -291,7 +291,7 @@ jobs:
       - name: Install browsers
         run: npm run postinstall
       - name: Run all tests (MacOS)
-        if: ${{ matrix.os == 'macos-latest' }}
+        if: ${{ matrix.os == 'macos-15' }}
         run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
       - name: Run all tests (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
@@ -330,12 +330,12 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-          - macos-latest
+          - macos-15
         exclude:
           - linux-only: true
             os: windows-latest
           - linux-only: true
-            os: macos-latest
+            os: macos-15
     steps:
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -454,7 +454,7 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-          - macos-latest
+          - macos-15
         test-runner:
           - node
           - jest
@@ -464,7 +464,7 @@ jobs:
           - linux-only: true
             os: windows-latest
           - linux-only: true
-            os: macos-latest
+            os: macos-15
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -511,12 +511,12 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-          - macos-latest
+          - macos-15
         exclude:
           - linux-only: true
             os: windows-latest
           - linux-only: true
-            os: macos-latest
+            os: macos-15
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
