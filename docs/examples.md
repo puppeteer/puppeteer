@@ -62,6 +62,8 @@ See the following list for use cases and examples from categories like Rendering
   Jest driven tests without coding.
 - **[puppeteer-loadtest](https://github.com/svenkatreddy/puppeteer-loadtest)**:
   command line interface for performing load test on Puppeteer scripts.
+- **[testingbot](https://github.com/testingbot/puppeteer-testingbot-example)**:
+  run Puppeteer tests on remote browsers, on different browser versions and operating systems.
 - **[cucumber-puppeteer-example](https://github.com/mlampedx/cucumber-puppeteer-example)**:
   Example repository demonstrating how to use Puppeeteer and Cucumber for
   integration testing.
