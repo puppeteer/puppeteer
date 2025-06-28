@@ -88,14 +88,16 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   ] as const;
 
   #clients = new Map<CDPSession, DisposableStack>();
+  #networkEnabled = true;
 
-  constructor(frameManager: FrameProvider) {
+  constructor(frameManager: FrameProvider, networkEnabled?: boolean) {
     super();
     this.#frameManager = frameManager;
+    this.#networkEnabled = networkEnabled ?? true;
   }
 
   async addClient(client: CDPSession): Promise<void> {
-    if (this.#clients.has(client)) {
+    if (!this.#networkEnabled || this.#clients.has(client)) {
       return;
     }
     const subscriptions = new DisposableStack();
