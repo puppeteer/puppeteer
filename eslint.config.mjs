@@ -209,7 +209,7 @@ export default defineConfig([
 
       'import/enforce-node-protocol-usage': ['error', 'always'],
 
-      '@stylistic/func-call-spacing': 'error',
+      '@stylistic/function-call-spacing': 'error',
       '@stylistic/semi': 'error',
 
       // Keeps comments formatted.
