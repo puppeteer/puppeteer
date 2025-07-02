@@ -43,6 +43,7 @@ The selector to query for.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

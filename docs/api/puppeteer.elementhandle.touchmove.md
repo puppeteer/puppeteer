@@ -54,6 +54,7 @@ _(Optional)_ An optional [TouchHandle](./puppeteer.touchhandle.md). If provided,
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

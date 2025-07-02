@@ -39,6 +39,7 @@ session
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 [Connection](./puppeteer.connection.md) \| undefined

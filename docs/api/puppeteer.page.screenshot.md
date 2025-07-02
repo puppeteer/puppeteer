@@ -49,6 +49,7 @@ Configures screenshot behavior.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;string&gt;
@@ -98,6 +99,7 @@ _(Optional)_
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;Uint8Array&gt;

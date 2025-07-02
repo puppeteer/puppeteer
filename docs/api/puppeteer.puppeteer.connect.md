@@ -43,6 +43,7 @@ Set of configurable options to set on the browser.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[Browser](./puppeteer.browser.md)&gt;

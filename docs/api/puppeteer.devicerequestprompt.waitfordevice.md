@@ -57,6 +57,7 @@ _(Optional)_
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[DeviceRequestPromptDevice](./puppeteer.devicerequestpromptdevice.md)&gt;

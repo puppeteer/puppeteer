@@ -56,6 +56,7 @@ Values of options to select. If the `<select>` has the `multiple` attribute, all
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;string\[\]&gt;

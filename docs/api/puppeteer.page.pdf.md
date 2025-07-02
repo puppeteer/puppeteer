@@ -43,6 +43,7 @@ _(Optional)_ options for generating the PDF.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;Uint8Array&gt;

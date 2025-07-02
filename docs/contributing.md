@@ -333,7 +333,6 @@ In the event release-please fails, the following needs to be done:
 
 1. Update anything missing in the CHANGELOG of every package that was supposed
    to be published. For example, if the header is missing, you may need to add
-
    - For puppeteer:
 
      ```md

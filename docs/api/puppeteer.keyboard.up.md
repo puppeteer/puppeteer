@@ -43,6 +43,7 @@ Name of key to release, such as `ArrowLeft`. See [KeyInput](./puppeteer.keyinput
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

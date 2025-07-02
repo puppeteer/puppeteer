@@ -41,6 +41,7 @@ _(Optional)_ Set of configurable options to set on the browser.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 string\[\]

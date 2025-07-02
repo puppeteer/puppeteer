@@ -43,7 +43,6 @@ await chromeBrowser.close();
 ## Puppeteer features not supported over WebDriver BiDi
 
 - Various emulations
-
   - Page.emulate()
   - Page.emulateCPUThrottling()
   - Page.emulateIdleState()
@@ -55,7 +54,6 @@ await chromeBrowser.close();
   - Page.setJavaScriptEnabled()
 
 - CDP-specific features
-
   - HTTPRequest.client()
   - HTTPRequest.resourceType()
   - Page.createCDPSession()
@@ -65,7 +63,6 @@ await chromeBrowser.close();
 - Tracing
 
 - Other methods:
-
   - Frame.waitForDevicePrompt()
   - HTTPResponse.buffer()
   - HTTPResponse.content()
@@ -92,14 +89,12 @@ await chromeBrowser.close();
 ## Puppeteer features fully supported over WebDriver BiDi
 
 - Browser automation
-
   - Browser.close()
   - Browser.userAgent()
   - Browser.version()
   - Puppeteer.launch()
 
 - Page automation
-
   - Frame.goto() (except `referer` and `referrerPolicy`)
   - Page 'popup' event
   - Page.bringToFront()
@@ -121,7 +116,6 @@ await chromeBrowser.close();
   - Target.opener()
 
 - [Script evaluation](https://pptr.dev/guides/evaluate-javascript):
-
   - JSHandle.evaluate()
   - JSHandle.evaluateHandle()
   - Page.evaluate()
@@ -129,7 +123,6 @@ await chromeBrowser.close();
   - Page.exposeFunction()
 
 - [Selectors](https://pptr.dev/guides/query-selectors) and [locators](https://pptr.dev/guides/locators) except for ARIA:
-
   - Page.$
   - Page.$$
   - Page.$$eval
@@ -138,7 +131,6 @@ await chromeBrowser.close();
   - Page.locator() and all locator APIs
 
 - Input
-
   - ElementHandle.click
   - ElementHandle.uploadFile
   - Keyboard.down
@@ -151,21 +143,17 @@ await chromeBrowser.close();
   - TouchScreen.\*
 
 - JavaScript dialog interception
-
   - page.on('dialog')
   - Dialog.\*
 
 - Screenshots (not all parameters are supported)
-
   - Page.screenshot (supported parameters are `clip`, `encoding`, `fullPage`)
 
 - PDF generation (not all parameters are supported)
-
   - Page.pdf (only `format`, `height`, `landscape`, `margin`, `pageRanges`, `printBackground`, `scale`, `width` are supported)
   - Page.createPDFStream (only `format`, `height`, `landscape`, `margin`, `pageRanges`, `printBackground`, `scale`, `width` are supported)
 
 - Permissions
-
   - BrowserContext.clearPermissionOverrides()
   - BrowserContext.overridePermissions()
 

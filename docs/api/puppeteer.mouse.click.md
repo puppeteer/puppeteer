@@ -73,6 +73,7 @@ _(Optional)_ Options to configure behavior.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

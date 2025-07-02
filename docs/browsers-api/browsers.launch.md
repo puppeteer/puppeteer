@@ -39,6 +39,7 @@ opts
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 [Process](./browsers.process.md)

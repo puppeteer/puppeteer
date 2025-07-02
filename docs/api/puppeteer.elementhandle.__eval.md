@@ -82,6 +82,7 @@ Additional arguments to pass to `pageFunction`.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;

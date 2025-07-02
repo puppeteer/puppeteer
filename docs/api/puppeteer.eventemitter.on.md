@@ -59,6 +59,7 @@ the function to be called when the event occurs.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 this

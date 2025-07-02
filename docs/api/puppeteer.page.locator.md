@@ -47,6 +47,7 @@ Selector
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt;
@@ -90,6 +91,7 @@ func
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;Ret&gt;

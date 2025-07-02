@@ -56,6 +56,7 @@ _(Optional)_ Delay in milliseconds. Defaults to 0.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

@@ -41,6 +41,7 @@ mapper
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;To&gt;

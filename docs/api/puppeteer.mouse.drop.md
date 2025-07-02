@@ -56,6 +56,7 @@ drag data containing items and operations mask
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

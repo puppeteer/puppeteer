@@ -39,6 +39,7 @@ number
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[ExtensionTransport](./puppeteer.extensiontransport.md)&gt;

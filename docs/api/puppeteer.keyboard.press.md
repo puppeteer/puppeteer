@@ -59,6 +59,7 @@ _(Optional)_ An object of options. Accepts text which, if specified, generates a
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

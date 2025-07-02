@@ -45,6 +45,7 @@ When `true`, enables offline mode for the page.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

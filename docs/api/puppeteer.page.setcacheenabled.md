@@ -43,6 +43,7 @@ _(Optional)_ sets the `enabled` state of cache
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

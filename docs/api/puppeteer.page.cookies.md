@@ -45,6 +45,7 @@ string\[\]
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[Cookie](./puppeteer.cookie.md)\[\]&gt;

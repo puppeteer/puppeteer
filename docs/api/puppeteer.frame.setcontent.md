@@ -56,6 +56,7 @@ _(Optional)_ Options to configure how long before timing out and at what point t
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

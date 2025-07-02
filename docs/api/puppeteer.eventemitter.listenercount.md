@@ -43,6 +43,7 @@ the event to get the listener count for
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 number

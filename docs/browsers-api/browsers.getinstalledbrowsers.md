@@ -41,6 +41,7 @@ options
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[InstalledBrowser](./browsers.installedbrowser.md)\[\]&gt;

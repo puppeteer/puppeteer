@@ -41,6 +41,7 @@ _(Optional)_ Set of configurable options for coverage, defaults to `resetOnNavig
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

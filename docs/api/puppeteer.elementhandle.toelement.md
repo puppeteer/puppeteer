@@ -45,6 +45,7 @@ The tag name of the desired element type.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;[ElementFor](./puppeteer.elementfor.md)&lt;K&gt;&gt;&gt;

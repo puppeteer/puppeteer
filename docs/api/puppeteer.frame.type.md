@@ -73,6 +73,7 @@ _(Optional)_ takes one option, `delay`, which sets the time to wait between key 
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

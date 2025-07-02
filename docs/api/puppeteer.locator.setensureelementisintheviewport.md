@@ -55,6 +55,7 @@ boolean
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;ElementType&gt;

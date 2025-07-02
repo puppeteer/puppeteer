@@ -45,6 +45,7 @@ a handle to the object prototype.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[JSHandle](./puppeteer.jshandle.md)&lt;Prototype\[\]&gt;&gt;

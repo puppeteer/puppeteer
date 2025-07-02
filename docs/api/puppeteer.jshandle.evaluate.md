@@ -58,6 +58,7 @@ Params
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;

@@ -39,6 +39,7 @@ partitionKey
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Protocol.Network.CookiePartitionKey \| undefined

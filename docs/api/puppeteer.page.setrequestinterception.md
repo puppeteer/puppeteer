@@ -47,6 +47,7 @@ Whether to enable request interception.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

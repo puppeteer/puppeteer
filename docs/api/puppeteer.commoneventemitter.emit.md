@@ -50,6 +50,7 @@ Events\[Key\]
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 boolean

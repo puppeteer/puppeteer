@@ -45,6 +45,7 @@ options
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[InstalledBrowser](./browsers.installedbrowser.md)&gt;
@@ -92,6 +93,7 @@ options
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;string&gt;

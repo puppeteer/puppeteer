@@ -43,6 +43,7 @@ sets bypassing of page's Content-Security-Policy.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

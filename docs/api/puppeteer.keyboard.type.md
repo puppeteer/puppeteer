@@ -59,6 +59,7 @@ _(Optional)_ An object of options. Accepts delay which, if specified, is the tim
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

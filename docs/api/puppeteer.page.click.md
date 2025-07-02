@@ -56,6 +56,7 @@ _(Optional)_ `Object`
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

@@ -45,6 +45,7 @@ Options for the script.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLScriptElement&gt;&gt;

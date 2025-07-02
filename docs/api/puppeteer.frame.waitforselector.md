@@ -61,6 +61,7 @@ _(Optional)_ Options for customizing waiting behavior.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt; \| null&gt;

@@ -59,6 +59,7 @@ _(Optional)_ the function that should be removed.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 this

@@ -47,6 +47,7 @@ _(Optional)_
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[BrowserContext](./puppeteer.browsercontext.md)&gt;

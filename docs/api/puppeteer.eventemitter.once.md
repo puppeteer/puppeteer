@@ -59,6 +59,7 @@ the handler function to run when the event occurs
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 this

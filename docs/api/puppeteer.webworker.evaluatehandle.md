@@ -62,6 +62,7 @@ Arguments to pass into `func`.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;&gt;

@@ -45,6 +45,7 @@ _(Optional)_ the type of deficiency to simulate, or `'none'` to reset.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

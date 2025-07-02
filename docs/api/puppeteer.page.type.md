@@ -75,6 +75,7 @@ _(Optional)_ have property `delay` which is the Time to wait between key presses
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

@@ -56,6 +56,7 @@ The array of values to select. If the `<select>` has the `multiple` attribute, a
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;string\[\]&gt;
