@@ -56,6 +56,7 @@ _(Optional)_ Parameters that has some properties.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

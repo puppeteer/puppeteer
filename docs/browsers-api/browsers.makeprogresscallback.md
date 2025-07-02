@@ -51,6 +51,7 @@ string
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 (downloadedBytes: number, totalBytes: number) =&gt; void

@@ -43,6 +43,7 @@ Character to send into the page.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

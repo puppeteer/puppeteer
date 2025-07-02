@@ -47,6 +47,7 @@ credentials
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

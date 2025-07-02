@@ -43,6 +43,7 @@ _(Optional)_ the event to remove listeners for.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 this

@@ -69,6 +69,7 @@ _(Optional)_
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;ProtocolMapping.Commands\[T\]\['returnType'\]&gt;

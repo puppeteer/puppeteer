@@ -43,6 +43,7 @@ _(Optional)_ Navigation parameters which might have the following properties:
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[HTTPResponse](./puppeteer.httpresponse.md) \| null&gt;

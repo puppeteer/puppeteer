@@ -45,6 +45,7 @@ _(Optional)_ Options to configure launching behavior.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[Browser](./puppeteer.browser.md)&gt;

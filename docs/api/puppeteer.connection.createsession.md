@@ -41,6 +41,7 @@ The target info
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[CDPSession](./puppeteer.cdpsession.md)&gt;

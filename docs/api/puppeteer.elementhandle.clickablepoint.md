@@ -43,6 +43,7 @@ _(Optional)_
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[Point](./puppeteer.point.md)&gt;

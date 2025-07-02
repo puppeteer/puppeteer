@@ -45,6 +45,7 @@ Whether to enable drag interception.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

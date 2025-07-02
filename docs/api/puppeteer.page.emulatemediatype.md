@@ -41,6 +41,7 @@ _(Optional)_ Changes the CSS media type of the page. The only allowed values are
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

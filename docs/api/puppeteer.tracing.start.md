@@ -43,6 +43,7 @@ _(Optional)_ Optional `TracingOptions`.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

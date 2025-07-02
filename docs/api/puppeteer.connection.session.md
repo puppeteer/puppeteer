@@ -41,6 +41,7 @@ The session id
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 [CDPSession](./puppeteer.cdpsession.md) \| null

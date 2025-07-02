@@ -56,6 +56,7 @@ Vertical position of the tap.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[TouchHandle](./puppeteer.touchhandle.md)&gt;

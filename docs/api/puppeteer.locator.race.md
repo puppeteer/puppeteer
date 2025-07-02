@@ -43,6 +43,7 @@ Locators
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;[AwaitedLocator](./puppeteer.awaitedlocator.md)&lt;Locators\[number\]&gt;&gt;

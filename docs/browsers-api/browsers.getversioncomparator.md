@@ -41,6 +41,7 @@ browser
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 (a: string, b: string) =&gt; number

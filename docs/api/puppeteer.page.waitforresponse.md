@@ -57,6 +57,7 @@ _(Optional)_ Optional waiting parameters
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[HTTPResponse](./puppeteer.httpresponse.md)&gt;

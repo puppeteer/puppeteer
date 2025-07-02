@@ -45,6 +45,7 @@ propertyName
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;T\[K\]&gt;&gt;
@@ -86,6 +87,7 @@ string
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[JSHandle](./puppeteer.jshandle.md)&lt;unknown&gt;&gt;

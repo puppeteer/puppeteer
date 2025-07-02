@@ -56,6 +56,7 @@ _(Optional)_ If provided, intercept is resolved using cooperative handling rules
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

@@ -43,6 +43,7 @@ _(Optional)_ optional text that will be entered in the dialog prompt. Has no eff
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

@@ -55,6 +55,7 @@ Maximum navigation time in milliseconds.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 void

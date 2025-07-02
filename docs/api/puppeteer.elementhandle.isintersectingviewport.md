@@ -59,6 +59,7 @@ _(Optional)_ Threshold for the intersection between 0 (no intersection) and 1 (f
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;boolean&gt;

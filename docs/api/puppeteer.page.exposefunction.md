@@ -71,6 +71,7 @@ Callback function which will be called in Puppeteer's context.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

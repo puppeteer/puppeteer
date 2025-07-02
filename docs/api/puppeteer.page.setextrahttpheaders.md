@@ -55,6 +55,7 @@ An object containing additional HTTP headers to be sent with every request. All 
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

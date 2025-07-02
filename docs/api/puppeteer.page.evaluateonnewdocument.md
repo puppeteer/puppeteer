@@ -68,6 +68,7 @@ Arguments to pass to `pageFunction`
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[NewDocumentScriptEvaluation](./puppeteer.newdocumentscriptevaluation.md)&gt;

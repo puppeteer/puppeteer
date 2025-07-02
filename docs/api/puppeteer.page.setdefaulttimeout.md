@@ -41,6 +41,7 @@ Maximum time in milliseconds.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 void

@@ -56,6 +56,7 @@ point to drag to
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;Protocol.Input.DragData&gt;

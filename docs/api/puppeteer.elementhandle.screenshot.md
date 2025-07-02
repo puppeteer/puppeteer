@@ -47,6 +47,7 @@ Readonly&lt;[ScreenshotOptions](./puppeteer.screenshotoptions.md)&gt; &amp; &#12
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;string&gt;
@@ -90,6 +91,7 @@ _(Optional)_
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;Uint8Array&gt;

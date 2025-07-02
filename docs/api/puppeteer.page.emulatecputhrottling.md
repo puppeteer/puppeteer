@@ -43,6 +43,7 @@ slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

@@ -59,6 +59,7 @@ The [custom query handler](./puppeteer.customqueryhandler.md) to register.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 void

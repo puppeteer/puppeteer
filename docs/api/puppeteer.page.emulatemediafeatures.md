@@ -41,6 +41,7 @@ _(Optional)_ `<?Array<Object>>` Given an array of media feature objects, emulate
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

@@ -59,6 +59,7 @@ An array of permissions to grant. All permissions that are not listed here will 
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

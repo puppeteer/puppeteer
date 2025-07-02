@@ -39,6 +39,7 @@ keyof Events
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 number

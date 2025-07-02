@@ -47,6 +47,7 @@ Omit&lt;[FrameAddStyleTagOptions](./puppeteer.frameaddstyletagoptions.md), 'url'
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLStyleElement&gt;&gt;
@@ -92,6 +93,7 @@ options
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLLinkElement&gt;&gt;

@@ -43,6 +43,7 @@ channel
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 string
@@ -86,6 +87,7 @@ options
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 string

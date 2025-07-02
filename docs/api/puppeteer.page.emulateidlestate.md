@@ -46,6 +46,7 @@ _(Optional)_ Mock idle state. If not set, clears idle overrides
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

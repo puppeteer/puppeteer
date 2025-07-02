@@ -41,6 +41,7 @@ string
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;string&gt;

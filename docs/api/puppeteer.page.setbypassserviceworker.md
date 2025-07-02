@@ -43,6 +43,7 @@ Whether to bypass service worker and load from network.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

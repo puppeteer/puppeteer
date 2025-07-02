@@ -47,6 +47,7 @@ Passing `null` disables network condition emulation.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

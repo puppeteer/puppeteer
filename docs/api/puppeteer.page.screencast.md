@@ -43,6 +43,7 @@ _(Optional)_ Configures screencast behavior.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[ScreenRecorder](./puppeteer.screenrecorder.md)&gt;

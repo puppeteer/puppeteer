@@ -43,6 +43,7 @@ number
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 [Locator](./puppeteer.locator.md)&lt;T&gt;

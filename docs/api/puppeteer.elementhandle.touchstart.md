@@ -41,6 +41,7 @@ this
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[TouchHandle](./puppeteer.touchhandle.md)&gt;

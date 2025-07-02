@@ -74,6 +74,7 @@ arguments to pass to the `pageFunction`.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;&gt;
