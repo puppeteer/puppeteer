@@ -1602,4 +1602,6 @@ function intersectBoundingBox(
       : Math.min(height, box.height + box.y),
     0,
   );
+  box.x = Math.max(box.x, 0);
+  box.y = Math.max(box.y, 0);
 }
