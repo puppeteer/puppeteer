@@ -196,6 +196,43 @@ describe('Page.click', function () {
     ]);
   });
 
+  it('should click half-offscreen elements', async () => {
+    const {page} = await getTestState();
+
+    await page.setContent(`<!DOCTYPE html>
+<style>
+  body {
+    overflow: hidden;
+  }
+  #target {
+    width: 200px;
+    height: 200px;
+    background: red;
+    position: fixed;
+    left: -150px;
+    top: -150px;
+  }
+</style>
+<div id="target" onclick="window.CLICKED=true;"></div>`);
+    await page.click('#target');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).CLICKED;
+      }),
+    ).toBe(true);
+    using element = await page.locator('#target').waitHandle();
+    expect(await element.boundingBox()).toStrictEqual({
+      height: 200,
+      width: 200,
+      x: -150,
+      y: -150,
+    });
+    expect(await element.clickablePoint()).toStrictEqual({
+      x: 25,
+      y: 25,
+    });
+  });
+
   it('should click wrapped links', async () => {
     const {page, server} = await getTestState();
 
