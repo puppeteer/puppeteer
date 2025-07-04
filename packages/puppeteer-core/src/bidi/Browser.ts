@@ -44,6 +44,7 @@ export interface BidiBrowserOptions {
   defaultViewport: Viewport | null;
   acceptInsecureCerts?: boolean;
   capabilities?: SupportedWebDriverCapabilities;
+  networkEnabled: boolean;
 }
 
 /**
@@ -91,9 +92,18 @@ export class BidiBrowser extends Browser {
     });
 
     await session.subscribe(
-      session.capabilities.browserName.toLocaleLowerCase().includes('firefox')
+      (session.capabilities.browserName.toLocaleLowerCase().includes('firefox')
         ? BidiBrowser.subscribeModules
-        : [...BidiBrowser.subscribeModules, ...BidiBrowser.subscribeCdpEvents],
+        : [...BidiBrowser.subscribeModules, ...BidiBrowser.subscribeCdpEvents]
+      ).filter(module => {
+        if (!opts.networkEnabled) {
+          return (
+            module !== 'network' &&
+            module !== 'goog:cdp.Network.requestWillBeSent'
+          );
+        }
+        return true;
+      }) as [string, ...string[]],
     );
 
     const browser = new BidiBrowser(session.browser, opts);
@@ -111,6 +121,7 @@ export class BidiBrowser extends Browser {
   #browserContexts = new WeakMap<UserContext, BidiBrowserContext>();
   #target = new BidiBrowserTarget(this);
   #cdpConnection?: CdpConnection;
+  #networkEnabled: boolean;
 
   private constructor(browserCore: BrowserCore, opts: BidiBrowserOptions) {
     super();
@@ -119,6 +130,7 @@ export class BidiBrowser extends Browser {
     this.#browserCore = browserCore;
     this.#defaultViewport = opts.defaultViewport;
     this.#cdpConnection = opts.cdpConnection;
+    this.#networkEnabled = opts.networkEnabled;
   }
 
   #initialize() {
@@ -278,5 +290,9 @@ export class BidiBrowser extends Browser {
     return {
       pendingProtocolErrors: this.connection.getPendingProtocolErrors(),
     };
+  }
+
+  override isNetworkEnabled(): boolean {
+    return this.#networkEnabled;
   }
 }

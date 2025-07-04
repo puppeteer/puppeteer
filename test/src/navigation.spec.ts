@@ -12,7 +12,11 @@ import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {
+  getTestState,
+  setupSeparateTestBrowserHooks,
+  setupTestBrowserHooks,
+} from './mocha-utils.js';
 import {attachFrame, isFavicon, waitEvent} from './utils.js';
 
 describe('navigation', function () {
@@ -960,5 +964,24 @@ describe('navigation', function () {
         }),
       ).toBe(undefined);
     });
+  });
+});
+
+describe('with network events disabled', () => {
+  const state = setupSeparateTestBrowserHooks({
+    networkEnabled: false,
+  });
+
+  it('should work', async () => {
+    const {page, server} = state;
+
+    const response = await page.goto(server.EMPTY_PAGE);
+    expect(response).toBe(null);
+    expect(page.url()).toBe(server.EMPTY_PAGE);
+    expect(
+      await page.evaluate(() => {
+        return window.location.href;
+      }),
+    ).toBe(server.EMPTY_PAGE);
   });
 });
