@@ -121,7 +121,7 @@ export class BidiBrowser extends Browser {
   #browserContexts = new WeakMap<UserContext, BidiBrowserContext>();
   #target = new BidiBrowserTarget(this);
   #cdpConnection?: CdpConnection;
-  #networkEnabled = true;
+  #networkEnabled: boolean;
 
   private constructor(browserCore: BrowserCore, opts: BidiBrowserOptions) {
     super();
