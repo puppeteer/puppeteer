@@ -11,7 +11,7 @@ import expect from 'expect';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
 import {isFavicon, waitEvent} from './utils.js';
 
 describe('request interception', function () {
@@ -635,32 +635,38 @@ describe('request interception', function () {
         expect(cached).toHaveLength(0);
       });
       it(`should cache ${resourceType} if cache enabled`, async () => {
-        const {page, server} = await getTestState();
+        const {page, server, close} = await launch({
+          // Viewport emulation resets memory caches.
+          defaultViewport: null,
+        });
+        try {
+          // Load and re-load to make sure it's cached.
+          await page.goto(server.PREFIX + url);
 
-        // Load and re-load to make sure it's cached.
-        await page.goto(server.PREFIX + url);
-
-        await page.setRequestInterception(true);
-        await page.setCacheEnabled(true);
-        let error: Error | undefined;
-        page.on('request', async request => {
-          await request.continue().catch(_error => {
-            error = _error;
+          await page.setRequestInterception(true);
+          await page.setCacheEnabled(true);
+          let error: Error | undefined;
+          page.on('request', async request => {
+            await request.continue().catch(_error => {
+              error = _error;
+            });
           });
-        });
 
-        const cached: HTTPRequest[] = [];
-        page.on('requestservedfromcache', r => {
-          if (isFavicon(r)) {
-            return;
-          }
-          return cached.push(r);
-        });
+          const cached: HTTPRequest[] = [];
+          page.on('requestservedfromcache', r => {
+            if (isFavicon(r)) {
+              return;
+            }
+            return cached.push(r);
+          });
 
-        await page.reload();
-        expect(error).toBeUndefined();
-        expect(cached).toHaveLength(1);
-        expect(cached[0]!.url()).toBe(server.PREFIX + cachedResourceUrl);
+          await page.reload();
+          expect(error).toBeUndefined();
+          expect(cached).toHaveLength(1);
+          expect(cached[0]!.url()).toBe(server.PREFIX + cachedResourceUrl);
+        } finally {
+          await close();
+        }
       });
     }
     it('should load fonts if cache enabled', async () => {
