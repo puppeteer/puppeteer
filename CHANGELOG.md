@@ -2,6 +2,31 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.12.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.11.2...puppeteer-v24.12.0) (2025-07-07)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.11.2 to 24.12.0
+
+
+### Features
+
+* allow turning off network events ([#13901](https://github.com/puppeteer/puppeteer/issues/13901)) ([0dddb1d](https://github.com/puppeteer/puppeteer/commit/0dddb1d403374e96f8e95d6d95d0dedd49ef02fe))
+
+
+### Bug Fixes
+
+* handle clicks on partially offscreen elements ([#13991](https://github.com/puppeteer/puppeteer/issues/13991)) ([6bb84bb](https://github.com/puppeteer/puppeteer/commit/6bb84bb81683e3ed934e86de0d163f86b6847d38))
+
+
 ## [24.11.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.11.1...puppeteer-v24.11.2) (2025-07-01)
 
 
