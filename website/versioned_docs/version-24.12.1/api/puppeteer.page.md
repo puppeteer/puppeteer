@@ -1369,6 +1369,10 @@ Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/Hist
 
 Waits for the network to be idle.
 
+**Remarks:**
+
+The function will always wait at least the set [IdleTime](./puppeteer.waitfornetworkidleoptions.md#idletime).
+
 </td></tr>
 <tr><td>
 
