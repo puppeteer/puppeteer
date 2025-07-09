@@ -69,16 +69,21 @@ export class PipeTransport implements ConnectionTransport {
       return;
     }
     const message = this.#pendingMessage + buffer.toString(undefined, 0, end);
-    if (this.onmessage) {
-      this.onmessage.call(null, message);
-    }
+    setImmediate(() => {
+      if (this.onmessage) {
+        this.onmessage.call(null, message);
+      }
+    });
 
     let start = end + 1;
     end = buffer.indexOf('\0', start);
     while (end !== -1) {
-      if (this.onmessage) {
-        this.onmessage.call(null, buffer.toString(undefined, start, end));
-      }
+      const message = buffer.toString(undefined, start, end);
+      setImmediate(() => {
+        if (this.onmessage) {
+          this.onmessage.call(null, message);
+        }
+      });
       start = end + 1;
       end = buffer.indexOf('\0', start);
     }
