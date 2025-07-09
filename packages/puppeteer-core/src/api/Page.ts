@@ -8,6 +8,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import {
   concat,
+  distinctUntilChanged,
   EMPTY,
   filter,
   first,
@@ -1879,6 +1880,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * Waits for the network to be idle.
    *
+   * @remarks The function will always wait at least the
+   * set {@link WaitForNetworkIdleOptions.idleTime | IdleTime}.
+   *
    * @param options - Options to configure waiting behavior.
    * @returns A promise which resolves once the network is idle.
    */
@@ -1900,8 +1904,12 @@ export abstract class Page extends EventEmitter<PageEvents> {
     } = options;
 
     return this.#inflight$.pipe(
-      switchMap(inflight => {
-        if (inflight > concurrency) {
+      map(inflight => {
+        return inflight > concurrency;
+      }),
+      distinctUntilChanged(),
+      switchMap(isInflightOverConcurrency => {
+        if (isInflightOverConcurrency) {
           return EMPTY;
         }
         return timer(idleTime);

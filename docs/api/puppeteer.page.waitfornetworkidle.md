@@ -49,3 +49,7 @@ _(Optional)_ Options to configure waiting behavior.
 Promise&lt;void&gt;
 
 A promise which resolves once the network is idle.
+
+## Remarks
+
+The function will always wait at least the set [IdleTime](./puppeteer.waitfornetworkidleoptions.md#idletime).
