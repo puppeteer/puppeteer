@@ -2,6 +2,29 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.12.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.12.0...puppeteer-v24.12.1) (2025-07-09)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.12.0 to 24.12.1
+
+
+### Bug Fixes
+
+* make sure pipe transport dispatches messages in tasks ([#14009](https://github.com/puppeteer/puppeteer/issues/14009)) ([b52ad4c](https://github.com/puppeteer/puppeteer/commit/b52ad4ccb52235ce253f84fb8105edc74971f5ef))
+* roll to Chrome 138.0.7204.94 ([#14003](https://github.com/puppeteer/puppeteer/issues/14003)) ([7140ffa](https://github.com/puppeteer/puppeteer/commit/7140ffae116874cf9f407970cee13243aa10aac3))
+* roll to Firefox 140.0.4 ([#14006](https://github.com/puppeteer/puppeteer/issues/14006)) ([5887283](https://github.com/puppeteer/puppeteer/commit/5887283f384cea366f188e662614266cbf05f3e1))
+* waitForNetwork idle timer resetting on new request changes ([#14005](https://github.com/puppeteer/puppeteer/issues/14005)) ([5745098](https://github.com/puppeteer/puppeteer/commit/57450983c4fa98ea701b6376ee812fb8d533bb03))
+
+
 ## [24.12.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.11.2...puppeteer-v24.12.0) (2025-07-07)
 
 
