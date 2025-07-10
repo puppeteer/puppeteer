@@ -230,9 +230,9 @@ export class BidiBrowser extends Browser {
   }
 
   override async createBrowserContext(
-    _options?: BrowserContextOptions,
+    options: BrowserContextOptions = {},
   ): Promise<BidiBrowserContext> {
-    const userContext = await this.#browserCore.createUserContext();
+    const userContext = await this.#browserCore.createUserContext(options);
     return this.#createBrowserContext(userContext);
   }
 
