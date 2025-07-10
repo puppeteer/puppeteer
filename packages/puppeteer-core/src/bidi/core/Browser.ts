@@ -6,6 +6,7 @@
 
 import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
+import type {BrowserContextOptions} from '../../api/Browser.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
@@ -218,10 +219,23 @@ export class Browser extends EventEmitter<{
     // SAFETY: By definition of `disposed`, `#reason` is defined.
     return browser.#reason!;
   })
-  async createUserContext(): Promise<UserContext> {
+  async createUserContext(
+    options: BrowserContextOptions,
+  ): Promise<UserContext> {
+    const proxyConfig: Bidi.Session.ProxyConfiguration | undefined =
+      options.proxyServer === undefined
+        ? undefined
+        : {
+            proxyType: 'manual',
+            httpProxy: options.proxyServer,
+            sslProxy: options.proxyServer,
+            noProxy: options.proxyBypassList,
+          };
     const {
       result: {userContext: context},
-    } = await this.session.send('browser.createUserContext', {});
+    } = await this.session.send('browser.createUserContext', {
+      proxy: proxyConfig,
+    });
     return this.#createUserContext(context);
   }
 

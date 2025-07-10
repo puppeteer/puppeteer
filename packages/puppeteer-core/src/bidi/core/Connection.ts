@@ -39,7 +39,7 @@ export interface Commands {
   };
 
   'browser.createUserContext': {
-    params: Bidi.EmptyParams;
+    params: Bidi.Browser.CreateUserContextParameters;
     returnType: Bidi.Browser.CreateUserContextResult;
   };
   'browser.getUserContexts': {
