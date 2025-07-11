@@ -332,7 +332,7 @@ export class BidiHTTPRequest extends HTTPRequest {
     return this.#request.timing();
   }
 
-  getResponseContent(): Promise<Uint8Array>{
+  getResponseContent(): Promise<Uint8Array> {
     return this.#request.getResponseContent();
   }
 }

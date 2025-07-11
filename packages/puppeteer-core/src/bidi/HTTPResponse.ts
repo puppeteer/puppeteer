@@ -146,7 +146,7 @@ export class BidiHTTPResponse extends HTTPResponse {
     return this.#securityDetails ?? null;
   }
 
-  async content(): Promise<Uint8Array>{
-    return this.#request.getResponseContent()
+  async content(): Promise<Uint8Array> {
+    return await this.#request.getResponseContent();
   }
 }

@@ -8,11 +8,11 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {inertIfDisposed} from '../../util/decorators.js';
+import {Deferred} from '../../util/Deferred.js';
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
+import {stringToTypedArray} from '../../util/encoding.js';
 
 import type {BrowsingContext} from './BrowsingContext.js';
-import {stringToTypedArray} from '../../util/encoding.js';
-import {Deferred} from '../../util/Deferred.js';
 
 /**
  * @internal
@@ -225,21 +225,23 @@ export class Request extends EventEmitter<{
     });
   }
 
-  async getResponseContent(): Promise<Uint8Array>{
+  async getResponseContent(): Promise<Uint8Array> {
     if (!this.#responseContentPromise) {
       this.#responseContentPromise = this.#responseCompleteDeferred
         .valueOrThrow()
         .then(async () => {
-            const data =
-              await this.#session.send('network.getData', {
-                dataType: Bidi.Network.DataType.Response,
-                request: this.id
-              });
+          const data = await this.#session.send('network.getData', {
+            dataType: Bidi.Network.DataType.Response,
+            request: this.id,
+          });
 
-            return stringToTypedArray(data.result.bytes.value, data.result.bytes.type==='base64');
+          return stringToTypedArray(
+            data.result.bytes.value,
+            data.result.bytes.type === 'base64',
+          );
         });
     }
-    return this.#responseContentPromise;
+    return await this.#responseContentPromise;
   }
 
   async continueWithAuth(
