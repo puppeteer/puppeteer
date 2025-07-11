@@ -109,8 +109,8 @@ export class BidiBrowser extends Browser {
     await session.send('network.addDataCollector', {
       dataTypes: [Bidi.Network.DataType.Response],
       // Buffer size of 200 MB is equivalent to the CDP:
-      maxEncodedDataSize: 200 * 1000 * 1000 // 200 MB
-    })
+      maxEncodedDataSize: 200 * 1000 * 1000, // 200 MB
+    });
 
     const browser = new BidiBrowser(session.browser, opts);
     browser.#initialize();
