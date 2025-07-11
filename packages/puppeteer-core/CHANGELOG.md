@@ -1,5 +1,17 @@
 # Changelog
 
+## [24.13.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.12.1...puppeteer-core-v24.13.0) (2025-07-11)
+
+
+### Features
+
+* respect `proxyServer` in incognito browser context in BiDi ([#14013](https://github.com/puppeteer/puppeteer/issues/14013)) ([1559ee4](https://github.com/puppeteer/puppeteer/commit/1559ee4cafb96afb637609de5f3fc63e3e1e60ad))
+
+
+### Bug Fixes
+
+* ignore errors caused by worker targets that do not support network conditions ([#14015](https://github.com/puppeteer/puppeteer/issues/14015)) ([d012588](https://github.com/puppeteer/puppeteer/commit/d012588b7a3fe649b0919ec14d0878390433cf6b))
+
 ## [24.12.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.12.0...puppeteer-core-v24.12.1) (2025-07-09)
 
 
