@@ -106,6 +106,12 @@ export class BidiBrowser extends Browser {
       }) as [string, ...string[]],
     );
 
+    await session.send('network.addDataCollector', {
+      dataTypes: [Bidi.Network.DataType.Response],
+      // TODO: check what would be the proper limit.
+      maxEncodedDataSize: 1 * 1024 * 1024 * 1024 // 1 GB.
+    })
+
     const browser = new BidiBrowser(session.browser, opts);
     browser.#initialize();
     return browser;
