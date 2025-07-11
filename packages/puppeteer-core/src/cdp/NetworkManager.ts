@@ -96,6 +96,13 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     this.#networkEnabled = networkEnabled ?? true;
   }
 
+  #canIgnoreError(error: unknown) {
+    return (
+      isErrorLike(error) &&
+      (isTargetClosedError(error) || error.message.includes('Not supported'))
+    );
+  }
+
   async addClient(client: CDPSession): Promise<void> {
     if (!this.#networkEnabled || this.#clients.has(client)) {
       return;
@@ -120,7 +127,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
         this.#applyUserAgent(client),
       ]);
     } catch (error) {
-      if (isErrorLike(error) && isTargetClosedError(error)) {
+      if (this.#canIgnoreError(error)) {
         return;
       }
       throw error;
@@ -167,7 +174,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
         headers: this.#extraHTTPHeaders,
       });
     } catch (error) {
-      if (isErrorLike(error) && isTargetClosedError(error)) {
+      if (this.#canIgnoreError(error)) {
         return;
       }
       throw error;
@@ -239,7 +246,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
         downloadThroughput: this.#emulatedNetworkConditions.download,
       });
     } catch (error) {
-      if (isErrorLike(error) && isTargetClosedError(error)) {
+      if (this.#canIgnoreError(error)) {
         return;
       }
       throw error;
@@ -265,7 +272,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
         userAgentMetadata: this.#userAgentMetadata,
       });
     } catch (error) {
-      if (isErrorLike(error) && isTargetClosedError(error)) {
+      if (this.#canIgnoreError(error)) {
         return;
       }
       throw error;
@@ -309,7 +316,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
         ]);
       }
     } catch (error) {
-      if (isErrorLike(error) && isTargetClosedError(error)) {
+      if (this.#canIgnoreError(error)) {
         return;
       }
       throw error;
@@ -325,7 +332,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
         cacheDisabled: this.#userCacheDisabled,
       });
     } catch (error) {
-      if (isErrorLike(error) && isTargetClosedError(error)) {
+      if (this.#canIgnoreError(error)) {
         return;
       }
       throw error;

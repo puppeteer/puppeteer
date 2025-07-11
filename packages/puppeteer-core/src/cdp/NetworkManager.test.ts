@@ -1552,10 +1552,13 @@ describe('NetworkManager', () => {
   });
 
   describe('error handling', () => {
-    function createMockSession<E extends ErrorConstructor>(ErrorCls: E) {
+    function createMockSession<E extends ErrorConstructor>(
+      ErrorCls: E,
+      message = 'error',
+    ) {
       class MockCDPSession extends EventEmitter<CDPSessionEvents> {
         async send(): Promise<any> {
-          throw new ErrorCls('error');
+          throw new ErrorCls(message);
         }
         connection() {
           return undefined;
@@ -1576,6 +1579,20 @@ describe('NetworkManager', () => {
       const mockCDPSession = createMockSession(
         TargetCloseError as unknown as ErrorConstructor,
       );
+      const manager = new NetworkManager({
+        frame(): CdpFrame | null {
+          return null;
+        },
+      });
+      await manager.addClient(mockCDPSession);
+      await manager.setCacheEnabled(true);
+      await manager.setExtraHTTPHeaders({});
+      await manager.setOfflineMode(true);
+      await manager.setUserAgent('test');
+    });
+
+    it('should not throw on unsupported errors', async () => {
+      const mockCDPSession = createMockSession(Error, 'Not supported');
       const manager = new NetworkManager({
         frame(): CdpFrame | null {
           return null;
