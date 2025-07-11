@@ -112,11 +112,25 @@
     "comment": "https://github.com/w3c/webdriver-bidi/issues/747"
   },
   {
+    "testIdPattern": "[network.spec] network Response.json *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "https://github.com/w3c/webdriver-bidi/issues/747"
+  },
+  {
     "testIdPattern": "[network.spec] network Response.remoteAddress *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "Bidi does not have equivalent field"
+  },
+  {
+    "testIdPattern": "[network.spec] network Response.text *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "https://github.com/w3c/webdriver-bidi/issues/747"
   },
   {
     "testIdPattern": "[page.spec] Page Page.metrics *",
@@ -388,6 +402,13 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp"],
     "expectations": ["SKIP"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[navigation.spec] navigation Frame.goto should return matching responses",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
