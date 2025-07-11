@@ -1599,14 +1599,14 @@
   },
   {
     "testIdPattern": "[network.spec] network Response.text should throw when requesting body of redirected response",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "headless", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: investigate"
   },
   {
     "testIdPattern": "[network.spec] network Response.text should wait until response completes",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "headless", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: investigate"
