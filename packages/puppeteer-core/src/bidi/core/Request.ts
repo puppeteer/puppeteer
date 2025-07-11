@@ -4,13 +4,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {inertIfDisposed} from '../../util/decorators.js';
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 
 import type {BrowsingContext} from './BrowsingContext.js';
+import {stringToTypedArray} from '../../util/encoding.js';
+import {Deferred} from '../../util/Deferred.js';
 
 /**
  * @internal
@@ -34,6 +36,8 @@ export class Request extends EventEmitter<{
     return request;
   }
 
+  #responseCompleteDeferred = Deferred.create<void, Error>();
+  #responseContentPromise: Promise<Uint8Array<ArrayBufferLike>> | null = null;
   #error?: string;
   #redirect?: Request;
   #response?: Bidi.Network.ResponseData;
@@ -110,6 +114,9 @@ export class Request extends EventEmitter<{
       this.#response = event.response;
       this.#event.request.timings = event.request.timings;
       this.emit('success', this.#response);
+      // TODO: clarify behavior in case of redirect.
+      this.#responseCompleteDeferred.resolve();
+
       // In case this is a redirect.
       if (this.#response.status >= 300 && this.#response.status < 400) {
         return;
@@ -216,6 +223,23 @@ export class Request extends EventEmitter<{
       headers,
       body,
     });
+  }
+
+  async getResponseContent(): Promise<Uint8Array>{
+    if (!this.#responseContentPromise) {
+      this.#responseContentPromise = this.#responseCompleteDeferred
+        .valueOrThrow()
+        .then(async () => {
+            const data =
+              await this.#session.send('network.getData', {
+                dataType: Bidi.Network.DataType.Response,
+                request: this.id
+              });
+
+            return stringToTypedArray(data.result.bytes.value, data.result.bytes.type==='base64');
+        });
+    }
+    return this.#responseContentPromise;
   }
 
   async continueWithAuth(
