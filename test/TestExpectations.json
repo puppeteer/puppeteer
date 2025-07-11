@@ -1630,7 +1630,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "headless", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: investigate"
+    "comment": "https://github.com/puppeteer/puppeteer/issues/14017"
   },
   {
     "testIdPattern": "[oopif.spec] OOPIF should support lazy OOP frames",
