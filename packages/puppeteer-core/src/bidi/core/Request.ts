@@ -112,8 +112,6 @@ export class Request extends EventEmitter<{
       this.#response = event.response;
       this.#event.request.timings = event.request.timings;
       this.emit('success', this.#response);
-      // TODO: clarify behavior in case of redirect.
-      // this.#responseCompleteDeferred.resolve();
 
       // In case this is a redirect.
       if (this.#response.status >= 300 && this.#response.status < 400) {
