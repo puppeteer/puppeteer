@@ -21,6 +21,7 @@ import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {Connection as CdpConnection} from '../cdp/Connection.js';
 import type {SupportedWebDriverCapabilities} from '../common/ConnectOptions.js';
+import {ProtocolError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -106,12 +107,20 @@ export class BidiBrowser extends Browser {
       }) as [string, ...string[]],
     );
 
-    await session.send('network.addDataCollector', {
-      dataTypes: [Bidi.Network.DataType.Response],
-      // Buffer size of 20 MB is equivalent to the CDP:
-      maxEncodedDataSize: 20 * 1000 * 1000, // 20 MB
-    });
-
+    try {
+      await session.send('network.addDataCollector', {
+        dataTypes: [Bidi.Network.DataType.Response],
+        // Buffer size of 20 MB is equivalent to the CDP:
+        maxEncodedDataSize: 20 * 1000 * 1000, // 20 MB
+      });
+    } catch (err) {
+      if (err instanceof ProtocolError) {
+        // Ignore protocol errors, as the data collectors can be not implemented.
+        debugError(err);
+      } else {
+        throw err;
+      }
+    }
     const browser = new BidiBrowser(session.browser, opts);
     browser.#initialize();
     return browser;
