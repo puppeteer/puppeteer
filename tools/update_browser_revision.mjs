@@ -211,21 +211,11 @@ async function updateLastMaintainedChromeVersion(oldVersion, newVersion) {
       return browserVersions['chrome'];
     },
   );
-  if (browserVersions.indexOf(newVersion) !== -1) {
-    // Already updated.
-    return;
-  }
-
   const oldSemVer = new SemVer(oldVersion, true);
   const newSemVer = new SemVer(newVersion, true);
 
   if (newSemVer.compareMain(oldSemVer) !== 0) {
-    const lastMaintainedSemVer = new SemVer(
-      versionData.lastMaintainedChromeVersion,
-      true,
-    );
-    const newLastMaintainedMajor = lastMaintainedSemVer.major + 1;
-
+    const newLastMaintainedMajor = newSemVer.major - 3;
     const nextMaintainedVersion = browserVersions.find(version => {
       return new SemVer(version, true).major === newLastMaintainedMajor;
     });
