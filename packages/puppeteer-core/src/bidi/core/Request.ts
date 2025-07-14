@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {inertIfDisposed} from '../../util/decorators.js';
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
+import {stringToTypedArray} from '../../util/encoding.js';
 
 import type {BrowsingContext} from './BrowsingContext.js';
 
@@ -34,6 +35,7 @@ export class Request extends EventEmitter<{
     return request;
   }
 
+  #responseContentPromise: Promise<Uint8Array<ArrayBufferLike>> | null = null;
   #error?: string;
   #redirect?: Request;
   #response?: Bidi.Network.ResponseData;
@@ -216,6 +218,23 @@ export class Request extends EventEmitter<{
       headers,
       body,
     });
+  }
+
+  async getResponseContent(): Promise<Uint8Array> {
+    if (!this.#responseContentPromise) {
+      this.#responseContentPromise = (async () => {
+        const data = await this.#session.send('network.getData', {
+          dataType: Bidi.Network.DataType.Response,
+          request: this.id,
+        });
+
+        return stringToTypedArray(
+          data.result.bytes.value,
+          data.result.bytes.type === 'base64',
+        );
+      })();
+    }
+    return await this.#responseContentPromise;
   }
 
   async continueWithAuth(

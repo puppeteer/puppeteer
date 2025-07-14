@@ -331,6 +331,10 @@ export class BidiHTTPRequest extends HTTPRequest {
   timing(): Bidi.Network.FetchTimingInfo {
     return this.#request.timing();
   }
+
+  getResponseContent(): Promise<Uint8Array> {
+    return this.#request.getResponseContent();
+  }
 }
 
 function getBidiHeaders(rawHeaders?: Record<string, unknown>) {
