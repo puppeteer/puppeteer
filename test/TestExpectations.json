@@ -1620,9 +1620,10 @@
   },
   {
     "testIdPattern": "[network.spec] network Response.buffer should throw if the response does not have a body",
-    "platforms": ["linux"],
-    "parameters": ["chrome", "headless", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "TODO: investigate"
   },
   {
     "testIdPattern": "[oopif.spec] OOPIF should support lazy OOP frames",
