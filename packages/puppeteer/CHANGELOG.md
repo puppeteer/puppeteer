@@ -1,5 +1,19 @@
 # Changelog
 
+## [24.13.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.12.1...puppeteer-v24.13.0) (2025-07-14)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.12.1 to 24.13.0
+
 ## [24.12.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.12.0...puppeteer-v24.12.1) (2025-07-09)
 
 
