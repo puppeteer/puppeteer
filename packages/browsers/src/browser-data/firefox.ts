@@ -218,7 +218,7 @@ function defaultProfilePreferences(
     // Prevent various error message on the console
     // jest-puppeteer asserts that no error message is emitted by the console
     'browser.contentblocking.features.standard':
-      '-tp,tpPrivate,cookieBehavior0,-cm,-fp',
+      '-tp,tpPrivate,cookieBehavior0,-cryptoTP,-fp',
 
     // Enable the dump function: which sends messages to the system
     // console
