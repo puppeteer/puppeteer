@@ -37,6 +37,25 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="debughighlight">debugHighlight</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+**_(Experimental)_** An experimental debugging feature. If true, inserts an element into the page to highlight the click location for 10 seconds. Might not work on all pages and does not persist across navigations.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="offset">offset</span>
 
 </td><td>
