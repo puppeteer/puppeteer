@@ -27,11 +27,11 @@ function archive(platform: BrowserPlatform, buildId: string): string {
 
 function folder(platform: BrowserPlatform): string {
   switch (platform) {
+    case BrowserPlatform.LINUX_ARM:
     case BrowserPlatform.LINUX:
       return 'Linux_x64';
     case BrowserPlatform.MAC_ARM:
       return 'Mac_Arm';
-    case BrowserPlatform.LINUX_ARM:
     case BrowserPlatform.MAC:
       return 'Mac';
     case BrowserPlatform.WIN32:
