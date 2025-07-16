@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.6](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.5...browsers-v2.10.6) (2025-07-16)
+
+
+### Bug Fixes
+
+* **browsers:** correctly handle LINUX_ARM in chromium data ([#14032](https://github.com/puppeteer/puppeteer/issues/14032)) ([519d8e0](https://github.com/puppeteer/puppeteer/commit/519d8e0f7cc3c781f97338c2e513b52479c64d20))
+
 ## [2.10.5](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.4...browsers-v2.10.5) (2025-05-20)
 
 

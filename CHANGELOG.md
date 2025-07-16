@@ -2,6 +2,32 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.14.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.13.0...puppeteer-v24.14.0) (2025-07-16)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.10.5 to 2.10.6
+
+
+### Features
+
+* add debugging highlight to ElementHandle.click() ([#14024](https://github.com/puppeteer/puppeteer/issues/14024)) ([8c4d87a](https://github.com/puppeteer/puppeteer/commit/8c4d87af17aceb0a25aecc85819f4258f717b944))
+
+
+### Bug Fixes
+
+* roll to Chrome 138.0.7204.157 ([#14029](https://github.com/puppeteer/puppeteer/issues/14029)) ([2a733b4](https://github.com/puppeteer/puppeteer/commit/2a733b401f688ea1e74b0e8af65c7399021db1ea))
+* **webdriver:** provide proper exception while accessing response in BiDi ([#14031](https://github.com/puppeteer/puppeteer/issues/14031)) ([9150473](https://github.com/puppeteer/puppeteer/commit/915047341b779a580be07552d853c88c6b306603))
+
+
 ## [24.13.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.12.1...puppeteer-v24.13.0) (2025-07-14)
 
 
