@@ -175,13 +175,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work when resolved right before execution context disposal",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": [],
-    "expectations": ["SKIP"],
-    "comment": "Goes into an infinite loop needs investigation"
-  },
-  {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should work when node is added in a shadow root",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": [],
