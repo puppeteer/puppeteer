@@ -1,10 +1,11 @@
 FROM node:22@sha256:9e6918e8e32a47a58ed5fb9bd235bbc1d18a8c272e37f15d502b9db9e36821ee
 
-ENV \
-    # Configure default locale (important for chrome-headless-shell).
-    LANG=en_US.UTF-8 \
-    # UID of the non-root user 'pptruser'
-    PPTRUSER_UID=10042
+# Configure default locale (important for chrome-headless-shell).
+ENV LANG=en_US.UTF-8 
+# UID of the non-root user 'pptruser'
+ENV PPTRUSER_UID=10042
+# Attempts to start a new DBUS session if none is present
+ENV DBUS_SESSION_BUS_ADDRESS=autolaunch:
 
 # Install latest chrome dev package and fonts to support major charsets (Chinese, Japanese, Arabic, Hebrew, Thai and a few others)
 # Note: this installs the necessary libs to make the bundled version of Chrome that Puppeteer
@@ -22,7 +23,6 @@ WORKDIR /home/pptruser
 
 COPY puppeteer-browsers-latest.tgz puppeteer-latest.tgz puppeteer-core-latest.tgz ./
 
-ENV DBUS_SESSION_BUS_ADDRESS autolaunch:
 
 # Install @puppeteer/browsers, puppeteer and puppeteer-core into /home/pptruser/node_modules.
 RUN npm i ./puppeteer-browsers-latest.tgz ./puppeteer-core-latest.tgz ./puppeteer-latest.tgz \
@@ -33,7 +33,7 @@ USER root
 # Overriding the cache directory to install the deps for the Chrome
 # version installed for pptruser. 
 RUN PUPPETEER_CACHE_DIR=/home/pptruser/.cache/puppeteer \
-  npx puppeteer browsers install chrome --install-deps
+    npx puppeteer browsers install chrome --install-deps
 
 USER $PPTRUSER_UID
 # Generate THIRD_PARTY_NOTICES using chrome --credits.
