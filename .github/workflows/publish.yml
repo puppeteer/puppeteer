@@ -12,6 +12,7 @@ jobs:
   npm-publish:
     name: Publish npm packages
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_dispatch' }}
     permissions:
       contents: read
     steps:
@@ -49,7 +50,7 @@ jobs:
   docker-publish:
     name: Publish Docker image
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.ref_name, 'puppeteer-v') }}
+    if: ${{ startsWith(github.ref_name, 'puppeteer-v') || github.event_name == 'workflow_dispatch' }}
     permissions:
       contents: read
       packages: write
