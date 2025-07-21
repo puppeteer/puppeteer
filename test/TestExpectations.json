@@ -282,7 +282,8 @@
     "testIdPattern": "[emulation.spec] Emulation Page.emulateTimezone should support timezone offset",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL"],
+    "comment": "Firefox does not support timezone emulation yet"
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should replace symbols with undefined",
