@@ -5,6 +5,7 @@
  */
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import {Emulation} from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type Protocol from 'devtools-protocol';
 
 import {firstValueFrom, from, raceWith} from '../../third_party/rxjs/rxjs.js';
@@ -393,6 +394,19 @@ export class BidiPage extends Page {
           ? viewport.deviceScaleFactor
           : null,
       });
+
+      const screenOrientation: Bidi.Emulation.ScreenOrientation | null =
+        viewport?.isLandscape === undefined
+          ? null
+          : {
+              natural: viewport.isLandscape
+                ? Emulation.ScreenOrientationNatural.Landscape
+                : Emulation.ScreenOrientationNatural.Portrait,
+              type: 'portrait-primary',
+            };
+      await this.#frame.browsingContext.setScreenOrientationOverride(
+        screenOrientation,
+      );
       this.#viewport = viewport;
       return;
     }
