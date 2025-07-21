@@ -584,6 +584,22 @@ export class BrowsingContext extends EventEmitter<{
     // SAFETY: Disposal implies this exists.
     return context.#reason!;
   })
+  async setScreenOrientationOverride(
+    screenOrientation: Bidi.Emulation.ScreenOrientation | null,
+  ): Promise<void> {
+    await this.userContext.browser.session.send(
+      'emulation.setScreenOrientationOverride',
+      {
+        screenOrientation,
+        contexts: [this.id],
+      },
+    );
+  }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
   async getCookies(
     options: GetCookiesOptions = {},
   ): Promise<Bidi.Network.Cookie[]> {

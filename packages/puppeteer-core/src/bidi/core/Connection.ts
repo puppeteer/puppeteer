@@ -119,6 +119,10 @@ export interface Commands {
     params: Bidi.Emulation.SetGeolocationOverrideParameters;
     returnType: Bidi.EmptyResult;
   };
+  'emulation.setScreenOrientationOverride': {
+    params: Bidi.Emulation.SetScreenOrientationOverrideParameters;
+    returnType: Bidi.EmptyResult;
+  };
 
   'permissions.setPermission': {
     params: Bidi.Permissions.SetPermissionParameters;
