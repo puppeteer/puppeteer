@@ -171,7 +171,7 @@
     "eslint-plugin-rulesdir": "0.2.2",
     "eslint-plugin-tsdoc": "0.4.0",
     "eslint-plugin-unused-imports": "4.1.4",
-    "eslint": "9.22.0",
+    "eslint": "9.31.0",
     "execa": "9.6.0",
     "expect": "30.0.4",
     "globals": "16.3.0",

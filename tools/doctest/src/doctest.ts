@@ -36,7 +36,7 @@ import {transform, type Output} from '@swc/core';
 import {parse as parseJs} from 'acorn';
 import {parse, type Tag} from 'doctrine';
 import {Glob} from 'glob';
-import {packageDirectory} from 'pkg-dir';
+import {packageDirectory} from 'package-directory';
 import {
   SourceMapConsumer,
   SourceMapGenerator,
