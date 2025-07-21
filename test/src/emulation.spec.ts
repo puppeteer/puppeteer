@@ -450,6 +450,27 @@ describe('Emulation', () => {
       );
     });
 
+    it('should support timezone offset', async () => {
+      const {page} = await getTestState();
+
+      await page.evaluate(() => {
+        (globalThis as any).date = new Date(1479579154987);
+      });
+      await page.emulateTimezone('GMT+10:00');
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).date.toString();
+        }),
+      ).toBe('Sun Nov 20 2016 04:12:34 GMT+1000 (GMT+10:00)');
+
+      await page.emulateTimezone('GMT-12:34');
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).date.toString();
+        }),
+      ).toBe('Sat Nov 19 2016 05:38:34 GMT-1234 (GMT-12:34)');
+    });
+
     it('should throw for invalid timezone IDs', async () => {
       const {page} = await getTestState();
 
