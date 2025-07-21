@@ -457,11 +457,21 @@ describe('Emulation', () => {
       await page.emulateTimezone('Foo/Bar').catch(error_ => {
         return (error = error_);
       });
-      expect(error.message).toBe('Invalid timezone ID: Foo/Bar');
+      expect(error.message).atLeastOneToContain([
+        'Invalid timezone ID: Foo/Bar', // CDP
+        'invalid argument', // BiDi.
+      ]);
+      // Assert the error message is informative.
+      expect(error.message).toContain('Foo/Bar');
       await page.emulateTimezone('Baz/Qux').catch(error_ => {
         return (error = error_);
       });
-      expect(error.message).toBe('Invalid timezone ID: Baz/Qux');
+      expect(error.message).atLeastOneToContain([
+        'Invalid timezone ID: Baz/Qux', // CDP
+        'invalid argument', // BiDi.
+      ]);
+      // Assert the error message is informative.
+      expect(error.message).toContain('Baz/Qux');
     });
   });
 
