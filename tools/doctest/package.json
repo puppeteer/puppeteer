@@ -24,14 +24,14 @@
     }
   },
   "devDependencies": {
-    "@swc/core": "1.12.14",
+    "@swc/core": "1.13.1",
     "@types/doctrine": "0.0.9",
     "@types/source-map-support": "0.5.10",
     "@types/yargs": "17.0.33",
     "acorn": "8.15.0",
     "doctrine": "3.0.0",
     "glob": "10.4.5",
-    "pkg-dir": "8.0.0",
+    "pkg-dir": "9.0.0",
     "source-map-support": "0.5.21",
     "source-map": "0.7.4",
     "yargs": "17.7.2"
