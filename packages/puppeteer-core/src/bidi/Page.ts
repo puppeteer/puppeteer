@@ -363,7 +363,7 @@ export class BidiPage extends Page {
   }
 
   override async emulateTimezone(timezoneId?: string): Promise<void> {
-    return await this.#cdpEmulationManager.emulateTimezone(timezoneId);
+    return await this.#frame.browsingContext.setTimezoneOverride(timezoneId);
   }
 
   override async emulateIdleState(overrides?: {
