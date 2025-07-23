@@ -705,13 +705,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[browsercontext-cookies.spec] BrowserContext cookies BrowserContext.setCookie should set cookie with a partition key",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Needs CHIPS to be enabled. See https://bugzilla.mozilla.org/show_bug.cgi?id=1931488"
-  },
-  {
     "testIdPattern": "[browsercontext.spec] BrowserContext should fire target events",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -1076,13 +1069,6 @@
     "comment": "For some reason it times out on MacOS. Perhaps it's a bug in chromium-bidi"
   },
   {
-    "testIdPattern": "[navigation.spec] navigation Page.goBack should work with HistoryAPI",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "https://github.com/w3c/webdriver-bidi/issues/502"
-  },
-  {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work when a page redirects on DOMContentLoaded",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -1102,6 +1088,13 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "https://github.com/puppeteer/puppeteer/issues/12929 and https://github.com/w3c/webdriver-bidi/issues/763"
+  },
+  {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should work when page calls history API in beforeunload",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1908952#c4 historyUpdated from beforeunload incorrectly comes before navigationStarted"
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work with anchor navigation",
