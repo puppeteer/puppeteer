@@ -1,5 +1,18 @@
 # Changelog
 
+## [24.15.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.14.0...puppeteer-core-v24.15.0) (2025-07-23)
+
+
+### Features
+
+* emulateTimezone via BiDi ([#14042](https://github.com/puppeteer/puppeteer/issues/14042)) ([e8768c9](https://github.com/puppeteer/puppeteer/commit/e8768c9b2b21c077ba0cf503c69e27f72868c20a))
+* roll to Firefox 141.0 ([#14048](https://github.com/puppeteer/puppeteer/issues/14048)) ([f8853de](https://github.com/puppeteer/puppeteer/commit/f8853de69677c22a1cf3d4b3de55af3a1be85105))
+
+
+### Bug Fixes
+
+* roll to Chrome 138.0.7204.168 ([#14047](https://github.com/puppeteer/puppeteer/issues/14047)) ([4a89e96](https://github.com/puppeteer/puppeteer/commit/4a89e966554727950cdc1cc88146e2a6a733bc88))
+
 ## [24.14.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.13.0...puppeteer-core-v24.14.0) (2025-07-16)
 
 
