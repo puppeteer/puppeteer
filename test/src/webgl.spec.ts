@@ -1,21 +1,25 @@
 /**
  * @license
- * Copyright 2024 Google Inc.
+ * Copyright 2025 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import expect from 'expect';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {setupSeparateTestBrowserHooks} from './mocha-utils.js';
 
 describe('webgl', function () {
-  setupTestBrowserHooks();
+  const state = setupSeparateTestBrowserHooks({
+    args: [
+      '--disable-gpu',
+      '--enable-features=AllowSwiftShaderFallback,AllowSoftwareGLFallbackDueToCrashes',
+      '--enable-unsafe-swiftshader',
+    ],
+  });
 
   describe('Create webgl context', function () {
     it('should work', async () => {
-      const {page} = await getTestState();
-
-      const promise = page.evaluate(() => {
+      const promise = state.page.evaluate(() => {
         const canvas = document.createElement('canvas');
         const gl = canvas.getContext('webgl');
         if (!gl) {
