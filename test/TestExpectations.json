@@ -649,6 +649,13 @@
     "comment": "Firefox is currently only able to install signed extensions."
   },
   {
+    "testIdPattern": "[webgl.spec] webgl Create webgl context should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "tests chrome-specific flags"
+  },
+  {
     "testIdPattern": "[acceptInsecureCerts.spec] acceptInsecureCerts Response.securityDetails Network redirects should report SecurityDetails",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
