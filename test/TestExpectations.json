@@ -642,13 +642,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[webExtension.spec] webExtension can install and uninstall an extension",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL"],
-    "comment": "Firefox is currently only able to install signed extensions."
-  },
-  {
     "testIdPattern": "[webgl.spec] webgl Create webgl context should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
