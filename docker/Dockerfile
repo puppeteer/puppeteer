@@ -12,7 +12,7 @@ ENV DBUS_SESSION_BUS_ADDRESS=autolaunch:
 # installs, work.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-khmeros \
-    fonts-kacst fonts-freefont-ttf dbus dbus-x11
+    fonts-kacst fonts-freefont-ttf dbus dbus-x11 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
