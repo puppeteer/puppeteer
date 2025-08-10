@@ -156,7 +156,7 @@
     "@microsoft/api-extractor": "7.52.10",
     "@rollup/plugin-babel": "6.0.4",
     "@rollup/plugin-node-resolve": "16.0.1",
-    "@stylistic/eslint-plugin": "5.2.2",
+    "@stylistic/eslint-plugin": "5.2.3",
     "@types/mocha": "10.0.10",
     "@types/node": "22.13.10",
     "@types/semver": "7.7.0",
