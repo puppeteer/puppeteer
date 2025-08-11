@@ -2,6 +2,22 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.16.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.16.0...puppeteer-v24.16.1) (2025-08-10)
+
+### Miscellaneous Chores
+
+- **puppeteer:** Synchronize puppeteer versions
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - puppeteer-core bumped from 24.16.0 to 24.16.1
+
+### Bug Fixes
+
+- roll to Firefox 141.0.3 ([#14097](https://github.com/puppeteer/puppeteer/issues/14097)) ([a25cf76](https://github.com/puppeteer/puppeteer/commit/a25cf76add045dc4bc2ee9df8d25faa9322a5391))
+
 ## [24.16.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.15.0...puppeteer-v24.16.0) (2025-08-06)
 
 ### Features
