@@ -439,10 +439,9 @@ describe('AriaQueryHandler', () => {
       await detachFrame(page, 'frame1');
       await waitPromise;
       expect(waitError).toBeTruthy();
-      expect(waitError.message).atLeastOneToContain([
-        'waitForFunction failed: frame got detached.',
-        'Browsing context already closed.',
-      ]);
+      expect(waitError.message).toBe(
+        'Waiting for selector `does-not-exist` failed',
+      );
     });
 
     it('should survive cross-process navigation', async () => {
@@ -612,7 +611,7 @@ describe('AriaQueryHandler', () => {
           return error;
         });
       expect(error.message).toContain(
-        'Waiting for selector `[role="button"]` failed: Waiting failed: 10ms exceeded',
+        'Waiting for selector `[role="button"]` failed',
       );
       expect(error).toBeInstanceOf(TimeoutError);
     });
@@ -626,8 +625,7 @@ describe('AriaQueryHandler', () => {
         timeout: 10,
       });
       await expect(promise).rejects.toMatchObject({
-        message:
-          'Waiting for selector `[role="main"]` failed: Waiting failed: 10ms exceeded',
+        message: 'Waiting for selector `[role="main"]` failed',
       });
     });
 
@@ -677,9 +675,7 @@ describe('AriaQueryHandler', () => {
       await page.waitForSelector('aria/zombo', {timeout: 10}).catch(error_ => {
         return (error = error_);
       });
-      expect(error!.stack).toContain(
-        'Waiting for selector `zombo` failed: Waiting failed: 10ms exceeded',
-      );
+      expect(error!.stack).toContain('Waiting for selector `zombo` failed');
     });
   });
 
