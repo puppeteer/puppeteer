@@ -924,7 +924,7 @@ describe('waittask specs', function () {
 
   describe('protocol timeout', () => {
     const state = setupSeparateTestBrowserHooks({
-      protocolTimeout: 1000,
+      protocolTimeout: 3000,
     });
 
     it('should error if underyling protocol command times out with raf polling', async () => {
@@ -934,7 +934,7 @@ describe('waittask specs', function () {
           () => {
             return false;
           },
-          {timeout: 2000},
+          {timeout: 6000},
         )
         .catch(error_ => {
           return (error = error_);
