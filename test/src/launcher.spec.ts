@@ -74,10 +74,7 @@ describe('Launcher specs', function () {
             });
           await remote.disconnect();
           const error = await watchdog;
-          expect(error.message).atLeastOneToContain([
-            'Waiting for selector `div` failed: Waiting failed: Frame detached',
-            'Waiting for selector `div` failed: Browsing context already closed: User context was closed: Session already ended.',
-          ]);
+          expect(error.message).toBe('Waiting for selector `div` failed');
         } finally {
           await close();
         }

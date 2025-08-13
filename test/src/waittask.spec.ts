@@ -11,6 +11,7 @@ import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 import {
   createTimeout,
   getTestState,
+  setupSeparateTestBrowserHooks,
   setupTestBrowserHooks,
 } from './mocha-utils.js';
 import {attachFrame, detachFrame} from './utils.js';
@@ -511,10 +512,7 @@ describe('waittask specs', function () {
       await detachFrame(page, 'frame1');
       await waitPromise;
       expect(waitError).toBeTruthy();
-      expect(waitError?.message).atLeastOneToContain([
-        'waitForFunction failed: frame got detached.',
-        'Browsing context already closed.',
-      ]);
+      expect(waitError?.message).toBe('Waiting for selector `.box` failed');
     });
     it('should survive cross-process navigation', async () => {
       const {page, server} = await getTestState();
@@ -722,9 +720,7 @@ describe('waittask specs', function () {
         return (error = error_);
       });
       expect(error).toBeInstanceOf(TimeoutError);
-      expect(error?.message).toContain(
-        'Waiting for selector `div` failed: Waiting failed: 10ms exceeded',
-      );
+      expect(error?.message).toBe('Waiting for selector `div` failed');
     });
     it('should have an error message specifically for awaiting an element to be hidden', async () => {
       const {page} = await getTestState();
@@ -737,9 +733,7 @@ describe('waittask specs', function () {
           return (error = error_);
         });
       expect(error).toBeTruthy();
-      expect(error?.message).toContain(
-        'Waiting for selector `div` failed: Waiting failed: 10ms exceeded',
-      );
+      expect(error?.message).toBe('Waiting for selector `div` failed');
     });
 
     it('should respond to node attribute mutation', async () => {
@@ -777,11 +771,9 @@ describe('waittask specs', function () {
       await page.waitForSelector('.zombo', {timeout: 10}).catch(error_ => {
         return (error = error_);
       });
-      expect(error?.stack).toContain(
-        'Waiting for selector `.zombo` failed: Waiting failed: 10ms exceeded',
-      );
+      expect(error?.stack).toContain('Waiting for selector `.zombo` failed');
       // The extension is ts here as Mocha maps back via sourcemaps.
-      expect(error?.stack).toContain('WaitTask.ts');
+      expect(error?.stack).toContain('waittask.spec.ts');
     });
 
     describe('xpath', function () {
@@ -815,7 +807,7 @@ describe('waittask specs', function () {
             return (error = error_);
           });
         expect(error).toBeInstanceOf(TimeoutError);
-        expect(error?.message).toContain('Waiting failed: 10ms exceeded');
+        expect(error?.message).toBe('Waiting for selector `.//div` failed');
       });
       it('should run in specified frame', async () => {
         const {page, server} = await getTestState();
@@ -844,10 +836,9 @@ describe('waittask specs', function () {
         await detachFrame(page, 'frame1');
         await waitPromise;
         expect(waitError).toBeTruthy();
-        expect(waitError?.message).atLeastOneToContain([
-          'waitForFunction failed: frame got detached.',
-          'Browsing context already closed.',
-        ]);
+        expect(waitError?.message).toBe(
+          'Waiting for selector `.//*[@class="box"]` failed',
+        );
       });
       it('hidden should wait for display: none', async () => {
         const {page} = await getTestState();
@@ -928,6 +919,31 @@ describe('waittask specs', function () {
           ),
         ).toBe('some text');
       });
+    });
+  });
+
+  describe('protocol timeout', () => {
+    const state = setupSeparateTestBrowserHooks({
+      protocolTimeout: 1000,
+    });
+
+    it('should error if underyling protocol command times out with raf polling', async () => {
+      let error!: Error;
+      await state.page
+        .waitForFunction(
+          () => {
+            return false;
+          },
+          {timeout: 2000},
+        )
+        .catch(error_ => {
+          return (error = error_);
+        });
+
+      expect(error).toBeInstanceOf(Error);
+      expect(error.message).toBe('Waiting failed');
+      expect(error.stack).toContain('waittask.spec.ts');
+      expect(error.cause).toBeInstanceOf(Error);
     });
   });
 });
