@@ -383,6 +383,11 @@ export class CLI {
             return typeof arg === 'string';
           });
 
+          args.browser.buildId = this.#resolvePinnedBrowserIfNeeded(
+            args.browser.buildId,
+            args.browser.name,
+          );
+
           const executablePath = args.system
             ? computeSystemExecutablePath({
                 browser: args.browser.name,
@@ -476,6 +481,17 @@ export class CLI {
         : 'latest';
   }
 
+  #resolvePinnedBrowserIfNeeded(buildId: string, browserName: Browser): string {
+    if (buildId === 'pinned') {
+      const options = this.#pinnedBrowsers?.[browserName];
+      if (!options || !options.buildId) {
+        throw new Error(`No pinned version found for ${browserName}`);
+      }
+      return options.buildId;
+    }
+    return buildId;
+  }
+
   async #install(args: InstallArgs) {
     args.platform ??= detectBrowserPlatform();
     if (!args.browser) {
@@ -484,13 +500,10 @@ export class CLI {
     if (!args.platform) {
       throw new Error(`Could not resolve the current platform`);
     }
-    if (args.browser.buildId === 'pinned') {
-      const options = this.#pinnedBrowsers?.[args.browser.name];
-      if (!options || !options.buildId) {
-        throw new Error(`No pinned version found for ${args.browser.name}`);
-      }
-      args.browser.buildId = options.buildId;
-    }
+    args.browser.buildId = this.#resolvePinnedBrowserIfNeeded(
+      args.browser.buildId,
+      args.browser.name,
+    );
     const originalBuildId = args.browser.buildId;
     args.browser.buildId = await resolveBuildId(
       args.browser.name,
