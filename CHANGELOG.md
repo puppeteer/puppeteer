@@ -2,6 +2,16 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.16.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.16.2...puppeteer-v24.16.3) (2025-08-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.10.6 to 2.10.7
+
+
 ## [24.16.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.16.1...puppeteer-v24.16.2) (2025-08-13)
 
 
