@@ -718,6 +718,5 @@ export class BrowsingContext extends EventEmitter<{
         contexts: [this.id],
       },
     );
-
   }
 }
