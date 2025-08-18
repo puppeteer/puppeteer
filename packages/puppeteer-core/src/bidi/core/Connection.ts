@@ -123,6 +123,10 @@ export interface Commands {
     params: Bidi.Emulation.SetTimezoneOverrideParameters;
     returnType: Bidi.EmptyResult;
   };
+  'emulation.setScriptingEnabled': {
+    params: Bidi.Emulation.SetScriptingEnabledParameters;
+    returnType: Bidi.EmptyResult;
+  };
 
   'permissions.setPermission': {
     params: Bidi.Permissions.SetPermissionParameters;

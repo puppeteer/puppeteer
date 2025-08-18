@@ -708,4 +708,16 @@ export class BrowsingContext extends EventEmitter<{
     });
     return result.result.nodes;
   }
+
+  async setJavaScriptEnabled(enabled: boolean): Promise<void> {
+    await this.userContext.browser.session.send(
+      'emulation.setScriptingEnabled',
+      {
+        // Enabled `null` means `default`, `false` means `disabled`.
+        enabled: enabled ? null : false,
+        contexts: [this.id],
+      },
+    );
+
+  }
 }

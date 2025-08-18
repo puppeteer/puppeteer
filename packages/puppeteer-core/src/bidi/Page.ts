@@ -345,7 +345,7 @@ export class BidiPage extends Page {
   }
 
   override async setJavaScriptEnabled(enabled: boolean): Promise<void> {
-    return await this.#cdpEmulationManager.setJavaScriptEnabled(enabled);
+    return await this.#frame.browsingContext.setJavaScriptEnabled(enabled);
   }
 
   override async emulateMediaType(type?: string): Promise<void> {
