@@ -158,6 +158,9 @@ export class BrowsingContext extends EventEmitter<{
   readonly parent: BrowsingContext | undefined;
   readonly userContext: UserContext;
   readonly originalOpener: string | null;
+  readonly #emulationState: {
+    javaScriptEnabled: boolean;
+  } = {javaScriptEnabled: true};
 
   private constructor(
     context: UserContext,
@@ -707,5 +710,21 @@ export class BrowsingContext extends EventEmitter<{
       startNodes: startNodes.length ? startNodes : undefined,
     });
     return result.result.nodes;
+  }
+
+  async setJavaScriptEnabled(enabled: boolean): Promise<void> {
+    await this.userContext.browser.session.send(
+      'emulation.setScriptingEnabled',
+      {
+        // Enabled `null` means `default`, `false` means `disabled`.
+        enabled: enabled ? null : false,
+        contexts: [this.id],
+      },
+    );
+    this.#emulationState.javaScriptEnabled = enabled;
+  }
+
+  isJavaScriptEnabled(): boolean {
+    return this.#emulationState.javaScriptEnabled;
   }
 }

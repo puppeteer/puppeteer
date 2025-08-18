@@ -315,7 +315,7 @@ export class BidiPage extends Page {
   }
 
   override isJavaScriptEnabled(): boolean {
-    return this.#cdpEmulationManager.javascriptEnabled;
+    return this.#frame.browsingContext.isJavaScriptEnabled();
   }
 
   override async setGeolocation(options: GeolocationOptions): Promise<void> {
@@ -345,7 +345,7 @@ export class BidiPage extends Page {
   }
 
   override async setJavaScriptEnabled(enabled: boolean): Promise<void> {
-    return await this.#cdpEmulationManager.setJavaScriptEnabled(enabled);
+    return await this.#frame.browsingContext.setJavaScriptEnabled(enabled);
   }
 
   override async emulateMediaType(type?: string): Promise<void> {
