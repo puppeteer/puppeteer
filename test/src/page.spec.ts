@@ -2043,6 +2043,7 @@ describe('Page', function () {
       const {page} = await getTestState();
 
       await page.setJavaScriptEnabled(false);
+      expect(page.isJavaScriptEnabled()).toBe(false);
       await page.goto(
         'data:text/html, <script>var something = "forbidden"</script>',
       );
@@ -2053,6 +2054,7 @@ describe('Page', function () {
       expect(error.message).toContain('something is not defined');
 
       await page.setJavaScriptEnabled(true);
+      expect(page.isJavaScriptEnabled()).toBe(true);
       await page.goto(
         'data:text/html, <script>var something = "forbidden"</script>',
       );

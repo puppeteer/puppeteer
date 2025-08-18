@@ -158,6 +158,9 @@ export class BrowsingContext extends EventEmitter<{
   readonly parent: BrowsingContext | undefined;
   readonly userContext: UserContext;
   readonly originalOpener: string | null;
+  readonly #emulationState: {
+    javaScriptEnabled: boolean;
+  } = {javaScriptEnabled: true};
 
   private constructor(
     context: UserContext,
@@ -718,5 +721,10 @@ export class BrowsingContext extends EventEmitter<{
         contexts: [this.id],
       },
     );
+    this.#emulationState.javaScriptEnabled = enabled;
+  }
+
+  isJavaScriptEnabled(): boolean {
+    return this.#emulationState.javaScriptEnabled;
   }
 }
