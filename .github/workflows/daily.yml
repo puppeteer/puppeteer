@@ -73,7 +73,7 @@ jobs:
           PUPPETEER_TEST_EXPERIMENTAL_CHROME_FEATURES: ${{ matrix.configs == 'experimental' }}
       - name: Run all tests (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
-        run: npm run test -- -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: npm run test -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_CHROME_VERSION: canary
           PUPPETEER_CHROME_HEADLESS_SHELL_VERSION: canary
@@ -146,7 +146,7 @@ jobs:
           PUPPETEER_FIREFOX_VERSION: nightly
       - name: Run all tests (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
-        run: npm run test -- -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: npm run test -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_FIREFOX_VERSION: nightly
       - name: Run all tests (Linux)

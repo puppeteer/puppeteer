@@ -77,7 +77,7 @@ jobs:
           PUPPETEER_DEFLAKE_RETRIES: ${{ inputs.retries }}
       - name: Run all tests (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
-        run: npm run test -- -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
           PUPPETEER_DEFLAKE_RETRIES: ${{ inputs.retries }}
