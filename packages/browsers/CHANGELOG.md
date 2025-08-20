@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.7](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.6...browsers-v2.10.7) (2025-08-20)
+
+
+### Bug Fixes
+
+* browsers launch command should work with pinned browsers ([#14110](https://github.com/puppeteer/puppeteer/issues/14110)) ([340e77e](https://github.com/puppeteer/puppeteer/commit/340e77eecd90577b8fd74447ddd75af37f58f29a))
+
 ## [2.10.6](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.5...browsers-v2.10.6) (2025-07-16)
 
 

@@ -2,6 +2,27 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.17.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.16.2...puppeteer-v24.17.0) (2025-08-20)
+
+### Miscellaneous Chores
+
+- **puppeteer:** Synchronize puppeteer versions
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - @puppeteer/browsers bumped from 2.10.6 to 2.10.7
+
+### Features
+
+- roll to Firefox 142.0 ([#14127](https://github.com/puppeteer/puppeteer/issues/14127)) ([f00517e](https://github.com/puppeteer/puppeteer/commit/f00517ef4aad3ccfd9afb2e00114baa13ea71cc4))
+- **webdriver:** implement `Page.setJavaScriptEnabled` ([#14118](https://github.com/puppeteer/puppeteer/issues/14118)) ([fb55e8f](https://github.com/puppeteer/puppeteer/commit/fb55e8fe26aa6be6ed7edb235f5914d0bab641c3))
+
+### Bug Fixes
+
+- roll to Chrome 139.0.7258.138 ([#14125](https://github.com/puppeteer/puppeteer/issues/14125)) ([b1d2a54](https://github.com/puppeteer/puppeteer/commit/b1d2a541815bd0010039ab1f8f269865ce5897be))
+
 ## [24.16.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.16.1...puppeteer-v24.16.2) (2025-08-13)
 
 ### Miscellaneous Chores
