@@ -48,10 +48,8 @@ await chromeBrowser.close();
   - Page.emulateIdleState()
   - Page.emulateMediaFeatures()
   - Page.emulateMediaType()
-  - Page.emulateTimezone()
   - Page.emulateVisionDeficiency()
   - Page.setBypassCSP()
-  - Page.setJavaScriptEnabled()
 
 - CDP-specific features
   - HTTPRequest.client()
@@ -75,7 +73,6 @@ await chromeBrowser.close();
   - Input.drop()
   - Page.emulateNetworkConditions()
   - Page.isDragInterceptionEnabled()
-  - Page.isJavaScriptEnabled()
   - Page.isServiceWorkerBypassed()
   - Page.metrics()
   - Page.queryObjects()
@@ -156,6 +153,11 @@ await chromeBrowser.close();
 - Permissions
   - BrowserContext.clearPermissionOverrides()
   - BrowserContext.overridePermissions()
+
+- Various emulations
+  - Page.emulateTimezone()
+  - Page.isJavaScriptEnabled()
+  - Page.setJavaScriptEnabled()
 
 - [Request interception](https://pptr.dev/guides/request-interception)
   - HTTPRequest.abort() (no custom error support)
