@@ -40,7 +40,7 @@ function getEmptyPageUrl(server: TestServer): string {
   return `http://${HOSTNAME}:${server.PORT}${emptyPagePath}`;
 }
 
-describe.only('request proxy', () => {
+describe('request proxy', () => {
   let proxiedRequestUrls: string[];
   let proxyServer: Server;
   let proxyServerUrl: string;
