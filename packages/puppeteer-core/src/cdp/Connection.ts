@@ -16,7 +16,7 @@ import {
 import {CallbackRegistry} from '../common/CallbackRegistry.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {debug} from '../common/Debug.js';
-import {TargetCloseError} from '../common/Errors.js';
+import {ConnectionClosedError, TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {createProtocolErrorMessage} from '../util/ErrorLike.js';
 
@@ -131,7 +131,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     options?: CommandOptions,
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
     if (this.#closed) {
-      return Promise.reject(new Error('Protocol error: Connection closed.'));
+      return Promise.reject(new ConnectionClosedError('Connection closed.'));
     }
     return callbacks.create(method, options?.timeout ?? this.#timeout, id => {
       const stringifiedMessage = JSON.stringify({
