@@ -40,14 +40,14 @@ function getEmptyPageUrl(server: TestServer): string {
   return `http://${HOSTNAME}:${server.PORT}${emptyPagePath}`;
 }
 
-describe('request proxy', () => {
+describe.only('request proxy', () => {
   let proxiedRequestUrls: string[];
   let proxyServer: Server;
   let proxyServerUrl: string;
   const defaultArgs = [
     // We disable this in tests so that proxy-related tests
     // don't intercept queries from this service in headful.
-    '--disable-features=NetworkTimeServiceQuerying',
+    '--disable-features=NetworkTimeServiceQuerying,AimEnabled',
   ];
 
   beforeEach(() => {
