@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import actions from '@actions/core';
-
+import {resolveBuildId} from '@puppeteer/browsers';
 /**
  *
  * @param {string} env
@@ -31,13 +31,17 @@ const today = new Date().toLocaleDateString('en-GB', options);
 
 const chromeStatus = getStatus(process.env.CHROME_RUN_STATUS);
 const firefoxStatus = getStatus(process.env.FIREFOX_RUN_STATUS);
+
+const chromeVersion = await resolveBuildId('chrome', 'linux', 'canary');
+const firefoxVersion = await resolveBuildId('firefox', 'linux', 'nightly');
+
 const body = `
 Date: ${today}
 
-| Browser | Status | 
-| ------- | ------ | 
-| Chrome Canary | ${chromeStatus} |
-| Firefox Nightly | ${firefoxStatus} |
+| Browser | Status | Version | 
+| ------- | ------ | ------- | 
+| Chrome Canary | ${chromeStatus} | ${chromeVersion} |
+| Firefox Nightly | ${firefoxStatus} | ${firefoxVersion} |
 `;
 
 const footer = `
