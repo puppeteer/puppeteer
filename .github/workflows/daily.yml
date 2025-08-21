@@ -179,6 +179,8 @@ jobs:
         run: npm ci
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
+      - name: Build packages
+        run: npm run build -w @puppeteer/browsers
       - name: Generate comment
         id: genearate-comment-body
         run: node tools/build_daily_comment.mjs
