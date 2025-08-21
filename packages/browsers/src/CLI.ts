@@ -10,8 +10,8 @@ import * as readline from 'node:readline';
 import type * as Yargs from 'yargs';
 
 import {
+  Browser,
   resolveBuildId,
-  type Browser,
   BrowserPlatform,
   type ChromeReleaseChannel,
 } from './browser-data/browser-data.js';
@@ -35,6 +35,14 @@ interface InstallArgs {
   platform?: BrowserPlatform;
   baseUrl?: string;
   installDeps?: boolean;
+}
+
+function isValidBrowser(browser: unknown): browser is Browser {
+  return Object.values(Browser).includes(browser as Browser);
+}
+
+function isValidPlatform(platform: unknown): platform is BrowserPlatform {
+  return Object.values(BrowserPlatform).includes(platform as BrowserPlatform);
 }
 
 /**
@@ -109,10 +117,16 @@ export class CLI {
         'Which browser to install <browser>[@<buildId|latest>]. `latest` will try to find the latest available build. `buildId` is a browser-specific identifier such as a version or a revision.',
       type: 'string',
       coerce: (opt): InstallBrowser => {
-        return {
+        const browser: InstallBrowser = {
           name: this.#parseBrowser(opt),
           buildId: this.#parseBuildId(opt),
         };
+
+        if (!isValidBrowser(browser.name)) {
+          throw new Error(`Unsupported browser '${browser.name}'`);
+        }
+
+        return browser;
       },
       demandOption: required,
     });
@@ -123,6 +137,14 @@ export class CLI {
       type: 'string',
       desc: 'Platform that the binary needs to be compatible with.',
       choices: Object.values(BrowserPlatform),
+      default: detectBrowserPlatform(),
+      coerce: platform => {
+        if (!isValidPlatform(platform)) {
+          throw new Error(`Unsupported platform '${platform}'`);
+        }
+
+        return platform;
+      },
       defaultDescription: 'Auto-detected',
     });
   }
@@ -493,7 +515,6 @@ export class CLI {
   }
 
   async #install(args: InstallArgs) {
-    args.platform ??= detectBrowserPlatform();
     if (!args.browser) {
       throw new Error(`No browser arg provided`);
     }
