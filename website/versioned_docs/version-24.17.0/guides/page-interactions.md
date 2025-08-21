@@ -127,9 +127,9 @@ other locator functions such as `.click()` or `.fill()` on the function locator.
 ```ts
 await page
   .locator(() => {
-    let resolve!: (node: HTMLCanvasElement) => void;
+    let resolve;
     const promise = new Promise(res => {
-      return (resolve = res);
+      return resolve = res;
     });
     const observer = new MutationObserver(records => {
       for (const record of records) {
@@ -138,7 +138,7 @@ await page
         }
       }
     });
-    observer.observe(document);
+    observer.observe(document, { childList: true, subtree: true });
     return promise;
   })
   .wait();
