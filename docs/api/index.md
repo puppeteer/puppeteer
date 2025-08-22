@@ -111,6 +111,15 @@ The constructor for this class is marked as internal. Third-party code should no
 </td></tr>
 <tr><td>
 
+<span id="connectionclosederror">[ConnectionClosedError](./puppeteer.connectionclosederror.md)</span>
+
+</td><td>
+
+Thrown if underlying protocol connection has been closed.
+
+</td></tr>
+<tr><td>
+
 <span id="consolemessage">[ConsoleMessage](./puppeteer.consolemessage.md)</span>
 
 </td><td>
