@@ -104,8 +104,10 @@ export class LifecycleWatcher {
     });
 
     signal?.addEventListener('abort', () => {
-      this.#error.cause = signal.reason;
-      this.#terminationDeferred.reject(this.#error);
+      if (signal.reason instanceof Error) {
+        signal.reason.cause = this.#error;
+      }
+      this.#terminationDeferred.reject(signal.reason);
     });
 
     this.#frame = frame;
