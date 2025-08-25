@@ -1228,6 +1228,9 @@ function getIntersectionRect(
   };
 }
 
+/**
+ * @internal
+ */
 export function convertCookiesPartitionKeyFromPuppeteerToCdp(
   partitionKey: CookiePartitionKey | string | undefined,
 ): Protocol.Network.CookiePartitionKey | undefined {
