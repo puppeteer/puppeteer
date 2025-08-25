@@ -100,7 +100,7 @@ export class LifecycleWatcher {
     this.#expectedLifecycle = waitUntil.map(value => {
       const protocolEvent = puppeteerToProtocolLifecycle.get(value);
       assert(protocolEvent, 'Unknown value for options.waitUntil: ' + value);
-      return protocolEvent as ProtocolLifeCycleEvent;
+      return protocolEvent;
     });
 
     signal?.addEventListener('abort', () => {
