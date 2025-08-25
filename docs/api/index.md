@@ -676,13 +676,6 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="convertcookiespartitionkeyfrompuppeteertocdp">[convertCookiesPartitionKeyFromPuppeteerToCdp(partitionKey)](./puppeteer.convertcookiespartitionkeyfrompuppeteertocdp.md)</span>
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
 <span id="defaultargs">[defaultArgs(options)](./puppeteer.defaultargs.md)</span>
 
 </td><td>
