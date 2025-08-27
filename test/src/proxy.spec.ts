@@ -47,7 +47,7 @@ describe('request proxy', () => {
   const defaultArgs = [
     // We disable this in tests so that proxy-related tests
     // don't intercept queries from this service in headful.
-    '--disable-features=NetworkTimeServiceQuerying',
+    '--disable-features=NetworkTimeServiceQuerying,AimEnabled',
   ];
 
   beforeEach(() => {

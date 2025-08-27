@@ -111,6 +111,15 @@ The constructor for this class is marked as internal. Third-party code should no
 </td></tr>
 <tr><td>
 
+<span id="connectionclosederror">[ConnectionClosedError](./puppeteer.connectionclosederror.md)</span>
+
+</td><td>
+
+Thrown if underlying protocol connection has been closed.
+
+</td></tr>
+<tr><td>
+
 <span id="consolemessage">[ConsoleMessage](./puppeteer.consolemessage.md)</span>
 
 </td><td>
@@ -661,13 +670,6 @@ Description
 <tbody><tr><td>
 
 <span id="connect">[connect(options)](./puppeteer.connect.md)</span>
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
-<span id="convertcookiespartitionkeyfrompuppeteertocdp">[convertCookiesPartitionKeyFromPuppeteerToCdp(partitionKey)](./puppeteer.convertcookiespartitionkeyfrompuppeteertocdp.md)</span>
 
 </td><td>
 

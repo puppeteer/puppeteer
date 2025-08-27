@@ -9,10 +9,10 @@ import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {CallbackRegistry} from '../common/CallbackRegistry.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {debug} from '../common/Debug.js';
+import {ConnectionClosedError} from '../common/Errors.js';
 import type {EventsWithWildcard} from '../common/EventEmitter.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
-import {assert} from '../util/assert.js';
 
 import {BidiCdpSession} from './CDPSession.js';
 import type {
@@ -100,8 +100,9 @@ export class BidiConnection
     params: Commands[T]['params'],
     timeout?: number,
   ): Promise<{result: Commands[T]['returnType']}> {
-    assert(!this.#closed, 'Protocol error: Connection closed.');
-
+    if (this.#closed) {
+      return Promise.reject(new ConnectionClosedError('Connection closed.'));
+    }
     return this.#callbacks.create(method, timeout ?? this.#timeout, id => {
       const stringifiedMessage = JSON.stringify({
         id,

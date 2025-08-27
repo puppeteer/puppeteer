@@ -1139,7 +1139,7 @@ export class CdpPage extends Page {
     const connection = this.#primaryTargetClient.connection();
     assert(
       connection,
-      'Protocol error: Connection closed. Most likely the page has been closed.',
+      'Connection closed. Most likely the page has been closed.',
     );
     const runBeforeUnload = !!options.runBeforeUnload;
     if (runBeforeUnload) {
@@ -1228,6 +1228,9 @@ function getIntersectionRect(
   };
 }
 
+/**
+ * @internal
+ */
 export function convertCookiesPartitionKeyFromPuppeteerToCdp(
   partitionKey: CookiePartitionKey | string | undefined,
 ): Protocol.Network.CookiePartitionKey | undefined {

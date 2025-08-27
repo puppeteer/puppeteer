@@ -10,7 +10,9 @@ import path from 'node:path';
 import {TestServer} from '@pptr/testserver';
 import expect from 'expect';
 import type * as MochaBase from 'mocha';
-import puppeteer from 'puppeteer/lib/cjs/puppeteer/puppeteer.js';
+import puppeteer, {
+  ConnectionClosedError,
+} from 'puppeteer/lib/cjs/puppeteer/puppeteer.js';
 import type {Browser} from 'puppeteer-core/internal/api/Browser.js';
 import type {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
@@ -530,7 +532,7 @@ const closeLaunched = (storage: Array<() => Promise<void>>) => {
     } catch (error) {
       // If the browser was closed by other means, swallow the error
       // and mark the browser as closed.
-      if ((error as Error)?.message.includes('Connection closed')) {
+      if (error instanceof ConnectionClosedError) {
         storage.splice(0, storage.length);
         return;
       }
