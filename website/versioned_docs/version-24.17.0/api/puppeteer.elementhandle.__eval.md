@@ -102,9 +102,15 @@ HTML:
 
 JavaScript:
 
-```ts
+```js
 const feedHandle = await page.$('.feed');
-expect(
-  await feedHandle.$$eval('.tweet', nodes => nodes.map(n => n.innerText)),
-).toEqual(['Hello!', 'Hi!']);
+
+const tweets = await feedHandle.$$eval('.tweet', nodes => {
+  return nodes.map(n => n.innerText);
+});
+
+console.log(tweets); // ['Hello!', 'Hi!']
+
+const assert = require('assert');
+assert.deepStrictEqual(tweets, ['Hello!', 'Hi!']);
 ```
