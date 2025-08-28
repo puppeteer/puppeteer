@@ -2,6 +2,25 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.17.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.17.0...puppeteer-v24.17.1) (2025-08-28)
+
+### Miscellaneous Chores
+
+- **puppeteer:** Synchronize puppeteer versions
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - @puppeteer/browsers bumped from 2.10.7 to 2.10.8
+
+### Bug Fixes
+
+- add better stack trace to LifecycleWatcher ([#14137](https://github.com/puppeteer/puppeteer/issues/14137)) ([0c9fd4f](https://github.com/puppeteer/puppeteer/commit/0c9fd4f0d188842a04682561270ea7c91402dca2))
+- roll to Chrome 139.0.7258.154 ([#14144](https://github.com/puppeteer/puppeteer/issues/14144)) ([51033e3](https://github.com/puppeteer/puppeteer/commit/51033e358a8bd65eb7aa2b3379d0a9ec12d50859))
+- roll to Firefox 142.0.1 ([#14145](https://github.com/puppeteer/puppeteer/issues/14145)) ([b321cd0](https://github.com/puppeteer/puppeteer/commit/b321cd0c8bf7d4c4b9c618dbab49ad39c8d89cfe))
+- standardize error handling for closed connections ([#14135](https://github.com/puppeteer/puppeteer/issues/14135)) ([d4478a1](https://github.com/puppeteer/puppeteer/commit/d4478a127db373645a6960527e495aa52457c42e))
+
 ## [24.17.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.16.2...puppeteer-v24.17.0) (2025-08-20)
 
 ### Miscellaneous Chores
