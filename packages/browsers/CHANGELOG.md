@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.8](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.7...browsers-v2.10.8) (2025-08-28)
+
+
+### Bug Fixes
+
+* move errors to Yargs parser ([#14133](https://github.com/puppeteer/puppeteer/issues/14133)) ([db525f8](https://github.com/puppeteer/puppeteer/commit/db525f8502f24c25f89129de25f0c6f439ebf747))
+
 ## [2.10.7](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.6...browsers-v2.10.7) (2025-08-20)
 
 
