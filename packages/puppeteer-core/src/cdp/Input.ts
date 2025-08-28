@@ -383,7 +383,7 @@ export class CdpMouse extends Mouse {
   }
 
   override async down(options: Readonly<MouseOptions> = {}): Promise<void> {
-    const {button = MouseButton.Left, clickCount = 1} = options;
+    const {button = MouseButton.Left} = options;
     const flag = getFlag(button);
     if (!flag) {
       throw new Error(`Unsupported mouse button: ${button}`);
@@ -399,7 +399,7 @@ export class CdpMouse extends Mouse {
       return this.#client.send('Input.dispatchMouseEvent', {
         type: 'mousePressed',
         modifiers: this.#keyboard._modifiers,
-        clickCount,
+        clickCount: 1,
         buttons,
         button,
         ...position,
@@ -408,7 +408,7 @@ export class CdpMouse extends Mouse {
   }
 
   override async up(options: Readonly<MouseOptions> = {}): Promise<void> {
-    const {button = MouseButton.Left, clickCount = 1} = options;
+    const {button = MouseButton.Left} = options;
     const flag = getFlag(button);
     if (!flag) {
       throw new Error(`Unsupported mouse button: ${button}`);
@@ -424,7 +424,7 @@ export class CdpMouse extends Mouse {
       return this.#client.send('Input.dispatchMouseEvent', {
         type: 'mouseReleased',
         modifiers: this.#keyboard._modifiers,
-        clickCount,
+        clickCount: 1,
         buttons,
         button,
         ...position,
@@ -437,20 +437,15 @@ export class CdpMouse extends Mouse {
     y: number,
     options: Readonly<MouseClickOptions> = {},
   ): Promise<void> {
-    const {delay, count = 1, clickCount = count} = options;
+    const {delay, count = 1} = options;
     if (count < 1) {
       throw new Error('Click must occur a positive number of times.');
     }
     const actions: Array<Promise<void>> = [this.move(x, y)];
-    if (clickCount === count) {
-      for (let i = 1; i < count; ++i) {
-        actions.push(
-          this.down({...options, clickCount: i}),
-          this.up({...options, clickCount: i}),
-        );
-      }
+    for (let i = 1; i < count; ++i) {
+      actions.push(this.down({...options}), this.up({...options}));
     }
-    actions.push(this.down({...options, clickCount}));
+    actions.push(this.down({...options}));
     if (typeof delay === 'number') {
       await Promise.all(actions);
       actions.length = 0;
@@ -458,7 +453,7 @@ export class CdpMouse extends Mouse {
         setTimeout(resolve, delay);
       });
     }
-    actions.push(this.up({...options, clickCount}));
+    actions.push(this.up({...options}));
     await Promise.all(actions);
   }
 
