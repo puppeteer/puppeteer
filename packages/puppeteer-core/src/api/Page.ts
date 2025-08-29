@@ -1105,13 +1105,22 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * {@link https://pptr.dev/guides/page-interactions#prefixed-selector-syntax | prefix}.
    */
   locator<Ret>(func: () => Awaitable<Ret>): Locator<Ret>;
-  locator<Selector extends string, Ret>(
-    selectorOrFunc: Selector | (() => Awaitable<Ret>),
-  ): Locator<NodeFor<Selector>> | Locator<Ret> {
-    if (typeof selectorOrFunc === 'string') {
-      return NodeLocator.create(this, selectorOrFunc);
+
+  /**
+   * Creates a locator based on an ElementHandle. This would not allow
+   * refreshing the element handle if it is stale but it allows re-using other
+   * locator pre-conditions.
+   */
+  locator<T extends Node>(handle: ElementHandle<T>): Locator<T>;
+  locator<Selector extends string, Ret, T extends Node>(
+    input: Selector | (() => Awaitable<Ret>) | ElementHandle<T>,
+  ): Locator<NodeFor<Selector>> | Locator<Ret> | Locator<T> {
+    if (typeof input === 'string') {
+      return NodeLocator.create(this, input);
+    } else if (typeof input === 'function') {
+      return FunctionLocator.create(this, input);
     } else {
-      return FunctionLocator.create(this, selectorOrFunc);
+      return NodeLocator.createFromHandle(this, input);
     }
   }
 

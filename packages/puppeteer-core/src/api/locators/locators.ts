@@ -22,6 +22,7 @@ import {
   merge,
   mergeMap,
   noop,
+  of,
   pipe,
   race,
   raceWith,
@@ -973,14 +974,29 @@ export class NodeLocator<T extends Node> extends Locator<T> {
     );
   }
 
+  static createFromHandle<T extends Node>(
+    pageOrFrame: Page | Frame,
+    handle: ElementHandle<T>,
+  ): Locator<T> {
+    return new NodeLocator<T>(pageOrFrame, handle).setTimeout(
+      'getDefaultTimeout' in pageOrFrame
+        ? pageOrFrame.getDefaultTimeout()
+        : pageOrFrame.page().getDefaultTimeout(),
+    );
+  }
+
   #pageOrFrame: Page | Frame;
-  #selector: string;
+  #selectorOrHandle: string | ElementHandle<T>;
 
-  private constructor(pageOrFrame: Page | Frame, selector: string) {
+  private constructor(pageOrFrame: Page | Frame, selector: string);
+  private constructor(pageOrFrame: Page | Frame, handle: ElementHandle<T>);
+  private constructor(
+    pageOrFrame: Page | Frame,
+    selectorOrHandle: string | ElementHandle<T>,
+  ) {
     super();
-
     this.#pageOrFrame = pageOrFrame;
-    this.#selector = selector;
+    this.#selectorOrHandle = selectorOrHandle;
   }
 
   /**
@@ -1009,21 +1025,27 @@ export class NodeLocator<T extends Node> extends Locator<T> {
   };
 
   override _clone(): NodeLocator<T> {
-    return new NodeLocator<T>(this.#pageOrFrame, this.#selector).copyOptions(
-      this,
-    );
+    return new NodeLocator<T>(
+      this.#pageOrFrame,
+      // @ts-expect-error TSC does cannot parse private overloads.
+      this.#selectorOrHandle,
+    ).copyOptions(this);
   }
 
   override _wait(options?: Readonly<ActionOptions>): Observable<HandleFor<T>> {
     const signal = options?.signal;
     return defer(() => {
-      return from(
-        this.#pageOrFrame.waitForSelector(this.#selector, {
-          visible: false,
-          timeout: this._timeout,
-          signal,
-        }) as Promise<HandleFor<T> | null>,
-      );
+      if (typeof this.#selectorOrHandle === 'string') {
+        return from(
+          this.#pageOrFrame.waitForSelector(this.#selectorOrHandle, {
+            visible: false,
+            timeout: this._timeout,
+            signal,
+          }) as Promise<HandleFor<T> | null>,
+        );
+      } else {
+        return of(this.#selectorOrHandle as HandleFor<T>);
+      }
     }).pipe(
       filter((value): value is NonNullable<typeof value> => {
         return value !== null;

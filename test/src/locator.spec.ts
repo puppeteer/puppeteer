@@ -127,6 +127,24 @@ describe('Locator', function () {
       expect(text).toBe('clicked');
     });
 
+    it('should work with element handles', async () => {
+      const {page} = await getTestState();
+
+      await page.setViewport({width: 500, height: 500});
+      await page.setContent(`
+        <button style="margin-top: 600px;" onclick="this.innerText = 'clicked';">test</button>
+    `);
+      using button = await page.$('button');
+      if (!button) {
+        throw new Error('button not found');
+      }
+      await page.locator(button).click();
+      const text = await button?.evaluate(el => {
+        return el.innerText;
+      });
+      expect(text).toBe('clicked');
+    });
+
     it('should work if the element becomes visible later', async () => {
       const {page} = await getTestState();
 
