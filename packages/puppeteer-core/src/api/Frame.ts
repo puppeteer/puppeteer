@@ -521,25 +521,16 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   locator<Ret>(func: () => Awaitable<Ret>): Locator<Ret>;
 
   /**
-   * Creates a locator based on an ElementHandle. This would not allow
-   * refreshing the element handle if it is stale but it allows re-using other
-   * locator pre-conditions.
-   */
-  locator<T extends Node>(handle: ElementHandle<T>): Locator<T>;
-
-  /**
    * @internal
    */
   @throwIfDetached
   locator<Selector extends string, Ret, T extends Node>(
-    input: Selector | (() => Awaitable<Ret>) | ElementHandle<T>,
+    input: Selector | (() => Awaitable<Ret>),
   ): Locator<NodeFor<Selector>> | Locator<Ret> | Locator<T> {
     if (typeof input === 'string') {
       return NodeLocator.create(this, input);
-    } else if (typeof input === 'function') {
-      return FunctionLocator.create(this, input);
     } else {
-      return NodeLocator.createFromHandle(this, input);
+      return FunctionLocator.create(this, input);
     }
   }
   /**

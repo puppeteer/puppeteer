@@ -832,17 +832,6 @@ Creates a locator for the provided function. See [Locator](./puppeteer.locator.m
 </td></tr>
 <tr><td>
 
-<span id="locator">[locator(handle)](./puppeteer.page.locator.md)</span>
-
-</td><td>
-
-</td><td>
-
-Creates a locator based on an ElementHandle. This would not allow refreshing the element handle if it is stale but it allows re-using other locator pre-conditions.
-
-</td></tr>
-<tr><td>
-
 <span id="mainframe">[mainFrame()](./puppeteer.page.mainframe.md)</span>
 
 </td><td>
