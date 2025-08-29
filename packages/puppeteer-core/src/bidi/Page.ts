@@ -237,6 +237,13 @@ export class BidiPage extends Page {
     return this.#frame;
   }
 
+  override resize(_params: {
+    contentWidth: number;
+    contentHeight: number;
+  }): Promise<void> {
+    throw new Error('Method not implemented for WebDriver BiDi yet.');
+  }
+
   async focusedFrame(): Promise<BidiFrame> {
     using handle = (await this.mainFrame()
       .isolatedRealm()
