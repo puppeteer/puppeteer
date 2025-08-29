@@ -2,6 +2,22 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.18.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.17.1...puppeteer-v24.18.0) (2025-08-29)
+
+### Miscellaneous Chores
+
+- **puppeteer:** Synchronize puppeteer versions
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - puppeteer-core bumped from 24.17.1 to 24.18.0
+
+### Features
+
+- support converting ElementHandle to Locator ([#14150](https://github.com/puppeteer/puppeteer/issues/14150)) ([da95fb0](https://github.com/puppeteer/puppeteer/commit/da95fb039fed12d43bbce05c1718efd35aae5c83))
+
 ## [24.17.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.17.0...puppeteer-v24.17.1) (2025-08-28)
 
 ### Miscellaneous Chores

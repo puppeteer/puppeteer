@@ -142,6 +142,17 @@ If the given function returns a promise, then this method will wait till the pro
 </td></tr>
 <tr><td>
 
+<span id="aslocator">[asLocator(this)](./puppeteer.elementhandle.aslocator.md)</span>
+
+</td><td>
+
+</td><td>
+
+Creates a locator based on an ElementHandle. This would not allow refreshing the element handle if it is stale but it allows re-using other locator pre-conditions.
+
+</td></tr>
+<tr><td>
+
 <span id="autofill">[autofill(data)](./puppeteer.elementhandle.autofill.md)</span>
 
 </td><td>
