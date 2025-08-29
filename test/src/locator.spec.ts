@@ -138,7 +138,7 @@ describe('Locator', function () {
       if (!button) {
         throw new Error('button not found');
       }
-      await page.locator(button).click();
+      await button.asLocator().click();
       const text = await button?.evaluate(el => {
         return el.innerText;
       });

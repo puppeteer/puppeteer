@@ -31,6 +31,8 @@ import type {
   TouchHandle,
 } from './Input.js';
 import {JSHandle} from './JSHandle.js';
+import type {Locator} from './locators/locators.js';
+import {NodeLocator} from './locators/locators.js';
 import type {
   QueryOptions,
   ScreenshotOptions,
@@ -1554,6 +1556,16 @@ export abstract class ElementHandle<
         behavior: 'instant',
       });
     });
+  }
+
+  /**
+   * Creates a locator based on an ElementHandle. This would not allow
+   * refreshing the element handle if it is stale but it allows re-using other
+   * locator pre-conditions.
+   */
+  @throwIfDisposed()
+  asLocator(this: ElementHandle<Element>): Locator<Element> {
+    return NodeLocator.createFromHandle(this.frame, this);
   }
 
   /**
