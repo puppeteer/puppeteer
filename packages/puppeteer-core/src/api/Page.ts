@@ -3141,6 +3141,18 @@ export abstract class Page extends EventEmitter<PageEvents> {
     options?: WaitTimeoutOptions,
   ): Promise<DeviceRequestPrompt>;
 
+  /**
+   * Resizes the browser window the page is in so that the content area
+   * (excluding browser UI) is according to the specified widht and height.
+   *
+   * @experimental
+   * @internal
+   */
+  abstract resize(params: {
+    contentWidth: number;
+    contentHeight: number;
+  }): Promise<void>;
+
   /** @internal */
   override [disposeSymbol](): void {
     return void this.close().catch(debugError);

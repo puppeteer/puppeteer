@@ -361,6 +361,22 @@ export class CdpPage extends Page {
     }
   }
 
+  override async resize(params: {
+    contentWidth: number;
+    contentHeight: number;
+  }): Promise<void> {
+    const {windowId} = await this.#primaryTargetClient.send(
+      'Browser.getWindowForTarget',
+    );
+
+    // @ts-expect-error Not available in stable yet.
+    await this.#primaryTargetClient.send('Browser.setContentsSize', {
+      windowId,
+      width: params.contentWidth,
+      height: params.contentHeight,
+    });
+  }
+
   async #onFileChooser(
     event: Protocol.Page.FileChooserOpenedEvent,
   ): Promise<void> {
