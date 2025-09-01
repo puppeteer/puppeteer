@@ -35,6 +35,9 @@ export function stringifyFunction(fn: (...args: never) => unknown): string {
     if (
       (err as Error).message.includes(
         `Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive`,
+      ) ||
+      (err as Error).message.includes(
+        'Evaluating a string as JavaScript violates the following Content Security Policy',
       )
     ) {
       // The content security policy does not allow Function eval. Let's
