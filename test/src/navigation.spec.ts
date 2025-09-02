@@ -826,11 +826,13 @@ describe.only('navigation', function () {
       });
       expect(page.url()).toBe(server.PREFIX + '/second.html');
 
-      await page.goBack();
+      let response = await page.goBack();
+      expect(response).toBeNull();
       expect(page.url()).toBe(server.PREFIX + '/first.html');
       await page.goBack();
       expect(page.url()).toBe(server.EMPTY_PAGE);
-      await page.goForward();
+      response = await page.goForward();
+      expect(response).toBeNull();
       expect(page.url()).toBe(server.PREFIX + '/first.html');
     });
   });
