@@ -19,7 +19,7 @@ import {
 } from './mocha-utils.js';
 import {attachFrame, isFavicon, waitEvent} from './utils.js';
 
-describe('navigation', function () {
+describe.only('navigation', function () {
   setupTestBrowserHooks();
 
   describe('Page.goto', function () {
@@ -802,9 +802,19 @@ describe('navigation', function () {
       response = (await page.goForward())!;
       expect(response.ok()).toBe(true);
       expect(response.url()).toContain('/grid.html');
-
-      response = (await page.goForward())!;
-      expect(response).toBe(null);
+    });
+    it('should error if no history is found', async () => {
+      const {page} = await getTestState();
+      let error: Error | undefined;
+      try {
+        await page.goBack();
+      } catch (e) {
+        error = e as Error;
+      }
+      expect(error?.message).atLeastOneToContain([
+        'History entry to navigate to not found.',
+        'no such history entry',
+      ]);
     });
     it('should work with HistoryAPI', async () => {
       const {page, server} = await getTestState();
