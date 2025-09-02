@@ -41,6 +41,7 @@ export class CdpHTTPRequest extends HTTPRequest {
   #headers: Record<string, string> = {};
   #frame: Frame | null;
   #initiator?: Protocol.Network.Initiator;
+  #documentId = '';
 
   override get client(): CDPSession {
     return this.#client;
@@ -97,12 +98,17 @@ export class CdpHTTPRequest extends HTTPRequest {
     this.#frame = frame;
     this._redirectChain = redirectChain;
     this.#initiator = data.initiator;
+    this.#documentId = data.loaderId ?? '';
 
     this.interception.enabled = allowInterception;
 
     for (const [key, value] of Object.entries(data.request.headers)) {
       this.#headers[key.toLowerCase()] = value;
     }
+  }
+
+  override documentId(): string {
+    return this.#documentId;
   }
 
   override url(): string {
