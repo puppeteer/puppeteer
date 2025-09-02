@@ -19,7 +19,7 @@ import {
 } from './mocha-utils.js';
 import {attachFrame, isFavicon, waitEvent} from './utils.js';
 
-describe.only('navigation', function () {
+describe('navigation', function () {
   setupTestBrowserHooks();
 
   describe('Page.goto', function () {
