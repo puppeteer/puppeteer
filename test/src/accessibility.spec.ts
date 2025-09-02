@@ -741,6 +741,45 @@ describe('Accessibility', function () {
           }),
         ).toEqual('My Button');
       });
+
+      it('should get the parent ElementHandle from a text node accessibility node', async () => {
+        const {page} = await getTestState();
+
+        await page.setContent(`<div><b>Hello, </b> world!</div>`);
+        using div = (await page.$('div'))!;
+
+        const parentSnapshot = await page.accessibility.snapshot({
+          root: div,
+          interestingOnly: false,
+        });
+        expect(parentSnapshot).toMatchObject({
+          role: 'generic',
+          name: '',
+          children: [
+            {role: 'StaticText', name: 'Hello, '},
+            {role: 'StaticText', name: 'world!'},
+          ],
+        });
+
+        using textNode = (await div.evaluateHandle(el => {
+          return el.lastChild!;
+        }))!;
+        const snapshot = await page.accessibility.snapshot({root: textNode});
+        expect(snapshot).toMatchObject({
+          role: 'StaticText',
+          name: 'world!',
+        });
+
+        // Get the element handle from the text node.
+        // This should be the parent's handle, not the text node's.
+        using parentNodeHandle = await parentSnapshot!.elementHandle();
+        using textNodeHandle = await snapshot!.elementHandle();
+        expect(parentNodeHandle).toEqual(textNodeHandle);
+        
+        expect( await textNodeHandle?.evaluate(button => {
+            return button.innerHTML;
+          })).toEqual('<b>Hello, </b> world!');
+      });
     });
   });
 

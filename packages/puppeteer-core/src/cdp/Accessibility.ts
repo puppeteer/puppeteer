@@ -508,9 +508,28 @@ class AXNode {
         if (!this.payload.backendDOMNodeId) {
           return null;
         }
-        return (await this.#realm.adoptBackendNode(
+        const handle = (await this.#realm.adoptBackendNode(
           this.payload.backendDOMNodeId,
         )) as ElementHandle<Element>;
+
+        if (!handle) {
+          return null;
+        }
+
+        // Text nodes are not elements, so we can't return a handle to them.
+        // Instead, we find the parent element and return a handle to the parent.
+        if (await handle.evaluate(node => {
+          return node.nodeType === Node.TEXT_NODE;
+        })) {
+          using parent = await handle.evaluateHandle(node => {
+            return node.parentElement;
+          });
+          await handle.dispose();
+
+          return parent.move() as ElementHandle<Element>;
+        }
+
+        return handle;
       },
     };
 
