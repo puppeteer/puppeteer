@@ -48,4 +48,4 @@ _(Optional)_ Navigation parameters
 
 Promise&lt;[HTTPResponse](./puppeteer.httpresponse.md) \| null&gt;
 
-Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If can not go back, resolves to `null`.
+Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If the navigation is same page, returns null. If no history entry is found throws.

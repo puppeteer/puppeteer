@@ -1982,7 +1982,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param options - Navigation parameters
    * @returns Promise which resolves to the main resource response. In case of
    * multiple redirects, the navigation will resolve with the response of the
-   * last redirect. If can not go back, resolves to `null`.
+   * last redirect.
+   * If the navigation is same page, returns null.
+   * If no history entry is found throws.
    */
   abstract goBack(options?: WaitForOptions): Promise<HTTPResponse | null>;
 
@@ -1991,7 +1993,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param options - Navigation Parameter
    * @returns Promise which resolves to the main resource response. In case of
    * multiple redirects, the navigation will resolve with the response of the
-   * last redirect. If can not go forward, resolves to `null`.
+   * last redirect.
+   * If the navigation is same page, returns null.
+   * If no history entry is found throws.
    */
   abstract goForward(options?: WaitForOptions): Promise<HTTPResponse | null>;
 
