@@ -8,7 +8,7 @@ import type {ElementHandle} from '../api/ElementHandle.js';
 import {_isElementHandle} from '../api/ElementHandleSymbol.js';
 import type {Frame} from '../api/Frame.js';
 import type {WaitForSelectorOptions} from '../api/Page.js';
-import type PuppeteerUtil from '../injected/injected.js';
+import type {PuppeteerInjectedUtil} from '../injected/injected.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {interpolateFunction, stringifyFunction} from '../util/Function.js';
 
@@ -23,7 +23,7 @@ import type {Awaitable, AwaitableIterable} from './types.js';
 export type QuerySelectorAll = (
   node: Node,
   selector: string,
-  PuppeteerUtil: PuppeteerUtil,
+  PuppeteerUtil: PuppeteerInjectedUtil,
 ) => AwaitableIterable<Node>;
 
 /**
@@ -32,7 +32,7 @@ export type QuerySelectorAll = (
 export type QuerySelector = (
   node: Node,
   selector: string,
-  PuppeteerUtil: PuppeteerUtil,
+  PuppeteerUtil: PuppeteerInjectedUtil,
 ) => Awaitable<Node | null>;
 
 /**

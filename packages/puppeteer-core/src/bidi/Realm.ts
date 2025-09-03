@@ -20,7 +20,7 @@ import {
   PuppeteerURL,
   SOURCE_URL_REGEX,
 } from '../common/util.js';
-import type PuppeteerUtil from '../injected/injected.js';
+import type {PuppeteerInjectedUtil} from '../injected/injected.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {stringifyFunction} from '../util/Function.js';
 
@@ -61,8 +61,10 @@ export abstract class BidiRealm extends Realm {
     });
   }
 
-  protected internalPuppeteerUtil?: Promise<BidiJSHandle<PuppeteerUtil>>;
-  get puppeteerUtil(): Promise<BidiJSHandle<PuppeteerUtil>> {
+  protected internalPuppeteerUtil?: Promise<
+    BidiJSHandle<PuppeteerInjectedUtil>
+  >;
+  get puppeteerUtil(): Promise<BidiJSHandle<PuppeteerInjectedUtil>> {
     const promise = Promise.resolve() as Promise<unknown>;
     scriptInjector.inject(script => {
       if (this.internalPuppeteerUtil) {
@@ -72,11 +74,13 @@ export abstract class BidiRealm extends Realm {
       }
       this.internalPuppeteerUtil = promise.then(() => {
         return this.evaluateHandle(script) as Promise<
-          BidiJSHandle<PuppeteerUtil>
+          BidiJSHandle<PuppeteerInjectedUtil>
         >;
       });
     }, !this.internalPuppeteerUtil);
-    return this.internalPuppeteerUtil as Promise<BidiJSHandle<PuppeteerUtil>>;
+    return this.internalPuppeteerUtil as Promise<
+      BidiJSHandle<PuppeteerInjectedUtil>
+    >;
   }
 
   override async evaluateHandle<
@@ -308,18 +312,18 @@ export class BidiFrameRealm extends BidiRealm {
   }
 
   #bindingsInstalled = false;
-  override get puppeteerUtil(): Promise<BidiJSHandle<PuppeteerUtil>> {
+  override get puppeteerUtil(): Promise<BidiJSHandle<PuppeteerInjectedUtil>> {
     let promise = Promise.resolve() as Promise<unknown>;
     if (!this.#bindingsInstalled) {
       promise = Promise.all([
         ExposableFunction.from(
-          this.environment as BidiFrame,
+          this.environment,
           '__ariaQuerySelector',
           ARIAQueryHandler.queryOne,
           !!this.sandbox,
         ),
         ExposableFunction.from(
-          this.environment as BidiFrame,
+          this.environment,
           '__ariaQuerySelectorAll',
           async (
             element: BidiElementHandle<Node>,

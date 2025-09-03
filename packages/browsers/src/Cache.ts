@@ -93,6 +93,9 @@ export interface ComputeExecutablePathOptions {
   buildId: string;
 }
 
+/**
+ * @public
+ */
 export interface Metadata {
   // Maps an alias (canary/latest/dev/etc.) to a buildId.
   aliases: Record<string, string>;
