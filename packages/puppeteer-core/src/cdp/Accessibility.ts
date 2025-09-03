@@ -508,9 +508,15 @@ class AXNode {
         if (!this.payload.backendDOMNodeId) {
           return null;
         }
-        return (await this.#realm.adoptBackendNode(
+        using handle = await this.#realm.adoptBackendNode(
           this.payload.backendDOMNodeId,
-        )) as ElementHandle<Element>;
+        );
+
+        // Since Text nodes are not elements, we want to
+        // return a handle to the parent element for them.
+        return (await handle.evaluateHandle(node => {
+          return node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+        })) as ElementHandle<Element>;
       },
     };
 
