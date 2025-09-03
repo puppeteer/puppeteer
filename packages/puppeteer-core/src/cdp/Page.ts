@@ -369,7 +369,6 @@ export class CdpPage extends Page {
       'Browser.getWindowForTarget',
     );
 
-    // @ts-expect-error Not available in stable yet.
     await this.#primaryTargetClient.send('Browser.setContentsSize', {
       windowId,
       width: params.contentWidth,
