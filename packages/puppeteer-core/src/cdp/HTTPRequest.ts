@@ -41,7 +41,7 @@ export class CdpHTTPRequest extends HTTPRequest {
   #headers: Record<string, string> = {};
   #frame: Frame | null;
   #initiator?: Protocol.Network.Initiator;
-  #documentId = '';
+  #documentId: string;
 
   override get client(): CDPSession {
     return this.#client;
