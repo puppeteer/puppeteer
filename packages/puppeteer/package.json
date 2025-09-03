@@ -71,9 +71,10 @@
       ]
     },
     "build:docs": {
-      "command": "api-extractor run --local --config \"./api-extractor.docs.json\"",
+      "command": "api-extractor run --local --config \"./api-extractor.docs.json\" && node --experimental-strip-types ../../tools/rmGlob.ts ./lib '**/*/puppeteer.docs*'",
       "files": [
         "api-extractor.docs.json",
+        "src/puppeteer.docs.ts",
         "lib/esm/puppeteer/puppeteer-core.d.ts",
         "tsconfig.json"
       ],

@@ -10,13 +10,12 @@ import path from 'node:path';
 import {TestServer} from '@pptr/testserver';
 import expect from 'expect';
 import type * as MochaBase from 'mocha';
-import puppeteer, {
-  ConnectionClosedError,
-} from 'puppeteer/lib/cjs/puppeteer/puppeteer.js';
+import puppeteer from 'puppeteer/internal/puppeteer.js';
 import type {Browser} from 'puppeteer-core/internal/api/Browser.js';
 import type {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 import type {Cookie} from 'puppeteer-core/internal/common/Cookie.js';
+import {ConnectionClosedError} from 'puppeteer-core/internal/common/Errors.js';
 import type {LaunchOptions} from 'puppeteer-core/internal/node/LaunchOptions.js';
 import type {PuppeteerNode} from 'puppeteer-core/internal/node/PuppeteerNode.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
@@ -177,7 +176,7 @@ export const setupTestBrowserHooks = (): void => {
     try {
       if (!state.browser) {
         if (!browserPromise) {
-          browserPromise = puppeteer.launch({
+          browserPromise = (puppeteer as unknown as PuppeteerNode).launch({
             ...processVariables.defaultBrowserOptions,
             timeout: defaultTimeout - 1_000,
             protocolTimeout: defaultTimeout * 2,
@@ -367,7 +366,7 @@ export const mochaHooks: Mocha.RootHookObject = {
     async function setUpDefaultState() {
       const {server, httpsServer} = await setupServer();
 
-      state.puppeteer = puppeteer;
+      state.puppeteer = puppeteer as unknown as PuppeteerNode;
       state.server = server;
       state.httpsServer = httpsServer;
       state.isFirefox = processVariables.isFirefox;
@@ -565,7 +564,7 @@ export const launch = async (
       ...(initState.defaultBrowserOptions.args ?? []),
       ...(launchOptions.args ?? []),
     ];
-    const browser = await puppeteer.launch({
+    const browser = await (puppeteer as unknown as PuppeteerNode).launch({
       ...initState.defaultBrowserOptions,
       ...launchOptions,
       args,
