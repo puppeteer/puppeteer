@@ -664,7 +664,7 @@ describe('NetworkManager', () => {
         connection: 'keep-alive',
         'content-length': '85862',
       },
-      resourceIPAddressSpace: 'Private',
+      resourceIPAddressSpace: 'Public',
       statusCode: 200,
       headersText:
         'HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n',
@@ -818,7 +818,7 @@ describe('NetworkManager', () => {
         Date: 'Wed, 10 Aug 2022 09:04:39 GMT',
         'Keep-Alive': 'timeout=5',
       },
-      resourceIPAddressSpace: 'Private',
+      resourceIPAddressSpace: 'Public',
       statusCode: 200,
       headersText:
         'HTTP/1.1 200 OK\\r\\nCache-Control: no-cache, no-store\\r\\nContent-Type: text/html; charset=utf-8\\r\\nDate: Wed, 10 Aug 2022 09:04:39 GMT\\r\\nConnection: keep-alive\\r\\nKeep-Alive: timeout=5\\r\\nContent-Length: 0\\r\\n\\r\\n',
