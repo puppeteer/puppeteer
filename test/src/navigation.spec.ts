@@ -802,9 +802,19 @@ describe('navigation', function () {
       response = (await page.goForward())!;
       expect(response.ok()).toBe(true);
       expect(response.url()).toContain('/grid.html');
-
-      response = (await page.goForward())!;
-      expect(response).toBe(null);
+    });
+    it('should error if no history is found', async () => {
+      const {page} = await getTestState();
+      let error: Error | undefined;
+      try {
+        await page.goBack();
+      } catch (e) {
+        error = e as Error;
+      }
+      expect(error?.message).atLeastOneToContain([
+        'History entry to navigate to not found.',
+        'no such history entry',
+      ]);
     });
     it('should work with HistoryAPI', async () => {
       const {page, server} = await getTestState();
@@ -816,11 +826,13 @@ describe('navigation', function () {
       });
       expect(page.url()).toBe(server.PREFIX + '/second.html');
 
-      await page.goBack();
+      let response = await page.goBack();
+      expect(response).toBeNull();
       expect(page.url()).toBe(server.PREFIX + '/first.html');
       await page.goBack();
       expect(page.url()).toBe(server.EMPTY_PAGE);
-      await page.goForward();
+      response = await page.goForward();
+      expect(response).toBeNull();
       expect(page.url()).toBe(server.PREFIX + '/first.html');
     });
   });

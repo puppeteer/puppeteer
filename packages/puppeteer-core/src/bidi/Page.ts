@@ -55,7 +55,6 @@ import {assert} from '../util/assert.js';
 import {bubble} from '../util/decorators.js';
 import {Deferred} from '../util/Deferred.js';
 import {stringToTypedArray} from '../util/encoding.js';
-import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {BidiBrowser} from './Browser.js';
 import type {BidiBrowserContext} from './BrowserContext.js';
@@ -933,11 +932,6 @@ export class BidiPage extends Page {
       return response;
     } catch (error) {
       controller.abort();
-      if (isErrorLike(error)) {
-        if (error.message.includes('no such history entry')) {
-          return null;
-        }
-      }
       throw error;
     }
   }
