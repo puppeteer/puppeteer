@@ -775,10 +775,12 @@ describe('Accessibility', function () {
         using parentNodeHandle = await parentSnapshot!.elementHandle();
         using textNodeHandle = await snapshot!.elementHandle();
         expect(parentNodeHandle).toEqual(textNodeHandle);
-        
-        expect( await textNodeHandle?.evaluate(button => {
+
+        expect(
+          await textNodeHandle?.evaluate(button => {
             return button.innerHTML;
-          })).toEqual('<b>Hello, </b> world!');
+          }),
+        ).toEqual('<b>Hello, </b> world!');
       });
     });
   });

@@ -6,8 +6,9 @@
 
 import type {Protocol} from 'devtools-protocol';
 
-import type {ElementHandle} from '../api/ElementHandle.js';
+import {ElementHandle} from '../api/ElementHandle.js';
 import type {Realm} from '../api/Realm.js';
+import {debugError} from '../common/util.js';
 
 /**
  * Represents a Node and the properties of it that are relevant to Accessibility.
@@ -508,23 +509,25 @@ class AXNode {
         if (!this.payload.backendDOMNodeId) {
           return null;
         }
-        const handle = (await this.#realm.adoptBackendNode(
+        const handle = await this.#realm.adoptBackendNode(
           this.payload.backendDOMNodeId,
-        )) as ElementHandle<Element>;
+        );
 
-        if (!handle) {
+        if (!handle || !(handle instanceof ElementHandle)) {
           return null;
         }
 
+        const isTextNode = await handle.evaluate(node => {
+          return node.nodeType === Node.TEXT_NODE;
+        });
         // Text nodes are not elements, so we can't return a handle to them.
         // Instead, we find the parent element and return a handle to the parent.
-        if (await handle.evaluate(node => {
-          return node.nodeType === Node.TEXT_NODE;
-        })) {
+        if (isTextNode) {
           using parent = await handle.evaluateHandle(node => {
             return node.parentElement;
           });
-          await handle.dispose();
+
+          void handle.dispose().catch(debugError);
 
           return parent.move() as ElementHandle<Element>;
         }
