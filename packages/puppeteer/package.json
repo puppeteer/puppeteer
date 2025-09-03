@@ -71,11 +71,10 @@
       ]
     },
     "build:docs": {
-      "command": "api-extractor run --local --config \"./api-extractor.docs.json\" && node --experimental-strip-types ../../tools/rmGlob.ts ./lib '**/*/puppeteer.docs*'",
+      "command": "api-extractor run --local --config \"./api-extractor.docs.json\"",
       "files": [
         "api-extractor.docs.json",
-        "src/puppeteer.docs.ts",
-        "lib/esm/puppeteer/puppeteer-core.d.ts",
+        "lib/esm/puppeteer/puppeteer.docs.d.ts",
         "tsconfig.json"
       ],
       "dependencies": [
@@ -122,6 +121,11 @@
     "!*.test.d.ts",
     "!*.test.js.map",
     "!*.test.d.ts.map",
+    "!*.docs.ts",
+    "!*.docs.js",
+    "!*.docs.d.ts",
+    "!*.docs.js.map",
+    "!*.docs.d.ts.map",
     "!*.tsbuildinfo"
   ],
   "author": "The Chromium Authors",
