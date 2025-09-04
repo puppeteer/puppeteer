@@ -18,26 +18,34 @@ describe('Accessibility', function () {
   it('should work', async () => {
     const {page, isFirefox} = await getTestState();
 
-    await page.setContent(`
-      <head>
-        <title>Accessibility Test</title>
-      </head>
-      <body>
-        <div>Hello World</div>
-        <h1>Inputs</h1>
-        <input placeholder="Empty input" autofocus />
-        <input placeholder="readonly input" readonly />
-        <input placeholder="disabled input" disabled />
-        <input aria-label="Input with whitespace" value="  " />
-        <input value="value only" />
-        <input aria-placeholder="placeholder" value="and a value" />
-        <div aria-hidden="true" id="desc">This is a description!</div>
-        <input aria-placeholder="placeholder" value="and a value" aria-describedby="desc" />
-        <select>
-          <option>First Option</option>
-          <option>Second Option</option>
-        </select>
-      </body>`);
+    await page.setContent(
+      htmlRaw`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <title>Accessibility Test</title>
+        </head>
+        <body>
+          <div>Hello World</div>
+          <h1>Inputs</h1>
+          <input placeholder="Empty input" autofocus />
+          <input placeholder="readonly input" readonly />
+          <input placeholder="disabled input" disabled />
+          <input aria-label="Input with whitespace" value="  " />
+          <input value="value only" />
+          <input aria-placeholder="placeholder" value="and a value" />
+          <div aria-hidden="true" id="desc">This is a description!</div>
+          <input
+            aria-placeholder="placeholder"
+            value="and a value"
+            aria-describedby="desc"
+          />
+          <select>
+            <option>First Option</option>
+            <option>Second Option</option>
+          </select>
+        </body>`,
+    );
 
     await page.focus('[placeholder="Empty input"]');
     const golden = isFirefox
@@ -110,7 +118,7 @@ describe('Accessibility', function () {
   it('should report uninteresting nodes', async () => {
     const {page, isFirefox} = await getTestState();
 
-    await page.setContent(`<textarea>hi</textarea>`);
+    await page.setContent(html`<textarea>hi</textarea>`);
     await page.focus('textarea');
     const golden = isFirefox
       ? {
@@ -156,37 +164,43 @@ describe('Accessibility', function () {
     const {page} = await getTestState();
 
     await page.setContent(
-      `<!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Accessible name + aria-expanded puppeteer bug</title>
-        <style>
-          [aria-expanded="false"] + * {
-            display: none;
-          }
-        </style>
-      </head>
-      <body>
-        <button hidden>Show</button>
-        <p>Some content</p>
-        <script>
-          const button = document.querySelector('button');
-          button.removeAttribute('hidden')
-          button.setAttribute('aria-expanded', 'false');
-          button.addEventListener('click', function() {
-            button.setAttribute('aria-expanded', button.getAttribute('aria-expanded') !== 'true')
-            if (button.getAttribute('aria-expanded') == 'true') {
-              button.textContent = 'Hide'
-            } else {
-              button.textContent = 'Show'
-            }
-          })
-        </script>
-      </body>
-      </html>`,
+      htmlRaw`<!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1.0"
+            />
+            <title>Accessible name + aria-expanded puppeteer bug</title>
+            <style>
+              [aria-expanded='false'] + * {
+                display: none;
+              }
+            </style>
+          </head>
+          <body>
+            <button hidden>Show</button>
+            <p>Some content</p>
+            <script>
+              const button = document.querySelector('button');
+              button.removeAttribute('hidden');
+              button.setAttribute('aria-expanded', 'false');
+              button.addEventListener('click', function () {
+                button.setAttribute(
+                  'aria-expanded',
+                  button.getAttribute('aria-expanded') !== 'true',
+                );
+                if (button.getAttribute('aria-expanded') == 'true') {
+                  button.textContent = 'Hide';
+                } else {
+                  button.textContent = 'Show';
+                }
+              });
+            </script>
+          </body>
+        </html>`,
     );
     async function getAccessibleName(page: any, element: any) {
       return (await page.accessibility.snapshot({root: element})).name;
@@ -200,7 +214,7 @@ describe('Accessibility', function () {
     const {page} = await getTestState();
 
     await page.setContent(
-      '<div tabIndex=-1 aria-roledescription="foo">Hi</div>',
+      html`<div tabindex="-1" aria-roledescription="foo">Hi</div>`,
     );
     const snapshot = await page.accessibility.snapshot();
     // See https://chromium-review.googlesource.com/c/chromium/src/+/3088862
@@ -213,7 +227,7 @@ describe('Accessibility', function () {
     const {page} = await getTestState();
 
     await page.setContent(
-      '<a href="" role="slider" aria-orientation="vertical">11</a>',
+      html`<a href="" role="slider" aria-orientation="vertical">11</a>`,
     );
     const snapshot = await page.accessibility.snapshot();
     assert(snapshot);
@@ -224,7 +238,9 @@ describe('Accessibility', function () {
   it('autocomplete', async () => {
     const {page} = await getTestState();
 
-    await page.setContent('<input type="number" aria-autocomplete="list" />');
+    await page.setContent(
+      html`<input type="number" aria-autocomplete="list" />`,
+    );
     const snapshot = await page.accessibility.snapshot();
     assert(snapshot);
     assert(snapshot.children);
@@ -235,7 +251,9 @@ describe('Accessibility', function () {
     const {page} = await getTestState();
 
     await page.setContent(
-      '<div role="grid" tabIndex=-1 aria-multiselectable=true>hey</div>',
+      html`<div role="grid" tabindex="-1" aria-multiselectable="true">
+        hey
+      </div>`,
     );
     const snapshot = await page.accessibility.snapshot();
     assert(snapshot);
@@ -416,7 +434,7 @@ describe('Accessibility', function () {
     const {page} = await getTestState();
 
     await page.setContent(
-      '<div role="grid" tabIndex=-1 aria-keyshortcuts="foo">hey</div>',
+      html`<div role="grid" tabindex="-1" aria-keyshortcuts="foo">hey</div>`,
     );
     const snapshot = await page.accessibility.snapshot();
     assert(snapshot);
@@ -428,11 +446,12 @@ describe('Accessibility', function () {
     it('should not report text nodes inside controls', async () => {
       const {page, isFirefox} = await getTestState();
 
-      await page.setContent(`
-        <div role="tablist">
+      await page.setContent(
+        html` <div role="tablist">
           <div role="tab" aria-selected="true"><b>Tab1</b></div>
           <div role="tab">Tab2</div>
-        </div>`);
+        </div>`,
+      );
       const golden = isFirefox
         ? {
             role: 'document',
@@ -469,10 +488,11 @@ describe('Accessibility', function () {
     it('rich text editable fields should have children', async () => {
       const {page, isFirefox} = await getTestState();
 
-      await page.setContent(`
-        <div contenteditable="true">
-          Edit this image: <img src="fakeimage.png" alt="my fake image">
-        </div>`);
+      await page.setContent(
+        html` <div contenteditable="true">
+          Edit this image: <img src="fakeimage.png" alt="my fake image" />
+        </div>`,
+      );
       const golden = isFirefox
         ? {
             role: 'section',
@@ -511,10 +531,11 @@ describe('Accessibility', function () {
     it('rich text editable fields with role should have children', async () => {
       const {page, isFirefox} = await getTestState();
 
-      await page.setContent(`
-        <div contenteditable="true" role='textbox'>
-          Edit this image: <img src="fakeimage.png" alt="my fake image">
-        </div>`);
+      await page.setContent(
+        html` <div contenteditable="true" role="textbox">
+          Edit this image: <img src="fakeimage.png" alt="my fake image" />
+        </div>`,
+      );
       // Image node should not be exposed in contenteditable elements. See https://crbug.com/1324392.
       const golden = isFirefox
         ? {
@@ -551,8 +572,11 @@ describe('Accessibility', function () {
       it('plain text field with role should not have children', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(`
-          <div contenteditable="plaintext-only" role='textbox'>Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
+        await page.setContent(
+          html` <div contenteditable="plaintext-only" role="textbox">
+            Edit this image:<img src="fakeimage.png" alt="my fake image" />
+          </div>`,
+        );
         const snapshot = await page.accessibility.snapshot();
         assert(snapshot);
         assert(snapshot.children);
@@ -567,11 +591,17 @@ describe('Accessibility', function () {
     it('non editable textbox with role and tabIndex and label should not have children', async () => {
       const {page, isFirefox} = await getTestState();
 
-      await page.setContent(`
-        <div role="textbox" tabIndex=0 aria-checked="true" aria-label="my favorite textbox">
+      await page.setContent(
+        html` <div
+          role="textbox"
+          tabindex="0"
+          aria-checked="true"
+          aria-label="my favorite textbox"
+        >
           this is the inner content
-          <img alt="yo" src="fakeimg.png">
-        </div>`);
+          <img alt="yo" src="fakeimg.png" />
+        </div>`,
+      );
       const golden = isFirefox
         ? {
             role: 'entry',
@@ -591,11 +621,17 @@ describe('Accessibility', function () {
     it('checkbox with and tabIndex and label should not have children', async () => {
       const {page, isFirefox} = await getTestState();
 
-      await page.setContent(`
-        <div role="checkbox" tabIndex=0 aria-checked="true" aria-label="my favorite checkbox">
+      await page.setContent(
+        html` <div
+          role="checkbox"
+          tabindex="0"
+          aria-checked="true"
+          aria-label="my favorite checkbox"
+        >
           this is the inner content
-          <img alt="yo" src="fakeimg.png">
-        </div>`);
+          <img alt="yo" src="fakeimg.png" />
+        </div>`,
+      );
       const golden = isFirefox
         ? {
             role: 'checkbutton',
@@ -615,11 +651,12 @@ describe('Accessibility', function () {
     it('checkbox without label should not have children', async () => {
       const {page, isFirefox} = await getTestState();
 
-      await page.setContent(`
-        <div role="checkbox" aria-checked="true">
+      await page.setContent(
+        html` <div role="checkbox" aria-checked="true">
           this is the inner content
-          <img alt="yo" src="fakeimg.png">
-        </div>`);
+          <img alt="yo" src="fakeimg.png" />
+        </div>`,
+      );
       const golden = isFirefox
         ? {
             role: 'checkbutton',
@@ -641,7 +678,7 @@ describe('Accessibility', function () {
       it('should work a button', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(`<button>My Button</button>`);
+        await page.setContent(html`<button>My Button</button>`);
 
         using button = (await page.$('button'))!;
         expect(await page.accessibility.snapshot({root: button})).toMatchObject(
@@ -654,7 +691,9 @@ describe('Accessibility', function () {
       it('should work an input', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(`<input title="My Input" value="My Value">`);
+        await page.setContent(
+          html`<input title="My Input" value="My Value" />`,
+        );
 
         using input = (await page.$('input'))!;
         expect(await page.accessibility.snapshot({root: input})).toMatchObject({
@@ -666,13 +705,13 @@ describe('Accessibility', function () {
       it('should work a menu', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(`
-            <div role="menu" title="My Menu">
-              <div role="menuitem">First Item</div>
-              <div role="menuitem">Second Item</div>
-              <div role="menuitem">Third Item</div>
-            </div>
-          `);
+        await page.setContent(html`
+          <div role="menu" title="My Menu">
+            <div role="menuitem">First Item</div>
+            <div role="menuitem">Second Item</div>
+            <div role="menuitem">Third Item</div>
+          </div>
+        `);
 
         using menu = (await page.$('div[role="menu"]'))!;
         expect(await page.accessibility.snapshot({root: menu})).toMatchObject({
@@ -689,7 +728,7 @@ describe('Accessibility', function () {
       it('should return null when the element is no longer in DOM', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(`<button>My Button</button>`);
+        await page.setContent(html`<button>My Button</button>`);
         using button = (await page.$('button'))!;
         await page.$eval('button', button => {
           return button.remove();
@@ -699,7 +738,7 @@ describe('Accessibility', function () {
       it('should support the interestingOnly option', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(`<div><button>My Button</button></div>`);
+        await page.setContent(html`<div><button>My Button</button></div>`);
         using div = (await page.$('div'))!;
         expect(await page.accessibility.snapshot({root: div})).toEqual(null);
         expect(
@@ -725,7 +764,7 @@ describe('Accessibility', function () {
       it('should get an ElementHandle from a snapshot item', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(`<button>My Button</button>`);
+        await page.setContent(html`<button>My Button</button>`);
 
         using button = (await page.$('button'))!;
         const snapshot = await page.accessibility.snapshot({root: button});
@@ -745,7 +784,7 @@ describe('Accessibility', function () {
       it('should get the parent ElementHandle from a text node accessibility node', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(`<div><b>Hello, </b> world!</div>`);
+        await page.setContent(html`<div><b>Hello, </b> world!</div>`);
         using div = (await page.$('div'))!;
 
         const parentSnapshot = await page.accessibility.snapshot({

@@ -10,6 +10,7 @@ import {Puppeteer} from 'puppeteer-core';
 import type {ElementHandle} from 'puppeteer-core/internal/api/ElementHandle.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {html} from './utils.js';
 
 describe('Query handler tests', function () {
   setupTestBrowserHooks();
@@ -89,7 +90,7 @@ describe('Query handler tests', function () {
       it('should query existing element', async () => {
         const {page} = await getTestState();
 
-        await page.setContent('<section>test</section>');
+        await page.setContent(html`<section>test</section>`);
 
         expect(await page.$('text/test')).toBeTruthy();
         expect(await page.$$('text/test')).toHaveLength(1);
@@ -103,7 +104,10 @@ describe('Query handler tests', function () {
       it('should return first element', async () => {
         const {page} = await getTestState();
 
-        await page.setContent('<div id="1">a</div><div>a</div>');
+        await page.setContent(
+          html`<div id="1">a</div>
+            <div>a</div>`,
+        );
 
         using element = await page.$('text/a');
         expect(
@@ -115,7 +119,10 @@ describe('Query handler tests', function () {
       it('should return multiple elements', async () => {
         const {page} = await getTestState();
 
-        await page.setContent('<div>a</div><div>a</div>');
+        await page.setContent(
+          html`<div>a</div>
+            <div>a</div>`,
+        );
 
         const elements = await page.$$('text/a');
         expect(elements).toHaveLength(2);
@@ -145,7 +152,12 @@ describe('Query handler tests', function () {
       it('should query deeply nested text', async () => {
         const {page} = await getTestState();
 
-        await page.setContent('<div><div>a</div><div>b</div></div>');
+        await page.setContent(
+          html`<div>
+            <div>a</div>
+            <div>b</div>
+          </div>`,
+        );
 
         using element = await page.$('text/a');
         expect(
@@ -157,7 +169,7 @@ describe('Query handler tests', function () {
       it('should query inputs', async () => {
         const {page} = await getTestState();
 
-        await page.setContent('<input value="a">');
+        await page.setContent(html`<input value="a" />`);
 
         using element = (await page.$(
           'text/a',
@@ -171,14 +183,19 @@ describe('Query handler tests', function () {
       it('should not query radio', async () => {
         const {page} = await getTestState();
 
-        await page.setContent('<radio value="a">');
+        await page.setContent(html`<radio value="a"></radio>`);
 
         expect(await page.$('text/a')).toBeNull();
       });
       it('should query text spanning multiple elements', async () => {
         const {page} = await getTestState();
 
-        await page.setContent('<div><span>a</span> <span>b</span><div>');
+        await page.setContent(
+          html`<div>
+            <span>a</span> <span>b</span>
+            <div></div>
+          </div>`,
+        );
 
         using element = await page.$('text/a b');
         expect(
@@ -191,7 +208,9 @@ describe('Query handler tests', function () {
         const {page} = await getTestState();
 
         await page.setContent(
-          '<div id=target1>text</div><input id=target2 value=text><div id=target3>text</div>',
+          html`<div id="target1">text</div>
+            <input id="target2" value="text" />
+            <div id="target3">text</div>`,
         );
         using div = (await page.$('#target1')) as ElementHandle<HTMLDivElement>;
         using input = (await page.$(
@@ -259,7 +278,7 @@ describe('Query handler tests', function () {
       it('should query existing element', async () => {
         const {page} = await getTestState();
 
-        await page.setContent('<div class="a"><span>a</span></div>');
+        await page.setContent(html`<div class="a"><span>a</span></div>`);
 
         using elementHandle = (await page.$('div'))!;
         expect(await elementHandle.$(`text/a`)).toBeTruthy();
@@ -269,7 +288,7 @@ describe('Query handler tests', function () {
       it('should return null for non-existing element', async () => {
         const {page} = await getTestState();
 
-        await page.setContent('<div class="a"></div>');
+        await page.setContent(html`<div class="a"></div>`);
 
         using elementHandle = (await page.$('div'))!;
         expect(await elementHandle.$(`text/a`)).toBeFalsy();
@@ -283,7 +302,7 @@ describe('Query handler tests', function () {
       it('should query existing element', async () => {
         const {page} = await getTestState();
 
-        await page.setContent('<section>test</section>');
+        await page.setContent(html`<section>test</section>`);
 
         expect(await page.$('xpath/html/body/section')).toBeTruthy();
         expect(await page.$$('xpath/html/body/section')).toHaveLength(1);
@@ -301,7 +320,10 @@ describe('Query handler tests', function () {
       it('should return first element', async () => {
         const {page} = await getTestState();
 
-        await page.setContent('<div>a</div><div></div>');
+        await page.setContent(
+          html`<div>a</div>
+            <div></div>`,
+        );
 
         using element = await page.$('xpath/html/body/div');
         expect(
@@ -313,7 +335,10 @@ describe('Query handler tests', function () {
       it('should return multiple elements', async () => {
         const {page} = await getTestState();
 
-        await page.setContent('<div></div><div></div>');
+        await page.setContent(
+          html`<div></div>
+            <div></div>`,
+        );
 
         const elements = await page.$$('xpath/html/body/div');
         expect(elements).toHaveLength(2);
@@ -323,7 +348,7 @@ describe('Query handler tests', function () {
       it('should query existing element', async () => {
         const {page} = await getTestState();
 
-        await page.setContent('<div class="a">a<span></span></div>');
+        await page.setContent(html`<div class="a">a<span></span></div>`);
 
         using elementHandle = (await page.$('div'))!;
         expect(await elementHandle.$(`xpath/span`)).toBeTruthy();
@@ -333,7 +358,7 @@ describe('Query handler tests', function () {
       it('should return null for non-existing element', async () => {
         const {page} = await getTestState();
 
-        await page.setContent('<div class="a">a</div>');
+        await page.setContent(html`<div class="a">a</div>`);
 
         using elementHandle = (await page.$('div'))!;
         expect(await elementHandle.$(`xpath/span`)).toBeFalsy();

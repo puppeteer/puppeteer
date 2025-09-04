@@ -19,9 +19,16 @@ import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 import sinon from 'sinon';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame, detachFrame, isFavicon, waitEvent} from './utils.js';
+import {
+  attachFrame,
+  detachFrame,
+  html,
+  htmlRaw,
+  isFavicon,
+  waitEvent,
+} from './utils.js';
 
-describe('Page', function () {
+describe.only('Page', function () {
   setupTestBrowserHooks();
 
   describe('Page.close', function () {
@@ -237,7 +244,9 @@ describe('Page', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      await page.setContent('<a target=_blank href="/one-style.html">yo</a>');
+      await page.setContent(
+        html`<a target="_blank" href="/one-style.html">yo</a>`,
+      );
       const [popup] = await Promise.all([
         waitEvent<Page>(page, 'popup'),
         page.click('a'),
@@ -258,7 +267,7 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.setContent(
-        '<a target=_blank rel=opener href="/one-style.html">yo</a>',
+        html`<a target="_blank" rel="opener" href="/one-style.html">yo</a>`,
       );
       const [popup] = await Promise.all([
         waitEvent<Page>(page, 'popup'),
@@ -280,7 +289,7 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.setContent(
-        '<a target=_blank rel=noopener href="/one-style.html">yo</a>',
+        html`<a target="_blank" rel="noopener" href="/one-style.html">yo</a>`,
       );
       const [popup] = await Promise.all([
         waitEvent<Page>(page, 'popup'),
@@ -304,7 +313,7 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.setContent(
-        '<a target=_blank rel=noopener href="/one-style.html">yo</a>',
+        html`<a target="_blank" rel="noopener" href="/one-style.html">yo</a>`,
       );
       const [popup] = await Promise.all([
         waitEvent<Page>(page, 'popup'),
@@ -556,7 +565,11 @@ describe('Page', function () {
       await page.goto(server.EMPTY_PAGE);
       const [message] = await Promise.all([
         waitEvent(page, 'console'),
-        page.setContent(`<script>fetch('http://wat');</script>`),
+        page.setContent(
+          html`<script>
+            fetch('http://wat');
+          </script>`,
+        ),
       ]);
       expect(message.text()).toContain(`ERR_NAME_NOT_RESOLVED`);
       expect(message.type()).toEqual('error');
@@ -1483,7 +1496,7 @@ describe('Page', function () {
     it('should work', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('<div>hello</div>');
+      await page.setContent(htmlRaw`<div>hello</div>`);
       const result = await page.content();
       expect(result).toBe(expectedOutput);
     });
@@ -1491,7 +1504,7 @@ describe('Page', function () {
       const {page} = await getTestState();
 
       const doctype = '<!DOCTYPE html>';
-      await page.setContent(`${doctype}<div>hello</div>`);
+      await page.setContent(htmlRaw`${doctype}<div>hello</div>`);
       const result = await page.content();
       expect(result).toBe(`${doctype}${expectedOutput}`);
     });
@@ -1501,7 +1514,7 @@ describe('Page', function () {
       const doctype =
         '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" ' +
         '"http://www.w3.org/TR/html4/strict.dtd">';
-      await page.setContent(`${doctype}<div>hello</div>`);
+      await page.setContent(htmlRaw`${doctype}<div>hello</div>`);
       const result = await page.content();
       expect(result).toBe(`${doctype}${expectedOutput}`);
     });
@@ -1513,7 +1526,7 @@ describe('Page', function () {
       server.setRoute(imgPath, () => {});
       let error!: Error;
       await page
-        .setContent(`<img src="${server.PREFIX + imgPath}"></img>`, {
+        .setContent(html`<img src="${server.PREFIX + imgPath}"></img>`, {
           timeout: 1,
         })
         .catch(error_ => {
@@ -1530,7 +1543,7 @@ describe('Page', function () {
       server.setRoute(imgPath, () => {});
       let error!: Error;
       await page
-        .setContent(`<img src="${server.PREFIX + imgPath}"></img>`)
+        .setContent(html`<img src="${server.PREFIX + imgPath}"></img>`)
         .catch(error_ => {
           return (error = error_);
         });
@@ -1546,7 +1559,7 @@ describe('Page', function () {
       });
       let loaded = false;
       const contentPromise = page
-        .setContent(`<img src="${server.PREFIX + imgPath}"></img>`)
+        .setContent(html`<img src="${server.PREFIX + imgPath}"></img>`)
         .then(() => {
           return (loaded = true);
         });
@@ -1559,13 +1572,13 @@ describe('Page', function () {
       const {page} = await getTestState();
 
       for (let i = 0; i < 20; ++i) {
-        await page.setContent('<div>yo</div>');
+        await page.setContent(htmlRaw`<div>yo</div>`);
       }
     });
     it('should work with tricky content', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('<div>hello world</div>' + '\x7F');
+      await page.setContent(html`${'<div>hello world</div>' + '\x7F'}`);
       expect(
         await page.$eval('div', div => {
           return div.textContent;
@@ -1575,7 +1588,7 @@ describe('Page', function () {
     it('should work with accents', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('<div>aberración</div>');
+      await page.setContent(html`<div>aberración</div>`);
       expect(
         await page.$eval('div', div => {
           return div.textContent;
@@ -1585,7 +1598,7 @@ describe('Page', function () {
     it('should work with emojis', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('<div>🐥</div>');
+      await page.setContent(html`<div>🐥</div>`);
       expect(
         await page.$eval('div', div => {
           return div.textContent;
@@ -1595,7 +1608,7 @@ describe('Page', function () {
     it('should work with newline', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('<div>\n</div>');
+      await page.setContent(htmlRaw`<div>\n</div>`);
       expect(
         await page.$eval('div', div => {
           return div.textContent;
@@ -1606,7 +1619,7 @@ describe('Page', function () {
       const {page} = await getTestState();
 
       const comment = '<!-- Comment -->';
-      await page.setContent(`${comment}<div>hello</div>`);
+      await page.setContent(htmlRaw`${comment}<div>hello</div>`);
       const result = await page.content();
       expect(result).toBe(`${comment}${expectedOutput}`);
     });
@@ -2317,7 +2330,11 @@ describe('Page', function () {
     it('should throw if passed in non-strings', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('<select><option value="12"/></select>');
+      await page.setContent(
+        html`<select>
+          <option value="12" />
+        </select>`,
+      );
       let error!: Error;
       try {
         // @ts-expect-error purposefully passing bad input

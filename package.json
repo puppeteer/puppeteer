@@ -14,7 +14,7 @@
     "docs": "wireit",
     "doctest": "wireit",
     "format": "wireit",
-    "format:eslint": "eslint --cache --fix .",
+    "format:eslint": "wireit",
     "format:expectations": "node tools/sort-test-expectations.mjs",
     "format:prettier": "prettier --write --cache . ",
     "lint": "wireit",
@@ -96,6 +96,12 @@
         "format:eslint",
         "format:prettier",
         "format:expectations"
+      ]
+    },
+    "format:eslint": {
+      "command": "eslint --cache --fix .",
+      "dependencies": [
+        "build:tools"
       ]
     },
     "test:chrome": {

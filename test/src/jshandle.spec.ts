@@ -13,6 +13,7 @@ import {
 import sinon from 'sinon';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {html} from './utils.js';
 
 describe('JSHandle', function () {
   setupTestBrowserHooks();
@@ -232,7 +233,7 @@ describe('JSHandle', function () {
     it('should return ElementHandle for TextNodes', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('<div>ee!</div>');
+      await page.setContent(html`<div>ee!</div>`);
       using aHandle = await page.evaluateHandle(() => {
         return document.querySelector('div')!.firstChild;
       });

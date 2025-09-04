@@ -7,7 +7,7 @@
 import expect from 'expect';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame} from './utils.js';
+import {attachFrame, html} from './utils.js';
 
 describe('Evaluation specs', function () {
   setupTestBrowserHooks();
@@ -369,7 +369,7 @@ describe('Evaluation specs', function () {
     it('should accept element handle as an argument', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('<section>42</section>');
+      await page.setContent(html`<section>42</section>`);
       using element = (await page.$('section'))!;
       const text = await page.evaluate(e => {
         return e.textContent;
@@ -379,7 +379,7 @@ describe('Evaluation specs', function () {
     it('should throw if underlying element was disposed', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('<section>39</section>');
+      await page.setContent(html`<section>39</section>`);
       using element = (await page.$('section'))!;
       expect(element).toBeTruthy();
       // We want to dispose early.
@@ -463,7 +463,9 @@ describe('Evaluation specs', function () {
     it('should return properly serialize objects with unknown type fields', async () => {
       const {page} = await getTestState();
       await page.setContent(
-        "<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='>",
+        html`<img
+          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
+        />`,
       );
 
       const result = await page.evaluate(async () => {

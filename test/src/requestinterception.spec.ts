@@ -12,7 +12,7 @@ import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {isFavicon, waitEvent} from './utils.js';
+import {html, isFavicon, waitEvent} from './utils.js';
 
 describe('request interception', function () {
   setupTestBrowserHooks();
@@ -60,9 +60,9 @@ describe('request interception', function () {
       page.on('request', request => {
         return request.continue();
       });
-      await page.setContent(`
-        <form action='/rredirect' method='post'>
-          <input type="hidden" id="foo" name="foo" value="FOOBAR">
+      await page.setContent(html`
+        <form action="/rredirect" method="post">
+          <input type="hidden" id="foo" name="foo" value="FOOBAR" />
         </form>
       `);
       await Promise.all([
@@ -546,7 +546,7 @@ describe('request interception', function () {
     it('should not throw "Invalid Interception Id" if the request was cancelled', async () => {
       const {page, server} = await getTestState();
 
-      await page.setContent('<iframe></iframe>');
+      await page.setContent(html`<iframe></iframe>`);
       await page.setRequestInterception(true);
       let request!: HTTPRequest;
       page.on('request', async r => {
