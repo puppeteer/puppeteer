@@ -22,10 +22,10 @@ const noInvalidSetContentRule = createRule({
     },
     messages: {
       missingHtml:
-        'page.setContent() should wrap the HTML in html to prevent Quirk Mode activation. If you needed use htmlWithQuirks',
+        'page.setContent() should not use Quirks mode, if needed use htmlRaw``',
     },
     fixable: 'code',
-    schema: [], // No options for this rule
+    schema: [],
   },
   defaultOptions: [],
   create(context) {
@@ -33,13 +33,10 @@ const noInvalidSetContentRule = createRule({
       CallExpression(node) {
         const callee = node.callee;
 
-        // 1. Check if the function being called is a MemberExpression
-        // (e.g., object.method)
         if (callee.type !== 'MemberExpression') {
           return;
         }
 
-        // 2. Check if the object is `page` and the method is `setContent`
         const object = callee.object;
         const property = callee.property;
 
@@ -52,17 +49,12 @@ const noInvalidSetContentRule = createRule({
           return;
         }
 
-        // At this point, we know we have a `page.setContent(...)` call.
-
-        // 3. Check the first argument
         const firstArg = node.arguments[0];
         let isArgumentValid = false;
 
         if (firstArg) {
-          // 4. Verify the argument is a TaggedTemplateExpression (e.g., tag`...`)
           if (firstArg.type === 'TaggedTemplateExpression') {
             const tag = firstArg.tag;
-            // 5. Verify the tag is the `html` identifier
             if (
               tag.type === 'Identifier' &&
               (tag.name === 'html' || tag.name === 'htmlRaw')
@@ -72,10 +64,9 @@ const noInvalidSetContentRule = createRule({
           }
         }
 
-        // 6. If the argument is not valid, report an error
         if (!isArgumentValid) {
           context.report({
-            node: node, // Report the error on the entire call expression
+            node: node,
             messageId: 'missingHtml',
             fix(fixer) {
               const argToFix = node.arguments[0];
@@ -98,8 +89,6 @@ const noInvalidSetContentRule = createRule({
                 return fixer.replaceText(argToFix, `html\`${stringContent}\``);
               }
 
-              // Case 2: For all other types (variables, string literals, etc.),
-              // we wrap the entire expression in `html`${...}``.
               const argText = context.sourceCode.getText(argToFix);
               return fixer.replaceText(argToFix, `html\`\${${argText}}\``);
             },

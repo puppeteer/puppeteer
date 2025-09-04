@@ -2332,7 +2332,7 @@ describe.only('Page', function () {
 
       await page.setContent(
         html`<select>
-          <option value="12" />
+          <option value="12"></option>
         </select>`,
       );
       let error!: Error;

@@ -184,7 +184,9 @@ describe('Keyboard', function () {
     const {page} = await getTestState();
 
     await page.setContent(html`
-      <iframe srcdoc="<iframe name='test' srcdoc='<textarea></textarea>'></iframe>"</iframe>
+      <iframe
+        srcdoc="<iframe name='test' srcdoc='<textarea></textarea>'></iframe>"
+      ></iframe>
     `);
     const frame = await page.waitForFrame(async frame => {
       using element = await frame.frameElement();
