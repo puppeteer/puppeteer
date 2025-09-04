@@ -28,7 +28,10 @@ function Hit({hit, children}) {
 function ResultsFooter({state, onClose}) {
   const createSearchLink = useSearchLinkCreator();
   return (
-    <Link to={createSearchLink(state.query)} onClick={onClose}>
+    <Link
+      to={createSearchLink(state.query)}
+      onClick={onClose}
+    >
       <Translate
         id="theme.SearchBar.seeAll"
         values={{count: state.context.nbHits}}
@@ -139,7 +142,12 @@ function DocSearch({contextualSearch, externalUrlRegex, ...props}) {
   }).current;
   const resultsFooterComponent = useMemo(() => {
     return footerProps => {
-      return <ResultsFooter {...footerProps} onClose={onClose} />;
+      return (
+        <ResultsFooter
+          {...footerProps}
+          onClose={onClose}
+        />
+      );
     };
   }, [onClose]);
   const transformSearchClient = useCallback(

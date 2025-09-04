@@ -13,6 +13,7 @@ import {
 import sinon from 'sinon';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {html} from './utils.js';
 
 describe('Locator', function () {
   setupTestBrowserHooks();
@@ -21,7 +22,7 @@ describe('Locator', function () {
     const {page} = await getTestState();
 
     await page.setViewport({width: 500, height: 500});
-    await page.setContent(`
+    await page.setContent(html`
       <button onclick="this.innerText = 'clicked';">test</button>
     `);
     let willClick = false;
@@ -44,7 +45,7 @@ describe('Locator', function () {
     const {page} = await getTestState();
 
     await page.setViewport({width: 500, height: 500});
-    await page.setContent(`
+    await page.setContent(html`
       <button onclick="this.innerText = 'clicked';">test</button>
     `);
     let willClick = false;
@@ -72,7 +73,7 @@ describe('Locator', function () {
       const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
-      await page.setContent(`
+      await page.setContent(html`
         <button onclick="this.innerText = 'clicked';">test</button>
       `);
       let willClick = false;
@@ -94,7 +95,7 @@ describe('Locator', function () {
       const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
-      await page.setContent(`
+      await page.setContent(html`
         <button onclick="this.innerText = 'clicked';">test</button>
       `);
       let clicked = false;
@@ -116,8 +117,13 @@ describe('Locator', function () {
       const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
-      await page.setContent(`
-        <button style="margin-top: 600px;" onclick="this.innerText = 'clicked';">test</button>
+      await page.setContent(html`
+        <button
+          style="margin-top: 600px;"
+          onclick="this.innerText = 'clicked';"
+        >
+          test
+        </button>
       `);
       await page.locator('button').click();
       using button = await page.$('button');
@@ -131,9 +137,14 @@ describe('Locator', function () {
       const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
-      await page.setContent(`
-        <button style="margin-top: 600px;" onclick="this.innerText = 'clicked';">test</button>
-    `);
+      await page.setContent(html`
+        <button
+          style="margin-top: 600px;"
+          onclick="this.innerText = 'clicked';"
+        >
+          test
+        </button>
+      `);
       using button = await page.$('button');
       if (!button) {
         throw new Error('button not found');
@@ -149,8 +160,12 @@ describe('Locator', function () {
       const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
-      await page.setContent(`
-        <button style="display: none;" onclick="this.innerText = 'clicked';">test</button>
+      await page.setContent(html`
+        <button
+          style="display: none;"
+          onclick="this.innerText = 'clicked';"
+          >test</button
+        >
       `);
       using button = await page.$('button');
       const result = page
@@ -182,8 +197,12 @@ describe('Locator', function () {
       const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
-      await page.setContent(`
-        <button disabled onclick="this.innerText = 'clicked';">test</button>
+      await page.setContent(html`
+        <button
+          disabled
+          onclick="this.innerText = 'clicked';"
+          >test</button
+        >
       `);
       using button = await page.$('button');
       const result = page.locator('button').click();
@@ -207,8 +226,15 @@ describe('Locator', function () {
       const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
-      await page.setContent(`
-        <button style="margin-top: 600px;" style="display: none;" disabled onclick="this.innerText = 'clicked';">test</button>
+      await page.setContent(html`
+        <button
+          style="margin-top: 600px;"
+          style="display: none;"
+          disabled
+          onclick="this.innerText = 'clicked';"
+        >
+          test
+        </button>
       `);
       using button = await page.$('button');
       const result = page.locator('button').click();
@@ -239,8 +265,13 @@ describe('Locator', function () {
 
         page.setDefaultTimeout(5000);
         await page.setViewport({width: 500, height: 500});
-        await page.setContent(`
-          <button style="display: none;" onclick="this.innerText = 'clicked';">test</button>
+        await page.setContent(html`
+          <button
+            style="display: none;"
+            onclick="this.innerText = 'clicked';"
+          >
+            test
+          </button>
         `);
         const result = page.locator('button').click();
         clock.tick(5100);
@@ -261,8 +292,13 @@ describe('Locator', function () {
       try {
         page.setDefaultTimeout(5000);
         await page.setViewport({width: 500, height: 500});
-        await page.setContent(`
-          <button style="display: none;" onclick="this.innerText = 'clicked';">test</button>
+        await page.setContent(html`
+          <button
+            style="display: none;"
+            onclick="this.innerText = 'clicked';"
+          >
+            test
+          </button>
         `);
         const result = page.locator('button').click();
         clock.tick(5100);
@@ -284,8 +320,13 @@ describe('Locator', function () {
         page.setDefaultTimeout(5000);
 
         await page.setViewport({width: 500, height: 500});
-        await page.setContent(`
-          <button style="display: none;" onclick="this.innerText = 'clicked';">test</button>
+        await page.setContent(html`
+          <button
+            style="display: none;"
+            onclick="this.innerText = 'clicked';"
+          >
+            test
+          </button>
         `);
         const abortController = new AbortController();
         const result = page.locator('button').click({
@@ -303,8 +344,10 @@ describe('Locator', function () {
       const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
-      await page.setContent(`
-        <iframe src="data:text/html,<button onclick=&quot;this.innerText = 'clicked';&quot;>test</button>"></iframe>
+      await page.setContent(html`
+        <iframe
+          src="data:text/html,<button onclick=&quot;this.innerText = 'clicked';&quot;>test</button>"
+        ></iframe>
       `);
       const frame = await page.waitForFrame(frame => {
         return frame.url().startsWith('data');
@@ -330,7 +373,7 @@ describe('Locator', function () {
       const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
-      await page.setContent(`
+      await page.setContent(html`
         <button onmouseenter="this.innerText = 'hovered';">test</button>
       `);
       let hovered = false;
@@ -354,7 +397,7 @@ describe('Locator', function () {
       const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
-      await page.setContent(`
+      await page.setContent(html`
         <div style="height: 500px; width: 500px; overflow: scroll;">
           <div style="height: 1000px; width: 1000px;">test</div>
         </div>
@@ -382,9 +425,7 @@ describe('Locator', function () {
     it('should work for textarea', async () => {
       const {page} = await getTestState();
 
-      await page.setContent(`
-        <textarea></textarea>
-      `);
+      await page.setContent(html` <textarea></textarea> `);
       let filled = false;
       await page
         .locator('textarea')
@@ -403,11 +444,11 @@ describe('Locator', function () {
     it('should work for selects', async () => {
       const {page} = await getTestState();
 
-      await page.setContent(`
+      await page.setContent(html`
         <select>
           <option value="value1">Option 1</option>
           <option value="value2">Option 2</option>
-        <select>
+        </select>
       `);
       let filled = false;
       await page
@@ -426,9 +467,7 @@ describe('Locator', function () {
 
     it('should work for inputs', async () => {
       const {page} = await getTestState();
-      await page.setContent(`
-        <input>
-      `);
+      await page.setContent(html`<input />`);
       await page.locator('input').fill('test');
       expect(
         await page.evaluate(() => {
@@ -440,9 +479,7 @@ describe('Locator', function () {
     it('should work if the input becomes enabled later', async () => {
       const {page} = await getTestState();
 
-      await page.setContent(`
-        <input disabled>
-      `);
+      await page.setContent(html` <input disabled /> `);
       using input = await page.$('input');
       const result = page.locator('input').fill('test');
       expect(
@@ -463,9 +500,7 @@ describe('Locator', function () {
 
     it('should work for contenteditable', async () => {
       const {page} = await getTestState();
-      await page.setContent(`
-        <div contenteditable="true">
-      `);
+      await page.setContent(html` <div contenteditable="true"></div> `);
       await page.locator('div').fill('test');
       expect(
         await page.evaluate(() => {
@@ -476,9 +511,7 @@ describe('Locator', function () {
 
     it('should work for pre-filled inputs', async () => {
       const {page} = await getTestState();
-      await page.setContent(`
-        <input value="te">
-      `);
+      await page.setContent(html` <input value="te" /> `);
       await page.locator('input').fill('test');
       expect(
         await page.evaluate(() => {
@@ -489,9 +522,7 @@ describe('Locator', function () {
 
     it('should override pre-filled inputs', async () => {
       const {page} = await getTestState();
-      await page.setContent(`
-        <input value="wrong prefix">
-      `);
+      await page.setContent(html` <input value="wrong prefix" /> `);
       await page.locator('input').fill('test');
       expect(
         await page.evaluate(() => {
@@ -502,9 +533,7 @@ describe('Locator', function () {
 
     it('should work for non-text inputs', async () => {
       const {page} = await getTestState();
-      await page.setContent(`
-        <input type="color">
-      `);
+      await page.setContent(html` <input type="color" /> `);
       await page.locator('input').fill('#333333');
       expect(
         await page.evaluate(() => {
@@ -519,7 +548,7 @@ describe('Locator', function () {
       const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
-      await page.setContent(`
+      await page.setContent(html`
         <button onclick="window.count++;">test</button>
       `);
       await page.evaluate(() => {
@@ -545,8 +574,13 @@ describe('Locator', function () {
       });
       try {
         await page.setViewport({width: 500, height: 500});
-        await page.setContent(`
-          <button style="display: none;" onclick="this.innerText = 'clicked';">test</button>
+        await page.setContent(html`
+          <button
+            style="display: none;"
+            onclick="this.innerText = 'clicked';"
+          >
+            test
+          </button>
         `);
         const abortController = new AbortController();
         const result = Locator.race([
@@ -572,7 +606,7 @@ describe('Locator', function () {
       });
       try {
         const {page} = await getTestState();
-        await page.setContent(`<button>test</button>`);
+        await page.setContent(html`<button>test</button>`);
         const result = Locator.race([
           page.locator('not-found'),
           page.locator('not-found'),
@@ -590,7 +624,7 @@ describe('Locator', function () {
 
     it('should not time out when one of the locators matches', async () => {
       const {page} = await getTestState();
-      await page.setContent(`<button>test</button>`);
+      await page.setContent(html`<button>test</button>`);
       const result = Locator.race([
         page.locator('not-found'),
         page.locator('button'),
@@ -602,7 +636,7 @@ describe('Locator', function () {
   describe('Locator.prototype.map', () => {
     it('should work', async () => {
       const {page} = await getTestState();
-      await page.setContent(`<div>test</div>`);
+      await page.setContent(html`<div>test</div>`);
       await expect(
         page
           .locator('::-p-text(test)')
@@ -625,7 +659,7 @@ describe('Locator', function () {
     });
     it('should work with throws', async () => {
       const {page} = await getTestState();
-      await page.setContent(`<div>test</div>`);
+      await page.setContent(html`<div>test</div>`);
       const result = page
         .locator('::-p-text(test)')
         .map(element => {
@@ -643,7 +677,7 @@ describe('Locator', function () {
     });
     it('should work with expect', async () => {
       const {page} = await getTestState();
-      await page.setContent(`<div>test</div>`);
+      await page.setContent(html`<div>test</div>`);
       const result = page
         .locator('::-p-text(test)')
         .filter(element => {
@@ -668,7 +702,7 @@ describe('Locator', function () {
       });
       try {
         const {page} = await getTestState();
-        await page.setContent(`<div>test</div>`);
+        await page.setContent(html`<div>test</div>`);
         const result = page
           .locator('::-p-text(test)')
           .setTimeout(5000)
@@ -694,11 +728,11 @@ describe('Locator', function () {
   describe('Locator.prototype.wait', () => {
     it('should work', async () => {
       const {page} = await getTestState();
-      void page.setContent(`
+      void page.setContent(html`
         <script>
           setTimeout(() => {
-            const element = document.createElement("div");
-            element.innerText = "test2"
+            const element = document.createElement('div');
+            element.innerText = 'test2';
             document.body.append(element);
           }, 50);
         </script>
@@ -711,11 +745,11 @@ describe('Locator', function () {
   describe('Locator.prototype.waitHandle', () => {
     it('should work', async () => {
       const {page} = await getTestState();
-      void page.setContent(`
+      void page.setContent(html`
         <script>
           setTimeout(() => {
-            const element = document.createElement("div");
-            element.innerText = "test2"
+            const element = document.createElement('div');
+            element.innerText = 'test2';
             document.body.append(element);
           }, 50);
         </script>
@@ -765,7 +799,9 @@ describe('Locator', function () {
     });
     it('should work with actions', async () => {
       const {page} = await getTestState();
-      await page.setContent(`<div onclick="window.clicked = true">test</div>`);
+      await page.setContent(
+        html`<div onclick="window.clicked = true">test</div>`,
+      );
       await page
         .locator(() => {
           return document.getElementsByTagName('div')[0]!;

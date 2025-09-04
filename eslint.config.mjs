@@ -413,6 +413,7 @@ export default defineConfig([
 
       'mocha/no-pending-tests': 'error',
       'mocha/no-identical-title': 'error',
+      'rulesdir/no-quirks-mode-set-content': 'error',
     },
   },
 ]);
