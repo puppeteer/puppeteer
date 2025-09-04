@@ -12,7 +12,7 @@ import type {SerializedAXNode} from 'puppeteer-core/internal/cdp/Accessibility.j
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {attachFrame, html, htmlRaw} from './utils.js';
 
-describe.only('Accessibility', function () {
+describe('Accessibility', function () {
   setupTestBrowserHooks();
 
   it('should work', async () => {
