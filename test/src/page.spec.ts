@@ -28,7 +28,7 @@ import {
   waitEvent,
 } from './utils.js';
 
-describe.only('Page', function () {
+describe('Page', function () {
   setupTestBrowserHooks();
 
   describe('Page.close', function () {
