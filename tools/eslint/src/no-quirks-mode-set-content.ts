@@ -82,11 +82,7 @@ const noInvalidSetContentRule = createRule({
                 argToFix.type === 'Literal' &&
                 typeof argToFix.value === 'string'
               ) {
-                const stringContent = argToFix.value
-                  .replace(/`/g, '\\`')
-                  .replace(/\$\{/g, '\\${');
-
-                return fixer.replaceText(argToFix, `html\`${stringContent}\``);
+                return fixer.replaceText(argToFix, `html\`${argToFix.value}\``);
               }
 
               const argText = context.sourceCode.getText(argToFix);
