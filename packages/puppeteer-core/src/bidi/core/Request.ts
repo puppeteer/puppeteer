@@ -70,8 +70,24 @@ export class Request extends EventEmitter<{
     sessionEmitter.on('network.beforeRequestSent', event => {
       if (
         event.context !== this.#browsingContext.id ||
-        event.request.request !== this.id ||
-        event.redirectCount !== this.#event.redirectCount + 1
+        event.request.request !== this.id
+      ) {
+        return;
+      }
+      // This is a workaround to detect if a beforeRequestSent is for a request
+      // sent after continueWithAuth. Currently, only emitted in Firefox.
+      const previousRequestHasAuth = this.#event.request.headers.find(
+        header => {
+          return header.name.toLowerCase() === 'authorization';
+        },
+      );
+      const newRequestHasAuth = event.request.headers.find(header => {
+        return header.name.toLowerCase() === 'authorization';
+      });
+      const isAfterAuth = newRequestHasAuth && !previousRequestHasAuth;
+      if (
+        event.redirectCount !== this.#event.redirectCount + 1 &&
+        !isAfterAuth
       ) {
         return;
       }

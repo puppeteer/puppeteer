@@ -744,6 +744,21 @@ describe('network', function () {
       expect(response.status()).toBe(200);
     });
 
+    it('should work with interception', async () => {
+      const {page, server} = await getTestState();
+      await page.setRequestInterception(true);
+      page.on('request', async req => {
+        await req.continue();
+      });
+      server.setAuth('/empty.html', 'user', 'pass');
+      await page.authenticate({
+        username: 'user',
+        password: 'pass',
+      });
+      const response = (await page.goto(server.EMPTY_PAGE))!;
+      expect(response.status()).toBe(200);
+    });
+
     it('should error if authentication is required but not enabled', async () => {
       const {page, server} = await getTestState();
 
