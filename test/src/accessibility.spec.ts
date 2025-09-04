@@ -214,7 +214,11 @@ describe('Accessibility', function () {
     const {page} = await getTestState();
 
     await page.setContent(
-      html`<div tabindex="-1" aria-roledescription="foo">Hi</div>`,
+      html`<div
+        tabindex="-1"
+        aria-roledescription="foo"
+        >Hi</div
+      >`,
     );
     const snapshot = await page.accessibility.snapshot();
     // See https://chromium-review.googlesource.com/c/chromium/src/+/3088862
@@ -227,7 +231,12 @@ describe('Accessibility', function () {
     const {page} = await getTestState();
 
     await page.setContent(
-      html`<a href="" role="slider" aria-orientation="vertical">11</a>`,
+      html`<a
+        href=""
+        role="slider"
+        aria-orientation="vertical"
+        >11</a
+      >`,
     );
     const snapshot = await page.accessibility.snapshot();
     assert(snapshot);
@@ -239,7 +248,10 @@ describe('Accessibility', function () {
     const {page} = await getTestState();
 
     await page.setContent(
-      html`<input type="number" aria-autocomplete="list" />`,
+      html`<input
+        type="number"
+        aria-autocomplete="list"
+      />`,
     );
     const snapshot = await page.accessibility.snapshot();
     assert(snapshot);
@@ -251,7 +263,11 @@ describe('Accessibility', function () {
     const {page} = await getTestState();
 
     await page.setContent(
-      html`<div role="grid" tabindex="-1" aria-multiselectable="true">
+      html`<div
+        role="grid"
+        tabindex="-1"
+        aria-multiselectable="true"
+      >
         hey
       </div>`,
     );
@@ -434,7 +450,12 @@ describe('Accessibility', function () {
     const {page} = await getTestState();
 
     await page.setContent(
-      html`<div role="grid" tabindex="-1" aria-keyshortcuts="foo">hey</div>`,
+      html`<div
+        role="grid"
+        tabindex="-1"
+        aria-keyshortcuts="foo"
+        >hey</div
+      >`,
     );
     const snapshot = await page.accessibility.snapshot();
     assert(snapshot);
@@ -447,7 +468,8 @@ describe('Accessibility', function () {
       const {page, isFirefox} = await getTestState();
 
       await page.setContent(
-        html` <div role="tablist">
+        // TODO: move to html after the fix
+        htmlRaw` <div role="tablist">
           <div role="tab" aria-selected="true"><b>Tab1</b></div>
           <div role="tab">Tab2</div>
         </div>`,
@@ -490,7 +512,11 @@ describe('Accessibility', function () {
 
       await page.setContent(
         html` <div contenteditable="true">
-          Edit this image: <img src="fakeimage.png" alt="my fake image" />
+          Edit this image:
+          <img
+            src="fakeimage.png"
+            alt="my fake image"
+          />
         </div>`,
       );
       const golden = isFirefox
@@ -532,8 +558,15 @@ describe('Accessibility', function () {
       const {page, isFirefox} = await getTestState();
 
       await page.setContent(
-        html` <div contenteditable="true" role="textbox">
-          Edit this image: <img src="fakeimage.png" alt="my fake image" />
+        html` <div
+          contenteditable="true"
+          role="textbox"
+        >
+          Edit this image:
+          <img
+            src="fakeimage.png"
+            alt="my fake image"
+          />
         </div>`,
       );
       // Image node should not be exposed in contenteditable elements. See https://crbug.com/1324392.
@@ -573,9 +606,14 @@ describe('Accessibility', function () {
         const {page} = await getTestState();
 
         await page.setContent(
-          html` <div contenteditable="plaintext-only" role="textbox">
-            Edit this image:<img src="fakeimage.png" alt="my fake image" />
-          </div>`,
+          // TODO: fix after the fix
+          htmlRaw`<div 
+            contenteditable="plaintext-only" 
+            role="textbox"
+          >Edit this image:<img 
+            src="fakeimage.png" 
+            alt="my fake image" 
+          /></div>`,
         );
         const snapshot = await page.accessibility.snapshot();
         assert(snapshot);
@@ -591,8 +629,9 @@ describe('Accessibility', function () {
     it('non editable textbox with role and tabIndex and label should not have children', async () => {
       const {page, isFirefox} = await getTestState();
 
+      // TODO: move to html after the fix
       await page.setContent(
-        html` <div
+        htmlRaw`<div
           role="textbox"
           tabindex="0"
           aria-checked="true"
@@ -629,7 +668,10 @@ describe('Accessibility', function () {
           aria-label="my favorite checkbox"
         >
           this is the inner content
-          <img alt="yo" src="fakeimg.png" />
+          <img
+            alt="yo"
+            src="fakeimg.png"
+          />
         </div>`,
       );
       const golden = isFirefox
@@ -652,7 +694,8 @@ describe('Accessibility', function () {
       const {page, isFirefox} = await getTestState();
 
       await page.setContent(
-        html` <div role="checkbox" aria-checked="true">
+        // TODO: Migrate to html after the fix
+        htmlRaw`<div role="checkbox" aria-checked="true">
           this is the inner content
           <img alt="yo" src="fakeimg.png" />
         </div>`,
@@ -692,7 +735,10 @@ describe('Accessibility', function () {
         const {page} = await getTestState();
 
         await page.setContent(
-          html`<input title="My Input" value="My Value" />`,
+          html`<input
+            title="My Input"
+            value="My Value"
+          />`,
         );
 
         using input = (await page.$('input'))!;
@@ -705,7 +751,8 @@ describe('Accessibility', function () {
       it('should work a menu', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(html`
+        // TODO: move to html after fix
+        await page.setContent(htmlRaw`
           <div role="menu" title="My Menu">
             <div role="menuitem">First Item</div>
             <div role="menuitem">Second Item</div>
@@ -784,7 +831,8 @@ describe('Accessibility', function () {
       it('should get the parent ElementHandle from a text node accessibility node', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(html`<div><b>Hello, </b> world!</div>`);
+        // TODO: move to html after a fix
+        await page.setContent(htmlRaw`<div><b>Hello, </b> world!</div>`);
         using div = (await page.$('div'))!;
 
         const parentSnapshot = await page.accessibility.snapshot({

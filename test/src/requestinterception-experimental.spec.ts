@@ -132,8 +132,16 @@ describe('cooperative request interception', function () {
         return request.continue({}, 0);
       });
       await page.setContent(html`
-        <form action="/rredirect" method="post">
-          <input type="hidden" id="foo" name="foo" value="FOOBAR" />
+        <form
+          action="/rredirect"
+          method="post"
+        >
+          <input
+            type="hidden"
+            id="foo"
+            name="foo"
+            value="FOOBAR"
+          />
         </form>
       `);
       await Promise.all([

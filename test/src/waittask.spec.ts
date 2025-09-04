@@ -14,7 +14,7 @@ import {
   setupSeparateTestBrowserHooks,
   setupTestBrowserHooks,
 } from './mocha-utils.js';
-import {attachFrame, detachFrame, html} from './utils.js';
+import {attachFrame, detachFrame, html, htmlRaw} from './utils.js';
 
 describe('waittask specs', function () {
   setupTestBrowserHooks();
@@ -791,10 +791,7 @@ describe('waittask specs', function () {
       it('should support some fancy xpath', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(
-          html`<p>red herring</p>
-            <p>hello world</p>`,
-        );
+        await page.setContent(htmlRaw`<p>red herring</p><p>hello  world  </p>`);
         const waitForSelector = page.waitForSelector(
           'xpath/.//p[normalize-space(.)="hello world"]',
         );

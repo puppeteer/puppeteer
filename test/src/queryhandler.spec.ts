@@ -104,10 +104,7 @@ describe('Query handler tests', function () {
       it('should return first element', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(
-          html`<div id="1">a</div>
-            <div>a</div>`,
-        );
+        await page.setContent(html`<div id="1">a</div> <div>a</div>`);
 
         using element = await page.$('text/a');
         expect(
@@ -119,10 +116,7 @@ describe('Query handler tests', function () {
       it('should return multiple elements', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(
-          html`<div>a</div>
-            <div>a</div>`,
-        );
+        await page.setContent(html`<div>a</div> <div>a</div>`);
 
         const elements = await page.$$('text/a');
         expect(elements).toHaveLength(2);
@@ -190,12 +184,7 @@ describe('Query handler tests', function () {
       it('should query text spanning multiple elements', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(
-          html`<div>
-            <span>a</span> <span>b</span>
-            <div></div>
-          </div>`,
-        );
+        await page.setContent(html`<div><span>a</span> <span>b</span></div>`);
 
         using element = await page.$('text/a b');
         expect(
@@ -209,7 +198,10 @@ describe('Query handler tests', function () {
 
         await page.setContent(
           html`<div id="target1">text</div>
-            <input id="target2" value="text" />
+            <input
+              id="target2"
+              value="text"
+            />
             <div id="target3">text</div>`,
         );
         using div = (await page.$('#target1')) as ElementHandle<HTMLDivElement>;
@@ -320,10 +312,7 @@ describe('Query handler tests', function () {
       it('should return first element', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(
-          html`<div>a</div>
-            <div></div>`,
-        );
+        await page.setContent(html`<div>a</div> <div></div>`);
 
         using element = await page.$('xpath/html/body/div');
         expect(
@@ -335,10 +324,7 @@ describe('Query handler tests', function () {
       it('should return multiple elements', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(
-          html`<div></div>
-            <div></div>`,
-        );
+        await page.setContent(html`<div></div> <div></div>`);
 
         const elements = await page.$$('xpath/html/body/div');
         expect(elements).toHaveLength(2);

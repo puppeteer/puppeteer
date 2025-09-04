@@ -245,7 +245,11 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.setContent(
-        html`<a target="_blank" href="/one-style.html">yo</a>`,
+        html`<a
+          target="_blank"
+          href="/one-style.html"
+          >yo</a
+        >`,
       );
       const [popup] = await Promise.all([
         waitEvent<Page>(page, 'popup'),
@@ -267,7 +271,12 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.setContent(
-        html`<a target="_blank" rel="opener" href="/one-style.html">yo</a>`,
+        html`<a
+          target="_blank"
+          rel="opener"
+          href="/one-style.html"
+          >yo</a
+        >`,
       );
       const [popup] = await Promise.all([
         waitEvent<Page>(page, 'popup'),
@@ -289,7 +298,12 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.setContent(
-        html`<a target="_blank" rel="noopener" href="/one-style.html">yo</a>`,
+        html`<a
+          target="_blank"
+          rel="noopener"
+          href="/one-style.html"
+          >yo</a
+        >`,
       );
       const [popup] = await Promise.all([
         waitEvent<Page>(page, 'popup'),
@@ -313,7 +327,12 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.setContent(
-        html`<a target="_blank" rel="noopener" href="/one-style.html">yo</a>`,
+        html`<a
+          target="_blank"
+          rel="noopener"
+          href="/one-style.html"
+          >yo</a
+        >`,
       );
       const [popup] = await Promise.all([
         waitEvent<Page>(page, 'popup'),
@@ -1572,7 +1591,7 @@ describe('Page', function () {
       const {page} = await getTestState();
 
       for (let i = 0; i < 20; ++i) {
-        await page.setContent(htmlRaw`<div>yo</div>`);
+        await page.setContent(html`<div>yo</div>`);
       }
     });
     it('should work with tricky content', async () => {

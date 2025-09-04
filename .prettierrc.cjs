@@ -8,6 +8,8 @@
  */
 module.exports = {
   ...require('gts/.prettierrc.json'),
+  singleAttributePerLine: true,
+  htmlWhitespaceSensitivity: 'strict',
   /**
    * Uncomment this while working on Markdown documents.
    * MAKE SURE TO COMMENT THIS BEFORE RUNNING CHECKS/FORMATS

@@ -28,7 +28,10 @@ describe('Page.click', function () {
     const {page} = await getTestState();
 
     await page.setContent(html`
-      <svg height="100" width="100">
+      <svg
+        height="100"
+        width="100"
+      >
         <circle
           onclick="javascript:window.__CLICKED=42"
           cx="50"
@@ -224,7 +227,10 @@ describe('Page.click', function () {
             top: -150px;
           }
         </style>
-        <div id="target" onclick="window.CLICKED=true;"></div>`,
+        <div
+          id="target"
+          onclick="window.CLICKED=true;"
+        ></div>`,
     );
     await page.click('#target');
     expect(

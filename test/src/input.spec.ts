@@ -190,7 +190,10 @@ describe('input tests', function () {
       const {page} = await getTestState();
 
       await page.setContent(
-        html`<input type="file" oninput="javascript:console.timeStamp()" />`,
+        html`<input
+          type="file"
+          oninput="javascript:console.timeStamp()"
+        />`,
       );
       const [chooser] = await Promise.all([
         page.waitForFileChooser(),
@@ -404,7 +407,12 @@ describe('input tests', function () {
     it('should work for "multiple"', async () => {
       const {page} = await getTestState();
 
-      await page.setContent(html`<input multiple type="file" />`);
+      await page.setContent(
+        html`<input
+          multiple
+          type="file"
+        />`,
+      );
       const [chooser] = await Promise.all([
         page.waitForFileChooser(),
         page.click('input'),
@@ -415,7 +423,11 @@ describe('input tests', function () {
       const {page} = await getTestState();
 
       await page.setContent(
-        html`<input multiple webkitdirectory type="file" />`,
+        html`<input
+          multiple
+          webkitdirectory
+          type="file"
+        />`,
       );
       const [chooser] = await Promise.all([
         page.waitForFileChooser(),

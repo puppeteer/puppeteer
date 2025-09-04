@@ -161,9 +161,11 @@ describe('Locator', function () {
 
       await page.setViewport({width: 500, height: 500});
       await page.setContent(html`
-        <button style="display: none;" onclick="this.innerText = 'clicked';">
-          test
-        </button>
+        <button
+          style="display: none;"
+          onclick="this.innerText = 'clicked';"
+          >test</button
+        >
       `);
       using button = await page.$('button');
       const result = page
@@ -196,7 +198,11 @@ describe('Locator', function () {
 
       await page.setViewport({width: 500, height: 500});
       await page.setContent(html`
-        <button disabled onclick="this.innerText = 'clicked';">test</button>
+        <button
+          disabled
+          onclick="this.innerText = 'clicked';"
+          >test</button
+        >
       `);
       using button = await page.$('button');
       const result = page.locator('button').click();
@@ -260,7 +266,10 @@ describe('Locator', function () {
         page.setDefaultTimeout(5000);
         await page.setViewport({width: 500, height: 500});
         await page.setContent(html`
-          <button style="display: none;" onclick="this.innerText = 'clicked';">
+          <button
+            style="display: none;"
+            onclick="this.innerText = 'clicked';"
+          >
             test
           </button>
         `);
@@ -284,7 +293,10 @@ describe('Locator', function () {
         page.setDefaultTimeout(5000);
         await page.setViewport({width: 500, height: 500});
         await page.setContent(html`
-          <button style="display: none;" onclick="this.innerText = 'clicked';">
+          <button
+            style="display: none;"
+            onclick="this.innerText = 'clicked';"
+          >
             test
           </button>
         `);
@@ -309,7 +321,10 @@ describe('Locator', function () {
 
         await page.setViewport({width: 500, height: 500});
         await page.setContent(html`
-          <button style="display: none;" onclick="this.innerText = 'clicked';">
+          <button
+            style="display: none;"
+            onclick="this.innerText = 'clicked';"
+          >
             test
           </button>
         `);
@@ -560,7 +575,10 @@ describe('Locator', function () {
       try {
         await page.setViewport({width: 500, height: 500});
         await page.setContent(html`
-          <button style="display: none;" onclick="this.innerText = 'clicked';">
+          <button
+            style="display: none;"
+            onclick="this.innerText = 'clicked';"
+          >
             test
           </button>
         `);

@@ -61,8 +61,16 @@ describe('request interception', function () {
         return request.continue();
       });
       await page.setContent(html`
-        <form action="/rredirect" method="post">
-          <input type="hidden" id="foo" name="foo" value="FOOBAR" />
+        <form
+          action="/rredirect"
+          method="post"
+        >
+          <input
+            type="hidden"
+            id="foo"
+            name="foo"
+            value="FOOBAR"
+          />
         </form>
       `);
       await Promise.all([

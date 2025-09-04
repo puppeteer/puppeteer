@@ -39,10 +39,7 @@ describe('querySelector', function () {
     it('should accept ElementHandles as arguments', async () => {
       const {page} = await getTestState();
 
-      await page.setContent(
-        html`<section>hello</section>
-          <div>world</div>`,
-      );
+      await page.setContent(html`<section>hello</section><div> world</div>`);
       using divHandle = (await page.$('div'))!;
       const text = await page.$eval(
         'section',
@@ -229,10 +226,7 @@ describe('querySelector', function () {
       it('should return multiple elements', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(
-          html`<div></div>
-            <div></div>`,
-        );
+        await page.setContent(html`<div></div> <div></div>`);
         const elements = await page.$$('xpath/html/body/div');
         expect(elements).toHaveLength(2);
       });

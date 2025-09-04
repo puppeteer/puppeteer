@@ -70,12 +70,22 @@ describe('ElementHandle specs', function () {
       const {page} = await getTestState();
 
       await page.setContent(html`
-        <svg xmlns="http://www.w3.org/2000/svg" width="500" height="500">
-          <rect id="theRect" x="30" y="50" width="200" height="300"></rect>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="500"
+          height="500"
+        >
+          <rect
+            id="theRect"
+            x="30"
+            y="50"
+            width="200"
+            height="300"
+          ></rect>
         </svg>
       `);
       using element = (await page.$(
-        '#therect',
+        '#theRect',
       )) as ElementHandle<SVGRectElement>;
       const pptrBoundingBox = await element.boundingBox();
       const webBoundingBox = await page.evaluate(e => {
@@ -921,8 +931,7 @@ describe('ElementHandle specs', function () {
     it('should register and unregister', async () => {
       const {page} = await getTestState();
       await page.setContent(
-        html`<div id="not-foo"></div>
-          <div id="foo"></div>`,
+        html`<div id="not-foo"></div> <div id="foo"></div>`,
       );
 
       // Register.
@@ -1028,8 +1037,7 @@ describe('ElementHandle specs', function () {
 
       // Set the page content after the waitFor has been started.
       await page.setContent(
-        html`<div id="not-foo"></div>
-          <div class="foo">Foo1</div>`,
+        html`<div id="not-foo"></div> <div class="foo">Foo1</div>`,
       );
       const element = await waitFor;
 
@@ -1089,7 +1097,12 @@ describe('ElementHandle specs', function () {
       const {page} = await getTestState();
       await page.setContent(
         html`<div id="not-foo"></div>
-          <div class="foo"><div id="nested-foo" class="foo"></div></div>
+          <div class="foo"
+            ><div
+              id="nested-foo"
+              class="foo"
+            ></div
+          ></div>
           <div class="foo baz">Foo2</div>`,
       );
       Puppeteer.registerCustomQueryHandler('getByClass', {
@@ -1141,8 +1154,7 @@ describe('ElementHandle specs', function () {
     it('should work with function shorthands', async () => {
       const {page} = await getTestState();
       await page.setContent(
-        html`<div id="not-foo"></div>
-          <div id="foo"></div>`,
+        html`<div id="not-foo"></div> <div id="foo"></div>`,
       );
 
       Puppeteer.registerCustomQueryHandler('getById', {

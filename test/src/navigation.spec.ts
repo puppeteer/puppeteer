@@ -724,8 +724,16 @@ describe('navigation', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.setContent(html`
-        <a id="back" onclick="javascript:goBack()">back</a>
-        <a id="forward" onclick="javascript:goForward()">forward</a>
+        <a
+          id="back"
+          onclick="javascript:goBack()"
+          >back</a
+        >
+        <a
+          id="forward"
+          onclick="javascript:goForward()"
+          >forward</a
+        >
         <script>
           function goBack() {
             history.back();
