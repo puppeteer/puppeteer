@@ -8,7 +8,7 @@ import type {CustomQueryHandler} from '../common/CustomQueryHandler.js';
 import type {Awaitable, AwaitableIterable} from '../common/types.js';
 
 /**
- * @internal
+ * @public
  */
 export interface CustomQuerySelector {
   querySelector(root: Node, selector: string): Awaitable<Node | null>;
