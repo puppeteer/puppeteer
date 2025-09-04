@@ -42,5 +42,10 @@ export {
   getVersionComparator,
 } from './browser-data/browser-data.js';
 export {CLI} from './CLI.js';
-export {Cache, InstalledBrowser} from './Cache.js';
+export {
+  Cache,
+  InstalledBrowser,
+  type Metadata,
+  type ComputeExecutablePathOptions,
+} from './Cache.js';
 export {BrowserTag} from './browser-data/types.js';

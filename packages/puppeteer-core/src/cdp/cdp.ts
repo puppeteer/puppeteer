@@ -37,6 +37,7 @@ export * from './Page.js';
 export * from './PredefinedNetworkConditions.js';
 export * from './Target.js';
 export * from './TargetManager.js';
+export * from './TargetManageEvents.js';
 export * from './Tracing.js';
 export * from './utils.js';
 export * from './WebWorker.js';

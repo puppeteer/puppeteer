@@ -21,7 +21,7 @@ import {
   getSourceUrlComment,
   isString,
 } from '../common/util.js';
-import type PuppeteerUtil from '../injected/injected.js';
+import type {PuppeteerInjectedUtil} from '../injected/injected.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {DisposableStack, disposeSymbol} from '../util/disposable.js';
 import {stringifyFunction} from '../util/Function.js';
@@ -208,8 +208,8 @@ export class ExecutionContext
   }
 
   #bindingsInstalled = false;
-  #puppeteerUtil?: Promise<JSHandle<PuppeteerUtil>>;
-  get puppeteerUtil(): Promise<JSHandle<PuppeteerUtil>> {
+  #puppeteerUtil?: Promise<JSHandle<PuppeteerInjectedUtil>>;
+  get puppeteerUtil(): Promise<JSHandle<PuppeteerInjectedUtil>> {
     let promise = Promise.resolve() as Promise<unknown>;
     if (!this.#bindingsInstalled) {
       promise = Promise.all([
@@ -225,10 +225,12 @@ export class ExecutionContext
         });
       }
       this.#puppeteerUtil = promise.then(() => {
-        return this.evaluateHandle(script) as Promise<JSHandle<PuppeteerUtil>>;
+        return this.evaluateHandle(script) as Promise<
+          JSHandle<PuppeteerInjectedUtil>
+        >;
       });
     }, !this.#puppeteerUtil);
-    return this.#puppeteerUtil as Promise<JSHandle<PuppeteerUtil>>;
+    return this.#puppeteerUtil as Promise<JSHandle<PuppeteerInjectedUtil>>;
   }
 
   async #addBindingWithoutThrowing(binding: Binding) {

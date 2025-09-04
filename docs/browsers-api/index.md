@@ -350,6 +350,13 @@ Description
 </td></tr>
 <tr><td>
 
+<span id="metadata_2">[Metadata_2](./browsers.metadata_2.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="options">[Options](./browsers.options.md)</span>
 
 </td><td>
