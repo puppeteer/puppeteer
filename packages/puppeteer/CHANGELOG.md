@@ -1,5 +1,24 @@
 # Changelog
 
+## [24.19.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.18.0...puppeteer-v24.19.0) (2025-09-04)
+
+
+### Features
+
+* roll to Chrome 140.0.7339.80 ([#14162](https://github.com/puppeteer/puppeteer/issues/14162)) ([0cb425b](https://github.com/puppeteer/puppeteer/commit/0cb425b442258433798f58bd162812903d520127))
+
+
+### Bug Fixes
+
+* make types between puppeteer and puppeteer-core comptaible ([#14158](https://github.com/puppeteer/puppeteer/issues/14158)) ([549bb8a](https://github.com/puppeteer/puppeteer/commit/549bb8a281a9d2c2dae44897dea4cc8703ac06d9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.18.0 to 24.19.0
+
 ## [24.18.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.17.1...puppeteer-v24.18.0) (2025-09-01)
 
 

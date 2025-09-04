@@ -2,6 +2,28 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.19.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.18.0...puppeteer-v24.19.0) (2025-09-04)
+
+
+### Features
+
+* roll to Chrome 140.0.7339.80 ([#14162](https://github.com/puppeteer/puppeteer/issues/14162)) ([0cb425b](https://github.com/puppeteer/puppeteer/commit/0cb425b442258433798f58bd162812903d520127))
+
+
+### Bug Fixes
+
+* accessibility SerializedAXNode.elementHandle returns the parent's handle for text nodes ([#14159](https://github.com/puppeteer/puppeteer/issues/14159)) ([0cb49fd](https://github.com/puppeteer/puppeteer/commit/0cb49fdbada8612230dc71a8625bfc073d6b9caf))
+* throw on history entry not found ([#14160](https://github.com/puppeteer/puppeteer/issues/14160)) ([f660ef8](https://github.com/puppeteer/puppeteer/commit/f660ef8e520c9d2356df6aee7d7b01b7f9882016))
+* **webdriver:** support interception after continueWithAuth ([#14167](https://github.com/puppeteer/puppeteer/issues/14167)) ([21f1eb5](https://github.com/puppeteer/puppeteer/commit/21f1eb58d7274a72b2e0c0de1f36d3889ba001c1))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.18.0 to 24.19.0
+
+
 ## [24.18.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.17.1...puppeteer-v24.18.0) (2025-09-01)
 
 
