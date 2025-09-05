@@ -171,7 +171,7 @@ class DisposableStackPolyfill {
       throw errors[0];
     } else if (errors.length > 1) {
       let suppressed = null;
-      for (const error of errors.reverse()) {
+      for (const error of errors) {
         if (suppressed === null) {
           suppressed = error;
         } else {
@@ -332,7 +332,7 @@ class AsyncDisposableStackPolyfill {
       throw errors[0];
     } else if (errors.length > 1) {
       let suppressed = null;
-      for (const error of errors.reverse()) {
+      for (const error of errors) {
         if (suppressed === null) {
           suppressed = error;
         } else {
