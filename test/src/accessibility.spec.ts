@@ -468,9 +468,12 @@ describe('Accessibility', function () {
       const {page, isFirefox} = await getTestState();
 
       await page.setContent(
-        // TODO: move to html after the fix
-        htmlRaw` <div role="tablist">
-          <div role="tab" aria-selected="true"><b>Tab1</b></div>
+        html` <div role="tablist">
+          <div
+            role="tab"
+            aria-selected="true"
+            ><b>Tab1</b></div
+          >
           <div role="tab">Tab2</div>
         </div>`,
       );
@@ -492,7 +495,7 @@ describe('Accessibility', function () {
           }
         : {
             role: 'RootWebArea',
-            name: '',
+            name: 'Document',
             children: [
               {
                 role: 'tab',
@@ -606,13 +609,12 @@ describe('Accessibility', function () {
         const {page} = await getTestState();
 
         await page.setContent(
-          // TODO: fix after the fix
-          htmlRaw`<div 
-            contenteditable="plaintext-only" 
+          html`<div
+            contenteditable="plaintext-only"
             role="textbox"
-          >Edit this image:<img 
-            src="fakeimage.png" 
-            alt="my fake image" 
+            >Edit this image:<img
+              src="fakeimage.png"
+              alt="my fake image"
           /></div>`,
         );
         const snapshot = await page.accessibility.snapshot();
@@ -629,16 +631,18 @@ describe('Accessibility', function () {
     it('non editable textbox with role and tabIndex and label should not have children', async () => {
       const {page, isFirefox} = await getTestState();
 
-      // TODO: move to html after the fix
       await page.setContent(
-        htmlRaw`<div
+        html`<div
           role="textbox"
           tabindex="0"
           aria-checked="true"
           aria-label="my favorite textbox"
         >
           this is the inner content
-          <img alt="yo" src="fakeimg.png" />
+          <img
+            alt="yo"
+            src="fakeimg.png"
+          />
         </div>`,
       );
       const golden = isFirefox
@@ -694,10 +698,15 @@ describe('Accessibility', function () {
       const {page, isFirefox} = await getTestState();
 
       await page.setContent(
-        // TODO: Migrate to html after the fix
-        htmlRaw`<div role="checkbox" aria-checked="true">
+        html`<div
+          role="checkbox"
+          aria-checked="true"
+        >
           this is the inner content
-          <img alt="yo" src="fakeimg.png" />
+          <img
+            alt="yo"
+            src="fakeimg.png"
+          />
         </div>`,
       );
       const golden = isFirefox
@@ -751,9 +760,11 @@ describe('Accessibility', function () {
       it('should work a menu', async () => {
         const {page} = await getTestState();
 
-        // TODO: move to html after fix
-        await page.setContent(htmlRaw`
-          <div role="menu" title="My Menu">
+        await page.setContent(html`
+          <div
+            role="menu"
+            title="My Menu"
+          >
             <div role="menuitem">First Item</div>
             <div role="menuitem">Second Item</div>
             <div role="menuitem">Third Item</div>
@@ -785,12 +796,22 @@ describe('Accessibility', function () {
       it('should support the interestingOnly option', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(html`<div><button>My Button</button></div>`);
-        using div = (await page.$('div'))!;
+        await page.setContent(
+          html`<div><button>My Button</button></div
+            ><div class="uninteresting"></div>`,
+        );
+        using div = (await page.$('div.uninteresting'))!;
         expect(await page.accessibility.snapshot({root: div})).toEqual(null);
+        using divWithButton = (await page.$('div'))!;
+        expect(
+          await page.accessibility.snapshot({root: divWithButton}),
+        ).toMatchObject({
+          name: 'My Button',
+          role: 'button',
+        });
         expect(
           await page.accessibility.snapshot({
-            root: div,
+            root: divWithButton,
             interestingOnly: false,
           }),
         ).toMatchObject({
@@ -831,8 +852,7 @@ describe('Accessibility', function () {
       it('should get the parent ElementHandle from a text node accessibility node', async () => {
         const {page} = await getTestState();
 
-        // TODO: move to html after a fix
-        await page.setContent(htmlRaw`<div><b>Hello, </b> world!</div>`);
+        await page.setContent(html`<div><b>Hello, </b> world!</div>`);
         using div = (await page.$('div'))!;
 
         const parentSnapshot = await page.accessibility.snapshot({
@@ -868,6 +888,28 @@ describe('Accessibility', function () {
             return button.innerHTML;
           }),
         ).toEqual('<b>Hello, </b> world!');
+      });
+    });
+
+    it('should not report Document as leaf node', async () => {
+      const {page} = await getTestState();
+
+      await page.setContent(
+        html`<main><span>Hello</span><div> </div><div>World</div></main>`,
+      );
+
+      await page.setContent(html`<span>Name:</span><input />`);
+      const snapshot = await page.accessibility.snapshot();
+      expect(snapshot).toMatchObject({
+        role: 'RootWebArea',
+        name: 'Document',
+        children: [
+          {
+            name: 'Name:',
+            role: 'StaticText',
+          },
+          {role: 'textbox', name: ''},
+        ],
       });
     });
   });
