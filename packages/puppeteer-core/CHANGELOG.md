@@ -1,5 +1,12 @@
 # Changelog
 
+## [24.19.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.19.0...puppeteer-core-v24.19.1) (2025-09-05)
+
+
+### Bug Fixes
+
+* **accessibility:** reports snapshot with uninteresting root and focusable Document is not a leaf node ([#14169](https://github.com/puppeteer/puppeteer/issues/14169)) ([3bad7ad](https://github.com/puppeteer/puppeteer/commit/3bad7ad2240647d57ae327fc12b0e7deff8d95e8))
+
 ## [24.19.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.18.0...puppeteer-core-v24.19.0) (2025-09-04)
 
 
