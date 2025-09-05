@@ -2,6 +2,22 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.19.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.19.0...puppeteer-v24.19.1) (2025-09-05)
+
+### Miscellaneous Chores
+
+- **puppeteer:** Synchronize puppeteer versions
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - puppeteer-core bumped from 24.19.0 to 24.19.1
+
+### Bug Fixes
+
+- **accessibility:** reports snapshot with uninteresting root and focusable Document is not a leaf node ([#14169](https://github.com/puppeteer/puppeteer/issues/14169)) ([3bad7ad](https://github.com/puppeteer/puppeteer/commit/3bad7ad2240647d57ae327fc12b0e7deff8d95e8))
+
 ## [24.19.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.18.0...puppeteer-v24.19.0) (2025-09-04)
 
 ### Features
