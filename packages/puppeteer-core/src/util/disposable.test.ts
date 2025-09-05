@@ -112,15 +112,15 @@ describe('AsyncDisposableStack', () => {
     const dispose2 = sinon.stub().resolves();
     stack.adopt({}, dispose1);
     stack.adopt({}, dispose2);
-    await stack.dispose();
+    await stack.disposeAsync();
     expect(dispose2.calledBefore(dispose1)).toBeTruthy();
   });
 
   it('should not dispose resources if already disposed', async () => {
     const dispose = sinon.stub().resolves();
     stack.adopt({}, dispose);
-    await stack.dispose();
-    await stack.dispose();
+    await stack.disposeAsync();
+    await stack.disposeAsync();
     expect(dispose.calledOnce).toBeTruthy();
   });
 
@@ -129,14 +129,14 @@ describe('AsyncDisposableStack', () => {
       [asyncDisposeSymbol]: sinon.stub().resolves(),
     };
     stack.use(resource);
-    await stack.dispose();
+    await stack.disposeAsync();
     expect(resource[asyncDisposeSymbol].calledOnce).toBeTruthy();
   });
 
   it('should defer async disposal callbacks', async () => {
     const onDispose = sinon.stub().resolves();
     stack.defer(onDispose);
-    await stack.dispose();
+    await stack.disposeAsync();
     expect(onDispose.calledOnce).toBeTruthy();
   });
 
@@ -146,12 +146,12 @@ describe('AsyncDisposableStack', () => {
     const newStack = stack.move();
     expect(stack.disposed).toBeTruthy();
     expect(newStack.disposed).toBeFalsy();
-    await newStack.dispose();
+    await newStack.disposeAsync();
     expect(dispose.calledOnce).toBeTruthy();
   });
 
   it('should throw error if moving a disposed stack', () => {
-    stack.dispose();
+    stack.disposeAsync();
     expect(() => {
       return stack.move();
     }).toThrow(ReferenceError);
@@ -166,7 +166,7 @@ describe('AsyncDisposableStack', () => {
     stack.adopt({}, dispose3);
     let error;
     try {
-      await stack.dispose();
+      await stack.disposeAsync();
     } catch (e) {
       error = e;
     }
