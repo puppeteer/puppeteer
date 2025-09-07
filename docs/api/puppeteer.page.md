@@ -489,7 +489,7 @@ By default, `page.pdf()` generates a pdf with modified colors for printing. Use 
 
 **Deprecated:**
 
-Page-level cookie API is deprecated. Use [Browser.deleteCookie()](./puppeteer.browser.deletecookie.md) or [BrowserContext.deleteCookie()](./puppeteer.browsercontext.deletecookie.md) instead.
+Page-level cookie API is deprecated. Use [Browser.deleteCookie()](./puppeteer.browser.deletecookie.md), [BrowserContext.deleteCookie()](./puppeteer.browsercontext.deletecookie.md), [Browser.deleteMatchingCookies()](./puppeteer.browser.deletematchingcookies.md) or [BrowserContext.deleteMatchingCookies()](./puppeteer.browsercontext.deletematchingcookies.md) instead.
 
 </td></tr>
 <tr><td>

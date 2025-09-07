@@ -58,18 +58,6 @@ export interface CookiePartitionKey {
  */
 export interface Cookie extends CookieData {
   /**
-   * Cookie name.
-   */
-  name: string;
-  /**
-   * Cookie value.
-   */
-  value: string;
-  /**
-   * Cookie domain.
-   */
-  domain: string;
-  /**
    * Cookie path.
    */
   path: string;
@@ -83,10 +71,6 @@ export interface Cookie extends CookieData {
    */
   size: number;
   /**
-   * True if cookie is http-only.
-   */
-  httpOnly: boolean;
-  /**
    * True if cookie is secure.
    */
   secure: boolean;
@@ -94,29 +78,6 @@ export interface Cookie extends CookieData {
    * True in case of session cookie.
    */
   session: boolean;
-  /**
-   * Cookie SameSite type.
-   */
-  sameSite?: CookieSameSite;
-  /**
-   * Cookie Priority. Supported only in Chrome.
-   */
-  priority?: CookiePriority;
-  /**
-   * True if cookie is SameParty. Supported only in Chrome.
-   */
-  sameParty?: boolean;
-  /**
-   * Cookie source scheme type. Supported only in Chrome.
-   */
-  sourceScheme?: CookieSourceScheme;
-  /**
-   * Cookie partition key. In Chrome, it is the top-level site the
-   * partitioned cookie is available in. In Firefox, it matches the
-   * source origin in the
-   * {@link https://w3c.github.io/webdriver-bidi/#type-storage-PartitionKey | PartitionKey }.
-   */
-  partitionKey?: CookiePartitionKey | string;
   /**
    * True if cookie partition key is opaque. Supported only in Chrome.
    */
