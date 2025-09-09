@@ -15,7 +15,11 @@ import {
   raceWith,
 } from '../../third_party/rxjs/rxjs.js';
 import type {ProtocolType} from '../common/ConnectOptions.js';
-import type {Cookie, CookieData} from '../common/Cookie.js';
+import type {
+  Cookie,
+  CookieData,
+  DeleteCookiesRequest,
+} from '../common/Cookie.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {
@@ -459,6 +463,22 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    */
   async deleteCookie(...cookies: Cookie[]): Promise<void> {
     return await this.defaultBrowserContext().deleteCookie(...cookies);
+  }
+
+  /**
+   * Deletes cookies matching the provided filters from the default
+   * {@link BrowserContext}.
+   *
+   * @remarks
+   *
+   * Shortcut for
+   * {@link BrowserContext.deleteMatchingCookies |
+   * browser.defaultBrowserContext().deleteMatchingCookies()}.
+   */
+  async deleteMatchingCookies(
+    ...filters: DeleteCookiesRequest[]
+  ): Promise<void> {
+    return await this.defaultBrowserContext().deleteMatchingCookies(...filters);
   }
 
   /**

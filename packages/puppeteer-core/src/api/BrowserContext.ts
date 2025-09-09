@@ -10,7 +10,11 @@ import {
   merge,
   raceWith,
 } from '../../third_party/rxjs/rxjs.js';
-import type {Cookie, CookieData} from '../common/Cookie.js';
+import type {
+  Cookie,
+  CookieData,
+  DeleteCookiesRequest,
+} from '../common/Cookie.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {
   debugError,
@@ -255,8 +259,9 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
   abstract setCookie(...cookies: CookieData[]): Promise<void>;
 
   /**
-   * Removes cookie in the browser context
-   * @param cookies - {@link Cookie | cookie} to remove
+   * Removes cookie in this browser context.
+   *
+   * @param cookies - Complete {@link Cookie | cookie} object to be removed.
    */
   async deleteCookie(...cookies: Cookie[]): Promise<void> {
     return await this.setCookie(
@@ -267,6 +272,62 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
         };
       }),
     );
+  }
+
+  /**
+   * Deletes cookies matching the provided filters in this browser context.
+   *
+   * @param filters - {@link DeleteCookiesRequest}
+   */
+  async deleteMatchingCookies(
+    ...filters: DeleteCookiesRequest[]
+  ): Promise<void> {
+    const cookies = await this.cookies();
+    const cookiesToDelete = cookies.filter(cookie => {
+      return filters.some(filter => {
+        if (filter.name === cookie.name) {
+          if (filter.domain !== undefined && filter.domain === cookie.domain) {
+            return true;
+          }
+
+          if (filter.path !== undefined && filter.path === cookie.path) {
+            return true;
+          }
+          if (
+            filter.partitionKey !== undefined &&
+            cookie.partitionKey !== undefined
+          ) {
+            if (typeof cookie.partitionKey !== 'object') {
+              throw new Error('Unexpected string partition key');
+            }
+            if (typeof filter.partitionKey === 'string') {
+              if (filter.partitionKey === cookie.partitionKey?.sourceOrigin) {
+                return true;
+              }
+            } else {
+              if (
+                filter.partitionKey.sourceOrigin ===
+                cookie.partitionKey?.sourceOrigin
+              ) {
+                return true;
+              }
+            }
+          }
+          if (filter.url !== undefined) {
+            const url = new URL(filter.url);
+            if (
+              url.hostname === cookie.domain &&
+              url.pathname === cookie.path
+            ) {
+              return true;
+            }
+          }
+          return true;
+        }
+        return false;
+      });
+    });
+    await this.deleteCookie(...cookiesToDelete);
   }
 
   /**

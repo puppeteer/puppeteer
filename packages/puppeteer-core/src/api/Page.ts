@@ -1472,7 +1472,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
   /**
    * @deprecated Page-level cookie API is deprecated. Use
-   * {@link Browser.deleteCookie} or {@link BrowserContext.deleteCookie}
+   * {@link Browser.deleteCookie}, {@link BrowserContext.deleteCookie},
+   * {@link Browser.deleteMatchingCookies} or {@link BrowserContext.deleteMatchingCookies}
    * instead.
    */
   abstract deleteCookie(...cookies: DeleteCookiesRequest[]): Promise<void>;

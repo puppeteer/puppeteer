@@ -167,7 +167,18 @@ Gets all cookies in the browser context.
 
 </td><td>
 
-Removes cookie in the browser context
+Removes cookie in this browser context.
+
+</td></tr>
+<tr><td>
+
+<span id="deletematchingcookies">[deleteMatchingCookies(filters)](./puppeteer.browsercontext.deletematchingcookies.md)</span>
+
+</td><td>
+
+</td><td>
+
+Deletes cookies matching the provided filters in this browser context.
 
 </td></tr>
 <tr><td>
