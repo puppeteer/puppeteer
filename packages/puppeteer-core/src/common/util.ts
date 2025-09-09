@@ -238,10 +238,6 @@ export async function getReadableAsTypedArray(
 /**
  * @internal
  */
-
-/**
- * @internal
- */
 export async function getReadableFromProtocolStream(
   client: CDPSession,
   handle: string,

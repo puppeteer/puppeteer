@@ -5,10 +5,11 @@
  */
 
 import type {ElementHandle} from '../api/ElementHandle.js';
-import {QueryHandler, type QuerySelector} from '../common/QueryHandler.js';
-import type {AwaitableIterable} from '../common/types.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
+
+import {QueryHandler, type QuerySelector} from './QueryHandler.js';
+import type {AwaitableIterable} from './types.js';
 
 interface ARIASelector {
   name?: string;

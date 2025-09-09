@@ -7,7 +7,7 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
-import {ARIAQueryHandler} from '../cdp/AriaQueryHandler.js';
+import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
