@@ -148,7 +148,6 @@ export class BidiFrame extends Frame {
     });
 
     this.browsingContext.on('navigation', ({navigation}) => {
-      this._hasStartedLoading = true;
       navigation.once('fragment', () => {
         this.page().trustedEmitter.emit(PageEvent.FrameNavigated, this);
       });
@@ -157,6 +156,7 @@ export class BidiFrame extends Frame {
       this.page().trustedEmitter.emit(PageEvent.Load, undefined);
     });
     this.browsingContext.on('DOMContentLoaded', () => {
+      this._hasStartedLoading = true;
       this.page().trustedEmitter.emit(PageEvent.DOMContentLoaded, undefined);
       this.page().trustedEmitter.emit(PageEvent.FrameNavigated, this);
     });
