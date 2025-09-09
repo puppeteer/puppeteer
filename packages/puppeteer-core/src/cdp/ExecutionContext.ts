@@ -9,6 +9,7 @@ import type {Protocol} from 'devtools-protocol';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
+import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
@@ -27,7 +28,6 @@ import {DisposableStack, disposeSymbol} from '../util/disposable.js';
 import {stringifyFunction} from '../util/Function.js';
 import {Mutex} from '../util/Mutex.js';
 
-import {ARIAQueryHandler} from './AriaQueryHandler.js';
 import {Binding} from './Binding.js';
 import {CdpElementHandle} from './ElementHandle.js';
 import type {IsolatedWorld} from './IsolatedWorld.js';
