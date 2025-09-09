@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type * as Bidi from 'webdriver-bidi-protocol';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
@@ -452,7 +452,6 @@ export class BrowsingContext extends EventEmitter<{
     return context.#reason!;
   })
   async setCacheBehavior(cacheBehavior: 'default' | 'bypass'): Promise<void> {
-    // @ts-expect-error not in BiDi types yet.
     await this.#session.send('network.setCacheBehavior', {
       contexts: [this.id],
       cacheBehavior,
@@ -714,6 +713,7 @@ export class BrowsingContext extends EventEmitter<{
 
   async setJavaScriptEnabled(enabled: boolean): Promise<void> {
     await this.userContext.browser.session.send(
+      // @ts-expect-error missing types
       'emulation.setScriptingEnabled',
       {
         // Enabled `null` means `default`, `false` means `disabled`.

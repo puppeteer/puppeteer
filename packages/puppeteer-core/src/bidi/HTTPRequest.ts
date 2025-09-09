@@ -3,8 +3,8 @@
  * Copyright 2020 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type {Protocol} from 'devtools-protocol';
+import type * as Bidi from 'webdriver-bidi-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
 import type {

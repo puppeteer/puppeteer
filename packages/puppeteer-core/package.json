@@ -145,6 +145,7 @@
     "debug": "^4.4.1",
     "devtools-protocol": "0.0.1495869",
     "typed-query-selector": "^2.12.0",
+    "webdriver-bidi-protocol": "0.2.8",
     "ws": "^8.18.3"
   },
   "devDependencies": {
