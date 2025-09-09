@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import * as Bidi from 'webdriver-bidi-protocol';
 
 import {ProtocolError} from '../../common/Errors.js';
 import {EventEmitter} from '../../common/EventEmitter.js';

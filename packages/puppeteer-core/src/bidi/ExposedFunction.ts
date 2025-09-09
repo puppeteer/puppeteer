@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import * as Bidi from 'webdriver-bidi-protocol';
 
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {Awaitable, FlattenHandle} from '../common/types.js';
@@ -78,10 +78,7 @@ export class ExposableFunction<Args extends unknown[], Ret> {
     const connectionEmitter = this.#disposables.use(
       new EventEmitter(connection),
     );
-    connectionEmitter.on(
-      Bidi.ChromiumBidi.Script.EventNames.Message,
-      this.#handleMessage,
-    );
+    connectionEmitter.on('script.message', this.#handleMessage);
 
     const functionDeclaration = stringifyFunction(
       interpolateFunction(

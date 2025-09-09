@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type * as ChromiumBidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type * as Bidi from 'webdriver-bidi-protocol';
 
 import {CallbackRegistry} from '../common/CallbackRegistry.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
@@ -24,21 +25,23 @@ import type {
 const debugProtocolSend = debug('puppeteer:webDriverBiDi:SEND ►');
 const debugProtocolReceive = debug('puppeteer:webDriverBiDi:RECV ◀');
 
+export type CdpEvent = ChromiumBidi.Cdp.Event;
+
 /**
  * @internal
  */
 export interface Commands extends BidiCommands {
   'goog:cdp.sendCommand': {
-    params: Bidi.Cdp.SendCommandParameters;
-    returnType: Bidi.Cdp.SendCommandResult;
+    params: ChromiumBidi.Cdp.SendCommandParameters;
+    returnType: ChromiumBidi.Cdp.SendCommandResult;
   };
   'goog:cdp.getSession': {
-    params: Bidi.Cdp.GetSessionParameters;
-    returnType: Bidi.Cdp.GetSessionResult;
+    params: ChromiumBidi.Cdp.GetSessionParameters;
+    returnType: ChromiumBidi.Cdp.GetSessionResult;
   };
   'goog:cdp.resolveRealm': {
-    params: Bidi.Cdp.ResolveRealmParameters;
-    returnType: Bidi.Cdp.ResolveRealmResult;
+    params: ChromiumBidi.Cdp.ResolveRealmParameters;
+    returnType: ChromiumBidi.Cdp.ResolveRealmResult;
   };
 }
 
@@ -124,7 +127,7 @@ export class BidiConnection
       });
     }
     debugProtocolReceive(message);
-    const object: Bidi.ChromiumBidi.Message = JSON.parse(message);
+    const object: Bidi.Message | CdpEvent = JSON.parse(message);
     if ('type' in object) {
       switch (object.type) {
         case 'success':
@@ -148,10 +151,7 @@ export class BidiConnection
             return;
           }
           // SAFETY: We know the method and parameter still match here.
-          this.emit(
-            object.method,
-            object.params as BidiEvents[keyof BidiEvents],
-          );
+          this.emit(object.method, object.params);
           return;
       }
     }
@@ -208,6 +208,6 @@ function createProtocolError(object: Bidi.ErrorResponse): string {
   return message;
 }
 
-function isCdpEvent(event: Bidi.ChromiumBidi.Event): event is Bidi.Cdp.Event {
+function isCdpEvent(event: Bidi.Event | CdpEvent): event is CdpEvent {
   return event.method.startsWith('goog:cdp.');
 }

@@ -6,7 +6,7 @@
 
 import type {ChildProcess} from 'node:child_process';
 
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import * as Bidi from 'webdriver-bidi-protocol';
 
 import type {BrowserEvents} from '../api/Browser.js';
 import {
@@ -28,7 +28,7 @@ import type {Viewport} from '../common/Viewport.js';
 import {bubble} from '../util/decorators.js';
 
 import {BidiBrowserContext} from './BrowserContext.js';
-import type {BidiConnection} from './Connection.js';
+import type {BidiConnection, CdpEvent} from './Connection.js';
 import type {Browser as BrowserCore} from './core/Browser.js';
 import {Session} from './core/Session.js';
 import type {UserContext} from './core/UserContext.js';
@@ -61,7 +61,7 @@ export class BidiBrowser extends Browser {
     'script',
     'input',
   ];
-  static readonly subscribeCdpEvents: Bidi.Cdp.EventNames[] = [
+  static readonly subscribeCdpEvents: Array<CdpEvent['method']> = [
     // Coverage
     'goog:cdp.Debugger.scriptParsed',
     'goog:cdp.CSS.styleSheetAdded',
