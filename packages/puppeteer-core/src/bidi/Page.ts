@@ -769,7 +769,7 @@ export class BidiPage extends Page {
     }
     if (!this.#emulatedNetworkConditions) {
       this.#emulatedNetworkConditions = {
-        offline: false,
+        offline: networkConditions?.offline ?? false,
         upload: -1,
         download: -1,
         latency: 0,
@@ -784,6 +784,8 @@ export class BidiPage extends Page {
     this.#emulatedNetworkConditions.latency = networkConditions
       ? networkConditions.latency
       : 0;
+    this.#emulatedNetworkConditions.offline =
+      networkConditions?.offline ?? false;
     return await this.#applyNetworkConditions();
   }
 

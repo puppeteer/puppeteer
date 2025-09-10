@@ -32,6 +32,14 @@ import {
  */
 export interface NetworkConditions {
   /**
+   * Emulates the offline mode.
+   *
+   * @remarks
+   *
+   * Shortcut for {@link Page.setOfflineMode}.
+   */
+  offline?: boolean;
+  /**
    * Download speed (bytes/s)
    */
   download: number;
@@ -207,7 +215,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   ): Promise<void> {
     if (!this.#emulatedNetworkConditions) {
       this.#emulatedNetworkConditions = {
-        offline: false,
+        offline: networkConditions?.offline ?? false,
         upload: -1,
         download: -1,
         latency: 0,
@@ -222,7 +230,8 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     this.#emulatedNetworkConditions.latency = networkConditions
       ? networkConditions.latency
       : 0;
-
+    this.#emulatedNetworkConditions.offline =
+      networkConditions?.offline ?? false;
     await this.#applyToAllClients(this.#applyNetworkConditions.bind(this));
   }
 
