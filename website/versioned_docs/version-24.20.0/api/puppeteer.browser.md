@@ -212,6 +212,21 @@ Shortcut for [browser.defaultBrowserContext().deleteCookie()](./puppeteer.browse
 </td></tr>
 <tr><td>
 
+<span id="deletematchingcookies">[deleteMatchingCookies(filters)](./puppeteer.browser.deletematchingcookies.md)</span>
+
+</td><td>
+
+</td><td>
+
+Deletes cookies matching the provided filters from the default [BrowserContext](./puppeteer.browsercontext.md).
+
+**Remarks:**
+
+Shortcut for [browser.defaultBrowserContext().deleteMatchingCookies()](./puppeteer.browsercontext.deletematchingcookies.md).
+
+</td></tr>
+<tr><td>
+
 <span id="disconnect">[disconnect()](./puppeteer.browser.disconnect.md)</span>
 
 </td><td>

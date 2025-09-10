@@ -489,7 +489,7 @@ By default, `page.pdf()` generates a pdf with modified colors for printing. Use 
 
 **Deprecated:**
 
-Page-level cookie API is deprecated. Use [Browser.deleteCookie()](./puppeteer.browser.deletecookie.md) or [BrowserContext.deleteCookie()](./puppeteer.browsercontext.deletecookie.md) instead.
+Page-level cookie API is deprecated. Use [Browser.deleteCookie()](./puppeteer.browser.deletecookie.md), [BrowserContext.deleteCookie()](./puppeteer.browsercontext.deletecookie.md), [Browser.deleteMatchingCookies()](./puppeteer.browser.deletematchingcookies.md) or [BrowserContext.deleteMatchingCookies()](./puppeteer.browsercontext.deletematchingcookies.md) instead.
 
 </td></tr>
 <tr><td>
@@ -1144,9 +1144,9 @@ NOTE: changing this value won't affect scripts that have already been run. It wi
 
 </td><td>
 
-Sets the network connection to offline.
+Emulates the offline mode.
 
-It does not change the parameters used in [Page.emulateNetworkConditions()](./puppeteer.page.emulatenetworkconditions.md)
+It does not change the download/upload/latency parameters set by [Page.emulateNetworkConditions()](./puppeteer.page.emulatenetworkconditions.md)
 
 </td></tr>
 <tr><td>
