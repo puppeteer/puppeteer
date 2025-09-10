@@ -2096,67 +2096,101 @@ describe('Page', function () {
       const {page} = await getTestState();
       // Set up an interval that increments a counter every 0ms. This will queue up tasks
       // to run as fast as possible.
-      await page.evaluate(
-        'setInterval(window.intervalCounter=(window.intervalCounter??0)+1, 0)',
-      );
+      await page.evaluate(() => {
+        return setInterval(() => {
+          return ((globalThis as any).intervalCounter =
+            ((globalThis as any).intervalCounter ?? 0) + 1);
+        }, 0);
+      });
+
       // Disable JavaScript execution on the page. This should pause timers.
       await page.setJavaScriptEnabled(false);
       // Capture the current value of the counter after JS is disabled.
-      const intervalCounter = await page.evaluate('window.intervalCounter');
-      // Wait for a microtask to complete. This gives the event loop a chance to run if it
-      // were not paused, which would have incremented the counter.
-      await page.evaluate('Promise.resolve()');
+      const intervalCounter = await page.evaluate(() => {
+        return (globalThis as any).intervalCounter;
+      });
+      // Wait for a microtask to complete. This gives the event loop with the task a
+      // chance to run if it were not paused, which would have incremented the counter.
+      await page.evaluate(() => {
+        return Promise.resolve();
+      });
       // Verify that the counter has not changed, confirming that setInterval was paused
       // when JavaScript was disabled.
-      expect(await page.evaluate('window.intervalCounter')).toBe(
-        intervalCounter,
-      );
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).intervalCounter;
+        }),
+      ).toBe(intervalCounter);
       // Re-enable JavaScript execution.
       await page.setJavaScriptEnabled(true);
       // Wait for another microtask to complete.
-      await page.evaluate('Promise.resolve()');
+      await page.evaluate(() => {
+        return Promise.resolve();
+      });
       // Verify that the counter still has not changed. This confirms that timers paused
       // by setJavaScriptEnabled(false) do not automatically resume when JavaScript is
       // re-enabled.
-      expect(await page.evaluate('window.intervalCounter')).toBe(
-        intervalCounter,
-      );
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).intervalCounter;
+        }),
+      ).toBe(intervalCounter);
     });
     it('setTimeout should pause', async () => {
       const {page} = await getTestState();
       // Set up a recursive setTimeout chain. The `task` function increments a counter and
       // immediately schedules itself to run again.
-      await page.evaluate(`
-        const task = ()=>{
-          window.timeoutCounter = (window.timeoutCounter??0)+1;
+      await page.evaluate(() => {
+        const task = () => {
+          (globalThis as any).timeoutCounter =
+            ((globalThis as any).timeoutCounter ?? 0) + 1;
           setTimeout(task, 0);
         };
         task();
-      `);
+      });
       // Disable JavaScript, which should pause the timeout chain.
       await page.setJavaScriptEnabled(false);
       // Capture the counter's value after the timeout chain is paused.
-      const timeoutCounter = await page.evaluate('window.timeoutCounter');
-      // Wait for a microtask to complete to see if the timeout fires.
-      await page.evaluate('Promise.resolve()');
+      const timeoutCounter = await page.evaluate(() => {
+        return (globalThis as any).timeoutCounter;
+      });
+      // Wait for a microtask to complete. This gives the event loop with the task a
+      // chance to run if it were not paused, which would have incremented the counter.
+      await page.evaluate(() => {
+        return Promise.resolve();
+      });
       // Verify the counter has not changed, confirming that setTimeout was paused.
-      expect(await page.evaluate('window.timeoutCounter')).toBe(timeoutCounter);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).timeoutCounter;
+        }),
+      ).toBe(timeoutCounter);
       // Re-enable JavaScript.
       await page.setJavaScriptEnabled(true);
       // Wait for another microtask.
-      await page.evaluate('Promise.resolve()');
+      await page.evaluate(() => {
+        return Promise.resolve();
+      });
       // Verify the counter still has not changed, confirming that paused timeouts do not
       // resume upon re-enabling JavaScript.
-      expect(await page.evaluate('window.timeoutCounter')).toBe(timeoutCounter);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).timeoutCounter;
+        }),
+      ).toBe(timeoutCounter);
     });
     it('then should not pause', async () => {
       const {page} = await getTestState();
       // Disable JavaScript execution on the page.
       await page.setJavaScriptEnabled(false);
-      // This test verifies that native browser operations, like resolving a promise,
-      // continue to work even when page scripts are disabled. The promise's .then()
-      // callback should execute and return 42.
-      expect(await page.evaluate('Promise.resolve().then(()=>42)')).toBe(42);
+      // Assert the microtasks continue to work even when page scripts are disabled.
+      expect(
+        await page.evaluate(() => {
+          return Promise.resolve().then(() => {
+            return 42;
+          });
+        }),
+      ).toBe(42);
     });
   });
 
