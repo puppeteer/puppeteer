@@ -747,11 +747,13 @@ export class CdpPage extends Page {
   }
 
   override async setUserAgent(
-    userAgentOrOptions: string | {
-      userAgent?: string;
-      userAgentMetadata?: Protocol.Emulation.UserAgentMetadata;
-      platform?: string;
-    },
+    userAgentOrOptions:
+      | string
+      | {
+          userAgent?: string;
+          userAgentMetadata?: Protocol.Emulation.UserAgentMetadata;
+          platform?: string;
+        },
     userAgentMetadata?: Protocol.Emulation.UserAgentMetadata,
   ): Promise<void> {
     if (typeof userAgentOrOptions === 'string') {
@@ -760,7 +762,8 @@ export class CdpPage extends Page {
         userAgentMetadata,
       );
     } else {
-      const userAgent = userAgentOrOptions.userAgent ?? await this.browser().userAgent();
+      const userAgent =
+        userAgentOrOptions.userAgent ?? (await this.browser().userAgent());
       return await this.#frameManager.networkManager.setUserAgent(
         userAgent,
         userAgentOrOptions.userAgentMetadata,

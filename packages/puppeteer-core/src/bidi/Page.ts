@@ -141,11 +141,13 @@ export class BidiPage extends Page {
   #userAgentInterception?: string;
   #userAgentPreloadScript?: string;
   override async setUserAgent(
-    userAgentOrOptions: string | {
-      userAgent?: string;
-      userAgentMetadata?: Protocol.Emulation.UserAgentMetadata;
-      platform?: string;
-    },
+    userAgentOrOptions:
+      | string
+      | {
+          userAgent?: string;
+          userAgentMetadata?: Protocol.Emulation.UserAgentMetadata;
+          platform?: string;
+        },
     userAgentMetadata?: Protocol.Emulation.UserAgentMetadata,
   ): Promise<void> {
     let userAgent: string;
@@ -156,12 +158,17 @@ export class BidiPage extends Page {
       userAgent = userAgentOrOptions;
       metadata = userAgentMetadata;
     } else {
-      userAgent = userAgentOrOptions.userAgent ?? (await this.#browserContext.browser().userAgent());
+      userAgent =
+        userAgentOrOptions.userAgent ??
+        (await this.#browserContext.browser().userAgent());
       metadata = userAgentOrOptions.userAgentMetadata;
       platform = userAgentOrOptions.platform;
     }
 
-    if (!this.#browserContext.browser().cdpSupported && (metadata || platform)) {
+    if (
+      !this.#browserContext.browser().cdpSupported &&
+      (metadata || platform)
+    ) {
       throw new UnsupportedOperation(
         'Current Browser does not support `userAgentMetadata` or `platform`',
       );
@@ -190,13 +197,16 @@ export class BidiPage extends Page {
       enable,
     );
 
-    const changeUserAgent = (userAgent: string, platform: string | undefined) => {
+    const changeUserAgent = (
+      userAgent: string,
+      platform: string | undefined,
+    ) => {
       Object.defineProperty(navigator, 'userAgent', {
         value: userAgent,
         configurable: true,
       });
       if (platform) {
-      Object.defineProperty(navigator, 'platform', {
+        Object.defineProperty(navigator, 'platform', {
           value: platform,
           configurable: true,
         });
@@ -215,12 +225,20 @@ export class BidiPage extends Page {
     }
     const [evaluateToken] = await Promise.all([
       enable
-        ? this.evaluateOnNewDocument(changeUserAgent, userAgent, platform || undefined)
+        ? this.evaluateOnNewDocument(
+            changeUserAgent,
+            userAgent,
+            platform || undefined,
+          )
         : undefined,
       // When we disable the UserAgent we want to
       // evaluate the original value in all Browsing Contexts
       ...frames.map(frame => {
-        return frame.evaluate(changeUserAgent, userAgent, platform || undefined);
+        return frame.evaluate(
+          changeUserAgent,
+          userAgent,
+          platform || undefined,
+        );
       }),
     ]);
     this.#userAgentPreloadScript = evaluateToken?.identifier;

@@ -1423,7 +1423,7 @@ describe('Page', function () {
           return navigator.userAgent;
         }),
       ).toContain('Mozilla');
-      await page.setUserAgent({ userAgent: 'foobar' });
+      await page.setUserAgent({userAgent: 'foobar'});
       const [request] = await Promise.all([
         server.waitForRequest('/empty.html'),
         page.goto(server.EMPTY_PAGE),
@@ -1438,18 +1438,18 @@ describe('Page', function () {
           return navigator.platform;
         }),
       ).not.toBe('MockPlatform');
-      
-      await page.setUserAgent({ 
+
+      await page.setUserAgent({
         userAgent: 'foobar',
-        platform: 'MockPlatform'
+        platform: 'MockPlatform',
       });
-      
+
       expect(
         await page.evaluate(() => {
           return navigator.platform;
         }),
       ).toBe('MockPlatform');
-      
+
       const [request] = await Promise.all([
         server.waitForRequest('/empty.html'),
         page.goto(server.EMPTY_PAGE),
@@ -1462,30 +1462,30 @@ describe('Page', function () {
       const originalUserAgent = await page.evaluate(() => {
         return navigator.userAgent;
       });
-      
+
       expect(
         await page.evaluate(() => {
           return navigator.platform;
         }),
       ).not.toBe('MockPlatform');
-      
-      await page.setUserAgent({ 
-        platform: 'MockPlatform'
+
+      await page.setUserAgent({
+        platform: 'MockPlatform',
       });
-      
+
       expect(
         await page.evaluate(() => {
           return navigator.platform;
         }),
       ).toBe('MockPlatform');
-      
+
       // User agent should remain the same
       expect(
         await page.evaluate(() => {
           return navigator.userAgent;
         }),
       ).toBe(originalUserAgent);
-      
+
       const [request] = await Promise.all([
         server.waitForRequest('/empty.html'),
         page.goto(server.EMPTY_PAGE),
