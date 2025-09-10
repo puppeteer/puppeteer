@@ -2114,7 +2114,9 @@ describe('Page', function () {
 
       // Wait for 100 ms. This gives the event loop with the task a
       // chance to run if it were not paused, which would have incremented the counter.
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => {
+        return setTimeout(resolve, 100);
+      });
 
       // Verify that the counter has not changed, confirming that setInterval was paused
       // when JavaScript was disabled.
@@ -2129,8 +2131,10 @@ describe('Page', function () {
       // Wait for another task. It should be long enough to avoid flakiness, as the
       // original `setInterval` will be throttled after several invocations.
       await page.evaluate(() => {
-        return new Promise(resolve => setTimeout(resolve, 100));
-      })
+        return new Promise(resolve => {
+          return setTimeout(resolve, 100);
+        });
+      });
 
       // Verify that the counter increased. This confirms that timers resumed when
       // JavaScript is re-enabled.
@@ -2140,7 +2144,7 @@ describe('Page', function () {
         }),
       ).toBeGreaterThan(intervalCounter);
     });
-    it('setTimeout should pause', async () => {
+    it('setTimeout should stop', async () => {
       const {page} = await getTestState();
 
       // Set up a recursive setTimeout chain. The `task` function increments a counter and
@@ -2164,7 +2168,9 @@ describe('Page', function () {
 
       // Wait for 100 ms. This gives the event loop with the task a
       // chance to run if it were not paused, which would have incremented the counter.
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => {
+        return setTimeout(resolve, 100);
+      });
 
       // Verify the counter has not changed, confirming that setTimeout was paused.
       expect(
@@ -2179,8 +2185,10 @@ describe('Page', function () {
       // Wait for another task. It should be long enough to avoid flakiness, as the
       // original `setInterval` will be throttled after several invocations.
       await page.evaluate(() => {
-        return new Promise(resolve => setTimeout(resolve, 100));
-      })
+        return new Promise(resolve => {
+          return setTimeout(resolve, 100);
+        });
+      });
 
       // Verify the counter still has not changed, confirming that `setTimeout` do not
       // resume upon re-enabling JavaScript.
