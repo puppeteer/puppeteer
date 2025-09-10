@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.9](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.8...browsers-v2.10.9) (2025-09-10)
+
+
+### Bug Fixes
+
+* wait for file descriptors to close after download ([#14183](https://github.com/puppeteer/puppeteer/issues/14183)) ([7645421](https://github.com/puppeteer/puppeteer/commit/7645421e51e550dcbfee2a141b79048a39785232))
+
 ## [2.10.8](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.7...browsers-v2.10.8) (2025-08-28)
 
 
