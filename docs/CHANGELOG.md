@@ -2,6 +2,28 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.20.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.19.0...puppeteer-v24.20.0) (2025-09-10)
+
+### Miscellaneous Chores
+
+- **puppeteer:** Synchronize puppeteer versions
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - @puppeteer/browsers bumped from 2.10.8 to 2.10.9
+
+### Features
+
+- add Browser.deleteMatchingCookies() method ([#14175](https://github.com/puppeteer/puppeteer/issues/14175)) ([925460d](https://github.com/puppeteer/puppeteer/commit/925460d4c888522088952b0b001b1ec6b9ed9968))
+- support offline parameter in emulateNetworkConditions ([#14184](https://github.com/puppeteer/puppeteer/issues/14184)) ([79c47f4](https://github.com/puppeteer/puppeteer/commit/79c47f4885a691d578209a84d98b73e2c2fb73a0))
+
+### Bug Fixes
+
+- **accessibility:** reports snapshot with uninteresting root and focusable Document is not a leaf node ([#14169](https://github.com/puppeteer/puppeteer/issues/14169)) ([3bad7ad](https://github.com/puppeteer/puppeteer/commit/3bad7ad2240647d57ae327fc12b0e7deff8d95e8))
+- roll to Chrome 140.0.7339.82 ([#14182](https://github.com/puppeteer/puppeteer/issues/14182)) ([7e4440d](https://github.com/puppeteer/puppeteer/commit/7e4440d706dfa62b2a011dedb8d87c4189f397b3))
+
 ## [24.19.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.18.0...puppeteer-v24.19.0) (2025-09-04)
 
 ### Features

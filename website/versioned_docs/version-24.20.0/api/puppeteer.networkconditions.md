@@ -69,6 +69,29 @@ Latency (ms)
 </td></tr>
 <tr><td>
 
+<span id="offline">offline</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Emulates the offline mode.
+
+**Remarks:**
+
+Shortcut for [Page.setOfflineMode()](./puppeteer.page.setofflinemode.md).
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="upload">upload</span>
 
 </td><td>

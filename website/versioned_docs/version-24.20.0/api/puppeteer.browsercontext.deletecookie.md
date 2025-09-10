@@ -4,7 +4,7 @@ sidebar_label: BrowserContext.deleteCookie
 
 # BrowserContext.deleteCookie() method
 
-Removes cookie in the browser context
+Removes cookie in this browser context.
 
 ### Signature
 
@@ -39,7 +39,7 @@ cookies
 
 </td><td>
 
-[cookie](./puppeteer.cookie.md) to remove
+Complete [cookie](./puppeteer.cookie.md) object to be removed.
 
 </td></tr>
 </tbody></table>
