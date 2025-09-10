@@ -183,7 +183,7 @@ export class BidiPage extends Page {
       });
     }
     const enable = userAgent !== '';
-    userAgent = userAgent || (await this.#browserContext.browser().userAgent());
+    userAgent = userAgent ?? (await this.#browserContext.browser().userAgent());
 
     this._userAgentHeaders = enable
       ? {
@@ -197,7 +197,7 @@ export class BidiPage extends Page {
       enable,
     );
 
-    const changeUserAgent = (
+    const overrideNavigatorProperties = (
       userAgent: string,
       platform: string | undefined,
     ) => {
@@ -226,7 +226,7 @@ export class BidiPage extends Page {
     const [evaluateToken] = await Promise.all([
       enable
         ? this.evaluateOnNewDocument(
-            changeUserAgent,
+            overrideNavigatorProperties,
             userAgent,
             platform || undefined,
           )
@@ -235,7 +235,7 @@ export class BidiPage extends Page {
       // evaluate the original value in all Browsing Contexts
       ...frames.map(frame => {
         return frame.evaluate(
-          changeUserAgent,
+          overrideNavigatorProperties,
           userAgent,
           platform || undefined,
         );
