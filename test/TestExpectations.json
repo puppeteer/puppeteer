@@ -412,6 +412,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[mouse.spec] Mouse should select the text with mouse",
+    "platforms": ["win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "Suddenly started being flaky on Windows"
+  },
+  {
     "testIdPattern": "[navigation.spec] navigation Frame.goto should return matching responses",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -543,6 +550,13 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.setGeolocation should work",
+    "platforms": ["win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "Suddenly started being flaky on Windows"
   },
   {
     "testIdPattern": "[pdf.spec] Page.pdf can print to PDF with accessible",
