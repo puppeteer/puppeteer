@@ -567,6 +567,24 @@ describe('Emulation', () => {
   });
 
   describe('Page.emulateNetworkConditions', function () {
+    it('should support offline', async () => {
+      const {page, server} = await getTestState();
+
+      await page.emulateNetworkConditions({
+        offline: true,
+        download: 0,
+        upload: 0,
+        latency: 0,
+      });
+
+      try {
+        await page.goto(server.EMPTY_PAGE);
+        throw new Error('not reached');
+      } catch (err) {
+        expect((err as Error).message).toMatch(/ERR_INTERNET_DISCONNECTED/);
+      }
+    });
+
     it('should change navigator.connection.effectiveType', async () => {
       const {page} = await getTestState();
 

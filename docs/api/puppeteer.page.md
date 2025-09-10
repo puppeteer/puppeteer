@@ -1144,9 +1144,9 @@ NOTE: changing this value won't affect scripts that have already been run. It wi
 
 </td><td>
 
-Sets the network connection to offline.
+Emulates the offline mode.
 
-It does not change the parameters used in [Page.emulateNetworkConditions()](./puppeteer.page.emulatenetworkconditions.md)
+It does not change the download/upload/latency parameters set by [Page.emulateNetworkConditions()](./puppeteer.page.emulatenetworkconditions.md)
 
 </td></tr>
 <tr><td>
