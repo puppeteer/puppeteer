@@ -1415,6 +1415,83 @@ describe('Page', function () {
       ]);
       expect(request.headers['user-agent']).toBe('foobar');
     });
+    it('should work with options parameter', async () => {
+      const {page, server} = await getTestState();
+
+      expect(
+        await page.evaluate(() => {
+          return navigator.userAgent;
+        }),
+      ).toContain('Mozilla');
+      await page.setUserAgent({ userAgent: 'foobar' });
+      const [request] = await Promise.all([
+        server.waitForRequest('/empty.html'),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+      expect(request.headers['user-agent']).toBe('foobar');
+    });
+    it('should work with platform option', async () => {
+      const {page, server} = await getTestState();
+
+      expect(
+        await page.evaluate(() => {
+          return navigator.platform;
+        }),
+      ).not.toBe('MockPlatform');
+      
+      await page.setUserAgent({ 
+        userAgent: 'foobar',
+        platform: 'MockPlatform'
+      });
+      
+      expect(
+        await page.evaluate(() => {
+          return navigator.platform;
+        }),
+      ).toBe('MockPlatform');
+      
+      const [request] = await Promise.all([
+        server.waitForRequest('/empty.html'),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+      expect(request.headers['user-agent']).toBe('foobar');
+    });
+    it('should work with platform option without userAgent', async () => {
+      const {page, server} = await getTestState();
+
+      const originalUserAgent = await page.evaluate(() => {
+        return navigator.userAgent;
+      });
+      
+      expect(
+        await page.evaluate(() => {
+          return navigator.platform;
+        }),
+      ).not.toBe('MockPlatform');
+      
+      await page.setUserAgent({ 
+        platform: 'MockPlatform'
+      });
+      
+      expect(
+        await page.evaluate(() => {
+          return navigator.platform;
+        }),
+      ).toBe('MockPlatform');
+      
+      // User agent should remain the same
+      expect(
+        await page.evaluate(() => {
+          return navigator.userAgent;
+        }),
+      ).toBe(originalUserAgent);
+      
+      const [request] = await Promise.all([
+        server.waitForRequest('/empty.html'),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+      expect(request.headers['user-agent']).toBe(originalUserAgent);
+    });
     it('should work for subframes', async () => {
       const {page, server} = await getTestState();
 
