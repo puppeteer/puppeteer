@@ -1655,11 +1655,22 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param userAgentData - Specific user agent client hint data to use in this
    * page
    * @returns Promise which resolves when the user agent is set.
+   * @deprecated Use {@link Page.setUserAgent} instead.
    */
   abstract setUserAgent(
     userAgent: string,
     userAgentMetadata?: Protocol.Emulation.UserAgentMetadata,
   ): Promise<void>;
+
+  /**
+   * @param options - Object containing user agent and optional user agent metadata
+   * @returns Promise which resolves when the user agent is set.
+   */
+  abstract setUserAgent(options: {
+    userAgent?: string;
+    userAgentMetadata?: Protocol.Emulation.UserAgentMetadata;
+    platform?: string;
+  }): Promise<void>;
 
   /**
    * Object containing metrics as key/value pairs.
