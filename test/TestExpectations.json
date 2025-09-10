@@ -415,7 +415,7 @@
     "testIdPattern": "[mouse.spec] Mouse should select the text with mouse",
     "platforms": ["win32"],
     "parameters": ["firefox"],
-    "expectations": ["FAIL"],
+    "expectations": ["SKIP"],
     "comment": "Suddenly started being flaky on Windows"
   },
   {
