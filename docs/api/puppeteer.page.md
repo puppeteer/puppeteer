@@ -506,7 +506,7 @@ To aid emulation, Puppeteer provides a list of known devices that can be via [Kn
 
 **Remarks:**
 
-This method is a shortcut for calling two methods: [Page.setUserAgent()](./puppeteer.page.setuseragent.md) and [Page.setViewport()](./puppeteer.page.setviewport.md).
+This method is a shortcut for calling two methods: [Page.setUserAgent()](./puppeteer.page.setuseragent.md#overload-2) and [Page.setViewport()](./puppeteer.page.setviewport.md).
 
 This method will resize the page. A lot of websites don't expect phones to change size, so you should emulate before navigating to the page.
 
@@ -1176,12 +1176,12 @@ See the [Request interception guide](https://pptr.dev/guides/network-interceptio
 
 **Deprecated:**
 
-Use [Page.setUserAgent()](./puppeteer.page.setuseragent.md) instead.
+Use [Page.setUserAgent()](./puppeteer.page.setuseragent.md#overload-2) instead.
 
 </td></tr>
 <tr><td>
 
-<span id="setuseragent">[setUserAgent(options)](./puppeteer.page.setuseragent.md)</span>
+<span id="setuseragent">[setUserAgent(options)](./puppeteer.page.setuseragent.md#overload-2)</span>
 
 </td><td>
 

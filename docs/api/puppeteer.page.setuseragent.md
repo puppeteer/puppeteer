@@ -4,11 +4,11 @@ sidebar_label: Page.setUserAgent
 
 # Page.setUserAgent() method
 
-<h2 id="setUserAgent">setUserAgent(): Promise&lt;void&gt;</h2>
+<h2 id="overload-1">setUserAgent(): Promise&lt;void&gt;</h2>
 
 > Warning: This API is now obsolete.
 >
-> Use [Page.setUserAgent()](./puppeteer.page.setuseragent.md) instead.
+> Use [Page.setUserAgent()](./puppeteer.page.setuseragent.md#overload-2) instead.
 
 ### Signature
 
@@ -70,7 +70,7 @@ Promise&lt;void&gt;
 
 Promise which resolves when the user agent is set.
 
-<h2 id="setUserAgent-1">setUserAgent(): Promise&lt;void&gt;</h2>
+<h2 id="overload-2">setUserAgent(): Promise&lt;void&gt;</h2>
 
 ### Signature
 

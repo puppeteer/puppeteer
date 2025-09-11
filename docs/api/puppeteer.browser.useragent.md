@@ -6,7 +6,7 @@ sidebar_label: Browser.userAgent
 
 Gets this [browser's](./puppeteer.browser.md) original user agent.
 
-[Pages](./puppeteer.page.md) can override the user agent with [Page.setUserAgent()](./puppeteer.page.setuseragent.md).
+[Pages](./puppeteer.page.md) can override the user agent with [Page.setUserAgent()](./puppeteer.page.setuseragent.md#overload-2).
 
 ### Signature
 
