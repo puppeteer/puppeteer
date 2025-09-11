@@ -322,12 +322,12 @@ Shortcut for [page.mainFrame().addScriptTag(options)](./puppeteer.frame.addscrip
 
 Adds a `<link rel="stylesheet">` tag into the page with the desired URL or a `<style type="text/css">` tag with the content.
 
-Shortcut for [page.mainFrame().addStyleTag(options)](./puppeteer.frame.addstyletag.md).
+Shortcut for [page.mainFrame().addStyleTag(options)](./puppeteer.frame.addstyletag.md#overload-2).
 
 </td></tr>
 <tr><td>
 
-<span id="addstyletag">[addStyleTag(options)](./puppeteer.page.addstyletag.md)</span>
+<span id="addstyletag">[addStyleTag(options)](./puppeteer.page.addstyletag.md#overload-2)</span>
 
 </td><td>
 
@@ -821,7 +821,7 @@ Creates a locator for the provided selector. See [Locator](./puppeteer.locator.m
 </td></tr>
 <tr><td>
 
-<span id="locator">[locator(func)](./puppeteer.page.locator.md)</span>
+<span id="locator">[locator(func)](./puppeteer.page.locator.md#overload-2)</span>
 
 </td><td>
 
@@ -953,7 +953,7 @@ Calling [Page.bringToFront()](./puppeteer.page.bringtofront.md) will not wait fo
 </td></tr>
 <tr><td>
 
-<span id="screenshot">[screenshot(options)](./puppeteer.page.screenshot.md)</span>
+<span id="screenshot">[screenshot(options)](./puppeteer.page.screenshot.md#overload-2)</span>
 
 </td><td>
 

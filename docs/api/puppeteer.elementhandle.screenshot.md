@@ -4,9 +4,9 @@ sidebar_label: ElementHandle.screenshot
 
 # ElementHandle.screenshot() method
 
-<h2 id="screenshot">screenshot(): Promise&lt;string&gt;</h2>
+<h2 id="overload-1">screenshot(): Promise&lt;string&gt;</h2>
 
-This method scrolls element into view if needed, and then uses [Page.screenshot()](./puppeteer.page.screenshot.md) to take a screenshot of the element. If the element is detached from DOM, the method throws an error.
+This method scrolls element into view if needed, and then uses [Page.screenshot()](./puppeteer.page.screenshot.md#overload-2) to take a screenshot of the element. If the element is detached from DOM, the method throws an error.
 
 ### Signature
 
@@ -52,7 +52,7 @@ Readonly&lt;[ScreenshotOptions](./puppeteer.screenshotoptions.md)&gt; &amp; &#12
 
 Promise&lt;string&gt;
 
-<h2 id="screenshot-1">screenshot(): Promise&lt;Uint8Array&gt;</h2>
+<h2 id="overload-2">screenshot(): Promise&lt;Uint8Array&gt;</h2>
 
 ### Signature
 

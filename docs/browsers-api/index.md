@@ -277,7 +277,7 @@ Downloads and unpacks the browser archive according to the [InstallOptions](./br
 </td></tr>
 <tr><td>
 
-<span id="install">[install(options)](./browsers.install.md)</span>
+<span id="install">[install(options)](./browsers.install.md#overload-2)</span>
 
 </td><td>
 
