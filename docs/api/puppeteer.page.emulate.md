@@ -50,7 +50,7 @@ Promise&lt;void&gt;
 
 ## Remarks
 
-This method is a shortcut for calling two methods: [Page.setUserAgent()](./puppeteer.page.setuseragent.md) and [Page.setViewport()](./puppeteer.page.setviewport.md).
+This method is a shortcut for calling two methods: [Page.setUserAgent()](./puppeteer.page.setuseragent.md#overload-2) and [Page.setViewport()](./puppeteer.page.setviewport.md).
 
 This method will resize the page. A lot of websites don't expect phones to change size, so you should emulate before navigating to the page.
 
