@@ -21,7 +21,27 @@ const puppeteer = new PuppeteerNode({
   configuration,
 });
 
-export const {connect, defaultArgs, executablePath, launch, trimCache} =
-  puppeteer;
+export const {
+  /**
+   * @public
+   */
+  connect,
+  /**
+   * @public
+   */
+  defaultArgs,
+  /**
+   * @public
+   */
+  executablePath,
+  /**
+   * @public
+   */
+  launch,
+  /**
+   * @public
+   */
+  trimCache,
+} = puppeteer;
 
 export default puppeteer;
