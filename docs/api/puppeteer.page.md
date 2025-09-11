@@ -1170,6 +1170,21 @@ See the [Request interception guide](https://pptr.dev/guides/network-interceptio
 
 </td><td>
 
+`deprecated`
+
+</td><td>
+
+**Deprecated:**
+
+Use [Page.setUserAgent()](./puppeteer.page.setuseragent.md) instead.
+
+</td></tr>
+<tr><td>
+
+<span id="setuseragent">[setUserAgent(options)](./puppeteer.page.setuseragent.md)</span>
+
+</td><td>
+
 </td><td>
 
 </td></tr>

@@ -580,6 +580,20 @@
     "comment": "Unknown command emulation.setScriptingEnabled"
   },
   {
+    "testIdPattern": "[page.spec] Page Page.setUserAgent should work with platform option",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"],
+    "comment": "BiDi not supprting platform option"
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.setUserAgent should work with platform option without userAgent",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"],
+    "comment": "BiDi not supprting platform option"
+  },
+  {
     "testIdPattern": "[pdf.spec] Page.pdf can print to PDF with accessible",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],

@@ -747,13 +747,29 @@ export class CdpPage extends Page {
   }
 
   override async setUserAgent(
-    userAgent: string,
+    userAgentOrOptions:
+      | string
+      | {
+          userAgent?: string;
+          userAgentMetadata?: Protocol.Emulation.UserAgentMetadata;
+          platform?: string;
+        },
     userAgentMetadata?: Protocol.Emulation.UserAgentMetadata,
   ): Promise<void> {
-    return await this.#frameManager.networkManager.setUserAgent(
-      userAgent,
-      userAgentMetadata,
-    );
+    if (typeof userAgentOrOptions === 'string') {
+      return await this.#frameManager.networkManager.setUserAgent(
+        userAgentOrOptions,
+        userAgentMetadata,
+      );
+    } else {
+      const userAgent =
+        userAgentOrOptions.userAgent ?? (await this.browser().userAgent());
+      return await this.#frameManager.networkManager.setUserAgent(
+        userAgent,
+        userAgentOrOptions.userAgentMetadata,
+        userAgentOrOptions.platform,
+      );
+    }
   }
 
   override async metrics(): Promise<Metrics> {

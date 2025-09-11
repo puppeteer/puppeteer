@@ -141,20 +141,45 @@ export class BidiPage extends Page {
   #userAgentInterception?: string;
   #userAgentPreloadScript?: string;
   override async setUserAgent(
-    userAgent: string,
+    userAgentOrOptions:
+      | string
+      | {
+          userAgent?: string;
+          userAgentMetadata?: Protocol.Emulation.UserAgentMetadata;
+          platform?: string;
+        },
     userAgentMetadata?: Protocol.Emulation.UserAgentMetadata,
   ): Promise<void> {
-    if (!this.#browserContext.browser().cdpSupported && userAgentMetadata) {
+    let userAgent: string;
+    let metadata: Protocol.Emulation.UserAgentMetadata | undefined;
+    let platform: string | undefined;
+
+    if (typeof userAgentOrOptions === 'string') {
+      userAgent = userAgentOrOptions;
+      metadata = userAgentMetadata;
+    } else {
+      userAgent =
+        userAgentOrOptions.userAgent ??
+        (await this.#browserContext.browser().userAgent());
+      metadata = userAgentOrOptions.userAgentMetadata;
+      platform = userAgentOrOptions.platform;
+    }
+
+    if (
+      !this.#browserContext.browser().cdpSupported &&
+      (metadata || platform)
+    ) {
       throw new UnsupportedOperation(
-        'Current Browser does not support `userAgentMetadata`',
+        'Current Browser does not support `userAgentMetadata` or `platform`',
       );
     } else if (
       this.#browserContext.browser().cdpSupported &&
-      userAgentMetadata
+      (metadata || platform)
     ) {
       return await this._client().send('Network.setUserAgentOverride', {
         userAgent: userAgent,
-        userAgentMetadata: userAgentMetadata,
+        userAgentMetadata: metadata,
+        platform: platform,
       });
     }
     const enable = userAgent !== '';
@@ -172,11 +197,20 @@ export class BidiPage extends Page {
       enable,
     );
 
-    const changeUserAgent = (userAgent: string) => {
+    const overrideNavigatorProperties = (
+      userAgent: string,
+      platform: string | undefined,
+    ) => {
       Object.defineProperty(navigator, 'userAgent', {
         value: userAgent,
         configurable: true,
       });
+      if (platform) {
+        Object.defineProperty(navigator, 'platform', {
+          value: platform,
+          configurable: true,
+        });
+      }
     };
 
     const frames = [this.#frame];
@@ -191,12 +225,20 @@ export class BidiPage extends Page {
     }
     const [evaluateToken] = await Promise.all([
       enable
-        ? this.evaluateOnNewDocument(changeUserAgent, userAgent)
+        ? this.evaluateOnNewDocument(
+            overrideNavigatorProperties,
+            userAgent,
+            platform || undefined,
+          )
         : undefined,
       // When we disable the UserAgent we want to
       // evaluate the original value in all Browsing Contexts
       ...frames.map(frame => {
-        return frame.evaluate(changeUserAgent, userAgent);
+        return frame.evaluate(
+          overrideNavigatorProperties,
+          userAgent,
+          platform || undefined,
+        );
       }),
     ]);
     this.#userAgentPreloadScript = evaluateToken?.identifier;
