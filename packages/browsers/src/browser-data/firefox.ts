@@ -215,6 +215,12 @@ function defaultProfilePreferences(
     // Increase the APZ content response timeout to 1 minute
     'apz.content_response_timeout': 60000,
 
+    // Disables backup service to improve startup performance and stability. See
+    // https://github.com/puppeteer/puppeteer/issues/14194. TODO: can be removed
+    // once the service is disabled on the Firefox side for WebDriver (see
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=1988250).
+    'browser.backup.enabled': false,
+
     // Prevent various error message on the console
     // jest-puppeteer asserts that no error message is emitted by the console
     'browser.contentblocking.features.standard':
