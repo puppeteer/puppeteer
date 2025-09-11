@@ -2048,7 +2048,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    */
   async emulate(device: Device): Promise<void> {
     await Promise.all([
-      this.setUserAgent(device.userAgent),
+      this.setUserAgent({userAgent: device.userAgent}),
       this.setViewport(device.viewport),
     ]);
   }
