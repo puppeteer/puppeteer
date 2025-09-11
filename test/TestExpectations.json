@@ -1717,27 +1717,6 @@
     "comment": "For some reason service_workers do not close in chrome-headless-shell"
   },
   {
-    "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work with three touches",
-    "platforms": ["darwin"],
-    "parameters": ["cdp", "chrome", "headless"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work with three touches",
-    "platforms": ["darwin"],
-    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work with three touches",
-    "platforms": ["darwin"],
-    "parameters": ["chrome", "headless", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[webExtension.spec] webExtension can install and uninstall an extension",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
