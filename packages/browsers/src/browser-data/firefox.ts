@@ -205,6 +205,8 @@ function defaultProfilePreferences(
   const server = 'dummy.test';
 
   const defaultPrefs = {
+    'remote.log.level': 'Trace',
+
     // Make sure Shield doesn't hit the network.
     'app.normandy.api_url': '',
     // Disable Firefox old build background check
