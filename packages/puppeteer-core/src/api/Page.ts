@@ -1655,7 +1655,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param userAgentData - Specific user agent client hint data to use in this
    * page
    * @returns Promise which resolves when the user agent is set.
-   * @deprecated Use {@link Page.setUserAgent} instead.
+   * @deprecated Use {@link Page.(setUserAgent:2) } instead.
    */
   abstract setUserAgent(
     userAgent: string,
@@ -2025,7 +2025,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @remarks
    * This method is a shortcut for calling two methods:
-   * {@link Page.setUserAgent} and {@link Page.setViewport}.
+   * {@link Page.(setUserAgent:2) } and {@link Page.setViewport}.
    *
    * This method will resize the page. A lot of websites don't expect phones to
    * change size, so you should emulate before navigating to the page.

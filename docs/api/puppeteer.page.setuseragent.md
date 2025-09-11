@@ -8,7 +8,7 @@ sidebar_label: Page.setUserAgent
 
 > Warning: This API is now obsolete.
 >
-> Use instead.
+> Use [Page.setUserAgent()](./puppeteer.page.setuseragent.md) instead.
 
 ### Signature
 

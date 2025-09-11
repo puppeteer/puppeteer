@@ -363,7 +363,7 @@ Uninstalls an extension. In Chrome, this is only available if the browser was cr
 
 Gets this [browser's](./puppeteer.browser.md) original user agent.
 
-[Pages](./puppeteer.page.md) can override the user agent with .
+[Pages](./puppeteer.page.md) can override the user agent with [Page.setUserAgent()](./puppeteer.page.setuseragent.md).
 
 </td></tr>
 <tr><td>
