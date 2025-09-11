@@ -1,17 +1,24 @@
 # Running Puppeteer in the browser
 
-Puppeteer is a powerful tool for automating browsers, but did you know it can also run within a browser itself? This enables you to leverage Puppeteer's capabilities for tasks that don't require Node.js specific features.
+Puppeteer is a powerful tool for automating browsers, but did you know its API can also run within a browser itself? This enables you to leverage Puppeteer's capabilities for tasks that don't require Node.js specific features.
+
+:::note
+
+Note that while the Puppeteer API can run from a client webpage, the automation actions are sent to a separate browser with an open debugging port.
+
+:::
+
 
 ## Supported Features
 
 While running in the browser, Puppeteer offers a variety of functionalities including:
 
 1. WebSocket Connections: Establish connections to existing browser instances using WebSockets. Launching or downloading browsers directly is not supported as it relies on Node.js APIs.
-2. Script Evaluation: Execute JavaScript code within the browser context.
-3. Document Manipulation: Generate PDFs and screenshots of the current web page.
-4. Page Management: Create, close, and navigate between different web pages.
-5. Cookie Handling: Inspect, modify, and manage cookies within the browser.
-6. Network Control: Monitor and intercept network requests made by the browser.
+2. Script Evaluation: Execute JavaScript code within the remote browser context.
+3. Document Manipulation: Generate PDFs and screenshots of the remote browser page.
+4. Page Management: Create, close, and navigate between different web pages in the remote browser.
+5. Cookie Handling: Inspect, modify, and manage cookies within the remote browser.
+6. Network Control: Monitor and intercept network requests made by the remote browser.
 
 ## How to run Puppeteer in the browser
 
@@ -65,7 +72,7 @@ export default {
 
 :::note
 
-Do not forget to include a valid browser WebSocket endpoint when connecting to an instance.
+Do not forget to include a valid browser WebSocket endpoint when connecting to a remote browser instance.
 
 :::
 
