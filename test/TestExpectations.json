@@ -1314,28 +1314,7 @@
     "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1866749"
   },
   {
-    "testIdPattern": "[page.spec] Page Page.setJavaScriptEnabled setInterval should pause",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Unknown command emulation.setScriptingEnabled"
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.setJavaScriptEnabled setTimeout should stop",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Unknown command emulation.setScriptingEnabled"
-  },
-  {
     "testIdPattern": "[page.spec] Page Page.setJavaScriptEnabled should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Unknown command emulation.setScriptingEnabled"
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.setJavaScriptEnabled then should not pause",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
