@@ -1604,8 +1604,7 @@ export class MarkdownDocumenter {
     }
 
     if (
-      'overloadIndex' in apiItem &&
-      typeof apiItem.overloadIndex === 'number' &&
+      ApiParameterListMixin.isBaseClassOf(apiItem) &&
       apiItem.overloadIndex > 1
     ) {
       suffix = `#${this._getOverloadElementId(apiItem.overloadIndex)}`;
