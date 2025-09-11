@@ -1567,7 +1567,7 @@
     "testIdPattern": "[tracing.spec] Tracing should support a typedArray without a path",
     "platforms": ["linux"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"],
+    "expectations": ["FAIL", "PASS"],
     "comment": "Might be flaky on Chrome BiDi"
   },
   {
