@@ -8,7 +8,6 @@ Note that while the Puppeteer API can run from a client webpage, the automation 
 
 :::
 
-
 ## Supported Features
 
 While running in the browser, Puppeteer offers a variety of functionalities including:
