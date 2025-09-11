@@ -560,14 +560,14 @@
   },
   {
     "testIdPattern": "[page.spec] Page Page.setUserAgent should work with platform option",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["FAIL"],
     "comment": "BiDi not supprting platform option"
   },
   {
     "testIdPattern": "[page.spec] Page Page.setUserAgent should work with platform option without userAgent",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["FAIL"],
     "comment": "BiDi not supprting platform option"
@@ -1562,13 +1562,6 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[tracing.spec] Tracing should support a typedArray without a path",
-    "platforms": ["linux"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "Might be flaky on Chrome BiDi"
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work with strict CSP policy",
