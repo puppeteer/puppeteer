@@ -11,37 +11,37 @@ The following example searches [developer.chrome.com](https://developer.chrome.c
 
 ```ts
 import puppeteer from 'puppeteer';
+// Or import puppeteer from 'puppeteer-core';
 
-(async () => {
-  // Launch the browser and open a new blank page
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
+// Launch the browser and open a new blank page.
+const browser = await puppeteer.launch();
+const page = await browser.newPage();
 
-  // Navigate the page to a URL
-  await page.goto('https://developer.chrome.com/');
+// Navigate the page to a URL.
+await page.goto('https://developer.chrome.com/');
 
-  // Set screen size
-  await page.setViewport({width: 1080, height: 1024});
+// Set screen size.
+await page.setViewport({width: 1080, height: 1024});
 
-  // Type into search box
-  await page.type('.devsite-search-field', 'automate beyond recorder');
+// Open the search menu using the keyboard.
+await page.keyboard.press('/');
 
-  // Wait and click on first result
-  const searchResultSelector = '.devsite-result-item-link';
-  await page.waitForSelector(searchResultSelector);
-  await page.click(searchResultSelector);
+// Type into search box using accessible input name.
+await page.locator('::-p-aria(Search)').fill('automate beyond recorder');
 
-  // Locate the full title with a unique string
-  const textSelector = await page.waitForSelector(
-    'text/Customize and automate',
-  );
-  const fullTitle = await textSelector?.evaluate(el => el.textContent);
+// Wait and click on first result.
+await page.locator('.devsite-result-item-link').click();
 
-  // Print the full title
-  console.log('The title of this blog post is "%s".', fullTitle);
+// Locate the full title with a unique string.
+const textSelector = await page
+  .locator('::-p-text(Customize and automate)')
+  .waitHandle();
+const fullTitle = await textSelector?.evaluate(el => el.textContent);
 
-  await browser.close();
-})();
+// Print the full title.
+console.log('The title of this blog post is "%s".', fullTitle);
+
+await browser.close();
 ```
 
 For more in-depth usage, check our [documentation](https://pptr.dev/docs)
