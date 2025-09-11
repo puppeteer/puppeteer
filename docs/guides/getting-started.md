@@ -13,7 +13,7 @@ The following example searches [developer.chrome.com](https://developer.chrome.c
 import puppeteer from 'puppeteer';
 // Or import puppeteer from 'puppeteer-core';
 
-// Launch the browser and open a new blank page
+// Launch the browser and open a new blank page.
 const browser = await puppeteer.launch();
 const page = await browser.newPage();
 

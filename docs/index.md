@@ -29,7 +29,7 @@ npm i puppeteer-core # Alternatively, install as a library, without downloading 
 import puppeteer from 'puppeteer';
 // Or import puppeteer from 'puppeteer-core';
 
-// Launch the browser and open a new blank page
+// Launch the browser and open a new blank page.
 const browser = await puppeteer.launch();
 const page = await browser.newPage();
 
