@@ -1,5 +1,24 @@
 # Changelog
 
+## [24.21.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.20.0...puppeteer-core-v24.21.0) (2025-09-12)
+
+
+### Features
+
+* emulate `navigator.platform` in `Page.setUserAgent` ([#14190](https://github.com/puppeteer/puppeteer/issues/14190)) ([a2397a6](https://github.com/puppeteer/puppeteer/commit/a2397a616930ead735c9ae5d8bae5801cd97f62a))
+
+
+### Bug Fixes
+
+* do not change CDP state if interception was not toggled ([#14203](https://github.com/puppeteer/puppeteer/issues/14203)) ([a4f166a](https://github.com/puppeteer/puppeteer/commit/a4f166a1c873623d02f468522f4ace338819a35d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.10.9 to 2.10.10
+
 ## [24.20.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.19.0...puppeteer-core-v24.20.0) (2025-09-10)
 
 

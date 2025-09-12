@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.10](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.9...browsers-v2.10.10) (2025-09-12)
+
+
+### Bug Fixes
+
+* disable browser.backup for Firefox ([#14200](https://github.com/puppeteer/puppeteer/issues/14200)) ([6c751c4](https://github.com/puppeteer/puppeteer/commit/6c751c43b2f66e2d6d7849d92506da5fd669f2d8))
+
 ## [2.10.9](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.8...browsers-v2.10.9) (2025-09-10)
 
 
