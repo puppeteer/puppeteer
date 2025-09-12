@@ -77,7 +77,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   #credentials: Credentials | null = null;
   #attemptedAuthentications = new Set<string>();
   #userRequestInterceptionEnabled = false;
-  #protocolRequestInterceptionEnabled = false;
+  #protocolRequestInterceptionEnabled?: boolean;
   #userCacheDisabled?: boolean;
   #emulatedNetworkConditions?: InternalNetworkConditions;
   #userAgent?: string;
@@ -310,6 +310,9 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   }
 
   async #applyProtocolRequestInterception(client: CDPSession): Promise<void> {
+    if (this.#protocolRequestInterceptionEnabled === undefined) {
+      return;
+    }
     if (this.#userCacheDisabled === undefined) {
       this.#userCacheDisabled = false;
     }
