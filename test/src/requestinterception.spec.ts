@@ -643,10 +643,15 @@ describe('request interception', function () {
         expect(cached).toHaveLength(0);
       });
       it(`should cache ${resourceType} if cache enabled`, async () => {
-        const {page, server, close} = await launch({
-          // Viewport emulation resets memory caches.
-          defaultViewport: null,
-        });
+        const {page, server, close} = await launch(
+          {
+            // Viewport emulation resets memory caches.
+            defaultViewport: null,
+          },
+          {
+            createContext: true,
+          },
+        );
         try {
           // Load and re-load to make sure it's cached.
           await page.goto(server.PREFIX + url);
