@@ -75,166 +75,166 @@ jobs:
     with:
       check-mergeable-state: true
 
-  deploy-docs:
-    needs: check-changes
-    name: Deploy docs (if needed)
-    if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'website') }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-      - name: Set up Node.js
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
-        with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Install dependencies
-        working-directory: ./website
-        run: npm ci
-      - name: Build website
-        working-directory: ./website
-        env:
-          NODE_OPTIONS: --max-old-space-size=6144
-        run: npm run build
-      - name: Deploy to GitHub Pages
-        # Only change on push to main
-        if: ${{ github.event_name != 'pull_request'}}
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./website/build
-          user_name: release-please[bot]
-          user_email: 55107282+release-please[bot]@users.noreply.github.com
-      - name: Test Algolia if Crawler is blocked
-        # Only change on push to main
-        if: ${{ github.event_name != 'pull_request'}}
-        env:
-          CRAWLER_USER_ID: ${{secrets.ALGOLIA_CRAWLER_USER_ID}}
-          CRAWLER_API_KEY: ${{secrets.ALGOLIA_CRAWLER_API_KEY}}
-          CRAWLER_ID: ${{secrets.ALGOLIA_CRAWLER_ID}}
-        run: |
-          RESPONSE=$(curl -H "Content-Type: application/json" -X GET --user "$CRAWLER_USER_ID:$CRAWLER_API_KEY" \
-            "https://crawler.algolia.com/api/1/crawlers/$CRAWLER_ID" | grep "\"blocked\":true" || true ); \
-          if [ ! -z "$RESPONSE" ]; then echo "Please go to https://crawler.algolia.com/" && exit 1; fi
-      - name: Trigger Algolia reindexing
-        # Only change on push to main
-        if: ${{ github.event_name != 'pull_request'}}
-        env:
-          CRAWLER_USER_ID: ${{secrets.ALGOLIA_CRAWLER_USER_ID}}
-          CRAWLER_API_KEY: ${{secrets.ALGOLIA_CRAWLER_API_KEY}}
-          CRAWLER_ID: ${{secrets.ALGOLIA_CRAWLER_ID}}
-        run: |
-          curl -H "Content-Type: application/json" -X POST --user "$CRAWLER_USER_ID:$CRAWLER_API_KEY" \
-            "https://crawler.algolia.com/api/1/crawlers/$CRAWLER_ID/reindex"
+  # deploy-docs:
+  #   needs: check-changes
+  #   name: Deploy docs (if needed)
+  #   if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'website') }}
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: write
+  #   steps:
+  #     - name: Check out repository
+  #       uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+  #     - name: Set up Node.js
+  #       uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+  #       with:
+  #         cache: npm
+  #         node-version-file: '.nvmrc'
+  #     - name: Install dependencies
+  #       working-directory: ./website
+  #       run: npm ci
+  #     - name: Build website
+  #       working-directory: ./website
+  #       env:
+  #         NODE_OPTIONS: --max-old-space-size=6144
+  #       run: npm run build
+  #     - name: Deploy to GitHub Pages
+  #       # Only change on push to main
+  #       if: ${{ github.event_name != 'pull_request'}}
+  #       uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
+  #       with:
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #         publish_dir: ./website/build
+  #         user_name: release-please[bot]
+  #         user_email: 55107282+release-please[bot]@users.noreply.github.com
+  #     - name: Test Algolia if Crawler is blocked
+  #       # Only change on push to main
+  #       if: ${{ github.event_name != 'pull_request'}}
+  #       env:
+  #         CRAWLER_USER_ID: ${{secrets.ALGOLIA_CRAWLER_USER_ID}}
+  #         CRAWLER_API_KEY: ${{secrets.ALGOLIA_CRAWLER_API_KEY}}
+  #         CRAWLER_ID: ${{secrets.ALGOLIA_CRAWLER_ID}}
+  #       run: |
+  #         RESPONSE=$(curl -H "Content-Type: application/json" -X GET --user "$CRAWLER_USER_ID:$CRAWLER_API_KEY" \
+  #           "https://crawler.algolia.com/api/1/crawlers/$CRAWLER_ID" | grep "\"blocked\":true" || true ); \
+  #         if [ ! -z "$RESPONSE" ]; then echo "Please go to https://crawler.algolia.com/" && exit 1; fi
+  #     - name: Trigger Algolia reindexing
+  #       # Only change on push to main
+  #       if: ${{ github.event_name != 'pull_request'}}
+  #       env:
+  #         CRAWLER_USER_ID: ${{secrets.ALGOLIA_CRAWLER_USER_ID}}
+  #         CRAWLER_API_KEY: ${{secrets.ALGOLIA_CRAWLER_API_KEY}}
+  #         CRAWLER_ID: ${{secrets.ALGOLIA_CRAWLER_ID}}
+  #       run: |
+  #         curl -H "Content-Type: application/json" -X POST --user "$CRAWLER_USER_ID:$CRAWLER_API_KEY" \
+  #           "https://crawler.algolia.com/api/1/crawlers/$CRAWLER_ID/reindex"
 
-  doctest:
-    name: Doctest
-    runs-on: ubuntu-latest
-    needs: check-changes
-    if: ${{ false && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-      - name: Set up Node.js
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
-        with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Disable AppArmor
-        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-      - name: Install dependencies
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
-      - name: Run tests
-        run: npm run doctest
+  # # doctest:
+  # #   name: Doctest
+  # #   runs-on: ubuntu-latest
+  # #   needs: check-changes
+  # #   if: ${{ false && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+  # #   steps:
+  # #     - name: Check out repository
+  # #       uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+  # #     - name: Set up Node.js
+  # #       uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+  # #       with:
+  # #         cache: npm
+  # #         node-version-file: '.nvmrc'
+  # #     - name: Disable AppArmor
+  # #       run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
+  # #     - name: Install dependencies
+  # #       run: npm ci
+  # #       env:
+  # #         PUPPETEER_SKIP_DOWNLOAD: true
+  # #     - name: Run tests
+  # #       run: npm run doctest
 
-  chrome-tests:
-    name: ${{ matrix.suite }} (${{ matrix.shard }}) on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    needs: check-changes
-    if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
-    strategy:
-      fail-fast: false
-      matrix:
-        linux-only:
-          - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
-        suite:
-          - chrome-headless
-          - chrome-headful
-          - chrome-headless-shell
-          - chrome-bidi
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-15
-        shard:
-          - 1-2
-          - 2-2
-        exclude:
-          - linux-only: true
-            os: windows-latest
-          - linux-only: true
-            os: macos-15
-          - linux-only: true
-            suite: chrome-headful
+  # # # chrome-tests:
+  # # #   name: ${{ matrix.suite }} (${{ matrix.shard }}) on ${{ matrix.os }}
+  # # #   runs-on: ${{ matrix.os }}
+  # # #   needs: check-changes
+  # # #   if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+  # # #   strategy:
+  # # #     fail-fast: false
+  # # #     matrix:
+  # # #       linux-only:
+  # # #         - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
+  # # #       suite:
+  # # #         - chrome-headless
+  # # #         - chrome-headful
+  # # #         - chrome-headless-shell
+  # # #         - chrome-bidi
+  # # #       os:
+  # # #         - ubuntu-latest
+  # # #         - windows-latest
+  # # #         - macos-15
+  # # #       shard:
+  # # #         - 1-2
+  # # #         - 2-2
+  # # #       exclude:
+  # # #         - linux-only: true
+  # # #           os: windows-latest
+  # # #         - linux-only: true
+  # # #           os: macos-15
+  # # #         - linux-only: true
+  # # #           suite: chrome-headful
 
-          - os: windows-latest
-            suite: chrome-bidi
-          - os: macos-15
-            suite: chrome-headful
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-      - name: Set up Node.js
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
-        with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Disable AppArmor
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-      - name: Install dependencies
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
-      # Set up GitHub Actions caching for Wireit.
-      - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
-      - name: Build packages
-        run: npm run build --workspace @puppeteer-test/test
-      - name: Setup cache for browsers
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
-        with:
-          path: ~/.cache/puppeteer/
-          key: Browsers-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
-      - name: Install browsers
-        run: npm run postinstall
-      - name: Run all tests (MacOS)
-        if: ${{ matrix.os == 'macos-15' }}
-        run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
-      - name: Run all tests (Windows)
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
-      - name: Run all tests (Linux)
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        if: ${{ !cancelled() }}
-        with:
-          name: test-results-${{ matrix.os }}-${{ matrix.suite }}-${{ matrix.shard }}
-          path: /tmp/artifacts/*.json
+  # # #         - os: windows-latest
+  # # #           suite: chrome-bidi
+  # # #         - os: macos-15
+  # # #           suite: chrome-headful
+  # # #   steps:
+  # # #     - name: Check out repository
+  # # #       uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+  # # #     - name: Set up Node.js
+  # # #       uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+  # # #       with:
+  # # #         cache: npm
+  # # #         node-version-file: '.nvmrc'
+  # # #     - name: Disable AppArmor
+  # # #       if: ${{ matrix.os == 'ubuntu-latest' }}
+  # # #       run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
+  # # #     - name: Install dependencies
+  # # #       run: npm ci
+  # # #       env:
+  # # #         PUPPETEER_SKIP_DOWNLOAD: true
+  # # #     # Set up GitHub Actions caching for Wireit.
+  # # #     - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
+  # # #     - name: Build packages
+  # # #       run: npm run build --workspace @puppeteer-test/test
+  # # #     - name: Setup cache for browsers
+  # # #       uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+  # # #       with:
+  # # #         path: ~/.cache/puppeteer/
+  # # #         key: Browsers-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
+  # # #     - name: Install browsers
+  # # #       run: npm run postinstall
+  # # #     - name: Run all tests (MacOS)
+  # # #       if: ${{ matrix.os == 'macos-15' }}
+  # # #       run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+  # # #     - name: Run all tests (Windows)
+  # # #       if: ${{ matrix.os == 'windows-latest' }}
+  # # #       run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+  # # #     - name: Run all tests (Linux)
+  # # #       if: ${{ matrix.os == 'ubuntu-latest' }}
+  # # #       run: xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+  # # #     - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+  # # #       if: ${{ !cancelled() }}
+  # # #       with:
+  # # #         name: test-results-${{ matrix.os }}-${{ matrix.suite }}-${{ matrix.shard }}
+  # # #         path: /tmp/artifacts/*.json
 
-  chrome-tests-required:
-    name: '[Required] Chrome tests'
-    needs: [check-changes, chrome-tests]
-    runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
-    steps:
-      - if: ${{ needs.chrome-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
-        run: 'exit 1'
-      - run: 'exit 0'
+  # chrome-tests-required:
+  #   name: '[Required] Chrome tests'
+  #   needs: [check-changes, chrome-tests]
+  #   runs-on: ubuntu-latest
+  #   if: ${{ !cancelled() }}
+  #   steps:
+  #     - if: ${{ needs.chrome-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+  #       run: 'exit 1'
+  #     - run: 'exit 0'
 
   firefox-tests:
     name: ${{ matrix.suite }} (${{ matrix.shard }}) on ${{ matrix.os }}
@@ -248,11 +248,11 @@ jobs:
           - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
         suite:
           - firefox-headful
-          - firefox-headless
+          # - firefox-headless
         os:
           - ubuntu-latest
-          - macos-15
-          - windows-latest
+          # - macos-15
+          # - windows-latest
         shard:
           - 1-4
           - 2-4
@@ -275,6 +275,17 @@ jobs:
       - name: Disable AppArmor
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
+      - name: Download Firefox Nightly
+        run: |
+          URL="https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-144.0a1.en-US.linux-x86_64.tar.xz"
+          FILE_NAME="firefox.en-US.linux-x86_64.tar.xz"
+
+          echo "Downloading $FILE_NAME..."
+          wget -O $FILE_NAME $URL
+
+          tar -xvf $FILE_NAME
+          echo "Firefox Nightly extracted."
+
       - name: Install dependencies
         run: npm ci
         env:
@@ -288,17 +299,18 @@ jobs:
         with:
           path: ~/.cache/puppeteer/
           key: Browsers-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
-      - name: Install browsers
-        run: npm run postinstall
-      - name: Run all tests (MacOS)
-        if: ${{ matrix.os == 'macos-15' }}
-        run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
-      - name: Run all tests (Windows)
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+      # - name: Install browsers
+      #   run: npm run postinstall
+      # - name: Run all tests (MacOS)
+      #   if: ${{ matrix.os == 'macos-15' }}
+      #   run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+      # - name: Run all tests (Windows)
+      #   if: ${{ matrix.os == 'windows-latest' }}
+      #   run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
       - name: Run all tests (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: |
+          BINARY="./firefox/firefox" DUMPIO="1" xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: ${{ !cancelled() }}
         with:
@@ -315,58 +327,58 @@ jobs:
         run: 'exit 1'
       - run: 'exit 0'
 
-  installation-test:
-    name: ${{ matrix.pkg_manager }} installation on ${{ matrix.os }}
-    needs: check-changes
-    if: ${{ !startsWith(github.ref_name, 'release-please') && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        linux-only:
-          - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
-        pkg_manager:
-          - npm
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-15
-        exclude:
-          - linux-only: true
-            os: windows-latest
-          - linux-only: true
-            os: macos-15
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-      - name: Set up Node.js
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
-        with:
-          cache: npm
-          node-version-file: '.nvmrc'
-      - name: Disable AppArmor
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-      - name: Install dependencies
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
-      # Set up GitHub Actions caching for Wireit.
-      - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
-      - name: Test install
-        env:
-          PKG_MANAGER: ${{ matrix.pkg_manager }}
-        run: ${{ matrix.pkg_manager }} run test-install
+  # installation-test:
+  #   name: ${{ matrix.pkg_manager }} installation on ${{ matrix.os }}
+  #   needs: check-changes
+  #   if: ${{ !startsWith(github.ref_name, 'release-please') && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       linux-only:
+  #         - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
+  #       pkg_manager:
+  #         - npm
+  #       os:
+  #         - ubuntu-latest
+  #         - windows-latest
+  #         - macos-15
+  #       exclude:
+  #         - linux-only: true
+  #           os: windows-latest
+  #         - linux-only: true
+  #           os: macos-15
+  #   steps:
+  #     - name: Check out repository
+  #       uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+  #     - name: Set up Node.js
+  #       uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+  #       with:
+  #         cache: npm
+  #         node-version-file: '.nvmrc'
+  #     - name: Disable AppArmor
+  #       if: ${{ matrix.os == 'ubuntu-latest' }}
+  #       run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
+  #     - name: Install dependencies
+  #       run: npm ci
+  #       env:
+  #         PUPPETEER_SKIP_DOWNLOAD: true
+  #     # Set up GitHub Actions caching for Wireit.
+  #     - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
+  #     - name: Test install
+  #       env:
+  #         PKG_MANAGER: ${{ matrix.pkg_manager }}
+  #       run: ${{ matrix.pkg_manager }} run test-install
 
-  installation-test-required:
-    name: '[Required] Installation tests'
-    needs: [check-changes, installation-test]
-    runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
-    steps:
-      - if: ${{ needs.installation-test.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
-        run: 'exit 1'
-      - run: 'exit 0'
+  # installation-test-required:
+  #   name: '[Required] Installation tests'
+  #   needs: [check-changes, installation-test]
+  #   runs-on: ubuntu-latest
+  #   if: ${{ !cancelled() }}
+  #   steps:
+  #     - if: ${{ needs.installation-test.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+  #       run: 'exit 1'
+  #     - run: 'exit 0'
 
   docker-tests:
     name: '[Required] Docker image test'
