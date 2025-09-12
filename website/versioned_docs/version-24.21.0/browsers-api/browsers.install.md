@@ -4,7 +4,7 @@ sidebar_label: install
 
 # install() function
 
-<h2 id="install">install(): Promise&lt;InstalledBrowser&gt;</h2>
+<h2 id="overload-1">install(): Promise&lt;InstalledBrowser&gt;</h2>
 
 Downloads and unpacks the browser archive according to the [InstallOptions](./browsers.installoptions.md).
 
@@ -52,7 +52,7 @@ Promise&lt;[InstalledBrowser](./browsers.installedbrowser.md)&gt;
 
 a [InstalledBrowser](./browsers.installedbrowser.md) instance.
 
-<h2 id="install-1">install(): Promise&lt;string&gt;</h2>
+<h2 id="overload-2">install(): Promise&lt;string&gt;</h2>
 
 Downloads the browser archive according to the [InstallOptions](./browsers.installoptions.md) without unpacking.
 

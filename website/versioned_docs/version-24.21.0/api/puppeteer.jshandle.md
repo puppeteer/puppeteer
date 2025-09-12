@@ -160,7 +160,7 @@ Fetches a single property from the referenced object.
 </td></tr>
 <tr><td>
 
-<span id="getproperty">[getProperty(propertyName)](./puppeteer.jshandle.getproperty.md)</span>
+<span id="getproperty">[getProperty(propertyName)](./puppeteer.jshandle.getproperty.md#overload-2)</span>
 
 </td><td>
 

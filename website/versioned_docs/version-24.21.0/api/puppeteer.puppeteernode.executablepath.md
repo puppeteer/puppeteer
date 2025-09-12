@@ -4,7 +4,7 @@ sidebar_label: PuppeteerNode.executablePath
 
 # PuppeteerNode.executablePath() method
 
-<h2 id="executablePath">executablePath(): string</h2>
+<h2 id="overload-1">executablePath(): string</h2>
 
 The default executable path for a given ChromeReleaseChannel.
 
@@ -48,7 +48,7 @@ channel
 
 string
 
-<h2 id="executablePath-1">executablePath(): string</h2>
+<h2 id="overload-2">executablePath(): string</h2>
 
 The default executable path given LaunchOptions.
 
@@ -92,7 +92,7 @@ options
 
 string
 
-<h2 id="executablePath-2">executablePath(): string</h2>
+<h2 id="overload-3">executablePath(): string</h2>
 
 The default executable path.
 

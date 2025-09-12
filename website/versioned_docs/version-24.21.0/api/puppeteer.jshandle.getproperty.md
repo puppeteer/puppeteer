@@ -4,7 +4,7 @@ sidebar_label: JSHandle.getProperty
 
 # JSHandle.getProperty() method
 
-<h2 id="getProperty">getProperty(): Promise&lt;HandleFor&lt;T\[K\]&gt;&gt;</h2>
+<h2 id="overload-1">getProperty(): Promise&lt;HandleFor&lt;T\[K\]&gt;&gt;</h2>
 
 Fetches a single property from the referenced object.
 
@@ -50,7 +50,7 @@ propertyName
 
 Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;T\[K\]&gt;&gt;
 
-<h2 id="getProperty-1">getProperty(): Promise&lt;JSHandle&lt;unknown&gt;&gt;</h2>
+<h2 id="overload-2">getProperty(): Promise&lt;JSHandle&lt;unknown&gt;&gt;</h2>
 
 ### Signature
 

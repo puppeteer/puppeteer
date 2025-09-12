@@ -1,17 +1,17 @@
 ---
-sidebar_label: ElementHandle.screenshot
+sidebar_label: Page.screenshot
 ---
 
-# ElementHandle.screenshot() method
+# Page.screenshot() method
 
-<h2 id="screenshot">screenshot(): Promise&lt;string&gt;</h2>
+<h2 id="overload-1">screenshot(): Promise&lt;string&gt;</h2>
 
-This method scrolls element into view if needed, and then uses [Page.screenshot()](./puppeteer.page.screenshot.md) to take a screenshot of the element. If the element is detached from DOM, the method throws an error.
+Captures a screenshot of this [page](./puppeteer.page.md).
 
 ### Signature
 
 ```typescript
-class ElementHandle {
+class Page {
   screenshot(
     options: Readonly<ScreenshotOptions> & {
       encoding: 'base64';
@@ -45,6 +45,8 @@ Readonly&lt;[ScreenshotOptions](./puppeteer.screenshotoptions.md)&gt; &amp; &#12
 
 </td><td>
 
+Configures screenshot behavior.
+
 </td></tr>
 </tbody></table>
 
@@ -52,12 +54,18 @@ Readonly&lt;[ScreenshotOptions](./puppeteer.screenshotoptions.md)&gt; &amp; &#12
 
 Promise&lt;string&gt;
 
-<h2 id="screenshot-1">screenshot(): Promise&lt;Uint8Array&gt;</h2>
+## Remarks
+
+While a screenshot is being taken in a [BrowserContext](./puppeteer.browsercontext.md), the following methods will automatically wait for the screenshot to finish to prevent interference with the screenshot process: [BrowserContext.newPage()](./puppeteer.browsercontext.newpage.md), [Browser.newPage()](./puppeteer.browser.newpage.md), [Page.close()](./puppeteer.page.close.md).
+
+Calling [Page.bringToFront()](./puppeteer.page.bringtofront.md) will not wait for existing screenshot operations.
+
+<h2 id="overload-2">screenshot(): Promise&lt;Uint8Array&gt;</h2>
 
 ### Signature
 
 ```typescript
-class ElementHandle {
+class Page {
   screenshot(options?: Readonly<ScreenshotOptions>): Promise<Uint8Array>;
 }
 ```
