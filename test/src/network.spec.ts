@@ -521,10 +521,15 @@ describe('network', function () {
       {html: 'one-script.html', resource: 'one-script.js', type: 'script'},
     ]) {
       it(`Page.Events.RequestServedFromCache for ${type}`, async () => {
-        const {page, server, close} = await launch({
-          // Viewport emulation resets memory caches.
-          defaultViewport: null,
-        });
+        const {page, server, close} = await launch(
+          {
+            // Viewport emulation resets memory caches.
+            defaultViewport: null,
+          },
+          {
+            createContext: true,
+          },
+        );
 
         try {
           const cached: string[] = [];
