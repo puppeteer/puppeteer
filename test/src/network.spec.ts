@@ -521,20 +521,32 @@ describe('network', function () {
       {html: 'one-script.html', resource: 'one-script.js', type: 'script'},
     ]) {
       it(`Page.Events.RequestServedFromCache for ${type}`, async () => {
-        const {page, server} = await getTestState();
+        const {page, server, close} = await launch(
+          {
+            // Viewport emulation resets memory caches.
+            defaultViewport: null,
+          },
+          {
+            createContext: true,
+          },
+        );
 
-        const cached: string[] = [];
-        page.on('requestservedfromcache', r => {
-          return !isFavicon(r) && cached.push(r.url().split('/').pop()!);
-        });
+        try {
+          const cached: string[] = [];
+          page.on('requestservedfromcache', r => {
+            return !isFavicon(r) && cached.push(r.url().split('/').pop()!);
+          });
 
-        await page.goto(server.PREFIX + '/cached/' + html);
-        expect(cached).toEqual([]);
-        await new Promise(res => {
-          setTimeout(res, 1000);
-        });
-        await page.reload();
-        expect(cached).toEqual([resource]);
+          await page.goto(server.PREFIX + '/cached/' + html);
+          expect(cached).toEqual([]);
+          await new Promise(res => {
+            setTimeout(res, 1000);
+          });
+          await page.reload();
+          expect(cached).toEqual([resource]);
+        } finally {
+          await close();
+        }
       });
     }
     it('Page.Events.Response', async () => {
