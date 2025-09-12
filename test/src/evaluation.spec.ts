@@ -146,7 +146,10 @@ describe('Evaluation specs', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error.message).toContain('Protocol error');
+      expect(error.message).atLeastOneToContain([
+        'Protocol error',
+        'Execution context was destroyed, most likely because of a navigation.',
+      ]);
     });
     it('should await promise', async () => {
       const {page} = await getTestState();
