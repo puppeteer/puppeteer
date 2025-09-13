@@ -703,6 +703,37 @@ describe('network', function () {
     });
   });
 
+  describe('Request.documentId', function () {
+    it('returns same documentId for navigation and resource requests', async () => {
+      const {page, server} = await getTestState();
+
+      const requests = new Map();
+      page.on('request', request => {
+        return requests.set(request.url().split('/').pop(), request);
+      });
+      server.setRedirect('/rrredirect', '/frames/one-frame.html');
+      await page.goto(server.PREFIX + '/rrredirect');
+      const documentId = requests.get('rrredirect').documentId();
+      expect(typeof documentId).toBe('string');
+      expect(documentId.length).toBeGreaterThan(0);
+      expect(requests.get('one-frame.html').documentId()).toBe(documentId);
+      const frameDocumentId = requests.get('frame.html').documentId();
+      expect(frameDocumentId).not.toBe(documentId);
+      expect(typeof frameDocumentId).toBe('string');
+      expect(frameDocumentId.length).toBeGreaterThan(0);
+      expect(requests.get('script.js').documentId()).toBe(frameDocumentId);
+      expect(requests.get('style.css').documentId()).toBe(frameDocumentId);
+      requests.clear();
+
+      // New documentId after reload.
+      await page.goto(server.PREFIX + '/rrredirect');
+      const reloadedDocumentId = requests.get('rrredirect').documentId();
+      expect(typeof reloadedDocumentId).toBe('string');
+      expect(reloadedDocumentId.length).toBeGreaterThan(0);
+      expect(reloadedDocumentId).not.toBe(documentId);
+    });
+  });
+
   describe('Page.setExtraHTTPHeaders', function () {
     it('should work', async () => {
       const {page, server} = await getTestState();
