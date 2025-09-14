@@ -7,7 +7,10 @@
  * @type {import('prettier').Config}
  */
 module.exports = {
-  ...require('gts/.prettierrc.json'),
+  bracketSpacing: false,
+  singleQuote: true,
+  trailingComma: 'all',
+  arrowParens: 'avoid',
   singleAttributePerLine: true,
   htmlWhitespaceSensitivity: 'strict',
   /**
