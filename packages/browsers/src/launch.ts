@@ -552,6 +552,10 @@ export class Process {
         );
       }
 
+      for (const line of this.#logs) {
+        onLine(line);
+      }
+
       function onLine(line: string): void {
         const match = line.match(regex);
         if (!match) {
