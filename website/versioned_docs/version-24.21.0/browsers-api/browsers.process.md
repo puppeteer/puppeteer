@@ -100,6 +100,17 @@ Description
 </td></tr>
 <tr><td>
 
+<span id="getrecentlogs">[getRecentLogs()](./browsers.process.getrecentlogs.md)</span>
+
+</td><td>
+
+</td><td>
+
+Get recent logs (stderr + stdout) emitted by the browser.
+
+</td></tr>
+<tr><td>
+
 <span id="hasclosed">[hasClosed()](./browsers.process.hasclosed.md)</span>
 
 </td><td>

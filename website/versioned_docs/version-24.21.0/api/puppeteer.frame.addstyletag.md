@@ -1,19 +1,17 @@
 ---
-sidebar_label: Page.addStyleTag
+sidebar_label: Frame.addStyleTag
 ---
 
-# Page.addStyleTag() method
+# Frame.addStyleTag() method
 
-<h2 id="addStyleTag">addStyleTag(): Promise&lt;ElementHandle&lt;HTMLStyleElement&gt;&gt;</h2>
+<h2 id="overload-1">addStyleTag(): Promise&lt;ElementHandle&lt;HTMLStyleElement&gt;&gt;</h2>
 
-Adds a `<link rel="stylesheet">` tag into the page with the desired URL or a `<style type="text/css">` tag with the content.
-
-Shortcut for [page.mainFrame().addStyleTag(options)](./puppeteer.frame.addstyletag.md).
+Adds a `HTMLStyleElement` into the frame with the desired URL
 
 ### Signature
 
 ```typescript
-class Page {
+class Frame {
   addStyleTag(
     options: Omit<FrameAddStyleTagOptions, 'url'>,
   ): Promise<ElementHandle<HTMLStyleElement>>;
@@ -52,14 +50,16 @@ Omit&lt;[FrameAddStyleTagOptions](./puppeteer.frameaddstyletagoptions.md), 'url'
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLStyleElement&gt;&gt;
 
-An [element handle](./puppeteer.elementhandle.md) to the injected `<link>` or `<style>` element.
+An [element handle](./puppeteer.elementhandle.md) to the loaded `<style>` element.
 
-<h2 id="addStyleTag-1">addStyleTag(): Promise&lt;ElementHandle&lt;HTMLLinkElement&gt;&gt;</h2>
+<h2 id="overload-2">addStyleTag(): Promise&lt;ElementHandle&lt;HTMLLinkElement&gt;&gt;</h2>
+
+Adds a `HTMLLinkElement` into the frame with the desired URL
 
 ### Signature
 
 ```typescript
-class Page {
+class Frame {
   addStyleTag(
     options: FrameAddStyleTagOptions,
   ): Promise<ElementHandle<HTMLLinkElement>>;
@@ -97,3 +97,5 @@ options
 **Returns:**
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLLinkElement&gt;&gt;
+
+An [element handle](./puppeteer.elementhandle.md) to the loaded `<link>` element.

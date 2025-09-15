@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.10.10](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.9...browsers-v2.10.10) (2025-09-15)
+
+
+### Bug Fixes
+
+* always pipe stdio and report process launch errors ([#14210](https://github.com/puppeteer/puppeteer/issues/14210)) ([c17a64b](https://github.com/puppeteer/puppeteer/commit/c17a64bd6880549c7fe5123592a7270b1d1101df))
+* check previously received log lines in waitForLineOutput ([#14213](https://github.com/puppeteer/puppeteer/issues/14213)) ([8304bdd](https://github.com/puppeteer/puppeteer/commit/8304bdd35bcf8aa9c46da7ec97566f5e11095316))
+* disable browser.backup for Firefox ([#14200](https://github.com/puppeteer/puppeteer/issues/14200)) ([6c751c4](https://github.com/puppeteer/puppeteer/commit/6c751c43b2f66e2d6d7849d92506da5fd669f2d8))
+
 ## [2.10.9](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.8...browsers-v2.10.9) (2025-09-10)
 
 

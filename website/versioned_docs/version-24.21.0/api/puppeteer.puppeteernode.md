@@ -164,7 +164,7 @@ The default executable path for a given ChromeReleaseChannel.
 </td></tr>
 <tr><td>
 
-<span id="executablepath">[executablePath(options)](./puppeteer.puppeteernode.executablepath.md)</span>
+<span id="executablepath">[executablePath(options)](./puppeteer.puppeteernode.executablepath.md#overload-2)</span>
 
 </td><td>
 
@@ -175,7 +175,7 @@ The default executable path given LaunchOptions.
 </td></tr>
 <tr><td>
 
-<span id="executablepath">[executablePath()](./puppeteer.puppeteernode.executablepath.md)</span>
+<span id="executablepath">[executablePath()](./puppeteer.puppeteernode.executablepath.md#overload-3)</span>
 
 </td><td>
 
