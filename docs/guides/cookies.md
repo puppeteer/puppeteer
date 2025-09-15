@@ -8,7 +8,7 @@ store and restore specific cookies for your tests.
 
 The following example demonstrates how to get cookies available in the
 browser's default
-[BrowserContext](https://pptr.dev/api/puppeteer.browsercontext/).
+[BrowserContext](https://pptr.dev/api/puppeteer.browsercontext).
 
 ```ts
 import puppeteer from 'puppeteer';
