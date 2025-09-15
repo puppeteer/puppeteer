@@ -117,5 +117,26 @@ describe('Chrome', () => {
       await process.close();
       assert.ok(url.startsWith('ws://127.0.0.1:9222/devtools/browser'));
     });
+
+    it('should return recent browser logs', async () => {
+      const executablePath = computeExecutablePath({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        buildId: testChromeBuildId,
+      });
+      const process = launch({
+        executablePath,
+        args: getArgs(),
+      });
+      const url = await process.waitForLineOutput(CDP_WEBSOCKET_ENDPOINT_REGEX);
+      await process.close();
+      assert.ok(url.startsWith('ws://127.0.0.1:9222/devtools/browser'));
+      assert.ok(process.getRecentLogs().length >= 1);
+      assert.ok(
+        process.getRecentLogs().some(line => {
+          return line.includes(url);
+        }),
+      );
+    });
   });
 });
