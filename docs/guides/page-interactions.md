@@ -28,8 +28,8 @@ be in the right state for the action. You always instantiate a locator using the
 [`frame.locator()`](https://pptr.dev/api/puppeteer.frame.locator) function. If
 the locator API doesn't offer a functionality you need, you can still use lower
 level APIs such as
-[`page.waitForSelector()`](https://pptr.dev/api/puppeteer.page.waitforselector/)
-or [`ElementHandle`](https://pptr.dev/api/puppeteer.elementhandle/).
+[`page.waitForSelector()`](https://pptr.dev/api/puppeteer.page.waitforselector)
+or [`ElementHandle`](https://pptr.dev/api/puppeteer.elementhandle).
 
 ### Clicking an element using locators
 
@@ -42,7 +42,7 @@ The locator automatically checks the following before clicking:
 
 - Ensures the element is in the viewport.
 - Waits for the element to become
-  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible/) or hidden.
+  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible) or hidden.
 - Waits for the element to become enabled.
 - Waits for the element to have a stable bounding box over two consecutive
   animation frames.
@@ -62,7 +62,7 @@ The locator automatically checks the following before typing into the input:
 
 - Ensures the element is in the viewport.
 - Waits for the element to become
-  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible/) or hidden.
+  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible) or hidden.
 - Waits for the element to become enabled.
 - Waits for the element to have a stable bounding box over two consecutive
   animation frames.
@@ -77,7 +77,7 @@ The locator automatically checks the following before hovering:
 
 - Ensures the element is in the viewport.
 - Waits for the element to become
-  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible/) or hidden.
+  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible) or hidden.
 - Waits for the element to have a stable bounding box over two consecutive
   animation frames.
 
@@ -98,7 +98,7 @@ The locator automatically checks the following before scrolling:
 
 - Ensures the element is in the viewport.
 - Waits for the element to become
-  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible/) or hidden.
+  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible) or hidden.
 - Waits for the element to have a stable bounding box over two consecutive
   animation frames.
 
@@ -114,7 +114,7 @@ await page.locator('.loading').wait();
 The locator automatically checks the following before returning:
 
 - Waits for the element to become
-  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible/) or hidden.
+  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible) or hidden.
 
 ### Waiting for a function
 
@@ -159,7 +159,7 @@ await page
 
 ### Returning values from a locator
 
-The [`map`](https://pptr.dev/api/puppeteer.locator.map/) function allows mapping
+The [`map`](https://pptr.dev/api/puppeteer.locator.map) function allows mapping
 an element to a JavaScript value. In this case, calling `wait()` will return the
 deserialized JavaScript value.
 
@@ -172,9 +172,9 @@ const enabled = await page
 
 ### Returning ElementHandles from a locator
 
-The [`waitHandle`](https://pptr.dev/api/puppeteer.locator.waithandle/) function
+The [`waitHandle`](https://pptr.dev/api/puppeteer.locator.waithandle) function
 allows returning the
-[ElementHandle](https://pptr.dev/api/puppeteer.elementhandle/). It might be
+[ElementHandle](https://pptr.dev/api/puppeteer.elementhandle). It might be
 useful if there is no corresponding locator API for the action you need.
 
 ```ts
@@ -201,7 +201,7 @@ await page
 
 By default, locators inherit the timeout setting from the page. But it is
 possible to set the timeout on the per-locator basis. A
-[TimeoutError](https://pptr.dev/api/puppeteer.timeouterror/) will be thrown if
+[TimeoutError](https://pptr.dev/api/puppeteer.timeouterror) will be thrown if
 the element is not found or the preconditions are not met within the specified
 time period.
 
@@ -213,7 +213,7 @@ await page.locator('button').setTimeout(3000).click();
 ### Getting locator events
 
 Currently, locators support [a single
-event](https://pptr.dev/api/puppeteer.locatorevents/) that notifies you when the
+event](https://pptr.dev/api/puppeteer.locatorevents) that notifies you when the
 locator is about to perform the action indicating that pre-conditions have been
 met:
 
@@ -232,7 +232,7 @@ fire multiple times if the locator retries the action.
 
 ## waitForSelector
 
-[`waitForSelector`](https://pptr.dev/api/puppeteer.page.waitforselector/) is a
+[`waitForSelector`](https://pptr.dev/api/puppeteer.page.waitforselector) is a
 lower-level API compared to locators that allows waiting for an element to be
 available in DOM. It does not automatically retry the action if it fails and
 requires manually disposing the resulting ElementHandle to prevent memory leaks.
@@ -274,7 +274,7 @@ Sometimes you know that the elements are already on the page. In that case,
 Puppeteer offers multiple ways to find an element or multiple elements matching a
 selector. These methods exist on Page, Frame and ElementHandle instances.
 
-- [`page.$()`](https://pptr.dev/api/puppeteer.page._/) returns a single element
+- [`page.$()`](https://pptr.dev/api/puppeteer.page._) returns a single element
   matching a selector.
 - [`page.$$()`](https://pptr.dev/api/puppeteer.page.__) returns all elements matching a selector.
 - [`page.$eval()`](https://pptr.dev/api/puppeteer.page._eval) returns the result

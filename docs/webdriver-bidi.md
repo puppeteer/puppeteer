@@ -13,7 +13,7 @@ When launching Firefox with Puppeteer, the WebDriver BiDi Protocol is
 enabled by default. When launching Chrome, CDP is still used by default
 since not all CDP features are supported by WebDriver BiDi yet. If a
 certain Puppeteer feature is not supported over WebDriver BiDi yet,
-[`UnsupportedOperation`](https://pptr.dev/api/puppeteer.unsupportedoperation/)
+[`UnsupportedOperation`](https://pptr.dev/api/puppeteer.unsupportedoperation)
 error is thrown. Also see the lists below on what is supported with
 WebDriver BiDi.
 
