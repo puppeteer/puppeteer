@@ -713,7 +713,6 @@ export class BrowsingContext extends EventEmitter<{
 
   async setJavaScriptEnabled(enabled: boolean): Promise<void> {
     await this.userContext.browser.session.send(
-      // @ts-expect-error missing types
       'emulation.setScriptingEnabled',
       {
         // Enabled `null` means `default`, `false` means `disabled`.
