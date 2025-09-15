@@ -106,7 +106,7 @@
     "!*.tsbuildinfo"
   ],
   "dependencies": {
-    "debug": "^4.4.1",
+    "debug": "^4.4.3",
     "extract-zip": "^2.0.1",
     "progress": "^2.0.3",
     "proxy-agent": "^6.5.0",
