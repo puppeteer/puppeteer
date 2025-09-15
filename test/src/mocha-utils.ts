@@ -93,7 +93,7 @@ const defaultBrowserOptions: LaunchOptions = Object.assign(
     handleSIGINT: true,
     executablePath: process.env['BINARY'],
     headless: headless === 'shell' ? ('shell' as const) : isHeadless,
-    dumpio: !!process.env['DUMPIO'],
+    dumpio: true,
     protocol,
     args: [],
     extraPrefsFirefox: {},
