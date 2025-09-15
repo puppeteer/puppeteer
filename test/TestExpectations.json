@@ -175,6 +175,27 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[userDataDir.spec] userDataDir should not launch the browser twice with the same userDataDir *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["FAIL"],
+    "comment": "headless-shell can launch multiple instances from the same user data dir"
+  },
+  {
+    "testIdPattern": "[userDataDir.spec] userDataDir should not launch the browser twice with the same userDataDir *",
+    "platforms": ["win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"],
+    "comment": "on Windows Chrome seems to have no issues starting on the user data dir"
+  },
+  {
+    "testIdPattern": "[userDataDir.spec] userDataDir should not launch the browser twice with the same userDataDir *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "we currently do not detect this siutation for Firefox"
+  },
+  {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should work when node is added in a shadow root",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": [],

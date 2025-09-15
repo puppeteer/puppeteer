@@ -181,6 +181,7 @@ export abstract class BrowserLauncher {
             slowMo,
           });
         }
+
         if (protocol === 'webDriverBiDi') {
           browser = await this.createBiDiOverCdpBrowser(
             browserProcess,
@@ -210,6 +211,17 @@ export abstract class BrowserLauncher {
       }
     } catch (error) {
       void browserCloseCallback();
+      if (
+        browserProcess.getRecentLogs().some(line => {
+          return line.includes(
+            'Failed to create a ProcessSingleton for your profile directory',
+          );
+        })
+      ) {
+        throw new Error(
+          `The browser is already running for ${launchArgs.userDataDir}. Use a different \`userDataDir\` or stop the running browser first.`,
+        );
+      }
       if (error instanceof BrowsersTimeoutError) {
         throw new TimeoutError(error.message);
       }
