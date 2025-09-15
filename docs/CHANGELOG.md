@@ -2,6 +2,27 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.21.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.20.0...puppeteer-v24.21.0) (2025-09-15)
+
+### Miscellaneous Chores
+
+- **puppeteer:** Synchronize puppeteer versions
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - @puppeteer/browsers bumped from 2.10.9 to 2.10.10
+
+### Features
+
+- emulate `navigator.platform` in `Page.setUserAgent` ([#14190](https://github.com/puppeteer/puppeteer/issues/14190)) ([a2397a6](https://github.com/puppeteer/puppeteer/commit/a2397a616930ead735c9ae5d8bae5801cd97f62a))
+
+### Bug Fixes
+
+- always pipe stdio and report process launch errors ([#14210](https://github.com/puppeteer/puppeteer/issues/14210)) ([c17a64b](https://github.com/puppeteer/puppeteer/commit/c17a64bd6880549c7fe5123592a7270b1d1101df))
+- do not change CDP state if interception was not toggled ([#14203](https://github.com/puppeteer/puppeteer/issues/14203)) ([a4f166a](https://github.com/puppeteer/puppeteer/commit/a4f166a1c873623d02f468522f4ace338819a35d))
+
 ## [24.20.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.19.0...puppeteer-v24.20.0) (2025-09-10)
 
 ### Miscellaneous Chores

@@ -1,17 +1,17 @@
 ---
-sidebar_label: Page.locator
+sidebar_label: Frame.locator
 ---
 
-# Page.locator() method
+# Frame.locator() method
 
-<h2 id="locator">locator(): Locator&lt;NodeFor&lt;Selector&gt;&gt;</h2>
+<h2 id="overload-1">locator(): Locator&lt;NodeFor&lt;Selector&gt;&gt;</h2>
 
 Creates a locator for the provided selector. See [Locator](./puppeteer.locator.md) for details and supported actions.
 
 ### Signature
 
 ```typescript
-class Page {
+class Frame {
   locator<Selector extends string>(
     selector: Selector,
   ): Locator<NodeFor<Selector>>;
@@ -52,14 +52,14 @@ Selector
 
 [Locator](./puppeteer.locator.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt;
 
-<h2 id="locator-1">locator(): Locator&lt;Ret&gt;</h2>
+<h2 id="overload-2">locator(): Locator&lt;Ret&gt;</h2>
 
 Creates a locator for the provided function. See [Locator](./puppeteer.locator.md) for details and supported actions.
 
 ### Signature
 
 ```typescript
-class Page {
+class Frame {
   locator<Ret>(func: () => Awaitable<Ret>): Locator<Ret>;
 }
 ```

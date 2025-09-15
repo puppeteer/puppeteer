@@ -253,7 +253,7 @@ Resolves the frame associated with the element, if any. Always exists for HTMLIF
 </td></tr>
 <tr><td>
 
-<span id="contentframe">[contentFrame()](./puppeteer.elementhandle.contentframe.md)</span>
+<span id="contentframe">[contentFrame()](./puppeteer.elementhandle.contentframe.md#overload-2)</span>
 
 </td><td>
 
@@ -329,7 +329,7 @@ Drops the given element onto the current one.
 </td></tr>
 <tr><td>
 
-<span id="drop">[drop(this, data)](./puppeteer.elementhandle.drop.md)</span>
+<span id="drop">[drop(this, data)](./puppeteer.elementhandle.drop.md#overload-2)</span>
 
 </td><td>
 
@@ -434,12 +434,12 @@ If `key` is a single character and no modifier keys besides `Shift` are being he
 
 </td><td>
 
-This method scrolls element into view if needed, and then uses [Page.screenshot()](./puppeteer.page.screenshot.md) to take a screenshot of the element. If the element is detached from DOM, the method throws an error.
+This method scrolls element into view if needed, and then uses [Page.screenshot()](./puppeteer.page.screenshot.md#overload-2) to take a screenshot of the element. If the element is detached from DOM, the method throws an error.
 
 </td></tr>
 <tr><td>
 
-<span id="screenshot">[screenshot(options)](./puppeteer.elementhandle.screenshot.md)</span>
+<span id="screenshot">[screenshot(options)](./puppeteer.elementhandle.screenshot.md#overload-2)</span>
 
 </td><td>
 

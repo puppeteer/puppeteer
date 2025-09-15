@@ -197,7 +197,7 @@ Adds a `HTMLStyleElement` into the frame with the desired URL
 </td></tr>
 <tr><td>
 
-<span id="addstyletag">[addStyleTag(options)](./puppeteer.frame.addstyletag.md)</span>
+<span id="addstyletag">[addStyleTag(options)](./puppeteer.frame.addstyletag.md#overload-2)</span>
 
 </td><td>
 
@@ -360,7 +360,7 @@ Creates a locator for the provided selector. See [Locator](./puppeteer.locator.m
 </td></tr>
 <tr><td>
 
-<span id="locator">[locator(func)](./puppeteer.frame.locator.md)</span>
+<span id="locator">[locator(func)](./puppeteer.frame.locator.md#overload-2)</span>
 
 </td><td>
 
