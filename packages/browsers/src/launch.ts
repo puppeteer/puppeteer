@@ -277,7 +277,7 @@ export class Process {
   #onExitHook = async () => {};
   #browserProcessExiting: Promise<void>;
   #logs: string[] = [];
-  #maxLogLinesSize = 100;
+  #maxLogLinesSize = 1000;
   #lineEmitter = new EventEmitter();
 
   constructor(opts: LaunchOptions) {
