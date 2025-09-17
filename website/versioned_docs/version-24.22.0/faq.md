@@ -24,7 +24,7 @@ to automate both Chrome and Firefox.
 ## Q: Will keep Puppeteer supporting CDP?
 
 We are not going to stop supporting automation of Chrome with CDP - despite
-Puppeteer's support for WebDriver BiDi. To not break existing automations relying on CDP,
+Puppeteer's support for WebDriver BiDi. To not break existing automation relying on CDP,
 but also to keep enabling automation use-cases unique to Chrome and not standardized
 with WebDriver BiDi.
 
@@ -126,7 +126,7 @@ await page.evaluate(() => {
 ## Q: Does Puppeteer support media and audio playback?
 
 Puppeteer uses [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) binaries
-by default which ship with properietary codecs support starting from
+by default which ship with proprietary codecs support starting from
 [M120](https://chromiumdash.appspot.com/commit/12d607016c31ea13579e897740c765be189ed6eb).
 
 ## Q: I am having trouble installing / running Puppeteer in my test environment. Where should I look for help?
