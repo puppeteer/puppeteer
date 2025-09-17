@@ -2,6 +2,31 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.22.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.21.0...puppeteer-v24.22.0) (2025-09-17)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.21.0 to 24.22.0
+
+
+### Features
+
+* roll to Firefox 143.0 ([#14219](https://github.com/puppeteer/puppeteer/issues/14219)) ([ddab735](https://github.com/puppeteer/puppeteer/commit/ddab735b965bd244a988b394fd206bb5fe5520bd))
+
+
+### Bug Fixes
+
+* **a11y:** handle leaf nodes without heuristics that rely on name ([#14221](https://github.com/puppeteer/puppeteer/issues/14221)) ([076cc2e](https://github.com/puppeteer/puppeteer/commit/076cc2e5c1ba68e6915265b339cae812ae8acc10))
+
+
 ## [24.21.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.20.0...puppeteer-v24.21.0) (2025-09-15)
 
 

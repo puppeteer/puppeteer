@@ -4,7 +4,7 @@ sidebar_label: computeSystemExecutablePath
 
 # computeSystemExecutablePath() function
 
-Returns a path to a system-wide Chrome installation given a release channel name by checking known installation locations (using https://pptr.dev/browsers-api/browsers.computesystemexecutablepath/). If Chrome instance is not found at the expected path, an error is thrown.
+Returns a path to a system-wide Chrome installation given a release channel name by checking known installation locations (using [https://pptr.dev/browsers-api/browsers.computesystemexecutablepath](https://pptr.dev/browsers-api/browsers.computesystemexecutablepath)). If Chrome instance is not found at the expected path, an error is thrown.
 
 ### Signature
 
