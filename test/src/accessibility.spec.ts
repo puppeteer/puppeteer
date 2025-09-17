@@ -495,7 +495,7 @@ describe('Accessibility', function () {
           }
         : {
             role: 'RootWebArea',
-            name: 'Document',
+            name: 'My test page',
             children: [
               {
                 role: 'tab',
@@ -898,17 +898,19 @@ describe('Accessibility', function () {
         html`<main><span>Hello</span><div> </div><div>World</div></main>`,
       );
 
-      await page.setContent(html`<span>Name:</span><input />`);
       const snapshot = await page.accessibility.snapshot();
       expect(snapshot).toMatchObject({
         role: 'RootWebArea',
-        name: 'Document',
+        name: 'My test page',
         children: [
           {
-            name: 'Name:',
+            name: 'Hello',
             role: 'StaticText',
           },
-          {role: 'textbox', name: ''},
+          {
+            name: 'World',
+            role: 'StaticText',
+          },
         ],
       });
     });
