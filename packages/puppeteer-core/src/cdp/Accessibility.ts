@@ -319,7 +319,6 @@ class AXNode {
   #name: string;
   #role: string;
   #ignored: boolean;
-  #cachedHasFocusableChild?: boolean;
   #realm: Realm;
 
   constructor(realm: Realm, payload: Protocol.Accessibility.AXNode) {
@@ -360,19 +359,6 @@ class AXNode {
       role === 'InlineTextBox' ||
       role === 'StaticText'
     );
-  }
-
-  #hasFocusableChild(): boolean {
-    if (this.#cachedHasFocusableChild === undefined) {
-      this.#cachedHasFocusableChild = false;
-      for (const child of this.children) {
-        if (child.#focusable || child.#hasFocusableChild()) {
-          this.#cachedHasFocusableChild = true;
-          break;
-        }
-      }
-    }
-    return this.#cachedHasFocusableChild;
   }
 
   public find(predicate: (x: AXNode) => boolean): AXNode | null {
@@ -420,16 +406,10 @@ class AXNode {
         break;
     }
 
-    // Here and below: Android heuristics
-    if (this.#hasFocusableChild()) {
-      return false;
-    }
-    if (this.#focusable && this.#name && this.#name !== 'Document') {
-      return true;
-    }
     if (this.#role === 'heading' && this.#name) {
       return true;
     }
+
     return false;
   }
 
