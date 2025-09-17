@@ -440,13 +440,6 @@
     "comment": "Suddenly started being flaky on Windows"
   },
   {
-    "testIdPattern": "[navigation.spec] navigation Frame.goto should return matching responses",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[navigation.spec] navigation Page.goto should send referer",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -501,13 +494,6 @@
     "parameters": ["chrome-headless-shell"],
     "expectations": ["FAIL"],
     "comment": "chrome-headless-shell does not have a PDF viewer"
-  },
-  {
-    "testIdPattern": "[oopif.spec] OOPIF should retrieve body for OOPIF document requests",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "https://github.com/w3c/webdriver-bidi/issues/747"
   },
   {
     "testIdPattern": "[page.spec] Page Page.addScriptTag should throw when added with content to the CSP page",
@@ -1076,13 +1062,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to reconnect to a disconnected browser",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support acceptInsecureCerts option",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -1333,6 +1312,13 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "Firefox does not support multiple sessions in BiDi."
+  },
+  {
+    "testIdPattern": "[oopif.spec] OOPIF should retrieve body for OOPIF document requests",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "https://github.com/w3c/webdriver-bidi/issues/747"
   },
   {
     "testIdPattern": "[page.spec] Page Page.addScriptTag should throw when added with content to the CSP page",
