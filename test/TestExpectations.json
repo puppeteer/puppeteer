@@ -747,6 +747,13 @@
     "comment": "times out flakily"
   },
   {
+    "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler waitForSelector (aria) should persist query handler bindings across reloads",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["TIMEOUT"],
+    "comment": "See https://github.com/GoogleChromeLabs/chromium-bidi/issues/3729"
+  },
+  {
     "testIdPattern": "[backendNodeId.spec] ElementHandle.backendNodeId should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -934,6 +941,13 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw when evaluation triggers reload",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "See https://github.com/GoogleChromeLabs/chromium-bidi/issues/3729"
   },
   {
     "testIdPattern": "[extensions.spec] extensions can evaluate in the service worker",
@@ -1715,6 +1729,48 @@
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["SKIP"],
     "comment": "For some reason service_workers do not close in chrome-headless-shell"
+  },
+  {
+    "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.tap should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
+    "expectations": ["FAIL"],
+    "comment": "Seems to fail with RenderDocument on stable"
+  },
+  {
+    "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.tap should work if another touch is already active",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
+    "expectations": ["FAIL"],
+    "comment": "Seems to fail with RenderDocument on stable"
+  },
+  {
+    "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
+    "expectations": ["FAIL"],
+    "comment": "Seems to fail with RenderDocument on stable"
+  },
+  {
+    "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work when moving touches separately",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
+    "expectations": ["FAIL"],
+    "comment": "Seems to fail with RenderDocument on stable"
+  },
+  {
+    "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work with three touches",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
+    "expectations": ["FAIL"],
+    "comment": "Seems to fail with RenderDocument on stable"
+  },
+  {
+    "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work with two touches",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
+    "expectations": ["FAIL"],
+    "comment": "Seems to fail with RenderDocument on stable"
   },
   {
     "testIdPattern": "[webExtension.spec] webExtension can install and uninstall an extension",
