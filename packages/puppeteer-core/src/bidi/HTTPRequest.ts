@@ -108,6 +108,10 @@ export class BidiHTTPRequest extends HTTPRequest {
     }
   }
 
+  override documentId(): string {
+    throw new UnsupportedOperation('Not supported in WebDriver BiDi');
+  }
+
   override url(): string {
     return this.#request.url;
   }

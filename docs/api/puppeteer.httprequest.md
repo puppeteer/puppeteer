@@ -143,6 +143,19 @@ The `ContinueRequestOverrides` that will be used if the interception is allowed 
 </td></tr>
 <tr><td>
 
+<span id="documentid">[documentId()](./puppeteer.httprequest.documentid.md)</span>
+
+</td><td>
+
+</td><td>
+
+Returns an opaque ID of the document associated with the request. When a new document gets loaded into a frame, a new documentId is genereated to identify the navigation request and all resource requests originated from this document.
+
+documentId is an empty string for requests related to workers.
+
+</td></tr>
+<tr><td>
+
 <span id="enqueueinterceptaction">[enqueueInterceptAction(pendingHandler)](./puppeteer.httprequest.enqueueinterceptaction.md)</span>
 
 </td><td>
