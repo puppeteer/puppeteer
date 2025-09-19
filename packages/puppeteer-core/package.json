@@ -40,7 +40,8 @@
     "check": "wireit",
     "clean": "../../tools/clean.mjs",
     "prepack": "wireit",
-    "unit": "wireit"
+    "unit": "wireit",
+    "unit:only": "wireit"
   },
   "wireit": {
     "check": {
@@ -122,6 +123,12 @@
     },
     "unit": {
       "command": "node --test --test-reporter=spec \"lib/cjs/**/*.test.js\"",
+      "dependencies": [
+        "build"
+      ]
+    },
+    "unit:only": {
+      "command": "node --test --test-only --test-reporter=spec \"lib/cjs/**/*.test.js\"",
       "dependencies": [
         "build"
       ]

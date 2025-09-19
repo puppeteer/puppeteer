@@ -121,6 +121,17 @@ describe('Evaluation specs', function () {
       expect(await page.evaluate(a.sum, 1, 2)).toBe(3);
       expect(await page.evaluate(a.mult, 2, 4)).toBe(8);
     });
+    it('should work with function shorthands and nested arrow functions', async () => {
+      const {page} = await getTestState();
+      const a = {
+        sum(a: number, b: number) {
+          const _arrow = () => {};
+          _arrow();
+          return a + b;
+        },
+      };
+      expect(await page.evaluate(a.sum, 1, 2)).toBe(3);
+    });
     it('should work with unicode chars', async () => {
       const {page} = await getTestState();
 
