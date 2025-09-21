@@ -1,0 +1,73 @@
+// MoodboardCarousel.jsx
+import React from "react";
+
+const slides = [
+  {
+    title: "Metamorfosis White",
+    desc: "Camisa asimétrica + pantalón fluido + botas chunky",
+    img: "https://static.yohjiyamamoto.co.jp/images/item/221207233.jpg",
+  },
+  {
+    title: "Rock Leather",
+    desc: "Chaleco de cuero + bermuda vinilo + leggins",
+    img: "https://www.heddels.com/wp-content/uploads/2017/08/helmut-lang-leather-vest.jpg",
+  },
+  {
+    title: "Sport-Blue Transparency",
+    desc: "Mesh Adidas + shorts satinados + botines urbanos",
+    img: "https://assets.adidas.com/images/w_600,f_auto,q_auto/0d2a8f6d6d9649f2b2c7ad72011af2c2_9366/Camiseta_Mesh_Adidas.jpg",
+  },
+  {
+    title: "White Futurism",
+    desc: "Crop top estructurado + cargo pants + botas militares",
+    img: "https://cdn-images.farfetch-contents.com/18/10/43/56/18104356_39029954_1000.jpg",
+  },
+  {
+    title: "Dark Vinyl",
+    desc: "Top vinilo + jogger brillante + botas altas",
+    img: "https://cdn-images.farfetch-contents.com/19/07/60/74/19076074_41193054_1000.jpg",
+  },
+  {
+    title: "Urban Adidas",
+    desc: "Sudadera zipped + shorts negros + sneakers altos",
+    img: "https://assets.adidas.com/images/w_600,f_auto,q_auto/f9d51f5b9893461e8353adb0012e36b5_9366/Adidas_Sin_Mangas.jpg",
+  },
+  {
+    title: "Shiny White Fantasy",
+    desc: "Chaleco bordado + pantalón slim + botas futuristas",
+    img: "https://cdn-images.farfetch-contents.com/19/56/54/32/19565432_43563274_1000.jpg",
+  },
+  {
+    title: "Vinyl Power",
+    desc: "Tank top vinilo + pantalón ajustado + corset belt",
+    img: "https://cdn-images.farfetch-contents.com/18/49/33/99/18493399_39450174_1000.jpg",
+  },
+  {
+    title: "Futuristic Blue",
+    desc: "Jumpsuit azul brillante + botas metálicas + choker",
+    img: "https://cdn-images.farfetch-contents.com/20/14/62/11/20146211_45124564_1000.jpg",
+  },
+];
+
+export default function MoodboardCarousel() {
+  return (
+    <div className="flex flex-col gap-10">
+      {slides.map((slide, i) => (
+        <div
+          key={i}
+          className="w-[1080px] h-[1350px] bg-black text-white flex flex-col items-center justify-center rounded-2xl shadow-lg p-10"
+        >
+          <img
+            src={slide.img}
+            alt={slide.title}
+            className="h-[600px] object-contain"
+          />
+          <h2 className="text-3xl font-bold mt-6">{slide.title}</h2>
+          <p className="text-lg text-gray-300 mt-4 text-center">
+            {slide.desc}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
