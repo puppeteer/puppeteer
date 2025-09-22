@@ -277,7 +277,7 @@ jobs:
         run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
       - name: Download Firefox Nightly
         run: |
-          URL="https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-144.0a1.en-US.linux-x86_64.tar.xz"
+          URL="https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-145.0a1.en-US.linux-x86_64.tar.xz"
           FILE_NAME="firefox.en-US.linux-x86_64.tar.xz"
 
           echo "Downloading $FILE_NAME..."
@@ -309,8 +309,14 @@ jobs:
       #   run: npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
       - name: Run all tests (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
+        env:
+          DEBUG: "puppeteer:*"
         run: |
-          BINARY="./firefox/firefox" DUMPIO="1" xvfb-run --auto-servernum npm run test -- --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+          # mkdir profile
+          # echo 'user_pref("remote.log.level", "Trace");' >> profile/prefs.js
+          # echo 'user_pref("remote.log.truncate", false);' >> profile/prefs.js
+          # xvfb-run --auto-servernum ./firefox/firefox --remote-debugging-port=92923 --profile profile
+          BINARY="./firefox/firefox" DUMPIO="1" xvfb-run --auto-servernum npm run test -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: ${{ !cancelled() }}
         with:

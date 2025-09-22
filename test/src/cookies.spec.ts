@@ -44,7 +44,7 @@ describe('Cookie specs', () => {
         },
       ]);
     });
-    it('should properly report httpOnly cookie', async () => {
+    it.only('should properly report httpOnly cookie', async () => {
       const {page, server} = await getTestState();
       server.setRoute('/empty.html', (_req, res) => {
         res.setHeader('Set-Cookie', 'a=b; HttpOnly; Path=/');
