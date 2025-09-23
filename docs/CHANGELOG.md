@@ -2,6 +2,24 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.22.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.22.0...puppeteer-v24.22.1) (2025-09-23)
+
+### Miscellaneous Chores
+
+- **puppeteer:** Synchronize puppeteer versions
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - puppeteer-core bumped from 24.22.0 to 24.22.1
+
+### Bug Fixes
+
+- replace function eval with parsing in page.evaluate() ([#14226](https://github.com/puppeteer/puppeteer/issues/14226)) ([d0e95b1](https://github.com/puppeteer/puppeteer/commit/d0e95b19796d6492d09244eb2fe7918a23b2d65d))
+- roll to Chrome 140.0.7339.185 ([#14222](https://github.com/puppeteer/puppeteer/issues/14222)) ([2b15421](https://github.com/puppeteer/puppeteer/commit/2b15421157acf179643e1f4e66a4964ecbe505f9))
+- roll to Firefox 143.0.1 ([#14227](https://github.com/puppeteer/puppeteer/issues/14227)) ([ce89b9b](https://github.com/puppeteer/puppeteer/commit/ce89b9b1ab9fcb2e00496ece36a08b99e05b3881))
+
 ## [24.22.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.21.0...puppeteer-v24.22.0) (2025-09-17)
 
 ### Miscellaneous Chores
