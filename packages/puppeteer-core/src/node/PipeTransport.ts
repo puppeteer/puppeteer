@@ -64,6 +64,7 @@ export class PipeTransport implements ConnectionTransport {
     assert(!this.#isClosed, '`PipeTransport` is closed.');
 
     this.#pendingMessage.push(buffer);
+    console.log('buffer str', buffer.toString());
     if (buffer.indexOf('\0') === -1) {
       return;
     }

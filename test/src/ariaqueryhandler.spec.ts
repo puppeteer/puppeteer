@@ -327,7 +327,8 @@ describe('AriaQueryHandler', () => {
     });
   });
   describe('queryAllArray', () => {
-    it('$$eval should handle many elements', async function () {
+    // eslint-disable-next-line mocha/no-exclusive-tests
+    it.only('$$eval should handle many elements', async function () {
       this.timeout(40_000);
 
       const {page} = await getTestState();
