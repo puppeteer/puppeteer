@@ -1,5 +1,12 @@
 # Changelog
 
+## [24.22.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.22.1...puppeteer-core-v24.22.2) (2025-09-23)
+
+
+### Bug Fixes
+
+* **pipes:** concat buffers instead of string concatenation ([#14236](https://github.com/puppeteer/puppeteer/issues/14236)) ([21e54b6](https://github.com/puppeteer/puppeteer/commit/21e54b61531511af1c6187d685f97a1378a00018))
+
 ## [24.22.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.22.0...puppeteer-core-v24.22.1) (2025-09-23)
 
 
