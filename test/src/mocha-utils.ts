@@ -180,6 +180,7 @@ export const setupTestBrowserHooks = (): void => {
             ...processVariables.defaultBrowserOptions,
             timeout: defaultTimeout,
             // Commands should fail before Mocha timeouts
+            pipe: isChrome,
             protocolTimeout: defaultTimeout / 2,
           });
         }
