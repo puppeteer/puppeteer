@@ -84,9 +84,7 @@ export class PipeTransport implements ConnectionTransport {
     if (start >= concatBuffer.length) {
       this.#pendingMessage = [];
     } else {
-      this.#pendingMessage = [
-        Buffer.from(concatBuffer.toString(undefined, start, end)),
-      ];
+      this.#pendingMessage = [concatBuffer.subarray(start)];
     }
   }
 
