@@ -179,6 +179,7 @@ export const setupTestBrowserHooks = (): void => {
           browserPromise = (puppeteer as unknown as PuppeteerNode).launch({
             ...processVariables.defaultBrowserOptions,
             timeout: defaultTimeout,
+            // Commands should fail before Mocha timeouts
             protocolTimeout: defaultTimeout / 2,
           });
         }
