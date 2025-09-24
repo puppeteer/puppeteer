@@ -97,6 +97,7 @@ export abstract class Realm extends EventEmitter<{
       target: this.target,
       ...options,
     });
+    // @ts-expect-error We can create proper mapping upstream
     return result;
   }
 
