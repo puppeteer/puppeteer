@@ -1,5 +1,13 @@
 # Changelog
 
+## [24.22.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.22.2...puppeteer-core-v24.22.3) (2025-09-24)
+
+
+### Bug Fixes
+
+* regression in function stringification ([#14246](https://github.com/puppeteer/puppeteer/issues/14246)) ([773a375](https://github.com/puppeteer/puppeteer/commit/773a37535f59f86fd6d1ef15b898c0f0f4f53d9d))
+* roll to Chrome 140.0.7339.207 ([#14240](https://github.com/puppeteer/puppeteer/issues/14240)) ([db1a654](https://github.com/puppeteer/puppeteer/commit/db1a654791cdf3f3f0063da24074555a7d15864c))
+
 ## [24.22.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.22.1...puppeteer-core-v24.22.2) (2025-09-23)
 
 
