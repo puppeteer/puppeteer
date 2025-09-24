@@ -154,7 +154,7 @@ export abstract class BrowserLauncher {
     };
 
     try {
-      if (this.#browser === 'firefox' && protocol === 'webDriverBiDi') {
+      if (this.#browser === 'firefox') {
         browser = await this.createBiDiBrowser(
           browserProcess,
           browserCloseCallback,
