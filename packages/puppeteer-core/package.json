@@ -137,6 +137,7 @@
   "files": [
     "lib",
     "src",
+    "!function-fixture.mjs",
     "!*.test.ts",
     "!*.test.js",
     "!*.test.d.ts",

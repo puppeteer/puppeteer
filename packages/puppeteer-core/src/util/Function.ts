@@ -30,7 +30,7 @@ export const createFunction = (
 export function stringifyFunction(fn: (...args: never) => unknown): string {
   let value = fn.toString();
   if (
-    value.match(/^(async )*function /) ||
+    value.match(/^(async )*function(\(|\s)/) ||
     value.match(/^(async )*function\s*\*\s*/)
   ) {
     return value;
