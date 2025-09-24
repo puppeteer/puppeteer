@@ -2,6 +2,69 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.22.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.22.2...puppeteer-v24.22.3) (2025-09-24)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.22.2 to 24.22.3
+
+
+### Bug Fixes
+
+* regression in function stringification ([#14246](https://github.com/puppeteer/puppeteer/issues/14246)) ([773a375](https://github.com/puppeteer/puppeteer/commit/773a37535f59f86fd6d1ef15b898c0f0f4f53d9d))
+* roll to Chrome 140.0.7339.207 ([#14240](https://github.com/puppeteer/puppeteer/issues/14240)) ([db1a654](https://github.com/puppeteer/puppeteer/commit/db1a654791cdf3f3f0063da24074555a7d15864c))
+
+
+## [24.22.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.22.1...puppeteer-v24.22.2) (2025-09-23)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.22.1 to 24.22.2
+
+
+### Bug Fixes
+
+* **pipes:** concat buffers instead of string concatenation ([#14236](https://github.com/puppeteer/puppeteer/issues/14236)) ([21e54b6](https://github.com/puppeteer/puppeteer/commit/21e54b61531511af1c6187d685f97a1378a00018))
+
+
+## [24.22.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.22.0...puppeteer-v24.22.1) (2025-09-23)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.22.0 to 24.22.1
+
+
+### Bug Fixes
+
+* replace function eval with parsing in page.evaluate() ([#14226](https://github.com/puppeteer/puppeteer/issues/14226)) ([d0e95b1](https://github.com/puppeteer/puppeteer/commit/d0e95b19796d6492d09244eb2fe7918a23b2d65d))
+* roll to Chrome 140.0.7339.185 ([#14222](https://github.com/puppeteer/puppeteer/issues/14222)) ([2b15421](https://github.com/puppeteer/puppeteer/commit/2b15421157acf179643e1f4e66a4964ecbe505f9))
+* roll to Firefox 143.0.1 ([#14227](https://github.com/puppeteer/puppeteer/issues/14227)) ([ce89b9b](https://github.com/puppeteer/puppeteer/commit/ce89b9b1ab9fcb2e00496ece36a08b99e05b3881))
+
+
 ## [24.22.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.21.0...puppeteer-v24.22.0) (2025-09-17)
 
 

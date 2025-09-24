@@ -10,7 +10,7 @@ import path from 'node:path';
 import {TestServer} from '@pptr/testserver';
 import expect from 'expect';
 import type * as MochaBase from 'mocha';
-import puppeteer from 'puppeteer/internal/puppeteer.js';
+import puppeteer, {TimeoutError} from 'puppeteer/internal/puppeteer.js';
 import type {Browser} from 'puppeteer-core/internal/api/Browser.js';
 import type {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
@@ -170,25 +170,29 @@ const setupServer = async () => {
 let browserPromise: Promise<Browser> | null = null;
 export const setupTestBrowserHooks = (): void => {
   before(async function () {
-    const defaultTimeout = this.timeout() ?? 0;
-    // Double
-    this.timeout(defaultTimeout * 2);
+    const defaultTimeout = this.timeout() || 10_000;
+    // Let mocha fail after the 1s of timeout.
+    this.timeout(defaultTimeout + 1_000);
     try {
       if (!state.browser) {
         if (!browserPromise) {
           browserPromise = (puppeteer as unknown as PuppeteerNode).launch({
             ...processVariables.defaultBrowserOptions,
-            timeout: defaultTimeout - 1_000,
-            protocolTimeout: defaultTimeout * 2,
+            timeout: defaultTimeout,
+            // Commands should fail before Mocha timeouts
+            protocolTimeout: defaultTimeout / 2,
           });
         }
 
         state.browser = await browserPromise;
       }
     } catch (error) {
-      console.error(error);
-      // Intentionally empty as `getTestState` will throw
-      // if browser is not found
+      if (error instanceof TimeoutError) {
+        // If we get a Puppeteer Timeout Error the browser in not usable
+        browserPromise = null;
+      } else {
+        console.error(error);
+      }
     }
   });
 

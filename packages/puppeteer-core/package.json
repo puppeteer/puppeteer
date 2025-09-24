@@ -1,6 +1,6 @@
 {
   "name": "puppeteer-core",
-  "version": "24.22.0",
+  "version": "24.22.3",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "keywords": [
     "puppeteer",
@@ -40,7 +40,8 @@
     "check": "wireit",
     "clean": "../../tools/clean.mjs",
     "prepack": "wireit",
-    "unit": "wireit"
+    "unit": "wireit",
+    "unit:only": "wireit"
   },
   "wireit": {
     "check": {
@@ -125,11 +126,18 @@
       "dependencies": [
         "build"
       ]
+    },
+    "unit:only": {
+      "command": "node --test --test-only --test-reporter=spec \"lib/cjs/**/*.test.js\"",
+      "dependencies": [
+        "build"
+      ]
     }
   },
   "files": [
     "lib",
     "src",
+    "!function-fixture.mjs",
     "!*.test.ts",
     "!*.test.js",
     "!*.test.d.ts",
@@ -141,7 +149,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@puppeteer/browsers": "2.10.10",
-    "chromium-bidi": "8.0.0",
+    "chromium-bidi": "9.1.0",
     "debug": "^4.4.3",
     "devtools-protocol": "0.0.1495869",
     "typed-query-selector": "^2.12.0",
@@ -149,7 +157,7 @@
     "ws": "^8.18.3"
   },
   "devDependencies": {
-    "@types/chrome": "0.1.4",
+    "@types/chrome": "0.1.12",
     "@types/debug": "4.1.12",
     "@types/node": "^18.17.15",
     "@types/ws": "8.18.1",
