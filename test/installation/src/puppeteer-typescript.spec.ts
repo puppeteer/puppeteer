@@ -17,7 +17,7 @@ import {execFile, readAsset} from './util.js';
   () => {
     configureSandbox({
       dependencies: ['@puppeteer/browsers', 'puppeteer-core', 'puppeteer'],
-      devDependencies: ['typescript@5.0.0', '@types/node@18.17.15'],
+      devDependencies: ['typescript@4.7.4', '@types/node@18.17.15'],
       env: cwd => {
         return {
           PUPPETEER_CACHE_DIR: join(cwd, '.cache', 'puppeteer'),
