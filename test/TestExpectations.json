@@ -834,14 +834,14 @@
     "testIdPattern": "[download.spec] Download Browser.createBrowserContext should download to configured location",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
+    "expectations": ["SKIP"],
     "comment": "Firefox does not support download behavior."
   },
   {
     "testIdPattern": "[download.spec] Download Browser.createBrowserContext should not download to location",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
+    "expectations": ["SKIP"],
     "comment": "Firefox does not support download behavior."
   },
   {
