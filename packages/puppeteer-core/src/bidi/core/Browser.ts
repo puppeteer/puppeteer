@@ -7,6 +7,7 @@
 import type * as Bidi from 'webdriver-bidi-protocol';
 
 import type {BrowserContextOptions} from '../../api/Browser.js';
+import {UnsupportedOperation} from '../../common/Errors.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
@@ -232,11 +233,36 @@ export class Browser extends EventEmitter<{
             noProxy: options.proxyBypassList,
           };
     const {
-      result: {userContext: context},
+      result: {userContext},
     } = await this.session.send('browser.createUserContext', {
       proxy: proxyConfig,
     });
-    return this.#createUserContext(context);
+    if (options.downloadBehavior?.policy === 'allowAndName') {
+      throw new UnsupportedOperation(
+        '`allowAndName` is not supported in WebDriver BiDi',
+      );
+    }
+    if (options.downloadBehavior?.policy === 'allow') {
+      if (options.downloadBehavior.downloadPath === undefined) {
+        throw new UnsupportedOperation(
+          '`downloadPath` is required in `allow` download behavior',
+        );
+      }
+      await this.session.send('browser.setDownloadBehavior', {
+        downloadBehavior: {
+          type: 'allowed',
+          destinationFolder: options.downloadBehavior.downloadPath,
+        },
+        userContexts: [userContext],
+      });
+    }
+    if (options.downloadBehavior?.policy === 'deny') {
+      await this.session.send('browser.setDownloadBehavior', {
+        downloadBehavior: {type: 'denied'},
+        userContexts: [userContext],
+      });
+    }
+    return this.#createUserContext(userContext);
   }
 
   @throwIfDisposed<Browser>(browser => {
