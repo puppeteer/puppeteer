@@ -18,7 +18,7 @@ import {debugError} from '../common/util.js';
 import {BidiCdpSession} from './CDPSession.js';
 import type {
   BidiEvents,
-  CommandMapping as BidiCommands,
+  Commands as BidiCommands,
   Connection,
 } from './core/Connection.js';
 
