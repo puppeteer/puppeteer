@@ -35,13 +35,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[download.spec] *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "This feature is not supported by WebDriver BiDi"
-  },
-  {
     "testIdPattern": "[drag-and-drop.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
