@@ -447,6 +447,13 @@
     "comment": "Flaky with both CDP and WebDriver BiDi. Needs investigation."
   },
   {
+    "testIdPattern": "[network.spec] network Request.documentId returns same documentId for navigation and resource requests",
+    "platforms": ["darwin"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "Not supported by WebDriver BiDi"
+  },
+  {
     "testIdPattern": "[network.spec] network Request.initiator should return the initiator",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
