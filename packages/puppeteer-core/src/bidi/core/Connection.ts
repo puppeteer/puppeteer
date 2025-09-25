@@ -5,11 +5,11 @@
  */
 
 import type {Event} from 'webdriver-bidi-protocol';
-import type {Commands} from 'webdriver-bidi-protocol';
+import type {CommandMapping} from 'webdriver-bidi-protocol';
 
 import type {EventEmitter} from '../../common/EventEmitter.js';
 
-export type {Commands};
+export type {CommandMapping};
 
 /**
  * @internal
@@ -23,8 +23,8 @@ export type BidiEvents = {
  */
 export interface Connection<Events extends BidiEvents = BidiEvents>
   extends EventEmitter<Events> {
-  send<T extends keyof Commands>(
+  send<T extends keyof CommandMapping>(
     method: T,
-    params: Commands[T]['params'],
-  ): Promise<{result: Commands[T]['returnType']}>;
+    params: CommandMapping[T]['params'],
+  ): Promise<{result: CommandMapping[T]['returnType']}>;
 }

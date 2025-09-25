@@ -15,7 +15,7 @@ import {
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 
 import {Browser} from './Browser.js';
-import type {BidiEvents, Commands, Connection} from './Connection.js';
+import type {BidiEvents, CommandMapping, Connection} from './Connection.js';
 
 /**
  * @internal
@@ -104,10 +104,10 @@ export class Session
     // SAFETY: By definition of `disposed`, `#reason` is defined.
     return session.#reason!;
   })
-  async send<T extends keyof Commands>(
+  async send<T extends keyof CommandMapping>(
     method: T,
-    params: Commands[T]['params'],
-  ): Promise<{result: Commands[T]['returnType']}> {
+    params: CommandMapping[T]['params'],
+  ): Promise<{result: CommandMapping[T]['returnType']}> {
     return await this.connection.send(method, params);
   }
 
