@@ -28,7 +28,7 @@ page.on('dialog', async dialog => {
   await dialog.dismiss();
   await browser.close();
 });
-page.evaluate(() => alert('1'));
+await page.evaluate(() => alert('1'));
 ```
 
 ## Methods
