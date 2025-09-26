@@ -1,5 +1,12 @@
 # Changelog
 
+## [24.23.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.22.3...puppeteer-core-v24.23.0) (2025-09-26)
+
+
+### Features
+
+* **webdriver:** support `createUserContext(downloadBehavior)` ([#14249](https://github.com/puppeteer/puppeteer/issues/14249)) ([cd9dc0c](https://github.com/puppeteer/puppeteer/commit/cd9dc0ce6837e239a03b982605ae3a4bd8615ffd))
+
 ## [24.22.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.22.2...puppeteer-core-v24.22.3) (2025-09-24)
 
 

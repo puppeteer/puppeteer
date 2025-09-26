@@ -21,16 +21,14 @@ The constructor for this class is marked as internal. Third-party code should no
 ```ts
 import puppeteer from 'puppeteer';
 
-(async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  page.on('dialog', async dialog => {
-    console.log(dialog.message());
-    await dialog.dismiss();
-    await browser.close();
-  });
-  page.evaluate(() => alert('1'));
-})();
+const browser = await puppeteer.launch();
+const page = await browser.newPage();
+page.on('dialog', async dialog => {
+  console.log(dialog.message());
+  await dialog.dismiss();
+  await browser.close();
+});
+await page.evaluate(() => alert('1'));
 ```
 
 ## Methods
