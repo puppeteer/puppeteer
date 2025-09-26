@@ -86,7 +86,7 @@ export abstract class BrowserLauncher {
       slowMo = 0,
       timeout = 30000,
       waitForInitialPage = true,
-      protocolTimeout,
+      protocolTimeout = 30000,
     } = options;
 
     let {protocol} = options;
