@@ -650,13 +650,11 @@ export function setDefaultScreenshotOptions(options: ScreenshotOptions): void {
  * ```ts
  * import puppeteer from 'puppeteer';
  *
- * (async () => {
- *   const browser = await puppeteer.launch();
- *   const page = await browser.newPage();
- *   await page.goto('https://example.com');
- *   await page.screenshot({path: 'screenshot.png'});
- *   await browser.close();
- * })();
+ * const browser = await puppeteer.launch();
+ * const page = await browser.newPage();
+ * await page.goto('https://example.com');
+ * await page.screenshot({path: 'screenshot.png'});
+ * await browser.close();
  * ```
  *
  * The Page class extends from Puppeteer's {@link EventEmitter} class and will
@@ -949,21 +947,19 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * ```ts
    * import puppeteer from 'puppeteer';
-   * (async () => {
-   *   const browser = await puppeteer.launch();
-   *   const page = await browser.newPage();
-   *   await page.setRequestInterception(true);
-   *   page.on('request', interceptedRequest => {
-   *     if (
-   *       interceptedRequest.url().endsWith('.png') ||
-   *       interceptedRequest.url().endsWith('.jpg')
-   *     )
-   *       interceptedRequest.abort();
-   *     else interceptedRequest.continue();
-   *   });
-   *   await page.goto('https://example.com');
-   *   await browser.close();
-   * })();
+   * const browser = await puppeteer.launch();
+   * const page = await browser.newPage();
+   * await page.setRequestInterception(true);
+   * page.on('request', interceptedRequest => {
+   *   if (
+   *     interceptedRequest.url().endsWith('.png') ||
+   *     interceptedRequest.url().endsWith('.jpg')
+   *   )
+   *     interceptedRequest.abort();
+   *   else interceptedRequest.continue();
+   * });
+   * await page.goto('https://example.com');
+   * await browser.close();
    * ```
    *
    * @param value - Whether to enable request interception.
@@ -1010,14 +1006,12 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * import {PredefinedNetworkConditions} from 'puppeteer';
    * const slow3G = PredefinedNetworkConditions['Slow 3G'];
    *
-   * (async () => {
-   *   const browser = await puppeteer.launch();
-   *   const page = await browser.newPage();
-   *   await page.emulateNetworkConditions(slow3G);
-   *   await page.goto('https://www.google.com');
-   *   // other actions...
-   *   await browser.close();
-   * })();
+   * const browser = await puppeteer.launch();
+   * const page = await browser.newPage();
+   * await page.emulateNetworkConditions(slow3G);
+   * await page.goto('https://www.google.com');
+   * // other actions...
+   * await browser.close();
    * ```
    *
    * @param networkConditions - Passing `null` disables network condition
@@ -1552,21 +1546,19 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * import puppeteer from 'puppeteer';
    * import crypto from 'crypto';
    *
-   * (async () => {
-   *   const browser = await puppeteer.launch();
-   *   const page = await browser.newPage();
-   *   page.on('console', msg => console.log(msg.text()));
-   *   await page.exposeFunction('md5', text =>
-   *     crypto.createHash('md5').update(text).digest('hex'),
-   *   );
-   *   await page.evaluate(async () => {
-   *     // use window.md5 to compute hashes
-   *     const myString = 'PUPPETEER';
-   *     const myHash = await window.md5(myString);
-   *     console.log(`md5 of ${myString} is ${myHash}`);
-   *   });
-   *   await browser.close();
-   * })();
+   * const browser = await puppeteer.launch();
+   * const page = await browser.newPage();
+   * page.on('console', msg => console.log(msg.text()));
+   * await page.exposeFunction('md5', text =>
+   *   crypto.createHash('md5').update(text).digest('hex'),
+   * );
+   * await page.evaluate(async () => {
+   *   // use window.md5 to compute hashes
+   *   const myString = 'PUPPETEER';
+   *   const myHash = await window.md5(myString);
+   *   console.log(`md5 of ${myString} is ${myHash}`);
+   * });
+   * await browser.close();
    * ```
    *
    * @example
@@ -1576,25 +1568,23 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * import puppeteer from 'puppeteer';
    * import fs from 'node:fs';
    *
-   * (async () => {
-   *   const browser = await puppeteer.launch();
-   *   const page = await browser.newPage();
-   *   page.on('console', msg => console.log(msg.text()));
-   *   await page.exposeFunction('readfile', async filePath => {
-   *     return new Promise((resolve, reject) => {
-   *       fs.readFile(filePath, 'utf8', (err, text) => {
-   *         if (err) reject(err);
-   *         else resolve(text);
-   *       });
+   * const browser = await puppeteer.launch();
+   * const page = await browser.newPage();
+   * page.on('console', msg => console.log(msg.text()));
+   * await page.exposeFunction('readfile', async filePath => {
+   *   return new Promise((resolve, reject) => {
+   *     fs.readFile(filePath, 'utf8', (err, text) => {
+   *       if (err) reject(err);
+   *       else resolve(text);
    *     });
    *   });
-   *   await page.evaluate(async () => {
-   *     // use window.readfile to read contents of a file
-   *     const content = await window.readfile('/etc/hosts');
-   *     console.log(content);
-   *   });
-   *   await browser.close();
-   * })();
+   * });
+   * await page.evaluate(async () => {
+   *   // use window.readfile to read contents of a file
+   *   const content = await window.readfile('/etc/hosts');
+   *   console.log(content);
+   * });
+   * await browser.close();
    * ```
    *
    * @param name - Name of the function on the window object
@@ -2036,14 +2026,12 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * import {KnownDevices} from 'puppeteer';
    * const iPhone = KnownDevices['iPhone 15 Pro'];
    *
-   * (async () => {
-   *   const browser = await puppeteer.launch();
-   *   const page = await browser.newPage();
-   *   await page.emulate(iPhone);
-   *   await page.goto('https://www.google.com');
-   *   // other actions...
-   *   await browser.close();
-   * })();
+   * const browser = await puppeteer.launch();
+   * const page = await browser.newPage();
+   * await page.emulate(iPhone);
+   * await page.goto('https://www.google.com');
+   * // other actions...
+   * await browser.close();
    * ```
    */
   async emulate(device: Device): Promise<void> {
@@ -2207,25 +2195,23 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * ```ts
    * import puppeteer from 'puppeteer';
    *
-   * (async () => {
-   *   const browser = await puppeteer.launch();
-   *   const page = await browser.newPage();
-   *   await page.goto('https://v8.dev/blog/10-years');
+   * const browser = await puppeteer.launch();
+   * const page = await browser.newPage();
+   * await page.goto('https://v8.dev/blog/10-years');
    *
-   *   await page.emulateVisionDeficiency('achromatopsia');
-   *   await page.screenshot({path: 'achromatopsia.png'});
+   * await page.emulateVisionDeficiency('achromatopsia');
+   * await page.screenshot({path: 'achromatopsia.png'});
    *
-   *   await page.emulateVisionDeficiency('deuteranopia');
-   *   await page.screenshot({path: 'deuteranopia.png'});
+   * await page.emulateVisionDeficiency('deuteranopia');
+   * await page.screenshot({path: 'deuteranopia.png'});
    *
-   *   await page.emulateVisionDeficiency('blurredVision');
-   *   await page.screenshot({path: 'blurred-vision.png'});
+   * await page.emulateVisionDeficiency('blurredVision');
+   * await page.screenshot({path: 'blurred-vision.png'});
    *
-   *   await page.emulateVisionDeficiency('reducedContrast');
-   *   await page.screenshot({path: 'reduced-contrast.png'});
+   * await page.emulateVisionDeficiency('reducedContrast');
+   * await page.screenshot({path: 'reduced-contrast.png'});
    *
-   *   await browser.close();
-   * })();
+   * await browser.close();
    * ```
    *
    * @param type - the type of deficiency to simulate, or `'none'` to reset.
@@ -2994,22 +2980,21 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * ```ts
    * import puppeteer from 'puppeteer';
-   * (async () => {
-   *   const browser = await puppeteer.launch();
-   *   const page = await browser.newPage();
-   *   let currentURL;
-   *   page
-   *     .waitForSelector('img')
-   *     .then(() => console.log('First URL with image: ' + currentURL));
-   *   for (currentURL of [
-   *     'https://example.com',
-   *     'https://google.com',
-   *     'https://bbc.com',
-   *   ]) {
-   *     await page.goto(currentURL);
-   *   }
-   *   await browser.close();
-   * })();
+   *
+   * const browser = await puppeteer.launch();
+   * const page = await browser.newPage();
+   * let currentURL;
+   * page
+   *   .waitForSelector('img')
+   *   .then(() => console.log('First URL with image: ' + currentURL));
+   * for (currentURL of [
+   *   'https://example.com',
+   *   'https://google.com',
+   *   'https://bbc.com',
+   * ]) {
+   *   await page.goto(currentURL);
+   * }
+   * await browser.close();
    * ```
    *
    * @param selector -
@@ -3063,14 +3048,13 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * ```ts
    * import puppeteer from 'puppeteer';
-   * (async () => {
-   *   const browser = await puppeteer.launch();
-   *   const page = await browser.newPage();
-   *   const watchDog = page.waitForFunction('window.innerWidth < 100');
-   *   await page.setViewport({width: 50, height: 50});
-   *   await watchDog;
-   *   await browser.close();
-   * })();
+   *
+   * const browser = await puppeteer.launch();
+   * const page = await browser.newPage();
+   * const watchDog = page.waitForFunction('window.innerWidth < 100');
+   * await page.setViewport({width: 50, height: 50});
+   * await watchDog;
+   * await browser.close();
    * ```
    *
    * @example

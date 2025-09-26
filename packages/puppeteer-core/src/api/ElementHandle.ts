@@ -188,14 +188,12 @@ export function bindIsolatedHandle<This extends ElementHandle<Node>>(
  * ```ts
  * import puppeteer from 'puppeteer';
  *
- * (async () => {
- *   const browser = await puppeteer.launch();
- *   const page = await browser.newPage();
- *   await page.goto('https://example.com');
- *   const hrefElement = await page.$('a');
- *   await hrefElement.click();
- *   // ...
- * })();
+ * const browser = await puppeteer.launch();
+ * const page = await browser.newPage();
+ * await page.goto('https://example.com');
+ * const hrefElement = await page.$('a');
+ * await hrefElement.click();
+ * // ...
  * ```
  *
  * ElementHandle prevents the DOM element from being garbage-collected unless the
@@ -533,9 +531,10 @@ export abstract class ElementHandle<
    *
    * ```ts
    * const feedHandle = await page.$('.feed');
-   * expect(
-   *   await feedHandle.$$eval('.tweet', nodes => nodes.map(n => n.innerText)),
-   * ).toEqual(['Hello!', 'Hi!']);
+   *
+   * const listOfTweets = await feedHandle.$$eval('.tweet', nodes =>
+   *   nodes.map(n => n.innerText),
+   * );
    * ```
    *
    * @param selector -
@@ -600,24 +599,22 @@ export abstract class ElementHandle<
    * ```ts
    * import puppeteer from 'puppeteer';
    *
-   * (async () => {
-   *   const browser = await puppeteer.launch();
-   *   const page = await browser.newPage();
-   *   let currentURL;
-   *   page
-   *     .mainFrame()
-   *     .waitForSelector('img')
-   *     .then(() => console.log('First URL with image: ' + currentURL));
+   * const browser = await puppeteer.launch();
+   * const page = await browser.newPage();
+   * let currentURL;
+   * page
+   *   .mainFrame()
+   *   .waitForSelector('img')
+   *   .then(() => console.log('First URL with image: ' + currentURL));
    *
-   *   for (currentURL of [
-   *     'https://example.com',
-   *     'https://google.com',
-   *     'https://bbc.com',
-   *   ]) {
-   *     await page.goto(currentURL);
-   *   }
-   *   await browser.close();
-   * })();
+   * for (currentURL of [
+   *   'https://example.com',
+   *   'https://google.com',
+   *   'https://bbc.com',
+   * ]) {
+   *   await page.goto(currentURL);
+   * }
+   * await browser.close();
    * ```
    *
    * @param selector - The selector to query and wait for.
