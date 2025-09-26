@@ -198,7 +198,8 @@ export function bindIsolatedHandle<This extends ElementHandle<Node>>(
  *
  * ElementHandle prevents the DOM element from being garbage-collected unless the
  * handle is {@link JSHandle.dispose | disposed}. ElementHandles are auto-disposed
- * when their origin frame gets navigated.
+ * when their associated frame is navigated away or the parent
+ * context gets destroyed.
  *
  * ElementHandle instances can be used as arguments in {@link Page.$eval} and
  * {@link Page.evaluate} methods.
