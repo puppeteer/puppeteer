@@ -58,12 +58,10 @@ Promise&lt;void&gt;
 import {PredefinedNetworkConditions} from 'puppeteer';
 const slow3G = PredefinedNetworkConditions['Slow 3G'];
 
-(async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.emulateNetworkConditions(slow3G);
-  await page.goto('https://www.google.com');
-  // other actions...
-  await browser.close();
-})();
+const browser = await puppeteer.launch();
+const page = await browser.newPage();
+await page.emulateNetworkConditions(slow3G);
+await page.goto('https://www.google.com');
+// other actions...
+await browser.close();
 ```

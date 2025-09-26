@@ -231,20 +231,18 @@ export const throwIfDetached = throwIfDisposed<Frame>(frame => {
  * ```ts
  * import puppeteer from 'puppeteer';
  *
- * (async () => {
- *   const browser = await puppeteer.launch();
- *   const page = await browser.newPage();
- *   await page.goto('https://www.google.com/chrome/browser/canary.html');
- *   dumpFrameTree(page.mainFrame(), '');
- *   await browser.close();
+ * const browser = await puppeteer.launch();
+ * const page = await browser.newPage();
+ * await page.goto('https://www.google.com/chrome/browser/canary.html');
+ * dumpFrameTree(page.mainFrame(), '');
+ * await browser.close();
  *
- *   function dumpFrameTree(frame, indent) {
- *     console.log(indent + frame.url());
- *     for (const child of frame.childFrames()) {
- *       dumpFrameTree(child, indent + '  ');
- *     }
+ * function dumpFrameTree(frame, indent) {
+ *   console.log(indent + frame.url());
+ *   for (const child of frame.childFrames()) {
+ *     dumpFrameTree(child, indent + '  ');
  *   }
- * })();
+ * }
  * ```
  *
  * @example
@@ -712,24 +710,22 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * ```ts
    * import puppeteer from 'puppeteer';
    *
-   * (async () => {
-   *   const browser = await puppeteer.launch();
-   *   const page = await browser.newPage();
-   *   let currentURL;
-   *   page
-   *     .mainFrame()
-   *     .waitForSelector('img')
-   *     .then(() => console.log('First URL with image: ' + currentURL));
+   * const browser = await puppeteer.launch();
+   * const page = await browser.newPage();
+   * let currentURL;
+   * page
+   *   .mainFrame()
+   *   .waitForSelector('img')
+   *   .then(() => console.log('First URL with image: ' + currentURL));
    *
-   *   for (currentURL of [
-   *     'https://example.com',
-   *     'https://google.com',
-   *     'https://bbc.com',
-   *   ]) {
-   *     await page.goto(currentURL);
-   *   }
-   *   await browser.close();
-   * })();
+   * for (currentURL of [
+   *   'https://example.com',
+   *   'https://google.com',
+   *   'https://bbc.com',
+   * ]) {
+   *   await page.goto(currentURL);
+   * }
+   * await browser.close();
    * ```
    *
    * @param selector - The selector to query and wait for.
@@ -757,14 +753,14 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * ```ts
    * import puppeteer from 'puppeteer';
    *
-   * (async () => {
-   * .  const browser = await puppeteer.launch();
-   * .  const page = await browser.newPage();
-   * .  const watchDog = page.mainFrame().waitForFunction('window.innerWidth < 100');
-   * .  page.setViewport({width: 50, height: 50});
-   * .  await watchDog;
-   * .  await browser.close();
-   * })();
+   * const browser = await puppeteer.launch();
+   * const page = await browser.newPage();
+   * const watchDog = page
+   *   .mainFrame()
+   *   .waitForFunction('window.innerWidth < 100');
+   * page.setViewport({width: 50, height: 50});
+   * await watchDog;
+   * await browser.close();
    * ```
    *
    * To pass arguments from Node.js to the predicate of `page.waitForFunction` function:

@@ -88,14 +88,12 @@ The `waitForFunction` can be used to observe viewport size change:
 ```ts
 import puppeteer from 'puppeteer';
 
-(async () => {
-.  const browser = await puppeteer.launch();
-.  const page = await browser.newPage();
-.  const watchDog = page.mainFrame().waitForFunction('window.innerWidth < 100');
-.  page.setViewport({width: 50, height: 50});
-.  await watchDog;
-.  await browser.close();
-})();
+const browser = await puppeteer.launch();
+const page = await browser.newPage();
+const watchDog = page.mainFrame().waitForFunction('window.innerWidth < 100');
+page.setViewport({width: 50, height: 50});
+await watchDog;
+await browser.close();
 ```
 
 To pass arguments from Node.js to the predicate of `page.waitForFunction` function:
