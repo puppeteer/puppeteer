@@ -21,18 +21,16 @@ PredefinedNetworkConditions: Readonly<{
 
 ```ts
 import {PredefinedNetworkConditions} from 'puppeteer';
-(async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.emulateNetworkConditions(PredefinedNetworkConditions['Slow 3G']);
-  await page.goto('https://www.google.com');
-  await page.emulateNetworkConditions(PredefinedNetworkConditions['Fast 3G']);
-  await page.goto('https://www.google.com');
-  await page.emulateNetworkConditions(PredefinedNetworkConditions['Slow 4G']); // alias to Fast 3G.
-  await page.goto('https://www.google.com');
-  await page.emulateNetworkConditions(PredefinedNetworkConditions['Fast 4G']);
-  await page.goto('https://www.google.com');
-  // other actions...
-  await browser.close();
-})();
+const browser = await puppeteer.launch();
+const page = await browser.newPage();
+await page.emulateNetworkConditions(PredefinedNetworkConditions['Slow 3G']);
+await page.goto('https://www.google.com');
+await page.emulateNetworkConditions(PredefinedNetworkConditions['Fast 3G']);
+await page.goto('https://www.google.com');
+await page.emulateNetworkConditions(PredefinedNetworkConditions['Slow 4G']); // alias to Fast 3G.
+await page.goto('https://www.google.com');
+await page.emulateNetworkConditions(PredefinedNetworkConditions['Fast 4G']);
+await page.goto('https://www.google.com');
+// other actions...
+await browser.close();
 ```

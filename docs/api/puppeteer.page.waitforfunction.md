@@ -85,14 +85,13 @@ Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;Awaited&lt;ReturnType&lt;Fun
 
 ```ts
 import puppeteer from 'puppeteer';
-(async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  const watchDog = page.waitForFunction('window.innerWidth < 100');
-  await page.setViewport({width: 50, height: 50});
-  await watchDog;
-  await browser.close();
-})();
+
+const browser = await puppeteer.launch();
+const page = await browser.newPage();
+const watchDog = page.waitForFunction('window.innerWidth < 100');
+await page.setViewport({width: 50, height: 50});
+await watchDog;
+await browser.close();
 ```
 
 ## Example 2
