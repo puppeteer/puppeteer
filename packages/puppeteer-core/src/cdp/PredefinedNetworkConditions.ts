@@ -20,7 +20,8 @@ import type {NetworkConditions} from './NetworkManager.js';
  * await page.goto('https://www.google.com');
  * await page.emulateNetworkConditions(PredefinedNetworkConditions['Fast 3G']);
  * await page.goto('https://www.google.com');
- * await page.emulateNetworkConditions(PredefinedNetworkConditions['Slow 4G']); // alias to Fast 3G.
+ * // alias to Fast 3G.
+ * await page.emulateNetworkConditions(PredefinedNetworkConditions['Slow 4G']);
  * await page.goto('https://www.google.com');
  * await page.emulateNetworkConditions(PredefinedNetworkConditions['Fast 4G']);
  * await page.goto('https://www.google.com');

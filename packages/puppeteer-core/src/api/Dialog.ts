@@ -25,7 +25,7 @@ import {assert} from '../util/assert.js';
  *   await dialog.dismiss();
  *   await browser.close();
  * });
- * page.evaluate(() => alert('1'));
+ * await page.evaluate(() => alert('1'));
  * ```
  *
  * @public
