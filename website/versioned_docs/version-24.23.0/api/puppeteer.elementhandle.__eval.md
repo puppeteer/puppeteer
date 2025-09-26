@@ -104,7 +104,8 @@ JavaScript:
 
 ```ts
 const feedHandle = await page.$('.feed');
-expect(
-  await feedHandle.$$eval('.tweet', nodes => nodes.map(n => n.innerText)),
-).toEqual(['Hello!', 'Hi!']);
+
+const listOfTweets = await feedHandle.$$eval('.tweet', nodes =>
+  nodes.map(n => n.innerText),
+);
 ```

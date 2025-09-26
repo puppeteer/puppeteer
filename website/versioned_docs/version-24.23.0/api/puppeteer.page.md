@@ -31,13 +31,11 @@ This example creates a page, navigates it to a URL, and then saves a screenshot:
 ```ts
 import puppeteer from 'puppeteer';
 
-(async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.goto('https://example.com');
-  await page.screenshot({path: 'screenshot.png'});
-  await browser.close();
-})();
+const browser = await puppeteer.launch();
+const page = await browser.newPage();
+await page.goto('https://example.com');
+await page.screenshot({path: 'screenshot.png'});
+await browser.close();
 ```
 
 The Page class extends from Puppeteer's [EventEmitter](./puppeteer.eventemitter.md) class and will emit various events which are documented in the [PageEvent](./puppeteer.pageevent.md) enum.

@@ -31,13 +31,11 @@ The following is a typical example of using Puppeteer to drive automation:
 ```ts
 import puppeteer from 'puppeteer';
 
-(async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.goto('https://www.google.com');
-  // other actions...
-  await browser.close();
-})();
+const browser = await puppeteer.launch();
+const page = await browser.newPage();
+await page.goto('https://www.google.com');
+// other actions...
+await browser.close();
 ```
 
 Once you have created a `page` you have access to a large API to interact with the page, navigate, or find certain elements in that page. The [\`page\` documentation](./puppeteer.page.md) lists all the available methods.
