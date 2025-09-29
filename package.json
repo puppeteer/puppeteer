@@ -28,6 +28,7 @@
     "test-types": "wireit",
     "test:chrome": "wireit",
     "test:chrome:bidi": "wireit",
+    "test:chrome:bidi-only": "wireit",
     "test:chrome:headful": "wireit",
     "test:chrome:headless": "wireit",
     "test:chrome:shell": "wireit",
@@ -108,6 +109,7 @@
     "test:chrome": {
       "dependencies": [
         "test:chrome:bidi",
+        "test:chrome:bidi-only",
         "test:chrome:headful",
         "test:chrome:headless",
         "test:chrome:shell",
@@ -116,6 +118,9 @@
     },
     "test:chrome:bidi": {
       "command": "npm test -- --test-suite chrome-bidi"
+    },
+    "test:chrome:bidi-only": {
+      "command": "npm test -- --test-suite chrome-bidi-only"
     },
     "test:chrome:headful": {
       "command": "npm test -- --test-suite chrome-headful"

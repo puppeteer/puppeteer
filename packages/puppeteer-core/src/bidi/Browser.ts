@@ -93,7 +93,7 @@ export class BidiBrowser extends Browser {
     });
 
     await session.subscribe(
-      (session.capabilities.browserName.toLocaleLowerCase().includes('firefox')
+      (opts.cdpConnection === undefined
         ? BidiBrowser.subscribeModules
         : [...BidiBrowser.subscribeModules, ...BidiBrowser.subscribeCdpEvents]
       ).filter(module => {

@@ -38,7 +38,8 @@ export async function _connectToBiDiBrowser(
   const BiDi = await import(/* webpackIgnore: true */ './bidi.js');
   const bidiBrowser = await BiDi.BidiBrowser.create({
     connection: bidiConnection,
-    cdpConnection,
+    cdpConnection:
+      options.protocol === 'webDriverBiDiOnly' ? undefined : cdpConnection,
     closeCallback,
     process: undefined,
     defaultViewport: defaultViewport,

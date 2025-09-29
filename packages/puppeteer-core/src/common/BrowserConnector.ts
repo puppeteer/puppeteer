@@ -33,7 +33,10 @@ export async function _connectToBrowser(
   const {connectionTransport, endpointUrl} =
     await getConnectionTransport(options);
 
-  if (options.protocol === 'webDriverBiDi') {
+  if (
+    options.protocol === 'webDriverBiDi' ||
+    options.protocol === 'webDriverBiDiOnly'
+  ) {
     const bidiBrowser = await _connectToBiDiBrowser(
       connectionTransport,
       endpointUrl,

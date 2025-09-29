@@ -22,6 +22,7 @@ jobs:
           - chrome-headful
           - chrome-headless-shell
           - chrome-bidi
+          - chrome-bidi-only
         os:
           - ubuntu-latest
           - windows-latest
@@ -34,6 +35,8 @@ jobs:
         exclude:
           - os: windows-latest
             suite: chrome-bidi
+          - os: windows-latest
+            suite: chrome-bidi-only
           - os: macos-15
             suite: chrome-headful
     steps:

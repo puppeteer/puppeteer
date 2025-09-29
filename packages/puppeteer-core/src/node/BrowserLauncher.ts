@@ -191,6 +191,19 @@ export abstract class BrowserLauncher {
               defaultViewport,
               acceptInsecureCerts,
               networkEnabled,
+              bidiPlus: true,
+            },
+          );
+        } else if (protocol === 'webDriverBiDiOnly') {
+          browser = await this.createBiDiOverCdpBrowser(
+            browserProcess,
+            cdpConnection,
+            browserCloseCallback,
+            {
+              defaultViewport,
+              acceptInsecureCerts,
+              networkEnabled,
+              bidiPlus: false,
             },
           );
         } else {
@@ -372,19 +385,20 @@ export abstract class BrowserLauncher {
    */
   protected async createBiDiOverCdpBrowser(
     browserProcess: ReturnType<typeof launch>,
-    connection: Connection,
+    cdpConnection: Connection,
     closeCallback: BrowserCloseCallback,
     opts: {
       defaultViewport: Viewport | null;
       acceptInsecureCerts?: boolean;
       networkEnabled: boolean;
+      bidiPlus: boolean;
     },
   ): Promise<Browser> {
     const BiDi = await import(/* webpackIgnore: true */ '../bidi/bidi.js');
-    const bidiConnection = await BiDi.connectBidiOverCdp(connection);
+    const bidiConnection = await BiDi.connectBidiOverCdp(cdpConnection);
     return await BiDi.BidiBrowser.create({
       connection: bidiConnection,
-      cdpConnection: connection,
+      cdpConnection: opts.bidiPlus ? cdpConnection : undefined,
       closeCallback,
       process: browserProcess.nodeProcess,
       defaultViewport: opts.defaultViewport,

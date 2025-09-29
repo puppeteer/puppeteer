@@ -18,7 +18,7 @@ import type {Viewport} from './Viewport.js';
 /**
  * @public
  */
-export type ProtocolType = 'cdp' | 'webDriverBiDi';
+export type ProtocolType = 'cdp' | 'webDriverBiDi' | 'webDriverBiDiOnly';
 
 /**
  * @public

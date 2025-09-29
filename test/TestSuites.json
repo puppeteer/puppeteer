@@ -25,6 +25,10 @@
       "parameters": ["chrome", "headless", "webDriverBiDi"]
     },
     {
+      "id": "chrome-bidi-only",
+      "parameters": ["chrome", "headless", "webDriverBiDiOnly"]
+    },
+    {
       "id": "chrome-pipe",
       "parameters": ["chrome", "headless", "cdp", "pipe"]
     }
@@ -47,6 +51,9 @@
     },
     "webDriverBiDi": {
       "PUPPETEER_PROTOCOL": "webDriverBiDi"
+    },
+    "webDriverBiDiOnly": {
+      "PUPPETEER_PROTOCOL": "webDriverBiDiOnly"
     },
     "cdp": {},
     "pipe": {

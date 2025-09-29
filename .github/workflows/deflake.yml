@@ -23,6 +23,7 @@ on:
           - chrome-headful
           - chrome-headless-shell
           - chrome-bidi
+          - chrome-bidi-only
           - firefox-headful
           - firefox-headless
       os:
