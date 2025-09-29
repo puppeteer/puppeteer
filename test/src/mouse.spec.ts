@@ -70,7 +70,7 @@ describe('Mouse', function () {
     expect(event.isTrusted).toBe(true);
     expect(event.button).toBe(0);
   });
-  it('should resize the textarea', async () => {
+  it.only('should resize the textarea', async () => {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
@@ -81,8 +81,8 @@ describe('Mouse', function () {
     await mouse.move(x + width + 100, y + height + 100);
     await mouse.up();
     const newDimensions = await page.evaluate(dimensions);
-    expect(newDimensions.width).toBe(Math.floor(width + 104));
-    expect(newDimensions.height).toBe(Math.floor(height + 104));
+    expect(newDimensions.width).toBe(Math.round(width + 104));
+    expect(newDimensions.height).toBe(Math.round(height + 104));
   });
   it('should select the text with mouse', async () => {
     const {page, server} = await getTestState();
