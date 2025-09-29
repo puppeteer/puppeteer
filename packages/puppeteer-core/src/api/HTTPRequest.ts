@@ -381,10 +381,16 @@ export abstract class HTTPRequest {
    */
   abstract failure(): {errorText: string} | null;
 
+  /**
+   * @internal
+   */
   protected verifyInterception(): void {
     assert(this.interception.enabled, 'Request Interception is not enabled!');
     assert(!this.interception.handled, 'Request is already handled!');
   }
+  /**
+   * @internal
+   */
   protected abstract canBeIntercepted(): boolean;
 
   /**
