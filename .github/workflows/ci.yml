@@ -166,6 +166,7 @@ jobs:
           - chrome-headful
           - chrome-headless-shell
           - chrome-bidi
+          - chrome-pipe
         os:
           - ubuntu-latest
           - windows-latest
