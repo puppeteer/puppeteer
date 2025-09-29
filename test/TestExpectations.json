@@ -834,7 +834,8 @@
     "testIdPattern": "[acceptInsecureCerts.spec] acceptInsecureCerts Response.securityDetails Network redirects should report SecurityDetails",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDiOnly"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
     "testIdPattern": "[acceptInsecureCerts.spec] acceptInsecureCerts Response.securityDetails should be |null| for non-secure requests",
@@ -847,7 +848,8 @@
     "testIdPattern": "[acceptInsecureCerts.spec] acceptInsecureCerts Response.securityDetails should be |null| for non-secure requests",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDiOnly"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
     "testIdPattern": "[acceptInsecureCerts.spec] acceptInsecureCerts Response.securityDetails should work",
@@ -860,7 +862,8 @@
     "testIdPattern": "[acceptInsecureCerts.spec] acceptInsecureCerts Response.securityDetails should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDiOnly"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
     "testIdPattern": "[accessibility.spec] Accessibility get snapshots while the tree is re-calculated",
@@ -887,7 +890,8 @@
     "testIdPattern": "[autofill.spec] Autofill ElementHandle.autofill should fill out a credit card",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDiOnly"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
     "testIdPattern": "[backendNodeId.spec] ElementHandle.backendNodeId should work",
@@ -900,7 +904,8 @@
     "testIdPattern": "[backendNodeId.spec] ElementHandle.backendNodeId should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDiOnly"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
     "testIdPattern": "[browser.spec] Browser specs Browser.isConnected should set the browser connected state",
@@ -1739,7 +1744,8 @@
     "testIdPattern": "[network.spec] network Request.postData should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDiOnly"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
     "testIdPattern": "[network.spec] network Request.postData should work with blobs",
@@ -2226,7 +2232,8 @@
     "testIdPattern": "[target.spec] Target should create a worker from a service worker",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDiOnly"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
     "testIdPattern": "[target.spec] Target should create a worker from a shared worker",
@@ -2246,7 +2253,8 @@
     "testIdPattern": "[target.spec] Target should create a worker from a shared worker",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDiOnly"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
     "testIdPattern": "[target.spec] Target should have an opener",
@@ -2266,7 +2274,8 @@
     "testIdPattern": "[target.spec] Target should have an opener",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDiOnly"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
     "testIdPattern": "[target.spec] Target should not report uninitialized pages",
@@ -2300,7 +2309,8 @@
     "testIdPattern": "[target.spec] Target should report when a service worker is created and destroyed",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDiOnly"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
     "testIdPattern": "[TargetManager.spec] TargetManager should handle targets",
@@ -2369,7 +2379,8 @@
     "testIdPattern": "[worker.spec] Workers can be closed",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDiOnly"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
     "testIdPattern": "[worker.spec] Workers should report errors",
