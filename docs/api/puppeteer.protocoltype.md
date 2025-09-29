@@ -7,5 +7,5 @@ sidebar_label: ProtocolType
 ### Signature
 
 ```typescript
-export type ProtocolType = 'cdp' | 'webDriverBiDi';
+export type ProtocolType = 'cdp' | 'webDriverBiDi' | 'webDriverBiDiOnly';
 ```
