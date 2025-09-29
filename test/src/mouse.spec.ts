@@ -70,7 +70,7 @@ describe('Mouse', function () {
     expect(event.isTrusted).toBe(true);
     expect(event.button).toBe(0);
   });
-  it.only('should resize the textarea', async () => {
+  it('should resize the textarea', async () => {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
