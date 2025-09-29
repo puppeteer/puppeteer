@@ -14,6 +14,13 @@
     "comment": "Chrome-only feature blocked on https://github.com/GoogleChromeLabs/chromium-bidi/issues/2082"
   },
   {
+    "testIdPattern": "[bfcache.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDiOnly"],
+    "expectations": ["SKIP"],
+    "comment": "Chrome-only feature blocked on https://github.com/GoogleChromeLabs/chromium-bidi/issues/2082"
+  },
+  {
     "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should not hang when there is a debugger statement",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": [],
@@ -35,6 +42,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[devtools.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDiOnly"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
     "testIdPattern": "[drag-and-drop.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -49,9 +63,23 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[drag-and-drop.spec] Legacy Drag n' Drop *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDiOnly"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
     "testIdPattern": "[extensions.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "No extensions in WebDriver BiDi so far"
+  },
+  {
+    "testIdPattern": "[extensions.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDiOnly"],
     "expectations": ["SKIP"],
     "comment": "No extensions in WebDriver BiDi so far"
   },
@@ -91,6 +119,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch *",
+    "platforms": ["win32"],
+    "parameters": ["webDriverBiDiOnly"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
     "testIdPattern": "[network.spec] network Page.setBypassServiceWorker *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -101,6 +136,13 @@
     "testIdPattern": "[network.spec] network Page.setBypassServiceWorker *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[network.spec] network Page.setBypassServiceWorker *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDiOnly"],
     "expectations": ["SKIP"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
@@ -140,6 +182,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[page.spec] Page Page.metrics *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDiOnly"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
     "testIdPattern": "[pipe.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -171,6 +220,13 @@
     "testIdPattern": "[screenshot.spec] Screenshots Cdp *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Cdp *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDiOnly"],
     "expectations": ["SKIP"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
@@ -489,6 +545,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[network.spec] network Response.fromServiceWorker Response.fromServiceWorker",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDiOnly"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
     "testIdPattern": "[oopif.spec] OOPIF should evaluate on a page with a PDF viewer",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome-headless-shell"],
@@ -524,6 +587,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[page.spec] Page Page.Events.Console should have location when fetch fails",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDiOnly"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.Events.Console should return remote objects",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -545,9 +615,23 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[page.spec] Page Page.Events.Console should trigger correct Log",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDiOnly"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.Events.error should throw when page crashes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.Events.error should throw when page crashes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDiOnly"],
     "expectations": ["SKIP"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
@@ -684,9 +768,23 @@
     "comment": "not supported"
   },
   {
+    "testIdPattern": "[target.spec] Target should close a service worker",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDiOnly"],
+    "expectations": ["SKIP"],
+    "comment": "not supported"
+  },
+  {
     "testIdPattern": "[target.spec] Target should close a shared worker",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "not supported"
+  },
+  {
+    "testIdPattern": "[target.spec] Target should close a shared worker",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDiOnly"],
     "expectations": ["SKIP"],
     "comment": "not supported"
   },
