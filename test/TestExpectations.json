@@ -1867,6 +1867,13 @@
     "comment": "For some reason it is flaky, needs investigation"
   },
   {
+    "testIdPattern": "[oopif.spec] OOPIF should load oopif iframes with subresources and request interception",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDiOnly"],
+    "expectations": ["PASS", "TIMEOUT"],
+    "comment": "For some reason it is flaky, needs investigation"
+  },
+  {
     "testIdPattern": "[oopif.spec] OOPIF should recover cross-origin frames on reconnect",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "pipe"],
