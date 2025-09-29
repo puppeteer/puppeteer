@@ -384,9 +384,7 @@ export abstract class HTTPRequest {
    */
   abstract failure(): {errorText: string} | null;
 
-  #canBeIntercepted(): boolean {
-    return !this.url().startsWith('data:') && !this._fromMemoryCache;
-  }
+  protected abstract canBeIntercepted(): boolean;
 
   /**
    * Continues request with optional request overrides.
@@ -420,7 +418,7 @@ export abstract class HTTPRequest {
     overrides: ContinueRequestOverrides = {},
     priority?: number,
   ): Promise<void> {
-    if (!this.#canBeIntercepted()) {
+    if (!this.canBeIntercepted()) {
       return;
     }
     assert(this.interception.enabled, 'Request Interception is not enabled!');
@@ -488,7 +486,7 @@ export abstract class HTTPRequest {
     response: Partial<ResponseForRequest>,
     priority?: number,
   ): Promise<void> {
-    if (!this.#canBeIntercepted()) {
+    if (!this.canBeIntercepted()) {
       return;
     }
     assert(this.interception.enabled, 'Request Interception is not enabled!');
@@ -534,7 +532,7 @@ export abstract class HTTPRequest {
     errorCode: ErrorCode = 'failed',
     priority?: number,
   ): Promise<void> {
-    if (!this.#canBeIntercepted()) {
+    if (!this.canBeIntercepted()) {
       return;
     }
     const errorReason = errorReasons[errorCode];
