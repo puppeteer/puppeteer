@@ -174,7 +174,6 @@ export abstract class HTTPRequest {
    * `respond()` aren't called).
    */
   continueRequestOverrides(): ContinueRequestOverrides {
-    assert(this.interception.enabled, 'Request Interception is not enabled!');
     return this.interception.requestOverrides;
   }
 
@@ -183,7 +182,6 @@ export abstract class HTTPRequest {
    * interception is allowed to respond (ie, `abort()` is not called).
    */
   responseForRequest(): Partial<ResponseForRequest> | null {
-    assert(this.interception.enabled, 'Request Interception is not enabled!');
     return this.interception.response;
   }
 
@@ -191,7 +189,6 @@ export abstract class HTTPRequest {
    * The most recent reason for aborting the request
    */
   abortErrorReason(): Protocol.Network.ErrorReason | null {
-    assert(this.interception.enabled, 'Request Interception is not enabled!');
     return this.interception.abortReason;
   }
 
@@ -384,9 +381,17 @@ export abstract class HTTPRequest {
    */
   abstract failure(): {errorText: string} | null;
 
-  #canBeIntercepted(): boolean {
-    return !this.url().startsWith('data:') && !this._fromMemoryCache;
+  /**
+   * @internal
+   */
+  protected verifyInterception(): void {
+    assert(this.interception.enabled, 'Request Interception is not enabled!');
+    assert(!this.interception.handled, 'Request is already handled!');
   }
+  /**
+   * @internal
+   */
+  protected abstract canBeIntercepted(): boolean;
 
   /**
    * Continues request with optional request overrides.
@@ -420,11 +425,11 @@ export abstract class HTTPRequest {
     overrides: ContinueRequestOverrides = {},
     priority?: number,
   ): Promise<void> {
-    if (!this.#canBeIntercepted()) {
+    this.verifyInterception();
+    if (!this.canBeIntercepted()) {
       return;
     }
-    assert(this.interception.enabled, 'Request Interception is not enabled!');
-    assert(!this.interception.handled, 'Request is already handled!');
+
     if (priority === undefined) {
       return await this._continue(overrides);
     }
@@ -488,11 +493,10 @@ export abstract class HTTPRequest {
     response: Partial<ResponseForRequest>,
     priority?: number,
   ): Promise<void> {
-    if (!this.#canBeIntercepted()) {
+    this.verifyInterception();
+    if (!this.canBeIntercepted()) {
       return;
     }
-    assert(this.interception.enabled, 'Request Interception is not enabled!');
-    assert(!this.interception.handled, 'Request is already handled!');
     if (priority === undefined) {
       return await this._respond(response);
     }
@@ -534,13 +538,12 @@ export abstract class HTTPRequest {
     errorCode: ErrorCode = 'failed',
     priority?: number,
   ): Promise<void> {
-    if (!this.#canBeIntercepted()) {
+    this.verifyInterception();
+    if (!this.canBeIntercepted()) {
       return;
     }
     const errorReason = errorReasons[errorCode];
     assert(errorReason, 'Unknown error code: ' + errorCode);
-    assert(this.interception.enabled, 'Request Interception is not enabled!');
-    assert(!this.interception.handled, 'Request is already handled!');
     if (priority === undefined) {
       return await this._abort(errorReason);
     }

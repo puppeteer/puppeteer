@@ -110,6 +110,10 @@ export class BidiHTTPRequest extends HTTPRequest {
     }
   }
 
+  protected canBeIntercepted(): boolean {
+    return this.#request.isBlocked;
+  }
+
   override interceptResolutionState(): InterceptResolutionState {
     if (!this.#request.isBlocked) {
       return {action: InterceptResolutionAction.Disabled};

@@ -170,6 +170,10 @@ export class CdpHTTPRequest extends HTTPRequest {
     };
   }
 
+  protected canBeIntercepted(): boolean {
+    return !this.url().startsWith('data:') && !this._fromMemoryCache;
+  }
+
   /**
    * @internal
    */
