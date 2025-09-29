@@ -26,7 +26,7 @@
     },
     {
       "id": "chrome-pipe",
-      "parameters": ["chrome", "headful", "cdp", "pipe"]
+      "parameters": ["chrome", "headless", "cdp", "pipe"]
     }
   ],
   "parameterDefinitions": {
