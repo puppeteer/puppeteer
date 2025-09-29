@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import assert from 'node:assert';
 import {readFile, readFileSync} from 'node:fs';
 import {
   createServer as createHttpServer,
@@ -196,7 +195,7 @@ export class TestServer {
     }
     this.#requestSubscribers.clear();
     for (const request of this.#requests.values()) {
-      if (!request.writableEnded) {
+      if (!request.writableFinished) {
         request.destroy();
       }
     }
@@ -207,6 +206,10 @@ export class TestServer {
     request: TestIncomingMessage,
     response,
   ): void => {
+    if (!request.url) {
+      return;
+    }
+
     this.#requests.add(response);
 
     request.on('error', (error: {code: string}) => {
@@ -225,7 +228,6 @@ export class TestServer {
         return resolve(body);
       });
     });
-    assert(request.url);
     const url = new URL(request.url, `https://${request.headers.host}`);
     const path = url.pathname;
     const auth = this.#auths.get(path);

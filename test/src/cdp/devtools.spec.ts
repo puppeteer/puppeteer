@@ -68,14 +68,7 @@ describe('DevTools', function () {
     expect(await browser.pages()).toContain(page);
   });
   it('target.page() should return Page when calling asPage on DevTools target', async function () {
-    const {puppeteer} = await getTestState({skipLaunch: true});
-    const originalBrowser = await launchBrowser(launchOptions);
-
-    const browserWSEndpoint = originalBrowser.wsEndpoint();
-
-    using browser = await puppeteer.connect({
-      browserWSEndpoint,
-    });
+    const browser = await launchBrowser(launchOptions);
     const devtoolsPageTarget = await browser.waitForTarget(target => {
       return target.type() === 'other';
     });

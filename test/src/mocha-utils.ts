@@ -99,7 +99,7 @@ const defaultBrowserOptions: LaunchOptions = Object.assign(
     args: [],
     extraPrefsFirefox: {},
     pipe: pipeTransport,
-  } satisfies LaunchOptions,
+  },
   extraLaunchOptions,
 );
 
@@ -109,6 +109,7 @@ defaultBrowserOptions.extraPrefsFirefox!['network.dns.localDomains'] =
 defaultBrowserOptions.args!.push(
   `--host-resolver-rules=MAP domain1.test 127.0.0.1,MAP domain2.test 127.0.0.1,MAP domain3.test 127.0.0.1`,
 );
+defaultBrowserOptions.args!.push(`--force-device-scale-factor=1`);
 
 if (defaultBrowserOptions.executablePath) {
   console.warn(
