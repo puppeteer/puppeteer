@@ -77,6 +77,13 @@
     "comment": "This is Chromium-specific test"
   },
   {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch *",
     "platforms": ["win32"],
     "parameters": ["webDriverBiDi"],
@@ -754,11 +761,25 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[browser.spec] Browser specs Browser.isConnected should set the browser connected state",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
     "testIdPattern": "[browser.spec] Browser specs Browser.process should not return child_process for remote browser",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.process should not return child_process for remote browser",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
   },
   {
     "testIdPattern": "[browsercontext.spec] BrowserContext should fire target events",
@@ -773,6 +794,13 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "Firefox does not support multiple connection at this time"
+  },
+  {
+    "testIdPattern": "[browsercontext.spec] BrowserContext should work across sessions",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
   },
   {
     "testIdPattern": "[click.spec] Page.click should click the button with fixed position inside an iframe",
@@ -829,6 +857,13 @@
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[devtools.spec] DevTools target.page() should return a DevTools page if custom isPageTarget is provided",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
   },
   {
     "testIdPattern": "[download.spec] Download Browser.createBrowserContext should download to configured location",
@@ -964,6 +999,20 @@
     "comment": "The browser `disconnect` event is not emitted"
   },
   {
+    "testIdPattern": "[fixtures.spec] Fixtures should close the browser when the node process closes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[fixtures.spec] Fixtures should dump browser process stderr",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should support framesets",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
@@ -1013,11 +1062,25 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[launcher.spec] Launcher specs Browser.Events.disconnected should be emitted when: browser gets closed, disconnected or underlying websocket gets closed",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.close should terminate network waiters",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.close should terminate network waiters",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.disconnect should reject navigation when browser closes",
@@ -1027,11 +1090,25 @@
     "comment": "Requires support for multiple sessions"
   },
   {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.disconnect should reject navigation when browser closes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.disconnect should reject waitForSelector when browser closes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.disconnect should reject waitForSelector when browser closes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to close remote browser",
@@ -1067,13 +1144,6 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["pipe"],
-    "expectations": ["SKIP"],
-    "comment": "We can't connect to a browser started with pipe:true"
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support acceptInsecureCerts option",
@@ -1132,25 +1202,25 @@
     "comment": "Test is testing chrome specific ignore and fails"
   },
   {
-    "testIdPattern": "[launcher.spec] Launcher specs Browser.Events.disconnected should be emitted when: browser gets closed, disconnected or underlying websocket gets closed",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "pipe"],
-    "expectations": ["SKIP"],
-    "comment": "We can't connect to a browser started with pipe:true"
-  },
-  {
-    "testIdPattern": "[launcher.spec] Launcher specs Browser.Events.disconnected should be emitted when: browser gets closed, disconnected or underlying websocket gets closed",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "pipe"],
-    "expectations": ["SKIP"],
-    "comment": "We can't connect to a browser started with pipe:true"
-  },
-  {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should have custom URL when launching browser",
     "platforms": ["darwin"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "For some reason it times out on MacOS. Perhaps it's a bug in chromium-bidi"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should pass the timeout parameter to browser.waitForTarget",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should set the debugging port",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work when a page redirects on DOMContentLoaded",
@@ -1314,13 +1384,6 @@
     "comment": "We can't connect to a browser started with pipe:true"
   },
   {
-    "testIdPattern": "[oopif.spec] OOPIF should recover cross-origin frames on reconnect",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "pipe"],
-    "expectations": ["SKIP"],
-    "comment": "We can't connect to a browser started with pipe:true"
-  },
-  {
     "testIdPattern": "[oopif.spec] OOPIF should evaluate on a page with a PDF viewer",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -1347,6 +1410,13 @@
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS", "TIMEOUT"],
     "comment": "For some reason it is flaky, needs investigation"
+  },
+  {
+    "testIdPattern": "[oopif.spec] OOPIF should recover cross-origin frames on reconnect",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
   },
   {
     "testIdPattern": "[oopif.spec] OOPIF should recover cross-origin frames on reconnect",
@@ -1757,82 +1827,5 @@
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["FAIL", "PASS"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.disconnect should reject navigation when browser closes",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "pipe"],
-    "expectations": ["SKIP"],
-    "comment": "We can't connect to a browser started with pipe:true"
-  },
-  {
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.disconnect should reject waitForSelector when browser closes",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "pipe"],
-    "expectations": ["SKIP"],
-    "comment": "We can't connect to a browser started with pipe:true"
-  },
-  {
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.close should terminate network waiters",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "pipe"],
-    "expectations": ["SKIP"],
-    "comment": "We can't connect to a browser started with pipe:true"
-  },
-  {
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should pass the timeout parameter to browser.waitForTarget",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "pipe"],
-    "expectations": ["SKIP"],
-    "comment": "We can't connect to a browser started with pipe:true"
-  },
-  {
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should set the debugging port",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "pipe"],
-    "expectations": ["SKIP"],
-    "comment": "We can't connect to a browser started with pipe:true"
-  },
-  {
-    "testIdPattern": "[fixtures.spec] Fixtures should dump browser process stderr",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "pipe"],
-    "expectations": ["SKIP"],
-    "comment": "We can't connect to a browser started with pipe:true"
-  },
-  {
-    "testIdPattern": "[fixtures.spec] Fixtures should close the browser when the node process closes",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "pipe"],
-    "expectations": ["SKIP"],
-    "comment": "We can't connect to a browser started with pipe:true"
-  },
-  {
-    "testIdPattern": "[devtools.spec] DevTools target.page() should return a DevTools page if custom isPageTarget is provided",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "pipe"],
-    "expectations": ["SKIP"],
-    "comment": "We can't connect to a browser started with pipe:true"
-  },
-  {
-    "testIdPattern": "[browser.spec] Browser specs Browser.process should not return child_process for remote browser",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "pipe"],
-    "expectations": ["SKIP"],
-    "comment": "We can't connect to a browser started with pipe:true"
-  },
-  {
-    "testIdPattern": "[browser.spec] Browser specs Browser.isConnected should set the browser connected state",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "pipe"],
-    "expectations": ["SKIP"],
-    "comment": "We can't connect to a browser started with pipe:true"
-  },
-  {
-    "testIdPattern": "[browsercontext.spec] BrowserContext should work across sessions",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "pipe"],
-    "expectations": ["SKIP"],
-    "comment": "We can't connect to a browser started with pipe:true"
   }
 ]
