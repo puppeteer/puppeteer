@@ -74,6 +74,7 @@ const isChrome = product === 'chrome';
 const protocol = (process.env['PUPPETEER_PROTOCOL'] || 'cdp') as
   | 'cdp'
   | 'webDriverBiDi';
+const pipeTransport = process.env['PUPPETEER_PIPE'] === 'true';
 
 let extraLaunchOptions = {};
 try {
@@ -97,7 +98,8 @@ const defaultBrowserOptions: LaunchOptions = Object.assign(
     protocol,
     args: [],
     extraPrefsFirefox: {},
-  } satisfies LaunchOptions,
+    pipe: pipeTransport,
+  },
   extraLaunchOptions,
 );
 
@@ -107,6 +109,7 @@ defaultBrowserOptions.extraPrefsFirefox!['network.dns.localDomains'] =
 defaultBrowserOptions.args!.push(
   `--host-resolver-rules=MAP domain1.test 127.0.0.1,MAP domain2.test 127.0.0.1,MAP domain3.test 127.0.0.1`,
 );
+defaultBrowserOptions.args!.push(`--force-device-scale-factor=1`);
 
 if (defaultBrowserOptions.executablePath) {
   console.warn(
@@ -357,7 +360,8 @@ if (
         : 'headless'
       : 'headful'
   }
-  -> protocol: ${protocol}`,
+  -> protocol: ${protocol}
+  -> pipeTransport: ${pipeTransport}`,
   );
 }
 
