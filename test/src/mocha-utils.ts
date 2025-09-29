@@ -74,6 +74,7 @@ const isChrome = product === 'chrome';
 const protocol = (process.env['PUPPETEER_PROTOCOL'] || 'cdp') as
   | 'cdp'
   | 'webDriverBiDi';
+const pipeTransport = process.env['PUPPETEER_PIPE'] === 'true';
 
 let extraLaunchOptions = {};
 try {
@@ -97,6 +98,7 @@ const defaultBrowserOptions: LaunchOptions = Object.assign(
     protocol,
     args: [],
     extraPrefsFirefox: {},
+    pipe: pipeTransport,
   } satisfies LaunchOptions,
   extraLaunchOptions,
 );
@@ -357,7 +359,8 @@ if (
         : 'headless'
       : 'headful'
   }
-  -> protocol: ${protocol}`,
+  -> protocol: ${protocol}
+  -> pipeTransport: ${pipeTransport}`,
   );
 }
 
