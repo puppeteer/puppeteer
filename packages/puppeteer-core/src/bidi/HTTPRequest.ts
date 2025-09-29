@@ -9,6 +9,7 @@ import type * as Bidi from 'webdriver-bidi-protocol';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {
   ContinueRequestOverrides,
+  InterceptResolutionState,
   ResponseForRequest,
 } from '../api/HTTPRequest.js';
 import {
@@ -16,6 +17,7 @@ import {
   STATUS_TEXTS,
   type ResourceType,
   handleError,
+  InterceptResolutionAction,
 } from '../api/HTTPRequest.js';
 import {PageEvent} from '../api/Page.js';
 import {UnsupportedOperation} from '../common/Errors.js';
@@ -106,6 +108,13 @@ export class BidiHTTPRequest extends HTTPRequest {
         );
       });
     }
+  }
+
+  override interceptResolutionState(): InterceptResolutionState {
+    if (!this.#request.isBlocked) {
+      return {action: InterceptResolutionAction.Disabled};
+    }
+    return super.interceptResolutionState();
   }
 
   override url(): string {
