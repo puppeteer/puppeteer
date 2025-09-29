@@ -591,6 +591,7 @@ describe('request interception', function () {
         }
       });
       await page.goto(server.EMPTY_PAGE);
+      expect(error).toBeDefined();
       expect(error.message).toContain('Request Interception is not enabled');
     });
     it('should work with file URLs', async () => {
