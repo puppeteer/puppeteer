@@ -711,11 +711,15 @@ export class BidiPage extends Page {
     return [...this.#workers];
   }
 
-  #userInterception?: string;
+  get isNetworkInterceptionEnabled(): boolean {
+    return Boolean(this.#requestInterception);
+  }
+
+  #requestInterception?: string;
   override async setRequestInterception(enable: boolean): Promise<void> {
-    this.#userInterception = await this.#toggleInterception(
+    this.#requestInterception = await this.#toggleInterception(
       [Bidi.Network.InterceptPhase.BeforeRequestSent],
-      this.#userInterception,
+      this.#requestInterception,
       enable,
     );
   }
