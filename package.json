@@ -119,10 +119,7 @@
       "command": "npm test -- --test-suite chrome-bidi"
     },
     "test:chrome:bidi-only": {
-      "command": "npm test -- --test-suite chrome-bidi",
-      "env": {
-        "PUPPETEER_WEBDRIVER_BIDI_ONLY": "true"
-      }
+      "command": "npm test -- --test-suite chrome-bidi-only"
     },
     "test:chrome:headful": {
       "command": "npm test -- --test-suite chrome-headful"
