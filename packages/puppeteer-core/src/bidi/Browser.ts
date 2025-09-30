@@ -92,10 +92,12 @@ export class BidiBrowser extends Browser {
       },
     });
 
+    // Subscribe to all WebDriver BiDi events. Also subscribe to CDP events if CDP
+    // connection is available.
     await session.subscribe(
-      (session.capabilities.browserName.toLocaleLowerCase().includes('firefox')
-        ? BidiBrowser.subscribeModules
-        : [...BidiBrowser.subscribeModules, ...BidiBrowser.subscribeCdpEvents]
+      (opts.cdpConnection
+        ? [...BidiBrowser.subscribeModules, ...BidiBrowser.subscribeCdpEvents]
+        : BidiBrowser.subscribeModules
       ).filter(module => {
         if (!opts.networkEnabled) {
           return (
