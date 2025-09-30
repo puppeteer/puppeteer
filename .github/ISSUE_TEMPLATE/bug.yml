@@ -21,7 +21,7 @@ body:
       description: >
         Provide a [minimal, reproducible
         example](https://stackoverflow.com/help/minimal-reproducible-example) of
-        the bug you are facing. If possible, embedd the test page content into the
+        the bug you are facing. If possible, embed the test page content into the
         Puppeteer script using `page.setContent()`.
       render: TypeScript
       placeholder: |
