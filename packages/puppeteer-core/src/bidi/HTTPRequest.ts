@@ -36,9 +36,15 @@ export class BidiHTTPRequest extends HTTPRequest {
   static from(
     bidiRequest: Request,
     frame: BidiFrame,
+    isNetworkInterceptionEnabled: boolean,
     redirect?: BidiHTTPRequest,
   ): BidiHTTPRequest {
-    const request = new BidiHTTPRequest(bidiRequest, frame, redirect);
+    const request = new BidiHTTPRequest(
+      bidiRequest,
+      frame,
+      isNetworkInterceptionEnabled,
+      redirect,
+    );
     request.#initialize();
     return request;
   }
@@ -52,12 +58,13 @@ export class BidiHTTPRequest extends HTTPRequest {
   private constructor(
     request: Request,
     frame: BidiFrame,
+    isNetworkInterceptionEnabled: boolean,
     redirect?: BidiHTTPRequest,
   ) {
     super();
     requests.set(request, this);
 
-    this.interception.enabled = request.isBlocked;
+    this.interception.enabled = isNetworkInterceptionEnabled;
 
     this.#request = request;
     this.#frame = frame;
@@ -71,7 +78,12 @@ export class BidiHTTPRequest extends HTTPRequest {
 
   #initialize() {
     this.#request.on('redirect', request => {
-      const httpRequest = BidiHTTPRequest.from(request, this.#frame, this);
+      const httpRequest = BidiHTTPRequest.from(
+        request,
+        this.#frame,
+        this.interception.enabled,
+        this,
+      );
       this.#redirectChain.push(this);
 
       request.once('success', () => {
