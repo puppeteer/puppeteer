@@ -715,7 +715,8 @@ export class BidiPage extends Page {
     return (
       Boolean(this.#requestInterception) ||
       Boolean(this.#extraHeadersInterception) ||
-      Boolean(this.#authInterception)
+      Boolean(this.#authInterception) ||
+      Boolean(this.#userAgentInterception)
     );
   }
 
