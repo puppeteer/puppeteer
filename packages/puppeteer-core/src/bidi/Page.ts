@@ -712,7 +712,11 @@ export class BidiPage extends Page {
   }
 
   get isNetworkInterceptionEnabled(): boolean {
-    return Boolean(this.#requestInterception);
+    return (
+      Boolean(this.#requestInterception) ||
+      Boolean(this.#extraHeadersInterception) ||
+      Boolean(this.#authInterception)
+    );
   }
 
   #requestInterception?: string;
