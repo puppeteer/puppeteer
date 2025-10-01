@@ -127,19 +127,16 @@ other locator functions such as `.click()` or `.fill()` on the function locator.
 ```ts
 await page
   .locator(() => {
-    let resolve!: (node: HTMLCanvasElement) => void;
-    const promise = new Promise(res => {
-      return (resolve = res);
-    });
-    const observer = new MutationObserver(records => {
-      for (const record of records) {
-        if (record.target instanceof HTMLCanvasElement) {
-          resolve(record.target);
+    return new Promise(res => {
+      const observer = new MutationObserver(records => {
+        for (const record of records) {
+          if (record.target instanceof HTMLCanvasElement) {
+            resolve(record.target);
+          }
         }
-      }
+      });
+      observer.observe(document, {childList: true, subtree: true});
     });
-    observer.observe(document);
-    return promise;
   })
   .wait();
 ```

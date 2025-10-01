@@ -1,5 +1,21 @@
 # Changelog
 
+## [24.23.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.22.3...puppeteer-core-v24.23.0) (2025-10-01)
+
+
+### Features
+
+* roll to Chrome 141.0.7390.54 ([#14273](https://github.com/puppeteer/puppeteer/issues/14273)) ([b9ca458](https://github.com/puppeteer/puppeteer/commit/b9ca458df52762270ac5953865fb5c61c88e6f58))
+* **webdriver:** support `createUserContext(downloadBehavior)` ([#14249](https://github.com/puppeteer/puppeteer/issues/14249)) ([cd9dc0c](https://github.com/puppeteer/puppeteer/commit/cd9dc0ce6837e239a03b982605ae3a4bd8615ffd))
+
+
+### Bug Fixes
+
+* roll to Firefox 143.0.3 ([#14274](https://github.com/puppeteer/puppeteer/issues/14274)) ([4890265](https://github.com/puppeteer/puppeteer/commit/48902651782c712a90cba51e913f1adf78933766))
+* **webdriver:** don't intercept non blocked requests ([#14262](https://github.com/puppeteer/puppeteer/issues/14262)) ([f39f48d](https://github.com/puppeteer/puppeteer/commit/f39f48db3d10a9ff435ad4ba59db06c56cbd104d))
+* **webdriver:** properly pipe network interception flag ([#14269](https://github.com/puppeteer/puppeteer/issues/14269)) ([fd4a371](https://github.com/puppeteer/puppeteer/commit/fd4a371c431896dae0eb862c10d8b23a173217d9))
+* **webdriver:** respect isBlocked in request interception ([#14264](https://github.com/puppeteer/puppeteer/issues/14264)) ([b5c1bb5](https://github.com/puppeteer/puppeteer/commit/b5c1bb59252e94f8a894c7e7577394368ac5a03a))
+
 ## [24.22.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.22.2...puppeteer-core-v24.22.3) (2025-09-24)
 
 

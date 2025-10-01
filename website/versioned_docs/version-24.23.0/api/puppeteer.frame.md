@@ -35,20 +35,18 @@ An example of dumping frame tree:
 ```ts
 import puppeteer from 'puppeteer';
 
-(async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.goto('https://www.google.com/chrome/browser/canary.html');
-  dumpFrameTree(page.mainFrame(), '');
-  await browser.close();
+const browser = await puppeteer.launch();
+const page = await browser.newPage();
+await page.goto('https://www.google.com/chrome/browser/canary.html');
+dumpFrameTree(page.mainFrame(), '');
+await browser.close();
 
-  function dumpFrameTree(frame, indent) {
-    console.log(indent + frame.url());
-    for (const child of frame.childFrames()) {
-      dumpFrameTree(child, indent + '  ');
-    }
+function dumpFrameTree(frame, indent) {
+  console.log(indent + frame.url());
+  for (const child of frame.childFrames()) {
+    dumpFrameTree(child, indent + '  ');
   }
-})();
+}
 ```
 
 ## Example 3
