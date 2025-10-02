@@ -1,4 +1,4 @@
-name: "Conventional Commit"
+name: 'Conventional Commit'
 
 on:
   pull_request_target:
@@ -14,7 +14,7 @@ on:
 
 jobs:
   main:
-    name: Validate PR title
+    name: '[Required] Validate PR title'
     runs-on: ubuntu-latest
     permissions:
       pull-requests: read
