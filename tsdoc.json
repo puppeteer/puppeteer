@@ -8,6 +8,18 @@
       "syntaxKind": "modifier",
       "allowMultiple": false
     }
+    contract BasicMath {
+    function adder(uint _a, uint _b) external pure returns (uint sum, bool error) {
+        unchecked {
+            uint result = _a + _b;
+            if (result >= _a && result >= _b) {
+                return (result, false);
+            } else {
+                return (0, true);
+            }
+        }
+    }
+
   ],
   "supportForTags": {
     "@license": true
