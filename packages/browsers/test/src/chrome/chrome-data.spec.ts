@@ -14,7 +14,7 @@ import {
 import {
   resolveDownloadUrl,
   relativeExecutablePath,
-  resolveSystemExecutablePath,
+  resolveSystemExecutablePaths,
   resolveBuildId,
   compareVersions,
 } from '../../../lib/cjs/browser-data/chrome.js';
@@ -81,30 +81,32 @@ describe('Chrome', () => {
   it('should resolve system executable path', () => {
     process.env['PROGRAMFILES'] = 'C:\\ProgramFiles';
     try {
-      assert.strictEqual(
-        resolveSystemExecutablePath(
+      assert.deepStrictEqual(
+        resolveSystemExecutablePaths(
           BrowserPlatform.WIN32,
           ChromeReleaseChannel.DEV,
         ),
-        'C:\\ProgramFiles\\Google\\Chrome Dev\\Application\\chrome.exe',
+        ['C:\\ProgramFiles\\Google\\Chrome Dev\\Application\\chrome.exe'],
       );
     } finally {
       delete process.env['PROGRAMFILES'];
     }
 
-    assert.strictEqual(
-      resolveSystemExecutablePath(
+    assert.deepStrictEqual(
+      resolveSystemExecutablePaths(
         BrowserPlatform.MAC,
         ChromeReleaseChannel.BETA,
       ),
-      '/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta',
+      [
+        '/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta',
+      ],
     );
-    assert.strictEqual(
-      resolveSystemExecutablePath(
+    assert.deepStrictEqual(
+      resolveSystemExecutablePaths(
         BrowserPlatform.LINUX,
         ChromeReleaseChannel.CANARY,
       ),
-      '/opt/google/chrome-canary/chrome',
+      ['/opt/google/chrome-canary/chrome'],
     );
   });
 

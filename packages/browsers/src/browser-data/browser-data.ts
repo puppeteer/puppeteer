@@ -220,6 +220,8 @@ export async function createProfile(
 
 /**
  * @public
+ *
+ * Get's the most first resolved system path
  */
 export function resolveSystemExecutablePath(
   browser: Browser,
@@ -235,7 +237,31 @@ export function resolveSystemExecutablePath(
         `System browser detection is not supported for ${browser} yet.`,
       );
     case Browser.CHROME:
-      return chrome.resolveSystemExecutablePath(platform, channel);
+      return chrome.resolveSystemExecutablePaths(platform, channel)[0];
+  }
+}
+
+/**
+ * @internal
+ *
+ * Tries to find multiple paths that the executable may be.
+ * Return them priority based on heuristics.
+ */
+export function resolveSystemExecutablePaths(
+  browser: Browser,
+  platform: BrowserPlatform,
+  channel: ChromeReleaseChannel,
+): [string, ...string[]] {
+  switch (browser) {
+    case Browser.CHROMEDRIVER:
+    case Browser.CHROMEHEADLESSSHELL:
+    case Browser.FIREFOX:
+    case Browser.CHROMIUM:
+      throw new Error(
+        `System browser detection is not supported for ${browser} yet.`,
+      );
+    case Browser.CHROME:
+      return chrome.resolveSystemExecutablePaths(platform, channel);
   }
 }
 
