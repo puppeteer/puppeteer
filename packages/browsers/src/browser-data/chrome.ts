@@ -208,10 +208,9 @@ function getWslLocation(channel: ChromeReleaseChannel): [string, ...string[]] {
       // to WSL, so we evoke `cmd.exe` which is usually on the PATH
       // from which the env can be access with all uppercase names.
       // The return value is a Windows Path - `C:\Program Files`.
-      // Then we use the utility `wslpath` to transform that path
-      // to a Linux supported one that maps to the mounted disk.
+
       const wslPrefix = execSync(
-        `wslpath "$(cmd.exe /c echo %${name.toLocaleUpperCase()}%"`,
+        `cmd.exe /c echo %${name.toLocaleUpperCase()}%`,
         {
           // We need to ignore the stderr as cmd.exe
           // prints a message about wrong UNC path not supported.
@@ -225,7 +224,13 @@ function getWslLocation(channel: ChromeReleaseChannel): [string, ...string[]] {
     } catch {}
   }
 
-  return getChromeWindowsLocation(channel, wslPrefixes);
+  const windowsPath = getChromeWindowsLocation(channel, wslPrefixes);
+
+  return windowsPath.map(path => {
+    // The above command returned the Windows paths `C:\Program Files\...\chrome.exe`
+    // Use the `wslpath` utility tool to transform into the mounted disk
+    return execSync(`wslpath "${path}"`).toString().trim();
+  }) as [string, ...string[]];
 }
 
 function getChromeLinuxOrWslLocation(
