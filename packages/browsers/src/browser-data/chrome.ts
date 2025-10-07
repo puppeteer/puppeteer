@@ -159,17 +159,10 @@ const WINDOWS_ENV_PARAM_NAMES = [
   'ProgramW6432',
   'ProgramFiles(x86)',
 ];
-const WINDOWS_LOCATION_PREFIXES = new Set<string>(
-  WINDOWS_ENV_PARAM_NAMES.map(name => {
-    return process.env[name];
-  }).filter((l): l is string => {
-    return !!l;
-  }),
-);
 
 function getChromeWindowsLocation(
   channel: ChromeReleaseChannel,
-  locationsPrefixes = WINDOWS_LOCATION_PREFIXES,
+  locationsPrefixes: Set<string>,
 ): [string, ...string[]] {
   if (locationsPrefixes.size === 0) {
     throw new Error('Non of the common Windows Env variables were set');
@@ -192,12 +185,15 @@ function getChromeWindowsLocation(
   }
 
   return [...locationsPrefixes.values()].map(l => {
-    return path.join(l, suffix);
+    return `${l}${suffix}`;
   }) as [string, ...string[]];
 }
 
 function getWslLocation(channel: ChromeReleaseChannel): [string, ...string[]] {
-  const wslVersion = execSync('wslinfo --version').toString().trim();
+  const wslVersion = execSync('wslinfo --version', {
+    stdio: ['ignore', 'pipe', 'ignore'],
+    encoding: 'utf-8',
+  }).trim();
   if (!wslVersion) {
     throw new Error('Not in WSL or unsupported version of WSL.');
   }
@@ -272,7 +268,14 @@ export function resolveSystemExecutablePaths(
   switch (platform) {
     case BrowserPlatform.WIN64:
     case BrowserPlatform.WIN32:
-      return getChromeWindowsLocation(channel);
+      const prefixLocation = new Set<string>(
+        WINDOWS_ENV_PARAM_NAMES.map(name => {
+          return process.env[name];
+        }).filter((l): l is string => {
+          return !!l;
+        }),
+      );
+      return getChromeWindowsLocation(channel, prefixLocation);
     case BrowserPlatform.MAC_ARM:
     case BrowserPlatform.MAC:
       switch (channel) {
