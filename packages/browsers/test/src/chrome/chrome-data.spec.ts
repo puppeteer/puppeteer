@@ -78,18 +78,26 @@ describe('Chrome', () => {
     );
   });
 
-  it('should resolve system executable path', () => {
+  it.only('should resolve system executable path', () => {
     process.env['PROGRAMFILES'] = 'C:\\ProgramFiles';
+    process.env['ProgramW6432'] = 'C:\\ProgramFiles';
+    process.env['ProgramFiles(x86)'] = 'C:\\ProgramFiles (x86)';
+
     try {
       assert.deepStrictEqual(
         resolveSystemExecutablePaths(
           BrowserPlatform.WIN32,
           ChromeReleaseChannel.DEV,
         ),
-        ['C:\\ProgramFiles\\Google\\Chrome Dev\\Application\\chrome.exe'],
+        [
+          'C:\\ProgramFiles\\Google\\Chrome Dev\\Application\\chrome.exe',
+          'C:\\ProgramFiles (x86)\\Google\\Chrome Dev\\Application\\chrome.exe',
+        ],
       );
     } finally {
       delete process.env['PROGRAMFILES'];
+      delete process.env['ProgramW6432'];
+      delete process.env['ProgramFiles(x86)'];
     }
 
     assert.deepStrictEqual(

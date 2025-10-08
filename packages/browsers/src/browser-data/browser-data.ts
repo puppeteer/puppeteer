@@ -221,7 +221,7 @@ export async function createProfile(
 /**
  * @public
  *
- * Get's the most first resolved system path
+ * Get's the first resolved system path
  */
 export function resolveSystemExecutablePath(
   browser: Browser,
@@ -244,8 +244,8 @@ export function resolveSystemExecutablePath(
 /**
  * @internal
  *
- * Tries to find multiple paths that the executable may be.
- * Return them priority based on heuristics.
+ * Returns multiple paths where the executable may be located at on the current system
+ * ordered by likelihood (based on heuristics).
  */
 export function resolveSystemExecutablePaths(
   browser: Browser,
