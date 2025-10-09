@@ -78,7 +78,7 @@ describe('Chrome', () => {
     );
   });
 
-  it.only('should resolve system executable path', () => {
+  it('should resolve system executable path', () => {
     process.env['PROGRAMFILES'] = 'C:\\ProgramFiles';
     process.env['ProgramW6432'] = 'C:\\ProgramFiles';
     process.env['ProgramFiles(x86)'] = 'C:\\ProgramFiles (x86)';
