@@ -14,9 +14,9 @@ import type Stream from 'node:stream';
 import {
   type Browser,
   type BrowserPlatform,
-  resolveSystemExecutablePath,
   type ChromeReleaseChannel,
   executablePathByBrowser,
+  resolveSystemExecutablePaths,
 } from './browser-data/browser-data.js';
 import {Cache} from './Cache.js';
 import {debug} from './debug.js';
@@ -109,19 +109,24 @@ export function computeSystemExecutablePath(options: SystemOptions): string {
       `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`,
     );
   }
-  const path = resolveSystemExecutablePath(
+  const paths = resolveSystemExecutablePaths(
     options.browser,
     options.platform,
     options.channel,
   );
-  try {
-    accessSync(path);
-  } catch {
-    throw new Error(
-      `Could not find Google Chrome executable for channel '${options.channel}' at '${path}'.`,
-    );
+  for (const path of paths) {
+    try {
+      accessSync(path);
+      return path;
+    } catch {}
   }
-  return path;
+  throw new Error(
+    `Could not find Google Chrome executable for channel '${options.channel}' at:${paths.map(
+      path => {
+        return `\n - ${path}`;
+      },
+    )}.`,
+  );
 }
 
 /**

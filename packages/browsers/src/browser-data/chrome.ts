@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {execSync} from 'node:child_process';
 import path from 'node:path';
 
 import semver from 'semver';
@@ -153,48 +154,151 @@ export async function resolveBuildId(
   }
   return;
 }
+const WINDOWS_ENV_PARAM_NAMES = [
+  'PROGRAMFILES',
+  'ProgramW6432',
+  'ProgramFiles(x86)',
+];
 
-export function resolveSystemExecutablePath(
+function getChromeWindowsLocation(
+  channel: ChromeReleaseChannel,
+  locationsPrefixes: Set<string>,
+): [string, ...string[]] {
+  if (locationsPrefixes.size === 0) {
+    throw new Error('Non of the common Windows Env variables were set');
+  }
+
+  let suffix: string;
+  switch (channel) {
+    case ChromeReleaseChannel.STABLE:
+      suffix = '\\Google\\Chrome\\Application\\chrome.exe';
+      break;
+    case ChromeReleaseChannel.BETA:
+      suffix = '\\Google\\Chrome Beta\\Application\\chrome.exe';
+      break;
+    case ChromeReleaseChannel.CANARY:
+      suffix = '\\Google\\Chrome SxS\\Application\\chrome.exe';
+      break;
+    case ChromeReleaseChannel.DEV:
+      suffix = '\\Google\\Chrome Dev\\Application\\chrome.exe';
+      break;
+  }
+
+  return [...locationsPrefixes.values()].map(l => {
+    return `${l}${suffix}`;
+  }) as [string, ...string[]];
+}
+
+function getWslLocation(channel: ChromeReleaseChannel): [string, ...string[]] {
+  const wslVersion = execSync('wslinfo --version', {
+    stdio: ['ignore', 'pipe', 'ignore'],
+    encoding: 'utf-8',
+  }).trim();
+  if (!wslVersion) {
+    throw new Error('Not in WSL or unsupported version of WSL.');
+  }
+  const wslPrefixes = new Set<string>();
+  for (const name of WINDOWS_ENV_PARAM_NAMES) {
+    try {
+      // The Windows env for the paths are not passed down
+      // to WSL, so we evoke `cmd.exe` which is usually on the PATH
+      // from which the env can be access with all uppercase names.
+      // The return value is a Windows Path - `C:\Program Files`.
+
+      const wslPrefix = execSync(
+        `cmd.exe /c echo %${name.toLocaleUpperCase()}%`,
+        {
+          // We need to ignore the stderr as cmd.exe
+          // prints a message about wrong UNC path not supported.
+          stdio: ['ignore', 'pipe', 'ignore'],
+          encoding: 'utf-8',
+        },
+      ).trim();
+      if (wslPrefix) {
+        wslPrefixes.add(wslPrefix);
+      }
+    } catch {}
+  }
+
+  const windowsPath = getChromeWindowsLocation(channel, wslPrefixes);
+
+  return windowsPath.map(path => {
+    // The above command returned the Windows paths `C:\Program Files\...\chrome.exe`
+    // Use the `wslpath` utility tool to transform into the mounted disk
+    return execSync(`wslpath "${path}"`).toString().trim();
+  }) as [string, ...string[]];
+}
+
+function getChromeLinuxOrWslLocation(
+  channel: ChromeReleaseChannel,
+): [string, ...string[]] {
+  const locations: string[] = [];
+
+  try {
+    const wslPath = getWslLocation(channel);
+    if (wslPath) {
+      locations.push(...wslPath);
+    }
+  } catch {
+    // Ignore WSL errors
+  }
+
+  switch (channel) {
+    case ChromeReleaseChannel.STABLE:
+      locations.push('/opt/google/chrome/chrome');
+      break;
+    case ChromeReleaseChannel.BETA:
+      locations.push('/opt/google/chrome-beta/chrome');
+      break;
+    case ChromeReleaseChannel.CANARY:
+      locations.push('/opt/google/chrome-canary/chrome');
+      break;
+    case ChromeReleaseChannel.DEV:
+      locations.push('/opt/google/chrome-unstable/chrome');
+      break;
+  }
+
+  return locations as [string, ...string[]];
+}
+
+export function resolveSystemExecutablePaths(
   platform: BrowserPlatform,
   channel: ChromeReleaseChannel,
-): string {
+): [string, ...string[]] {
   switch (platform) {
     case BrowserPlatform.WIN64:
     case BrowserPlatform.WIN32:
-      switch (channel) {
-        case ChromeReleaseChannel.STABLE:
-          return `${process.env['PROGRAMFILES']}\\Google\\Chrome\\Application\\chrome.exe`;
-        case ChromeReleaseChannel.BETA:
-          return `${process.env['PROGRAMFILES']}\\Google\\Chrome Beta\\Application\\chrome.exe`;
-        case ChromeReleaseChannel.CANARY:
-          return `${process.env['PROGRAMFILES']}\\Google\\Chrome SxS\\Application\\chrome.exe`;
-        case ChromeReleaseChannel.DEV:
-          return `${process.env['PROGRAMFILES']}\\Google\\Chrome Dev\\Application\\chrome.exe`;
-      }
+      const prefixLocation = new Set<string>(
+        WINDOWS_ENV_PARAM_NAMES.map(name => {
+          return process.env[name];
+        }).filter((l): l is string => {
+          return !!l;
+        }),
+      );
+      return getChromeWindowsLocation(channel, prefixLocation);
     case BrowserPlatform.MAC_ARM:
     case BrowserPlatform.MAC:
       switch (channel) {
         case ChromeReleaseChannel.STABLE:
-          return '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+          return [
+            '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+          ];
         case ChromeReleaseChannel.BETA:
-          return '/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta';
+          return [
+            '/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta',
+          ];
         case ChromeReleaseChannel.CANARY:
-          return '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary';
+          return [
+            '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary',
+          ];
         case ChromeReleaseChannel.DEV:
-          return '/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev';
+          return [
+            '/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev',
+          ];
       }
     case BrowserPlatform.LINUX_ARM:
     case BrowserPlatform.LINUX:
-      switch (channel) {
-        case ChromeReleaseChannel.STABLE:
-          return '/opt/google/chrome/chrome';
-        case ChromeReleaseChannel.BETA:
-          return '/opt/google/chrome-beta/chrome';
-        case ChromeReleaseChannel.CANARY:
-          return '/opt/google/chrome-canary/chrome';
-        case ChromeReleaseChannel.DEV:
-          return '/opt/google/chrome-unstable/chrome';
-      }
+      return getChromeLinuxOrWslLocation(channel);
   }
 }
 
