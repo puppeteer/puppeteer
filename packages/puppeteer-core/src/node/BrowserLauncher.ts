@@ -87,6 +87,7 @@ export abstract class BrowserLauncher {
       timeout = 30000,
       waitForInitialPage = true,
       protocolTimeout,
+      handleDevToolsAsPage,
     } = options;
 
     let {protocol} = options;
@@ -206,6 +207,7 @@ export abstract class BrowserLauncher {
             undefined,
             undefined,
             networkEnabled,
+            handleDevToolsAsPage,
           );
         }
       }

@@ -31,6 +31,7 @@ export async function _connectToCdpBrowser(
     _isPageTarget: isPageTarget,
     slowMo = 0,
     protocolTimeout,
+    handleDevToolsAsPage,
   } = options;
 
   const connection = new Connection(
@@ -57,6 +58,7 @@ export async function _connectToCdpBrowser(
     isPageTarget,
     undefined,
     networkEnabled,
+    handleDevToolsAsPage,
   );
   return browser;
 }
