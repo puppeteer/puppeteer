@@ -2,6 +2,26 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.24.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.23.1...puppeteer-v24.24.0) (2025-10-10)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.23.1 to 24.24.0
+
+
+### Features
+
+* add handleDevToolsAsPage to access DevTools windows as pages ([#14296](https://github.com/puppeteer/puppeteer/issues/14296)) ([d6bcf61](https://github.com/puppeteer/puppeteer/commit/d6bcf614cca2ccb40aca6c3824fe8d35b7cbcbdb))
+
+
 ## [24.23.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.23.0...puppeteer-v24.23.1) (2025-10-10)
 
 

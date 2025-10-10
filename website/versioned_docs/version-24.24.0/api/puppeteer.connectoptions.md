@@ -155,6 +155,27 @@ Sets the download behavior for the context.
 </td></tr>
 <tr><td>
 
+<span id="handledevtoolsaspage">handleDevToolsAsPage</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether to handle the DevTools windows as pages in Puppeteer. Supported only in Chrome with CDP.
+
+</td><td>
+
+'false'
+
+</td></tr>
+<tr><td>
+
 <span id="headers">headers</span>
 
 </td><td>
