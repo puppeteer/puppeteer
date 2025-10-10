@@ -67,6 +67,49 @@ describe('DevTools', function () {
     ).toBe(6);
     expect(await browser.pages()).toContain(page);
   });
+
+  it('browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in connect()', async function () {
+    const {puppeteer} = await getTestState({skipLaunch: true});
+    const originalBrowser = await launchBrowser(launchOptions);
+
+    const browserWSEndpoint = originalBrowser.wsEndpoint();
+
+    using browser = await puppeteer.connect({
+      browserWSEndpoint,
+      handleDevToolsAsPage: true,
+    });
+    const devtoolsPageTarget = await browser.waitForTarget(target => {
+      return target.type() === 'other';
+    });
+    const page = (await devtoolsPageTarget.page())!;
+    expect(
+      await page.evaluate(() => {
+        // @ts-expect-error devtools context.
+        return Boolean(DevToolsAPI);
+      }),
+    ).toBe(true);
+    expect(await browser.pages()).toContain(page);
+  });
+
+  it('browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in launch()', async function () {
+    const browser = await launchBrowser({
+      ...launchOptions,
+      handleDevToolsAsPage: true,
+    });
+
+    const devtoolsPageTarget = await browser.waitForTarget(target => {
+      return target.type() === 'other';
+    });
+    const page = (await devtoolsPageTarget.page())!;
+    expect(
+      await page.evaluate(() => {
+        // @ts-expect-error devtools context.
+        return Boolean(DevToolsAPI);
+      }),
+    ).toBe(true);
+    expect(await browser.pages()).toContain(page);
+  });
+
   it('target.page() should return Page when calling asPage on DevTools target', async function () {
     const browser = await launchBrowser(launchOptions);
     const devtoolsPageTarget = await browser.waitForTarget(target => {

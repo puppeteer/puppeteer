@@ -83,6 +83,14 @@ export interface ConnectOptions {
   _isPageTarget?: IsPageTargetCallback;
 
   /**
+   * Whether to handle the DevTools windows as pages in Puppeteer. Supported
+   * only in Chrome with CDP.
+   *
+   * @defaultValue 'false'
+   */
+  handleDevToolsAsPage?: boolean;
+
+  /**
    * @defaultValue Determined at run time:
    *
    * - Launching Chrome - 'cdp'.
