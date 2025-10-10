@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.11](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.10...browsers-v2.10.11) (2025-10-10)
+
+
+### Bug Fixes
+
+* support multiple paths for system executables on Windows and WSL ([#14286](https://github.com/puppeteer/puppeteer/issues/14286)) ([1ffcbb0](https://github.com/puppeteer/puppeteer/commit/1ffcbb0dec0461defb65616f7c9ff37b71221c86))
+
 ## [2.10.10](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.9...browsers-v2.10.10) (2025-09-15)
 
 

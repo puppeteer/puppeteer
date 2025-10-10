@@ -1,5 +1,21 @@
 # Changelog
 
+## [24.23.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.23.0...puppeteer-core-v24.23.1) (2025-10-10)
+
+
+### Bug Fixes
+
+* roll to Chrome 141.0.7390.65 ([#14291](https://github.com/puppeteer/puppeteer/issues/14291)) ([a3a8376](https://github.com/puppeteer/puppeteer/commit/a3a8376ae759e1ba6716b76e2ddf6b9e75ff4f26))
+* roll to Chrome 141.0.7390.76 ([#14293](https://github.com/puppeteer/puppeteer/issues/14293)) ([0ba8a91](https://github.com/puppeteer/puppeteer/commit/0ba8a911e86060eb24d4b4872db803121f216ce5))
+* roll to Firefox 143.0.4 ([#14281](https://github.com/puppeteer/puppeteer/issues/14281)) ([b32adf4](https://github.com/puppeteer/puppeteer/commit/b32adf4b214d17e97d11c21847db5d010b1f093a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.10.10 to 2.10.11
+
 ## [24.23.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.22.3...puppeteer-core-v24.23.0) (2025-10-01)
 
 
