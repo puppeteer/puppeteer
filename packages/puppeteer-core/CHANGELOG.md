@@ -1,5 +1,12 @@
 # Changelog
 
+## [24.24.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.23.1...puppeteer-core-v24.24.0) (2025-10-10)
+
+
+### Features
+
+* add handleDevToolsAsPage to access DevTools windows as pages ([#14296](https://github.com/puppeteer/puppeteer/issues/14296)) ([d6bcf61](https://github.com/puppeteer/puppeteer/commit/d6bcf614cca2ccb40aca6c3824fe8d35b7cbcbdb))
+
 ## [24.23.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.23.0...puppeteer-core-v24.23.1) (2025-10-10)
 
 
