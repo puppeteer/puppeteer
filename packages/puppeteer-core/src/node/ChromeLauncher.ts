@@ -198,7 +198,7 @@ export class ChromeLauncher extends BrowserLauncher {
     // Merge default enabled features with user-provided ones, if any.
     const enabledFeatures = [
       'PdfOopif',
-      'RenderDocument:level/all-frames'', // https://crbug.com/444150315
+      'RenderDocument:level/all-frames', // https://crbug.com/444150315
       // Add features to enable by default here.
       ...userEnabledFeatures,
     ].filter(feature => {
