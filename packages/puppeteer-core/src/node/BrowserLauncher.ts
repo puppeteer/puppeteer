@@ -217,7 +217,12 @@ export abstract class BrowserLauncher {
       if (
         logs.includes(
           'Failed to create a ProcessSingleton for your profile directory',
-        )
+        ) ||
+        // On Windows we will not get logs due to the singleton process
+        // handover. See
+        // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/process_singleton_win.cc;l=46;drc=fc7952f0422b5073515a205a04ec9c3a1ae81658
+        (process.platform === 'win32' &&
+          existsSync(join(launchArgs.userDataDir, 'lockfile')))
       ) {
         throw new Error(
           `The browser is already running for ${launchArgs.userDataDir}. Use a different \`userDataDir\` or stop the running browser first.`,
