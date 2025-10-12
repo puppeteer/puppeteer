@@ -213,15 +213,19 @@ export abstract class BrowserLauncher {
       }
     } catch (error) {
       void browserCloseCallback();
+      const logs = browserProcess.getRecentLogs().join('\n');
       if (
-        browserProcess.getRecentLogs().some(line => {
-          return line.includes(
-            'Failed to create a ProcessSingleton for your profile directory',
-          );
-        })
+        logs.includes(
+          'Failed to create a ProcessSingleton for your profile directory',
+        )
       ) {
         throw new Error(
           `The browser is already running for ${launchArgs.userDataDir}. Use a different \`userDataDir\` or stop the running browser first.`,
+        );
+      }
+      if (logs.includes('Missing X server') && options.headless === false) {
+        throw new Error(
+          `Missing X server to start the headful browser. Either set headless to true or use xvfb-run to run your Puppeteer script.`,
         );
       }
       if (error instanceof BrowsersTimeoutError) {
