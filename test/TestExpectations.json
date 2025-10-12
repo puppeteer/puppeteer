@@ -190,13 +190,6 @@
   },
   {
     "testIdPattern": "[userDataDir.spec] userDataDir should not launch the browser twice with the same userDataDir *",
-    "platforms": ["win32"],
-    "parameters": ["chrome"],
-    "expectations": ["FAIL"],
-    "comment": "on Windows Chrome seems to have no issues starting on the user data dir"
-  },
-  {
-    "testIdPattern": "[userDataDir.spec] userDataDir should not launch the browser twice with the same userDataDir *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
