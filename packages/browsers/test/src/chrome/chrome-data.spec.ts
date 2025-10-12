@@ -82,6 +82,7 @@ describe('Chrome', () => {
     process.env['PROGRAMFILES'] = 'C:\\ProgramFiles';
     process.env['ProgramW6432'] = 'C:\\ProgramFiles';
     process.env['ProgramFiles(x86)'] = 'C:\\ProgramFiles (x86)';
+    process.env['LOCALAPPDATA'] = 'C:\\LocalAppData';
 
     try {
       assert.deepStrictEqual(
@@ -92,6 +93,11 @@ describe('Chrome', () => {
         [
           'C:\\ProgramFiles\\Google\\Chrome Dev\\Application\\chrome.exe',
           'C:\\ProgramFiles (x86)\\Google\\Chrome Dev\\Application\\chrome.exe',
+          'C:\\LocalAppData\\Google\\Chrome Dev\\Application\\chrome.exe',
+          'C:\\Program Files\\Google\\Chrome Dev\\Application\\chrome.exe',
+          'C:\\Program Files (x86)\\Google\\Chrome Dev\\Application\\chrome.exe',
+          'D:\\Program Files\\Google\\Chrome Dev\\Application\\chrome.exe',
+          'D:\\Program Files (x86)\\Google\\Chrome Dev\\Application\\chrome.exe',
         ],
       );
     } finally {

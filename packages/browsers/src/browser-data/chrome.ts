@@ -158,6 +158,8 @@ const WINDOWS_ENV_PARAM_NAMES = [
   'PROGRAMFILES',
   'ProgramW6432',
   'ProgramFiles(x86)',
+  // https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/mini_installer/README.md
+  'LOCALAPPDATA',
 ];
 
 function getChromeWindowsLocation(
@@ -171,21 +173,21 @@ function getChromeWindowsLocation(
   let suffix: string;
   switch (channel) {
     case ChromeReleaseChannel.STABLE:
-      suffix = '\\Google\\Chrome\\Application\\chrome.exe';
+      suffix = 'Google\\Chrome\\Application\\chrome.exe';
       break;
     case ChromeReleaseChannel.BETA:
-      suffix = '\\Google\\Chrome Beta\\Application\\chrome.exe';
+      suffix = 'Google\\Chrome Beta\\Application\\chrome.exe';
       break;
     case ChromeReleaseChannel.CANARY:
-      suffix = '\\Google\\Chrome SxS\\Application\\chrome.exe';
+      suffix = 'Google\\Chrome SxS\\Application\\chrome.exe';
       break;
     case ChromeReleaseChannel.DEV:
-      suffix = '\\Google\\Chrome Dev\\Application\\chrome.exe';
+      suffix = 'Google\\Chrome Dev\\Application\\chrome.exe';
       break;
   }
 
   return [...locationsPrefixes.values()].map(l => {
-    return `${l}${suffix}`;
+    return path.win32.join(l, suffix);
   }) as [string, ...string[]];
 }
 
@@ -275,6 +277,11 @@ export function resolveSystemExecutablePaths(
           return !!l;
         }),
       );
+      // Fallbacks in case env vars are misconfigured.
+      prefixLocation.add('C:\\Program Files');
+      prefixLocation.add('C:\\Program Files (x86)');
+      prefixLocation.add('D:\\Program Files');
+      prefixLocation.add('D:\\Program Files (x86)');
       return getChromeWindowsLocation(channel, prefixLocation);
     case BrowserPlatform.MAC_ARM:
     case BrowserPlatform.MAC:
