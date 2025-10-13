@@ -7,9 +7,9 @@
  */
 
 import {CLI, Browser} from '@puppeteer/browsers';
-import {packageVersion} from 'puppeteer-core/internal/generated/version.js';
 import type {PuppeteerNode} from 'puppeteer-core/internal/node/PuppeteerNode.js';
 import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
+import {packageVersion} from 'puppeteer-core/internal/util/version.js';
 
 import puppeteer from '../puppeteer.js';
 

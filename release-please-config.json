@@ -3,18 +3,30 @@
   "separate-pull-requests": false,
   "packages": {
     "packages/puppeteer": {
-      "component": "puppeteer",
-      "extra-files": ["docker/Dockerfile"]
+      "component": "puppeteer"
     },
     "packages/puppeteer-core": {
-      "component": "puppeteer-core"
+      "component": "puppeteer-core",
+      "extra-files": [
+        {
+          "type": "generic",
+          "path": "src/util/version.ts"
+        }
+      ]
     },
     "packages/testserver": {},
     "packages/ng-schematics": {
       "bump-minor-pre-major": true,
       "separate-pull-requests": true
     },
-    "packages/browsers": {}
+    "packages/browsers": {
+      "extra-files": [
+        {
+          "type": "generic",
+          "path": "src/CLI.ts"
+        }
+      ]
+    }
   },
   "plugins": [
     {
