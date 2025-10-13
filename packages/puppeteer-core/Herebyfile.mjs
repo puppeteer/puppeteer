@@ -14,31 +14,6 @@ import {task} from 'hereby';
 
 const require = Module.createRequire(import.meta.url);
 
-export const generateVersionTask = task({
-  name: 'generate:version',
-  run: async () => {
-    const {version} = JSON.parse(await readFile('package.json', 'utf8'));
-    await mkdir('src/generated', {recursive: true});
-    await writeFile(
-      'src/generated/version.ts',
-      (await readFile('src/templates/version.ts.tmpl', 'utf8')).replace(
-        'PACKAGE_VERSION',
-        version,
-      ),
-    );
-    if (process.env['PUBLISH']) {
-      await writeFile(
-        '../../versions.json',
-        (
-          await readFile('../../versions.json', {
-            encoding: 'utf-8',
-          })
-        ).replace(`"NEXT"`, `"v${version}"`),
-      );
-    }
-  },
-});
-
 export const generateInjectedTask = task({
   name: 'generate:injected',
   run: async () => {
@@ -72,11 +47,7 @@ export const generatePackageJsonTask = task({
 
 export const generateTask = task({
   name: 'generate',
-  dependencies: [
-    generateVersionTask,
-    generateInjectedTask,
-    generatePackageJsonTask,
-  ],
+  dependencies: [generateInjectedTask, generatePackageJsonTask],
 });
 
 export const buildTscTask = task({

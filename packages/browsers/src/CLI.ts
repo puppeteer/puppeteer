@@ -17,7 +17,6 @@ import {
 } from './browser-data/browser-data.js';
 import {Cache} from './Cache.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
-import {packageVersion} from './generated/version.js';
 import {install} from './install.js';
 import {
   computeExecutablePath,
@@ -44,6 +43,11 @@ function isValidBrowser(browser: unknown): browser is Browser {
 function isValidPlatform(platform: unknown): platform is BrowserPlatform {
   return Object.values(BrowserPlatform).includes(platform as BrowserPlatform);
 }
+
+// If moved update release-please config
+// x-release-please-start-version
+const packageVersion = '2.10.10';
+// x-release-please-end
 
 /**
  * @public

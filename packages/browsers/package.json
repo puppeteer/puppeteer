@@ -29,18 +29,7 @@
         "!lib/esm/package.json"
       ],
       "dependencies": [
-        "generate:package-json",
-        "generate:version"
-      ]
-    },
-    "generate:version": {
-      "command": "hereby generate:version",
-      "clean": "if-file-deleted",
-      "files": [
-        "Herebyfile.mjs"
-      ],
-      "output": [
-        "src/generated/version.ts"
+        "generate:package-json"
       ]
     },
     "generate:package-json": {
