@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.12](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.11...browsers-v2.10.12) (2025-10-13)
+
+
+### Bug Fixes
+
+* improve Chrome installation detection on Windows ([#14304](https://github.com/puppeteer/puppeteer/issues/14304)) ([e37f856](https://github.com/puppeteer/puppeteer/commit/e37f856f347388a30a9bd2c80a159429088a3131))
+
 ## [2.10.11](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.10...browsers-v2.10.11) (2025-10-10)
 
 

@@ -1,5 +1,23 @@
 # Changelog
 
+## [24.24.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.24.0...puppeteer-core-v24.24.1) (2025-10-13)
+
+
+### Bug Fixes
+
+* detect missing X11 server and report errors ([#14306](https://github.com/puppeteer/puppeteer/issues/14306)) ([74c551b](https://github.com/puppeteer/puppeteer/commit/74c551be1fc0473a2c7a0db61dd340bd405ea1d4))
+* Revert "fix(webdriver): response should be created on responseStarted" ([#14312](https://github.com/puppeteer/puppeteer/issues/14312)) ([abb8ee0](https://github.com/puppeteer/puppeteer/commit/abb8ee0d976f39491693b74e10d119b85715699a))
+* revert Accessibility heuristic focus changes ([#14313](https://github.com/puppeteer/puppeteer/issues/14313)) ([8b1706a](https://github.com/puppeteer/puppeteer/commit/8b1706ade203de8d3e8c6408fb818853ae3e67de))
+* **webdriver:** response should be created on responseStarted ([#14302](https://github.com/puppeteer/puppeteer/issues/14302)) ([c86e367](https://github.com/puppeteer/puppeteer/commit/c86e36744d09fde517692269ac28a7ab49648cd4))
+* **windows:** use lockfile to detect concurrent chrome instances ([#14307](https://github.com/puppeteer/puppeteer/issues/14307)) ([8d3a60b](https://github.com/puppeteer/puppeteer/commit/8d3a60b99629ec345b34dae9687057d3a9261dc5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.10.11 to 2.10.12
+
 ## [24.24.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.23.1...puppeteer-core-v24.24.0) (2025-10-10)
 
 
