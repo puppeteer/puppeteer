@@ -826,6 +826,25 @@ describe('Accessibility', function () {
           ],
         });
       });
+      it('should work with nested button inside h1 with interestingOnly:true', async () => {
+        const {page} = await getTestState();
+
+        await page.setContent(html`
+          <main>
+            <h2>
+              <button>My Button</button>
+            </h2>
+          </main>
+        `);
+
+        using button = (await page.$('button'))!;
+        expect(await page.accessibility.snapshot({root: button})).toMatchObject(
+          {
+            role: 'button',
+            name: 'My Button',
+          },
+        );
+      });
     });
 
     describe('elementHandle()', () => {
