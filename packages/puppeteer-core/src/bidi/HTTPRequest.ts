@@ -99,7 +99,7 @@ export class BidiHTTPRequest extends HTTPRequest {
       });
       void httpRequest.finalizeInterceptions();
     });
-    this.#request.once('success', data => {
+    this.#request.once('response', data => {
       this.#response = BidiHTTPResponse.from(
         data,
         this,
