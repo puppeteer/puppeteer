@@ -40,7 +40,10 @@ jobs:
           npm publish --provenance --access public --workspace packages/${GITHUB_REF_NAME%-v*}
       - name: Deprecate old Puppeteer versions
         if: ${{ startsWith(github.ref_name, 'puppeteer-v') }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN_PUPPETEER}}
         run: |
+          npm config set '//wombat-dressing-room.appspot.com/:_authToken' $NODE_AUTH_TOKEN
           version_range=$(node tools/get_deprecated_version_range.mjs)
           npm deprecate puppeteer@"$version_range" "$version_range is no longer supported" || true
   docker-publish:
