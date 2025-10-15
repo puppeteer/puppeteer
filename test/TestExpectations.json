@@ -314,13 +314,6 @@
     "comment": "Not supported by WebDriver BiDi"
   },
   {
-    "testIdPattern": "[emulation.spec] Emulation Page.emulateTimezone should support timezone offset",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL"],
-    "comment": "Firefox does not support timezone emulation yet"
-  },
-  {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should replace symbols with undefined",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp"],
@@ -929,13 +922,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[emulation.spec] Emulation Page.emulateTimezone should throw for invalid timezone IDs",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateTimezone should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -1223,25 +1209,11 @@
     "comment": "We can't connect to a browser started with pipe:true"
   },
   {
-    "testIdPattern": "[navigation.spec] navigation Page.goto should work when a page redirects on DOMContentLoaded",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "https://github.com/puppeteer/puppeteer/issues/12929 and https://github.com/w3c/webdriver-bidi/issues/763"
-  },
-  {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work when navigating to a URL with a client redirect",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL"],
     "comment": "In CDP implementation, we get the client redirect response."
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Page.goto should work when navigating to a URL with a client redirect",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "https://github.com/puppeteer/puppeteer/issues/12929 and https://github.com/w3c/webdriver-bidi/issues/763"
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work when page calls history API in beforeunload",
