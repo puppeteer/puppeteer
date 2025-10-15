@@ -115,6 +115,96 @@ describe('Accessibility', function () {
         };
     expect(await page.accessibility.snapshot()).toMatchObject(golden);
   });
+
+  it('should work for showcase', async () => {
+    const {page, server} = await getTestState();
+    await page.goto(server.PREFIX + '/a11y/landmarks.html');
+    const snapshot = await page.accessibility.snapshot();
+    expect(snapshot).toMatchObject({
+      role: 'RootWebArea',
+      name: 'HTML Elements Showcase',
+      children: [
+        {
+          role: 'banner',
+          name: '',
+          children: [
+            {
+              role: 'heading',
+              name: 'HTML Elements Showcase',
+              level: 1,
+            },
+            {
+              role: 'navigation',
+              name: '',
+              children: [
+                {
+                  role: 'link',
+                  name: 'Forms',
+                  children: [
+                    {
+                      role: 'StaticText',
+                      name: 'Forms',
+                    },
+                  ],
+                },
+                {
+                  role: 'link',
+                  name: 'Media',
+                  children: [
+                    {
+                      role: 'StaticText',
+                      name: 'Media',
+                    },
+                  ],
+                },
+                {
+                  role: 'link',
+                  name: 'Interactive',
+                  children: [
+                    {
+                      role: 'StaticText',
+                      name: 'Interactive',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          role: 'main',
+          name: '',
+          children: [
+            {
+              role: 'search',
+              name: '',
+            },
+          ],
+        },
+        {
+          role: 'complementary',
+          name: '',
+          children: [
+            {
+              role: 'StaticText',
+              name: 'complementary',
+            },
+          ],
+        },
+        {
+          role: 'contentinfo',
+          name: '',
+          children: [
+            {
+              role: 'StaticText',
+              name: 'contentinfo',
+            },
+          ],
+        },
+      ],
+    });
+  });
+
   it('should report uninteresting nodes', async () => {
     const {page, isFirefox} = await getTestState();
 
@@ -923,12 +1013,18 @@ describe('Accessibility', function () {
         name: 'My test page',
         children: [
           {
-            name: 'Hello',
-            role: 'StaticText',
-          },
-          {
-            name: 'World',
-            role: 'StaticText',
+            name: '',
+            role: 'main',
+            children: [
+              {
+                name: 'Hello',
+                role: 'StaticText',
+              },
+              {
+                name: 'World',
+                role: 'StaticText',
+              },
+            ],
           },
         ],
       });
