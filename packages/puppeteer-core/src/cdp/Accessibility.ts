@@ -460,10 +460,30 @@ class AXNode {
     }
   }
 
+  public isLandmark(): boolean {
+    switch (this.#role) {
+      case 'banner':
+      case 'complementary':
+      case 'contentinfo':
+      case 'form':
+      case 'main':
+      case 'navigation':
+      case 'region':
+      case 'search':
+        return true;
+      default:
+        return false;
+    }
+  }
+
   public isInteresting(insideControl: boolean): boolean {
     const role = this.#role;
     if (role === 'Ignored' || this.#hidden || this.#ignored) {
       return false;
+    }
+
+    if (this.isLandmark()) {
+      return true;
     }
 
     if (this.#focusable || this.#richlyEditable) {
