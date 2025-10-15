@@ -1689,6 +1689,20 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[network.spec] network Response.buffer should work with compression",
+    "platforms": ["linux"],
+    "parameters": ["chrome", "headless", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "https://crbug.com/452295916 `Network.getResponseBody` returns compressed durable data"
+  },
+  {
+    "testIdPattern": "[network.spec] network Response.text should return uncompressed text",
+    "platforms": ["linux"],
+    "parameters": ["chrome", "headless", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "https://crbug.com/452295916 `Network.getResponseBody` returns compressed durable data"
+  },
+  {
     "testIdPattern": "[oopif.spec] OOPIF should support lazy OOP frames",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "headless", "webDriverBiDi"],
