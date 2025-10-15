@@ -15,6 +15,7 @@ jobs:
     if: ${{ github.event_name != 'workflow_dispatch' }}
     permissions:
       contents: read
+      id-token: write
     steps:
       - name: Check out repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
@@ -25,26 +26,21 @@ jobs:
         with:
           cache: npm
           node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Update npm
+        run: npm install -g npm@latest
       - name: Install dependencies
         run: npm ci
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
       - name: Build packages
         run: npm run build
-      - name: Set npm registry
-        run: npm config set registry 'https://wombat-dressing-room.appspot.com/'
       - name: Publish packages
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN_RELEASE}}
         run: |
-          npm config set '//wombat-dressing-room.appspot.com/:_authToken' $NODE_AUTH_TOKEN
-          npm publish -w packages/${GITHUB_REF_NAME%-v*}
+          npm publish --provenance --access public --workspaces packages/${GITHUB_REF_NAME%-v*}
       - name: Deprecate old Puppeteer versions
         if: ${{ startsWith(github.ref_name, 'puppeteer-v') }}
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN_PUPPETEER}}
         run: |
-          npm config set '//wombat-dressing-room.appspot.com/:_authToken' $NODE_AUTH_TOKEN
           version_range=$(node tools/get_deprecated_version_range.mjs)
           npm deprecate puppeteer@"$version_range" "$version_range is no longer supported" || true
   docker-publish:
