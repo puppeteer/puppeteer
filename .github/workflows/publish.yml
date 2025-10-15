@@ -37,7 +37,7 @@ jobs:
         run: npm run build
       - name: Publish packages
         run: |
-          npm publish --provenance --access public --workspaces packages/${GITHUB_REF_NAME%-v*}
+          npm publish --provenance --access public --workspace packages/${GITHUB_REF_NAME%-v*}
       - name: Deprecate old Puppeteer versions
         if: ${{ startsWith(github.ref_name, 'puppeteer-v') }}
         run: |
