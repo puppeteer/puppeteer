@@ -89,6 +89,8 @@ export class BidiBrowser extends Browser {
         // yet because WebDriver BiDi behavior is not specified. See
         // https://github.com/w3c/webdriver-bidi/issues/321.
         'goog:prerenderingDisabled': true,
+        // TODO: remove after Puppeteer rolled Chrome to 142 after Oct 28, 2025.
+        'goog:disableNetworkDurableMessages': true,
       },
     });
 
