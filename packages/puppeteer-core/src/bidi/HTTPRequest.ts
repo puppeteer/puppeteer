@@ -166,18 +166,11 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   get #hasInternalHeaderOverwrite(): boolean {
-    return Boolean(
-      Object.keys(this.#extraHTTPHeaders).length ||
-        Object.keys(this.#userAgentHeaders).length,
-    );
+    return Boolean(Object.keys(this.#extraHTTPHeaders).length);
   }
 
   get #extraHTTPHeaders(): Record<string, string> {
     return this.#frame?.page()._extraHTTPHeaders ?? {};
-  }
-
-  get #userAgentHeaders(): Record<string, string> {
-    return this.#frame?.page()._userAgentHeaders ?? {};
   }
 
   override headers(): Record<string, string> {
@@ -189,7 +182,6 @@ export class BidiHTTPRequest extends HTTPRequest {
     return {
       ...headers,
       ...this.#extraHTTPHeaders,
-      ...this.#userAgentHeaders,
     };
   }
 
