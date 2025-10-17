@@ -241,68 +241,6 @@ describe('network', function () {
     });
   });
 
-  // TODO: remove test for deprecated `Request.postData` in favor of `Request.fetchPostData`.
-  describe('Request.postData', function () {
-    it('should work', async () => {
-      const {page, server} = await getTestState();
-
-      await page.goto(server.EMPTY_PAGE);
-      server.setRoute('/post', (_req, res) => {
-        return res.end();
-      });
-
-      const [request] = await Promise.all([
-        waitEvent<HTTPRequest>(page, 'request', r => {
-          return !isFavicon(r);
-        }),
-        page.evaluate(() => {
-          return fetch('./post', {
-            method: 'POST',
-            body: JSON.stringify({foo: 'bar'}),
-          });
-        }),
-      ]);
-
-      expect(request).toBeTruthy();
-      expect(request.postData()).toBe('{"foo":"bar"}');
-    });
-
-    it('should be |undefined| when there is no post data', async () => {
-      const {page, server} = await getTestState();
-
-      const response = (await page.goto(server.EMPTY_PAGE))!;
-      expect(response.request().postData()).toBe(undefined);
-    });
-
-    it('should work with blobs', async () => {
-      const {page, server} = await getTestState();
-
-      await page.goto(server.EMPTY_PAGE);
-      server.setRoute('/post', (_req, res) => {
-        return res.end();
-      });
-
-      const [request] = await Promise.all([
-        waitEvent<HTTPRequest>(page, 'request', r => {
-          return !isFavicon(r);
-        }),
-        page.evaluate(() => {
-          return fetch('./post', {
-            method: 'POST',
-            body: new Blob([JSON.stringify({foo: 'bar'})], {
-              type: 'application/json',
-            }),
-          });
-        }),
-      ]);
-
-      expect(request).toBeTruthy();
-      expect(request.postData()).toBe(undefined);
-      expect(request.hasPostData()).toBe(true);
-      expect(await request.fetchPostData()).toBe('{"foo":"bar"}');
-    });
-  });
-
   describe('Request.fetchPostData', function () {
     it('should work', async () => {
       const {page, server} = await getTestState();
@@ -329,19 +267,13 @@ describe('network', function () {
       expect(await request.fetchPostData()).toBe('{"foo":"bar"}');
     });
 
-    it('should throw when there is no post data', async () => {
+    it('should be |undefined| when there is no post data', async () => {
       const {page, server} = await getTestState();
 
       const response = (await page.goto(server.EMPTY_PAGE))!;
       expect(response.request().hasPostData()).toBeFalsy();
 
-      let error!: Error;
-      await response.request().fetchPostData().catch(error_ => {
-        return (error = error_);
-      });
-      expect(error.message).toContain(
-        'No post data available for the request',
-      );
+      expect(await response.request().fetchPostData()).toBe(undefined);
     });
 
     it('should work with blobs', async () => {

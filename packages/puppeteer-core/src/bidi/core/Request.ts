@@ -239,6 +239,9 @@ export class Request extends EventEmitter<{
   }
 
   async fetchPostData(): Promise<string | undefined> {
+    if (!this.hasPostData) {
+      return undefined;
+    }
     if (!this.#requestBodyPromise) {
       this.#requestBodyPromise = (async () => {
         const data = await this.#session.send('network.getData', {
