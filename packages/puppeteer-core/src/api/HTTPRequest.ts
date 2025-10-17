@@ -285,7 +285,7 @@ export abstract class HTTPRequest {
   abstract method(): string;
 
   /**
-   * The request's post body, if any.
+   * @deprecated Use {@link HTTPRequest.fetchPostData}.
    */
   abstract postData(): string | undefined;
 

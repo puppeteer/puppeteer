@@ -4,7 +4,9 @@ sidebar_label: HTTPRequest.postData
 
 # HTTPRequest.postData() method
 
-The request's post body, if any.
+> Warning: This API is now obsolete.
+>
+> Use [HTTPRequest.fetchPostData()](./puppeteer.httprequest.fetchpostdata.md).
 
 ### Signature
 
