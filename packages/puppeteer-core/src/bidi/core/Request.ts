@@ -196,8 +196,7 @@ export class Request extends EventEmitter<{
   }
 
   get hasPostData(): boolean {
-    // @ts-expect-error non-standard attribute.
-    return this.#event.request.bodySize > 0;
+    return (this.#event.request.bodySize ?? 0) > 0;
   }
 
   async continueRequest({
