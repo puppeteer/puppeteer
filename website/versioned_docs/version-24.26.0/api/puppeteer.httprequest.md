@@ -285,9 +285,13 @@ The method used (`GET`, `POST`, etc.)
 
 </td><td>
 
+`deprecated`
+
 </td><td>
 
-The request's post body, if any.
+**Deprecated:**
+
+Use [HTTPRequest.fetchPostData()](./puppeteer.httprequest.fetchpostdata.md).
 
 </td></tr>
 <tr><td>

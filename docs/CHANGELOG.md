@@ -2,6 +2,26 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.26.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.25.0...puppeteer-v24.26.0) (2025-10-17)
+
+### ♻️ Chores
+
+- **puppeteer:** Synchronize puppeteer versions
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - puppeteer-core bumped from 24.25.0 to 24.26.0
+
+### 🎉 Features
+
+- consider landmarks interesting for a11y ([#14330](https://github.com/puppeteer/puppeteer/issues/14330)) ([894eb7c](https://github.com/puppeteer/puppeteer/commit/894eb7cfe47d1cc8df6b1c3a3dc712ee862ff8d6))
+
+### 📄 Documentation
+
+- mark `HTTPRequest.postData` as deprecated ([#14336](https://github.com/puppeteer/puppeteer/issues/14336)) ([3812c50](https://github.com/puppeteer/puppeteer/commit/3812c50bd8d1682360486ac04e8df59e17aa2431))
+
 ## [24.25.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.24.1...puppeteer-v24.25.0) (2025-10-15)
 
 ### Miscellaneous Chores
