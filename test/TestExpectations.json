@@ -1286,6 +1286,20 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[network.spec] network Request.fetchPostData should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "network.getData(request) is not yet supported"
+  },
+  {
+    "testIdPattern": "[network.spec] network Request.fetchPostData should work with blobs",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "network.getData(request) is not yet supported"
+  },
+  {
     "testIdPattern": "[network.spec] network Request.postData should be |undefined| when there is no post data",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
