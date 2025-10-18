@@ -133,6 +133,22 @@ describe('request interception', function () {
       expect(requests[1]!.url()).toContain('/one-style.css');
       expect(requests[1]!.headers()['referer']).toContain('/one-style.html');
     });
+    it('should not allow mutating request headers', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setRequestInterception(true);
+      const requests: HTTPRequest[] = [];
+      page.on('request', request => {
+        if (!isFavicon(request)) {
+          requests.push(request);
+        }
+        const headers = request.headers();
+        headers['test'] = 'test';
+        void request.continue({headers});
+      });
+      await page.goto(server.EMPTY_PAGE);
+      expect(Object.keys(requests[0]!.headers())).not.toContain('test');
+    });
     it('should work with requests without networkId', async () => {
       const {page, server} = await getTestState();
       await page.goto(server.EMPTY_PAGE);
