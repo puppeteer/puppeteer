@@ -224,7 +224,7 @@ Quality of the image, between 0-100. Not applicable to `png` images.
 
 </td><td>
 
-[ImageFormat](./puppeteer.imageformat.md)
+\`$&#123;[ImageFormat](./puppeteer.imageformat.md)&#125;\`
 
 </td><td>
 
