@@ -154,7 +154,14 @@ export class Request extends EventEmitter<{
     return this.#event.request.request;
   }
   get initiator(): Bidi.Network.Initiator | undefined {
-    return this.#event.initiator;
+    return {
+      ...this.#event.initiator,
+      // Initiator URL is not specified in BiDi.
+      // @ts-expect-error non-standard property.
+      url: this.#event.request['goog:resourceInitiator']?.url,
+      // @ts-expect-error non-standard property.
+      stack: this.#event.request['goog:resourceInitiator']?.stack,
+    };
   }
   get method(): string {
     return this.#event.request.method;

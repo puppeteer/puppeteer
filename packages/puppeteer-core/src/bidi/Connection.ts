@@ -88,10 +88,26 @@ export class BidiConnection
     this.#emitters.push(emitter);
   }
 
+  #toWebDriverOnlyEvent(event: Record<string, any>) {
+    for (const key in event) {
+      if (key.startsWith('goog:')) {
+        delete event[key];
+      } else {
+        if (typeof event[key] === 'object' && event[key] !== null) {
+          this.#toWebDriverOnlyEvent(event[key]);
+        }
+      }
+    }
+  }
+
   override emit<Key extends keyof EventsWithWildcard<BidiEvents>>(
     type: Key,
     event: EventsWithWildcard<BidiEvents>[Key],
   ): boolean {
+    if (process.env['PUPPETEER_WEBDRIVER_BIDI_ONLY'] === 'true') {
+      // Required for WebDriver-only testing.
+      this.#toWebDriverOnlyEvent(event);
+    }
     for (const emitter of this.#emitters) {
       emitter.emit(type, event);
     }

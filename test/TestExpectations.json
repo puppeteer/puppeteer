@@ -461,13 +461,6 @@
     "comment": "Flaky with both CDP and WebDriver BiDi. Needs investigation."
   },
   {
-    "testIdPattern": "[network.spec] network Request.initiator should return the initiator",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[network.spec] network Request.resourceType *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -1312,6 +1305,13 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "network.getData(request) is not yet supported"
+  },
+  {
+    "testIdPattern": "[network.spec] network Request.initiator should return the initiator",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Initiator url and stack is not specified in WebDriver BiDi"
   },
   {
     "testIdPattern": "[network.spec] network Request.postData should be |undefined| when there is no post data",
