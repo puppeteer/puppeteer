@@ -403,7 +403,9 @@ export class ExecutionContext
       }
 
       if (returnByValue) {
-        return valueFromRemoteObject(remoteObject);
+        return valueFromRemoteObject(remoteObject) as HandleFor<
+          Awaited<ReturnType<Func>>
+        >;
       }
 
       return this.#world.createCdpHandle(remoteObject) as HandleFor<
@@ -455,7 +457,9 @@ export class ExecutionContext
     }
 
     if (returnByValue) {
-      return valueFromRemoteObject(remoteObject);
+      return valueFromRemoteObject(remoteObject) as unknown as HandleFor<
+        Awaited<ReturnType<Func>>
+      >;
     }
 
     return this.#world.createCdpHandle(remoteObject) as HandleFor<
