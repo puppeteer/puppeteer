@@ -158,14 +158,11 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override hasPostData(): boolean {
-    if (!this.#frame.page().browser().cdpSupported) {
-      throw new UnsupportedOperation();
-    }
     return this.#request.hasPostData;
   }
 
   override async fetchPostData(): Promise<string | undefined> {
-    throw new UnsupportedOperation();
+    return await this.#request.fetchPostData();
   }
 
   get #hasInternalHeaderOverwrite(): boolean {
