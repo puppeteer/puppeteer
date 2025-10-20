@@ -138,7 +138,8 @@ export class CdpHTTPRequest extends HTTPRequest {
   }
 
   override headers(): Record<string, string> {
-    return this.#headers;
+    // Callers should not be allowed to mutate internal structure.
+    return structuredClone(this.#headers);
   }
 
   override response(): CdpHTTPResponse | null {
