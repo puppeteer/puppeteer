@@ -556,7 +556,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "With BiDi we get only text and nota a serializable value for console messages"
+    "comment": "With BiDi we get only text and not a serializable value for console messages"
   },
   {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP *",
