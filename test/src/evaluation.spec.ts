@@ -83,6 +83,14 @@ describe('Evaluation specs', function () {
       );
       expect(result).toBe(true);
     });
+    it('should transfer RegEx', async () => {
+      const {page} = await getTestState();
+
+      const result = await page.evaluate(a => {
+        return `Hello World!`.match(a)![1];
+      }, /Hello (.*)/);
+      expect(result).toBe(`World!`);
+    });
     it('should modify global environment', async () => {
       const {page} = await getTestState();
 
@@ -293,6 +301,14 @@ describe('Evaluation specs', function () {
         return -Infinity;
       });
       expect(Object.is(result, -Infinity)).toBe(true);
+    });
+    it('should return RegEx', async () => {
+      const {page} = await getTestState();
+
+      const result = await page.evaluate(() => {
+        return /(.*)/;
+      });
+      expect(result instanceof RegExp).toBe(true);
     });
     it('should accept "null" as one of multiple parameters', async () => {
       const {page} = await getTestState();

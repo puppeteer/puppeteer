@@ -94,7 +94,7 @@ const getErrorDetails = (details: Protocol.Runtime.ExceptionDetails) => {
  */
 export function createClientError(
   details: Protocol.Runtime.ExceptionDetails,
-): Error {
+): Error | unknown {
   let name: string;
   let message: string;
   if (!details.exception) {
@@ -141,7 +141,7 @@ export function createClientError(
  */
 export function valueFromRemoteObject(
   remoteObject: Protocol.Runtime.RemoteObject,
-): any {
+): unknown {
   assert(!remoteObject.objectId, 'Cannot extract value when objectId is given');
   if (remoteObject.unserializableValue) {
     if (remoteObject.type === 'bigint') {

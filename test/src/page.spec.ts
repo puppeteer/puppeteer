@@ -1389,13 +1389,22 @@ describe('Page', function () {
       const {page, server} = await getTestState();
 
       const [error] = await Promise.all([
-        waitEvent<Error>(page, 'pageerror', err => {
+        waitEvent(page, 'pageerror', err => {
           return err.message.includes('Fancy');
         }),
         page.goto(server.PREFIX + '/error.html'),
       ]);
       expect(error.message).toContain('Fancy');
       expect(error.stack?.split('\n').at(-1)).toContain('error.html:3:1');
+    });
+    it('should fire for all value types', async () => {
+      const {page, server} = await getTestState();
+
+      const [error] = await Promise.all([
+        waitEvent<unknown>(page, 'pageerror'),
+        page.goto(server.PREFIX + '/error-primitive.html'),
+      ]);
+      expect(error).toBe(undefined);
     });
   });
 

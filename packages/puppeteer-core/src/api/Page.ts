@@ -507,7 +507,7 @@ export const enum PageEvent {
   Metrics = 'metrics',
   /**
    * Emitted when an uncaught exception happens within the page. Contains an
-   * `Error`.
+   * `Error` or data of type unknown.
    */
   PageError = 'pageerror',
   /**
@@ -602,7 +602,7 @@ export interface PageEvents extends Record<EventType, unknown> {
   [PageEvent.FrameNavigated]: Frame;
   [PageEvent.Load]: undefined;
   [PageEvent.Metrics]: {title: string; metrics: Metrics};
-  [PageEvent.PageError]: Error;
+  [PageEvent.PageError]: Error | unknown;
   [PageEvent.Popup]: Page | null;
   [PageEvent.Request]: HTTPRequest;
   [PageEvent.Response]: HTTPResponse;
