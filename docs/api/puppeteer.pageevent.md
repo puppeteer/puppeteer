@@ -177,7 +177,7 @@ PageError
 
 </td><td>
 
-Emitted when an uncaught exception happens within the page. Contains an `Error`.
+Emitted when an uncaught exception happens within the page. Contains an `Error` or data of type unknown.
 
 </td></tr>
 <tr><td>
