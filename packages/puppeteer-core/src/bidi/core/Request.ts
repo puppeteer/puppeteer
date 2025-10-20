@@ -156,7 +156,6 @@ export class Request extends EventEmitter<{
   get initiator(): Bidi.Network.Initiator | undefined {
     return {
       ...this.#event.initiator,
-      type: this.#event.initiator?.type ?? 'other',
       // Initiator URL is not specified in BiDi.
       // @ts-expect-error non-standard property.
       url: this.#event.request['goog:resourceInitiator']?.url,
