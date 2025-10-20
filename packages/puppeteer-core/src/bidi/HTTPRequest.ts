@@ -158,14 +158,11 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override hasPostData(): boolean {
-    if (!this.#frame.page().browser().cdpSupported) {
-      throw new UnsupportedOperation();
-    }
     return this.#request.hasPostData;
   }
 
   override async fetchPostData(): Promise<string | undefined> {
-    throw new UnsupportedOperation();
+    return await this.#request.fetchPostData();
   }
 
   get #hasInternalHeaderOverwrite(): boolean {
@@ -184,6 +181,7 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override headers(): Record<string, string> {
+    // Callers should not be allowed to mutate internal structure.
     const headers: Record<string, string> = {};
     for (const header of this.#request.headers) {
       headers[header.name.toLowerCase()] = header.value.value;

@@ -241,7 +241,7 @@ describe('network', function () {
     });
   });
 
-  describe('Request.postData', function () {
+  describe('Request.fetchPostData', function () {
     it('should work', async () => {
       const {page, server} = await getTestState();
 
@@ -263,14 +263,17 @@ describe('network', function () {
       ]);
 
       expect(request).toBeTruthy();
-      expect(request.postData()).toBe('{"foo":"bar"}');
+      expect(request.hasPostData()).toBeTruthy();
+      expect(await request.fetchPostData()).toBe('{"foo":"bar"}');
     });
 
     it('should be |undefined| when there is no post data', async () => {
       const {page, server} = await getTestState();
 
       const response = (await page.goto(server.EMPTY_PAGE))!;
-      expect(response.request().postData()).toBe(undefined);
+      expect(response.request().hasPostData()).toBeFalsy();
+
+      expect(await response.request().fetchPostData()).toBe(undefined);
     });
 
     it('should work with blobs', async () => {
@@ -296,7 +299,6 @@ describe('network', function () {
       ]);
 
       expect(request).toBeTruthy();
-      expect(request.postData()).toBe(undefined);
       expect(request.hasPostData()).toBe(true);
       expect(await request.fetchPostData()).toBe('{"foo":"bar"}');
     });
@@ -450,7 +452,7 @@ describe('network', function () {
 
       const response = await responsePromise;
       await expect(response.buffer()).rejects.toThrow(
-        'Could not load body for this request. This might happen if the request is a preflight request.',
+        'Could not load response body for this request. This might happen if the request is a preflight request.',
       );
     });
   });
