@@ -328,6 +328,20 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should return RegEx",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp"],
+    "expectations": ["FAIL"],
+    "comment": "CDP serialization does not work with RegEx"
+  },
+  {
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should transfer RegEx",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp"],
+    "expectations": ["FAIL"],
+    "comment": "CDP serialization does not work with RegEx"
+  },
+  {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work for circular object",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp"],
