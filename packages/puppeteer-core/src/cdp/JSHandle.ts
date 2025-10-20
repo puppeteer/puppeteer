@@ -45,7 +45,7 @@ export class CdpJSHandle<T = unknown> extends JSHandle<T> {
 
   override async jsonValue(): Promise<T> {
     if (!this.#remoteObject.objectId) {
-      return valueFromRemoteObject(this.#remoteObject);
+      return valueFromRemoteObject(this.#remoteObject) as T;
     }
     const value = await this.evaluate(object => {
       return object;
