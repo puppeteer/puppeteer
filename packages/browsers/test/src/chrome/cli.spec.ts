@@ -80,7 +80,7 @@ describe('Chrome CLI', function () {
     );
   });
 
-  it.only('should download latest Chrome binaries', async () => {
+  it('should download latest Chrome binaries', async () => {
     chrome.changeBaseVersionUrlForTesting(getServerUrl());
     serverState.server.setRoute(
       '/last-known-good-versions.json',
