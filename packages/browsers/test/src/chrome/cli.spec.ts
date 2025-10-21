@@ -9,18 +9,19 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
+import * as chrome from '../../../lib/esm/browser-data/chrome.js';
 import {CLI} from '../../../lib/esm/CLI.js';
 import {
   createMockedReadlineInterface,
   setupTestServer,
   getServerUrl,
 } from '../utils.js';
-import {testChromeBuildId} from '../versions.js';
+import {testChromeBuildId, testChromiumBuildId} from '../versions.js';
 
 describe('Chrome CLI', function () {
   this.timeout(90000);
 
-  setupTestServer();
+  const serverState = setupTestServer();
 
   let tmpDir = '/tmp/puppeteer-browsers-test';
 
@@ -79,8 +80,26 @@ describe('Chrome CLI', function () {
     );
   });
 
-  // Skipped because the current latest is not published yet.
-  it.skip('should download latest Chrome binaries', async () => {
+  it.only('should download latest Chrome binaries', async () => {
+    chrome.changeBaseVersionUrlForTesting(getServerUrl());
+    serverState.server.setRoute(
+      '/last-known-good-versions.json',
+      (_req, res) => {
+        res.write(
+          JSON.stringify({
+            timestamp: '2025-10-21T22:09:41.716Z',
+            channels: {
+              Canary: {
+                channel: 'Canary',
+                version: testChromeBuildId,
+                revision: testChromiumBuildId,
+              },
+            },
+          }),
+        );
+        res.end();
+      },
+    );
     await new CLI(tmpDir).run([
       'npx',
       '@puppeteer/browsers',

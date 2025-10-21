@@ -50,7 +50,7 @@ interface ServerState {
 
 const state: Partial<ServerState> = {};
 
-export function setupTestServer(): void {
+export function setupTestServer(): ServerState {
   before(async () => {
     state.server = await startServer();
   });
@@ -59,6 +59,8 @@ export function setupTestServer(): void {
     await state.server!.stop();
     state.server = undefined;
   });
+
+  return state as ServerState;
 }
 
 export function getServerUrl(): string {

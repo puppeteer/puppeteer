@@ -11,8 +11,8 @@ import path from 'node:path';
 
 import sinon from 'sinon';
 
+import * as firefox from '../../../lib/esm/browser-data/firefox.js';
 import {CLI} from '../../../lib/esm/CLI.js';
-import * as httpUtil from '../../../lib/esm/httpUtil.js';
 import {
   createMockedReadlineInterface,
   getServerUrl,
@@ -23,7 +23,7 @@ import {testFirefoxBuildId} from '../versions.js';
 describe('Firefox CLI', function () {
   this.timeout(90000);
 
-  setupTestServer();
+  const serverState = setupTestServer();
 
   let tmpDir = '/tmp/puppeteer-browsers-test';
 
@@ -61,11 +61,15 @@ describe('Firefox CLI', function () {
   });
 
   it('should download latest Firefox binaries', async () => {
-    sinon.stub(httpUtil, 'getJSON').returns(
-      Promise.resolve({
-        FIREFOX_NIGHTLY: testFirefoxBuildId.split('_').at(-1),
-      }),
-    );
+    firefox.changeBaseVersionUrlForTesting(getServerUrl());
+    serverState.server.setRoute('/firefox_versions.json', (_req, res) => {
+      res.write(
+        JSON.stringify({
+          FIREFOX_NIGHTLY: testFirefoxBuildId.split('_').at(-1),
+        }),
+      );
+      res.end();
+    });
     await new CLI(tmpDir).run([
       'npx',
       '@puppeteer/browsers',

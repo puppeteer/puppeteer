@@ -15,7 +15,7 @@ const FILENAME = import.meta.filename.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
 const parseStackTrace = (stack: string): string => {
   stack = stack.replace(new RegExp(FILENAME, 'g'), '<filename>');
   stack = stack.replace(
-    /file:\/\/<filename>:(\d+):(\d+)/g,
+    /file:\/{2,3}<filename>:(\d+):(\d+)/g,
     '<filename>:<line>:<col>',
   );
   stack = stack.replace(/<anonymous>:(\d+):(\d+)/g, '<anonymous>:<line>:<col>');
