@@ -10,8 +10,9 @@
   ],
   "type": "commonjs",
   "main": "./lib/cjs/puppeteer/puppeteer-core.js",
-  "types": "./lib/types.d.ts",
   "browser": "./lib/esm/puppeteer/puppeteer-core-browser.js",
+  "module": "./lib/esm/puppeteer/puppeteer-core.js",
+  "types": "./lib/types.d.ts",
   "exports": {
     ".": {
       "types": "./lib/types.d.ts",
