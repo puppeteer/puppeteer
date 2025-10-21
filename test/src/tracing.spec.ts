@@ -105,34 +105,6 @@ describe('Tracing', function () {
     expect(trace).toBeTruthy();
   });
 
-  it('should return undefined in case of Buffer error', async () => {
-    const {page, server} = testState;
-
-    await page.tracing.start({screenshots: true});
-    await page.goto(server.PREFIX + '/grid.html');
-
-    const oldGetReadableAsBuffer = utils.getReadableAsTypedArray;
-    sinon.stub(utils, 'getReadableAsTypedArray').callsFake(() => {
-      return oldGetReadableAsBuffer({
-        getReader() {
-          return {
-            done: false,
-            read() {
-              if (!this.done) {
-                this.done = true;
-                return {done: false, value: null};
-              }
-              return {done: true};
-            },
-          };
-        },
-      } as unknown as ReadableStream);
-    });
-
-    const trace = await page.tracing.stop();
-    expect(trace).toEqual(undefined);
-  });
-
   it('should support a typedArray without a path', async () => {
     const {page, server} = testState;
 

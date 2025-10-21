@@ -382,7 +382,17 @@ export const mochaHooks: Mocha.RootHookObject = {
       state.isHeadless = processVariables.isHeadless;
       state.headless = processVariables.headless;
       state.puppeteerPath = path.resolve(
-        path.join(import.meta.dirname, '..', '..', 'packages', 'puppeteer'),
+        path.join(
+          import.meta.dirname,
+          '..',
+          '..',
+          'packages',
+          'puppeteer',
+          'lib',
+          'esm',
+          'puppeteer',
+          'puppeteer.js',
+        ),
       );
     }
 
