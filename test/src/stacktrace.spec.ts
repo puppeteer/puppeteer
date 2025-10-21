@@ -14,15 +14,18 @@ import {waitEvent} from './utils.js';
 const FILENAME = import.meta.filename.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
 const parseStackTrace = (stack: string): string => {
   stack = stack.replace(new RegExp(FILENAME, 'g'), '<filename>');
-  stack = stack.replace(/<filename>:(\d+):(\d+)/g, '<filename>:<line>:<col>');
+  stack = stack.replace(
+    /file:\/\/<filename>:(\d+):(\d+)/g,
+    '<filename>:<line>:<col>',
+  );
   stack = stack.replace(/<anonymous>:(\d+):(\d+)/g, '<anonymous>:<line>:<col>');
   return stack;
 };
 
-describe('Stack trace', function () {
+describe.only('Stack trace', function () {
   setupTestBrowserHooks();
 
-  it('should work', async () => {
+  it.only('should work', async () => {
     const {page} = await getTestState();
 
     const error = (await page

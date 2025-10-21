@@ -29,7 +29,7 @@ describe('Fixtures', function () {
       dumpio: true,
     });
     const res = spawn('node', [
-      path.join(import.meta.dirname, '../fixtures', 'dumpio.js'),
+      path.join(import.meta.dirname, '../fixtures', 'dumpio.mjs'),
       puppeteerPath,
       JSON.stringify(options),
     ]);
