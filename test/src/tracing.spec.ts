@@ -8,8 +8,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import expect from 'expect';
-import * as utils from 'puppeteer-core/internal/common/util.js';
-import sinon from 'sinon';
 
 import {launch} from './mocha-utils.js';
 
