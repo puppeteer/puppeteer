@@ -19,7 +19,7 @@ import translations from '@theme/SearchTranslations';
 import React, {useState, useRef, useCallback, useMemo} from 'react';
 import {createPortal} from 'react-dom';
 
-// eslint-disable-next-line rulesdir/extensions
+// eslint-disable-next-line @puppeteer/extensions
 import {tagToCounter} from '../SearchMetadata';
 let DocSearchModal = null;
 function Hit({hit, children}) {

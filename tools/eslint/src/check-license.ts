@@ -95,4 +95,4 @@ const enforceLicenseRule = createRule<[], 'licenseRule'>({
   },
 });
 
-export = enforceLicenseRule;
+export default enforceLicenseRule;

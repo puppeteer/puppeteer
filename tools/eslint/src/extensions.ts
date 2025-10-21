@@ -47,4 +47,4 @@ const enforceExtensionRule = createRule<[], 'extensionsRule'>({
   },
 });
 
-export = enforceExtensionRule;
+export default enforceExtensionRule;

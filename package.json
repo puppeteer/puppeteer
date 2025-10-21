@@ -184,7 +184,6 @@
     "eslint-plugin-import": "2.32.0",
     "eslint-plugin-mocha": "11.2.0",
     "eslint-plugin-prettier": "5.5.4",
-    "eslint-plugin-rulesdir": "0.2.2",
     "eslint-plugin-tsdoc": "0.4.0",
     "eslint-plugin-unused-imports": "4.1.4",
     "eslint": "9.31.0",
