@@ -12,6 +12,7 @@
   "type": "commonjs",
   "bin": "lib/cjs/main-cli.js",
   "main": "./lib/cjs/main.js",
+  "module": "./lib/esm/main.js",
   "exports": {
     "import": "./lib/esm/main.js",
     "require": "./lib/cjs/main.js"

@@ -11,6 +11,7 @@
   "type": "commonjs",
   "bin": "./lib/cjs/puppeteer/node/cli.js",
   "main": "./lib/cjs/puppeteer/puppeteer.js",
+  "module": "./lib/esm/puppeteer/puppeteer.js",
   "types": "./lib/types.d.ts",
   "exports": {
     ".": {
