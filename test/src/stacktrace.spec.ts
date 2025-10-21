@@ -12,7 +12,7 @@ import expect from 'expect';
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
 
-const FILENAME = import.meta.filename.split('/').join(path.sep);
+const FILENAME = import.meta.filename.split('\\').join(path.sep);
 const parseStackTrace = (stack: string): string => {
   stack = stack.replace(new RegExp(FILENAME, 'g'), '<filename>');
   stack = stack.replace(
@@ -26,7 +26,7 @@ const parseStackTrace = (stack: string): string => {
 describe('Stack trace', function () {
   setupTestBrowserHooks();
 
-  it.only('should work', async () => {
+  it('should work', async () => {
     const {page} = await getTestState();
 
     const error = (await page
@@ -40,12 +40,7 @@ describe('Stack trace', function () {
     expect(error.name).toEqual('Error');
     expect(error.message).toEqual('Test');
     assert(error.stack);
-    console.log('--START--');
-    console.log(FILENAME);
-    console.log(error.stack);
-
     error.stack = error.stack.replace(new RegExp(FILENAME, 'g'), '<filename>');
-    console.log('--END--');
     expect(
       parseStackTrace(error.stack).split('\n    at ').slice(0, 2),
     ).toMatchObject({
