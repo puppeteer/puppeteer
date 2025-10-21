@@ -197,7 +197,7 @@ undefined
 
 </td><td>
 
-Error
+Error \| unknown
 
 </td><td>
 
