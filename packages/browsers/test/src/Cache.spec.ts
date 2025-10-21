@@ -9,7 +9,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import {Browser, Cache} from '../../lib/cjs/main.js';
+import {Browser, Cache} from '../../lib/esm/main.js';
 
 describe('Cache', () => {
   let tmpDir = '/tmp/puppeteer-browsers-test';

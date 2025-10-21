@@ -11,8 +11,8 @@ import path from 'node:path';
 
 import sinon from 'sinon';
 
-import {CLI} from '../../../lib/cjs/CLI.js';
-import * as httpUtil from '../../../lib/cjs/httpUtil.js';
+import {CLI} from '../../../lib/esm/CLI.js';
+import * as httpUtil from '../../../lib/esm/httpUtil.js';
 import {
   createMockedReadlineInterface,
   getServerUrl,

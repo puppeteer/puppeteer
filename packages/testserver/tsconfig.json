@@ -3,8 +3,8 @@
   "compilerOptions": {
     "allowJs": true,
     "composite": true,
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
     "outDir": "lib",
     "rootDir": "src"
   },

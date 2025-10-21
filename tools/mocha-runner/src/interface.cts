@@ -4,8 +4,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * This file needs to be kept CJS until Mocha starts accepting ESM
+ * for custom interfaces
+ */
+
 import Mocha from 'mocha';
-import commonInterface from 'mocha/lib/interfaces/common';
+// @ts-expect-error
+import commonInterface from 'mocha/lib/interfaces/common.js';
 import {
   setLogCapture,
   getCapturedLogs,

@@ -1899,7 +1899,7 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.addScriptTag({
-        path: path.join(__dirname, '../assets/es6/es6pathimport.js'),
+        path: path.join(import.meta.dirname, '../assets/es6/es6pathimport.js'),
         type: 'module',
       });
       await page.waitForFunction(() => {
@@ -1952,7 +1952,7 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       using scriptHandle = await page.addScriptTag({
-        path: path.join(__dirname, '../assets/injectedfile.js'),
+        path: path.join(import.meta.dirname, '../assets/injectedfile.js'),
       });
       expect(scriptHandle.asElement()).not.toBeNull();
       expect(
@@ -1967,7 +1967,7 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.addScriptTag({
-        path: path.join(__dirname, '../assets/injectedfile.js'),
+        path: path.join(import.meta.dirname, '../assets/injectedfile.js'),
       });
       const result = await page.evaluate(() => {
         return (globalThis as any).__injectedError.stack;
@@ -2078,7 +2078,7 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       using styleHandle = await page.addStyleTag({
-        path: path.join(__dirname, '../assets/injectedstyle.css'),
+        path: path.join(import.meta.dirname, '../assets/injectedstyle.css'),
       });
       expect(styleHandle.asElement()).not.toBeNull();
       expect(
@@ -2093,7 +2093,7 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.addStyleTag({
-        path: path.join(__dirname, '../assets/injectedstyle.css'),
+        path: path.join(import.meta.dirname, '../assets/injectedstyle.css'),
       });
       using styleHandle = (await page.$('style'))!;
       const styleContent = await page.evaluate(style => {
@@ -2340,7 +2340,7 @@ describe('Page', function () {
     it('can print to PDF and save to file', async () => {
       const {page, server} = await getTestState();
 
-      const outputFile = __dirname + '/../assets/output.pdf';
+      const outputFile = import.meta.dirname + '/../assets/output.pdf';
       await page.goto(server.PREFIX + '/pdf.html');
       await page.pdf({path: outputFile});
       try {

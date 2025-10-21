@@ -5,6 +5,7 @@
     "type": "git",
     "url": "https://github.com/puppeteer/puppeteer"
   },
+  "type": "module",
   "scripts": {
     "build": "wireit",
     "build:tools": "wireit",
@@ -213,6 +214,7 @@
     "packages/*",
     "test",
     "test/installation",
+    "test/smoke",
     "tools/eslint",
     "tools/doctest",
     "tools/docgen",

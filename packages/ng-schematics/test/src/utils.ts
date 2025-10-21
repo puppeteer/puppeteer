@@ -92,7 +92,7 @@ export async function buildTestingTree(
 ): Promise<UnitTestTree> {
   const runner = new SchematicTestRunner(
     'schematics',
-    join(__dirname, '../../lib/schematics/collection.json'),
+    join(import.meta.dirname, '../../lib/schematics/collection.json'),
   );
   const options = {
     testRunner: 'jasmine',
@@ -146,7 +146,7 @@ export async function runSchematic(
 ): Promise<UnitTestTree> {
   const runner = new SchematicTestRunner(
     'schematics',
-    join(__dirname, '../../lib/schematics/collection.json'),
+    join(import.meta.dirname, '../../lib/schematics/collection.json'),
   );
   return await runner.runSchematic(command, options, tree);
 }

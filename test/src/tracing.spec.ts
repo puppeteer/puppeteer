@@ -22,7 +22,7 @@ describe('Tracing', function () {
    */
   beforeEach(async () => {
     testState = await launch({}, {createContext: true});
-    outputFile = path.join(__dirname, 'trace.json');
+    outputFile = path.join(import.meta.dirname, 'trace.json');
   });
 
   afterEach(async () => {
@@ -144,7 +144,7 @@ describe('Tracing', function () {
 
   it('should properly fail if readProtocolStream errors out', async () => {
     const {page} = testState;
-    await page.tracing.start({path: __dirname});
+    await page.tracing.start({path: import.meta.dirname});
 
     let error!: Error;
     try {

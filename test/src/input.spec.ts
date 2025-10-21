@@ -12,7 +12,10 @@ import {TimeoutError} from 'puppeteer';
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {html} from './utils.js';
 
-const FILE_TO_UPLOAD = path.join(__dirname, '/../assets/file-to-upload.txt');
+const FILE_TO_UPLOAD = path.join(
+  import.meta.dirname,
+  '/../assets/file-to-upload.txt',
+);
 
 describe('input tests', function () {
   setupTestBrowserHooks();
@@ -277,9 +280,12 @@ describe('input tests', function () {
         .accept([
           path.relative(
             process.cwd(),
-            __dirname + '/../assets/file-to-upload.txt',
+            import.meta.dirname + '/../assets/file-to-upload.txt',
           ),
-          path.relative(process.cwd(), __dirname + '/../assets/pptr.png'),
+          path.relative(
+            process.cwd(),
+            import.meta.dirname + '/../assets/pptr.png',
+          ),
         ])
         .catch(error_ => {
           return (error = error_);

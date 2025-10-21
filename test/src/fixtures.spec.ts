@@ -29,7 +29,7 @@ describe('Fixtures', function () {
       dumpio: true,
     });
     const res = spawn('node', [
-      path.join(__dirname, '../fixtures', 'dumpio.js'),
+      path.join(import.meta.dirname, '../fixtures', 'dumpio.js'),
       puppeteerPath,
       JSON.stringify(options),
     ]);
@@ -48,7 +48,7 @@ describe('Fixtures', function () {
     let dumpioData = '';
     const options = Object.assign({}, defaultBrowserOptions, {dumpio: true});
     const res = spawn('node', [
-      path.join(__dirname, '../fixtures', 'dumpio.js'),
+      path.join(import.meta.dirname, '../fixtures', 'dumpio.js'),
       puppeteerPath,
       JSON.stringify(options),
     ]);
@@ -73,7 +73,7 @@ describe('Fixtures', function () {
       dumpio: false,
     });
     const res = spawn('node', [
-      path.join(__dirname, '../fixtures', 'closeme.js'),
+      path.join(import.meta.dirname, '../fixtures', 'closeme.js'),
       puppeteerPath,
       JSON.stringify(options),
     ]);
