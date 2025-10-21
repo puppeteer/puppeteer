@@ -60,34 +60,42 @@ describe('Firefox CLI', function () {
     );
   });
 
-  it('should download latest Firefox binaries', async () => {
-    firefox.changeBaseVersionUrlForTesting(getServerUrl());
-    serverState.server.setRoute('/firefox_versions.json', (_req, res) => {
-      res.write(
-        JSON.stringify({
-          FIREFOX_NIGHTLY: testFirefoxBuildId.split('_').at(-1),
-        }),
-      );
-      res.end();
+  describe('with mocked version url', () => {
+    before(() => {
+      firefox.changeBaseVersionUrlForTesting(getServerUrl());
     });
-    await new CLI(tmpDir).run([
-      'npx',
-      '@puppeteer/browsers',
-      'install',
-      `firefox@latest`,
-      `--path=${tmpDir}`,
-      '--platform=linux',
-      `--base-url=${getServerUrl()}`,
-    ]);
+    after(() => {
+      firefox.resetBaseVersionUrlForTesting();
+    });
 
-    await new CLI(tmpDir).run([
-      'npx',
-      '@puppeteer/browsers',
-      'install',
-      `firefox`,
-      `--path=${tmpDir}`,
-      '--platform=linux',
-      `--base-url=${getServerUrl()}`,
-    ]);
+    it('should download latest Firefox binaries', async () => {
+      serverState.server.setRoute('/firefox_versions.json', (_req, res) => {
+        res.write(
+          JSON.stringify({
+            FIREFOX_NIGHTLY: testFirefoxBuildId.split('_').at(-1),
+          }),
+        );
+        res.end();
+      });
+      await new CLI(tmpDir).run([
+        'npx',
+        '@puppeteer/browsers',
+        'install',
+        `firefox@latest`,
+        `--path=${tmpDir}`,
+        '--platform=linux',
+        `--base-url=${getServerUrl()}`,
+      ]);
+
+      await new CLI(tmpDir).run([
+        'npx',
+        '@puppeteer/browsers',
+        'install',
+        `firefox`,
+        `--path=${tmpDir}`,
+        '--platform=linux',
+        `--base-url=${getServerUrl()}`,
+      ]);
+    });
   });
 });

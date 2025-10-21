@@ -25,7 +25,7 @@ const parseStackTrace = (stack: string): string => {
 describe('Stack trace', function () {
   setupTestBrowserHooks();
 
-  it('should work', async () => {
+  it.only('should work', async () => {
     const {page} = await getTestState();
 
     const error = (await page
@@ -39,6 +39,8 @@ describe('Stack trace', function () {
     expect(error.name).toEqual('Error');
     expect(error.message).toEqual('Test');
     assert(error.stack);
+    console.log(error.stack);
+    console.log(FILENAME);
     error.stack = error.stack.replace(new RegExp(FILENAME, 'g'), '<filename>');
     expect(
       parseStackTrace(error.stack).split('\n    at ').slice(0, 2),

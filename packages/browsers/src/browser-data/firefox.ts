@@ -170,6 +170,10 @@ export function changeBaseVersionUrlForTesting(url: string): void {
   baseVersionUrl = url;
 }
 
+export function resetBaseVersionUrlForTesting(): void {
+  baseVersionUrl = 'https://product-details.mozilla.org/1.0';
+}
+
 export async function resolveBuildId(
   channel: FirefoxChannel = FirefoxChannel.NIGHTLY,
 ): Promise<string> {

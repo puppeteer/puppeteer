@@ -72,6 +72,9 @@ let baseVersionUrl = 'https://googlechromelabs.github.io/chrome-for-testing';
 export function changeBaseVersionUrlForTesting(url: string): void {
   baseVersionUrl = url;
 }
+export function resetBaseVersionUrlForTesting(): void {
+  baseVersionUrl = 'https://googlechromelabs.github.io/chrome-for-testing';
+}
 
 export async function getLastKnownGoodReleaseForChannel(
   channel: ChromeReleaseChannel,

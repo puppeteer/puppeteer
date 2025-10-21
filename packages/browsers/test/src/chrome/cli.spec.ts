@@ -80,34 +80,42 @@ describe('Chrome CLI', function () {
     );
   });
 
-  it('should download latest Chrome binaries', async () => {
-    chrome.changeBaseVersionUrlForTesting(getServerUrl());
-    serverState.server.setRoute(
-      '/last-known-good-versions.json',
-      (_req, res) => {
-        res.write(
-          JSON.stringify({
-            timestamp: '2025-10-21T22:09:41.716Z',
-            channels: {
-              Canary: {
-                channel: 'Canary',
-                version: testChromeBuildId,
-                revision: testChromiumBuildId,
+  describe('with mocked version url', () => {
+    before(() => {
+      chrome.changeBaseVersionUrlForTesting(getServerUrl());
+    });
+    after(() => {
+      chrome.resetBaseVersionUrlForTesting();
+    });
+
+    it('should download latest Chrome binaries', async () => {
+      serverState.server.setRoute(
+        '/last-known-good-versions.json',
+        (_req, res) => {
+          res.write(
+            JSON.stringify({
+              timestamp: '2025-10-21T22:09:41.716Z',
+              channels: {
+                Canary: {
+                  channel: 'Canary',
+                  version: testChromeBuildId,
+                  revision: testChromiumBuildId,
+                },
               },
-            },
-          }),
-        );
-        res.end();
-      },
-    );
-    await new CLI(tmpDir).run([
-      'npx',
-      '@puppeteer/browsers',
-      'install',
-      `chrome@latest`,
-      `--path=${tmpDir}`,
-      '--platform=linux',
-      `--base-url=${getServerUrl()}`,
-    ]);
+            }),
+          );
+          res.end();
+        },
+      );
+      await new CLI(tmpDir).run([
+        'npx',
+        '@puppeteer/browsers',
+        'install',
+        `chrome@latest`,
+        `--path=${tmpDir}`,
+        '--platform=linux',
+        `--base-url=${getServerUrl()}`,
+      ]);
+    });
   });
 });
