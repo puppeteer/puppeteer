@@ -16,7 +16,7 @@ describe('Accessibility', function () {
   setupTestBrowserHooks();
 
   it('should work', async () => {
-    const {page, isFirefox} = await getTestState();
+    const {page} = await getTestState();
 
     await page.setContent(
       htmlRaw`
@@ -44,76 +44,46 @@ describe('Accessibility', function () {
             <option>First Option</option>
             <option>Second Option</option>
           </select>
+          <a href="https://example.com">example</a>
         </body>`,
     );
 
     await page.focus('[placeholder="Empty input"]');
-    const golden = isFirefox
-      ? {
-          role: 'document',
-          name: 'Accessibility Test',
+    expect(await page.accessibility.snapshot()).toMatchObject({
+      role: 'RootWebArea',
+      name: 'Accessibility Test',
+      children: [
+        {role: 'StaticText', name: 'Hello World'},
+        {role: 'heading', name: 'Inputs', level: 1},
+        {role: 'textbox', name: 'Empty input', focused: true},
+        {role: 'textbox', name: 'readonly input', readonly: true},
+        {role: 'textbox', name: 'disabled input', disabled: true},
+        {role: 'textbox', name: 'Input with whitespace', value: '  '},
+        {role: 'textbox', name: '', value: 'value only'},
+        {role: 'textbox', name: 'placeholder', value: 'and a value'},
+        {
+          role: 'textbox',
+          name: 'placeholder',
+          value: 'and a value',
+          description: 'This is a description!',
+        },
+        {
+          role: 'combobox',
+          name: '',
+          value: 'First Option',
+          haspopup: 'menu',
           children: [
-            {role: 'text leaf', name: 'Hello World'},
-            {role: 'heading', name: 'Inputs', level: 1},
-            {role: 'entry', name: 'Empty input', focused: true},
-            {role: 'entry', name: 'readonly input', readonly: true},
-            {role: 'entry', name: 'disabled input', disabled: true},
-            {role: 'entry', name: 'Input with whitespace', value: '  '},
-            {role: 'entry', name: '', value: 'value only'},
-            {role: 'entry', name: '', value: 'and a value'}, // firefox doesn't use aria-placeholder for the name
-            {
-              role: 'entry',
-              name: '',
-              value: 'and a value',
-              description: 'This is a description!',
-            }, // and here
-            {
-              role: 'combobox',
-              name: '',
-              value: 'First Option',
-              haspopup: true,
-              children: [
-                {
-                  role: 'combobox option',
-                  name: 'First Option',
-                  selected: true,
-                },
-                {role: 'combobox option', name: 'Second Option'},
-              ],
-            },
+            {role: 'option', name: 'First Option', selected: true},
+            {role: 'option', name: 'Second Option'},
           ],
-        }
-      : {
-          role: 'RootWebArea',
-          name: 'Accessibility Test',
-          children: [
-            {role: 'StaticText', name: 'Hello World'},
-            {role: 'heading', name: 'Inputs', level: 1},
-            {role: 'textbox', name: 'Empty input', focused: true},
-            {role: 'textbox', name: 'readonly input', readonly: true},
-            {role: 'textbox', name: 'disabled input', disabled: true},
-            {role: 'textbox', name: 'Input with whitespace', value: '  '},
-            {role: 'textbox', name: '', value: 'value only'},
-            {role: 'textbox', name: 'placeholder', value: 'and a value'},
-            {
-              role: 'textbox',
-              name: 'placeholder',
-              value: 'and a value',
-              description: 'This is a description!',
-            },
-            {
-              role: 'combobox',
-              name: '',
-              value: 'First Option',
-              haspopup: 'menu',
-              children: [
-                {role: 'option', name: 'First Option', selected: true},
-                {role: 'option', name: 'Second Option'},
-              ],
-            },
-          ],
-        };
-    expect(await page.accessibility.snapshot()).toMatchObject(golden);
+        },
+        {
+          name: 'example',
+          role: 'link',
+          url: 'https://example.com/',
+        },
+      ],
+    });
   });
 
   it('should work for showcase', async () => {
@@ -206,48 +176,33 @@ describe('Accessibility', function () {
   });
 
   it('should report uninteresting nodes', async () => {
-    const {page, isFirefox} = await getTestState();
+    const {page} = await getTestState();
 
     await page.setContent(html`<textarea>hi</textarea>`);
     await page.focus('textarea');
-    const golden = isFirefox
-      ? {
-          role: 'entry',
-          name: '',
-          value: 'hi',
-          focused: true,
-          multiline: true,
-          children: [
-            {
-              role: 'text leaf',
-              name: 'hi',
-            },
-          ],
-        }
-      : {
-          role: 'textbox',
-          name: '',
-          value: 'hi',
-          focused: true,
-          multiline: true,
-          children: [
-            {
-              role: 'generic',
-              name: '',
-              children: [
-                {
-                  role: 'StaticText',
-                  name: 'hi',
-                },
-              ],
-            },
-          ],
-        };
     expect(
       findFocusedNode(
         await page.accessibility.snapshot({interestingOnly: false}),
       ),
-    ).toMatchObject(golden);
+    ).toMatchObject({
+      role: 'textbox',
+      name: '',
+      value: 'hi',
+      focused: true,
+      multiline: true,
+      children: [
+        {
+          role: 'generic',
+          name: '',
+          children: [
+            {
+              role: 'StaticText',
+              name: 'hi',
+            },
+          ],
+        },
+      ],
+    });
   });
   it('get snapshots while the tree is re-calculated', async () => {
     // see https://github.com/puppeteer/puppeteer/issues/9404
@@ -555,7 +510,7 @@ describe('Accessibility', function () {
   });
   describe('filtering children of leaf nodes', function () {
     it('should not report text nodes inside controls', async () => {
-      const {page, isFirefox} = await getTestState();
+      const {page} = await getTestState();
 
       await page.setContent(
         html` <div role="tablist">
@@ -567,41 +522,25 @@ describe('Accessibility', function () {
           <div role="tab">Tab2</div>
         </div>`,
       );
-      const golden = isFirefox
-        ? {
-            role: 'document',
-            name: '',
-            children: [
-              {
-                role: 'pagetab',
-                name: 'Tab1',
-                selected: true,
-              },
-              {
-                role: 'pagetab',
-                name: 'Tab2',
-              },
-            ],
-          }
-        : {
-            role: 'RootWebArea',
-            name: 'My test page',
-            children: [
-              {
-                role: 'tab',
-                name: 'Tab1',
-                selected: true,
-              },
-              {
-                role: 'tab',
-                name: 'Tab2',
-              },
-            ],
-          };
-      expect(await page.accessibility.snapshot()).toMatchObject(golden);
+
+      expect(await page.accessibility.snapshot()).toMatchObject({
+        role: 'RootWebArea',
+        name: 'My test page',
+        children: [
+          {
+            role: 'tab',
+            name: 'Tab1',
+            selected: true,
+          },
+          {
+            role: 'tab',
+            name: 'Tab2',
+          },
+        ],
+      });
     });
     it('rich text editable fields should have children', async () => {
-      const {page, isFirefox} = await getTestState();
+      const {page} = await getTestState();
 
       await page.setContent(
         html` <div contenteditable="true">
@@ -612,43 +551,27 @@ describe('Accessibility', function () {
           />
         </div>`,
       );
-      const golden = isFirefox
-        ? {
-            role: 'section',
-            name: '',
-            children: [
-              {
-                role: 'text leaf',
-                name: 'Edit this image:',
-              },
-              {
-                role: 'StaticText',
-                name: 'my fake image',
-              },
-            ],
-          }
-        : {
-            role: 'generic',
-            name: '',
-            value: 'Edit this image: ',
-            children: [
-              {
-                role: 'StaticText',
-                name: 'Edit this image: ',
-              },
-              {
-                role: 'image',
-                name: 'my fake image',
-              },
-            ],
-          };
       const snapshot = await page.accessibility.snapshot();
       assert(snapshot);
       assert(snapshot.children);
-      expect(snapshot.children[0]).toMatchObject(golden);
+      expect(snapshot.children[0]).toMatchObject({
+        role: 'generic',
+        name: '',
+        value: 'Edit this image: ',
+        children: [
+          {
+            role: 'StaticText',
+            name: 'Edit this image: ',
+          },
+          {
+            role: 'image',
+            name: 'my fake image',
+          },
+        ],
+      });
     });
     it('rich text editable fields with role should have children', async () => {
-      const {page, isFirefox} = await getTestState();
+      const {page} = await getTestState();
 
       await page.setContent(
         html` <div
@@ -663,34 +586,21 @@ describe('Accessibility', function () {
         </div>`,
       );
       // Image node should not be exposed in contenteditable elements. See https://crbug.com/1324392.
-      const golden = isFirefox
-        ? {
-            role: 'entry',
-            name: '',
-            value: 'Edit this image: my fake image',
-            children: [
-              {
-                role: 'StaticText',
-                name: 'my fake image',
-              },
-            ],
-          }
-        : {
-            role: 'textbox',
-            name: '',
-            value: 'Edit this image: ',
-            multiline: true,
-            children: [
-              {
-                role: 'StaticText',
-                name: 'Edit this image: ',
-              },
-            ],
-          };
       const snapshot = await page.accessibility.snapshot();
       assert(snapshot);
       assert(snapshot.children);
-      expect(snapshot.children[0]).toMatchObject(golden);
+      expect(snapshot.children[0]).toMatchObject({
+        role: 'textbox',
+        name: '',
+        value: 'Edit this image: ',
+        multiline: true,
+        children: [
+          {
+            role: 'StaticText',
+            name: 'Edit this image: ',
+          },
+        ],
+      });
     });
 
     // Firefox does not support contenteditable="plaintext-only".
@@ -719,7 +629,7 @@ describe('Accessibility', function () {
       });
     });
     it('non editable textbox with role and tabIndex and label should not have children', async () => {
-      const {page, isFirefox} = await getTestState();
+      const {page} = await getTestState();
 
       await page.setContent(
         html`<div
@@ -735,24 +645,18 @@ describe('Accessibility', function () {
           />
         </div>`,
       );
-      const golden = isFirefox
-        ? {
-            role: 'entry',
-            name: 'my favorite textbox',
-            value: 'this is the inner content yo',
-          }
-        : {
-            role: 'textbox',
-            name: 'my favorite textbox',
-            value: 'this is the inner content ',
-          };
+
       const snapshot = await page.accessibility.snapshot();
       assert(snapshot);
       assert(snapshot.children);
-      expect(snapshot.children[0]).toMatchObject(golden);
+      expect(snapshot.children[0]).toMatchObject({
+        role: 'textbox',
+        name: 'my favorite textbox',
+        value: 'this is the inner content ',
+      });
     });
     it('checkbox with and tabIndex and label should not have children', async () => {
-      const {page, isFirefox} = await getTestState();
+      const {page} = await getTestState();
 
       await page.setContent(
         html` <div
@@ -768,24 +672,17 @@ describe('Accessibility', function () {
           />
         </div>`,
       );
-      const golden = isFirefox
-        ? {
-            role: 'checkbutton',
-            name: 'my favorite checkbox',
-            checked: true,
-          }
-        : {
-            role: 'checkbox',
-            name: 'my favorite checkbox',
-            checked: true,
-          };
       const snapshot = await page.accessibility.snapshot();
       assert(snapshot);
       assert(snapshot.children);
-      expect(snapshot.children[0]).toMatchObject(golden);
+      expect(snapshot.children[0]).toMatchObject({
+        role: 'checkbox',
+        name: 'my favorite checkbox',
+        checked: true,
+      });
     });
     it('checkbox without label should not have children', async () => {
-      const {page, isFirefox} = await getTestState();
+      const {page} = await getTestState();
 
       await page.setContent(
         html`<div
@@ -799,21 +696,14 @@ describe('Accessibility', function () {
           />
         </div>`,
       );
-      const golden = isFirefox
-        ? {
-            role: 'checkbutton',
-            name: 'this is the inner content yo',
-            checked: true,
-          }
-        : {
-            role: 'checkbox',
-            name: 'this is the inner content yo',
-            checked: true,
-          };
       const snapshot = await page.accessibility.snapshot();
       assert(snapshot);
       assert(snapshot.children);
-      expect(snapshot.children[0]).toMatchObject(golden);
+      expect(snapshot.children[0]).toMatchObject({
+        role: 'checkbox',
+        name: 'this is the inner content yo',
+        checked: true,
+      });
     });
 
     describe('root option', function () {

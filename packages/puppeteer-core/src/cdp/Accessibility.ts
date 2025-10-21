@@ -76,6 +76,11 @@ export interface SerializedAXNode {
    */
   invalid?: string;
   orientation?: string;
+
+  /**
+   * Url for link elements.
+   */
+  url?: string;
   /**
    * Children of this node, if there are any.
    */
@@ -542,7 +547,8 @@ class AXNode {
       | 'description'
       | 'keyshortcuts'
       | 'roledescription'
-      | 'valuetext';
+      | 'valuetext'
+      | 'url';
 
     const userStringProperties: UserStringProperty[] = [
       'name',
@@ -551,6 +557,7 @@ class AXNode {
       'keyshortcuts',
       'roledescription',
       'valuetext',
+      'url',
     ];
     const getUserStringPropertyValue = (key: UserStringProperty): string => {
       return properties.get(key) as string;
