@@ -11,7 +11,7 @@ import type {JsonObject} from '@angular-devkit/core';
 import {
   SchematicTestRunner,
   type UnitTestTree,
-} from '@angular-devkit/schematics/testing';
+} from '@angular-devkit/schematics/testing/index.js';
 import sinon from 'sinon';
 
 const WORKSPACE_OPTIONS = {

@@ -2,6 +2,7 @@
   "name": "@puppeteer/ng-schematics",
   "version": "0.7.0",
   "description": "Puppeteer Angular schematics",
+  "type": "module",
   "scripts": {
     "build": "wireit",
     "clean": "../../tools/clean.mjs",
