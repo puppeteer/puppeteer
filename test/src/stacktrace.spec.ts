@@ -22,10 +22,10 @@ const parseStackTrace = (stack: string): string => {
   return stack;
 };
 
-describe.only('Stack trace', function () {
+describe('Stack trace', function () {
   setupTestBrowserHooks();
 
-  it.only('should work', async () => {
+  it('should work', async () => {
     const {page} = await getTestState();
 
     const error = (await page
