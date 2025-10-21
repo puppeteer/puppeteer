@@ -53,5 +53,12 @@
     "parameters": ["chrome"],
     "expectations": ["FAIL"],
     "comment": "crbug.com/433304196"
+  },
+  {
+    "testIdPattern": "[target.spec] Target should close a shared worker",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"],
+    "comment": "Fix for M143 in https://github.com/puppeteer/puppeteer/pull/14351"
   }
 ]
