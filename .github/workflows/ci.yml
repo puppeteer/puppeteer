@@ -368,7 +368,7 @@ jobs:
       - name: Test install
         env:
           PKG_MANAGER: ${{ matrix.pkg_manager }}
-        run: ${{ matrix.pkg_manager }} run test -w @puppeteer-test/installation
+        run: ${{ matrix.pkg_manager }} run test-ci -w @puppeteer-test/installation
 
   installation-test-required:
     name: '[Required] Installation tests'

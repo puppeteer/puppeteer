@@ -6,7 +6,8 @@
   "scripts": {
     "build": "wireit",
     "clean": "../../tools/clean.mjs",
-    "test": "wireit"
+    "test": "wireit",
+    "test-ci": "mocha"
   },
   "wireit": {
     "build": {
@@ -38,7 +39,10 @@
       ]
     },
     "test": {
-      "command": "mocha"
+      "command": "mocha",
+      "dependencies": [
+        "build"
+      ]
     }
   },
   "files": [
