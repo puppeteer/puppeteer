@@ -85,13 +85,13 @@ describe('DevTools', function () {
     expect(
       await page.evaluate(() => {
         // @ts-expect-error devtools context.
-        return Boolean(DevToolsAPI);
+        return Boolean(window.DevToolsAPI);
       }),
     ).toBe(true);
     expect(await browser.pages()).toContain(page);
   });
 
-  it.only('browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in launch()', async function () {
+  it('browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in launch()', async function () {
     const browser = await launchBrowser({
       ...launchOptions,
       handleDevToolsAsPage: true,
@@ -101,13 +101,10 @@ describe('DevTools', function () {
       return target.type() === 'other' && target.url().startsWith('devtools');
     });
     const page = (await devtoolsPageTarget.page())!;
-    await page.waitForFunction(() => {
-      return document.readyState === 'complete';
-    });
     expect(
       await page.evaluate(() => {
         // @ts-expect-error devtools context.
-        return Boolean(DevToolsAPI);
+        return Boolean(window.DevToolsAPI);
       }),
     ).toBe(true);
     expect(await browser.pages()).toContain(page);
@@ -154,7 +151,7 @@ describe('DevTools', function () {
     const page = await target.page();
     await page!.waitForFunction(() => {
       // @ts-expect-error wrong context.
-      return Boolean(DevToolsAPI);
+      return Boolean(window.DevToolsAPI);
     });
     await browser.close();
   });
