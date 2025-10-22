@@ -58,7 +58,7 @@ jobs:
               - 'test/**'
               - 'test-d/**'
               - 'tools/mocha-runner/**'
-              - '.mocharc.cjs'
+              - '.mocharc.js'
               - 'tools/doctest/**'
               - 'tsconfig.base.json'
             website:

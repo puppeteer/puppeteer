@@ -189,9 +189,9 @@ async function main() {
       console.log('Running', JSON.stringify(parameters), tmpFilename);
       const args = [
         '-u',
-        path.join(import.meta.dirname, 'interface.cjs'),
+        path.join(import.meta.dirname, 'interface.js'),
         '-R',
-        !reporter ? path.join(import.meta.dirname, 'reporter.cjs') : reporter,
+        !reporter ? path.join(import.meta.dirname, 'reporter.js') : reporter,
         '-O',
         `output=${tmpFilename}`,
         '-n',

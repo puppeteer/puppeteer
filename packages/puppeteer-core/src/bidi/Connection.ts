@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type * as ChromiumBidi from 'chromium-bidi/lib/protocol/protocol.js';
+import type * as ChromiumBidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type * as Bidi from 'webdriver-bidi-protocol';
 
 import {CallbackRegistry} from '../common/CallbackRegistry.js';

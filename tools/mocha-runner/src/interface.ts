@@ -192,4 +192,4 @@ function customBDDInterface(suite: Mocha.Suite) {
 
 customBDDInterface.description = 'Custom BDD';
 
-module.exports = customBDDInterface;
+export default customBDDInterface;

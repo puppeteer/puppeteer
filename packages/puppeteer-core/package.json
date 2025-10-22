@@ -8,7 +8,7 @@
     "headless",
     "automation"
   ],
-  "type": "commonjs",
+  "type": "module",
   "main": "./lib/puppeteer/puppeteer-core.js",
   "browser": "./lib/puppeteer/puppeteer-core-browser.js",
   "module": "./lib/puppeteer/puppeteer-core.js",
@@ -91,7 +91,7 @@
         "Herebyfile.mjs"
       ],
       "output": [
-        "lib/{cjs,esm}/**"
+        "lib/**"
       ]
     },
     "build:es5": {

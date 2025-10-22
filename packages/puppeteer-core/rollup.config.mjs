@@ -27,10 +27,10 @@ export default {
     if (id.includes('node_modules')) {
       return true;
     }
-    if (id.startsWith(path.join(cwd, `lib`, `esm`, `puppeteer`, `bidi`))) {
+    if (id.startsWith(path.join(cwd, `lib`, `puppeteer`, `bidi`))) {
       return true;
     }
-    if (id.startsWith(path.join(cwd, `lib`, `esm`, `puppeteer`, `node`))) {
+    if (id.startsWith(path.join(cwd, `lib`, `puppeteer`, `node`))) {
       return true;
     }
     return false;

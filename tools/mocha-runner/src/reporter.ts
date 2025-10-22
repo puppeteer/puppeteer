@@ -18,4 +18,4 @@ class SpecJSONReporter extends Mocha.reporters.Spec {
   }
 }
 
-module.exports = SpecJSONReporter;
+export default SpecJSONReporter;

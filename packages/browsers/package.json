@@ -9,7 +9,7 @@
     "clean": "../../tools/clean.mjs",
     "test": "wireit"
   },
-  "type": "commonjs",
+  "type": "module",
   "bin": "lib/main-cli.js",
   "main": "./lib/main.js",
   "module": "./lib/main.js",
@@ -54,7 +54,7 @@
     "test": {
       "command": "node tools/downloadTestBrowsers.mjs && mocha",
       "files": [
-        ".mocharc.cjs"
+        ".mocharc.js"
       ],
       "dependencies": [
         "build:test"
