@@ -213,7 +213,6 @@
     "packages/*",
     "test",
     "test/installation",
-    "test/smoke",
     "tools/eslint",
     "tools/doctest",
     "tools/docgen",
