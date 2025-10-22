@@ -40,6 +40,8 @@ describe('Stack trace', function () {
     expect(error.name).toEqual('Error');
     expect(error.message).toEqual('Test');
     assert(error.stack);
+    console.log(import.meta.filename);
+    console.log(import.meta.url);
     console.log(FILENAME);
     console.log(error.stack);
     console.log(parseStackTrace(error.stack));
