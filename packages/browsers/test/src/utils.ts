@@ -12,8 +12,8 @@ import {Writable, Readable} from 'node:stream';
 
 import {TestServer} from '@pptr/testserver';
 
-import {isErrorLike} from '../../lib/esm/launch.js';
-import {Cache} from '../../lib/esm/main.js';
+import {isErrorLike} from '../../lib/launch.js';
+import {Cache} from '../../lib/main.js';
 
 export function createMockedReadlineInterface(
   input: string,

@@ -1,6 +1,6 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
-  "mainEntryPointFilePath": "<projectFolder>/lib/esm/puppeteer/puppeteer-core.d.ts",
+  "mainEntryPointFilePath": "<projectFolder>/lib/puppeteer/puppeteer-core.d.ts",
 
   "extends": "./api-extractor.json",
 

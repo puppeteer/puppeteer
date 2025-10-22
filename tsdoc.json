@@ -5,7 +5,7 @@
   "tagDefinitions": [
     {
       "tagName": "@license",
-      "syntaxKind": "modifier",
+      "syntaxKind": "block",
       "allowMultiple": false
     }
   ],

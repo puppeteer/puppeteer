@@ -6,7 +6,7 @@
 
 // TODO: can rollup find the browser entrypoint?
 
-import puppeteer from 'puppeteer-core/lib/esm/puppeteer/puppeteer-core-browser.js';
+import puppeteer from 'puppeteer-core/lib/puppeteer/puppeteer-core-browser.js';
 
 async function onConnectClick() {
   const wsUrl = document.querySelector('#ws').value;

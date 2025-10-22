@@ -1,8 +1,9 @@
 {
   "extends": "../../tsconfig.base.json",
-  "files": [],
-  "references": [
-    {"path": "./src/tsconfig.esm.json"},
-    {"path": "./src/tsconfig.cjs.json"}
-  ]
+  "compilerOptions": {
+    "outDir": "./lib/puppeteer",
+    "rootDir": "./src"
+  },
+  "include": ["src/**/*"],
+  "references": [{"path": "./third_party/tsconfig.json"}]
 }

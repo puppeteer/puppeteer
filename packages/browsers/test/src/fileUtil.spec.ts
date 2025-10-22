@@ -12,7 +12,7 @@ import path from 'node:path';
 import {
   internalConstantsForTesting,
   unpackArchive,
-} from '../../lib/esm/fileUtil.js';
+} from '../../lib/fileUtil.js';
 
 describe('fileUtil', function () {
   let tmpDir = '/tmp/puppeteer-browsers-test';

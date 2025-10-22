@@ -115,6 +115,7 @@ class AngularProject {
       ...packageJson['scripts'],
       ...AngularProject.#scripts(this.#runner),
     };
+    packageJson['devDependencies']['puppeteer'] = '../../../puppeteer';
     await writeFile(packageJsonFile, JSON.stringify(packageJson, null, 2));
   }
 

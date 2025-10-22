@@ -9,8 +9,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import * as chrome from '../../../lib/esm/browser-data/chrome.js';
-import {CLI} from '../../../lib/esm/CLI.js';
+import * as chrome from '../../../lib/browser-data/chrome.js';
+import {CLI} from '../../../lib/CLI.js';
 import {
   createMockedReadlineInterface,
   setupTestServer,

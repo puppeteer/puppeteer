@@ -11,8 +11,8 @@ import path from 'node:path';
 
 import sinon from 'sinon';
 
-import * as firefox from '../../../lib/esm/browser-data/firefox.js';
-import {CLI} from '../../../lib/esm/CLI.js';
+import * as firefox from '../../../lib/browser-data/firefox.js';
+import {CLI} from '../../../lib/CLI.js';
 import {
   createMockedReadlineInterface,
   getServerUrl,

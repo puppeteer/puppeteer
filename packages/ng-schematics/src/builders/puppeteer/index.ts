@@ -35,7 +35,7 @@ export function getCommandForRunner(runner: TestRunner): [string, ...string[]] {
     case TestRunner.Jest:
       return [`jest`, '-c', 'e2e/jest.config.js'];
     case TestRunner.Mocha:
-      return [`mocha`, '--config=./e2e/.mocharc.js'];
+      return [`mocha`, '--config=./e2e/.mocharc.cjs'];
     case TestRunner.Node:
       return [
         'node',

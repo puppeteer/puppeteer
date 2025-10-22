@@ -16,7 +16,7 @@ import {
   Browser,
   BrowserPlatform,
   createProfile,
-} from '../../../lib/esm/main.js';
+} from '../../../lib/main.js';
 import {setupTestServer, getServerUrl, clearCache} from '../utils.js';
 import {testFirefoxBuildId} from '../versions.js';
 

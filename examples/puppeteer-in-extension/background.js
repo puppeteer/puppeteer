@@ -6,7 +6,7 @@
 import {
   connect,
   ExtensionTransport,
-} from 'puppeteer-core/lib/esm/puppeteer/puppeteer-core-browser.js';
+} from 'puppeteer-core/lib/puppeteer/puppeteer-core-browser.js';
 
 globalThis.testConnect = async url => {
   const tab = await chrome.tabs.create({
