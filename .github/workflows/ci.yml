@@ -355,6 +355,11 @@ jobs:
       # Set up GitHub Actions caching for Wireit.
       - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
 
+      - name: Build install test
+        env:
+          PKG_MANAGER: ${{ matrix.pkg_manager }}
+        run: ${{ matrix.pkg_manager }} run build -w @puppeteer-test/installation
+
       - name: Set up Node.js for testing
         uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
@@ -363,7 +368,7 @@ jobs:
       - name: Test install
         env:
           PKG_MANAGER: ${{ matrix.pkg_manager }}
-        run: ${{ matrix.pkg_manager }} run test-install
+        run: ${{ matrix.pkg_manager }} run test -w @puppeteer-test/installation
 
   installation-test-required:
     name: '[Required] Installation tests'
