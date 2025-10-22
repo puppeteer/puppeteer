@@ -9,19 +9,19 @@
     "automation"
   ],
   "type": "commonjs",
-  "bin": "./lib/cjs/puppeteer/node/cli.js",
-  "main": "./lib/cjs/puppeteer/puppeteer.js",
-  "module": "./lib/esm/puppeteer/puppeteer.js",
+  "bin": "./lib/puppeteer/node/cli.js",
+  "main": "./lib/puppeteer/puppeteer.js",
+  "module": "./lib/puppeteer/puppeteer.js",
   "types": "./lib/types.d.ts",
   "exports": {
     ".": {
       "types": "./lib/types.d.ts",
-      "import": "./lib/esm/puppeteer/puppeteer.js",
-      "require": "./lib/cjs/puppeteer/puppeteer.js"
+      "import": "./lib/puppeteer/puppeteer.js",
+      "require": "./lib/puppeteer/puppeteer.js"
     },
     "./internal/*": {
-      "import": "./lib/esm/puppeteer/*",
-      "require": "./lib/cjs/puppeteer/*"
+      "import": "./lib/puppeteer/*",
+      "require": "./lib/puppeteer/*"
     },
     "./*": {
       "import": "./*",
@@ -55,27 +55,14 @@
     "build": {
       "dependencies": [
         "build:tsc",
-        "build:types",
-        "generate:package-json"
-      ]
-    },
-    "generate:package-json": {
-      "command": "node --experimental-strip-types ../../tools/generate_module_package_json.ts lib/esm/package.json",
-      "files": [
-        "../../tools/generate_module_package_json.ts"
-      ],
-      "dependencies": [
-        "build:tsc"
-      ],
-      "output": [
-        "lib/esm/package.json"
+        "build:types"
       ]
     },
     "build:docs": {
       "command": "api-extractor run --local --config \"./api-extractor.docs.json\"",
       "files": [
         "api-extractor.docs.json",
-        "lib/esm/puppeteer/puppeteer.docs.d.ts",
+        "lib/puppeteer/puppeteer.docs.d.ts",
         "tsconfig.json"
       ],
       "dependencies": [
@@ -83,7 +70,7 @@
       ]
     },
     "build:tsc": {
-      "command": "tsc -b && node --experimental-strip-types ../../tools/chmod.ts 755 lib/cjs/puppeteer/node/cli.js lib/esm/puppeteer/node/cli.js",
+      "command": "tsc -b && node --experimental-strip-types ../../tools/chmod.ts 755 lib/puppeteer/node/cli.js",
       "clean": "if-file-deleted",
       "dependencies": [
         "../puppeteer-core:build",
@@ -93,8 +80,8 @@
         "src/**"
       ],
       "output": [
-        "lib/{cjs,esm}/**",
-        "!lib/esm/package.json"
+        "lib/**",
+        "!lib/package.json"
       ]
     },
     "build:types": {
@@ -102,7 +89,7 @@
       "files": [
         "../../eslint.types.config.mjs",
         "api-extractor.json",
-        "lib/esm/puppeteer/types.d.ts",
+        "lib/puppeteer/types.d.ts",
         "tsconfig.json"
       ],
       "output": [

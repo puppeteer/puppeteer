@@ -1,6 +1,6 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
-  "mainEntryPointFilePath": "<projectFolder>/lib/esm/puppeteer/puppeteer.d.ts",
+  "mainEntryPointFilePath": "<projectFolder>/lib/puppeteer/puppeteer.d.ts",
   "bundledPackages": [],
 
   "apiReport": {

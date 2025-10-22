@@ -7,12 +7,12 @@
 import assert from 'node:assert';
 import path from 'node:path';
 
-import {BrowserPlatform} from '../../../lib/esm/browser-data/browser-data.js';
+import {BrowserPlatform} from '../../../lib/browser-data/browser-data.js';
 import {
   resolveDownloadUrl,
   relativeExecutablePath,
   resolveBuildId,
-} from '../../../lib/esm/browser-data/chromedriver.js';
+} from '../../../lib/browser-data/chromedriver.js';
 
 describe('ChromeDriver', () => {
   it('should resolve download URLs', () => {

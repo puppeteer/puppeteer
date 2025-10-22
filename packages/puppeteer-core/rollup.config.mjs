@@ -11,7 +11,7 @@ import {nodeResolve} from '@rollup/plugin-node-resolve';
 const cwd = process.cwd();
 
 export default {
-  input: 'lib/esm/puppeteer/puppeteer-core-browser.js',
+  input: 'lib/puppeteer/puppeteer-core-browser.js',
   output: {
     format: 'iife',
     file: 'lib/es5-iife/puppeteer-core-browser.js',

@@ -14,7 +14,7 @@ import {normalize, join, dirname} from 'node:path';
 
 import {BrowserPlatform, install} from '@puppeteer/browsers';
 
-import {downloadPaths} from '../lib/esm/browser-data/browser-data.js';
+import {downloadPaths} from '../lib/browser-data/browser-data.js';
 import * as versions from '../test/build/versions.js';
 
 function getBrowser(str) {

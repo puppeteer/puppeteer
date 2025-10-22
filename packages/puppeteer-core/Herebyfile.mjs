@@ -37,17 +37,9 @@ export const generateInjectedTask = task({
   },
 });
 
-export const generatePackageJsonTask = task({
-  name: 'generate:package-json',
-  run: async () => {
-    await mkdir('lib/esm', {recursive: true});
-    await writeFile('lib/esm/package.json', JSON.stringify({type: 'module'}));
-  },
-});
-
 export const generateTask = task({
   name: 'generate',
-  dependencies: [generateInjectedTask, generatePackageJsonTask],
+  dependencies: [generateInjectedTask],
 });
 
 export const buildTscTask = task({

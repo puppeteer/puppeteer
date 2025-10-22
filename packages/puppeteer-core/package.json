@@ -9,19 +9,19 @@
     "automation"
   ],
   "type": "commonjs",
-  "main": "./lib/cjs/puppeteer/puppeteer-core.js",
-  "browser": "./lib/esm/puppeteer/puppeteer-core-browser.js",
-  "module": "./lib/esm/puppeteer/puppeteer-core.js",
+  "main": "./lib/puppeteer/puppeteer-core.js",
+  "browser": "./lib/puppeteer/puppeteer-core-browser.js",
+  "module": "./lib/puppeteer/puppeteer-core.js",
   "types": "./lib/types.d.ts",
   "exports": {
     ".": {
       "types": "./lib/types.d.ts",
-      "import": "./lib/esm/puppeteer/puppeteer-core.js",
-      "require": "./lib/cjs/puppeteer/puppeteer-core.js"
+      "import": "./lib/puppeteer/puppeteer-core.js",
+      "require": "./lib/puppeteer/puppeteer-core.js"
     },
     "./internal/*": {
-      "import": "./lib/esm/puppeteer/*",
-      "require": "./lib/cjs/puppeteer/*"
+      "import": "./lib/puppeteer/*",
+      "require": "./lib/puppeteer/*"
     },
     "./*": {
       "import": "./*",
@@ -71,7 +71,7 @@
       "command": "api-extractor run --local --config \"./api-extractor.docs.json\"",
       "files": [
         "api-extractor.docs.json",
-        "lib/esm/puppeteer/puppeteer-core.d.ts",
+        "lib/puppeteer/puppeteer-core.d.ts",
         "tsconfig.json"
       ],
       "dependencies": [
@@ -112,7 +112,7 @@
       "files": [
         "../../eslint.types.config.mjs",
         "api-extractor.json",
-        "lib/esm/puppeteer/types.d.ts",
+        "lib/puppeteer/types.d.ts",
         "tsconfig.json"
       ],
       "output": [
@@ -123,13 +123,13 @@
       ]
     },
     "unit": {
-      "command": "node --test --test-reporter=spec \"lib/cjs/**/*.test.js\"",
+      "command": "node --test --test-reporter=spec \"lib/**/*.test.js\"",
       "dependencies": [
         "build"
       ]
     },
     "unit:only": {
-      "command": "node --test --test-only --test-reporter=spec \"lib/cjs/**/*.test.js\"",
+      "command": "node --test --test-only --test-reporter=spec \"lib/**/*.test.js\"",
       "dependencies": [
         "build"
       ]
