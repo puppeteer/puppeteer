@@ -431,6 +431,25 @@ boolean
 </td></tr>
 <tr><td>
 
+<span id="url">url</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+Url for link elements.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="value">value</span>
 
 </td><td>

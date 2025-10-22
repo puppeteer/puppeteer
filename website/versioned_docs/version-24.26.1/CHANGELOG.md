@@ -2,6 +2,23 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.26.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.26.0...puppeteer-v24.26.1) (2025-10-22)
+
+### ♻️ Chores
+
+- **puppeteer:** Synchronize puppeteer versions
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - puppeteer-core bumped from 24.26.0 to 24.26.1
+
+### 🛠️ Fixes
+
+- **a11y:** expose the url property for links ([#14357](https://github.com/puppeteer/puppeteer/issues/14357)) ([93d098b](https://github.com/puppeteer/puppeteer/commit/93d098b060771dbd1e6875f4664273604022f3bd))
+- roll to Chrome 141.0.7390.122 ([#14360](https://github.com/puppeteer/puppeteer/issues/14360)) ([f2fef81](https://github.com/puppeteer/puppeteer/commit/f2fef816f234bd30a13bb86dfc654f29f5cb2f6b))
+
 ## [24.26.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.25.0...puppeteer-v24.26.0) (2025-10-21)
 
 ### 🎉 Features
