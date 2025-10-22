@@ -5,20 +5,15 @@
  */
 
 import assert from 'node:assert';
-import path from 'node:path';
 
 import expect from 'expect';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
 
-const FILENAME = import.meta.filename.split('\\').join(path.sep);
 const parseStackTrace = (stack: string): string => {
-  stack = stack.replace(new RegExp(FILENAME, 'g'), '<filename>');
-  stack = stack.replace(
-    /file:\/{2,3}<filename>:(\d+):(\d+)/g,
-    '<filename>:<line>:<col>',
-  );
+  stack = stack.replace(new RegExp(import.meta.url, 'g'), '<filename>');
+  stack = stack.replace(/<filename>:(\d+):(\d+)/g, '<filename>:<line>:<col>');
   stack = stack.replace(/<anonymous>:(\d+):(\d+)/g, '<anonymous>:<line>:<col>');
   return stack;
 };
@@ -26,7 +21,7 @@ const parseStackTrace = (stack: string): string => {
 describe('Stack trace', function () {
   setupTestBrowserHooks();
 
-  it.only('should work', async () => {
+  it('should work', async () => {
     const {page} = await getTestState();
 
     const error = (await page
@@ -40,11 +35,11 @@ describe('Stack trace', function () {
     expect(error.name).toEqual('Error');
     expect(error.message).toEqual('Test');
     assert(error.stack);
-    console.log(import.meta.filename);
-    console.log(import.meta.url);
-    console.log(FILENAME);
-    console.log(error.stack);
-    console.log(parseStackTrace(error.stack));
+    // console.log(import.meta.filename);
+    // console.log();
+    // console.log(FILENAME);
+    // console.log(error.stack);
+    // console.log(parseStackTrace(error.stack));
 
     expect(
       parseStackTrace(error.stack).split('\n    at ').slice(0, 2),
