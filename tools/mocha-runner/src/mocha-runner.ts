@@ -229,9 +229,8 @@ async function main() {
           } files out of ${specs.length}.`,
         );
       } else {
-        args.push('./test/build/accessibility.spec.js');
+        args.push(...specs);
       }
-      console.log(args);
 
       const mochaCommand = [
         ...(useCoverage
@@ -241,8 +240,6 @@ async function main() {
         ...mochaArgs.map(String),
         ...args,
       ];
-
-      console.log(mochaCommand.join(' '));
 
       const handle = spawn('npx', mochaCommand, {
         shell: true,

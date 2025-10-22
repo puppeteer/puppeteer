@@ -8,7 +8,6 @@ let timeout = process.platform === 'win32' ? 20_000 : 10_000;
 if (!!process.env.DEBUGGER_ATTACHED) {
   timeout = 0;
 }
-
 export default {
   logLevel: 'debug',
   require: ['./test/build/mocha-utils.js', 'source-map-support/register'],

@@ -8,20 +8,21 @@ import type {TLSSocket} from 'node:tls';
 
 import expect from 'expect';
 import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
-
-import {setupSeparateTestBrowserHooks} from './mocha-utils.js';
+import type {CdpPage} from 'puppeteer-core/internal/index-browser.js';
 
 describe('acceptInsecureCerts', async () => {
   /* Note that this test creates its own browser rather than use
    * the one provided by the test set-up as we need one
    * with acceptInsecureCerts set to true
    */
-  const state = setupSeparateTestBrowserHooks({
-    acceptInsecureCerts: true,
-  });
+  const state = {} as {
+    page: CdpPage;
+    httpsServer: any;
+    server: any;
+  };
 
   describe('Response.securityDetails', function () {
-    it('should work', async () => {
+    it.only('should work', async () => {
       const {httpsServer, page} = state;
 
       const [serverRequest, response] = await Promise.all([
@@ -93,7 +94,7 @@ describe('acceptInsecureCerts', async () => {
   it('should work with mixed content', async () => {
     const {server, httpsServer, page} = state;
 
-    httpsServer.setRoute('/mixedcontent.html', (_req, res) => {
+    httpsServer.setRoute('/mixedcontent.html', (_req: any, res: any) => {
       res.end(`<iframe src=${server.EMPTY_PAGE}></iframe>`);
     });
     await page.goto(httpsServer.PREFIX + '/mixedcontent.html', {

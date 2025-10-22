@@ -34,10 +34,10 @@ interface Subscriber {
 type TestIncomingMessage = IncomingMessage & {postBody?: Promise<string>};
 
 export class TestServer {
-  PORT!: number;
-  PREFIX!: string;
-  CROSS_PROCESS_PREFIX!: string;
-  EMPTY_PAGE!: string;
+  declare PORT: number;
+  declare PREFIX: string;
+  declare CROSS_PROCESS_PREFIX: string;
+  declare EMPTY_PAGE: string;
 
   #dirPath: string;
   #server: HttpsServer | HttpServer;
@@ -66,6 +66,13 @@ export class TestServer {
     server.#server.once('listening', res);
     server.#server.listen(0);
     await promise;
+
+    const port = server.port;
+    server.PORT = port;
+    server.PREFIX = `http://localhost:${port}`;
+    server.CROSS_PROCESS_PREFIX = `http://127.0.0.1:${port}`;
+    server.EMPTY_PAGE = `http://localhost:${port}/empty.html`;
+
     return server;
   }
 
