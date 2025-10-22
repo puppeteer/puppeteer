@@ -38,10 +38,7 @@
       ]
     },
     "test": {
-      "command": "mocha",
-      "dependencies": [
-        "build"
-      ]
+      "command": "mocha"
     }
   },
   "files": [
