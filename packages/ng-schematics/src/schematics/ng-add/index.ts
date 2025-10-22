@@ -10,7 +10,7 @@ import {
   type SchematicContext,
   type Tree,
 } from '@angular-devkit/schematics';
-import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
+import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks/index.js';
 import {of} from 'rxjs';
 import {concatMap, map, scan} from 'rxjs/operators';
 

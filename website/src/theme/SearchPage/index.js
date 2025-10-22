@@ -23,7 +23,7 @@ import algoliaSearchHelper from 'algoliasearch-helper';
 import clsx from 'clsx';
 import React, {useEffect, useState, useReducer, useRef} from 'react';
 
-// eslint-disable-next-line rulesdir/extensions
+// eslint-disable-next-line @puppeteer/extensions
 import {tagToCounter} from '../SearchMetadata';
 
 import styles from './styles.module.css';

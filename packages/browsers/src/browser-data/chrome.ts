@@ -67,13 +67,20 @@ export function relativeExecutablePath(
   }
 }
 
+let baseVersionUrl = 'https://googlechromelabs.github.io/chrome-for-testing';
+
+export function changeBaseVersionUrlForTesting(url: string): void {
+  baseVersionUrl = url;
+}
+export function resetBaseVersionUrlForTesting(): void {
+  baseVersionUrl = 'https://googlechromelabs.github.io/chrome-for-testing';
+}
+
 export async function getLastKnownGoodReleaseForChannel(
   channel: ChromeReleaseChannel,
 ): Promise<{version: string; revision: string}> {
   const data = (await getJSON(
-    new URL(
-      'https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json',
-    ),
+    new URL(`${baseVersionUrl}/last-known-good-versions.json`),
   )) as {
     channels: Record<string, {version: string}>;
   };
@@ -97,9 +104,7 @@ export async function getLastKnownGoodReleaseForMilestone(
   milestone: string,
 ): Promise<{version: string; revision: string} | undefined> {
   const data = (await getJSON(
-    new URL(
-      'https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json',
-    ),
+    new URL(`${baseVersionUrl}/latest-versions-per-milestone.json`),
   )) as {
     milestones: Record<string, {version: string; revision: string}>;
   };
@@ -115,9 +120,7 @@ export async function getLastKnownGoodReleaseForBuild(
   buildPrefix: string,
 ): Promise<{version: string; revision: string} | undefined> {
   const data = (await getJSON(
-    new URL(
-      'https://googlechromelabs.github.io/chrome-for-testing/latest-patch-versions-per-build.json',
-    ),
+    new URL(`${baseVersionUrl}/latest-patch-versions-per-build.json`),
   )) as {
     builds: Record<string, {version: string; revision: string}>;
   };

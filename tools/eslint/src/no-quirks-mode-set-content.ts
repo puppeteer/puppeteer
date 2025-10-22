@@ -95,4 +95,4 @@ const noInvalidSetContentRule = createRule({
   },
 });
 
-export = noInvalidSetContentRule;
+export default noInvalidSetContentRule;

@@ -10,9 +10,12 @@ import expect from 'expect';
 
 import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
 
-const EXTENSION_PATH = path.join(__dirname, '/../assets/simple-extension');
+const EXTENSION_PATH = path.join(
+  import.meta.dirname,
+  '/../assets/simple-extension',
+);
 const EXTENSION_FIREFOX_PATH = path.join(
-  __dirname,
+  import.meta.dirname,
   '/../assets/simple-extension-firefox',
 );
 const EXPECTED_ID = 'mbljndkcfjhaffohbnmoedabegpolpmd';

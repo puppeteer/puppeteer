@@ -164,6 +164,16 @@ export enum FirefoxChannel {
   NIGHTLY = 'nightly',
 }
 
+let baseVersionUrl = 'https://product-details.mozilla.org/1.0';
+
+export function changeBaseVersionUrlForTesting(url: string): void {
+  baseVersionUrl = url;
+}
+
+export function resetBaseVersionUrlForTesting(): void {
+  baseVersionUrl = 'https://product-details.mozilla.org/1.0';
+}
+
 export async function resolveBuildId(
   channel: FirefoxChannel = FirefoxChannel.NIGHTLY,
 ): Promise<string> {
@@ -175,7 +185,7 @@ export async function resolveBuildId(
     [FirefoxChannel.NIGHTLY]: 'FIREFOX_NIGHTLY',
   };
   const versions = (await getJSON(
-    new URL('https://product-details.mozilla.org/1.0/firefox_versions.json'),
+    new URL(`${baseVersionUrl}/firefox_versions.json`),
   )) as Record<string, string>;
   const version = versions[channelToVersionKey[channel]];
   if (!version) {

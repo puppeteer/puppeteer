@@ -12,12 +12,12 @@ import path from 'node:path';
 import {
   internalConstantsForTesting,
   unpackArchive,
-} from '../../lib/cjs/fileUtil.js';
+} from '../../lib/esm/fileUtil.js';
 
 describe('fileUtil', function () {
   let tmpDir = '/tmp/puppeteer-browsers-test';
 
-  const fixturesPath = path.join(__dirname, '..', 'fixtures');
+  const fixturesPath = path.join(import.meta.dirname, '..', 'fixtures');
 
   beforeEach(() => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'puppeteer-browsers-test'));

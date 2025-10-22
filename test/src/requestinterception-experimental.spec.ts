@@ -681,7 +681,9 @@ describe('cooperative request interception', function () {
         void request.continue({}, 0);
       });
       await page.goto(
-        pathToFileURL(path.join(__dirname, '../assets', 'one-style.html')),
+        pathToFileURL(
+          path.join(import.meta.dirname, '../assets', 'one-style.html'),
+        ),
       );
       expect(urls.size).toBe(2);
       expect(urls.has('one-style.html')).toBe(true);
@@ -946,7 +948,7 @@ describe('cooperative request interception', function () {
       await page.setRequestInterception(true);
       page.on('request', request => {
         const imageBuffer = fs.readFileSync(
-          path.join(__dirname, '../assets', 'pptr.png'),
+          path.join(import.meta.dirname, '../assets', 'pptr.png'),
         );
         void request.respond(
           {

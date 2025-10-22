@@ -1,4 +1,4 @@
-// esline-disable rulesdir/check-license
+// esline-disable @puppeteer/check-license
 export {
   bufferCount,
   catchError,

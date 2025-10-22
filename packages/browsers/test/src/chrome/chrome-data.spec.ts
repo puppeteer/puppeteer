@@ -10,14 +10,14 @@ import path from 'node:path';
 import {
   BrowserPlatform,
   ChromeReleaseChannel,
-} from '../../../lib/cjs/browser-data/browser-data.js';
+} from '../../../lib/esm/browser-data/browser-data.js';
 import {
   resolveDownloadUrl,
   relativeExecutablePath,
   resolveSystemExecutablePaths,
   resolveBuildId,
   compareVersions,
-} from '../../../lib/cjs/browser-data/chrome.js';
+} from '../../../lib/esm/browser-data/chrome.js';
 
 describe('Chrome', () => {
   it('should resolve download URLs', () => {

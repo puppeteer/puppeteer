@@ -18,7 +18,7 @@ import {
   BrowserPlatform,
   Cache,
   computeExecutablePath,
-} from '../../../lib/cjs/main.js';
+} from '../../../lib/esm/main.js';
 import {getServerUrl, setupTestServer} from '../utils.js';
 import {testChromeBuildId} from '../versions.js';
 

@@ -1,7 +1,7 @@
 {
   "name": "@puppeteer/mocha-runner",
   "version": "0.1.0",
-  "type": "commonjs",
+  "type": "module",
   "private": true,
   "bin": "./bin/mocha-runner.js",
   "description": "Mocha runner for Puppeteer",

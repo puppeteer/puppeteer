@@ -9,7 +9,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import {CLI} from '../../lib/cjs/CLI.js';
+import {CLI} from '../../lib/esm/CLI.js';
 
 import {
   createMockedReadlineInterface,

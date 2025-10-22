@@ -2,6 +2,7 @@
   "name": "@puppeteer-test/test",
   "version": "latest",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "wireit",
     "clean": "../tools/clean.mjs"

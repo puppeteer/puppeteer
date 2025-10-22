@@ -148,8 +148,8 @@ const processVariables: {
 };
 
 const setupServer = async () => {
-  const assetsPath = path.join(__dirname, '../assets');
-  const cachedPath = path.join(__dirname, '../assets', 'cached');
+  const assetsPath = path.join(import.meta.dirname, '../assets');
+  const cachedPath = path.join(import.meta.dirname, '../assets', 'cached');
 
   const server = await TestServer.create(assetsPath);
   const port = server.port;
@@ -307,8 +307,8 @@ export const getTestState = async (
 
 const setupGoldenAssertions = (): void => {
   const suffix = processVariables.product.toLowerCase();
-  const GOLDEN_DIR = path.join(__dirname, `../golden-${suffix}`);
-  const OUTPUT_DIR = path.join(__dirname, `../output-${suffix}`);
+  const GOLDEN_DIR = path.join(import.meta.dirname, `../golden-${suffix}`);
+  const OUTPUT_DIR = path.join(import.meta.dirname, `../output-${suffix}`);
   if (fs.existsSync(OUTPUT_DIR)) {
     rmSync(OUTPUT_DIR);
   }
@@ -382,7 +382,17 @@ export const mochaHooks: Mocha.RootHookObject = {
       state.isHeadless = processVariables.isHeadless;
       state.headless = processVariables.headless;
       state.puppeteerPath = path.resolve(
-        path.join(__dirname, '..', '..', 'packages', 'puppeteer'),
+        path.join(
+          import.meta.dirname,
+          '..',
+          '..',
+          'packages',
+          'puppeteer',
+          'lib',
+          'esm',
+          'puppeteer',
+          'puppeteer.js',
+        ),
       );
     }
 

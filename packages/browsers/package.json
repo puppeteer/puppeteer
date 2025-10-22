@@ -42,6 +42,15 @@
         "lib/esm/package.json"
       ]
     },
+    "generate:package-json:test": {
+      "command": "node --experimental-strip-types ../../tools/generate_module_package_json.ts test/build/package.json",
+      "files": [
+        "../../tools/generate_module_package_json.ts"
+      ],
+      "output": [
+        "test/build/package.json"
+      ]
+    },
     "build:docs": {
       "command": "api-extractor run --local --config \"./api-extractor.docs.json\"",
       "files": [
@@ -60,10 +69,12 @@
         "test/src/tsconfig.json"
       ],
       "output": [
-        "test/build/**"
+        "test/build/**",
+        "!test/build/package.json"
       ],
       "dependencies": [
         "build",
+        "generate:package-json:test",
         "../testserver:build"
       ]
     },

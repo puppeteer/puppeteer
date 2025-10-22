@@ -402,7 +402,7 @@ describe('network', function () {
 
       const response = (await page.goto(server.PREFIX + '/pptr.png'))!;
       const imageBuffer = fs.readFileSync(
-        path.join(__dirname, '../assets', 'pptr.png'),
+        path.join(import.meta.dirname, '../assets', 'pptr.png'),
       );
       const responseBuffer = await response.buffer();
 
@@ -414,7 +414,7 @@ describe('network', function () {
       server.enableGzip('/pptr.png');
       const response = (await page.goto(server.PREFIX + '/pptr.png'))!;
       const imageBuffer = fs.readFileSync(
-        path.join(__dirname, '../assets', 'pptr.png'),
+        path.join(import.meta.dirname, '../assets', 'pptr.png'),
       );
       const responseBuffer = await response.buffer();
       expect(Buffer.from(responseBuffer).equals(imageBuffer)).toBe(true);

@@ -557,7 +557,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   async $<Selector extends string>(
     selector: Selector,
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    // eslint-disable-next-line rulesdir/use-using -- This is cached.
+    // eslint-disable-next-line @puppeteer/use-using -- This is cached.
     const document = await this.#document();
     return await document.$(selector);
   }
@@ -589,7 +589,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
     selector: Selector,
     options?: QueryOptions,
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    // eslint-disable-next-line rulesdir/use-using -- This is cached.
+    // eslint-disable-next-line @puppeteer/use-using -- This is cached.
     const document = await this.#document();
     return await document.$$(selector, options);
   }
@@ -642,7 +642,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
-    // eslint-disable-next-line rulesdir/use-using -- This is cached.
+    // eslint-disable-next-line @puppeteer/use-using -- This is cached.
     const document = await this.#document();
     return await document.$eval(selector, pageFunction, ...args);
   }
@@ -695,7 +695,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
-    // eslint-disable-next-line rulesdir/use-using -- This is cached.
+    // eslint-disable-next-line @puppeteer/use-using -- This is cached.
     const document = await this.#document();
     return await document.$$eval(selector, pageFunction, ...args);
   }

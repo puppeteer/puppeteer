@@ -22,8 +22,8 @@ import {join} from 'node:path';
 import type {Duplex} from 'node:stream';
 import {gzip} from 'node:zlib';
 
-import {getType as getMimeType} from 'mime';
-import {Server as WebSocketServer, type WebSocket} from 'ws';
+import mime from 'mime';
+import {WebSocketServer, type WebSocket} from 'ws';
 
 interface Subscriber {
   resolve: (msg: IncomingMessage) => void;
@@ -75,8 +75,8 @@ export class TestServer {
       res = resolve;
     });
     const server = new TestServer(dirPath, {
-      key: readFileSync(join(__dirname, '..', 'key.pem')),
-      cert: readFileSync(join(__dirname, '..', 'cert.pem')),
+      key: readFileSync(join(import.meta.dirname, '..', 'key.pem')),
+      cert: readFileSync(join(import.meta.dirname, '..', 'cert.pem')),
       passphrase: 'aaaa',
     });
     server.#server.once('listening', res);
@@ -296,7 +296,7 @@ export class TestServer {
         response.end(`File not found: ${filePath}`);
         return;
       }
-      const mimeType = getMimeType(filePath);
+      const mimeType = mime.getType(filePath);
       if (mimeType) {
         const isTextEncoding = /^text\/|^application\/(javascript|json)/.test(
           mimeType,
