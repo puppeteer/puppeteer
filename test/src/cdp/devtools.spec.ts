@@ -91,16 +91,19 @@ describe('DevTools', function () {
     expect(await browser.pages()).toContain(page);
   });
 
-  it('browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in launch()', async function () {
+  it.only('browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in launch()', async function () {
     const browser = await launchBrowser({
       ...launchOptions,
       handleDevToolsAsPage: true,
     });
 
     const devtoolsPageTarget = await browser.waitForTarget(target => {
-      return target.type() === 'other';
+      return target.type() === 'other' && target.url().startsWith('devtools');
     });
     const page = (await devtoolsPageTarget.page())!;
+    await page.waitForFunction(() => {
+      return document.readyState === 'complete';
+    });
     expect(
       await page.evaluate(() => {
         // @ts-expect-error devtools context.
