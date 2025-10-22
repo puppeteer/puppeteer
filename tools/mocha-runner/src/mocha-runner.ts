@@ -189,9 +189,9 @@ async function main() {
       console.log('Running', JSON.stringify(parameters), tmpFilename);
       const args = [
         '-u',
-        path.join(import.meta.dirname, 'interface.js'),
+        path.join(import.meta.dirname, 'interface.cjs'),
         '-R',
-        !reporter ? path.join(import.meta.dirname, 'reporter.js') : reporter,
+        !reporter ? path.join(import.meta.dirname, 'reporter.cjs') : reporter,
         '-O',
         `output=${tmpFilename}`,
         '-n',
@@ -229,8 +229,10 @@ async function main() {
           } files out of ${specs.length}.`,
         );
       } else {
-        args.push(...specs);
+        args.push('./test/build/accessibility.spec.js');
       }
+      console.log(args);
+
       const mochaCommand = [
         ...(useCoverage
           ? ['c8', '--check-coverage', '--lines', '90', 'npx']
@@ -239,6 +241,9 @@ async function main() {
         ...mochaArgs.map(String),
         ...args,
       ];
+
+      console.log(mochaCommand.join(' '));
+
       const handle = spawn('npx', mochaCommand, {
         shell: true,
         cwd: process.cwd(),
