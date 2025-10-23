@@ -54,7 +54,7 @@
     "test": {
       "command": "node tools/downloadTestBrowsers.mjs && mocha",
       "files": [
-        ".mocharc.js"
+        ".mocharc.cjs"
       ],
       "dependencies": [
         "build:test"
