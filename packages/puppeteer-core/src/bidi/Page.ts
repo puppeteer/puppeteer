@@ -17,6 +17,7 @@ import type {
   GeolocationOptions,
   MediaFeature,
   PageEvents,
+  ReloadOptions,
   WaitTimeoutOptions,
 } from '../api/Page.js';
 import {
@@ -332,11 +333,13 @@ export class BidiPage extends Page {
   }
 
   override async reload(
-    options: WaitForOptions = {},
+    options: ReloadOptions = {},
   ): Promise<BidiHTTPResponse | null> {
     const [response] = await Promise.all([
       this.#frame.waitForNavigation(options),
-      this.#frame.browsingContext.reload(),
+      this.#frame.browsingContext.reload({
+        ignoreCache: options.ignoreCache ? true : undefined,
+      }),
     ]).catch(
       rewriteNavigationError(
         this.url(),

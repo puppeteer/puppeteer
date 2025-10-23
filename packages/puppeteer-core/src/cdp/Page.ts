@@ -14,7 +14,7 @@ import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Frame, WaitForOptions} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {JSHandle} from '../api/JSHandle.js';
-import type {Credentials} from '../api/Page.js';
+import type {Credentials, ReloadOptions} from '../api/Page.js';
 import {
   Page,
   PageEvent,
@@ -898,15 +898,15 @@ export class CdpPage extends Page {
     this.emit(PageEvent.Dialog, dialog);
   }
 
-  override async reload(
-    options?: WaitForOptions,
-  ): Promise<HTTPResponse | null> {
+  override async reload(options?: ReloadOptions): Promise<HTTPResponse | null> {
     const [result] = await Promise.all([
       this.waitForNavigation({
         ...options,
         ignoreSameDocumentNavigation: true,
       }),
-      this.#primaryTargetClient.send('Page.reload'),
+      this.#primaryTargetClient.send('Page.reload', {
+        ignoreCache: options?.ignoreCache ?? false,
+      }),
     ]);
 
     return result;
