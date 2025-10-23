@@ -365,7 +365,6 @@ const browserNotClosedError = new Error(
 export const mochaHooks: Mocha.RootHookObject = {
   async beforeAll(this: Mocha.Context): Promise<void> {
     const {server, httpsServer} = await setupServer();
-    console.log(server, httpsServer);
 
     state.puppeteer = puppeteer as unknown as PuppeteerNode;
     state.server = server;

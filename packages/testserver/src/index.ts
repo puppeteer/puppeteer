@@ -67,11 +67,7 @@ export class TestServer {
     server.#server.listen(0);
     await promise;
 
-    const port = server.port;
-    server.PORT = port;
-    server.PREFIX = `http://localhost:${port}`;
-    server.CROSS_PROCESS_PREFIX = `http://127.0.0.1:${port}`;
-    server.EMPTY_PAGE = `http://localhost:${port}/empty.html`;
+    TestServer.setupProps(server);
 
     return server;
   }
@@ -89,7 +85,18 @@ export class TestServer {
     server.#server.once('listening', res);
     server.#server.listen(0);
     await promise;
+
+    TestServer.setupProps(server, 'https');
+
     return server;
+  }
+
+  static setupProps(server: TestServer, protocol = 'http'): void {
+    const port = server.port;
+    server.PORT = port;
+    server.PREFIX = `${protocol}://localhost:${port}`;
+    server.CROSS_PROCESS_PREFIX = `${protocol}://127.0.0.1:${port}`;
+    server.EMPTY_PAGE = `${protocol}://localhost:${port}/empty.html`;
   }
 
   constructor(dirPath: string, sslOptions?: HttpsServerOptions) {

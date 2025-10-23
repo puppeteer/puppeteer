@@ -10,11 +10,7 @@ if (!!process.env.DEBUGGER_ATTACHED) {
 }
 module.exports = {
   logLevel: 'debug',
-  require: [
-    './test/build/mocha-utils.js',
-    './test/build/mocha-hooks.js',
-    'source-map-support/register',
-  ],
+  require: ['./test/build/mocha-utils.js', 'source-map-support/register'],
   exit: !!process.env.CI,
   retries: process.env.CI ? 3 : 0,
   parallel: !!process.env.PARALLEL,
