@@ -1,7 +1,9 @@
 {
   "extends": "../../tsconfig.base.json",
-  "files": [],
   "compilerOptions": {
+    "outDir": "./lib/puppeteer",
+    "rootDir": "./src",
+
     // API extractor doesn't work well with NodeNext module resolution, so we
     // just stick with ol'fashion path resolution.
     "baseUrl": ".",
@@ -9,5 +11,5 @@
       "puppeteer-core/internal/*": ["../puppeteer-core/lib/puppeteer/*"]
     }
   },
-  "references": [{"path": "./src/tsconfig.json"}]
+  "include": ["src/**/*"]
 }
