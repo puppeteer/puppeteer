@@ -266,7 +266,7 @@ Use [Browser.connected](./puppeteer.browser.md).
 </td></tr>
 <tr><td>
 
-<span id="newpage">[newPage()](./puppeteer.browser.newpage.md)</span>
+<span id="newpage">[newPage(options)](./puppeteer.browser.newpage.md)</span>
 
 </td><td>
 

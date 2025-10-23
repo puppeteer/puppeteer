@@ -31,6 +31,19 @@ import {
 describe('Page', function () {
   setupTestBrowserHooks();
 
+  describe('Page.newPage', function () {
+    it('should open pages in a new window', async () => {
+      const {context, browser} = await getTestState();
+
+      const page = await context.newPage({
+        type: 'window',
+      });
+
+      expect(await context.pages()).toContain(page);
+      expect(await browser.pages()).toContain(page);
+    });
+  });
+
   describe('Page.close', function () {
     it('should reject all promises when page is closed', async () => {
       const {context} = await getTestState();

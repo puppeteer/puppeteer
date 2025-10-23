@@ -211,6 +211,18 @@ export interface DebugInfo {
 }
 
 /**
+ * @public
+ */
+export type CreatePageOptions =
+  | {
+      type: 'tab';
+    }
+  | {
+      type: 'window';
+      // TODO: window-specific params will be added here.
+    };
+
+/**
  * {@link Browser} represents a browser instance that is either:
  *
  * - connected to via {@link Puppeteer.connect} or
@@ -324,7 +336,7 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * Creates a new {@link Page | page} in the
    * {@link Browser.defaultBrowserContext | default browser context}.
    */
-  abstract newPage(): Promise<Page>;
+  abstract newPage(options?: CreatePageOptions): Promise<Page>;
 
   /**
    * Gets all active {@link Target | targets}.
