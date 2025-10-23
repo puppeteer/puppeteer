@@ -7,7 +7,7 @@
 /**
  * @type {import('mocha').MochaOptions}
  */
-export default {
+module.exports = {
   spec: ['build/**/*.spec.js'],
   require: ['source-map-support/register'],
   exit: !!process.env.CI,

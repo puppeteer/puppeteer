@@ -362,11 +362,8 @@ const browserNotClosedError = new Error(
   'A manually launched browser was not closed!',
 );
 
-console.log('HERe?');
-
 export const mochaHooks: Mocha.RootHookObject = {
   async beforeAll(this: Mocha.Context): Promise<void> {
-    console.log('HER?E');
     const {server, httpsServer} = await setupServer();
     console.log(server, httpsServer);
 
