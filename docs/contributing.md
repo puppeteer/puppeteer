@@ -130,7 +130,7 @@ information on using pull requests.
 Our coding style is fully defined in
 [`eslint.config`](https://github.com/puppeteer/puppeteer/blob/main/eslint.config.mjs)
 ([ESLint](https://eslint.org/)) and
-[`.prettierrc.cjs`](https://github.com/puppeteer/puppeteer/blob/main/.prettierrc.cjs)
+[`prettier.config.js`](https://github.com/puppeteer/puppeteer/blob/main/prettier.config.js)
 ([Prettier](https://prettier.io)).
 
 Code is checked for PRs automatically and you can check your code

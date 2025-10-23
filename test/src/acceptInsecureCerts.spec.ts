@@ -9,20 +9,19 @@ import type {TLSSocket} from 'node:tls';
 import expect from 'expect';
 import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 
-import {setupSeparateTestBrowserHooks} from './mocha-utils.js'
+import {setupSeparateTestBrowserHooks} from './mocha-utils.js';
 
 describe('acceptInsecureCerts', async () => {
   /* Note that this test creates its own browser rather than use
    * the one provided by the test set-up as we need one
    * with acceptInsecureCerts set to true
    */
-  const state =  setupSeparateTestBrowserHooks({
+  const state = setupSeparateTestBrowserHooks({
     acceptInsecureCerts: true,
   });
 
-
   describe('Response.securityDetails', function () {
-    it.only('should work', async () => {
+    it('should work', async () => {
       const {httpsServer, page} = state;
 
       const [serverRequest, response] = await Promise.all([
@@ -120,4 +119,3 @@ describe('acceptInsecureCerts', async () => {
     });
   });
 });
-
