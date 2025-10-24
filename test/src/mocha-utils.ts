@@ -387,6 +387,7 @@ export const mochaHooks: Mocha.RootHookObject = {
         'packages',
         'puppeteer',
         'lib',
+        'esm',
         'puppeteer',
         'puppeteer.js',
       ),
