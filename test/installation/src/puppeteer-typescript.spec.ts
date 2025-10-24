@@ -12,7 +12,7 @@ import {configureSandbox} from './sandbox.js';
 import {execFile, readAsset} from './util.js';
 
 // Skipping this test on Windows as windows runners are much slower.
-(platform() === 'win32' ? describe.skip : describe.only)(
+(platform() === 'win32' ? describe.skip : describe)(
   '`puppeteer` with TypeScript',
   () => {
     configureSandbox({
