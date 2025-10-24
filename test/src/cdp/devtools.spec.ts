@@ -79,15 +79,13 @@ describe('DevTools', function () {
       handleDevToolsAsPage: true,
     });
     const devtoolsPageTarget = await browser.waitForTarget(target => {
-      return target.type() === 'other';
+      return target.type() === 'other' && target.url().startsWith('devtools');
     });
     const page = (await devtoolsPageTarget.page())!;
-    expect(
-      await page.evaluate(() => {
-        // @ts-expect-error devtools context.
-        return Boolean(window.DevToolsAPI);
-      }),
-    ).toBe(true);
+    await page.waitForFunction(() => {
+      // @ts-expect-error devtools context.
+      return Boolean(window.DevToolsAPI);
+    });
     expect(await browser.pages()).toContain(page);
   });
 
@@ -101,12 +99,11 @@ describe('DevTools', function () {
       return target.type() === 'other' && target.url().startsWith('devtools');
     });
     const page = (await devtoolsPageTarget.page())!;
-    expect(
-      await page.evaluate(() => {
-        // @ts-expect-error devtools context.
-        return Boolean(window.DevToolsAPI);
-      }),
-    ).toBe(true);
+
+    await page.waitForFunction(() => {
+      // @ts-expect-error devtools context.
+      return Boolean(window.DevToolsAPI);
+    });
     expect(await browser.pages()).toContain(page);
   });
 

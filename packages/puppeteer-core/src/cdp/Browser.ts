@@ -8,7 +8,7 @@ import type {ChildProcess} from 'node:child_process';
 
 import type {Protocol} from 'devtools-protocol';
 
-import type {DebugInfo} from '../api/Browser.js';
+import type {CreatePageOptions, DebugInfo} from '../api/Browser.js';
 import {
   Browser as BrowserBase,
   BrowserEvent,
@@ -347,10 +347,19 @@ export class CdpBrowser extends BrowserBase {
     return await this.#defaultContext.newPage();
   }
 
-  async _createPageInContext(contextId?: string): Promise<Page> {
+  async _createPageInContext(
+    contextId?: string,
+    options?: CreatePageOptions,
+  ): Promise<Page> {
+    const hasTargets =
+      this.targets().filter(t => {
+        return t.browserContext().id === contextId;
+      }).length > 0;
     const {targetId} = await this.#connection.send('Target.createTarget', {
       url: 'about:blank',
       browserContextId: contextId || undefined,
+      // Works around crbug.com/454825274.
+      newWindow: hasTargets && options?.type === 'window' ? true : undefined,
     });
     const target = (await this.waitForTarget(t => {
       return (t as CdpTarget)._targetId === targetId;

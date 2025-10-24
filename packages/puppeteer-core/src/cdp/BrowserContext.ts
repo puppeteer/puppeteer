@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import type {CreatePageOptions} from '../api/Browser.js';
 import {
   WEB_PERMISSION_TO_PROTOCOL_PERMISSION,
   type Permission,
@@ -88,9 +89,9 @@ export class CdpBrowserContext extends BrowserContext {
     });
   }
 
-  override async newPage(): Promise<Page> {
+  override async newPage(options?: CreatePageOptions): Promise<Page> {
     using _guard = await this.waitForScreenshotOperations();
-    return await this.#browser._createPageInContext(this.#id);
+    return await this.#browser._createPageInContext(this.#id, options);
   }
 
   override browser(): CdpBrowser {

@@ -25,7 +25,12 @@ import {
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 import {Mutex} from '../util/Mutex.js';
 
-import type {Browser, Permission, WaitForTargetOptions} from './Browser.js';
+import type {
+  Browser,
+  CreatePageOptions,
+  Permission,
+  WaitForTargetOptions,
+} from './Browser.js';
 import type {Page} from './Page.js';
 import type {Target} from './Target.js';
 
@@ -230,7 +235,7 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * Creates a new {@link Page | page} in this
    * {@link BrowserContext | browser context}.
    */
-  abstract newPage(): Promise<Page>;
+  abstract newPage(options?: CreatePageOptions): Promise<Page>;
 
   /**
    * Gets the {@link Browser | browser} associated with this

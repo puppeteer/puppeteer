@@ -6,7 +6,7 @@
 
 import * as Bidi from 'webdriver-bidi-protocol';
 
-import type {Permission} from '../api/Browser.js';
+import type {CreatePageOptions, Permission} from '../api/Browser.js';
 import {WEB_PERMISSION_TO_PROTOCOL_PERMISSION} from '../api/Browser.js';
 import type {BrowserContextEvents} from '../api/BrowserContext.js';
 import {BrowserContext, BrowserContextEvent} from '../api/BrowserContext.js';
@@ -181,12 +181,15 @@ export class BidiBrowserContext extends BrowserContext {
     });
   }
 
-  override async newPage(): Promise<Page> {
+  override async newPage(options?: CreatePageOptions): Promise<Page> {
     using _guard = await this.waitForScreenshotOperations();
 
-    const context = await this.userContext.createBrowsingContext(
-      Bidi.BrowsingContext.CreateType.Tab,
-    );
+    const type =
+      options?.type === 'window'
+        ? Bidi.BrowsingContext.CreateType.Window
+        : Bidi.BrowsingContext.CreateType.Tab;
+
+    const context = await this.userContext.createBrowsingContext(type);
     const page = this.#pages.get(context)!;
     if (!page) {
       throw new Error('Page is not found');

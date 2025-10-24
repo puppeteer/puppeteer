@@ -1488,6 +1488,13 @@ Represents the source scheme of the origin that originally set the cookie. A val
 </td></tr>
 <tr><td>
 
+<span id="createpageoptions">[CreatePageOptions](./puppeteer.createpageoptions.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="downloadpolicy">[DownloadPolicy](./puppeteer.downloadpolicy.md)</span>
 
 </td><td>
