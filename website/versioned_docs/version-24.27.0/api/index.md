@@ -1176,6 +1176,13 @@ Valid options to configure PDF generation via [Page.pdf()](./puppeteer.page.pdf.
 </td></tr>
 <tr><td>
 
+<span id="reloadoptions">[ReloadOptions](./puppeteer.reloadoptions.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="remoteaddress">[RemoteAddress](./puppeteer.remoteaddress.md)</span>
 
 </td><td>
@@ -1477,6 +1484,13 @@ Represents the cookie's 'SameSite' status: https://tools.ietf.org/html/draft-wes
 </td><td>
 
 Represents the source scheme of the origin that originally set the cookie. A value of "Unset" allows protocol clients to emulate legacy cookie scope for the scheme. This is a temporary ability and it will be removed in the future.
+
+</td></tr>
+<tr><td>
+
+<span id="createpageoptions">[CreatePageOptions](./puppeteer.createpageoptions.md)</span>
+
+</td><td>
 
 </td></tr>
 <tr><td>

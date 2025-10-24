@@ -183,7 +183,7 @@ Deletes cookies matching the provided filters in this browser context.
 </td></tr>
 <tr><td>
 
-<span id="newpage">[newPage()](./puppeteer.browsercontext.newpage.md)</span>
+<span id="newpage">[newPage(options)](./puppeteer.browsercontext.newpage.md)</span>
 
 </td><td>
 

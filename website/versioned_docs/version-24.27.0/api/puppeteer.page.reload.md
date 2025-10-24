@@ -10,7 +10,7 @@ Reloads the page.
 
 ```typescript
 class Page {
-  abstract reload(options?: WaitForOptions): Promise<HTTPResponse | null>;
+  abstract reload(options?: ReloadOptions): Promise<HTTPResponse | null>;
 }
 ```
 
@@ -35,7 +35,7 @@ options
 
 </td><td>
 
-[WaitForOptions](./puppeteer.waitforoptions.md)
+[ReloadOptions](./puppeteer.reloadoptions.md)
 
 </td><td>
 
