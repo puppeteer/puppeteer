@@ -634,6 +634,19 @@ export function setDefaultScreenshotOptions(options: ScreenshotOptions): void {
 }
 
 /**
+ * @public
+ */
+export interface ReloadOptions extends WaitForOptions {
+  /**
+   * If set to true, the browser caches are ignored for the page reload.
+   *
+   * @defaultValue true
+   * @public
+   */
+  ignoreCache?: boolean;
+}
+
+/**
  * Page provides methods to interact with a single tab or
  * {@link https://developer.chrome.com/extensions/background_pages | extension background page}
  * in the browser.
@@ -1743,7 +1756,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * multiple redirects, the navigation will resolve with the response of the
    * last redirect.
    */
-  abstract reload(options?: WaitForOptions): Promise<HTTPResponse | null>;
+  abstract reload(options?: ReloadOptions): Promise<HTTPResponse | null>;
 
   /**
    * Waits for the page to navigate to a new URL or to reload. It is useful when

@@ -1176,6 +1176,13 @@ Valid options to configure PDF generation via [Page.pdf()](./puppeteer.page.pdf.
 </td></tr>
 <tr><td>
 
+<span id="reloadoptions">[ReloadOptions](./puppeteer.reloadoptions.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="remoteaddress">[RemoteAddress](./puppeteer.remoteaddress.md)</span>
 
 </td><td>

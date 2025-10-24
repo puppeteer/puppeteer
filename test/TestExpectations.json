@@ -552,6 +552,13 @@
     "comment": "With BiDi we get only text and not a serializable value for console messages"
   },
   {
+    "testIdPattern": "[page.spec] Page Page.reload should enable or disable the cache based on reload params",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Not yet supported https://bugzilla.mozilla.org/show_bug.cgi?id=1851561"
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],

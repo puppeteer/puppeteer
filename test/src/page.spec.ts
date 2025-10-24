@@ -2301,6 +2301,28 @@ describe('Page', function () {
     });
   });
 
+  describe('Page.reload', function () {
+    it('should enable or disable the cache based on reload params', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.PREFIX + '/cached/one-style.html');
+      const [cachedRequest] = await Promise.all([
+        server.waitForRequest('/cached/one-style.html'),
+        page.reload(),
+      ]);
+      // Rely on "if-modified-since" caching in our test server.
+      expect(cachedRequest.headers['if-modified-since']).not.toBe(undefined);
+
+      const [nonCachedRequest] = await Promise.all([
+        server.waitForRequest('/cached/one-style.html'),
+        page.reload({
+          ignoreCache: true,
+        }),
+      ]);
+      expect(nonCachedRequest.headers['if-modified-since']).toBe(undefined);
+    });
+  });
+
   describe('Page.setCacheEnabled', function () {
     it('should enable or disable the cache based on the state passed', async () => {
       const {page, server} = await getTestState();
