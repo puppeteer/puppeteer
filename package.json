@@ -75,7 +75,7 @@
       ]
     },
     "doctest": {
-      "command": "npx ./tools/doctest 'packages/puppeteer-core/lib/esm/**/*.js'",
+      "command": "npx ./tools/doctest 'packages/puppeteer-core/lib/**/*.js'",
       "dependencies": [
         "./packages/puppeteer-core:build",
         "./tools/doctest:build"

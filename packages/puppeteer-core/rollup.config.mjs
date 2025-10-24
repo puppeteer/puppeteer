@@ -11,7 +11,7 @@ import {nodeResolve} from '@rollup/plugin-node-resolve';
 const cwd = process.cwd();
 
 export default {
-  input: 'lib/esm/puppeteer/puppeteer-core-browser.js',
+  input: 'lib/puppeteer/puppeteer-core-browser.js',
   output: {
     format: 'iife',
     file: 'lib/es5-iife/puppeteer-core-browser.js',
@@ -27,10 +27,10 @@ export default {
     if (id.includes('node_modules')) {
       return true;
     }
-    if (id.startsWith(path.join(cwd, `lib`, `esm`, `puppeteer`, `bidi`))) {
+    if (id.startsWith(path.join(cwd, `lib`, `puppeteer`, `bidi`))) {
       return true;
     }
-    if (id.startsWith(path.join(cwd, `lib`, `esm`, `puppeteer`, `node`))) {
+    if (id.startsWith(path.join(cwd, `lib`, `puppeteer`, `node`))) {
       return true;
     }
     return false;

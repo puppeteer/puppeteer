@@ -9,53 +9,27 @@
     "clean": "../../tools/clean.mjs",
     "test": "wireit"
   },
-  "type": "commonjs",
-  "bin": "lib/cjs/main-cli.js",
-  "main": "./lib/cjs/main.js",
-  "module": "./lib/esm/main.js",
-  "exports": {
-    "import": "./lib/esm/main.js",
-    "require": "./lib/cjs/main.js"
-  },
+  "type": "module",
+  "bin": "lib/main-cli.js",
+  "main": "./lib/main.js",
+  "module": "./lib/main.js",
   "wireit": {
     "build": {
-      "command": "tsc -b && node --experimental-strip-types ../../tools/chmod.ts 755 lib/cjs/main-cli.js lib/esm/main-cli.js",
+      "command": "tsc -b && node --experimental-strip-types ../../tools/chmod.ts 755 lib/main-cli.js",
       "files": [
         "src/**/*.ts",
         "tsconfig.json"
       ],
       "clean": "if-file-deleted",
       "output": [
-        "lib/**",
-        "!lib/esm/package.json"
-      ],
-      "dependencies": [
-        "generate:package-json"
-      ]
-    },
-    "generate:package-json": {
-      "command": "node --experimental-strip-types ../../tools/generate_module_package_json.ts lib/esm/package.json",
-      "files": [
-        "../../tools/generate_module_package_json.ts"
-      ],
-      "output": [
-        "lib/esm/package.json"
-      ]
-    },
-    "generate:package-json:test": {
-      "command": "node --experimental-strip-types ../../tools/generate_module_package_json.ts test/build/package.json",
-      "files": [
-        "../../tools/generate_module_package_json.ts"
-      ],
-      "output": [
-        "test/build/package.json"
+        "lib/**"
       ]
     },
     "build:docs": {
       "command": "api-extractor run --local --config \"./api-extractor.docs.json\"",
       "files": [
         "api-extractor.docs.json",
-        "lib/esm/main.d.ts",
+        "lib/main.d.ts",
         "tsconfig.json"
       ],
       "dependencies": [
@@ -74,7 +48,6 @@
       ],
       "dependencies": [
         "build",
-        "generate:package-json:test",
         "../testserver:build"
       ]
     },

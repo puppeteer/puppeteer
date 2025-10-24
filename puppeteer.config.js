@@ -7,7 +7,7 @@
 /**
  * @type {import("puppeteer").Configuration}
  */
-module.exports = {
+export default {
   chrome: {
     skipDownload: false,
     skipHeadlessShellDownload: false,

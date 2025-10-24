@@ -7,12 +7,12 @@
 import assert from 'node:assert';
 import path from 'node:path';
 
-import {BrowserPlatform} from '../../../lib/esm/browser-data/browser-data.js';
+import {BrowserPlatform} from '../../../lib/browser-data/browser-data.js';
 import {
   resolveDownloadUrl,
   relativeExecutablePath,
   compareVersions,
-} from '../../../lib/esm/browser-data/chromium.js';
+} from '../../../lib/browser-data/chromium.js';
 
 describe('Chromium', () => {
   it('should resolve download URLs', () => {

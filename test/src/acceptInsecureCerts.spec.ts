@@ -93,7 +93,7 @@ describe('acceptInsecureCerts', async () => {
   it('should work with mixed content', async () => {
     const {server, httpsServer, page} = state;
 
-    httpsServer.setRoute('/mixedcontent.html', (_req, res) => {
+    httpsServer.setRoute('/mixedcontent.html', (_req: any, res: any) => {
       res.end(`<iframe src=${server.EMPTY_PAGE}></iframe>`);
     });
     await page.goto(httpsServer.PREFIX + '/mixedcontent.html', {

@@ -28,7 +28,7 @@ function testIdMatchesExpectationPattern(title, pattern) {
 }
 
 const prettierConfig = await import(
-  path.join(import.meta.dirname, '..', '.prettierrc.cjs')
+  path.join(import.meta.dirname, '..', 'prettier.config.js')
 );
 
 function getSpecificity(item) {

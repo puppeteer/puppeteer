@@ -84,7 +84,7 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       const {devDependencies} = getPackageJson(tree);
       const {options} = getAngularJsonScripts(tree);
 
-      expect(tree.files).toContain('/e2e/.mocharc.js');
+      expect(tree.files).toContain('/e2e/.mocharc.cjs');
       expect(devDependencies).toContain('mocha');
       expect(devDependencies).toContain('@types/mocha');
       expect(options['testRunner']).toBe('mocha');
@@ -194,7 +194,7 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       const {devDependencies} = getPackageJson(tree);
       const {options} = getAngularJsonScripts(tree);
 
-      expect(tree.files).toContain(getMultiApplicationFile('e2e/.mocharc.js'));
+      expect(tree.files).toContain(getMultiApplicationFile('e2e/.mocharc.cjs'));
       expect(devDependencies).toContain('mocha');
       expect(devDependencies).toContain('@types/mocha');
       expect(options['testRunner']).toBe('mocha');

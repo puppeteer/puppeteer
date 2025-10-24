@@ -231,6 +231,7 @@ async function main() {
       } else {
         args.push(...specs);
       }
+
       const mochaCommand = [
         ...(useCoverage
           ? ['c8', '--check-coverage', '--lines', '90', 'npx']
@@ -239,6 +240,7 @@ async function main() {
         ...mochaArgs.map(String),
         ...args,
       ];
+
       const handle = spawn('npx', mochaCommand, {
         shell: true,
         cwd: process.cwd(),

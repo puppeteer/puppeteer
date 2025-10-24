@@ -8,7 +8,7 @@ import prettier from '@prettier/sync';
 import {ESLintUtils} from '@typescript-eslint/utils';
 
 const prettierConfigFile = prettier.resolveConfigFile(
-  '../../../.prettierrc.cjs',
+  '../../../prettier.config.js',
 );
 const prettierConfig = prettier.resolveConfig(prettierConfigFile ?? '');
 
