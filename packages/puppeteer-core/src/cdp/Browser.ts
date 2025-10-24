@@ -358,7 +358,7 @@ export class CdpBrowser extends BrowserBase {
     const {targetId} = await this.#connection.send('Target.createTarget', {
       url: 'about:blank',
       browserContextId: contextId || undefined,
-      // Works around buggy logic in CDP if newWindow is false.
+      // Works around crbug.com/454825274.
       newWindow: hasTargets && options?.type === 'window' ? true : undefined,
     });
     const target = (await this.waitForTarget(t => {
