@@ -28,11 +28,10 @@
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "dependencies": {
-    "mime": "3.0.0",
+    "mime": "4.1.0",
     "ws": "8.18.3"
   },
   "devDependencies": {
-    "@types/mime": "3.0.4",
     "@types/ws": "8.18.1"
   }
 }
