@@ -45,7 +45,7 @@ export const asyncDisposeSymbol: typeof Symbol.asyncDispose =
 /**
  * @internal
  */
-class DisposableStackPolyfill {
+export class DisposableStackPolyfill {
   #disposed = false;
   #stack: Disposable[] = [];
 
@@ -194,7 +194,7 @@ export const DisposableStack: typeof DisposableStackPolyfill =
 /**
  * @internal
  */
-class AsyncDisposableStackPolyfill {
+export class AsyncDisposableStackPolyfill {
   #disposed = false;
   #stack: AsyncDisposable[] = [];
 
