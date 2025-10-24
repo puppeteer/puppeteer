@@ -327,7 +327,9 @@ async function installUrl(
     debugInstall(`Installing ${archivePath} to ${outputPath}`);
     try {
       debugTime('extract');
+console.log('Unpacking browser files...');
       await unpackArchive(archivePath, outputPath);
+console.log('Unpacking complete.');
     } finally {
       debugTimeEnd('extract');
     }
