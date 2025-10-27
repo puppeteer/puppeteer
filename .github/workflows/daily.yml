@@ -87,7 +87,7 @@ jobs:
           PUPPETEER_CHROME_HEADLESS_SHELL_VERSION: canary
           PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD: true
           PUPPETEER_TEST_EXPERIMENTAL_CHROME_FEATURES: ${{ matrix.configs == 'experimental' }}
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         if: ${{ !cancelled() }}
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.suite }}-${{ matrix.shard }}-${{ matrix.configs }}
@@ -154,7 +154,7 @@ jobs:
         run: xvfb-run --auto-servernum npm run test -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_FIREFOX_VERSION: nightly
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         if: ${{ !cancelled() }}
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.suite }}-${{ matrix.shard }}
