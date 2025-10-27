@@ -1,5 +1,18 @@
 # Changelog
 
+## [24.27.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.26.1...puppeteer-core-v24.27.0) (2025-10-27)
+
+
+### 🎉 Features
+
+* add window options to newPage() ([#14363](https://github.com/puppeteer/puppeteer/issues/14363)) ([1d4f48d](https://github.com/puppeteer/puppeteer/commit/1d4f48d80760231bc765f26e4648b4d0c6de66f4))
+* support ignoreCache in page.reload() ([#14365](https://github.com/puppeteer/puppeteer/issues/14365)) ([3794e8f](https://github.com/puppeteer/puppeteer/commit/3794e8f0136f6e25c27bab5b6e89723fd9b6a239))
+
+
+### 📄 Documentation
+
+* fix api-extractor warnings ([#14370](https://github.com/puppeteer/puppeteer/issues/14370)) ([538c480](https://github.com/puppeteer/puppeteer/commit/538c480a2b485b1ae9b4d25645b0b99e53967855))
+
 ## [24.26.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.26.0...puppeteer-core-v24.26.1) (2025-10-22)
 
 

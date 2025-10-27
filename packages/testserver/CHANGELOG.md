@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.2](https://github.com/puppeteer/puppeteer/compare/testserver-v0.6.1...testserver-v0.6.2) (2025-10-27)
+
+
+### ♻️ Chores
+
+* extract things required for ESM migration ([#14369](https://github.com/puppeteer/puppeteer/issues/14369)) ([c38313c](https://github.com/puppeteer/puppeteer/commit/c38313c4ebde082573409d1dfb358534673f42f4))
+
 ## [0.6.1](https://github.com/puppeteer/puppeteer/compare/testserver-v0.6.0...testserver-v0.6.1) (2024-06-18)
 
 
