@@ -87,6 +87,13 @@ export interface SerializedAXNode {
   children?: SerializedAXNode[];
 
   /**
+   * CDP-specifc ID to reference the DOM node.
+   *
+   * @internal
+   */
+  backendNodeId?: number;
+
+  /**
    * Get an ElementHandle for this AXNode if available.
    *
    * If the underlying DOM element has been disposed, the method might return an
@@ -539,6 +546,7 @@ class AXNode {
           return node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
         })) as ElementHandle<Element>;
       },
+      backendNodeId: this.payload.backendDOMNodeId,
     };
 
     type UserStringProperty =
