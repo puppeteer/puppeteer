@@ -29,7 +29,6 @@
         }
       ]
     },
-    "packages/testserver": {},
     "packages/ng-schematics": {
       "bump-minor-pre-major": true,
       "separate-pull-requests": true
