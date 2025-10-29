@@ -2,6 +2,38 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.27.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.26.1...puppeteer-v24.27.0) (2025-10-29)
+
+
+### 🎉 Features
+
+* add window options to newPage() ([#14363](https://github.com/puppeteer/puppeteer/issues/14363)) ([1d4f48d](https://github.com/puppeteer/puppeteer/commit/1d4f48d80760231bc765f26e4648b4d0c6de66f4))
+* roll to Chrome 142.0.7444.59 ([#14381](https://github.com/puppeteer/puppeteer/issues/14381)) ([54d504d](https://github.com/puppeteer/puppeteer/commit/54d504db0515f150b97862aa1415008dcfe9fcfa))
+* support ignoreCache in page.reload() ([#14365](https://github.com/puppeteer/puppeteer/issues/14365)) ([3794e8f](https://github.com/puppeteer/puppeteer/commit/3794e8f0136f6e25c27bab5b6e89723fd9b6a239))
+
+
+### ♻️ Chores
+
+* extract things required for ESM migration ([#14369](https://github.com/puppeteer/puppeteer/issues/14369)) ([c38313c](https://github.com/puppeteer/puppeteer/commit/c38313c4ebde082573409d1dfb358534673f42f4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.26.1 to 24.27.0
+
+
+### 🛠️ Fixes
+
+* roll to Firefox 144.0.2 ([#14382](https://github.com/puppeteer/puppeteer/issues/14382)) ([122f56e](https://github.com/puppeteer/puppeteer/commit/122f56ec6d5a71e48e3e4f00cae2e097bb8d2ce8))
+
+
+### 📄 Documentation
+
+* fix api-extractor warnings ([#14370](https://github.com/puppeteer/puppeteer/issues/14370)) ([538c480](https://github.com/puppeteer/puppeteer/commit/538c480a2b485b1ae9b4d25645b0b99e53967855))
+
+
 ## [24.26.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.26.0...puppeteer-v24.26.1) (2025-10-22)
 
 
