@@ -1,5 +1,24 @@
 # Changelog
 
+## [24.27.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.26.1...puppeteer-v24.27.0) (2025-10-29)
+
+
+### 🎉 Features
+
+* roll to Chrome 142.0.7444.59 ([#14381](https://github.com/puppeteer/puppeteer/issues/14381)) ([54d504d](https://github.com/puppeteer/puppeteer/commit/54d504db0515f150b97862aa1415008dcfe9fcfa))
+
+
+### ♻️ Chores
+
+* extract things required for ESM migration ([#14369](https://github.com/puppeteer/puppeteer/issues/14369)) ([c38313c](https://github.com/puppeteer/puppeteer/commit/c38313c4ebde082573409d1dfb358534673f42f4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.26.1 to 24.27.0
+
 ## [24.26.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.26.0...puppeteer-v24.26.1) (2025-10-22)
 
 
