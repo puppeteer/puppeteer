@@ -135,7 +135,7 @@
     "@puppeteer/browsers": "2.10.12",
     "chromium-bidi": "10.5.1",
     "cosmiconfig": "^9.0.0",
-    "devtools-protocol": "0.0.1508733",
+    "devtools-protocol": "0.0.1521046",
     "puppeteer-core": "24.26.1",
     "typed-query-selector": "^2.12.0"
   },
