@@ -19,6 +19,7 @@ import {debug} from '../common/Debug.js';
 import {ConnectionClosedError, TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {createProtocolErrorMessage} from '../util/ErrorLike.js';
+import type {GetIdFn} from '../util/incremental-id-generator.js';
 
 import {CdpCDPSession} from './CdpSession.js';
 
@@ -38,17 +39,20 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
   #manuallyAttached = new Set<string>();
   #callbacks: CallbackRegistry;
   #rawErrors = false;
+  #idGenerator: GetIdFn;
 
   constructor(
     url: string,
     transport: ConnectionTransport,
+    idGenerator: GetIdFn,
     delay = 0,
     timeout?: number,
     rawErrors = false,
   ) {
     super();
     this.#rawErrors = rawErrors;
-    this.#callbacks = new CallbackRegistry();
+    this.#idGenerator = idGenerator;
+    this.#callbacks = new CallbackRegistry(idGenerator);
     this.#url = url;
     this.#delay = delay;
     this.#timeout = timeout ?? 180_000;
@@ -78,6 +82,13 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
    */
   get _closed(): boolean {
     return this.#closed;
+  }
+
+  /**
+   * @internal
+   */
+  get _idGenerator(): GetIdFn {
+    return this.#idGenerator;
   }
 
   /**

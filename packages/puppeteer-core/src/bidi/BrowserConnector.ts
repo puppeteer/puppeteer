@@ -10,6 +10,7 @@ import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import type {ConnectOptions} from '../common/ConnectOptions.js';
 import {ProtocolError, UnsupportedOperation} from '../common/Errors.js';
 import {debugError, DEFAULT_VIEWPORT} from '../common/util.js';
+import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
 
 import type {BidiBrowser} from './Browser.js';
 import type {BidiConnection} from './Connection.js';
@@ -66,12 +67,17 @@ async function getBiDiConnection(
   closeCallback: BrowserCloseCallback;
 }> {
   const BiDi = await import(/* webpackIgnore: true */ './bidi.js');
-  const {slowMo = 0, protocolTimeout} = options;
+  const {
+    slowMo = 0,
+    protocolTimeout,
+    idGenerator = createIncrementalIdGenerator(),
+  } = options;
 
   // Try pure BiDi first.
   const pureBidiConnection = new BiDi.BidiConnection(
     url,
     connectionTransport,
+    idGenerator,
     slowMo,
     protocolTimeout,
   );
@@ -99,6 +105,7 @@ async function getBiDiConnection(
   const cdpConnection = new Connection(
     url,
     connectionTransport,
+    idGenerator,
     slowMo,
     protocolTimeout,
     /* rawErrors= */ true,

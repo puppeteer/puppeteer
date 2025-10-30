@@ -6,12 +6,10 @@
 
 import {Deferred} from '../util/Deferred.js';
 import {rewriteError} from '../util/ErrorLike.js';
-import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
+import type {GetIdFn} from '../util/incremental-id-generator.js';
 
 import {ProtocolError, TargetCloseError} from './Errors.js';
 import {debugError} from './util.js';
-
-const idGenerator = createIncrementalIdGenerator();
 
 /**
  * Manages callbacks and their IDs for the protocol request/response communication.
@@ -19,8 +17,12 @@ const idGenerator = createIncrementalIdGenerator();
  * @internal
  */
 export class CallbackRegistry {
-  #callbacks = new Map<number, Callback>();
-  #idGenerator = idGenerator;
+  readonly #callbacks = new Map<number, Callback>();
+  readonly #idGenerator: GetIdFn;
+
+  constructor(idGenerator: GetIdFn) {
+    this.#idGenerator = idGenerator;
+  }
 
   create(
     label: string,
