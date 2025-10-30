@@ -29,7 +29,7 @@ describe('TargetManager', () => {
     const targetManager = (browser as CdpBrowser)._targetManager();
 
     const initialTargetCount = targetManager.getAvailableTargets().size;
-    // There could be an conditional extra prerender targets.
+    // There could be an conditional extra prerender target.
     expect(initialTargetCount === 3 || initialTargetCount === 4).toBeTruthy();
 
     expect(await context.pages()).toHaveLength(0);
