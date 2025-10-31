@@ -1,6 +1,6 @@
 {
   "name": "puppeteer",
-  "version": "24.14.0",
+  "version": "24.27.0",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "keywords": [
     "puppeteer",
@@ -11,6 +11,7 @@
   "type": "commonjs",
   "bin": "./lib/cjs/puppeteer/node/cli.js",
   "main": "./lib/cjs/puppeteer/puppeteer.js",
+  "module": "./lib/esm/puppeteer/puppeteer.js",
   "types": "./lib/types.d.ts",
   "exports": {
     ".": {
@@ -74,7 +75,7 @@
       "command": "api-extractor run --local --config \"./api-extractor.docs.json\"",
       "files": [
         "api-extractor.docs.json",
-        "lib/esm/puppeteer/puppeteer-core.d.ts",
+        "lib/esm/puppeteer/puppeteer.docs.d.ts",
         "tsconfig.json"
       ],
       "dependencies": [
@@ -121,16 +122,21 @@
     "!*.test.d.ts",
     "!*.test.js.map",
     "!*.test.d.ts.map",
+    "!*.docs.ts",
+    "!*.docs.js",
+    "!*.docs.d.ts",
+    "!*.docs.js.map",
+    "!*.docs.d.ts.map",
     "!*.tsbuildinfo"
   ],
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "dependencies": {
-    "@puppeteer/browsers": "2.10.6",
-    "chromium-bidi": "7.2.0",
+    "@puppeteer/browsers": "2.10.12",
+    "chromium-bidi": "10.5.1",
     "cosmiconfig": "^9.0.0",
-    "devtools-protocol": "0.0.1464554",
-    "puppeteer-core": "24.14.0",
+    "devtools-protocol": "0.0.1521046",
+    "puppeteer-core": "24.27.0",
     "typed-query-selector": "^2.12.0"
   },
   "devDependencies": {

@@ -1,0 +1,24 @@
+name: 'Conventional Commit'
+
+on:
+  pull_request_target:
+    types:
+      # Defaults
+      # https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request_target
+      - opened
+      - reopened
+      - synchronize
+      # Tracks editing PR title or description, or base branch changes
+      # https://docs.github.com/en/webhooks/webhook-events-and-payloads?actionType=edited#pull_request
+      - edited
+
+jobs:
+  main:
+    name: '[Required] Validate PR title'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

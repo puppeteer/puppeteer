@@ -5,6 +5,7 @@
     "type": "git",
     "url": "https://github.com/puppeteer/puppeteer"
   },
+  "type": "module",
   "scripts": {
     "build": "wireit",
     "build:tools": "wireit",
@@ -14,7 +15,7 @@
     "docs": "wireit",
     "doctest": "wireit",
     "format": "wireit",
-    "format:eslint": "eslint --cache --fix .",
+    "format:eslint": "wireit",
     "format:expectations": "node tools/sort-test-expectations.mjs",
     "format:prettier": "prettier --write --cache . ",
     "lint": "wireit",
@@ -28,9 +29,11 @@
     "test-types": "wireit",
     "test:chrome": "wireit",
     "test:chrome:bidi": "wireit",
+    "test:chrome:bidi-only": "wireit",
     "test:chrome:headful": "wireit",
     "test:chrome:headless": "wireit",
     "test:chrome:shell": "wireit",
+    "test:chrome:pipe": "wireit",
     "test:firefox": "wireit",
     "test:firefox:headful": "wireit",
     "test:firefox:headless": "wireit",
@@ -98,16 +101,26 @@
         "format:expectations"
       ]
     },
+    "format:eslint": {
+      "command": "eslint --cache --fix .",
+      "dependencies": [
+        "build:tools"
+      ]
+    },
     "test:chrome": {
       "dependencies": [
         "test:chrome:bidi",
         "test:chrome:headful",
         "test:chrome:headless",
-        "test:chrome:shell"
+        "test:chrome:shell",
+        "test:chrome:pipe"
       ]
     },
     "test:chrome:bidi": {
       "command": "npm test -- --test-suite chrome-bidi"
+    },
+    "test:chrome:bidi-only": {
+      "command": "npm test -- --test-suite chrome-bidi-only"
     },
     "test:chrome:headful": {
       "command": "npm test -- --test-suite chrome-headful"
@@ -117,6 +130,9 @@
     },
     "test:chrome:shell": {
       "command": "npm test -- --test-suite chrome-headless-shell"
+    },
+    "test:chrome:pipe": {
+      "command": "npm test -- --test-suite chrome-pipe"
     },
     "test:firefox:headful": {
       "command": "npm test -- --test-suite firefox-headful"
@@ -148,44 +164,42 @@
   "devDependencies": {
     "@actions/core": "1.11.1",
     "@babel/plugin-transform-class-properties": "7.27.1",
-    "@babel/plugin-transform-class-static-block": "7.27.1",
+    "@babel/plugin-transform-class-static-block": "7.28.3",
     "@babel/plugin-transform-dynamic-import": "7.27.1",
     "@babel/plugin-transform-modules-commonjs": "7.27.1",
     "@babel/plugin-transform-private-methods": "7.27.1",
     "@babel/plugin-transform-private-property-in-object": "7.27.1",
-    "@microsoft/api-extractor": "7.52.8",
-    "@rollup/plugin-babel": "6.0.4",
-    "@rollup/plugin-node-resolve": "16.0.1",
-    "@stylistic/eslint-plugin": "5.2.0",
+    "@microsoft/api-extractor": "7.53.3",
+    "@rollup/plugin-babel": "6.1.0",
+    "@rollup/plugin-node-resolve": "16.0.3",
+    "@stylistic/eslint-plugin": "5.5.0",
     "@types/mocha": "10.0.10",
     "@types/node": "22.13.10",
-    "@types/semver": "7.7.0",
+    "@types/semver": "7.7.1",
     "@types/sinon": "17.0.4",
-    "typescript-eslint": "8.37.0",
-    "esbuild": "0.25.8",
+    "typescript-eslint": "8.46.2",
+    "esbuild": "0.25.11",
     "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-typescript": "4.4.4",
     "eslint-plugin-import": "2.32.0",
-    "eslint-plugin-mocha": "11.1.0",
-    "eslint-plugin-prettier": "5.5.3",
-    "eslint-plugin-rulesdir": "0.2.2",
+    "eslint-plugin-mocha": "11.2.0",
+    "eslint-plugin-prettier": "5.5.4",
     "eslint-plugin-tsdoc": "0.4.0",
     "eslint-plugin-unused-imports": "4.1.4",
     "eslint": "9.31.0",
     "execa": "9.6.0",
-    "expect": "30.0.4",
-    "globals": "16.3.0",
-    "gts": "6.0.2",
-    "hereby": "1.11.0",
+    "expect": "30.2.0",
+    "globals": "16.4.0",
+    "hereby": "1.11.1",
     "license-checker": "25.0.1",
-    "mocha": "11.7.1",
+    "mocha": "11.7.4",
     "prettier": "3.6.2",
-    "rollup": "4.45.1",
-    "semver": "7.7.2",
+    "rollup": "4.52.5",
+    "semver": "7.7.3",
     "sinon": "21.0.0",
     "source-map-support": "0.5.21",
     "spdx-satisfies": "6.0.0",
-    "tsd": "0.32.0",
+    "tsd": "0.33.0",
     "typescript": "5.8.3",
     "wireit": "0.14.12",
     "yargs": "18.0.0"

@@ -7,7 +7,12 @@
  * @type {import('prettier').Config}
  */
 module.exports = {
-  ...require('gts/.prettierrc.json'),
+  bracketSpacing: false,
+  singleQuote: true,
+  trailingComma: 'all',
+  arrowParens: 'avoid',
+  singleAttributePerLine: true,
+  htmlWhitespaceSensitivity: 'strict',
   /**
    * Uncomment this while working on Markdown documents.
    * MAKE SURE TO COMMENT THIS BEFORE RUNNING CHECKS/FORMATS

@@ -3,6 +3,8 @@
   "compilerOptions": {
     "rootDir": "src/",
     "outDir": "build/",
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
     "types": ["node"]
   },
   "include": ["src/**/*"],

@@ -138,7 +138,8 @@ export class CdpHTTPRequest extends HTTPRequest {
   }
 
   override headers(): Record<string, string> {
-    return this.#headers;
+    // Callers should not be allowed to mutate internal structure.
+    return structuredClone(this.#headers);
   }
 
   override response(): CdpHTTPResponse | null {
@@ -168,6 +169,10 @@ export class CdpHTTPRequest extends HTTPRequest {
     return {
       errorText: this._failureText,
     };
+  }
+
+  protected canBeIntercepted(): boolean {
+    return !this.url().startsWith('data:') && !this._fromMemoryCache;
   }
 
   /**

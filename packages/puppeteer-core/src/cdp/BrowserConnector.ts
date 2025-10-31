@@ -7,6 +7,7 @@
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import type {ConnectOptions} from '../common/ConnectOptions.js';
 import {debugError, DEFAULT_VIEWPORT} from '../common/util.js';
+import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
 
 import {CdpBrowser} from './Browser.js';
 import {Connection} from './Connection.js';
@@ -31,6 +32,8 @@ export async function _connectToCdpBrowser(
     _isPageTarget: isPageTarget,
     slowMo = 0,
     protocolTimeout,
+    handleDevToolsAsPage,
+    idGenerator = createIncrementalIdGenerator(),
   } = options;
 
   const connection = new Connection(
@@ -38,6 +41,8 @@ export async function _connectToCdpBrowser(
     connectionTransport,
     slowMo,
     protocolTimeout,
+    /* rawErrors */ false,
+    idGenerator,
   );
 
   const {browserContextIds} = await connection.send(
@@ -57,6 +62,7 @@ export async function _connectToCdpBrowser(
     isPageTarget,
     undefined,
     networkEnabled,
+    handleDevToolsAsPage,
   );
   return browser;
 }

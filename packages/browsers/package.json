@@ -1,6 +1,6 @@
 {
   "name": "@puppeteer/browsers",
-  "version": "2.10.6",
+  "version": "2.10.12",
   "description": "Download and launch browsers",
   "scripts": {
     "build:docs": "wireit",
@@ -12,6 +12,7 @@
   "type": "commonjs",
   "bin": "lib/cjs/main-cli.js",
   "main": "./lib/cjs/main.js",
+  "module": "./lib/esm/main.js",
   "exports": {
     "import": "./lib/esm/main.js",
     "require": "./lib/cjs/main.js"
@@ -29,18 +30,7 @@
         "!lib/esm/package.json"
       ],
       "dependencies": [
-        "generate:package-json",
-        "generate:version"
-      ]
-    },
-    "generate:version": {
-      "command": "hereby generate:version",
-      "clean": "if-file-deleted",
-      "files": [
-        "Herebyfile.mjs"
-      ],
-      "output": [
-        "src/generated/version.ts"
+        "generate:package-json"
       ]
     },
     "generate:package-json": {
@@ -50,6 +40,15 @@
       ],
       "output": [
         "lib/esm/package.json"
+      ]
+    },
+    "generate:package-json:test": {
+      "command": "node --experimental-strip-types ../../tools/generate_module_package_json.ts test/build/package.json",
+      "files": [
+        "../../tools/generate_module_package_json.ts"
+      ],
+      "output": [
+        "test/build/package.json"
       ]
     },
     "build:docs": {
@@ -70,10 +69,12 @@
         "test/src/tsconfig.json"
       ],
       "output": [
-        "test/build/**"
+        "test/build/**",
+        "!test/build/package.json"
       ],
       "dependencies": [
         "build",
+        "generate:package-json:test",
         "../testserver:build"
       ]
     },
@@ -106,13 +107,13 @@
     "!*.tsbuildinfo"
   ],
   "dependencies": {
-    "debug": "^4.4.1",
+    "debug": "^4.4.3",
     "extract-zip": "^2.0.1",
     "progress": "^2.0.3",
     "proxy-agent": "^6.5.0",
-    "tar-fs": "^3.1.0",
+    "tar-fs": "^3.1.1",
     "yargs": "^17.7.2",
-    "semver": "^7.7.2"
+    "semver": "^7.7.3"
   },
   "devDependencies": {
     "@types/debug": "4.1.12",

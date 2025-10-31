@@ -10,14 +10,13 @@ import * as readline from 'node:readline';
 import type * as Yargs from 'yargs';
 
 import {
+  Browser,
   resolveBuildId,
-  type Browser,
   BrowserPlatform,
   type ChromeReleaseChannel,
 } from './browser-data/browser-data.js';
 import {Cache} from './Cache.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
-import {packageVersion} from './generated/version.js';
 import {install} from './install.js';
 import {
   computeExecutablePath,
@@ -36,6 +35,19 @@ interface InstallArgs {
   baseUrl?: string;
   installDeps?: boolean;
 }
+
+function isValidBrowser(browser: unknown): browser is Browser {
+  return Object.values(Browser).includes(browser as Browser);
+}
+
+function isValidPlatform(platform: unknown): platform is BrowserPlatform {
+  return Object.values(BrowserPlatform).includes(platform as BrowserPlatform);
+}
+
+// If moved update release-please config
+// x-release-please-start-version
+const packageVersion = '2.10.12';
+// x-release-please-end
 
 /**
  * @public
@@ -109,10 +121,16 @@ export class CLI {
         'Which browser to install <browser>[@<buildId|latest>]. `latest` will try to find the latest available build. `buildId` is a browser-specific identifier such as a version or a revision.',
       type: 'string',
       coerce: (opt): InstallBrowser => {
-        return {
+        const browser: InstallBrowser = {
           name: this.#parseBrowser(opt),
           buildId: this.#parseBuildId(opt),
         };
+
+        if (!isValidBrowser(browser.name)) {
+          throw new Error(`Unsupported browser '${browser.name}'`);
+        }
+
+        return browser;
       },
       demandOption: required,
     });
@@ -123,6 +141,14 @@ export class CLI {
       type: 'string',
       desc: 'Platform that the binary needs to be compatible with.',
       choices: Object.values(BrowserPlatform),
+      default: detectBrowserPlatform(),
+      coerce: platform => {
+        if (!isValidPlatform(platform)) {
+          throw new Error(`Unsupported platform '${platform}'`);
+        }
+
+        return platform;
+      },
       defaultDescription: 'Auto-detected',
     });
   }
@@ -383,6 +409,11 @@ export class CLI {
             return typeof arg === 'string';
           });
 
+          args.browser.buildId = this.#resolvePinnedBrowserIfNeeded(
+            args.browser.buildId,
+            args.browser.name,
+          );
+
           const executablePath = args.system
             ? computeSystemExecutablePath({
                 browser: args.browser.name,
@@ -476,21 +507,28 @@ export class CLI {
         : 'latest';
   }
 
+  #resolvePinnedBrowserIfNeeded(buildId: string, browserName: Browser): string {
+    if (buildId === 'pinned') {
+      const options = this.#pinnedBrowsers?.[browserName];
+      if (!options || !options.buildId) {
+        throw new Error(`No pinned version found for ${browserName}`);
+      }
+      return options.buildId;
+    }
+    return buildId;
+  }
+
   async #install(args: InstallArgs) {
-    args.platform ??= detectBrowserPlatform();
     if (!args.browser) {
       throw new Error(`No browser arg provided`);
     }
     if (!args.platform) {
       throw new Error(`Could not resolve the current platform`);
     }
-    if (args.browser.buildId === 'pinned') {
-      const options = this.#pinnedBrowsers?.[args.browser.name];
-      if (!options || !options.buildId) {
-        throw new Error(`No pinned version found for ${args.browser.name}`);
-      }
-      args.browser.buildId = options.buildId;
-    }
+    args.browser.buildId = this.#resolvePinnedBrowserIfNeeded(
+      args.browser.buildId,
+      args.browser.name,
+    );
     const originalBuildId = args.browser.buildId;
     args.browser.buildId = await resolveBuildId(
       args.browser.name,

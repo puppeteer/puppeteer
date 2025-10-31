@@ -42,7 +42,7 @@ file = fs.readFileSync(genTypes, 'utf-8');
 file = file.replaceAll('#private;', '');
 
 file = file.replaceAll(
-  `import { Session } from 'chromium-bidi/lib/cjs/protocol/protocol.js';`,
+  `import { Session } from 'webdriver-bidi-protocol';`,
   'type Session = any;',
 );
 file = file.replaceAll(

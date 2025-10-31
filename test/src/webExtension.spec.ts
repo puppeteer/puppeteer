@@ -10,7 +10,14 @@ import expect from 'expect';
 
 import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
 
-const EXTENSION_PATH = path.join(__dirname, '/../assets/simple-extension');
+const EXTENSION_PATH = path.join(
+  import.meta.dirname,
+  '/../assets/simple-extension',
+);
+const EXTENSION_FIREFOX_PATH = path.join(
+  import.meta.dirname,
+  '/../assets/simple-extension-firefox',
+);
 const EXPECTED_ID = 'mbljndkcfjhaffohbnmoedabegpolpmd';
 
 describe('webExtension', function () {
@@ -22,7 +29,10 @@ describe('webExtension', function () {
     });
 
     const options = Object.assign({}, defaultBrowserOptions);
-
+    const extensionPath = isChrome ? EXTENSION_PATH : EXTENSION_FIREFOX_PATH;
+    // For Chrome, since the `key` field is present in the
+    // manifest, this should always have the same ID.
+    const expectedId = isChrome ? EXPECTED_ID : /temporary-addon/;
     if (isChrome) {
       options.enableExtensions = true;
       options.pipe = true;
@@ -30,12 +40,11 @@ describe('webExtension', function () {
 
     const {browser, close} = await launch(options);
     try {
-      // Install an extension. Since the `key` field is present in the
-      // manifest, this should always have the same ID.
-      expect(await browser.installExtension(EXTENSION_PATH)).toBe(EXPECTED_ID);
+      const id = await browser.installExtension(extensionPath);
+      expect(id).toMatch(expectedId);
 
       // Check we can uninstall the extension.
-      await browser.uninstallExtension(EXPECTED_ID);
+      await browser.uninstallExtension(id);
     } finally {
       await close();
     }

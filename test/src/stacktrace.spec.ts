@@ -11,9 +11,8 @@ import expect from 'expect';
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
 
-const FILENAME = __filename.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
 const parseStackTrace = (stack: string): string => {
-  stack = stack.replace(new RegExp(FILENAME, 'g'), '<filename>');
+  stack = stack.replace(new RegExp(import.meta.url, 'g'), '<filename>');
   stack = stack.replace(/<filename>:(\d+):(\d+)/g, '<filename>:<line>:<col>');
   stack = stack.replace(/<anonymous>:(\d+):(\d+)/g, '<anonymous>:<line>:<col>');
   return stack;
@@ -36,7 +35,7 @@ describe('Stack trace', function () {
     expect(error.name).toEqual('Error');
     expect(error.message).toEqual('Test');
     assert(error.stack);
-    error.stack = error.stack.replace(new RegExp(FILENAME, 'g'), '<filename>');
+
     expect(
       parseStackTrace(error.stack).split('\n    at ').slice(0, 2),
     ).toMatchObject({

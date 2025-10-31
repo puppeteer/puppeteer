@@ -38,9 +38,9 @@ jobs:
             suite: chrome-headful
     steps:
       - name: Check out repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Set up Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           cache: npm
           node-version-file: '.nvmrc'
@@ -73,7 +73,7 @@ jobs:
           PUPPETEER_TEST_EXPERIMENTAL_CHROME_FEATURES: ${{ matrix.configs == 'experimental' }}
       - name: Run all tests (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
-        run: npm run test -- -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: npm run test -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_CHROME_VERSION: canary
           PUPPETEER_CHROME_HEADLESS_SHELL_VERSION: canary
@@ -87,7 +87,7 @@ jobs:
           PUPPETEER_CHROME_HEADLESS_SHELL_VERSION: canary
           PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD: true
           PUPPETEER_TEST_EXPERIMENTAL_CHROME_FEATURES: ${{ matrix.configs == 'experimental' }}
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         if: ${{ !cancelled() }}
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.suite }}-${{ matrix.shard }}-${{ matrix.configs }}
@@ -114,9 +114,9 @@ jobs:
           - 4-4
     steps:
       - name: Check out repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Set up Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           cache: npm
           node-version-file: '.nvmrc'
@@ -146,7 +146,7 @@ jobs:
           PUPPETEER_FIREFOX_VERSION: nightly
       - name: Run all tests (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
-        run: npm run test -- -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        run: npm run test -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_FIREFOX_VERSION: nightly
       - name: Run all tests (Linux)
@@ -154,7 +154,7 @@ jobs:
         run: xvfb-run --auto-servernum npm run test -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           PUPPETEER_FIREFOX_VERSION: nightly
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         if: ${{ !cancelled() }}
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.suite }}-${{ matrix.shard }}
@@ -169,9 +169,9 @@ jobs:
     if: ${{ !cancelled() }}
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Set up Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           cache: npm
           node-version-file: '.nvmrc'
@@ -179,6 +179,8 @@ jobs:
         run: npm ci
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
+      - name: Build packages
+        run: npm run build -w @puppeteer/browsers
       - name: Generate comment
         id: genearate-comment-body
         run: node tools/build_daily_comment.mjs
@@ -186,7 +188,7 @@ jobs:
           CHROME_RUN_STATUS: ${{ needs.chrome-canary-tests.result }}
           FIREFOX_RUN_STATUS: ${{ needs.firefox-nightly-tests.result }}
       - name: Find Comment
-        uses: peter-evans/find-comment@3eae4d37986fb5a8592848f6a574fdf654e61f9e # v3.1.0
+        uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4.0.0
         id: find-comment
         with:
           # https://github.com/puppeteer/puppeteer/issues/12379
@@ -194,7 +196,7 @@ jobs:
           body-includes: ${{ steps.genearate-comment-body.outputs.today }}
           direction: last
       - name: Post comment
-        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4.0.0
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
         if: ${{ needs.chrome-canary-tests.result}}
         with:
           # https://github.com/puppeteer/puppeteer/issues/12379

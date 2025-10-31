@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {Session} from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type {Session} from 'webdriver-bidi-protocol';
 
 import type {
   IsPageTargetCallback,
@@ -83,6 +83,14 @@ export interface ConnectOptions {
   _isPageTarget?: IsPageTargetCallback;
 
   /**
+   * Whether to handle the DevTools windows as pages in Puppeteer. Supported
+   * only in Chrome with CDP.
+   *
+   * @defaultValue 'false'
+   */
+  handleDevToolsAsPage?: boolean;
+
+  /**
    * @defaultValue Determined at run time:
    *
    * - Launching Chrome - 'cdp'.
@@ -104,6 +112,14 @@ export interface ConnectOptions {
   browserWSEndpoint?: string;
   browserURL?: string;
   transport?: ConnectionTransport;
+  /**
+   * @internal
+   *
+   * Custom ID generator for CDP / BiDi messages. Useful if the same transport
+   * is shared for multiple connections.
+   */
+  idGenerator?: () => number;
+
   /**
    * Headers to use for the web socket connection.
    * @remarks

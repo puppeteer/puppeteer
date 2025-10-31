@@ -10,7 +10,7 @@ import expect from 'expect';
 import type {KeyInput} from 'puppeteer-core/internal/common/USKeyboardLayout.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame} from './utils.js';
+import {attachFrame, html} from './utils.js';
 
 describe('Keyboard', function () {
   setupTestBrowserHooks();
@@ -183,8 +183,10 @@ describe('Keyboard', function () {
 
     const {page} = await getTestState();
 
-    await page.setContent(`
-      <iframe srcdoc="<iframe name='test' srcdoc='<textarea></textarea>'></iframe>"</iframe>
+    await page.setContent(html`
+      <iframe
+        srcdoc="<iframe name='test' srcdoc='<textarea></textarea>'></iframe>"
+      ></iframe>
     `);
     const frame = await page.waitForFrame(async frame => {
       using element = await frame.frameElement();

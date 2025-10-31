@@ -1,5 +1,329 @@
 # Changelog
 
+## [24.27.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.26.1...puppeteer-v24.27.0) (2025-10-29)
+
+
+### 🎉 Features
+
+* roll to Chrome 142.0.7444.59 ([#14381](https://github.com/puppeteer/puppeteer/issues/14381)) ([54d504d](https://github.com/puppeteer/puppeteer/commit/54d504db0515f150b97862aa1415008dcfe9fcfa))
+
+
+### ♻️ Chores
+
+* extract things required for ESM migration ([#14369](https://github.com/puppeteer/puppeteer/issues/14369)) ([c38313c](https://github.com/puppeteer/puppeteer/commit/c38313c4ebde082573409d1dfb358534673f42f4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.26.1 to 24.27.0
+
+## [24.26.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.26.0...puppeteer-v24.26.1) (2025-10-22)
+
+
+### ♻️ Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.26.0 to 24.26.1
+
+## [24.26.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.25.0...puppeteer-v24.26.0) (2025-10-21)
+
+
+### 🎉 Features
+
+* **webdriver:** support `fetchPostData`  ([#14340](https://github.com/puppeteer/puppeteer/issues/14340)) ([ebe76d3](https://github.com/puppeteer/puppeteer/commit/ebe76d3f0c0dc2392f453331224afa41cfc78a70))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.25.0 to 24.26.0
+
+## [24.25.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.24.1...puppeteer-v24.25.0) (2025-10-15)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.24.1 to 24.25.0
+
+## [24.24.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.24.0...puppeteer-v24.24.1) (2025-10-13)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.10.11 to 2.10.12
+    * puppeteer-core bumped from 24.24.0 to 24.24.1
+
+## [24.24.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.23.1...puppeteer-v24.24.0) (2025-10-10)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.23.1 to 24.24.0
+
+## [24.23.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.23.0...puppeteer-v24.23.1) (2025-10-10)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.10.10 to 2.10.11
+    * puppeteer-core bumped from 24.23.0 to 24.23.1
+
+## [24.23.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.22.3...puppeteer-v24.23.0) (2025-10-01)
+
+
+### Features
+
+* roll to Chrome 141.0.7390.54 ([#14273](https://github.com/puppeteer/puppeteer/issues/14273)) ([b9ca458](https://github.com/puppeteer/puppeteer/commit/b9ca458df52762270ac5953865fb5c61c88e6f58))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.22.3 to 24.23.0
+
+## [24.22.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.22.2...puppeteer-v24.22.3) (2025-09-24)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.22.2 to 24.22.3
+
+## [24.22.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.22.1...puppeteer-v24.22.2) (2025-09-23)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.22.1 to 24.22.2
+
+## [24.22.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.22.0...puppeteer-v24.22.1) (2025-09-23)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.22.0 to 24.22.1
+
+## [24.22.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.21.0...puppeteer-v24.22.0) (2025-09-17)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.21.0 to 24.22.0
+
+## [24.21.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.20.0...puppeteer-v24.21.0) (2025-09-15)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.10.9 to 2.10.10
+    * puppeteer-core bumped from 24.20.0 to 24.21.0
+
+## [24.20.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.19.0...puppeteer-v24.20.0) (2025-09-10)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.10.8 to 2.10.9
+    * puppeteer-core bumped from 24.19.0 to 24.20.0
+
+## [24.19.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.18.0...puppeteer-v24.19.0) (2025-09-04)
+
+
+### Features
+
+* roll to Chrome 140.0.7339.80 ([#14162](https://github.com/puppeteer/puppeteer/issues/14162)) ([0cb425b](https://github.com/puppeteer/puppeteer/commit/0cb425b442258433798f58bd162812903d520127))
+
+
+### Bug Fixes
+
+* make types between puppeteer and puppeteer-core comptaible ([#14158](https://github.com/puppeteer/puppeteer/issues/14158)) ([549bb8a](https://github.com/puppeteer/puppeteer/commit/549bb8a281a9d2c2dae44897dea4cc8703ac06d9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.18.0 to 24.19.0
+
+## [24.18.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.17.1...puppeteer-v24.18.0) (2025-09-01)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.17.1 to 24.18.0
+
+## [24.17.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.17.0...puppeteer-v24.17.1) (2025-08-28)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.10.7 to 2.10.8
+    * puppeteer-core bumped from 24.17.0 to 24.17.1
+
+## [24.17.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.16.2...puppeteer-v24.17.0) (2025-08-20)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.10.6 to 2.10.7
+    * puppeteer-core bumped from 24.16.2 to 24.17.0
+
+## [24.16.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.16.1...puppeteer-v24.16.2) (2025-08-13)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.16.1 to 24.16.2
+
+## [24.16.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.16.0...puppeteer-v24.16.1) (2025-08-10)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.16.0 to 24.16.1
+
+## [24.16.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.15.0...puppeteer-v24.16.0) (2025-08-06)
+
+
+### Features
+
+* roll to Chrome 139.0.7258.66 ([#14085](https://github.com/puppeteer/puppeteer/issues/14085)) ([65c18f4](https://github.com/puppeteer/puppeteer/commit/65c18f4f2876806cb6e086d568a0011f890fd945))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.15.0 to 24.16.0
+
+## [24.15.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.14.0...puppeteer-v24.15.0) (2025-07-23)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.14.0 to 24.15.0
+
 ## [24.14.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.13.0...puppeteer-v24.14.0) (2025-07-16)
 
 

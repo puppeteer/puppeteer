@@ -38,6 +38,7 @@ export class WaitTask<T = unknown> {
   #args: unknown[];
 
   #timeout?: NodeJS.Timeout;
+  #genericError = new Error('Waiting failed');
   #timeoutError?: TimeoutError;
 
   #result = Deferred.create<HandleFor<T>>();
@@ -162,7 +163,8 @@ export class WaitTask<T = unknown> {
       }
       const badError = this.getBadError(error);
       if (badError) {
-        await this.terminate(badError);
+        this.#genericError.cause = badError;
+        await this.terminate(this.#genericError);
       }
     }
   }

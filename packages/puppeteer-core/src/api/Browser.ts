@@ -15,7 +15,11 @@ import {
   raceWith,
 } from '../../third_party/rxjs/rxjs.js';
 import type {ProtocolType} from '../common/ConnectOptions.js';
-import type {Cookie, CookieData} from '../common/Cookie.js';
+import type {
+  Cookie,
+  CookieData,
+  DeleteCookiesRequest,
+} from '../common/Cookie.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {
@@ -207,6 +211,18 @@ export interface DebugInfo {
 }
 
 /**
+ * @public
+ */
+export type CreatePageOptions =
+  | {
+      type: 'tab';
+    }
+  | {
+      type: 'window';
+      // TODO: window-specific params will be added here.
+    };
+
+/**
  * {@link Browser} represents a browser instance that is either:
  *
  * - connected to via {@link Puppeteer.connect} or
@@ -320,7 +336,7 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * Creates a new {@link Page | page} in the
    * {@link Browser.defaultBrowserContext | default browser context}.
    */
-  abstract newPage(): Promise<Page>;
+  abstract newPage(options?: CreatePageOptions): Promise<Page>;
 
   /**
    * Gets all active {@link Target | targets}.
@@ -408,7 +424,7 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * Gets this {@link Browser | browser's} original user agent.
    *
    * {@link Page | Pages} can override the user agent with
-   * {@link Page.setUserAgent}.
+   * {@link Page.(setUserAgent:2) }.
    *
    */
   abstract userAgent(): Promise<string>;
@@ -459,6 +475,22 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    */
   async deleteCookie(...cookies: Cookie[]): Promise<void> {
     return await this.defaultBrowserContext().deleteCookie(...cookies);
+  }
+
+  /**
+   * Deletes cookies matching the provided filters from the default
+   * {@link BrowserContext}.
+   *
+   * @remarks
+   *
+   * Shortcut for
+   * {@link BrowserContext.deleteMatchingCookies |
+   * browser.defaultBrowserContext().deleteMatchingCookies()}.
+   */
+  async deleteMatchingCookies(
+    ...filters: DeleteCookiesRequest[]
+  ): Promise<void> {
+    return await this.defaultBrowserContext().deleteMatchingCookies(...filters);
   }
 
   /**

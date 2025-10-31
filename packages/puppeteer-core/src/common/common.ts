@@ -6,6 +6,7 @@
 
 export * from './BrowserWebSocketTransport.js';
 export * from './CallbackRegistry.js';
+export * from './AriaQueryHandler.js';
 export type * from './Configuration.js';
 export type * from './ConnectionTransport.js';
 export type * from './ConnectOptions.js';

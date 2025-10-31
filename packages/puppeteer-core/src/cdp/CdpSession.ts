@@ -27,7 +27,7 @@ import type {CdpTarget} from './Target.js';
 export class CdpCDPSession extends CDPSession {
   #sessionId: string;
   #targetType: string;
-  #callbacks = new CallbackRegistry();
+  #callbacks: CallbackRegistry;
   #connection: Connection;
   #parentSessionId?: string;
   #target?: CdpTarget;
@@ -46,6 +46,7 @@ export class CdpCDPSession extends CDPSession {
     super();
     this.#connection = connection;
     this.#targetType = targetType;
+    this.#callbacks = new CallbackRegistry(connection._idGenerator);
     this.#sessionId = sessionId;
     this.#parentSessionId = parentSessionId;
     this.#rawErrors = rawErrors;

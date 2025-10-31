@@ -1,6 +1,6 @@
 {
   "name": "puppeteer-core",
-  "version": "24.14.0",
+  "version": "24.27.0",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "keywords": [
     "puppeteer",
@@ -10,8 +10,9 @@
   ],
   "type": "commonjs",
   "main": "./lib/cjs/puppeteer/puppeteer-core.js",
-  "types": "./lib/types.d.ts",
   "browser": "./lib/esm/puppeteer/puppeteer-core-browser.js",
+  "module": "./lib/esm/puppeteer/puppeteer-core.js",
+  "types": "./lib/types.d.ts",
   "exports": {
     ".": {
       "types": "./lib/types.d.ts",
@@ -40,7 +41,8 @@
     "check": "wireit",
     "clean": "../../tools/clean.mjs",
     "prepack": "wireit",
-    "unit": "wireit"
+    "unit": "wireit",
+    "unit:only": "wireit"
   },
   "wireit": {
     "check": {
@@ -125,11 +127,18 @@
       "dependencies": [
         "build"
       ]
+    },
+    "unit:only": {
+      "command": "node --test --test-only --test-reporter=spec \"lib/cjs/**/*.test.js\"",
+      "dependencies": [
+        "build"
+      ]
     }
   },
   "files": [
     "lib",
     "src",
+    "!function-fixture.mjs",
     "!*.test.ts",
     "!*.test.js",
     "!*.test.d.ts",
@@ -140,15 +149,16 @@
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "dependencies": {
-    "@puppeteer/browsers": "2.10.6",
-    "chromium-bidi": "7.2.0",
-    "debug": "^4.4.1",
-    "devtools-protocol": "0.0.1464554",
+    "@puppeteer/browsers": "2.10.12",
+    "chromium-bidi": "10.5.1",
+    "debug": "^4.4.3",
+    "devtools-protocol": "0.0.1521046",
     "typed-query-selector": "^2.12.0",
+    "webdriver-bidi-protocol": "0.3.8",
     "ws": "^8.18.3"
   },
   "devDependencies": {
-    "@types/chrome": "0.1.1",
+    "@types/chrome": "0.1.24",
     "@types/debug": "4.1.12",
     "@types/node": "^18.17.15",
     "@types/ws": "8.18.1",

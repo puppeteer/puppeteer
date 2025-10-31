@@ -16,7 +16,7 @@ import {
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {isFavicon, waitEvent} from './utils.js';
+import {html, isFavicon, waitEvent} from './utils.js';
 
 describe('cooperative request interception', function () {
   setupTestBrowserHooks();
@@ -131,9 +131,17 @@ describe('cooperative request interception', function () {
       page.on('request', request => {
         return request.continue({}, 0);
       });
-      await page.setContent(`
-        <form action='/rredirect' method='post'>
-          <input type="hidden" id="foo" name="foo" value="FOOBAR">
+      await page.setContent(html`
+        <form
+          action="/rredirect"
+          method="post"
+        >
+          <input
+            type="hidden"
+            id="foo"
+            name="foo"
+            value="FOOBAR"
+          />
         </form>
       `);
       await Promise.all([
@@ -624,7 +632,7 @@ describe('cooperative request interception', function () {
     it('should not throw "Invalid Interception Id" if the request was cancelled', async () => {
       const {page, server} = await getTestState();
 
-      await page.setContent('<iframe></iframe>');
+      await page.setContent(html`<iframe></iframe>`);
       await page.setRequestInterception(true);
       let request!: HTTPRequest;
       page.on('request', async r => {
@@ -673,7 +681,9 @@ describe('cooperative request interception', function () {
         void request.continue({}, 0);
       });
       await page.goto(
-        pathToFileURL(path.join(__dirname, '../assets', 'one-style.html')),
+        pathToFileURL(
+          path.join(import.meta.dirname, '../assets', 'one-style.html'),
+        ),
       );
       expect(urls.size).toBe(2);
       expect(urls.has('one-style.html')).toBe(true);
@@ -938,7 +948,7 @@ describe('cooperative request interception', function () {
       await page.setRequestInterception(true);
       page.on('request', request => {
         const imageBuffer = fs.readFileSync(
-          path.join(__dirname, '../assets', 'pptr.png'),
+          path.join(import.meta.dirname, '../assets', 'pptr.png'),
         );
         void request.respond(
           {

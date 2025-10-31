@@ -17,7 +17,7 @@ export class PipeTransport implements ConnectionTransport {
   #subscriptions = new DisposableStack();
 
   #isClosed = false;
-  #pendingMessage = '';
+  #pendingMessage: Buffer[] = [];
 
   onclose?: () => void;
   onmessage?: (value: string) => void;
@@ -34,7 +34,7 @@ export class PipeTransport implements ConnectionTransport {
         pipeRead as unknown as EventEmitter<Record<string, any>>,
       ),
     );
-    pipeReadEmitter.on('data', (buffer: Buffer) => {
+    pipeReadEmitter.on('data', buffer => {
       return this.#dispatch(buffer);
     });
     pipeReadEmitter.on('close', () => {
@@ -60,34 +60,32 @@ export class PipeTransport implements ConnectionTransport {
     this.#pipeWrite.write('\0');
   }
 
-  #dispatch(buffer: Buffer): void {
+  #dispatch(buffer: Buffer<ArrayBuffer>): void {
     assert(!this.#isClosed, '`PipeTransport` is closed.');
 
-    let end = buffer.indexOf('\0');
-    if (end === -1) {
-      this.#pendingMessage += buffer.toString();
+    this.#pendingMessage.push(buffer);
+    if (buffer.indexOf('\0') === -1) {
       return;
     }
-    const message = this.#pendingMessage + buffer.toString(undefined, 0, end);
-    setImmediate(() => {
-      if (this.onmessage) {
-        this.onmessage.call(null, message);
-      }
-    });
+    const concatBuffer = Buffer.concat(this.#pendingMessage);
 
-    let start = end + 1;
-    end = buffer.indexOf('\0', start);
+    let start = 0;
+    let end = concatBuffer.indexOf('\0');
     while (end !== -1) {
-      const message = buffer.toString(undefined, start, end);
+      const message = concatBuffer.toString(undefined, start, end);
       setImmediate(() => {
         if (this.onmessage) {
           this.onmessage.call(null, message);
         }
       });
       start = end + 1;
-      end = buffer.indexOf('\0', start);
+      end = concatBuffer.indexOf('\0', start);
     }
-    this.#pendingMessage = buffer.toString(undefined, start);
+    if (start >= concatBuffer.length) {
+      this.#pendingMessage = [];
+    } else {
+      this.#pendingMessage = [concatBuffer.subarray(start)];
+    }
   }
 
   close(): void {

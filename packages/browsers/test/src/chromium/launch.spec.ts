@@ -16,7 +16,7 @@ import {
   install,
   Browser,
   BrowserPlatform,
-} from '../../../lib/cjs/main.js';
+} from '../../../lib/esm/main.js';
 import {getServerUrl, setupTestServer, clearCache} from '../utils.js';
 import {testChromiumBuildId} from '../versions.js';
 

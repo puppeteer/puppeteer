@@ -14,28 +14,27 @@ import {task} from 'hereby';
 
 const require = Module.createRequire(import.meta.url);
 
-export const generateVersionTask = task({
-  name: 'generate:version',
+export const updateVersionTask = task({
+  name: 'update:version',
   run: async () => {
-    const {version} = JSON.parse(await readFile('package.json', 'utf8'));
-    await mkdir('src/generated', {recursive: true});
-    await writeFile(
-      'src/generated/version.ts',
-      (await readFile('src/templates/version.ts.tmpl', 'utf8')).replace(
-        'PACKAGE_VERSION',
-        version,
-      ),
-    );
-    if (process.env['PUBLISH']) {
-      await writeFile(
-        '../../versions.json',
-        (
-          await readFile('../../versions.json', {
-            encoding: 'utf-8',
-          })
-        ).replace(`"NEXT"`, `"v${version}"`),
-      );
+    // x-release-please-start-version
+    const version = '24.27.0';
+    // x-release-please-end
+
+    // We only want to do this once we are trying to publish
+    // a new version
+    if (!process.env['PUBLISH']) {
+      return;
     }
+
+    const fileContent = await readFile('../../versions.json', {
+      encoding: 'utf-8',
+    });
+
+    await writeFile(
+      '../../versions.json',
+      fileContent.replace(`"NEXT"`, `"v${version}"`),
+    );
   },
 });
 
@@ -73,9 +72,9 @@ export const generatePackageJsonTask = task({
 export const generateTask = task({
   name: 'generate',
   dependencies: [
-    generateVersionTask,
     generateInjectedTask,
     generatePackageJsonTask,
+    updateVersionTask,
   ],
 });
 

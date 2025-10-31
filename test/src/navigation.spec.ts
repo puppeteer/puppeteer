@@ -17,7 +17,7 @@ import {
   setupSeparateTestBrowserHooks,
   setupTestBrowserHooks,
 } from './mocha-utils.js';
-import {attachFrame, isFavicon, waitEvent} from './utils.js';
+import {attachFrame, html, isFavicon, waitEvent} from './utils.js';
 
 describe('navigation', function () {
   setupTestBrowserHooks();
@@ -673,7 +673,7 @@ describe('navigation', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      await page.setContent(`<a href='#foobar'>foobar</a>`);
+      await page.setContent(html`<a href="#foobar">foobar</a>`);
       const [response] = await Promise.all([
         page.waitForNavigation(),
         page.click('a'),
@@ -685,10 +685,12 @@ describe('navigation', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      await page.setContent(`
-        <a onclick='javascript:pushState()'>SPA</a>
+      await page.setContent(html`
+        <a onclick="javascript:pushState()">SPA</a>
         <script>
-          function pushState() { history.pushState({}, '', 'wow.html') }
+          function pushState() {
+            history.pushState({}, '', 'wow.html');
+          }
         </script>
       `);
       const [response] = await Promise.all([
@@ -702,10 +704,12 @@ describe('navigation', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      await page.setContent(`
-        <a onclick='javascript:replaceState()'>SPA</a>
+      await page.setContent(html`
+        <a onclick="javascript:replaceState()">SPA</a>
         <script>
-          function replaceState() { history.replaceState({}, '', '/replaced.html') }
+          function replaceState() {
+            history.replaceState({}, '', '/replaced.html');
+          }
         </script>
       `);
       const [response] = await Promise.all([
@@ -719,12 +723,24 @@ describe('navigation', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      await page.setContent(`
-        <a id=back onclick='javascript:goBack()'>back</a>
-        <a id=forward onclick='javascript:goForward()'>forward</a>
+      await page.setContent(html`
+        <a
+          id="back"
+          onclick="javascript:goBack()"
+          >back</a
+        >
+        <a
+          id="forward"
+          onclick="javascript:goForward()"
+          >forward</a
+        >
         <script>
-          function goBack() { history.back(); }
-          function goForward() { history.forward(); }
+          function goBack() {
+            history.back();
+          }
+          function goForward() {
+            history.forward();
+          }
           history.pushState({}, '', '/first.html');
           history.pushState({}, '', '/second.html');
         </script>
@@ -802,9 +818,19 @@ describe('navigation', function () {
       response = (await page.goForward())!;
       expect(response.ok()).toBe(true);
       expect(response.url()).toContain('/grid.html');
-
-      response = (await page.goForward())!;
-      expect(response).toBe(null);
+    });
+    it('should error if no history is found', async () => {
+      const {page} = await getTestState();
+      let error: Error | undefined;
+      try {
+        await page.goBack();
+      } catch (e) {
+        error = e as Error;
+      }
+      expect(error?.message).atLeastOneToContain([
+        'History entry to navigate to not found.',
+        'no such history entry',
+      ]);
     });
     it('should work with HistoryAPI', async () => {
       const {page, server} = await getTestState();
@@ -816,11 +842,13 @@ describe('navigation', function () {
       });
       expect(page.url()).toBe(server.PREFIX + '/second.html');
 
-      await page.goBack();
+      let response = await page.goBack();
+      expect(response).toBeNull();
       expect(page.url()).toBe(server.PREFIX + '/first.html');
       await page.goBack();
       expect(page.url()).toBe(server.EMPTY_PAGE);
-      await page.goForward();
+      response = await page.goForward();
+      expect(response).toBeNull();
       expect(page.url()).toBe(server.PREFIX + '/first.html');
     });
   });

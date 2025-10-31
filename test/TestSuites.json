@@ -23,6 +23,14 @@
     {
       "id": "chrome-bidi",
       "parameters": ["chrome", "headless", "webDriverBiDi"]
+    },
+    {
+      "id": "chrome-bidi-only",
+      "parameters": ["chrome", "headless", "webDriverBiDiOnly"]
+    },
+    {
+      "id": "chrome-pipe",
+      "parameters": ["chrome", "headless", "cdp", "pipe"]
     }
   ],
   "parameterDefinitions": {
@@ -33,8 +41,7 @@
       "PUPPETEER_BROWSER": "firefox"
     },
     "headless": {
-      "HEADLESS": "true",
-      "PUPPETEER_LOGLEVEL": "silent"
+      "HEADLESS": "true"
     },
     "headful": {
       "HEADLESS": "false"
@@ -45,6 +52,13 @@
     "webDriverBiDi": {
       "PUPPETEER_PROTOCOL": "webDriverBiDi"
     },
-    "cdp": {}
+    "webDriverBiDiOnly": {
+      "PUPPETEER_PROTOCOL": "webDriverBiDi",
+      "PUPPETEER_WEBDRIVER_BIDI_ONLY": "true"
+    },
+    "cdp": {},
+    "pipe": {
+      "PUPPETEER_PIPE": "true"
+    }
   }
 }

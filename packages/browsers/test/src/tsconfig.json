@@ -2,8 +2,8 @@
   "extends": "../../../../tsconfig.base.json",
   "compilerOptions": {
     "lib": ["ES2024.Promise"],
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
     "outDir": "../build"
   },
   "references": [{"path": "../../tsconfig.json"}]

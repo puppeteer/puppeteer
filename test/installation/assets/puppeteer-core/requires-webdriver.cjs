@@ -6,5 +6,5 @@
 
 require('puppeteer-core');
 require('puppeteer-core/internal/revisions.js');
-require('puppeteer-core/lib/cjs/puppeteer/revisions.js');
-require('puppeteer-core/lib/cjs/puppeteer/bidi/BidiOverCdp.js');
+require('puppeteer-core/lib/esm/puppeteer/revisions.js');
+require('puppeteer-core/lib/esm/puppeteer/bidi/BidiOverCdp.js');

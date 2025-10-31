@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import * as Bidi from 'webdriver-bidi-protocol';
 
 import type {Observable} from '../../third_party/rxjs/rxjs.js';
 import {
@@ -136,7 +136,11 @@ export class BidiFrame extends Frame {
     });
 
     this.browsingContext.on('request', ({request}) => {
-      const httpRequest = BidiHTTPRequest.from(request, this);
+      const httpRequest = BidiHTTPRequest.from(
+        request,
+        this,
+        this.page().isNetworkInterceptionEnabled,
+      );
       request.once('success', () => {
         this.page().trustedEmitter.emit(PageEvent.RequestFinished, httpRequest);
       });

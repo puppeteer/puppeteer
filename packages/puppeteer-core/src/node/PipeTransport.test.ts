@@ -14,6 +14,26 @@ describe('PipeTransport', () => {
   let transport: PipeTransport;
   let myReadable: Readable;
 
+  async function waitForNextMessage() {
+    return await new Promise<string>(res => {
+      transport.onmessage = message => {
+        res(message);
+      };
+    });
+  }
+
+  function waitForNumberOfMessages(count: number): Promise<string[]> {
+    const messages: string[] = [];
+    return new Promise<string[]>(resolve => {
+      transport.onmessage = (message: string) => {
+        messages.push(message);
+        if (messages.length === count) {
+          resolve(messages);
+        }
+      };
+    });
+  }
+
   beforeEach(() => {
     const myWritable = new Writable({
       write(_chunk: string, _encoding: string, callback) {
@@ -62,5 +82,47 @@ describe('PipeTransport', () => {
       'microtask1 m2',
       'microtask2 m2',
     ]);
+  });
+
+  describe('message handling', () => {
+    it('should work with message with ending', async () => {
+      let message = waitForNextMessage();
+      myReadable.push('m1\0');
+
+      expect(await message).toBe('m1');
+      message = waitForNextMessage();
+      myReadable.push('m2\0');
+      expect(await message).toBe('m2');
+    });
+
+    it('should work for messages ending in multiple lines', async () => {
+      const message = waitForNextMessage();
+      myReadable.push('Hello wor');
+      myReadable.push('ld!\0');
+
+      expect(await message).toBe('Hello world!');
+    });
+
+    it('should work with messages continuing from previous one', async () => {
+      let message = waitForNextMessage();
+      myReadable.push('Hello wor');
+      myReadable.push('ld!\0I started in ');
+
+      expect(await message).toBe('Hello world!');
+      message = waitForNextMessage();
+      myReadable.push('the previous message\0');
+      expect(await message).toBe('I started in the previous message');
+    });
+    it('should work with multiple messages in a single line', async () => {
+      const messagesPromise = waitForNumberOfMessages(3);
+      myReadable.push('First\0Second\0Third\0');
+
+      const messages = await messagesPromise;
+      expect(messages).toHaveLength(3);
+
+      expect(messages[0]).toBe('First');
+      expect(messages[1]).toBe('Second');
+      expect(messages[2]).toBe('Third');
+    });
   });
 });

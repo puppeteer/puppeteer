@@ -97,10 +97,18 @@ export function downloadFile(
         return;
       }
       const file = createWriteStream(destinationPath);
-      file.on('finish', () => {
+      file.on('close', () => {
+        // The 'close' event is emitted when the stream and any of its
+        // underlying resources (a file descriptor, for example) have been
+        // closed. The event indicates that no more events will be emitted, and
+        // no further computation will occur.
         return resolve();
       });
       file.on('error', error => {
+        // The 'error' event may be emitted by a Readable implementation at any
+        // time. Typically, this may occur if the underlying stream is unable to
+        // generate data due to an underlying internal failure, or when a stream
+        // implementation attempts to push an invalid chunk of data.
         return reject(error);
       });
       response.pipe(file);

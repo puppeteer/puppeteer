@@ -67,7 +67,8 @@ describe('DevTools', function () {
     ).toBe(6);
     expect(await browser.pages()).toContain(page);
   });
-  it('target.page() should return Page when calling asPage on DevTools target', async function () {
+
+  it('browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in connect()', async function () {
     const {puppeteer} = await getTestState({skipLaunch: true});
     const originalBrowser = await launchBrowser(launchOptions);
 
@@ -75,7 +76,39 @@ describe('DevTools', function () {
 
     using browser = await puppeteer.connect({
       browserWSEndpoint,
+      handleDevToolsAsPage: true,
     });
+    const devtoolsPageTarget = await browser.waitForTarget(target => {
+      return target.type() === 'other' && target.url().startsWith('devtools');
+    });
+    const page = (await devtoolsPageTarget.page())!;
+    await page.waitForFunction(() => {
+      // @ts-expect-error devtools context.
+      return Boolean(window.DevToolsAPI);
+    });
+    expect(await browser.pages()).toContain(page);
+  });
+
+  it('browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in launch()', async function () {
+    const browser = await launchBrowser({
+      ...launchOptions,
+      handleDevToolsAsPage: true,
+    });
+
+    const devtoolsPageTarget = await browser.waitForTarget(target => {
+      return target.type() === 'other' && target.url().startsWith('devtools');
+    });
+    const page = (await devtoolsPageTarget.page())!;
+
+    await page.waitForFunction(() => {
+      // @ts-expect-error devtools context.
+      return Boolean(window.DevToolsAPI);
+    });
+    expect(await browser.pages()).toContain(page);
+  });
+
+  it('target.page() should return Page when calling asPage on DevTools target', async function () {
+    const browser = await launchBrowser(launchOptions);
     const devtoolsPageTarget = await browser.waitForTarget(target => {
       return target.type() === 'other';
     });
@@ -115,7 +148,7 @@ describe('DevTools', function () {
     const page = await target.page();
     await page!.waitForFunction(() => {
       // @ts-expect-error wrong context.
-      return Boolean(DevToolsAPI);
+      return Boolean(window.DevToolsAPI);
     });
     await browser.close();
   });

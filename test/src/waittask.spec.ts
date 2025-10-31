@@ -11,9 +11,10 @@ import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 import {
   createTimeout,
   getTestState,
+  setupSeparateTestBrowserHooks,
   setupTestBrowserHooks,
 } from './mocha-utils.js';
-import {attachFrame, detachFrame} from './utils.js';
+import {attachFrame, detachFrame, html, htmlRaw} from './utils.js';
 
 describe('waittask specs', function () {
   setupTestBrowserHooks();
@@ -210,7 +211,7 @@ describe('waittask specs', function () {
     it('should accept ElementHandle arguments', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('<div></div>');
+      await page.setContent(html`<div></div>`);
       using div = (await page.$('div'))!;
       let resolved = false;
       const waitForFunction = page
@@ -398,7 +399,7 @@ describe('waittask specs', function () {
       });
       const [handle] = await Promise.all([
         page.waitForSelector('.zombo'),
-        page.setContent(`<div class='zombo'>anything</div>`),
+        page.setContent(html`<div class="zombo">anything</div>`),
       ]);
       expect(
         await page.evaluate(x => {
@@ -467,7 +468,7 @@ describe('waittask specs', function () {
       await expect(
         Promise.race([watchdog, createTimeout(40)]),
       ).resolves.toBeFalsy();
-      await page.setContent(`<input></input>`);
+      await page.setContent(html`<input></input>`);
       await page.click('input');
       await watchdog;
     });
@@ -511,10 +512,7 @@ describe('waittask specs', function () {
       await detachFrame(page, 'frame1');
       await waitPromise;
       expect(waitError).toBeTruthy();
-      expect(waitError?.message).atLeastOneToContain([
-        'waitForFunction failed: frame got detached.',
-        'Browsing context already closed.',
-      ]);
+      expect(waitError?.message).toBe('Waiting for selector `.box` failed');
     });
     it('should survive cross-process navigation', async () => {
       const {page, server} = await getTestState();
@@ -535,7 +533,7 @@ describe('waittask specs', function () {
       const {page} = await getTestState();
 
       const promise = page.waitForSelector('div', {visible: true});
-      await page.setContent('<div style="display: none">text</div>');
+      await page.setContent(html`<div style="display: none">text</div>`);
       using element = await page.evaluateHandle(() => {
         return document.getElementsByTagName('div')[0]!;
       });
@@ -552,7 +550,12 @@ describe('waittask specs', function () {
 
       const promise = page.waitForSelector('div', {visible: true});
       await page.setContent(
-        '<style>div {display: none;}</style><div>text</div>',
+        html`<style>
+            div {
+              display: none;
+            }
+          </style>
+          <div>text</div>`,
       );
       using element = await page.evaluateHandle(() => {
         return document.getElementsByTagName('div')[0]!;
@@ -575,7 +578,7 @@ describe('waittask specs', function () {
       const {page} = await getTestState();
 
       const promise = page.waitForSelector('div', {visible: true});
-      await page.setContent('<div style="visibility: hidden">text</div>');
+      await page.setContent(html`<div style="visibility: hidden">text</div>`);
       using element = await page.evaluateHandle(() => {
         return document.getElementsByTagName('div')[0]!;
       });
@@ -597,7 +600,7 @@ describe('waittask specs', function () {
       const {page} = await getTestState();
 
       const promise = page.waitForSelector('div', {visible: true});
-      await page.setContent('<div style="width: 0">text</div>');
+      await page.setContent(html`<div style="width: 0">text</div>`);
       using element = await page.evaluateHandle(() => {
         return document.getElementsByTagName('div')[0]!;
       });
@@ -623,7 +626,9 @@ describe('waittask specs', function () {
         visible: true,
       });
       await page.setContent(
-        `<div style='display: none; visibility: hidden;'><div id="inner">hi</div></div>`,
+        html`<div style="display: none; visibility: hidden;">
+          <div id="inner">hi</div>
+        </div>`,
       );
       using element = await page.evaluateHandle(() => {
         return document.getElementsByTagName('div')[0]!;
@@ -646,7 +651,7 @@ describe('waittask specs', function () {
       const {page} = await getTestState();
 
       const promise = page.waitForSelector('div', {hidden: true});
-      await page.setContent(`<div style='display: block;'>text</div>`);
+      await page.setContent(html`<div style="display: block;">text</div>`);
       using element = await page.evaluateHandle(() => {
         return document.getElementsByTagName('div')[0]!;
       });
@@ -662,7 +667,7 @@ describe('waittask specs', function () {
       const {page} = await getTestState();
 
       const promise = page.waitForSelector('div', {hidden: true});
-      await page.setContent(`<div style='display: block;'>text</div>`);
+      await page.setContent(html`<div style="display: block;">text</div>`);
       using element = await page.evaluateHandle(() => {
         return document.getElementsByTagName('div')[0]!;
       });
@@ -678,7 +683,7 @@ describe('waittask specs', function () {
       const {page} = await getTestState();
 
       const promise = page.waitForSelector('div', {hidden: true});
-      await page.setContent('<div>text</div>');
+      await page.setContent(html`<div>text</div>`);
       using element = await page.evaluateHandle(() => {
         return document.getElementsByTagName('div')[0]!;
       });
@@ -694,7 +699,7 @@ describe('waittask specs', function () {
       const {page} = await getTestState();
 
       const promise = page.waitForSelector('div', {hidden: true});
-      await page.setContent(`<div>text</div>`);
+      await page.setContent(html`<div>text</div>`);
       using element = await page.evaluateHandle(() => {
         return document.getElementsByTagName('div')[0]!;
       });
@@ -722,14 +727,12 @@ describe('waittask specs', function () {
         return (error = error_);
       });
       expect(error).toBeInstanceOf(TimeoutError);
-      expect(error?.message).toContain(
-        'Waiting for selector `div` failed: Waiting failed: 10ms exceeded',
-      );
+      expect(error?.message).toBe('Waiting for selector `div` failed');
     });
     it('should have an error message specifically for awaiting an element to be hidden', async () => {
       const {page} = await getTestState();
 
-      await page.setContent(`<div>text</div>`);
+      await page.setContent(html`<div>text</div>`);
       let error!: Error;
       await page
         .waitForSelector('div', {hidden: true, timeout: 10})
@@ -737,9 +740,7 @@ describe('waittask specs', function () {
           return (error = error_);
         });
       expect(error).toBeTruthy();
-      expect(error?.message).toContain(
-        'Waiting for selector `div` failed: Waiting failed: 10ms exceeded',
-      );
+      expect(error?.message).toBe('Waiting for selector `div` failed');
     });
 
     it('should respond to node attribute mutation', async () => {
@@ -749,7 +750,7 @@ describe('waittask specs', function () {
       const waitForSelector = page.waitForSelector('.zombo').then(() => {
         return (divFound = true);
       });
-      await page.setContent(`<div class='notZombo'></div>`);
+      await page.setContent(html`<div class="notZombo"></div>`);
       expect(divFound).toBe(false);
       await page.evaluate(() => {
         return (document.querySelector('div')!.className = 'zombo');
@@ -760,7 +761,7 @@ describe('waittask specs', function () {
       const {page} = await getTestState();
 
       const waitForSelector = page.waitForSelector('.zombo');
-      await page.setContent(`<div class='zombo'>anything</div>`);
+      await page.setContent(html`<div class="zombo">anything</div>`);
       expect(
         await page.evaluate(
           x => {
@@ -777,11 +778,9 @@ describe('waittask specs', function () {
       await page.waitForSelector('.zombo', {timeout: 10}).catch(error_ => {
         return (error = error_);
       });
-      expect(error?.stack).toContain(
-        'Waiting for selector `.zombo` failed: Waiting failed: 10ms exceeded',
-      );
+      expect(error?.stack).toContain('Waiting for selector `.zombo` failed');
       // The extension is ts here as Mocha maps back via sourcemaps.
-      expect(error?.stack).toContain('WaitTask.ts');
+      expect(error?.stack).toContain('waittask.spec.ts');
     });
 
     describe('xpath', function () {
@@ -792,7 +791,7 @@ describe('waittask specs', function () {
       it('should support some fancy xpath', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(`<p>red herring</p><p>hello  world  </p>`);
+        await page.setContent(htmlRaw`<p>red herring</p><p>hello  world  </p>`);
         const waitForSelector = page.waitForSelector(
           'xpath/.//p[normalize-space(.)="hello world"]',
         );
@@ -815,7 +814,7 @@ describe('waittask specs', function () {
             return (error = error_);
           });
         expect(error).toBeInstanceOf(TimeoutError);
-        expect(error?.message).toContain('Waiting failed: 10ms exceeded');
+        expect(error?.message).toBe('Waiting for selector `.//div` failed');
       });
       it('should run in specified frame', async () => {
         const {page, server} = await getTestState();
@@ -844,16 +843,15 @@ describe('waittask specs', function () {
         await detachFrame(page, 'frame1');
         await waitPromise;
         expect(waitError).toBeTruthy();
-        expect(waitError?.message).atLeastOneToContain([
-          'waitForFunction failed: frame got detached.',
-          'Browsing context already closed.',
-        ]);
+        expect(waitError?.message).toBe(
+          'Waiting for selector `.//*[@class="box"]` failed',
+        );
       });
       it('hidden should wait for display: none', async () => {
         const {page} = await getTestState();
 
         let divHidden = false;
-        await page.setContent(`<div style='display: block;'>text</div>`);
+        await page.setContent(html`<div style="display: block;">text</div>`);
         const waitForSelector = page
           .waitForSelector('xpath/.//div', {hidden: true})
           .then(() => {
@@ -881,7 +879,7 @@ describe('waittask specs', function () {
       it('hidden should return an empty element handle if the element is found', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(`<div style='display: none;'>text</div>`);
+        await page.setContent(html`<div style="display: none;">text</div>`);
 
         using waitForSelector = await page.waitForSelector('xpath/.//div', {
           hidden: true,
@@ -895,7 +893,7 @@ describe('waittask specs', function () {
         const waitForSelector = page.waitForSelector(
           'xpath/.//*[@class="zombo"]',
         );
-        await page.setContent(`<div class='zombo'>anything</div>`);
+        await page.setContent(html`<div class="zombo">anything</div>`);
         expect(
           await page.evaluate(
             x => {
@@ -908,7 +906,7 @@ describe('waittask specs', function () {
       it('should allow you to select a text node', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(`<div>some text</div>`);
+        await page.setContent(html`<div>some text</div>`);
         using text = await page.waitForSelector('xpath/.//div/text()');
         expect(await (await text!.getProperty('nodeType')!).jsonValue()).toBe(
           3 /* Node.TEXT_NODE */,
@@ -917,7 +915,7 @@ describe('waittask specs', function () {
       it('should allow you to select an element with single slash', async () => {
         const {page} = await getTestState();
 
-        await page.setContent(`<div>some text</div>`);
+        await page.setContent(html`<div>some text</div>`);
         const waitForSelector = page.waitForSelector('xpath/html/body/div');
         expect(
           await page.evaluate(
@@ -928,6 +926,31 @@ describe('waittask specs', function () {
           ),
         ).toBe('some text');
       });
+    });
+  });
+
+  describe('protocol timeout', () => {
+    const state = setupSeparateTestBrowserHooks({
+      protocolTimeout: 3000,
+    });
+
+    it('should error if underyling protocol command times out with raf polling', async () => {
+      let error!: Error;
+      await state.page
+        .waitForFunction(
+          () => {
+            return false;
+          },
+          {timeout: 6000},
+        )
+        .catch(error_ => {
+          return (error = error_);
+        });
+
+      expect(error).toBeInstanceOf(Error);
+      expect(error.message).toBe('Waiting failed');
+      expect(error.stack).toContain('waittask.spec.ts');
+      expect(error.cause).toBeInstanceOf(Error);
     });
   });
 });

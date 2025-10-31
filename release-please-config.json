@@ -1,20 +1,46 @@
 {
-  "last-release-sha": "0b006175eea0c58957715b2c1cd7e56aec5170f1",
+  "last-release-sha": "7d3f88132698d4c7374ca059662d2d750001e521",
   "separate-pull-requests": false,
+
+  "changelog-sections": [
+    {"type": "feat", "section": "🎉 Features", "hidden": false},
+    {"type": "fix", "section": "🛠️ Fixes", "hidden": false},
+    {"type": "docs", "section": "📄 Documentation", "hidden": false},
+
+    {"type": "perf", "section": "♻️ Chores", "hidden": false},
+    {"type": "refactor", "section": "♻️ Chores", "hidden": false},
+    {"type": "chore", "section": "♻️ Chores", "hidden": true},
+    {"type": "test", "section": "♻️ Chores", "hidden": true},
+
+    {"type": "build", "section": "⚙️ Automation", "hidden": true},
+    {"type": "ci", "section": "⚙️ Automation", "hidden": true}
+  ],
+
   "packages": {
     "packages/puppeteer": {
-      "component": "puppeteer",
-      "extra-files": ["docker/Dockerfile"]
+      "component": "puppeteer"
     },
     "packages/puppeteer-core": {
-      "component": "puppeteer-core"
+      "component": "puppeteer-core",
+      "extra-files": [
+        {
+          "type": "generic",
+          "path": "src/util/version.ts"
+        }
+      ]
     },
-    "packages/testserver": {},
     "packages/ng-schematics": {
       "bump-minor-pre-major": true,
       "separate-pull-requests": true
     },
-    "packages/browsers": {}
+    "packages/browsers": {
+      "extra-files": [
+        {
+          "type": "generic",
+          "path": "src/CLI.ts"
+        }
+      ]
+    }
   },
   "plugins": [
     {

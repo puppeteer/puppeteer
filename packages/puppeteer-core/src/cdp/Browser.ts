@@ -8,7 +8,7 @@ import type {ChildProcess} from 'node:child_process';
 
 import type {Protocol} from 'devtools-protocol';
 
-import type {DebugInfo} from '../api/Browser.js';
+import type {CreatePageOptions, DebugInfo} from '../api/Browser.js';
 import {
   Browser as BrowserBase,
   BrowserEvent,
@@ -56,6 +56,7 @@ export class CdpBrowser extends BrowserBase {
     isPageTargetCallback?: IsPageTargetCallback,
     waitForInitiallyDiscoveredTargets = true,
     networkEnabled = true,
+    handleDevToolsAsPage = false,
   ): Promise<CdpBrowser> {
     const browser = new CdpBrowser(
       connection,
@@ -67,6 +68,7 @@ export class CdpBrowser extends BrowserBase {
       isPageTargetCallback,
       waitForInitiallyDiscoveredTargets,
       networkEnabled,
+      handleDevToolsAsPage,
     );
     if (acceptInsecureCerts) {
       await connection.send('Security.setIgnoreCertificateErrors', {
@@ -86,6 +88,7 @@ export class CdpBrowser extends BrowserBase {
   #contexts = new Map<string, CdpBrowserContext>();
   #networkEnabled = true;
   #targetManager: TargetManager;
+  #handleDevToolsAsPage = false;
 
   constructor(
     connection: Connection,
@@ -97,6 +100,7 @@ export class CdpBrowser extends BrowserBase {
     isPageTargetCallback?: IsPageTargetCallback,
     waitForInitiallyDiscoveredTargets = true,
     networkEnabled = true,
+    handleDevToolsAsPage = false,
   ) {
     super();
     this.#networkEnabled = networkEnabled;
@@ -109,6 +113,7 @@ export class CdpBrowser extends BrowserBase {
       (() => {
         return true;
       });
+    this.#handleDevToolsAsPage = handleDevToolsAsPage;
     this.#setIsPageTargetCallback(isPageTargetCallback);
     this.#targetManager = new TargetManager(
       connection,
@@ -188,7 +193,10 @@ export class CdpBrowser extends BrowserBase {
         return (
           target.type() === 'page' ||
           target.type() === 'background_page' ||
-          target.type() === 'webview'
+          target.type() === 'webview' ||
+          (this.#handleDevToolsAsPage &&
+            target.type() === 'other' &&
+            target.url().startsWith('devtools://'))
         );
       });
   }
@@ -339,10 +347,19 @@ export class CdpBrowser extends BrowserBase {
     return await this.#defaultContext.newPage();
   }
 
-  async _createPageInContext(contextId?: string): Promise<Page> {
+  async _createPageInContext(
+    contextId?: string,
+    options?: CreatePageOptions,
+  ): Promise<Page> {
+    const hasTargets =
+      this.targets().filter(t => {
+        return t.browserContext().id === contextId;
+      }).length > 0;
     const {targetId} = await this.#connection.send('Target.createTarget', {
       url: 'about:blank',
       browserContextId: contextId || undefined,
+      // Works around crbug.com/454825274.
+      newWindow: hasTargets && options?.type === 'window' ? true : undefined,
     });
     const target = (await this.waitForTarget(t => {
       return (t as CdpTarget)._targetId === targetId;

@@ -10,14 +10,14 @@ import path from 'node:path';
 import {
   BrowserPlatform,
   ChromeReleaseChannel,
-} from '../../../lib/cjs/browser-data/browser-data.js';
+} from '../../../lib/esm/browser-data/browser-data.js';
 import {
   resolveDownloadUrl,
   relativeExecutablePath,
-  resolveSystemExecutablePath,
+  resolveSystemExecutablePaths,
   resolveBuildId,
   compareVersions,
-} from '../../../lib/cjs/browser-data/chrome.js';
+} from '../../../lib/esm/browser-data/chrome.js';
 
 describe('Chrome', () => {
   it('should resolve download URLs', () => {
@@ -80,31 +80,47 @@ describe('Chrome', () => {
 
   it('should resolve system executable path', () => {
     process.env['PROGRAMFILES'] = 'C:\\ProgramFiles';
+    process.env['ProgramW6432'] = 'C:\\ProgramFiles';
+    process.env['ProgramFiles(x86)'] = 'C:\\ProgramFiles (x86)';
+    process.env['LOCALAPPDATA'] = 'C:\\LocalAppData';
+
     try {
-      assert.strictEqual(
-        resolveSystemExecutablePath(
+      assert.deepStrictEqual(
+        resolveSystemExecutablePaths(
           BrowserPlatform.WIN32,
           ChromeReleaseChannel.DEV,
         ),
-        'C:\\ProgramFiles\\Google\\Chrome Dev\\Application\\chrome.exe',
+        [
+          'C:\\ProgramFiles\\Google\\Chrome Dev\\Application\\chrome.exe',
+          'C:\\ProgramFiles (x86)\\Google\\Chrome Dev\\Application\\chrome.exe',
+          'C:\\LocalAppData\\Google\\Chrome Dev\\Application\\chrome.exe',
+          'C:\\Program Files\\Google\\Chrome Dev\\Application\\chrome.exe',
+          'C:\\Program Files (x86)\\Google\\Chrome Dev\\Application\\chrome.exe',
+          'D:\\Program Files\\Google\\Chrome Dev\\Application\\chrome.exe',
+          'D:\\Program Files (x86)\\Google\\Chrome Dev\\Application\\chrome.exe',
+        ],
       );
     } finally {
       delete process.env['PROGRAMFILES'];
+      delete process.env['ProgramW6432'];
+      delete process.env['ProgramFiles(x86)'];
     }
 
-    assert.strictEqual(
-      resolveSystemExecutablePath(
+    assert.deepStrictEqual(
+      resolveSystemExecutablePaths(
         BrowserPlatform.MAC,
         ChromeReleaseChannel.BETA,
       ),
-      '/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta',
+      [
+        '/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta',
+      ],
     );
-    assert.strictEqual(
-      resolveSystemExecutablePath(
+    assert.deepStrictEqual(
+      resolveSystemExecutablePaths(
         BrowserPlatform.LINUX,
         ChromeReleaseChannel.CANARY,
       ),
-      '/opt/google/chrome-canary/chrome',
+      ['/opt/google/chrome-canary/chrome'],
     );
   });
 

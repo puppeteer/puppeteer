@@ -24,7 +24,7 @@
     }
   },
   "devDependencies": {
-    "@swc/core": "1.13.1",
+    "@swc/core": "1.13.5",
     "@types/doctrine": "0.0.9",
     "@types/source-map-support": "0.5.10",
     "@types/yargs": "17.0.33",
@@ -33,7 +33,7 @@
     "glob": "10.4.5",
     "package-directory": "8.1.0",
     "source-map-support": "0.5.21",
-    "source-map": "0.7.4",
+    "source-map": "0.7.6",
     "yargs": "17.7.2"
   }
 }

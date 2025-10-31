@@ -215,3 +215,33 @@ export async function waitForFileExistence(
     });
   }
 }
+
+export function html(
+  strings: TemplateStringsArray,
+  ...values: unknown[]
+): string {
+  const bodyContent = strings.reduce((acc, str, i) => {
+    return acc + str + (values[i] || '');
+  }, '');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My test page</title>
+  </head>
+  <body>
+    ${bodyContent}
+  </body>
+</html>`;
+}
+
+export function htmlRaw(
+  strings: TemplateStringsArray,
+  ...values: unknown[]
+): string {
+  return strings.reduce((acc, str, i) => {
+    return acc + str + (values[i] || '');
+  }, '');
+}
