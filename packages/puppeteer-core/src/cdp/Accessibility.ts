@@ -8,6 +8,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Realm} from '../api/Realm.js';
+import {debugError} from '../common/util.js';
 
 /**
  * Represents a Node and the properties of it that are relevant to Accessibility.
@@ -238,8 +239,13 @@ export class Accessibility {
         if (!frame) {
           return;
         }
-        const iframeSnapshot = await frame.accessibility.snapshot(options);
-        root.iframeSnapshot = iframeSnapshot ?? undefined;
+        try {
+          const iframeSnapshot = await frame.accessibility.snapshot(options);
+          root.iframeSnapshot = iframeSnapshot ?? undefined;
+        } catch (error) {
+          // Frames can get detached at any time resulting in errors.
+          debugError(error);
+        }
       }
       for (const child of root.children) {
         await populateIframes(child);
