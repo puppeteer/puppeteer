@@ -186,10 +186,12 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * Gets a list of all open {@link Page | pages} inside this
    * {@link BrowserContext | browser context}.
    *
+   * @param includeAll - experimental, setting to true includes all kinds of pages.
+   *
    * @remarks Non-visible {@link Page | pages}, such as `"background_page"`,
    * will not be listed here. You can find them using {@link Target.page}.
    */
-  abstract pages(): Promise<Page[]>;
+  abstract pages(includeAll?: boolean): Promise<Page[]>;
 
   /**
    * Grants this {@link BrowserContext | browser context} the given
