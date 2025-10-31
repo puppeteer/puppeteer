@@ -105,10 +105,10 @@ async function getBiDiConnection(
   const cdpConnection = new Connection(
     url,
     connectionTransport,
-    idGenerator,
     slowMo,
     protocolTimeout,
     /* rawErrors= */ true,
+    idGenerator,
   );
 
   const version = await cdpConnection.send('Browser.getVersion');

@@ -361,9 +361,10 @@ export abstract class BrowserLauncher {
     return new Connection(
       browserWSEndpoint,
       transport,
-      opts.idGenerator,
       opts.slowMo,
       opts.protocolTimeout,
+      /* rawErrors */ false,
+      opts.idGenerator,
     );
   }
 
@@ -389,9 +390,10 @@ export abstract class BrowserLauncher {
     return new Connection(
       '',
       transport,
-      opts.idGenerator,
       opts.slowMo,
       opts.protocolTimeout,
+      /* rawErrors */ false,
+      opts.idGenerator,
     );
   }
 

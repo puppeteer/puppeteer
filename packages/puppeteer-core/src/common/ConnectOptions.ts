@@ -113,10 +113,13 @@ export interface ConnectOptions {
   browserURL?: string;
   transport?: ConnectionTransport;
   /**
+   * @internal
+   *
    * Custom ID generator for CDP / BiDi messages. Useful if the same transport
    * is shared for multiple connections.
    */
   idGenerator?: () => number;
+
   /**
    * Headers to use for the web socket connection.
    * @remarks

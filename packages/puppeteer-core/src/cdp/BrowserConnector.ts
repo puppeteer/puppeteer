@@ -39,9 +39,10 @@ export async function _connectToCdpBrowser(
   const connection = new Connection(
     url,
     connectionTransport,
-    idGenerator,
     slowMo,
     protocolTimeout,
+    /* rawErrors */ false,
+    idGenerator,
   );
 
   const {browserContextIds} = await connection.send(
