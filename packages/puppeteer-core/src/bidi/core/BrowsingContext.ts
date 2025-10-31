@@ -608,13 +608,10 @@ export class BrowsingContext extends EventEmitter<{
   async setScreenOrientationOverride(
     screenOrientation: Bidi.Emulation.ScreenOrientation | null,
   ): Promise<void> {
-    await this.#session.send(
-      'emulation.setScreenOrientationOverride',
-      {
-        screenOrientation,
-        contexts: [this.id],
-      },
-    );
+    await this.#session.send('emulation.setScreenOrientationOverride', {
+      screenOrientation,
+      contexts: [this.id],
+    });
   }
 
   @throwIfDisposed<BrowsingContext>(context => {
