@@ -45,13 +45,13 @@ export class CdpBrowserContext extends BrowserContext {
     });
   }
 
-  override async pages(): Promise<Page[]> {
+  override async pages(includeAll = false): Promise<Page[]> {
     const pages = await Promise.all(
       this.targets()
         .filter(target => {
           return (
             target.type() === 'page' ||
-            (target.type() === 'other' &&
+            ((target.type() === 'other' || includeAll) &&
               this.#browser._getIsPageTargetCallback()?.(target))
           );
         })

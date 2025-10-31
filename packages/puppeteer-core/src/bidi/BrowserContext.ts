@@ -224,7 +224,7 @@ export class BidiBrowserContext extends BrowserContext {
     return this.#browser;
   }
 
-  override async pages(): Promise<BidiPage[]> {
+  override async pages(_includeAll = false): Promise<BidiPage[]> {
     return [...this.userContext.browsingContexts].map(context => {
       return this.#pages.get(context)!;
     });
