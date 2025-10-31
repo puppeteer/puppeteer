@@ -432,18 +432,42 @@ export class BidiPage extends Page {
 
   override async setViewport(viewport: Viewport | null): Promise<void> {
     if (!this.browser().cdpSupported) {
-      await this.#frame.browsingContext.setViewport({
-        viewport:
-          viewport?.width && viewport?.height
+      const viewportSize =
+        viewport?.width && viewport?.height
+          ? {
+              width: viewport.width,
+              height: viewport.height,
+            }
+          : null;
+
+      const devicePixelRatio = viewport?.deviceScaleFactor
+        ? viewport.deviceScaleFactor
+        : null;
+
+      // If `viewport` is not set, remove screen orientation override.
+      const screenOrientation: Bidi.Emulation.ScreenOrientation | null =
+        viewport
+          ? viewport.isLandscape
             ? {
-                width: viewport.width,
-                height: viewport.height,
+                natural: Bidi.Emulation.ScreenOrientationNatural.Landscape,
+                type: 'landscape-primary',
               }
-            : null,
-        devicePixelRatio: viewport?.deviceScaleFactor
-          ? viewport.deviceScaleFactor
-          : null,
-      });
+            : {
+                natural: Bidi.Emulation.ScreenOrientationNatural.Portrait,
+                type: 'portrait-primary',
+              }
+          : null;
+
+      await Promise.all([
+        this.#frame.browsingContext.setViewport({
+          viewport: viewportSize,
+          devicePixelRatio,
+        }),
+        this.#frame.browsingContext.setScreenOrientationOverride(
+          screenOrientation,
+        ),
+      ]);
+
       this.#viewport = viewport;
       return;
     }
