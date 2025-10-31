@@ -19,7 +19,10 @@ import {debug} from '../common/Debug.js';
 import {ConnectionClosedError, TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {createProtocolErrorMessage} from '../util/ErrorLike.js';
-import {createIncrementalIdGenerator, type GetIdFn} from '../util/incremental-id-generator.js';
+import {
+  createIncrementalIdGenerator,
+  type GetIdFn,
+} from '../util/incremental-id-generator.js';
 
 import {CdpCDPSession} from './CdpSession.js';
 
