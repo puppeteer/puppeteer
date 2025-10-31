@@ -30,6 +30,10 @@ import {TimeoutError} from '../common/Errors.js';
 import type {SupportedBrowser} from '../common/SupportedBrowser.js';
 import {debugError, DEFAULT_VIEWPORT} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
+import {
+  createIncrementalIdGenerator,
+  type GetIdFn,
+} from '../util/incremental-id-generator.js';
 
 import type {ChromeReleaseChannel, LaunchOptions} from './LaunchOptions.js';
 import {NodeWebSocketTransport as WebSocketTransport} from './NodeWebSocketTransport.js';
@@ -88,6 +92,7 @@ export abstract class BrowserLauncher {
       waitForInitialPage = true,
       protocolTimeout,
       handleDevToolsAsPage,
+      idGenerator = createIncrementalIdGenerator(),
     } = options;
 
     let {protocol} = options;
@@ -166,6 +171,7 @@ export abstract class BrowserLauncher {
             defaultViewport,
             acceptInsecureCerts,
             networkEnabled,
+            idGenerator,
           },
         );
       } else {
@@ -174,12 +180,14 @@ export abstract class BrowserLauncher {
             timeout,
             protocolTimeout,
             slowMo,
+            idGenerator,
           });
         } else {
           cdpConnection = await this.createCdpSocketConnection(browserProcess, {
             timeout,
             protocolTimeout,
             slowMo,
+            idGenerator,
           });
         }
 
@@ -342,6 +350,7 @@ export abstract class BrowserLauncher {
       timeout: number;
       protocolTimeout: number | undefined;
       slowMo: number;
+      idGenerator: GetIdFn;
     },
   ): Promise<Connection> {
     const browserWSEndpoint = await browserProcess.waitForLineOutput(
@@ -354,6 +363,8 @@ export abstract class BrowserLauncher {
       transport,
       opts.slowMo,
       opts.protocolTimeout,
+      /* rawErrors */ false,
+      opts.idGenerator,
     );
   }
 
@@ -366,6 +377,7 @@ export abstract class BrowserLauncher {
       timeout: number;
       protocolTimeout: number | undefined;
       slowMo: number;
+      idGenerator: GetIdFn;
     },
   ): Promise<Connection> {
     // stdio was assigned during start(), and the 'pipe' option there adds the
@@ -375,7 +387,14 @@ export abstract class BrowserLauncher {
       pipeWrite as NodeJS.WritableStream,
       pipeRead as NodeJS.ReadableStream,
     );
-    return new Connection('', transport, opts.slowMo, opts.protocolTimeout);
+    return new Connection(
+      '',
+      transport,
+      opts.slowMo,
+      opts.protocolTimeout,
+      /* rawErrors */ false,
+      opts.idGenerator,
+    );
   }
 
   /**
@@ -417,6 +436,7 @@ export abstract class BrowserLauncher {
       timeout: number;
       protocolTimeout: number | undefined;
       slowMo: number;
+      idGenerator: GetIdFn;
       defaultViewport: Viewport | null;
       acceptInsecureCerts?: boolean;
       networkEnabled?: boolean;
@@ -432,6 +452,7 @@ export abstract class BrowserLauncher {
     const bidiConnection = new BiDi.BidiConnection(
       browserWSEndpoint,
       transport,
+      opts.idGenerator,
       opts.slowMo,
       opts.protocolTimeout,
     );

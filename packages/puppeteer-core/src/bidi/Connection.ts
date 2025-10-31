@@ -14,6 +14,7 @@ import {ConnectionClosedError} from '../common/Errors.js';
 import type {EventsWithWildcard} from '../common/EventEmitter.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
+import type {GetIdFn} from '../util/incremental-id-generator.js';
 
 import {BidiCdpSession} from './CDPSession.js';
 import type {
@@ -57,12 +58,13 @@ export class BidiConnection
   #delay: number;
   #timeout = 0;
   #closed = false;
-  #callbacks = new CallbackRegistry();
+  #callbacks: CallbackRegistry;
   #emitters: Array<EventEmitter<any>> = [];
 
   constructor(
     url: string,
     transport: ConnectionTransport,
+    idGenerator: GetIdFn,
     delay = 0,
     timeout?: number,
   ) {
@@ -70,6 +72,7 @@ export class BidiConnection
     this.#url = url;
     this.#delay = delay;
     this.#timeout = timeout ?? 180_000;
+    this.#callbacks = new CallbackRegistry(idGenerator);
 
     this.#transport = transport;
     this.#transport.onmessage = this.onMessage.bind(this);

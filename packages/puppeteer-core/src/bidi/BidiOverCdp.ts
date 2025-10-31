@@ -48,6 +48,7 @@ export async function connectBidiOverCdp(
   const pptrBiDiConnection = new BidiConnection(
     cdp.url(),
     pptrTransport,
+    cdp._idGenerator,
     cdp.delay,
     cdp.timeout,
   );
