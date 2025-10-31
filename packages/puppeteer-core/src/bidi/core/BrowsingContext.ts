@@ -6,7 +6,9 @@
 
 import type * as Bidi from 'webdriver-bidi-protocol';
 
+import {ProtocolError} from '../../common/Errors.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
+import {debugError} from '../../common/util.js';
 import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 
@@ -608,10 +610,22 @@ export class BrowsingContext extends EventEmitter<{
   async setScreenOrientationOverride(
     screenOrientation: Bidi.Emulation.ScreenOrientation | null,
   ): Promise<void> {
-    await this.#session.send('emulation.setScreenOrientationOverride', {
-      screenOrientation,
-      contexts: [this.id],
-    });
+    try {
+      await this.#session.send('emulation.setScreenOrientationOverride', {
+        screenOrientation,
+        contexts: [this.id],
+      });
+    } catch (err) {
+      // Tolerate ProtocolError for
+      // emulation.setScreenOrientationOverride, Firefox only added
+      // support since 144 and 140 ESR doesn't implement it yet:
+      // https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/144#webdriver_conformance_webdriver_bidi_marionette
+      if (err instanceof ProtocolError) {
+        debugError(err);
+      } else {
+        throw err;
+      }
+    }
   }
 
   @throwIfDisposed<BrowsingContext>(context => {
