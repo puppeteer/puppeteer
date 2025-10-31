@@ -205,7 +205,7 @@ Grants this [browser context](./puppeteer.browsercontext.md) the given `permissi
 </td></tr>
 <tr><td>
 
-<span id="pages">[pages()](./puppeteer.browsercontext.pages.md)</span>
+<span id="pages">[pages(includeAll)](./puppeteer.browsercontext.pages.md)</span>
 
 </td><td>
 
