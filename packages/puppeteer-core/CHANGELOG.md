@@ -1,5 +1,34 @@
 # Changelog
 
+## [24.28.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.27.0...puppeteer-core-v24.28.0) (2025-11-03)
+
+
+### 🎉 Features
+
+* use BiDi for screen orientation emulation ([#14043](https://github.com/puppeteer/puppeteer/issues/14043)) ([e8b1903](https://github.com/puppeteer/puppeteer/commit/e8b1903de7ff7ece1e6c5e0e68c52f4dbf56d7d5))
+
+
+### 🛠️ Fixes
+
+* catch iframe snapshot errors ([#14389](https://github.com/puppeteer/puppeteer/issues/14389)) ([f231ead](https://github.com/puppeteer/puppeteer/commit/f231ead4c78f913a8de4796b010e9f1855736955))
+
+
+### 📄 Documentation
+
+* fix missing supported browser versions ([#14383](https://github.com/puppeteer/puppeteer/issues/14383)) ([abf147a](https://github.com/puppeteer/puppeteer/commit/abf147ae79527abb01214ab74a02f184c827c730))
+
+
+### ♻️ Chores
+
+* make protocol (cdp/bidi) command ID generator configurable ([4421b99](https://github.com/puppeteer/puppeteer/commit/4421b99bf0f6f0035d1bb3f7e16f5e82e74bbb50))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.10.12 to 2.10.13
+
 ## [24.27.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.26.1...puppeteer-core-v24.27.0) (2025-10-29)
 
 

@@ -277,7 +277,7 @@ Creates a new [page](./puppeteer.page.md) in the [default browser context](./pup
 </td></tr>
 <tr><td>
 
-<span id="pages">[pages()](./puppeteer.browser.pages.md)</span>
+<span id="pages">[pages(includeAll)](./puppeteer.browser.pages.md)</span>
 
 </td><td>
 

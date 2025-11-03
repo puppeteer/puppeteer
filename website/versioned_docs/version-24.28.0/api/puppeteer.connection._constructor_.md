@@ -16,6 +16,7 @@ class Connection {
     delay?: number,
     timeout?: number,
     rawErrors?: boolean,
+    idGenerator?: () => number,
   );
 }
 ```
@@ -90,6 +91,19 @@ rawErrors
 </td><td>
 
 boolean
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+<tr><td>
+
+idGenerator
+
+</td><td>
+
+() =&gt; number
 
 </td><td>
 

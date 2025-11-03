@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.13](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.12...browsers-v2.10.13) (2025-11-03)
+
+
+### 📄 Documentation
+
+* fix missing supported browser versions ([#14383](https://github.com/puppeteer/puppeteer/issues/14383)) ([abf147a](https://github.com/puppeteer/puppeteer/commit/abf147ae79527abb01214ab74a02f184c827c730))
+
 ## [2.10.12](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.11...browsers-v2.10.12) (2025-10-13)
 
 

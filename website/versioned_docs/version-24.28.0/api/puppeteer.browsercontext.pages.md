@@ -10,9 +10,39 @@ Gets a list of all open [pages](./puppeteer.page.md) inside this [browser contex
 
 ```typescript
 class BrowserContext {
-  abstract pages(): Promise<Page[]>;
+  abstract pages(includeAll?: boolean): Promise<Page[]>;
 }
 ```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+includeAll
+
+</td><td>
+
+boolean
+
+</td><td>
+
+_(Optional)_ experimental, setting to true includes all kinds of pages.
+
+</td></tr>
+</tbody></table>
 
 **Returns:**
 
