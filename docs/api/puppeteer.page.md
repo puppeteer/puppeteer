@@ -862,7 +862,7 @@ All timestamps are in monotonic time: monotonically increasing time in seconds s
 
 </td><td>
 
-Opens DevTools for the current Page and returns the DevTools Page.
+Opens DevTools for the current Page and returns the DevTools Page. This method is only available in Chrome.
 
 </td></tr>
 <tr><td>

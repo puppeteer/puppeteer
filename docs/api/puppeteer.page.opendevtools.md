@@ -4,7 +4,7 @@ sidebar_label: Page.openDevTools
 
 # Page.openDevTools() method
 
-Opens DevTools for the current Page and returns the DevTools Page.
+Opens DevTools for the current Page and returns the DevTools Page. This method is only available in Chrome.
 
 ### Signature
 
