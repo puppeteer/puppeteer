@@ -205,10 +205,6 @@ export class BidiBrowserContext extends BrowserContext {
     return page;
   }
 
-  override openDevTools(): Promise<Page> {
-    throw new Error('openDevTools is not supported in BiDi');
-  }
-
   override async close(): Promise<void> {
     assert(
       this.userContext.id !== UserContext.DEFAULT,

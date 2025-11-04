@@ -240,11 +240,6 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
   abstract newPage(options?: CreatePageOptions): Promise<Page>;
 
   /**
-   * Opens DevTools on the provided Target.
-   */
-  abstract openDevTools(targetId: string): Promise<Page>;
-
-  /**
    * Gets the {@link Browser | browser} associated with this
    * {@link BrowserContext | browser context}.
    */

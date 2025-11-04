@@ -94,11 +94,6 @@ export class CdpBrowserContext extends BrowserContext {
     return await this.#browser._createPageInContext(this.#id, options);
   }
 
-  override async openDevTools(targetId: string): Promise<Page> {
-    using _guard = await this.waitForScreenshotOperations();
-    return await this.#browser._createDevToolsPage(targetId);
-  }
-
   override browser(): CdpBrowser {
     return this.#browser;
   }

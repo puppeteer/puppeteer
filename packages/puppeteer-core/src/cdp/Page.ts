@@ -58,6 +58,7 @@ import {AsyncDisposableStack} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {Binding} from './Binding.js';
+import type {CdpBrowser} from './Browser.js';
 import {CdpCDPSession} from './CdpSession.js';
 import {isTargetClosedError} from './Connection.js';
 import {Coverage} from './Coverage.js';
@@ -419,7 +420,8 @@ export class CdpPage extends Page {
 
   override async openDevTools(): Promise<Page> {
     const pageTargetId = this.target()._targetId;
-    const devtoolsPage = await this.browserContext().openDevTools(pageTargetId);
+    const browser = this.browser() as CdpBrowser;
+    const devtoolsPage = await browser._createDevToolsPage(pageTargetId);
     return devtoolsPage;
   }
 
