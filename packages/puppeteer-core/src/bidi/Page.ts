@@ -286,6 +286,10 @@ export class BidiPage extends Page {
     throw new Error('Method not implemented for WebDriver BiDi yet.');
   }
 
+  override openDevTools(): Promise<Page> {
+    throw new Error('Method not implemented for WebDriver BiDi yet.');
+  }
+
   async focusedFrame(): Promise<BidiFrame> {
     using handle = (await this.mainFrame()
       .isolatedRealm()

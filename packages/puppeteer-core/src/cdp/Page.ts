@@ -417,6 +417,12 @@ export class CdpPage extends Page {
     return this.#emulationManager.javascriptEnabled;
   }
 
+  override async openDevTools(): Promise<Page> {
+    const pageTargetId = this.target()._targetId;
+    const devtoolsPage = await this.browserContext().openDevTools(pageTargetId);
+    return devtoolsPage;
+  }
+
   override async waitForFileChooser(
     options: WaitTimeoutOptions = {},
   ): Promise<FileChooser> {
