@@ -856,6 +856,17 @@ All timestamps are in monotonic time: monotonically increasing time in seconds s
 </td></tr>
 <tr><td>
 
+<span id="opendevtools">[openDevTools()](./puppeteer.page.opendevtools.md)</span>
+
+</td><td>
+
+</td><td>
+
+Opens DevTools for the current Page and returns the DevTools Page.
+
+</td></tr>
+<tr><td>
+
 <span id="pdf">[pdf(options)](./puppeteer.page.pdf.md)</span>
 
 </td><td>
