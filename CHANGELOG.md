@@ -2,6 +2,32 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.29.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.28.0...puppeteer-v24.29.0) (2025-11-05)
+
+
+### ♻️ Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.28.0 to 24.29.0
+
+
+### 🎉 Features
+
+* add page.openDevTools() method ([#14396](https://github.com/puppeteer/puppeteer/issues/14396)) ([0209c07](https://github.com/puppeteer/puppeteer/commit/0209c0756319177aa0cc5a5f7a5391a817621dca))
+
+
+### 🛠️ Fixes
+
+* do not wait for all targets when connecting ([#14395](https://github.com/puppeteer/puppeteer/issues/14395)) ([0029495](https://github.com/puppeteer/puppeteer/commit/0029495d0dbb1a81faab647cd83b8878049c9f01))
+* tasks and session management in ExtensionTransport ([#14400](https://github.com/puppeteer/puppeteer/issues/14400)) ([47c92d6](https://github.com/puppeteer/puppeteer/commit/47c92d6aff49c10b065b49109bac094e7bcc7469))
+
+
 ## [24.28.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.27.0...puppeteer-v24.28.0) (2025-11-03)
 
 
