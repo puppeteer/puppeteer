@@ -15,7 +15,8 @@ import {Deferred} from '../util/Deferred.js';
 
 import {CdpCDPSession} from './CdpSession.js';
 import type {Connection} from './Connection.js';
-import {CdpTarget, InitializationStatus} from './Target.js';
+import type {CdpTarget} from './Target.js';
+import {InitializationStatus} from './Target.js';
 import type {TargetManagerEvents} from './TargetManageEvents.js';
 import {TargetManagerEvent} from './TargetManageEvents.js';
 
@@ -90,10 +91,20 @@ export class TargetManager
   >();
 
   #initializeDeferred = Deferred.create<void>();
-  #targetsIdsForInit = new Set<string>();
   #waitForInitiallyDiscoveredTargets = true;
 
   #discoveryFilter: Protocol.Target.FilterEntry[] = [{}];
+  // IDs of tab targets detected while running the initial Target.setAutoAttach
+  // request. These are the targets whose initialization we want to await for
+  // before resolving puppeteer.connect() or launch() to avoid flakiness.
+  // Whenever a sub-target whose parent is a tab target is attached, we remove
+  // the tab target from this list. Once the list is empty, we resolve the
+  // initializeDeferred.
+  #targetsIdsForInit = new Set<string>();
+  // This is false until the connection-level Target.setAutoAttach request is
+  // done. It indicates whethere we are running the initial auto-attach step or
+  // if we are handling targets after that.
+  #initialAttachDone = false;
 
   constructor(
     connection: Connection,
@@ -117,44 +128,11 @@ export class TargetManager
     this.#setupAttachmentListeners(this.#connection);
   }
 
-  #storeExistingTargetsForInit = () => {
-    if (!this.#waitForInitiallyDiscoveredTargets) {
-      return;
-    }
-    for (const [
-      targetId,
-      targetInfo,
-    ] of this.#discoveredTargetsByTargetId.entries()) {
-      const targetForFilter = new CdpTarget(
-        targetInfo,
-        undefined,
-        undefined,
-        this,
-        undefined,
-      );
-      // Only wait for pages and frames (except those from extensions)
-      // to auto-attach.
-      const isPageOrFrame =
-        targetInfo.type === 'page' || targetInfo.type === 'iframe';
-      const isExtension = targetInfo.url.startsWith('chrome-extension://');
-      if (
-        (!this.#targetFilterCallback ||
-          this.#targetFilterCallback(targetForFilter)) &&
-        isPageOrFrame &&
-        !isExtension
-      ) {
-        this.#targetsIdsForInit.add(targetId);
-      }
-    }
-  };
-
   async initialize(): Promise<void> {
     await this.#connection.send('Target.setDiscoverTargets', {
       discover: true,
       filter: this.#discoveryFilter,
     });
-
-    this.#storeExistingTargetsForInit();
 
     await this.#connection.send('Target.setAutoAttach', {
       waitForDebuggerOnStart: true,
@@ -168,6 +146,7 @@ export class TargetManager
         ...this.#discoveryFilter,
       ],
     });
+    this.#initialAttachDone = true;
     this.#finishInitializationIfReady();
     await this.#initializeDeferred.valueOrThrow();
   }
@@ -346,7 +325,6 @@ export class TargetManager
     // should determine if a target is auto-attached or not with the help of
     // CDP.
     if (targetInfo.type === 'service_worker') {
-      this.#finishInitializationIfReady(targetInfo.targetId);
       await silentDetach();
       if (this.#attachedTargetsByTargetId.has(targetInfo.targetId)) {
         return;
@@ -370,11 +348,24 @@ export class TargetManager
           parentSession instanceof CdpCDPSession ? parentSession : undefined,
         );
 
+    const parentTarget =
+      parentSession instanceof CdpCDPSession ? parentSession.target() : null;
+
     if (this.#targetFilterCallback && !this.#targetFilterCallback(target)) {
       this.#ignoredTargets.add(targetInfo.targetId);
-      this.#finishInitializationIfReady(targetInfo.targetId);
+      if (parentTarget?.type() === 'tab') {
+        this.#finishInitializationIfReady(parentTarget._targetId);
+      }
       await silentDetach();
       return;
+    }
+
+    if (
+      this.#waitForInitiallyDiscoveredTargets &&
+      event.targetInfo.type === 'tab' &&
+      !this.#initialAttachDone
+    ) {
+      this.#targetsIdsForInit.add(event.targetInfo.targetId);
     }
 
     this.#setupAttachmentListeners(session);
@@ -391,19 +382,16 @@ export class TargetManager
       this.#attachedTargetsBySessionId.set(session.id(), target);
     }
 
-    const parentTarget =
-      parentSession instanceof CDPSession
-        ? (parentSession as CdpCDPSession).target()
-        : null;
     parentTarget?._addChildTarget(target);
 
     parentSession.emit(CDPSessionEvent.Ready, session);
 
-    this.#targetsIdsForInit.delete(target._targetId);
     if (!isExistingTarget) {
       this.emit(TargetManagerEvent.TargetAvailable, target);
     }
-    this.#finishInitializationIfReady();
+    if (parentTarget?.type() === 'tab') {
+      this.#finishInitializationIfReady(parentTarget._targetId);
+    }
 
     // TODO: the browser might be shutting down here. What do we do with the
     // error?
@@ -421,6 +409,11 @@ export class TargetManager
   #finishInitializationIfReady(targetId?: string): void {
     if (targetId !== undefined) {
       this.#targetsIdsForInit.delete(targetId);
+    }
+    // If we are still initializing it might be that we have not learned about
+    // some targets yet.
+    if (!this.#initialAttachDone) {
+      return;
     }
     if (this.#targetsIdsForInit.size === 0) {
       this.#initializeDeferred.resolve();
