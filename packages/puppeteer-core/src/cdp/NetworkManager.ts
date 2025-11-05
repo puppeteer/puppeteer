@@ -108,7 +108,9 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   #canIgnoreError(error: unknown) {
     return (
       isErrorLike(error) &&
-      (isTargetClosedError(error) || error.message.includes('Not supported'))
+      (isTargetClosedError(error) ||
+        error.message.includes('Not supported') ||
+        error.message.includes("wasn't found"))
     );
   }
 
