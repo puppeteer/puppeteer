@@ -168,9 +168,30 @@ const setupServer = async () => {
   return {server, httpsServer};
 };
 
+/**
+ * Adjusts Mocha.Context timeout and returns launch params with timeouts set.
+ */
+function adjustBrowserLaunchTimeout(context: Mocha.Context): {
+  timeout: number;
+  protocolTimeout: number;
+} {
+  let defaultTimeout = context.timeout() || 10_000;
+  if (isFirefox) {
+    defaultTimeout += 5_000;
+  }
+  // Let mocha fail after the 1s of timeout.
+  context.timeout(defaultTimeout + 1_000);
+  return {
+    timeout: defaultTimeout,
+    // Commands should fail before Mocha timeouts
+    protocolTimeout: defaultTimeout - 1_000,
+  };
+}
+
 let browserPromise: Promise<Browser> | null = null;
 export const setupTestBrowserHooks = (): void => {
   before(async function () {
+    const {timeout, protocolTimeout} = adjustBrowserLaunchTimeout(this);
     const defaultTimeout = this.timeout() || 10_000;
     // Let mocha fail after the 1s of timeout.
     this.timeout(defaultTimeout + 1_000);
@@ -180,9 +201,8 @@ export const setupTestBrowserHooks = (): void => {
         if (!browserPromise) {
           browserPromise = (puppeteer as unknown as PuppeteerNode).launch({
             ...processVariables.defaultBrowserOptions,
-            timeout: defaultTimeout,
-            // Commands should fail before Mocha timeouts
-            protocolTimeout: defaultTimeout / 2,
+            timeout,
+            protocolTimeout,
           });
         }
 
@@ -232,11 +252,19 @@ export const setupSeparateTestBrowserHooks = (
   const {createContext = true, createPage = true} = options;
 
   const state: Awaited<ReturnType<typeof launch>> = {} as any;
-  before(async () => {
-    const browserState = await launch(launchOptions, {
-      after: 'all',
-      ...options,
-    });
+  before(async function () {
+    const {timeout, protocolTimeout} = adjustBrowserLaunchTimeout(this);
+    const browserState = await launch(
+      {
+        timeout,
+        protocolTimeout,
+        ...launchOptions,
+      },
+      {
+        after: 'all',
+        ...options,
+      },
+    );
     // Trick to keep the correct reference
     const props = Object.entries(browserState).reduce((acc, entries) => {
       const [key, value] = entries;
