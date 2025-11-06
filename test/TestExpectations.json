@@ -661,7 +661,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Workers do not work in Firefox yet"
   },
   {
     "testIdPattern": "[screencast.spec] Screencasts Page.screencast should validate options",
