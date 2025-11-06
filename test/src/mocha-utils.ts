@@ -256,9 +256,9 @@ export const setupSeparateTestBrowserHooks = (
     const {timeout, protocolTimeout} = adjustBrowserLaunchTimeout(this);
     const browserState = await launch(
       {
-        ...launchOptions,
         timeout,
         protocolTimeout,
+        ...launchOptions,
       },
       {
         after: 'all',
