@@ -657,6 +657,13 @@
     "comment": "https://github.com/w3c/webdriver-bidi/issues/508"
   },
   {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with worker",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "Workers do not work in Firefox yet"
+  },
+  {
     "testIdPattern": "[screencast.spec] Screencasts Page.screencast should validate options",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],

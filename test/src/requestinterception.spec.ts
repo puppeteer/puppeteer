@@ -705,6 +705,16 @@ describe('request interception', function () {
       await page.goto(server.PREFIX + '/cached/one-style-font.html');
       await responsePromise;
     });
+    it('should work with worker', async () => {
+      const {page, server} = await getTestState();
+
+      await Promise.all([
+        waitEvent(page, 'workercreated'),
+        page.goto(server.PREFIX + '/worker/worker.html'),
+      ]);
+
+      await page.setRequestInterception(true);
+    });
   });
 
   describe('Request.continue', function () {
