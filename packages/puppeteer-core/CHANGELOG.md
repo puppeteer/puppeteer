@@ -1,5 +1,13 @@
 # Changelog
 
+## [24.29.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.29.0...puppeteer-core-v24.29.1) (2025-11-06)
+
+
+### 🛠️ Fixes
+
+* ignore wasn't found errors in NetworkManager ([#14399](https://github.com/puppeteer/puppeteer/issues/14399)) ([3a6342d](https://github.com/puppeteer/puppeteer/commit/3a6342ddbc173b68f67abc52e6f417f56b5fc5ea))
+* roll to Chrome 142.0.7444.61 ([#14401](https://github.com/puppeteer/puppeteer/issues/14401)) ([3d2c957](https://github.com/puppeteer/puppeteer/commit/3d2c9575ff55178cb2d85a8479765027532bc622))
+
 ## [24.29.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.28.0...puppeteer-core-v24.29.0) (2025-11-05)
 
 
