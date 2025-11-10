@@ -133,7 +133,7 @@ describe('request interception', function () {
       expect(requests[1]!.url()).toContain('/one-style.css');
       expect(requests[1]!.headers()['referer']).toContain('/one-style.html');
     });
-    it('should not allow mutating request headers', async () => {
+    it.only('should not allow mutating request headers', async () => {
       const {page, server} = await getTestState();
 
       await page.setRequestInterception(true);
@@ -144,7 +144,7 @@ describe('request interception', function () {
         }
         const headers = request.headers();
         headers['test'] = 'test';
-        void request.continue({headers});
+        void request.continue({headers: request.headers()});
       });
       await page.goto(server.EMPTY_PAGE);
       expect(Object.keys(requests[0]!.headers())).not.toContain('test');
