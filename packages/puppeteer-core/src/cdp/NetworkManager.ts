@@ -88,6 +88,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     ['Fetch.requestPaused', this.#onRequestPaused],
     ['Fetch.authRequired', this.#onAuthRequired],
     ['Network.requestWillBeSent', this.#onRequestWillBeSent],
+    ['Network.requestWillBeSentExtraInfo', this.#onRequestWillBeSentExtraInfo],
     ['Network.requestServedFromCache', this.#onRequestServedFromCache],
     ['Network.responseReceived', this.#onResponseReceived],
     ['Network.loadingFinished', this.#onLoadingFinished],
@@ -536,6 +537,13 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
           redirectResponseExtraInfo,
         );
         redirectChain = request._redirectChain;
+
+        const extraInfo = this.#networkEventManager
+          .requestExtraInfo(event.requestId)
+          .shift();
+        if (extraInfo) {
+          request.updateHeaders(extraInfo.headers);
+        }
       }
     }
     const frame = event.frameId
@@ -550,10 +558,30 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       event,
       redirectChain,
     );
+
+    const extraInfo = this.#networkEventManager
+      .requestExtraInfo(event.requestId)
+      .shift();
+    if (extraInfo) {
+      request.updateHeaders(extraInfo.headers);
+    }
+
     request._fromMemoryCache = fromMemoryCache;
     this.#networkEventManager.storeRequest(event.requestId, request);
     this.emit(NetworkManagerEvent.Request, request);
     void request.finalizeInterceptions();
+  }
+
+  #onRequestWillBeSentExtraInfo(
+    _client: CDPSession,
+    event: Protocol.Network.RequestWillBeSentExtraInfoEvent,
+  ): void {
+    const request = this.#networkEventManager.getRequest(event.requestId);
+    if (request) {
+      request.updateHeaders(event.headers);
+    } else {
+      this.#networkEventManager.requestExtraInfo(event.requestId).push(event);
+    }
   }
 
   #onRequestServedFromCache(

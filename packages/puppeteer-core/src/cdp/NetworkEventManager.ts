@@ -83,7 +83,10 @@ export class NetworkEventManager {
     Protocol.Fetch.RequestPausedEvent
   >();
   #httpRequestsMap = new Map<NetworkRequestId, CdpHTTPRequest>();
-
+  #requestWillBeSentExtraInfoMap = new Map<
+    NetworkRequestId,
+    Protocol.Network.RequestWillBeSentExtraInfoEvent[]
+  >();
   /*
    * The below maps are used to reconcile Network.responseReceivedExtraInfo
    * events with their corresponding request. Each response and redirect
@@ -103,9 +106,21 @@ export class NetworkEventManager {
   forget(networkRequestId: NetworkRequestId): void {
     this.#requestWillBeSentMap.delete(networkRequestId);
     this.#requestPausedMap.delete(networkRequestId);
+    this.#requestWillBeSentExtraInfoMap.delete(networkRequestId);
     this.#queuedEventGroupMap.delete(networkRequestId);
     this.#queuedRedirectInfoMap.delete(networkRequestId);
     this.#responseReceivedExtraInfoMap.delete(networkRequestId);
+  }
+
+  requestExtraInfo(
+    networkRequestId: NetworkRequestId,
+  ): Protocol.Network.RequestWillBeSentExtraInfoEvent[] {
+    if (!this.#requestWillBeSentExtraInfoMap.has(networkRequestId)) {
+      this.#requestWillBeSentExtraInfoMap.set(networkRequestId, []);
+    }
+    return this.#requestWillBeSentExtraInfoMap.get(
+      networkRequestId,
+    ) as Protocol.Network.RequestWillBeSentExtraInfoEvent[];
   }
 
   responseExtraInfo(
