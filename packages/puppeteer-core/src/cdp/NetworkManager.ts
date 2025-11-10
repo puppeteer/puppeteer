@@ -130,7 +130,10 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
 
     try {
       await Promise.all([
-        client.send('Network.enable'),
+        client.send('Network.enable', {
+          enableDurableMessages: true,
+          maxTotalBufferSize: 1_000_000_000,
+        }),
         this.#applyExtraHTTPHeaders(client),
         this.#applyNetworkConditions(client),
         this.#applyProtocolCacheDisabled(client),

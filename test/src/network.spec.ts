@@ -15,6 +15,39 @@ import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
 import {attachFrame, isFavicon, waitEvent} from './utils.js';
 
+describe('durable http', () => {
+  it.only('gets network data', async () => {
+    const {server, browser, close} = await launch(
+      {},
+      {
+        createContext: false,
+        createPage: false,
+      },
+    );
+    let id: string | undefined;
+    try {
+      const context = await browser.createBrowserContext();
+      const page = await context.newPage();
+      const res = await page.goto(server.PREFIX + '/empty.html');
+      id = res!.request().id;
+      {
+        await context.close();
+
+        const context2 = await browser.createBrowserContext();
+        const page2 = await context2.newPage();
+        const session = await page2.createCDPSession();
+        const result = await session.send('Network.getResponseBody', {
+          requestId: id,
+        });
+        console.log(result);
+      }
+      console.log(id);
+    } finally {
+      await close();
+    }
+  });
+});
+
 describe('network', function () {
   setupTestBrowserHooks();
 
