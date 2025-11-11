@@ -1317,7 +1317,10 @@
     "testIdPattern": "[network.spec] network Request.headers cookie header should show Cookie header for redirect",
     "platforms": ["darwin"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"]
+    "expectations": ["FAIL", "PASS"],
+    "comment": [
+      "Test is flaky for MacOS BiDi as event order is we don't repopulate the request data from the response."
+    ]
   },
   {
     "testIdPattern": "[network.spec] network Request.initiator should return the initiator",
