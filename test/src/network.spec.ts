@@ -109,6 +109,61 @@ describe('network', function () {
         expect(userAgent).toContain('Firefox');
       }
     });
+
+    // In CDP cookie header is only when the request actually
+    // hits the network, verify that we populate the correctly
+    describe('cookie header', () => {
+      it('should show Cookie header', async () => {
+        const {page, server} = await getTestState();
+        await page.goto(server.EMPTY_PAGE);
+        await page.evaluate(() => {
+          document.cookie = 'username=John Doe';
+        });
+        const response = (await page.goto(server.PREFIX + '/title.html'))!;
+
+        const cookie = response.request().headers()['cookie'];
+
+        expect(cookie).toContain('username=John Doe');
+      });
+
+      it('should show Cookie header for redirect', async () => {
+        const {page, server} = await getTestState();
+        await page.goto(server.EMPTY_PAGE);
+        server.setRedirect('/foo.html', '/title.html');
+        await page.evaluate(() => {
+          document.cookie = 'username=John Doe';
+        });
+        const response = (await page.goto(server.PREFIX + '/foo.html'))!;
+
+        const cookie1 = response.request().redirectChain()[0]!.headers()[
+          'cookie'
+        ];
+        expect(cookie1).toContain('username=John Doe');
+
+        const cookie2 = response.request().headers()['cookie'];
+        expect(cookie2).toContain('username=John Doe');
+      });
+
+      it('should show Cookie header for fetch request', async () => {
+        const {page, server} = await getTestState();
+        await page.goto(server.EMPTY_PAGE);
+        await page.evaluate(() => {
+          document.cookie = 'username=John Doe';
+        });
+
+        const [response] = await Promise.all([
+          waitEvent<HTTPResponse>(page, 'response', req => {
+            return !isFavicon(req);
+          }),
+          page.evaluate(async () => {
+            await fetch('/title.html');
+          }),
+        ]);
+
+        const cookie = response.request().headers()['cookie'];
+        expect(cookie).toContain('username=John Doe');
+      });
+    });
   });
 
   describe('Response.headers', function () {

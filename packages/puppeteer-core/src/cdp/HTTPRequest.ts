@@ -100,7 +100,11 @@ export class CdpHTTPRequest extends HTTPRequest {
 
     this.interception.enabled = allowInterception;
 
-    for (const [key, value] of Object.entries(data.request.headers)) {
+    this.updateHeaders(data.request.headers);
+  }
+
+  updateHeaders(headers: Protocol.Network.Headers): void {
+    for (const [key, value] of Object.entries(headers)) {
       this.#headers[key.toLowerCase()] = value;
     }
   }
