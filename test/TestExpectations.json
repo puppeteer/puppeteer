@@ -1314,6 +1314,12 @@
     "comment": "network.getData(request) is not yet supported"
   },
   {
+    "testIdPattern": "[network.spec] network Request.headers cookie header should show Cookie header for redirect",
+    "platforms": ["darwin"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"]
+  },
+  {
     "testIdPattern": "[network.spec] network Request.initiator should return the initiator",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
