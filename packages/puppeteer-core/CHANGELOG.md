@@ -1,5 +1,12 @@
 # Changelog
 
+## [24.31.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.30.0...puppeteer-core-v24.31.0) (2025-11-14)
+
+
+### 🎉 Features
+
+* **webdriver:** use `emulation.setUserAgentOverride` instead of network interception ([#14335](https://github.com/puppeteer/puppeteer/issues/14335)) ([e48ae6b](https://github.com/puppeteer/puppeteer/commit/e48ae6bd8ca39fc09c79f468b48b1666d5668726))
+
 ## [24.30.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.29.1...puppeteer-core-v24.30.0) (2025-11-12)
 
 
