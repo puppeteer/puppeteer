@@ -739,4 +739,11 @@ export class BrowsingContext extends EventEmitter<{
   isJavaScriptEnabled(): boolean {
     return this.#emulationState.javaScriptEnabled;
   }
+
+  async setUserAgent(userAgent: string | null): Promise<void> {
+    await this.#session.send('emulation.setUserAgentOverride', {
+      userAgent,
+      contexts: [this.id],
+    });
+  }
 }
