@@ -186,9 +186,7 @@ export class BidiPage extends Page {
 
     await this.#frame.browsingContext.setUserAgent(enable ? userAgent : null);
 
-    const overrideNavigatorProperties = (
-      platform: string | undefined,
-    ) => {
+    const overrideNavigatorProperties = (platform: string | undefined) => {
       if (platform) {
         Object.defineProperty(navigator, 'platform', {
           value: platform,

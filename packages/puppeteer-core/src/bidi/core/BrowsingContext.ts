@@ -740,7 +740,7 @@ export class BrowsingContext extends EventEmitter<{
     return this.#emulationState.javaScriptEnabled;
   }
 
-  async setUserAgent(userAgent: string | null) {
+  async setUserAgent(userAgent: string | null): Promise<void> {
     await this.#session.send('emulation.setUserAgentOverride', {
       userAgent,
       contexts: [this.id],
