@@ -47,11 +47,7 @@ import {EventEmitter} from '../common/EventEmitter.js';
 import {FileChooser} from '../common/FileChooser.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
 import type {Awaitable} from '../common/types.js';
-import {
-  evaluationString,
-  parsePDFOptions,
-  timeout,
-} from '../common/util.js';
+import {evaluationString, parsePDFOptions, timeout} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
 import {bubble} from '../util/decorators.js';
@@ -724,8 +720,7 @@ export class BidiPage extends Page {
 
   get isNetworkInterceptionEnabled(): boolean {
     return (
-      Boolean(this.#requestInterception) ||
-      Boolean(this.#authInterception)
+      Boolean(this.#requestInterception) || Boolean(this.#authInterception)
     );
   }
 
