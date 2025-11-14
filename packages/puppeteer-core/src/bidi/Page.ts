@@ -49,7 +49,6 @@ import type {PDFOptions} from '../common/PDFOptions.js';
 import type {Awaitable} from '../common/types.js';
 import {
   evaluationString,
-  isString,
   parsePDFOptions,
   timeout,
 } from '../common/util.js';
@@ -726,7 +725,6 @@ export class BidiPage extends Page {
   get isNetworkInterceptionEnabled(): boolean {
     return (
       Boolean(this.#requestInterception) ||
-      Boolean(this.#extraHeadersInterception) ||
       Boolean(this.#authInterception)
     );
   }
@@ -743,26 +741,10 @@ export class BidiPage extends Page {
   /**
    * @internal
    */
-  _extraHTTPHeaders: Record<string, string> = {};
-  #extraHeadersInterception?: string;
   override async setExtraHTTPHeaders(
     headers: Record<string, string>,
   ): Promise<void> {
-    const extraHTTPHeaders: Record<string, string> = {};
-    for (const [key, value] of Object.entries(headers)) {
-      assert(
-        isString(value),
-        `Expected value of header "${key}" to be String, but "${typeof value}" is found.`,
-      );
-      extraHTTPHeaders[key.toLowerCase()] = value;
-    }
-    this._extraHTTPHeaders = extraHTTPHeaders;
-
-    this.#extraHeadersInterception = await this.#toggleInterception(
-      [Bidi.Network.InterceptPhase.BeforeRequestSent],
-      this.#extraHeadersInterception,
-      Boolean(Object.keys(this._extraHTTPHeaders).length),
-    );
+    await this.#frame.browsingContext.setExtraHTTPHeaders(headers);
   }
 
   /**
