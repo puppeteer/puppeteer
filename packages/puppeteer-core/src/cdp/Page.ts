@@ -488,7 +488,8 @@ export class CdpPage extends Page {
   }
 
   #onLogEntryAdded(event: Protocol.Log.EntryAddedEvent): void {
-    const {level, text, args, source, url, lineNumber} = event.entry;
+    const {level, text, args, source, url, lineNumber, stackTrace} =
+      event.entry;
     if (args) {
       args.map(arg => {
         void releaseObject(this.#primaryTargetClient, arg);
@@ -502,6 +503,8 @@ export class CdpPage extends Page {
           text,
           [],
           [{url, lineNumber}],
+          undefined,
+          stackTrace,
         ),
       );
     }
@@ -891,6 +894,8 @@ export class CdpPage extends Page {
       textTokens.join(' '),
       args,
       stackTraceLocations,
+      undefined,
+      stackTrace,
     );
     this.emit(PageEvent.Console, message);
   }
