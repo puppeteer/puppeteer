@@ -746,4 +746,15 @@ export class BrowsingContext extends EventEmitter<{
       contexts: [this.id],
     });
   }
+
+  async setOfflineMode(enabled: boolean): Promise<void> {
+    await this.#session.send('emulation.setNetworkConditions', {
+      networkConditions: enabled
+        ? {
+            type: 'offline',
+          }
+        : null,
+      contexts: [this.id],
+    });
+  }
 }
