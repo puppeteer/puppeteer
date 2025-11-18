@@ -5,7 +5,9 @@
  */
 
 import mitt, {type Emitter} from '../../third_party/mitt/mitt.js';
-import {disposeSymbol} from '../util/disposable.js';
+import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
+
+import {debugError} from './util.js';
 
 /**
  * @public
@@ -183,6 +185,13 @@ export class EventEmitter<
    * @internal
    */
   [disposeSymbol](): void {
+    return void this[asyncDisposeSymbol]().catch(debugError);
+  }
+
+  /**
+   * @internal
+   */
+  async [asyncDisposeSymbol](): Promise<void> {
     for (const [type, handlers] of this.#handlers) {
       for (const handler of handlers) {
         this.#emitter.off(type, handler);

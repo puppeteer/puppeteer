@@ -423,6 +423,7 @@ export class CdpFrame extends Frame {
     for (const extensionWorld of Object.values(this.extensionWorlds)) {
       extensionWorld[disposeSymbol]();
     }
+    super[disposeSymbol]();
   }
 
   exposeFunction(): never {
