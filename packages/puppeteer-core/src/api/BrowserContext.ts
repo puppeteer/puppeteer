@@ -358,7 +358,7 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
 
   /** @internal */
   override async [asyncDisposeSymbol](): Promise<void> {
+    await this.close();
     await super[asyncDisposeSymbol]();
-    return await this.close();
   }
 }

@@ -191,6 +191,9 @@ export class EventEmitter<Events extends Record<EventType, unknown>>
     this.#handlers.clear();
   }
 
+  /**
+   * @internal
+   */
   async [asyncDisposeSymbol](): Promise<void> {
     this[disposeSymbol]();
   }

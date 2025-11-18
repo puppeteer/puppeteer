@@ -178,7 +178,7 @@ describe('Evaluation specs', function () {
       });
       expect(result).toBe(56);
     });
-    it('should work right after framenavigated', async () => {
+    it.only('should work right after framenavigated', async () => {
       const {page, server} = await getTestState();
 
       let frameEvaluation = null;

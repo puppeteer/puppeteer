@@ -3166,8 +3166,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
   /** @internal */
   override async [asyncDisposeSymbol](): Promise<void> {
+    await this.close();
     await super[asyncDisposeSymbol]();
-    return await this.close();
   }
 
   /**
