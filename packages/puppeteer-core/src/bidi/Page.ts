@@ -806,7 +806,7 @@ export class BidiPage extends Page {
 
   override async setOfflineMode(enabled: boolean): Promise<void> {
     if (!this.#browserContext.browser().cdpSupported) {
-      throw new UnsupportedOperation();
+      return await this.#frame.browsingContext.setOfflineMode(enabled);
     }
 
     if (!this.#emulatedNetworkConditions) {
@@ -825,8 +825,20 @@ export class BidiPage extends Page {
     networkConditions: NetworkConditions | null,
   ): Promise<void> {
     if (!this.#browserContext.browser().cdpSupported) {
-      throw new UnsupportedOperation();
+      if (
+        !networkConditions?.offline &&
+        ((networkConditions?.upload ?? -1) >= 0 ||
+          (networkConditions?.download ?? -1) >= 0 ||
+          (networkConditions?.latency ?? 0) > 0)
+      ) {
+        // WebDriver BiDi supports only offline mode.
+        throw new UnsupportedOperation();
+      }
+      return await this.#frame.browsingContext.setOfflineMode(
+        networkConditions?.offline ?? false,
+      );
     }
+
     if (!this.#emulatedNetworkConditions) {
       this.#emulatedNetworkConditions = {
         offline: networkConditions?.offline ?? false,
