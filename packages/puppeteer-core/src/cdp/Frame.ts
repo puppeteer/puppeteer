@@ -419,6 +419,7 @@ export class CdpFrame extends Frame {
     this.#detached = true;
     this.worlds[MAIN_WORLD][disposeSymbol]();
     this.worlds[PUPPETEER_WORLD][disposeSymbol]();
+    super[disposeSymbol]();
   }
 
   exposeFunction(): never {
