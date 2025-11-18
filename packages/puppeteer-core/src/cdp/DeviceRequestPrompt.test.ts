@@ -9,13 +9,13 @@ import {describe, it} from 'node:test';
 import expect from 'expect';
 
 import type {CDPSessionEvents} from '../api/CDPSession.js';
+import {DeviceRequestPromptDevice} from '../api/DeviceRequestPrompt.js';
 import {TimeoutError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 
 import {
-  DeviceRequestPrompt,
-  DeviceRequestPromptDevice,
+  DeviceRequestPromptImpl,
   DeviceRequestPromptManager,
 } from './DeviceRequestPrompt.js';
 
@@ -141,7 +141,7 @@ describe('DeviceRequestPrompt', function () {
     it('lists devices as they arrive', function () {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const prompt = new DeviceRequestPrompt(client, timeoutSettings, {
+      const prompt = new DeviceRequestPromptImpl(client, timeoutSettings, {
         id: '00000000000000000000000000000000',
         devices: [],
       });
@@ -167,7 +167,7 @@ describe('DeviceRequestPrompt', function () {
     it('does not list devices from events of another prompt', function () {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const prompt = new DeviceRequestPrompt(client, timeoutSettings, {
+      const prompt = new DeviceRequestPromptImpl(client, timeoutSettings, {
         id: '00000000000000000000000000000000',
         devices: [],
       });
@@ -188,7 +188,7 @@ describe('DeviceRequestPrompt', function () {
     it('should return first matching device', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const prompt = new DeviceRequestPrompt(client, timeoutSettings, {
+      const prompt = new DeviceRequestPromptImpl(client, timeoutSettings, {
         id: '00000000000000000000000000000000',
         devices: [],
       });
@@ -217,7 +217,7 @@ describe('DeviceRequestPrompt', function () {
     it('should return first matching device from already known devices', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const prompt = new DeviceRequestPrompt(client, timeoutSettings, {
+      const prompt = new DeviceRequestPromptImpl(client, timeoutSettings, {
         id: '00000000000000000000000000000000',
         devices: [
           {id: '00000000', name: 'Device 0'},
@@ -234,7 +234,7 @@ describe('DeviceRequestPrompt', function () {
     it('should return device in the devices list', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const prompt = new DeviceRequestPrompt(client, timeoutSettings, {
+      const prompt = new DeviceRequestPromptImpl(client, timeoutSettings, {
         id: '00000000000000000000000000000000',
         devices: [],
       });
@@ -259,7 +259,7 @@ describe('DeviceRequestPrompt', function () {
     it('should respect timeout', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const prompt = new DeviceRequestPrompt(client, timeoutSettings, {
+      const prompt = new DeviceRequestPromptImpl(client, timeoutSettings, {
         id: '00000000000000000000000000000000',
         devices: [],
       });
@@ -277,7 +277,7 @@ describe('DeviceRequestPrompt', function () {
     it('should respect default timeout when there is no custom timeout', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const prompt = new DeviceRequestPrompt(client, timeoutSettings, {
+      const prompt = new DeviceRequestPromptImpl(client, timeoutSettings, {
         id: '00000000000000000000000000000000',
         devices: [],
       });
@@ -296,7 +296,7 @@ describe('DeviceRequestPrompt', function () {
     it('should prioritize exact timeout over default timeout', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const prompt = new DeviceRequestPrompt(client, timeoutSettings, {
+      const prompt = new DeviceRequestPromptImpl(client, timeoutSettings, {
         id: '00000000000000000000000000000000',
         devices: [],
       });
@@ -315,7 +315,7 @@ describe('DeviceRequestPrompt', function () {
     it('should work with no timeout', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const prompt = new DeviceRequestPrompt(client, timeoutSettings, {
+      const prompt = new DeviceRequestPromptImpl(client, timeoutSettings, {
         id: '00000000000000000000000000000000',
         devices: [],
       });
@@ -347,7 +347,7 @@ describe('DeviceRequestPrompt', function () {
     it('should be able to abort', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const prompt = new DeviceRequestPrompt(client, timeoutSettings, {
+      const prompt = new DeviceRequestPromptImpl(client, timeoutSettings, {
         id: '00000000000000000000000000000000',
         devices: [],
       });
@@ -366,7 +366,7 @@ describe('DeviceRequestPrompt', function () {
     it('should return same device from multiple watchdogs', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const prompt = new DeviceRequestPrompt(client, timeoutSettings, {
+      const prompt = new DeviceRequestPromptImpl(client, timeoutSettings, {
         id: '00000000000000000000000000000000',
         devices: [],
       });
@@ -400,7 +400,7 @@ describe('DeviceRequestPrompt', function () {
     it('should succeed with listed device', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const prompt = new DeviceRequestPrompt(client, timeoutSettings, {
+      const prompt = new DeviceRequestPromptImpl(client, timeoutSettings, {
         id: '00000000000000000000000000000000',
         devices: [],
       });
@@ -425,7 +425,7 @@ describe('DeviceRequestPrompt', function () {
     it('should error for device not listed in devices', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const prompt = new DeviceRequestPrompt(client, timeoutSettings, {
+      const prompt = new DeviceRequestPromptImpl(client, timeoutSettings, {
         id: '00000000000000000000000000000000',
         devices: [],
       });
@@ -438,7 +438,7 @@ describe('DeviceRequestPrompt', function () {
     it('should fail when selecting prompt twice', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const prompt = new DeviceRequestPrompt(client, timeoutSettings, {
+      const prompt = new DeviceRequestPromptImpl(client, timeoutSettings, {
         id: '00000000000000000000000000000000',
         devices: [],
       });
@@ -468,7 +468,7 @@ describe('DeviceRequestPrompt', function () {
     it('should succeed on first call', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const prompt = new DeviceRequestPrompt(client, timeoutSettings, {
+      const prompt = new DeviceRequestPromptImpl(client, timeoutSettings, {
         id: '00000000000000000000000000000000',
         devices: [],
       });
@@ -478,7 +478,7 @@ describe('DeviceRequestPrompt', function () {
     it('should fail when canceling prompt twice', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const prompt = new DeviceRequestPrompt(client, timeoutSettings, {
+      const prompt = new DeviceRequestPromptImpl(client, timeoutSettings, {
         id: '00000000000000000000000000000000',
         devices: [],
       });

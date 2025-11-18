@@ -7,59 +7,17 @@
 import type Protocol from 'devtools-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
+import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
+import {DeviceRequestPromptDevice} from '../api/DeviceRequestPrompt.js';
 import type {WaitTimeoutOptions} from '../api/Page.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
 /**
- * Device in a request prompt.
- *
- * @public
+ * @internal
  */
-export class DeviceRequestPromptDevice {
-  /**
-   * Device id during a prompt.
-   */
-  id: string;
-
-  /**
-   * Device name as it appears in a prompt.
-   */
-  name: string;
-
-  /**
-   * @internal
-   */
-  constructor(id: string, name: string) {
-    this.id = id;
-    this.name = name;
-  }
-}
-
-/**
- * Device request prompts let you respond to the page requesting for a device
- * through an API like WebBluetooth.
- *
- * @remarks
- * `DeviceRequestPrompt` instances are returned via the
- * {@link Page.waitForDevicePrompt} method.
- *
- * @example
- *
- * ```ts
- * const [devicePrompt] = Promise.all([
- *   page.waitForDevicePrompt(),
- *   page.click('#connect-bluetooth'),
- * ]);
- * await devicePrompt.select(
- *   await devicePrompt.waitForDevice(({name}) => name.includes('My Device')),
- * );
- * ```
- *
- * @public
- */
-export class DeviceRequestPrompt {
+export class DeviceRequestPromptImpl implements DeviceRequestPrompt {
   #client: CDPSession | null;
   #timeoutSettings: TimeoutSettings;
   #id: string;
@@ -288,7 +246,7 @@ export class DeviceRequestPromptManager {
     }
 
     assert(this.#client !== null);
-    const devicePrompt = new DeviceRequestPrompt(
+    const devicePrompt = new DeviceRequestPromptImpl(
       this.#client,
       this.#timeoutSettings,
       event,

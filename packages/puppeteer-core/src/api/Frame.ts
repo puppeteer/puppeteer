@@ -15,7 +15,6 @@ import type {
   WaitTimeoutOptions,
 } from '../api/Page.js';
 import type {Accessibility} from '../cdp/Accessibility.js';
-import type {DeviceRequestPrompt} from '../cdp/DeviceRequestPrompt.js';
 import type {PuppeteerLifeCycleEvent} from '../cdp/LifecycleWatcher.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
@@ -33,6 +32,7 @@ import {assert} from '../util/assert.js';
 import {throwIfDisposed} from '../util/decorators.js';
 
 import type {CDPSession} from './CDPSession.js';
+import type {DeviceRequestPrompt} from './DeviceRequestPrompt.js';
 import type {KeyboardTypeOptions} from './Input.js';
 import {
   FunctionLocator,
