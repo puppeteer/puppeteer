@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2022 Google Inc.
+ * Copyright 2025 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -53,13 +53,16 @@ export class DeviceRequestPromptDevice {
  *
  * @public
  */
-export interface DeviceRequestPrompt {
-  devices: DeviceRequestPromptDevice[];
+export abstract class DeviceRequestPrompt {
+  /**
+   * Current list of selectable devices.
+   */
+  abstract get devices(): DeviceRequestPromptDevice[];
 
   /**
    * Resolve to the first device in the prompt matching a filter.
    */
-  waitForDevice(
+  abstract waitForDevice(
     filter: (device: DeviceRequestPromptDevice) => boolean,
     options?: WaitTimeoutOptions,
   ): Promise<DeviceRequestPromptDevice>;
@@ -67,10 +70,10 @@ export interface DeviceRequestPrompt {
   /**
    * Select a device in the prompt's list.
    */
-  select(device: DeviceRequestPromptDevice): Promise<void>;
+  abstract select(device: DeviceRequestPromptDevice): Promise<void>;
 
   /**
    * Cancel the prompt.
    */
-  cancel(): Promise<void>;
+  abstract cancel(): Promise<void>;
 }
