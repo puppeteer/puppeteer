@@ -10,7 +10,7 @@ Select a device in the prompt's list.
 
 ```typescript
 class DeviceRequestPrompt {
-  select(device: DeviceRequestPromptDevice): Promise<void>;
+  abstract select(device: DeviceRequestPromptDevice): Promise<void>;
 }
 ```
 

@@ -10,7 +10,7 @@ Resolve to the first device in the prompt matching a filter.
 
 ```typescript
 class DeviceRequestPrompt {
-  waitForDevice(
+  abstract waitForDevice(
     filter: (device: DeviceRequestPromptDevice) => boolean,
     options?: WaitTimeoutOptions,
   ): Promise<DeviceRequestPromptDevice>;

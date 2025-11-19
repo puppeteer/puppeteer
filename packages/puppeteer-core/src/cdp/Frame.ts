@@ -7,6 +7,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
+import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {WaitForOptions} from '../api/Frame.js';
 import {Frame, FrameEvent, throwIfDetached} from '../api/Frame.js';
@@ -21,10 +22,7 @@ import {isErrorLike} from '../util/ErrorLike.js';
 import {Accessibility} from './Accessibility.js';
 import type {Binding} from './Binding.js';
 import type {CdpPreloadScript} from './CdpPreloadScript.js';
-import type {
-  DeviceRequestPrompt,
-  DeviceRequestPromptManager,
-} from './DeviceRequestPrompt.js';
+import type {DeviceRequestPromptManager} from './DeviceRequestPrompt.js';
 import type {FrameManager} from './FrameManager.js';
 import {FrameManagerEvent} from './FrameManagerEvents.js';
 import type {IsolatedWorldChart} from './IsolatedWorld.js';
