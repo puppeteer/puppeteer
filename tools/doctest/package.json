@@ -30,7 +30,7 @@
     "@types/yargs": "17.0.33",
     "acorn": "8.15.0",
     "doctrine": "3.0.0",
-    "glob": "10.4.5",
+    "glob": "10.5.0",
     "package-directory": "8.1.0",
     "source-map-support": "0.5.21",
     "source-map": "0.7.6",
