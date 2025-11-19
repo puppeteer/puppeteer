@@ -28,6 +28,8 @@ describe('durable http', () => {
     try {
       const context = await browser.createBrowserContext();
       const page = await context.newPage();
+      const _keepAlive = await context.newPage();
+      _keepAlive;
       const res = await page.goto(server.PREFIX + '/empty.html');
       id = res!.request().id;
       {
