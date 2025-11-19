@@ -17,7 +17,7 @@ import {Deferred} from '../util/Deferred.js';
 /**
  * @internal
  */
-export class DeviceRequestPromptImpl implements DeviceRequestPrompt {
+export class CdpDeviceRequestPrompt implements DeviceRequestPrompt {
   #client: CDPSession | null;
   #timeoutSettings: TimeoutSettings;
   #id: string;
@@ -246,7 +246,7 @@ export class DeviceRequestPromptManager {
     }
 
     assert(this.#client !== null);
-    const devicePrompt = new DeviceRequestPromptImpl(
+    const devicePrompt = new CdpDeviceRequestPrompt(
       this.#client,
       this.#timeoutSettings,
       event,
