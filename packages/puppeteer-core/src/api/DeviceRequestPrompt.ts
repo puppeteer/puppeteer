@@ -57,7 +57,7 @@ export abstract class DeviceRequestPrompt {
   /**
    * Current list of selectable devices.
    */
-  abstract get devices(): DeviceRequestPromptDevice[];
+  readonly devices: DeviceRequestPromptDevice[] = [];
 
   /**
    * Resolve to the first device in the prompt matching a filter.
