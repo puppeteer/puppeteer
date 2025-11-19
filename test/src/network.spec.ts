@@ -31,7 +31,7 @@ describe('durable http', () => {
       const res = await page.goto(server.PREFIX + '/empty.html');
       id = res!.request().id;
       {
-        await context.close();
+        await page.close();
 
         const context2 = await browser.createBrowserContext();
         const page2 = await context2.newPage();
