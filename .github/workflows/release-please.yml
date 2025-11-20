@@ -1,13 +1,11 @@
+name: release-please
+
+# Declare default permissions as read only.
+permissions: read-all
 on:
   push:
     branches:
       - main
-
-permissions:
-  contents: write
-  pull-requests: write
-
-name: release-please
 
 jobs:
   release-please:

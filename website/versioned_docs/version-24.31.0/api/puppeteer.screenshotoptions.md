@@ -186,7 +186,7 @@ boolean
 
 </td><td>
 
-\`$&#123;string&#125;.$&#123;[ImageFormat](./puppeteer.imageformat.md)&#125;\`
+string
 
 </td><td>
 

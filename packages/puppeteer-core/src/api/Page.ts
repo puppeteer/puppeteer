@@ -306,7 +306,7 @@ export interface ScreenshotOptions {
    * relative to current working directory. If no path is provided, the image
    * won't be saved to the disk.
    */
-  path?: `${string}.${ImageFormat}`;
+  path?: string;
   /**
    * Specifies the region of the page/element to clip.
    */
