@@ -14,6 +14,8 @@ import {
   BrowserEvent,
   type BrowserCloseCallback,
   type BrowserContextOptions,
+  type ScreenInfo,
+  type AddScreenParams,
   type DebugInfo,
 } from '../api/Browser.js';
 import {BrowserContextEvent} from '../api/BrowserContext.js';
@@ -22,6 +24,7 @@ import type {Target} from '../api/Target.js';
 import type {Connection as CdpConnection} from '../cdp/Connection.js';
 import type {SupportedWebDriverCapabilities} from '../common/ConnectOptions.js';
 import {ProtocolError} from '../common/Errors.js';
+import {UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -287,6 +290,18 @@ export class BidiBrowser extends Browser {
 
   override async uninstallExtension(id: string): Promise<void> {
     await this.#browserCore.uninstallExtension(id);
+  }
+
+  override screens(): Promise<ScreenInfo[]> {
+    throw new UnsupportedOperation();
+  }
+
+  override addScreen(_params: AddScreenParams): Promise<ScreenInfo> {
+    throw new UnsupportedOperation();
+  }
+
+  override removeScreen(_screenId: string): Promise<void> {
+    throw new UnsupportedOperation();
   }
 
   override targets(): Target[] {

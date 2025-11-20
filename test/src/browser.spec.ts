@@ -109,4 +109,83 @@ describe('Browser specs', function () {
       expect(newBrowser.isConnected()).toBe(false);
     });
   });
+
+  describe('Browser.screens', function () {
+    it('should return default screen info', async () => {
+      const {browser, isHeadless} = await getTestState();
+
+      if (!isHeadless) {
+        // In headful mode 'Browser.screens' returns the real
+        // platform screens info which is not stable enough
+        // for matching.
+        return;
+      }
+
+      const screenInfos = await browser.screens();
+      expect(screenInfos).toMatchObject([
+        {
+          availHeight: 600,
+          availLeft: 0,
+          availTop: 0,
+          availWidth: 800,
+          colorDepth: 24,
+          devicePixelRatio: 1,
+          height: 600,
+          id: '1',
+          isExtended: false,
+          isInternal: false,
+          isPrimary: true,
+          label: '',
+          left: 0,
+          orientation: {angle: 0, type: 'landscapePrimary'},
+          top: 0,
+          width: 800,
+        },
+      ]);
+    });
+  });
+
+  describe('Browser.add|removeScreen', function () {
+    it('should add and remove a screen', async () => {
+      const {browser, isHeadless} = await getTestState();
+
+      if (!isHeadless) {
+        // 'Browser.add|removeScreen' are only available in
+        // headless mode.
+        return;
+      }
+
+      const screenInfo = await browser.addScreen({
+        left: 800,
+        top: 0,
+        width: 1600,
+        height: 1200,
+        colorDepth: 32,
+        workAreaInsets: {bottom: 80},
+        label: 'secondary',
+      });
+      expect(screenInfo).toMatchObject({
+        availHeight: 1120,
+        availLeft: 800,
+        availTop: 0,
+        availWidth: 1600,
+        colorDepth: 32,
+        devicePixelRatio: 1,
+        height: 1200,
+        id: '2',
+        isExtended: true,
+        isInternal: false,
+        isPrimary: false,
+        label: 'secondary',
+        left: 800,
+        orientation: {angle: 0, type: 'landscapePrimary'},
+        top: 0,
+        width: 1600,
+      });
+      expect((await browser.screens()).length).toBe(2);
+
+      await browser.removeScreen(screenInfo.id);
+      expect((await browser.screens()).length).toBe(1);
+    });
+  });
 });

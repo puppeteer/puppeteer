@@ -16,6 +16,8 @@ import {
   type BrowserContextOptions,
   type IsPageTargetCallback,
   type TargetFilterCallback,
+  type ScreenInfo,
+  type AddScreenParams,
 } from '../api/Browser.js';
 import {BrowserContextEvent} from '../api/BrowserContext.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
@@ -428,6 +430,25 @@ export class CdpBrowser extends BrowserBase {
 
   override uninstallExtension(id: string): Promise<void> {
     return this.#connection.send('Extensions.uninstall', {id});
+  }
+
+  override async screens(): Promise<ScreenInfo[]> {
+    const {screenInfos} = await this.#connection.send(
+      'Emulation.getScreenInfos',
+    );
+    return screenInfos;
+  }
+
+  override async addScreen(params: AddScreenParams): Promise<ScreenInfo> {
+    const {screenInfo} = await this.#connection.send(
+      'Emulation.addScreen',
+      params,
+    );
+    return screenInfo;
+  }
+
+  override async removeScreen(screenId: string): Promise<void> {
+    return await this.#connection.send('Emulation.removeScreen', {screenId});
   }
 
   override targets(): CdpTarget[] {
