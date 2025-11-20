@@ -1719,6 +1719,20 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[device-request-prompt.spec] device request prompt \"after each\" hook for \"can be selected\"",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["FAIL"],
+    "comment": "Headless shell does not support Bluetooth Emulation"
+  },
+  {
+    "testIdPattern": "[device-request-prompt.spec] device request prompt \"before each\" hook for \"can be canceled\"",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "WebDriver BiDi sessions don't not support Browser CDP sessions"
+  },
+  {
     "testIdPattern": "[mouse.spec] Mouse should select the text with mouse",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
