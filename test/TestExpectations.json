@@ -1719,7 +1719,7 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[device-request-prompt.spec] device request prompt \"after each\" hook for \"can be selected\"",
+    "testIdPattern": "[device-request-prompt.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome-headless-shell"],
     "expectations": ["FAIL"],
