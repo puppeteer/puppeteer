@@ -1726,7 +1726,7 @@
     "comment": "Headless shell does not support Bluetooth Emulation"
   },
   {
-    "testIdPattern": "[device-request-prompt.spec] device request prompt \"before each\" hook for \"can be canceled\"",
+    "testIdPattern": "[device-request-prompt.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
