@@ -28,8 +28,6 @@ export class CdpDeviceRequestPrompt extends DeviceRequestPrompt {
     promise: Deferred<DeviceRequestPromptDevice>;
   }>();
 
-  devices: DeviceRequestPromptDevice[] = [];
-
   constructor(
     client: CDPSession,
     timeoutSettings: TimeoutSettings,
