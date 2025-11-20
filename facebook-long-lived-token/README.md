@@ -12,7 +12,8 @@ Este ejemplo te ayuda a obtener **tokens de acceso de larga duración** para Fac
 ## Requisitos previos
 
 - **Node.js 14+**
-- **App de Facebook** creada en [Meta Developers](https://developers.facebook.com/)
+- **App de Facebook** creada en [Meta Developers][facebookDeveloperL
+ink]
   - Anota tu `App ID` y `App Secret`
   - Configura "Valid OAuth Redirect URIs" → `http://localhost:3000/callback`
 
@@ -28,12 +29,12 @@ Crea un archivo `.env` en la raíz del proyecto:
 
 ```bash
 FACEBOOK_APP_ID=tu_app_id_
-FACEBOOK_APP_SECRET=tu_app_sechttps://www.facebook.com/yenes.amayaret_aqui
+FACEBOOK_APP_SECRET=tu_app_sechttps://www.facebook.com/yenes.amaya-aqui
 REDIRECT_URI=http://localhost:3000/callback
 PORT=3000
 ```
 
-## Uso
+FACEBOOK_APP_SECRET
 
 ```bash
 npm start
@@ -127,5 +128,9 @@ Modifica el parámetro `scope` en el URL de login (`server.js`) para pedir permi
 ## Referencias
 
 - [Facebook Graph API](https://developers.facebook.com/docs/graph-api)
-- [OAuth 2.0](https://developers.facebook.com/docs/facebook-login/guides-and-tutorials/getting-started-with-the-facebook-sdk)
+- [OAuth 2.0][facebookSDKOverview]
 - [Tokens de acceso](https://developers.facebook.com/docs/facebook-login/access-tokens)
+
+
+[facebookSDKOverview]: https://developers.facebook.com/docs/facebook-login/guides-and-tutorials/getting-started-with-the-facebook-sdk
+[facebookDeveloperLink]: https://developers.facebook.com/
