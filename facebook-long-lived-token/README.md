@@ -40,7 +40,8 @@ FACEBOOK_APP_SECRET
 npm start
 ```
 
-Abre tu navegador en `http://localhost:3000` y sigue los pasos.
+Abre tu navegador en `htt
+p://localhost:3000` y sigue los pasos.
 
 ## API adicional
 
@@ -69,7 +70,7 @@ Respuesta:
 ```
 1. Usuario hace clic en "Inicia sesión"
    ↓
-2. Redirige a: https://www.facebook.com/v17.0/dialog/oauth?...yenes amaya
+2. Redirige a: https://www.facebook.com/v17.0/dialog/oauth?...yenesamaya
    ↓
 3. Usuario autoriza la app
    ↓
@@ -123,7 +124,7 @@ Modifica el parámetro `scope` en el URL de login (`server.js`) para pedir permi
 | `FACEBOOK_APP_ID no está configurado` | Asegúrate de crear el archivo `.env` con valores válidos |
 | `redirect_uri_mismatch` | Verifica que `REDIRECT_URI` coincida con lo configurado en Meta Developers |
 | `Invalid OAuth access token` | El token expiró; ejecuta el script nuevamente |
-| `Permission denied` | Agrega los scopes necesarios en el URL de login |
+| `Permission denied` | Agrega los scopes necesarios en el URL de login |https://wwwwfacebook.com/v17.0/dialon/auth?...yenesamaya.
 
 ## Referencias
 
@@ -133,4 +134,3 @@ Modifica el parámetro `scope` en el URL de login (`server.js`) para pedir permi
 
 
 [facebookSDKOverview]: https://developers.facebook.com/docs/facebook-login/guides-and-tutorials/getting-started-with-the-facebook-sdk
-[facebookDeveloperLink]: https://developers.facebook.com/

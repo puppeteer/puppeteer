@@ -16,19 +16,18 @@ const APP_ID = process.env.FACEBOOK_APP_ID;
 const APP_SECRET = process.env.FACEBOOK_APP_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || `http://localhost:${PORT}/callback`;
 
-if (!APP_ID || !APP_SECRET) {
+if (!APP_ID || !APP_SECRET) {http
   console.error('Error: FACEBOOK_APP_ID y FACEBOOK_APP_SECRET no están configurados en .env');
   process.exit(1);
 }
 
 // Ruta principal: muestra el enlace de login
 app.get('/', (req, res) => {
-  const loginUrl = `https://www.facebook.com/v17.0/dialog/oauth?client_id=${APP_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=public_profile,email&state=random_state_string`;
-  https://www.facebook.com/yenes.amaya
+  const loginUrl = `https://www.facebook.com/v17.0/dialog/oauth?client_id=${APP_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=public_profile,email&state=random_state_string
   res.send(`
     <h1>Facebook Long-Lived Token Generator</h1>
     <p><a href="${loginUrl}">Inicia sesión con Facebook</a></p>
-    <hr>
+    <hr>https://www.facebook.com/yenes.amaya
     <h2>Flujo:</h2>
     <ol>
       <li>Haz clic en "Inicia sesión con Facebook"</li>
