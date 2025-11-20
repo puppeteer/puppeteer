@@ -13,5 +13,8 @@ export type CreatePageOptions =
     }
   | {
       type: 'window';
+      windowBounds?: WindowBounds;
     };
 ```
+
+**References:** [WindowBounds](./puppeteer.windowbounds.md)
