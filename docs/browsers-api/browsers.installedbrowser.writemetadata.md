@@ -33,7 +33,7 @@ metadata
 
 </td><td>
 
-[Metadata](./browsers.metadata_2.md)
+[Metadata](./browsers.metadata.md)
 
 </td><td>
 
