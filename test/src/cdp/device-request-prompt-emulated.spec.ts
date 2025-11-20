@@ -20,7 +20,7 @@ const SIMULATED_PERIPHERAL = {
   knownServiceUuids: ['12345678-1234-5678-9abc-def123456789'],
 };
 
-describe('device request prompt', function () {
+describe('device request prompt with emulated device', function () {
   const state = setupSeparateTestBrowserHooks({
     args: [
       '--enable-features=WebBluetoothNewPermissionsBackend',
