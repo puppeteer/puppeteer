@@ -286,6 +286,12 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[device-request-prompt-emulated.spec] device request prompt with emulated device can be canceled",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[devtools.spec] DevTools browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in connect()",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["pipe"],
