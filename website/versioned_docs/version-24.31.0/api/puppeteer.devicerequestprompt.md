@@ -9,14 +9,12 @@ Device request prompts let you respond to the page requesting for a device throu
 ### Signature
 
 ```typescript
-export declare class DeviceRequestPrompt
+export declare abstract class DeviceRequestPrompt
 ```
 
 ## Remarks
 
 `DeviceRequestPrompt` instances are returned via the [Page.waitForDevicePrompt()](./puppeteer.page.waitfordeviceprompt.md) method.
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `DeviceRequestPrompt` class.
 
 ## Example
 
@@ -54,6 +52,8 @@ Description
 <span id="devices">devices</span>
 
 </td><td>
+
+`readonly`
 
 </td><td>
 

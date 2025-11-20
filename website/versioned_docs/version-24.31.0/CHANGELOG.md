@@ -2,6 +2,29 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.31.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.30.0...puppeteer-v24.31.0) (2025-11-20)
+
+### ♻️ Chores
+
+- **puppeteer:** Synchronize puppeteer versions
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - puppeteer-core bumped from 24.30.0 to 24.31.0
+
+### 🎉 Features
+
+- **webdriver:** use `emulation.setNetworkConditions` for offline emulation ([#14431](https://github.com/puppeteer/puppeteer/issues/14431)) ([a9e7c1d](https://github.com/puppeteer/puppeteer/commit/a9e7c1dc7df7de10304c2f6cdd93e95de3bc0921))
+- **webdriver:** use `emulation.setUserAgentOverride` instead of network interception ([#14335](https://github.com/puppeteer/puppeteer/issues/14335)) ([e48ae6b](https://github.com/puppeteer/puppeteer/commit/e48ae6bd8ca39fc09c79f468b48b1666d5668726))
+
+### 🛠️ Fixes
+
+- roll to Chrome 142.0.7444.175 ([#14429](https://github.com/puppeteer/puppeteer/issues/14429)) ([839fe96](https://github.com/puppeteer/puppeteer/commit/839fe96c6f885e38b68612a7135256850ea0b39d))
+- roll to Firefox 145.0.1 ([#14437](https://github.com/puppeteer/puppeteer/issues/14437)) ([7e1eed0](https://github.com/puppeteer/puppeteer/commit/7e1eed0838778a70acbc7a7a0133f61197335260))
+- TS fix for path in ScreenshotOptions ([#14443](https://github.com/puppeteer/puppeteer/issues/14443)) ([3b83e65](https://github.com/puppeteer/puppeteer/commit/3b83e658ec4fb76b72e56e1241e3370eac1c4d8d))
+
 ## [24.30.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.29.1...puppeteer-v24.30.0) (2025-11-12)
 
 ### ♻️ Chores
