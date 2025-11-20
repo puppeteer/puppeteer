@@ -202,7 +202,7 @@ export abstract class JSHandle<T = unknown> {
 
   /** @internal */
   [disposeSymbol](): void {
-    return void this.dispose().catch(debugError);
+    return void this[asyncDisposeSymbol]().catch(debugError);
   }
 
   /** @internal */

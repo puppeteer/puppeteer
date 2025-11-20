@@ -5,7 +5,7 @@
  */
 
 import mitt, {type Emitter} from '../../third_party/mitt/mitt.js';
-import {disposeSymbol} from '../util/disposable.js';
+import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
 /**
  * @public
@@ -189,5 +189,12 @@ export class EventEmitter<Events extends Record<EventType, unknown>>
       }
     }
     this.#handlers.clear();
+  }
+
+  /**
+   * @internal
+   */
+  async [asyncDisposeSymbol](): Promise<void> {
+    this[disposeSymbol]();
   }
 }
