@@ -10,7 +10,7 @@ Cancel the prompt.
 
 ```typescript
 class DeviceRequestPrompt {
-  cancel(): Promise<void>;
+  abstract cancel(): Promise<void>;
 }
 ```
 
