@@ -1,0 +1,26 @@
+{
+  "name": "facebook-long-lived-token",  # Intercambiar código por token
+  node token-exchange.js exchange-code TU_CODIGO_AQUI
+  
+  # Intercambiar token corto por larga duración
+  node token-exchange.js exchange-short TU_TOKEN_CORTO_AQUI
+  
+  # Verificar un token
+  node token-exchange.js verify TU_TOKEN_AQUI
+  "version": "1.0.0",
+  "description": "Get Facebook long-lived user access tokens via OAuth",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["facebook", "oauth", "token", "long-lived"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1"
+  }
+}
