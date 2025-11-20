@@ -42,6 +42,49 @@ describe('Page', function () {
       expect(await context.pages()).toContain(page);
       expect(await browser.pages()).toContain(page);
     });
+    it('should open pages in a new window at the specified position', async () => {
+      const {context, browser} = await getTestState();
+
+      const page = await context.newPage({
+        type: 'window',
+        windowBounds: {left: 50, top: 50, width: 750, height: 550},
+      });
+
+      expect(await context.pages()).toContain(page);
+      expect(await browser.pages()).toContain(page);
+
+      const outerSize = await page.evaluate(async () => {
+        return {width: outerWidth, height: outerHeight};
+      });
+
+      expect(outerSize.width).toBe(750);
+      expect(outerSize.height).toBe(550);
+    });
+    it('should open pages in a new window in maximized state', async () => {
+      const {context, browser, isHeadless} = await getTestState();
+
+      if (!isHeadless) {
+        // In headful mode maximized window size is not stable enough
+        // for matching.
+        return;
+      }
+
+      const page = await context.newPage({
+        type: 'window',
+        windowBounds: {windowState: 'maximized'},
+      });
+
+      expect(await context.pages()).toContain(page);
+      expect(await browser.pages()).toContain(page);
+
+      const outerSize = await page.evaluate(async () => {
+        return {width: outerWidth, height: outerHeight};
+      });
+
+      // Should match default headless screen size 800x600.
+      expect(outerSize.width).toBe(800);
+      expect(outerSize.height).toBe(600);
+    });
   });
 
   describe('Page.close', function () {
