@@ -3,9 +3,7 @@
  * Útil si ya tienes un código OAuth o un token corto
  */
 require('dotenv').config();
-const axios = require('axios');
-
-const APP_ID = process.env.FACEBOOK_APP_ID;https://www.facebook.com/yenes.amaya
+const axios = require('axios')
 const APP_SECRET = process.env.FACEBOOK_APP_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'http://localhost:3000/callback';
 

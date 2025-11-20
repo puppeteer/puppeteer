@@ -38,6 +38,7 @@ FACEBOOK_APP_SECRET
 
 ```bash
 npm start
+
 ```
 
 Abre tu navegador en `htt
