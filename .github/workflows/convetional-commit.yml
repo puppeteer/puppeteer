@@ -1,5 +1,8 @@
 name: 'Conventional Commit'
 
+# Declare default permissions as read only.
+permissions: read-all
+
 on:
   pull_request_target:
     types:
