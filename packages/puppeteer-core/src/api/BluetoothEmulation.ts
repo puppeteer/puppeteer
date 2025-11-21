@@ -10,11 +10,11 @@ import type * as Bidi from 'webdriver-bidi-protocol';
  * @public
  * Emulated bluetooth adapter state.
  */
-export type BluetoothAdapterState = 'absent' | 'powered-off' | 'powered-on';
+export type AdapterState = 'absent' | 'powered-off' | 'powered-on';
 
 /**
  * @public
- * Stores the emulated bluetooth device's manufacturer data.
+ * Stores the simulated bluetooth device's manufacturer data.
  */
 export interface BluetoothManufacturerData {
   /**
@@ -30,9 +30,9 @@ export interface BluetoothManufacturerData {
 
 /**
  * @public
- * A peripheral to be emulated.
+ * A peripheral to be simulated.
  */
-export class PreconnectedBluetoothPeripheral {
+export class PreconnectedPeripheral {
   address: string;
   name: string;
   manufacturerData: [...Bidi.Bluetooth.BluetoothManufacturerData[]];
@@ -52,17 +52,36 @@ export class PreconnectedBluetoothPeripheral {
 }
 
 /**
- * @internal
+ * The BluetoothSimulation class exposes the bluetooth emulation abilities.
+ * @remarks
+ * @example
+ *
+ * ```ts
+ * await page.bluetoothEmulation.emulateAdapter('powered-on');
+ * await page.bluetoothEmulation.simulatePreconnectedPeripheral({
+ *   address: '09:09:09:09:09:09',
+ *   name: 'SOME_NAME',
+ *   manufacturerData: [{
+ *     key: 17,
+ *     data: 'AP8BAX8=',
+ *   }],
+ *   knownServiceUuids: ['12345678-1234-5678-9abc-def123456789'],
+ * });
+ * await page.bluetoothEmulation.disableEmulation();
+ * ```
+ *
+ * @public
+ * @experimental
  */
-export interface BluetoothEmulationManager {
-  simulateAdapter(
-    state: BluetoothAdapterState,
+export interface BluetoothEmulation {
+  emulateAdapter(
+    state: AdapterState,
     leSupported?: boolean,
   ): Promise<void>;
 
-  disableSimulation(): Promise<void>;
+  disableEmulation(): Promise<void>;
 
   simulatePreconnectedPeripheral(
-    preconnectedPeripheral: PreconnectedBluetoothPeripheral,
+    preconnectedPeripheral: PreconnectedPeripheral,
   ): Promise<void>;
 }

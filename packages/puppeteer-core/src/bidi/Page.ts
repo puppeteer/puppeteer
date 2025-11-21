@@ -1014,17 +1014,9 @@ export class BidiPage extends Page {
     throw new UnsupportedOperation();
   }
 
-  override disableBluetoothSimulation(): never {
+  override get bluetoothEmulation(): never{
     throw new UnsupportedOperation();
-  }
-
-  override simulateBluetoothAdapter(_adapter: unknown): never {
-    throw new UnsupportedOperation();
-  }
-
-  override simulatePreconnectedBluetoothPeripheral(): never {
-    throw new UnsupportedOperation();
-  }
+  };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type

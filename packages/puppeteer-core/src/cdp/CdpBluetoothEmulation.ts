@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type {
-  BluetoothAdapterState,
-  BluetoothEmulationManager,
-  PreconnectedBluetoothPeripheral,
-} from '../api/BluetoothEmulationManager.js';
+  AdapterState,
+  BluetoothEmulation,
+  PreconnectedPeripheral,
+} from '../api/BluetoothEmulation.js';
 
 import type {CdpCDPSession} from './CdpSession.js';
 import type {CdpTarget} from './Target.js';
@@ -15,7 +15,7 @@ import type {CdpTarget} from './Target.js';
 /**
  * @internal
  */
-export class CdpBluetoothEmulationManager implements BluetoothEmulationManager {
+export class CdpBluetoothEmulation implements BluetoothEmulation {
   #cdpTarget: CdpTarget;
   // Cdp session is created on-demand.
   #cdpSession?: CdpCDPSession;
@@ -31,9 +31,9 @@ export class CdpBluetoothEmulationManager implements BluetoothEmulationManager {
     return this.#cdpSession;
   }
 
-  async simulateAdapter(
-    state: BluetoothAdapterState,
-    leSupported: boolean,
+  async emulateAdapter(
+    state: AdapterState,
+    leSupported: boolean=true,
   ): Promise<void> {
     // Bluetooth spec requires overriding the existing adapter (step 6). From the CDP
     // perspective, it means disabling the emulation first.
@@ -47,12 +47,12 @@ export class CdpBluetoothEmulationManager implements BluetoothEmulationManager {
     });
   }
 
-  async disableSimulation(): Promise<void> {
+  async disableEmulation(): Promise<void> {
     await (await this.#getCdpSession()).send('BluetoothEmulation.disable');
   }
 
   async simulatePreconnectedPeripheral(
-    preconnectedPeripheral: PreconnectedBluetoothPeripheral,
+    preconnectedPeripheral: PreconnectedPeripheral,
   ): Promise<void> {
     await (
       await this.#getCdpSession()
