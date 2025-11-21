@@ -17,8 +17,8 @@ import type {Connection} from './Connection.js';
 export class CdpBluetoothEmulation implements BluetoothEmulation {
   #connection: Connection;
 
-  constructor(cdpTarget: Connection) {
-    this.#connection = cdpTarget;
+  constructor(connection: Connection) {
+    this.#connection = connection;
   }
 
   async emulateAdapter(state: AdapterState, leSupported = true): Promise<void> {

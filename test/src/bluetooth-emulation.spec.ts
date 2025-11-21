@@ -32,10 +32,8 @@ describe('request prompt for emulated bluetooth device', function () {
     const {page} = state;
     await state.page.goto(state.httpsServer.EMPTY_PAGE);
 
-    await page.bluetoothEmulation.emulateAdapter('powered-on');
-    await page.bluetoothEmulation.simulatePreconnectedPeripheral(
-      SIMULATED_PERIPHERAL,
-    );
+    await page.bluetooth.emulateAdapter('powered-on');
+    await page.bluetooth.simulatePreconnectedPeripheral(SIMULATED_PERIPHERAL);
 
     const devicePromptPromise = page.waitForDevicePrompt();
 
@@ -56,10 +54,8 @@ describe('request prompt for emulated bluetooth device', function () {
     const {page} = state;
     await state.page.goto(state.httpsServer.EMPTY_PAGE);
 
-    await page.bluetoothEmulation.emulateAdapter('powered-on');
-    await page.bluetoothEmulation.simulatePreconnectedPeripheral(
-      SIMULATED_PERIPHERAL,
-    );
+    await page.bluetooth.emulateAdapter('powered-on');
+    await page.bluetooth.simulatePreconnectedPeripheral(SIMULATED_PERIPHERAL);
 
     const devicePromptPromise = page.waitForDevicePrompt();
 

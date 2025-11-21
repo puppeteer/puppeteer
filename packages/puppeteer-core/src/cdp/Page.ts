@@ -1236,7 +1236,7 @@ export class CdpPage extends Page {
 
   // Use browser's singleton implementation, as Bluetooth emulation is implemented on the
   // browser level.
-  override get bluetoothEmulation(): BluetoothEmulation {
+  override get bluetooth(): BluetoothEmulation {
     return (this.browser() as CdpBrowser)._cdpBluetoothEmulation();
   }
 }

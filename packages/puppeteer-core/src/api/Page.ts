@@ -3179,7 +3179,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * {@inheritDoc BluetoothEmulation}
    */
-  abstract get bluetoothEmulation(): BluetoothEmulation;
+  abstract get bluetooth(): BluetoothEmulation;
 }
 
 /**

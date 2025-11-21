@@ -1014,7 +1014,7 @@ export class BidiPage extends Page {
     throw new UnsupportedOperation();
   }
 
-  override get bluetoothEmulation(): never {
+  override get bluetooth(): never {
     throw new UnsupportedOperation();
   }
 }

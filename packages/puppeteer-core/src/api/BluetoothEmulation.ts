@@ -60,8 +60,8 @@ export class PreconnectedPeripheral {
  * @example
  *
  * ```ts
- * await page.bluetoothEmulation.emulateAdapter('powered-on');
- * await page.bluetoothEmulation.simulatePreconnectedPeripheral({
+ * await page.bluetooth.emulateAdapter('powered-on');
+ * await page.bluetooth.simulatePreconnectedPeripheral({
  *   address: '09:09:09:09:09:09',
  *   name: 'SOME_NAME',
  *   manufacturerData: [
@@ -72,7 +72,7 @@ export class PreconnectedPeripheral {
  *   ],
  *   knownServiceUuids: ['12345678-1234-5678-9abc-def123456789'],
  * });
- * await page.bluetoothEmulation.disableEmulation();
+ * await page.bluetooth.disableEmulation();
  * ```
  *
  * @experimental

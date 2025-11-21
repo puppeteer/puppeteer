@@ -90,7 +90,7 @@ export class CdpBrowser extends BrowserBase {
   #networkEnabled = true;
   #targetManager: TargetManager;
   #handleDevToolsAsPage = false;
-  #cdpBluetoothEmulation: undefined | CdpBluetoothEmulation;
+  #cdpBluetoothEmulation: CdpBluetoothEmulation;
 
   constructor(
     connection: Connection,
@@ -130,6 +130,7 @@ export class CdpBrowser extends BrowserBase {
         new CdpBrowserContext(this.#connection, this, contextId),
       );
     }
+    this.#cdpBluetoothEmulation = new CdpBluetoothEmulation(this.#connection);
   }
 
   #emitDisconnected = () => {
@@ -490,9 +491,6 @@ export class CdpBrowser extends BrowserBase {
   // the specific target. `cdpBluetoothEmulationManager` is a singleton until CDP
   // implementation is adjusted.
   _cdpBluetoothEmulation(): CdpBluetoothEmulation {
-    if (!this.#cdpBluetoothEmulation) {
-      this.#cdpBluetoothEmulation = new CdpBluetoothEmulation(this.#connection);
-    }
     return this.#cdpBluetoothEmulation;
   }
 }

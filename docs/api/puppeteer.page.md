@@ -107,7 +107,7 @@ The constructor for this class is marked as internal. Third-party code should no
 </td></tr>
 <tr><td>
 
-<span id="bluetoothemulation">bluetoothEmulation</span>
+<span id="bluetooth">bluetooth</span>
 
 </td><td>
 
