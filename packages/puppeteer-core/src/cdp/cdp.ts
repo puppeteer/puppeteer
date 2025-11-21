@@ -6,6 +6,7 @@
 
 export * from './Accessibility.js';
 export * from './Binding.js';
+export * from './BluetoothEmulation.js';
 export * from './Browser.js';
 export * from './BrowserContext.js';
 export * from './BrowserConnector.js';
