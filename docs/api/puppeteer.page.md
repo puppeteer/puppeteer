@@ -115,9 +115,13 @@ The constructor for this class is marked as internal. Third-party code should no
 
 </td><td>
 
-BluetoothEmulation
+[BluetoothEmulation](./puppeteer.bluetoothemulation.md)
 
 </td><td>
+
+Exposes the bluetooth emulation abilities.
+
+**Remarks:**
 
 </td></tr>
 <tr><td>

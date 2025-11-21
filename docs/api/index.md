@@ -424,6 +424,15 @@ The constructor for this class is marked as internal. Third-party code should no
 </td></tr>
 <tr><td>
 
+<span id="preconnectedperipheral">[PreconnectedPeripheral](./puppeteer.preconnectedperipheral.md)</span>
+
+</td><td>
+
+A bluetooth peripheral to be simulated.
+
+</td></tr>
+<tr><td>
+
 <span id="protocolerror">[ProtocolError](./puppeteer.protocolerror.md)</span>
 
 </td><td>
@@ -716,6 +725,26 @@ Description
 <span id="autofilldata">[AutofillData](./puppeteer.autofilldata.md)</span>
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="bluetoothemulation">[BluetoothEmulation](./puppeteer.bluetoothemulation.md)</span>
+
+</td><td>
+
+**_(Experimental)_** Exposes the bluetooth emulation abilities.
+
+**Remarks:**
+
+</td></tr>
+<tr><td>
+
+<span id="bluetoothmanufacturerdata">[BluetoothManufacturerData](./puppeteer.bluetoothmanufacturerdata.md)</span>
+
+</td><td>
+
+Represents the simulated bluetooth peripheral's manufacturer data.
 
 </td></tr>
 <tr><td>
@@ -1404,6 +1433,15 @@ Description
 <span id="actionresult">[ActionResult](./puppeteer.actionresult.md)</span>
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="adapterstate">[AdapterState](./puppeteer.adapterstate.md)</span>
+
+</td><td>
+
+Emulated bluetooth adapter state.
 
 </td></tr>
 <tr><td>

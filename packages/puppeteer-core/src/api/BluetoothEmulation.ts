@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type * as Bidi from 'webdriver-bidi-protocol';
-
 /**
  * @public
  * Emulated bluetooth adapter state.
@@ -14,7 +12,7 @@ export type AdapterState = 'absent' | 'powered-off' | 'powered-on';
 
 /**
  * @public
- * Stores the simulated bluetooth device's manufacturer data.
+ * Represents the simulated bluetooth peripheral's manufacturer data.
  */
 export interface BluetoothManufacturerData {
   /**
@@ -30,19 +28,19 @@ export interface BluetoothManufacturerData {
 
 /**
  * @public
- * A peripheral to be simulated.
+ * A bluetooth peripheral to be simulated.
  */
 export class PreconnectedPeripheral {
   address: string;
   name: string;
-  manufacturerData: [...Bidi.Bluetooth.BluetoothManufacturerData[]];
-  knownServiceUuids: [...Bidi.Bluetooth.BluetoothUuid[]];
+  manufacturerData: BluetoothManufacturerData[];
+  knownServiceUuids: string[];
 
   constructor(
     address: string,
     name: string,
-    manufacturerData: [...Bidi.Bluetooth.BluetoothManufacturerData[]],
-    knownServiceUuids: [...Bidi.Bluetooth.BluetoothUuid[]],
+    manufacturerData: BluetoothManufacturerData[],
+    knownServiceUuids: string[],
   ) {
     this.address = address;
     this.name = name;
@@ -52,7 +50,7 @@ export class PreconnectedPeripheral {
 }
 
 /**
- * The BluetoothEmulation class exposes the bluetooth emulation abilities.
+ * Exposes the bluetooth emulation abilities.
  * @remarks
  * @example
  *
@@ -70,17 +68,41 @@ export class PreconnectedPeripheral {
  * await page.bluetoothEmulation.disableEmulation();
  * ```
  *
- * @public
  * @experimental
+ * @public
  */
 export interface BluetoothEmulation {
+  /**
+   * Emulate Bluetooth adapter. Required for bluetooth simulations
+   * https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateAdapter-command
+   *
+   * @param state - The desired bluetooth adapter state.
+   * @param leSupported - Mark if the adapter supports low-energy bluetooth.
+   * @experimental
+   * @public
+   */
   emulateAdapter(
     state: AdapterState,
     leSupported?: boolean,
   ): Promise<void>;
 
+  /**
+   * Disable emulated bluetooth adapter.
+   * https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-disableSimulation-command
+   *
+   * @experimental
+   * @public
+   */
   disableEmulation(): Promise<void>;
 
+  /**
+   * Simulated preconnected Bluetooth Peripheral.
+   * https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateconnectedperipheral-command
+   *
+   * @param preconnectedPeripheral - The peripheral to simulate.
+   * @experimental
+   * @public
+   */
   simulatePreconnectedPeripheral(
     preconnectedPeripheral: PreconnectedPeripheral,
   ): Promise<void>;
