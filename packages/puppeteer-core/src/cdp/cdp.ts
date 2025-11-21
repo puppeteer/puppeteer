@@ -6,10 +6,10 @@
 
 export * from './Accessibility.js';
 export * from './Binding.js';
+export * from './BluetoothEmulation.js';
 export * from './Browser.js';
 export * from './BrowserContext.js';
 export * from './BrowserConnector.js';
-export * from './CdpBluetoothEmulation.js';
 export * from './CdpSession.js';
 export * from './Connection.js';
 export * from './Coverage.js';

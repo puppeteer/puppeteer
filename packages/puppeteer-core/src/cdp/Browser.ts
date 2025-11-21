@@ -24,8 +24,8 @@ import type {Target} from '../api/Target.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import type {Viewport} from '../common/Viewport.js';
 
+import {CdpBluetoothEmulation} from './BluetoothEmulation.js';
 import {CdpBrowserContext} from './BrowserContext.js';
-import {CdpBluetoothEmulation} from './CdpBluetoothEmulation.js';
 import type {CdpCDPSession} from './CdpSession.js';
 import type {Connection} from './Connection.js';
 import {
