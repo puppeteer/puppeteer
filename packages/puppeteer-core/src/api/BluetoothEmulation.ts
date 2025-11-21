@@ -52,7 +52,7 @@ export class PreconnectedPeripheral {
 }
 
 /**
- * The BluetoothSimulation class exposes the bluetooth emulation abilities.
+ * The BluetoothEmulation class exposes the bluetooth emulation abilities.
  * @remarks
  * @example
  *

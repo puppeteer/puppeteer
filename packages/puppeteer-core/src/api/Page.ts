@@ -3177,7 +3177,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
   abstract openDevTools(): Promise<Page>;
 
   /**
-   * {@inheritDoc BluetoothSimulation}
+   * {@inheritDoc BluetoothEmulation}
    */
   abstract get bluetoothEmulation(): BluetoothEmulation;
 }

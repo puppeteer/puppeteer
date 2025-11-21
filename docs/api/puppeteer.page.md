@@ -107,6 +107,21 @@ The constructor for this class is marked as internal. Third-party code should no
 </td></tr>
 <tr><td>
 
+<span id="bluetoothemulation">bluetoothEmulation</span>
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+BluetoothEmulation
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="coverage">coverage</span>
 
 </td><td>
@@ -488,17 +503,6 @@ By default, `page.pdf()` generates a pdf with modified colors for printing. Use 
 **Deprecated:**
 
 Page-level cookie API is deprecated. Use [Browser.deleteCookie()](./puppeteer.browser.deletecookie.md), [BrowserContext.deleteCookie()](./puppeteer.browsercontext.deletecookie.md), [Browser.deleteMatchingCookies()](./puppeteer.browser.deletematchingcookies.md) or [BrowserContext.deleteMatchingCookies()](./puppeteer.browsercontext.deletematchingcookies.md) instead.
-
-</td></tr>
-<tr><td>
-
-<span id="disablebluetoothsimulation">[disableBluetoothSimulation()](./puppeteer.page.disablebluetoothsimulation.md)</span>
-
-</td><td>
-
-</td><td>
-
-**_(Experimental)_** Disable simulated Bluetooth adapter. https://webbluetoothcg.github.io/web-bluetooth/\#bluetooth-disableSimulation-command
 
 </td></tr>
 <tr><td>
@@ -1223,28 +1227,6 @@ In the case of multiple pages in a single browser, each page can have its own vi
 **Remarks:**
 
 NOTE: in certain cases, setting viewport will reload the page in order to set the isMobile or hasTouch properties.
-
-</td></tr>
-<tr><td>
-
-<span id="simulatebluetoothadapter">[simulateBluetoothAdapter(state, leSupported)](./puppeteer.page.simulatebluetoothadapter.md)</span>
-
-</td><td>
-
-</td><td>
-
-**_(Experimental)_** Simulate Bluetooth adapter. https://webbluetoothcg.github.io/web-bluetooth/\#bluetooth-simulateAdapter-command
-
-</td></tr>
-<tr><td>
-
-<span id="simulatepreconnectedbluetoothperipheral">[simulatePreconnectedBluetoothPeripheral(peripheral)](./puppeteer.page.simulatepreconnectedbluetoothperipheral.md)</span>
-
-</td><td>
-
-</td><td>
-
-**_(Experimental)_** Simulated preconnected Bluetooth Peripheral. https://webbluetoothcg.github.io/web-bluetooth/\#bluetooth-simulateconnectedperipheral-command
 
 </td></tr>
 <tr><td>
