@@ -7,11 +7,13 @@
 import type * as Bidi from 'webdriver-bidi-protocol';
 
 /**
+ * @public
  * Emulated bluetooth adapter state.
  */
 export type BluetoothAdapterState = 'absent' | 'powered-off' | 'powered-on';
 
 /**
+ * @public
  * Stores the emulated bluetooth device's manufacturer data.
  */
 export interface BluetoothManufacturerData {
@@ -27,6 +29,7 @@ export interface BluetoothManufacturerData {
 }
 
 /**
+ * @public
  * A peripheral to be emulated.
  */
 export class PreconnectedBluetoothPeripheral {

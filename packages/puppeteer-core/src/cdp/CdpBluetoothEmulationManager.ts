@@ -12,6 +12,9 @@ import type {
 import type {CdpCDPSession} from './CdpSession.js';
 import type {CdpTarget} from './Target.js';
 
+/**
+ * @internal
+ */
 export class CdpBluetoothEmulationManager implements BluetoothEmulationManager {
   #cdpTarget: CdpTarget;
   // Cdp session is created on-demand.
