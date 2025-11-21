@@ -14,6 +14,8 @@ export interface BluetoothEmulation
 
 ## Remarks
 
+[Web Bluetooth specification](https://webbluetoothcg.github.io/web-bluetooth/#simulated-bluetooth-adapter) requires the emulated adapters should be isolated per top-level navigable. However, at the moment Chromium's bluetooth emulation implementation is tight to the browser, not the page. This means the bluetooth emulation exposed from different pages would interfere their states.
+
 ## Example
 
 ```ts
@@ -49,7 +51,7 @@ Description
 
 </td><td>
 
-**_(Experimental)_** Disable emulated bluetooth adapter. https://webbluetoothcg.github.io/web-bluetooth/\#bluetooth-disableSimulation-command
+**_(Experimental)_** Disable emulated bluetooth adapter. See [bluetooth.disableSimulation](https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-disableSimulation-command).
 
 </td></tr>
 <tr><td>
@@ -58,7 +60,7 @@ Description
 
 </td><td>
 
-**_(Experimental)_** Emulate Bluetooth adapter. Required for bluetooth simulations https://webbluetoothcg.github.io/web-bluetooth/\#bluetooth-simulateAdapter-command
+**_(Experimental)_** Emulate Bluetooth adapter. Required for bluetooth simulations See [bluetooth.simulateAdapter](https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateAdapter-command).
 
 </td></tr>
 <tr><td>
@@ -67,7 +69,7 @@ Description
 
 </td><td>
 
-**_(Experimental)_** Simulated preconnected Bluetooth Peripheral. https://webbluetoothcg.github.io/web-bluetooth/\#bluetooth-simulateconnectedperipheral-command
+**_(Experimental)_** Simulated preconnected Bluetooth Peripheral. See [bluetooth.simulatePreconnectedPeripheral](https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateconnectedperipheral-command).
 
 </td></tr>
 </tbody></table>

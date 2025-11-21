@@ -4,7 +4,7 @@ sidebar_label: BluetoothEmulation.simulatePreconnectedPeripheral
 
 # BluetoothEmulation.simulatePreconnectedPeripheral() method
 
-Simulated preconnected Bluetooth Peripheral. https://webbluetoothcg.github.io/web-bluetooth/\#bluetooth-simulateconnectedperipheral-command
+Simulated preconnected Bluetooth Peripheral. See [bluetooth.simulatePreconnectedPeripheral](https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateconnectedperipheral-command).
 
 ### Signature
 

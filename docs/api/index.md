@@ -737,6 +737,8 @@ Description
 
 **Remarks:**
 
+[Web Bluetooth specification](https://webbluetoothcg.github.io/web-bluetooth/#simulated-bluetooth-adapter) requires the emulated adapters should be isolated per top-level navigable. However, at the moment Chromium's bluetooth emulation implementation is tight to the browser, not the page. This means the bluetooth emulation exposed from different pages would interfere their states.
+
 </td></tr>
 <tr><td>
 

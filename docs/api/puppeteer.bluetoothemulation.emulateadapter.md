@@ -4,7 +4,7 @@ sidebar_label: BluetoothEmulation.emulateAdapter
 
 # BluetoothEmulation.emulateAdapter() method
 
-Emulate Bluetooth adapter. Required for bluetooth simulations https://webbluetoothcg.github.io/web-bluetooth/\#bluetooth-simulateAdapter-command
+Emulate Bluetooth adapter. Required for bluetooth simulations See [bluetooth.simulateAdapter](https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateAdapter-command).
 
 ### Signature
 

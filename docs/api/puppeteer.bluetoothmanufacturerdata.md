@@ -47,7 +47,7 @@ string
 
 </td><td>
 
-Base64-encoded JSON representing the manufacturer’s data.
+The manufacturer-specific data as a base64-encoded string.
 
 </td><td>
 
@@ -64,7 +64,7 @@ number
 
 </td><td>
 
-Company identifier https://bitbucket.org/bluetooth-SIG/public/src/main/assigned\_numbers/company\_identifiers/company\_identifiers.yaml https://usb.org/developers
+The company identifier, as defined by the [Bluetooth SIG](https://www.bluetooth.com/specifications/assigned-numbers/company-identifiers/).
 
 </td><td>
 

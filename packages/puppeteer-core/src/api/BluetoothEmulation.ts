@@ -16,12 +16,11 @@ export type AdapterState = 'absent' | 'powered-off' | 'powered-on';
  */
 export interface BluetoothManufacturerData {
   /**
-   * Company identifier
-   * https://bitbucket.org/bluetooth-SIG/public/src/main/assigned_numbers/company_identifiers/company_identifiers.yaml https://usb.org/developers
+   * The company identifier, as defined by the {@link https://www.bluetooth.com/specifications/assigned-numbers/company-identifiers/|Bluetooth SIG}.
    */
   key: number;
   /**
-   * Base64-encoded JSON representing the manufacturer’s data.
+   * The manufacturer-specific data as a base64-encoded string.
    */
   data: string;
 }
@@ -51,7 +50,13 @@ export class PreconnectedPeripheral {
 
 /**
  * Exposes the bluetooth emulation abilities.
- * @remarks
+ *
+ * @remarks {@link https://webbluetoothcg.github.io/web-bluetooth/#simulated-bluetooth-adapter|Web Bluetooth specification}
+ * requires the emulated adapters should be isolated per top-level navigable. However,
+ * at the moment Chromium's bluetooth emulation implementation is tight to the browser,
+ * not the page. This means the bluetooth emulation exposed from different pages would
+ * interfere their states.
+ *
  * @example
  *
  * ```ts
@@ -76,10 +81,11 @@ export class PreconnectedPeripheral {
 export interface BluetoothEmulation {
   /**
    * Emulate Bluetooth adapter. Required for bluetooth simulations
-   * https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateAdapter-command
+   * See {@link https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateAdapter-command|bluetooth.simulateAdapter}.
    *
    * @param state - The desired bluetooth adapter state.
    * @param leSupported - Mark if the adapter supports low-energy bluetooth.
+   *
    * @experimental
    * @public
    */
@@ -87,7 +93,7 @@ export interface BluetoothEmulation {
 
   /**
    * Disable emulated bluetooth adapter.
-   * https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-disableSimulation-command
+   * See {@link https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-disableSimulation-command|bluetooth.disableSimulation}.
    *
    * @experimental
    * @public
@@ -96,9 +102,10 @@ export interface BluetoothEmulation {
 
   /**
    * Simulated preconnected Bluetooth Peripheral.
-   * https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateconnectedperipheral-command
+   * See {@link https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateconnectedperipheral-command|bluetooth.simulatePreconnectedPeripheral}.
    *
    * @param preconnectedPeripheral - The peripheral to simulate.
+   *
    * @experimental
    * @public
    */
