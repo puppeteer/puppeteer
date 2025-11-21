@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import expect from 'expect';
-import type {CDPSession} from 'puppeteer-core/internal/api/CDPSession.js';
 
-import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
+import {setupSeparateTestBrowserHooks} from './mocha-utils.js';
 
 const SIMULATED_PERIPHERAL = {
   address: '09:09:09:09:09:09',
@@ -20,7 +19,7 @@ const SIMULATED_PERIPHERAL = {
   knownServiceUuids: ['12345678-1234-5678-9abc-def123456789'],
 };
 
-describe('device request prompt with emulated device', function () {
+describe('request prompt for emulated bluetooth device', function () {
   const state = setupSeparateTestBrowserHooks({
     args: [
       '--enable-features=WebBluetoothNewPermissionsBackend',
@@ -29,30 +28,12 @@ describe('device request prompt with emulated device', function () {
     acceptInsecureCerts: true,
   });
 
-  // `browserSession` should be clean up between tests to prevent state leak.
-  let browserSession: CDPSession | null = null;
-
-  beforeEach(async () => {
-    await state.page.goto(state.httpsServer.EMPTY_PAGE);
-
-    browserSession = await state.browser.target().createCDPSession();
-    await browserSession.send('BluetoothEmulation.disable');
-    await browserSession.send('BluetoothEmulation.enable', {
-      state: 'powered-on',
-      leSupported: true,
-    });
-    await browserSession.send(
-      'BluetoothEmulation.simulatePreconnectedPeripheral',
-      SIMULATED_PERIPHERAL,
-    );
-  });
-
-  afterEach(async () => {
-    await browserSession?.detach();
-  });
-
   it('can be canceled', async function () {
     const {page} = state;
+    await state.page.goto(state.httpsServer.EMPTY_PAGE);
+
+    await page.simulateBluetoothAdapter('powered-on');
+    await page.simulatePreconnectedBluetoothPeripheral(SIMULATED_PERIPHERAL);
 
     const devicePromptPromise = page.waitForDevicePrompt();
 
@@ -71,6 +52,10 @@ describe('device request prompt with emulated device', function () {
 
   it('can be selected', async function () {
     const {page} = state;
+    await state.page.goto(state.httpsServer.EMPTY_PAGE);
+
+    await page.simulateBluetoothAdapter('powered-on');
+    await page.simulatePreconnectedBluetoothPeripheral(SIMULATED_PERIPHERAL);
 
     const devicePromptPromise = page.waitForDevicePrompt();
 

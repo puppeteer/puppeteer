@@ -81,6 +81,10 @@ import {
 } from '../util/disposable.js';
 import {stringToTypedArray} from '../util/encoding.js';
 
+import type {
+  BluetoothAdapterState,
+  PreconnectedBluetoothPeripheral,
+} from './BluetoothEmulationManager.js';
 import type {Browser} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';
 import type {CDPSession} from './CDPSession.js';
@@ -3174,6 +3178,38 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * method is only available in Chrome.
    */
   abstract openDevTools(): Promise<Page>;
+
+  /**
+   * Disable simulated Bluetooth adapter.
+   * https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-disableSimulation-command
+   *
+   * @experimental
+   */
+  abstract disableBluetoothSimulation(): Promise<void>;
+
+  /**
+   * Simulate Bluetooth adapter.
+   * https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateAdapter-command
+   *
+   * @param state - The desired bluetooth adapter state.
+   * @param leSupported - Mark if the adapter supports BLE.
+   * @experimental
+   */
+  abstract simulateBluetoothAdapter(
+    state: BluetoothAdapterState,
+    leSupported?: boolean,
+  ): Promise<void>;
+
+  /**
+   * Simulated preconnected Bluetooth Peripheral.
+   * https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateconnectedperipheral-command
+   *
+   * @param peripheral - The peripheral to simulate.
+   * @experimental
+   */
+  abstract simulatePreconnectedBluetoothPeripheral(
+    peripheral: PreconnectedBluetoothPeripheral,
+  ): Promise<void>;
 }
 
 /**

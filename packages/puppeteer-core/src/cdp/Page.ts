@@ -7,6 +7,10 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {firstValueFrom, from, raceWith} from '../../third_party/rxjs/rxjs.js';
+import type {
+  BluetoothAdapterState,
+  PreconnectedBluetoothPeripheral,
+} from '../api/BluetoothEmulationManager.js';
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
@@ -60,6 +64,7 @@ import {isErrorLike} from '../util/ErrorLike.js';
 
 import {Binding} from './Binding.js';
 import type {CdpBrowser} from './Browser.js';
+import type {CdpBluetoothEmulationManager} from './CdpBluetoothEmulationManager.js';
 import {CdpCDPSession} from './CdpSession.js';
 import {isTargetClosedError} from './Connection.js';
 import {Coverage} from './Coverage.js';
@@ -1231,6 +1236,35 @@ export class CdpPage extends Page {
     options: WaitTimeoutOptions = {},
   ): Promise<DeviceRequestPrompt> {
     return await this.mainFrame().waitForDevicePrompt(options);
+  }
+
+  // Use browser's singleton implementation, as Bluetooth simulation is implemented on the
+  // browser level.
+  async #cdpBluetoothEmulationManager(): Promise<CdpBluetoothEmulationManager> {
+    return await (this.browser() as CdpBrowser)._cdpBluetoothEmulationManager();
+  }
+
+  override async disableBluetoothSimulation(): Promise<void> {
+    return await (
+      await this.#cdpBluetoothEmulationManager()
+    ).disableSimulation();
+  }
+
+  override async simulateBluetoothAdapter(
+    state: BluetoothAdapterState,
+    leSupported = true,
+  ): Promise<void> {
+    return await (
+      await this.#cdpBluetoothEmulationManager()
+    ).simulateAdapter(state, leSupported);
+  }
+
+  override async simulatePreconnectedBluetoothPeripheral(
+    preconnectedPeripheral: PreconnectedBluetoothPeripheral,
+  ): Promise<void> {
+    return await (
+      await this.#cdpBluetoothEmulationManager()
+    ).simulatePreconnectedPeripheral(preconnectedPeripheral);
   }
 }
 
