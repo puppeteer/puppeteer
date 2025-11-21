@@ -343,8 +343,8 @@ export class CdpBrowser extends BrowserBase {
     return this.#connection.url();
   }
 
-  override async newPage(): Promise<Page> {
-    return await this.#defaultContext.newPage();
+  override async newPage(options?: CreatePageOptions): Promise<Page> {
+    return await this.#defaultContext.newPage(options);
   }
 
   async _createPageInContext(
@@ -355,9 +355,16 @@ export class CdpBrowser extends BrowserBase {
       this.targets().filter(t => {
         return t.browserContext().id === contextId;
       }).length > 0;
+    const windowBounds =
+      options?.type === 'window' ? options.windowBounds : undefined;
     const {targetId} = await this.#connection.send('Target.createTarget', {
       url: 'about:blank',
       browserContextId: contextId || undefined,
+      left: windowBounds?.left,
+      top: windowBounds?.top,
+      width: windowBounds?.width,
+      height: windowBounds?.height,
+      windowState: windowBounds?.windowState,
       // Works around crbug.com/454825274.
       newWindow: hasTargets && options?.type === 'window' ? true : undefined,
     });

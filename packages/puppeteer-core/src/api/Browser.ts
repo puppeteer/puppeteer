@@ -213,13 +213,29 @@ export interface DebugInfo {
 /**
  * @public
  */
+export type WindowState = 'normal' | 'minimized' | 'maximized' | 'fullscreen';
+
+/**
+ * @public
+ */
+export interface WindowBounds {
+  left?: number;
+  top?: number;
+  width?: number;
+  height?: number;
+  windowState?: WindowState;
+}
+
+/**
+ * @public
+ */
 export type CreatePageOptions =
   | {
       type: 'tab';
     }
   | {
       type: 'window';
-      // TODO: window-specific params will be added here.
+      windowBounds?: WindowBounds;
     };
 
 /**
