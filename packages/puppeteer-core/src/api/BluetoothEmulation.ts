@@ -59,10 +59,12 @@ export class PreconnectedPeripheral {
  * await page.bluetoothEmulation.simulatePreconnectedPeripheral({
  *   address: '09:09:09:09:09:09',
  *   name: 'SOME_NAME',
- *   manufacturerData: [{
- *     key: 17,
- *     data: 'AP8BAX8=',
- *   }],
+ *   manufacturerData: [
+ *     {
+ *       key: 17,
+ *       data: 'AP8BAX8=',
+ *     },
+ *   ],
  *   knownServiceUuids: ['12345678-1234-5678-9abc-def123456789'],
  * });
  * await page.bluetoothEmulation.disableEmulation();
@@ -81,10 +83,7 @@ export interface BluetoothEmulation {
    * @experimental
    * @public
    */
-  emulateAdapter(
-    state: AdapterState,
-    leSupported?: boolean,
-  ): Promise<void>;
+  emulateAdapter(state: AdapterState, leSupported?: boolean): Promise<void>;
 
   /**
    * Disable emulated bluetooth adapter.

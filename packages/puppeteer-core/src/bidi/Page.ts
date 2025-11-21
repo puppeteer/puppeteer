@@ -1014,9 +1014,9 @@ export class BidiPage extends Page {
     throw new UnsupportedOperation();
   }
 
-  override get bluetoothEmulation(): never{
+  override get bluetoothEmulation(): never {
     throw new UnsupportedOperation();
-  };
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type

@@ -7,7 +7,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {firstValueFrom, from, raceWith} from '../../third_party/rxjs/rxjs.js';
-import {  BluetoothEmulation} from '../api/BluetoothEmulation.js';
+import type {BluetoothEmulation} from '../api/BluetoothEmulation.js';
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
@@ -1236,10 +1236,9 @@ export class CdpPage extends Page {
 
   // Use browser's singleton implementation, as Bluetooth emulation is implemented on the
   // browser level.
-  override get bluetoothEmulation(): BluetoothEmulation{
-    return (this.browser() as CdpBrowser)._cdpBluetoothEmulation()
-  };
-
+  override get bluetoothEmulation(): BluetoothEmulation {
+    return (this.browser() as CdpBrowser)._cdpBluetoothEmulation();
+  }
 }
 
 const supportedMetrics = new Set<string>([

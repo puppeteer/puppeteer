@@ -81,7 +81,7 @@ import {
 } from '../util/disposable.js';
 import {stringToTypedArray} from '../util/encoding.js';
 
-import {BluetoothEmulation} from './BluetoothEmulation.js';
+import type {BluetoothEmulation} from './BluetoothEmulation.js';
 import type {Browser} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';
 import type {CDPSession} from './CDPSession.js';

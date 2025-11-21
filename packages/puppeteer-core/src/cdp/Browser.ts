@@ -491,9 +491,7 @@ export class CdpBrowser extends BrowserBase {
   // implementation is adjusted.
   _cdpBluetoothEmulation(): CdpBluetoothEmulation {
     if (!this.#cdpBluetoothEmulation) {
-      this.#cdpBluetoothEmulation = new CdpBluetoothEmulation(
-        this.target(),
-      );
+      this.#cdpBluetoothEmulation = new CdpBluetoothEmulation(this.#connection);
     }
     return this.#cdpBluetoothEmulation;
   }
