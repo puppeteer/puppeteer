@@ -492,6 +492,17 @@ Page-level cookie API is deprecated. Use [Browser.deleteCookie()](./puppeteer.br
 </td></tr>
 <tr><td>
 
+<span id="disablebluetoothsimulation">[disableBluetoothSimulation()](./puppeteer.page.disablebluetoothsimulation.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Disable simulated Bluetooth adapter. https://webbluetoothcg.github.io/web-bluetooth/\#bluetooth-disableSimulation-command
+
+</td></tr>
+<tr><td>
+
 <span id="emulate">[emulate(device)](./puppeteer.page.emulate.md)</span>
 
 </td><td>
@@ -1212,6 +1223,28 @@ In the case of multiple pages in a single browser, each page can have its own vi
 **Remarks:**
 
 NOTE: in certain cases, setting viewport will reload the page in order to set the isMobile or hasTouch properties.
+
+</td></tr>
+<tr><td>
+
+<span id="simulatebluetoothadapter">[simulateBluetoothAdapter(state, leSupported)](./puppeteer.page.simulatebluetoothadapter.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Simulate Bluetooth adapter. https://webbluetoothcg.github.io/web-bluetooth/\#bluetooth-simulateAdapter-command
+
+</td></tr>
+<tr><td>
+
+<span id="simulatepreconnectedbluetoothperipheral">[simulatePreconnectedBluetoothPeripheral(peripheral)](./puppeteer.page.simulatepreconnectedbluetoothperipheral.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Simulated preconnected Bluetooth Peripheral. https://webbluetoothcg.github.io/web-bluetooth/\#bluetooth-simulateconnectedperipheral-command
 
 </td></tr>
 <tr><td>
