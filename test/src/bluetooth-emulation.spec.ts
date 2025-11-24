@@ -29,8 +29,8 @@ describe('request prompt for emulated bluetooth device', function () {
   });
 
   it('can be canceled', async function () {
-    const {page} = state;
-    await state.page.goto(state.httpsServer.EMPTY_PAGE);
+    const {page, httpsServer} = state;
+    await page.goto(httpsServer.EMPTY_PAGE);
 
     await page.bluetooth.emulateAdapter('powered-on');
     await page.bluetooth.simulatePreconnectedPeripheral(SIMULATED_PERIPHERAL);
@@ -51,8 +51,8 @@ describe('request prompt for emulated bluetooth device', function () {
   });
 
   it('can be selected', async function () {
-    const {page} = state;
-    await state.page.goto(state.httpsServer.EMPTY_PAGE);
+    const {page, httpsServer} = state;
+    await page.goto(httpsServer.EMPTY_PAGE);
 
     await page.bluetooth.emulateAdapter('powered-on');
     await page.bluetooth.simulatePreconnectedPeripheral(SIMULATED_PERIPHERAL);
