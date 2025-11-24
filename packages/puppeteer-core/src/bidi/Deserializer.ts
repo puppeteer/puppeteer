@@ -31,13 +31,13 @@ export class BidiDeserializer {
           return acc.add(this.deserialize(value));
         }, new Set());
       case 'object':
-        if (!result?.value) {
+        if (!result?.value && !result.internalId) {
           // Heuristic detecting platform objects. WebDriver BiDi serializes platform
           // objects without value. Return an empty object, as there is no way to restore
           // the original value's constructor.
           return {};
         }
-        return result.value.reduce((acc: Record<any, unknown>, tuple) => {
+        return result.value?.reduce((acc: Record<any, unknown>, tuple) => {
           const {key, value} = this.#deserializeTuple(tuple);
           acc[key as any] = value;
           return acc;
