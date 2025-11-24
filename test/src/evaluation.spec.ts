@@ -275,6 +275,20 @@ describe('Evaluation specs', function () {
       expect(result).not.toBe(object);
       expect(result).toEqual(object);
     });
+    it('should serialize platform object as an empty object', async () => {
+      const {page} = await getTestState();
+
+      const result = await page.evaluate(()=>new URLSearchParams('foo=1&bar=2'));
+      // Platform objects are serialized as an empty object.
+      expect(result).toEqual({});
+    });
+    it('should serialize error as an empty object', async () => {
+      const {page} = await getTestState();
+
+      const result = await page.evaluate(()=>new Error("some error"));
+      // Platform objects are serialized as an empty object.
+      expect(result).toEqual({});
+    });
     it('should return BigInt', async () => {
       const {page} = await getTestState();
 
