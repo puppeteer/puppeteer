@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export * from './BluetoothEmulation.js';
+export type * from './BluetoothEmulation.js';
 export * from './Browser.js';
 export * from './BrowserContext.js';
 export * from './CDPSession.js';
