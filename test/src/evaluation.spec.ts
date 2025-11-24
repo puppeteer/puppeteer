@@ -252,6 +252,19 @@ describe('Evaluation specs', function () {
         });
       expect(error).toEqual(100500);
     });
+    it('should support thrown platform objects as error messages', async () => {
+      const {page} = await getTestState();
+
+      let error!: Error;
+      await page
+        .evaluate(() => {
+          throw new DOMException('some DOMException message');
+        })
+        .catch(error_ => {
+          return (error = error_);
+        });
+      expect(error.message).toContain('some DOMException message');
+    });
     it('should return complex objects', async () => {
       const {page} = await getTestState();
 
