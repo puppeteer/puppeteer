@@ -476,10 +476,10 @@ export class BidiFrame extends Frame {
   }
 
   override waitForDevicePrompt(
-    options?: WaitTimeoutOptions,
+    options: WaitTimeoutOptions = {},
   ): Promise<DeviceRequestPrompt> {
-    const timeout = options?.timeout ?? this.timeoutSettings.timeout();
-    return this.browsingContext.waitForDevicePrompt(timeout, options?.signal);
+    const {timeout = this.timeoutSettings.timeout(), signal} = options ?? {};
+    return this.browsingContext.waitForDevicePrompt(timeout, signal);
   }
 
   override get detached(): boolean {
