@@ -118,7 +118,7 @@ describe('Browser specs', function () {
         // In headful mode 'Browser.screens' returns the real
         // platform screens info which is not stable enough
         // for matching.
-        return;
+        throw new Error('Not testable in headful');
       }
 
       const screenInfos = await browser.screens();
@@ -147,14 +147,7 @@ describe('Browser specs', function () {
 
   describe('Browser.add|removeScreen', function () {
     it('should add and remove a screen', async () => {
-      const {browser, isHeadless} = await getTestState();
-
-      if (!isHeadless) {
-        // 'Browser.add|removeScreen' are only available in
-        // headless mode.
-        return;
-      }
-
+      const {browser} = await getTestState();
       const screenInfo = await browser.addScreen({
         left: 800,
         top: 0,
