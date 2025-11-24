@@ -350,7 +350,7 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="metadata">[Metadata](./browsers.metadata.md)</span>
+<span id="metadata_2">[Metadata_2](./browsers.metadata_2.md)</span>
 
 </td><td>
 

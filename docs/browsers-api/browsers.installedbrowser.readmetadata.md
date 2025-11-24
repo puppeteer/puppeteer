@@ -14,4 +14,4 @@ class InstalledBrowser {
 
 **Returns:**
 
-[Metadata](./browsers.metadata.md)
+[Metadata](./browsers.metadata_2.md)

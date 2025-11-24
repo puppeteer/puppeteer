@@ -61,13 +61,7 @@ describe('Page', function () {
       expect(outerSize.height).toBe(550);
     });
     it('should open pages in a new window in maximized state', async () => {
-      const {context, browser, isHeadless} = await getTestState();
-
-      if (!isHeadless) {
-        // In headful mode maximized window size is not stable enough
-        // for matching.
-        return;
-      }
+      const {context, browser} = await getTestState();
 
       const page = await context.newPage({
         type: 'window',
