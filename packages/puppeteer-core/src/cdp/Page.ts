@@ -61,6 +61,7 @@ import {isErrorLike} from '../util/ErrorLike.js';
 
 import {Binding} from './Binding.js';
 import type {CdpBrowser} from './Browser.js';
+import type {CdpBrowserContext} from './BrowserContext.js';
 import {CdpCDPSession} from './CdpSession.js';
 import {isTargetClosedError} from './Connection.js';
 import {Coverage} from './Coverage.js';
@@ -1234,10 +1235,10 @@ export class CdpPage extends Page {
     return await this.mainFrame().waitForDevicePrompt(options);
   }
 
-  // Use browser's singleton implementation, as Bluetooth emulation is implemented on the
-  // browser level.
+  // Use browser context's singleton implementation, as Bluetooth emulation is implemented
+  // on the browser context level.
   override get bluetooth(): BluetoothEmulation {
-    return (this.browser() as CdpBrowser)._cdpBluetoothEmulation();
+    return (this.browserContext() as CdpBrowserContext)._cdpBluetoothEmulation;
   }
 }
 

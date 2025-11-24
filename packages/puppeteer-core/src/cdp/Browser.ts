@@ -24,7 +24,6 @@ import type {Target} from '../api/Target.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import type {Viewport} from '../common/Viewport.js';
 
-import {CdpBluetoothEmulation} from './BluetoothEmulation.js';
 import {CdpBrowserContext} from './BrowserContext.js';
 import type {CdpCDPSession} from './CdpSession.js';
 import type {Connection} from './Connection.js';
@@ -90,7 +89,6 @@ export class CdpBrowser extends BrowserBase {
   #networkEnabled = true;
   #targetManager: TargetManager;
   #handleDevToolsAsPage = false;
-  #cdpBluetoothEmulation: CdpBluetoothEmulation;
 
   constructor(
     connection: Connection,
@@ -130,7 +128,6 @@ export class CdpBrowser extends BrowserBase {
         new CdpBrowserContext(this.#connection, this, contextId),
       );
     }
-    this.#cdpBluetoothEmulation = new CdpBluetoothEmulation(this.#connection);
   }
 
   #emitDisconnected = () => {
@@ -485,12 +482,5 @@ export class CdpBrowser extends BrowserBase {
 
   override isNetworkEnabled(): boolean {
     return this.#networkEnabled;
-  }
-
-  // Current Bluetooth emulation is implemented on the browser level, and not tight to
-  // the specific target. `cdpBluetoothEmulationManager` is a singleton until CDP
-  // implementation is adjusted.
-  _cdpBluetoothEmulation(): CdpBluetoothEmulation {
-    return this.#cdpBluetoothEmulation;
   }
 }
