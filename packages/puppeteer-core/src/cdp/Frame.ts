@@ -22,7 +22,7 @@ import {isErrorLike} from '../util/ErrorLike.js';
 import {Accessibility} from './Accessibility.js';
 import type {Binding} from './Binding.js';
 import type {CdpPreloadScript} from './CdpPreloadScript.js';
-import type {DeviceRequestPromptManager} from './DeviceRequestPrompt.js';
+import type {CdpDeviceRequestPromptManager} from './DeviceRequestPrompt.js';
 import type {FrameManager} from './FrameManager.js';
 import {FrameManagerEvent} from './FrameManagerEvents.js';
 import type {IsolatedWorldChart} from './IsolatedWorld.js';
@@ -315,7 +315,7 @@ export class CdpFrame extends Frame {
     return this._frameManager._frameTree.childFrames(this._id);
   }
 
-  #deviceRequestPromptManager(): DeviceRequestPromptManager {
+  #deviceRequestPromptManager(): CdpDeviceRequestPromptManager {
     return this._frameManager._deviceRequestPromptManager(this.#client);
   }
 

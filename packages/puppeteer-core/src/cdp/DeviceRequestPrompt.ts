@@ -154,7 +154,7 @@ export class CdpDeviceRequestPrompt extends DeviceRequestPrompt {
 /**
  * @internal
  */
-export class DeviceRequestPromptManager {
+export class CdpDeviceRequestPromptManager {
   #client: CDPSession | null;
   #timeoutSettings: TimeoutSettings;
   #deviceRequestPromptDeferreds = new Set<Deferred<DeviceRequestPrompt>>();

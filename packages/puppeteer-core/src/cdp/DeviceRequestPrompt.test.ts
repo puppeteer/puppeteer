@@ -16,7 +16,7 @@ import {TimeoutSettings} from '../common/TimeoutSettings.js';
 
 import {
   CdpDeviceRequestPrompt,
-  DeviceRequestPromptManager,
+  CdpDeviceRequestPromptManager,
 } from './DeviceRequestPrompt.js';
 
 class MockCDPSession extends EventEmitter<CDPSessionEvents> {
@@ -39,7 +39,10 @@ describe('DeviceRequestPrompt', function () {
     it('should return prompt', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const manager = new DeviceRequestPromptManager(client, timeoutSettings);
+      const manager = new CdpDeviceRequestPromptManager(
+        client,
+        timeoutSettings,
+      );
 
       const [prompt] = await Promise.all([
         manager.waitForDevicePrompt(),
@@ -56,7 +59,10 @@ describe('DeviceRequestPrompt', function () {
     it('should respect timeout', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const manager = new DeviceRequestPromptManager(client, timeoutSettings);
+      const manager = new CdpDeviceRequestPromptManager(
+        client,
+        timeoutSettings,
+      );
 
       await expect(
         manager.waitForDevicePrompt({timeout: 1}),
@@ -66,7 +72,10 @@ describe('DeviceRequestPrompt', function () {
     it('should respect default timeout when there is no custom timeout', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const manager = new DeviceRequestPromptManager(client, timeoutSettings);
+      const manager = new CdpDeviceRequestPromptManager(
+        client,
+        timeoutSettings,
+      );
 
       timeoutSettings.setDefaultTimeout(1);
       await expect(manager.waitForDevicePrompt()).rejects.toBeInstanceOf(
@@ -77,7 +86,10 @@ describe('DeviceRequestPrompt', function () {
     it('should prioritize exact timeout over default timeout', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const manager = new DeviceRequestPromptManager(client, timeoutSettings);
+      const manager = new CdpDeviceRequestPromptManager(
+        client,
+        timeoutSettings,
+      );
 
       timeoutSettings.setDefaultTimeout(0);
       await expect(
@@ -88,7 +100,10 @@ describe('DeviceRequestPrompt', function () {
     it('should work with no timeout', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const manager = new DeviceRequestPromptManager(client, timeoutSettings);
+      const manager = new CdpDeviceRequestPromptManager(
+        client,
+        timeoutSettings,
+      );
 
       const [prompt] = await Promise.all([
         manager.waitForDevicePrompt({timeout: 0}),
@@ -108,7 +123,10 @@ describe('DeviceRequestPrompt', function () {
     it('should return the same prompt when there are many watchdogs simultaneously', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const manager = new DeviceRequestPromptManager(client, timeoutSettings);
+      const manager = new CdpDeviceRequestPromptManager(
+        client,
+        timeoutSettings,
+      );
 
       const [prompt1, prompt2] = await Promise.all([
         manager.waitForDevicePrompt(),
@@ -126,7 +144,10 @@ describe('DeviceRequestPrompt', function () {
     it('should listen and shortcut when there are no watchdogs', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const manager = new DeviceRequestPromptManager(client, timeoutSettings);
+      const manager = new CdpDeviceRequestPromptManager(
+        client,
+        timeoutSettings,
+      );
 
       client.emit('DeviceAccess.deviceRequestPrompted', {
         id: '00000000000000000000000000000000',
