@@ -15,7 +15,6 @@ import type {Cookie, CookieData} from '../common/Cookie.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import {assert} from '../util/assert.js';
 
-import {CdpBluetoothEmulation} from './BluetoothEmulation.js';
 import type {CdpBrowser} from './Browser.js';
 import type {Connection} from './Connection.js';
 import {convertCookiesPartitionKeyFromPuppeteerToCdp} from './Page.js';
@@ -28,14 +27,12 @@ export class CdpBrowserContext extends BrowserContext {
   #connection: Connection;
   #browser: CdpBrowser;
   #id?: string;
-  #cdpBluetoothEmulation: CdpBluetoothEmulation;
 
   constructor(connection: Connection, browser: CdpBrowser, contextId?: string) {
     super();
     this.#connection = connection;
     this.#browser = browser;
     this.#id = contextId;
-    this.#cdpBluetoothEmulation = new CdpBluetoothEmulation(connection);
   }
 
   override get id(): string | undefined {
@@ -145,14 +142,5 @@ export class CdpBrowserContext extends BrowserContext {
       downloadPath: downloadBehavior.downloadPath,
       browserContextId: this.#id,
     });
-  }
-
-  /**
-   * Current Bluetooth emulation in Chromkum is implemented on the browser context level,
-   * and not tight to the specific tab. `_cdpBluetoothEmulation` returns a singleton
-   * `CdpBluetoothEmulation` until CDP implementation is adjusted.
-   */
-  get _cdpBluetoothEmulation(): CdpBluetoothEmulation {
-    return this.#cdpBluetoothEmulation;
   }
 }
