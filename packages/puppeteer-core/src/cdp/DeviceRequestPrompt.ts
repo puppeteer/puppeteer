@@ -63,10 +63,7 @@ export class CdpDeviceRequestPrompt extends DeviceRequestPrompt {
         continue;
       }
 
-      const newDevice = new DeviceRequestPromptDevice(
-        rawDevice.id,
-        rawDevice.name,
-      );
+      const newDevice = { id: rawDevice.id, name: rawDevice.name};
       this.devices.push(newDevice);
 
       for (const waitForDevicePromise of this.#waitForDevicePromises) {

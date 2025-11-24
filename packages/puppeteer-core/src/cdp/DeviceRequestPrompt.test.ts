@@ -9,7 +9,6 @@ import {describe, it} from 'node:test';
 import expect from 'expect';
 
 import type {CDPSessionEvents} from '../api/CDPSession.js';
-import {DeviceRequestPromptDevice} from '../api/DeviceRequestPrompt.js';
 import {TimeoutError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
@@ -18,6 +17,7 @@ import {
   CdpDeviceRequestPrompt,
   CdpDeviceRequestPromptManager,
 } from './DeviceRequestPrompt.js';
+import {DeviceRequestPromptDevice} from '../api/DeviceRequestPrompt.js';
 
 class MockCDPSession extends EventEmitter<CDPSessionEvents> {
   async send(): Promise<any> {}
@@ -31,6 +31,16 @@ class MockCDPSession extends EventEmitter<CDPSessionEvents> {
   }
   parentSession() {
     return undefined;
+  }
+}
+
+class MockDeviceRequestPromptDevice implements DeviceRequestPromptDevice{
+    id: string;
+    name: string;
+
+  constructor(id: string, name: string) {
+    this.id = id;
+    this.name = name;
   }
 }
 
@@ -181,8 +191,8 @@ describe('DeviceRequestPrompt', function () {
         ],
       });
       expect(prompt.devices).toHaveLength(2);
-      expect(prompt.devices[0]).toBeInstanceOf(DeviceRequestPromptDevice);
-      expect(prompt.devices[1]).toBeInstanceOf(DeviceRequestPromptDevice);
+      expect(prompt.devices[0]).toBeInstanceOf(MockDeviceRequestPromptDevice);
+      expect(prompt.devices[1]).toBeInstanceOf(MockDeviceRequestPromptDevice);
     });
 
     it('does not list devices from events of another prompt', function () {
@@ -232,7 +242,7 @@ describe('DeviceRequestPrompt', function () {
           });
         })(),
       ]);
-      expect(device).toBeInstanceOf(DeviceRequestPromptDevice);
+      expect(device).toBeInstanceOf(MockDeviceRequestPromptDevice);
     });
 
     it('should return first matching device from already known devices', async () => {
@@ -249,7 +259,7 @@ describe('DeviceRequestPrompt', function () {
       const device = await prompt.waitForDevice(({name}) => {
         return name.includes('1');
       });
-      expect(device).toBeInstanceOf(DeviceRequestPromptDevice);
+      expect(device).toBeInstanceOf(MockDeviceRequestPromptDevice);
     });
 
     it('should return device in the devices list', async () => {
@@ -362,7 +372,7 @@ describe('DeviceRequestPrompt', function () {
           });
         })(),
       ]);
-      expect(device).toBeInstanceOf(DeviceRequestPromptDevice);
+      expect(device).toBeInstanceOf(MockDeviceRequestPromptDevice);
     });
 
     it('should be able to abort', async () => {
@@ -452,7 +462,7 @@ describe('DeviceRequestPrompt', function () {
       });
 
       await expect(
-        prompt.select(new DeviceRequestPromptDevice('11111111', 'Device 1')),
+        prompt.select(new MockDeviceRequestPromptDevice('11111111', 'Device 1')),
       ).rejects.toThrow('Cannot select unknown device!');
     });
 
