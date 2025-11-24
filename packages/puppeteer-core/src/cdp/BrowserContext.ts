@@ -147,9 +147,11 @@ export class CdpBrowserContext extends BrowserContext {
     });
   }
 
-  // Current Bluetooth emulation is implemented on the browser context level, and not
-  // tight to the specific tab. `_cdpBluetoothEmulation` returns a singleton
-  // `CdpBluetoothEmulation` until CDP implementation is adjusted.
+  /**
+   * Current Bluetooth emulation in Chromkum is implemented on the browser context level,
+   * and not tight to the specific tab. `_cdpBluetoothEmulation` returns a singleton
+   * `CdpBluetoothEmulation` until CDP implementation is adjusted.
+   */
   get _cdpBluetoothEmulation(): CdpBluetoothEmulation {
     return this.#cdpBluetoothEmulation;
   }
