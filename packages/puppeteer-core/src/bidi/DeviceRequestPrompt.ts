@@ -53,8 +53,8 @@ export class BidiDeviceRequestPromptManager {
         deferred.resolve(
           new BidiDeviceRequestPrompt(
             this.#contextId,
-            this.#session,
             params.prompt,
+            this.#session,
             params.devices,
           ),
         );
@@ -85,20 +85,23 @@ export class BidiDeviceRequestPromptManager {
   }
 }
 
+/**
+ * @internal
+ */
 export class BidiDeviceRequestPrompt extends DeviceRequestPrompt {
   readonly #session: Session;
-  #requestDevicePrompt: Bidi.Bluetooth.RequestDevicePrompt;
+  #promptId: string;
   #contextId: string;
 
   constructor(
     contextId: string,
+    promptId: string,
     session: Session,
-    promptId: Bidi.Bluetooth.RequestDevicePrompt,
     devices: Bidi.Bluetooth.RequestDeviceInfo[],
   ) {
     super();
     this.#session = session;
-    this.#requestDevicePrompt = promptId;
+    this.#promptId = promptId;
     this.#contextId = contextId;
 
     this.devices.push(
@@ -114,7 +117,7 @@ export class BidiDeviceRequestPrompt extends DeviceRequestPrompt {
   async cancel(): Promise<void> {
     await this.#session.send('bluetooth.handleRequestDevicePrompt', {
       context: this.#contextId,
-      prompt: this.#requestDevicePrompt,
+      prompt: this.#promptId,
       accept: false,
     });
   }
@@ -122,7 +125,7 @@ export class BidiDeviceRequestPrompt extends DeviceRequestPrompt {
   async select(device: DeviceRequestPromptDevice): Promise<void> {
     await this.#session.send('bluetooth.handleRequestDevicePrompt', {
       context: this.#contextId,
-      prompt: this.#requestDevicePrompt,
+      prompt: this.#promptId,
       accept: true,
       device: device.id,
     });
