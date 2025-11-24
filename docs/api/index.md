@@ -424,15 +424,6 @@ The constructor for this class is marked as internal. Third-party code should no
 </td></tr>
 <tr><td>
 
-<span id="preconnectedperipheral">[PreconnectedPeripheral](./puppeteer.preconnectedperipheral.md)</span>
-
-</td><td>
-
-A bluetooth peripheral to be simulated.
-
-</td></tr>
-<tr><td>
-
 <span id="protocolerror">[ProtocolError](./puppeteer.protocolerror.md)</span>
 
 </td><td>
@@ -1194,6 +1185,15 @@ Valid options to configure PDF generation via [Page.pdf()](./puppeteer.page.pdf.
 <span id="point">[Point](./puppeteer.point.md)</span>
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="preconnectedperipheral">[PreconnectedPeripheral](./puppeteer.preconnectedperipheral.md)</span>
+
+</td><td>
+
+A bluetooth peripheral to be simulated.
 
 </td></tr>
 <tr><td>

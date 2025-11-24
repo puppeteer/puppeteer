@@ -2,43 +2,15 @@
 sidebar_label: PreconnectedPeripheral
 ---
 
-# PreconnectedPeripheral class
+# PreconnectedPeripheral interface
 
 A bluetooth peripheral to be simulated.
 
 ### Signature
 
 ```typescript
-export declare class PreconnectedPeripheral
+export interface PreconnectedPeripheral
 ```
-
-## Constructors
-
-<table><thead><tr><th>
-
-Constructor
-
-</th><th>
-
-Modifiers
-
-</th><th>
-
-Description
-
-</th></tr></thead>
-<tbody><tr><td>
-
-<span id="_constructor_">[(constructor)(address, name, manufacturerData, knownServiceUuids)](./puppeteer.preconnectedperipheral._constructor_.md)</span>
-
-</td><td>
-
-</td><td>
-
-Constructs a new instance of the `PreconnectedPeripheral` class
-
-</td></tr>
-</tbody></table>
 
 ## Properties
 
@@ -58,6 +30,10 @@ Type
 
 Description
 
+</th><th>
+
+Default
+
 </th></tr></thead>
 <tbody><tr><td>
 
@@ -68,6 +44,8 @@ Description
 </td><td>
 
 string
+
+</td><td>
 
 </td><td>
 
@@ -84,6 +62,8 @@ string\[\]
 
 </td><td>
 
+</td><td>
+
 </td></tr>
 <tr><td>
 
@@ -97,6 +77,8 @@ string\[\]
 
 </td><td>
 
+</td><td>
+
 </td></tr>
 <tr><td>
 
@@ -107,6 +89,8 @@ string\[\]
 </td><td>
 
 string
+
+</td><td>
 
 </td><td>
 

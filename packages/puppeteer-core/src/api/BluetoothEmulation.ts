@@ -29,23 +29,11 @@ export interface BluetoothManufacturerData {
  * @public
  * A bluetooth peripheral to be simulated.
  */
-export class PreconnectedPeripheral {
+export interface PreconnectedPeripheral {
   address: string;
   name: string;
   manufacturerData: BluetoothManufacturerData[];
   knownServiceUuids: string[];
-
-  constructor(
-    address: string,
-    name: string,
-    manufacturerData: BluetoothManufacturerData[],
-    knownServiceUuids: string[],
-  ) {
-    this.address = address;
-    this.name = name;
-    this.manufacturerData = manufacturerData;
-    this.knownServiceUuids = knownServiceUuids;
-  }
 }
 
 /**
