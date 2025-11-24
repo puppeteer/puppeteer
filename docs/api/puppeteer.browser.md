@@ -130,6 +130,21 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="addscreen">[addScreen(params)](./puppeteer.browser.addscreen.md)</span>
+
+</td><td>
+
+</td><td>
+
+Adds a new screen, returns the added [screen information object](./puppeteer.screeninfo.md).
+
+**Remarks:**
+
+Only supported in headless mode.
+
+</td></tr>
+<tr><td>
+
 <span id="browsercontexts">[browserContexts()](./puppeteer.browser.browsercontexts.md)</span>
 
 </td><td>
@@ -301,6 +316,32 @@ Non-visible [pages](./puppeteer.page.md), such as `"background_page"`, will not 
 </td><td>
 
 Gets the associated [ChildProcess](https://nodejs.org/api/child_process.html#class-childprocess).
+
+</td></tr>
+<tr><td>
+
+<span id="removescreen">[removeScreen(screenId)](./puppeteer.browser.removescreen.md)</span>
+
+</td><td>
+
+</td><td>
+
+Removes a screen.
+
+**Remarks:**
+
+Only supported in headless mode. Fails if the primary screen id is specified.
+
+</td></tr>
+<tr><td>
+
+<span id="screens">[screens()](./puppeteer.browser.screens.md)</span>
+
+</td><td>
+
+</td><td>
+
+Gets a list of [screen information objects](./puppeteer.screeninfo.md).
 
 </td></tr>
 <tr><td>
