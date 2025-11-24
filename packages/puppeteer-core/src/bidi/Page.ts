@@ -68,6 +68,7 @@ import {BidiKeyboard, BidiMouse, BidiTouchscreen} from './Input.js';
 import type {BidiJSHandle} from './JSHandle.js';
 import {rewriteNavigationError} from './util.js';
 import type {BidiWebWorker} from './WebWorker.js';
+import {BluetoothEmulation} from '../api/BluetoothEmulation.js';
 
 /**
  * Implements Page using WebDriver BiDi.
@@ -1014,8 +1015,8 @@ export class BidiPage extends Page {
     throw new UnsupportedOperation();
   }
 
-  override get bluetooth(): never {
-    throw new UnsupportedOperation();
+  override get bluetooth(): BluetoothEmulation {
+    return this.mainFrame().browsingContext.bluetooth;
   }
 }
 

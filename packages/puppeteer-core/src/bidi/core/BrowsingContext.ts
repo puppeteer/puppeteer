@@ -17,6 +17,8 @@ import {WindowRealm} from './Realm.js';
 import {Request} from './Request.js';
 import type {UserContext} from './UserContext.js';
 import {UserPrompt} from './UserPrompt.js';
+import {BluetoothEmulation} from '../../api/BluetoothEmulation.js';
+import {BidiBluetoothEmulation} from '../BluetoothEmulation.js';
 
 /**
  * @internal
@@ -161,9 +163,10 @@ export class BrowsingContext extends EventEmitter<{
   readonly #emulationState: {
     javaScriptEnabled: boolean;
   } = {javaScriptEnabled: true};
+  readonly #bluetoothEmulation: BluetoothEmulation;
 
   private constructor(
-    context: UserContext,
+    userContext: UserContext,
     parent: BrowsingContext | undefined,
     id: string,
     url: string,
@@ -174,10 +177,11 @@ export class BrowsingContext extends EventEmitter<{
     this.#url = url;
     this.id = id;
     this.parent = parent;
-    this.userContext = context;
+    this.userContext = userContext;
     this.originalOpener = originalOpener;
 
     this.defaultRealm = this.#createWindowRealm();
+    this.#bluetoothEmulation = new BidiBluetoothEmulation(this.id, this.#session);
   }
 
   #initialize() {
@@ -757,4 +761,9 @@ export class BrowsingContext extends EventEmitter<{
       contexts: [this.id],
     });
   }
+
+  get bluetooth(): BluetoothEmulation{
+    return this.#bluetoothEmulation;
+  }
+
 }
