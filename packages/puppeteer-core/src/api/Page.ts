@@ -81,6 +81,7 @@ import {
 } from '../util/disposable.js';
 import {stringToTypedArray} from '../util/encoding.js';
 
+import type {BluetoothEmulation} from './BluetoothEmulation.js';
 import type {Browser} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';
 import type {CDPSession} from './CDPSession.js';
@@ -3174,6 +3175,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * method is only available in Chrome.
    */
   abstract openDevTools(): Promise<Page>;
+
+  /**
+   * {@inheritDoc BluetoothEmulation}
+   */
+  abstract get bluetooth(): BluetoothEmulation;
 }
 
 /**

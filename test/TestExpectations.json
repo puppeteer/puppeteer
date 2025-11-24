@@ -14,25 +14,25 @@
     "comment": "Chrome-only feature blocked on https://github.com/GoogleChromeLabs/chromium-bidi/issues/2082"
   },
   {
-    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should not hang when there is a debugger statement",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": [],
-    "expectations": ["SKIP"],
-    "comment": "See https://crbug.com/990945"
-  },
-  {
-    "testIdPattern": "[device-request-prompt-emulated.spec] *",
+    "testIdPattern": "[bluetooth-emulation.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome-headless-shell"],
     "expectations": ["FAIL"],
     "comment": "Headless shell does not support Bluetooth Emulation"
   },
   {
-    "testIdPattern": "[device-request-prompt-emulated.spec] *",
+    "testIdPattern": "[bluetooth-emulation.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "WebDriver BiDi sessions don't not support Browser CDP sessions"
+  },
+  {
+    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should not hang when there is a debugger statement",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": [],
+    "expectations": ["SKIP"],
+    "comment": "See https://crbug.com/990945"
   },
   {
     "testIdPattern": "[device-request-prompt.spec] *",
@@ -245,6 +245,12 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[bluetooth-emulation.spec] request prompt for emulated bluetooth device can be canceled",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[CDPSession.spec] Target.createCDPSession *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -284,12 +290,6 @@
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[device-request-prompt-emulated.spec] device request prompt with emulated device can be canceled",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome-headless-shell"],
-    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[devtools.spec] DevTools browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in connect()",
