@@ -6,9 +6,13 @@
 
 import type * as Bidi from 'webdriver-bidi-protocol';
 
+import type {BluetoothEmulation} from '../../api/BluetoothEmulation.js';
+import type {DeviceRequestPrompt} from '../../api/DeviceRequestPrompt.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
+import {BidiBluetoothEmulation} from '../BluetoothEmulation.js';
+import {BidiDeviceRequestPromptManager} from '../DeviceRequestPrompt.js';
 
 import type {AddPreloadScriptOptions} from './Browser.js';
 import {Navigation} from './Navigation.js';
@@ -17,8 +21,6 @@ import {WindowRealm} from './Realm.js';
 import {Request} from './Request.js';
 import type {UserContext} from './UserContext.js';
 import {UserPrompt} from './UserPrompt.js';
-import {BluetoothEmulation} from '../../api/BluetoothEmulation.js';
-import {BidiBluetoothEmulation} from '../BluetoothEmulation.js';
 
 /**
  * @internal
@@ -164,6 +166,7 @@ export class BrowsingContext extends EventEmitter<{
     javaScriptEnabled: boolean;
   } = {javaScriptEnabled: true};
   readonly #bluetoothEmulation: BluetoothEmulation;
+  readonly #deviceRequestPromptManager: BidiDeviceRequestPromptManager;
 
   private constructor(
     userContext: UserContext,
@@ -181,7 +184,14 @@ export class BrowsingContext extends EventEmitter<{
     this.originalOpener = originalOpener;
 
     this.defaultRealm = this.#createWindowRealm();
-    this.#bluetoothEmulation = new BidiBluetoothEmulation(this.id, this.#session);
+    this.#bluetoothEmulation = new BidiBluetoothEmulation(
+      this.id,
+      this.#session,
+    );
+    this.#deviceRequestPromptManager = new BidiDeviceRequestPromptManager(
+      this.id,
+      this.#session,
+    );
   }
 
   #initialize() {
@@ -762,8 +772,17 @@ export class BrowsingContext extends EventEmitter<{
     });
   }
 
-  get bluetooth(): BluetoothEmulation{
+  get bluetooth(): BluetoothEmulation {
     return this.#bluetoothEmulation;
   }
 
+  async waitForDevicePrompt(
+    timeout: number,
+    signal?: AbortSignal,
+  ): Promise<DeviceRequestPrompt> {
+    return await this.#deviceRequestPromptManager.waitForDevicePrompt(
+      timeout,
+      signal,
+    );
+  }
 }

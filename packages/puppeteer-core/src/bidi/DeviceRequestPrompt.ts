@@ -1,0 +1,134 @@
+/**
+ * @license
+ * Copyright 2025 Google Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import type * as Bidi from 'webdriver-bidi-protocol';
+
+import {
+  DeviceRequestPrompt,
+  type DeviceRequestPromptDevice,
+} from '../api/DeviceRequestPrompt.js';
+import {Deferred} from '../util/Deferred.js';
+
+import type {Session} from './core/Session.js';
+
+/**
+ * @internal
+ */
+export class BidiDeviceRequestPromptManager {
+  readonly #session: Session;
+  readonly #contextId: string;
+  #enabled = false;
+
+  constructor(contextId: string, session: Session) {
+    this.#session = session;
+    this.#contextId = contextId;
+  }
+
+  async #enableIfNeeded(): Promise<void> {
+    if (!this.#enabled) {
+      this.#enabled = true;
+      await this.#session.subscribe(
+        ['bluetooth.requestDevicePromptUpdated'],
+        [this.#contextId],
+      );
+    }
+  }
+
+  async waitForDevicePrompt(
+    timeout: number,
+    signal: AbortSignal | undefined,
+  ): Promise<DeviceRequestPrompt> {
+    const deferred = Deferred.create<DeviceRequestPrompt>({
+      message: `Waiting for \`DeviceRequestPrompt\` failed: ${timeout}ms exceeded`,
+      timeout,
+    });
+
+    const onRequestDevicePromptUpdated = (
+      params: Bidi.Bluetooth.RequestDevicePromptUpdatedParameters,
+    ) => {
+      if (params.context === this.#contextId) {
+        deferred.resolve(
+          new BidiDeviceRequestPrompt(
+            this.#contextId,
+            this.#session,
+            params.prompt,
+            params.devices,
+          ),
+        );
+        this.#session.off(
+          'bluetooth.requestDevicePromptUpdated',
+          onRequestDevicePromptUpdated,
+        );
+      }
+    };
+    this.#session.on(
+      'bluetooth.requestDevicePromptUpdated',
+      onRequestDevicePromptUpdated,
+    );
+
+    if (signal) {
+      signal.addEventListener(
+        'abort',
+        () => {
+          deferred.reject(signal.reason);
+        },
+        {once: true},
+      );
+    }
+
+    void this.#enableIfNeeded();
+
+    return await deferred.valueOrThrow();
+  }
+}
+
+export class BidiDeviceRequestPrompt extends DeviceRequestPrompt {
+  readonly #session: Session;
+  #requestDevicePrompt: Bidi.Bluetooth.RequestDevicePrompt;
+  #contextId: string;
+
+  constructor(
+    contextId: string,
+    session: Session,
+    promptId: Bidi.Bluetooth.RequestDevicePrompt,
+    devices: Bidi.Bluetooth.RequestDeviceInfo[],
+  ) {
+    super();
+    this.#session = session;
+    this.#requestDevicePrompt = promptId;
+    this.#contextId = contextId;
+
+    this.devices.push(
+      ...devices.map(d => {
+        return {
+          id: d.id,
+          name: d.name ?? 'UNKNOWN',
+        };
+      }),
+    );
+  }
+
+  async cancel(): Promise<void> {
+    await this.#session.send('bluetooth.handleRequestDevicePrompt', {
+      context: this.#contextId,
+      prompt: this.#requestDevicePrompt,
+      accept: false,
+    });
+  }
+
+  async select(device: DeviceRequestPromptDevice): Promise<void> {
+    await this.#session.send('bluetooth.handleRequestDevicePrompt', {
+      context: this.#contextId,
+      prompt: this.#requestDevicePrompt,
+      accept: true,
+      device: device.id,
+    });
+  }
+
+  waitForDevice(): never {
+    throw new Error('Not implemented');
+  }
+}

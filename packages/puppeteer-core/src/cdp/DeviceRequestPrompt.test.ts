@@ -9,6 +9,7 @@ import {describe, it} from 'node:test';
 import expect from 'expect';
 
 import type {CDPSessionEvents} from '../api/CDPSession.js';
+import type {DeviceRequestPromptDevice} from '../api/DeviceRequestPrompt.js';
 import {TimeoutError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
@@ -17,7 +18,6 @@ import {
   CdpDeviceRequestPrompt,
   CdpDeviceRequestPromptManager,
 } from './DeviceRequestPrompt.js';
-import {DeviceRequestPromptDevice} from '../api/DeviceRequestPrompt.js';
 
 class MockCDPSession extends EventEmitter<CDPSessionEvents> {
   async send(): Promise<any> {}
@@ -34,9 +34,9 @@ class MockCDPSession extends EventEmitter<CDPSessionEvents> {
   }
 }
 
-class MockDeviceRequestPromptDevice implements DeviceRequestPromptDevice{
-    id: string;
-    name: string;
+class MockDeviceRequestPromptDevice implements DeviceRequestPromptDevice {
+  id: string;
+  name: string;
 
   constructor(id: string, name: string) {
     this.id = id;
@@ -462,7 +462,9 @@ describe('DeviceRequestPrompt', function () {
       });
 
       await expect(
-        prompt.select(new MockDeviceRequestPromptDevice('11111111', 'Device 1')),
+        prompt.select(
+          new MockDeviceRequestPromptDevice('11111111', 'Device 1'),
+        ),
       ).rejects.toThrow('Cannot select unknown device!');
     });
 

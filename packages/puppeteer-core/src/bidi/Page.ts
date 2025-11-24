@@ -8,7 +8,9 @@ import type Protocol from 'devtools-protocol';
 import * as Bidi from 'webdriver-bidi-protocol';
 
 import {firstValueFrom, from, raceWith} from '../../third_party/rxjs/rxjs.js';
+import type {BluetoothEmulation} from '../api/BluetoothEmulation.js';
 import type {CDPSession} from '../api/CDPSession.js';
+import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
 import type {WaitForOptions} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
@@ -68,7 +70,6 @@ import {BidiKeyboard, BidiMouse, BidiTouchscreen} from './Input.js';
 import type {BidiJSHandle} from './JSHandle.js';
 import {rewriteNavigationError} from './util.js';
 import type {BidiWebWorker} from './WebWorker.js';
-import {BluetoothEmulation} from '../api/BluetoothEmulation.js';
 
 /**
  * Implements Page using WebDriver BiDi.
@@ -1011,8 +1012,10 @@ export class BidiPage extends Page {
     }
   }
 
-  override waitForDevicePrompt(): never {
-    throw new UnsupportedOperation();
+  override async waitForDevicePrompt(
+    options: WaitTimeoutOptions = {},
+  ): Promise<DeviceRequestPrompt> {
+    return await this.mainFrame().waitForDevicePrompt(options);
   }
 
   override get bluetooth(): BluetoothEmulation {
