@@ -53,9 +53,9 @@ export class PreconnectedPeripheral {
  *
  * @remarks {@link https://webbluetoothcg.github.io/web-bluetooth/#simulated-bluetooth-adapter|Web Bluetooth specification}
  * requires the emulated adapters should be isolated per top-level navigable. However,
- * at the moment Chromium's bluetooth emulation implementation is tight to the browser,
- * not the page. This means the bluetooth emulation exposed from different pages would
- * interfere their states.
+ * at the moment Chromium's bluetooth emulation implementation is tight to the browser
+ * context, not the page. This means the bluetooth emulation exposed from different pages
+ * of the same browser context would interfere their states.
  *
  * @example
  *
