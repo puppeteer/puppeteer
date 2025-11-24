@@ -168,19 +168,6 @@ Device request prompts let you respond to the page requesting for a device throu
 </td></tr>
 <tr><td>
 
-<span id="devicerequestpromptdevice">[DeviceRequestPromptDevice](./puppeteer.devicerequestpromptdevice.md)</span>
-
-</td><td>
-
-Device in a request prompt.
-
-**Remarks:**
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `DeviceRequestPromptDevice` class.
-
-</td></tr>
-<tr><td>
-
 <span id="dialog">[Dialog](./puppeteer.dialog.md)</span>
 
 </td><td>
@@ -954,6 +941,15 @@ Set of configurable options for CSS coverage.
 <span id="device">[Device](./puppeteer.device.md)</span>
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="devicerequestpromptdevice">[DeviceRequestPromptDevice](./puppeteer.devicerequestpromptdevice.md)</span>
+
+</td><td>
+
+Device in a request prompt.
 
 </td></tr>
 <tr><td>

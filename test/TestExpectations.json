@@ -21,6 +21,13 @@
     "comment": "Headless shell does not support Bluetooth Emulation"
   },
   {
+    "testIdPattern": "[bluetooth-emulation.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox does not support Web Bluetooth"
+  },
+  {
     "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should not hang when there is a debugger statement",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": [],
@@ -236,13 +243,6 @@
     "parameters": ["chrome", "chrome-headless-shell"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[bluetooth-emulation.spec] *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL"],
-    "comment": "Firefox does not support Web Bluetooth"
   },
   {
     "testIdPattern": "[bluetooth-emulation.spec] request prompt for emulated bluetooth device can be canceled",

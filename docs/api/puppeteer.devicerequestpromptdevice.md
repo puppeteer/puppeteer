@@ -2,19 +2,15 @@
 sidebar_label: DeviceRequestPromptDevice
 ---
 
-# DeviceRequestPromptDevice class
+# DeviceRequestPromptDevice interface
 
 Device in a request prompt.
 
 ### Signature
 
 ```typescript
-export declare class DeviceRequestPromptDevice
+export interface DeviceRequestPromptDevice
 ```
-
-## Remarks
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `DeviceRequestPromptDevice` class.
 
 ## Properties
 
@@ -34,6 +30,10 @@ Type
 
 Description
 
+</th><th>
+
+Default
+
 </th></tr></thead>
 <tbody><tr><td>
 
@@ -49,6 +49,8 @@ string
 
 Device id during a prompt.
 
+</td><td>
+
 </td></tr>
 <tr><td>
 
@@ -63,6 +65,8 @@ string
 </td><td>
 
 Device name as it appears in a prompt.
+
+</td><td>
 
 </td></tr>
 </tbody></table>
