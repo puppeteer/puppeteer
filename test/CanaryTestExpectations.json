@@ -60,5 +60,12 @@
     "parameters": ["chrome"],
     "expectations": ["FAIL"],
     "comment": "Fix for M143 in https://github.com/puppeteer/puppeteer/pull/14351"
+  },
+  {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should fail when server returns 204",
+    "platforms": [ "darwin", "linux", "win32" ],
+    "parameters": [ "firefox", "webDriverBiDi" ],
+    "expectations": [ "TIMEOUT" ],
+    "comment": "See https://bugzilla.mozilla.org/show_bug.cgi?id=2001934"
   }
 ]
