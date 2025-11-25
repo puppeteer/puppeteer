@@ -607,6 +607,13 @@
     "comment": "Not supported by WebDriver BiDi"
   },
   {
+    "testIdPattern": "[page.spec] Page Page.newPage should open pages in a new window at the specified position",
+    "platforms": ["darwin"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["FAIL"],
+    "comment": "Returns a different window size in Chrome headless sheell on Mac"
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.newPage should open pages in a new window in maximized state",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -835,6 +842,13 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "CDP-specific"
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.add|removeScreen should add and remove a screen",
+    "platforms": ["win32"],
+    "parameters": ["chrome", "headless"],
+    "expectations": ["FAIL"],
+    "comment": "Different dimensions on Windows in Chrome Headless"
   },
   {
     "testIdPattern": "[browser.spec] Browser specs Browser.isConnected should set the browser connected state",
@@ -1502,6 +1516,13 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1866749"
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.newPage should open pages in a new window in maximized state",
+    "platforms": ["darwin"],
+    "parameters": ["chrome", "headless"],
+    "expectations": ["FAIL"],
+    "comment": "Returns a different window size in Chrome headless on Mac"
   },
   {
     "testIdPattern": "[page.spec] Page Page.setJavaScriptEnabled should work",
