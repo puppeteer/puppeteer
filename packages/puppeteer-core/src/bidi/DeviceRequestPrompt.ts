@@ -10,6 +10,7 @@ import {
   DeviceRequestPrompt,
   type DeviceRequestPromptDevice,
 } from '../api/DeviceRequestPrompt.js';
+import {UnsupportedOperation} from '../common/Errors.js';
 import {Deferred} from '../util/Deferred.js';
 
 import type {Session} from './core/Session.js';
@@ -79,7 +80,7 @@ export class BidiDeviceRequestPromptManager {
       );
     }
 
-    void this.#enableIfNeeded();
+    await this.#enableIfNeeded();
 
     return await deferred.valueOrThrow();
   }
@@ -132,6 +133,6 @@ export class BidiDeviceRequestPrompt extends DeviceRequestPrompt {
   }
 
   waitForDevice(): never {
-    throw new Error('Not implemented');
+    throw new UnsupportedOperation();
   }
 }

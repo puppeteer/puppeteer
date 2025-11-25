@@ -33,6 +33,9 @@ class MockCDPSession extends EventEmitter<CDPSessionEvents> {
   }
 }
 
+const DEVICE_0 = {id: '00000000', name: 'Device 0'};
+const DEVICE_1 = {id: '11111111', name: 'Device 1'};
+
 describe('DeviceRequestPrompt', function () {
   describe('waitForDevicePrompt', function () {
     it('should return prompt', async () => {
@@ -169,24 +172,14 @@ describe('DeviceRequestPrompt', function () {
       expect(prompt.devices).toHaveLength(0);
       client.emit('DeviceAccess.deviceRequestPrompted', {
         id: '00000000000000000000000000000000',
-        devices: [{id: '00000000', name: 'Device 0'}],
+        devices: [DEVICE_0],
       });
       expect(prompt.devices).toHaveLength(1);
       client.emit('DeviceAccess.deviceRequestPrompted', {
         id: '00000000000000000000000000000000',
-        devices: [
-          {id: '00000000', name: 'Device 0'},
-          {id: '11111111', name: 'Device 1'},
-        ],
+        devices: [DEVICE_0, DEVICE_1],
       });
-      expect(prompt.devices).toEqual(
-        [
-          {id: '00000000', name: 'Device 0'},
-          {id: '11111111', name: 'Device 1'},
-        ].sort((a, b) => {
-          return a.id.localeCompare(b.id);
-        }),
-      );
+      expect(prompt.devices).toEqual([DEVICE_0, DEVICE_1]);
     });
 
     it('does not list devices from events of another prompt', function () {
@@ -200,10 +193,7 @@ describe('DeviceRequestPrompt', function () {
       expect(prompt.devices).toHaveLength(0);
       client.emit('DeviceAccess.deviceRequestPrompted', {
         id: '88888888888888888888888888888888',
-        devices: [
-          {id: '00000000', name: 'Device 0'},
-          {id: '11111111', name: 'Device 1'},
-        ],
+        devices: [DEVICE_0, DEVICE_1],
       });
       expect(prompt.devices).toHaveLength(0);
     });
@@ -225,18 +215,15 @@ describe('DeviceRequestPrompt', function () {
         (() => {
           client.emit('DeviceAccess.deviceRequestPrompted', {
             id: '00000000000000000000000000000000',
-            devices: [{id: '00000000', name: 'Device 0'}],
+            devices: [DEVICE_0],
           });
           client.emit('DeviceAccess.deviceRequestPrompted', {
             id: '00000000000000000000000000000000',
-            devices: [
-              {id: '00000000', name: 'Device 0'},
-              {id: '11111111', name: 'Device 1'},
-            ],
+            devices: [DEVICE_0, DEVICE_1],
           });
         })(),
       ]);
-      expect(device).toEqual({id: '11111111', name: 'Device 1'});
+      expect(device).toEqual(DEVICE_1);
     });
 
     it('should return first matching device from already known devices', async () => {
@@ -244,16 +231,13 @@ describe('DeviceRequestPrompt', function () {
       const timeoutSettings = new TimeoutSettings();
       const prompt = new CdpDeviceRequestPrompt(client, timeoutSettings, {
         id: '00000000000000000000000000000000',
-        devices: [
-          {id: '00000000', name: 'Device 0'},
-          {id: '11111111', name: 'Device 1'},
-        ],
+        devices: [DEVICE_0, DEVICE_1],
       });
 
       const device = await prompt.waitForDevice(({name}) => {
         return name.includes('1');
       });
-      expect(device).toEqual({id: '11111111', name: 'Device 1'});
+      expect(device).toEqual(DEVICE_1);
     });
 
     it('should return device in the devices list', async () => {
@@ -271,10 +255,7 @@ describe('DeviceRequestPrompt', function () {
         (() => {
           client.emit('DeviceAccess.deviceRequestPrompted', {
             id: '00000000000000000000000000000000',
-            devices: [
-              {id: '00000000', name: 'Device 0'},
-              {id: '11111111', name: 'Device 1'},
-            ],
+            devices: [DEVICE_0, DEVICE_1],
           });
         })(),
       ]);
@@ -355,18 +336,15 @@ describe('DeviceRequestPrompt', function () {
         (() => {
           client.emit('DeviceAccess.deviceRequestPrompted', {
             id: '00000000000000000000000000000000',
-            devices: [{id: '00000000', name: 'Device 0'}],
+            devices: [DEVICE_0],
           });
           client.emit('DeviceAccess.deviceRequestPrompted', {
             id: '00000000000000000000000000000000',
-            devices: [
-              {id: '00000000', name: 'Device 0'},
-              {id: '11111111', name: 'Device 1'},
-            ],
+            devices: [DEVICE_0, DEVICE_1],
           });
         })(),
       ]);
-      expect(device).toEqual({id: '11111111', name: 'Device 1'});
+      expect(device).toEqual(DEVICE_1);
     });
 
     it('should be able to abort', async () => {
@@ -406,14 +384,11 @@ describe('DeviceRequestPrompt', function () {
         (() => {
           client.emit('DeviceAccess.deviceRequestPrompted', {
             id: '00000000000000000000000000000000',
-            devices: [{id: '00000000', name: 'Device 0'}],
+            devices: [DEVICE_0],
           });
           client.emit('DeviceAccess.deviceRequestPrompted', {
             id: '00000000000000000000000000000000',
-            devices: [
-              {id: '00000000', name: 'Device 0'},
-              {id: '11111111', name: 'Device 1'},
-            ],
+            devices: [DEVICE_0, DEVICE_1],
           });
         })(),
       ]);
@@ -437,10 +412,7 @@ describe('DeviceRequestPrompt', function () {
         (() => {
           client.emit('DeviceAccess.deviceRequestPrompted', {
             id: '00000000000000000000000000000000',
-            devices: [
-              {id: '00000000', name: 'Device 0'},
-              {id: '11111111', name: 'Device 1'},
-            ],
+            devices: [DEVICE_0, DEVICE_1],
           });
         })(),
       ]);
@@ -455,9 +427,9 @@ describe('DeviceRequestPrompt', function () {
         devices: [],
       });
 
-      await expect(
-        prompt.select({id: '11111111', name: 'Device 1'}),
-      ).rejects.toThrow('Cannot select unknown device!');
+      await expect(prompt.select(DEVICE_1)).rejects.toThrow(
+        'Cannot select unknown device!',
+      );
     });
 
     it('should fail when selecting prompt twice', async () => {
@@ -475,10 +447,7 @@ describe('DeviceRequestPrompt', function () {
         (() => {
           client.emit('DeviceAccess.deviceRequestPrompted', {
             id: '00000000000000000000000000000000',
-            devices: [
-              {id: '00000000', name: 'Device 0'},
-              {id: '11111111', name: 'Device 1'},
-            ],
+            devices: [DEVICE_0, DEVICE_1],
           });
         })(),
       ]);
