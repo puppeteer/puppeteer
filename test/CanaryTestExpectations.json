@@ -60,5 +60,61 @@
     "parameters": ["chrome"],
     "expectations": ["FAIL"],
     "comment": "Fix for M143 in https://github.com/puppeteer/puppeteer/pull/14351"
+  },
+  {
+    "testIdPattern": "[userDataDir.spec] userDataDir should not launch the browser twice with the same userDataDir with pipe=true",
+    "platforms": ["darwin", "linux"],
+    "parameters": ["chrome"],
+    "expectations": ["TIMEOUT", "FAIL"],
+    "comment": "Needs investigation"
+  },
+  {
+    "testIdPattern": "[userDataDir.spec] userDataDir should not launch the browser twice with the same userDataDir with pipe=false",
+    "platforms": ["darwin", "linux"],
+    "parameters": ["chrome"],
+    "expectations": ["TIMEOUT", "FAIL"],
+    "comment": "Needs investigation"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to reconnect to a disconnected browser",
+    "platforms": ["darwin"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Needs investigation"
+  },
+  {
+    "testIdPattern": "[pipe.spec] Puppeteer.launch should support the pipe option",
+    "platforms": ["darwin", "linux"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["TIMEOUT"],
+    "comment": "Needs investigation"
+  },
+  {
+    "testIdPattern": "[pipe.spec] Puppeteer.launch should support the pipe argument",
+    "platforms": ["darwin", "linux"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["TIMEOUT"],
+    "comment": "Needs investigation"
+  },
+  {
+    "testIdPattern": "[pipe.spec] Puppeteer.launch should fire \"disconnected\" when closing with pipe",
+    "platforms": ["darwin"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["TIMEOUT"],
+    "comment": "Needs investigation"
+  },
+  {
+    "testIdPattern": "[webExtension.spec] webExtension can install and uninstall an extension",
+    "platforms": ["linux"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["TIMEOUT"],
+    "comment": "Needs investigation"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option in puppeteer.launch",
+    "platforms": ["win32"],
+    "parameters": ["cdp"],
+    "expectations": ["TIMEOUT"],
+    "comment": "Needs investigation"
   }
 ]
