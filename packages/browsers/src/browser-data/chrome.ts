@@ -5,6 +5,7 @@
  */
 
 import {execSync} from 'node:child_process';
+import os from 'node:os';
 import path from 'node:path';
 
 import semver from 'semver';
@@ -194,6 +195,29 @@ function getChromeWindowsLocation(
   }) as [string, ...string[]];
 }
 
+function getWslVariable(variable: string): string | undefined {
+  try {
+    // The Windows env for the paths are not passed down
+    // to WSL, so we evoke `cmd.exe` which is usually on the PATH
+    // from which the env can be access with all uppercase names.
+    // The return value is a Windows Path - `C:\Program Files`.
+
+    const result = execSync(
+      `cmd.exe /c echo %${variable.toLocaleUpperCase()}%`,
+      {
+        // We need to ignore the stderr as cmd.exe
+        // prints a message about wrong UNC path not supported.
+        stdio: ['ignore', 'pipe', 'ignore'],
+        encoding: 'utf-8',
+      },
+    ).trim();
+    if (result) {
+      return result;
+    }
+  } catch {}
+  return;
+}
+
 function getWslLocation(channel: ChromeReleaseChannel): [string, ...string[]] {
   const wslVersion = execSync('wslinfo --version', {
     stdio: ['ignore', 'pipe', 'ignore'],
@@ -204,27 +228,11 @@ function getWslLocation(channel: ChromeReleaseChannel): [string, ...string[]] {
   }
   const wslPrefixes = new Set<string>();
   for (const name of WINDOWS_ENV_PARAM_NAMES) {
-    try {
-      // The Windows env for the paths are not passed down
-      // to WSL, so we evoke `cmd.exe` which is usually on the PATH
-      // from which the env can be access with all uppercase names.
-      // The return value is a Windows Path - `C:\Program Files`.
-
-      const wslPrefix = execSync(
-        `cmd.exe /c echo %${name.toLocaleUpperCase()}%`,
-        {
-          // We need to ignore the stderr as cmd.exe
-          // prints a message about wrong UNC path not supported.
-          stdio: ['ignore', 'pipe', 'ignore'],
-          encoding: 'utf-8',
-        },
-      ).trim();
-      if (wslPrefix) {
-        wslPrefixes.add(wslPrefix);
-      }
-    } catch {}
+    const wslPrefix = getWslVariable(name);
+    if (wslPrefix) {
+      wslPrefixes.add(wslPrefix);
+    }
   }
-
   const windowsPath = getChromeWindowsLocation(channel, wslPrefixes);
 
   return windowsPath.map(path => {
@@ -310,6 +318,91 @@ export function resolveSystemExecutablePaths(
     case BrowserPlatform.LINUX:
       return getChromeLinuxOrWslLocation(channel);
   }
+}
+
+export function resolveDefaultUserDataDir(
+  platform: BrowserPlatform,
+  channel: ChromeReleaseChannel,
+): string {
+  switch (platform) {
+    case BrowserPlatform.WIN64:
+    case BrowserPlatform.WIN32:
+      // https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/chrome_paths_win.cc;l=42;drc=4c86c7940a47c36b8bf52c134483ef2da86caa62
+      switch (channel) {
+        case ChromeReleaseChannel.STABLE:
+          return path.join(
+            getLocalAppDataWin(),
+            'Google',
+            'Chrome',
+            'User Data',
+          );
+        case ChromeReleaseChannel.BETA:
+          return path.join(
+            getLocalAppDataWin(),
+            'Google',
+            'Chrome Beta',
+            'User Data',
+          );
+        case ChromeReleaseChannel.CANARY:
+          return path.join(
+            getLocalAppDataWin(),
+            'Google',
+            'Chrome SxS',
+            'User Data',
+          );
+        case ChromeReleaseChannel.DEV:
+          return path.join(
+            getLocalAppDataWin(),
+            'Google',
+            'Chrome Dev',
+            'User Data',
+          );
+      }
+    case BrowserPlatform.MAC_ARM:
+    case BrowserPlatform.MAC:
+      // https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/chrome_paths_mac.mm;l=86;drc=4c86c7940a47c36b8bf52c134483ef2da86caa62
+      switch (channel) {
+        case ChromeReleaseChannel.STABLE:
+          return path.join(getBaseUserDataDirPathMac(), 'Chrome');
+        case ChromeReleaseChannel.BETA:
+          return path.join(getBaseUserDataDirPathMac(), 'Chrome Beta');
+        case ChromeReleaseChannel.DEV:
+          return path.join(getBaseUserDataDirPathMac(), 'Chrome Dev');
+        case ChromeReleaseChannel.CANARY:
+          return path.join(getBaseUserDataDirPathMac(), 'Chrome Canary');
+      }
+    case BrowserPlatform.LINUX_ARM:
+    case BrowserPlatform.LINUX:
+      // https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/chrome_paths_linux.cc;l=80;drc=4c86c7940a47c36b8bf52c134483ef2da86caa62
+      switch (channel) {
+        case ChromeReleaseChannel.STABLE:
+          return `${getConfigHomeLinux()}/google-chrome`;
+        case ChromeReleaseChannel.BETA:
+          return `${getConfigHomeLinux()}/google-chrome-beta`;
+        case ChromeReleaseChannel.CANARY:
+          return `${getConfigHomeLinux()}/google-chrome-canary`;
+        case ChromeReleaseChannel.DEV:
+          return `${getConfigHomeLinux()}/google-chrome-unstable`;
+      }
+  }
+}
+
+function getLocalAppDataWin() {
+  return (
+    process.env['LOCALAPPDATA'] || path.join(os.homedir(), 'AppData', 'Local')
+  );
+}
+
+function getConfigHomeLinux() {
+  return (
+    process.env['CHROME_CONFIG_HOME'] ||
+    process.env['XDG_CONFIG_HOME'] ||
+    path.join(os.homedir(), 'config')
+  );
+}
+
+function getBaseUserDataDirPathMac() {
+  return path.join(os.homedir(), 'Library', 'Application Support', 'Google');
 }
 
 export function compareVersions(a: string, b: string): number {

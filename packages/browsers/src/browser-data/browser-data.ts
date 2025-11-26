@@ -242,6 +242,30 @@ export function resolveSystemExecutablePath(
 }
 
 /**
+ * Returns the expected default user data dir for the given channel. It does not
+ * check if the dir actually exists.
+ *
+ * @public
+ */
+export function resolveDefaultUserDataDir(
+  browser: Browser,
+  platform: BrowserPlatform,
+  channel: ChromeReleaseChannel,
+): string {
+  switch (browser) {
+    case Browser.CHROMEDRIVER:
+    case Browser.CHROMEHEADLESSSHELL:
+    case Browser.FIREFOX:
+    case Browser.CHROMIUM:
+      throw new Error(
+        `Default user dir detection is not supported for ${browser} yet.`,
+      );
+    case Browser.CHROME:
+      return chrome.resolveDefaultUserDataDir(platform, channel);
+  }
+}
+
+/**
  * @internal
  *
  * Returns multiple paths where the executable may be located at on the current system
