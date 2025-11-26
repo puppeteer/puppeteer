@@ -611,7 +611,7 @@
     "platforms": ["darwin"],
     "parameters": ["chrome-headless-shell"],
     "expectations": ["FAIL"],
-    "comment": "Returns a different window size in Chrome headless sheell on Mac"
+    "comment": "Returns a different window size in Chrome headless shell on Mac"
   },
   {
     "testIdPattern": "[page.spec] Page Page.newPage should open pages in a new window in maximized state",
@@ -1522,7 +1522,7 @@
     "platforms": ["darwin"],
     "parameters": ["chrome", "headless"],
     "expectations": ["FAIL"],
-    "comment": "Returns a different window size in Chrome headless on Mac"
+    "comment": "Returns a different window size in Chrome Headless on Mac"
   },
   {
     "testIdPattern": "[page.spec] Page Page.setJavaScriptEnabled should work",
