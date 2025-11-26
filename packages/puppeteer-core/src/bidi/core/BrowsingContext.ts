@@ -6,9 +6,13 @@
 
 import type * as Bidi from 'webdriver-bidi-protocol';
 
+import type {BluetoothEmulation} from '../../api/BluetoothEmulation.js';
+import type {DeviceRequestPrompt} from '../../api/DeviceRequestPrompt.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
+import {BidiBluetoothEmulation} from '../BluetoothEmulation.js';
+import {BidiDeviceRequestPromptManager} from '../DeviceRequestPrompt.js';
 
 import type {AddPreloadScriptOptions} from './Browser.js';
 import {Navigation} from './Navigation.js';
@@ -161,9 +165,11 @@ export class BrowsingContext extends EventEmitter<{
   readonly #emulationState: {
     javaScriptEnabled: boolean;
   } = {javaScriptEnabled: true};
+  readonly #bluetoothEmulation: BluetoothEmulation;
+  readonly #deviceRequestPromptManager: BidiDeviceRequestPromptManager;
 
   private constructor(
-    context: UserContext,
+    userContext: UserContext,
     parent: BrowsingContext | undefined,
     id: string,
     url: string,
@@ -174,10 +180,18 @@ export class BrowsingContext extends EventEmitter<{
     this.#url = url;
     this.id = id;
     this.parent = parent;
-    this.userContext = context;
+    this.userContext = userContext;
     this.originalOpener = originalOpener;
 
     this.defaultRealm = this.#createWindowRealm();
+    this.#bluetoothEmulation = new BidiBluetoothEmulation(
+      this.id,
+      this.#session,
+    );
+    this.#deviceRequestPromptManager = new BidiDeviceRequestPromptManager(
+      this.id,
+      this.#session,
+    );
   }
 
   #initialize() {
@@ -756,5 +770,19 @@ export class BrowsingContext extends EventEmitter<{
         : null,
       contexts: [this.id],
     });
+  }
+
+  get bluetooth(): BluetoothEmulation {
+    return this.#bluetoothEmulation;
+  }
+
+  async waitForDevicePrompt(
+    timeout: number,
+    signal?: AbortSignal,
+  ): Promise<DeviceRequestPrompt> {
+    return await this.#deviceRequestPromptManager.waitForDevicePrompt(
+      timeout,
+      signal,
+    );
   }
 }

@@ -7,9 +7,10 @@ import expect from 'expect';
 
 import {setupSeparateTestBrowserHooks} from './mocha-utils.js';
 
+const DEVICE_NAME = 'SOME_NAME';
 const SIMULATED_PERIPHERAL = {
   address: '09:09:09:09:09:09',
-  name: 'SOME_NAME',
+  name: DEVICE_NAME,
   manufacturerData: [
     {
       key: 17,
@@ -18,6 +19,13 @@ const SIMULATED_PERIPHERAL = {
   ],
   knownServiceUuids: ['12345678-1234-5678-9abc-def123456789'],
 };
+async function triggerBluetoothDevicePrompt() {
+  const device = await (navigator as any).bluetooth.requestDevice({
+    acceptAllDevices: true,
+    optionalServices: [],
+  });
+  return device.name;
+}
 
 describe('request prompt for emulated bluetooth device', function () {
   const state = setupSeparateTestBrowserHooks({
@@ -37,11 +45,9 @@ describe('request prompt for emulated bluetooth device', function () {
 
     const devicePromptPromise = page.waitForDevicePrompt();
 
-    const navigatorRequestDevicePromise =
-      page.evaluate(`navigator.bluetooth.requestDevice({
-        acceptAllDevices: true,
-        optionalServices: [],
-      })`);
+    const navigatorRequestDevicePromise = page.evaluate(
+      triggerBluetoothDevicePrompt,
+    );
 
     const devicePrompt = await devicePromptPromise;
     await devicePrompt.cancel();
@@ -59,12 +65,9 @@ describe('request prompt for emulated bluetooth device', function () {
 
     const devicePromptPromise = page.waitForDevicePrompt();
 
-    // Trigger bluetooth device prompt.
-    const navigatorRequestDevicePromise =
-      page.evaluate(`navigator.bluetooth.requestDevice({
-          acceptAllDevices: true,
-          optionalServices: [],
-        })`);
+    const navigatorRequestDevicePromise = page.evaluate(
+      triggerBluetoothDevicePrompt,
+    );
 
     // Wait for the device prompt to be shown.
     const devicePrompt = await devicePromptPromise;
@@ -72,7 +75,7 @@ describe('request prompt for emulated bluetooth device', function () {
     // Select available device.
     await devicePrompt.select(devicePrompt.devices[0]!);
 
-    // Assert the navigator request is finished.
-    expect(await navigatorRequestDevicePromise).toBeTruthy();
+    // Assert the device is accessed.
+    expect(await navigatorRequestDevicePromise).toEqual(DEVICE_NAME);
   });
 });

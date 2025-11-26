@@ -23,9 +23,9 @@
   {
     "testIdPattern": "[bluetooth-emulation.spec] *",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
+    "parameters": ["firefox"],
     "expectations": ["FAIL"],
-    "comment": "WebDriver BiDi sessions don't not support Browser CDP sessions"
+    "comment": "Firefox does not support Web Bluetooth"
   },
   {
     "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should not hang when there is a debugger statement",
@@ -940,20 +940,6 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "Chromium-specific test. The test relies on the cookie in secure context to be secure. This is not the case for Firefox."
-  },
-  {
-    "testIdPattern": "[device-request-prompt.spec] device request prompt can be aborted",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[device-request-prompt.spec] device request prompt does not crash",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
     "testIdPattern": "[devtools.spec] DevTools target.page() should return a DevTools page if custom isPageTarget is provided",

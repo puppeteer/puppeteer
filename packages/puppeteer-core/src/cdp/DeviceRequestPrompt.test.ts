@@ -9,14 +9,13 @@ import {describe, it} from 'node:test';
 import expect from 'expect';
 
 import type {CDPSessionEvents} from '../api/CDPSession.js';
-import {DeviceRequestPromptDevice} from '../api/DeviceRequestPrompt.js';
 import {TimeoutError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 
 import {
   CdpDeviceRequestPrompt,
-  DeviceRequestPromptManager,
+  CdpDeviceRequestPromptManager,
 } from './DeviceRequestPrompt.js';
 
 class MockCDPSession extends EventEmitter<CDPSessionEvents> {
@@ -34,12 +33,18 @@ class MockCDPSession extends EventEmitter<CDPSessionEvents> {
   }
 }
 
+const DEVICE_0 = {id: '00000000', name: 'Device 0'};
+const DEVICE_1 = {id: '11111111', name: 'Device 1'};
+
 describe('DeviceRequestPrompt', function () {
   describe('waitForDevicePrompt', function () {
     it('should return prompt', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const manager = new DeviceRequestPromptManager(client, timeoutSettings);
+      const manager = new CdpDeviceRequestPromptManager(
+        client,
+        timeoutSettings,
+      );
 
       const [prompt] = await Promise.all([
         manager.waitForDevicePrompt(),
@@ -56,7 +61,10 @@ describe('DeviceRequestPrompt', function () {
     it('should respect timeout', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const manager = new DeviceRequestPromptManager(client, timeoutSettings);
+      const manager = new CdpDeviceRequestPromptManager(
+        client,
+        timeoutSettings,
+      );
 
       await expect(
         manager.waitForDevicePrompt({timeout: 1}),
@@ -66,7 +74,10 @@ describe('DeviceRequestPrompt', function () {
     it('should respect default timeout when there is no custom timeout', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const manager = new DeviceRequestPromptManager(client, timeoutSettings);
+      const manager = new CdpDeviceRequestPromptManager(
+        client,
+        timeoutSettings,
+      );
 
       timeoutSettings.setDefaultTimeout(1);
       await expect(manager.waitForDevicePrompt()).rejects.toBeInstanceOf(
@@ -77,7 +88,10 @@ describe('DeviceRequestPrompt', function () {
     it('should prioritize exact timeout over default timeout', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const manager = new DeviceRequestPromptManager(client, timeoutSettings);
+      const manager = new CdpDeviceRequestPromptManager(
+        client,
+        timeoutSettings,
+      );
 
       timeoutSettings.setDefaultTimeout(0);
       await expect(
@@ -88,7 +102,10 @@ describe('DeviceRequestPrompt', function () {
     it('should work with no timeout', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const manager = new DeviceRequestPromptManager(client, timeoutSettings);
+      const manager = new CdpDeviceRequestPromptManager(
+        client,
+        timeoutSettings,
+      );
 
       const [prompt] = await Promise.all([
         manager.waitForDevicePrompt({timeout: 0}),
@@ -108,7 +125,10 @@ describe('DeviceRequestPrompt', function () {
     it('should return the same prompt when there are many watchdogs simultaneously', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const manager = new DeviceRequestPromptManager(client, timeoutSettings);
+      const manager = new CdpDeviceRequestPromptManager(
+        client,
+        timeoutSettings,
+      );
 
       const [prompt1, prompt2] = await Promise.all([
         manager.waitForDevicePrompt(),
@@ -126,7 +146,10 @@ describe('DeviceRequestPrompt', function () {
     it('should listen and shortcut when there are no watchdogs', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
-      const manager = new DeviceRequestPromptManager(client, timeoutSettings);
+      const manager = new CdpDeviceRequestPromptManager(
+        client,
+        timeoutSettings,
+      );
 
       client.emit('DeviceAccess.deviceRequestPrompted', {
         id: '00000000000000000000000000000000',
@@ -149,19 +172,14 @@ describe('DeviceRequestPrompt', function () {
       expect(prompt.devices).toHaveLength(0);
       client.emit('DeviceAccess.deviceRequestPrompted', {
         id: '00000000000000000000000000000000',
-        devices: [{id: '00000000', name: 'Device 0'}],
+        devices: [DEVICE_0],
       });
       expect(prompt.devices).toHaveLength(1);
       client.emit('DeviceAccess.deviceRequestPrompted', {
         id: '00000000000000000000000000000000',
-        devices: [
-          {id: '00000000', name: 'Device 0'},
-          {id: '11111111', name: 'Device 1'},
-        ],
+        devices: [DEVICE_0, DEVICE_1],
       });
-      expect(prompt.devices).toHaveLength(2);
-      expect(prompt.devices[0]).toBeInstanceOf(DeviceRequestPromptDevice);
-      expect(prompt.devices[1]).toBeInstanceOf(DeviceRequestPromptDevice);
+      expect(prompt.devices).toEqual([DEVICE_0, DEVICE_1]);
     });
 
     it('does not list devices from events of another prompt', function () {
@@ -175,10 +193,7 @@ describe('DeviceRequestPrompt', function () {
       expect(prompt.devices).toHaveLength(0);
       client.emit('DeviceAccess.deviceRequestPrompted', {
         id: '88888888888888888888888888888888',
-        devices: [
-          {id: '00000000', name: 'Device 0'},
-          {id: '11111111', name: 'Device 1'},
-        ],
+        devices: [DEVICE_0, DEVICE_1],
       });
       expect(prompt.devices).toHaveLength(0);
     });
@@ -200,18 +215,15 @@ describe('DeviceRequestPrompt', function () {
         (() => {
           client.emit('DeviceAccess.deviceRequestPrompted', {
             id: '00000000000000000000000000000000',
-            devices: [{id: '00000000', name: 'Device 0'}],
+            devices: [DEVICE_0],
           });
           client.emit('DeviceAccess.deviceRequestPrompted', {
             id: '00000000000000000000000000000000',
-            devices: [
-              {id: '00000000', name: 'Device 0'},
-              {id: '11111111', name: 'Device 1'},
-            ],
+            devices: [DEVICE_0, DEVICE_1],
           });
         })(),
       ]);
-      expect(device).toBeInstanceOf(DeviceRequestPromptDevice);
+      expect(device).toEqual(DEVICE_1);
     });
 
     it('should return first matching device from already known devices', async () => {
@@ -219,16 +231,13 @@ describe('DeviceRequestPrompt', function () {
       const timeoutSettings = new TimeoutSettings();
       const prompt = new CdpDeviceRequestPrompt(client, timeoutSettings, {
         id: '00000000000000000000000000000000',
-        devices: [
-          {id: '00000000', name: 'Device 0'},
-          {id: '11111111', name: 'Device 1'},
-        ],
+        devices: [DEVICE_0, DEVICE_1],
       });
 
       const device = await prompt.waitForDevice(({name}) => {
         return name.includes('1');
       });
-      expect(device).toBeInstanceOf(DeviceRequestPromptDevice);
+      expect(device).toEqual(DEVICE_1);
     });
 
     it('should return device in the devices list', async () => {
@@ -246,10 +255,7 @@ describe('DeviceRequestPrompt', function () {
         (() => {
           client.emit('DeviceAccess.deviceRequestPrompted', {
             id: '00000000000000000000000000000000',
-            devices: [
-              {id: '00000000', name: 'Device 0'},
-              {id: '11111111', name: 'Device 1'},
-            ],
+            devices: [DEVICE_0, DEVICE_1],
           });
         })(),
       ]);
@@ -330,18 +336,15 @@ describe('DeviceRequestPrompt', function () {
         (() => {
           client.emit('DeviceAccess.deviceRequestPrompted', {
             id: '00000000000000000000000000000000',
-            devices: [{id: '00000000', name: 'Device 0'}],
+            devices: [DEVICE_0],
           });
           client.emit('DeviceAccess.deviceRequestPrompted', {
             id: '00000000000000000000000000000000',
-            devices: [
-              {id: '00000000', name: 'Device 0'},
-              {id: '11111111', name: 'Device 1'},
-            ],
+            devices: [DEVICE_0, DEVICE_1],
           });
         })(),
       ]);
-      expect(device).toBeInstanceOf(DeviceRequestPromptDevice);
+      expect(device).toEqual(DEVICE_1);
     });
 
     it('should be able to abort', async () => {
@@ -381,14 +384,11 @@ describe('DeviceRequestPrompt', function () {
         (() => {
           client.emit('DeviceAccess.deviceRequestPrompted', {
             id: '00000000000000000000000000000000',
-            devices: [{id: '00000000', name: 'Device 0'}],
+            devices: [DEVICE_0],
           });
           client.emit('DeviceAccess.deviceRequestPrompted', {
             id: '00000000000000000000000000000000',
-            devices: [
-              {id: '00000000', name: 'Device 0'},
-              {id: '11111111', name: 'Device 1'},
-            ],
+            devices: [DEVICE_0, DEVICE_1],
           });
         })(),
       ]);
@@ -412,10 +412,7 @@ describe('DeviceRequestPrompt', function () {
         (() => {
           client.emit('DeviceAccess.deviceRequestPrompted', {
             id: '00000000000000000000000000000000',
-            devices: [
-              {id: '00000000', name: 'Device 0'},
-              {id: '11111111', name: 'Device 1'},
-            ],
+            devices: [DEVICE_0, DEVICE_1],
           });
         })(),
       ]);
@@ -430,9 +427,9 @@ describe('DeviceRequestPrompt', function () {
         devices: [],
       });
 
-      await expect(
-        prompt.select(new DeviceRequestPromptDevice('11111111', 'Device 1')),
-      ).rejects.toThrow('Cannot select unknown device!');
+      await expect(prompt.select(DEVICE_1)).rejects.toThrow(
+        'Cannot select unknown device!',
+      );
     });
 
     it('should fail when selecting prompt twice', async () => {
@@ -450,10 +447,7 @@ describe('DeviceRequestPrompt', function () {
         (() => {
           client.emit('DeviceAccess.deviceRequestPrompted', {
             id: '00000000000000000000000000000000',
-            devices: [
-              {id: '00000000', name: 'Device 0'},
-              {id: '11111111', name: 'Device 1'},
-            ],
+            devices: [DEVICE_0, DEVICE_1],
           });
         })(),
       ]);
