@@ -376,13 +376,13 @@ export function resolveDefaultUserDataDir(
       // https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/chrome_paths_linux.cc;l=80;drc=4c86c7940a47c36b8bf52c134483ef2da86caa62
       switch (channel) {
         case ChromeReleaseChannel.STABLE:
-          return `${getConfigHomeLinux()}/google-chrome`;
+          return path.join(getConfigHomeLinux(), 'google-chrome');
         case ChromeReleaseChannel.BETA:
-          return `${getConfigHomeLinux()}/google-chrome-beta`;
+          return path.join(getConfigHomeLinux(), 'google-chrome-beta');
         case ChromeReleaseChannel.CANARY:
-          return `${getConfigHomeLinux()}/google-chrome-canary`;
+          return path.join(getConfigHomeLinux(), 'google-chrome-canary');
         case ChromeReleaseChannel.DEV:
-          return `${getConfigHomeLinux()}/google-chrome-unstable`;
+          return path.join(getConfigHomeLinux(), 'google-chrome-unstable');
       }
   }
 }
