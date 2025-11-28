@@ -4,17 +4,33 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {ConnectOptions} from '../common/ConnectOptions.js';
+import {ChromeReleaseChannel as BrowsersChromeReleaseChannel} from '@puppeteer/browsers';
+
+import type {
+  ChromeReleaseChannel,
+  ConnectOptions,
+} from '../common/ConnectOptions.js';
 import type {SupportedBrowser} from '../common/SupportedBrowser.js';
 
+export type {ChromeReleaseChannel};
+
 /**
- * @public
+ * @internal
  */
-export type ChromeReleaseChannel =
-  | 'chrome'
-  | 'chrome-beta'
-  | 'chrome-canary'
-  | 'chrome-dev';
+export function convertPuppeteerChannelToBrowsersChannel(
+  channel: ChromeReleaseChannel,
+): BrowsersChromeReleaseChannel {
+  switch (channel) {
+    case 'chrome':
+      return BrowsersChromeReleaseChannel.STABLE;
+    case 'chrome-dev':
+      return BrowsersChromeReleaseChannel.DEV;
+    case 'chrome-beta':
+      return BrowsersChromeReleaseChannel.BETA;
+    case 'chrome-canary':
+      return BrowsersChromeReleaseChannel.CANARY;
+  }
+}
 
 /**
  * Generic launch options that can be passed when launching any browser.
