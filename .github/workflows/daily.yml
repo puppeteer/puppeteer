@@ -181,6 +181,10 @@ jobs:
           PUPPETEER_SKIP_DOWNLOAD: true
       - name: Build packages
         run: npm run build -w @puppeteer/browsers
+      - name: Fetch jobs
+        run: gh run view ${{ github.run_id }} --json jobs > jobs.json
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: Generate comment
         id: genearate-comment-body
         run: node tools/build_daily_comment.mjs
