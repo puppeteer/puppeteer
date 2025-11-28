@@ -76,13 +76,6 @@
     "comment": "Needs investigation"
   },
   {
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to reconnect to a disconnected browser",
-    "platforms": ["darwin"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Needs investigation"
-  },
-  {
     "testIdPattern": "[pipe.spec] Puppeteer.launch should support the pipe option",
     "platforms": ["darwin", "linux"],
     "parameters": ["chrome", "webDriverBiDi"],
@@ -98,14 +91,14 @@
   },
   {
     "testIdPattern": "[pipe.spec] Puppeteer.launch should fire \"disconnected\" when closing with pipe",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["TIMEOUT"],
     "comment": "Needs investigation"
   },
   {
     "testIdPattern": "[webExtension.spec] webExtension can install and uninstall an extension",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["TIMEOUT"],
     "comment": "Needs investigation"
