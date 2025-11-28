@@ -311,24 +311,34 @@ describe('Chrome', () => {
       });
 
       it('should resolve with CHROME_CONFIG_HOME set', () => {
-        process.env['CHROME_CONFIG_HOME'] = '/home/test/.config/chrome';
+        process.env['CHROME_CONFIG_HOME'] = path.join(
+          'home',
+          'test',
+          '.config',
+          'chrome',
+        );
         assert.strictEqual(
           resolveDefaultUserDataDir(
             BrowserPlatform.LINUX,
             ChromeReleaseChannel.STABLE,
           ),
-          '/home/test/.config/chrome/google-chrome',
+          path.join('home', 'test', '.config', 'chrome', 'google-chrome'),
         );
       });
 
       it('should resolve with XDG_CONFIG_HOME set', () => {
-        process.env['XDG_CONFIG_HOME'] = '/home/test/.config/xdg';
+        process.env['XDG_CONFIG_HOME'] = path.join(
+          'home',
+          'test',
+          '.config',
+          'xdg',
+        );
         assert.strictEqual(
           resolveDefaultUserDataDir(
             BrowserPlatform.LINUX_ARM,
             ChromeReleaseChannel.BETA,
           ),
-          '/home/test/.config/xdg/google-chrome-beta',
+          path.join('home', 'test', '.config', 'xdg', 'google-chrome-beta'),
         );
       });
 
