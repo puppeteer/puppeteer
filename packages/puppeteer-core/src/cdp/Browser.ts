@@ -198,7 +198,9 @@ export class CdpBrowser extends BrowserBase {
           target.type() === 'webview' ||
           (this.#handleDevToolsAsPage &&
             target.type() === 'other' &&
-            target.url().startsWith('devtools://'))
+            target
+              .url()
+              .startsWith('devtools://devtools/bundled/devtools_app.html'))
         );
       });
   }
