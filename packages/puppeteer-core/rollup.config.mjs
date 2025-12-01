@@ -27,6 +27,9 @@ export default {
     if (id.includes('node_modules')) {
       return true;
     }
+    if (id.includes('@puppeteer/browsers')) {
+      return true;
+    }
     if (id.startsWith(path.join(cwd, `lib`, `esm`, `puppeteer`, `bidi`))) {
       return true;
     }

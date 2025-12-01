@@ -40,6 +40,7 @@ export {
   ChromeReleaseChannel,
   createProfile,
   getVersionComparator,
+  resolveDefaultUserDataDir,
 } from './browser-data/browser-data.js';
 export {CLI} from './CLI.js';
 export {

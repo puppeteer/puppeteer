@@ -39,6 +39,15 @@ export interface SupportedWebDriverCapabilities {
 }
 
 /**
+ * @public
+ */
+export type ChromeReleaseChannel =
+  | 'chrome'
+  | 'chrome-beta'
+  | 'chrome-canary'
+  | 'chrome-dev';
+
+/**
  * Generic browser options that can be passed when launching any browser or when
  * connecting to an existing browser instance.
  * @public
@@ -49,6 +58,17 @@ export interface ConnectOptions {
    * @defaultValue `false`
    */
   acceptInsecureCerts?: boolean;
+  /**
+   * If specified, puppeteer looks for an open WebSocket at the well-known
+   * default user data directory for the specified channel and attempts to
+   * connect to it using ws://localhost:$ActivePort/devtools/browser. Only works
+   * for Chrome and when run in Node.js.
+   *
+   * This option is experimental when used with puppeteer.connect().
+   *
+   * @experimental
+   */
+  channel?: ChromeReleaseChannel;
   /**
    * Experimental setting to disable monitoring network events by default. When
    * set to `false`, parts of Puppeteer that depend on network events would not
