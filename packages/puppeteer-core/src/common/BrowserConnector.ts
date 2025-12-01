@@ -102,17 +102,20 @@ async function getConnectionTransport(
     );
     const portPath = join(userDataDir, 'DevToolsActivePort');
     try {
-      const port = parseInt(
-        await environment.value.fs.promises.readFile(portPath, 'ascii'),
-        10,
+      const portRawValue = await environment.value.fs.promises.readFile(
+        portPath,
+        'ascii',
       );
-      if (port <= 0 || port > 65535) {
-        throw new Error(`Invalid port ${port} found`);
+      const port = parseInt(portRawValue, 10);
+      if (isNaN(port) || port <= 0 || port > 65535) {
+        throw new Error(`Invalid port '${portRawValue}' found`);
       }
       const browserWSEndpoint = `ws://localhost:${port}`;
       const WebSocketClass = await getWebSocketTransportClass();
-      const connectionTransport: ConnectionTransport =
-        await WebSocketClass.create(browserWSEndpoint, headers);
+      const connectionTransport = await WebSocketClass.create(
+        browserWSEndpoint,
+        headers,
+      );
       return {
         connectionTransport: connectionTransport,
         endpointUrl: browserWSEndpoint,
