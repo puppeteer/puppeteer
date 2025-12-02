@@ -72,6 +72,7 @@ describe('Accessibility', function () {
           name: '',
           value: 'First Option',
           haspopup: 'menu',
+          expanded: false,
           children: [
             {role: 'option', name: 'First Option', selected: true},
             {role: 'option', name: 'Second Option'},

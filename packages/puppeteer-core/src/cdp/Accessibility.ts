@@ -618,7 +618,7 @@ class AXNode {
         continue;
       }
       const value = getBooleanPropertyValue(booleanProperty);
-      if (!value) {
+      if (value === undefined) {
         continue;
       }
       node[booleanProperty] = getBooleanPropertyValue(booleanProperty);
