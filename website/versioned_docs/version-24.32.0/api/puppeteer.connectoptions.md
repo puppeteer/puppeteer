@@ -115,6 +115,27 @@ Only works for `protocol="webDriverBiDi"` and [Puppeteer.connect()](./puppeteer.
 </td></tr>
 <tr><td>
 
+<span id="channel">channel</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[ChromeReleaseChannel](./puppeteer.chromereleasechannel.md)
+
+</td><td>
+
+**_(Experimental)_** If specified, puppeteer looks for an open WebSocket at the well-known default user data directory for the specified channel and attempts to connect to it using ws://localhost:$ActivePort/devtools/browser. Only works for Chrome and when run in Node.js.
+
+This option is experimental when used with puppeteer.connect().
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="defaultviewport">defaultViewport</span>
 
 </td><td>

@@ -309,6 +309,15 @@ Launches a browser process according to [LaunchOptions](./browsers.launchoptions
 </td></tr>
 <tr><td>
 
+<span id="resolvedefaultuserdatadir">[resolveDefaultUserDataDir(browser, platform, channel)](./browsers.resolvedefaultuserdatadir.md)</span>
+
+</td><td>
+
+Returns the expected default user data dir for the given channel. It does not check if the dir actually exists.
+
+</td></tr>
+<tr><td>
+
 <span id="uninstall">[uninstall(options)](./browsers.uninstall.md)</span>
 
 </td><td>

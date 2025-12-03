@@ -168,19 +168,6 @@ Device request prompts let you respond to the page requesting for a device throu
 </td></tr>
 <tr><td>
 
-<span id="devicerequestpromptdevice">[DeviceRequestPromptDevice](./puppeteer.devicerequestpromptdevice.md)</span>
-
-</td><td>
-
-Device in a request prompt.
-
-**Remarks:**
-
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `DeviceRequestPromptDevice` class.
-
-</td></tr>
-<tr><td>
-
 <span id="dialog">[Dialog](./puppeteer.dialog.md)</span>
 
 </td><td>
@@ -713,9 +700,38 @@ Description
 </td></tr>
 <tr><td>
 
+<span id="addscreenparams">[AddScreenParams](./puppeteer.addscreenparams.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="autofilldata">[AutofillData](./puppeteer.autofilldata.md)</span>
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="bluetoothemulation">[BluetoothEmulation](./puppeteer.bluetoothemulation.md)</span>
+
+</td><td>
+
+**_(Experimental)_** Exposes the bluetooth emulation abilities.
+
+**Remarks:**
+
+[Web Bluetooth specification](https://webbluetoothcg.github.io/web-bluetooth/#simulated-bluetooth-adapter) requires the emulated adapters should be isolated per top-level navigable. However, at the moment Chromium's bluetooth emulation implementation is tight to the browser context, not the page. This means the bluetooth emulation exposed from different pages of the same browser context would interfere their states.
+
+</td></tr>
+<tr><td>
+
+<span id="bluetoothmanufacturerdata">[BluetoothManufacturerData](./puppeteer.bluetoothmanufacturerdata.md)</span>
+
+</td><td>
+
+Represents the simulated bluetooth peripheral's manufacturer data.
 
 </td></tr>
 <tr><td>
@@ -925,6 +941,15 @@ Set of configurable options for CSS coverage.
 <span id="device">[Device](./puppeteer.device.md)</span>
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="devicerequestpromptdevice">[DeviceRequestPromptDevice](./puppeteer.devicerequestpromptdevice.md)</span>
+
+</td><td>
+
+Device in a request prompt.
 
 </td></tr>
 <tr><td>
@@ -1167,6 +1192,15 @@ Valid options to configure PDF generation via [Page.pdf()](./puppeteer.page.pdf.
 </td></tr>
 <tr><td>
 
+<span id="preconnectedperipheral">[PreconnectedPeripheral](./puppeteer.preconnectedperipheral.md)</span>
+
+</td><td>
+
+A bluetooth peripheral to be simulated.
+
+</td></tr>
+<tr><td>
+
 <span id="queryoptions">[QueryOptions](./puppeteer.queryoptions.md)</span>
 
 </td><td>
@@ -1202,6 +1236,20 @@ Required response data to fulfill a request with.
 </td><td>
 
 **_(Experimental)_**
+
+</td></tr>
+<tr><td>
+
+<span id="screeninfo">[ScreenInfo](./puppeteer.screeninfo.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="screenorientation_2">[ScreenOrientation_2](./puppeteer.screenorientation_2.md)</span>
+
+</td><td>
 
 </td></tr>
 <tr><td>
@@ -1297,6 +1345,20 @@ The TouchHandle interface exposes methods to manipulate touches that have been s
 <tr><td>
 
 <span id="waittimeoutoptions">[WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="windowbounds">[WindowBounds](./puppeteer.windowbounds.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="workareainsets">[WorkAreaInsets](./puppeteer.workareainsets.md)</span>
 
 </td><td>
 
@@ -1404,6 +1466,15 @@ Description
 <span id="actionresult">[ActionResult](./puppeteer.actionresult.md)</span>
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="adapterstate">[AdapterState](./puppeteer.adapterstate.md)</span>
+
+</td><td>
+
+Emulated bluetooth adapter state.
 
 </td></tr>
 <tr><td>
@@ -1767,6 +1838,13 @@ Browsers supported by Puppeteer.
 </td><td>
 
 Whether to wait for the element to be [visible](./puppeteer.elementhandle.isvisible.md) or [hidden](./puppeteer.elementhandle.ishidden.md). `null` to disable visibility checks.
+
+</td></tr>
+<tr><td>
+
+<span id="windowstate">[WindowState](./puppeteer.windowstate.md)</span>
+
+</td><td>
 
 </td></tr>
 </tbody></table>
