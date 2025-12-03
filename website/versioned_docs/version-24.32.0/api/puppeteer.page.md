@@ -107,6 +107,27 @@ The constructor for this class is marked as internal. Third-party code should no
 </td></tr>
 <tr><td>
 
+<span id="bluetooth">bluetooth</span>
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+[BluetoothEmulation](./puppeteer.bluetoothemulation.md)
+
+</td><td>
+
+Exposes the bluetooth emulation abilities.
+
+**Remarks:**
+
+[Web Bluetooth specification](https://webbluetoothcg.github.io/web-bluetooth/#simulated-bluetooth-adapter) requires the emulated adapters should be isolated per top-level navigable. However, at the moment Chromium's bluetooth emulation implementation is tight to the browser context, not the page. This means the bluetooth emulation exposed from different pages of the same browser context would interfere their states.
+
+</td></tr>
+<tr><td>
+
 <span id="coverage">coverage</span>
 
 </td><td>

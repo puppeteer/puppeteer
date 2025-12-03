@@ -2,6 +2,34 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.32.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.31.0...puppeteer-v24.32.0) (2025-12-03)
+
+
+### 🎉 Features
+
+* add browser.screens, .addScreen and .removeScreen methods ([#14445](https://github.com/puppeteer/puppeteer/issues/14445)) ([98ae5e7](https://github.com/puppeteer/puppeteer/commit/98ae5e75fda3d01c067dac6926370dba05cd720c))
+* bluetooth emulation ([#14448](https://github.com/puppeteer/puppeteer/issues/14448)) ([e181c1b](https://github.com/puppeteer/puppeteer/commit/e181c1befaebadfa74ec4e1b6742f26187bd3a2a))
+* roll to Chrome 143.0.7499.40 ([#14476](https://github.com/puppeteer/puppeteer/issues/14476)) ([b0e15af](https://github.com/puppeteer/puppeteer/commit/b0e15aff5143b1c08d0ad66555cfc5c9a369d5dd))
+* support channel in puppeteer.connect ([#14466](https://github.com/puppeteer/puppeteer/issues/14466)) ([bc3a521](https://github.com/puppeteer/puppeteer/commit/bc3a52185d43618756c491e9cc930ca9340f9776))
+* support new page window positioning ([#14446](https://github.com/puppeteer/puppeteer/issues/14446)) ([20881f8](https://github.com/puppeteer/puppeteer/commit/20881f8a52b8a29abaf6e5353dc8642474348fa0))
+* **webdriver:** bluetooth emulation via WebDriver BiDi ([#14455](https://github.com/puppeteer/puppeteer/issues/14455)) ([e17263c](https://github.com/puppeteer/puppeteer/commit/e17263c815cb6638c035d0d91934ab8536f03b7b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.10.13 to 2.11.0
+
+
+### 🛠️ Fixes
+
+* ignore non-page DevTools targets when handleDevToolsAsPage=true ([#14472](https://github.com/puppeteer/puppeteer/issues/14472)) ([11bf1d2](https://github.com/puppeteer/puppeteer/commit/11bf1d205707e02c874cb6e3c5ee6f12b1e27f70))
+* prevent accessibility nodes attributes with false from being ignored ([#14475](https://github.com/puppeteer/puppeteer/issues/14475)) ([086a8ab](https://github.com/puppeteer/puppeteer/commit/086a8ab650c424192ec8edf489fce90bad318bb2))
+* roll to Firefox 145.0.2 ([#14462](https://github.com/puppeteer/puppeteer/issues/14462)) ([97ca894](https://github.com/puppeteer/puppeteer/commit/97ca8944d5fb5f169804f230d431a62cb600bbfc))
+* **webdriver:** allow for scripts to throw platform objects ([#14456](https://github.com/puppeteer/puppeteer/issues/14456)) ([7c0d3d9](https://github.com/puppeteer/puppeteer/commit/7c0d3d977b2c3370516c42218977bd4338421b28))
+
+
 ## [24.31.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.30.0...puppeteer-v24.31.0) (2025-11-20)
 
 
