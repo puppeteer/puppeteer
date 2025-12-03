@@ -91,9 +91,8 @@ async function getConnectionTransport(
     if (!platform) {
       throw new Error('Could not detect required browser platform');
     }
-    const {convertPuppeteerChannelToBrowsersChannel} = await import(
-      '../node/LaunchOptions.js'
-    );
+    const {convertPuppeteerChannelToBrowsersChannel} =
+      await import('../node/LaunchOptions.js');
     const {join} = await import('node:path');
     const userDataDir = resolveDefaultUserDataDir(
       Browser.CHROME,
