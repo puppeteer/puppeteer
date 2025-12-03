@@ -95,15 +95,20 @@ export class CdpWebWorker extends WebWorker {
 
   override async close(): Promise<void> {
     switch (this.#targetType) {
-      case TargetType.SERVICE_WORKER:
-      case TargetType.SHARED_WORKER: {
-        // For service and shared workers we need to close the target and detach to allow
+      case TargetType.SERVICE_WORKER: {
+        // For service workers we need to close the target and detach to allow
         // the worker to stop.
         await this.client.connection()?.send('Target.closeTarget', {
           targetId: this.#id,
         });
         await this.client.connection()?.send('Target.detachFromTarget', {
           sessionId: this.client.id(),
+        });
+        break;
+      }
+      case TargetType.SHARED_WORKER: {
+        await this.client.connection()?.send('Target.closeTarget', {
+          targetId: this.#id,
         });
         break;
       }
