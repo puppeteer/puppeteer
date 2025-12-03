@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.11.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.13...browsers-v2.11.0) (2025-12-03)
+
+
+### 🎉 Features
+
+* add resolveDefaultUserDataDir for Chrome ([#14463](https://github.com/puppeteer/puppeteer/issues/14463)) ([bc9aa6b](https://github.com/puppeteer/puppeteer/commit/bc9aa6ba6d35b0bda3c09cc6a43d48cafaf57925))
+* support channel in puppeteer.connect ([#14466](https://github.com/puppeteer/puppeteer/issues/14466)) ([bc3a521](https://github.com/puppeteer/puppeteer/commit/bc3a52185d43618756c491e9cc930ca9340f9776))
+
+
+### 🛠️ Fixes
+
+* avoid hard-coded separators in chrome.ts ([#14464](https://github.com/puppeteer/puppeteer/issues/14464)) ([372b280](https://github.com/puppeteer/puppeteer/commit/372b2806cee3893c6935afa98cc9b836b7c1cce1))
+
 ## [2.10.13](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.12...browsers-v2.10.13) (2025-11-03)
 
 

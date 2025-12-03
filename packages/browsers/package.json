@@ -1,6 +1,6 @@
 {
   "name": "@puppeteer/browsers",
-  "version": "2.10.13",
+  "version": "2.11.0",
   "description": "Download and launch browsers",
   "scripts": {
     "build:docs": "wireit",
