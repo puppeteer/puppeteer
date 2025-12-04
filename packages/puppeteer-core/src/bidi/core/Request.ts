@@ -22,8 +22,10 @@ export class Request extends EventEmitter<{
   redirect: Request;
   /** Emitted when the request succeeds. */
   authenticate: void;
-  /** Emitted when the request succeeds. */
+  /** Emitted when the request succeeds after the response body is fetched. */
   success: Bidi.Network.ResponseData;
+  /** Emitted when a response is available. */
+  response: Bidi.Network.ResponseData;
   /** Emitted when the request fails. */
   error: string;
 }> {
@@ -118,6 +120,18 @@ export class Request extends EventEmitter<{
       this.#error = event.errorText;
       this.emit('error', this.#error);
       this.dispose();
+    });
+    sessionEmitter.on('network.responseStarted', event => {
+      if (
+        event.context !== this.#browsingContext.id ||
+        event.request.request !== this.id ||
+        this.#event.redirectCount !== event.redirectCount
+      ) {
+        return;
+      }
+      this.#response = event.response;
+      this.#event.request.timings = event.request.timings;
+      this.emit('response', this.#response);
     });
     sessionEmitter.on('network.responseCompleted', event => {
       if (
