@@ -57,12 +57,21 @@ export async function _connectToBrowser(
 async function getConnectionTransport(
   options: ConnectOptions,
 ): Promise<{connectionTransport: ConnectionTransport; endpointUrl: string}> {
-  const {browserWSEndpoint, browserURL, transport, headers = {}} = options;
+  const {
+    browserWSEndpoint,
+    browserURL,
+    channel,
+    transport,
+    headers = {},
+  } = options;
 
   assert(
-    Number(!!browserWSEndpoint) + Number(!!browserURL) + Number(!!transport) ===
+    Number(!!browserWSEndpoint) +
+      Number(!!browserURL) +
+      Number(!!transport) +
+      Number(!!channel) ===
       1,
-    'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect',
+    'Exactly one of browserWSEndpoint, browserURL, transport or channel must be passed to puppeteer.connect',
   );
 
   if (transport) {
@@ -101,15 +110,26 @@ async function getConnectionTransport(
     );
     const portPath = join(userDataDir, 'DevToolsActivePort');
     try {
-      const portRawValue = await environment.value.fs.promises.readFile(
+      const fileContent = await environment.value.fs.promises.readFile(
         portPath,
         'ascii',
       );
-      const port = parseInt(portRawValue, 10);
-      if (isNaN(port) || port <= 0 || port > 65535) {
-        throw new Error(`Invalid port '${portRawValue}' found`);
+      const [rawPort, rawPath] = fileContent
+        .split('\n')
+        .map(line => {
+          return line.trim();
+        })
+        .filter(line => {
+          return !!line;
+        });
+      if (!rawPort || !rawPath) {
+        throw new Error(`Invalid DevToolsActivePort '${fileContent}' found`);
       }
-      const browserWSEndpoint = `ws://localhost:${port}`;
+      const port = parseInt(rawPort, 10);
+      if (isNaN(port) || port <= 0 || port > 65535) {
+        throw new Error(`Invalid port '${rawPort}' found`);
+      }
+      const browserWSEndpoint = `ws://localhost:${port}${rawPath}`;
       const WebSocketClass = await getWebSocketTransportClass();
       const connectionTransport = await WebSocketClass.create(
         browserWSEndpoint,
