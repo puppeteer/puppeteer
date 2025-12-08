@@ -51,7 +51,7 @@ describe('Puppeteer.connect', function () {
         return (error = error_);
       });
     expect(error.message).toContain(
-      'Exactly one of browserWSEndpoint, browserURL or transport',
+      'Exactly one of browserWSEndpoint, browserURL, transport or channel must be passed to puppeteer.connect',
     );
   });
 
