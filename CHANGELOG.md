@@ -2,6 +2,31 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.32.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.32.0...puppeteer-v24.32.1) (2025-12-08)
+
+
+### ♻️ Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.32.0 to 24.32.1
+
+
+### 🛠️ Fixes
+
+* assertion errors and wrong URL in puppeteer.connect(channel) ([#14486](https://github.com/puppeteer/puppeteer/issues/14486)) ([1095b46](https://github.com/puppeteer/puppeteer/commit/1095b463494dce105fff567321aa3b6e504bab52))
+
+
+### 📄 Documentation
+
+* fix versioning in Supported browsers ([#14481](https://github.com/puppeteer/puppeteer/issues/14481)) ([1af199d](https://github.com/puppeteer/puppeteer/commit/1af199d748333f6068ce89d09a6c82fc8cc07d8b))
+
+
 ## [24.32.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.31.0...puppeteer-v24.32.0) (2025-12-03)
 
 
