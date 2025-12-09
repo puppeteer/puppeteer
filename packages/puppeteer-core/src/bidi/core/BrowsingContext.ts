@@ -9,6 +9,8 @@ import type * as Bidi from 'webdriver-bidi-protocol';
 import type {BluetoothEmulation} from '../../api/BluetoothEmulation.js';
 import type {DeviceRequestPrompt} from '../../api/DeviceRequestPrompt.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
+import {isString} from '../../common/util.js';
+import {assert} from '../../util/assert.js';
 import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 import {BidiBluetoothEmulation} from '../BluetoothEmulation.js';
@@ -784,5 +786,22 @@ export class BrowsingContext extends EventEmitter<{
       timeout,
       signal,
     );
+  }
+
+  async setExtraHTTPHeaders(headers: Record<string, string>): Promise<void> {
+    await this.#session.send('network.setExtraHeaders', {
+      headers: Object.entries(headers).map(([key, value]) => {
+        assert(
+          isString(value),
+          `Expected value of header "${key}" to be String, but "${typeof value}" is found.`,
+        );
+
+        return {
+          name: key.toLowerCase(),
+          value: {type: 'string', value: value},
+        };
+      }),
+      contexts: [this.id],
+    });
   }
 }
