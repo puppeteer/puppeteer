@@ -8,7 +8,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import {firstValueFrom, from, raceWith} from '../../third_party/rxjs/rxjs.js';
 import type {BluetoothEmulation} from '../api/BluetoothEmulation.js';
-import type {Browser} from '../api/Browser.js';
+import type {Browser, WindowId} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
@@ -375,15 +375,20 @@ export class CdpPage extends Page {
     contentWidth: number;
     contentHeight: number;
   }): Promise<void> {
+    const windowId = await this.windowId();
+    await this.#primaryTargetClient.send('Browser.setContentsSize', {
+      windowId: Number(windowId),
+      width: params.contentWidth,
+      height: params.contentHeight,
+    });
+  }
+
+  override async windowId(): Promise<WindowId> {
     const {windowId} = await this.#primaryTargetClient.send(
       'Browser.getWindowForTarget',
     );
 
-    await this.#primaryTargetClient.send('Browser.setContentsSize', {
-      windowId,
-      width: params.contentWidth,
-      height: params.contentHeight,
-    });
+    return windowId.toString();
   }
 
   async #onFileChooser(

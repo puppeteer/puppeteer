@@ -2753,4 +2753,25 @@ describe('Page', function () {
       await page2.close();
     });
   });
+
+  describe('Page.resize', function () {
+    it('should resize the browser window to fit page content', async () => {
+      const {context} = await getTestState();
+
+      const page = await context.newPage();
+
+      // Default view port restricts window to 800x600, so remove it.
+      await page.setViewport(null);
+
+      const contentWidth = 500;
+      const contentHeight = 400;
+      await page.resize({contentWidth, contentHeight});
+
+      const innerSize = await page.evaluate(() => {
+        return {width: window.innerWidth, height: window.innerHeight};
+      });
+      expect(innerSize.width).toBe(contentWidth);
+      expect(innerSize.height).toBe(contentHeight);
+    });
+  });
 });

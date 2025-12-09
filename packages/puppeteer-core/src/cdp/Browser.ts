@@ -18,6 +18,8 @@ import {
   type TargetFilterCallback,
   type ScreenInfo,
   type AddScreenParams,
+  type WindowBounds,
+  type WindowId,
 } from '../api/Browser.js';
 import {BrowserContextEvent} from '../api/BrowserContext.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
@@ -451,6 +453,23 @@ export class CdpBrowser extends BrowserBase {
 
   override async removeScreen(screenId: string): Promise<void> {
     return await this.#connection.send('Emulation.removeScreen', {screenId});
+  }
+
+  override async getWindowBounds(windowId: WindowId): Promise<WindowBounds> {
+    const {bounds} = await this.#connection.send('Browser.getWindowBounds', {
+      windowId: Number(windowId),
+    });
+    return bounds;
+  }
+
+  override async setWindowBounds(
+    windowId: WindowId,
+    windowBounds: WindowBounds,
+  ): Promise<void> {
+    await this.#connection.send('Browser.setWindowBounds', {
+      windowId: Number(windowId),
+      bounds: windowBounds,
+    });
   }
 
   override targets(): CdpTarget[] {

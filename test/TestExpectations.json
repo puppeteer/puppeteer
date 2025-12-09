@@ -265,6 +265,20 @@
     "comment": "Not testable in headful"
   },
   {
+    "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should get and set browser window bounds",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Not supported by WebDriver BiDi"
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should set and get browser window maximized state",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Not supported by WebDriver BiDi"
+  },
+  {
     "testIdPattern": "[browser.spec] Browser specs Browser.screens should return default screen info",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -633,6 +647,13 @@
     "parameters": ["firefox"],
     "expectations": ["FAIL"],
     "comment": "Not yet supported https://bugzilla.mozilla.org/show_bug.cgi?id=1851561"
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.resize should resize the browser window to fit page content",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Not supported by WebDriver BiDi"
   },
   {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP *",
@@ -1495,6 +1516,13 @@
     "parameters": ["chrome", "headless"],
     "expectations": ["FAIL"],
     "comment": "Returns a different window size in Chrome Headless on Mac"
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.resize should resize the browser window to fit page content",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "firefox"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "Flaky on all platforms"
   },
   {
     "testIdPattern": "[page.spec] Page Page.setJavaScriptEnabled should work",
