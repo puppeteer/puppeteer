@@ -55,20 +55,6 @@
     "comment": "crbug.com/433304196"
   },
   {
-    "testIdPattern": "[userDataDir.spec] userDataDir should not launch the browser twice with the same userDataDir with pipe=true",
-    "platforms": ["darwin", "linux"],
-    "parameters": ["chrome"],
-    "expectations": ["TIMEOUT", "FAIL"],
-    "comment": "Needs investigation"
-  },
-  {
-    "testIdPattern": "[userDataDir.spec] userDataDir should not launch the browser twice with the same userDataDir with pipe=false",
-    "platforms": ["darwin", "linux"],
-    "parameters": ["chrome"],
-    "expectations": ["TIMEOUT", "FAIL"],
-    "comment": "Needs investigation"
-  },
-  {
     "testIdPattern": "[pipe.spec] Puppeteer.launch should support the pipe option",
     "platforms": ["darwin", "linux"],
     "parameters": ["chrome", "webDriverBiDi"],
