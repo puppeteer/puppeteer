@@ -36,3 +36,14 @@ export const environment: {
     },
   },
 };
+
+/**
+ * Whether to ignore tab targets.
+ * Some chrome versions do not support tab targets. eg: chrome 114 and above.
+ *
+ * @defaultValue false
+ */
+export const IGNORE_TAB_TARGET =
+  typeof process !== 'undefined'
+    ? process.env['PUPPETEER_IGNORE_TAB_TARGET'] === 'true'
+    : false;

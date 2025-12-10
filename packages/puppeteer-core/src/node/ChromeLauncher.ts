@@ -25,6 +25,7 @@ import {
 } from './LaunchOptions.js';
 import type {PuppeteerNode} from './PuppeteerNode.js';
 import {rm} from './util/fs.js';
+import { IGNORE_TAB_TARGET } from '../environment.js';
 
 /**
  * @internal
@@ -190,6 +191,10 @@ export class ChromeLauncher extends BrowserLauncher {
     ].filter(feature => {
       return feature !== '';
     });
+
+    if (IGNORE_TAB_TARGET) {
+      disabledFeatures.push('Prerender2');
+    }
 
     const userEnabledFeatures = getFeatures('--enable-features', options.args);
     if (options.args && userEnabledFeatures.length > 0) {

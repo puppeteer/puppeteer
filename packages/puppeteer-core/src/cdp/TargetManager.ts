@@ -19,6 +19,7 @@ import type {CdpTarget} from './Target.js';
 import {InitializationStatus} from './Target.js';
 import type {TargetManagerEvents} from './TargetManageEvents.js';
 import {TargetManagerEvent} from './TargetManageEvents.js';
+import {IGNORE_TAB_TARGET} from '../environment.js';
 
 /**
  * @internal
@@ -93,7 +94,15 @@ export class TargetManager
   #initializeDeferred = Deferred.create<void>();
   #waitForInitiallyDiscoveredTargets = true;
 
-  #discoveryFilter: Protocol.Target.FilterEntry[] = [{}];
+  #discoveryFilter: Protocol.Target.FilterEntry[] = IGNORE_TAB_TARGET
+    ? [
+        {
+          type: 'tab',
+          exclude: true,
+        },
+        {},
+      ]
+    : [{}];
   // IDs of tab targets detected while running the initial Target.setAutoAttach
   // request. These are the targets whose initialization we want to await for
   // before resolving puppeteer.connect() or launch() to avoid flakiness.
@@ -139,10 +148,14 @@ export class TargetManager
       flatten: true,
       autoAttach: true,
       filter: [
-        {
-          type: 'page',
-          exclude: true,
-        },
+        ...(IGNORE_TAB_TARGET
+          ? []
+          : [
+              {
+                type: 'page',
+                exclude: true,
+              },
+            ]),
         ...this.#discoveryFilter,
       ],
     });

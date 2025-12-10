@@ -167,6 +167,7 @@ jobs:
           - chrome-headless-shell
           - chrome-bidi
           - chrome-pipe
+          - chrome-headless-page
         os:
           - ubuntu-latest
           - windows-latest
@@ -186,6 +187,10 @@ jobs:
             suite: chrome-bidi
           - os: macos-15
             suite: chrome-headful
+          - os: windows-latest
+            suite: chrome-headless-page
+          - os: macos-15
+            suite: chrome-headless-page
     steps:
       - name: Check out repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1

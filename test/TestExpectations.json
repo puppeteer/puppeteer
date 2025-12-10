@@ -712,6 +712,34 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[prerender.spec] Prerender can navigate to a prerendered page via input",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "headless", "cdp", "ignoreTabTarget"],
+    "expectations": ["TIMEOUT"],
+    "comment": "page target do not support prerender"
+  },
+  {
+    "testIdPattern": "[prerender.spec] Prerender via frame can navigate to a prerendered page via input",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "headless", "cdp", "ignoreTabTarget"],
+    "expectations": ["TIMEOUT"],
+    "comment": "page target do not support prerender"
+  },
+  {
+    "testIdPattern": "[prerender.spec] Prerender with network requests can receive requests from the prerendered page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "headless", "cdp", "ignoreTabTarget"],
+    "expectations": ["TIMEOUT"],
+    "comment": "page target do not support prerender"
+  },
+  {
+    "testIdPattern": "[prerender.spec] Prerender with emulation can configure viewport for prerendered pages",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "headless", "cdp", "ignoreTabTarget"],
+    "expectations": ["TIMEOUT"],
+    "comment": "page target do not support prerender"
+  },
+  {
     "testIdPattern": "[queryObjects.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -1710,6 +1738,13 @@
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[TargetManager.spec] TargetManager should handle targets",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "headless", "cdp", "ignoreTabTarget"],
+    "expectations": ["FAIL"],
+    "comment": "ignore tab target, targets will not include tab target"
   },
   {
     "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.tap should work",

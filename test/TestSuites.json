@@ -31,6 +31,10 @@
     {
       "id": "chrome-pipe",
       "parameters": ["chrome", "headless", "cdp", "pipe"]
+    },
+    {
+      "id": "chrome-headless-page",
+      "parameters": ["chrome", "headless", "cdp", "ignoreTabTarget"]
     }
   ],
   "parameterDefinitions": {
@@ -59,6 +63,9 @@
     "cdp": {},
     "pipe": {
       "PUPPETEER_PIPE": "true"
+    },
+    "ignoreTabTarget": {
+      "PUPPETEER_IGNORE_TAB_TARGET": "true"
     }
   }
 }

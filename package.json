@@ -32,6 +32,7 @@
     "test:chrome:bidi-only": "wireit",
     "test:chrome:headful": "wireit",
     "test:chrome:headless": "wireit",
+    "test:chrome:headless-page": "wireit",
     "test:chrome:shell": "wireit",
     "test:chrome:pipe": "wireit",
     "test:firefox": "wireit",
@@ -127,6 +128,9 @@
     },
     "test:chrome:headless": {
       "command": "npm test -- --test-suite chrome-headless"
+    },
+    "test:chrome:headless-page": {
+      "command": "npm test -- --test-suite chrome-headless-page"
     },
     "test:chrome:shell": {
       "command": "npm test -- --test-suite chrome-headless-shell"
