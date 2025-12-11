@@ -2704,6 +2704,13 @@ export abstract class Page extends EventEmitter<PageEvents> {
   }
 
   /**
+   * Emulates focus state of the page.
+   *
+   * @param enabled - Whether to emulate focus.
+   */
+  abstract emulateFocusedPage(enabled: boolean): Promise<void>;
+
+  /**
    * @internal
    */
   abstract _screenshot(options: Readonly<ScreenshotOptions>): Promise<string>;

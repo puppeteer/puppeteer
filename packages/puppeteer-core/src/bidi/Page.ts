@@ -256,6 +256,10 @@ export class BidiPage extends Page {
     return this.#frame;
   }
 
+  override async emulateFocusedPage(enabled: boolean): Promise<void> {
+    return await this.#cdpEmulationManager.emulateFocus(enabled);
+  }
+
   override resize(_params: {
     contentWidth: number;
     contentHeight: number;

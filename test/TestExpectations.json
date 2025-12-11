@@ -70,6 +70,13 @@
     "comment": "TODO: Not yet supported in Puppeteer for WebDriver BiDi"
   },
   {
+    "testIdPattern": "[emulation.spec] Emulation Page.emulateFocusedPage *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Not supported in Firefox"
+  },
+  {
     "testIdPattern": "[extensions.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -381,6 +388,13 @@
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[emulation.spec] Emulation Page.emulateFocusedPage should reset focus",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["FAIL"],
+    "comment": "shell always emulates a focused page"
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateNetworkConditions should support offline",
