@@ -543,6 +543,17 @@ Enables CPU throttling to emulate slow CPUs.
 </td></tr>
 <tr><td>
 
+<span id="emulatefocusedpage">[emulateFocusedPage(enabled)](./puppeteer.page.emulatefocusedpage.md)</span>
+
+</td><td>
+
+</td><td>
+
+Emulates focus state of the page.
+
+</td></tr>
+<tr><td>
+
 <span id="emulateidlestate">[emulateIdleState(overrides)](./puppeteer.page.emulateidlestate.md)</span>
 
 </td><td>
@@ -1468,6 +1479,17 @@ The optional Parameter in Arguments `options` are:
 - `hidden`: Wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
 
 - `timeout`: maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The default value can be changed by using the [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) method.
+
+</td></tr>
+<tr><td>
+
+<span id="windowid">[windowId()](./puppeteer.page.windowid.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Returns the page's window id.
 
 </td></tr>
 <tr><td>

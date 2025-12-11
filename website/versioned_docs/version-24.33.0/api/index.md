@@ -1842,6 +1842,13 @@ Whether to wait for the element to be [visible](./puppeteer.elementhandle.isvisi
 </td></tr>
 <tr><td>
 
+<span id="windowid">[WindowId](./puppeteer.windowid.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="windowstate">[WindowState](./puppeteer.windowstate.md)</span>
 
 </td><td>

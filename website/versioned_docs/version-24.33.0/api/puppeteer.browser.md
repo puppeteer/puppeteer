@@ -253,6 +253,17 @@ Disconnects Puppeteer from this [browser](./puppeteer.browser.md), but leaves th
 </td></tr>
 <tr><td>
 
+<span id="getwindowbounds">[getWindowBounds(windowId)](./puppeteer.browser.getwindowbounds.md)</span>
+
+</td><td>
+
+</td><td>
+
+Gets the specified window [bounds](./puppeteer.windowbounds.md).
+
+</td></tr>
+<tr><td>
+
 <span id="installextension">[installExtension(path)](./puppeteer.browser.installextension.md)</span>
 
 </td><td>
@@ -357,6 +368,17 @@ Sets cookies in the default [BrowserContext](./puppeteer.browsercontext.md).
 **Remarks:**
 
 Shortcut for [browser.defaultBrowserContext().setCookie()](./puppeteer.browsercontext.setcookie.md).
+
+</td></tr>
+<tr><td>
+
+<span id="setwindowbounds">[setWindowBounds(windowId, windowBounds)](./puppeteer.browser.setwindowbounds.md)</span>
+
+</td><td>
+
+</td><td>
+
+Sets the specified window [bounds](./puppeteer.windowbounds.md).
 
 </td></tr>
 <tr><td>
