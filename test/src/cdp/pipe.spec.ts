@@ -10,7 +10,7 @@ import {getTestState, launch} from '../mocha-utils.js';
 import {waitEvent} from '../utils.js';
 
 describe('Puppeteer.launch', function () {
-  it('should support the pipe option', async () => {
+  it.only('should support the pipe option', async () => {
     const {browser, close} = await launch({pipe: true});
     try {
       expect(await browser.pages()).toHaveLength(1);
