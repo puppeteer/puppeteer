@@ -2765,7 +2765,13 @@ describe('Page', function () {
 
       const contentWidth = 500;
       const contentHeight = 400;
+      const resized = page.evaluate(() => {
+        return new Promise(resolve => {
+          window.onresize = resolve;
+        });
+      });
       await page.resize({contentWidth, contentHeight});
+      await resized;
 
       const innerSize = await page.evaluate(() => {
         return {width: window.innerWidth, height: window.innerHeight};

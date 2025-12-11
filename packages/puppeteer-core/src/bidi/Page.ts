@@ -260,15 +260,15 @@ export class BidiPage extends Page {
     contentWidth: number;
     contentHeight: number;
   }): Promise<void> {
-    throw new Error('Method not implemented for WebDriver BiDi yet.');
+    throw new UnsupportedOperation();
   }
 
   override windowId(): Promise<WindowId> {
-    throw new Error('Method not implemented for WebDriver BiDi yet.');
+    throw new UnsupportedOperation();
   }
 
   override openDevTools(): Promise<Page> {
-    throw new Error('Method not implemented for WebDriver BiDi yet.');
+    throw new UnsupportedOperation();
   }
 
   async focusedFrame(): Promise<BidiFrame> {

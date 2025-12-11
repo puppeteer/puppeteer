@@ -273,10 +273,24 @@
   },
   {
     "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should set and get browser window maximized state",
+    "platforms": ["darwin", "win32"],
+    "parameters": ["headless"],
+    "expectations": ["FAIL"],
+    "comment": "Exact window bounds are different on Windows and Mac."
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should set and get browser window maximized state",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "Not supported by WebDriver BiDi"
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should set and get browser window maximized state",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["headful"],
+    "expectations": ["FAIL"],
+    "comment": "Screen methods are only supported in headless mode"
   },
   {
     "testIdPattern": "[browser.spec] Browser specs Browser.screens should return default screen info",
@@ -1518,13 +1532,6 @@
     "comment": "Returns a different window size in Chrome Headless on Mac"
   },
   {
-    "testIdPattern": "[page.spec] Page Page.resize should resize the browser window to fit page content",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "firefox"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "Flaky on all platforms"
-  },
-  {
     "testIdPattern": "[page.spec] Page Page.setJavaScriptEnabled should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -1800,6 +1807,13 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should get and set browser window bounds",
+    "platforms": ["win32"],
+    "parameters": ["cdp", "chrome", "headful"],
+    "expectations": ["FAIL"],
+    "comment": "Different dimensions on Windows for headful"
   },
   {
     "testIdPattern": "[CDPSession.spec] Target.createCDPSession should send events",
