@@ -82,7 +82,7 @@ import {
 import {stringToTypedArray} from '../util/encoding.js';
 
 import type {BluetoothEmulation} from './BluetoothEmulation.js';
-import type {Browser} from './Browser.js';
+import type {Browser, WindowId} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';
 import type {CDPSession} from './CDPSession.js';
 import type {DeviceRequestPrompt} from './DeviceRequestPrompt.js';
@@ -3148,7 +3148,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
   /**
    * Resizes the browser window the page is in so that the content area
-   * (excluding browser UI) is according to the specified widht and height.
+   * (excluding browser UI) is according to the specified width and height.
    *
    * @experimental
    * @internal
@@ -3157,6 +3157,13 @@ export abstract class Page extends EventEmitter<PageEvents> {
     contentWidth: number;
     contentHeight: number;
   }): Promise<void>;
+
+  /**
+   * Returns the page's window id.
+   *
+   * @experimental
+   */
+  abstract windowId(): Promise<WindowId>;
 
   /** @internal */
   override [disposeSymbol](): void {

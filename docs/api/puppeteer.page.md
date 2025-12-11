@@ -1472,6 +1472,17 @@ The optional Parameter in Arguments `options` are:
 </td></tr>
 <tr><td>
 
+<span id="windowid">[windowId()](./puppeteer.page.windowid.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Returns the page's window id.
+
+</td></tr>
+<tr><td>
+
 <span id="workers">[workers()](./puppeteer.page.workers.md)</span>
 
 </td><td>

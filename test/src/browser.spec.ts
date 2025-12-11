@@ -181,4 +181,74 @@ describe('Browser specs', function () {
       expect((await browser.screens()).length).toBe(1);
     });
   });
+
+  describe('Browser.get|setWindowBounds', function () {
+    it('should get and set browser window bounds', async () => {
+      const {browser, context} = await getTestState();
+
+      const initialBounds = {
+        left: 10,
+        top: 20,
+        width: 800,
+        height: 600,
+      };
+      const page = await context.newPage({
+        type: 'window',
+        windowBounds: initialBounds,
+      });
+
+      const windowId = await page.windowId();
+      expect(await browser.getWindowBounds(windowId)).toMatchObject(
+        initialBounds,
+      );
+
+      const setBounds = {
+        left: 100,
+        top: 200,
+        width: 1600,
+        height: 1200,
+      };
+      await browser.setWindowBounds(windowId, setBounds);
+      expect(await browser.getWindowBounds(windowId)).toMatchObject(setBounds);
+    });
+
+    it('should set and get browser window maximized state', async () => {
+      const {browser, context} = await getTestState();
+
+      // Add a secondary screen.
+      const screenInfo = await browser.addScreen({
+        left: 800,
+        top: 0,
+        width: 1600,
+        height: 1200,
+      });
+
+      // Open a window on the secondary screen.
+      const page = await context.newPage({
+        type: 'window',
+        windowBounds: {
+          left: screenInfo.availLeft + 50,
+          top: screenInfo.availTop + 50,
+          width: screenInfo.availWidth - 100,
+          height: screenInfo.availHeight - 100,
+        },
+      });
+
+      // Maximize the created window.
+      const windowId = await page.windowId();
+      await browser.setWindowBounds(windowId, {windowState: 'maximized'});
+
+      // Expect the maximized window to fill the entire screen's available area.
+      expect(await browser.getWindowBounds(windowId)).toMatchObject({
+        left: screenInfo.availLeft,
+        top: screenInfo.availTop,
+        width: screenInfo.availWidth,
+        height: screenInfo.availHeight,
+        windowState: 'maximized',
+      });
+
+      // Cleanup.
+      await browser.removeScreen(screenInfo.id);
+    });
+  });
 });

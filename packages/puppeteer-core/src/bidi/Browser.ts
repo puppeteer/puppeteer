@@ -16,6 +16,8 @@ import {
   type BrowserContextOptions,
   type ScreenInfo,
   type AddScreenParams,
+  type WindowBounds,
+  type WindowId,
   type DebugInfo,
 } from '../api/Browser.js';
 import {BrowserContextEvent} from '../api/BrowserContext.js';
@@ -301,6 +303,17 @@ export class BidiBrowser extends Browser {
   }
 
   override removeScreen(_screenId: string): Promise<void> {
+    throw new UnsupportedOperation();
+  }
+
+  override getWindowBounds(_windowId: WindowId): Promise<WindowBounds> {
+    throw new UnsupportedOperation();
+  }
+
+  override setWindowBounds(
+    _windowId: WindowId,
+    _windowBounds: WindowBounds,
+  ): Promise<void> {
     throw new UnsupportedOperation();
   }
 

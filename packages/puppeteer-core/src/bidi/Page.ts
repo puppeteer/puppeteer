@@ -9,6 +9,7 @@ import * as Bidi from 'webdriver-bidi-protocol';
 
 import {firstValueFrom, from, raceWith} from '../../third_party/rxjs/rxjs.js';
 import type {BluetoothEmulation} from '../api/BluetoothEmulation.js';
+import type {WindowId} from '../api/Browser.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
@@ -259,11 +260,15 @@ export class BidiPage extends Page {
     contentWidth: number;
     contentHeight: number;
   }): Promise<void> {
-    throw new Error('Method not implemented for WebDriver BiDi yet.');
+    throw new UnsupportedOperation();
+  }
+
+  override windowId(): Promise<WindowId> {
+    throw new UnsupportedOperation();
   }
 
   override openDevTools(): Promise<Page> {
-    throw new Error('Method not implemented for WebDriver BiDi yet.');
+    throw new UnsupportedOperation();
   }
 
   async focusedFrame(): Promise<BidiFrame> {
