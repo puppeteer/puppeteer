@@ -107,6 +107,9 @@ export class BidiConnection
     type: Key,
     event: EventsWithWildcard<BidiEvents>[Key],
   ): boolean {
+    if (type === 'network.authRequired') {
+      console.log('!!@@## BidiConnection emit', type, event);
+    }
     if (process.env['PUPPETEER_WEBDRIVER_BIDI_ONLY'] === 'true') {
       // Required for WebDriver-only testing.
       this.#toWebDriverOnlyEvent(event);

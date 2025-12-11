@@ -106,7 +106,10 @@ export class BidiHTTPRequest extends HTTPRequest {
         this.#frame.page().browser().cdpSupported,
       );
     });
-    this.#request.on('authenticate', this.#handleAuthentication);
+    this.#request.on('authenticate', () => {
+      console.log('!!@@## Request authenticate event', this.id);
+      this.#handleAuthentication();
+    });
 
     this.#frame.page().trustedEmitter.emit(PageEvent.Request, this);
   }
@@ -289,6 +292,7 @@ export class BidiHTTPRequest extends HTTPRequest {
 
   #authenticationHandled = false;
   #handleAuthentication = async () => {
+    console.log('!!@@## Handling authentication for request', this.id);
     if (!this.#frame) {
       return;
     }

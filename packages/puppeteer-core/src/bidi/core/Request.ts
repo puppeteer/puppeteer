@@ -68,7 +68,11 @@ export class Request extends EventEmitter<{
     const sessionEmitter = this.#disposables.use(
       new EventEmitter(this.#session),
     );
+    sessionEmitter.on('*', event => {
+      console.log('!!@@## sessionEmitter.on', event);
+    });
     sessionEmitter.on('network.beforeRequestSent', event => {
+      console.log('!!@@## network.beforeRequestSent', event);
       if (
         event.context !== this.#browsingContext.id ||
         event.request.request !== this.id
@@ -97,6 +101,7 @@ export class Request extends EventEmitter<{
       this.dispose();
     });
     sessionEmitter.on('network.authRequired', event => {
+      console.log('!!@@## network.authRequired', event);
       if (
         event.context !== this.#browsingContext.id ||
         event.request.request !== this.id ||
@@ -320,10 +325,12 @@ export class Request extends EventEmitter<{
 
   @inertIfDisposed
   private dispose(): void {
+    console.log('!!@@## disposed', this.id);
     this[disposeSymbol]();
   }
 
   override [disposeSymbol](): void {
+    console.log('!!@@## disposeSymbol', this.id);
     this.#disposables.dispose();
     super[disposeSymbol]();
   }

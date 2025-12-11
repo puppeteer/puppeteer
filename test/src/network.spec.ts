@@ -790,6 +790,41 @@ describe('network', function () {
   });
 
   describe('Page.authenticate', function () {
+    it.only('qwe', async () => {
+      const proxyServer = 'gw.dataimpulse.com:823';
+      const proxyUsername = 'correct-user';
+      const proxyPassword = 'correct-pass';
+
+      console.log('Launching browser with proxy...');
+      const { browser, close } = await launch({
+        browser: 'chrome',
+        // protocol: 'webDriverBiDi', // If cdp, program works as expected
+        headless: false,
+        args: [`--proxy-server=${proxyServer}`,
+          '--disable-sync']
+      });
+      try {
+        console.log('Browser launched with proxy');
+        const page = await browser.newPage();
+
+        // Authenticate proxies
+        await page.authenticate({
+          username: proxyUsername,
+          password: proxyPassword
+        });
+
+        // Navigate to a website
+        const response = await page.goto('https://whoer.com/');
+        const text = await response?.text()
+
+        console.log('Page response text:', text);
+
+        return new Promise(resolve => setTimeout(resolve, 30000));
+      } finally {
+        await close();
+      }
+    });
+
     it('should work', async () => {
       const {page, server} = await getTestState();
       server.setAuth('/empty.html', 'user', 'pass');
