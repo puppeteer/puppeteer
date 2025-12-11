@@ -86,7 +86,11 @@ export class UserContext extends EventEmitter<{
       }
 
       if (info.userContext !== this.#id) {
-        return;
+        if (this.#id === 'default') {
+          // TODO: This is a hack to workaround a potential Chrome Canary bug.
+        } else {
+          return;
+        }
       }
 
       const browsingContext = BrowsingContext.from(
