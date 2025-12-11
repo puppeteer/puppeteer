@@ -2,6 +2,29 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.33.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.32.1...puppeteer-v24.33.0) (2025-12-11)
+
+### ♻️ Chores
+
+- **puppeteer:** Synchronize puppeteer versions
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - puppeteer-core bumped from 24.32.1 to 24.33.0
+
+### 🎉 Features
+
+- add Browser.get|setWindowBounds and Page.windowId methods ([#14494](https://github.com/puppeteer/puppeteer/issues/14494)) ([f5a860d](https://github.com/puppeteer/puppeteer/commit/f5a860d118ee1aaab3089bf56d4251af69f3a934))
+- emulate focused page ([#14501](https://github.com/puppeteer/puppeteer/issues/14501)) ([4ad78e7](https://github.com/puppeteer/puppeteer/commit/4ad78e7c084aed1d04dfaf55756e5f9f61e2c2e5))
+- roll to Firefox 146.0 ([#14490](https://github.com/puppeteer/puppeteer/issues/14490)) ([525f19c](https://github.com/puppeteer/puppeteer/commit/525f19cefe065fd94e23664e2de694736da80acc))
+- **webdriver:** use `network.setExtraHeaders` instead of network interception ([#14422](https://github.com/puppeteer/puppeteer/issues/14422)) ([ece0992](https://github.com/puppeteer/puppeteer/commit/ece0992de0ab7cce0205f4ff5280e65d015b881b))
+
+### 🛠️ Fixes
+
+- roll to Chrome 143.0.7499.42 ([#14500](https://github.com/puppeteer/puppeteer/issues/14500)) ([be72f84](https://github.com/puppeteer/puppeteer/commit/be72f84e2001d048ae2c1a5d0b2e3a0737b6be0d))
+
 ## [24.32.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.32.0...puppeteer-v24.32.1) (2025-12-08)
 
 ### ♻️ Chores
