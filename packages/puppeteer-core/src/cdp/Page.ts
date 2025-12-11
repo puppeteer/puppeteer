@@ -585,6 +585,10 @@ export class CdpPage extends Page {
     );
   }
 
+  override async emulateFocusedPage(enabled: boolean): Promise<void> {
+    return await this.#emulationManager.emulateFocus(enabled);
+  }
+
   override setDefaultNavigationTimeout(timeout: number): void {
     this._timeoutSettings.setDefaultNavigationTimeout(timeout);
   }

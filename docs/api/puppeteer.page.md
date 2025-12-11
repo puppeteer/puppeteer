@@ -543,6 +543,17 @@ Enables CPU throttling to emulate slow CPUs.
 </td></tr>
 <tr><td>
 
+<span id="emulatefocusedpage">[emulateFocusedPage(enabled)](./puppeteer.page.emulatefocusedpage.md)</span>
+
+</td><td>
+
+</td><td>
+
+Emulates focus state of the page.
+
+</td></tr>
+<tr><td>
+
 <span id="emulateidlestate">[emulateIdleState(overrides)](./puppeteer.page.emulateidlestate.md)</span>
 
 </td><td>

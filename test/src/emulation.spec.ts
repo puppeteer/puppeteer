@@ -614,4 +614,50 @@ describe('Emulation', () => {
       await page.emulateCPUThrottling(null);
     });
   });
+
+  describe('Page.emulateFocusedPage', function () {
+    it('should emulate focus', async () => {
+      const {page, context} = await getTestState();
+
+      await page.emulateFocusedPage(true);
+      expect(
+        await page.evaluate(() => {
+          return document.hasFocus();
+        }),
+      ).toBe(true);
+
+      const page2 = await context.newPage();
+      // Move page into background by focusing page2.
+      await page2.bringToFront();
+
+      expect(
+        await page.evaluate(() => {
+          return document.hasFocus();
+        }),
+      ).toBe(true);
+    });
+
+    it('should reset focus', async () => {
+      const {page, context} = await getTestState();
+
+      await page.emulateFocusedPage(true);
+
+      const page2 = await context.newPage();
+      // Move page into background by focusing page2.
+      await page2.bringToFront();
+
+      expect(
+        await page.evaluate(() => {
+          return document.hasFocus();
+        }),
+      ).toBe(true);
+
+      await page.emulateFocusedPage(false);
+      expect(
+        await page.evaluate(() => {
+          return document.hasFocus();
+        }),
+      ).toBe(false);
+    });
+  });
 });
