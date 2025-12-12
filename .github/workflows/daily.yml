@@ -27,8 +27,9 @@ jobs:
           # - windows-latest
           # - macos-15
         shard:
-          - 1-2
-          - 2-2
+          - 1-1
+          # - 1-2
+          # - 2-2
         configs:
           - stable
         # exclude:

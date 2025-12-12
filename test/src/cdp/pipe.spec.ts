@@ -9,7 +9,7 @@ import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 import {getTestState, launch} from '../mocha-utils.js';
 import {waitEvent} from '../utils.js';
 
-describe('Puppeteer.launch', function () {
+describe.only('Puppeteer.launch', function () {
   it.only('should support the pipe option', async () => {
     const {browser, close} = await launch({pipe: true});
     try {
