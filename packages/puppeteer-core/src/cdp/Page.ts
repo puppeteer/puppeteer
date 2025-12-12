@@ -702,6 +702,7 @@ export class CdpPage extends Page {
     await this.deleteCookie(...items);
     if (items.length) {
       await this.#primaryTargetClient.send('Network.setCookies', {
+        // @ts-ignore
         cookies: items.map(cookieParam => {
           return {
             ...cookieParam,
