@@ -45,6 +45,13 @@ import {TargetManager} from './TargetManager.js';
 /**
  * @internal
  */
+function isDevToolsPageTarget(url: string): boolean {
+  return url.startsWith('devtools://devtools/bundled/devtools_app.html');
+}
+
+/**
+ * @internal
+ */
 export class CdpBrowser extends BrowserBase {
   readonly protocol = 'cdp';
 
@@ -200,9 +207,7 @@ export class CdpBrowser extends BrowserBase {
           target.type() === 'webview' ||
           (this.#handleDevToolsAsPage &&
             target.type() === 'other' &&
-            target
-              .url()
-              .startsWith('devtools://devtools/bundled/devtools_app.html'))
+            isDevToolsPageTarget(target.url()))
         );
       });
   }
@@ -277,7 +282,7 @@ export class CdpBrowser extends BrowserBase {
       this.#targetManager,
       createSession,
     );
-    if (targetInfo.url?.startsWith('devtools://')) {
+    if (targetInfo.url && isDevToolsPageTarget(targetInfo.url)) {
       return new DevToolsTarget(
         targetInfo,
         session,
