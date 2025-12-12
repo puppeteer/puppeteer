@@ -1,5 +1,12 @@
 # Changelog
 
+## [24.33.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.33.0...puppeteer-core-v24.33.1) (2025-12-12)
+
+
+### 🛠️ Fixes
+
+* DevTools worker targets should not end up as DevToolsTarget ([#14505](https://github.com/puppeteer/puppeteer/issues/14505)) ([e37f1a4](https://github.com/puppeteer/puppeteer/commit/e37f1a44e51689e0aedbb8f6a36a79a421d6264b))
+
 ## [24.33.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.32.1...puppeteer-core-v24.33.0) (2025-12-11)
 
 
