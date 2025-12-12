@@ -833,5 +833,25 @@ describe('Cookie specs', () => {
       });
       expect(await page.cookies()).toHaveLength(0);
     });
+
+    it("Delete cookie set with default SameSite value", async () => {
+      const { browser, page, server } = await getTestState();
+      const url = new URL(server.EMPTY_PAGE);
+      await page.goto(url.toString());
+      await browser.setCookie(
+        {
+          name: 'cookie1',
+          value: '1',
+          domain: 'localhost',
+        },
+      );
+
+      const cookies = await browser.cookies();
+      expect(cookies).toHaveLength(1);
+
+      await browser.deleteCookie(...cookies);
+
+      expect(await browser.cookies()).toHaveLength(0);
+    });
   });
 });

@@ -10,7 +10,7 @@
  *
  * @public
  */
-export type CookieSameSite = 'Strict' | 'Lax' | 'None';
+export type CookieSameSite = 'Strict' | 'Lax' | 'None' | 'Default';
 
 /**
  * Represents the cookie's 'Priority' status:

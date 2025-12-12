@@ -123,6 +123,7 @@ export class CdpBrowserContext extends BrowserContext {
   override async setCookie(...cookies: CookieData[]): Promise<void> {
     return await this.#connection.send('Storage.setCookies', {
       browserContextId: this.#id,
+      // @ts-ignore
       cookies: cookies.map(cookie => {
         return {
           ...cookie,
