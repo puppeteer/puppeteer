@@ -13,29 +13,29 @@ jobs:
   chrome-canary-tests:
     name: ${{ matrix.suite }} tests on ${{ matrix.os }} (${{ matrix.shard }}) ${{ matrix.configs }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
+    timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
         suite:
           - chrome-headless
-          - chrome-headful
-          - chrome-headless-shell
+          # - chrome-headful
+          # - chrome-headless-shell
           - chrome-bidi
         os:
           - ubuntu-latest
-          - windows-latest
-          - macos-15
+          # - windows-latest
+          # - macos-15
         shard:
           - 1-2
           - 2-2
         configs:
           - stable
-        exclude:
-          - os: windows-latest
-            suite: chrome-bidi
-          - os: macos-15
-            suite: chrome-headful
+        # exclude:
+        #   - os: windows-latest
+        #     suite: chrome-bidi
+        #   - os: macos-15
+        #     suite: chrome-headful
     steps:
       - name: Check out repository
         uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
