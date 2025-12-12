@@ -39,3 +39,4 @@ yarn-error.log*
 
 # Wireit
 .wireit
+chrome/
