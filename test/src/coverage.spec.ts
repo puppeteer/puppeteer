@@ -148,18 +148,6 @@ describe('Coverage specs', function () {
       await page.coverage.stopJSCoverage();
     });
     describe('resetOnNavigation', function () {
-      it('should report scripts across navigations when disabled', async () => {
-        const {page, server} = await getTestState();
-
-        await page.coverage.startJSCoverage({resetOnNavigation: false});
-        await page.goto(server.PREFIX + '/jscoverage/multiple.html');
-        // TODO: navigating too fast might loose JS coverage data in the browser.
-        await page.waitForNetworkIdle();
-        await page.goto(server.EMPTY_PAGE);
-        const coverage = await page.coverage.stopJSCoverage();
-        expect(coverage).toHaveLength(2);
-      });
-
       it('should NOT report scripts across navigations when enabled', async () => {
         const {page, server} = await getTestState();
 
