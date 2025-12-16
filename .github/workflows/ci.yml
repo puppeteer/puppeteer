@@ -162,11 +162,11 @@ jobs:
         linux-only:
           - ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'release-please') && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
         suite:
-          # - chrome-headless
-          # - chrome-headful
-          # - chrome-headless-shell
+          - chrome-headless
+          - chrome-headful
+          - chrome-headless-shell
           - chrome-bidi
-          # - chrome-pipe
+          - chrome-pipe
         os:
           - ubuntu-latest
           - windows-latest
@@ -241,8 +241,7 @@ jobs:
     name: ${{ matrix.suite }} (${{ matrix.shard }}) on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     needs: check-changes
-    if: false
-    # if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+    if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
     strategy:
       fail-fast: false
       matrix:
