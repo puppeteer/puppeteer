@@ -24,6 +24,9 @@ export class Request extends EventEmitter<{
   authenticate: void;
   /** Emitted when the request succeeds. */
   success: Bidi.Network.ResponseData;
+  /** Analog of WebDriver BiDi event `network.responseStarted`. Emitted when a
+   * response is received. */
+  response: Bidi.Network.ResponseData;
   /** Emitted when the request fails. */
   error: string;
 }> {
@@ -118,6 +121,18 @@ export class Request extends EventEmitter<{
       this.#error = event.errorText;
       this.emit('error', this.#error);
       this.dispose();
+    });
+    sessionEmitter.on('network.responseStarted', event => {
+      if (
+        event.context !== this.#browsingContext.id ||
+        event.request.request !== this.id ||
+        this.#event.redirectCount !== event.redirectCount
+      ) {
+        return;
+      }
+      this.#response = event.response;
+      this.#event.request.timings = event.request.timings;
+      this.emit('response', this.#response);
     });
     sessionEmitter.on('network.responseCompleted', event => {
       if (

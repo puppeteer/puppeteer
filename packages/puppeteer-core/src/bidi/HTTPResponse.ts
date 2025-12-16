@@ -19,11 +19,21 @@ import type {BidiHTTPRequest} from './HTTPRequest.js';
  * @internal
  */
 export class BidiHTTPResponse extends HTTPResponse {
+  /**
+   * Returns a new BidiHTTPResponse or updates the existing one if it already exists.
+   */
   static from(
     data: Bidi.Network.ResponseData,
     request: BidiHTTPRequest,
     cdpSupported: boolean,
   ): BidiHTTPResponse {
+    const existingResponse = request.response();
+    if (existingResponse) {
+      // Update existing response data with up-to-date data.
+      existingResponse.#data = data;
+      return existingResponse;
+    }
+
     const response = new BidiHTTPResponse(data, request, cdpSupported);
     response.#initialize();
     return response;
