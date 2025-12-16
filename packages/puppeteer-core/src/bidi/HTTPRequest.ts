@@ -106,6 +106,14 @@ export class BidiHTTPRequest extends HTTPRequest {
         this.#frame.page().browser().cdpSupported,
       );
     });
+    this.#request.once('success', data => {
+      // The `network.responseCompleted` event (mapped to `success` here)
+      // contains the most up-to-date and complete response data, including
+      // headers that might be missing from `network.responseStarted`
+      // (e.g., `Set-Cookie` for navigation requests in Chrome).
+      // We update the response object to ensure it reflects the final state.
+      this.#response?._setData(data);
+    });
     this.#request.on('authenticate', this.#handleAuthentication);
 
     this.#frame.page().trustedEmitter.emit(PageEvent.Request, this);

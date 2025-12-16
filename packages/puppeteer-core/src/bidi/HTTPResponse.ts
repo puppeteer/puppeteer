@@ -64,6 +64,15 @@ export class BidiHTTPResponse extends HTTPResponse {
     this.#request.frame()?.page().trustedEmitter.emit(PageEvent.Response, this);
   }
 
+  /** 
+   * Can be used to update the response data with more complete data, e.g. the
+   * `network.responseCompleted` event can have additional data compared to
+   * `network.responseStarted`.
+   */
+  _setData(data: Bidi.Network.ResponseData): void {
+    this.#data = data;
+  }
+
   @invokeAtMostOnceForArguments
   override remoteAddress(): RemoteAddress {
     return {
