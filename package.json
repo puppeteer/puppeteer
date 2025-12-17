@@ -162,7 +162,7 @@
     }
   },
   "devDependencies": {
-    "@actions/core": "1.11.1",
+    "@actions/core": "2.0.1",
     "@babel/plugin-transform-class-properties": "7.27.1",
     "@babel/plugin-transform-class-static-block": "7.28.3",
     "@babel/plugin-transform-dynamic-import": "7.27.1",
@@ -177,8 +177,8 @@
     "@types/node": "22.13.10",
     "@types/semver": "7.7.1",
     "@types/sinon": "21.0.0",
-    "typescript-eslint": "8.48.1",
-    "esbuild": "0.27.1",
+    "typescript-eslint": "8.50.0",
+    "esbuild": "0.27.2",
     "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-typescript": "4.4.4",
     "eslint-plugin-import": "2.32.0",
@@ -194,7 +194,7 @@
     "license-checker": "25.0.1",
     "mocha": "11.7.5",
     "prettier": "3.7.4",
-    "rollup": "4.53.3",
+    "rollup": "4.53.5",
     "semver": "7.7.3",
     "sinon": "21.0.0",
     "source-map-support": "0.5.21",
