@@ -960,6 +960,17 @@ Removes script that injected into page by Page.evaluateOnNewDocument.
 </td></tr>
 <tr><td>
 
+<span id="resize">[resize(params)](./puppeteer.page.resize.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Resizes the browser window of this page so that the content area (excluding browser UI) has the specified width and height.
+
+</td></tr>
+<tr><td>
+
 <span id="screencast">[screencast(options)](./puppeteer.page.screencast.md)</span>
 
 </td><td>
