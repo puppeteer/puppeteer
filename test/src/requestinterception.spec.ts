@@ -80,6 +80,49 @@ describe('request interception', function () {
         page.waitForNavigation(),
       ]);
     });
+    it('should work with keep alive redirects', async () => {
+      const {page, server} = await getTestState();
+      server.setRoute('/rredirect', (_req, res) => {
+        res.writeHead(302, {location: '/target'});
+        res.end();
+      });
+      server.setRoute('/target', (_req, res) => {
+        res.end('Hello World');
+      });
+      await page.goto(server.EMPTY_PAGE);
+      page.on('request', request => {
+        void request.continue();
+      });
+      await page.setRequestInterception(true);
+      const redirectRequest = page.waitForRequest(
+        request => {
+          return request.url().endsWith('/rredirect');
+        },
+        {
+          timeout: 1000,
+        },
+      );
+      const targetResponse = page.waitForResponse(
+        response => {
+          return response.request().url().endsWith('/target');
+        },
+        {
+          timeout: 1000,
+        },
+      );
+      await page.evaluate(async url => {
+        void fetch(url, {
+          method: 'POST',
+          body: JSON.stringify({test: 'test'}),
+          mode: 'no-cors',
+          keepalive: true,
+        }).then(async res => {
+          console.log(await res.text());
+        });
+      }, server.PREFIX + '/rredirect');
+      await redirectRequest;
+      await targetResponse;
+    });
     // @see https://github.com/puppeteer/puppeteer/issues/3973
     it('should work when header manipulation headers with redirect', async () => {
       const {page, server} = await getTestState();
