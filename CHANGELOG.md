@@ -2,6 +2,28 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.33.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.33.0...puppeteer-v24.33.1) (2025-12-18)
+
+
+### ♻️ Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.33.0 to 24.33.1
+
+
+### 🛠️ Fixes
+
+* DevTools worker targets should not end up as DevToolsTarget ([#14505](https://github.com/puppeteer/puppeteer/issues/14505)) ([e37f1a4](https://github.com/puppeteer/puppeteer/commit/e37f1a44e51689e0aedbb8f6a36a79a421d6264b))
+* roll to Chrome 143.0.7499.146 ([#14519](https://github.com/puppeteer/puppeteer/issues/14519)) ([0fe8e2c](https://github.com/puppeteer/puppeteer/commit/0fe8e2cdd80626468b136fc0e4a4b204cb81ca24))
+* **webdriver:** emit `response` event on `network.responseStarted` ([#14513](https://github.com/puppeteer/puppeteer/issues/14513)) ([cdd358f](https://github.com/puppeteer/puppeteer/commit/cdd358fb351d8776dafcd5e909ccabadbefa729e))
+
+
 ## [24.33.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.32.1...puppeteer-v24.33.0) (2025-12-11)
 
 
