@@ -2,6 +2,27 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.34.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.33.1...puppeteer-v24.34.0) (2025-12-19)
+
+### ♻️ Chores
+
+- **puppeteer:** Synchronize puppeteer versions
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - puppeteer-core bumped from 24.33.1 to 24.34.0
+
+### 🎉 Features
+
+- publish page.resize() ([#14525](https://github.com/puppeteer/puppeteer/issues/14525)) ([ee31c21](https://github.com/puppeteer/puppeteer/commit/ee31c21270a881164b689c3b1cd9c2feca0e2820))
+
+### 🛠️ Fixes
+
+- roll to Chrome 143.0.7499.169 ([#14529](https://github.com/puppeteer/puppeteer/issues/14529)) ([40c73cd](https://github.com/puppeteer/puppeteer/commit/40c73cd6599db2857cbffbe7e9b1685f2d50e4f1))
+- roll to Firefox 146.0.1 ([#14530](https://github.com/puppeteer/puppeteer/issues/14530)) ([f0c7e57](https://github.com/puppeteer/puppeteer/commit/f0c7e574e382d0d270823b8e705cb424fd0aae4c))
+
 ## [24.33.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.33.0...puppeteer-v24.33.1) (2025-12-18)
 
 ### ♻️ Chores
