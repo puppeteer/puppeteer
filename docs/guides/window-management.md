@@ -2,7 +2,7 @@
 
 Use Puppeteer's [`Browser.getWindowBounds`](https://pptr.dev/api/puppeteer.browser.getwindowbounds) and[`Browser.setWindowBounds`](https://pptr.dev/api/puppeteer.browser.setwindowbounds) methods to manage browser window position and state.
 
-The following script opens a window at the default position on a primary 800x600 screen, then moves that window to a newly created screen and maximizes it there. After that it restores the window to its nomral state.
+The following script opens a window at the default position on a primary 800x600 screen, then moves that window to a newly created screen and maximizes it there. After that it restores the window to its normal state.
 
 ```ts
 import puppeteer from 'puppeteer-core';
@@ -66,7 +66,7 @@ Output:
 
 ## Sizing page content
 
-Use Puppeteer's [`Page.resize`](https://pptr.dev/api/puppeteer.page.resize) method to adjust the browser window size so that content has the specified size.
+Use Puppeteer's [`Page.resize`](https://pptr.dev/api/puppeteer.page.resize) method to adjust the browser window size so that the content has the specified size.
 
 Example:
 
@@ -80,10 +80,10 @@ import puppeteer from 'puppeteer-core';
 
   const page = (await browser.pages())[0];
 
-  // Default view port restricts window to 800x600, so remove it.
+  // Default viewport restricts window to 800x600, so remove it.
   await page.setViewport(null);
 
-  // Inner window size is updated asynchonously, so wait for
+  // Inner window size is updated asynchronously, so wait for
   // the window size change to get reported before logging it.
   const resized = page.evaluate(() => {
     return new Promise(resolve => {
@@ -112,4 +112,48 @@ Output:
 ```
 Inner size: 600x400
 Outer size: 600x487
+```
+
+## Fullscreen element
+
+The following example demonstrates how to request full-screen mode for an element on click.
+
+```ts
+import puppeteer from 'puppeteer-core';
+
+(async () => {
+  const browser = await puppeteer.launch({
+    args: ['--screen-info={1600x1200}'],
+  });
+
+  const page = (await browser.pages())[0];
+  await page.setContent(`
+    <div id="click-box" style="width: 10px; height: 10px;"/>
+  `);
+
+  await page.evaluate(() => {
+    const element = document.getElementById('click-box');
+    element.addEventListener('click', () => {
+      element.requestFullscreen();
+    });
+  });
+
+  await page.click('#click-box');
+
+  const windowId = await page.windowId();
+  const bounds = await browser.getWindowBounds(windowId);
+  console.log(
+    `${bounds.left},${bounds.top}` +
+      ` ${bounds.width}x${bounds.height}` +
+      ` ${bounds.windowState}`,
+  );
+
+  await browser.close();
+})();
+```
+
+Output:
+
+```
+0,0 1600x1200 fullscreen
 ```

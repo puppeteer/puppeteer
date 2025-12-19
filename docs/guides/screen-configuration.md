@@ -1,6 +1,6 @@
 # Screen configuration
 
-Use [`--screen-info`](https://chromium.googlesource.com/chromium/src/+/main/components/headless/screen_info/README.md) command line switch to configurr headless screen.
+Use [`--screen-info`](https://chromium.googlesource.com/chromium/src/+/main/components/headless/screen_info/README.md) command line switch to configure headless screen.
 
 The following script configures Chrome to run in a dual-screen configuration. The primary 800x600 screen is configured in a landscape orientation, and the secondary 600x800 screen, positioned directly to the right of the primary screen, is in a portrait orientation.
 
@@ -44,11 +44,11 @@ Screen [1] 0,0 800x600 label='1st' isPrimary=true isExtended=true isInternal=fal
 Screen [2] 800,0 600x800 label='2nd' isPrimary=false isExtended=true isInternal=false colorDepth=24 devicePixelRatio=1 avail=800,0 600x800 orientation.type=portraitPrimary orientation.angle=0
 ```
 
-With no `--screen-info` switch, the headless screen has one 800x600 screen unless `--window-size` switch is specified in which case the headess screen is as large as the requested window size.
+With no `--screen-info` switch, the headless screen has one 800x600 screen unless the `--window-size` switch is specified, in which case the headless screen is as large as the requested window size.
 
 :::caution
 
-The `--screen-info` switch is only avalable in headelss mode. Headful Chrome always uses physical platform screens.
+The `--screen-info` switch is only available in headless mode. Headful Chrome always uses physical platform screens.
 
 :::
 
@@ -81,10 +81,10 @@ import puppeteer from 'puppeteer-core';
       console.log(text);
     }
     const screens = await browser.screens();
-    const screen_infos = screens.map(s => getScreenInfo(s));
+    const screenInfos = screens.map(s => getScreenInfo(s));
 
     console.log(
-      `Number of screens: ${screens.length}\n` + screen_infos.join('\n'),
+      `Number of screens: ${screens.length}\n` + screenInfos.join('\n'),
     );
   }
 
@@ -128,6 +128,6 @@ Screen [1] 0,0 800x600 label='1st' isPrimary=true isExtended=false
 
 :::caution
 
-The `Browser.addScreen` and `Browser.removeScreen` methods are only avalable in headeless mode. The `Browser.screens` method is vailable in both headful and headless modes.
+The `Browser.addScreen` and `Browser.removeScreen` methods are only available in headless mode. The `Browser.screens` method is available in both headful and headless modes.
 
 :::
