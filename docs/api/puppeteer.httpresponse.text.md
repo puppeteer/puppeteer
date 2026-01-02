@@ -17,3 +17,7 @@ class HTTPResponse {
 **Returns:**
 
 Promise&lt;string&gt;
+
+## Remarks
+
+This method will throw if the content is not utf-8 string
