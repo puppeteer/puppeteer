@@ -3,12 +3,13 @@
  * Copyright 2025 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import expect from 'expect';
 import {describe, it} from 'node:test';
+
+import expect from 'expect';
 
 import {HTTPResponse} from './HTTPResponse.js';
 
-//@ts-expect-error we don't need to implement all the methods for the tests on
+// @ts-expect-error we don't need to implement all the methods for the tests on
 // text method
 class TestResponse extends HTTPResponse {
   private _contentToReturn: Uint8Array = new Uint8Array();
@@ -34,7 +35,7 @@ describe('HTTPResponse', () => {
 
     it('should throw if content is not valid UTF-8', async () => {
       const testResponse = new TestResponse();
-      testResponse.contentToReturn = new Uint8Array([ 0xff ]);
+      testResponse.contentToReturn = new Uint8Array([0xff]);
 
       await expect(testResponse.text()).rejects.toThrow();
     });

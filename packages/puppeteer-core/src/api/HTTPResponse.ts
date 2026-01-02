@@ -72,12 +72,12 @@ export abstract class HTTPResponse {
    * {@link SecurityDetails} if the response was received over the
    * secure connection, or `null` otherwise.
    */
-  abstract securityDetails(): SecurityDetails|null;
+  abstract securityDetails(): SecurityDetails | null;
 
   /**
    * Timing information related to the response.
    */
-  abstract timing(): Protocol.Network.ResourceTiming|null;
+  abstract timing(): Protocol.Network.ResourceTiming | null;
 
   /**
    * Promise which resolves to a buffer with response body.
@@ -108,7 +108,7 @@ export abstract class HTTPResponse {
    */
   async text(): Promise<string> {
     const content = await this.content();
-    return new TextDecoder('utf-8', {fatal : true}).decode(content);
+    return new TextDecoder('utf-8', {fatal: true}).decode(content);
   }
 
   /**
@@ -144,5 +144,5 @@ export abstract class HTTPResponse {
    * A {@link Frame} that initiated this response, or `null` if
    * navigating to error pages.
    */
-  abstract frame(): Frame|null;
+  abstract frame(): Frame | null;
 }
