@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 Google Inc.
+ * Copyright 2026 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
 import {describe, it} from 'node:test';
