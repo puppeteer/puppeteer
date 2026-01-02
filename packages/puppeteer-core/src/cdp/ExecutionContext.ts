@@ -526,6 +526,7 @@ export class ExecutionContext
   override [disposeSymbol](): void {
     this.#disposables.dispose();
     this.emit('disposed', undefined);
+    super[disposeSymbol]();
   }
 }
 
