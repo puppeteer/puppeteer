@@ -30,6 +30,7 @@ export {
   canDownload,
   uninstall,
   getDownloadUrl,
+  FallbackSources,
 } from './install.js';
 export {detectBrowserPlatform} from './detectPlatform.js';
 export type {ProfileOptions} from './browser-data/browser-data.js';
