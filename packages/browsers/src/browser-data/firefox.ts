@@ -383,6 +383,10 @@ function defaultProfilePreferences(
     // https://bugzilla.mozilla.org/show_bug.cgi?id=1710839
     'remote.enabled': true,
 
+    // Until Bug 1999693 is resolved, this preference needs to be set to allow
+    // Webdriver BiDi to automatically dismiss file pickers.
+    'remote.bidi.dismiss_file_pickers.enabled': true,
+
     // Disabled screenshots component
     'screenshots.browser.component.enabled': false,
 
