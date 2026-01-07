@@ -3154,11 +3154,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
   ): Promise<DeviceRequestPrompt>;
 
   /**
-   * Resizes the browser window the page is in so that the content area
-   * (excluding browser UI) is according to the specified width and height.
+   * Resizes the browser window of this page so that the content area (excluding
+   * browser UI) has the specified width and height.
    *
    * @experimental
-   * @internal
    */
   abstract resize(params: {
     contentWidth: number;

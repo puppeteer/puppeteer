@@ -56,6 +56,8 @@ module.exports = {
         'guides/files',
         'guides/running-puppeteer-in-the-browser',
         'guides/running-puppeteer-in-extensions',
+        'guides/screen-configuration',
+        'guides/window-management',
       ],
     },
     'examples',
