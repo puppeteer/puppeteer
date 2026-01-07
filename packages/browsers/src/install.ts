@@ -27,6 +27,46 @@ import {downloadFile, getJSON, headHttpRequest} from './httpUtil.js';
 
 const debugInstall = debug('puppeteer:browsers:install');
 
+/**
+ * Maps BrowserPlatform to Electron release platform names
+ */
+function mapPlatformForElectron(platform: BrowserPlatform): string {
+  switch (platform) {
+    case BrowserPlatform.LINUX:
+      return 'linux-x64';
+    case BrowserPlatform.LINUX_ARM:
+      return 'linux-arm64';
+    case BrowserPlatform.MAC:
+      return 'darwin-x64';
+    case BrowserPlatform.MAC_ARM:
+      return 'darwin-arm64';
+    case BrowserPlatform.WIN32:
+      return 'win32-ia32';
+    case BrowserPlatform.WIN64:
+      return 'win32-x64';
+  }
+}
+
+/**
+ * Maps BrowserPlatform to Playwright platform names
+ */
+function mapPlatformForPlaywright(platform: BrowserPlatform): string {
+  switch (platform) {
+    case BrowserPlatform.LINUX:
+      return 'linux';
+    case BrowserPlatform.LINUX_ARM:
+      return 'linux-arm64';
+    case BrowserPlatform.MAC:
+      return 'mac';
+    case BrowserPlatform.MAC_ARM:
+      return 'mac-arm64';
+    case BrowserPlatform.WIN32:
+      return 'win32';
+    case BrowserPlatform.WIN64:
+      return 'win64';
+  }
+}
+
 const times = new Map<string, [number, number]>();
 function debugTime(label: string) {
   times.set(label, process.hrtime());
@@ -42,6 +82,37 @@ function debugTimeEnd(label: string) {
     end[0] * 1000 + end[1] / 1e6 - (start[0] * 1000 + start[1] / 1e6); // calculate duration in milliseconds
   debugInstall(`Duration for ${label}: ${duration}ms`);
 }
+
+/**
+ * Predefined fallback sources for common alternative download locations
+ */
+export const FallbackSources = {
+  /**
+   * Electron releases - useful for Chromedriver on platforms where Chrome releases aren't available
+   */
+  ELECTRON: {
+    baseUrl: 'https://github.com/electron/electron/releases/download/',
+    urlBuilder: (browser: Browser, platform: BrowserPlatform, buildId: string, baseUrl: string) => {
+      if (browser !== Browser.CHROMEDRIVER) {
+        throw new Error('Electron fallback is only supported for Chromedriver');
+      }
+      return `${baseUrl}v${buildId}/chromedriver-v${buildId}-${mapPlatformForElectron(platform)}.zip`;
+    }
+  },
+
+  /**
+   * Playwright builds - useful for Chromium on ARM64 platforms
+   */
+  PLAYWRIGHT_CHROMIUM: {
+    baseUrl: 'https://playwright.azureedge.net/builds/chromium/',
+    urlBuilder: (browser: Browser, platform: BrowserPlatform, buildId: string, baseUrl: string) => {
+      if (browser !== Browser.CHROMIUM) {
+        throw new Error('Playwright Chromium fallback is only supported for Chromium browser');
+      }
+      return `${baseUrl}${buildId}/chromium-${mapPlatformForPlaywright(platform)}.zip`;
+    }
+  }
+} as const;
 
 /**
  * @public
@@ -91,6 +162,31 @@ export interface InstallOptions {
    *
    */
   baseUrl?: string;
+  /**
+   * Alternative download sources to try if the primary download fails.
+   * Useful for platforms where official builds aren't available.
+   *
+   * @example
+   * ```typescript
+   * // Use Electron releases as fallback for Chromedriver
+   * fallbackSources: [{
+   *   baseUrl: 'https://github.com/electron/electron/releases/download/',
+   *   urlBuilder: (browser, platform, buildId, baseUrl) =>
+   *     `${baseUrl}v${buildId}/chromedriver-v${buildId}-${mapPlatformForElectron(platform)}.zip`
+   * }]
+   *
+   * // Use Playwright builds as fallback for Chromium
+   * fallbackSources: [{
+   *   baseUrl: 'https://playwright.azureedge.net/builds/chromium/',
+   *   urlBuilder: (browser, platform, buildId, baseUrl) =>
+   *     `${baseUrl}${buildId}/chromium-${mapPlatformForPlaywright(platform)}.zip`
+   * }]
+   * ```
+   */
+  fallbackSources?: Array<{
+    baseUrl: string;
+    urlBuilder?: (browser: Browser, platform: BrowserPlatform, buildId: string, baseUrl: string) => string;
+  }>;
   /**
    * Whether to unpack and install browser archives.
    *
@@ -161,6 +257,47 @@ export async function install(
       throw err;
     }
     debugInstall(`Error downloading from ${url}.`);
+
+    // Try user-provided fallback sources first
+    if (options.fallbackSources) {
+      for (const fallbackSource of options.fallbackSources) {
+        try {
+          debugInstall(`Trying fallback source: ${fallbackSource.baseUrl}`);
+          let fallbackDownloadUrl: URL;
+
+          if (fallbackSource.urlBuilder) {
+            // Use custom URL builder for sources with different URL structures
+            // At this point, options.platform is guaranteed to be defined due to earlier validation
+            if (!options.platform) {
+              throw new Error('Platform should be defined at this point');
+            }
+            const urlString = fallbackSource.urlBuilder(
+              options.browser,
+              options.platform,
+              options.buildId,
+              fallbackSource.baseUrl
+            );
+            fallbackDownloadUrl = new URL(urlString);
+          } else {
+            // Use standard URL builder with custom baseUrl
+            fallbackDownloadUrl = getDownloadUrl(
+              options.browser,
+              options.platform,
+              options.buildId,
+              fallbackSource.baseUrl,
+            );
+          }
+
+          debugInstall(`Attempting download from ${fallbackDownloadUrl}`);
+          return await installUrl(fallbackDownloadUrl, options);
+        } catch (fallbackErr) {
+          debugInstall(`Fallback source ${fallbackSource.baseUrl} failed: ${(fallbackErr as Error).message}`);
+          // Continue to next fallback source
+        }
+      }
+    }
+
+    // Fall back to browser-specific logic
     switch (options.browser) {
       case Browser.CHROME:
       case Browser.CHROMEDRIVER:
