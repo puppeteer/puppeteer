@@ -55,27 +55,6 @@
     "comment": "crbug.com/433304196"
   },
   {
-    "testIdPattern": "[pipe.spec] Puppeteer.launch should support the pipe option",
-    "platforms": ["darwin", "linux"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["TIMEOUT"],
-    "comment": "Needs investigation"
-  },
-  {
-    "testIdPattern": "[pipe.spec] Puppeteer.launch should support the pipe argument",
-    "platforms": ["darwin", "linux"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["TIMEOUT"],
-    "comment": "Needs investigation"
-  },
-  {
-    "testIdPattern": "[pipe.spec] Puppeteer.launch should fire \"disconnected\" when closing with pipe",
-    "platforms": ["darwin", "linux"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["TIMEOUT"],
-    "comment": "Needs investigation"
-  },
-  {
     "testIdPattern": "[webExtension.spec] webExtension can install and uninstall an extension",
     "platforms": ["darwin", "linux"],
     "parameters": ["chrome", "webDriverBiDi"],
