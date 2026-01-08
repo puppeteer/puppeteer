@@ -181,6 +181,21 @@ describe('Page', function () {
         expect(message).not.toContain('Timeout');
       }
     });
+
+    it('should close pages', async () => {
+      const {browser, server} = await getTestState();
+
+      // Reproduction of https://github.com/puppeteer/puppeteer/issues/14533.
+      for (let i = 0; i < 2; i++) {
+        const p = await browser.newPage();
+        await p.goto(server.EMPTY_PAGE);
+        await browser.newPage();
+        for (const page of await browser.pages()) {
+          await page.close();
+        }
+      }
+      expect(await browser.pages()).toHaveLength(0);
+    });
   });
 
   describe('Page.Events.Load', function () {
