@@ -631,7 +631,7 @@ export class CdpPage extends Page {
       })
     ).cookies;
 
-    const unsupportedCookieAttributes = ['sourcePort'];
+    const unsupportedCookieAttributes = ['sourcePort', 'sameParty'];
     const filterUnsupportedAttributes = (
       cookie: Protocol.Network.Cookie,
     ): Protocol.Network.Cookie => {

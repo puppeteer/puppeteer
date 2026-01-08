@@ -911,7 +911,6 @@ export class BidiPage extends Page {
         // Chrome-specific properties.
         ...cdpSpecificCookiePropertiesFromPuppeteerToBidi(
           cookie,
-          'sameParty',
           'sourceScheme',
           'priority',
           'url',
@@ -1115,7 +1114,6 @@ export function bidiToPuppeteerCookie(
     // Extending with CDP-specific properties with `goog:` prefix.
     ...cdpSpecificCookiePropertiesFromBidiToPuppeteer(
       bidiCookie,
-      'sameParty',
       'sourceScheme',
       'partitionKeyOpaque',
       'priority',
