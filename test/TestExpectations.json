@@ -649,6 +649,13 @@
     "comment": "With BiDi we get only text and not a serializable value for console messages"
   },
   {
+    "testIdPattern": "[page.spec] Page Page.newPage should create a background page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["FAIL"],
+    "comment": "In headless shell all pages are in foreground"
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.newPage should open pages in a new window at the specified position",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
