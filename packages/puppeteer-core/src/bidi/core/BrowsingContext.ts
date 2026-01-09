@@ -415,11 +415,9 @@ export class BrowsingContext extends EventEmitter<{
     return context.#reason!;
   })
   async close(promptUnload?: boolean): Promise<void> {
-    await Promise.all(
-      [...this.#children.values()].map(async child => {
-        await child.close(promptUnload);
-      }),
-    );
+    // The WebDriver BiDi specification only allows closing top-level browsing contexts.
+    // Closing a top-level context automatically closes all its children, so there is
+    // no need to explicitly close nested contexts.
     await this.#session.send('browsingContext.close', {
       context: this.id,
       promptUnload,

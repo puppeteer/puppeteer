@@ -120,6 +120,15 @@ describe('Page', function () {
       await newPage.close();
       expect(await browser.pages()).not.toContain(newPage);
     });
+    it('should close child iframes', async () => {
+      const {context, server} = await getTestState();
+
+      const newPage = await context.newPage();
+      await newPage.goto(server.PREFIX + '/frames/one-frame.html');
+      expect(newPage.frames().length).toBe(2);
+      await newPage.close();
+      expect(await context.pages()).not.toContain(newPage);
+    });
     it('should run beforeunload if asked for', async () => {
       const {context, server, isChrome} = await getTestState();
 
