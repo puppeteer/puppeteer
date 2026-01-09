@@ -7,14 +7,17 @@ sidebar_label: CreatePageOptions
 ### Signature
 
 ```typescript
-export type CreatePageOptions =
+export type CreatePageOptions = (
   | {
-      type: 'tab';
+      type?: 'tab';
     }
   | {
       type: 'window';
       windowBounds?: WindowBounds;
-    };
+    }
+) & {
+  background?: boolean;
+};
 ```
 
 **References:** [WindowBounds](./puppeteer.windowbounds.md)
