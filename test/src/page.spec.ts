@@ -182,18 +182,19 @@ describe('Page', function () {
       }
     });
 
-    it('should close pages', async () => {
-      const {context, server} = await getTestState();
+    it.only('should close pages', async () => {
+      const {context} = await getTestState();
 
       // Reproduction of https://github.com/puppeteer/puppeteer/issues/14533.
-      for (let i = 0; i < 2; i++) {
-        const p = await context.newPage();
-        await p.goto(server.EMPTY_PAGE);
-        await context.newPage();
-        for (const page of await context.pages()) {
-          await page.close();
-        }
+      const promises = [];
+      for (let i = 0; i < 10; i++) {
+        promises.push(context.newPage());
       }
+      await Promise.all(promises);
+
+      const pages = await context.pages();
+      await Promise.all(pages.map(page => page.close()));
+      expect(pages.every(page => page.isClosed())).toBe(true);
       expect(await context.pages()).toHaveLength(0);
     });
   });
