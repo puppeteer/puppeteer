@@ -430,8 +430,8 @@ export class BrowsingContext extends EventEmitter<{
 
     // We wait for the `closed` event to ensure that the internal state is
     // updated. Even though the spec requires the browser to close the context
-    // before returning the response, the `contextDestroyed` event might be
-    // received and processed after the command response.
+    // before returning the response, the `contextDestroyed` event might be processed
+    // after the command response.
     await closed.valueOrThrow();
   }
 
