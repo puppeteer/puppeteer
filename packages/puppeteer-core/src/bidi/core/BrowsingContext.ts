@@ -12,7 +12,6 @@ import {EventEmitter} from '../../common/EventEmitter.js';
 import {isString} from '../../common/util.js';
 import {assert} from '../../util/assert.js';
 import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
-import {Deferred} from '../../util/Deferred.js';
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
 import {BidiBluetoothEmulation} from '../BluetoothEmulation.js';
 import {BidiDeviceRequestPromptManager} from '../DeviceRequestPrompt.js';
@@ -416,23 +415,13 @@ export class BrowsingContext extends EventEmitter<{
     return context.#reason!;
   })
   async close(promptUnload?: boolean): Promise<void> {
-    const closed = Deferred.create<void>();
-    this.once('closed', () => {
-      closed.resolve();
-    });
-
-    // According to the WebDriver BiDi spec, closing a browsing context
-    // automatically closes all its child browsing contexts.
+    // The WebDriver BiDi specification only allows closing top-level browsing contexts.
+    // Closing a top-level context automatically closes all its children, so there is
+    // no need to explicitly close nested contexts.
     await this.#session.send('browsingContext.close', {
       context: this.id,
       promptUnload,
     });
-
-    // We wait for the `closed` event to ensure that the internal state is
-    // updated. Even though the spec requires the browser to close the context
-    // before returning the response, the `contextDestroyed` event might be processed
-    // after the command response.
-    await closed.valueOrThrow();
   }
 
   @throwIfDisposed<BrowsingContext>(context => {

@@ -120,6 +120,15 @@ describe('Page', function () {
       await newPage.close();
       expect(await browser.pages()).not.toContain(newPage);
     });
+    it('should close child iframes', async () => {
+      const {context, server} = await getTestState();
+
+      const newPage = await context.newPage();
+      await newPage.goto(server.PREFIX + '/frames/one-frame.html');
+      expect(newPage.frames().length).toBe(2);
+      await newPage.close();
+      expect(await context.pages()).not.toContain(newPage);
+    });
     it('should run beforeunload if asked for', async () => {
       const {context, server, isChrome} = await getTestState();
 
@@ -180,22 +189,6 @@ describe('Page', function () {
         ]);
         expect(message).not.toContain('Timeout');
       }
-    });
-
-    it.only('should close pages', async () => {
-      const {context} = await getTestState();
-
-      // Reproduction of https://github.com/puppeteer/puppeteer/issues/14533.
-      const promises = [];
-      for (let i = 0; i < 10; i++) {
-        promises.push(context.newPage());
-      }
-      await Promise.all(promises);
-
-      const pages = await context.pages();
-      await Promise.all(pages.map(page => page.close()));
-      expect(pages.every(page => page.isClosed())).toBe(true);
-      expect(await context.pages()).toHaveLength(0);
     });
   });
 

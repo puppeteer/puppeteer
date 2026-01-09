@@ -300,13 +300,6 @@
     "comment": "Screen methods are only supported in headless mode"
   },
   {
-    "testIdPattern": "[browser.spec] Browser specs Browser.process should keep connected after the last page is closed",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL", "TIMEOUT"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[browser.spec] Browser specs Browser.screens should return default screen info",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
