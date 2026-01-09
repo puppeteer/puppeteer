@@ -8,7 +8,7 @@ import type {ChildProcess} from 'node:child_process';
 
 import * as Bidi from 'webdriver-bidi-protocol';
 
-import type {BrowserEvents} from '../api/Browser.js';
+import type {BrowserEvents, CreatePageOptions} from '../api/Browser.js';
 import {
   Browser,
   BrowserEvent,
@@ -282,8 +282,8 @@ export class BidiBrowser extends Browser {
     return this.#browserContexts.get(this.#browserCore.defaultUserContext)!;
   }
 
-  override newPage(): Promise<Page> {
-    return this.defaultBrowserContext().newPage();
+  override newPage(options?: CreatePageOptions): Promise<Page> {
+    return this.defaultBrowserContext().newPage(options);
   }
 
   override installExtension(path: string): Promise<string> {

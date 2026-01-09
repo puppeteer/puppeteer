@@ -23,6 +23,7 @@ export type CreateBrowsingContextOptions = Omit<
   'type' | 'referenceContext'
 > & {
   referenceContext?: BrowsingContext;
+  background?: boolean;
 };
 
 /**
@@ -147,6 +148,7 @@ export class UserContext extends EventEmitter<{
       type,
       ...options,
       referenceContext: options.referenceContext?.id,
+      background: options.background,
       userContext: this.#id,
     });
 

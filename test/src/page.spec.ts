@@ -79,6 +79,19 @@ describe('Page', function () {
       expect(outerSize.width).toBe(800);
       expect(outerSize.height).toBe(600);
     });
+    it('should create a background page', async () => {
+      const {context} = await getTestState();
+
+      const page = await context.newPage({
+        background: true,
+      });
+
+      expect(
+        await page.evaluate(() => {
+          return document.visibilityState;
+        }),
+      ).toBe('hidden');
+    });
   });
 
   describe('Page.close', function () {
