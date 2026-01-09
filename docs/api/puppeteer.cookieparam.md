@@ -168,27 +168,6 @@ Cookie Priority. Supported only in Chrome.
 </td></tr>
 <tr><td>
 
-<span id="sameparty">sameParty</span>
-
-</td><td>
-
-`optional, deprecated`
-
-</td><td>
-
-boolean
-
-</td><td>
-
-**Deprecated:**
-
-Always ignored.
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
 <span id="samesite">sameSite</span>
 
 </td><td>
