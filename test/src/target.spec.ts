@@ -40,6 +40,12 @@ describe('Target', function () {
     expect(allPages).toHaveLength(1);
     expect(allPages).toContain(page);
   });
+
+  it('page should return tab target id', async () => {
+    const {page} = await getTestState();
+    expect(page._tabId.length).toBeGreaterThan(0);
+  });
+
   it('should contain browser target', async () => {
     const {browser} = await getTestState();
 

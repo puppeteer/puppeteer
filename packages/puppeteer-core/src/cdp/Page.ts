@@ -151,6 +151,7 @@ export class CdpPage extends Page {
     assert(this.#tabTargetClient, 'Tab target session is not defined.');
     this.#tabTarget = (this.#tabTargetClient as CdpCDPSession).target();
     assert(this.#tabTarget, 'Tab target is not defined.');
+    this._tabId = this.#tabTarget._getTargetInfo().targetId;
     this.#primaryTarget = target;
     this.#targetManager = target._targetManager();
     this.#keyboard = new CdpKeyboard(client);

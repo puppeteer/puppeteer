@@ -704,6 +704,15 @@ export abstract class Page extends EventEmitter<PageEvents> {
    */
   _timeoutSettings = new TimeoutSettings();
 
+  /**
+   * Internal API to get an implementation-specific identifier
+   * for the tab. In Chrome, it is a tab target id. If unknown,
+   * returns an empty string.
+   *
+   * @internal
+   */
+  _tabId = '';
+
   #requestHandlers = new WeakMap<Handler<HTTPRequest>, Handler<HTTPRequest>>();
 
   #inflight$ = new ReplaySubject<number>(1);
