@@ -183,18 +183,18 @@ describe('Page', function () {
     });
 
     it('should close pages', async () => {
-      const {browser, server} = await getTestState();
+      const {context, server} = await getTestState();
 
       // Reproduction of https://github.com/puppeteer/puppeteer/issues/14533.
       for (let i = 0; i < 2; i++) {
-        const p = await browser.newPage();
+        const p = await context.newPage();
         await p.goto(server.EMPTY_PAGE);
-        await browser.newPage();
-        for (const page of await browser.pages()) {
+        await context.newPage();
+        for (const page of await context.pages()) {
           await page.close();
         }
       }
-      expect(await browser.pages()).toHaveLength(0);
+      expect(await context.pages()).toHaveLength(0);
     });
   });
 
