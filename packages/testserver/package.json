@@ -29,7 +29,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "mime": "4.1.0",
-    "ws": "8.18.3"
+    "ws": "8.19.0"
   },
   "devDependencies": {
     "@types/ws": "8.18.1"
