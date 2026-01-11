@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@angular/cli": "^21.0.5",
-    "@schematics/angular": "21.0.4"
+    "@schematics/angular": "21.0.5"
   },
   "files": [
     "lib",
