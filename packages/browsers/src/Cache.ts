@@ -39,16 +39,28 @@ export class InstalledBrowser {
     browser: Browser,
     buildId: string,
     platform: BrowserPlatform,
+    executablePathTemplate?: string,
   ) {
     this.#cache = cache;
     this.browser = browser;
     this.buildId = buildId;
     this.platform = platform;
-    this.executablePath = cache.computeExecutablePath({
-      browser,
-      buildId,
-      platform,
-    });
+
+    // If a path template is provided, expand it and use that
+    if (executablePathTemplate) {
+      const installationDir = cache.installationDir(browser, platform, buildId);
+      this.executablePath = path.join(
+        installationDir,
+        expandPathTemplate(executablePathTemplate, {platform, buildId}),
+      );
+    } else {
+      // Otherwise use default Chrome for Testing structure
+      this.executablePath = cache.computeExecutablePath({
+        browser,
+        buildId,
+        platform,
+      });
+    }
   }
 
   /**
@@ -274,4 +286,22 @@ function parseFolderPath(
     return;
   }
   return {platform, buildId};
+}
+
+/**
+ * Expand path template by replacing \{platform\} and \{buildId\} placeholders.
+ *
+ * @param template - Path template with optional placeholders
+ * @param variables - Values to substitute
+ * @returns Expanded path
+ *
+ * @internal
+ */
+function expandPathTemplate(
+  template: string,
+  variables: {platform: BrowserPlatform; buildId: string},
+): string {
+  return template
+    .replace(/{platform}/g, variables.platform)
+    .replace(/{buildId}/g, variables.buildId);
 }
