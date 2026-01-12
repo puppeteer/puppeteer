@@ -338,6 +338,32 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="browserdownloader">[BrowserDownloader](./browsers.browserdownloader.md)</span>
+
+</td><td>
+
+Interface for custom browser downloader implementations. Allows users to implement alternative download sources for browsers.
+
+⚠️ **IMPORTANT**: Custom downloaders are NOT officially supported by Puppeteer.
+
+By implementing this interface, you accept full responsibility for:
+
+- Ensuring downloaded binaries are compatible with Puppeteer's expectations - Testing that browser launch and other features work with your binaries - Maintaining compatibility when Puppeteer or your download source changes - Version consistency across platforms if mixing sources
+
+Puppeteer only tests and guarantees Chrome for Testing binaries.
+
+</td></tr>
+<tr><td>
+
+<span id="downloadoptions">[DownloadOptions](./browsers.downloadoptions.md)</span>
+
+</td><td>
+
+Options passed to a downloader.
+
+</td></tr>
+<tr><td>
+
 <span id="getinstalledbrowsersoptions">[GetInstalledBrowsersOptions](./browsers.getinstalledbrowsersoptions.md)</span>
 
 </td><td>

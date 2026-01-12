@@ -128,6 +128,35 @@ Determines the path to download browsers to.
 </td></tr>
 <tr><td>
 
+<span id="downloaders">downloaders</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[BrowserDownloader](./browsers.browserdownloader.md)\[\]
+
+</td><td>
+
+Custom downloader implementation for alternative download sources.
+
+If not provided, uses the default Chrome for Testing downloader. Multiple downloaders can be chained - they will be tried in order. Chrome for Testing is automatically added as the final fallback.
+
+⚠️ **IMPORTANT**: Custom downloaders are NOT officially supported by Puppeteer.
+
+By using custom downloaders, you accept full responsibility for:
+
+- **Version compatibility**: Different platforms may receive different binary versions - **Archive compatibility**: Binary structure must match Puppeteer's expectations - **Feature integration**: Browser launch and other Puppeteer features may not work - **Testing**: You must validate that downloaded binaries work with Puppeteer
+
+**Puppeteer only tests and guarantees compatibility with Chrome for Testing binaries.**
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="downloadprogresscallback">downloadProgressCallback</span>
 
 </td><td>
