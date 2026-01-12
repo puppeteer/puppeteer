@@ -51,5 +51,3 @@ export {
 } from './Cache.js';
 export {BrowserTag} from './browser-data/types.js';
 export type {BrowserDownloader, DownloadOptions} from './downloader.js';
-export {buildArchiveFilename} from './downloader.js';
-export {ChromeForTestingDownloader} from './default-downloader.js';
