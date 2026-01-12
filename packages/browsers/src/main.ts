@@ -50,4 +50,6 @@ export {
   type ComputeExecutablePathOptions,
 } from './Cache.js';
 export {BrowserTag} from './browser-data/types.js';
+export {ChromeForTestingDownloader} from './default-downloader.js';
+export {buildArchiveFilename} from './downloader.js';
 export type {BrowserDownloader, DownloadOptions} from './downloader.js';
