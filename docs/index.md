@@ -25,7 +25,7 @@ npm i puppeteer-core # Alternatively, install as a library, without downloading 
 
 ## MCP
 
-Install [Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp),
+Install [`chrome-devtools-mcp`](https://github.com/ChromeDevTools/chrome-devtools-mcp),
 a Puppeteer-based MCP server for browser automation and debugging.
 
 ## Example
