@@ -1,5 +1,26 @@
 # Changelog
 
+## [24.35.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.34.0...puppeteer-core-v24.35.0) (2026-01-12)
+
+
+### 🎉 Features
+
+* support background flag when creating pages ([#14547](https://github.com/puppeteer/puppeteer/issues/14547)) ([77245fd](https://github.com/puppeteer/puppeteer/commit/77245fd344c0d0ec3ce2b8307cbc528e4c1e572a))
+
+
+### 🛠️ Fixes
+
+* **puppeteer-core:** Deprecate Cookie attribute sameParty ([#14550](https://github.com/puppeteer/puppeteer/issues/14550)) ([d128a84](https://github.com/puppeteer/puppeteer/commit/d128a845a176100957eaee32aa391c22d6c9374b))
+* roll to Chrome 143.0.7499.192 ([#14541](https://github.com/puppeteer/puppeteer/issues/14541)) ([d3127b7](https://github.com/puppeteer/puppeteer/commit/d3127b7a9a9810e84cf35d75efd66debaffab088))
+* **webdriver:** closing page with iframes via webdriver ([#14549](https://github.com/puppeteer/puppeteer/issues/14549)) ([b89ce87](https://github.com/puppeteer/puppeteer/commit/b89ce8772803fc207bdd67000d3ea908a3a6f96b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.11.0 to 2.11.1
+
 ## [24.34.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.33.1...puppeteer-core-v24.34.0) (2025-12-19)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.11.1](https://github.com/puppeteer/puppeteer/compare/browsers-v2.11.0...browsers-v2.11.1) (2026-01-12)
+
+
+### 🛠️ Fixes
+
+* **firefox:** set preference dismiss_file_pickers to true ([#14540](https://github.com/puppeteer/puppeteer/issues/14540)) ([cc67588](https://github.com/puppeteer/puppeteer/commit/cc67588466777a272d46ed00347093f861cdfa9a))
+
 ## [2.11.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.10.13...browsers-v2.11.0) (2025-12-03)
 
 
