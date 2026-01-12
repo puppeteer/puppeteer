@@ -200,6 +200,7 @@ export class BidiFrame extends Frame {
             args,
             getStackTraceLocations(entry.stackTrace),
             this,
+            undefined,
           ),
         );
       } else if (isJavaScriptLogEntry(entry)) {
