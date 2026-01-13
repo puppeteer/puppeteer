@@ -6,6 +6,8 @@ sidebar_label: BrowserDownloader
 
 Interface for custom browser downloader implementations. Allows users to implement alternative download sources for browsers.
 
+See the [Custom Downloaders Guide](../../guides/custom-downloaders.md) for usage examples.
+
 ⚠️ **IMPORTANT**: Custom downloaders are NOT officially supported by Puppeteer.
 
 By implementing this interface, you accept full responsibility for:
