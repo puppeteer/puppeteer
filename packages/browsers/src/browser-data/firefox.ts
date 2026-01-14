@@ -229,6 +229,7 @@ function defaultProfilePreferences(
     // jest-puppeteer asserts that no error message is emitted by the console
     'browser.contentblocking.features.standard':
       '-tp,tpPrivate,cookieBehavior0,-cryptoTP,-fp',
+    'layout.testing.top-level-always-active': true,
 
     // Enable the dump function: which sends messages to the system
     // console
