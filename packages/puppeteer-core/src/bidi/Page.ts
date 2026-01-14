@@ -43,7 +43,7 @@ import type {
   CookieSameSite,
   DeleteCookiesRequest,
 } from '../common/Cookie.js';
-import {UnsupportedOperation} from '../common/Errors.js';
+import {ProtocolError, UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {FileChooser} from '../common/FileChooser.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
@@ -420,6 +420,7 @@ export class BidiPage extends Page {
   }
 
   override async setViewport(viewport: Viewport | null): Promise<void> {
+    let needsReload = false;
     if (!this.browser().cdpSupported) {
       const viewportSize =
         viewport?.width && viewport?.height
@@ -447,7 +448,7 @@ export class BidiPage extends Page {
               }
           : null;
 
-      await Promise.all([
+      const commands = [
         this.#frame.browsingContext.setViewport({
           viewport: viewportSize,
           devicePixelRatio,
@@ -455,13 +456,41 @@ export class BidiPage extends Page {
         this.#frame.browsingContext.setScreenOrientationOverride(
           screenOrientation,
         ),
-      ]);
+      ];
 
-      this.#viewport = viewport;
-      return;
+      if (
+        (this.#viewport?.hasTouch ?? false) !== (viewport?.hasTouch ?? false)
+      ) {
+        // The requested touch override state is different from the current one, meaning
+        // the reload is needed.
+        needsReload = true;
+        // 1 touch point if touch is enabled, null otherwise.
+        const maxTouchPoints = viewport?.hasTouch ? 1 : null;
+
+        commands.push(
+          this.#frame.browsingContext
+            .setTouchOverride(maxTouchPoints)
+            .catch(error => {
+              console.error(error);
+              console.error(JSON.stringify(error, null, 2));
+              if (
+                error instanceof ProtocolError &&
+                (error.message.includes('unknown command') ||
+                  error.message.includes('unsupported operation'))
+              ) {
+                // Tolerate not implemented or not supported commands. At least until
+                // the `emulation.setTouchOverride` is supported by all the supported
+                // browsers.
+                return;
+              }
+              throw error;
+            }),
+        );
+      }
+      await Promise.all(commands);
+    } else {
+      needsReload = await this.#cdpEmulationManager.emulateViewport(viewport);
     }
-    const needsReload =
-      await this.#cdpEmulationManager.emulateViewport(viewport);
     this.#viewport = viewport;
     if (needsReload) {
       await this.reload();
