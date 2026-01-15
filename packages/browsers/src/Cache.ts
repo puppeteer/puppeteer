@@ -54,7 +54,7 @@ export class InstalledBrowser {
         expandPathTemplate(executablePathTemplate, {platform, buildId}),
       );
     } else {
-      // Otherwise use default Chrome for Testing structure
+      // Otherwise use default structure
       this.executablePath = cache.computeExecutablePath({
         browser,
         buildId,
@@ -263,6 +263,17 @@ export class Cache {
       options.platform,
       options.buildId,
     );
+    const metadataPath = path.join(installationDir, '.puppeteer.json');
+    if (fs.existsSync(metadataPath)) {
+      try {
+        const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+        if (metadata.executablePath) {
+          return path.join(installationDir, metadata.executablePath);
+        }
+      } catch (err) {
+        debugCache('could not read .puppeteer.json', err);
+      }
+    }
     return path.join(
       installationDir,
       executablePathByBrowser[options.browser](

@@ -6,15 +6,15 @@
 
 import type {Browser, BrowserPlatform} from './browser-data/browser-data.js';
 import {downloadUrls} from './browser-data/browser-data.js';
-import type {BrowserDownloader, DownloadOptions} from './downloader.js';
+import type {BrowserProvider, DownloadOptions} from './provider.js';
 
 /**
- * Default downloader implementation that uses Chrome for Testing (CfT) sources.
- * This is the standard downloader used by Puppeteer.
+ * Default provider implementation that uses default sources.
+ * This is the standard provider used by Puppeteer.
  *
  * @public
  */
-export class ChromeForTestingDownloader implements BrowserDownloader {
+export class DefaultProvider implements BrowserProvider {
   #baseUrl?: string;
 
   constructor(baseUrl?: string) {
@@ -22,7 +22,7 @@ export class ChromeForTestingDownloader implements BrowserDownloader {
   }
 
   supports(_options: DownloadOptions): boolean {
-    // Chrome for Testing supports all browsers
+    // Default provider supports all browsers
     return true;
   }
 

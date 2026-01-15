@@ -19,7 +19,7 @@ import {ProxyAgent} from 'proxy-agent';
  * @param url - The URL to check
  * @returns Promise that resolves to true if final status is 200, false otherwise
  *
- * @public
+ * @internal
  */
 export function headHttpRequest(url: URL): Promise<boolean> {
   return new Promise(resolve => {
@@ -89,7 +89,7 @@ export function httpRequest(
  * @returns Promise that resolves when download completes
  * @throws Error if download fails or final response status is not 200
  *
- * @public
+ * @internal
  */
 export function downloadFile(
   url: URL,
@@ -151,7 +151,7 @@ export function downloadFile(
  * @returns Promise that resolves to the parsed JSON data
  * @throws Error if request fails, final status \>= 400, or JSON parsing fails
  *
- * @public
+ * @internal
  */
 export async function getJSON(url: URL): Promise<unknown> {
   const text = await getText(url);
@@ -170,7 +170,7 @@ export async function getJSON(url: URL): Promise<unknown> {
  * @returns Promise that resolves to the text content
  * @throws Error if the request fails or final response status is \>= 400
  *
- * @public
+ * @internal
  */
 export function getText(url: URL): Promise<string> {
   return new Promise((resolve, reject) => {
