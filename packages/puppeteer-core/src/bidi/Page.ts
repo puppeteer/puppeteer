@@ -471,8 +471,6 @@ export class BidiPage extends Page {
           this.#frame.browsingContext
             .setTouchOverride(maxTouchPoints)
             .catch(error => {
-              console.error(error);
-              console.error(JSON.stringify(error, null, 2));
               if (
                 error instanceof ProtocolError &&
                 (error.message.includes('unknown command') ||
