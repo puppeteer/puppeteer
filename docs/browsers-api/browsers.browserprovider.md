@@ -1,14 +1,14 @@
 ---
-sidebar_label: BrowserDownloader
+sidebar_label: BrowserProvider
 ---
 
-# BrowserDownloader interface
+# BrowserProvider interface
 
-Interface for custom browser downloader implementations. Allows users to implement alternative download sources for browsers.
+Interface for custom browser provider implementations. Allows users to implement alternative download sources for browsers.
 
-See the [Custom Downloaders Guide](../../guides/custom-downloaders.md) for usage examples.
+See the [Custom Providers Guide](../../guides/custom-downloaders.md) for usage examples.
 
-⚠️ **IMPORTANT**: Custom downloaders are NOT officially supported by Puppeteer.
+⚠️ **IMPORTANT**: Custom providers are NOT officially supported by Puppeteer.
 
 By implementing this interface, you accept full responsibility for:
 
@@ -19,13 +19,13 @@ Puppeteer only tests and guarantees Chrome for Testing binaries.
 ### Signature
 
 ```typescript
-export interface BrowserDownloader
+export interface BrowserProvider
 ```
 
 ## Example
 
 ```typescript
-class ElectronDownloader implements BrowserDownloader {
+class ElectronProvider implements BrowserProvider {
   supports(options: DownloadOptions): boolean {
     return options.browser === Browser.CHROMEDRIVER;
   }
@@ -58,13 +58,13 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="getdownloadurl">[getDownloadUrl(options)](./browsers.browserdownloader.getdownloadurl.md)</span>
+<span id="getdownloadurl">[getDownloadUrl(options)](./browsers.browserprovider.getdownloadurl.md)</span>
 
 </td><td>
 
 Get the download URL for the requested browser.
 
-The buildId can be either an exact version (e.g., "131.0.6778.109") or an alias (e.g., "latest", "stable"). Custom downloaders should handle version resolution internally if they support aliases.
+The buildId can be either an exact version (e.g., "131.0.6778.109") or an alias (e.g., "latest", "stable"). Custom providers should handle version resolution internally if they support aliases.
 
 Returns null if the buildId cannot be resolved to a valid version. The URL is not validated - download will fail later if URL doesn't exist.
 
@@ -73,7 +73,7 @@ Can be synchronous for simple URL construction or asynchronous if version resolu
 </td></tr>
 <tr><td>
 
-<span id="getexecutablepath">[getExecutablePath(options)](./browsers.browserdownloader.getexecutablepath.md)</span>
+<span id="getexecutablepath">[getExecutablePath(options)](./browsers.browserprovider.getexecutablepath.md)</span>
 
 </td><td>
 
@@ -84,11 +84,11 @@ Can return a simple path or use `\{platform\}` and `\{buildId\}` placeholders. I
 </td></tr>
 <tr><td>
 
-<span id="supports">[supports(options)](./browsers.browserdownloader.supports.md)</span>
+<span id="supports">[supports(options)](./browsers.browserprovider.supports.md)</span>
 
 </td><td>
 
-Check if this downloader supports the given browser/platform. Used for filtering before attempting downloads.
+Check if this provider supports the given browser/platform. Used for filtering before attempting downloads.
 
 Can be synchronous for quick checks or asynchronous if version resolution/network requests are needed.
 
