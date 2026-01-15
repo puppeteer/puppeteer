@@ -18,7 +18,7 @@ import type {Environment} from './Environment.js';
 import type {JSHandle} from './JSHandle.js';
 
 /**
- * @internal
+ * @public
  */
 export abstract class Realm implements Disposable {
   protected readonly timeoutSettings: TimeoutSettings;

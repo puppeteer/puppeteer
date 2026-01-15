@@ -380,9 +380,6 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
     options?: WaitForOptions,
   ): Promise<HTTPResponse | null>;
 
-  /**
-   * @internal
-   */
   abstract get client(): CDPSession;
 
   /**
@@ -390,14 +387,8 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    */
   abstract get accessibility(): Accessibility;
 
-  /**
-   * @internal
-   */
   abstract mainRealm(): Realm;
 
-  /**
-   * @internal
-   */
   abstract isolatedRealm(): Realm;
 
   #_document: Promise<ElementHandle<Document>> | undefined;
