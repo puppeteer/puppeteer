@@ -1,17 +1,17 @@
 ---
-sidebar_label: BrowserDownloader.supports
+sidebar_label: BrowserProvider.supports
 ---
 
-# BrowserDownloader.supports() method
+# BrowserProvider.supports() method
 
-Check if this downloader supports the given browser/platform. Used for filtering before attempting downloads.
+Check if this provider supports the given browser/platform. Used for filtering before attempting downloads.
 
 Can be synchronous for quick checks or asynchronous if version resolution/network requests are needed.
 
 ### Signature
 
 ```typescript
-interface BrowserDownloader {
+interface BrowserProvider {
   supports(options: DownloadOptions): Promise<boolean> | boolean;
 }
 ```
@@ -50,4 +50,4 @@ Download options to check
 
 Promise&lt;boolean&gt; \| boolean
 
-True if this downloader supports the browser/platform combination
+True if this provider supports the browser/platform combination

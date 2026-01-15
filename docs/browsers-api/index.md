@@ -338,13 +338,13 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="browserdownloader">[BrowserDownloader](./browsers.browserdownloader.md)</span>
+<span id="browserprovider">[BrowserProvider](./browsers.browserprovider.md)</span>
 
 </td><td>
 
-Interface for custom browser downloader implementations. Allows users to implement alternative download sources for browsers.
+Interface for custom browser provider implementations. Allows users to implement alternative download sources for browsers.
 
-⚠️ **IMPORTANT**: Custom downloaders are NOT officially supported by Puppeteer.
+⚠️ **IMPORTANT**: Custom providers are NOT officially supported by Puppeteer.
 
 By implementing this interface, you accept full responsibility for:
 
@@ -359,7 +359,7 @@ Puppeteer only tests and guarantees Chrome for Testing binaries.
 
 </td><td>
 
-Options passed to a downloader.
+Options passed to a provider.
 
 </td></tr>
 <tr><td>

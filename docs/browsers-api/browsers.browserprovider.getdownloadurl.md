@@ -1,12 +1,12 @@
 ---
-sidebar_label: BrowserDownloader.getDownloadUrl
+sidebar_label: BrowserProvider.getDownloadUrl
 ---
 
-# BrowserDownloader.getDownloadUrl() method
+# BrowserProvider.getDownloadUrl() method
 
 Get the download URL for the requested browser.
 
-The buildId can be either an exact version (e.g., "131.0.6778.109") or an alias (e.g., "latest", "stable"). Custom downloaders should handle version resolution internally if they support aliases.
+The buildId can be either an exact version (e.g., "131.0.6778.109") or an alias (e.g., "latest", "stable"). Custom providers should handle version resolution internally if they support aliases.
 
 Returns null if the buildId cannot be resolved to a valid version. The URL is not validated - download will fail later if URL doesn't exist.
 
@@ -15,7 +15,7 @@ Can be synchronous for simple URL construction or asynchronous if version resolu
 ### Signature
 
 ```typescript
-interface BrowserDownloader {
+interface BrowserProvider {
   getDownloadUrl(options: DownloadOptions): Promise<URL | null> | URL | null;
 }
 ```

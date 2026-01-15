@@ -4,7 +4,7 @@ sidebar_label: DownloadOptions
 
 # DownloadOptions interface
 
-Options passed to a downloader.
+Options passed to a provider.
 
 ### Signature
 

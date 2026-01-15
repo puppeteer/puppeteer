@@ -1,8 +1,8 @@
 ---
-sidebar_label: BrowserDownloader.getExecutablePath
+sidebar_label: BrowserProvider.getExecutablePath
 ---
 
-# BrowserDownloader.getExecutablePath() method
+# BrowserProvider.getExecutablePath() method
 
 Get the relative path to the executable within the extracted archive.
 
@@ -11,7 +11,7 @@ Can return a simple path or use `\{platform\}` and `\{buildId\}` placeholders. I
 ### Signature
 
 ```typescript
-interface BrowserDownloader {
+interface BrowserProvider {
   getExecutablePath?(options: {
     browser: Browser;
     buildId: string;

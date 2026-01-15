@@ -1,10 +1,10 @@
-# Custom Browser Downloaders
+# Custom Browser Providers
 
-Puppeteer’s pluggable downloader system allows you to implement alternative download sources for browsers and drivers. This is useful when you need to download from corporate mirrors, private repositories, or specialized browser builds.
+Puppeteer's pluggable provider system allows you to implement alternative download sources for browsers and drivers. This is useful when you need to download from corporate mirrors, private repositories, or specialized browser builds.
 
-## When to Use Custom Downloaders
+## When to Use Custom Providers
 
-Custom downloaders are appropriate when:
+Custom providers are appropriate when:
 
 - **Corporate Environments**: Your organization maintains internal browser mirrors
 - **Offline Development**: Working without internet access to official sources
@@ -14,7 +14,7 @@ Custom downloaders are appropriate when:
 
 :::caution
 
-Custom downloaders are NOT officially supported by Puppeteer. You accept full responsibility for:
+Custom providers are NOT officially supported by Puppeteer. You accept full responsibility for:
 
 - Binary compatibility with Puppeteer's expectations
 - Testing that browser launch and features work correctly
@@ -27,12 +27,12 @@ Puppeteer only tests and guarantees Chrome for Testing binaries.
 
 ## Basic Implementation
 
-Create a simple downloader that fetches Chrome from a custom mirror:
+Create a simple provider that fetches Chrome from a custom mirror:
 
 ```typescript
-import { BrowserDownloader, DownloadOptions, Browser, BrowserPlatform } from '@puppeteer/browsers';
+import { BrowserProvider, DownloadOptions, Browser, BrowserPlatform } from '@puppeteer/browsers';
 
-class SimpleMirrorDownloader implements BrowserDownloader {
+class SimpleMirrorProvider implements BrowserProvider {
   constructor(private mirrorUrl: string) {}
 
   supports(options: DownloadOptions): boolean {
@@ -80,30 +80,30 @@ class SimpleMirrorDownloader implements BrowserDownloader {
 ```typescript
 import { install } from '@puppeteer/browsers';
 
-const customDownloader = new CustomDownloader();
+const customProvider = new CustomProvider();
 
-// Install with custom downloader
+// Install with custom provider
 await install({
   browser: Browser.CHROME,
   buildId: '120.0.6099.109',
   platform: BrowserPlatform.LINUX,
   cacheDir: '/tmp/puppeteer-cache',
-  downloaders: [customDownloader]
+  providers: [customProvider]
 });
 ```
 
-## Downloader Chaining
+## Provider Chaining
 
-Downloaders are tried in order until one succeeds:
+Providers are tried in order until one succeeds:
 
 ```typescript
 await install({
   browser: Browser.CHROME,
   buildId: '120.0.6099.109',
   platform: BrowserPlatform.LINUX,
-  downloaders: [
-    new CorporateMirrorDownloader('https://internal.company.com'), // Try first
-    new CDNFallbackDownloader(), // Fallback
+  providers: [
+    new CorporateMirrorProvider('https://internal.company.com'), // Try first
+    new CDNFallbackProvider(), // Fallback
     // Chrome for Testing automatically added as final fallback
   ]
 });
