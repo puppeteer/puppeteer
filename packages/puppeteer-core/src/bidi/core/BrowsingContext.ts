@@ -512,6 +512,17 @@ export class BrowsingContext extends EventEmitter<{
     // SAFETY: Disposal implies this exists.
     return context.#reason!;
   })
+  async setTouchOverride(maxTouchPoints: number | null): Promise<void> {
+    await this.#session.send('emulation.setTouchOverride', {
+      contexts: [this.id],
+      maxTouchPoints,
+    });
+  }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
   async performActions(actions: Bidi.Input.SourceActions[]): Promise<void> {
     await this.#session.send('input.performActions', {
       context: this.id,
