@@ -10,13 +10,13 @@ import {
   buildArchiveFilename,
   Browser,
   BrowserPlatform,
-  type BrowserDownloader,
+  type BrowserProvider,
   type DownloadOptions,
 } from '../../../lib/esm/main.js';
 
-import {MockDownloader} from './mock-downloader.js';
+import {MockProvider} from './mock-provider.js';
 
-describe('BrowserDownloader Interface', () => {
+describe('BrowserProvider Interface', () => {
   describe('buildArchiveFilename', () => {
     it('should build standard archive filename', () => {
       const filename = buildArchiveFilename(
@@ -104,12 +104,12 @@ describe('BrowserDownloader Interface', () => {
     });
   });
 
-  describe('BrowserDownloader interface contract', () => {
-    let downloader: BrowserDownloader;
+  describe('BrowserProvider interface contract', () => {
+    let provider: BrowserProvider;
     let options: DownloadOptions;
 
     beforeEach(() => {
-      downloader = new MockDownloader();
+      provider = new MockProvider();
       options = {
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
@@ -118,27 +118,27 @@ describe('BrowserDownloader Interface', () => {
     });
 
     it('should implement supports method', () => {
-      const result = downloader.supports(options);
+      const result = provider.supports(options);
       assert.strictEqual(typeof result, 'boolean');
     });
 
     it('should implement getDownloadUrl method', () => {
-      const mockDownloader = new MockDownloader({
+      const mockProvider = new MockProvider({
         getDownloadUrlResult: new URL('https://example.com/archive.zip'),
       });
 
-      const result = mockDownloader.getDownloadUrl(options);
+      const result = mockProvider.getDownloadUrl(options);
       assert(result instanceof URL);
       assert.strictEqual(result.toString(), 'https://example.com/archive.zip');
     });
 
     it('should support optional getExecutablePath method', () => {
-      const mockDownloader = new MockDownloader({
+      const mockProvider = new MockProvider({
         getExecutablePath: '/path/to/executable',
       });
 
-      if (mockDownloader.getExecutablePath) {
-        const result = mockDownloader.getExecutablePath({
+      if (mockProvider.getExecutablePath) {
+        const result = mockProvider.getExecutablePath({
           browser: Browser.CHROME,
           buildId: '120.0.6099.109',
           platform: BrowserPlatform.LINUX,

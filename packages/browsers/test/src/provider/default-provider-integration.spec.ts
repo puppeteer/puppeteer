@@ -9,24 +9,24 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import type {DownloadOptions} from '../../../lib/esm/downloader.js';
 import {
   Browser,
   BrowserPlatform,
-  ChromeForTestingDownloader,
+  DefaultProvider,
+  type DownloadOptions,
 } from '../../../lib/esm/main.js';
 import {getServerUrl, setupTestServer} from '../utils.js';
 
-describe('ChromeForTestingDownloader Integration', () => {
+describe('DefaultProvider Integration', () => {
   setupTestServer();
 
-  let downloader: ChromeForTestingDownloader;
+  let downloader: DefaultProvider;
   let tmpDir: string;
 
   beforeEach(() => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'puppeteer-test'));
     // Use test server for controlled integration testing
-    downloader = new ChromeForTestingDownloader(getServerUrl());
+    downloader = new DefaultProvider(getServerUrl());
   });
 
   afterEach(() => {
@@ -90,7 +90,7 @@ describe('ChromeForTestingDownloader Integration', () => {
 
   describe('error handling', () => {
     it('should handle invalid build IDs', () => {
-      // ChromeForTestingDownloader always returns a URL, even for invalid build IDs
+      // DefaultProvider always returns a URL, even for invalid build IDs
       // The actual error occurs during download, which is tested via the install function
       const result = downloader.getDownloadUrl({
         browser: Browser.CHROME,

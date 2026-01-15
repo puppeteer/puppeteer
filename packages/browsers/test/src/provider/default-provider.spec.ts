@@ -12,20 +12,20 @@ import path from 'node:path';
 import {
   Browser,
   BrowserPlatform,
-  ChromeForTestingDownloader,
+  DefaultProvider,
 } from '../../../lib/esm/main.js';
 import {getServerUrl, setupTestServer} from '../utils.js';
 
-describe('ChromeForTestingDownloader', () => {
+describe('DefaultProvider', () => {
   setupTestServer();
 
-  let downloader: ChromeForTestingDownloader;
+  let downloader: DefaultProvider;
   let tmpDir: string;
 
   beforeEach(() => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'puppeteer-test'));
     // Use test server as base URL for controlled testing
-    downloader = new ChromeForTestingDownloader(getServerUrl());
+    downloader = new DefaultProvider(getServerUrl());
   });
 
   afterEach(() => {
@@ -36,18 +36,18 @@ describe('ChromeForTestingDownloader', () => {
 
   describe('constructor', () => {
     it('should create downloader with default base URL', () => {
-      const defaultDownloader = new ChromeForTestingDownloader();
-      assert(defaultDownloader instanceof ChromeForTestingDownloader);
+      const defaultDownloader = new DefaultProvider();
+      assert(defaultDownloader instanceof DefaultProvider);
     });
 
     it('should create downloader with custom base URL', () => {
       const customBaseUrl = 'https://custom.example.com/';
-      const customDownloader = new ChromeForTestingDownloader(customBaseUrl);
-      assert(customDownloader instanceof ChromeForTestingDownloader);
+      const customDownloader = new DefaultProvider(customBaseUrl);
+      assert(customDownloader instanceof DefaultProvider);
     });
   });
 
-  describe('BrowserDownloader interface compliance', () => {
+  describe('BrowserProvider interface compliance', () => {
     it('should implement supports method', () => {
       assert.strictEqual(typeof downloader.supports, 'function');
     });

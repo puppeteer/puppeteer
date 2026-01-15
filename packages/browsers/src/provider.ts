@@ -39,7 +39,7 @@ export interface DownloadOptions {
  * @example
  *
  * ```typescript
- * class ElectronDownloader implements BrowserDownloader {
+ * class ElectronDownloader implements BrowserProvider {
  *   supports(options: DownloadOptions): boolean {
  *     return options.browser === Browser.CHROMEDRIVER;
  *   }
@@ -61,7 +61,7 @@ export interface DownloadOptions {
  *
  * @public
  */
-export interface BrowserDownloader {
+export interface BrowserProvider {
   /**
    * Check if this downloader supports the given browser/platform.
    * Used for filtering before attempting downloads.

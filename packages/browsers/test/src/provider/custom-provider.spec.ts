@@ -9,11 +9,11 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import {install, Browser, BrowserPlatform} from '../../../lib/esm/main.js';
+import {Browser, BrowserPlatform, install} from '../../../lib/esm/main.js';
 
-import {MockDownloader} from './mock-downloader.js';
+import {MockProvider} from './mock-provider.js';
 
-describe('Custom Downloader Integration', () => {
+describe('Custom Provider Integration', () => {
   let tmpDir: string;
 
   beforeEach(() => {
@@ -27,10 +27,10 @@ describe('Custom Downloader Integration', () => {
   });
 
   describe('basic functionality', () => {
-    it('should work with no custom downloaders (default CfT)', async function () {
+    it('should work with no custom providers (default CfT)', async function () {
       this.timeout(30000); // May take time for network requests
 
-      // Should use default ChromeForTestingDownloader
+      // Should use default ChromeForTestingProvider
       await assert.rejects(
         install({
           cacheDir: tmpDir,
@@ -38,14 +38,14 @@ describe('Custom Downloader Integration', () => {
           platform: BrowserPlatform.LINUX,
           buildId: 'non-existent-build-12345',
         }),
-        /All downloaders failed/,
+        /Download failed/,
       );
     });
 
-    it('should accept custom downloaders array', async function () {
+    it('should accept custom providers array', async function () {
       this.timeout(30000);
 
-      const customDownloader = new MockDownloader({
+      const customProvider = new MockProvider({
         supports: false, // Will fall back to CfT
       });
 
@@ -55,7 +55,7 @@ describe('Custom Downloader Integration', () => {
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
         buildId: '120.0.6099.109',
-        downloaders: [customDownloader],
+        providers: [customProvider],
       });
 
       assert(result);
@@ -63,11 +63,11 @@ describe('Custom Downloader Integration', () => {
     });
   });
 
-  describe('downloader interface compliance', () => {
-    it('should handle downloaders that implement the interface', async function () {
+  describe('provider interface compliance', () => {
+    it('should handle providers that implement the interface', async function () {
       this.timeout(30000);
 
-      const downloader = new MockDownloader({
+      const provider = new MockProvider({
         supports: true,
         getDownloadUrlResult: new URL('https://example.com/test.zip'),
       });
@@ -75,7 +75,7 @@ describe('Custom Downloader Integration', () => {
       // Create dummy archive file
       fs.writeFileSync(path.join(tmpDir, 'test.zip'), 'dummy content');
 
-      // The MockDownloader should be used first, but may fail on extraction
+      // The MockProvider should be used first, but may fail on extraction
       // The important thing is that the interface is called correctly
       try {
         await install({
@@ -83,7 +83,7 @@ describe('Custom Downloader Integration', () => {
           browser: Browser.CHROME,
           platform: BrowserPlatform.LINUX,
           buildId: '120.0.6099.109',
-          downloaders: [downloader],
+          providers: [provider],
         });
         // If it succeeds, that's fine
         assert(true);
