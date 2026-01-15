@@ -24,7 +24,7 @@ import {debug} from './debug.js';
 import {DefaultProvider} from './default-provider.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {unpackArchive} from './fileUtil.js';
-import {downloadFile} from './httpUtil.js';
+import {downloadFile, headHttpRequest} from './httpUtil.js';
 import type {BrowserProvider} from './provider.js';
 
 const debugInstall = debug('puppeteer:browsers:install');
@@ -172,11 +172,19 @@ async function installWithProviders(
   const cache = new Cache(options.cacheDir);
   const browserRoot = cache.browserRoot(options.browser);
 
-  // Always add default CfT downloader as final fallback
-  const providers = [
-    ...(options.providers || []),
-    new DefaultProvider(options.baseUrl),
-  ];
+  // Build provider list with proper fallback behavior
+  const providers = [...(options.providers || [])];
+
+  // If custom baseUrl is provided, add it as a provider
+  if (options.baseUrl) {
+    providers.push(new DefaultProvider(options.baseUrl));
+  }
+
+  // Always add default provider as final fallback
+  // (unless custom baseUrl is provided and forceFallbackForTesting is false)
+  if (!options.baseUrl || options.forceFallbackForTesting) {
+    providers.push(new DefaultProvider());
+  }
 
   const downloadOptions = {
     browser: options.browser,
@@ -604,13 +612,13 @@ export async function canDownload(options: InstallOptions): Promise<boolean> {
     buildId: options.buildId,
   };
 
-  // Check if any provider can provide a URL for this request
+  // Check if any provider can provide a valid, downloadable URL
   for (const provider of providers) {
-    if (!provider.supports(downloadOptions)) {
+    if (!(await provider.supports(downloadOptions))) {
       continue;
     }
-    const url = provider.getDownloadUrl(downloadOptions);
-    if (url) {
+    const url = await provider.getDownloadUrl(downloadOptions);
+    if (url && (await headHttpRequest(url))) {
       return true;
     }
   }

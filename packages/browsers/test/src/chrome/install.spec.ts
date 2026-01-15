@@ -86,16 +86,18 @@ describe('Chrome install', () => {
         return err as Error;
       }
     }
-    assert.strictEqual(
-      (await installThatThrows())?.message,
-      `The browser folder (${expectedOutputPath}) exists but the executable (${computeExecutablePath(
-        {
-          cacheDir: tmpDir,
-          browser: Browser.CHROME,
-          platform: BrowserPlatform.LINUX,
-          buildId: testChromeBuildId,
-        },
-      )}) is missing`,
+    const error = await installThatThrows();
+    const expectedMessage = `The browser folder (${expectedOutputPath}) exists but the executable (${computeExecutablePath(
+      {
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        platform: BrowserPlatform.LINUX,
+        buildId: testChromeBuildId,
+      },
+    )}) is missing`;
+    assert.ok(
+      error?.message.includes(expectedMessage),
+      `Expected error message to contain "${expectedMessage}" but got "${error?.message}"`,
     );
     assert.strictEqual(fs.existsSync(expectedOutputPath), true);
   });

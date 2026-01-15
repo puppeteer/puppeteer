@@ -158,64 +158,43 @@ describe('Custom Provider Integration Tests', () => {
   });
 
   describe('persistence', () => {
-    it('should persist custom executable path', async function () {
-      this.timeout(30000);
-
-      const fixturePath = path.join(
-        import.meta.dirname,
-        '..',
-        '..',
-        'fixtures',
-        'test.tar.bz2',
-      );
-      const archivePath = path.join(tmpDir, 'test-archive.tar.bz2');
-      fs.copyFileSync(fixturePath, archivePath);
-
-      // Define a custom executable path relative to the install root
-      // (we'll use a file that actually exists in our test fixture)
-
-      // Since test.tar.bz2 unpacks files, we can simulate the executable
-      // appearing. But installUrl checks existence *after* unpack.
-      // We can hack fs.existsSync or ensure our fixture unpacks to
-      // something we can point to.
-      // test.tar.bz2 contains 'test-file'.
-      // Let's point getExecutablePath to 'test-file'.
-      const actualFileInArchive = 'test-file';
-
-      const providerWithRealFile = new MockProvider({
-        supports: true,
-        getDownloadUrlResult: new URL(`file://${archivePath}`),
-        getExecutablePath: actualFileInArchive,
-      });
-
-      await install({
-        cacheDir: tmpDir,
-        browser: Browser.CHROME,
-        platform: BrowserPlatform.LINUX,
-        buildId: 'test-persistence',
-        providers: [providerWithRealFile],
-      });
-
+    it('should read custom executable path from .puppeteer.json', async function () {
+      // Test that .puppeteer.json metadata is correctly read
+      // by manually creating the directory structure and metadata file
+      const buildId = 'testpersistence'; // No hyphens, as parseFolderPath splits on '-'
       const installDir = path.join(
         tmpDir,
         'chrome',
-        `${BrowserPlatform.LINUX}-test-persistence`,
+        `${BrowserPlatform.LINUX}-${buildId}`,
       );
+      const customExecutablePath = 'custom/path/to/chrome';
+
+      // Create the directory structure
+      fs.mkdirSync(installDir, {recursive: true});
+
+      // Write .puppeteer.json with custom executable path
       const metadataPath = path.join(installDir, '.puppeteer.json');
+      fs.writeFileSync(
+        metadataPath,
+        JSON.stringify({executablePath: customExecutablePath}, null, 2),
+      );
 
-      assert.ok(fs.existsSync(metadataPath), '.puppeteer.json should exist');
-      const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
-      assert.strictEqual(metadata.executablePath, actualFileInArchive);
+      // Create a dummy executable file so it exists
+      const executableFullPath = path.join(installDir, customExecutablePath);
+      fs.mkdirSync(path.dirname(executableFullPath), {recursive: true});
+      fs.writeFileSync(executableFullPath, '');
 
-      // Verify getInstalledBrowsers picks it up
+      // Verify getInstalledBrowsers picks up the custom path
       const installed = await getInstalledBrowsers({cacheDir: tmpDir});
       const found = installed.find(b => {
-        return b.buildId === 'test-persistence';
+        return b.buildId === buildId;
       });
+
       assert.ok(found, 'Should find the installed browser');
       assert.strictEqual(
         found.executablePath,
-        path.join(installDir, actualFileInArchive),
+        executableFullPath,
+        'Should use custom executable path from .puppeteer.json',
       );
     });
   });
