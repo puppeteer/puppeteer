@@ -1166,6 +1166,10 @@ function cdpSpecificCookiePropertiesFromBidiToPuppeteer(
       result[property] = bidiCookie[CDP_SPECIFIC_PREFIX + property];
     }
   }
+  // TODO: remove once deprecated sameParty attribute is dropped.
+  if (!result.sameParty) {
+    result.sameParty = false;
+  }
   return result;
 }
 
