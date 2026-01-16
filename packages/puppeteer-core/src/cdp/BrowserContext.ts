@@ -116,6 +116,8 @@ export class CdpBrowserContext extends BrowserContext {
               hasCrossSiteAncestor: cookie.partitionKey.hasCrossSiteAncestor,
             }
           : undefined,
+        // TODO: remove sameParty as it is removed from Chrome.
+        sameParty: cookie.sameParty ?? false,
       };
     });
   }
