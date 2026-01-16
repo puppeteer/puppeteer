@@ -151,6 +151,7 @@ export class CdpPage extends Page {
     assert(this.#tabTargetClient, 'Tab target session is not defined.');
     this.#tabTarget = (this.#tabTargetClient as CdpCDPSession).target();
     assert(this.#tabTarget, 'Tab target is not defined.');
+    this._tabId = this.#tabTarget._getTargetInfo().targetId;
     this.#primaryTarget = target;
     this.#targetManager = target._targetManager();
     this.#keyboard = new CdpKeyboard(client);
@@ -345,7 +346,7 @@ export class CdpPage extends Page {
         session.target().url(),
         session.target()._targetId,
         session.target().type(),
-        this.#addConsoleMessage.bind(this),
+        this.#onConsoleAPI.bind(this),
         this.#handleException.bind(this),
         this.#frameManager.networkManager,
       );
@@ -519,6 +520,7 @@ export class CdpPage extends Page {
           [{url, lineNumber}],
           undefined,
           stackTrace,
+          this.#primaryTarget._targetId,
         ),
       );
     }
@@ -648,6 +650,8 @@ export class CdpPage extends Page {
         partitionKey: cookie.partitionKey
           ? cookie.partitionKey.topLevelSite
           : undefined,
+        // TODO: remove sameParty as it is removed from Chrome.
+        sameParty: cookie.sameParty ?? false,
       };
     });
   }
@@ -842,11 +846,50 @@ export class CdpPage extends Page {
     const values = event.args.map(arg => {
       return world.createCdpHandle(arg);
     });
-    this.#addConsoleMessage(
+
+    if (!this.listenerCount(PageEvent.Console)) {
+      values.forEach(arg => {
+        return arg.dispose();
+      });
+      return;
+    }
+    const textTokens = [];
+    // eslint-disable-next-line max-len -- The comment is long.
+    // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
+    for (const arg of values) {
+      const remoteObject = arg.remoteObject();
+      if (remoteObject.objectId) {
+        textTokens.push(arg.toString());
+      } else {
+        textTokens.push(valueFromRemoteObject(remoteObject));
+      }
+    }
+    const stackTraceLocations = [];
+    if (event.stackTrace) {
+      for (const callFrame of event.stackTrace.callFrames) {
+        stackTraceLocations.push({
+          url: callFrame.url,
+          lineNumber: callFrame.lineNumber,
+          columnNumber: callFrame.columnNumber,
+        });
+      }
+    }
+
+    let targetId;
+    if (world.environment.client instanceof CdpCDPSession) {
+      targetId = world.environment.client.target()._targetId;
+    }
+
+    const message = new ConsoleMessage(
       convertConsoleMessageLevel(event.type),
+      textTokens.join(' '),
       values,
+      stackTraceLocations,
+      undefined,
       event.stackTrace,
+      targetId,
     );
+    this.emit(PageEvent.Console, message);
   }
 
   async #onBindingCalled(
@@ -873,49 +916,6 @@ export class CdpPage extends Page {
 
     const binding = this.#bindings.get(name);
     await binding?.run(context, seq, args, isTrivial);
-  }
-
-  #addConsoleMessage(
-    eventType: string,
-    args: JSHandle[],
-    stackTrace?: Protocol.Runtime.StackTrace,
-  ): void {
-    if (!this.listenerCount(PageEvent.Console)) {
-      args.forEach(arg => {
-        return arg.dispose();
-      });
-      return;
-    }
-    const textTokens = [];
-    // eslint-disable-next-line max-len -- The comment is long.
-    // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
-    for (const arg of args) {
-      const remoteObject = arg.remoteObject();
-      if (remoteObject.objectId) {
-        textTokens.push(arg.toString());
-      } else {
-        textTokens.push(valueFromRemoteObject(remoteObject));
-      }
-    }
-    const stackTraceLocations = [];
-    if (stackTrace) {
-      for (const callFrame of stackTrace.callFrames) {
-        stackTraceLocations.push({
-          url: callFrame.url,
-          lineNumber: callFrame.lineNumber,
-          columnNumber: callFrame.columnNumber,
-        });
-      }
-    }
-    const message = new ConsoleMessage(
-      convertConsoleMessageLevel(eventType),
-      textTokens.join(' '),
-      args,
-      stackTraceLocations,
-      undefined,
-      stackTrace,
-    );
-    this.emit(PageEvent.Console, message);
   }
 
   #onDialog(event: Protocol.Page.JavascriptDialogOpeningEvent): void {

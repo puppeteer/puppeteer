@@ -189,7 +189,9 @@ export class BidiBrowserContext extends BrowserContext {
         ? Bidi.BrowsingContext.CreateType.Window
         : Bidi.BrowsingContext.CreateType.Tab;
 
-    const context = await this.userContext.createBrowsingContext(type);
+    const context = await this.userContext.createBrowsingContext(type, {
+      background: options?.background,
+    });
     const page = this.#pages.get(context)!;
     if (!page) {
       throw new Error('Page is not found');

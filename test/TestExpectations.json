@@ -649,6 +649,13 @@
     "comment": "With BiDi we get only text and not a serializable value for console messages"
   },
   {
+    "testIdPattern": "[page.spec] Page Page.newPage should create a background page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["FAIL"],
+    "comment": "In headless shell all pages are in foreground"
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.newPage should open pages in a new window at the specified position",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -796,13 +803,6 @@
     "comment": "crbug.com/469591372"
   },
   {
-    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with keep alive redirects",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL"],
-    "comment": "Missing events for keep alive requests?"
-  },
-  {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with worker",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -835,6 +835,13 @@
     "parameters": ["cdp"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[target.spec] Target page should return tab target id",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Not implemented for WebDriver BiDi"
   },
   {
     "testIdPattern": "[target.spec] Target should close a service worker",
@@ -1775,11 +1782,11 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work with strict CSP policy",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "testIdPattern": "[waittask.spec] waittask specs protocol timeout *",
+    "platforms": ["darwin"],
+    "parameters": ["firefox", "headful", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "session.new before the test consistently times out on mac + headful since 147"
   },
   {
     "testIdPattern": "[worker.spec] Workers can be closed",

@@ -79,6 +79,19 @@ describe('Page', function () {
       expect(outerSize.width).toBe(800);
       expect(outerSize.height).toBe(600);
     });
+    it('should create a background page', async () => {
+      const {context} = await getTestState();
+
+      const page = await context.newPage({
+        background: true,
+      });
+
+      expect(
+        await page.evaluate(() => {
+          return document.visibilityState;
+        }),
+      ).toBe('hidden');
+    });
   });
 
   describe('Page.close', function () {
@@ -106,6 +119,15 @@ describe('Page', function () {
       expect(await browser.pages()).toContain(newPage);
       await newPage.close();
       expect(await browser.pages()).not.toContain(newPage);
+    });
+    it('should close child iframes', async () => {
+      const {context, server} = await getTestState();
+
+      const newPage = await context.newPage();
+      await newPage.goto(server.PREFIX + '/frames/one-frame.html');
+      expect(newPage.frames().length).toBe(2);
+      await newPage.close();
+      expect(await context.pages()).not.toContain(newPage);
     });
     it('should run beforeunload if asked for', async () => {
       const {context, server, isChrome} = await getTestState();

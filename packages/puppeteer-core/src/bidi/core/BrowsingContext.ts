@@ -415,11 +415,9 @@ export class BrowsingContext extends EventEmitter<{
     return context.#reason!;
   })
   async close(promptUnload?: boolean): Promise<void> {
-    await Promise.all(
-      [...this.#children.values()].map(async child => {
-        await child.close(promptUnload);
-      }),
-    );
+    // The WebDriver BiDi specification only allows closing top-level browsing contexts.
+    // Closing a top-level context automatically closes all its children, so there is
+    // no need to explicitly close nested contexts.
     await this.#session.send('browsingContext.close', {
       context: this.id,
       promptUnload,
@@ -507,6 +505,17 @@ export class BrowsingContext extends EventEmitter<{
     await this.#session.send('browsingContext.setViewport', {
       context: this.id,
       ...options,
+    });
+  }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
+  async setTouchOverride(maxTouchPoints: number | null): Promise<void> {
+    await this.#session.send('emulation.setTouchOverride', {
+      contexts: [this.id],
+      maxTouchPoints,
     });
   }
 

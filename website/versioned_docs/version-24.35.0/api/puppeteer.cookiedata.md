@@ -170,7 +170,7 @@ Cookie Priority. Supported only in Chrome.
 
 </td><td>
 
-`optional`
+`optional, deprecated`
 
 </td><td>
 
@@ -178,7 +178,9 @@ boolean
 
 </td><td>
 
-True if cookie is SameParty. Supported only in Chrome.
+**Deprecated:**
+
+Always set to false. Supported only in Chrome.
 
 </td><td>
 

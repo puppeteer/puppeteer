@@ -65,6 +65,7 @@ export class ConsoleMessage {
   #stackTraceLocations: ConsoleMessageLocation[];
   #frame?: Frame;
   #rawStackTrace?: Protocol.Runtime.StackTrace;
+  #targetId?: string;
 
   /**
    * @internal
@@ -76,6 +77,7 @@ export class ConsoleMessage {
     stackTraceLocations: ConsoleMessageLocation[],
     frame?: Frame,
     rawStackTrace?: Protocol.Runtime.StackTrace,
+    targetId?: string,
   ) {
     this.#type = type;
     this.#text = text;
@@ -83,6 +85,7 @@ export class ConsoleMessage {
     this.#stackTraceLocations = stackTraceLocations;
     this.#frame = frame;
     this.#rawStackTrace = rawStackTrace;
+    this.#targetId = targetId;
   }
 
   /**
@@ -130,5 +133,14 @@ export class ConsoleMessage {
    */
   _rawStackTrace(): Protocol.Runtime.StackTrace | undefined {
     return this.#rawStackTrace;
+  }
+
+  /**
+   * The targetId from which this console message originated.
+   *
+   * @internal
+   */
+  _targetId(): string | undefined {
+    return this.#targetId;
   }
 }
