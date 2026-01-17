@@ -1,4 +1,4 @@
-FROM node:24
+FROM node:24-bookworm@sha256:b2b2184ba9b78c022e1d6a7924ec6fba577adf28f15c9d9c457730cc4ad3807a
 
 # Configure default locale (important for chrome-headless-shell).
 ENV LANG=en_US.UTF-8 
