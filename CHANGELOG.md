@@ -2,6 +2,33 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.36.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.35.0...puppeteer-v24.36.0) (2026-01-18)
+
+
+### ♻️ Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.35.0 to 24.36.0
+
+
+### 🎉 Features
+
+* roll to Firefox 147.0 ([#14559](https://github.com/puppeteer/puppeteer/issues/14559)) ([63dd0e4](https://github.com/puppeteer/puppeteer/commit/63dd0e401f67ebc2c831e93d60fdbf23fa15fb53))
+* **webdriver:** use `emulation.setTouchOverride` ([#14566](https://github.com/puppeteer/puppeteer/issues/14566)) ([e726839](https://github.com/puppeteer/puppeteer/commit/e7268395411f6d02861c014a3ace2e3327e84d43))
+
+
+### 🛠️ Fixes
+
+* HTTPResponse.text() method expected to throw when content is malformed ([#14450](https://github.com/puppeteer/puppeteer/issues/14450)) ([d967f6c](https://github.com/puppeteer/puppeteer/commit/d967f6ce3bbe4bdc9303303b97f9b4f33743105b))
+* roll to Firefox 147.0.1 ([#14574](https://github.com/puppeteer/puppeteer/issues/14574)) ([c9bdb7a](https://github.com/puppeteer/puppeteer/commit/c9bdb7a8e3c47965fa4abbccc0eb9ac06deb9d39))
+
+
 ## [24.35.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.34.0...puppeteer-v24.35.0) (2026-01-12)
 
 
