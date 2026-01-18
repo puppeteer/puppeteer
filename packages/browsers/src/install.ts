@@ -6,7 +6,7 @@
 
 import assert from 'node:assert';
 import {spawnSync} from 'node:child_process';
-import {existsSync, readFileSync} from 'node:fs';
+import {existsSync, readFileSync, writeFileSync} from 'node:fs';
 import {mkdir, unlink} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -21,9 +21,11 @@ import {
 } from './browser-data/browser-data.js';
 import {Cache, InstalledBrowser} from './Cache.js';
 import {debug} from './debug.js';
+import {DefaultProvider} from './default-provider.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {unpackArchive} from './fileUtil.js';
-import {downloadFile, getJSON, headHttpRequest} from './httpUtil.js';
+import {downloadFile, headHttpRequest} from './httpUtil.js';
+import type {BrowserProvider} from './provider.js';
 
 const debugInstall = debug('puppeteer:browsers:install');
 
@@ -113,6 +115,153 @@ export interface InstallOptions {
    * @defaultValue `false`
    */
   installDeps?: boolean;
+  /**
+   * Custom provider implementation for alternative download sources.
+   *
+   * If not provided, uses the default Chrome for Testing downloader.
+   * Multiple providers can be chained - they will be tried in order.
+   * Chrome for Testing is automatically added as the final fallback.
+   *
+   * ⚠️ **IMPORTANT**: Custom providers are NOT officially supported by
+   * Puppeteer.
+   *
+   * By using custom providers, you accept full responsibility for:
+   *
+   * - **Version compatibility**: Different platforms may receive different
+   *   binary versions
+   * - **Archive compatibility**: Binary structure must match Puppeteer's expectations
+   * - **Feature integration**: Browser launch and other Puppeteer features may not work
+   * - **Testing**: You must validate that downloaded binaries work with Puppeteer
+   *
+   * **Puppeteer only tests and guarantees compatibility with Chrome for
+   * Testing binaries.**
+   *
+   * @example
+   *
+   * ```typescript
+   * import {ElectronDownloader} from '@wdio/browser-downloader-electron';
+   *
+   * await install({
+   *   browser: Browser.CHROMEDRIVER,
+   *   buildId: '142.0.7444.175',
+   *   cacheDir: './cache',
+   *   providers: [
+   *     new ElectronDownloader(), // Try Electron releases first
+   *     // Falls back to Chrome for Testing automatically
+   *   ],
+   * });
+   * ```
+   */
+  providers?: BrowserProvider[];
+}
+
+/**
+ * Install using custom downloader plugins.
+ * Tries each downloader in order until one succeeds.
+ * Falls back to default CfT downloader if all custom downloaders fail.
+ *
+ * @internal
+ */
+async function installWithProviders(
+  options: InstallOptions,
+): Promise<InstalledBrowser | string> {
+  if (!options.platform) {
+    throw new Error('Platform must be defined');
+  }
+
+  const cache = new Cache(options.cacheDir);
+  const browserRoot = cache.browserRoot(options.browser);
+
+  // Build provider list with proper fallback behavior
+  const providers = [...(options.providers || [])];
+
+  // If custom baseUrl is provided, add it as a provider
+  if (options.baseUrl) {
+    providers.push(new DefaultProvider(options.baseUrl));
+  }
+
+  // Always add default provider as final fallback
+  // (unless custom baseUrl is provided and forceFallbackForTesting is false)
+  if (!options.baseUrl || options.forceFallbackForTesting) {
+    providers.push(new DefaultProvider());
+  }
+
+  const downloadOptions = {
+    browser: options.browser,
+    platform: options.platform,
+    buildId: options.buildId,
+    progressCallback:
+      options.downloadProgressCallback === 'default'
+        ? await makeProgressCallback(
+            options.browser,
+            options.buildIdAlias ?? options.buildId,
+          )
+        : options.downloadProgressCallback,
+  };
+
+  const errors: Error[] = [];
+
+  for (const provider of providers) {
+    try {
+      // Check: does this provider support this browser/platform?
+      if (!(await provider.supports(downloadOptions))) {
+        debugInstall(
+          `Provider ${provider.constructor.name} does not support ${options.browser} on ${options.platform}`,
+        );
+        continue;
+      }
+
+      // Warn if using non-default provider
+      if (!(provider instanceof DefaultProvider)) {
+        debugInstall(
+          `⚠️  Using custom downloader: ${provider.constructor.name}`,
+        );
+        debugInstall(
+          `⚠️  Puppeteer does not guarantee compatibility with non-default providers`,
+        );
+      }
+
+      debugInstall(
+        `Trying provider: ${provider.constructor.name} for ${options.browser} ${options.buildId}`,
+      );
+
+      // Get download URL from provider
+      const url = await provider.getDownloadUrl(downloadOptions);
+      if (!url) {
+        debugInstall(
+          `Provider ${provider.constructor.name} returned no URL for ${options.browser} ${options.buildId}`,
+        );
+        continue;
+      }
+
+      debugInstall(
+        `Successfully got URL from ${provider.constructor.name}: ${url}`,
+      );
+
+      if (!existsSync(browserRoot)) {
+        await mkdir(browserRoot, {recursive: true});
+      }
+
+      // Download and install using the URL from the provider
+      return await installUrl(url, options, provider);
+    } catch (err) {
+      debugInstall(
+        `Provider ${provider.constructor.name} failed: ${(err as Error).message}`,
+      );
+      errors.push(err as Error);
+      // Continue to next provider
+    }
+  }
+
+  // All providers failed
+  const errorMessages = errors
+    .map(e => {
+      return e.message;
+    })
+    .join('\n  - ');
+  throw new Error(
+    `All providers failed for ${options.browser} ${options.buildId}:\n  - ${errorMessages}`,
+  );
 }
 
 /**
@@ -147,70 +296,10 @@ export async function install(
       `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`,
     );
   }
-  const url = getDownloadUrl(
-    options.browser,
-    options.platform,
-    options.buildId,
-    options.baseUrl,
-  );
-  try {
-    return await installUrl(url, options);
-  } catch (err) {
-    // If custom baseUrl is provided, do not fall back to CfT dashboard.
-    if (options.baseUrl && !options.forceFallbackForTesting) {
-      throw err;
-    }
-    debugInstall(`Error downloading from ${url}.`);
-    switch (options.browser) {
-      case Browser.CHROME:
-      case Browser.CHROMEDRIVER:
-      case Browser.CHROMEHEADLESSSHELL: {
-        debugInstall(
-          `Trying to find download URL via https://googlechromelabs.github.io/chrome-for-testing.`,
-        );
-        interface Version {
-          downloads: Record<string, Array<{platform: string; url: string}>>;
-        }
-        const version = (await getJSON(
-          new URL(
-            `https://googlechromelabs.github.io/chrome-for-testing/${options.buildId}.json`,
-          ),
-        )) as Version;
-        let platform = '';
-        switch (options.platform) {
-          case BrowserPlatform.LINUX:
-            platform = 'linux64';
-            break;
-          case BrowserPlatform.MAC_ARM:
-            platform = 'mac-arm64';
-            break;
-          case BrowserPlatform.MAC:
-            platform = 'mac-x64';
-            break;
-          case BrowserPlatform.WIN32:
-            platform = 'win32';
-            break;
-          case BrowserPlatform.WIN64:
-            platform = 'win64';
-            break;
-        }
-        const backupUrl = version.downloads[options.browser]?.find(link => {
-          return link['platform'] === platform;
-        })?.url;
-        if (backupUrl) {
-          // If the URL is the same, skip the retry.
-          if (backupUrl === url.toString()) {
-            throw err;
-          }
-          debugInstall(`Falling back to downloading from ${backupUrl}.`);
-          return await installUrl(new URL(backupUrl), options);
-        }
-        throw err;
-      }
-      default:
-        throw err;
-    }
-  }
+
+  // Always use plugin architecture (defaults to CfT if no downloaders provided)
+  options.providers ??= [];
+  return await installWithProviders(options);
 }
 
 async function installDeps(installedBrowser: InstalledBrowser) {
@@ -257,6 +346,7 @@ async function installDeps(installedBrowser: InstalledBrowser) {
 async function installUrl(
   url: URL,
   options: InstallOptions,
+  provider?: BrowserProvider,
 ): Promise<InstalledBrowser | string> {
   options.platform ??= detectBrowserPlatform();
   if (!options.platform) {
@@ -299,11 +389,25 @@ async function installUrl(
 
   try {
     if (existsSync(outputPath)) {
+      // Get executable path template from provider if provided
+      let pathTemplate: string | undefined;
+      if (provider?.getExecutablePath) {
+        pathTemplate = await provider?.getExecutablePath({
+          browser: options.browser,
+          buildId: options.buildId,
+          platform: options.platform,
+        });
+        debugInstall(
+          `Using executable path template from provider: ${pathTemplate}`,
+        );
+      }
+
       const installedBrowser = new InstalledBrowser(
         cache,
         options.browser,
         options.buildId,
         options.platform,
+        pathTemplate,
       );
       if (!existsSync(installedBrowser.executablePath)) {
         throw new Error(
@@ -316,12 +420,18 @@ async function installUrl(
       }
       return installedBrowser;
     }
-    debugInstall(`Downloading binary from ${url}`);
-    try {
-      debugTime('download');
-      await downloadFile(url, archivePath, downloadProgressCallback);
-    } finally {
-      debugTimeEnd('download');
+
+    // Check if archive already exists (e.g., from a custom downloader)
+    if (!existsSync(archivePath)) {
+      debugInstall(`Downloading binary from ${url}`);
+      try {
+        debugTime('download');
+        await downloadFile(url, archivePath, downloadProgressCallback);
+      } finally {
+        debugTimeEnd('download');
+      }
+    } else {
+      debugInstall(`Using existing archive at ${archivePath}`);
     }
 
     debugInstall(`Installing ${archivePath} to ${outputPath}`);
@@ -332,12 +442,41 @@ async function installUrl(
       debugTimeEnd('extract');
     }
 
+    // Get executable path template from provider if provided
+    let pathTemplate: string | undefined;
+    if (provider?.getExecutablePath) {
+      pathTemplate = await provider.getExecutablePath({
+        browser: options.browser,
+        buildId: options.buildId,
+        platform: options.platform,
+      });
+      debugInstall(
+        `Using executable path template from provider: ${pathTemplate}`,
+      );
+    }
+
     const installedBrowser = new InstalledBrowser(
       cache,
       options.browser,
       options.buildId,
       options.platform,
+      pathTemplate,
     );
+
+    // Write .puppeteer.json metadata for custom provider installations
+    if (provider && pathTemplate) {
+      const relativeExecutablePath = path.relative(
+        outputPath,
+        installedBrowser.executablePath,
+      );
+      const puppeteerJsonPath = path.join(outputPath, '.puppeteer.json');
+      writeFileSync(
+        puppeteerJsonPath,
+        JSON.stringify({executablePath: relativeExecutablePath}, null, 2),
+      );
+      debugInstall(`Wrote .puppeteer.json metadata to ${puppeteerJsonPath}`);
+    }
+
     if (options.buildIdAlias) {
       const metadata = installedBrowser.readMetadata();
       metadata.aliases[options.buildIdAlias] = options.buildId;
@@ -460,14 +599,31 @@ export async function canDownload(options: InstallOptions): Promise<boolean> {
       `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`,
     );
   }
-  return await headHttpRequest(
-    getDownloadUrl(
-      options.browser,
-      options.platform,
-      options.buildId,
-      options.baseUrl,
-    ),
-  );
+
+  // Always use plugin architecture (defaults to CfT if no providers provided)
+  const providers = [
+    ...(options.providers || []),
+    new DefaultProvider(options.baseUrl),
+  ];
+
+  const downloadOptions = {
+    browser: options.browser,
+    platform: options.platform,
+    buildId: options.buildId,
+  };
+
+  // Check if any provider can provide a valid, downloadable URL
+  for (const provider of providers) {
+    if (!(await provider.supports(downloadOptions))) {
+      continue;
+    }
+    const url = await provider.getDownloadUrl(downloadOptions);
+    if (url && (await headHttpRequest(url))) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 /**
@@ -499,9 +655,7 @@ export function makeProgressCallback(
   return (downloadedBytes: number, totalBytes: number) => {
     if (!progressBar) {
       progressBar = new ProgressBarClass(
-        `Downloading ${browser} ${buildId} - ${toMegabytes(
-          totalBytes,
-        )} [:bar] :percent :etas `,
+        `Downloading ${browser} ${buildId} - ${toMegabytes(totalBytes)} [:bar] :percent :etas `,
         {
           complete: '=',
           incomplete: ' ',
