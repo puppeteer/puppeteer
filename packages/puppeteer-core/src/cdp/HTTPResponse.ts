@@ -11,6 +11,7 @@ import {ProtocolError} from '../common/Errors.js';
 import {SecurityDetails} from '../common/SecurityDetails.js';
 import {Deferred} from '../util/Deferred.js';
 import {stringToTypedArray} from '../util/encoding.js';
+import {normalizeHeaderValue} from '../util/httpUtils.js';
 
 import type {CdpHTTPRequest} from './HTTPRequest.js';
 
@@ -51,7 +52,7 @@ export class CdpHTTPResponse extends HTTPResponse {
     this.#status = extraInfo ? extraInfo.statusCode : responsePayload.status;
     const headers = extraInfo ? extraInfo.headers : responsePayload.headers;
     for (const [key, value] of Object.entries(headers)) {
-      this.#headers[key.toLowerCase()] = value;
+      this.#headers[key.toLowerCase()] = normalizeHeaderValue(value);
     }
 
     this.#securityDetails = responsePayload.securityDetails
