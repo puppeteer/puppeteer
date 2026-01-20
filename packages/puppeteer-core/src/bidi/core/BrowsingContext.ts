@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import type Protocol from 'devtools-protocol';
 import type * as Bidi from 'webdriver-bidi-protocol';
 
 import type {BluetoothEmulation} from '../../api/BluetoothEmulation.js';
@@ -768,6 +769,22 @@ export class BrowsingContext extends EventEmitter<{
   async setUserAgent(userAgent: string | null): Promise<void> {
     await this.#session.send('emulation.setUserAgentOverride', {
       userAgent,
+      contexts: [this.id],
+    });
+  }
+
+  async setClientHintsOverride(
+    userAgentMetadata?: Protocol.Emulation.UserAgentMetadata,
+    platform?: string,
+  ): Promise<void> {
+    const clientHints: Bidi.BidiUaClientHints.Emulation.ClientHintsMetadata =
+      userAgentMetadata || {};
+    if (platform) {
+      clientHints.platform = platform;
+    }
+
+    await this.#session.send('emulation.setClientHintsOverride', {
+      clientHints,
       contexts: [this.id],
     });
   }

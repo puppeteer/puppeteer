@@ -136,7 +136,6 @@ export class BidiPage extends Page {
   /**
    * @internal
    */
-  #overrideNavigatorPropertiesPreloadScript?: string;
   override async setUserAgent(
     userAgentOrOptions:
       | string
@@ -147,7 +146,7 @@ export class BidiPage extends Page {
         },
     userAgentMetadata?: Protocol.Emulation.UserAgentMetadata,
   ): Promise<void> {
-    let userAgent: string;
+    let userAgent: string | null;
     let metadata: Protocol.Emulation.UserAgentMetadata | undefined;
     let platform: string | undefined;
 
@@ -155,71 +154,16 @@ export class BidiPage extends Page {
       userAgent = userAgentOrOptions;
       metadata = userAgentMetadata;
     } else {
-      userAgent =
-        userAgentOrOptions.userAgent ??
-        (await this.#browserContext.browser().userAgent());
+      userAgent = userAgentOrOptions.userAgent ?? null;
       metadata = userAgentOrOptions.userAgentMetadata;
       platform = userAgentOrOptions.platform;
     }
-
-    if (
-      !this.#browserContext.browser().cdpSupported &&
-      (metadata || platform)
-    ) {
-      throw new UnsupportedOperation(
-        'Current Browser does not support `userAgentMetadata` or `platform`',
-      );
-    } else if (
-      this.#browserContext.browser().cdpSupported &&
-      (metadata || platform)
-    ) {
-      return await this._client().send('Network.setUserAgentOverride', {
-        userAgent: userAgent,
-        userAgentMetadata: metadata,
-        platform: platform,
-      });
+    if (userAgent === '') {
+      // In WebDriver BiDi null is used to restore the original user agent.
+      userAgent = null;
     }
-    const enable = userAgent !== '';
-    userAgent = userAgent ?? (await this.#browserContext.browser().userAgent());
-
-    await this.#frame.browsingContext.setUserAgent(enable ? userAgent : null);
-
-    const overrideNavigatorProperties = (platform: string | undefined) => {
-      if (platform) {
-        Object.defineProperty(navigator, 'platform', {
-          value: platform,
-          configurable: true,
-        });
-      }
-    };
-
-    const frames = [this.#frame];
-    for (const frame of frames) {
-      frames.push(...frame.childFrames());
-    }
-
-    if (this.#overrideNavigatorPropertiesPreloadScript) {
-      await this.removeScriptToEvaluateOnNewDocument(
-        this.#overrideNavigatorPropertiesPreloadScript,
-      );
-    }
-    const [evaluateToken] = await Promise.all([
-      enable
-        ? this.evaluateOnNewDocument(
-            overrideNavigatorProperties,
-            platform || undefined,
-          )
-        : undefined,
-      // When we disable the UserAgent we want to
-      // evaluate the original value in all Browsing Contexts
-      ...frames.map(frame => {
-        return frame.evaluate(
-          overrideNavigatorProperties,
-          platform || undefined,
-        );
-      }),
-    ]);
-    this.#overrideNavigatorPropertiesPreloadScript = evaluateToken?.identifier;
+    await this.#frame.browsingContext.setUserAgent(userAgent);
+    await this.#frame.browsingContext.setClientHintsOverride(metadata, platform);
   }
 
   override async setBypassCSP(enabled: boolean): Promise<void> {

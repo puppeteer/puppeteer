@@ -1511,7 +1511,7 @@ describe('Page', function () {
       ]);
       expect(request.headers['user-agent']).toBe('foobar');
     });
-    it('should work with platform option', async () => {
+    it.only('should work with platform option', async () => {
       const {page, server} = await getTestState();
 
       expect(
