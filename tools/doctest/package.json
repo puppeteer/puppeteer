@@ -24,7 +24,7 @@
     }
   },
   "devDependencies": {
-    "@swc/core": "1.15.8",
+    "@swc/core": "1.15.10",
     "@types/doctrine": "0.0.9",
     "@types/source-map-support": "0.5.10",
     "@types/yargs": "17.0.33",
