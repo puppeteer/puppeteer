@@ -163,7 +163,10 @@ export class BidiPage extends Page {
       userAgent = null;
     }
     await this.#frame.browsingContext.setUserAgent(userAgent);
-    await this.#frame.browsingContext.setClientHintsOverride(metadata, platform);
+    await this.#frame.browsingContext.setClientHintsOverride(
+      metadata,
+      platform,
+    );
   }
 
   override async setBypassCSP(enabled: boolean): Promise<void> {

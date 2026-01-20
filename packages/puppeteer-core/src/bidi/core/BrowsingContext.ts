@@ -156,6 +156,7 @@ export class BrowsingContext extends EventEmitter<{
   #navigation: Navigation | undefined;
   #reason?: string;
   #url: string;
+  #clientHintsAreSet = false;
   readonly #children = new Map<string, BrowsingContext>();
   readonly #disposables = new DisposableStack();
   readonly #realms = new Map<string, WindowRealm>();
@@ -777,6 +778,16 @@ export class BrowsingContext extends EventEmitter<{
     userAgentMetadata?: Protocol.Emulation.UserAgentMetadata,
     platform?: string,
   ): Promise<void> {
+    if (userAgentMetadata === undefined && platform === undefined) {
+      if (!this.#clientHintsAreSet) {
+        // Ignore the call if client hints are not set. Required to avoid breakage with
+        // browsers that don't support client hints emulation.
+        return;
+      }
+    } else {
+      this.#clientHintsAreSet = true;
+    }
+
     const clientHints: Bidi.BidiUaClientHints.Emulation.ClientHintsMetadata =
       userAgentMetadata || {};
     if (platform) {
