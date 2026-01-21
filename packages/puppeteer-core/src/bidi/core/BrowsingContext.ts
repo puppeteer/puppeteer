@@ -155,6 +155,7 @@ export class BrowsingContext extends EventEmitter<{
   #navigation: Navigation | undefined;
   #reason?: string;
   #url: string;
+  // Indicated whether client hints have been set to non-default.
   #clientHintsAreSet = false;
   readonly #children = new Map<string, BrowsingContext>();
   readonly #disposables = new DisposableStack();
