@@ -133,32 +133,11 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[network.spec] network Response.buffer *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"],
-    "comment": "https://github.com/w3c/webdriver-bidi/issues/747"
-  },
-  {
-    "testIdPattern": "[network.spec] network Response.json *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"],
-    "comment": "https://github.com/w3c/webdriver-bidi/issues/747"
-  },
-  {
     "testIdPattern": "[network.spec] network Response.remoteAddress *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "Bidi does not have equivalent field"
-  },
-  {
-    "testIdPattern": "[network.spec] network Response.text *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"],
-    "comment": "https://github.com/w3c/webdriver-bidi/issues/747"
   },
   {
     "testIdPattern": "[page.spec] Page Page.metrics *",
@@ -570,6 +549,13 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "Bidi does not have equivalent field"
+  },
+  {
+    "testIdPattern": "[network.spec] network Response.buffer should throw if the response does not have a body",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"],
+    "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1879402 - Wrong order for CORS preflight requests"
   },
   {
     "testIdPattern": "[network.spec] network Response.fromCache should work for *",
@@ -1443,6 +1429,13 @@
   {
     "testIdPattern": "[network.spec] network Response.text should throw when requesting body of redirected response",
     "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "TODO: investigate why we get the response for the last redirect"
+  },
+  {
+    "testIdPattern": "[network.spec] network Response.text should throw when requesting body of redirected response",
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "https://github.com/GoogleChromeLabs/chromium-bidi/issues/3569"
@@ -1453,6 +1446,13 @@
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "https://github.com/puppeteer/puppeteer/issues/14017"
+  },
+  {
+    "testIdPattern": "[network.spec] network Response.text should wait until response completes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "It emits part of the full response"
   },
   {
     "testIdPattern": "[oopif.spec] OOPIF should detect existing OOPIFs when Puppeteer connects to an existing page",
