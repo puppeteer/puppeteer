@@ -147,17 +147,17 @@ export class BidiPage extends Page {
     userAgentMetadata?: Protocol.Emulation.UserAgentMetadata,
   ): Promise<void> {
     let userAgent: string | null;
-    let metadata:
+    let clientHints:
       | Bidi.BidiUaClientHints.Emulation.ClientHintsMetadata
       | undefined;
     let platform: string | undefined;
 
     if (typeof userAgentOrOptions === 'string') {
       userAgent = userAgentOrOptions;
-      metadata = userAgentMetadata;
+      clientHints = userAgentMetadata;
     } else {
       userAgent = userAgentOrOptions.userAgent ?? null;
-      metadata = userAgentOrOptions.userAgentMetadata;
+      clientHints = userAgentOrOptions.userAgentMetadata;
       // Empty string platform should be interpreted as "no override".
       platform =
         userAgentOrOptions.platform === ''
@@ -169,9 +169,16 @@ export class BidiPage extends Page {
       userAgent = null;
     }
     await this.#frame.browsingContext.setUserAgent(userAgent);
+
+    if (platform && platform !== '') {
+      // Work-around until https://github.com/w3c/webdriver-bidi/issues/1065 is resolved.
+      // Set platform via client hints override.
+      clientHints = clientHints ?? {};
+      clientHints.platform = platform;
+    }
+
     await this.#frame.browsingContext.setClientHintsOverride(
-      metadata,
-      platform,
+      clientHints ?? null,
     );
   }
 
