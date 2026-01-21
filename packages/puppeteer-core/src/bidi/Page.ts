@@ -147,7 +147,9 @@ export class BidiPage extends Page {
     userAgentMetadata?: Protocol.Emulation.UserAgentMetadata,
   ): Promise<void> {
     let userAgent: string | null;
-    let metadata: Protocol.Emulation.UserAgentMetadata | undefined;
+    let metadata:
+      | Bidi.BidiUaClientHints.Emulation.ClientHintsMetadata
+      | undefined;
     let platform: string | undefined;
 
     if (typeof userAgentOrOptions === 'string') {
@@ -164,7 +166,7 @@ export class BidiPage extends Page {
     }
     await this.#frame.browsingContext.setUserAgent(userAgent);
     await this.#frame.browsingContext.setClientHintsOverride(
-      metadata,
+      metadata ?? {},
       platform,
     );
   }

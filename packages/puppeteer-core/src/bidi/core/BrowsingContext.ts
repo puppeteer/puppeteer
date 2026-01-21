@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type Protocol from 'devtools-protocol';
 import type * as Bidi from 'webdriver-bidi-protocol';
 
 import type {BluetoothEmulation} from '../../api/BluetoothEmulation.js';
@@ -775,10 +774,10 @@ export class BrowsingContext extends EventEmitter<{
   }
 
   async setClientHintsOverride(
-    userAgentMetadata?: Protocol.Emulation.UserAgentMetadata,
+    clientHints: Bidi.BidiUaClientHints.Emulation.ClientHintsMetadata,
     platform?: string,
   ): Promise<void> {
-    if (userAgentMetadata === undefined && platform === undefined) {
+    if (clientHints === undefined && platform === undefined) {
       if (!this.#clientHintsAreSet) {
         // Ignore the call if client hints are not set yet. Required to avoid breakage
         // with browsers that don't support client hints emulation.
@@ -788,8 +787,6 @@ export class BrowsingContext extends EventEmitter<{
       this.#clientHintsAreSet = true;
     }
 
-    const clientHints: Bidi.BidiUaClientHints.Emulation.ClientHintsMetadata =
-      userAgentMetadata || {};
     if (platform) {
       // Work-around until https://github.com/w3c/webdriver-bidi/issues/1065 is resolved.
       clientHints.platform = platform;
