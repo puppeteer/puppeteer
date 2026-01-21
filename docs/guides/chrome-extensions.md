@@ -100,7 +100,7 @@ const popupTarget = await browser.waitForTarget(
   target => target.type() === 'page' && target.url().endsWith('popup.html'),
 );
 
-const popupPage = popupTarget.asPage();
+const popupPage = await popupTarget.asPage();
 
 // Test the popup page as you would any other page.
 
