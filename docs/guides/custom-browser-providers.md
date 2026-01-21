@@ -30,7 +30,12 @@ Puppeteer only tests and guarantees Chrome for Testing binaries.
 Create a simple provider that fetches Chrome from a custom mirror:
 
 ```typescript
-import { BrowserProvider, DownloadOptions, Browser, BrowserPlatform } from '@puppeteer/browsers';
+import {
+  BrowserProvider,
+  DownloadOptions,
+  Browser,
+  BrowserPlatform,
+} from '@puppeteer/browsers';
 
 class SimpleMirrorProvider implements BrowserProvider {
   constructor(private mirrorUrl: string) {}
@@ -42,14 +47,14 @@ class SimpleMirrorProvider implements BrowserProvider {
 
   getDownloadUrl(options: DownloadOptions): URL | null {
     // Construct download URL using mirror
-    const { buildId, platform } = options;
+    const {buildId, platform} = options;
 
     const filenameMap = {
       [BrowserPlatform.LINUX]: 'chrome-linux64.zip',
       [BrowserPlatform.MAC]: 'chrome-mac-x64.zip',
       [BrowserPlatform.MAC_ARM]: 'chrome-mac-arm64.zip',
       [BrowserPlatform.WIN32]: 'chrome-win32.zip',
-      [BrowserPlatform.WIN64]: 'chrome-win64.zip'
+      [BrowserPlatform.WIN64]: 'chrome-win64.zip',
     };
 
     const filename = filenameMap[platform];
@@ -60,9 +65,12 @@ class SimpleMirrorProvider implements BrowserProvider {
 
   getExecutablePath(options: DownloadOptions): string {
     // Return path to executable in extracted archive
-    const { platform } = options;
+    const {platform} = options;
 
-    if (platform === BrowserPlatform.MAC || platform === BrowserPlatform.MAC_ARM) {
+    if (
+      platform === BrowserPlatform.MAC ||
+      platform === BrowserPlatform.MAC_ARM
+    ) {
       return 'chrome-mac/Chromium.app/Contents/MacOS/Chromium';
     } else if (platform === BrowserPlatform.LINUX) {
       return 'chrome-linux64/chrome';
@@ -78,7 +86,7 @@ class SimpleMirrorProvider implements BrowserProvider {
 ## Usage with Installation
 
 ```typescript
-import { install } from '@puppeteer/browsers';
+import {install} from '@puppeteer/browsers';
 
 const customProvider = new CustomProvider();
 
@@ -88,7 +96,7 @@ await install({
   buildId: '120.0.6099.109',
   platform: BrowserPlatform.LINUX,
   cacheDir: '/tmp/puppeteer-cache',
-  providers: [customProvider]
+  providers: [customProvider],
 });
 ```
 
@@ -105,7 +113,7 @@ await install({
     new CorporateMirrorProvider('https://internal.company.com'), // Try first
     new CDNFallbackProvider(), // Fallback
     // Chrome for Testing automatically added as final fallback
-  ]
+  ],
 });
 ```
 
