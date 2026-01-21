@@ -775,7 +775,7 @@ export class BrowsingContext extends EventEmitter<{
   }
 
   async setClientHintsOverride(
-    clientHints: Bidi.BidiUaClientHints.Emulation.ClientHintsMetadata,
+    clientHints?: Bidi.BidiUaClientHints.Emulation.ClientHintsMetadata,
     platform?: string,
   ): Promise<void> {
     if (
@@ -789,6 +789,7 @@ export class BrowsingContext extends EventEmitter<{
     }
     this.#clientHintsAreSet = true;
 
+    clientHints = clientHints ?? {};
     if (platform) {
       // Work-around until https://github.com/w3c/webdriver-bidi/issues/1065 is resolved.
       clientHints.platform = platform;

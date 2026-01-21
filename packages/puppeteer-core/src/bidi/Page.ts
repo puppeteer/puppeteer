@@ -158,7 +158,11 @@ export class BidiPage extends Page {
     } else {
       userAgent = userAgentOrOptions.userAgent ?? null;
       metadata = userAgentOrOptions.userAgentMetadata;
-      platform = userAgentOrOptions.platform;
+      // Empty string platform should be interpreted as "no override".
+      platform =
+        userAgentOrOptions.platform === ''
+          ? undefined
+          : userAgentOrOptions.platform;
     }
     if (userAgent === '') {
       // In WebDriver BiDi null is used to restore the original user agent.
@@ -166,7 +170,7 @@ export class BidiPage extends Page {
     }
     await this.#frame.browsingContext.setUserAgent(userAgent);
     await this.#frame.browsingContext.setClientHintsOverride(
-      metadata ?? {},
+      metadata,
       platform,
     );
   }
