@@ -778,15 +778,16 @@ export class BrowsingContext extends EventEmitter<{
     clientHints: Bidi.BidiUaClientHints.Emulation.ClientHintsMetadata,
     platform?: string,
   ): Promise<void> {
-    if (clientHints === undefined && platform === undefined) {
-      if (!this.#clientHintsAreSet) {
-        // Ignore the call if client hints are not set yet. Required to avoid breakage
-        // with browsers that don't support client hints emulation.
-        return;
-      }
-    } else {
-      this.#clientHintsAreSet = true;
+    if (
+      clientHints === undefined &&
+      platform === undefined &&
+      !this.#clientHintsAreSet
+    ) {
+      // Ignore the call, as the client hints are not supposed to be changed.Required to
+      // avoid breakage with browsers that don't support client hints emulation.
+      return;
     }
+    this.#clientHintsAreSet = true;
 
     if (platform) {
       // Work-around until https://github.com/w3c/webdriver-bidi/issues/1065 is resolved.
