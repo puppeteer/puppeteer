@@ -728,7 +728,7 @@ describe('Touchscreen', () => {
       ]);
     });
 
-    it.only('should work with three touches', async () => {
+    it('should work with three touches', async () => {
       const {page, server} = await getTestState();
       await page.goto(server.PREFIX + '/input/touchscreen.html');
 
