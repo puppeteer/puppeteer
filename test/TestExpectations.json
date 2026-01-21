@@ -1560,6 +1560,27 @@
     "comment": "Chrome-specific test"
   },
   {
+    "testIdPattern": "[pipe.spec] Puppeteer.launch should fire \"disconnected\" when closing with pipe",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "https://github.com/puppeteer/puppeteer/issues/14594"
+  },
+  {
+    "testIdPattern": "[pipe.spec] Puppeteer.launch should support the pipe argument",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "https://github.com/puppeteer/puppeteer/issues/14594"
+  },
+  {
+    "testIdPattern": "[pipe.spec] Puppeteer.launch should support the pipe option",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "https://github.com/puppeteer/puppeteer/issues/14594"
+  },
+  {
     "testIdPattern": "[proxy.spec] request proxy in incognito browser context should proxy requests when configured at context level",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome"],
@@ -1789,11 +1810,25 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[userDataDir.spec] userDataDir should not launch the browser twice with the same userDataDir with pipe=true",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "https://github.com/puppeteer/puppeteer/issues/14594"
+  },
+  {
     "testIdPattern": "[waittask.spec] waittask specs protocol timeout *",
     "platforms": ["darwin"],
     "parameters": ["firefox", "headful", "webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "session.new before the test consistently times out on mac + headful since 147"
+  },
+  {
+    "testIdPattern": "[webExtension.spec] webExtension can install and uninstall an extension",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "https://github.com/puppeteer/puppeteer/issues/14594"
   },
   {
     "testIdPattern": "[worker.spec] Workers can be closed",
