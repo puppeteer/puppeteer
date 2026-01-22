@@ -1120,7 +1120,7 @@
     "testIdPattern": "[extensions.spec] extensions can evaluate in the service worker",
     "platforms": ["darwin"],
     "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL", "PASS"],
+    "expectations": ["SKIP"],
     "comment": "Flaky test needing investigation, seems to be MacOS only."
   },
   {
