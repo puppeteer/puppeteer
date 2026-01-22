@@ -46,7 +46,6 @@ module.exports = {
       },
       items: [
         'guides/configuration',
-        'guides/custom-browser-providers',
         'guides/debugging',
         'guides/network-interception',
         'guides/headless-modes',
