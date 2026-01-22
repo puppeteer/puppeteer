@@ -8,6 +8,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Realm} from '../api/Realm.js';
+import type {CdpFrame} from '../cdp/Frame.js';
 import {debugError} from '../common/util.js';
 
 /**
@@ -88,11 +89,18 @@ export interface SerializedAXNode {
   children?: SerializedAXNode[];
 
   /**
-   * CDP-specifc ID to reference the DOM node.
+   * CDP-specific ID to reference the DOM node.
    *
    * @internal
    */
   backendNodeId?: number;
+
+  /**
+   * CDP-specific documentId.
+   *
+   * @internal
+   */
+  loaderId: string;
 
   /**
    * Get an ElementHandle for this AXNode if available.
@@ -553,6 +561,9 @@ class AXNode {
         })) as ElementHandle<Element>;
       },
       backendNodeId: this.payload.backendDOMNodeId,
+      // LoaderId is an experimental mechanism to establish unique IDs across
+      // navigations.
+      loaderId: (this.#realm.environment as CdpFrame)._loaderId,
     };
 
     type UserStringProperty =

@@ -19,12 +19,25 @@
     </style>
     <button>Click target</button>
     <script>
-      var allEvents = [];
+      const allEvents = [];
+      const waitForEvents = Promise.withResolvers();
+      globalThis.waitForEvents = waitForEvents.promise;
+      let timeout;
+
+      function recordEvent(data) {
+        allEvents.push(data);
+        
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          waitForEvents.resolve(allEvents);
+        }, 50);
+      }
+
       for (const name of ["touchstart", "touchmove", "touchend"]) {
         globalThis.addEventListener(
           name,
           (event) => {
-            allEvents.push({
+            recordEvent({
               type: name,
               changedTouches: [...event.changedTouches].map((touch) => ({
                 clientX: touch.clientX,
@@ -49,7 +62,7 @@
         globalThis.addEventListener(
           name,
           (event) => {
-            allEvents.push({
+            recordEvent({
               type: name,
               x: event.x,
               y: event.y,
