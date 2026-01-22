@@ -6,7 +6,7 @@ sidebar_label: BrowserProvider
 
 Interface for custom browser provider implementations. Allows users to implement alternative download sources for browsers.
 
-See the [Custom Browser Providers Guide](../../guides/custom-browser-providers.md) for usage examples.
+See the [Browsers Package](../../packages/browsers/README.md) for usage examples.
 
 ⚠️ **IMPORTANT**: Custom providers are NOT officially supported by Puppeteer.
 
