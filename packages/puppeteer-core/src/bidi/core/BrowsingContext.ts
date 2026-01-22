@@ -778,7 +778,7 @@ export class BrowsingContext extends EventEmitter<{
     clientHints: Bidi.BidiUaClientHints.Emulation.ClientHintsMetadata | null,
   ): Promise<void> {
     if (clientHints === null && !this.#clientHintsAreSet) {
-      // Ignore the call, as the client hints are not supposed to be changed.Required to
+      // Ignore the call, as the client hints are not supposed to be changed. Required to
       // avoid breakage with browsers that don't support client hints emulation.
       return;
     }
