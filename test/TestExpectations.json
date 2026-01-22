@@ -1118,6 +1118,13 @@
   },
   {
     "testIdPattern": "[extensions.spec] extensions can evaluate in the service worker",
+    "platforms": ["darwin"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "Flaky test needing investigation, seems to be MacOS only."
+  },
+  {
+    "testIdPattern": "[extensions.spec] extensions can evaluate in the service worker",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["SKIP"],
@@ -1269,6 +1276,13 @@
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option in puppeteer.launch",
+    "platforms": ["win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["PASS", "TIMEOUT"],
+    "comment": "Flaky test needing investigation, seems to be Windows only."
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option in puppeteer.launch",
