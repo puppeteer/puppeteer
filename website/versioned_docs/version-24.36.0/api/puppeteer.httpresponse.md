@@ -196,6 +196,10 @@ The status text of the response (e.g. usually an "OK" for a success).
 
 Promise which resolves to a text (utf8) representation of response body.
 
+**Remarks:**
+
+This method will throw if the content is not utf-8 string
+
 </td></tr>
 <tr><td>
 
