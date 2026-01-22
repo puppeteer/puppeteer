@@ -8,8 +8,6 @@ import expect from 'expect';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 
-declare const allEvents: Array<{type: string}>;
-
 describe('Touchscreen', () => {
   setupTestBrowserHooks();
 
@@ -20,8 +18,9 @@ describe('Touchscreen', () => {
 
       await page.tap('button');
       expect(
-        await page.evaluate(() => {
-          return allEvents;
+        await page.evaluate(async () => {
+          // @ts-expect-error executed on the page
+          return await globalThis.waitForEvents;
         }),
       ).toMatchObject([
         {
@@ -93,8 +92,9 @@ describe('Touchscreen', () => {
       await page.tap('button');
 
       expect(
-        await page.evaluate(() => {
-          return allEvents;
+        await page.evaluate(async () => {
+          // @ts-expect-error executed on the page
+          return await globalThis.waitForEvents;
         }),
       ).toMatchObject([
         {
@@ -212,8 +212,9 @@ describe('Touchscreen', () => {
       await page.touchscreen.touchEnd();
 
       expect(
-        await page.evaluate(() => {
-          return allEvents;
+        await page.evaluate(async () => {
+          // @ts-expect-error executed on the page
+          return await globalThis.waitForEvents;
         }),
       ).toMatchObject([
         {
@@ -364,8 +365,9 @@ describe('Touchscreen', () => {
       await page.touchscreen.touchMove(15, 15);
 
       expect(
-        await page.evaluate(() => {
-          return allEvents;
+        await page.evaluate(async () => {
+          // @ts-expect-error executed on the page
+          return await globalThis.waitForEvents;
         }),
       ).toMatchObject([
         {
@@ -502,8 +504,9 @@ describe('Touchscreen', () => {
       await touch1.end();
 
       expect(
-        await page.evaluate(() => {
-          return allEvents;
+        await page.evaluate(async () => {
+          // @ts-expect-error executed on the page
+          return await globalThis.waitForEvents;
         }),
       ).toMatchObject([
         {
@@ -737,8 +740,9 @@ describe('Touchscreen', () => {
       await touch3.move(60, 100);
 
       expect(
-        await page.evaluate(() => {
-          return allEvents;
+        await page.evaluate(async () => {
+          // @ts-expect-error executed on the page
+          return await globalThis.waitForEvents;
         }),
       ).toMatchObject([
         {

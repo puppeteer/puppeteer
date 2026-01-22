@@ -133,32 +133,11 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[network.spec] network Response.buffer *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"],
-    "comment": "https://github.com/w3c/webdriver-bidi/issues/747"
-  },
-  {
-    "testIdPattern": "[network.spec] network Response.json *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"],
-    "comment": "https://github.com/w3c/webdriver-bidi/issues/747"
-  },
-  {
     "testIdPattern": "[network.spec] network Response.remoteAddress *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "Bidi does not have equivalent field"
-  },
-  {
-    "testIdPattern": "[network.spec] network Response.text *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"],
-    "comment": "https://github.com/w3c/webdriver-bidi/issues/747"
   },
   {
     "testIdPattern": "[page.spec] Page Page.metrics *",
@@ -570,6 +549,13 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "Bidi does not have equivalent field"
+  },
+  {
+    "testIdPattern": "[network.spec] network Response.buffer should throw if the response does not have a body",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"],
+    "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1879402 - Wrong order for CORS preflight requests"
   },
   {
     "testIdPattern": "[network.spec] network Response.fromCache should work for *",
@@ -1132,6 +1118,13 @@
   },
   {
     "testIdPattern": "[extensions.spec] extensions can evaluate in the service worker",
+    "platforms": ["darwin"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "Flaky test needing investigation, seems to be MacOS only."
+  },
+  {
+    "testIdPattern": "[extensions.spec] extensions can evaluate in the service worker",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["SKIP"],
@@ -1283,6 +1276,13 @@
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option in puppeteer.launch",
+    "platforms": ["win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["PASS", "TIMEOUT"],
+    "comment": "Flaky test needing investigation, seems to be Windows only."
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option in puppeteer.launch",
@@ -1443,6 +1443,13 @@
   {
     "testIdPattern": "[network.spec] network Response.text should throw when requesting body of redirected response",
     "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "TODO: investigate why we get the response for the last redirect"
+  },
+  {
+    "testIdPattern": "[network.spec] network Response.text should throw when requesting body of redirected response",
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "https://github.com/GoogleChromeLabs/chromium-bidi/issues/3569"
@@ -1453,6 +1460,13 @@
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "https://github.com/puppeteer/puppeteer/issues/14017"
+  },
+  {
+    "testIdPattern": "[network.spec] network Response.text should wait until response completes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "It emits part of the full response"
   },
   {
     "testIdPattern": "[oopif.spec] OOPIF should detect existing OOPIFs when Puppeteer connects to an existing page",
@@ -1558,6 +1572,27 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "Chrome-specific test"
+  },
+  {
+    "testIdPattern": "[pipe.spec] Puppeteer.launch should fire \"disconnected\" when closing with pipe",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "https://github.com/puppeteer/puppeteer/issues/14594"
+  },
+  {
+    "testIdPattern": "[pipe.spec] Puppeteer.launch should support the pipe argument",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "https://github.com/puppeteer/puppeteer/issues/14594"
+  },
+  {
+    "testIdPattern": "[pipe.spec] Puppeteer.launch should support the pipe option",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "https://github.com/puppeteer/puppeteer/issues/14594"
   },
   {
     "testIdPattern": "[proxy.spec] request proxy in incognito browser context should proxy requests when configured at context level",
@@ -1789,11 +1824,25 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[userDataDir.spec] userDataDir should not launch the browser twice with the same userDataDir with pipe=true",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "https://github.com/puppeteer/puppeteer/issues/14594"
+  },
+  {
     "testIdPattern": "[waittask.spec] waittask specs protocol timeout *",
     "platforms": ["darwin"],
     "parameters": ["firefox", "headful", "webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "session.new before the test consistently times out on mac + headful since 147"
+  },
+  {
+    "testIdPattern": "[webExtension.spec] webExtension can install and uninstall an extension",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "https://github.com/puppeteer/puppeteer/issues/14594"
   },
   {
     "testIdPattern": "[worker.spec] Workers can be closed",
