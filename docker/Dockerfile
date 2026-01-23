@@ -11,7 +11,8 @@ ENV DBUS_SESSION_BUS_ADDRESS=autolaunch:
 # installs, work.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-khmeros \
-    fonts-kacst fonts-freefont-ttf dbus dbus-x11
+    fonts-kacst fonts-freefont-ttf dbus dbus-x11 
+   
 
 # Add pptruser.
 RUN groupadd -r pptruser && useradd -u $PPTRUSER_UID -rm -g pptruser -G audio,video pptruser
@@ -32,7 +33,9 @@ USER root
 # Overriding the cache directory to install the deps for the Chrome
 # version installed for pptruser. 
 RUN PUPPETEER_CACHE_DIR=/home/pptruser/.cache/puppeteer \
-    npx puppeteer browsers install chrome --install-deps
+    npx puppeteer browsers install chrome --install-deps \
+     && apt-get clean \
+     && rm -rf /var/lib/apt/lists/*
 
 USER $PPTRUSER_UID
 # Generate THIRD_PARTY_NOTICES using chrome --credits.
