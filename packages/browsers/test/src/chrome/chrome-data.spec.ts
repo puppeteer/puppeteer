@@ -348,7 +348,7 @@ describe('Chrome', () => {
             BrowserPlatform.LINUX,
             ChromeReleaseChannel.CANARY,
           ),
-          path.join(os.homedir(), 'config', 'google-chrome-canary'),
+          path.join(os.homedir(), '.config', 'google-chrome-canary'),
         );
       });
 
@@ -358,7 +358,7 @@ describe('Chrome', () => {
             BrowserPlatform.LINUX_ARM,
             ChromeReleaseChannel.DEV,
           ),
-          path.join(os.homedir(), 'config', 'google-chrome-unstable'),
+          path.join(os.homedir(), '.config', 'google-chrome-unstable'),
         );
       });
 
@@ -368,7 +368,7 @@ describe('Chrome', () => {
             BrowserPlatform.LINUX,
             ChromeReleaseChannel.STABLE,
           ),
-          path.join(os.homedir(), 'config', 'google-chrome'),
+          path.join(os.homedir(), '.config', 'google-chrome'),
         );
       });
     });

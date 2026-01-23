@@ -397,7 +397,7 @@ function getConfigHomeLinux() {
   return (
     process.env['CHROME_CONFIG_HOME'] ||
     process.env['XDG_CONFIG_HOME'] ||
-    path.join(os.homedir(), 'config')
+    path.join(os.homedir(), '.config')
   );
 }
 
