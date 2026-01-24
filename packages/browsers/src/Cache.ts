@@ -17,6 +17,7 @@ import {
   getVersionComparator,
 } from './browser-data/browser-data.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
+import {expandPathTemplate} from './fileUtil.js';
 
 const debugCache = debug('puppeteer:browsers:cache');
 
@@ -39,28 +40,17 @@ export class InstalledBrowser {
     browser: Browser,
     buildId: string,
     platform: BrowserPlatform,
-    executablePathTemplate?: string,
   ) {
     this.#cache = cache;
     this.browser = browser;
     this.buildId = buildId;
     this.platform = platform;
 
-    // If a path template is provided, expand it and use that
-    if (executablePathTemplate) {
-      const installationDir = cache.installationDir(browser, platform, buildId);
-      this.executablePath = path.join(
-        installationDir,
-        expandPathTemplate(executablePathTemplate, {platform, buildId}),
-      );
-    } else {
-      // Otherwise use default structure
-      this.executablePath = cache.computeExecutablePath({
-        browser,
-        buildId,
-        platform,
-      });
-    }
+    this.executablePath = cache.computeExecutablePath({
+      browser,
+      buildId,
+      platform,
+    });
   }
 
   /**
@@ -111,6 +101,13 @@ export interface ComputeExecutablePathOptions {
 export interface Metadata {
   // Maps an alias (canary/latest/dev/etc.) to a buildId.
   aliases: Record<string, string>;
+}
+
+/**
+ * @internal
+ */
+interface InstallationMetadata {
+  executablePath: string;
 }
 
 /**
@@ -166,6 +163,56 @@ export class Cache {
     const metatadaPath = this.metadataFile(browser);
     fs.mkdirSync(path.dirname(metatadaPath), {recursive: true});
     fs.writeFileSync(metatadaPath, JSON.stringify(metadata, null, 2));
+  }
+
+  installationMetadataPath(
+    browser: Browser,
+    platform: BrowserPlatform,
+    buildId: string,
+  ): string {
+    return path.join(
+      this.installationDir(browser, platform, buildId),
+      '.metadata',
+    );
+  }
+
+  readInstallationMetadata(
+    browser: Browser,
+    platform: BrowserPlatform,
+    buildId: string,
+  ): InstallationMetadata | null {
+    const metadataPath = this.installationMetadataPath(
+      browser,
+      platform,
+      buildId,
+    );
+    if (!fs.existsSync(metadataPath)) {
+      return null;
+    }
+    try {
+      const data = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+      if (data.executablePath) {
+        return data as InstallationMetadata;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  writeInstallationMetadata(
+    browser: Browser,
+    platform: BrowserPlatform,
+    buildId: string,
+    executablePath: string,
+  ): void {
+    const metadataPath = this.installationMetadataPath(
+      browser,
+      platform,
+      buildId,
+    );
+    fs.mkdirSync(path.dirname(metadataPath), {recursive: true});
+    fs.writeFileSync(metadataPath, JSON.stringify({executablePath}, null, 2));
   }
 
   resolveAlias(browser: Browser, alias: string): string | undefined {
@@ -263,17 +310,33 @@ export class Cache {
       options.platform,
       options.buildId,
     );
-    const metadataPath = path.join(installationDir, '.puppeteer.json');
-    if (fs.existsSync(metadataPath)) {
-      try {
-        const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
-        if (metadata.executablePath) {
-          return path.join(installationDir, metadata.executablePath);
-        }
-      } catch (err) {
-        debugCache('could not read .puppeteer.json', err);
+
+    const installationMetadata = this.readInstallationMetadata(
+      options.browser,
+      options.platform,
+      options.buildId,
+    );
+    if (installationMetadata) {
+      // The metadata contains a relative path from the installation dir
+      // It may be a template or an expanded path
+      const relativePath = installationMetadata.executablePath;
+      // Check if it looks like a template (contains {platform} or {buildId})
+      if (
+        relativePath.includes('{platform}') ||
+        relativePath.includes('{buildId}')
+      ) {
+        return path.join(
+          installationDir,
+          expandPathTemplate(relativePath, {
+            platform: options.platform,
+            buildId: options.buildId,
+          }),
+        );
       }
+      // Otherwise use it directly as an expanded path
+      return path.join(installationDir, relativePath);
     }
+
     return path.join(
       installationDir,
       executablePathByBrowser[options.browser](
@@ -299,20 +362,4 @@ function parseFolderPath(
   return {platform, buildId};
 }
 
-/**
- * Expand path template by replacing \{platform\} and \{buildId\} placeholders.
- *
- * @param template - Path template with optional placeholders
- * @param variables - Values to substitute
- * @returns Expanded path
- *
- * @internal
- */
-function expandPathTemplate(
-  template: string,
-  variables: {platform: BrowserPlatform; buildId: string},
-): string {
-  return template
-    .replace(/{platform}/g, variables.platform)
-    .replace(/{buildId}/g, variables.buildId);
-}
+
