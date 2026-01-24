@@ -63,7 +63,11 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     CdpDeviceRequestPromptManager
   >();
 
-  #frameTreeHandled?: Deferred<void>;
+  /**
+   * Map of client sessions to their initialization promises.
+   * Event listeners wait for their specific client's initialization to complete.
+   */
+  #initializedClients = new WeakMap<CDPSession, Promise<void>>();
 
   get timeoutSettings(): TimeoutSettings {
     return this.#timeoutSettings;
@@ -137,12 +141,17 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
    * its frame tree and ID.
    */
   async swapFrameTree(client: CdpCDPSession): Promise<void> {
+    // Early return if the client is already the current client
+    if (client === this.#client) {
+      return;
+    }
     this.#client = client;
     const frame = this._frameTree.getMainFrame();
     if (frame) {
-      this.#frameNavigatedReceived.add(this.#client.target()._targetId);
+      const target = this.#client.target();
+      this.#frameNavigatedReceived.add(target._targetId);
       this._frameTree.removeFrame(frame);
-      frame.updateId(this.#client.target()._targetId);
+      frame.updateId(target._targetId);
       this._frameTree.addFrame(frame);
       frame.updateClient(client);
     }
@@ -162,23 +171,31 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
   }
 
   private setupEventListeners(session: CDPSession) {
+    // Wait for this session's initialization before processing events
+    const waitForInit = async () => {
+      const initPromise = this.#initializedClients.get(session);
+      if (initPromise) {
+        await initPromise;
+      }
+    };
+
     session.on('Page.frameAttached', async event => {
-      await this.#frameTreeHandled?.valueOrThrow();
+      await waitForInit();
       this.#onFrameAttached(session, event.frameId, event.parentFrameId);
     });
     session.on('Page.frameNavigated', async event => {
       this.#frameNavigatedReceived.add(event.frame.id);
-      await this.#frameTreeHandled?.valueOrThrow();
-      void this.#onFrameNavigated(event.frame, event.type);
+      await waitForInit();
+      this.#onFrameNavigated(event.frame, event.type).catch(debugError);
     });
     session.on('Page.navigatedWithinDocument', async event => {
-      await this.#frameTreeHandled?.valueOrThrow();
+      await waitForInit();
       this.#onFrameNavigatedWithinDocument(event.frameId, event.url);
     });
     session.on(
       'Page.frameDetached',
       async (event: Protocol.Page.FrameDetachedEvent) => {
-        await this.#frameTreeHandled?.valueOrThrow();
+        await waitForInit();
         this.#onFrameDetached(
           event.frameId,
           event.reason as Protocol.Page.FrameDetachedEventReason,
@@ -186,61 +203,71 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       },
     );
     session.on('Page.frameStartedLoading', async event => {
-      await this.#frameTreeHandled?.valueOrThrow();
+      await waitForInit();
       this.#onFrameStartedLoading(event.frameId);
     });
     session.on('Page.frameStoppedLoading', async event => {
-      await this.#frameTreeHandled?.valueOrThrow();
+      await waitForInit();
       this.#onFrameStoppedLoading(event.frameId);
     });
     session.on('Runtime.executionContextCreated', async event => {
-      await this.#frameTreeHandled?.valueOrThrow();
+      await waitForInit();
       this.#onExecutionContextCreated(event.context, session);
     });
     session.on('Page.lifecycleEvent', async event => {
-      await this.#frameTreeHandled?.valueOrThrow();
+      await waitForInit();
       this.#onLifecycleEvent(event);
     });
   }
 
   async initialize(client: CDPSession, frame?: CdpFrame | null): Promise<void> {
-    try {
-      this.#frameTreeHandled?.resolve();
-      this.#frameTreeHandled = Deferred.create();
-      // We need to schedule all these commands while the target is paused,
-      // therefore, it needs to happen synchronously. At the same time we
-      // should not start processing execution context and frame events before
-      // we received the initial information about the frame tree.
-      await Promise.all([
-        this.#networkManager.addClient(client),
-        client.send('Page.enable'),
-        client.send('Page.getFrameTree').then(({frameTree}) => {
-          this.#handleFrameTree(client, frameTree);
-          this.#frameTreeHandled?.resolve();
-        }),
-        client.send('Page.setLifecycleEventsEnabled', {enabled: true}),
-        client.send('Runtime.enable').then(() => {
-          return this.#createIsolatedWorld(client, UTILITY_WORLD_NAME);
-        }),
-        ...(frame
-          ? Array.from(this.#scriptsToEvaluateOnNewDocument.values())
-          : []
-        ).map(script => {
-          return frame?.addPreloadScript(script);
-        }),
-        ...(frame ? Array.from(this.#bindings.values()) : []).map(binding => {
-          return frame?.addExposedFunctionBinding(binding);
-        }),
-      ]);
-    } catch (error) {
-      this.#frameTreeHandled?.resolve();
-      // The target might have been closed before the initialization finished.
-      if (isErrorLike(error) && isTargetClosedError(error)) {
-        return;
-      }
-
-      throw error;
+    // If this client is already initialized, return the existing promise
+    const existingInit = this.#initializedClients.get(client);
+    if (existingInit) {
+      return await existingInit;
     }
+
+    // Create and store the initialization promise for this client
+    const initPromise = (async () => {
+      try {
+        // We need to schedule all these commands while the target is paused,
+        // therefore, it needs to happen synchronously. At the same time we
+        // should not start processing execution context and frame events before
+        // we received the initial information about the frame tree.
+        await Promise.all([
+          this.#networkManager.addClient(client),
+          client.send('Page.enable'),
+          client.send('Page.getFrameTree').then(({frameTree}) => {
+            this.#handleFrameTree(client, frameTree);
+          }),
+          client.send('Page.setLifecycleEventsEnabled', {enabled: true}),
+          client.send('Runtime.enable').then(() => {
+            return this.#createIsolatedWorld(client, UTILITY_WORLD_NAME);
+          }),
+          ...(frame
+            ? Array.from(this.#scriptsToEvaluateOnNewDocument.values()).map(
+                script => {
+                  return frame.addPreloadScript(script);
+                },
+              )
+            : []),
+          ...(frame
+            ? Array.from(this.#bindings.values()).map(binding => {
+                return frame.addExposedFunctionBinding(binding);
+              })
+            : []),
+        ]);
+      } catch (error) {
+        // The target might have been closed before the initialization finished.
+        if (isErrorLike(error) && isTargetClosedError(error)) {
+          return;
+        }
+        throw error;
+      }
+    })();
+
+    this.#initializedClients.set(client, initPromise);
+    return await initPromise;
   }
 
   page(): CdpPage {
@@ -398,7 +425,9 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       );
     }
     if (!this.#frameNavigatedReceived.has(frameTree.frame.id)) {
-      void this.#onFrameNavigated(frameTree.frame, 'Navigation');
+      void this.#onFrameNavigated(frameTree.frame, 'Navigation').catch(
+        debugError,
+      );
     } else {
       this.#frameNavigatedReceived.delete(frameTree.frame.id);
     }
@@ -420,7 +449,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     let frame = this.frame(frameId);
     if (frame) {
       const parentFrame = this.frame(parentFrameId);
-      if (session && parentFrame && frame.client !== parentFrame?.client) {
+      if (session && parentFrame && frame.client !== parentFrame.client) {
         // If an OOP iframes becomes a normal iframe
         // again it is first attached to the parent frame before the
         // target is removed.
@@ -443,7 +472,9 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
 
     let frame = this._frameTree.getById(frameId);
 
-    // Detach all child frames first.
+    // Detach all child frames first before updating/creating the frame.
+    // This ensures child frames are properly cleaned up before the parent
+    // frame's navigation state changes, preventing orphaned frame references.
     if (frame) {
       for (const child of frame.childFrames()) {
         this.#removeFramesRecursively(child);
@@ -574,6 +605,8 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     for (const child of frame.childFrames()) {
       this.#removeFramesRecursively(child);
     }
+    // Clean up frame ID from navigation tracking set
+    this.#frameNavigatedReceived.delete(frame._id);
     frame[disposeSymbol]();
     this._frameTree.removeFrame(frame);
     this.emit(FrameManagerEvent.FrameDetached, frame);
