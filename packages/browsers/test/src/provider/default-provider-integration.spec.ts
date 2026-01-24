@@ -13,7 +13,6 @@ import {
   Browser,
   BrowserPlatform,
   DefaultProvider,
-  type DownloadOptions,
 } from '../../../lib/esm/main.js';
 import {getServerUrl, setupTestServer} from '../utils.js';
 
@@ -58,21 +57,6 @@ describe('DefaultProvider Integration', () => {
       assert(result instanceof URL);
       assert(result.toString().includes('chromedriver'));
       assert(result.toString().includes('120.0.6099.109'));
-    });
-
-    it('should support progress callbacks in options', () => {
-      // Test that DownloadOptions can include progressCallback
-      const options: DownloadOptions = {
-        browser: Browser.CHROME,
-        platform: BrowserPlatform.LINUX,
-        buildId: '120.0.6099.109',
-        progressCallback: (downloaded: number, total: number) => {
-          assert.strictEqual(typeof downloaded, 'number');
-          assert.strictEqual(typeof total, 'number');
-        },
-      };
-
-      assert.strictEqual(typeof options.progressCallback, 'function');
     });
 
     it('should construct correct URLs for different platforms', () => {

@@ -14,10 +14,6 @@ export interface DownloadOptions {
   browser: Browser;
   platform: BrowserPlatform;
   buildId: string;
-  /**
-   * Progress callback for download progress.
-   */
-  progressCallback?: (downloadedBytes: number, totalBytes: number) => void;
 }
 
 /**
