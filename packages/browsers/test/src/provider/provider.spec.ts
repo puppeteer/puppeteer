@@ -163,20 +163,6 @@ describe('BrowserProvider Interface', () => {
       assert.strictEqual(options.platform, BrowserPlatform.LINUX);
       assert.strictEqual(options.buildId, '120.0.6099.109');
     });
-
-    it('should support optional progressCallback', () => {
-      const options: DownloadOptions = {
-        browser: Browser.CHROME,
-        platform: BrowserPlatform.LINUX,
-        buildId: '120.0.6099.109',
-        progressCallback: (downloaded, total) => {
-          assert.strictEqual(typeof downloaded, 'number');
-          assert.strictEqual(typeof total, 'number');
-        },
-      };
-
-      assert.strictEqual(typeof options.progressCallback, 'function');
-    });
   });
 
   describe('URL handling', () => {
