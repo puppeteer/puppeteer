@@ -12,13 +12,6 @@ import {URL, urlToHttpOptions} from 'node:url';
 import {ProxyAgent} from 'proxy-agent';
 
 /**
- * Checks if a URL is accessible using a HEAD request.
- * Automatically follows HTTP redirects.
- * Useful for verifying download URLs exist before attempting download.
- *
- * @param url - The URL to check
- * @returns Promise that resolves to true if final status is 200, false otherwise
- *
  * @internal
  */
 export function headHttpRequest(url: URL): Promise<boolean> {
@@ -80,15 +73,6 @@ export function httpRequest(
 }
 
 /**
- * Downloads a file from the specified URL to a destination path.
- * Automatically follows HTTP redirects and supports progress callbacks.
- *
- * @param url - The URL to download from
- * @param destinationPath - Local file path where the file will be saved
- * @param progressCallback - Optional callback for download progress updates
- * @returns Promise that resolves when download completes
- * @throws Error if download fails or final response status is not 200
- *
  * @internal
  */
 export function downloadFile(
@@ -143,14 +127,6 @@ export function downloadFile(
 }
 
 /**
- * Fetches JSON data from a URL.
- * Automatically follows HTTP redirects.
- * Useful for custom downloaders that need to query release APIs.
- *
- * @param url - The URL to fetch JSON from
- * @returns Promise that resolves to the parsed JSON data
- * @throws Error if request fails, final status \>= 400, or JSON parsing fails
- *
  * @internal
  */
 export async function getJSON(url: URL): Promise<unknown> {
@@ -163,13 +139,6 @@ export async function getJSON(url: URL): Promise<unknown> {
 }
 
 /**
- * Fetches text content from a URL.
- * Automatically follows HTTP redirects.
- *
- * @param url - The URL to fetch text from
- * @returns Promise that resolves to the text content
- * @throws Error if the request fails or final response status is \>= 400
- *
  * @internal
  */
 export function getText(url: URL): Promise<string> {
