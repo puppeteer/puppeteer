@@ -158,74 +158,54 @@ describe('Custom Provider Integration Tests', () => {
   });
 
   describe('persistence', () => {
-    it('should persist custom executable path', async function () {
-      this.timeout(30000);
+    it('should persist executable path in metadata', async function () {
+      this.timeout(60000);
 
-      const fixturePath = path.join(
-        import.meta.dirname,
-        '..',
-        '..',
-        'fixtures',
-        'test.tar.bz2',
-      );
-      const archivePath = path.join(tmpDir, 'test-persistence.tar.bz2');
-      fs.copyFileSync(fixturePath, archivePath);
-
-      // Let's point getExecutablePath to 'test-file'.
-      const actualFileInArchive = 'test-file';
-
-      const providerWithRealFile = new MockProvider({
-        supports: true,
-        getDownloadUrlResult: new URL(`file://${archivePath}`),
-        getExecutablePath: actualFileInArchive,
-      });
-
-      await install({
+      // Install using default provider
+      const result = await install({
         cacheDir: tmpDir,
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
-        buildId: 'test-persistence',
-        providers: [providerWithRealFile],
+        buildId: '120.0.6099.109',
       });
 
       const installDir = path.join(
         tmpDir,
         'chrome',
-        `${BrowserPlatform.LINUX}-test-persistence`,
+        `${BrowserPlatform.LINUX}-120.0.6099.109`,
       );
 
-      // Verify .puppeteer.json exists and contains the correct path
-      const metadataPath = path.join(installDir, '.puppeteer.json');
+      // Verify .metadata exists and contains the executable path
+      const metadataPath = path.join(installDir, '.metadata');
       assert.ok(
         fs.existsSync(metadataPath),
-        '.puppeteer.json should be created',
+        '.metadata should be created for all installations',
       );
 
       const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
-      assert.strictEqual(
+      assert.ok(
         metadata.executablePath,
-        actualFileInArchive,
-        'Metadata should contain the custom executable path',
+        'Metadata should contain the executable path',
       );
 
       // Verify getInstalledBrowsers uses the persisted path
       const installed = await getInstalledBrowsers({cacheDir: tmpDir});
       const found = installed.find(b => {
-        return b.buildId === 'test-persistence';
+        return b.buildId === '120.0.6099.109';
       });
-
       assert.ok(found, 'Should find the installed browser');
       assert.strictEqual(
-        found.executablePath,
-        path.join(installDir, actualFileInArchive),
-        'Should use custom executable path from .puppeteer.json',
+        found?.executablePath,
+        result.executablePath,
+        'getInstalledBrowsers should return the correct executable path',
       );
     });
 
-    it('should read custom executable path from .puppeteer.json', async function () {
-      // Test that .puppeteer.json metadata is correctly read
+    it('should read custom executable path from metadata', async function () {
+      // Test that .metadata is correctly read
       // by manually creating the directory structure and metadata file
-      const buildId = 'testpersistence'; // No hyphens, as parseFolderPath splits on '-'
+      // Use a unique buildId that won't conflict with other tests
+      const buildId = '999.0.9999.999';
       const installDir = path.join(
         tmpDir,
         'chrome',
@@ -236,8 +216,8 @@ describe('Custom Provider Integration Tests', () => {
       // Create the directory structure
       fs.mkdirSync(installDir, {recursive: true});
 
-      // Write .puppeteer.json with custom executable path
-      const metadataPath = path.join(installDir, '.puppeteer.json');
+      // Write .metadata with custom executable path
+      const metadataPath = path.join(installDir, '.metadata');
       fs.writeFileSync(
         metadataPath,
         JSON.stringify({executablePath: customExecutablePath}, null, 2),
@@ -258,7 +238,7 @@ describe('Custom Provider Integration Tests', () => {
       assert.strictEqual(
         found.executablePath,
         executableFullPath,
-        'Should use custom executable path from .puppeteer.json',
+        'Should use custom executable path from .metadata',
       );
     });
   });

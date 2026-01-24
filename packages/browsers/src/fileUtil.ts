@@ -180,4 +180,23 @@ async function installDMG(dmgPath: string, folderPath: string): Promise<void> {
   } finally {
     spawnSync('hdiutil', ['detach', mountPath, '-quiet']);
   }
+
+}
+
+/**
+ * Expand path template by replacing \{platform\} and \{buildId\} placeholders.
+ *
+ * @param template - Path template with optional placeholders
+ * @param variables - Values to substitute
+ * @returns Expanded path
+ *
+ * @internal
+ */
+export function expandPathTemplate(
+  template: string,
+  variables: {platform: string; buildId: string},
+): string {
+  return template
+    .replace(/{platform}/g, variables.platform)
+    .replace(/{buildId}/g, variables.buildId);
 }

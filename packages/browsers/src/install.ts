@@ -6,7 +6,7 @@
 
 import assert from 'node:assert';
 import {spawnSync} from 'node:child_process';
-import {existsSync, readFileSync, writeFileSync} from 'node:fs';
+import {existsSync, readFileSync} from 'node:fs';
 import {mkdir, unlink} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -18,6 +18,7 @@ import {
   Browser,
   BrowserPlatform,
   downloadUrls,
+  executablePathByBrowser,
 } from './browser-data/browser-data.js';
 import {Cache, InstalledBrowser} from './Cache.js';
 import {debug} from './debug.js';
@@ -407,8 +408,20 @@ async function installUrl(
         options.browser,
         options.buildId,
         options.platform,
-        pathTemplate,
       );
+
+      // Write metadata for the installation
+      const relativePath = pathTemplate ?? executablePathByBrowser[options.browser](
+        options.platform,
+        options.buildId,
+      );
+      cache.writeInstallationMetadata(
+        options.browser,
+        options.platform,
+        options.buildId,
+        relativePath,
+      );
+
       if (!existsSync(installedBrowser.executablePath)) {
         throw new Error(
           `The browser folder (${outputPath}) exists but the executable (${installedBrowser.executablePath}) is missing`,
@@ -442,7 +455,7 @@ async function installUrl(
       debugTimeEnd('extract');
     }
 
-    // Get executable path template from provider if provided
+    // Get executable path template from provider if provided, otherwise use default
     let pathTemplate: string | undefined;
     if (provider?.getExecutablePath) {
       pathTemplate = await provider.getExecutablePath({
@@ -453,6 +466,12 @@ async function installUrl(
       debugInstall(
         `Using executable path template from provider: ${pathTemplate}`,
       );
+    } else {
+      // Use default executable path
+      pathTemplate = executablePathByBrowser[options.browser](
+        options.platform,
+        options.buildId,
+      );
     }
 
     const installedBrowser = new InstalledBrowser(
@@ -460,22 +479,26 @@ async function installUrl(
       options.browser,
       options.buildId,
       options.platform,
-      pathTemplate,
     );
 
-    // Write .puppeteer.json metadata for custom provider installations
-    if (provider && pathTemplate) {
-      const relativeExecutablePath = path.relative(
-        outputPath,
-        installedBrowser.executablePath,
-      );
-      const puppeteerJsonPath = path.join(outputPath, '.puppeteer.json');
-      writeFileSync(
-        puppeteerJsonPath,
-        JSON.stringify({executablePath: relativeExecutablePath}, null, 2),
-      );
-      debugInstall(`Wrote .puppeteer.json metadata to ${puppeteerJsonPath}`);
-    }
+    // Write installation-level metadata for all installations
+    const relativeExecutablePath = pathTemplate ?? executablePathByBrowser[options.browser](
+      options.platform,
+      options.buildId,
+    );
+    cache.writeInstallationMetadata(
+      options.browser,
+      options.platform,
+      options.buildId,
+      relativeExecutablePath,
+    );
+    debugInstall(
+      `Wrote installation metadata to ${cache.installationMetadataPath(
+        options.browser,
+        options.platform,
+        options.buildId,
+      )}`,
+    );
 
     if (options.buildIdAlias) {
       const metadata = installedBrowser.readMetadata();
