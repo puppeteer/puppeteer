@@ -180,7 +180,6 @@ async function installDMG(dmgPath: string, folderPath: string): Promise<void> {
   } finally {
     spawnSync('hdiutil', ['detach', mountPath, '-quiet']);
   }
-
 }
 
 /**

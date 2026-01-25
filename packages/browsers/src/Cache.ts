@@ -101,13 +101,8 @@ export interface ComputeExecutablePathOptions {
 export interface Metadata {
   // Maps an alias (canary/latest/dev/etc.) to a buildId.
   aliases: Record<string, string>;
-}
-
-/**
- * @internal
- */
-interface InstallationMetadata {
-  executablePath: string;
+  // Maps installation key (platform-buildId) to executable path.
+  executablePaths?: Record<string, string>;
 }
 
 /**
@@ -165,54 +160,29 @@ export class Cache {
     fs.writeFileSync(metatadaPath, JSON.stringify(metadata, null, 2));
   }
 
-  installationMetadataPath(
+  readExecutablePath(
     browser: Browser,
     platform: BrowserPlatform,
     buildId: string,
-  ): string {
-    return path.join(
-      this.installationDir(browser, platform, buildId),
-      '.metadata',
-    );
+  ): string | null {
+    const metadata = this.readMetadata(browser);
+    const key = `${platform}-${buildId}`;
+    return metadata.executablePaths?.[key] ?? null;
   }
 
-  readInstallationMetadata(
-    browser: Browser,
-    platform: BrowserPlatform,
-    buildId: string,
-  ): InstallationMetadata | null {
-    const metadataPath = this.installationMetadataPath(
-      browser,
-      platform,
-      buildId,
-    );
-    if (!fs.existsSync(metadataPath)) {
-      return null;
-    }
-    try {
-      const data = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
-      if (data.executablePath) {
-        return data as InstallationMetadata;
-      }
-      return null;
-    } catch {
-      return null;
-    }
-  }
-
-  writeInstallationMetadata(
+  writeExecutablePath(
     browser: Browser,
     platform: BrowserPlatform,
     buildId: string,
     executablePath: string,
   ): void {
-    const metadataPath = this.installationMetadataPath(
-      browser,
-      platform,
-      buildId,
-    );
-    fs.mkdirSync(path.dirname(metadataPath), {recursive: true});
-    fs.writeFileSync(metadataPath, JSON.stringify({executablePath}, null, 2));
+    const metadata = this.readMetadata(browser);
+    if (!metadata.executablePaths) {
+      metadata.executablePaths = {};
+    }
+    const key = `${platform}-${buildId}`;
+    metadata.executablePaths[key] = executablePath;
+    this.writeMetadata(browser, metadata);
   }
 
   resolveAlias(browser: Browser, alias: string): string | undefined {
@@ -252,6 +222,12 @@ export class Cache {
       if (metadata.aliases[alias] === buildId) {
         delete metadata.aliases[alias];
       }
+    }
+    // Clean up executable path entry
+    const key = `${platform}-${buildId}`;
+    if (metadata.executablePaths?.[key]) {
+      delete metadata.executablePaths[key];
+      this.writeMetadata(browser, metadata);
     }
     fs.rmSync(this.installationDir(browser, platform, buildId), {
       force: true,
@@ -311,15 +287,15 @@ export class Cache {
       options.buildId,
     );
 
-    const installationMetadata = this.readInstallationMetadata(
+    const storedExecutablePath = this.readExecutablePath(
       options.browser,
       options.platform,
       options.buildId,
     );
-    if (installationMetadata) {
+    if (storedExecutablePath) {
       // The metadata contains a relative path from the installation dir
       // It may be a template or an expanded path
-      const relativePath = installationMetadata.executablePath;
+      const relativePath = storedExecutablePath;
       // Check if it looks like a template (contains {platform} or {buildId})
       if (
         relativePath.includes('{platform}') ||
@@ -361,5 +337,3 @@ function parseFolderPath(
   }
   return {platform, buildId};
 }
-
-
