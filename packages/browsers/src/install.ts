@@ -411,11 +411,13 @@ async function installUrl(
       );
 
       // Write metadata for the installation
-      const relativePath = pathTemplate ?? executablePathByBrowser[options.browser](
-        options.platform,
-        options.buildId,
-      );
-      cache.writeInstallationMetadata(
+      const relativePath =
+        pathTemplate ??
+        executablePathByBrowser[options.browser](
+          options.platform,
+          options.buildId,
+        );
+      cache.writeExecutablePath(
         options.browser,
         options.platform,
         options.buildId,
@@ -482,22 +484,20 @@ async function installUrl(
     );
 
     // Write installation-level metadata for all installations
-    const relativeExecutablePath = pathTemplate ?? executablePathByBrowser[options.browser](
-      options.platform,
-      options.buildId,
-    );
-    cache.writeInstallationMetadata(
+    const relativeExecutablePath =
+      pathTemplate ??
+      executablePathByBrowser[options.browser](
+        options.platform,
+        options.buildId,
+      );
+    cache.writeExecutablePath(
       options.browser,
       options.platform,
       options.buildId,
       relativeExecutablePath,
     );
     debugInstall(
-      `Wrote installation metadata to ${cache.installationMetadataPath(
-        options.browser,
-        options.platform,
-        options.buildId,
-      )}`,
+      `Wrote executable path metadata for ${options.platform}-${options.buildId}`,
     );
 
     if (options.buildIdAlias) {

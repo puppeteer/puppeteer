@@ -169,22 +169,17 @@ describe('Custom Provider Integration Tests', () => {
         buildId: '120.0.6099.109',
       });
 
-      const installDir = path.join(
-        tmpDir,
-        'chrome',
-        `${BrowserPlatform.LINUX}-120.0.6099.109`,
-      );
-
-      // Verify .metadata exists and contains the executable path
-      const metadataPath = path.join(installDir, '.metadata');
+      // Verify .metadata exists at browser root and contains the executable path
+      const metadataPath = path.join(tmpDir, 'chrome', '.metadata');
       assert.ok(
         fs.existsSync(metadataPath),
         '.metadata should be created for all installations',
       );
 
       const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+      const key = `${BrowserPlatform.LINUX}-120.0.6099.109`;
       assert.ok(
-        metadata.executablePath,
+        metadata.executablePaths?.[key],
         'Metadata should contain the executable path',
       );
 
@@ -216,11 +211,21 @@ describe('Custom Provider Integration Tests', () => {
       // Create the directory structure
       fs.mkdirSync(installDir, {recursive: true});
 
-      // Write .metadata with custom executable path
-      const metadataPath = path.join(installDir, '.metadata');
+      // Write .metadata at browser root with custom executable path
+      const metadataPath = path.join(tmpDir, 'chrome', '.metadata');
+      const key = `${BrowserPlatform.LINUX}-${buildId}`;
       fs.writeFileSync(
         metadataPath,
-        JSON.stringify({executablePath: customExecutablePath}, null, 2),
+        JSON.stringify(
+          {
+            aliases: {},
+            executablePaths: {
+              [key]: customExecutablePath,
+            },
+          },
+          null,
+          2,
+        ),
       );
 
       // Create a dummy executable file so it exists
