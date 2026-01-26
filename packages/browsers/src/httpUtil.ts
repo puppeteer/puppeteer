@@ -69,7 +69,6 @@ export function httpRequest(
   return request;
 }
 
-
 /**
  * @internal
  */
