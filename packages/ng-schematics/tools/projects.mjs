@@ -39,10 +39,10 @@ class AngularProject {
       'delete:file':
         'rm -f .puppeteerrc.cjs && rm -f tsconfig.e2e.json && rm -R -f e2e/',
       // Runs the Puppeteer Ng-Schematics against the sandbox
-      schematics: 'schematics ../../:ng-add --dry-run=false',
-      'schematics:e2e': 'schematics ../../:e2e --dry-run=false',
-      'schematics:config': 'schematics ../../:config --dry-run=false',
-      'schematics:add': `schematics ../../:ng-add --dry-run=false --test-runner="${testRunner}"`,
+      schematics: 'schematics ../../:ng-add --no-dry-run',
+      'schematics:e2e': 'schematics ../../:e2e --no-dry-run',
+      'schematics:config': 'schematics ../../:config --no-dry-run',
+      'schematics:add': `schematics ../../:ng-add --no-dry-run --test-runner="${testRunner}"`,
       'schematics:smoke': 'ng e2e',
     };
   };
