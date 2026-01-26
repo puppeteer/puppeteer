@@ -56,8 +56,8 @@ describe('DefaultProvider', () => {
       assert.strictEqual(typeof downloader.getDownloadUrl, 'function');
     });
 
-    it('should not implement getExecutablePath by default', () => {
-      assert.strictEqual('getExecutablePath' in downloader, false);
+    it('should implement getExecutablePath method', () => {
+      assert.strictEqual(typeof downloader.getExecutablePath, 'function');
     });
   });
 
