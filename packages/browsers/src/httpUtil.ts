@@ -69,6 +69,10 @@ export function httpRequest(
   return request;
 }
 
+
+/**
+ * @internal
+ */
 export function downloadFile(
   url: URL,
   destinationPath: string,
