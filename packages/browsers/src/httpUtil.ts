@@ -149,7 +149,7 @@ export function getText(url: URL): Promise<string> {
           try {
             return resolve(String(data));
           } catch {
-            return reject(new Error('Invalid text data received'));
+            return reject(new Error(`Failed to read text response from ${url}`));
           }
         });
       },
