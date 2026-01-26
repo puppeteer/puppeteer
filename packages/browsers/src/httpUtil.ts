@@ -11,9 +11,6 @@ import {URL, urlToHttpOptions} from 'node:url';
 
 import {ProxyAgent} from 'proxy-agent';
 
-/**
- * @internal
- */
 export function headHttpRequest(url: URL): Promise<boolean> {
   return new Promise(resolve => {
     const request = httpRequest(
@@ -72,9 +69,6 @@ export function httpRequest(
   return request;
 }
 
-/**
- * @internal
- */
 export function downloadFile(
   url: URL,
   destinationPath: string,
@@ -126,9 +120,6 @@ export function downloadFile(
   });
 }
 
-/**
- * @internal
- */
 export async function getJSON(url: URL): Promise<unknown> {
   const text = await getText(url);
   try {
@@ -138,9 +129,6 @@ export async function getJSON(url: URL): Promise<unknown> {
   }
 }
 
-/**
- * @internal
- */
 export function getText(url: URL): Promise<string> {
   return new Promise((resolve, reject) => {
     const request = httpRequest(
