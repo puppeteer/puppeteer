@@ -39,7 +39,11 @@ const config = {
   url: 'https://pptr.dev',
   baseUrl: '/',
   onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    },
+  },
   favicon: 'img/favicon.ico',
   organizationName: 'puppeteer',
   projectName: 'puppeteer',
@@ -68,6 +72,11 @@ const config = {
             parser: {
               syntax: 'typescript',
               tsx: true,
+            },
+            transform: {
+              react: {
+                runtime: 'automatic',
+              },
             },
             target: 'es2017',
           },

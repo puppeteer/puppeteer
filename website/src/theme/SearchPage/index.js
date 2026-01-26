@@ -14,14 +14,13 @@ import {
   useEvent,
   useSearchQueryString,
 } from '@docusaurus/theme-common';
-import {useTitleFormatter} from '@docusaurus/theme-common/internal';
 import Translate, {translate} from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import {liteClient} from 'algoliasearch/lite';
 import algoliaSearchHelper from 'algoliasearch-helper';
 import clsx from 'clsx';
-import React, {useEffect, useState, useReducer, useRef} from 'react';
+import React, {useEffect, useState, useReducer, useRef, useMemo} from 'react';
 
 // eslint-disable-next-line @puppeteer/extensions
 import {tagToCounter} from '../SearchMetadata';
@@ -267,6 +266,10 @@ function SearchPageContent() {
           description: 'The search page title for empty query',
         });
   };
+  const pageTitle = useMemo(() => {
+    const title = getTitle();
+    return title || 'Search';
+  }, [searchQuery]);
   const makeSearch = useEvent((page = 0) => {
     algoliaHelper.addDisjunctiveFacetRefinement(
       'counter',
@@ -316,7 +319,7 @@ function SearchPageContent() {
   return (
     <Layout>
       <Head>
-        <title>{useTitleFormatter(getTitle())}</title>
+        <title>{pageTitle}</title>
         {/*
          We should not index search pages
           See https://github.com/facebook/docusaurus/pull/3233
