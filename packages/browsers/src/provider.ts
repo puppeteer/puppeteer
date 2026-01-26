@@ -109,11 +109,8 @@ export interface BrowserProvider {
   /**
    * Get the relative path to the executable within the extracted archive.
    *
-   * Can return a simple path or use `\{platform\}` and `\{buildId\}` placeholders.
-   * If not provided, uses the default Chrome for Testing structure.
-   *
    * @param options - Browser, buildId, and platform
-   * @returns Relative path to the executable (may include placeholders)
+   * @returns Relative path to the executable
    * @example
    *
    * ```ts
@@ -122,13 +119,13 @@ export interface BrowserProvider {
    *   return 'chromedriver/chromedriver';
    * }
    *
-   * // Chrome for Testing uses platform-specific folders
+   * // Custom provider with platform-specific paths
    * getExecutablePath(options) {
-   *   return `chromedriver-\{platform\}/chromedriver`;
+   *   return `binaries/${options.browser}-${options.platform}`;
    * }
    * ```
    */
-  getExecutablePath?(options: {
+  getExecutablePath(options: {
     browser: Browser;
     buildId: string;
     platform: BrowserPlatform;

@@ -5,7 +5,10 @@
  */
 
 import type {Browser, BrowserPlatform} from './browser-data/browser-data.js';
-import {downloadUrls} from './browser-data/browser-data.js';
+import {
+  downloadUrls,
+  executablePathByBrowser,
+} from './browser-data/browser-data.js';
 import type {BrowserProvider, DownloadOptions} from './provider.js';
 
 /**
@@ -40,5 +43,16 @@ export class DefaultProvider implements BrowserProvider {
     buildId: string,
   ): URL {
     return new URL(downloadUrls[browser](platform, buildId, this.#baseUrl));
+  }
+
+  getExecutablePath(options: {
+    browser: Browser;
+    buildId: string;
+    platform: BrowserPlatform;
+  }): string {
+    return executablePathByBrowser[options.browser](
+      options.platform,
+      options.buildId,
+    );
   }
 }
