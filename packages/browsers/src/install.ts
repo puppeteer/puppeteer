@@ -18,7 +18,6 @@ import {
   Browser,
   BrowserPlatform,
   downloadUrls,
-  executablePathByBrowser,
 } from './browser-data/browser-data.js';
 import {Cache, InstalledBrowser} from './Cache.js';
 import {debug} from './debug.js';
@@ -347,8 +346,11 @@ async function installDeps(installedBrowser: InstalledBrowser) {
 async function installUrl(
   url: URL,
   options: InstallOptions,
-  provider?: BrowserProvider,
+  provider: BrowserProvider,
 ): Promise<InstalledBrowser | string> {
+  if (!provider) {
+    throw new Error('Provider is required for installation');
+  }
   options.platform ??= detectBrowserPlatform();
   if (!options.platform) {
     throw new Error(
@@ -388,42 +390,33 @@ async function installUrl(
     options.buildId,
   );
 
+  // Get executable path from provider once (used for both cached and new installations)
+  const relativeExecutablePath = await provider.getExecutablePath({
+    browser: options.browser,
+    buildId: options.buildId,
+    platform: options.platform,
+  });
+  debugInstall(
+    `Using executable path from provider: ${relativeExecutablePath}`,
+  );
+
+  const installedBrowser = new InstalledBrowser(
+    cache,
+    options.browser,
+    options.buildId,
+    options.platform,
+  );
+
+  // Write metadata for the installation
+  cache.writeExecutablePath(
+    options.browser,
+    options.platform,
+    options.buildId,
+    relativeExecutablePath,
+  );
+
   try {
     if (existsSync(outputPath)) {
-      // Get executable path template from provider if provided
-      let pathTemplate: string | undefined;
-      if (provider?.getExecutablePath) {
-        pathTemplate = await provider?.getExecutablePath({
-          browser: options.browser,
-          buildId: options.buildId,
-          platform: options.platform,
-        });
-        debugInstall(
-          `Using executable path template from provider: ${pathTemplate}`,
-        );
-      }
-
-      const installedBrowser = new InstalledBrowser(
-        cache,
-        options.browser,
-        options.buildId,
-        options.platform,
-      );
-
-      // Write metadata for the installation
-      const relativePath =
-        pathTemplate ??
-        executablePathByBrowser[options.browser](
-          options.platform,
-          options.buildId,
-        );
-      cache.writeExecutablePath(
-        options.browser,
-        options.platform,
-        options.buildId,
-        relativePath,
-      );
-
       if (!existsSync(installedBrowser.executablePath)) {
         throw new Error(
           `The browser folder (${outputPath}) exists but the executable (${installedBrowser.executablePath}) is missing`,
@@ -456,49 +449,6 @@ async function installUrl(
     } finally {
       debugTimeEnd('extract');
     }
-
-    // Get executable path template from provider if provided, otherwise use default
-    let pathTemplate: string | undefined;
-    if (provider?.getExecutablePath) {
-      pathTemplate = await provider.getExecutablePath({
-        browser: options.browser,
-        buildId: options.buildId,
-        platform: options.platform,
-      });
-      debugInstall(
-        `Using executable path template from provider: ${pathTemplate}`,
-      );
-    } else {
-      // Use default executable path
-      pathTemplate = executablePathByBrowser[options.browser](
-        options.platform,
-        options.buildId,
-      );
-    }
-
-    const installedBrowser = new InstalledBrowser(
-      cache,
-      options.browser,
-      options.buildId,
-      options.platform,
-    );
-
-    // Write installation-level metadata for all installations
-    const relativeExecutablePath =
-      pathTemplate ??
-      executablePathByBrowser[options.browser](
-        options.platform,
-        options.buildId,
-      );
-    cache.writeExecutablePath(
-      options.browser,
-      options.platform,
-      options.buildId,
-      relativeExecutablePath,
-    );
-    debugInstall(
-      `Wrote executable path metadata for ${options.platform}-${options.buildId}`,
-    );
 
     if (options.buildIdAlias) {
       const metadata = installedBrowser.readMetadata();
