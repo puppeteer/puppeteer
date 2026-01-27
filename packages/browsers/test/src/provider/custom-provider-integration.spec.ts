@@ -182,6 +182,15 @@ describe('Custom Provider Integration Tests', () => {
         metadata.executablePaths?.[key],
         'Metadata should contain the executable path',
       );
+      assert.ok(
+        metadata.providers?.[key],
+        'Metadata should contain the provider name',
+      );
+      assert.strictEqual(
+        metadata.providers?.[key],
+        'DefaultProvider',
+        'Provider should be DefaultProvider',
+      );
 
       // Verify getInstalledBrowsers uses the persisted path
       const installed = await getInstalledBrowsers({cacheDir: tmpDir});
@@ -244,6 +253,31 @@ describe('Custom Provider Integration Tests', () => {
         found.executablePath,
         executableFullPath,
         'Should use custom executable path from .metadata',
+      );
+    });
+
+    it('should store and retrieve provider name', async function () {
+      this.timeout(60000);
+
+      // Install using default provider
+      await install({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        platform: BrowserPlatform.LINUX,
+        buildId: '120.0.6099.109',
+      });
+
+      // Get installed browsers and verify provider name
+      const installed = await getInstalledBrowsers({cacheDir: tmpDir});
+      const found = installed.find(b => {
+        return b.buildId === '120.0.6099.109';
+      });
+
+      assert.ok(found, 'Should find the installed browser');
+      assert.strictEqual(
+        found?.getProviderName(),
+        'DefaultProvider',
+        'getProviderName() should return DefaultProvider',
       );
     });
   });

@@ -71,6 +71,13 @@ export class InstalledBrowser {
   writeMetadata(metadata: Metadata): void {
     this.#cache.writeMetadata(this.browser, metadata);
   }
+
+  /**
+   * Returns the name of the provider that installed this browser.
+   */
+  getProviderName(): string | undefined {
+    return this.#cache.readProvider(this.browser, this.platform, this.buildId);
+  }
 }
 
 /**
@@ -102,6 +109,8 @@ export interface Metadata {
   aliases: Record<string, string>;
   // Maps installation key (platform-buildId) to executable path.
   executablePaths?: Record<string, string>;
+  // Maps installation key (platform-buildId) to the provider name.
+  providers?: Record<string, string>;
 }
 
 /**
@@ -181,6 +190,31 @@ export class Cache {
     }
     const key = `${platform}-${buildId}`;
     metadata.executablePaths[key] = executablePath;
+    this.writeMetadata(browser, metadata);
+  }
+
+  readProvider(
+    browser: Browser,
+    platform: BrowserPlatform,
+    buildId: string,
+  ): string | undefined {
+    const metadata = this.readMetadata(browser);
+    const key = `${platform}-${buildId}`;
+    return metadata.providers?.[key];
+  }
+
+  writeProvider(
+    browser: Browser,
+    platform: BrowserPlatform,
+    buildId: string,
+    provider: string,
+  ): void {
+    const metadata = this.readMetadata(browser);
+    if (!metadata.providers) {
+      metadata.providers = {};
+    }
+    const key = `${platform}-${buildId}`;
+    metadata.providers[key] = provider;
     this.writeMetadata(browser, metadata);
   }
 

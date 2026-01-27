@@ -414,6 +414,12 @@ async function installUrl(
     options.buildId,
     relativeExecutablePath,
   );
+  cache.writeProvider(
+    options.browser,
+    options.platform,
+    options.buildId,
+    provider.constructor.name,
+  );
 
   try {
     if (existsSync(outputPath)) {
