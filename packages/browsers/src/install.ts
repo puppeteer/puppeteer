@@ -199,7 +199,12 @@ async function installWithProviders(
         : options.downloadProgressCallback,
   };
 
-  const errors: Error[] = [];
+  interface ProviderError {
+    providerName: string;
+    error: Error;
+  }
+
+  const errors: ProviderError[] = [];
 
   for (const provider of providers) {
     try {
@@ -248,19 +253,22 @@ async function installWithProviders(
       debugInstall(
         `Provider ${provider.constructor.name} failed: ${(err as Error).message}`,
       );
-      errors.push(err as Error);
+      errors.push({
+        providerName: provider.constructor.name,
+        error: err as Error,
+      });
       // Continue to next provider
     }
   }
 
   // All providers failed
-  const errorMessages = errors
+  const errorDetails = errors
     .map(e => {
-      return e.message;
+      return `  - ${e.providerName}: ${e.error.message}`;
     })
-    .join('\n  - ');
+    .join('\n');
   throw new Error(
-    `All providers failed for ${options.browser} ${options.buildId}:\n  - ${errorMessages}`,
+    `All providers failed for ${options.browser} ${options.buildId}:\n${errorDetails}`,
   );
 }
 

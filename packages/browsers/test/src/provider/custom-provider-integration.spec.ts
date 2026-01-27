@@ -71,6 +71,8 @@ describe('Custom Provider Integration Tests', () => {
         assert(!error.message.includes('supports'));
         // Allow 'download' related messages since they indicate the provider worked.
         assert(error.message.includes('All providers failed'));
+        // Verify the provider name appears in the error message
+        assert(error.message.includes('MockProvider'));
       }
     });
   });
@@ -125,6 +127,39 @@ describe('Custom Provider Integration Tests', () => {
 
       assert(result);
       assert.strictEqual(typeof result.executablePath, 'string');
+    });
+
+    it('should include provider names in error message when all providers fail', async function () {
+      this.timeout(60000);
+
+      // All providers fail
+      const provider1 = new MockProvider({
+        supports: true,
+        getDownloadUrlError: new Error('Network error'),
+      });
+      const provider2 = new MockProvider({
+        supports: true,
+        getDownloadUrlError: new Error('Server error'),
+      });
+
+      try {
+        await install({
+          cacheDir: tmpDir,
+          browser: Browser.CHROME,
+          platform: BrowserPlatform.LINUX,
+          buildId: 'non-existent-build',
+          providers: [provider1, provider2],
+        });
+        assert.fail('Expected install to fail');
+      } catch (error) {
+        assert(error instanceof Error);
+        assert(error.message.includes('All providers failed'));
+        // Verify provider names appear in error message
+        assert(error.message.includes('MockProvider'));
+        // Verify both provider errors are included
+        assert(error.message.includes('Network error'));
+        assert(error.message.includes('Server error'));
+      }
     });
   });
 
