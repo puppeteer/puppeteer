@@ -484,8 +484,10 @@ export class CLI {
           const browsers = cache.getInstalledBrowsers();
 
           for (const browser of browsers) {
+            const provider = browser.getProviderName();
             console.log(
-              `${browser.browser}@${browser.buildId} (${browser.platform}) ${browser.executablePath}`,
+              `${browser.browser}@${browser.buildId} (${browser.platform}) ${browser.executablePath}` +
+                (provider ? ` [${provider}]` : ''),
             );
           }
         },
