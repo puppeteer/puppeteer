@@ -1722,6 +1722,18 @@ export abstract class Page extends EventEmitter<PageEvents> {
   abstract metrics(): Promise<Metrics>;
 
   /**
+   * Captures a snapshot of the JavaScript heap and writes it to a file.
+   *
+   * @param options - Options for capturing the heap snapshot.
+   */
+  abstract captureHeapSnapshot(options?: {
+    /**
+     * The file path to save the heap snapshot to.
+     */
+    path?: string;
+  }): Promise<void>;
+
+  /**
    * The page's URL.
    *
    * @remarks

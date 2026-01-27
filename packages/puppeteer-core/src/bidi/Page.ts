@@ -952,6 +952,14 @@ export class BidiPage extends Page {
     throw new UnsupportedOperation();
   }
 
+  override async captureHeapSnapshot(
+    _options: {
+      path?: string;
+    } = {},
+  ): Promise<void> {
+    throw new UnsupportedOperation();
+  }
+
   override async goBack(
     options: WaitForOptions = {},
   ): Promise<HTTPResponse | null> {
