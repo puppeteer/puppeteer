@@ -88,17 +88,30 @@ export class CdpBrowserContext extends BrowserContext {
   }
 
   override async setPermission(
-    origin: string,
-    permission: PermissionDescriptor,
-    state: PermissionState,
+    origin: string | '*',
+    ...permissions: Array<{
+      permission: PermissionDescriptor;
+      state: PermissionState;
+    }>
   ): Promise<void> {
-    await this.#connection.send('Browser.setPermission', {
-      origin,
-      browserContextId: this.#id || undefined,
-      permission:
-        permission as unknown as Protocol.Browser.PermissionDescriptor,
-      setting: state as Protocol.Browser.PermissionSetting,
-    });
+    await Promise.all(
+      permissions.map(async permission => {
+        const protocolPermission: Protocol.Browser.PermissionDescriptor = {
+          name: permission.permission.name,
+          userVisibleOnly: permission.permission.userVisibleOnly,
+          sysex: permission.permission.sysex,
+          allowWithoutSanitization:
+            permission.permission.allowWithoutSanitization,
+          panTiltZoom: permission.permission.panTiltZoom,
+        };
+        await this.#connection.send('Browser.setPermission', {
+          origin: origin === '*' ? undefined : origin,
+          browserContextId: this.#id || undefined,
+          permission: protocolPermission,
+          setting: permission.state as Protocol.Browser.PermissionSetting,
+        });
+      }),
+    );
   }
 
   override async clearPermissionOverrides(): Promise<void> {

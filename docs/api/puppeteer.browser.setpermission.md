@@ -1,17 +1,17 @@
 ---
-sidebar_label: BrowserContext.setPermission
+sidebar_label: Browser.setPermission
 ---
 
-# BrowserContext.setPermission() method
+# Browser.setPermission() method
 
-Sets the permission for a specific origin.
+Sets the permission for a specific origin in the default [BrowserContext](./puppeteer.browsercontext.md).
 
 ### Signature
 
 ```typescript
-class BrowserContext {
-  abstract setPermission(
-    origin: string | '*',
+class Browser {
+  setPermission(
+    origin: string,
     ...permissions: Array<{
       permission: PermissionDescriptor;
       state: PermissionState;
@@ -41,7 +41,7 @@ origin
 
 </td><td>
 
-string \| '\*'
+string
 
 </td><td>
 
@@ -64,3 +64,7 @@ Array&lt;&#123; permission: [PermissionDescriptor](./puppeteer.permissiondescrip
 **Returns:**
 
 Promise&lt;void&gt;
+
+## Remarks
+
+Shortcut for [browser.defaultBrowserContext().setPermission()](./puppeteer.browsercontext.setpermission.md).

@@ -198,9 +198,15 @@ Creates a new [page](./puppeteer.page.md) in this [browser context](./puppeteer.
 
 </td><td>
 
+`deprecated`
+
 </td><td>
 
 Grants this [browser context](./puppeteer.browsercontext.md) the given `permissions` within the given `origin`.
+
+**Deprecated:**
+
+in favor of [BrowserContext.setPermission()](./puppeteer.browsercontext.setpermission.md).
 
 </td></tr>
 <tr><td>
@@ -231,7 +237,7 @@ Sets a cookie in the browser context.
 </td></tr>
 <tr><td>
 
-<span id="setpermission">[setPermission(origin, permission, state)](./puppeteer.browsercontext.setpermission.md)</span>
+<span id="setpermission">[setPermission(origin, permissions)](./puppeteer.browsercontext.setpermission.md)</span>
 
 </td><td>
 

@@ -1772,6 +1772,10 @@ The sizes of each format are as follows:
 
 </td><td>
 
+**Deprecated:**
+
+in favor of .
+
 </td></tr>
 <tr><td>
 

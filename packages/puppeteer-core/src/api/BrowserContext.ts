@@ -213,6 +213,8 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * "https://example.com".
    * @param permissions - An array of permissions to grant. All permissions that
    * are not listed here will be automatically denied.
+   *
+   * @deprecated in favor of {@link BrowserContext.setPermission}.
    */
   abstract overridePermissions(
     origin: string,
@@ -229,9 +231,11 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * @public
    */
   abstract setPermission(
-    origin: string,
-    permission: PermissionDescriptor,
-    state: PermissionState,
+    origin: string | '*',
+    ...permissions: Array<{
+      permission: PermissionDescriptor;
+      state: PermissionState;
+    }>
   ): Promise<void>;
 
   /**
