@@ -28,6 +28,13 @@
     "comment": "Firefox does not support Web Bluetooth"
   },
   {
+    "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.setPermission should support * as origin",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Origin (*) is not supported for setPermission in BiDi"
+  },
+  {
     "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should not hang when there is a debugger statement",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": [],

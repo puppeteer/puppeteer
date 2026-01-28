@@ -1194,6 +1194,13 @@ Valid options to configure PDF generation via [Page.pdf()](./puppeteer.page.pdf.
 </td></tr>
 <tr><td>
 
+<span id="permissiondescriptor_2">[PermissionDescriptor_2](./puppeteer.permissiondescriptor_2.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="point">[Point](./puppeteer.point.md)</span>
 
 </td><td>
@@ -1762,6 +1769,17 @@ The sizes of each format are as follows:
 <tr><td>
 
 <span id="permission">[Permission](./puppeteer.permission.md)</span>
+
+</td><td>
+
+**Deprecated:**
+
+in favor of .
+
+</td></tr>
+<tr><td>
+
+<span id="permissionstate_2">[PermissionState_2](./puppeteer.permissionstate_2.md)</span>
 
 </td><td>
 
