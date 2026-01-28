@@ -16,7 +16,11 @@ import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Frame, WaitForOptions} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {JSHandle} from '../api/JSHandle.js';
-import type {Credentials, ReloadOptions} from '../api/Page.js';
+import type {
+  Credentials,
+  HeapSnapshotOptions,
+  ReloadOptions,
+} from '../api/Page.js';
 import {
   Page,
   PageEvent,
@@ -54,6 +58,7 @@ import {
   validateDialogType,
 } from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
+import {environment} from '../environment.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {AsyncDisposableStack} from '../util/disposable.js';
@@ -810,6 +815,40 @@ export class CdpPage extends Page {
       'Performance.getMetrics',
     );
     return this.#buildMetricsObject(response.metrics);
+  }
+
+  override async captureHeapSnapshot(
+    options: HeapSnapshotOptions,
+  ): Promise<void> {
+    const {createWriteStream} = environment.value.fs;
+    const stream = createWriteStream(options.path);
+    const streamPromise = new Promise<void>((resolve, reject) => {
+      stream.on('error', reject);
+      stream.on('finish', resolve);
+    });
+
+    const client = this.#primaryTargetClient;
+    await client.send('HeapProfiler.enable');
+    await client.send('HeapProfiler.collectGarbage');
+
+    const handler = (
+      event: Protocol.HeapProfiler.AddHeapSnapshotChunkEvent,
+    ) => {
+      stream.write(event.chunk);
+    };
+    client.on('HeapProfiler.addHeapSnapshotChunk', handler);
+
+    try {
+      await client.send('HeapProfiler.takeHeapSnapshot', {
+        reportProgress: false,
+      });
+    } finally {
+      client.off('HeapProfiler.addHeapSnapshotChunk', handler);
+      await client.send('HeapProfiler.disable');
+    }
+
+    stream.end();
+    await streamPromise;
   }
 
   #emitMetrics(event: Protocol.Performance.MetricsEvent): void {
