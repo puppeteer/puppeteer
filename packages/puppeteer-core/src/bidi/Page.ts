@@ -228,8 +228,8 @@ export class BidiPage extends Page {
     throw new UnsupportedOperation();
   }
 
-  override windowId(): Promise<WindowId> {
-    throw new UnsupportedOperation();
+  override async windowId(): Promise<WindowId> {
+    return this.#frame.browsingContext.windowId;
   }
 
   override openDevTools(): Promise<Page> {

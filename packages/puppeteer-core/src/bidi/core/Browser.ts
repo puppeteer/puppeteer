@@ -286,6 +286,36 @@ export class Browser extends EventEmitter<{
     await this.session.send('webExtension.uninstall', {extension: id});
   }
 
+  @throwIfDisposed<Browser>(browser => {
+    // SAFETY: By definition of `disposed`, `#reason` is defined.
+    return browser.#reason!;
+  })
+  async setClientWindowState(
+    params: Bidi.Browser.SetClientWindowStateParameters,
+  ): Promise<void> {
+    await this.session.send('browser.setClientWindowState', params);
+  }
+
+  @throwIfDisposed<Browser>(browser => {
+    // SAFETY: By definition of `disposed`, `#reason` is defined.
+    return browser.#reason!;
+  })
+  async getClientWindowInfo(
+    windowId: string,
+  ): Promise<Bidi.Browser.ClientWindowInfo> {
+    const {
+      result: {clientWindows},
+    } = await this.session.send('browser.getClientWindows', {});
+
+    const window = clientWindows.find(window => {
+      return window.clientWindow === windowId;
+    });
+    if (!window) {
+      throw new Error('Window not found');
+    }
+    return window;
+  }
+
   override [disposeSymbol](): void {
     this.#reason ??=
       'Browser was disconnected, probably because the session ended.';
