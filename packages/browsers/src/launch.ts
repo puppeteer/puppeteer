@@ -297,15 +297,13 @@ export class Process {
     this.#executablePath = opts.executablePath;
     this.#args = opts.args ?? [];
 
-    if (opts.signal) {
-      this.#signal = opts.signal;
-      if (this.#signal.aborted) {
-        throw new Error(
-          this.#signal.reason ? this.#signal.reason : 'Launch aborted',
-        );
-      }
-      this.#signal.addEventListener('abort', this.#onAbort, {once: true});
+    this.#signal = opts.signal;
+    if (this.#signal?.aborted) {
+      throw new Error(
+        this.#signal.reason ? this.#signal.reason : 'Launch aborted',
+      );
     }
+    this.#signal?.addEventListener('abort', this.#onAbort, {once: true});
 
     opts.pipe ??= false;
     opts.dumpio ??= false;
