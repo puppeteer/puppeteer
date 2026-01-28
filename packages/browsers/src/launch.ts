@@ -288,7 +288,7 @@ export class Process {
   #logs: string[] = [];
   #maxLogLinesSize = 1000;
   #lineEmitter = new EventEmitter();
-  #onAbort: () => void = () => {
+  #onAbort = (): void => {
     this.kill();
   };
   #signal?: AbortSignal;
