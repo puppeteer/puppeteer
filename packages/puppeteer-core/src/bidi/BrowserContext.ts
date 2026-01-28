@@ -282,7 +282,7 @@ export class BidiBrowserContext extends BrowserContext {
   ): Promise<void> {
     await this.userContext.setPermissions(
       origin,
-      permission as unknown as Bidi.Permissions.PermissionDescriptor,
+      permission as Bidi.Permissions.PermissionDescriptor,
       state as Bidi.Permissions.PermissionState,
     );
   }
