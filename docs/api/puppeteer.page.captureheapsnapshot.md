@@ -10,7 +10,7 @@ Captures a snapshot of the JavaScript heap and writes it to a file.
 
 ```typescript
 class Page {
-  abstract captureHeapSnapshot(options?: {path?: string}): Promise<void>;
+  abstract captureHeapSnapshot(options: HeapSnapshotOptions): Promise<void>;
 }
 ```
 
@@ -35,11 +35,9 @@ options
 
 </td><td>
 
-&#123; path?: string; &#125;
+[HeapSnapshotOptions](./puppeteer.heapsnapshotoptions.md)
 
 </td><td>
-
-_(Optional)_ Options for capturing the heap snapshot.
 
 </td></tr>
 </tbody></table>

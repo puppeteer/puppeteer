@@ -1017,6 +1017,15 @@ Device in a request prompt.
 </td></tr>
 <tr><td>
 
+<span id="heapsnapshotoptions">[HeapSnapshotOptions](./puppeteer.heapsnapshotoptions.md)</span>
+
+</td><td>
+
+Options for [Page.captureHeapSnapshot()](./puppeteer.page.captureheapsnapshot.md).
+
+</td></tr>
+<tr><td>
+
 <span id="interceptresolutionstate">[InterceptResolutionState](./puppeteer.interceptresolutionstate.md)</span>
 
 </td><td>

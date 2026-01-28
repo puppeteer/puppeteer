@@ -16,7 +16,11 @@ import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Frame, WaitForOptions} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {JSHandle} from '../api/JSHandle.js';
-import type {Credentials, ReloadOptions} from '../api/Page.js';
+import type {
+  Credentials,
+  HeapSnapshotOptions,
+  ReloadOptions,
+} from '../api/Page.js';
 import {
   Page,
   PageEvent,
@@ -814,15 +818,8 @@ export class CdpPage extends Page {
   }
 
   override async captureHeapSnapshot(
-    options: {
-      path?: string;
-    } = {},
+    options: HeapSnapshotOptions,
   ): Promise<void> {
-    if (!options.path) {
-      throw new Error(
-        'CaptureHeapSnapshot only supports writing to a file currently.',
-      );
-    }
     const {createWriteStream} = environment.value.fs;
     const stream = createWriteStream(options.path);
     const streamPromise = new Promise<void>((resolve, reject) => {
@@ -830,14 +827,14 @@ export class CdpPage extends Page {
       stream.on('finish', resolve);
     });
 
-    const client = this._client();
+    const client = this.#primaryTargetClient;
     await client.send('HeapProfiler.enable');
     await client.send('HeapProfiler.collectGarbage');
 
-    const handler = ({
-      chunk,
-    }: Protocol.HeapProfiler.AddHeapSnapshotChunkEvent) => {
-      stream.write(chunk);
+    const handler = (
+      event: Protocol.HeapProfiler.AddHeapSnapshotChunkEvent,
+    ) => {
+      stream.write(event.chunk);
     };
     client.on('HeapProfiler.addHeapSnapshotChunk', handler);
 

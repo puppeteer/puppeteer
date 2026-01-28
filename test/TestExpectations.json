@@ -98,6 +98,13 @@
     "comment": "Spawns headful browser, needs display or `xvfb` like which is not required for other headless tests"
   },
   {
+    "testIdPattern": "[heapSnapshot.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Not supported in WebDriver BiDi"
+  },
+  {
     "testIdPattern": "[interventionHeaders.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -444,13 +451,6 @@
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "https://github.com/w3c/webdriver-bidi/issues/794"
-  },
-  {
-    "testIdPattern": "[heap_snapshot.spec] Heap Snapshot should capture heap snapshot",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Not supported in WebDriver BiDi"
   },
   {
     "testIdPattern": "[idle_override.spec] *",
