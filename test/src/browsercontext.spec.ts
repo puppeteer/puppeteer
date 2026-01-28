@@ -376,4 +376,38 @@ describe('BrowserContext', function () {
       expect(await getPermission(page, 'persistent-storage')).toBe('granted');
     });
   });
+
+  describe('BrowserContext.setPermission', function () {
+    function getPermission(page: Page, name: PermissionName) {
+      return page.evaluate(name => {
+        return navigator.permissions.query({name}).then(result => {
+          return result.state;
+        });
+      }, name);
+    }
+
+    it('should set permission', async () => {
+      const {page, server, context} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await context.setPermission(
+        server.EMPTY_PAGE,
+        {name: 'geolocation'},
+        'granted',
+      );
+      expect(await getPermission(page, 'geolocation')).toBe('granted');
+      await context.setPermission(
+        server.EMPTY_PAGE,
+        {name: 'geolocation'},
+        'denied',
+      );
+      expect(await getPermission(page, 'geolocation')).toBe('denied');
+      await context.setPermission(
+        server.EMPTY_PAGE,
+        {name: 'geolocation'},
+        'prompt',
+      );
+      expect(await getPermission(page, 'geolocation')).toBe('prompt');
+    });
+  });
 });

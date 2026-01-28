@@ -29,6 +29,8 @@ import type {
   Browser,
   CreatePageOptions,
   Permission,
+  PermissionDescriptor,
+  PermissionState,
   WaitForTargetOptions,
 } from './Browser.js';
 import type {Page} from './Page.js';
@@ -215,6 +217,21 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
   abstract overridePermissions(
     origin: string,
     permissions: Permission[],
+  ): Promise<void>;
+
+  /**
+   * Sets the permission for a specific origin.
+   *
+   * @param origin - The origin to set the permission for.
+   * @param permission - The permission descriptor.
+   * @param state - The state of the permission.
+   *
+   * @public
+   */
+  abstract setPermission(
+    origin: string,
+    permission: PermissionDescriptor,
+    state: PermissionState,
   ): Promise<void>;
 
   /**

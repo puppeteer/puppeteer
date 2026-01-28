@@ -4,10 +4,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import type {Protocol} from 'devtools-protocol';
+
 import type {CreatePageOptions} from '../api/Browser.js';
 import {
   WEB_PERMISSION_TO_PROTOCOL_PERMISSION,
   type Permission,
+  type PermissionDescriptor,
+  type PermissionState,
 } from '../api/Browser.js';
 import {BrowserContext} from '../api/BrowserContext.js';
 import type {Page} from '../api/Page.js';
@@ -80,6 +84,20 @@ export class CdpBrowserContext extends BrowserContext {
       origin,
       browserContextId: this.#id || undefined,
       permissions: protocolPermissions,
+    });
+  }
+
+  override async setPermission(
+    origin: string,
+    permission: PermissionDescriptor,
+    state: PermissionState,
+  ): Promise<void> {
+    await this.#connection.send('Browser.setPermission', {
+      origin,
+      browserContextId: this.#id || undefined,
+      permission:
+        permission as unknown as Protocol.Browser.PermissionDescriptor,
+      setting: state as Protocol.Browser.PermissionSetting,
     });
   }
 

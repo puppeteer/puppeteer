@@ -231,6 +231,17 @@ Sets a cookie in the browser context.
 </td></tr>
 <tr><td>
 
+<span id="setpermission">[setPermission(origin, permission, state)](./puppeteer.browsercontext.setpermission.md)</span>
+
+</td><td>
+
+</td><td>
+
+Sets the permission for a specific origin.
+
+</td></tr>
+<tr><td>
+
 <span id="targets">[targets()](./puppeteer.browsercontext.targets.md)</span>
 
 </td><td>

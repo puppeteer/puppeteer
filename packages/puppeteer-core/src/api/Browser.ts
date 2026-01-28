@@ -127,6 +127,22 @@ export type Permission =
 /**
  * @public
  */
+export interface PermissionDescriptor {
+  name: string;
+  userVisibleOnly?: boolean;
+  sysex?: boolean;
+  panTiltZoom?: boolean;
+  allowWithoutSanitization?: boolean;
+}
+
+/**
+ * @public
+ */
+export type PermissionState = 'granted' | 'denied' | 'prompt';
+
+/**
+ * @public
+ */
 export interface WaitForTargetOptions {
   /**
    * Maximum wait time in milliseconds. Pass `0` to disable the timeout.

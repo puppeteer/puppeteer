@@ -6,7 +6,12 @@
 
 import * as Bidi from 'webdriver-bidi-protocol';
 
-import type {CreatePageOptions, Permission} from '../api/Browser.js';
+import type {
+  CreatePageOptions,
+  Permission,
+  PermissionDescriptor,
+  PermissionState,
+} from '../api/Browser.js';
 import {WEB_PERMISSION_TO_PROTOCOL_PERMISSION} from '../api/Browser.js';
 import type {BrowserContextEvents} from '../api/BrowserContext.js';
 import {BrowserContext, BrowserContextEvent} from '../api/BrowserContext.js';
@@ -267,6 +272,18 @@ export class BidiBrowserContext extends BrowserContext {
           return result;
         },
       ),
+    );
+  }
+
+  override async setPermission(
+    origin: string,
+    permission: PermissionDescriptor,
+    state: PermissionState,
+  ): Promise<void> {
+    await this.userContext.setPermissions(
+      origin,
+      permission as unknown as Bidi.Permissions.PermissionDescriptor,
+      state as Bidi.Permissions.PermissionState,
     );
   }
 
