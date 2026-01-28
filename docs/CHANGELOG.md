@@ -2,6 +2,18 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.36.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.36.0...puppeteer-v24.36.1) (2026-01-27)
+
+### ♻️ Chores
+
+- improve TargetManager code ([#14602](https://github.com/puppeteer/puppeteer/issues/14602)) ([2c1e002](https://github.com/puppeteer/puppeteer/commit/2c1e0025594ee28e5ddff318eb91307941eaa3a0))
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - @puppeteer/browsers bumped from 2.11.1 to 2.11.2
+
 ## [24.36.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.35.0...puppeteer-v24.36.0) (2026-01-22)
 
 ### 🎉 Features

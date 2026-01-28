@@ -409,6 +409,17 @@ Get the browser context that the page belongs to.
 </td></tr>
 <tr><td>
 
+<span id="captureheapsnapshot">[captureHeapSnapshot(options)](./puppeteer.page.captureheapsnapshot.md)</span>
+
+</td><td>
+
+</td><td>
+
+Captures a snapshot of the JavaScript heap and writes it to a file.
+
+</td></tr>
+<tr><td>
+
 <span id="click">[click(selector, options)](./puppeteer.page.click.md)</span>
 
 </td><td>

@@ -648,6 +648,18 @@ export interface ReloadOptions extends WaitForOptions {
 }
 
 /**
+ * Options for {@link Page.captureHeapSnapshot}.
+ *
+ * @public
+ */
+export interface HeapSnapshotOptions {
+  /**
+   * The file path to save the heap snapshot to.
+   */
+  path: string;
+}
+
+/**
  * Page provides methods to interact with a single tab or
  * {@link https://developer.chrome.com/extensions/background_pages | extension background page}
  * in the browser.
@@ -1720,6 +1732,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * in seconds since an arbitrary point in the past.
    */
   abstract metrics(): Promise<Metrics>;
+
+  /**
+   * Captures a snapshot of the JavaScript heap and writes it to a file.
+   */
+  abstract captureHeapSnapshot(options: HeapSnapshotOptions): Promise<void>;
 
   /**
    * The page's URL.

@@ -18,6 +18,7 @@ import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {
   Credentials,
   GeolocationOptions,
+  HeapSnapshotOptions,
   MediaFeature,
   PageEvents,
   ReloadOptions,
@@ -949,6 +950,12 @@ export class BidiPage extends Page {
   }
 
   override metrics(): never {
+    throw new UnsupportedOperation();
+  }
+
+  override async captureHeapSnapshot(
+    _options: HeapSnapshotOptions,
+  ): Promise<void> {
     throw new UnsupportedOperation();
   }
 

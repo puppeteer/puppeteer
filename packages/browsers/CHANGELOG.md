@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.11.2](https://github.com/puppeteer/puppeteer/compare/browsers-v2.11.1...browsers-v2.11.2) (2026-01-27)
+
+
+### 🛠️ Fixes
+
+* typo in the config path in getConfigHomeLinux ([#14600](https://github.com/puppeteer/puppeteer/issues/14600)) ([c95d1bf](https://github.com/puppeteer/puppeteer/commit/c95d1bfd4be847d07f81b4a8c819786d3f51534d))
+
 ## [2.11.1](https://github.com/puppeteer/puppeteer/compare/browsers-v2.11.0...browsers-v2.11.1) (2026-01-12)
 
 
