@@ -138,5 +138,42 @@ describe('Chrome', () => {
         }),
       );
     });
+
+    it('should throw if signal is already aborted', async () => {
+      const executablePath = computeExecutablePath({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        buildId: testChromeBuildId,
+      });
+      const controller = new AbortController();
+      controller.abort('Launch aborted');
+      try {
+        launch({
+          executablePath,
+          args: getArgs(),
+          signal: controller.signal,
+        });
+        assert.fail('Should have thrown');
+      } catch (err) {
+        assert.strictEqual((err as Error).message, 'Launch aborted');
+      }
+    });
+
+    it('should kill the process when signal is aborted', async () => {
+      const executablePath = computeExecutablePath({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        buildId: testChromeBuildId,
+      });
+      const controller = new AbortController();
+      const process = launch({
+        executablePath,
+        args: getArgs(),
+        signal: controller.signal,
+      });
+      await process.waitForLineOutput(CDP_WEBSOCKET_ENDPOINT_REGEX);
+      controller.abort();
+      await process.hasClosed();
+    });
   });
 });
