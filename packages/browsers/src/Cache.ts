@@ -17,7 +17,6 @@ import {
   getVersionComparator,
 } from './browser-data/browser-data.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
-import {expandPathTemplate} from './fileUtil.js';
 
 const debugCache = debug('puppeteer:browsers:cache');
 
@@ -326,24 +325,8 @@ export class Cache {
       options.buildId,
     );
     if (storedExecutablePath) {
-      // The metadata contains a relative path from the installation dir
-      // It may be a template or an expanded path
-      const relativePath = storedExecutablePath;
-      // Check if it looks like a template (contains {platform} or {buildId})
-      if (
-        relativePath.includes('{platform}') ||
-        relativePath.includes('{buildId}')
-      ) {
-        return path.join(
-          installationDir,
-          expandPathTemplate(relativePath, {
-            platform: options.platform,
-            buildId: options.buildId,
-          }),
-        );
-      }
-      // Otherwise use it directly as an expanded path
-      return path.join(installationDir, relativePath);
+      // The metadata contains a resolved relative path from the installation dir
+      return path.join(installationDir, storedExecutablePath);
     }
 
     return path.join(
