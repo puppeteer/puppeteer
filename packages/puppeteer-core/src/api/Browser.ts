@@ -102,6 +102,7 @@ export const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map<
 
 /**
  * @public
+ * @deprecated in favor of {@link PermissionDescriptor}.
  */
 export type Permission =
   | 'accelerometer'
@@ -123,6 +124,22 @@ export type Permission =
   | 'payment-handler'
   | 'persistent-storage'
   | 'pointer-lock';
+
+/**
+ * @public
+ */
+export interface PermissionDescriptor {
+  name: string;
+  userVisibleOnly?: boolean;
+  sysex?: boolean;
+  panTiltZoom?: boolean;
+  allowWithoutSanitization?: boolean;
+}
+
+/**
+ * @public
+ */
+export type PermissionState = 'granted' | 'denied' | 'prompt';
 
 /**
  * @public
@@ -591,6 +608,35 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
     ...filters: DeleteCookiesRequest[]
   ): Promise<void> {
     return await this.defaultBrowserContext().deleteMatchingCookies(...filters);
+  }
+
+  /**
+   * Sets the permission for a specific origin in the default
+   * {@link BrowserContext}.
+   *
+   * @remarks
+   *
+   * Shortcut for
+   * {@link BrowserContext.setPermission |
+   * browser.defaultBrowserContext().setPermission()}.
+   *
+   * @param origin - The origin to set the permission for.
+   * @param permission - The permission descriptor.
+   * @param state - The state of the permission.
+   *
+   * @public
+   */
+  async setPermission(
+    origin: string,
+    ...permissions: Array<{
+      permission: PermissionDescriptor;
+      state: PermissionState;
+    }>
+  ): Promise<void> {
+    return await this.defaultBrowserContext().setPermission(
+      origin,
+      ...permissions,
+    );
   }
 
   /**

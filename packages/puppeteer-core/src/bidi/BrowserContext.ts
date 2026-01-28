@@ -6,13 +6,19 @@
 
 import * as Bidi from 'webdriver-bidi-protocol';
 
-import type {CreatePageOptions, Permission} from '../api/Browser.js';
+import type {
+  CreatePageOptions,
+  Permission,
+  PermissionDescriptor,
+  PermissionState,
+} from '../api/Browser.js';
 import {WEB_PERMISSION_TO_PROTOCOL_PERMISSION} from '../api/Browser.js';
 import type {BrowserContextEvents} from '../api/BrowserContext.js';
 import {BrowserContext, BrowserContextEvent} from '../api/BrowserContext.js';
 import {PageEvent, type Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {Cookie, CookieData} from '../common/Cookie.js';
+import {UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -267,6 +273,46 @@ export class BidiBrowserContext extends BrowserContext {
           return result;
         },
       ),
+    );
+  }
+
+  override async setPermission(
+    origin: string | '*',
+    ...permissions: Array<{
+      permission: PermissionDescriptor;
+      state: PermissionState;
+    }>
+  ): Promise<void> {
+    if (origin === '*') {
+      throw new UnsupportedOperation(
+        'Origin (*) is not supported by WebDriver BiDi',
+      );
+    }
+    await Promise.all(
+      permissions.map(permission => {
+        if (permission.permission.allowWithoutSanitization) {
+          throw new UnsupportedOperation(
+            'allowWithoutSanitization is not supported by WebDriver BiDi',
+          );
+        }
+        if (permission.permission.panTiltZoom) {
+          throw new UnsupportedOperation(
+            'panTiltZoom is not supported by WebDriver BiDi',
+          );
+        }
+        if (permission.permission.userVisibleOnly) {
+          throw new UnsupportedOperation(
+            'userVisibleOnly is not supported by WebDriver BiDi',
+          );
+        }
+        return this.userContext.setPermissions(
+          origin,
+          {
+            name: permission.permission.name,
+          },
+          permission.state as Bidi.Permissions.PermissionState,
+        );
+      }),
     );
   }
 
