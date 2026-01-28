@@ -209,6 +209,16 @@ export class BidiBrowserContext extends BrowserContext {
         // No support for setViewport in Firefox.
       }
     }
+    if (options?.type === 'window' && options?.windowBounds !== undefined) {
+      try {
+        await this.browser().setWindowBounds(
+          context.windowId,
+          options.windowBounds,
+        );
+      } catch {
+        // Tolerate not supporting `browser.setClientWindowState`.
+      }
+    }
 
     return page;
   }
