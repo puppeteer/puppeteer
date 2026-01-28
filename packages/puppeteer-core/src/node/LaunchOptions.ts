@@ -155,4 +155,8 @@ export interface LaunchOptions extends ConnectOptions {
    * Additional command line arguments to pass to the browser instance.
    */
   args?: string[];
+  /**
+   * If provided, the browser will be closed when the signal is aborted.
+   */
+  signal?: AbortSignal;
 }
