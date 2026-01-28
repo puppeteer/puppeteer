@@ -154,8 +154,8 @@ describe('Chrome', () => {
           signal: controller.signal,
         });
         assert.fail('Should have thrown');
-      } catch (err: any) {
-        assert.strictEqual(err.message, 'Launch aborted');
+      } catch (err) {
+        assert.strictEqual((err as Error).message, 'Launch aborted');
       }
     });
 

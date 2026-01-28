@@ -288,12 +288,24 @@ export class Process {
   #logs: string[] = [];
   #maxLogLinesSize = 1000;
   #lineEmitter = new EventEmitter();
-  #onAbort?: () => void;
+  #onAbort: () => void = () => {
+    this.kill();
+  };
   #signal?: AbortSignal;
 
   constructor(opts: LaunchOptions) {
     this.#executablePath = opts.executablePath;
     this.#args = opts.args ?? [];
+
+    if (opts.signal) {
+      this.#signal = opts.signal;
+      if (this.#signal.aborted) {
+        throw new Error(
+          this.#signal.reason ? this.#signal.reason : 'Launch aborted',
+        );
+      }
+      this.#signal.addEventListener('abort', this.#onAbort, {once: true});
+    }
 
     opts.pipe ??= false;
     opts.dumpio ??= false;
@@ -369,19 +381,6 @@ export class Process {
         resolve();
       });
     });
-    if (opts.signal) {
-      this.#signal = opts.signal;
-      this.#onAbort = () => {
-        this.kill();
-      };
-      if (this.#signal.aborted) {
-        this.kill();
-        throw new Error(
-          this.#signal.reason ? this.#signal.reason : 'Launch aborted',
-        );
-      }
-      this.#signal.addEventListener('abort', this.#onAbort, {once: true});
-    }
   }
 
   async #runHooks() {
@@ -409,9 +408,7 @@ export class Process {
     unsubscribeFromProcessEvent('SIGINT', this.#onDriverProcessSignal);
     unsubscribeFromProcessEvent('SIGTERM', this.#onDriverProcessSignal);
     unsubscribeFromProcessEvent('SIGHUP', this.#onDriverProcessSignal);
-    if (this.#signal && this.#onAbort) {
-      this.#signal.removeEventListener('abort', this.#onAbort);
-    }
+    this.#signal?.removeEventListener('abort', this.#onAbort);
   }
 
   #onDriverProcessExit = (_code: number) => {
