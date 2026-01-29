@@ -1160,7 +1160,7 @@ export function cdpSpecificCookiePropertiesFromPuppeteerToBidi(
 function convertCookiesSameSiteBiDiToCdp(
   sameSite: Bidi.Network.SameSite | undefined,
 ): CookieSameSite {
-  return sameSite === 'strict' ? 'Strict' : sameSite === 'lax' ? 'Lax' : 'None';
+  return sameSite === 'strict' ? 'Strict' : sameSite === 'lax' ? 'Lax' : sameSite === 'default' ? 'Default' : 'None';
 }
 
 export function convertCookiesSameSiteCdpToBiDi(
@@ -1170,6 +1170,8 @@ export function convertCookiesSameSiteCdpToBiDi(
     ? Bidi.Network.SameSite.Strict
     : sameSite === 'Lax'
       ? Bidi.Network.SameSite.Lax
+      : sameSite === 'Default'
+      ? Bidi.Network.SameSite.Default
       : Bidi.Network.SameSite.None;
 }
 
