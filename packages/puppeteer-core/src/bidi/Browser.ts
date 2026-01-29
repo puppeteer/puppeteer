@@ -327,7 +327,10 @@ export class BidiBrowser extends Browser {
       params = {
         clientWindow: windowId,
         state: 'normal',
-        ...windowBounds,
+        x: windowBounds.left,
+        y: windowBounds.top,
+        width: windowBounds.width,
+        height: windowBounds.height,
       };
     } else {
       params = {
