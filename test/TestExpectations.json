@@ -274,9 +274,9 @@
   {
     "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should get and set browser window bounds",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
+    "parameters": ["firefox"],
     "expectations": ["FAIL"],
-    "comment": "Not supported by WebDriver BiDi"
+    "comment": "Not supported by Firefox"
   },
   {
     "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should set and get browser window maximized state",
