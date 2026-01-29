@@ -453,6 +453,35 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
         )
           .pipe(
             mergeMap(inputType => {
+              const fillDirectly = (): Observable<void> => {
+                return from(handle.focus()).pipe(
+                  mergeMap(() => {
+                    return from(
+                      handle.evaluate((input, newValue) => {
+                        const element = input as HTMLElement;
+                        const currentValue = element.isContentEditable
+                          ? element.innerText
+                          : (element as HTMLInputElement).value;
+                        if (currentValue === newValue) {
+                          return;
+                        }
+                        if (element.isContentEditable) {
+                          element.innerText = newValue;
+                        } else {
+                          (element as HTMLInputElement).value = newValue;
+                        }
+                        element.dispatchEvent(
+                          new Event('input', {bubbles: true}),
+                        );
+                        element.dispatchEvent(
+                          new Event('change', {bubbles: true}),
+                        );
+                      }, value),
+                    );
+                  }),
+                );
+              };
+
               switch (inputType) {
                 case 'select':
                   return from(handle.select(value).then(noop));
@@ -502,59 +531,9 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
                       }),
                     );
                   }
-                  return from(handle.focus()).pipe(
-                    mergeMap(() => {
-                      return from(
-                        handle.evaluate((input, newValue) => {
-                          const element = input as HTMLElement;
-                          const currentValue = element.isContentEditable
-                            ? element.innerText
-                            : (element as HTMLInputElement).value;
-                          if (currentValue === newValue) {
-                            return;
-                          }
-                          if (element.isContentEditable) {
-                            element.innerText = newValue;
-                          } else {
-                            (element as HTMLInputElement).value = newValue;
-                          }
-                          element.dispatchEvent(
-                            new Event('input', {bubbles: true}),
-                          );
-                          element.dispatchEvent(
-                            new Event('change', {bubbles: true}),
-                          );
-                        }, value),
-                      );
-                    }),
-                  );
+                  return fillDirectly();
                 case 'other-input':
-                  return from(handle.focus()).pipe(
-                    mergeMap(() => {
-                      return from(
-                        handle.evaluate((input, newValue) => {
-                          const element = input as HTMLElement;
-                          const currentValue = element.isContentEditable
-                            ? element.innerText
-                            : (element as HTMLInputElement).value;
-                          if (currentValue === newValue) {
-                            return;
-                          }
-                          if (element.isContentEditable) {
-                            element.innerText = newValue;
-                          } else {
-                            (element as HTMLInputElement).value = newValue;
-                          }
-                          element.dispatchEvent(
-                            new Event('input', {bubbles: true}),
-                          );
-                          element.dispatchEvent(
-                            new Event('change', {bubbles: true}),
-                          );
-                        }, value),
-                      );
-                    }),
-                  );
+                  return fillDirectly();
                 case 'unknown':
                   throw new Error(`Element cannot be filled out.`);
               }
