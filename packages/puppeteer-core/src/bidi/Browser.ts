@@ -330,16 +330,6 @@ export class BidiBrowser extends Browser {
         ...windowBounds,
       };
     } else {
-      if (
-        windowBounds.height !== undefined ||
-        windowBounds.width !== undefined ||
-        windowBounds.left !== undefined ||
-        windowBounds.top !== undefined
-      ) {
-        throw new ProtocolError(
-          'Window size and position are not supported for non-normal window states',
-        );
-      }
       params = {
         clientWindow: windowId,
         state: windowState,
