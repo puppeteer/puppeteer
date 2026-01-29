@@ -411,13 +411,15 @@ async function installUrl(
     options.platform,
   );
 
-  // Write metadata for the installation
-  cache.writeExecutablePath(
-    options.browser,
-    options.platform,
-    options.buildId,
-    relativeExecutablePath,
-  );
+  // Write metadata for the installation (only for non-default providers)
+  if (!(provider instanceof DefaultProvider)) {
+    cache.writeExecutablePath(
+      options.browser,
+      options.platform,
+      options.buildId,
+      relativeExecutablePath,
+    );
+  }
 
   try {
     if (existsSync(outputPath)) {
