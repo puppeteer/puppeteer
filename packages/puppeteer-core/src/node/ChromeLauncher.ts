@@ -178,6 +178,8 @@ export class ChromeLauncher extends BrowserLauncher {
       'MediaRouter',
       'OptimizationHints',
       'RenderDocument', // https://crbug.com/444150315
+      'IPH_ReadingModePageActionLabel', // b/479237585
+      'ReadAnythingOmniboxChip', // b/479237585
       ...(turnOnExperimentalFeaturesForTesting
         ? []
         : [
