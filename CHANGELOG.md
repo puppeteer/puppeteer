@@ -2,6 +2,29 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.37.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.36.1...puppeteer-v24.37.0) (2026-01-29)
+
+
+### 🎉 Features
+
+* add BrowserContext.setPermission API ([#14611](https://github.com/puppeteer/puppeteer/issues/14611)) ([a51b7e2](https://github.com/puppeteer/puppeteer/commit/a51b7e2182b81ccff5b491c8b761f97e3a98930b))
+* **page:** expose heap snapshot getter ([#14610](https://github.com/puppeteer/puppeteer/issues/14610)) ([397793b](https://github.com/puppeteer/puppeteer/commit/397793ba8556ef79551f2addf39c9710a4fca645))
+* roll to Chrome 145.0.7632.26 ([#14619](https://github.com/puppeteer/puppeteer/issues/14619)) ([352067b](https://github.com/puppeteer/puppeteer/commit/352067b032eeb2ee9793947e33b449565c637de7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.36.1 to 24.37.0
+
+
+### 🛠️ Fixes
+
+* roll to Chrome 144.0.7559.109 ([#14615](https://github.com/puppeteer/puppeteer/issues/14615)) ([6dac84f](https://github.com/puppeteer/puppeteer/commit/6dac84fe1ba05203700eb5b46f96701fa19a2ddd))
+* roll to Firefox 147.0.2 ([#14612](https://github.com/puppeteer/puppeteer/issues/14612)) ([fe232c4](https://github.com/puppeteer/puppeteer/commit/fe232c472708c53e2701f89b4c176e89d3598ac6))
+
+
 ## [24.36.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.36.0...puppeteer-v24.36.1) (2026-01-27)
 
 

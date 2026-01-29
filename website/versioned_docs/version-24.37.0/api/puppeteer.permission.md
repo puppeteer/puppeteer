@@ -4,6 +4,10 @@ sidebar_label: Permission
 
 # Permission type
 
+> Warning: This API is now obsolete.
+>
+> in favor of .
+
 ### Signature
 
 ```typescript

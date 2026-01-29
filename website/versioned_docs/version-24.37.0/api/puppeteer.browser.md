@@ -372,6 +372,21 @@ Shortcut for [browser.defaultBrowserContext().setCookie()](./puppeteer.browserco
 </td></tr>
 <tr><td>
 
+<span id="setpermission">[setPermission(origin, permissions)](./puppeteer.browser.setpermission.md)</span>
+
+</td><td>
+
+</td><td>
+
+Sets the permission for a specific origin in the default [BrowserContext](./puppeteer.browsercontext.md).
+
+**Remarks:**
+
+Shortcut for [browser.defaultBrowserContext().setPermission()](./puppeteer.browsercontext.setpermission.md).
+
+</td></tr>
+<tr><td>
+
 <span id="setwindowbounds">[setWindowBounds(windowId, windowBounds)](./puppeteer.browser.setwindowbounds.md)</span>
 
 </td><td>
