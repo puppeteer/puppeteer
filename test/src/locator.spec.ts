@@ -541,6 +541,33 @@ describe('Locator', function () {
         }),
       ).toBe(true);
     });
+
+    it('should work for large text', async () => {
+      const {page} = await getTestState();
+      await page.setContent(html` <textarea></textarea> `);
+      const largeText = 'a'.repeat(1000);
+      await page.locator('textarea').fill(largeText);
+      expect(
+        await page.evaluate(() => {
+          return document.querySelector('textarea')?.value.length === 1000;
+        }),
+      ).toBe(true);
+    });
+
+    it('should work for large text in contenteditable', async () => {
+      const {page} = await getTestState();
+      await page.setContent(html` <div contenteditable="true"></div> `);
+      const largeText = 'a'.repeat(1000);
+      await page.locator('div').fill(largeText);
+      expect(
+        await page.evaluate(() => {
+          return (
+            (document.querySelector('div') as HTMLElement).innerText.length ===
+            1000
+          );
+        }),
+      ).toBe(true);
+    });
   });
 
   describe('Locator.race', () => {
