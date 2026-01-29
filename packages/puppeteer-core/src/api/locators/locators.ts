@@ -453,59 +453,81 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
         )
           .pipe(
             mergeMap(inputType => {
-              if (
-                (inputType === 'typeable-input' ||
-                  inputType === 'contenteditable') &&
-                value.length < 100
-              ) {
-                return from(
-                  (
-                    handle as unknown as ElementHandle<HTMLInputElement>
-                  ).evaluate((input, newValue) => {
-                    const element = input as HTMLElement;
-                    const currentValue = element.isContentEditable
-                      ? element.innerText
-                      : (input as HTMLInputElement).value;
-
-                    // Clear the input if the current value does not match the filled
-                    // out value.
-                    if (
-                      newValue.length <= currentValue.length ||
-                      !newValue.startsWith(currentValue)
-                    ) {
-                      if (element.isContentEditable) {
-                        element.innerText = '';
-                      } else {
-                        (input as HTMLInputElement).value = '';
-                      }
-                      return newValue;
-                    }
-
-                    // If the value is partially filled out, only type the rest. Move
-                    // cursor to the end of the common prefix.
-                    if (element.isContentEditable) {
-                      element.innerText = '';
-                      element.innerText = currentValue;
-                    } else {
-                      (input as HTMLInputElement).value = '';
-                      (input as HTMLInputElement).value = currentValue;
-                    }
-                    return newValue.substring(currentValue.length);
-                  }, value),
-                ).pipe(
-                  mergeMap(textToType => {
-                    if (!textToType) {
-                      return of(undefined);
-                    }
-                    return from(handle.type(textToType));
-                  }),
-                );
-              }
               switch (inputType) {
                 case 'select':
                   return from(handle.select(value).then(noop));
                 case 'contenteditable':
                 case 'typeable-input':
+                  if (value.length < 100) {
+                    return from(
+                      (
+                        handle as unknown as ElementHandle<HTMLInputElement>
+                      ).evaluate((input, newValue) => {
+                        const element = input as HTMLElement;
+                        const currentValue = element.isContentEditable
+                          ? element.innerText
+                          : (input as HTMLInputElement).value;
+
+                        // Clear the input if the current value does not match the filled
+                        // out value.
+                        if (
+                          newValue.length <= currentValue.length ||
+                          !newValue.startsWith(currentValue)
+                        ) {
+                          if (element.isContentEditable) {
+                            element.innerText = '';
+                          } else {
+                            (input as HTMLInputElement).value = '';
+                          }
+                          return newValue;
+                        }
+
+                        // If the value is partially filled out, only type the rest. Move
+                        // cursor to the end of the common prefix.
+                        if (element.isContentEditable) {
+                          element.innerText = '';
+                          element.innerText = currentValue;
+                        } else {
+                          (input as HTMLInputElement).value = '';
+                          (input as HTMLInputElement).value = currentValue;
+                        }
+                        return newValue.substring(currentValue.length);
+                      }, value),
+                    ).pipe(
+                      mergeMap(textToType => {
+                        if (!textToType) {
+                          return of(undefined);
+                        }
+                        return from(handle.type(textToType));
+                      }),
+                    );
+                  }
+                  return from(handle.focus()).pipe(
+                    mergeMap(() => {
+                      return from(
+                        handle.evaluate((input, newValue) => {
+                          const element = input as HTMLElement;
+                          const currentValue = element.isContentEditable
+                            ? element.innerText
+                            : (element as HTMLInputElement).value;
+                          if (currentValue === newValue) {
+                            return;
+                          }
+                          if (element.isContentEditable) {
+                            element.innerText = newValue;
+                          } else {
+                            (element as HTMLInputElement).value = newValue;
+                          }
+                          element.dispatchEvent(
+                            new Event('input', {bubbles: true}),
+                          );
+                          element.dispatchEvent(
+                            new Event('change', {bubbles: true}),
+                          );
+                        }, value),
+                      );
+                    }),
+                  );
                 case 'other-input':
                   return from(handle.focus()).pipe(
                     mergeMap(() => {
