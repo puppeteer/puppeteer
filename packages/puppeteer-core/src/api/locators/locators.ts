@@ -68,6 +68,18 @@ export type LocatorClickOptions = ClickOptions & ActionOptions;
 /**
  * @public
  */
+export interface LocatorFillOptions extends ActionOptions {
+  /**
+   * The number of characters to type before switching to a faster fill-out
+   * method.
+   *
+   * @defaultValue `100`
+   */
+  typingThreshold?: number;
+}
+/**
+ * @public
+ */
 export interface LocatorScrollOptions extends ActionOptions {
   scrollTop?: number;
   scrollLeft?: number;
@@ -400,9 +412,10 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
   #fill<ElementType extends Element>(
     this: Locator<ElementType>,
     value: string,
-    options?: Readonly<ActionOptions>,
+    options?: Readonly<LocatorFillOptions>,
   ): Observable<void> {
     const signal = options?.signal;
+    const typingThreshold = options?.typingThreshold ?? 100;
     const cause = new Error('Locator.fill');
     return this._wait(options).pipe(
       this.operators.conditions(
@@ -453,68 +466,87 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
         )
           .pipe(
             mergeMap(inputType => {
+              const fillDirectly = (): Observable<void> => {
+                return from(handle.focus()).pipe(
+                  mergeMap(() => {
+                    return from(
+                      handle.evaluate((input, newValue) => {
+                        const element = input as HTMLElement;
+                        const currentValue = element.isContentEditable
+                          ? element.innerText
+                          : (element as HTMLInputElement).value;
+                        if (currentValue === newValue) {
+                          return;
+                        }
+                        if (element.isContentEditable) {
+                          element.innerText = newValue;
+                        } else {
+                          (element as HTMLInputElement).value = newValue;
+                        }
+                        element.dispatchEvent(
+                          new Event('input', {bubbles: true}),
+                        );
+                        element.dispatchEvent(
+                          new Event('change', {bubbles: true}),
+                        );
+                      }, value),
+                    );
+                  }),
+                );
+              };
+
               switch (inputType) {
                 case 'select':
                   return from(handle.select(value).then(noop));
                 case 'contenteditable':
                 case 'typeable-input':
-                  return from(
-                    (
-                      handle as unknown as ElementHandle<HTMLInputElement>
-                    ).evaluate((input, newValue) => {
-                      const currentValue = input.isContentEditable
-                        ? input.innerText
-                        : input.value;
+                  if (value.length < typingThreshold) {
+                    return from(
+                      (
+                        handle as unknown as ElementHandle<HTMLInputElement>
+                      ).evaluate((input, newValue) => {
+                        const element = input as HTMLElement;
+                        const currentValue = element.isContentEditable
+                          ? element.innerText
+                          : (input as HTMLInputElement).value;
 
-                      // Clear the input if the current value does not match the filled
-                      // out value.
-                      if (
-                        newValue.length <= currentValue.length ||
-                        !newValue.startsWith(input.value)
-                      ) {
-                        if (input.isContentEditable) {
-                          input.innerText = '';
-                        } else {
-                          input.value = '';
+                        // Clear the input if the current value does not match the filled
+                        // out value.
+                        if (
+                          newValue.length <= currentValue.length ||
+                          !newValue.startsWith(currentValue)
+                        ) {
+                          if (element.isContentEditable) {
+                            element.innerText = '';
+                          } else {
+                            (input as HTMLInputElement).value = '';
+                          }
+                          return newValue;
                         }
-                        return newValue;
-                      }
-                      const originalValue = input.isContentEditable
-                        ? input.innerText
-                        : input.value;
 
-                      // If the value is partially filled out, only type the rest. Move
-                      // cursor to the end of the common prefix.
-                      if (input.isContentEditable) {
-                        input.innerText = '';
-                        input.innerText = originalValue;
-                      } else {
-                        input.value = '';
-                        input.value = originalValue;
-                      }
-                      return newValue.substring(originalValue.length);
-                    }, value),
-                  ).pipe(
-                    mergeMap(textToType => {
-                      return from(handle.type(textToType));
-                    }),
-                  );
+                        // If the value is partially filled out, only type the rest. Move
+                        // cursor to the end of the common prefix.
+                        if (element.isContentEditable) {
+                          element.innerText = '';
+                          element.innerText = currentValue;
+                        } else {
+                          (input as HTMLInputElement).value = '';
+                          (input as HTMLInputElement).value = currentValue;
+                        }
+                        return newValue.substring(currentValue.length);
+                      }, value),
+                    ).pipe(
+                      mergeMap(textToType => {
+                        if (!textToType) {
+                          return of(undefined);
+                        }
+                        return from(handle.type(textToType));
+                      }),
+                    );
+                  }
+                  return fillDirectly();
                 case 'other-input':
-                  return from(handle.focus()).pipe(
-                    mergeMap(() => {
-                      return from(
-                        handle.evaluate((input, value) => {
-                          (input as HTMLInputElement).value = value;
-                          input.dispatchEvent(
-                            new Event('input', {bubbles: true}),
-                          );
-                          input.dispatchEvent(
-                            new Event('change', {bubbles: true}),
-                          );
-                        }, value),
-                      );
-                    }),
-                  );
+                  return fillDirectly();
                 case 'unknown':
                   throw new Error(`Element cannot be filled out.`);
               }
@@ -716,7 +748,7 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
   fill<ElementType extends Element>(
     this: Locator<ElementType>,
     value: string,
-    options?: Readonly<ActionOptions>,
+    options?: Readonly<LocatorFillOptions>,
   ): Promise<void> {
     return firstValueFrom(this.#fill(value, options));
   }

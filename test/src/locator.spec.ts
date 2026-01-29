@@ -541,6 +541,55 @@ describe('Locator', function () {
         }),
       ).toBe(true);
     });
+
+    it('should work for large text', async () => {
+      const {page} = await getTestState();
+      await page.setContent(html` <textarea></textarea> `);
+      const largeText = 'a'.repeat(1000);
+      await page.locator('textarea').fill(largeText);
+      expect(
+        await page.evaluate(() => {
+          return document.querySelector('textarea')?.value.length === 1000;
+        }),
+      ).toBe(true);
+    });
+
+    it('should work for large text in contenteditable', async () => {
+      const {page} = await getTestState();
+      await page.setContent(html` <div contenteditable="true"></div> `);
+      const largeText = 'a'.repeat(1000);
+      await page.locator('div').fill(largeText);
+      expect(
+        await page.evaluate(() => {
+          return (
+            (document.querySelector('div') as HTMLElement).innerText.length ===
+            1000
+          );
+        }),
+      ).toBe(true);
+    });
+
+    it('should work with a custom typing threshold', async () => {
+      const {page} = await getTestState();
+      await page.setContent(html` <input /> `);
+      const text = 'abc';
+      // threshold is 10, so it should type it.
+      await page.locator('input').fill(text, {typingThreshold: 10});
+      expect(
+        await page.evaluate(() => {
+          return (document.querySelector('input') as HTMLInputElement).value;
+        }),
+      ).toBe(text);
+
+      await page.setContent(html` <input /> `);
+      // threshold is 2, so it should fill it directly.
+      await page.locator('input').fill(text, {typingThreshold: 2});
+      expect(
+        await page.evaluate(() => {
+          return (document.querySelector('input') as HTMLInputElement).value;
+        }),
+      ).toBe(text);
+    });
   });
 
   describe('Locator.race', () => {
