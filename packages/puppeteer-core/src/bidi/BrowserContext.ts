@@ -205,8 +205,9 @@ export class BidiBrowserContext extends BrowserContext {
     if (this.#defaultViewport) {
       try {
         await page.setViewport(this.#defaultViewport);
-      } catch {
-        // No support for setViewport in Firefox.
+      } catch (error) {
+        // Tolerate not supporting `browsingContext.setViewport`. Only log it.
+        debugError(error);
       }
     }
     if (options?.type === 'window' && options?.windowBounds !== undefined) {
@@ -215,8 +216,9 @@ export class BidiBrowserContext extends BrowserContext {
           context.windowId,
           options.windowBounds,
         );
-      } catch {
-        // Tolerate not supporting `browser.setClientWindowState`.
+      } catch (error) {
+        // Tolerate not supporting `browser.setClientWindowState`. Only log it.
+        debugError(error);
       }
     }
 
