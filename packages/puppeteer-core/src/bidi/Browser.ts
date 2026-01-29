@@ -25,8 +25,7 @@ import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {Connection as CdpConnection} from '../cdp/Connection.js';
 import type {SupportedWebDriverCapabilities} from '../common/ConnectOptions.js';
-import {ProtocolError} from '../common/Errors.js';
-import {UnsupportedOperation} from '../common/Errors.js';
+import {ProtocolError, UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -306,15 +305,38 @@ export class BidiBrowser extends Browser {
     throw new UnsupportedOperation();
   }
 
-  override getWindowBounds(_windowId: WindowId): Promise<WindowBounds> {
-    throw new UnsupportedOperation();
+  override async getWindowBounds(windowId: WindowId): Promise<WindowBounds> {
+    const clientWindowInfo =
+      await this.#browserCore.getClientWindowInfo(windowId);
+    return {
+      left: clientWindowInfo.x,
+      top: clientWindowInfo.y,
+      width: clientWindowInfo.width,
+      height: clientWindowInfo.height,
+      windowState: clientWindowInfo.state,
+    };
   }
 
-  override setWindowBounds(
-    _windowId: WindowId,
-    _windowBounds: WindowBounds,
+  override async setWindowBounds(
+    windowId: WindowId,
+    windowBounds: WindowBounds,
   ): Promise<void> {
-    throw new UnsupportedOperation();
+    let params: Bidi.Browser.SetClientWindowStateParameters | undefined;
+    const windowState = windowBounds.windowState ?? 'normal';
+    if (windowState === 'normal') {
+      params = {
+        clientWindow: windowId,
+        state: 'normal',
+        ...windowBounds,
+      };
+    } else {
+      params = {
+        clientWindow: windowId,
+        state: windowState,
+      };
+    }
+
+    await this.#browserCore.setClientWindowState(params);
   }
 
   override targets(): Target[] {

@@ -96,6 +96,7 @@ export class UserContext extends EventEmitter<{
         info.context,
         info.url,
         info.originalOpener,
+        info.clientWindow,
       );
       this.#browsingContexts.set(browsingContext.id, browsingContext);
 

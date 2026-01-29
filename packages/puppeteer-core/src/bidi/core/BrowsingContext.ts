@@ -140,6 +140,7 @@ export class BrowsingContext extends EventEmitter<{
     id: string,
     url: string,
     originalOpener: string | null,
+    clientWindow: string,
   ): BrowsingContext {
     const browsingContext = new BrowsingContext(
       userContext,
@@ -147,6 +148,7 @@ export class BrowsingContext extends EventEmitter<{
       id,
       url,
       originalOpener,
+      clientWindow,
     );
     browsingContext.#initialize();
     return browsingContext;
@@ -166,6 +168,7 @@ export class BrowsingContext extends EventEmitter<{
   readonly parent: BrowsingContext | undefined;
   readonly userContext: UserContext;
   readonly originalOpener: string | null;
+  readonly windowId: string;
   readonly #emulationState: {
     javaScriptEnabled: boolean;
   } = {javaScriptEnabled: true};
@@ -178,6 +181,7 @@ export class BrowsingContext extends EventEmitter<{
     id: string,
     url: string,
     originalOpener: string | null,
+    clientWindow: string,
   ) {
     super();
 
@@ -186,6 +190,7 @@ export class BrowsingContext extends EventEmitter<{
     this.parent = parent;
     this.userContext = userContext;
     this.originalOpener = originalOpener;
+    this.windowId = clientWindow;
 
     this.defaultRealm = this.#createWindowRealm();
     this.#bluetoothEmulation = new BidiBluetoothEmulation(
@@ -226,6 +231,7 @@ export class BrowsingContext extends EventEmitter<{
         info.context,
         info.url,
         info.originalOpener,
+        info.clientWindow,
       );
       this.#children.set(info.context, browsingContext);
 
