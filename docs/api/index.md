@@ -1088,6 +1088,13 @@ Generic launch options that can be passed when launching any browser.
 </td></tr>
 <tr><td>
 
+<span id="locatorfilloptions">[LocatorFillOptions](./puppeteer.locatorfilloptions.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="locatorscrolloptions">[LocatorScrollOptions](./puppeteer.locatorscrolloptions.md)</span>
 
 </td><td>

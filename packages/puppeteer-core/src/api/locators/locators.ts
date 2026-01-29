@@ -68,6 +68,18 @@ export type LocatorClickOptions = ClickOptions & ActionOptions;
 /**
  * @public
  */
+export interface LocatorFillOptions extends ActionOptions {
+  /**
+   * The number of characters to type before switching to a faster fill-out
+   * method.
+   *
+   * @defaultValue `100`
+   */
+  typingThreshold?: number;
+}
+/**
+ * @public
+ */
 export interface LocatorScrollOptions extends ActionOptions {
   scrollTop?: number;
   scrollLeft?: number;
@@ -400,9 +412,10 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
   #fill<ElementType extends Element>(
     this: Locator<ElementType>,
     value: string,
-    options?: Readonly<ActionOptions>,
+    options?: Readonly<LocatorFillOptions>,
   ): Observable<void> {
     const signal = options?.signal;
+    const typingThreshold = options?.typingThreshold ?? 100;
     const cause = new Error('Locator.fill');
     return this._wait(options).pipe(
       this.operators.conditions(
@@ -487,7 +500,7 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
                   return from(handle.select(value).then(noop));
                 case 'contenteditable':
                 case 'typeable-input':
-                  if (value.length < 100) {
+                  if (value.length < typingThreshold) {
                     return from(
                       (
                         handle as unknown as ElementHandle<HTMLInputElement>
@@ -735,7 +748,7 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
   fill<ElementType extends Element>(
     this: Locator<ElementType>,
     value: string,
-    options?: Readonly<ActionOptions>,
+    options?: Readonly<LocatorFillOptions>,
   ): Promise<void> {
     return firstValueFrom(this.#fill(value, options));
   }
