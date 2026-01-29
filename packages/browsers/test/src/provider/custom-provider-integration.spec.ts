@@ -14,9 +14,57 @@ import {
   BrowserPlatform,
   getInstalledBrowsers,
   install,
+  type BrowserProvider,
+  type DownloadOptions,
 } from '../../../lib/esm/main.js';
 
-import {MockProvider} from './mock-provider.js';
+/**
+ * Simple inline mock provider for testing.
+ * Allows configurable behavior for testing different provider scenarios.
+ */
+class MockProvider implements BrowserProvider {
+  #supports: boolean;
+  #getDownloadUrlResult: URL | null;
+  #getDownloadUrlError: Error | null;
+  #getExecutablePath: string;
+  #name: string;
+
+  constructor(
+    options: {
+      supports?: boolean;
+      getDownloadUrlResult?: URL | null;
+      getDownloadUrlError?: Error | null;
+      getExecutablePath?: string;
+      name?: string;
+    } = {},
+  ) {
+    this.#supports = options.supports ?? true;
+    this.#getDownloadUrlResult = options.getDownloadUrlResult ?? null;
+    this.#getDownloadUrlError = options.getDownloadUrlError ?? null;
+    this.#getExecutablePath =
+      options.getExecutablePath ?? '/mock/executable/path';
+    this.#name = options.name ?? 'MockProvider';
+  }
+
+  supports(_options: DownloadOptions): boolean {
+    return this.#supports;
+  }
+
+  getDownloadUrl(_options: DownloadOptions): URL | null {
+    if (this.#getDownloadUrlError) {
+      throw this.#getDownloadUrlError;
+    }
+    return this.#getDownloadUrlResult;
+  }
+
+  getExecutablePath(_options: DownloadOptions): string {
+    return this.#getExecutablePath;
+  }
+
+  getName(): string {
+    return this.#name;
+  }
+}
 
 describe('Custom Provider Integration Tests', () => {
   let tmpDir: string;
@@ -51,7 +99,7 @@ describe('Custom Provider Integration Tests', () => {
       const customProvider = new MockProvider({
         supports: true,
         getDownloadUrlResult: new URL(`file://${archivePath}`),
-        getExecutablePath: path.join(tmpDir, 'test-executable'), // Mock executable path
+        getExecutablePath: path.join(tmpDir, 'test-executable'),
       });
 
       // Will likely fail on extraction since test.tar.bz2 is not a real browser archive.
