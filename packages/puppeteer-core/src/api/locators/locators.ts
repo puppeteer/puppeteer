@@ -458,57 +458,27 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
                   return from(handle.select(value).then(noop));
                 case 'contenteditable':
                 case 'typeable-input':
-                  return from(
-                    (
-                      handle as unknown as ElementHandle<HTMLInputElement>
-                    ).evaluate((input, newValue) => {
-                      const currentValue = input.isContentEditable
-                        ? input.innerText
-                        : input.value;
-
-                      // Clear the input if the current value does not match the filled
-                      // out value.
-                      if (
-                        newValue.length <= currentValue.length ||
-                        !newValue.startsWith(input.value)
-                      ) {
-                        if (input.isContentEditable) {
-                          input.innerText = '';
-                        } else {
-                          input.value = '';
-                        }
-                        return newValue;
-                      }
-                      const originalValue = input.isContentEditable
-                        ? input.innerText
-                        : input.value;
-
-                      // If the value is partially filled out, only type the rest. Move
-                      // cursor to the end of the common prefix.
-                      if (input.isContentEditable) {
-                        input.innerText = '';
-                        input.innerText = originalValue;
-                      } else {
-                        input.value = '';
-                        input.value = originalValue;
-                      }
-                      return newValue.substring(originalValue.length);
-                    }, value),
-                  ).pipe(
-                    mergeMap(textToType => {
-                      return from(handle.type(textToType));
-                    }),
-                  );
                 case 'other-input':
                   return from(handle.focus()).pipe(
                     mergeMap(() => {
                       return from(
-                        handle.evaluate((input, value) => {
-                          (input as HTMLInputElement).value = value;
-                          input.dispatchEvent(
+                        handle.evaluate((input, newValue) => {
+                          const element = input as HTMLElement;
+                          const currentValue = element.isContentEditable
+                            ? element.innerText
+                            : (element as HTMLInputElement).value;
+                          if (currentValue === newValue) {
+                            return;
+                          }
+                          if (element.isContentEditable) {
+                            element.innerText = newValue;
+                          } else {
+                            (element as HTMLInputElement).value = newValue;
+                          }
+                          element.dispatchEvent(
                             new Event('input', {bubbles: true}),
                           );
-                          input.dispatchEvent(
+                          element.dispatchEvent(
                             new Event('change', {bubbles: true}),
                           );
                         }, value),
