@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2023 Google Inc.
+ * Copyright 2026 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -484,10 +484,8 @@ export class CLI {
           const browsers = cache.getInstalledBrowsers();
 
           for (const browser of browsers) {
-            const provider = browser.getProviderName();
             console.log(
-              `${browser.browser}@${browser.buildId} (${browser.platform}) ${browser.executablePath}` +
-                (provider ? ` [${provider}]` : ''),
+              `${browser.browser}@${browser.buildId} (${browser.platform}) ${browser.executablePath}`,
             );
           }
         },

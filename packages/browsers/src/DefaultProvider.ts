@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2017 Google Inc.
+ * Copyright 2026 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -54,5 +54,9 @@ export class DefaultProvider implements BrowserProvider {
       options.platform,
       options.buildId,
     );
+  }
+
+  getName(): string {
+    return 'DefaultProvider';
   }
 }

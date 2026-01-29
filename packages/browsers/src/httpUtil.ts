@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2023 Google Inc.
+ * Copyright 2026 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -149,7 +149,9 @@ export function getText(url: URL): Promise<string> {
           try {
             return resolve(String(data));
           } catch {
-            return reject(new Error(`Failed to read text response from ${url}`));
+            return reject(
+              new Error(`Failed to read text response from ${url}`),
+            );
           }
         });
       },

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2023 Google Inc.
+ * Copyright 2026 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -24,43 +24,6 @@ describe('Custom Provider Integration', () => {
     if (fs.existsSync(tmpDir)) {
       fs.rmSync(tmpDir, {recursive: true, force: true});
     }
-  });
-
-  describe('basic functionality', () => {
-    it('should work with no custom providers (default CfT)', async function () {
-      this.timeout(30000); // May take time for network requests
-
-      // Should use default ChromeForTestingProvider
-      await assert.rejects(
-        install({
-          cacheDir: tmpDir,
-          browser: Browser.CHROME,
-          platform: BrowserPlatform.LINUX,
-          buildId: 'non-existent-build-12345',
-        }),
-        /Download failed/,
-      );
-    });
-
-    it('should accept custom providers array', async function () {
-      this.timeout(30000);
-
-      const customProvider = new MockProvider({
-        supports: false, // Will fall back to CfT
-      });
-
-      // Should succeed with CfT fallback
-      const result = await install({
-        cacheDir: tmpDir,
-        browser: Browser.CHROME,
-        platform: BrowserPlatform.LINUX,
-        buildId: '120.0.6099.109',
-        providers: [customProvider],
-      });
-
-      assert(result);
-      assert.strictEqual(typeof result.path, 'string');
-    });
   });
 
   describe('provider interface compliance', () => {

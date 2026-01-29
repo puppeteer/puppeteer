@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2017 Google Inc.
+ * Copyright 2026 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -130,6 +130,26 @@ export interface BrowserProvider {
     buildId: string;
     platform: BrowserPlatform;
   }): Promise<string> | string;
+
+  /**
+   * Get the name of this provider.
+   * Used for error messages and logging purposes.
+   *
+   * @returns The provider name (e.g., "DefaultProvider", "CustomProvider")
+   *
+   * @remarks
+   * This method is used instead of `constructor.name` to avoid issues with
+   * minification in production builds.
+   *
+   * @example
+   *
+   * ```ts
+   * getName() {
+   *   return 'MyCustomProvider';
+   * }
+   * ```
+   */
+  getName(): string;
 }
 
 /**

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2023 Google Inc.
+ * Copyright 2026 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -50,7 +50,7 @@ export {
   type ComputeExecutablePathOptions,
 } from './Cache.js';
 export {BrowserTag} from './browser-data/types.js';
-export {DefaultProvider} from './default-provider.js';
+export {DefaultProvider} from './DefaultProvider.js';
 export {
   type BrowserProvider,
   buildArchiveFilename,

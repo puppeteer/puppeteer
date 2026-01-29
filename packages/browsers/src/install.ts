@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2017 Google Inc.
+ * Copyright 2026 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -21,7 +21,7 @@ import {
 } from './browser-data/browser-data.js';
 import {Cache, InstalledBrowser} from './Cache.js';
 import {debug} from './debug.js';
-import {DefaultProvider} from './default-provider.js';
+import {DefaultProvider} from './DefaultProvider.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {unpackArchive} from './fileUtil.js';
 import {downloadFile, headHttpRequest} from './httpUtil.js';
@@ -211,37 +211,33 @@ async function installWithProviders(
       // Check: does this provider support this browser/platform?
       if (!(await provider.supports(downloadOptions))) {
         debugInstall(
-          `Provider ${provider.constructor.name} does not support ${options.browser} on ${options.platform}`,
+          `Provider ${provider.getName()} does not support ${options.browser} on ${options.platform}`,
         );
         continue;
       }
 
       // Warn if using non-default provider
       if (!(provider instanceof DefaultProvider)) {
-        debugInstall(
-          `⚠️  Using custom downloader: ${provider.constructor.name}`,
-        );
+        debugInstall(`⚠️  Using custom downloader: ${provider.getName()}`);
         debugInstall(
           `⚠️  Puppeteer does not guarantee compatibility with non-default providers`,
         );
       }
 
       debugInstall(
-        `Trying provider: ${provider.constructor.name} for ${options.browser} ${options.buildId}`,
+        `Trying provider: ${provider.getName()} for ${options.browser} ${options.buildId}`,
       );
 
       // Get download URL from provider
       const url = await provider.getDownloadUrl(downloadOptions);
       if (!url) {
         debugInstall(
-          `Provider ${provider.constructor.name} returned no URL for ${options.browser} ${options.buildId}`,
+          `Provider ${provider.getName()} returned no URL for ${options.browser} ${options.buildId}`,
         );
         continue;
       }
 
-      debugInstall(
-        `Successfully got URL from ${provider.constructor.name}: ${url}`,
-      );
+      debugInstall(`Successfully got URL from ${provider.getName()}: ${url}`);
 
       if (!existsSync(browserRoot)) {
         await mkdir(browserRoot, {recursive: true});
@@ -251,10 +247,10 @@ async function installWithProviders(
       return await installUrl(url, options, provider);
     } catch (err) {
       debugInstall(
-        `Provider ${provider.constructor.name} failed: ${(err as Error).message}`,
+        `Provider ${provider.getName()} failed: ${(err as Error).message}`,
       );
       errors.push({
-        providerName: provider.constructor.name,
+        providerName: provider.getName(),
         error: err as Error,
       });
       // Continue to next provider
@@ -421,12 +417,6 @@ async function installUrl(
     options.platform,
     options.buildId,
     relativeExecutablePath,
-  );
-  cache.writeProvider(
-    options.browser,
-    options.platform,
-    options.buildId,
-    provider.constructor.name,
   );
 
   try {
