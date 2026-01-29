@@ -12,6 +12,7 @@ import {PageEvent} from '../api/Page.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {SecurityDetails} from '../common/SecurityDetails.js';
 import {invokeAtMostOnceForArguments} from '../util/decorators.js';
+import {normalizeHeaderValue} from '../util/httpUtils.js';
 
 import type {BidiHTTPRequest} from './HTTPRequest.js';
 
@@ -100,7 +101,9 @@ export class BidiHTTPResponse extends HTTPResponse {
       // TODO: How to handle Binary Headers
       // https://w3c.github.io/webdriver-bidi/#type-network-Header
       if (header.value.type === 'string') {
-        headers[header.name.toLowerCase()] = header.value.value;
+        headers[header.name.toLowerCase()] = normalizeHeaderValue(
+          header.value.value,
+        );
       }
     }
     return headers;
