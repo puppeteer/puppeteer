@@ -37,7 +37,7 @@ import {
 } from '../common/ConsoleMessage.js';
 import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
-import type {Awaitable} from '../common/types.js';
+import type {Awaitable, HandleFor} from '../common/types.js';
 import {
   debugError,
   fromAbortSignal,
@@ -52,7 +52,7 @@ import type {Navigation} from './core/Navigation.js';
 import type {Request} from './core/Request.js';
 import {BidiDeserializer} from './Deserializer.js';
 import {BidiDialog} from './Dialog.js';
-import type {BidiElementHandle} from './ElementHandle.js';
+import {BidiElementHandle} from './ElementHandle.js';
 import {ExposableFunction} from './ExposedFunction.js';
 import {BidiHTTPRequest, requests} from './HTTPRequest.js';
 import type {BidiHTTPResponse} from './HTTPResponse.js';
@@ -604,6 +604,27 @@ export class BidiFrame extends Frame {
       element.remoteValue() as Bidi.Script.SharedReference,
       files,
     );
+  }
+
+  @throwIfDetached
+  override async frameElement(): Promise<HandleFor<HTMLIFrameElement> | null> {
+    const parentFrame = this.parentFrame();
+    if (!parentFrame) {
+      return null;
+    }
+    const [node] = await parentFrame.browsingContext.locateNodes({
+      type: 'context',
+      value: {
+        context: this._id,
+      },
+    });
+    if (!node) {
+      return null;
+    }
+    return BidiElementHandle.from(
+      node,
+      parentFrame.mainRealm(),
+    ) as HandleFor<HTMLIFrameElement>;
   }
 
   @throwIfDetached
