@@ -280,10 +280,10 @@
   },
   {
     "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should set and get browser window maximized state",
-    "platforms": ["darwin", "win32"],
+    "platforms": ["darwin"],
     "parameters": ["headless"],
     "expectations": ["FAIL"],
-    "comment": "Exact window bounds are different on Windows and Mac."
+    "comment": "Exact window bounds are different on Mac."
   },
   {
     "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should set and get browser window maximized state",
@@ -919,13 +919,6 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "CDP-specific"
-  },
-  {
-    "testIdPattern": "[browser.spec] Browser specs Browser.add|removeScreen should add and remove a screen",
-    "platforms": ["win32"],
-    "parameters": ["chrome", "headless"],
-    "expectations": ["FAIL"],
-    "comment": "Different dimensions on Windows in Chrome Headless"
   },
   {
     "testIdPattern": "[browser.spec] Browser specs Browser.isConnected should set the browser connected state",
