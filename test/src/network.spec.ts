@@ -177,6 +177,28 @@ describe('network', function () {
       const response = (await page.goto(server.EMPTY_PAGE))!;
       expect(response.headers()['foo']).toBe('bar');
     });
+
+    it('should merge duplicate headers with comma-space', async () => {
+      const {page, server} = await getTestState();
+
+      server.setRoute('/empty.html', (_req, res) => {
+        res.setHeader('X-Duplicate', ['value1', 'value2']);
+        res.end();
+      });
+      const response = (await page.goto(server.EMPTY_PAGE))!;
+      expect(response.headers()['x-duplicate']).toBe('value1, value2');
+    });
+
+    it('should merge set-cookie headers with newline', async () => {
+      const {page, server} = await getTestState();
+
+      server.setRoute('/empty.html', (_req, res) => {
+        res.setHeader('Set-Cookie', ['a=b', 'c=d']);
+        res.end();
+      });
+      const response = (await page.goto(server.EMPTY_PAGE))!;
+      expect(response.headers()['set-cookie']).toBe('a=b\nc=d');
+    });
   });
 
   describe('Request.initiator', () => {

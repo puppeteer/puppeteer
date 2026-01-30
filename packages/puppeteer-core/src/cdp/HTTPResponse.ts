@@ -51,7 +51,12 @@ export class CdpHTTPResponse extends HTTPResponse {
     this.#status = extraInfo ? extraInfo.statusCode : responsePayload.status;
     const headers = extraInfo ? extraInfo.headers : responsePayload.headers;
     for (const [key, value] of Object.entries(headers)) {
-      this.#headers[key.toLowerCase()] = value;
+      const lowerName = key.toLowerCase();
+      if (lowerName === 'set-cookie') {
+        this.#headers[lowerName] = value;
+      } else {
+        this.#headers[lowerName] = value.replaceAll('\n', ', ');
+      }
     }
 
     this.#securityDetails = responsePayload.securityDetails
