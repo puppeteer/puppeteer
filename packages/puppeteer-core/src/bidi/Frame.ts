@@ -37,7 +37,7 @@ import {
 } from '../common/ConsoleMessage.js';
 import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
-import type {Awaitable} from '../common/types.js';
+import type {Awaitable, HandleFor} from '../common/types.js';
 import {
   debugError,
   fromAbortSignal,
@@ -298,6 +298,27 @@ export class BidiFrame extends Frame {
     return [...this.browsingContext.children].map(child => {
       return this.#frames.get(child)!;
     });
+  }
+
+  @throwIfDetached
+  override async frameElement(): Promise<HandleFor<HTMLIFrameElement> | null> {
+    const parentFrame = this.parentFrame();
+    if (!parentFrame) {
+      return null;
+    }
+    const nodes = await parentFrame.browsingContext.locateNodes({
+      type: 'context',
+      value: {
+        context: this._id,
+      },
+    });
+    const container = nodes[0];
+    if (!container) {
+      return null;
+    }
+    return parentFrame
+      .mainRealm()
+      .createHandle(container) as unknown as HandleFor<HTMLIFrameElement>;
   }
 
   #detached$() {

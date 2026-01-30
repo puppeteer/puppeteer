@@ -453,13 +453,6 @@
     "comment": "Firefox does not support --remote-debugging-pipe argument"
   },
   {
-    "testIdPattern": "[frame.spec] Frame specs Frame.prototype.frameElement should handle shadow roots",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "https://github.com/w3c/webdriver-bidi/issues/794"
-  },
-  {
     "testIdPattern": "[idle_override.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],

@@ -746,13 +746,18 @@ export class BrowsingContext extends EventEmitter<{
   })
   async locateNodes(
     locator: Bidi.BrowsingContext.Locator,
-    startNodes: [Bidi.Script.SharedReference, ...Bidi.Script.SharedReference[]],
+    startNodes: Bidi.Script.SharedReference[] = [],
   ): Promise<Bidi.Script.NodeRemoteValue[]> {
     // TODO: add other locateNodes options if needed.
     const result = await this.#session.send('browsingContext.locateNodes', {
       context: this.id,
       locator,
-      startNodes: startNodes.length ? startNodes : undefined,
+      startNodes: startNodes.length
+        ? (startNodes as [
+            Bidi.Script.SharedReference,
+            ...Bidi.Script.SharedReference[],
+          ])
+        : undefined,
     });
     return result.result.nodes;
   }
