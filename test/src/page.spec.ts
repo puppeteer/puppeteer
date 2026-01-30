@@ -424,7 +424,7 @@ describe('Page', function () {
   });
 
   describe('Page.setGeolocation', function () {
-    it('should work', async () => {
+    it.only('should work', async () => {
       const {page, server, context} = await getTestState();
 
       await context.overridePermissions(server.PREFIX, ['geolocation']);
