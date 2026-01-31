@@ -5,58 +5,47 @@
  */
 
 import assert from 'node:assert';
-import fs from 'node:fs';
-import os from 'node:os';
-import path from 'node:path';
 
 import {Browser, BrowserPlatform, DefaultProvider} from './main.js';
 
 describe('DefaultProvider', () => {
-  let downloader: DefaultProvider;
-  let tmpDir: string;
+  let provider: DefaultProvider;
 
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'puppeteer-test'));
-    downloader = new DefaultProvider();
-  });
-
-  afterEach(() => {
-    if (fs.existsSync(tmpDir)) {
-      fs.rmSync(tmpDir, {recursive: true, force: true});
-    }
+    provider = new DefaultProvider();
   });
 
   describe('constructor', () => {
-    it('should create downloader with default base URL', () => {
-      const defaultDownloader = new DefaultProvider();
-      assert(defaultDownloader instanceof DefaultProvider);
+    it('should create provider with default base URL', () => {
+      const defaultProvider = new DefaultProvider();
+      assert(defaultProvider instanceof DefaultProvider);
     });
 
-    it('should create downloader with custom base URL', () => {
+    it('should create provider with custom base URL', () => {
       const customBaseUrl = 'https://custom.example.com/';
-      const customDownloader = new DefaultProvider(customBaseUrl);
-      assert(customDownloader instanceof DefaultProvider);
+      const customProvider = new DefaultProvider(customBaseUrl);
+      assert(customProvider instanceof DefaultProvider);
     });
   });
 
   describe('BrowserProvider interface compliance', () => {
     it('should implement supports method', () => {
-      assert.strictEqual(typeof downloader.supports, 'function');
+      assert.strictEqual(typeof provider.supports, 'function');
     });
 
     it('should implement getDownloadUrl method', () => {
-      assert.strictEqual(typeof downloader.getDownloadUrl, 'function');
+      assert.strictEqual(typeof provider.getDownloadUrl, 'function');
     });
 
     it('should implement getExecutablePath method', () => {
-      assert.strictEqual(typeof downloader.getExecutablePath, 'function');
+      assert.strictEqual(typeof provider.getExecutablePath, 'function');
     });
   });
 
   describe('basic functionality', () => {
     it('should handle different browsers', () => {
       // Test with a known build ID that should exist
-      const result = downloader.supports({
+      const result = provider.supports({
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
         buildId: '120.0.6099.109',
@@ -67,7 +56,7 @@ describe('DefaultProvider', () => {
     });
 
     it('should handle different platforms', () => {
-      const result = downloader.supports({
+      const result = provider.supports({
         browser: Browser.CHROME,
         platform: BrowserPlatform.MAC,
         buildId: '120.0.6099.109',
@@ -78,7 +67,7 @@ describe('DefaultProvider', () => {
     });
 
     it('should handle ChromeDriver', () => {
-      const result = downloader.supports({
+      const result = provider.supports({
         browser: Browser.CHROMEDRIVER,
         platform: BrowserPlatform.LINUX,
         buildId: '120.0.6099.109',
@@ -89,7 +78,7 @@ describe('DefaultProvider', () => {
     });
 
     it('should return URL for valid build', () => {
-      const result = downloader.getDownloadUrl({
+      const result = provider.getDownloadUrl({
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
         buildId: '120.0.6099.109',
