@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2023 Google Inc.
+ * Copyright 2026 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -9,23 +9,15 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import {
-  Browser,
-  BrowserPlatform,
-  DefaultProvider,
-} from '../../../lib/esm/main.js';
-import {getServerUrl, setupTestServer} from '../utils.js';
+import {Browser, BrowserPlatform, DefaultProvider} from './main.js';
 
 describe('DefaultProvider', () => {
-  setupTestServer();
-
   let downloader: DefaultProvider;
   let tmpDir: string;
 
   beforeEach(() => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'puppeteer-test'));
-    // Use test server as base URL for controlled testing
-    downloader = new DefaultProvider(getServerUrl());
+    downloader = new DefaultProvider();
   });
 
   afterEach(() => {

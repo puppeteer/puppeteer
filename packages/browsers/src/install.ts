@@ -118,9 +118,9 @@ export interface InstallOptions {
   /**
    * Custom provider implementation for alternative download sources.
    *
-   * If not provided, uses the default Chrome for Testing downloader.
+   * If not provided, uses the default provider.
    * Multiple providers can be chained - they will be tried in order.
-   * Chrome for Testing is automatically added as the final fallback.
+   * The default provider is automatically added as the final fallback.
    *
    * ⚠️ **IMPORTANT**: Custom providers are NOT officially supported by
    * Puppeteer.
@@ -133,20 +133,19 @@ export interface InstallOptions {
    * - **Feature integration**: Browser launch and other Puppeteer features may not work
    * - **Testing**: You must validate that downloaded binaries work with Puppeteer
    *
-   * **Puppeteer only tests and guarantees compatibility with Chrome for
-   * Testing binaries.**
+   * **Puppeteer only tests and guarantees compatibility with default binaries.**
    *
    * @example
    *
    * ```typescript
-   * import {ElectronDownloader} from '@wdio/browser-downloader-electron';
+   * import {ElectronProvider} from './puppeteer-browser-provider-electron.js';
    *
    * await install({
    *   browser: Browser.CHROMEDRIVER,
    *   buildId: '142.0.7444.175',
    *   cacheDir: './cache',
    *   providers: [
-   *     new ElectronDownloader(), // Try Electron releases first
+   *     new ElectronProvider(), // Try Electron releases first
    *     // Falls back to Chrome for Testing automatically
    *   ],
    * });
@@ -156,9 +155,9 @@ export interface InstallOptions {
 }
 
 /**
- * Install using custom downloader plugins.
- * Tries each downloader in order until one succeeds.
- * Falls back to default CfT downloader if all custom downloaders fail.
+ * Install using custom provider plugins.
+ * Tries each provider in order until one succeeds.
+ * Falls back to default provider if all custom providers fail.
  *
  * @internal
  */
@@ -301,7 +300,7 @@ export async function install(
     );
   }
 
-  // Always use plugin architecture (defaults to CfT if no downloaders provided)
+  // Always use plugin architecture (uses default provider if none specified)
   options.providers ??= [];
   return await installWithProviders(options);
 }
@@ -435,7 +434,7 @@ async function installUrl(
       return installedBrowser;
     }
 
-    // Check if archive already exists (e.g., from a custom downloader)
+    // Check if archive already exists (e.g., from a custom provider)
     if (!existsSync(archivePath)) {
       debugInstall(`Downloading binary from ${url}`);
       try {
@@ -579,7 +578,7 @@ export async function canDownload(options: InstallOptions): Promise<boolean> {
     );
   }
 
-  // Always use plugin architecture (defaults to CfT if no providers provided)
+  // Always use plugin architecture (uses default provider if none specified)
   const providers = [
     ...(options.providers || []),
     new DefaultProvider(options.baseUrl),
