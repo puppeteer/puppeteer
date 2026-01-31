@@ -606,6 +606,20 @@ describe('Launcher specs', function () {
           'Browser was not found at the configured executablePath (/tmp/does-not-exist)',
         );
       });
+
+      it('should support the AbortSignal', async () => {
+        const controller = new AbortController();
+        const {browser, close} = await launch({
+          signal: controller.signal,
+        });
+        const process = browser.process()!;
+        const closed = new Promise(resolve => {
+          return process.once('exit', resolve);
+        });
+        controller.abort();
+        await closed;
+        await close();
+      });
     });
 
     describe('Puppeteer.connect', function () {
