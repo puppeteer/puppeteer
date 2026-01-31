@@ -6,8 +6,6 @@ sidebar_label: BrowserProvider
 
 Interface for custom browser provider implementations. Allows users to implement alternative download sources for browsers.
 
-See the [Browsers Package](../../packages/browsers/README.md) for usage examples.
-
 ⚠️ **IMPORTANT**: Custom providers are NOT officially supported by Puppeteer.
 
 By implementing this interface, you accept full responsibility for:
@@ -25,7 +23,7 @@ export interface BrowserProvider
 ## Example
 
 ```typescript
-class ElectronProvider implements BrowserProvider {
+class ElectronDownloader implements BrowserProvider {
   supports(options: DownloadOptions): boolean {
     return options.browser === Browser.CHROMEDRIVER;
   }
@@ -79,7 +77,18 @@ Can be synchronous for simple URL construction or asynchronous if version resolu
 
 Get the relative path to the executable within the extracted archive.
 
-Can return a simple path or use `\{platform\}` and `\{buildId\}` placeholders. If not provided, uses the default Chrome for Testing structure.
+</td></tr>
+<tr><td>
+
+<span id="getname">[getName()](./browsers.browserprovider.getname.md)</span>
+
+</td><td>
+
+Get the name of this provider. Used for error messages and logging purposes.
+
+**Remarks:**
+
+This method is used instead of `constructor.name` to avoid issues with minification in production builds.
 
 </td></tr>
 <tr><td>

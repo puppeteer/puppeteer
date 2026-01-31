@@ -80,23 +80,4 @@ string
 </td><td>
 
 </td></tr>
-<tr><td>
-
-<span id="progresscallback">progressCallback</span>
-
-</td><td>
-
-`optional`
-
-</td><td>
-
-(downloadedBytes: number, totalBytes: number) =&gt; void
-
-</td><td>
-
-Progress callback for download progress.
-
-</td><td>
-
-</td></tr>
 </tbody></table>

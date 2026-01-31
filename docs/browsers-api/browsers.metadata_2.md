@@ -48,4 +48,21 @@ Record&lt;string, string&gt;
 </td><td>
 
 </td></tr>
+<tr><td>
+
+<span id="executablepaths">executablePaths</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+Record&lt;string, string&gt;
+
+</td><td>
+
+</td><td>
+
+</td></tr>
 </tbody></table>

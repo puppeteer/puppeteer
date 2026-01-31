@@ -7,7 +7,7 @@
 import type {Browser, BrowserPlatform} from './browser-data/browser-data.js';
 
 /**
- * Options passed to a downloader.
+ * Options passed to a provider.
  * @public
  */
 export interface DownloadOptions {
@@ -17,10 +17,10 @@ export interface DownloadOptions {
 }
 
 /**
- * Interface for custom browser downloader implementations.
+ * Interface for custom browser provider implementations.
  * Allows users to implement alternative download sources for browsers.
  *
- * ⚠️ **IMPORTANT**: Custom downloaders are NOT officially supported by
+ * ⚠️ **IMPORTANT**: Custom providers are NOT officially supported by
  * Puppeteer.
  *
  * By implementing this interface, you accept full responsibility for:
@@ -59,14 +59,14 @@ export interface DownloadOptions {
  */
 export interface BrowserProvider {
   /**
-   * Check if this downloader supports the given browser/platform.
+   * Check if this provider supports the given browser/platform.
    * Used for filtering before attempting downloads.
    *
    * Can be synchronous for quick checks or asynchronous if version
    * resolution/network requests are needed.
    *
    * @param options - Download options to check
-   * @returns True if this downloader supports the browser/platform combination
+   * @returns True if this provider supports the browser/platform combination
    */
   supports(options: DownloadOptions): Promise<boolean> | boolean;
 
@@ -74,7 +74,7 @@ export interface BrowserProvider {
    * Get the download URL for the requested browser.
    *
    * The buildId can be either an exact version (e.g., "131.0.6778.109")
-   * or an alias (e.g., "latest", "stable"). Custom downloaders should handle
+   * or an alias (e.g., "latest", "stable"). Custom providers should handle
    * version resolution internally if they support aliases.
    *
    * Returns null if the buildId cannot be resolved to a valid version.
