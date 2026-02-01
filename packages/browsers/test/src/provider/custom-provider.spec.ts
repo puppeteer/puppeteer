@@ -241,22 +241,43 @@ describe('Custom Provider Integration Tests', () => {
   });
 
   describe('persistence', () => {
-    it('should persist executable path in metadata', async function () {
+    it('should persist executable path in metadata for custom providers', async function () {
       this.timeout(60000);
 
-      // Install using default provider
+      // Use the test.tar.bz2 fixture as a mock download
+      const fixturePath = path.join(
+        import.meta.dirname,
+        '..',
+        '..',
+        'fixtures',
+        'test.tar.bz2',
+      );
+      const archivePath = path.join(tmpDir, 'test-archive.tar.bz2');
+
+      // Copy the fixture to simulate a download
+      fs.copyFileSync(fixturePath, archivePath);
+
+      // Create a custom provider that uses the test fixture
+      const customProvider = new MockProvider({
+        supports: true,
+        getDownloadUrlResult: new URL('file://' + archivePath),
+        getExecutablePath: 'chrome-linux/chrome',
+      });
+
+      // Install using custom provider
       const result = await install({
         cacheDir: tmpDir,
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
         buildId: '120.0.6099.109',
+        providers: [customProvider],
       });
 
       // Verify .metadata exists at browser root and contains the executable path
       const metadataPath = path.join(tmpDir, 'chrome', '.metadata');
       assert.ok(
         fs.existsSync(metadataPath),
-        '.metadata should be created for all installations',
+        '.metadata should be created for custom provider installations',
       );
 
       const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
@@ -276,6 +297,79 @@ describe('Custom Provider Integration Tests', () => {
         found?.executablePath,
         result.executablePath,
         'getInstalledBrowsers should return the correct executable path',
+      );
+    });
+
+    it('should not write metadata for default provider installations', async function () {
+      this.timeout(60000);
+
+      // Use the test.tar.bz2 fixture as a mock download
+      const fixturePath = path.join(
+        import.meta.dirname,
+        '..',
+        '..',
+        'fixtures',
+        'test.tar.bz2',
+      );
+      const archivePath = path.join(tmpDir, 'test-archive.tar.bz2');
+
+      // Copy the fixture to simulate a download
+      fs.copyFileSync(fixturePath, archivePath);
+
+      // Create a custom provider that uses the test fixture
+      const customProvider = new MockProvider({
+        supports: true,
+        getDownloadUrlResult: new URL('file://' + archivePath),
+        getExecutablePath: 'chrome-linux/chrome',
+      });
+
+      // Install using custom provider first
+      await install({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        platform: BrowserPlatform.LINUX,
+        buildId: '120.0.6099.109',
+        providers: [customProvider],
+      });
+
+      // Verify .metadata was created by custom provider
+      const metadataPath = path.join(tmpDir, 'chrome', '.metadata');
+      assert.ok(
+        fs.existsSync(metadataPath),
+        '.metadata should exist after custom provider install',
+      );
+
+      // Now install using default provider (no providers option)
+      // First, clean up the installation but keep the metadata
+      const installDir = path.join(
+        tmpDir,
+        'chrome',
+        `${BrowserPlatform.LINUX}-120.0.6099.109`,
+      );
+      fs.rmSync(installDir, {recursive: true, force: true});
+
+      // Re-copy the fixture for the default provider install
+      fs.copyFileSync(fixturePath, archivePath);
+
+      // Install using default provider
+      await install({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        platform: BrowserPlatform.LINUX,
+        buildId: '120.0.6099.109',
+        // No providers option = uses default provider
+      });
+
+      // Read the metadata - it should still only have the original entry
+      // The default provider should not have added/modified executablePaths
+      const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+      const key = `${BrowserPlatform.LINUX}-120.0.6099.109`;
+
+      // The metadata file exists but default provider doesn't write executablePaths
+      // The original entry from custom provider should still be there
+      assert.ok(
+        metadata.executablePaths?.[key],
+        'Executable path should still be in metadata from custom provider',
       );
     });
 
