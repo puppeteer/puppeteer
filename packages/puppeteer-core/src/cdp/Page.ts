@@ -41,6 +41,7 @@ import type {
   DeleteCookiesRequest,
   CookieParam,
   CookiePartitionKey,
+  CookieSameSite,
 } from '../common/Cookie.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -714,6 +715,7 @@ export class CdpPage extends Page {
         cookies: items.map(cookieParam => {
           return {
             ...cookieParam,
+            sameSite: convertSameSiteCdp(cookieParam.sameSite),
             partitionKey: convertCookiesPartitionKeyFromPuppeteerToCdp(
               cookieParam.partitionKey,
             ),
@@ -1331,6 +1333,24 @@ function getIntersectionRect(
       0,
     ),
   };
+}
+
+/**
+ * @internal
+ */
+export function convertSameSiteCdp(
+  sameSite?: CookieSameSite,
+): Protocol.Network.CookieSameSite | undefined {
+  switch (sameSite) {
+    case 'Strict':
+      return 'Strict';
+    case 'Lax':
+      return 'Lax';
+    case 'None':
+      return 'None';
+    default:
+      return undefined;
+  }
 }
 
 /**

@@ -1160,17 +1160,35 @@ export function cdpSpecificCookiePropertiesFromPuppeteerToBidi(
 function convertCookiesSameSiteBiDiToCdp(
   sameSite: Bidi.Network.SameSite | undefined,
 ): CookieSameSite {
-  return sameSite === 'strict' ? 'Strict' : sameSite === 'lax' ? 'Lax' : 'None';
+  switch (sameSite) {
+    case 'strict':
+      return 'Strict';
+    case 'lax':
+      return 'Lax';
+    case 'none':
+      return 'None';
+    case 'default':
+      return 'Default';
+    default:
+      return 'None';
+  }
 }
 
 export function convertCookiesSameSiteCdpToBiDi(
   sameSite: CookieSameSite | undefined,
 ): Bidi.Network.SameSite {
-  return sameSite === 'Strict'
-    ? Bidi.Network.SameSite.Strict
-    : sameSite === 'Lax'
-      ? Bidi.Network.SameSite.Lax
-      : Bidi.Network.SameSite.None;
+  switch (sameSite) {
+    case 'Strict':
+      return Bidi.Network.SameSite.Strict;
+    case 'Lax':
+      return Bidi.Network.SameSite.Lax;
+    case 'None':
+      return Bidi.Network.SameSite.None;
+    case 'Default':
+      return Bidi.Network.SameSite.Default;
+    default:
+      return Bidi.Network.SameSite.None;
+  }
 }
 
 export function convertCookiesExpiryCdpToBiDi(
