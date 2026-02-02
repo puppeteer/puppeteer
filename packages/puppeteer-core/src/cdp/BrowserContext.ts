@@ -21,7 +21,10 @@ import {assert} from '../util/assert.js';
 
 import type {CdpBrowser} from './Browser.js';
 import type {Connection} from './Connection.js';
-import {convertCookiesPartitionKeyFromPuppeteerToCdp} from './Page.js';
+import {
+  convertCookiesPartitionKeyFromPuppeteerToCdp,
+  convertSameSiteFromPuppeteerToCdp,
+} from './Page.js';
 import type {CdpTarget} from './Target.js';
 
 /**
@@ -157,12 +160,18 @@ export class CdpBrowserContext extends BrowserContext {
     return await this.#connection.send('Storage.setCookies', {
       browserContextId: this.#id,
       cookies: cookies.map(cookie => {
-        return {
-          ...cookie,
+        const {sameSite, ...rest} = cookie;
+        const sameSiteCdp = convertSameSiteFromPuppeteerToCdp(sameSite);
+        const result: Protocol.Network.CookieParam = {
+          ...rest,
           partitionKey: convertCookiesPartitionKeyFromPuppeteerToCdp(
             cookie.partitionKey,
           ),
         };
+        if (sameSiteCdp) {
+          result.sameSite = sameSiteCdp;
+        }
+        return result;
       }),
     });
   }

@@ -77,6 +77,33 @@ describe('Cookie specs', () => {
       expect(cookies).toHaveLength(1);
       expect(cookies[0]!.sameSite).toBe('Lax');
     });
+    it('should properly report "Default" sameSite cookie', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      await page.setCookie({
+        name: 'a',
+        value: 'b',
+        sameSite: 'Default',
+      });
+      const cookies = await page.cookies();
+      expect(cookies).toHaveLength(1);
+      expect(cookies[0]!.name).toBe('a');
+      expect(['Default', 'Lax', undefined]).toContain(cookies[0]!.sameSite);
+    });
+    it('should report "Default" sameSite cookie when not specified', async () => {
+      const {page, server, defaultBrowserOptions, isFirefox} =
+        await getTestState();
+      server.setRoute('/empty.html', (_req, res) => {
+        res.setHeader('Set-Cookie', 'a=b');
+        res.end();
+      });
+      await page.goto(server.EMPTY_PAGE);
+      const cookies = await page.cookies();
+      expect(cookies).toHaveLength(1);
+      if (defaultBrowserOptions.protocol === 'webDriverBiDi' && isFirefox) {
+        expect(cookies[0]!.sameSite).toBe('Default');
+      }
+    });
     it('should get multiple cookies', async () => {
       const {page, server} = await getTestState();
       await page.goto(server.EMPTY_PAGE);

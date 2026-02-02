@@ -41,6 +41,7 @@ import type {
   DeleteCookiesRequest,
   CookieParam,
   CookiePartitionKey,
+  CookieSameSite,
 } from '../common/Cookie.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -97,6 +98,22 @@ function convertConsoleMessageLevel(method: string): ConsoleMessageType {
       return 'warn';
     default:
       return method as ConsoleMessageType;
+  }
+}
+
+/**
+ * @internal
+ */
+export function convertSameSiteFromPuppeteerToCdp(
+  sameSite: CookieSameSite | undefined,
+): Protocol.Network.CookieSameSite | undefined {
+  switch (sameSite) {
+    case 'Strict':
+    case 'Lax':
+    case 'None':
+      return sameSite;
+    default:
+      return undefined;
   }
 }
 
@@ -712,12 +729,18 @@ export class CdpPage extends Page {
     if (items.length) {
       await this.#primaryTargetClient.send('Network.setCookies', {
         cookies: items.map(cookieParam => {
-          return {
-            ...cookieParam,
+          const {sameSite, ...rest} = cookieParam;
+          const sameSiteCdp = convertSameSiteFromPuppeteerToCdp(sameSite);
+          const result: Protocol.Network.CookieParam = {
+            ...rest,
             partitionKey: convertCookiesPartitionKeyFromPuppeteerToCdp(
               cookieParam.partitionKey,
             ),
           };
+          if (sameSiteCdp) {
+            result.sameSite = sameSiteCdp;
+          }
+          return result;
         }),
       });
     }
