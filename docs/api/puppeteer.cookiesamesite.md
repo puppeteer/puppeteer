@@ -9,5 +9,5 @@ Represents the cookie's 'SameSite' status: https://tools.ietf.org/html/draft-wes
 ### Signature
 
 ```typescript
-export type CookieSameSite = 'Strict' | 'Lax' | 'None' | 'Default';
+export type CookieSameSite = 'Strict' | 'Lax' | 'None';
 ```

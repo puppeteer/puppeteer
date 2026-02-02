@@ -91,25 +91,17 @@ describe('Cookie specs', () => {
       expect(['Default', 'Lax', undefined]).toContain(cookies[0]!.sameSite);
     });
     it('should be able to delete "Default" sameSite cookie', async () => {
-      const {page, server, context} = await getTestState();
+      const {page, server} = await getTestState();
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({
         name: 'a',
         value: 'b',
         sameSite: 'Default',
       });
-      const cookies = await context.cookies();
-      expect(
-        cookies.find(c => {
-          return c.name === 'a';
-        }),
-      ).toBeDefined();
-      await context.deleteCookie(
-        ...cookies.filter(c => {
-          return c.name === 'a';
-        }),
-      );
-      expect(await context.cookies()).toHaveLength(0);
+      const cookies = await page.cookies();
+      expect(cookies.find(c => c.name === 'a')).toBeDefined();
+      await page.deleteCookie(...cookies.filter(c => c.name === 'a'));
+      expect(await page.cookies()).toHaveLength(0);
     });
     it('should report "Default" sameSite cookie when not specified', async () => {
       const {page, server, defaultBrowserOptions, isFirefox} =

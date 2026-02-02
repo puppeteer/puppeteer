@@ -220,24 +220,6 @@ export class UserContext extends EventEmitter<{
     // SAFETY: Disposal implies this exists.
     return context.#reason!;
   })
-  async deleteCookies(
-    filter: Bidi.Storage.CookieFilter,
-    sourceOrigin?: string,
-  ): Promise<void> {
-    await this.#session.send('storage.deleteCookies', {
-      filter,
-      partition: {
-        type: 'storageKey',
-        sourceOrigin,
-        userContext: this.id,
-      },
-    });
-  }
-
-  @throwIfDisposed<UserContext>(context => {
-    // SAFETY: Disposal implies this exists.
-    return context.#reason!;
-  })
   async setPermissions(
     origin: string,
     descriptor: Bidi.Permissions.PermissionDescriptor,
