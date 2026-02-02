@@ -358,6 +358,22 @@ export class BidiBrowserContext extends BrowserContext {
     });
   }
 
+  override async deleteCookie(...cookies: Cookie[]): Promise<void> {
+    await Promise.all(
+      cookies.map(async cookie => {
+        const filter: Bidi.Storage.CookieFilter = {
+          name: cookie.name,
+          domain: cookie.domain,
+          path: cookie.path,
+        };
+        return await this.userContext.deleteCookies(
+          filter,
+          convertCookiesPartitionKeyFromPuppeteerToBiDi(cookie.partitionKey),
+        );
+      }),
+    );
+  }
+
   override async setCookie(...cookies: CookieData[]): Promise<void> {
     await Promise.all(
       cookies.map(async cookie => {
