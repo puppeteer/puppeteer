@@ -94,6 +94,7 @@ describe('BrowserContext cookies', () => {
         return c.name === name;
       });
       expect(cookie).toBeDefined();
+      // Different browsers have different sameSite values for the "Default" sameSite.
       expect(['Default', 'Lax', undefined]).toContain(cookie!.sameSite);
       await context.deleteMatchingCookies({name, domain: 'localhost'});
     });

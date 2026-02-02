@@ -88,6 +88,7 @@ describe('Cookie specs', () => {
       const cookies = await page.cookies();
       expect(cookies).toHaveLength(1);
       expect(cookies[0]!.name).toBe('a');
+      // Different browsers have different sameSite values for the "Default" sameSite.
       expect(['Default', 'Lax', undefined]).toContain(cookies[0]!.sameSite);
     });
     it('should be able to delete "Default" sameSite cookie', async () => {
@@ -104,11 +105,7 @@ describe('Cookie specs', () => {
           return c.name === 'a';
         }),
       ).toBeDefined();
-      await page.deleteCookie(
-        ...cookies.filter(c => {
-          return c.name === 'a';
-        }),
-      );
+      await page.deleteCookie(...cookies);
       expect(await page.cookies()).toHaveLength(0);
     });
     it('should report "Default" sameSite cookie when not specified', async () => {
