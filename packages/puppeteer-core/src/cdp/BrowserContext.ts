@@ -164,9 +164,10 @@ export class CdpBrowserContext extends BrowserContext {
         const sameSiteCdp = convertSameSiteFromPuppeteerToCdp(sameSite);
         const result: Protocol.Network.CookieParam = {
           ...rest,
-          partitionKey: convertCookiesPartitionKeyFromPuppeteerToCdp(
-            cookie.partitionKey,
-          ),
+partitionKey: convertCookiesPartitionKeyFromPuppeteerToCdp(
+cookie.partitionKey,
+),
+sameSite: convertSameSiteFromPuppeteerToCdp(cookie.sameSite)
         };
         if (sameSiteCdp) {
           result.sameSite = sameSiteCdp;
