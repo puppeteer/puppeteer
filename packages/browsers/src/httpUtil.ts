@@ -149,7 +149,9 @@ export function getText(url: URL): Promise<string> {
           try {
             return resolve(String(data));
           } catch {
-            return reject(new Error('Chrome version not found'));
+            return reject(
+              new Error(`Failed to read text response from ${url}`),
+            );
           }
         });
       },

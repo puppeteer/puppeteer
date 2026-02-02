@@ -50,3 +50,9 @@ export {
   type ComputeExecutablePathOptions,
 } from './Cache.js';
 export {BrowserTag} from './browser-data/types.js';
+export {DefaultProvider} from './DefaultProvider.js';
+export {
+  type BrowserProvider,
+  buildArchiveFilename,
+  type DownloadOptions,
+} from './provider.js';
