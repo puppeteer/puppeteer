@@ -729,18 +729,13 @@ export class CdpPage extends Page {
     if (items.length) {
       await this.#primaryTargetClient.send('Network.setCookies', {
         cookies: items.map(cookieParam => {
-          const {sameSite, ...rest} = cookieParam;
-          const sameSiteCdp = convertSameSiteFromPuppeteerToCdp(sameSite);
-          const result: Protocol.Network.CookieParam = {
-            ...rest,
+          return {
+            ...cookieParam,
             partitionKey: convertCookiesPartitionKeyFromPuppeteerToCdp(
               cookieParam.partitionKey,
             ),
+            sameSite: convertSameSiteFromPuppeteerToCdp(cookieParam.sameSite),
           };
-          if (sameSiteCdp) {
-            result.sameSite = sameSiteCdp;
-          }
-          return result;
         }),
       });
     }

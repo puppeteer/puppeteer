@@ -160,19 +160,13 @@ export class CdpBrowserContext extends BrowserContext {
     return await this.#connection.send('Storage.setCookies', {
       browserContextId: this.#id,
       cookies: cookies.map(cookie => {
-        const {sameSite, ...rest} = cookie;
-        const sameSiteCdp = convertSameSiteFromPuppeteerToCdp(sameSite);
-        const result: Protocol.Network.CookieParam = {
-          ...rest,
-partitionKey: convertCookiesPartitionKeyFromPuppeteerToCdp(
-cookie.partitionKey,
-),
-sameSite: convertSameSiteFromPuppeteerToCdp(cookie.sameSite)
+        return {
+          ...cookie,
+          partitionKey: convertCookiesPartitionKeyFromPuppeteerToCdp(
+            cookie.partitionKey,
+          ),
+          sameSite: convertSameSiteFromPuppeteerToCdp(cookie.sameSite),
         };
-        if (sameSiteCdp) {
-          result.sameSite = sameSiteCdp;
-        }
-        return result;
       }),
     });
   }
