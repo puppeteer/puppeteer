@@ -27,10 +27,7 @@ describe('CdpHTTPRequest', () => {
           url: 'http://example.com',
           method: 'POST',
           headers: {},
-          postDataEntries: [
-            {bytes: btoa('part1')},
-            {bytes: btoa('part2')},
-          ],
+          postDataEntries: [{bytes: btoa('part1')}, {bytes: btoa('part2')}],
         } as any,
       } as any,
       [],

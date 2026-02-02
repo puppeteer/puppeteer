@@ -92,7 +92,10 @@ export class CdpHTTPRequest extends HTTPRequest {
     this.#url = data.request.url + (data.request.urlFragment ?? '');
     this.#resourceType = (data.type || 'other').toLowerCase() as ResourceType;
     this.#method = data.request.method;
-    if (data.request.postDataEntries && data.request.postDataEntries.length > 0) {
+    if (
+      data.request.postDataEntries &&
+      data.request.postDataEntries.length > 0
+    ) {
       this.#postData = '';
       for (const entry of data.request.postDataEntries) {
         if (entry.bytes) {
