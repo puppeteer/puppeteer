@@ -1180,7 +1180,7 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[keyboard.spec] Keyboard should report shiftKey",
+    "testIdPattern": "[keyboard.spec] Keyboard should report modifiers",
     "platforms": ["darwin"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
