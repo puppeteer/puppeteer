@@ -78,6 +78,25 @@ describe('BrowserContext cookies', () => {
           : undefined,
       );
     });
+
+    it('should properly report "Default" sameSite cookie', async () => {
+      const {context, server, page} = state;
+      await page.goto(server.EMPTY_PAGE);
+      const name = 'defaultSameSite';
+      await context.setCookie({
+        name,
+        value: 'b',
+        domain: 'localhost',
+        sameSite: 'Default',
+      });
+      const cookies = await context.cookies();
+      const cookie = cookies.find(c => {
+        return c.name === name;
+      });
+      expect(cookie).toBeDefined();
+      expect(['Default', 'Lax', undefined]).toContain(cookie!.sameSite);
+      await context.deleteMatchingCookies({name, domain: 'localhost'});
+    });
   });
   describe('BrowserContext.setCookie', function () {
     it('should set with undefined partition key', async () => {
@@ -182,6 +201,30 @@ describe('BrowserContext cookies', () => {
           return document.cookie;
         }),
       ).toEqual('cookie2=2');
+    });
+
+    it('should be able to delete "Default" sameSite cookie', async () => {
+      const {page, context, server} = state;
+      await page.goto(server.EMPTY_PAGE);
+      const name = 'deleteDefaultSameSite';
+      await context.setCookie({
+        name,
+        value: 'b',
+        domain: 'localhost',
+        sameSite: 'Default',
+      });
+      const cookies = await context.cookies();
+      const cookie = cookies.find(c => {
+        return c.name === name;
+      });
+      expect(cookie).toBeDefined();
+      await context.deleteMatchingCookies({name, domain: 'localhost'});
+      const cookiesAfter = await context.cookies();
+      expect(
+        cookiesAfter.find(c => {
+          return c.name === name;
+        }),
+      ).toBeUndefined();
     });
   });
 
