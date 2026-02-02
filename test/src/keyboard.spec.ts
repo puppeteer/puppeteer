@@ -7,7 +7,6 @@
 import os from 'node:os';
 
 import expect from 'expect';
-import type {KeyInput} from 'puppeteer-core/internal/common/USKeyboardLayout.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {attachFrame, html} from './utils.js';
@@ -241,49 +240,93 @@ describe('Keyboard', function () {
       }),
     ).toMatchObject({value: '嗨a', inputs: 2, keyDowns: 0});
   });
-  it('should report shiftKey', async () => {
+  it('should report modifiers', async () => {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/keyboard.html');
     const keyboard = page.keyboard;
-    const codeForKey = new Set<KeyInput>(['Shift', 'Alt', 'Control']);
-    for (const modifierKey of codeForKey) {
-      await keyboard.down(modifierKey);
-      expect(
-        await page.evaluate(() => {
-          return (globalThis as any).getResult();
-        }),
-      ).toBe(`Keydown: ${modifierKey} ${modifierKey}Left [${modifierKey}]`);
-      await keyboard.down('!');
-      if (modifierKey === 'Shift') {
-        expect(
-          await page.evaluate(() => {
-            return (globalThis as any).getResult();
-          }),
-        ).toBe(
-          `Keydown: ! Digit1 [${modifierKey}]\n` + `input: ! insertText false`,
-        );
-      } else {
-        expect(
-          await page.evaluate(() => {
-            return (globalThis as any).getResult();
-          }),
-        ).toBe(`Keydown: ! Digit1 [${modifierKey}]`);
-      }
 
-      await keyboard.up('!');
-      expect(
-        await page.evaluate(() => {
-          return (globalThis as any).getResult();
-        }),
-      ).toBe(`Keyup: ! Digit1 [${modifierKey}]`);
-      await keyboard.up(modifierKey);
-      expect(
-        await page.evaluate(() => {
-          return (globalThis as any).getResult();
-        }),
-      ).toBe(`Keyup: ${modifierKey} ${modifierKey}Left []`);
-    }
+    // Shift modifier
+    await keyboard.down('Shift');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).getResult();
+      }),
+    ).toBe('Keydown: Shift ShiftLeft [Shift]');
+    await keyboard.down('!');
+    // Shift + ! produces an input event.
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).getResult();
+      }),
+    ).toBe(`Keydown: ! Digit1 [Shift]\n` + `input: ! insertText false`);
+    await keyboard.up('!');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).getResult();
+      }),
+    ).toBe('Keyup: ! Digit1 [Shift]');
+    await keyboard.up('Shift');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).getResult();
+      }),
+    ).toBe('Keyup: Shift ShiftLeft []');
+
+    // Alt modifier
+    await keyboard.down('Alt');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).getResult();
+      }),
+    ).toBe('Keydown: Alt AltLeft [Alt]');
+    await keyboard.down('!');
+    // Alt + ! should NOT produce an input event in Puppeteer for cross-platform
+    // consistency.
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).getResult();
+      }),
+    ).toBe('Keydown: ! Digit1 [Alt]');
+    await keyboard.up('!');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).getResult();
+      }),
+    ).toBe('Keyup: ! Digit1 [Alt]');
+    await keyboard.up('Alt');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).getResult();
+      }),
+    ).toBe('Keyup: Alt AltLeft []');
+
+    // Control modifier
+    await keyboard.down('Control');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).getResult();
+      }),
+    ).toBe('Keydown: Control ControlLeft [Control]');
+    await keyboard.down('!');
+    // Control + ! should NOT produce an input event.
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).getResult();
+      }),
+    ).toBe('Keydown: ! Digit1 [Control]');
+    await keyboard.up('!');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).getResult();
+      }),
+    ).toBe('Keyup: ! Digit1 [Control]');
+    await keyboard.up('Control');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).getResult();
+      }),
+    ).toBe('Keyup: Control ControlLeft []');
   });
   it('should report multiple modifiers', async () => {
     const {page, server} = await getTestState();
