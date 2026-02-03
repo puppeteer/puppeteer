@@ -319,7 +319,7 @@ jobs:
   installation-test:
     name: ${{ matrix.pkg_manager }} installation on ${{ matrix.os }}
     needs: check-changes
-    if: ${{ !startsWith(github.ref_name, 'release-please') && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+    if: ${{ !startsWith(github.ref_name, 'release-please') && (contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') || contains(fromJSON(needs.check-changes.outputs.changes), 'browsers')) }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
