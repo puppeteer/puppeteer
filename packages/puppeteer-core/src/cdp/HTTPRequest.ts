@@ -17,7 +17,11 @@ import {
   handleError,
 } from '../api/HTTPRequest.js';
 import {debugError} from '../common/util.js';
-import {stringToBase64, stringToTypedArray} from '../util/encoding.js';
+import {
+  mergeUint8Arrays,
+  stringToBase64,
+  stringToTypedArray,
+} from '../util/encoding.js';
 
 import type {CdpHTTPResponse} from './HTTPResponse.js';
 
@@ -96,14 +100,17 @@ export class CdpHTTPRequest extends HTTPRequest {
       data.request.postDataEntries &&
       data.request.postDataEntries.length > 0
     ) {
-      this.#postData = '';
-      for (const entry of data.request.postDataEntries) {
-        if (entry.bytes) {
-          this.#postData += new TextDecoder().decode(
-            stringToTypedArray(entry.bytes, true),
-          );
-        }
-      }
+      this.#postData = new TextDecoder().decode(
+        mergeUint8Arrays(
+          data.request.postDataEntries
+            .map(entry => {
+              return entry.bytes ? stringToTypedArray(entry.bytes, true) : null;
+            })
+            .filter((entry): entry is Uint8Array => {
+              return entry !== null;
+            }),
+        ),
+      );
     } else {
       this.#postData = data.request.postData;
     }
