@@ -78,6 +78,35 @@ export interface SerializedAXNode {
    */
   invalid?: string;
   orientation?: string;
+  /**
+   * Whether the node is {@link https://www.w3.org/TR/wai-aria/#aria-busy | busy}.
+   */
+  busy?: boolean;
+  /**
+   * The {@link https://www.w3.org/TR/wai-aria/#aria-live | live} status of the
+   * node.
+   */
+  live?: string;
+  /**
+   * Whether the live region is
+   * {@link https://www.w3.org/TR/wai-aria/#aria-atomic | atomic}.
+   */
+  atomic?: boolean;
+  /**
+   * The {@link https://www.w3.org/TR/wai-aria/#aria-relevant | relevant}
+   * changes for the live region.
+   */
+  relevant?: string;
+  /**
+   * The {@link https://www.w3.org/TR/wai-aria/#aria-errormessage | error message}
+   * for the node.
+   */
+  errormessage?: string;
+  /**
+   * The {@link https://www.w3.org/TR/wai-aria/#aria-details | details} for the
+   * node.
+   */
+  details?: string;
 
   /**
    * Url for link elements.
@@ -342,17 +371,27 @@ class AXNode {
   #editable = false;
   #focusable = false;
   #hidden = false;
+  #busy = false;
+  #modal = false;
+  #hasErrormessage = false;
+  #hasDetails = false;
   #name: string;
   #role: string;
+  #description?: string;
+  #roledescription?: string;
+  #live?: string;
   #ignored: boolean;
   #cachedHasFocusableChild?: boolean;
   #realm: Realm;
 
   constructor(realm: Realm, payload: Protocol.Accessibility.AXNode) {
     this.payload = payload;
-    this.#name = this.payload.name ? this.payload.name.value : '';
     this.#role = this.payload.role ? this.payload.role.value : 'Unknown';
     this.#ignored = this.payload.ignored;
+    this.#name = this.payload.name ? this.payload.name.value : '';
+    this.#description = this.payload.description
+      ? this.payload.description.value
+      : undefined;
     this.#realm = realm;
     for (const property of this.payload.properties || []) {
       if (property.name === 'editable') {
@@ -364,6 +403,24 @@ class AXNode {
       }
       if (property.name === 'hidden') {
         this.#hidden = property.value.value;
+      }
+      if (property.name === 'busy') {
+        this.#busy = property.value.value;
+      }
+      if (property.name === 'live') {
+        this.#live = property.value.value;
+      }
+      if (property.name === 'modal') {
+        this.#modal = property.value.value;
+      }
+      if (property.name === 'roledescription') {
+        this.#roledescription = property.value.value;
+      }
+      if (property.name === 'errormessage') {
+        this.#hasErrormessage = true;
+      }
+      if (property.name === 'details') {
+        this.#hasDetails = true;
       }
     }
   }
@@ -512,7 +569,16 @@ class AXNode {
       return true;
     }
 
-    if (this.#focusable || this.#richlyEditable) {
+    if (
+      this.#focusable ||
+      this.#richlyEditable ||
+      this.#busy ||
+      (this.#live && this.#live !== 'off') ||
+      this.#modal ||
+      this.#hasErrormessage ||
+      this.#hasDetails ||
+      this.#roledescription
+    ) {
       return true;
     }
 
@@ -526,7 +592,7 @@ class AXNode {
       return false;
     }
 
-    return this.isLeafNode() && !!this.#name;
+    return this.isLeafNode() && (!!this.#name || !!this.#description);
   }
 
   public serialize(): SerializedAXNode {
@@ -605,7 +671,9 @@ class AXNode {
       | 'multiselectable'
       | 'readonly'
       | 'required'
-      | 'selected';
+      | 'selected'
+      | 'busy'
+      | 'atomic';
     const booleanProperties: BooleanProperty[] = [
       'disabled',
       'expanded',
@@ -616,9 +684,11 @@ class AXNode {
       'readonly',
       'required',
       'selected',
+      'busy',
+      'atomic',
     ];
     const getBooleanPropertyValue = (key: BooleanProperty): boolean => {
-      return properties.get(key) as boolean;
+      return !!properties.get(key);
     };
 
     for (const booleanProperty of booleanProperties) {
@@ -628,8 +698,7 @@ class AXNode {
       if (booleanProperty === 'focused' && this.#role === 'RootWebArea') {
         continue;
       }
-      const value = getBooleanPropertyValue(booleanProperty);
-      if (value === undefined) {
+      if (!properties.has(booleanProperty)) {
         continue;
       }
       node[booleanProperty] = getBooleanPropertyValue(booleanProperty);
@@ -666,12 +735,20 @@ class AXNode {
       | 'autocomplete'
       | 'haspopup'
       | 'invalid'
-      | 'orientation';
+      | 'orientation'
+      | 'live'
+      | 'relevant'
+      | 'errormessage'
+      | 'details';
     const tokenProperties: TokenProperty[] = [
       'autocomplete',
       'haspopup',
       'invalid',
       'orientation',
+      'live',
+      'relevant',
+      'errormessage',
+      'details',
     ];
     const getTokenPropertyValue = (key: TokenProperty): string => {
       return properties.get(key) as string;
