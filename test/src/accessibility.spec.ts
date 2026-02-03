@@ -936,4 +936,78 @@ describe('Accessibility', function () {
     }
     return null;
   }
+
+  it('should capture new accessibility properties and not prune them', async () => {
+    const {page} = await getTestState();
+
+    await page.setContent(
+      htmlRaw`
+        <div role="alert" aria-busy="true">This is an alert</div>
+        <div aria-live="polite" aria-atomic="true" aria-relevant="additions text">
+          This is polite live region
+        </div>
+        <div aria-modal="true" role="dialog" aria-roledescription="My Modal">
+          Modal content
+        </div>
+        <div id="error">Error message</div>
+        <input aria-invalid="true" aria-errormessage="error" value="invalid input">
+        <div id="details">Additional details</div>
+        <div aria-details="details">Element with details</div>
+        <div aria-description="This is a description"></div>
+      `,
+    );
+
+    const snapshot = await page.accessibility.snapshot();
+    expect(snapshot).toMatchObject({
+      role: 'RootWebArea',
+      children: [
+        {
+          role: 'alert',
+          name: '',
+          busy: true,
+          live: 'assertive',
+          atomic: true,
+          children: [{role: 'StaticText', name: 'This is an alert'}],
+        },
+        {
+          role: 'generic',
+          name: '',
+          live: 'polite',
+          atomic: true,
+          relevant: 'additions text',
+          children: [{role: 'StaticText', name: 'This is polite live region'}],
+        },
+        {
+          role: 'dialog',
+          name: '',
+          modal: true,
+          roledescription: 'My Modal',
+          children: [{role: 'StaticText', name: 'Modal content'}],
+        },
+        {
+          role: 'StaticText',
+          name: 'Error message',
+        },
+        {
+          role: 'textbox',
+          value: 'invalid input',
+          invalid: 'true',
+          errormessage: 'error',
+        },
+        {
+          role: 'StaticText',
+          name: 'Additional details',
+        },
+        {
+          role: 'generic',
+          details: 'details',
+          children: [{role: 'StaticText', name: 'Element with details'}],
+        },
+        {
+          role: 'generic',
+          description: 'This is a description',
+        },
+      ],
+    });
+  });
 });
