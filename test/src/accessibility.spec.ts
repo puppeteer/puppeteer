@@ -963,13 +963,15 @@ describe('Accessibility', function () {
       children: [
         {
           role: 'alert',
-          name: 'This is an alert',
+          name: '',
           busy: true,
           live: 'assertive',
           atomic: true,
+          children: [{role: 'StaticText', name: 'This is an alert'}],
         },
         {
           role: 'generic',
+          name: '',
           live: 'polite',
           atomic: true,
           relevant: 'additions text',
@@ -977,9 +979,10 @@ describe('Accessibility', function () {
         },
         {
           role: 'dialog',
-          name: 'Modal content',
+          name: '',
           modal: true,
           roledescription: 'My Modal',
+          children: [{role: 'StaticText', name: 'Modal content'}],
         },
         {
           role: 'StaticText',
