@@ -225,8 +225,8 @@ export class Cache {
     const key = `${platform}-${buildId}`;
     if (metadata.executablePaths?.[key]) {
       delete metadata.executablePaths[key];
+      this.writeMetadata(browser, metadata);
     }
-    this.writeMetadata(browser, metadata);
     fs.rmSync(this.installationDir(browser, platform, buildId), {
       force: true,
       recursive: true,

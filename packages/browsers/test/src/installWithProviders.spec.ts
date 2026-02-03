@@ -16,7 +16,10 @@ import {
   install,
   type BrowserProvider,
   type DownloadOptions,
-} from '../../../lib/esm/main.js';
+} from '../../lib/esm/main.js';
+
+import {getServerUrl, setupTestServer} from './utils.js';
+import {testChromeBuildId} from './versions.js';
 
 /**
  * Simple inline mock provider for testing.
@@ -66,7 +69,9 @@ class MockProvider implements BrowserProvider {
   }
 }
 
-describe('Custom Provider Integration Tests', () => {
+describe('Install with providers', () => {
+  setupTestServer();
+
   let tmpDir: string;
 
   beforeEach(() => {
@@ -86,7 +91,6 @@ describe('Custom Provider Integration Tests', () => {
       // Use the test.tar.bz2 fixture as a mock download
       const fixturePath = path.join(
         import.meta.dirname,
-        '..',
         '..',
         'fixtures',
         'test.tar.bz2',
@@ -111,6 +115,7 @@ describe('Custom Provider Integration Tests', () => {
           platform: BrowserPlatform.LINUX,
           buildId: 'test-build',
           providers: [customProvider],
+          baseUrl: getServerUrl(),
         });
         // If it succeeds with the fixture, that's unexpected but not wrong
       } catch (error) {
@@ -140,8 +145,9 @@ describe('Custom Provider Integration Tests', () => {
         cacheDir: tmpDir,
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
-        buildId: '120.0.6099.109',
+        buildId: testChromeBuildId,
         providers: [failingProvider],
+        baseUrl: getServerUrl(),
       });
 
       assert(result);
@@ -169,7 +175,7 @@ describe('Custom Provider Integration Tests', () => {
         cacheDir: tmpDir,
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
-        buildId: '120.0.6099.109',
+        buildId: testChromeBuildId,
         providers: [failingProvider, secondFailingProvider],
       });
 
@@ -197,6 +203,7 @@ describe('Custom Provider Integration Tests', () => {
           platform: BrowserPlatform.LINUX,
           buildId: 'non-existent-build',
           providers: [provider1, provider2],
+          baseUrl: getServerUrl(),
         });
         assert.fail('Expected install to fail');
       } catch (error) {
@@ -228,8 +235,9 @@ describe('Custom Provider Integration Tests', () => {
         cacheDir: tmpDir,
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
-        buildId: '120.0.6099.109',
+        buildId: testChromeBuildId,
         providers: [providerWithCustomPath],
+        baseUrl: getServerUrl(),
       });
 
       // Since default provider is used, we get the real executable path
@@ -247,7 +255,6 @@ describe('Custom Provider Integration Tests', () => {
       // Use the test.tar.bz2 fixture as a mock download
       const fixturePath = path.join(
         import.meta.dirname,
-        '..',
         '..',
         'fixtures',
         'test.tar.bz2',
@@ -269,8 +276,9 @@ describe('Custom Provider Integration Tests', () => {
         cacheDir: tmpDir,
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
-        buildId: '120.0.6099.109',
+        buildId: testChromeBuildId,
         providers: [customProvider],
+        baseUrl: getServerUrl(),
       });
 
       // Verify .metadata exists at browser root and contains the executable path
@@ -281,7 +289,7 @@ describe('Custom Provider Integration Tests', () => {
       );
 
       const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
-      const key = `${BrowserPlatform.LINUX}-120.0.6099.109`;
+      const key = `${BrowserPlatform.LINUX}-${testChromeBuildId}`;
       assert.ok(
         metadata.executablePaths?.[key],
         'Metadata should contain the executable path',
@@ -290,7 +298,7 @@ describe('Custom Provider Integration Tests', () => {
       // Verify getInstalledBrowsers uses the persisted path
       const installed = await getInstalledBrowsers({cacheDir: tmpDir});
       const found = installed.find(b => {
-        return b.buildId === '120.0.6099.109';
+        return b.buildId === testChromeBuildId;
       });
       assert.ok(found, 'Should find the installed browser');
       assert.strictEqual(
@@ -306,7 +314,6 @@ describe('Custom Provider Integration Tests', () => {
       // Use the test.tar.bz2 fixture as a mock download
       const fixturePath = path.join(
         import.meta.dirname,
-        '..',
         '..',
         'fixtures',
         'test.tar.bz2',
@@ -328,8 +335,9 @@ describe('Custom Provider Integration Tests', () => {
         cacheDir: tmpDir,
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
-        buildId: '120.0.6099.109',
+        buildId: testChromeBuildId,
         providers: [customProvider],
+        baseUrl: getServerUrl(),
       });
 
       // Verify .metadata was created by custom provider
@@ -344,7 +352,7 @@ describe('Custom Provider Integration Tests', () => {
       const installDir = path.join(
         tmpDir,
         'chrome',
-        `${BrowserPlatform.LINUX}-120.0.6099.109`,
+        `${BrowserPlatform.LINUX}-${testChromeBuildId}`,
       );
       fs.rmSync(installDir, {recursive: true, force: true});
 
@@ -356,14 +364,15 @@ describe('Custom Provider Integration Tests', () => {
         cacheDir: tmpDir,
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
-        buildId: '120.0.6099.109',
+        buildId: testChromeBuildId,
+        baseUrl: getServerUrl(),
         // No providers option = uses default provider
       });
 
       // Read the metadata - it should still only have the original entry
       // The default provider should not have added/modified executablePaths
       const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
-      const key = `${BrowserPlatform.LINUX}-120.0.6099.109`;
+      const key = `${BrowserPlatform.LINUX}-${testChromeBuildId}`;
 
       // The metadata file exists but default provider doesn't write executablePaths
       // The original entry from custom provider should still be there
@@ -442,8 +451,9 @@ describe('Custom Provider Integration Tests', () => {
           cacheDir: tmpDir,
           browser: Browser.CHROME,
           platform,
-          buildId: '120.0.6099.109',
+          buildId: testChromeBuildId,
           providers: [], // Use default provider
+          baseUrl: getServerUrl(),
         });
 
         assert(result);
