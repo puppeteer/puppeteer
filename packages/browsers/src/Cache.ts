@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import fs from 'node:fs';
+import fs, {promises as fsPromises} from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -39,16 +39,19 @@ export class InstalledBrowser {
     browser: Browser,
     buildId: string,
     platform: BrowserPlatform,
+    executablePath?: string,
   ) {
     this.#cache = cache;
     this.browser = browser;
     this.buildId = buildId;
     this.platform = platform;
-    this.executablePath = cache.computeExecutablePath({
-      browser,
-      buildId,
-      platform,
-    });
+    this.executablePath =
+      executablePath ??
+      cache.computeExecutablePath({
+        browser,
+        buildId,
+        platform,
+      });
   }
 
   /**
@@ -152,6 +155,19 @@ export class Cache {
     return data;
   }
 
+  async readMetadataAsync(browser: Browser): Promise<Metadata> {
+    const metatadaPath = this.metadataFile(browser);
+    try {
+      const data = JSON.parse(await fsPromises.readFile(metatadaPath, 'utf8'));
+      if (typeof data !== 'object') {
+        throw new Error('.metadata is not an object');
+      }
+      return data;
+    } catch {
+      return {aliases: {}};
+    }
+  }
+
   writeMetadata(browser: Browser, metadata: Metadata): void {
     const metatadaPath = this.metadataFile(browser);
     fs.mkdirSync(path.dirname(metatadaPath), {recursive: true});
@@ -235,35 +251,62 @@ export class Cache {
     });
   }
 
-  getInstalledBrowsers(): InstalledBrowser[] {
-    if (!fs.existsSync(this.#rootDir)) {
+  async getInstalledBrowsers(): Promise<InstalledBrowser[]> {
+    try {
+      await fsPromises.access(this.#rootDir);
+    } catch {
       return [];
     }
-    const types = fs.readdirSync(this.#rootDir);
+    const types = await fsPromises.readdir(this.#rootDir);
     const browsers = types.filter((t): t is Browser => {
       return (Object.values(Browser) as string[]).includes(t);
     });
-    return browsers.flatMap(browser => {
-      const files = fs.readdirSync(this.browserRoot(browser));
-      return files
-        .map(file => {
-          const result = parseFolderPath(
-            path.join(this.browserRoot(browser), file),
-          );
-          if (!result) {
-            return null;
-          }
-          return new InstalledBrowser(
-            this,
-            browser,
-            result.buildId,
-            result.platform as BrowserPlatform,
-          );
-        })
-        .filter((item: InstalledBrowser | null): item is InstalledBrowser => {
-          return item !== null;
-        });
-    });
+    const browsersList = await Promise.all(
+      browsers.map(async browser => {
+        const metadata = await this.readMetadataAsync(browser);
+        const files = await fsPromises.readdir(this.browserRoot(browser));
+        return await Promise.all(
+          files.map(async file => {
+            const result = parseFolderPath(
+              path.join(this.browserRoot(browser), file),
+            );
+            if (!result) {
+              return null;
+            }
+            const platform = result.platform as BrowserPlatform;
+            const buildId = result.buildId;
+            const installationDir = this.installationDir(
+              browser,
+              platform,
+              buildId,
+            );
+            const key = `${platform}-${buildId}`;
+            const storedExecutablePath = metadata.executablePaths?.[key];
+            let executablePath: string;
+            if (storedExecutablePath) {
+              executablePath = path.join(installationDir, storedExecutablePath);
+            } else {
+              executablePath = path.join(
+                installationDir,
+                executablePathByBrowser[browser](platform, buildId),
+              );
+            }
+            return new InstalledBrowser(
+              this,
+              browser,
+              buildId,
+              platform,
+              executablePath,
+            );
+          }),
+        );
+      }),
+    );
+    return browsersList
+      .flat()
+      .filter((item: InstalledBrowser | null): item is InstalledBrowser => {
+        return item !== null;
+      });
   }
 
   computeExecutablePath(options: ComputeExecutablePathOptions): string {

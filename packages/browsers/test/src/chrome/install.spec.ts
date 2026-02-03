@@ -131,7 +131,7 @@ describe('Chrome install', () => {
     assert.ok(fs.existsSync(expectedOutputPath));
     // Should discover installed browsers.
     const cache = new Cache(tmpDir);
-    const installed = cache.getInstalledBrowsers();
+    const installed = await cache.getInstalledBrowsers();
     assert.deepStrictEqual(browser, installed[0]);
     assert.deepStrictEqual(
       browser!.executablePath,

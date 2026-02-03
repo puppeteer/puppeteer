@@ -481,7 +481,7 @@ export class CLI {
         async args => {
           const cacheDir = args.path ?? this.#cachePath;
           const cache = new Cache(cacheDir);
-          const browsers = cache.getInstalledBrowsers();
+          const browsers = await cache.getInstalledBrowsers();
 
           for (const browser of browsers) {
             console.log(

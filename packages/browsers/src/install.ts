@@ -564,7 +564,7 @@ export interface GetInstalledBrowsersOptions {
 export async function getInstalledBrowsers(
   options: GetInstalledBrowsersOptions,
 ): Promise<InstalledBrowser[]> {
-  return new Cache(options.cacheDir).getInstalledBrowsers();
+  return await new Cache(options.cacheDir).getInstalledBrowsers();
 }
 
 /**
