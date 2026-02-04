@@ -37,6 +37,25 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="atomic">atomic</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether the live region is [atomic](https://www.w3.org/TR/wai-aria/#aria-atomic).
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="autocomplete">autocomplete</span>
 
 </td><td>
@@ -48,6 +67,25 @@ Default
 string
 
 </td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="busy">busy</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether the node is [busy](https://www.w3.org/TR/wai-aria/#aria-busy).
 
 </td><td>
 
@@ -111,6 +149,25 @@ An additional human readable description of the node.
 </td></tr>
 <tr><td>
 
+<span id="details">details</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+The [details](https://www.w3.org/TR/wai-aria/#aria-details) for the node.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="disabled">disabled</span>
 
 </td><td>
@@ -122,6 +179,25 @@ An additional human readable description of the node.
 boolean
 
 </td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="errormessage">errormessage</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+The [error message](https://www.w3.org/TR/wai-aria/#aria-errormessage) for the node.
 
 </td><td>
 
@@ -230,6 +306,25 @@ number
 </td><td>
 
 The level of a heading.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="live">live</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+The [live](https://www.w3.org/TR/wai-aria/#aria-live) status of the node.
 
 </td><td>
 
@@ -355,6 +450,25 @@ Whether the node is checked or in a mixed state.
 boolean
 
 </td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="relevant">relevant</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+The [relevant](https://www.w3.org/TR/wai-aria/#aria-relevant) changes for the live region.
 
 </td><td>
 
