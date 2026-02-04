@@ -19,5 +19,12 @@
     "parameters": ["cdp"],
     "expectations": ["TIMEOUT"],
     "comment": "Needs investigation"
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs protocol timeout *",
+    "platforms": ["darwin"],
+    "parameters": ["firefox", "headful", "webDriverBiDi"],
+    "expectations": ["PASS"],
+    "comment": "Fixed by https://bugzilla.mozilla.org/show_bug.cgi?id=2010507"
   }
 ]
