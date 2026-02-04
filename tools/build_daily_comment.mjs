@@ -3,7 +3,7 @@
  * Copyright 2024 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import actions from '@actions/core';
+import * as actions from '@actions/core';
 import {resolveBuildId} from '@puppeteer/browsers';
 
 /**

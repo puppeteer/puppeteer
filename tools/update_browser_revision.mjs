@@ -8,7 +8,7 @@ import {execSync, exec} from 'node:child_process';
 import {writeFile, readFile} from 'node:fs/promises';
 import {promisify} from 'node:util';
 
-import actions from '@actions/core';
+import * as actions from '@actions/core';
 import {resolveBuildId} from '@puppeteer/browsers';
 import {SemVer} from 'semver';
 
