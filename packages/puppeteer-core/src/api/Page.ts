@@ -1839,6 +1839,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * - `timeout`: Maximum wait time in milliseconds, defaults to `30` seconds, pass
    *   `0` to disable the timeout. The default value can be changed by using the
    *   {@link Page.setDefaultTimeout} method.
+   *
+   * - `signal`: A signal object that allows you to cancel a waitForRequest call.
    */
   waitForRequest(
     urlOrPredicate: string | AwaitablePredicate<HTTPRequest>,
@@ -1892,6 +1894,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * - `timeout`: Maximum wait time in milliseconds, defaults to `30` seconds,
    *   pass `0` to disable the timeout. The default value can be changed by using
    *   the {@link Page.setDefaultTimeout} method.
+   *
+   * - `signal`: A signal object that allows you to cancel a waitForResponse call.
    */
   waitForResponse(
     urlOrPredicate: string | AwaitablePredicate<HTTPResponse>,
@@ -3076,6 +3080,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * - `timeout`: maximum time to wait for in milliseconds. Defaults to `30000`
    *   (30 seconds). Pass `0` to disable timeout. The default value can be changed
    *   by using the {@link Page.setDefaultTimeout} method.
+   *
+   * - `signal`: A signal object that allows you to cancel a waitForSelector call.
    */
   async waitForSelector<Selector extends string>(
     selector: Selector,
