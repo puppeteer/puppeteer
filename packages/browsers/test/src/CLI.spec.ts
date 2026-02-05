@@ -114,13 +114,20 @@ describe('CLI', function () {
       console.log = originalLog;
     }
 
-    const expectedOutputRegex = new RegExp(
-      `chrome ${testChromeBuildId} .*${path.sep}chrome`
+    const found = logs.some(
+      log =>
+        log ===
+        `chrome ${testChromeBuildId} ${path.join(
+          tmpDir,
+          'chrome',
+          os.platform() === 'linux' ? `linux-${testChromeBuildId}` : '',
+          'chrome-linux64',
+          'chrome'
+        )}`
     );
-    const found = logs.some(log => expectedOutputRegex.test(log));
     if (!found) {
       throw new Error(
-        `Expected output matching ${expectedOutputRegex} not found in logs: ${JSON.stringify(logs)}`
+        `Expected output not found in logs: ${JSON.stringify(logs)}`
       );
     }
   });
