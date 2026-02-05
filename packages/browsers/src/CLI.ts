@@ -320,7 +320,7 @@ export class CLI {
             })
             .option('format', {
               type: 'string',
-              desc: 'Format to use for the output',
+              desc: 'Format to use for the output. Supported placeholders: ${browser}, ${buildId}, ${path}, ${platform}',
             });
         },
         async args => {
