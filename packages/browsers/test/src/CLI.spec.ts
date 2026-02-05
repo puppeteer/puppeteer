@@ -92,4 +92,37 @@ describe('CLI', function () {
       process.stdout.write = originalStdoutWrite;
     }
   });
+
+  it('should format output', async () => {
+    const logs: string[] = [];
+    const originalLog = console.log;
+    console.log = (message: string) => {
+      logs.push(message);
+    };
+
+    try {
+      await new CLI(tmpDir).run([
+        'npx',
+        '@puppeteer/browsers',
+        'install',
+        `chrome@${testChromeBuildId}`,
+        `--path=${tmpDir}`,
+        `--base-url=${getServerUrl()}`,
+        '--format',
+        '${browser} ${buildId} ${path}',
+      ]);
+    } finally {
+      console.log = originalLog;
+    }
+
+    const expectedOutputRegex = new RegExp(
+      `chrome ${testChromeBuildId} .*${path.sep}chrome`
+    );
+    const found = logs.some(log => expectedOutputRegex.test(log));
+    if (!found) {
+      throw new Error(
+        `Expected output matching ${expectedOutputRegex} not found in logs: ${JSON.stringify(logs)}`
+      );
+    }
+  });
 });
