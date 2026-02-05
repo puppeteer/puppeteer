@@ -1017,6 +1017,15 @@ Device in a request prompt.
 </td></tr>
 <tr><td>
 
+<span id="heapsnapshotoptions">[HeapSnapshotOptions](./puppeteer.heapsnapshotoptions.md)</span>
+
+</td><td>
+
+Options for [Page.captureHeapSnapshot()](./puppeteer.page.captureheapsnapshot.md).
+
+</td></tr>
+<tr><td>
+
 <span id="interceptresolutionstate">[InterceptResolutionState](./puppeteer.interceptresolutionstate.md)</span>
 
 </td><td>
@@ -1073,6 +1082,13 @@ Generic launch options that can be passed when launching any browser.
 <tr><td>
 
 <span id="locatorevents">[LocatorEvents](./puppeteer.locatorevents.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="locatorfilloptions">[LocatorFillOptions](./puppeteer.locatorfilloptions.md)</span>
 
 </td><td>
 
@@ -1181,6 +1197,13 @@ See [PageEvent](./puppeteer.pageevent.md) for more detail on the events and when
 </td><td>
 
 Valid options to configure PDF generation via [Page.pdf()](./puppeteer.page.pdf.md).
+
+</td></tr>
+<tr><td>
+
+<span id="permissiondescriptor_2">[PermissionDescriptor_2](./puppeteer.permissiondescriptor_2.md)</span>
+
+</td><td>
 
 </td></tr>
 <tr><td>
@@ -1753,6 +1776,17 @@ The sizes of each format are as follows:
 <tr><td>
 
 <span id="permission">[Permission](./puppeteer.permission.md)</span>
+
+</td><td>
+
+**Deprecated:**
+
+in favor of .
+
+</td></tr>
+<tr><td>
+
+<span id="permissionstate_2">[PermissionState_2](./puppeteer.permissionstate_2.md)</span>
 
 </td><td>
 

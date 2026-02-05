@@ -1,13 +1,15 @@
 ---
-sidebar_label: Metadata_2
+sidebar_label: HeapSnapshotOptions
 ---
 
-# Metadata_2 interface
+# HeapSnapshotOptions interface
+
+Options for [Page.captureHeapSnapshot()](./puppeteer.page.captureheapsnapshot.md).
 
 ### Signature
 
 ```typescript
-export interface Metadata
+export interface HeapSnapshotOptions
 ```
 
 ## Properties
@@ -35,15 +37,17 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="aliases">aliases</span>
+<span id="path">path</span>
 
 </td><td>
 
 </td><td>
 
-Record&lt;string, string&gt;
+string
 
 </td><td>
+
+The file path to save the heap snapshot to.
 
 </td><td>
 

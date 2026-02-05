@@ -373,6 +373,25 @@ Connect to a browser over a pipe instead of a WebSocket. Only supported with Chr
 </td></tr>
 <tr><td>
 
+<span id="signal">signal</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+AbortSignal
+
+</td><td>
+
+If provided, the browser will be closed when the signal is aborted.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="timeout">timeout</span>
 
 </td><td>

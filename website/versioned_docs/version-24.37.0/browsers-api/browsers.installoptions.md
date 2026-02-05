@@ -191,6 +191,35 @@ Determines which platform the browser will be suited for.
 </td></tr>
 <tr><td>
 
+<span id="providers">providers</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[BrowserProvider](./browsers.browserprovider.md)\[\]
+
+</td><td>
+
+Custom provider implementation for alternative download sources.
+
+If not provided, uses the default provider. Multiple providers can be chained - they will be tried in order. The default provider is automatically added as the final fallback.
+
+⚠️ **IMPORTANT**: Custom providers are NOT officially supported by Puppeteer.
+
+By using custom providers, you accept full responsibility for:
+
+- **Version compatibility**: Different platforms may receive different binary versions - **Archive compatibility**: Binary structure must match Puppeteer's expectations - **Feature integration**: Browser launch and other Puppeteer features may not work - **Testing**: You must validate that downloaded binaries work with Puppeteer
+
+**Puppeteer only tests and guarantees compatibility with default binaries.**
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="unpack">unpack</span>
 
 </td><td>
