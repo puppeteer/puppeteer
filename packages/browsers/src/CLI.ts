@@ -566,7 +566,9 @@ export class CLI {
           .replace(/\${platform}/g, args.platform!),
       );
     } else {
-      console.log(`${args.browser.name}@${args.browser.buildId} ${executablePath}`);
+      console.log(
+        `${args.browser.name}@${args.browser.buildId} ${executablePath}`,
+      );
     }
   }
 }

@@ -114,20 +114,21 @@ describe('CLI', function () {
       console.log = originalLog;
     }
 
-    const found = logs.some(
-      log =>
+    const found = logs.some(log => {
+      return (
         log ===
         `chrome ${testChromeBuildId} ${path.join(
           tmpDir,
           'chrome',
           os.platform() === 'linux' ? `linux-${testChromeBuildId}` : '',
           'chrome-linux64',
-          'chrome'
+          'chrome',
         )}`
-    );
+      );
+    });
     if (!found) {
       throw new Error(
-        `Expected output not found in logs: ${JSON.stringify(logs)}`
+        `Expected output not found in logs: ${JSON.stringify(logs)}`,
       );
     }
   });
