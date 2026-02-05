@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.12.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.11.2...browsers-v2.12.0) (2026-02-04)
+
+
+### 🎉 Features
+
+* **core:** support AbortSignal in launch ([#14616](https://github.com/puppeteer/puppeteer/issues/14616)) ([d02459c](https://github.com/puppeteer/puppeteer/commit/d02459c8b9a522ccb142109dda5807790c69becc))
+* pluggable browser providers ([#14552](https://github.com/puppeteer/puppeteer/issues/14552)) ([f4c9fee](https://github.com/puppeteer/puppeteer/commit/f4c9feef9972dc9f93a21e61e2876e4517316d13))
+
+
+### 🛠️ Fixes
+
+* do not write metadata when uninstalling ([#14645](https://github.com/puppeteer/puppeteer/issues/14645)) ([1339379](https://github.com/puppeteer/puppeteer/commit/13393790116a35f8ef3ac3938cba42b98fd3a446))
+
 ## [2.11.2](https://github.com/puppeteer/puppeteer/compare/browsers-v2.11.1...browsers-v2.11.2) (2026-01-27)
 
 

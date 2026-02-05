@@ -2,6 +2,39 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.37.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.36.1...puppeteer-v24.37.0) (2026-02-04)
+
+### 🎉 Features
+
+- add BrowserContext.setPermission API ([#14611](https://github.com/puppeteer/puppeteer/issues/14611)) ([a51b7e2](https://github.com/puppeteer/puppeteer/commit/a51b7e2182b81ccff5b491c8b761f97e3a98930b))
+- **core:** support AbortSignal in launch ([#14616](https://github.com/puppeteer/puppeteer/issues/14616)) ([d02459c](https://github.com/puppeteer/puppeteer/commit/d02459c8b9a522ccb142109dda5807790c69becc))
+- enhance accessibility tree snapshot with more properties ([#14643](https://github.com/puppeteer/puppeteer/issues/14643)) ([422f9b6](https://github.com/puppeteer/puppeteer/commit/422f9b6bb9fe026d297c756297853af944f78376))
+- **page:** expose heap snapshot getter ([#14610](https://github.com/puppeteer/puppeteer/issues/14610)) ([397793b](https://github.com/puppeteer/puppeteer/commit/397793ba8556ef79551f2addf39c9710a4fca645))
+- roll to Chrome 145.0.7632.26 ([#14619](https://github.com/puppeteer/puppeteer/issues/14619)) ([352067b](https://github.com/puppeteer/puppeteer/commit/352067b032eeb2ee9793947e33b449565c637de7))
+- **webdriver:** implement frame.frameElement() for WebDriver BiDi ([#14629](https://github.com/puppeteer/puppeteer/issues/14629)) ([b0c66a0](https://github.com/puppeteer/puppeteer/commit/b0c66a0ae309ecf066bb58a2d07a3ce750eb9f16))
+- **webdriver:** Implement window management ([#14618](https://github.com/puppeteer/puppeteer/issues/14618)) ([603fc9e](https://github.com/puppeteer/puppeteer/commit/603fc9eaf89027d91d6e39ecf26f3fc6a31374f1))
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - @puppeteer/browsers bumped from 2.11.2 to 2.12.0
+
+### 🛠️ Fixes
+
+- add support for "Default" SameSite cookie property ([#14637](https://github.com/puppeteer/puppeteer/issues/14637)) ([370878d](https://github.com/puppeteer/puppeteer/commit/370878d3926a31ac3508006aff3f888675894f96))
+- disable ReadAnythingOmniboxChip by default ([#14621](https://github.com/puppeteer/puppeteer/issues/14621)) ([457f886](https://github.com/puppeteer/puppeteer/commit/457f886fd0337aaafb95651a65700af8f31c2694))
+- roll to Chrome 144.0.7559.109 ([#14615](https://github.com/puppeteer/puppeteer/issues/14615)) ([6dac84f](https://github.com/puppeteer/puppeteer/commit/6dac84fe1ba05203700eb5b46f96701fa19a2ddd))
+- roll to Firefox 147.0.2 ([#14612](https://github.com/puppeteer/puppeteer/issues/14612)) ([fe232c4](https://github.com/puppeteer/puppeteer/commit/fe232c472708c53e2701f89b4c176e89d3598ac6))
+- **webdriver:** map window bounds correctly ([#14624](https://github.com/puppeteer/puppeteer/issues/14624)) ([3adcd67](https://github.com/puppeteer/puppeteer/commit/3adcd670831bd69b2f0bb7d868494f73e73342f0))
+
+### ♻️ Chores
+
+- Migrate from postData to postDataEntries in CDP HTTPRequest ([#14640](https://github.com/puppeteer/puppeteer/issues/14640)) ([61916a5](https://github.com/puppeteer/puppeteer/commit/61916a5de629c6b7923d25788d2154e2976ff077))
+- optimize Locator.fill performance for large text ([#14620](https://github.com/puppeteer/puppeteer/issues/14620)) ([1e8f5d5](https://github.com/puppeteer/puppeteer/commit/1e8f5d5986ab5240c3e41cfc5da9c5057782b064))
+- optimize XPathQuerySelector loop performance ([#14639](https://github.com/puppeteer/puppeteer/issues/14639)) ([55769e9](https://github.com/puppeteer/puppeteer/commit/55769e933464bf5f9202da37a7da3e07d63d6f38))
+- parallelize resolving build IDs ([#14641](https://github.com/puppeteer/puppeteer/issues/14641)) ([ee3aa66](https://github.com/puppeteer/puppeteer/commit/ee3aa662dc34708589ae811b579947d48d76b177))
+
 ## [24.36.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.36.0...puppeteer-v24.36.1) (2026-01-27)
 
 ### ♻️ Chores

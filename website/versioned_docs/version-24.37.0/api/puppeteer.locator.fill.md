@@ -13,7 +13,7 @@ class Locator {
   fill<ElementType extends Element>(
     this: Locator<ElementType>,
     value: string,
-    options?: Readonly<ActionOptions>,
+    options?: Readonly<LocatorFillOptions>,
   ): Promise<void>;
 }
 ```
@@ -61,7 +61,7 @@ options
 
 </td><td>
 
-Readonly&lt;[ActionOptions](./puppeteer.actionoptions.md)&gt;
+Readonly&lt;[LocatorFillOptions](./puppeteer.locatorfilloptions.md)&gt;
 
 </td><td>
 
