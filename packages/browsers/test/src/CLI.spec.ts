@@ -108,8 +108,7 @@ describe('CLI', function () {
         `chrome@${testChromeBuildId}`,
         `--path=${tmpDir}`,
         `--base-url=${getServerUrl()}`,
-        '--format',
-        '${browser} ${buildId} ${path}',
+        '--format=${browser} ${buildId} ${path}',
       ]);
     } finally {
       console.log = originalLog;
