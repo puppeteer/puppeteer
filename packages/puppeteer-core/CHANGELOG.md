@@ -1,5 +1,13 @@
 # Changelog
 
+## [24.37.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.37.0...puppeteer-core-v24.37.1) (2026-02-05)
+
+
+### 🛠️ Fixes
+
+* roll to Chrome 145.0.7632.46 ([#14653](https://github.com/puppeteer/puppeteer/issues/14653)) ([d2a5591](https://github.com/puppeteer/puppeteer/commit/d2a55914bee23a57098631f8c7cc8571d68c54ab))
+* roll to Firefox 147.0.3 ([#14658](https://github.com/puppeteer/puppeteer/issues/14658)) ([ad5cee0](https://github.com/puppeteer/puppeteer/commit/ad5cee0a575e298ef1dd07ed4d7cba455950c524))
+
 ## [24.37.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.36.1...puppeteer-core-v24.37.0) (2026-02-04)
 
 
