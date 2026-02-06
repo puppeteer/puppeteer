@@ -327,6 +327,48 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[console.spec] console should have location when fetch fails",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[console.spec] console should return remote objects",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "BiDi does not support getting a Handle for log args"
+  },
+  {
+    "testIdPattern": "[console.spec] console should return remote objects",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[console.spec] console should return the first line of the error message in text()",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Needs investigation if the same can be supported in BiDi"
+  },
+  {
+    "testIdPattern": "[console.spec] console should trigger correct Log",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[console.spec] console should work for Error instances",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Needs investigation if the same can be supported in BiDi"
+  },
+  {
     "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should delete cookie for specified URL regardless of the current page",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -605,34 +647,6 @@
     "parameters": ["chrome"],
     "expectations": ["FAIL", "PASS"],
     "comment": "Flaky on Mac"
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Console should have location when fetch fails",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Console should return remote objects",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "BiDi does not support getting a Handle for log args"
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Console should return remote objects",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Console should trigger correct Log",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.error should throw when page crashes",
@@ -996,6 +1010,13 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1862018 - Requires multiple session support"
+  },
+  {
+    "testIdPattern": "[console.spec] console should work for different console API calls with timing functions",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1866749"
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should default to setting secure cookie for HTTPS websites",
@@ -1530,13 +1551,6 @@
     "parameters": ["cdp", "chrome"],
     "expectations": ["SKIP"],
     "comment": "See https://github.com/puppeteer/puppeteer/issues/4840"
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Console should work for different console API calls with timing functions",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1866749"
   },
   {
     "testIdPattern": "[page.spec] Page Page.newPage should open pages in a new window in maximized state",

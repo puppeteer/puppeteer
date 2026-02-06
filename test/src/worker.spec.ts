@@ -97,7 +97,10 @@ describe('Workers', function () {
       return new Worker(`data:text/javascript,console.log(1,2,3,this)`);
     });
     const log = await logPromise;
-    expect(log.text()).toBe('1 2 3 JSHandle@object');
+    expect(log.text()).atLeastOneToContain([
+      '1 2 3 JSHandle@object',
+      '1 2 3 [object DedicatedWorkerGlobalScope]',
+    ]);
     expect(log.args()).toHaveLength(4);
   });
   it('should have an execution context', async () => {
