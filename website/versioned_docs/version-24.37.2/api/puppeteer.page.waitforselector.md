@@ -76,6 +76,8 @@ The optional Parameter in Arguments `options` are:
 
 - `timeout`: maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The default value can be changed by using the [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) method.
 
+- `signal`: A signal object that allows you to cancel a waitForSelector call.
+
 ## Example
 
 This method works across navigations:

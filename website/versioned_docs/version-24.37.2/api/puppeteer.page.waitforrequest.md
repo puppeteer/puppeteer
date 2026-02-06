@@ -70,6 +70,8 @@ Optional Waiting Parameters have:
 
 - `timeout`: Maximum wait time in milliseconds, defaults to `30` seconds, pass `0` to disable the timeout. The default value can be changed by using the [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) method.
 
+- `signal`: A signal object that allows you to cancel a waitForRequest call.
+
 ## Example
 
 ```ts
