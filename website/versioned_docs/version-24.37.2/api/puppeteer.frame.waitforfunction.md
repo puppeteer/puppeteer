@@ -57,7 +57,7 @@ options
 
 </td><td>
 
-_(Optional)_ options to configure the polling method and timeout.
+_(Optional)_ options to configure the polling method, timeout and signal.
 
 </td></tr>
 <tr><td>

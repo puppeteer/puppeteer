@@ -1,5 +1,17 @@
 # Changelog
 
+## [24.37.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.37.1...puppeteer-core-v24.37.2) (2026-02-06)
+
+
+### 🛠️ Fixes
+
+* improve ConsoleMessage text() results ([#14662](https://github.com/puppeteer/puppeteer/issues/14662)) ([0bb4703](https://github.com/puppeteer/puppeteer/commit/0bb4703fed0e6fcd7b40899d1b81a54d4b5c48c7))
+
+
+### 📄 Documentation
+
+* document signal option in Page waitFor methods ([#14648](https://github.com/puppeteer/puppeteer/issues/14648)) ([771b885](https://github.com/puppeteer/puppeteer/commit/771b8854d779e04279aa2063cf97df214e7e983d))
+
 ## [24.37.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.37.0...puppeteer-core-v24.37.1) (2026-02-05)
 
 
