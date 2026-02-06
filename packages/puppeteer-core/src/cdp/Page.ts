@@ -88,7 +88,7 @@ import {Tracing} from './Tracing.js';
 import {
   createClientError,
   pageBindingInitString,
-  valueFromRemoteObject,
+  valueFromJSHandle,
 } from './utils.js';
 import {CdpWebWorker} from './WebWorker.js';
 
@@ -914,12 +914,7 @@ export class CdpPage extends Page {
     // eslint-disable-next-line max-len -- The comment is long.
     // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
     for (const arg of values) {
-      const remoteObject = arg.remoteObject();
-      if (remoteObject.objectId) {
-        textTokens.push(arg.toString());
-      } else {
-        textTokens.push(valueFromRemoteObject(remoteObject));
-      }
+      textTokens.push(valueFromJSHandle(arg));
     }
     const stackTraceLocations = [];
     if (event.stackTrace) {

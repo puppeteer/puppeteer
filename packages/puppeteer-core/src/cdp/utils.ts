@@ -6,6 +6,7 @@
 
 import type {Protocol} from 'devtools-protocol';
 
+import type {JSHandle} from '../api/JSHandle.js';
 import {PuppeteerURL, evaluationString} from '../common/util.js';
 import {assert} from '../util/assert.js';
 
@@ -25,7 +26,7 @@ export function createEvaluationError(
       details.exception.subtype !== 'error') &&
     !details.exception.objectId
   ) {
-    return valueFromRemoteObject(details.exception);
+    return valueFromPrimitiveRemoteObject(details.exception);
   } else {
     const detail = getErrorDetails(details);
     name = detail.name;
@@ -105,7 +106,7 @@ export function createClientError(
       details.exception.subtype !== 'error') &&
     !details.exception.objectId
   ) {
-    return valueFromRemoteObject(details.exception);
+    return valueFromPrimitiveRemoteObject(details.exception);
   } else {
     const detail = getErrorDetails(details);
     name = detail.name;
@@ -139,7 +140,39 @@ export function createClientError(
 /**
  * @internal
  */
-export function valueFromRemoteObject(
+export function valueFromJSHandle(handle: JSHandle): unknown {
+  const remoteObject = handle.remoteObject();
+  if (remoteObject.objectId) {
+    return valueFromRemoteObjectReference(handle);
+  } else {
+    return valueFromPrimitiveRemoteObject(remoteObject);
+  }
+}
+
+/**
+ * @internal
+ */
+export function valueFromRemoteObjectReference(handle: JSHandle): string {
+  const remoteObject = handle.remoteObject();
+  assert(
+    remoteObject.objectId,
+    'Cannot extract value when no objectId is given',
+  );
+  const description = remoteObject.description ?? '';
+  if (remoteObject.subtype === 'error' && description) {
+    const newlineIdx = description.indexOf('\n');
+    if (newlineIdx === -1) {
+      return description;
+    }
+    return description.slice(0, newlineIdx);
+  }
+  return `[${remoteObject.subtype || remoteObject.type} ${remoteObject.className}]`;
+}
+
+/**
+ * @internal
+ */
+export function valueFromPrimitiveRemoteObject(
   remoteObject: Protocol.Runtime.RemoteObject,
 ): unknown {
   assert(!remoteObject.objectId, 'Cannot extract value when objectId is given');

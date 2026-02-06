@@ -12,7 +12,7 @@ import {debugError} from '../common/util.js';
 
 import type {CdpElementHandle} from './ElementHandle.js';
 import type {IsolatedWorld} from './IsolatedWorld.js';
-import {valueFromRemoteObject} from './utils.js';
+import {valueFromPrimitiveRemoteObject} from './utils.js';
 
 /**
  * @internal
@@ -45,7 +45,7 @@ export class CdpJSHandle<T = unknown> extends JSHandle<T> {
 
   override async jsonValue(): Promise<T> {
     if (!this.#remoteObject.objectId) {
-      return valueFromRemoteObject(this.#remoteObject) as T;
+      return valueFromPrimitiveRemoteObject(this.#remoteObject) as T;
     }
     const value = await this.evaluate(object => {
       return object;
@@ -74,7 +74,7 @@ export class CdpJSHandle<T = unknown> extends JSHandle<T> {
 
   override toString(): string {
     if (!this.#remoteObject.objectId) {
-      return 'JSHandle:' + valueFromRemoteObject(this.#remoteObject);
+      return 'JSHandle:' + valueFromPrimitiveRemoteObject(this.#remoteObject);
     }
     const type = this.#remoteObject.subtype || this.#remoteObject.type;
     return 'JSHandle@' + type;
