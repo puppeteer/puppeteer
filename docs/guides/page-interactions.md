@@ -160,7 +160,7 @@ Since `.filter()`'s callback is executed in browser context, it doesn't have acc
 const buttonName = 'My button';
 await page
   .locator('button')
-  .filter(`button => button.textContent === '${buttonName}'`)
+  .filter(`button => button.textContent === ${JSON.stringify(buttonName)}`)
   .click();
 ```
 
