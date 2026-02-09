@@ -145,12 +145,22 @@ await page
 
 The following example shows how to add extra conditions to the locator expressed
 as a JavaScript function. The button element will only be clicked if its
-`innerText` is 'My button'.
+`textContent` is 'My button'.
 
 ```ts
 await page
   .locator('button')
-  .filter(button => button.innerText === 'My button')
+  .filter(button => button.textContent === 'My button')
+  .click();
+```
+
+Since `.filter()`'s callback is executed in browser context, it doesn't have access to variables from the Node scope. You can build a string function to inject a variable:
+
+```ts
+const buttonName = 'My button';
+await page
+  .locator('button')
+  .filter(`button => button.textContent === ${JSON.stringify(buttonName)}`)
   .click();
 ```
 
