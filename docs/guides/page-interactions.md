@@ -120,23 +120,18 @@ The locator automatically checks the following before returning:
 
 Sometimes it is useful to wait for an arbitrary condition expressed as a
 JavaScript function. In this case, locator can be defined using a function
-instead of a selector. The following example waits until the MutationObserver
-detects a `HTMLCanvasElement` element appearing on the page. You can also call
-other locator functions such as `.click()` or `.fill()` on the function locator.
+instead of a selector. The following example waits until at least 3 paragraphs
+are present on the page, then extracts their text. You can also call locator
+functions such as `.click()` or `.fill()` instead of mapping elements to text.
 
 ```ts
-await page
+const paragraphs = await page
   .locator(() => {
-    return new Promise(res => {
-      const observer = new MutationObserver(records => {
-        for (const record of records) {
-          if (record.target instanceof HTMLCanvasElement) {
-            resolve(record.target);
-          }
-        }
-      });
-      observer.observe(document, {childList: true, subtree: true});
-    });
+    const paragraphs = document.querySelectorAll('p');
+
+    if (paragraphs.length >= 3) {
+      return [...paragraphs].map(p => p.textContent);
+    }
   })
   .wait();
 ```
