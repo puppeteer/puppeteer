@@ -12,9 +12,11 @@ export function stringToTypedArray(
   base64Encoded = false,
 ): Uint8Array {
   if (base64Encoded) {
-    // TODO: use
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array/fromBase64
-    // once available.
+    if ('fromBase64' in Uint8Array) {
+      // @ts-expect-error fromBase64 is newer than the types we use.
+      return Uint8Array.fromBase64(string);
+    }
+    // TODO: remove Buffer in v26 when it becomes LTS.
     if (typeof Buffer === 'function') {
       return Buffer.from(string, 'base64');
     }
