@@ -117,6 +117,7 @@ The locator automatically checks the following before returning:
   [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible) or hidden.
 
 ### Waiting for a function
+
 Sometimes it is useful to wait for an arbitrary condition expressed as a
 JavaScript function. In this case, locator can be defined using a function
 instead of a selector. The following example waits until at least 3 paragraphs
