@@ -169,14 +169,14 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
   /**
    * @internal
    */
-  protected async onMessage(message: string): Promise<void> {
+  protected async onMessage(message: string|object): Promise<void> {
     if (this.#delay) {
       await new Promise(r => {
         return setTimeout(r, this.#delay);
       });
     }
     debugProtocolReceive(message);
-    const object = JSON.parse(message);
+    const object = JSON.parse(message as string);
     if (object.method === 'Target.attachedToTarget') {
       const sessionId = object.params.sessionId;
       const session = new CdpCDPSession(
