@@ -149,7 +149,7 @@ export class BidiPage extends Page {
   ): Promise<void> {
     let userAgent: string | null;
     let clientHints:
-      | Bidi.BidiUaClientHints.Emulation.ClientHintsMetadata
+      | Bidi.BidiUaClientHints.UserAgentClientHints.ClientHintsMetadata
       | undefined;
     let platform: string | undefined;
 

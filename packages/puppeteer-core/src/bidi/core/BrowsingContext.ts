@@ -786,7 +786,7 @@ export class BrowsingContext extends EventEmitter<{
   }
 
   async setClientHintsOverride(
-    clientHints: Bidi.BidiUaClientHints.Emulation.ClientHintsMetadata | null,
+    clientHints: Bidi.BidiUaClientHints.UserAgentClientHints.ClientHintsMetadata | null,
   ): Promise<void> {
     if (clientHints === null && !this.#clientHintsAreSet) {
       // Ignore the call, as the client hints are not supposed to be changed. Required to
@@ -795,7 +795,7 @@ export class BrowsingContext extends EventEmitter<{
     }
     this.#clientHintsAreSet = true;
 
-    await this.#session.send('emulation.setClientHintsOverride', {
+    await this.#session.send('userAgentClientHints.setClientHintsOverride', {
       clientHints,
       contexts: [this.id],
     });
