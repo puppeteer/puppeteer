@@ -247,15 +247,6 @@ function getChromeLinuxOrWslLocation(
 ): [string, ...string[]] {
   const locations: string[] = [];
 
-  try {
-    const wslPath = getWslLocation(channel);
-    if (wslPath) {
-      locations.push(...wslPath);
-    }
-  } catch {
-    // Ignore WSL errors
-  }
-
   switch (channel) {
     case ChromeReleaseChannel.STABLE:
       locations.push('/opt/google/chrome/chrome');
@@ -269,6 +260,15 @@ function getChromeLinuxOrWslLocation(
     case ChromeReleaseChannel.DEV:
       locations.push('/opt/google/chrome-unstable/chrome');
       break;
+  }
+
+  try {
+    const wslPath = getWslLocation(channel);
+    if (wslPath) {
+      locations.push(...wslPath);
+    }
+  } catch {
+    // Ignore WSL errors
   }
 
   return locations as [string, ...string[]];
