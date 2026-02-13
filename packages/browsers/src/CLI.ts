@@ -34,6 +34,7 @@ interface InstallArgs {
   platform?: BrowserPlatform;
   baseUrl?: string;
   installDeps?: boolean;
+  format?: string;
 }
 
 function isValidBrowser(browser: unknown): browser is Browser {
@@ -316,6 +317,10 @@ export class CLI {
               type: 'boolean',
               desc: 'Whether to attempt installing system dependencies (only supported on Linux, requires root privileges).',
               default: false,
+            })
+            .option('format', {
+              type: 'string',
+              desc: 'Format to use for the output. Supported placeholders: ${browser}, ${buildId}, ${path}, ${platform}',
             });
         },
         async args => {
@@ -546,13 +551,24 @@ export class CLI {
         originalBuildId !== args.browser.buildId ? originalBuildId : undefined,
       installDeps: args.installDeps,
     });
-    console.log(
-      `${args.browser.name}@${args.browser.buildId} ${computeExecutablePath({
-        browser: args.browser.name,
-        buildId: args.browser.buildId,
-        cacheDir: args.path ?? this.#cachePath,
-        platform: args.platform,
-      })}`,
-    );
+    const executablePath = computeExecutablePath({
+      browser: args.browser.name,
+      buildId: args.browser.buildId,
+      cacheDir: args.path ?? this.#cachePath,
+      platform: args.platform,
+    });
+    if (args.format) {
+      console.log(
+        args.format
+          .replace(/\${browser}/g, args.browser.name)
+          .replace(/\${buildId}/g, args.browser.buildId)
+          .replace(/\${path}/g, executablePath)
+          .replace(/\${platform}/g, args.platform!),
+      );
+    } else {
+      console.log(
+        `${args.browser.name}@${args.browser.buildId} ${executablePath}`,
+      );
+    }
   }
 }
