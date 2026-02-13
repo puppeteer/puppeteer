@@ -42,6 +42,10 @@ export class CdpBrowserContext extends BrowserContext {
     this.#id = contextId;
   }
 
+  get connection(): Connection {
+    return this.#connection;
+  }
+
   override get id(): string | undefined {
     return this.#id;
   }
