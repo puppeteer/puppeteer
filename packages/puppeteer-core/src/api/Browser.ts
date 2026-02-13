@@ -692,18 +692,17 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
 
   /** @internal */
   override [disposeSymbol](): void {
-    if (this.process()) {
-      return void this.close().catch(debugError);
-    }
-    return void this.disconnect().catch(debugError);
+    return void this[asyncDisposeSymbol]().catch(debugError);
   }
 
   /** @internal */
-  [asyncDisposeSymbol](): Promise<void> {
+  override async [asyncDisposeSymbol](): Promise<void> {
     if (this.process()) {
-      return this.close();
+      await this.close();
+    } else {
+      await this.disconnect();
     }
-    return this.disconnect();
+    await super[asyncDisposeSymbol]();
   }
 
   /**
