@@ -120,23 +120,18 @@ The locator automatically checks the following before returning:
 
 Sometimes it is useful to wait for an arbitrary condition expressed as a
 JavaScript function. In this case, locator can be defined using a function
-instead of a selector. The following example waits until the MutationObserver
-detects a `HTMLCanvasElement` element appearing on the page. You can also call
-other locator functions such as `.click()` or `.fill()` on the function locator.
+instead of a selector. The following example waits until at least 3 paragraphs
+are present on the page, then extracts their text. You can also call locator
+functions such as `.click()` or `.fill()` instead of mapping elements to text.
 
 ```ts
-await page
+const paragraphs = await page
   .locator(() => {
-    return new Promise(res => {
-      const observer = new MutationObserver(records => {
-        for (const record of records) {
-          if (record.target instanceof HTMLCanvasElement) {
-            resolve(record.target);
-          }
-        }
-      });
-      observer.observe(document, {childList: true, subtree: true});
-    });
+    const paragraphs = document.querySelectorAll('p');
+
+    if (paragraphs.length >= 3) {
+      return [...paragraphs].map(p => p.textContent);
+    }
   })
   .wait();
 ```
@@ -145,12 +140,22 @@ await page
 
 The following example shows how to add extra conditions to the locator expressed
 as a JavaScript function. The button element will only be clicked if its
-`innerText` is 'My button'.
+`textContent` is 'My button'.
 
 ```ts
 await page
   .locator('button')
-  .filter(button => button.innerText === 'My button')
+  .filter(button => button.textContent === 'My button')
+  .click();
+```
+
+Since `.filter()`'s callback is executed in browser context, it doesn't have access to variables from the Node scope. You can build a string function to inject a variable:
+
+```ts
+const buttonName = 'My button';
+await page
+  .locator('button')
+  .filter(`button => button.textContent === ${JSON.stringify(buttonName)}`)
   .click();
 ```
 
