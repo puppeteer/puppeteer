@@ -210,14 +210,6 @@ export interface MouseOptions {
    * @defaultValue `'left'`
    */
   button?: MouseButton;
-  /**
-   * Determines the click count for the mouse event. This does not perform
-   * multiple clicks.
-   *
-   * @deprecated Use {@link MouseClickOptions.count}.
-   * @defaultValue `1`
-   */
-  clickCount?: number;
 }
 
 /**
