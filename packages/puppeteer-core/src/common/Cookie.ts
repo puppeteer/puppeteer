@@ -133,10 +133,6 @@ export interface CookieParam {
    */
   priority?: CookiePriority;
   /**
-   * @deprecated Always ignored.
-   */
-  sameParty?: boolean;
-  /**
    * Cookie source scheme type. Supported only in Chrome.
    */
   sourceScheme?: CookieSourceScheme;
@@ -192,10 +188,6 @@ export interface CookieData {
    * Cookie Priority. Supported only in Chrome.
    */
   priority?: CookiePriority;
-  /**
-   * @deprecated Always set to false. Supported only in Chrome.
-   */
-  sameParty?: boolean;
   /**
    * Cookie source scheme type. Supported only in Chrome.
    */

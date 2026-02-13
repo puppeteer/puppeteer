@@ -378,7 +378,6 @@ export class BidiBrowserContext extends BrowserContext {
           // Chrome-specific properties.
           ...cdpSpecificCookiePropertiesFromPuppeteerToBidi(
             cookie,
-            'sameParty',
             'sourceScheme',
             'priority',
             'url',
