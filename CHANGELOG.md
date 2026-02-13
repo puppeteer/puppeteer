@@ -2,6 +2,27 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.37.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.37.2...puppeteer-v24.37.3) (2026-02-13)
+
+
+### ♻️ Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.12.0 to 2.12.1
+
+
+### 🛠️ Fixes
+
+* do not resolve user data dir if it is absolute ([#14680](https://github.com/puppeteer/puppeteer/issues/14680)) ([7765ae7](https://github.com/puppeteer/puppeteer/commit/7765ae7d532634a919ca146b742b4a863e3366e9))
+* roll to Chrome 145.0.7632.67 ([#14679](https://github.com/puppeteer/puppeteer/issues/14679)) ([dfc22dd](https://github.com/puppeteer/puppeteer/commit/dfc22dd4361f57a90cb653499e023c272ab50018))
+
+
 ## [24.37.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.37.1...puppeteer-v24.37.2) (2026-02-06)
 
 
