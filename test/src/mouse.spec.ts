@@ -84,7 +84,7 @@ describe('Mouse', function () {
     expect(newDimensions.width).toBe(Math.round(width + 104));
     expect(newDimensions.height).toBe(Math.round(height + 104));
   });
-  it('should select the text with mouse', async () => {
+  it.only('should select the text with mouse', async () => {
     const {page, server} = await getTestState();
 
     const text =

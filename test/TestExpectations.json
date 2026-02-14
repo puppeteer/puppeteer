@@ -572,13 +572,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[mouse.spec] Mouse should select the text with mouse",
-    "platforms": ["win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"],
-    "comment": "Suddenly started being flaky on Windows"
-  },
-  {
     "testIdPattern": "[navigation.spec] navigation Page.goto should send referer",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -717,13 +710,6 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.setGeolocation should work",
-    "platforms": ["win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"],
-    "comment": "Suddenly started being flaky on Windows"
   },
   {
     "testIdPattern": "[page.spec] Page Page.setJavaScriptEnabled setInterval should pause",
