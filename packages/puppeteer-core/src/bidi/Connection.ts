@@ -126,11 +126,11 @@ export class BidiConnection
       return Promise.reject(new ConnectionClosedError('Connection closed.'));
     }
     return this.#callbacks.create(method, timeout ?? this.#timeout, id => {
-      const stringifiedMessage = JSON.stringify({
+      const stringifiedMessage = {
         id,
         method,
         params,
-      } as Bidi.Command);
+      };
       debugProtocolSend(stringifiedMessage);
       this.#transport.send(stringifiedMessage);
     }) as Promise<{result: Commands[T]['returnType']}>;
@@ -139,14 +139,14 @@ export class BidiConnection
   /**
    * @internal
    */
-  protected async onMessage(message: string): Promise<void> {
+  protected async onMessage(message: object|string): Promise<void> {
     if (this.#delay) {
       await new Promise(f => {
         return setTimeout(f, this.#delay);
       });
     }
     debugProtocolReceive(message);
-    const object: Bidi.Message | CdpEvent = JSON.parse(message);
+    const object: Bidi.Message | CdpEvent = message as Bidi.Message | CdpEvent;
     if ('type' in object) {
       switch (object.type) {
         case 'success':
