@@ -23,7 +23,7 @@
     "@docusaurus/remark-plugin-npm2yarn": "3.9.2",
     "@docusaurus/theme-common": "3.9.2",
     "@mdx-js/react": "3.1.1",
-    "algoliasearch-helper": "3.27.0",
+    "algoliasearch-helper": "3.27.1",
     "clsx": "2.1.1",
     "prism-react-renderer": "2.4.1",
     "react": "19.2.4",
