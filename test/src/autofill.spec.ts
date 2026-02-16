@@ -52,16 +52,29 @@ describe('Autofill', function () {
           email: 'john@example.com',
         },
       });
-      const values = await page.evaluate(() => {
-        const result: string[] = [];
-        for (const el of document.querySelectorAll('input:not([type="submit"])')) {
-          result.push((el as HTMLInputElement).value);
-        }
-        return result;
+      const nameValue = await page.evaluate(() => {
+        return (document.querySelector('#name') as HTMLInputElement).value;
       });
-      // Note: The actual values filled may depend on browser autofill behavior
-      // At minimum, we verify that the autofill was triggered without error
-      expect(values.length).toBeGreaterThan(0);
+      // Note: The actual autofill behavior depends on the browser implementation
+      // We verify that the autofill was triggered and at least attempted to fill the name field
+      // In some browsers/configurations, autofill may not populate all fields
+      expect(nameValue).toBeTruthy();
+    });
+
+    it('should throw an error when neither creditCard nor address is provided', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.PREFIX + '/address-form.html');
+      using nameField = await page.waitForSelector('#name');
+      let error: Error | undefined;
+      try {
+        await nameField!.autofill({} as any);
+      } catch (err) {
+        error = err as Error;
+      }
+      expect(error).toBeTruthy();
+      expect(error!.message).toContain(
+        'Either address or creditCard must be provided',
+      );
     });
   });
 });

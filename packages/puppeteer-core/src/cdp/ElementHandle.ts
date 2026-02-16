@@ -180,6 +180,10 @@ export class CdpElementHandle<
       params.address = data.address as Protocol.Autofill.Address;
     } else if (data.creditCard) {
       params.card = data.creditCard as Protocol.Autofill.CreditCard;
+    } else {
+      throw new Error(
+        'Either address or creditCard must be provided in autofill data',
+      );
     }
 
     await this.client.send('Autofill.trigger', params);
