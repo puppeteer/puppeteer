@@ -257,7 +257,7 @@ export async function getReadableFromProtocolStream(
   });
 }
 
-const validDialogTypes = new Set([
+const VALID_DIALOG_TYPES = new Set([
   'alert',
   'confirm',
   'prompt',
@@ -272,7 +272,7 @@ export function validateDialogType(
 ): 'alert' | 'confirm' | 'prompt' | 'beforeunload' {
   let dialogType = null;
 
-  if (validDialogTypes.has(type)) {
+  if (VALID_DIALOG_TYPES.has(type)) {
     dialogType = type;
   }
   assert(dialogType, `Unknown javascript dialog type: ${type}`);
