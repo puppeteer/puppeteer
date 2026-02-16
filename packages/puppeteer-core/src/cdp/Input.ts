@@ -178,6 +178,9 @@ export class CdpKeyboard extends Keyboard {
     text: string,
     options: Readonly<KeyboardTypeOptions> = {},
   ): Promise<void> {
+    if (options.delay !== undefined) {
+      assert(options.delay >= 0, 'Delay must be non-negative.');
+    }
     const delay = options.delay || undefined;
     for (const char of text) {
       if (this.charIsKey(char)) {
@@ -198,6 +201,9 @@ export class CdpKeyboard extends Keyboard {
     options: Readonly<KeyPressOptions> = {},
   ): Promise<void> {
     const {delay = null} = options;
+    if (delay !== null) {
+      assert(delay >= 0, 'Delay must be non-negative.');
+    }
     await this.down(key, options);
     if (delay) {
       await new Promise(f => {
@@ -359,7 +365,12 @@ export class CdpMouse extends Mouse {
     y: number,
     options: Readonly<MouseMoveOptions> = {},
   ): Promise<void> {
+    assert(
+      Number.isFinite(x) && Number.isFinite(y),
+      'Mouse coordinates must be finite numbers.',
+    );
     const {steps = 1} = options;
+    assert(steps >= 1, 'Mouse move steps must be at least 1.');
     const from = this.#state.position;
     const to = {x, y};
     for (let i = 1; i <= steps; i++) {
@@ -384,6 +395,7 @@ export class CdpMouse extends Mouse {
 
   override async down(options: Readonly<MouseOptions> = {}): Promise<void> {
     const {button = MouseButton.Left, clickCount = 1} = options;
+    assert(clickCount >= 0, 'Click count must be non-negative.');
     const flag = getFlag(button);
     if (!flag) {
       throw new Error(`Unsupported mouse button: ${button}`);
@@ -409,6 +421,7 @@ export class CdpMouse extends Mouse {
 
   override async up(options: Readonly<MouseOptions> = {}): Promise<void> {
     const {button = MouseButton.Left, clickCount = 1} = options;
+    assert(clickCount >= 0, 'Click count must be non-negative.');
     const flag = getFlag(button);
     if (!flag) {
       throw new Error(`Unsupported mouse button: ${button}`);
@@ -437,7 +450,14 @@ export class CdpMouse extends Mouse {
     y: number,
     options: Readonly<MouseClickOptions> = {},
   ): Promise<void> {
+    assert(
+      Number.isFinite(x) && Number.isFinite(y),
+      'Mouse coordinates must be finite numbers.',
+    );
     const {delay, count = 1, clickCount = count} = options;
+    if (delay !== undefined) {
+      assert(delay >= 0, 'Delay must be non-negative.');
+    }
     if (count < 1) {
       throw new Error('Click must occur a positive number of times.');
     }
@@ -538,6 +558,9 @@ export class CdpMouse extends Mouse {
     options: {delay?: number} = {},
   ): Promise<void> {
     const {delay = null} = options;
+    if (delay !== null) {
+      assert(delay >= 0, 'Delay must be non-negative.');
+    }
     const data = await this.drag(start, target);
     await this.dragEnter(target, data);
     await this.dragOver(target, data);
@@ -631,6 +654,10 @@ export class CdpTouchscreen extends Touchscreen {
   }
 
   override async touchStart(x: number, y: number): Promise<TouchHandle> {
+    assert(
+      Number.isFinite(x) && Number.isFinite(y),
+      'Touch coordinates must be finite numbers.',
+    );
     const id = this.idGenerator();
     const touchPoint: Protocol.Input.TouchPoint = {
       x: Math.round(x),
