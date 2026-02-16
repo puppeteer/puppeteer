@@ -1,7 +1,7 @@
 name: Bug report
 description: File a bug report for puppeteer or puppeteer-core
 title: '[Bug]: '
-labels: [bug]
+type: 'Bug'
 body:
   - type: markdown
     attributes:

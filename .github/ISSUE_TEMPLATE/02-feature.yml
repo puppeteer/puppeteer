@@ -1,7 +1,7 @@
 name: Feature
 description: File a feature request
 title: '[Feature]: '
-labels: [feature]
+type: 'Feature'
 body:
   - type: markdown
     attributes:

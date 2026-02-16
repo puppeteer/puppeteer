@@ -1,7 +1,8 @@
 name: Bug for @puppeteer/ng-schematics
 description: File a bug report specifically about the `@puppeteer/ng-schematics` package.
 title: '[Bug]: '
-labels: [bug, '@puppeteer/ng-schematics']
+labels: ['@puppeteer/ng-schematics']
+type: 'Bug'
 body:
   - type: textarea
     id: summary
