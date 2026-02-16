@@ -1601,13 +1601,13 @@ export abstract class ElementHandle<
    *
    * @remarks
    *
-   * Currently, Puppeteer supports auto-filling credit card information only and
+   * Puppeteer supports auto-filling credit card and address information
    * in Chrome in the new headless and headful modes only.
    *
    * ```ts
    * // Select an input on the credit card form.
    * const name = await page.waitForSelector('form #name');
-   * // Trigger autofill with the desired data.
+   * // Trigger autofill with credit card data.
    * await name.autofill({
    *   creditCard: {
    *     number: '4444444444444444',
@@ -1615,6 +1615,24 @@ export abstract class ElementHandle<
    *     expiryMonth: '01',
    *     expiryYear: '2030',
    *     cvc: '123',
+   *   },
+   * });
+   * ```
+   *
+   * ```ts
+   * // Select an input on the address form.
+   * const firstName = await page.waitForSelector('form #firstName');
+   * // Trigger autofill with address data.
+   * await firstName.autofill({
+   *   address: {
+   *     name: 'John Doe',
+   *     streetAddress: '123 Main St',
+   *     city: 'New York',
+   *     state: 'NY',
+   *     postalCode: '10001',
+   *     country: 'US',
+   *     phone: '+1234567890',
+   *     email: 'john@example.com',
    *   },
    * });
    * ```
@@ -1635,12 +1653,26 @@ export interface AutofillData {
   /**
    * See {@link https://chromedevtools.github.io/devtools-protocol/tot/Autofill/#type-CreditCard | Autofill.CreditCard}.
    */
-  creditCard: {
+  creditCard?: {
     number: string;
     name: string;
     expiryMonth: string;
     expiryYear: string;
     cvc: string;
+  };
+  /**
+   * See {@link https://chromedevtools.github.io/devtools-protocol/tot/Autofill/#type-Address | Autofill.Address}.
+   */
+  address?: {
+    name?: string;
+    organization?: string;
+    streetAddress?: string;
+    city?: string;
+    state?: string;
+    postalCode?: string;
+    country?: string;
+    phone?: string;
+    email?: string;
   };
 }
 
