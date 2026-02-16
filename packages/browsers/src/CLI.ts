@@ -200,7 +200,7 @@ export class CLI {
     return yargs
       .command(
         `install ${browserArgType}`,
-        'Download and install the specified browser. If successful, the command outputs the actual browser buildId that was installed and the absolute path to the browser executable (format: <browser>@<buildId> <path>).',
+        'Download and install the specified browser. If successful, the command outputs the actual browser buildId that was installed and the absolute path to the browser executable (see --format).',
         yargs => {
           if (this.#pinnedBrowsers) {
             yargs.example('$0 install', 'Install all pinned browsers');
@@ -320,7 +320,7 @@ export class CLI {
             })
             .option('format', {
               type: 'string',
-              desc: 'Format to use for the output. Supported placeholders: ${browser}, ${buildId}, ${path}, ${platform}',
+              desc: 'Format to use for the output. Supported placeholders: {{browser}}, {{buildId}}, {{path}}, {{platform}}',
               default: '{{browser}}@{{buildId}} {{path}}',
             });
         },
@@ -561,7 +561,7 @@ export class CLI {
 
     console.log(
       args.format
-        .replace(/{{browser}}/g, args.browser.name)
+        .replace(/{{browser}/g, args.browser.name)
         .replace(/{{buildId}}/g, args.browser.buildId)
         .replace(/{{path}}/g, executablePath)
         .replace(/{{platform}}/g, args.platform),
