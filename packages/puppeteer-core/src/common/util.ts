@@ -257,6 +257,13 @@ export async function getReadableFromProtocolStream(
   });
 }
 
+const validDialogTypes = new Set([
+  'alert',
+  'confirm',
+  'prompt',
+  'beforeunload',
+]);
+
 /**
  * @internal
  */
@@ -264,12 +271,6 @@ export function validateDialogType(
   type: string,
 ): 'alert' | 'confirm' | 'prompt' | 'beforeunload' {
   let dialogType = null;
-  const validDialogTypes = new Set([
-    'alert',
-    'confirm',
-    'prompt',
-    'beforeunload',
-  ]);
 
   if (validDialogTypes.has(type)) {
     dialogType = type;
