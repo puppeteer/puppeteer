@@ -561,7 +561,7 @@ export class CLI {
 
     console.log(
       args.format
-        .replace(/{{browser}/g, args.browser.name)
+        .replace(/{{browser}}/g, args.browser.name)
         .replace(/{{buildId}}/g, args.browser.buildId)
         .replace(/{{path}}/g, executablePath)
         .replace(/{{platform}}/g, args.platform),
