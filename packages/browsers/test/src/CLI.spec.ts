@@ -3,7 +3,7 @@
  * Copyright 2025 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-
+import assert from 'node:assert';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -108,7 +108,7 @@ describe('CLI', function () {
         `chrome@${testChromeBuildId}`,
         `--path=${tmpDir}`,
         `--base-url=${getServerUrl()}`,
-        '--format=${browser} ${buildId} ${path}',
+        '--format={{browser}} {{buildId}} {{path}}',
       ]);
     } finally {
       console.log = originalLog;
@@ -126,10 +126,7 @@ describe('CLI', function () {
         )}`
       );
     });
-    if (!found) {
-      throw new Error(
-        `Expected output not found in logs: ${JSON.stringify(logs)}`,
-      );
-    }
+
+    assert(found, `Expected output not found in logs: ${JSON.stringify(logs)}`);
   });
 });
