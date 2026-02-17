@@ -93,7 +93,7 @@ describe('CLI', function () {
     }
   });
 
-  it.only('should format output', async () => {
+  it('should format output', async () => {
     const logs: string[] = [];
     const originalLog = console.log;
     console.log = (message: string) => {
