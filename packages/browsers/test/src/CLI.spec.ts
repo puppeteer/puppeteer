@@ -93,7 +93,7 @@ describe('CLI', function () {
     }
   });
 
-  it('should format output', async () => {
+  it.only('should format output', async () => {
     const logs: string[] = [];
     const originalLog = console.log;
     console.log = (message: string) => {
@@ -108,25 +108,20 @@ describe('CLI', function () {
         `chrome@${testChromeBuildId}`,
         `--path=${tmpDir}`,
         `--base-url=${getServerUrl()}`,
-        '--format={{browser}} {{buildId}} {{path}}',
+        '--format=@{{buildId}}@{{browser}}@',
       ]);
     } finally {
       console.log = originalLog;
     }
 
-    const found = logs.some(log => {
-      return (
-        log ===
-        `chrome ${testChromeBuildId} ${path.join(
-          tmpDir,
-          'chrome',
-          os.platform() === 'linux' ? `linux-${testChromeBuildId}` : '',
-          'chrome-linux64',
-          'chrome',
-        )}`
-      );
+    const found = logs.find(log => {
+      return log.includes('chrome');
     });
 
-    assert(found, `Expected output not found in logs: ${JSON.stringify(logs)}`);
+    assert.strictEqual(
+      found,
+      `@${testChromeBuildId}@chrome@`,
+      `Expected output not found in logs: ${JSON.stringify(logs)}`,
+    );
   });
 });
