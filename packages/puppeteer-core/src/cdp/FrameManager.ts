@@ -341,7 +341,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       frame.updateClient(target._session()!);
     }
     this.setupEventListeners(target._session()!);
-    void this.initialize(target._session()!, frame);
+    void this.initialize(target._session()!, frame).catch(debugError);
   }
 
   _deviceRequestPromptManager(
