@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         ### Thanks for taking the time to fill out a feature request!
-        **Before filling out this report**, please check [existing feature requests](https://github.com/puppeteer/puppeteer/issues?q=is%3Aissue++label%3Afeature+) and see if your feature has already been proposed.
+        **Before filling out this report**, please check [existing feature requests](https://github.com/puppeteer/puppeteer/issues?q=is%3Aissue%20type%3AFeature) and see if your feature has already been proposed.
   - type: textarea
     id: summary
     attributes:
