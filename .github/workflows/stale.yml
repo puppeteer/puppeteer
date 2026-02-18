@@ -35,3 +35,5 @@ jobs:
           exempt-issue-labels: 'confirmed,feature'
           # PR settings
           days-before-pr-close: -1
+          stale-pr-label: stale
+
