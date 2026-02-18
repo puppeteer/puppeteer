@@ -6,5 +6,5 @@
 
 // If moved update release-please config
 // x-release-please-start-version
-export const packageVersion = '24.37.3';
+export const packageVersion = '24.37.4';
 // x-release-please-end
