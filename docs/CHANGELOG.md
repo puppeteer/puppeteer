@@ -2,6 +2,24 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.37.4](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.37.3...puppeteer-v24.37.4) (2026-02-18)
+
+### ♻️ Chores
+
+- **puppeteer:** Synchronize puppeteer versions
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - @puppeteer/browsers bumped from 2.12.1 to 2.13.0
+
+### 🛠️ Fixes
+
+- **cdp:** add missing .catch(debugError) to void initialize() in onAttachedToTarget ([#14701](https://github.com/puppeteer/puppeteer/issues/14701)) ([b8b1004](https://github.com/puppeteer/puppeteer/commit/b8b1004764fed66f3aac9841da4aa5b001b4b221))
+- roll to Chrome 145.0.7632.76 ([#14684](https://github.com/puppeteer/puppeteer/issues/14684)) ([6624d1d](https://github.com/puppeteer/puppeteer/commit/6624d1dceae3c1ac0778b95e77810dd8c39df7a5))
+- roll to Firefox 147.0.4 ([#14697](https://github.com/puppeteer/puppeteer/issues/14697)) ([eed313f](https://github.com/puppeteer/puppeteer/commit/eed313fc67d4e3b5c9b9440acb5b3262dac5e679))
+
 ## [24.37.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.37.2...puppeteer-v24.37.3) (2026-02-13)
 
 ### ♻️ Chores
