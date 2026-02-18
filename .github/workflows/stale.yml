@@ -32,7 +32,7 @@ jobs:
             new issue and include a minimal reproducible example or
             other details that would allow us to reproduce it.
           stale-issue-label: 'unconfirmed'
-          exempt-issue-labels: 'confirmed,feature'
+          exempt-issue-labels: 'confirmed'
           # PR settings
           days-before-pr-close: -1
           stale-pr-label: stale
