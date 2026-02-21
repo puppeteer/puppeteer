@@ -728,6 +728,34 @@ describe('ElementHandle specs', function () {
     });
   });
 
+  describe('ElementHandle.getText', () => {
+    it('should return the innerText of first matching element', async () => {
+      const {page} = await getTestState();
+      await page.setContent(html`
+                <div id="container">
+                    <p class="greeting">Hello</p>           <p class="greeting"
+            >World</p
+          >
+                    <span class="note">This is a note</span>         </div
+        >
+              
+      `);
+
+      using container = (await page.$('#container'))!;
+      expect(container).not.toBeNull();
+      const text = await container!.getText('.greeting');
+      expect(text).toBe('Hello');
+    });
+
+    it('should throw an error if element not found', async () => {
+      const {page} = await getTestState();
+      await page.setContent(html`<div id="container"></div>`);
+      using container = (await page.$('#container'))!;
+      await expect(container.getText('.nonexistent')).rejects.toThrow(
+        'getText failed: no element found for selector ".nonexistent"',
+      );
+    });
+  });
   describe('Element.waitForSelector', () => {
     it('should wait correctly with waitForSelector on an element', async () => {
       const {page} = await getTestState();

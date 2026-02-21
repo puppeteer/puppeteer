@@ -587,6 +587,36 @@ export abstract class ElementHandle<
   }
 
   /**
+   * Returns the innerText of the first element matching the selector within this element.
+   * @param selector - CSS selector (or Puppeteer selector) to query inside this element.
+   */
+  @throwIfDisposed()
+  @bindIsolatedHandle
+  async getText<Selector extends string>(selector: Selector): Promise<string> {
+    if (!selector || typeof selector !== 'string') {
+      throw new Error('getText(selector) requires a non-empty string selector');
+    }
+
+    // Use $eval safely
+    try {
+      return await this.$eval(selector, element => {
+        if (!(element instanceof HTMLElement)) {
+          throw new Error('Element is not an HTMLElement');
+        }
+        return element.innerText ?? '';
+      });
+    } catch (err: any) {
+      // If selector not found, throw a clear error
+      if (err.message.includes('failed to find element matching selector')) {
+        throw new Error(
+          `getText failed: no element found for selector "${selector}"`,
+        );
+      }
+      throw err;
+    }
+  }
+
+  /**
    * Wait for an element matching the given selector to appear in the current
    * element.
    *
