@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {Protocol} from 'devtools-protocol';
+import type { Protocol } from 'devtools-protocol';
 
-import type {Frame} from '../api/Frame.js';
-import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
-import {LazyArg} from '../common/LazyArg.js';
+import type { Frame } from '../api/Frame.js';
+import { getQueryHandlerAndSelector } from '../common/GetQueryHandler.js';
+import { LazyArg } from '../common/LazyArg.js';
 import type {
   AwaitableIterable,
   ElementFor,
@@ -17,22 +17,22 @@ import type {
   HandleOr,
   NodeFor,
 } from '../common/types.js';
-import type {KeyInput} from '../common/USKeyboardLayout.js';
-import {isString, withSourcePuppeteerURLIfNone} from '../common/util.js';
-import {assert} from '../util/assert.js';
-import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
-import {throwIfDisposed} from '../util/decorators.js';
+import type { KeyInput } from '../common/USKeyboardLayout.js';
+import { isString, withSourcePuppeteerURLIfNone } from '../common/util.js';
+import { assert } from '../util/assert.js';
+import { AsyncIterableUtil } from '../util/AsyncIterableUtil.js';
+import { throwIfDisposed } from '../util/decorators.js';
 
-import {_isElementHandle} from './ElementHandleSymbol.js';
+import { _isElementHandle } from './ElementHandleSymbol.js';
 import type {
   KeyboardTypeOptions,
   KeyPressOptions,
   MouseClickOptions,
   TouchHandle,
 } from './Input.js';
-import {JSHandle} from './JSHandle.js';
-import type {Locator} from './locators/locators.js';
-import {NodeLocator} from './locators/locators.js';
+import { JSHandle } from './JSHandle.js';
+import type { Locator } from './locators/locators.js';
+import { NodeLocator } from './locators/locators.js';
 import type {
   QueryOptions,
   ScreenshotOptions,
@@ -132,7 +132,7 @@ export function bindIsolatedHandle<This extends ElementHandle<Node>>(
   target: (this: This, ...args: any[]) => Promise<any>,
   _: unknown,
 ): typeof target {
-  return async function (...args) {
+  return async function(...args) {
     // If the handle is already isolated, then we don't need to adopt it
     // again.
     if (this.realm === this.frame.isolatedRealm()) {
@@ -382,7 +382,7 @@ export abstract class ElementHandle<
   async $<Selector extends string>(
     selector: Selector,
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    const {updatedSelector, QueryHandler} =
+    const { updatedSelector, QueryHandler } =
       getQueryHandlerAndSelector(selector);
     return (await QueryHandler.queryOne(
       this,
@@ -442,7 +442,7 @@ export abstract class ElementHandle<
   async #$$impl<Selector extends string>(
     selector: Selector,
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    const {updatedSelector, QueryHandler} =
+    const { updatedSelector, QueryHandler } =
       getQueryHandlerAndSelector(selector);
     return await (AsyncIterableUtil.collect(
       QueryHandler.queryAll(this, updatedSelector),
@@ -563,7 +563,7 @@ export abstract class ElementHandle<
     Selector extends string,
     Params extends unknown[],
     Func extends EvaluateFuncWith<Array<NodeFor<Selector>>, Params> =
-      EvaluateFuncWith<Array<NodeFor<Selector>>, Params>,
+    EvaluateFuncWith<Array<NodeFor<Selector>>, Params>,
   >(
     selector: Selector,
     pageFunction: Func | string,
@@ -587,9 +587,38 @@ export abstract class ElementHandle<
   }
 
   /**
-   * Returns the innerText of the first element matching the selector within this element.
-   * @param selector - CSS selector (or Puppeteer selector) to query inside this element.
-   */
+  * Retrieves the `innerText` of the first descendant element that matches
+  * the provided selector within the current element context.
+  *
+  * This method uses Puppeteer's `$eval` internally and executes in the
+  * page context. The returned value is normalized to an empty string if
+  * `innerText` is `null` or `undefined`.
+  *
+  * @typeParam Selector - A string type representing a valid CSS or
+  * Puppeteer-compatible selector.
+  *
+  * @param selector - A non-empty CSS selector used to locate the target
+  * element relative to the current element.
+  *
+  * @returns A promise that resolves to the `innerText` of the matched element.
+  *
+  * @throws An error if:
+  * - The selector is not a non-empty string.
+  * - No element matches the selector.
+  * - The matched node is not an `HTMLElement`.
+  * - The underlying evaluation fails.
+  *
+  * @remarks
+  * - Decorated with `@throwIfDisposed`, preventing execution on a disposed handle.
+  * - Decorated with `@bindIsolatedHandle`, ensuring execution within the correct isolated context.
+  * - Throws a descriptive error if no element matches the selector.
+  *
+  * @example
+  * ```ts
+  * const title = await pageHandle.getText('.title');
+  * console.log(title);
+  * ```
+  */
   @throwIfDisposed()
   @bindIsolatedHandle
   async getText<Selector extends string>(selector: Selector): Promise<string> {
@@ -657,7 +686,7 @@ export abstract class ElementHandle<
     selector: Selector,
     options: WaitForSelectorOptions = {},
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    const {updatedSelector, QueryHandler, polling} =
+    const { updatedSelector, QueryHandler, polling } =
       getQueryHandlerAndSelector(selector);
     return (await QueryHandler.waitFor(this, updatedSelector, {
       polling,
@@ -784,7 +813,7 @@ export abstract class ElementHandle<
   @bindIsolatedHandle
   async hover(this: ElementHandle<Element>): Promise<void> {
     await this.scrollIntoViewIfNeeded();
-    const {x, y} = await this.clickablePoint();
+    const { x, y } = await this.clickablePoint();
     await this.frame.page().mouse.move(x, y);
   }
 
@@ -800,7 +829,7 @@ export abstract class ElementHandle<
     options: Readonly<ClickOptions> = {},
   ): Promise<void> {
     await this.scrollIntoViewIfNeeded();
-    const {x, y} = await this.clickablePoint(options.offset);
+    const { x, y } = await this.clickablePoint(options.offset);
     try {
       await this.frame.page().mouse.click(x, y, options);
     } finally {
@@ -836,7 +865,7 @@ export abstract class ElementHandle<
               () => {
                 highlight.remove();
               },
-              {once: true},
+              { once: true },
             );
             document.body.append(highlight);
           },
@@ -892,7 +921,7 @@ export abstract class ElementHandle<
   @bindIsolatedHandle
   async dragEnter(
     this: ElementHandle<Element>,
-    data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1},
+    data: Protocol.Input.DragData = { items: [], dragOperationsMask: 1 },
   ): Promise<void> {
     const page = this.frame.page();
     await this.scrollIntoViewIfNeeded();
@@ -907,7 +936,7 @@ export abstract class ElementHandle<
   @bindIsolatedHandle
   async dragOver(
     this: ElementHandle<Element>,
-    data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1},
+    data: Protocol.Input.DragData = { items: [], dragOperationsMask: 1 },
   ): Promise<void> {
     const page = this.frame.page();
     await this.scrollIntoViewIfNeeded();
@@ -965,7 +994,7 @@ export abstract class ElementHandle<
   async dragAndDrop(
     this: ElementHandle<Element>,
     target: ElementHandle<Node>,
-    options?: {delay: number},
+    options?: { delay: number },
   ): Promise<void> {
     const page = this.frame.page();
     assert(
@@ -1001,10 +1030,10 @@ export abstract class ElementHandle<
       assert(
         isString(value),
         'Values must be strings. Found value "' +
-          value +
-          '" of type "' +
-          typeof value +
-          '"',
+        value +
+        '" of type "' +
+        typeof value +
+        '"',
       );
     }
 
@@ -1034,8 +1063,8 @@ export abstract class ElementHandle<
           }
         }
       }
-      element.dispatchEvent(new Event('input', {bubbles: true}));
-      element.dispatchEvent(new Event('change', {bubbles: true}));
+      element.dispatchEvent(new Event('input', { bubbles: true }));
+      element.dispatchEvent(new Event('change', { bubbles: true }));
       return [...selectedValues.values()];
     }, values);
   }
@@ -1073,7 +1102,7 @@ export abstract class ElementHandle<
   @bindIsolatedHandle
   async tap(this: ElementHandle<Element>): Promise<void> {
     await this.scrollIntoViewIfNeeded();
-    const {x, y} = await this.clickablePoint();
+    const { x, y } = await this.clickablePoint();
     await this.frame.page().touchscreen.tap(x, y);
   }
 
@@ -1086,7 +1115,7 @@ export abstract class ElementHandle<
   @bindIsolatedHandle
   async touchStart(this: ElementHandle<Element>): Promise<TouchHandle> {
     await this.scrollIntoViewIfNeeded();
-    const {x, y} = await this.clickablePoint();
+    const { x, y } = await this.clickablePoint();
     return await this.frame.page().touchscreen.touchStart(x, y);
   }
 
@@ -1103,7 +1132,7 @@ export abstract class ElementHandle<
     touch?: TouchHandle,
   ): Promise<void> {
     await this.scrollIntoViewIfNeeded();
-    const {x, y} = await this.clickablePoint();
+    const { x, y } = await this.clickablePoint();
     if (touch) {
       return await touch.move(x, y);
     }
@@ -1196,7 +1225,7 @@ export abstract class ElementHandle<
         return null;
       }
       return [...element.getClientRects()].map(rect => {
-        return {x: rect.x, y: rect.y, width: rect.width, height: rect.height};
+        return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
       });
     });
     if (!boxes?.length) {
@@ -1253,7 +1282,7 @@ export abstract class ElementHandle<
   }
 
   async #intersectBoundingBoxesWithFrame(boxes: BoundingBox[]) {
-    const {documentWidth, documentHeight} = await this.frame
+    const { documentWidth, documentHeight } = await this.frame
       .isolatedRealm()
       .evaluate(() => {
         return {
@@ -1283,7 +1312,7 @@ export abstract class ElementHandle<
         return null;
       }
       const rect = element.getBoundingClientRect();
-      return {x: rect.x, y: rect.y, width: rect.width, height: rect.height};
+      return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
     });
     if (!box) {
       return null;
@@ -1344,10 +1373,10 @@ export abstract class ElementHandle<
         },
       };
       const border: Quad = [
-        {x: rect.left, y: rect.top},
-        {x: rect.left + rect.width, y: rect.top},
-        {x: rect.left + rect.width, y: rect.top + rect.height},
-        {x: rect.left, y: rect.top + rect.height},
+        { x: rect.left, y: rect.top },
+        { x: rect.left + rect.width, y: rect.top },
+        { x: rect.left + rect.width, y: rect.top + rect.height },
+        { x: rect.left, y: rect.top + rect.height },
       ];
       const padding = transformQuadWithOffsets(border, offsets.border);
       const content = transformQuadWithOffsets(padding, offsets.padding);
@@ -1363,7 +1392,7 @@ export abstract class ElementHandle<
 
       function transformQuadWithOffsets(
         quad: Quad,
-        offsets: {top: number; left: number; right: number; bottom: number},
+        offsets: { top: number; left: number; right: number; bottom: number },
       ): Quad {
         return [
           {
@@ -1407,7 +1436,7 @@ export abstract class ElementHandle<
   }
 
   async #getTopLeftCornerOfFrame() {
-    const point = {x: 0, y: 0};
+    const point = { x: 0, y: 0 };
     let frame = this.frame;
     let parentFrame: Frame | null | undefined;
     while ((parentFrame = frame?.parentFrame())) {
@@ -1449,7 +1478,7 @@ export abstract class ElementHandle<
    * If the element is detached from DOM, the method throws an error.
    */
   async screenshot(
-    options: Readonly<ScreenshotOptions> & {encoding: 'base64'},
+    options: Readonly<ScreenshotOptions> & { encoding: 'base64' },
   ): Promise<string>;
   async screenshot(options?: Readonly<ScreenshotOptions>): Promise<Uint8Array>;
   @throwIfDisposed()
@@ -1458,7 +1487,7 @@ export abstract class ElementHandle<
     this: ElementHandle<Element>,
     options: Readonly<ElementScreenshotOptions> = {},
   ): Promise<string | Uint8Array> {
-    const {scrollIntoView = true, clip} = options;
+    const { scrollIntoView = true, clip } = options;
 
     const page = this.frame.page();
 
@@ -1486,7 +1515,7 @@ export abstract class ElementHandle<
       elementClip.width = clip.width;
     }
 
-    return await page.screenshot({...options, clip: elementClip});
+    return await page.screenshot({ ...options, clip: elementClip });
   }
 
   async #nonEmptyVisibleBoundingBox() {

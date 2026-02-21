@@ -353,6 +353,23 @@ Calls [focus](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus
 </td></tr>
 <tr><td>
 
+<span id="gettext">[getText(selector)](./puppeteer.elementhandle.gettext.md)</span>
+
+</td><td>
+
+</td><td>
+
+Retrieves the `innerText` of the first descendant element that matches the provided selector within the current element context.
+
+This method uses Puppeteer's `$eval` internally and executes in the page context. The returned value is normalized to an empty string if `innerText` is `null` or `undefined`.
+
+**Remarks:**
+
+- Decorated with `@throwIfDisposed`, preventing execution on a disposed handle. - Decorated with `@bindIsolatedHandle`, ensuring execution within the correct isolated context. - Throws a descriptive error if no element matches the selector.
+
+</td></tr>
+<tr><td>
+
 <span id="hover">[hover(this)](./puppeteer.elementhandle.hover.md)</span>
 
 </td><td>
