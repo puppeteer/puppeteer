@@ -448,6 +448,8 @@ async function installUrl(
     }
 
     debugInstall(`Installing ${archivePath} to ${outputPath}`);
+    // Install step can take time; show an indicator after download completes.
+    process.stderr.write(`Unpacking ${fileName}...\n`);
     try {
       debugTime('extract');
       await unpackArchive(archivePath, outputPath);
