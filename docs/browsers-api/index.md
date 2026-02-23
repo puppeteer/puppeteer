@@ -475,7 +475,7 @@ Options passed to a provider.
 </td></tr>
 <tr><td>
 
-<span id="metadata_2">[Metadata_2](./browsers.metadata_2.md)</span>
+<span id="metadata">[Metadata](./browsers.metadata.md)</span>
 
 </td><td>
 
