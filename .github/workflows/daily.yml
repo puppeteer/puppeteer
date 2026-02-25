@@ -5,8 +5,8 @@ permissions: read-all
 
 on:
   schedule:
-    # Run everyday at: https://crontab.guru/#0_8_*_*_1-5.
-    - cron: '0 8 * * 1-5'
+    # Run everyday at: https://crontab.guru/#0_7_*_*_1-5 UTC
+    - cron: '0 7 * * 1-5'
   workflow_dispatch:
 
 jobs:
