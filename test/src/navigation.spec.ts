@@ -112,6 +112,23 @@ describe('navigation', function () {
       });
       expect(response!.status()).toBe(200);
     });
+    it('should navigate successfully after encountering network error', async () => {
+      const {page, server} = await getTestState();
+
+      // Destroy the connection to simulate a network error. This will open
+      // about:neterror on Firefox.
+      server.setRoute('/network-error', req => {
+        req.socket.destroy();
+      });
+
+      let error!: Error;
+      await page.goto(server.PREFIX + '/network-error').catch(error_ => {
+        return (error = error_);
+      });
+      expect(error).not.toBe(null);
+      const response = await page.goto(server.PREFIX + '/grid.html');
+      expect(response!.status()).toBe(200);
+    });
     it('should work when page calls history API in beforeunload', async () => {
       const {page, server} = await getTestState();
 
