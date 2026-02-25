@@ -568,7 +568,7 @@ describe('Emulation', () => {
 
   describe('Page.emulateNetworkConditions', function () {
     it('should support offline', async () => {
-      const {page, server} = await getTestState();
+      const {isFirefox, page, server} = await getTestState();
 
       await page.emulateNetworkConditions({
         offline: true,
@@ -581,7 +581,13 @@ describe('Emulation', () => {
         await page.goto(server.EMPTY_PAGE);
         throw new Error('not reached');
       } catch (err) {
-        expect((err as Error).message).toMatch(/ERR_INTERNET_DISCONNECTED/);
+        let expectedError;
+        if (isFirefox) {
+          expectedError = /NS_ERROR_OFFLINE/;
+        } else {
+          expectedError = /ERR_INTERNET_DISCONNECTED/;
+        }
+        expect((err as Error).message).toMatch(expectedError);
       }
     });
 
