@@ -1483,13 +1483,6 @@
     "comment": "https://github.com/puppeteer/puppeteer/issues/14017"
   },
   {
-    "testIdPattern": "[network.spec] network Response.text should wait until response completes",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "It emits part of the full response"
-  },
-  {
     "testIdPattern": "[oopif.spec] OOPIF should detect existing OOPIFs when Puppeteer connects to an existing page",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
