@@ -673,7 +673,7 @@ export class CdpPage extends Page {
           ? cookie.partitionKey.topLevelSite
           : undefined,
         // TODO: remove sameParty as it is removed from Chrome.
-        sameParty: cookie.sameParty ?? false,
+        sameParty: false,
       };
     });
   }
