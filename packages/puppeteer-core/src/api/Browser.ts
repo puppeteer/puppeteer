@@ -29,11 +29,144 @@ import {
   timeout,
   fromAbortSignal,
 } from '../common/util.js';
+import type {ConsoleMessage} from '../puppeteer-core.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
 import type {BrowserContext} from './BrowserContext.js';
 import type {Page} from './Page.js';
 import type {Target} from './Target.js';
+import type {WebWorker} from './WebWorker.js';
+
+/**
+ * @public
+ */
+export class Extension {
+  #browser: Browser;
+  #pages = new WeakMap<Target, Page>();
+  #pageLogs = new WeakMap<Page, string[]>();
+  #workerLogs = new WeakMap<WebWorker, string[]>();
+
+  id: string;
+  version: string;
+  name: string;
+  path: string;
+
+  constructor(
+    browser: Browser,
+    id: string,
+    version: string,
+    name: string,
+    path: string,
+  ) {
+    this.#browser = browser;
+    this.id = id;
+    this.version = version;
+    this.name = name;
+    this.path = path;
+  }
+
+  getLogsFromPage(page: Page): string[] {
+    return this.#pageLogs.get(page) || [];
+  }
+
+  getLogsFromWorker(worker: WebWorker): string[] {
+    return this.#workerLogs.get(worker) || [];
+  }
+
+  async workers(): Promise<WebWorker[]> {
+    const targets = this.#browser.targets();
+
+    const extensionWorkers = targets.filter((target: Target) => {
+      const targetUrl = target.url();
+      return (
+        target.type() === 'service_worker' &&
+        targetUrl.startsWith('chrome-extension://' + this.id) &&
+        targetUrl.includes('js')
+      );
+    });
+
+    const workers: WebWorker[] = [];
+    for (const target of extensionWorkers) {
+      const worker = await target.worker();
+
+      if (worker && this.#workerLogs.has(worker)) {
+        workers.push(worker);
+        continue;
+      }
+
+      if (!worker) {
+        continue;
+      }
+
+      const session = await target.createCDPSession();
+      await session.send('Runtime.enable');
+
+      workers.push(worker);
+      this.#workerLogs.set(worker, []);
+
+      session.on('Runtime.consoleAPICalled', (event: any) => {
+        this.#workerLogs.get(worker)?.push(event.args[0].value);
+      });
+    }
+
+    return workers;
+  }
+
+  async pages(): Promise<Page[]> {
+    const targets = this.#browser.targets();
+
+    const extensionPages = targets.filter((target: Target) => {
+      if (this.#pages.has(target)) {
+        return this.#pages.get(target);
+      }
+
+      const targetUrl = target.url();
+      return (
+        target.type() === 'page' &&
+        targetUrl.startsWith('chrome-extension://' + this.id) &&
+        (targetUrl.includes('html') || targetUrl.includes('htm'))
+      );
+    });
+
+    const pages: Page[] = [];
+    for (const target of extensionPages) {
+      if (this.#pages.has(target)) {
+        pages.push(this.#pages.get(target)!);
+        continue;
+      }
+
+      const page = await target.asPage();
+      this.#pages.set(target, page);
+
+      this.#pageLogs.set(page, []);
+
+      page.on('console', (msg: ConsoleMessage) => {
+        this.#pageLogs.get(page)?.push(msg.text());
+      });
+
+      pages.push(page);
+    }
+
+    return pages;
+  }
+
+  async triggerAction(targetId: string): Promise<void> {
+    const session = await this.#browser.target().createCDPSession();
+
+    try {
+      // @ts-expect-error this is not yet available
+      await session.send('Extensions.triggerAction', {
+        id: this.id,
+        targetId,
+      });
+    } finally {
+      await session.detach();
+    }
+
+    return await Promise.resolve();
+  }
+}
+
 /**
  * @public
  */
@@ -638,6 +771,11 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
       ...permissions,
     );
   }
+
+  /**
+   * Returns a list of installed extensions.
+   */
+  abstract extensions(): Promise<Extension[]>;
 
   /**
    * Installs an extension and returns the ID. In Chrome, this is only

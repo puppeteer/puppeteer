@@ -9,6 +9,7 @@ import type {ChildProcess} from 'node:child_process';
 import type {Protocol} from 'devtools-protocol';
 
 import type {CreatePageOptions, DebugInfo} from '../api/Browser.js';
+import {Extension} from '../api/Browser.js';
 import {
   Browser as BrowserBase,
   BrowserEvent,
@@ -53,6 +54,21 @@ function isDevToolsPageTarget(url: string): boolean {
  * @internal
  */
 export class CdpBrowser extends BrowserBase {
+  override async extensions(): Promise<Extension[]> {
+    // @ts-expect-error Extensions domain is not yet in the type definitions
+    const response = await this.#connection.send('Extensions.getExtensions');
+    // @ts-expect-error Extensions domain is not yet in the type definitions
+    return response.extensions.map((extension: any) => {
+      return new Extension(
+        this,
+        extension.id,
+        extension.name,
+        extension.version,
+        extension.path,
+      );
+    });
+  }
+
   readonly protocol = 'cdp';
 
   static async _create(
