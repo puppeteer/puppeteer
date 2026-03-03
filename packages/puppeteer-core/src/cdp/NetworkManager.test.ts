@@ -910,7 +910,7 @@ describe('NetworkManager', () => {
       clientSecurityState: {
         initiatorIsSecureContext: true,
         initiatorIPAddressSpace: 'Local',
-        privateNetworkRequestPolicy: 'Allow',
+        localNetworkAccessRequestPolicy: 'Allow',
       },
     });
 
