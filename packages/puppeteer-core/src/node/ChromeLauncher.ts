@@ -216,6 +216,11 @@ export class ChromeLauncher extends BrowserLauncher {
       '--disable-crash-reporter', // No crash reporting in CfT.
       '--disable-default-apps',
       '--disable-dev-shm-usage',
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--no-zygote', // <--- Crucial for 146
+      '--disable-gpu',
       '--disable-hang-monitor',
       '--disable-infobars',
       '--disable-ipc-flooding-protection',
