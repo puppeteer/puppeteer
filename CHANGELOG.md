@@ -2,6 +2,29 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.38.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.37.5...puppeteer-v24.38.0) (2026-03-04)
+
+
+### 🎉 Features
+
+* roll to Chrome 146.0.7680.31 ([#14729](https://github.com/puppeteer/puppeteer/issues/14729)) ([627eb5e](https://github.com/puppeteer/puppeteer/commit/627eb5e6572f5248286ab09d74c204e2399632e8))
+* roll to Firefox 148.0 ([#14728](https://github.com/puppeteer/puppeteer/issues/14728)) ([09b655a](https://github.com/puppeteer/puppeteer/commit/09b655a1a4b2ee389f4a63f701a347566a5b9d88))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.37.5 to 24.38.0
+
+
+### 🛠️ Fixes
+
+* consider browsingContext.navigationCommitted to dispose an existing navigation ([#14724](https://github.com/puppeteer/puppeteer/issues/14724)) ([b4e92c6](https://github.com/puppeteer/puppeteer/commit/b4e92c637c503710895c842f391793018c4f35b5))
+* disable PartitionAllocSchedulerLoopQuarantineTaskControlledPurge ([#14744](https://github.com/puppeteer/puppeteer/issues/14744)) ([e6c7425](https://github.com/puppeteer/puppeteer/commit/e6c7425d3f459adfbf5c1dd0b230da33fa9eb7c3))
+* roll to Chrome 145.0.7632.117 ([#14719](https://github.com/puppeteer/puppeteer/issues/14719)) ([1d407e1](https://github.com/puppeteer/puppeteer/commit/1d407e1e69ee0f307f8819152a980fa0a24835ff))
+
+
 ## [24.37.5](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.37.4...puppeteer-v24.37.5) (2026-02-19)
 
 
