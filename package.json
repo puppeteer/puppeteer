@@ -202,7 +202,8 @@
     "tsd": "0.33.0",
     "typescript": "5.8.3",
     "wireit": "0.14.12",
-    "yargs": "18.0.0"
+    "yargs": "18.0.0",
+    "glob": "13.0.6"
   },
   "overrides": {
     "@microsoft/api-extractor": {
