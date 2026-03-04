@@ -1,8 +1,8 @@
 ---
-sidebar_label: Metadata_2
+sidebar_label: Metadata
 ---
 
-# Metadata_2 interface
+# Metadata interface
 
 ### Signature
 
