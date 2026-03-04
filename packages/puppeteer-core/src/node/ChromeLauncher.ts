@@ -178,6 +178,7 @@ export class ChromeLauncher extends BrowserLauncher {
       'MediaRouter',
       'OptimizationHints',
       'RenderDocument', // https://crbug.com/444150315
+      'PartitionAllocSchedulerLoopQuarantineTaskControlledPurge', // https://crbug.com/489314676
       ...(turnOnExperimentalFeaturesForTesting
         ? []
         : [
