@@ -1,10 +1,10 @@
 # System requirements
 
-- Node 18+. Puppeteer follows the latest
+- Node 20.19+. Puppeteer follows the latest
   [maintenance LTS](https://github.com/nodejs/Release#release-schedule) version of
   Node
 
-- TypeScript 4.7.4+ (If used with TypeScript).
+- TypeScript 5.0.1+ (If used with TypeScript).
   - Target ES2022 or later if you [type check node_modules](https://www.typescriptlang.org/tsconfig/#skipLibCheck).
 
 - Chrome for Testing browser system requirements:
