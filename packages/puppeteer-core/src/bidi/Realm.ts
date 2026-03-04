@@ -306,6 +306,9 @@ export class BidiFrameRealm extends BidiRealm {
 
     // This should run first.
     this.realm.on('updated', () => {
+      console.log(
+        `[REALM] Updated: ${this.realm.id} (Sandbox: ${this.sandbox})`,
+      );
       this.environment.clearDocumentHandle();
       this.#bindingsInstalled = false;
     });
@@ -315,6 +318,9 @@ export class BidiFrameRealm extends BidiRealm {
   override get puppeteerUtil(): Promise<BidiJSHandle<PuppeteerInjectedUtil>> {
     let promise = Promise.resolve() as Promise<unknown>;
     if (!this.#bindingsInstalled) {
+      console.log(
+        `[REALM] Installing bindings for ${this.realm.id} (Sandbox: ${this.sandbox})`,
+      );
       promise = Promise.all([
         ExposableFunction.from(
           this.environment,
@@ -339,7 +345,9 @@ export class BidiFrameRealm extends BidiRealm {
           },
           !!this.sandbox,
         ),
-      ]);
+      ]).then(() => {
+        console.log(`[REALM] Bindings installed successfully for ${this.realm.id}`);
+      });
       this.#bindingsInstalled = true;
     }
     return promise.then(() => {
