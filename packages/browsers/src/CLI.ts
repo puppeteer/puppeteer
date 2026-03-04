@@ -4,6 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {spawn} from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import {stdin as input, stdout as output} from 'node:process';
 import * as readline from 'node:readline';
 
@@ -494,6 +498,92 @@ export class CLI {
               `${browser.browser}@${browser.buildId} (${browser.platform}) ${browser.executablePath}`,
             );
           }
+        },
+      )
+      .command(
+        'bisect <path>',
+        'Bisect the specified test or script',
+        yargs => {
+          return yargs
+            .positional('path', {
+              type: 'string',
+              description: 'Path to a script or test name to bisect.',
+              demandOption: true,
+            })
+            .option('good', {
+              type: 'string',
+              alias: 'g',
+              demandOption: true,
+              desc: 'Last known good version',
+            })
+            .option('bad', {
+              type: 'string',
+              alias: 'b',
+              demandOption: true,
+              desc: 'First known bad version',
+            });
+        },
+        async args => {
+          const isScript =
+            args.path.endsWith('.mjs') ||
+            args.path.endsWith('.cjs') ||
+            args.path.endsWith('.js');
+          const testCommand = isScript
+            ? `PUPPETEER_EXECUTABLE_PATH=%p node ${args.path}`
+            : `BINARY=%p npm run ${args.path}`;
+
+          const bisectScriptPath = path.join(os.homedir(), 'bisect-builds.py');
+
+          if (!fs.existsSync(bisectScriptPath)) {
+            console.log('Downloading bisect-builds.py...');
+            const response = await fetch(
+              'https://chromium.googlesource.com/chromium/src.git/+/main/tools/bisect-builds.py?format=TEXT',
+            );
+            if (!response.ok) {
+              throw new Error(
+                `Failed to download bisect-builds.py: ${response.statusText}`,
+              );
+            }
+            const base64Text = await response.text();
+            const decodedText = Buffer.from(base64Text, 'base64').toString(
+              'utf-8',
+            );
+            fs.writeFileSync(bisectScriptPath, decodedText, {mode: 0o755});
+            console.log(`Saved bisect-builds.py to ${bisectScriptPath}`);
+          }
+
+          const pythonExecutable = 'python3';
+          const bisectArgs = [
+            bisectScriptPath,
+            '-g',
+            args.good,
+            '-b',
+            args.bad,
+            '-cft',
+            '-v',
+            '--verify-range',
+            '--not-interactive',
+            '-c',
+            testCommand,
+          ];
+
+          await new Promise<void>((resolve, reject) => {
+            const createProcess = spawn(pythonExecutable, bisectArgs, {
+              stdio: 'inherit',
+            });
+
+            createProcess.on('error', message => {
+              reject(message);
+            });
+
+            createProcess.on('exit', code => {
+              if (code !== 0) {
+                reject(new Error(`Process exited with code ${code}`));
+              } else {
+                resolve();
+              }
+            });
+          });
         },
       )
       .demandCommand(1)
