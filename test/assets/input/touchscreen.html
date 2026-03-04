@@ -62,6 +62,9 @@
         globalThis.addEventListener(
           name,
           (event) => {
+            if (event.pointerType !== 'touch') {
+              return;
+            }
             recordEvent({
               type: name,
               x: event.x,
