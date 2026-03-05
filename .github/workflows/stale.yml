@@ -33,6 +33,7 @@ jobs:
             other details that would allow us to reproduce it.
           stale-issue-label: 'unconfirmed'
           exempt-issue-labels: 'confirmed'
+          only-issue-types: 'bug'
           # PR settings
           days-before-pr-close: -1
           stale-pr-label: stale
