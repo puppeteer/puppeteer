@@ -66,11 +66,6 @@ export class ExposableFunction<Args extends unknown[], Ret> {
   }
 
   async #initialize() {
-    console.log(
-      `[EXPOSE] Initializing "${this.name}" on channel ${
-        this.#channel
-      } (Isolate: ${this.#isolate})`,
-    );
     const connection = this.#connection;
     const channel = {
       type: 'channel' as const,
@@ -120,9 +115,6 @@ export class ExposableFunction<Args extends unknown[], Ret> {
               arguments: [channel],
             }),
           ]);
-          console.log(
-            `[EXPOSE] Preload script added for "${this.name}" in context ${frame._id}`,
-          );
           this.#scripts.push([frame, script]);
         } catch (error) {
           // If it errors, the frame probably doesn't support call function. We
@@ -141,15 +133,9 @@ export class ExposableFunction<Args extends unknown[], Ret> {
     if (params.channel !== this.#channel) {
       return;
     }
-    console.log(
-      `[EXPOSE] Message received on channel ${this.#channel} from realm ${
-        params.source.realm
-      }`,
-    );
     const realm = this.#getRealm(params.source);
     if (!realm) {
       // Unrelated message.
-      console.log(`[EXPOSE] Realm NOT FOUND for ${params.source.realm}`);
       return;
     }
 

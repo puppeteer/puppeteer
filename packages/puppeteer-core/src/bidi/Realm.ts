@@ -36,7 +36,7 @@ import {ExposableFunction} from './ExposedFunction.js';
 import type {BidiFrame} from './Frame.js';
 import {BidiJSHandle} from './JSHandle.js';
 import {BidiSerializer} from './Serializer.js';
-import {createEvaluationError} from './util.js';
+import {createEvaluationError, rewriteEvaluationError} from './util.js';
 import type {BidiWebWorker} from './WebWorker.js';
 
 /**
@@ -181,7 +181,7 @@ export abstract class BidiRealm extends Realm {
       );
     }
 
-    const result = await responsePromise;
+    const result = await responsePromise.catch(rewriteEvaluationError);
 
     if ('type' in result && result.type === 'exception') {
       throw createEvaluationError(result.exceptionDetails);
@@ -306,9 +306,6 @@ export class BidiFrameRealm extends BidiRealm {
 
     // This should run first.
     this.realm.on('updated', () => {
-      console.log(
-        `[REALM] Updated: ${this.realm.id} (Sandbox: ${this.sandbox})`,
-      );
       this.environment.clearDocumentHandle();
       this.#bindingsInstalled = false;
     });
@@ -318,9 +315,6 @@ export class BidiFrameRealm extends BidiRealm {
   override get puppeteerUtil(): Promise<BidiJSHandle<PuppeteerInjectedUtil>> {
     let promise = Promise.resolve() as Promise<unknown>;
     if (!this.#bindingsInstalled) {
-      console.log(
-        `[REALM] Installing bindings for ${this.realm.id} (Sandbox: ${this.sandbox})`,
-      );
       promise = Promise.all([
         ExposableFunction.from(
           this.environment,
@@ -345,9 +339,7 @@ export class BidiFrameRealm extends BidiRealm {
           },
           !!this.sandbox,
         ),
-      ]).then(() => {
-        console.log(`[REALM] Bindings installed successfully for ${this.realm.id}`);
-      });
+      ]);
       this.#bindingsInstalled = true;
     }
     return promise.then(() => {
