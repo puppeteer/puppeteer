@@ -7,8 +7,8 @@
     {"type": "fix", "section": "🛠️ Fixes", "hidden": false},
     {"type": "docs", "section": "📄 Documentation", "hidden": false},
 
-    {"type": "perf", "section": "♻️ Chores", "hidden": false},
-    {"type": "refactor", "section": "♻️ Chores", "hidden": false},
+    {"type": "perf", "section": "⚡ Performance", "hidden": false},
+    {"type": "refactor", "section": "🏗️ Refactor", "hidden": false},
     {"type": "chore", "section": "♻️ Chores", "hidden": true},
     {"type": "test", "section": "♻️ Chores", "hidden": true},
 
