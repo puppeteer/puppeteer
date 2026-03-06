@@ -20,5 +20,21 @@ describe('FirefoxLauncher', function () {
       expect(prefs['fission.bfcacheInParent']).toBe(undefined);
       expect(prefs['fission.webContentIsolationStrategy']).toBe(0);
     });
+
+    it('should pass through locale preference', () => {
+      const prefs: Record<string, unknown> = FirefoxLauncher.getPreferences({
+        'intl.locale.requested': 'fr-FR',
+      });
+      expect(prefs['intl.locale.requested']).toBe('fr-FR');
+    });
+
+    it('should allow extraPrefsFirefox to override locale preference', () => {
+      const prefs: Record<string, unknown> = FirefoxLauncher.getPreferences({
+        'intl.locale.requested': 'en-US',
+        'intl.locale.requested2': 'de-DE',
+      });
+      expect(prefs['intl.locale.requested']).toBe('en-US');
+      expect(prefs['intl.locale.requested2']).toBe('de-DE');
+    });
   });
 });

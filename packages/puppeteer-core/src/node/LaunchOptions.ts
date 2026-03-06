@@ -159,4 +159,17 @@ export interface LaunchOptions extends ConnectOptions {
    * If provided, the browser will be closed when the signal is aborted.
    */
   signal?: AbortSignal;
+  /**
+   * Specifies the browser language (locale) to use.
+   *
+   * For Chrome, this sets the `--lang` command-line flag.
+   * For Firefox, this sets the `intl.locale.requested` profile preference.
+   *
+   * @example
+   *
+   * ```ts
+   * const browser = await puppeteer.launch({locale: 'fr-FR'});
+   * ```
+   */
+  locale?: string;
 }
