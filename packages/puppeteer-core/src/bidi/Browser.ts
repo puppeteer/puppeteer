@@ -8,7 +8,11 @@ import type {ChildProcess} from 'node:child_process';
 
 import * as Bidi from 'webdriver-bidi-protocol';
 
-import type {BrowserEvents, CreatePageOptions} from '../api/Browser.js';
+import type {
+  BrowserEvents,
+  CreatePageOptions,
+  Extension,
+} from '../api/Browser.js';
 import {
   Browser,
   BrowserEvent,
@@ -56,6 +60,9 @@ export interface BidiBrowserOptions {
  * @internal
  */
 export class BidiBrowser extends Browser {
+  override extensions(): Promise<Extension[]> {
+    throw new Error('Not yet available for BiDi protocol');
+  }
   readonly protocol = 'webDriverBiDi';
 
   static readonly subscribeModules: [string, ...string[]] = [
