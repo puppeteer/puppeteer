@@ -36,7 +36,7 @@ import {ExposableFunction} from './ExposedFunction.js';
 import type {BidiFrame} from './Frame.js';
 import {BidiJSHandle} from './JSHandle.js';
 import {BidiSerializer} from './Serializer.js';
-import {createEvaluationError} from './util.js';
+import {createEvaluationError, rewriteEvaluationError} from './util.js';
 import type {BidiWebWorker} from './WebWorker.js';
 
 /**
@@ -181,7 +181,7 @@ export abstract class BidiRealm extends Realm {
       );
     }
 
-    const result = await responsePromise;
+    const result = await responsePromise.catch(rewriteEvaluationError);
 
     if ('type' in result && result.type === 'exception') {
       throw createEvaluationError(result.exceptionDetails);
