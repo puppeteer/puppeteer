@@ -439,6 +439,34 @@ describe('Launcher specs', function () {
           );
         }
       });
+      it('should include --lang flag when locale is set (Chrome)', async () => {
+        const {isChrome, puppeteer} = await getTestState({skipLaunch: true});
+        if (!isChrome) {
+          return;
+        }
+        expect(puppeteer.defaultArgs({locale: 'fr-FR'})).toContain(
+          '--lang=fr-FR',
+        );
+        expect(puppeteer.defaultArgs()).not.toContain('--lang=fr-FR');
+      });
+
+      it('should not add --lang flag when user already provided it (Chrome)', async () => {
+        const {isChrome, puppeteer} = await getTestState({skipLaunch: true});
+        if (!isChrome) {
+          return;
+        }
+        const args = puppeteer.defaultArgs({
+          locale: 'fr-FR',
+          args: ['--lang=en-US'],
+        });
+        const langArgs = args.filter(a => {
+          return a.startsWith('--lang');
+        });
+        // User-provided --lang takes precedence; only one --lang should appear.
+        expect(langArgs).toHaveLength(1);
+        expect(langArgs[0]).toBe('--lang=en-US');
+      });
+
       it('should report the correct product', async () => {
         const {isChrome, isFirefox, puppeteer} = await getTestState({
           skipLaunch: true,

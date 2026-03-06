@@ -244,7 +244,16 @@ export class ChromeLauncher extends BrowserLauncher {
       args = [],
       userDataDir,
       enableExtensions = false,
+      locale,
     } = options;
+    if (
+      locale &&
+      !args.some(arg => {
+        return arg.startsWith('--lang');
+      })
+    ) {
+      chromeArguments.push(`--lang=${locale}`);
+    }
     if (userDataDir) {
       // If absolute (for any platform) path is given, we should not resolve it.
       chromeArguments.push(

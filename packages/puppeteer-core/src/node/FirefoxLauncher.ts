@@ -107,7 +107,12 @@ export class FirefoxLauncher extends BrowserLauncher {
 
     await createProfile(SupportedBrowsers.FIREFOX, {
       path: userDataDir,
-      preferences: FirefoxLauncher.getPreferences(extraPrefsFirefox),
+      preferences: FirefoxLauncher.getPreferences({
+        ...(options.locale
+          ? {'intl.locale.requested': options.locale}
+          : undefined),
+        ...extraPrefsFirefox,
+      }),
     });
 
     let firefoxExecutable: string;
