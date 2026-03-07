@@ -21,7 +21,7 @@ export class BrowserWebSocketTransport implements ConnectionTransport {
   }
 
   #ws: WebSocket;
-  onmessage?: (message: string) => void;
+  onmessage?: (message: string|object) => void;
   onclose?: () => void;
 
   constructor(ws: WebSocket) {
@@ -40,8 +40,8 @@ export class BrowserWebSocketTransport implements ConnectionTransport {
     this.#ws.addEventListener('error', () => {});
   }
 
-  send(message: string): void {
-    this.#ws.send(message);
+  send(message: string|object): void {
+    this.#ws.send(message as string);
   }
 
   close(): void {

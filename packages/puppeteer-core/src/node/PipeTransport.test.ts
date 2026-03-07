@@ -15,7 +15,7 @@ describe('PipeTransport', () => {
   let myReadable: Readable;
 
   async function waitForNextMessage() {
-    return await new Promise<string>(res => {
+    return await new Promise<string|object>(res => {
       transport.onmessage = message => {
         res(message);
       };
@@ -25,8 +25,8 @@ describe('PipeTransport', () => {
   function waitForNumberOfMessages(count: number): Promise<string[]> {
     const messages: string[] = [];
     return new Promise<string[]>(resolve => {
-      transport.onmessage = (message: string) => {
-        messages.push(message);
+      transport.onmessage = (message: string|object) => {
+        messages.push(message as string);
         if (messages.length === count) {
           resolve(messages);
         }
