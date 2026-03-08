@@ -943,7 +943,7 @@ describe('request interception', function () {
       expect(response.url()).toBe(server.EMPTY_PAGE);
     });
     it('should allow mocking multiple headers with same key', async () => {
-      const {isFirefox, page, server} = await getTestState();
+      const {page, server} = await getTestState();
 
       await page.setRequestInterception(true);
       page.on('request', request => {
@@ -967,20 +967,7 @@ describe('request interception', function () {
       });
       expect(response.status()).toBe(200);
       expect(response.headers()['foo']).toBe('bar');
-
-      // The separator used to handle headers with multiple values is browser
-      // specific.
-      // Per https://www.rfc-editor.org/rfc/rfc9110.html#section-5.2 the default
-      // should be a list of comma separated values with optional whitespace.
-      // Per note in https://www.rfc-editor.org/rfc/rfc9110.html#section-5.3,
-      // clients are also allowed to use other separators for special cases.
-      // However Chrome DevTools do return comma separated values for headers
-      // with multiple values, so this might be a bug.
-      if (isFirefox) {
-        expect(response.headers()['arr']).toBe('1, 2');
-      } else {
-        expect(response.headers()['arr']).toBe('1\n2');
-      }
+      expect(response.headers()['arr']).toBe('1, 2');
       // request.respond() will not trigger Network.responseReceivedExtraInfo
       // fail to get 'set-cookie' header from response
       expect(firstCookie?.value).toBe('1');
