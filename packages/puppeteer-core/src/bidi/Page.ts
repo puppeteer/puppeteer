@@ -236,6 +236,10 @@ export class BidiPage extends Page {
     throw new UnsupportedOperation();
   }
 
+  override hasDevTools(): Promise<boolean> {
+    throw new UnsupportedOperation();
+  }
+
   async focusedFrame(): Promise<BidiFrame> {
     using handle = (await this.mainFrame()
       .isolatedRealm()

@@ -786,6 +786,17 @@ In headless shell, this method will not throw an error when any valid HTTP statu
 </td></tr>
 <tr><td>
 
+<span id="hasdevtools">[hasDevTools()](./puppeteer.page.hasdevtools.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Returns true if DevTools is attached to the current page. Use [Page.openDevTools()](./puppeteer.page.opendevtools.md) to get the DevTools page.
+
+</td></tr>
+<tr><td>
+
 <span id="hover">[hover(selector)](./puppeteer.page.hover.md)</span>
 
 </td><td>

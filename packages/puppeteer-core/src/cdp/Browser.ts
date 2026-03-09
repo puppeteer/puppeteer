@@ -433,6 +433,13 @@ export class CdpBrowser extends BrowserBase {
     return page;
   }
 
+  async _hasDevToolsTarget(pageTargetId: string): Promise<string | undefined> {
+    const response = await this.#connection.send('Target.getDevToolsTarget', {
+      targetId: pageTargetId,
+    });
+    return response.targetId;
+  }
+
   override async installExtension(path: string): Promise<string> {
     const {id} = await this.#connection.send('Extensions.loadUnpacked', {path});
     return id;
