@@ -169,6 +169,19 @@ describe('DevTools', function () {
     await browser.close();
   });
 
+  it('should retrun same object when calling openDevTools twice', async () => {
+    const browser = await launchBrowser({
+      ...launchOptions,
+      devtools: false,
+    });
+    const page = await browser.newPage();
+    await page.goto('about:blank');
+    const devtoolsPage = await page.openDevTools();
+    const devtoolsPage2 = await page.openDevTools();
+    expect(devtoolsPage).toBe(devtoolsPage2);
+    await browser.close();
+  });
+
   describe('hasDevTools', () => {
     it('should report correctly after DevTools is opened', async () => {
       const browser = await launchBrowser({
