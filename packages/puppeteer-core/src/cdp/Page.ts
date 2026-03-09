@@ -463,10 +463,8 @@ export class CdpPage extends Page {
   }
 
   override async hasDevTools(): Promise<boolean> {
-    const targetId = await this.browser()._hasDevToolsTarget(
-      this.target()._targetId,
-    );
-
+    const browser = this.browser() as CdpBrowser;
+    const targetId = await browser._hasDevToolsTarget(this.target()._targetId);
     return Boolean(targetId);
   }
 
