@@ -1,5 +1,17 @@
 # Changelog
 
+## [24.39.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.38.0...puppeteer-core-v24.39.0) (2026-03-10)
+
+
+### 🎉 Features
+
+* expose Page.hasDevTools ([#14758](https://github.com/puppeteer/puppeteer/issues/14758)) ([5ed7e77](https://github.com/puppeteer/puppeteer/commit/5ed7e7784a3e23bd1b42b8f0d041a74709a1bf4e))
+
+
+### 🛠️ Fixes
+
+* roll to Chrome 146.0.7680.66 ([#14752](https://github.com/puppeteer/puppeteer/issues/14752)) ([60ace04](https://github.com/puppeteer/puppeteer/commit/60ace04425d1ad4e99732298ed51839f09adcb0a))
+
 ## [24.38.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.37.5...puppeteer-core-v24.38.0) (2026-03-04)
 
 
