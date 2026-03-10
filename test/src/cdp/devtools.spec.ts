@@ -155,7 +155,10 @@ describe('DevTools', function () {
   });
 
   it('should support opening DevTools on a page', async () => {
-    const browser = await launchBrowser(launchOptions);
+    const browser = await launchBrowser({
+      ...launchOptions,
+      devtools: false,
+    });
     const page = await browser.newPage();
     await page.goto('about:blank');
     const devtoolsPage = await page.openDevTools();
@@ -164,5 +167,53 @@ describe('DevTools', function () {
       return Boolean(window.DevToolsAPI);
     });
     await browser.close();
+  });
+
+  it('should retrun same object when calling openDevTools twice', async () => {
+    const browser = await launchBrowser({
+      ...launchOptions,
+      devtools: false,
+    });
+    const page = await browser.newPage();
+    await page.goto('about:blank');
+    const devtoolsPage = await page.openDevTools();
+    const devtoolsPage2 = await page.openDevTools();
+    expect(devtoolsPage).toBe(devtoolsPage2);
+    await browser.close();
+  });
+
+  describe('hasDevTools', () => {
+    it('should report correctly after DevTools is opened', async () => {
+      const browser = await launchBrowser({
+        ...launchOptions,
+        devtools: false,
+      });
+      const page = await browser.newPage();
+      await page.goto('about:blank');
+      expect(await page.hasDevTools()).toBe(false);
+      await page.openDevTools();
+      expect(await page.hasDevTools()).toBe(true);
+      await browser.close();
+    });
+
+    it('should report when DevTools is attached by default', async () => {
+      const browser = await launchBrowser(launchOptions);
+      const page = await browser.newPage();
+      await page.goto('about:blank');
+      expect(await page.hasDevTools()).toBe(true);
+      await browser.close();
+    });
+
+    it('should report when DevTools has been attached to a page with devtools:false', async () => {
+      const browser = await launchBrowser({
+        ...launchOptions,
+        devtools: false,
+      });
+      const page = await browser.newPage();
+      await page.goto('about:blank');
+      await page.openDevTools();
+      expect(await page.hasDevTools()).toBe(true);
+      await browser.close();
+    });
   });
 });

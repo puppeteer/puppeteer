@@ -462,6 +462,12 @@ export class CdpPage extends Page {
     return devtoolsPage;
   }
 
+  override async hasDevTools(): Promise<boolean> {
+    const browser = this.browser() as CdpBrowser;
+    const targetId = await browser._hasDevToolsTarget(this.target()._targetId);
+    return Boolean(targetId);
+  }
+
   override async waitForFileChooser(
     options: WaitTimeoutOptions = {},
   ): Promise<FileChooser> {
