@@ -205,6 +205,15 @@ describe('Screenshots', function () {
       expect(size.width).toBe(originalSize.width);
       expect(size.height).toBe(originalSize.height);
     });
+    it('should take a screenshot of an image document', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.PREFIX + '/pptr.png', {
+        waitUntil: 'networkidle2',
+      });
+      const screenshot = await page.screenshot();
+      expect(screenshot).toBeInstanceOf(Uint8Array);
+      expect(screenshot.length).toBeGreaterThan(0);
+    });
   });
 
   describe('ElementHandle.screenshot', function () {

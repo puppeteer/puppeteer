@@ -2720,6 +2720,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
         }
       } else {
         options.captureBeyondViewport = false;
+        // If we are not capturing beyond viewport, we ensure the renderer is
+        // flushed by performing a simple evaluation. This helps to synchronize
+        // the state and avoid hangs in `Page.captureScreenshot`.
+        await this.mainFrame().isolatedRealm().evaluate(() => {});
       }
     }
 
