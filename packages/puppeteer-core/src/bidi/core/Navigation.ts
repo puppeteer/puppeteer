@@ -32,8 +32,8 @@ export class Navigation extends EventEmitter<{
   /** Emitted when navigation was aborted. */
   aborted: NavigationInfo;
 }> {
-  static from(context: BrowsingContext): Navigation {
-    const navigation = new Navigation(context);
+  static from(context: BrowsingContext, isSetContent = false): Navigation {
+    const navigation = new Navigation(context, isSetContent);
     navigation.#initialize();
     return navigation;
   }
@@ -43,11 +43,13 @@ export class Navigation extends EventEmitter<{
   readonly #browsingContext: BrowsingContext;
   readonly #disposables = new DisposableStack();
   #id?: string | null;
+  #isSetContentNavigation: boolean;
 
-  private constructor(context: BrowsingContext) {
+  private constructor(context: BrowsingContext, isSetContent = false) {
     super();
 
     this.#browsingContext = context;
+    this.#isSetContentNavigation = isSetContent;
   }
 
   #initialize() {
@@ -110,6 +112,13 @@ export class Navigation extends EventEmitter<{
           return;
         }
 
+        // Skip disposal for setContent navigations on all lifecycle events
+        // to allow networkidle conditions to be evaluated
+        // The Navigation will be disposed when the Frame's setContent completes
+        if (this.#isSetContentNavigation) {
+          return;
+        }
+
         this.dispose();
       });
     }
@@ -160,6 +169,9 @@ export class Navigation extends EventEmitter<{
   }
   get navigation(): Navigation | undefined {
     return this.#navigation;
+  }
+  get isSetContentNavigation(): boolean {
+    return this.#isSetContentNavigation;
   }
 
   @inertIfDisposed

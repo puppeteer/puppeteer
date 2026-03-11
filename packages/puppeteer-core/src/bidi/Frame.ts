@@ -365,15 +365,24 @@ export class BidiFrame extends Frame {
     html: string,
     options: WaitForOptions = {},
   ): Promise<void> {
-    await Promise.all([
-      this.setFrameContent(html),
-      firstValueFrom(
-        combineLatest([
-          this.#waitForLoad$(options),
-          this.#waitForNetworkIdle$(options),
-        ]),
-      ),
-    ]);
+    // Mark the next navigation as setContent to prevent premature disposal
+    this.browsingContext.markNextNavigationAsSetContent();
+
+    try {
+      await Promise.all([
+        this.setFrameContent(html),
+        firstValueFrom(
+          combineLatest([
+            this.#waitForLoad$(options),
+            this.#waitForNetworkIdle$(options),
+          ]),
+        ),
+      ]);
+    } finally {
+      // Dispose the setContent navigation after all conditions are met
+      // This ensures proper cleanup and prevents memory leaks
+      this.browsingContext.disposeSetContentNavigation();
+    }
   }
 
   @throwIfDetached

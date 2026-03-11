@@ -157,6 +157,7 @@ export class BrowsingContext extends EventEmitter<{
   #navigation: Navigation | undefined;
   #reason?: string;
   #url: string;
+  #isNextNavigationSetContent = false;
   // Indicated whether client hints have been set to non-default.
   #clientHintsAreSet = false;
   readonly #children = new Map<string, BrowsingContext>();
@@ -296,7 +297,12 @@ export class BrowsingContext extends EventEmitter<{
       }
 
       // Note the navigation ID is null for this event.
-      this.#navigation = Navigation.from(this);
+      this.#navigation = Navigation.from(
+        this,
+        this.#isNextNavigationSetContent,
+      );
+      // Reset the flag after creating the navigation
+      this.#isNextNavigationSetContent = false;
 
       const navigationEmitter = this.#disposables.use(
         new EventEmitter(this.#navigation),
@@ -430,6 +436,35 @@ export class BrowsingContext extends EventEmitter<{
       context: this.id,
       promptUnload,
     });
+  }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
+  /**
+   * Marks the next navigation as a setContent navigation.
+   * This is used to prevent premature disposal of the Navigation object
+   * when using setContent with networkidle wait conditions.
+   * @internal
+   */
+  markNextNavigationAsSetContent(): void {
+    this.#isNextNavigationSetContent = true;
+  }
+
+  /**
+   * Disposes the current navigation if it's a setContent navigation.
+   * This should be called after setContent completes to clean up resources.
+   * @internal
+   */
+  disposeSetContentNavigation(): void {
+    if (
+      this.#navigation &&
+      !this.#navigation.disposed &&
+      this.#navigation.isSetContentNavigation
+    ) {
+      this.#navigation[disposeSymbol]();
+    }
   }
 
   @throwIfDisposed<BrowsingContext>(context => {
