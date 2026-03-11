@@ -448,13 +448,18 @@ async function installUrl(
     }
 
     debugInstall(`Installing ${archivePath} to ${outputPath}`);
+    process.stdout.write(
+      `Extracting ${options.browser} ${options.buildId}...\n`,
+    );
     try {
       debugTime('extract');
       await unpackArchive(archivePath, outputPath);
     } finally {
       debugTimeEnd('extract');
     }
-
+    process.stdout.write(
+      `Finished extracting ${options.browser} ${options.buildId}\n`,
+    );
     if (options.buildIdAlias) {
       const metadata = installedBrowser.readMetadata();
       metadata.aliases[options.buildIdAlias] = options.buildId;
