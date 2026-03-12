@@ -1,6 +1,6 @@
 name: Task
-description: Create a task to track work
-title: 'Work tracking for mainainers only!'
+description: Work tracking for mainainers only!
+title: ''
 type: 'Task'
 body:
   - type: markdown
