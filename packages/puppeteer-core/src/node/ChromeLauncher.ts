@@ -247,7 +247,7 @@ export class ChromeLauncher extends BrowserLauncher {
     } = options;
 
     if (
-      process.env['PUPPETEER_DANGEROUS_NO_SANDBOX'] &&
+      process.env['PUPPETEER_DANGEROUS_NO_SANDBOX'] === 'true' &&
       !args.includes('--no-sandbox')
     ) {
       chromeArguments.push('--no-sandbox');
