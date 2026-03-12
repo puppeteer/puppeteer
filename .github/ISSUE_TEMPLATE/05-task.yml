@@ -1,6 +1,6 @@
 name: Task
 description: Work tracking for mainainers only!
-title: ''
+title: 'Work tracking for mainainers only!'
 type: 'Task'
 body:
   - type: markdown
