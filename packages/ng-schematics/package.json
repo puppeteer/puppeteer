@@ -57,8 +57,8 @@
     "@angular-devkit/schematics": "18.1.4"
   },
   "devDependencies": {
-    "@angular/cli": "^21.2.0",
-    "@schematics/angular": "21.2.0"
+    "@angular/cli": "^21.2.2",
+    "@schematics/angular": "21.2.2"
   },
   "files": [
     "lib",

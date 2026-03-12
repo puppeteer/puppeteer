@@ -169,7 +169,7 @@
     "@babel/plugin-transform-modules-commonjs": "7.28.6",
     "@babel/plugin-transform-private-methods": "7.28.6",
     "@babel/plugin-transform-private-property-in-object": "7.28.6",
-    "@microsoft/api-extractor": "7.56.0",
+    "@microsoft/api-extractor": "7.57.7",
     "@rollup/plugin-babel": "6.1.0",
     "@rollup/plugin-node-resolve": "16.0.3",
     "@stylistic/eslint-plugin": "5.9.0",

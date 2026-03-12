@@ -13,22 +13,22 @@
 
 import * as path from 'node:path';
 
-import type {DocumenterConfig} from '@microsoft/api-documenter/lib/documenters/DocumenterConfig.js';
-import {CustomMarkdownEmitter as ApiFormatterMarkdownEmitter} from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter.js';
-import {CustomDocNodes} from '@microsoft/api-documenter/lib/nodes/CustomDocNodeKind.js';
-import {DocEmphasisSpan} from '@microsoft/api-documenter/lib/nodes/DocEmphasisSpan.js';
-import {DocHeading} from '@microsoft/api-documenter/lib/nodes/DocHeading.js';
-import {DocNoteBox} from '@microsoft/api-documenter/lib/nodes/DocNoteBox.js';
-import {DocTable} from '@microsoft/api-documenter/lib/nodes/DocTable.js';
-import {DocTableCell} from '@microsoft/api-documenter/lib/nodes/DocTableCell.js';
-import {DocTableRow} from '@microsoft/api-documenter/lib/nodes/DocTableRow.js';
-import {MarkdownDocumenterAccessor} from '@microsoft/api-documenter/lib/plugin/MarkdownDocumenterAccessor.js';
+import type {DocumenterConfig} from '@microsoft/api-documenter/lib/documenters/DocumenterConfig';
+import {CustomMarkdownEmitter as ApiFormatterMarkdownEmitter} from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
+import {CustomDocNodes} from '@microsoft/api-documenter/lib/nodes/CustomDocNodeKind';
+import {DocEmphasisSpan} from '@microsoft/api-documenter/lib/nodes/DocEmphasisSpan';
+import {DocHeading} from '@microsoft/api-documenter/lib/nodes/DocHeading';
+import {DocNoteBox} from '@microsoft/api-documenter/lib/nodes/DocNoteBox';
+import {DocTable} from '@microsoft/api-documenter/lib/nodes/DocTable';
+import {DocTableCell} from '@microsoft/api-documenter/lib/nodes/DocTableCell';
+import {DocTableRow} from '@microsoft/api-documenter/lib/nodes/DocTableRow';
+import {MarkdownDocumenterAccessor} from '@microsoft/api-documenter/lib/plugin/MarkdownDocumenterAccessor';
 import {
   type IMarkdownDocumenterFeatureOnBeforeWritePageArgs,
   MarkdownDocumenterFeatureContext,
-} from '@microsoft/api-documenter/lib/plugin/MarkdownDocumenterFeature.js';
-import {PluginLoader} from '@microsoft/api-documenter/lib/plugin/PluginLoader.js';
-import {Utilities} from '@microsoft/api-documenter/lib/utils/Utilities.js';
+} from '@microsoft/api-documenter/lib/plugin/MarkdownDocumenterFeature';
+import {PluginLoader} from '@microsoft/api-documenter/lib/plugin/PluginLoader';
+import {Utilities} from '@microsoft/api-documenter/lib/utils/Utilities';
 import {
   ApiClass,
   ApiDeclaredItem,
