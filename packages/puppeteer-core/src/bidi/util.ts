@@ -82,3 +82,20 @@ export function rewriteNavigationError(
     throw error;
   };
 }
+
+/**
+ * @internal
+ */
+export function rewriteEvaluationError(error: unknown): never {
+  if (error instanceof Error) {
+    if (
+      error.message.includes('ExecutionContext was destroyed') ||
+      error.message.includes('Inspected target navigated or closed')
+    ) {
+      throw new Error(
+        'Execution context was destroyed, most likely because of a navigation.',
+      );
+    }
+  }
+  throw error;
+}
