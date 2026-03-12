@@ -1005,11 +1005,11 @@
     "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1862018 - Requires multiple session support"
   },
   {
-    "testIdPattern": "[console.spec] console should work for different console API calls with timing functions",
+    "testIdPattern": "[console.spec] console should work for different console API calls with group functions",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1866749"
+    "comment": "See https://github.com/w3c/webdriver-bidi/issues/1097"
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should default to setting secure cookie for HTTPS websites",
