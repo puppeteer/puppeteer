@@ -10,7 +10,7 @@ body:
         Task are to track small non user facing issue or improvements. 
         The issue will be closed if it does not follow those rules.
   - type: textarea
-    label: "Task to do:"
+    label: 'Task to do:'
     id: task
     validations:
       required: true
