@@ -31,6 +31,11 @@ export interface KeyDownOptions {
  */
 export interface KeyboardTypeOptions {
   delay?: number;
+  /**
+   * Clears the input before typing.
+   * @defaultValue false
+   */
+  overwrite?: boolean;
 }
 
 /**

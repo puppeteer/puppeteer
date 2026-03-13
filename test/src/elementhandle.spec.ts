@@ -1246,4 +1246,18 @@ describe('ElementHandle specs', function () {
       expect(handle.disposed).toBeFalsy();
     });
   });
+
+  describe('ElementHandle.type', () => {
+    it('should clear the input before typing when overwrite is true', async () => {
+      const {page} = await getTestState();
+
+      await page.setContent('<input type="text" value="Old Text">');
+      using input = (await page.$('input'))!;
+
+      await input.type('New Text', { overwrite: true });
+
+      const value = await page.$eval('input', el => el.value);
+      expect(value).toBe('New Text');
+    });
+  });
 });
