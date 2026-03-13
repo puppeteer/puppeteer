@@ -26,12 +26,5 @@
     "parameters": ["firefox", "headful", "webDriverBiDi"],
     "expectations": ["PASS"],
     "comment": "Fixed by https://bugzilla.mozilla.org/show_bug.cgi?id=2010507"
-  },
-  {
-    "testIdPattern": "[console.spec] console should work for different console API calls with group functions",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "See https://github.com/w3c/webdriver-bidi/issues/1097"
   }
 ]
