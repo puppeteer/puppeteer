@@ -141,6 +141,23 @@ describe('Target', function () {
     expect(allPages).toContain(page);
     expect(allPages).not.toContain(otherPage);
   });
+  it('should report a target when window.open results in download', async () => {
+    const {server, browser, page} = await getTestState();
+
+    server.setRoute('/empty.html', (_req, res) => {
+      res.setHeader('Content-Type', 'application/octet-stream');
+      res.setHeader('Content-Disposition', 'attachment; filename="download.txt"');
+      res.write('test\n');
+      res.end();
+    });
+
+    await Promise.all([
+      waitEvent<Target>(browser, 'targetcreated'),
+      page.evaluate((url) => {
+        window.open(url);
+      }, server.EMPTY_PAGE),
+    ]);
+  })
   it('should report when a service worker is created and destroyed', async () => {
     const {page, server, context} = await getTestState();
 
