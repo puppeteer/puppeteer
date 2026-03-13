@@ -5,6 +5,7 @@
  */
 
 import type * as Bidi from 'webdriver-bidi-protocol';
+import type {Protocol} from 'devtools-protocol';
 
 import {
   bindIsolatedHandle,
@@ -62,12 +63,28 @@ export class BidiElementHandle<
       objectId: this.handle.id,
     });
     const fieldId = nodeInfo.node.backendNodeId;
+    if (fieldId === undefined) {
+      throw new Error(
+        'Could not resolve backendNodeId for the selected field',
+      );
+    }
     const frameId = this.frame._id;
-    await client.send('Autofill.trigger', {
-      fieldId,
-      frameId,
-      card: data.creditCard,
-    });
+    if (!frameId) {
+      throw new Error('Could not resolve frameId for the current frame');
+    }
+
+    const params: Protocol.Autofill.TriggerRequest = {fieldId, frameId};
+    if (data.address) {
+      params.address = data.address as Protocol.Autofill.Address;
+    } else if (data.creditCard) {
+      params.card = data.creditCard as Protocol.Autofill.CreditCard;
+    } else {
+      throw new Error(
+        'Either address or creditCard must be provided in autofill data',
+      );
+    }
+
+    await client.send('Autofill.trigger', params);
   }
 
   override async contentFrame(
