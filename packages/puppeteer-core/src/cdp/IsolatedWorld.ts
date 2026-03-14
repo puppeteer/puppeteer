@@ -260,7 +260,7 @@ export class IsolatedWorld extends Realm {
   override [disposeSymbol](): void {
     this.#context?.[disposeSymbol]();
     this.#emitter.emit('disposed', undefined);
-    super[disposeSymbol]();
     this.#emitter.removeAllListeners();
+    super[disposeSymbol]();
   }
 }
