@@ -36,7 +36,7 @@ export class NodeWebSocketTransport implements ConnectionTransport {
   }
 
   #ws: NodeWebSocket;
-  onmessage?: (message: NodeWebSocket.Data) => void;
+  onmessage?: (message: NodeWebSocket.Data|object) => void;
   onclose?: () => void;
 
   constructor(ws: NodeWebSocket) {
@@ -55,8 +55,8 @@ export class NodeWebSocketTransport implements ConnectionTransport {
     this.#ws.addEventListener('error', () => {});
   }
 
-  send(message: string): void {
-    this.#ws.send(message);
+  send(message: string|object): void {
+    this.#ws.send(message as string);
   }
 
   close(): void {

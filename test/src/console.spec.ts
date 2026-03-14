@@ -12,6 +12,53 @@ import {html, waitEvent} from './utils.js';
 
 describe('console', function () {
   setupTestBrowserHooks();
+  it.only('measure performance', async () => {
+    const {page} = await getTestState();
+    await page.setContent(html`<div id="some-counter"></div>`);
+
+    // Measurement
+    const ITERATIONS_PER_RUN = 1000;
+    const latencies: number[] = [];
+    for (let i = 0; i < ITERATIONS_PER_RUN; i++) {
+      const start = performance.now();
+      await page.evaluate(
+        (index, id) => {
+          // Change DOM.
+          document.getElementById(id)!.innerText = `Iter: ${index + 1}`;
+          // Return an object.
+          return {
+            iteration: index + 1,
+            timestamp: Date.now(),
+            someArray: [1, 2, 3],
+            someObject: {a: 1, b: 2, c: 3},
+            someString: 'hello',
+            someNumber: 123,
+            someBoolean: true,
+            someNull: null,
+            someUndefined: undefined,
+          };
+        },
+        i,
+        'some-counter',
+      );
+      const end = performance.now();
+      latencies.push(end - start);
+    }
+
+    latencies.sort((a, b) => {
+      return a - b;
+    });
+    const mean =
+      latencies.reduce((a, b) => {
+        return a + b;
+      }, 0) / latencies.length;
+    const median = latencies[Math.floor(latencies.length / 2)];
+    const p10 = latencies[Math.floor(latencies.length * 0.1)];
+
+    console.log(`Mean: ${mean}ms`);
+    console.log(`Median: ${median}ms`);
+    console.log(`p10: ${p10}ms`);
+  });
   it('should work', async () => {
     const {page} = await getTestState();
 
