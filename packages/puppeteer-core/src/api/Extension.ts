@@ -107,7 +107,7 @@ export class Extension {
 
     //@ts-expect-error - Method not yet public in non Canary version of Chrome
     await client.send('Extensions.triggerAction', {
-      extensionId: this.#id,
+      id: this.#id,
       targetId: page._tabId,
     });
   }

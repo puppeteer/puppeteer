@@ -34,6 +34,7 @@ import {
 } from './LifecycleWatcher.js';
 import type {CdpPage} from './Page.js';
 import {CDP_BINDING_PREFIX} from './utils.js';
+import {TinyRealm} from '../puppeteer-core.js';
 
 /**
  * @internal
@@ -69,10 +70,17 @@ export class CdpFrame extends Frame {
 
     this._loaderId = '';
     this.worlds = {
-      [MAIN_WORLD]: new IsolatedWorld(this, this._frameManager.timeoutSettings),
+      [MAIN_WORLD]: new IsolatedWorld(
+        this,
+        this._frameManager.timeoutSettings,
+        MAIN_WORLD,
+        this._frameManager.page().browser(),
+      ),
       [PUPPETEER_WORLD]: new IsolatedWorld(
         this,
         this._frameManager.timeoutSettings,
+        PUPPETEER_WORLD,
+        this._frameManager.page().browser(),
       ),
     };
 
@@ -84,30 +92,23 @@ export class CdpFrame extends Frame {
       this._onLoadingStopped();
     });
 
-    this.worlds[MAIN_WORLD].emitter.on(
-      'consoleapicalled',
-      this.#onMainWorldConsoleApiCalled.bind(this),
-    );
-    this.worlds[MAIN_WORLD].emitter.on(
-      'bindingcalled',
-      this.#onMainWorldBindingCalled.bind(this),
-    );
+    this._registerWorldListeners(this.worlds[MAIN_WORLD]);
   }
 
-  #onMainWorldConsoleApiCalled(
-    event: Protocol.Runtime.ConsoleAPICalledEvent,
-  ): void {
-    this._frameManager.emit(FrameManagerEvent.ConsoleApiCalled, [
-      this.worlds[MAIN_WORLD],
-      event,
-    ]);
-  }
+  /**
+   * @internal
+   */
+  _registerWorldListeners(world: IsolatedWorld): void {
+    world.emitter.on('consoleapicalled', event => {
+      this._frameManager.emit(FrameManagerEvent.ConsoleApiCalled, [
+        world,
+        event,
+      ]);
+    });
 
-  #onMainWorldBindingCalled(event: Protocol.Runtime.BindingCalledEvent) {
-    this._frameManager.emit(FrameManagerEvent.BindingCalled, [
-      this.worlds[MAIN_WORLD],
-      event,
-    ]);
+    world.emitter.on('bindingcalled', event => {
+      this._frameManager.emit(FrameManagerEvent.BindingCalled, [world, event]);
+    });
   }
 
   /**
@@ -434,6 +435,16 @@ export class CdpFrame extends Frame {
     return (await parent
       .mainRealm()
       .adoptBackendNode(backendNodeId)) as ElementHandle<HTMLIFrameElement>;
+  }
+
+  /**
+   * @public
+   */
+  override getRealms(): [string | Symbol, TinyRealm][] {
+    return [
+      [MAIN_WORLD, this.worlds[MAIN_WORLD]],
+      ...Object.entries(this.worlds),
+    ];
   }
 }
 

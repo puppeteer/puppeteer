@@ -24,9 +24,11 @@ import {disposeSymbol} from '../util/disposable.js';
 import {CdpElementHandle} from './ElementHandle.js';
 import type {ExecutionContext} from './ExecutionContext.js';
 import type {CdpFrame} from './Frame.js';
-import type {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
+import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {CdpJSHandle} from './JSHandle.js';
 import type {CdpWebWorker} from './WebWorker.js';
+import {Extension} from '../api/Extension.js';
+import {Browser} from '../api/Browser.js';
 
 /**
  * @internal
@@ -66,15 +68,21 @@ export type IsolatedWorldEmitter = EventEmitter<{
 export class IsolatedWorld extends Realm {
   #context?: ExecutionContext;
   #emitter: IsolatedWorldEmitter = new EventEmitter();
+  #worldId: string | Symbol;
+  #browser?: Browser;
 
   readonly #frameOrWorker: CdpFrame | CdpWebWorker;
 
   constructor(
     frameOrWorker: CdpFrame | CdpWebWorker,
     timeoutSettings: TimeoutSettings,
+    worldId: string | Symbol,
+    browser?: Browser,
   ) {
     super(timeoutSettings);
     this.#frameOrWorker = frameOrWorker;
+    this.#worldId = worldId;
+    this.#browser = browser;
   }
 
   get environment(): CdpFrame | CdpWebWorker {
@@ -262,5 +270,28 @@ export class IsolatedWorld extends Realm {
     this.#emitter.emit('disposed', undefined);
     super[disposeSymbol]();
     this.#emitter.removeAllListeners();
+  }
+
+  override set worldId(worldId: string | Symbol) {
+    this.#worldId = worldId;
+  }
+
+  override get worldId(): string | Symbol {
+    return this.#worldId;
+  }
+
+  extension(): Promise<Extension | null> {
+    if (!this.#browser) {
+      throw new Error('unable to get extension from WebWorker');
+    }
+
+    if (this.#worldId === MAIN_WORLD) {
+      console.log('well here');
+      return Promise.resolve(null);
+    }
+
+    const extensionId = this.worldId;
+    console.log('the world id is:', extensionId);
+    return this.#browser.getExtensionById(extensionId);
   }
 }

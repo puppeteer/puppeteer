@@ -15,12 +15,55 @@ import {disposeSymbol} from '../util/disposable.js';
 
 import type {ElementHandle} from './ElementHandle.js';
 import type {Environment} from './Environment.js';
+import {Extension} from './Extension.js';
 import type {JSHandle} from './JSHandle.js';
+
+/**
+ * @public
+ */
+export interface TinyRealm {
+  get worldId(): string | Symbol;
+  set worldId(worldId: string | Symbol);
+
+  extension(): Promise<Extension | null>;
+
+  evaluateHandle<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
+  >(
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
+
+  evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
+  >(
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<Awaited<ReturnType<Func>>>;
+
+  waitForFunction<
+    Params extends unknown[],
+    Func extends EvaluateFunc<InnerLazyParams<Params>> = EvaluateFunc<
+      InnerLazyParams<Params>
+    >,
+  >(
+    pageFunction: Func | string,
+    options: {
+      polling?: 'raf' | 'mutation' | number;
+      timeout?: number;
+      root?: ElementHandle<Node>;
+      signal?: AbortSignal;
+    },
+    ...args: Params
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
+}
 
 /**
  * @internal
  */
-export abstract class Realm implements Disposable {
+export abstract class Realm implements Disposable, TinyRealm {
   protected readonly timeoutSettings: TimeoutSettings;
   readonly taskManager = new TaskManager();
 
@@ -29,6 +72,9 @@ export abstract class Realm implements Disposable {
   }
 
   abstract get environment(): Environment;
+
+  abstract get worldId(): string | Symbol;
+  abstract set worldId(worldId: string | Symbol);
 
   abstract adoptHandle<T extends JSHandle<Node>>(handle: T): Promise<T>;
   abstract transferHandle<T extends JSHandle<Node>>(handle: T): Promise<T>;
@@ -105,4 +151,6 @@ export abstract class Realm implements Disposable {
   [disposeSymbol](): void {
     this.dispose();
   }
+
+  abstract extension(): Promise<Extension | null>;
 }

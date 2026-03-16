@@ -34,6 +34,7 @@ import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 import type {BrowserContext} from './BrowserContext.js';
 import type {Page} from './Page.js';
 import type {Target} from './Target.js';
+import {Extension} from './Extension.js';
 /**
  * @public
  */
@@ -734,4 +735,8 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * @internal
    */
   abstract isNetworkEnabled(): boolean;
+
+  abstract getExtensionById(
+    extensionId: string | Symbol,
+  ): Promise<Extension | null>;
 }

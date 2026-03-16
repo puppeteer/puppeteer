@@ -62,6 +62,7 @@ import type {BidiRealm} from './Realm.js';
 import {BidiFrameRealm} from './Realm.js';
 import {rewriteNavigationError} from './util.js';
 import {BidiWebWorker} from './WebWorker.js';
+import {TinyRealm} from '../api/Realm.js';
 
 // TODO: Remove this and map CDP the correct method.
 // Requires breaking change.
@@ -637,6 +638,10 @@ export class BidiFrame extends Frame {
       // SAFETY: ElementHandles are always remote references.
       [element.remoteValue() as Bidi.Script.SharedReference],
     );
+  }
+
+  override getRealms(): [string | Symbol, TinyRealm][] {
+    return [];
   }
 }
 

@@ -39,7 +39,7 @@ import {
   NodeLocator,
   type Locator,
 } from './locators/locators.js';
-import type {Realm} from './Realm.js';
+import type {Realm, TinyRealm} from './Realm.js';
 
 /**
  * @public
@@ -1200,4 +1200,6 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   abstract waitForDevicePrompt(
     options?: WaitTimeoutOptions,
   ): Promise<DeviceRequestPrompt>;
+
+  abstract getRealms(): [string | Symbol, TinyRealm][];
 }

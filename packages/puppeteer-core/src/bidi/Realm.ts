@@ -38,6 +38,7 @@ import {BidiJSHandle} from './JSHandle.js';
 import {BidiSerializer} from './Serializer.js';
 import {createEvaluationError, rewriteEvaluationError} from './util.js';
 import type {BidiWebWorker} from './WebWorker.js';
+import {Extension} from '../api/Extension.js';
 
 /**
  * @internal
@@ -280,6 +281,21 @@ export abstract class BidiRealm extends Realm {
     const transferredHandle = this.adoptHandle(handle);
     await handle.dispose();
     return await transferredHandle;
+  }
+
+  override set worldId(_worldId: string | Symbol) {
+    // TODO: Understand how to handle this on BidiRealm
+    throw new Error('worldId are defined only for CDP implementations.');
+  }
+
+  override get worldId(): string | Symbol {
+    // TODO: Understand how to handle this on BidiRealm
+    throw new Error('worldId are defined only for CDP implementations.');
+  }
+
+  extension(): Promise<Extension | null> {
+    // TODO: Understand how to handle this on BidiRealm
+    throw new Error('worldId are defined only for CDP implementations.');
   }
 }
 

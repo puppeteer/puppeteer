@@ -554,10 +554,19 @@ export class CdpBrowser extends BrowserBase {
     return response.extensions.map((extension: any) => {
       return new Extension(
         extension.id,
-        extension.name,
         extension.version,
+        extension.name,
         this,
       );
     });
+  }
+
+  override async getExtensionById(
+    extensionId: string | Symbol,
+  ): Promise<Extension | null> {
+    const extensions = await this.extensions();
+
+    const extension = extensions.find(ext => ext.id === extensionId);
+    return extension || null;
   }
 }

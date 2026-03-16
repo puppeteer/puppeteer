@@ -27,7 +27,7 @@ import {CdpFrame} from './Frame.js';
 import type {FrameManagerEvents} from './FrameManagerEvents.js';
 import {FrameManagerEvent} from './FrameManagerEvents.js';
 import {FrameTree} from './FrameTree.js';
-import type {IsolatedWorld} from './IsolatedWorld.js';
+import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {NetworkManager} from './NetworkManager.js';
 import type {CdpPage} from './Page.js';
@@ -536,11 +536,21 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     }
   }
 
+  #isExtensionOrigin(origin: string) {
+    return origin.startsWith('chrome-extension://');
+  }
+
+  #extractExtensionId(origin: string) {
+    const parts = origin.split('://');
+    return parts.length > 1 ? parts[1]!.split('/')[0] : undefined;
+  }
+
   #onExecutionContextCreated(
     contextPayload: Protocol.Runtime.ExecutionContextDescription,
     session: CDPSession,
   ): void {
     const auxData = contextPayload.auxData as {frameId?: string} | undefined;
+    const origin = contextPayload.origin;
     const frameId = auxData && auxData.frameId;
     const frame = typeof frameId === 'string' ? this.frame(frameId) : undefined;
     let world: IsolatedWorld | undefined;
@@ -556,8 +566,30 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
         // connections so we might end up creating multiple isolated worlds.
         // We can use either.
         world = frame.worlds[PUPPETEER_WORLD];
+      } else if (this.#isExtensionOrigin(origin)) {
+        const extId = this.#extractExtensionId(origin);
+
+        if (!extId) {
+          throw new Error('error while parsing extension id');
+        }
+
+        if (frame.worlds[extId]) {
+          world = frame.worlds[extId];
+        } else {
+          world = new IsolatedWorld(
+            frame,
+            this.timeoutSettings,
+            extId,
+            this.#page.browser(),
+          );
+          frame.worlds[extId] = world;
+          frame._registerWorldListeners(world);
+        }
+
+        world.worldId = extId;
       }
     }
+
     // If there is no world, the context is not meant to be handled by us.
     if (!world) {
       return;
