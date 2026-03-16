@@ -712,6 +712,13 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
   abstract get protocol(): ProtocolType;
 
   /**
+   * Get a list of the installed extensions in the browser.
+   *
+   * @public
+   */
+  abstract extensions(): Promise<Extension[]>;
+
+  /**
    * Get debug information from Puppeteer.
    *
    * @remarks

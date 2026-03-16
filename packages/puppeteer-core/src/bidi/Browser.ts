@@ -37,6 +37,7 @@ import type {Browser as BrowserCore} from './core/Browser.js';
 import {Session} from './core/Session.js';
 import type {UserContext} from './core/UserContext.js';
 import {BidiBrowserTarget} from './Target.js';
+import {Extension} from '../api/Extension.js';
 
 /**
  * @internal
@@ -374,5 +375,11 @@ export class BidiBrowser extends Browser {
 
   override isNetworkEnabled(): boolean {
     return this.#networkEnabled;
+  }
+
+  override extensions(): Promise<Extension[]> {
+    throw new Error(
+      'Method not yet implemented for BiDi. Use CDP to interact with Extensions.',
+    );
   }
 }

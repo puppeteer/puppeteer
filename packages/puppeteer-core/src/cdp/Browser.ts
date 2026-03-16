@@ -41,6 +41,7 @@ import {
 } from './Target.js';
 import {TargetManagerEvent} from './TargetManageEvents.js';
 import {TargetManager} from './TargetManager.js';
+import {Extension} from '../api/Extension.js';
 
 /**
  * @internal
@@ -544,5 +545,19 @@ export class CdpBrowser extends BrowserBase {
 
   override isNetworkEnabled(): boolean {
     return this.#networkEnabled;
+  }
+
+  override async extensions(): Promise<Extension[]> {
+    // @ts-expect-error Extensions domain is not yet in the type definitions
+    const response = await this.#connection.send('Extensions.getExtensions');
+    // @ts-expect-error Extensions domain is not yet in the type definitions
+    return response.extensions.map((extension: any) => {
+      return new Extension(
+        extension.id,
+        extension.name,
+        extension.version,
+        this,
+      );
+    });
   }
 }
