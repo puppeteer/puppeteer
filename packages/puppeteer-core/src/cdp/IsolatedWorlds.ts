@@ -8,7 +8,7 @@
  * A unique key for {@link IsolatedWorldChart} to denote the default world.
  * Execution contexts are automatically created in the default world.
  *
- * @internal
+ * @public
  */
 export const MAIN_WORLD = Symbol('mainWorld');
 /**
