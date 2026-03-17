@@ -562,7 +562,7 @@ export class CdpBrowser extends BrowserBase {
   }
 
   override async getExtensionById(
-    extensionId: string | Symbol,
+    extensionId: string,
   ): Promise<Extension | null> {
     const extensions = await this.extensions();
 

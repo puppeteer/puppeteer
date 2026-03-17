@@ -736,7 +736,10 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    */
   abstract isNetworkEnabled(): boolean;
 
-  abstract getExtensionById(
-    extensionId: string | Symbol,
-  ): Promise<Extension | null>;
+  /**
+   * Retrieve a specific extension that is installed in the browser starting from its id.
+   *
+   * @public
+   */
+  abstract getExtensionById(extensionId: string): Promise<Extension | null>;
 }

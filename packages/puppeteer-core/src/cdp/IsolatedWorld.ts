@@ -290,8 +290,12 @@ export class IsolatedWorld extends Realm {
       return Promise.resolve(null);
     }
 
-    const extensionId = this.worldId;
-    console.log('the world id is:', extensionId);
-    return this.#browser.getExtensionById(extensionId);
+    if (typeof this.worldId === 'string') {
+      const extensionId = this.worldId;
+      console.log('the world id is:', extensionId);
+      return this.#browser.getExtensionById(extensionId);
+    }
+
+    return Promise.resolve(null);
   }
 }

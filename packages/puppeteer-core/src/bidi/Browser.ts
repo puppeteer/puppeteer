@@ -383,9 +383,7 @@ export class BidiBrowser extends Browser {
     );
   }
 
-  override getExtensionById(
-    _extensionId: string | Symbol,
-  ): Promise<Extension | null> {
+  override getExtensionById(_extensionId: string): Promise<Extension | null> {
     throw new Error(
       'Method not yet implemented for BiDi. Use CDP to interact with Extensions.',
     );

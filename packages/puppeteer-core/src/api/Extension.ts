@@ -16,7 +16,7 @@ import {WebWorker} from './WebWorker';
  * @public
  */
 export class Extension {
-  //needed to access the CDPSession to trigger an extension action
+  // needed to access the CDPSession to trigger an extension action.
   #browser: Browser;
   #id: string;
   #version: string;
@@ -105,7 +105,6 @@ export class Extension {
   async triggerAction(page: Page): Promise<void> {
     const client = await this.#browser.target().createCDPSession();
 
-    //@ts-expect-error - Method not yet public in non Canary version of Chrome
     await client.send('Extensions.triggerAction', {
       id: this.#id,
       targetId: page._tabId,

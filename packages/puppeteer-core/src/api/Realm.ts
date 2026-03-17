@@ -25,6 +25,12 @@ export interface TinyRealm {
   get worldId(): string | Symbol;
   set worldId(worldId: string | Symbol);
 
+  /**
+   * This method returns the extension from the ExecutionContext paired with the realm
+   * at the moment of the execution.
+   *
+   * @public
+   */
   extension(): Promise<Extension | null>;
 
   evaluateHandle<
