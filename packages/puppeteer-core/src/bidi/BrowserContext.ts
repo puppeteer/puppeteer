@@ -360,7 +360,7 @@ export class BidiBrowserContext extends BrowserContext {
 
   override async setCookie(...cookies: CookieData[]): Promise<void> {
     await Promise.all(
-      cookies.map(async cookie => {
+      cookies.map(cookie => {
         const bidiCookie: Bidi.Storage.PartialCookie = {
           domain: cookie.domain,
           name: cookie.name,
@@ -384,7 +384,7 @@ export class BidiBrowserContext extends BrowserContext {
             'url',
           ),
         };
-        return await this.userContext.setCookie(
+        return this.userContext.setCookie(
           bidiCookie,
           convertCookiesPartitionKeyFromPuppeteerToBiDi(cookie.partitionKey),
         );

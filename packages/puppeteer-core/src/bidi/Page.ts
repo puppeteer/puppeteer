@@ -856,97 +856,97 @@ export class BidiPage extends Page {
   override async setCookie(...cookies: CookieParam[]): Promise<void> {
     const pageURL = this.url();
     const pageUrlStartsWithHTTP = pageURL.startsWith('http');
-    for (const cookie of cookies) {
-      let cookieUrl = cookie.url || '';
-      if (!cookieUrl && pageUrlStartsWithHTTP) {
-        cookieUrl = pageURL;
-      }
-      assert(
-        cookieUrl !== 'about:blank',
-        `Blank page can not have cookie "${cookie.name}"`,
-      );
-      assert(
-        !String.prototype.startsWith.call(cookieUrl || '', 'data:'),
-        `Data URL page can not have cookie "${cookie.name}"`,
-      );
-      // TODO: Support Chrome cookie partition keys
-      assert(
-        cookie.partitionKey === undefined ||
-          typeof cookie.partitionKey === 'string',
-        'BiDi only allows domain partition keys',
-      );
-
-      const normalizedUrl = URL.canParse(cookieUrl)
-        ? new URL(cookieUrl)
-        : undefined;
-
-      const domain = cookie.domain ?? normalizedUrl?.hostname;
-      assert(
-        domain !== undefined,
-        `At least one of the url and domain needs to be specified`,
-      );
-
-      const bidiCookie: Bidi.Storage.PartialCookie = {
-        domain: domain,
-        name: cookie.name,
-        value: {
-          type: 'string',
-          value: cookie.value,
-        },
-        ...(cookie.path !== undefined ? {path: cookie.path} : {}),
-        ...(cookie.httpOnly !== undefined ? {httpOnly: cookie.httpOnly} : {}),
-        ...(cookie.secure !== undefined ? {secure: cookie.secure} : {}),
-        ...(cookie.sameSite !== undefined
-          ? {sameSite: convertCookiesSameSiteCdpToBiDi(cookie.sameSite)}
-          : {}),
-        ...{expiry: convertCookiesExpiryCdpToBiDi(cookie.expires)},
-        // Chrome-specific properties.
-        ...cdpSpecificCookiePropertiesFromPuppeteerToBidi(
-          cookie,
-          'sameParty',
-          'sourceScheme',
-          'priority',
-          'url',
-        ),
-      };
-
-      if (cookie.partitionKey !== undefined) {
-        await this.browserContext().userContext.setCookie(
-          bidiCookie,
-          cookie.partitionKey,
-        );
-      } else {
-        await this.#frame.browsingContext.setCookie(bidiCookie);
-      }
-    }
-  }
-
-  override async deleteCookie(
-    ...cookies: DeleteCookiesRequest[]
-  ): Promise<void> {
     await Promise.all(
-      cookies.map(async deleteCookieRequest => {
-        const cookieUrl = deleteCookieRequest.url ?? this.url();
+      cookies.map(cookie => {
+        let cookieUrl = cookie.url || '';
+        if (!cookieUrl && pageUrlStartsWithHTTP) {
+          cookieUrl = pageURL;
+        }
+        assert(
+          cookieUrl !== 'about:blank',
+          `Blank page can not have cookie "${cookie.name}"`,
+        );
+        assert(
+          !String.prototype.startsWith.call(cookieUrl || '', 'data:'),
+          `Data URL page can not have cookie "${cookie.name}"`,
+        );
+        // TODO: Support Chrome cookie partition keys
+        assert(
+          cookie.partitionKey === undefined ||
+            typeof cookie.partitionKey === 'string',
+          'BiDi only allows domain partition keys',
+        );
+
         const normalizedUrl = URL.canParse(cookieUrl)
           ? new URL(cookieUrl)
           : undefined;
 
-        const domain = deleteCookieRequest.domain ?? normalizedUrl?.hostname;
+        const domain = cookie.domain ?? normalizedUrl?.hostname;
         assert(
           domain !== undefined,
           `At least one of the url and domain needs to be specified`,
         );
 
-        const filter = {
+        const bidiCookie: Bidi.Storage.PartialCookie = {
           domain: domain,
-          name: deleteCookieRequest.name,
-          ...(deleteCookieRequest.path !== undefined
-            ? {path: deleteCookieRequest.path}
+          name: cookie.name,
+          value: {
+            type: 'string',
+            value: cookie.value,
+          },
+          ...(cookie.path !== undefined ? {path: cookie.path} : {}),
+          ...(cookie.httpOnly !== undefined ? {httpOnly: cookie.httpOnly} : {}),
+          ...(cookie.secure !== undefined ? {secure: cookie.secure} : {}),
+          ...(cookie.sameSite !== undefined
+            ? {sameSite: convertCookiesSameSiteCdpToBiDi(cookie.sameSite)}
             : {}),
+          ...{expiry: convertCookiesExpiryCdpToBiDi(cookie.expires)},
+          // Chrome-specific properties.
+          ...cdpSpecificCookiePropertiesFromPuppeteerToBidi(
+            cookie,
+            'sameParty',
+            'sourceScheme',
+            'priority',
+            'url',
+          ),
         };
-        await this.#frame.browsingContext.deleteCookie(filter);
+
+        if (cookie.partitionKey !== undefined) {
+          return this.browserContext().userContext.setCookie(
+            bidiCookie,
+            cookie.partitionKey,
+          );
+        } else {
+          return this.#frame.browsingContext.setCookie(bidiCookie);
+        }
       }),
     );
+  }
+
+  override async deleteCookie(
+    ...cookies: DeleteCookiesRequest[]
+  ): Promise<void> {
+    const filters = cookies.map(deleteCookieRequest => {
+      const cookieUrl = deleteCookieRequest.url ?? this.url();
+      const normalizedUrl = URL.canParse(cookieUrl)
+        ? new URL(cookieUrl)
+        : undefined;
+
+      const domain = deleteCookieRequest.domain ?? normalizedUrl?.hostname;
+      assert(
+        domain !== undefined,
+        `At least one of the url and domain needs to be specified`,
+      );
+
+      return {
+        domain: domain,
+        name: deleteCookieRequest.name,
+        ...(deleteCookieRequest.path !== undefined
+          ? {path: deleteCookieRequest.path}
+          : {}),
+      };
+    });
+    await this.#frame.browsingContext.deleteCookie(...filters);
   }
 
   override async removeExposedFunction(name: string): Promise<void> {

@@ -728,8 +728,8 @@ export class BrowsingContext extends EventEmitter<{
     ...cookieFilters: Bidi.Storage.CookieFilter[]
   ): Promise<void> {
     await Promise.all(
-      cookieFilters.map(async filter => {
-        await this.#session.send('storage.deleteCookies', {
+      cookieFilters.map(filter => {
+        return this.#session.send('storage.deleteCookies', {
           filter: filter,
           partition: {
             type: 'context',
