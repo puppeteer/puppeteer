@@ -1,5 +1,18 @@
 # Changelog
 
+## [24.40.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.39.1...puppeteer-core-v24.40.0) (2026-03-19)
+
+
+### 🎉 Features
+
+* support PUPPETEER_DANGEROUS_NO_SANDBOX environment variable ([#14756](https://github.com/puppeteer/puppeteer/issues/14756)) ([2a8276e](https://github.com/puppeteer/puppeteer/commit/2a8276ee095d6f9676a6d2ea82541127cc9f7f1f))
+
+
+### 🛠️ Fixes
+
+* roll to Chrome 146.0.7680.153 ([#14787](https://github.com/puppeteer/puppeteer/issues/14787)) ([443e87f](https://github.com/puppeteer/puppeteer/commit/443e87f263cdc3578d6867ab72960f3c9979f72a))
+* roll to Chrome 146.0.7680.80 ([#14778](https://github.com/puppeteer/puppeteer/issues/14778)) ([14685a0](https://github.com/puppeteer/puppeteer/commit/14685a0e090671eb1d1db2dc9e4ec60117b8cfc3))
+
 ## [24.39.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.39.0...puppeteer-core-v24.39.1) (2026-03-13)
 
 
