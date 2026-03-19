@@ -35,6 +35,8 @@ export async function _connectToCdpBrowser(
     protocolTimeout,
     handleDevToolsAsPage,
     idGenerator = createIncrementalIdGenerator(),
+    allowlist,
+    blocklist,
   } = options;
 
   const connection = new Connection(
@@ -65,6 +67,8 @@ export async function _connectToCdpBrowser(
     networkEnabled,
     issuesEnabled,
     handleDevToolsAsPage,
+    allowlist,
+    blocklist,
   );
   return browser;
 }

@@ -106,18 +106,22 @@ export class TargetManager
   // done. It indicates whethere we are running the initial auto-attach step or
   // if we are handling targets after that.
   #initialAttachDone = false;
+  #blockedUrlPatterns: Protocol.Network.SetBlockedURLsRequest['urlPatterns'] =
+    [];
 
   constructor(
     connection: Connection,
     targetFactory: TargetFactory,
     targetFilterCallback?: TargetFilterCallback,
     waitForInitiallyDiscoveredTargets = true,
+    blockedUrlPatterns: Protocol.Network.SetBlockedURLsRequest['urlPatterns'] = [],
   ) {
     super();
     this.#connection = connection;
     this.#targetFilterCallback = targetFilterCallback;
     this.#targetFactory = targetFactory;
     this.#waitForInitiallyDiscoveredTargets = waitForInitiallyDiscoveredTargets;
+    this.#blockedUrlPatterns = blockedUrlPatterns;
 
     this.#connection.on('Target.targetCreated', this.#onTargetCreated);
     this.#connection.on('Target.targetDestroyed', this.#onTargetDestroyed);
@@ -386,15 +390,6 @@ export class TargetManager
 
     parentTarget?._addChildTarget(target);
 
-    parentSession.emit(CDPSessionEvent.Ready, session);
-
-    if (!isExistingTarget) {
-      this.emit(TargetManagerEvent.TargetAvailable, target);
-    }
-    if (parentTarget?.type() === 'tab') {
-      this.#finishInitializationIfReady(parentTarget._targetId);
-    }
-
     // TODO: the browser might be shutting down here. What do we do with the
     // error?
     await Promise.all([
@@ -404,8 +399,28 @@ export class TargetManager
         autoAttach: true,
         filter: this.#discoveryFilter,
       }),
-      session.send('Runtime.runIfWaitingForDebugger'),
+      (this.#blockedUrlPatterns?.length ?? 0) > 0
+        ? session
+            .send('Network.enable')
+            .then(() => {
+              return session.send('Network.setBlockedURLs', {
+                urlPatterns: this.#blockedUrlPatterns,
+              });
+            })
+            .catch(debugError)
+        : Promise.resolve(),
     ]).catch(debugError);
+
+    parentSession.emit(CDPSessionEvent.Ready, session);
+
+    if (!isExistingTarget) {
+      this.emit(TargetManagerEvent.TargetAvailable, target);
+    }
+    if (parentTarget?.type() === 'tab') {
+      this.#finishInitializationIfReady(parentTarget._targetId);
+    }
+
+    await session.send('Runtime.runIfWaitingForDebugger').catch(debugError);
   };
 
   #finishInitializationIfReady(targetId?: string): void {

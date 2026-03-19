@@ -71,7 +71,22 @@ export class CdpBrowser extends BrowserBase {
     networkEnabled = true,
     issuesEnabled = true,
     handleDevToolsAsPage = false,
+    allowlist?: string[],
+    blocklist?: string[],
   ): Promise<CdpBrowser> {
+    const blockedUrlPatterns: Protocol.Network.SetBlockedURLsRequest['urlPatterns'] =
+      [];
+    if (allowlist) {
+      for (const pattern of allowlist) {
+        blockedUrlPatterns.push({urlPattern: pattern, block: false}); // TODO: add patterns validation
+      }
+      blockedUrlPatterns.push({urlPattern: '*://*:*/*', block: true});
+    }
+    if (blocklist) {
+      for (const pattern of blocklist) {
+        blockedUrlPatterns.push({urlPattern: pattern, block: true});
+      }
+    }
     const browser = new CdpBrowser(
       connection,
       contextIds,
@@ -84,6 +99,7 @@ export class CdpBrowser extends BrowserBase {
       networkEnabled,
       issuesEnabled,
       handleDevToolsAsPage,
+      blockedUrlPatterns,
     );
     if (acceptInsecureCerts) {
       await connection.send('Security.setIgnoreCertificateErrors', {
@@ -119,6 +135,7 @@ export class CdpBrowser extends BrowserBase {
     networkEnabled = true,
     issuesEnabled = true,
     handleDevToolsAsPage = false,
+    blockedUrlPatterns: Protocol.Network.SetBlockedURLsRequest['urlPatterns'] = [],
   ) {
     super();
     this.#networkEnabled = networkEnabled;
@@ -139,6 +156,7 @@ export class CdpBrowser extends BrowserBase {
       this.#createTarget,
       this.#targetFilterCallback,
       waitForInitiallyDiscoveredTargets,
+      blockedUrlPatterns,
     );
     this.#defaultContext = new CdpBrowserContext(this.#connection, this);
     for (const contextId of contextIds) {
