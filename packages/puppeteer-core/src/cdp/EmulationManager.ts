@@ -448,14 +448,26 @@ export class EmulationManager implements ClientProvider {
     });
   }
 
+  static readonly #supportedMediaFeatures = new Set([
+    'prefers-color-scheme',
+    'prefers-reduced-motion',
+    'prefers-contrast',
+    'prefers-reduced-data',
+    'prefers-reduced-transparency',
+    'color-gamut',
+    'forced-colors',
+    'hover',
+    'any-hover',
+    'pointer',
+    'any-pointer',
+  ]);
+
   async emulateMediaFeatures(features?: MediaFeature[]): Promise<void> {
     if (Array.isArray(features)) {
       for (const mediaFeature of features) {
         const name = mediaFeature.name;
         assert(
-          /^(?:prefers-(?:color-scheme|reduced-motion)|color-gamut)$/.test(
-            name,
-          ),
+          EmulationManager.#supportedMediaFeatures.has(name),
           'Unsupported media feature: ' + name,
         );
       }
