@@ -93,6 +93,153 @@ describe('input tests', function () {
         }),
       ).toBe('contents of the file');
     });
+    it('should upload a file from buffer', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.PREFIX + '/input/fileupload.html');
+      using input = (await page.$('input'))!;
+      await input.evaluate(e => {
+        (globalThis as any)._inputEvents = [];
+        e.addEventListener('change', ev => {
+          return (globalThis as any)._inputEvents.push(ev.type);
+        });
+        e.addEventListener('input', ev => {
+          return (globalThis as any)._inputEvents.push(ev.type);
+        });
+      });
+
+      await input.uploadFile({
+        name: 'test.txt',
+        mimeType: 'text/plain',
+        buffer: Buffer.from('test file content'),
+      });
+
+      expect(
+        await input.evaluate(e => {
+          return e.files?.[0]?.name;
+        }),
+      ).toBe('test.txt');
+      expect(
+        await input.evaluate(e => {
+          return e.files?.[0]?.type;
+        }),
+      ).toBe('text/plain');
+      expect(
+        await input.evaluate(e => {
+          const file = e.files?.[0];
+          if (!file) {
+            throw new Error('No file found');
+          }
+          const reader = new FileReader();
+          const promise = new Promise(fulfill => {
+            reader.addEventListener('load', fulfill);
+          });
+          reader.readAsText(file);
+          return promise.then(() => reader.result);
+        }),
+      ).toBe('test file content');
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any)._inputEvents;
+        }),
+      ).toEqual(['input', 'change']);
+    });
+
+    it('should upload a binary file from buffer', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.PREFIX + '/input/fileupload.html');
+      using input = (await page.$('input'))!;
+
+      const binaryData = Buffer.from([0x89, 0x50, 0x4e, 0x47]);
+      await input.uploadFile({
+        name: 'test.png',
+        mimeType: 'image/png',
+        buffer: binaryData,
+      });
+
+      expect(
+        await input.evaluate(e => {
+          return e.files?.[0]?.name;
+        }),
+      ).toBe('test.png');
+      expect(
+        await input.evaluate(e => {
+          return e.files?.[0]?.type;
+        }),
+      ).toBe('image/png');
+      expect(
+        await input.evaluate(e => {
+          return e.files?.[0]?.size;
+        }),
+      ).toBe(4);
+    });
+
+    it('should upload multiple files from buffer', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.PREFIX + '/input/fileupload.html');
+
+      // Need a multiple input
+      await page.evaluate(() => {
+        const input = document.querySelector('input')!;
+        input.multiple = true;
+      });
+      using input = (await page.$('input'))!;
+
+      await input.uploadFile(
+        {
+          name: 'file1.txt',
+          mimeType: 'text/plain',
+          buffer: Buffer.from('content 1'),
+        },
+        {
+          name: 'file2.txt',
+          mimeType: 'text/plain',
+          buffer: Buffer.from('content 2'),
+        },
+      );
+
+      expect(
+        await input.evaluate(e => {
+          return e.files?.length;
+        }),
+      ).toBe(2);
+      expect(
+        await input.evaluate(e => {
+          return e.files?.[0]?.name;
+        }),
+      ).toBe('file1.txt');
+      expect(
+        await input.evaluate(e => {
+          return e.files?.[1]?.name;
+        }),
+      ).toBe('file2.txt');
+    });
+
+    it('should not allow mixing file paths and payloads', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.PREFIX + '/input/fileupload.html');
+      using input = (await page.$('input'))!;
+
+      let error: Error | undefined;
+      try {
+        await input.uploadFile(
+          '/path/to/file.txt',
+          {
+            name: 'file.txt',
+            mimeType: 'text/plain',
+            buffer: Buffer.from('content'),
+          },
+        );
+      } catch (e) {
+        error = e as Error;
+      }
+      expect(error?.message).toContain(
+        'Cannot mix file paths and file payloads',
+      );
+    });
   });
 
   describe('Page.waitForFileChooser', function () {
@@ -349,6 +496,27 @@ describe('input tests', function () {
         'Cannot accept FileChooser which is already handled!',
       );
     });
+    it('should accept file payloads', async () => {
+      const {page} = await getTestState();
+      await page.setContent(`<input type=file>`);
+      const [chooser] = await Promise.all([
+        page.waitForFileChooser(),
+        page.click('input'),
+      ]);
+      await chooser.accept([
+        {
+          name: 'buffer-file.txt',
+          mimeType: 'text/plain',
+          buffer: Buffer.from('chooser content'),
+        },
+      ]);
+      expect(
+        await page.$eval('input', (input: HTMLInputElement) => {
+          return input.files?.[0]?.name;
+        }),
+      ).toBe('buffer-file.txt');
+    });
+  
   });
 
   describe('FileChooser.cancel', function () {
