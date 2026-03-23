@@ -5,7 +5,7 @@
  */
 
 import type {Protocol} from 'devtools-protocol';
-
+import type {FilePayload} from '../common/types.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import {
   bindIsolatedHandle,
@@ -102,8 +102,26 @@ export class CdpElementHandle<
   @bindIsolatedHandle
   override async uploadFile(
     this: CdpElementHandle<HTMLInputElement>,
-    ...files: string[]
+    ...files: Array<string | FilePayload>
   ): Promise<void> {
+    // Separate file payloads from file paths
+    const filePayloads: FilePayload[] = [];
+    const filePaths: string[] = [];
+
+    for (const file of files) {
+      if (typeof file === 'string') {
+        filePaths.push(file);
+      } else {
+        filePayloads.push(file);
+      }
+    }
+
+    // Cannot mix paths and payloads in a single call
+    assert(
+      filePayloads.length === 0 || filePaths.length === 0,
+      'Cannot mix file paths and file payloads in a single call to uploadFile',
+    );
+
     const isMultiple = await this.evaluate(element => {
       return element.multiple;
     });
@@ -112,10 +130,54 @@ export class CdpElementHandle<
       'Multiple file uploads only work with <input type=file multiple>',
     );
 
+    // ============================================
+    // PATH A: Buffer/FilePayload (NEW CODE PATH)
+    // ============================================
+    if (filePayloads.length > 0) {
+      // Convert buffers to base64, inject as File objects
+      // via DataTransfer API in the browser
+      const payloads = filePayloads.map(payload => ({
+        name: payload.name,
+        mimeType:
+          payload.mimeType || 'application/octet-stream',
+        data: payload.buffer.toString('base64'),
+        lastModified: payload.lastModified ?? Date.now(),
+      }));
+
+      await this.evaluate((element, payloads) => {
+        const dt = new DataTransfer();
+        for (const payload of payloads) {
+          const binaryString = atob(payload.data);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          const file = new File([bytes], payload.name, {
+            type: payload.mimeType,
+            lastModified: payload.lastModified,
+          });
+          dt.items.add(file);
+        }
+        element.files = dt.files;
+        element.dispatchEvent(
+          new Event('input', {bubbles: true, composed: true}),
+        );
+        element.dispatchEvent(
+          new Event('change', {bubbles: true}),
+        );
+      }, payloads);
+      return;
+    }
+
+    // ============================================
+    // PATH B: File paths (EXISTING CODE — unchanged)
+    // ============================================
+
     // Locate all files and confirm that they exist.
     const path = environment.value.path;
+    let resolvedPaths = filePaths;
     if (path) {
-      files = files.map(filePath => {
+      resolvedPaths = filePaths.map(filePath => {
         if (
           path.win32.isAbsolute(filePath) ||
           path.posix.isAbsolute(filePath)
@@ -129,20 +191,19 @@ export class CdpElementHandle<
 
     /**
      * The zero-length array is a special case, it seems that
-     * DOM.setFileInputFiles does not actually update the files in that case, so
-     * the solution is to eval the element value to a new FileList directly.
+     * DOM.setFileInputFiles does not actually update the files
+     * in that case, so the solution is to eval the element
+     * value to a new FileList directly.
      */
-    if (files.length === 0) {
-      // XXX: These events should converted to trusted events. Perhaps do this
-      // in `DOM.setFileInputFiles`?
+    if (resolvedPaths.length === 0) {
       await this.evaluate(element => {
         element.files = new DataTransfer().files;
-
-        // Dispatch events for this case because it should behave akin to a user action.
         element.dispatchEvent(
           new Event('input', {bubbles: true, composed: true}),
         );
-        element.dispatchEvent(new Event('change', {bubbles: true}));
+        element.dispatchEvent(
+          new Event('change', {bubbles: true}),
+        );
       });
       return;
     }
@@ -154,7 +215,7 @@ export class CdpElementHandle<
     });
     await this.client.send('DOM.setFileInputFiles', {
       objectId: this.id,
-      files,
+      files: resolvedPaths,
       backendNodeId,
     });
   }

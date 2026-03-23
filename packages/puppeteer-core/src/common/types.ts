@@ -126,3 +126,13 @@ export type EvaluateFuncWith<V, T extends unknown[]> = (
  */
 export type NodeFor<ComplexSelector extends string> =
   ParseSelector<ComplexSelector>;
+
+/**
+ * @public
+ */
+export interface FilePayload {
+  name: string;
+  mimeType?: string;
+  buffer: Buffer;
+  lastModified?: number;
+}

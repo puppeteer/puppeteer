@@ -3,7 +3,7 @@
  * Copyright 2020 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-
+import type {FilePayload} from './types.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import {assert} from '../util/assert.js';
 
@@ -51,22 +51,48 @@ export class FileChooser {
     return this.#multiple;
   }
 
-  /**
-   * Accept the file chooser request with the given file paths.
+/**
+   * Accepts the file chooser request with the given file paths or {@link FilePayload} objects.
    *
-   * @remarks This will not validate whether the file paths exists. Also, if a
-   * path is relative, then it is resolved against the
+   * @param files - An array of file paths or in-memory {@link FilePayload} objects to upload.
+   *
+   * @remarks
+   * When providing file paths, this will not validate whether the file paths
+   * exist. Also, if a path is relative, then it is resolved against the
    * {@link https://nodejs.org/api/process.html#process_process_cwd | current working directory}.
-   * For locals script connecting to remote chrome environments, paths must be
-   * absolute.
+   * For local scripts connecting to remote chrome environments, paths must be absolute.
+   *
+   * When providing {@link FilePayload} objects, the file content is injected
+   * directly into the browser from memory. This is highly useful for uploading
+   * remote URLs or dynamically generated content without writing to disk.
+   *
+   * @example
+   * ```ts
+   * const [fileChooser] = await Promise.all([
+   * page.waitForFileChooser(),
+   * page.click('#upload-button'),
+   * ]);
+   *
+   * // Uploading from a local file path
+   * await fileChooser.accept(['/path/to/file.pdf']);
+   *
+   * // Uploading from memory (Buffer)
+   * await fileChooser.accept([{
+   * name: 'data.json',
+   * mimeType: 'application/json',
+   * buffer: Buffer.from('{"key": "value"}')
+   * }]);
+   * ```
+   *
+   * @public
    */
-  async accept(paths: string[]): Promise<void> {
+  async accept(files: Array<string | FilePayload>): Promise<void> {
     assert(
       !this.#handled,
       'Cannot accept FileChooser which is already handled!',
     );
     this.#handled = true;
-    await this.#element.uploadFile(...paths);
+    await this.#element.uploadFile(...files);
   }
 
   /**

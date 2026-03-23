@@ -5,7 +5,7 @@
  */
 
 import type {Protocol} from 'devtools-protocol';
-
+import type {FilePayload} from '../common/types.js';
 import type {Frame} from '../api/Frame.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {LazyArg} from '../common/LazyArg.js';
@@ -1023,7 +1023,7 @@ export abstract class ElementHandle<
    */
   abstract uploadFile(
     this: ElementHandle<HTMLInputElement>,
-    ...paths: string[]
+    ...files: Array<string | FilePayload>
   ): Promise<void>;
 
   /**
