@@ -452,14 +452,9 @@ export class EmulationManager implements ClientProvider {
     'prefers-color-scheme',
     'prefers-reduced-motion',
     'prefers-contrast',
-    'prefers-reduced-data',
     'prefers-reduced-transparency',
     'color-gamut',
     'forced-colors',
-    'hover',
-    'any-hover',
-    'pointer',
-    'any-pointer',
   ]);
 
   async emulateMediaFeatures(features?: MediaFeature[]): Promise<void> {
