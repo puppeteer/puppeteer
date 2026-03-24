@@ -396,6 +396,10 @@ describe('Emulation', () => {
           return matchMedia('(color-gamut: rec2020)').matches;
         }),
       ).toBe(true);
+    });
+    it('should work with hover', async () => {
+      const {page} = await getTestState();
+
       await page.emulateMediaFeatures([{name: 'hover', value: 'hover'}]);
       expect(
         await page.evaluate(() => {
@@ -418,6 +422,10 @@ describe('Emulation', () => {
           return matchMedia('(hover: hover)').matches;
         }),
       ).toBe(false);
+    });
+    it('should work with any-hover', async () => {
+      const {page} = await getTestState();
+
       await page.emulateMediaFeatures([{name: 'any-hover', value: 'hover'}]);
       expect(
         await page.evaluate(() => {
@@ -440,6 +448,10 @@ describe('Emulation', () => {
           return matchMedia('(any-hover: hover)').matches;
         }),
       ).toBe(false);
+    });
+    it('should work with pointer', async () => {
+      const {page} = await getTestState();
+
       await page.emulateMediaFeatures([{name: 'pointer', value: 'coarse'}]);
       expect(
         await page.evaluate(() => {
@@ -462,6 +474,10 @@ describe('Emulation', () => {
           return matchMedia('(pointer: coarse)').matches;
         }),
       ).toBe(false);
+    });
+    it('should work with any-pointer', async () => {
+      const {page} = await getTestState();
+
       await page.emulateMediaFeatures([{name: 'any-pointer', value: 'coarse'}]);
       expect(
         await page.evaluate(() => {
@@ -484,6 +500,10 @@ describe('Emulation', () => {
           return matchMedia('(any-pointer: coarse)').matches;
         }),
       ).toBe(false);
+    });
+    it('should work with forced-colors', async () => {
+      const {page} = await getTestState();
+
       await page.emulateMediaFeatures([
         {name: 'forced-colors', value: 'active'},
       ]);
@@ -497,6 +517,10 @@ describe('Emulation', () => {
           return matchMedia('(forced-colors: none)').matches;
         }),
       ).toBe(false);
+    });
+    it('should work with prefers-contrast', async () => {
+      const {page} = await getTestState();
+
       await page.emulateMediaFeatures([
         {name: 'prefers-contrast', value: 'more'},
       ]);
@@ -510,6 +534,10 @@ describe('Emulation', () => {
           return matchMedia('(prefers-contrast: no-preference)').matches;
         }),
       ).toBe(false);
+    });
+    it('should work with prefers-reduced-data', async () => {
+      const {page} = await getTestState();
+
       await page.emulateMediaFeatures([
         {name: 'prefers-reduced-data', value: 'reduce'},
       ]);
@@ -523,6 +551,10 @@ describe('Emulation', () => {
           return matchMedia('(prefers-reduced-data: no-preference)').matches;
         }),
       ).toBe(false);
+    });
+    it('should work with prefers-reduced-transparency', async () => {
+      const {page} = await getTestState();
+
       await page.emulateMediaFeatures([
         {name: 'prefers-reduced-transparency', value: 'reduce'},
       ]);
@@ -533,9 +565,8 @@ describe('Emulation', () => {
       ).toBe(true);
       expect(
         await page.evaluate(() => {
-          return matchMedia(
-            '(prefers-reduced-transparency: no-preference)',
-          ).matches;
+          return matchMedia('(prefers-reduced-transparency: no-preference)')
+            .matches;
         }),
       ).toBe(false);
     });
