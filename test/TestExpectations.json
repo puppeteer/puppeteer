@@ -1084,21 +1084,21 @@
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateMediaFeatures should work with forced-colors",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
+    "parameters": ["firefox"],
     "expectations": ["FAIL"],
     "comment": "emulateMediaFeatures relies on CDP Emulation.setEmulatedMedia which is not supported in Firefox BiDi"
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateMediaFeatures should work with prefers-contrast",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
+    "parameters": ["firefox"],
     "expectations": ["FAIL"],
     "comment": "emulateMediaFeatures relies on CDP Emulation.setEmulatedMedia which is not supported in Firefox BiDi"
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateMediaFeatures should work with prefers-reduced-transparency",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
+    "parameters": ["firefox"],
     "expectations": ["FAIL"],
     "comment": "emulateMediaFeatures relies on CDP Emulation.setEmulatedMedia which is not supported in Firefox BiDi"
   },
