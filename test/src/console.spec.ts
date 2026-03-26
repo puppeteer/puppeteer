@@ -164,7 +164,6 @@ describe('console', function () {
       }),
     ]);
     expect(message.text()).atLeastOneToContain([
-      '[object Object]',
       '[object Window]',
       'JSHandle@window', // WebDriver BiDi
     ]);
@@ -180,9 +179,8 @@ describe('console', function () {
     const log = await logPromise;
 
     expect(log.text()).atLeastOneToContain([
-      '1 2 3 [object Object]',
       '1 2 3 [object Window]',
-      '1 2 3 JSHandle@object', // WebDriver BiDi
+      '1 2 3 JSHandle@window', // WebDriver BiDi
     ]);
     expect(log.args()).toHaveLength(4);
     using property = await log.args()[3]!.getProperty('test');
