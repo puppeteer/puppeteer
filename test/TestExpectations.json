@@ -1944,7 +1944,13 @@
   {
     "testIdPattern": "[page.spec] Page Page.Events.error should throw when page crashes",
     "platforms": ["linux"],
-    "parameters": ["cdp", "chrome", "headless", "pipe"],
+    "parameters": [
+      "cdp",
+      "chrome",
+      "chrome-headless-shell",
+      "headless",
+      "pipe"
+    ],
     "expectations": ["FAIL", "PASS"],
     "comment": "Flaky on Linux"
   }
