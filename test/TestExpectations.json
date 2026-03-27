@@ -643,6 +643,13 @@
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.error should throw when page crashes",
+    "platforms": ["linux"],
+    "parameters": ["chrome", "headless", "cdp", "pipe"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "Flaky on Linux"
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.Events.error should throw when page crashes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],
