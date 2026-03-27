@@ -127,32 +127,20 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
   /**
    * If defined, indicates an ongoing screenshot opereation.
    */
-  #pageScreenshotMutex?: Mutex;
-  #screenshotOperationsCount = 0;
+  #pageScreenshotMutex = new Mutex();
 
   /**
    * @internal
    */
   startScreenshot(): Promise<InstanceType<typeof Mutex.Guard>> {
-    const mutex = this.#pageScreenshotMutex || new Mutex();
-    this.#pageScreenshotMutex = mutex;
-    this.#screenshotOperationsCount++;
-    return mutex.acquire(() => {
-      this.#screenshotOperationsCount--;
-      if (this.#screenshotOperationsCount === 0) {
-        // Remove the mutex to indicate no ongoing screenshot operation.
-        this.#pageScreenshotMutex = undefined;
-      }
-    });
+    return this.#pageScreenshotMutex.acquire();
   }
 
   /**
    * @internal
    */
-  waitForScreenshotOperations():
-    | Promise<InstanceType<typeof Mutex.Guard>>
-    | undefined {
-    return this.#pageScreenshotMutex?.acquire();
+  waitForScreenshotOperations(): Promise<InstanceType<typeof Mutex.Guard>> {
+    return this.#pageScreenshotMutex.acquire();
   }
 
   /**
