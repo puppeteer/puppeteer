@@ -113,6 +113,7 @@ import {
   NodeLocator,
   type AwaitedLocator,
 } from './locators/locators.js';
+import type {Extension} from './Extension.js';
 import type {Target} from './Target.js';
 import type {WebWorker} from './WebWorker.js';
 
@@ -2732,6 +2733,14 @@ export abstract class Page extends EventEmitter<PageEvents> {
     await this._maybeWriteTypedArrayToFile(options.path, typedArray);
     return typedArray;
   }
+
+  /**
+   * Triggers an extension action for the given extension.
+   *
+   * @param extension - The extension to trigger the action for.
+   * @public
+   */
+  abstract triggerExtensionAction(extension: Extension): Promise<void>;
 
   /**
    * Emulates focus state of the page.

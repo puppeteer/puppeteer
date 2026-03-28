@@ -11,6 +11,7 @@ export * from './CDPSession.js';
 export * from './DeviceRequestPrompt.js';
 export * from './Dialog.js';
 export * from './ElementHandle.js';
+export * from './Extension.js';
 export type * from './Environment.js';
 export * from './Frame.js';
 export * from './HTTPRequest.js';
