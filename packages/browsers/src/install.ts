@@ -29,6 +29,14 @@ import type {BrowserProvider} from './provider.js';
 
 const debugInstall = debug('puppeteer:browsers:install');
 
+interface InstallProgressCallbackSet {
+  downloadProgressCallback?: (
+    downloadedBytes: number,
+    totalBytes: number,
+  ) => void;
+  onExtract?: () => void;
+}
+
 const times = new Map<string, [number, number]>();
 function debugTime(label: string) {
   times.set(label, process.hrtime());
@@ -77,8 +85,8 @@ export interface InstallOptions {
   buildIdAlias?: string;
   /**
    * Provides information about the progress of the download. If set to
-   * 'default', the default callback implementing a progress bar will be
-   * used.
+   * 'default', the default callback implementing a progress bar and install
+   * status updates will be used.
    */
   downloadProgressCallback?:
     | 'default'
@@ -361,11 +369,14 @@ async function installUrl(
     );
   }
   let downloadProgressCallback = options.downloadProgressCallback;
+  let onExtract: (() => void) | undefined;
   if (downloadProgressCallback === 'default') {
-    downloadProgressCallback = await makeProgressCallback(
+    const progressCallbackSet = makeProgressCallbackSet(
       options.browser,
       options.buildIdAlias ?? options.buildId,
     );
+    downloadProgressCallback = progressCallbackSet.downloadProgressCallback;
+    onExtract = progressCallbackSet.onExtract;
   }
   const fileName = decodeURIComponent(url.toString()).split('/').pop();
   assert(fileName, `A malformed download URL was found: ${url}.`);
@@ -448,6 +459,7 @@ async function installUrl(
     }
 
     debugInstall(`Installing ${archivePath} to ${outputPath}`);
+    onExtract?.();
     try {
       debugTime('extract');
       await unpackArchive(archivePath, outputPath);
@@ -627,24 +639,36 @@ export function makeProgressCallback(
   browser: Browser,
   buildId: string,
 ): (downloadedBytes: number, totalBytes: number) => void {
+  return makeProgressCallbackSet(browser, buildId).downloadProgressCallback!;
+}
+
+function makeProgressCallbackSet(
+  browser: Browser,
+  buildId: string,
+): InstallProgressCallbackSet {
   let progressBar: ProgressBar;
 
   let lastDownloadedBytes = 0;
-  return (downloadedBytes: number, totalBytes: number) => {
-    if (!progressBar) {
-      progressBar = new ProgressBarClass(
-        `Downloading ${browser} ${buildId} - ${toMegabytes(totalBytes)} [:bar] :percent :etas `,
-        {
-          complete: '=',
-          incomplete: ' ',
-          width: 20,
-          total: totalBytes,
-        },
-      );
-    }
-    const delta = downloadedBytes - lastDownloadedBytes;
-    lastDownloadedBytes = downloadedBytes;
-    progressBar.tick(delta);
+  return {
+    downloadProgressCallback: (downloadedBytes: number, totalBytes: number) => {
+      if (!progressBar) {
+        progressBar = new ProgressBarClass(
+          `Downloading ${browser} ${buildId} - ${toMegabytes(totalBytes)} [:bar] :percent :etas `,
+          {
+            complete: '=',
+            incomplete: ' ',
+            width: 20,
+            total: totalBytes,
+          },
+        );
+      }
+      const delta = downloadedBytes - lastDownloadedBytes;
+      lastDownloadedBytes = downloadedBytes;
+      progressBar.tick(delta);
+    },
+    onExtract: () => {
+      process.stderr.write(`Unpacking ${browser} ${buildId}\n`);
+    },
   };
 }
 

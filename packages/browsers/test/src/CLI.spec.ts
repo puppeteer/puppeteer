@@ -130,4 +130,32 @@ describe('CLI', function () {
     );
     assert.strictEqual(found[2], 'chrome', 'Expected browser to match');
   });
+
+  it('should report when unpacking starts', async () => {
+    const logs: string[] = [];
+    const originalStderrWrite = process.stderr.write.bind(process.stderr);
+
+    process.stderr.write = chunk => {
+      logs.push(chunk.toString());
+      return true;
+    };
+
+    try {
+      await new CLI(tmpDir).run([
+        'npx',
+        '@puppeteer/browsers',
+        'install',
+        `chrome@${testChromeBuildId}`,
+        `--path=${tmpDir}`,
+        `--base-url=${getServerUrl()}`,
+      ]);
+    } finally {
+      process.stderr.write = originalStderrWrite;
+    }
+
+    assert(
+      logs.join('').includes(`Unpacking chrome ${testChromeBuildId}`),
+      `Expected unpacking status in ${JSON.stringify(logs)}`,
+    );
+  });
 });
