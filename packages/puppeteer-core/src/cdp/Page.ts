@@ -32,10 +32,8 @@ import {
   type ScreenshotOptions,
   type WaitTimeoutOptions,
 } from '../api/Page.js';
-import {
-  ConsoleMessage,
-  type ConsoleMessageType,
-} from '../common/ConsoleMessage.js';
+import {WebWorker, WebWorkerEvent} from '../api/WebWorker.js';
+import {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {
   Cookie,
   DeleteCookiesRequest,
@@ -86,20 +84,12 @@ import {TargetManagerEvent} from './TargetManageEvents.js';
 import type {TargetManager} from './TargetManager.js';
 import {Tracing} from './Tracing.js';
 import {
+  convertConsoleMessageLevel,
   createClientError,
+  createConsoleMessage,
   pageBindingInitString,
-  valueFromJSHandle,
 } from './utils.js';
 import {CdpWebWorker} from './WebWorker.js';
-
-function convertConsoleMessageLevel(method: string): ConsoleMessageType {
-  switch (method) {
-    case 'warning':
-      return 'warn';
-    default:
-      return method as ConsoleMessageType;
-  }
-}
 
 /**
  * @internal
@@ -368,11 +358,29 @@ export class CdpPage extends Page {
         session.target().url(),
         session.target()._targetId,
         session.target().type(),
-        this.#onConsoleAPI.bind(this),
         this.#handleException.bind(this),
         this.#frameManager.networkManager,
       );
       this.#workers.set(session.id(), worker);
+      worker.internalEmitter.on(WebWorkerEvent.Console, message => {
+        const noListenersForConsoleOnPage =
+          this.listenerCount(PageEvent.Console) === 0;
+        const noListenersForConsoleOnWorker =
+          worker.listenerCount(WebWorkerEvent.Console) === 0;
+
+        if (noListenersForConsoleOnPage && noListenersForConsoleOnWorker) {
+          // eslint-disable-next-line max-len -- The comment is long.
+          // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
+          for (const arg of message.args()) {
+            void arg.dispose().catch(debugError);
+          }
+          return;
+        }
+
+        if (!noListenersForConsoleOnPage) {
+          this.emit(PageEvent.Console, message);
+        }
+      });
       this.emit(PageEvent.WorkerCreated, worker);
     }
     session.on(CDPSessionEvent.Ready, this.#onAttachedToTarget);
@@ -905,32 +913,28 @@ export class CdpPage extends Page {
   #onConsoleAPI(
     world: IsolatedWorld,
     event: Protocol.Runtime.ConsoleAPICalledEvent,
+    values?: JSHandle[],
   ): void {
-    const values = event.args.map(arg => {
-      return world.createCdpHandle(arg);
-    });
-
-    if (!this.listenerCount(PageEvent.Console)) {
-      values.forEach(arg => {
-        return arg.dispose();
+    if (!values) {
+      values = event.args.map(arg => {
+        return world.createCdpHandle(arg);
       });
-      return;
     }
-    const textTokens = [];
-    // eslint-disable-next-line max-len -- The comment is long.
-    // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
-    for (const arg of values) {
-      textTokens.push(valueFromJSHandle(arg));
-    }
-    const stackTraceLocations = [];
-    if (event.stackTrace) {
-      for (const callFrame of event.stackTrace.callFrames) {
-        stackTraceLocations.push({
-          url: callFrame.url,
-          lineNumber: callFrame.lineNumber,
-          columnNumber: callFrame.columnNumber,
-        });
+
+    const hasPageConsoleListeners = this.listenerCount(PageEvent.Console) > 0;
+    const hasWorkerConsoleListeners =
+      world.environment instanceof WebWorker &&
+      world.environment.listenerCount(WebWorkerEvent.Console) > 0;
+
+    if (!hasPageConsoleListeners) {
+      if (!hasWorkerConsoleListeners) {
+        // eslint-disable-next-line max-len -- The comment is long.
+        // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
+        for (const value of values) {
+          void value.dispose().catch(debugError);
+        }
       }
+      return;
     }
 
     let targetId;
@@ -938,16 +942,7 @@ export class CdpPage extends Page {
       targetId = world.environment.client.target()._targetId;
     }
 
-    const message = new ConsoleMessage(
-      convertConsoleMessageLevel(event.type),
-      textTokens.join(' '),
-      values,
-      stackTraceLocations,
-      undefined,
-      event.stackTrace,
-      targetId,
-    );
-    this.emit(PageEvent.Console, message);
+    this.emit(PageEvent.Console, createConsoleMessage(event, values, targetId));
   }
 
   async #onBindingCalled(

@@ -284,7 +284,6 @@ export class WorkerTarget extends CdpTarget {
   override async worker(): Promise<CdpWebWorker | null> {
     if (!this.#workerPromise) {
       const session = this._session();
-      // TODO(einbinder): Make workers send their console logs.
       this.#workerPromise = (
         session
           ? Promise.resolve(session)
@@ -295,7 +294,6 @@ export class WorkerTarget extends CdpTarget {
           this._getTargetInfo().url,
           this._targetId,
           this.type(),
-          () => {} /* consoleAPICalled */,
           () => {} /* exceptionThrown */,
           undefined /* networkManager */,
         );

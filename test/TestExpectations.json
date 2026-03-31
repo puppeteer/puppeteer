@@ -886,6 +886,13 @@
     "comment": "tests chrome-specific flags"
   },
   {
+    "testIdPattern": "[worker.spec] Workers console should return remote objects",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "BiDi does not support getting a Handle for log args"
+  },
+  {
     "testIdPattern": "[acceptInsecureCerts.spec] acceptInsecureCerts Response.securityDetails Network redirects should report SecurityDetails",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],

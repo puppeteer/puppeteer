@@ -7,6 +7,7 @@ import * as Bidi from 'webdriver-bidi-protocol';
 
 import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
+import {WebWorkerEvent} from '../api/WebWorker.js';
 import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
@@ -36,7 +37,12 @@ import {ExposableFunction} from './ExposedFunction.js';
 import type {BidiFrame} from './Frame.js';
 import {BidiJSHandle} from './JSHandle.js';
 import {BidiSerializer} from './Serializer.js';
-import {createEvaluationError, rewriteEvaluationError} from './util.js';
+import {
+  createEvaluationError,
+  getConsoleMessage,
+  isConsoleLogEntry,
+  rewriteEvaluationError,
+} from './util.js';
 import type {BidiWebWorker} from './WebWorker.js';
 
 /**
@@ -398,6 +404,28 @@ export class BidiWorkerRealm extends BidiRealm {
   ) {
     super(realm, frame.timeoutSettings);
     this.#worker = frame;
+  }
+
+  override initialize(): void {
+    super.initialize();
+    this.realm.on('log', entry => {
+      if (
+        isConsoleLogEntry(entry) &&
+        this.#worker.listenerCount(WebWorkerEvent.Console)
+      ) {
+        const args = entry.args.map(arg => {
+          return this.createHandle(arg);
+        });
+
+        const message = getConsoleMessage(
+          entry,
+          args,
+          undefined,
+          this.realm.id,
+        );
+        this.#worker.emit(WebWorkerEvent.Console, message);
+      }
+    });
   }
 
   override get environment(): BidiWebWorker {

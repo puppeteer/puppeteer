@@ -637,6 +637,13 @@ All the events that a page instance may emit.
 </td><td>
 
 </td></tr>
+<tr><td>
+
+<span id="webworkerevent">[WebWorkerEvent](./puppeteer.webworkerevent.md)</span>
+
+</td><td>
+
+</td></tr>
 </tbody></table>
 
 ## Functions
@@ -1368,6 +1375,13 @@ The TouchHandle interface exposes methods to manipulate touches that have been s
 <tr><td>
 
 <span id="waittimeoutoptions">[WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="webworkerevents">[WebWorkerEvents](./puppeteer.webworkerevents.md)</span>
 
 </td><td>
 
