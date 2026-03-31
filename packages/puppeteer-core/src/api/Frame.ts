@@ -39,7 +39,7 @@ import {
   NodeLocator,
   type Locator,
 } from './locators/locators.js';
-import type {Realm, TinyRealm} from './Realm.js';
+import type {Realm} from './Realm.js';
 
 /**
  * @public
@@ -1207,5 +1207,5 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    *
    * @public
    */
-  abstract getRealms(): [string | Symbol, TinyRealm][];
+  abstract getRealms(): Array<[string | symbol, Realm]>;
 }

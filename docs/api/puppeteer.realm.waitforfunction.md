@@ -1,13 +1,13 @@
 ---
-sidebar_label: TinyRealm.waitForFunction
+sidebar_label: Realm.waitForFunction
 ---
 
-# TinyRealm.waitForFunction() method
+# Realm.waitForFunction() method
 
 ### Signature
 
 ```typescript
-interface TinyRealm {
+class Realm {
   waitForFunction<
     Params extends unknown[],
     Func extends EvaluateFunc<InnerLazyParams<Params>> = EvaluateFunc<
@@ -15,7 +15,7 @@ interface TinyRealm {
     >,
   >(
     pageFunction: Func | string,
-    options: {
+    options?: {
       polling?: 'raf' | 'mutation' | number;
       timeout?: number;
       root?: ElementHandle<Node>;
@@ -61,6 +61,8 @@ options
 &#123; polling?: 'raf' \| 'mutation' \| number; timeout?: number; root?: [ElementHandle](./puppeteer.elementhandle.md)&lt;Node&gt;; signal?: AbortSignal; &#125;
 
 </td><td>
+
+_(Optional)_
 
 </td></tr>
 <tr><td>

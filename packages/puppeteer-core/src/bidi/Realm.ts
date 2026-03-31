@@ -5,6 +5,7 @@
  */
 import * as Bidi from 'webdriver-bidi-protocol';
 
+import type {Extension} from '../api/Extension.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
 import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
@@ -38,7 +39,6 @@ import {BidiJSHandle} from './JSHandle.js';
 import {BidiSerializer} from './Serializer.js';
 import {createEvaluationError, rewriteEvaluationError} from './util.js';
 import type {BidiWebWorker} from './WebWorker.js';
-import {Extension} from '../api/Extension.js';
 
 /**
  * @internal
@@ -283,12 +283,12 @@ export abstract class BidiRealm extends Realm {
     return await transferredHandle;
   }
 
-  override set worldId(_worldId: string | Symbol) {
+  override set worldId(_worldId: string | symbol) {
     // TODO: Understand how to handle this on BidiRealm
     throw new Error('worldId are defined only for CDP implementations.');
   }
 
-  override get worldId(): string | Symbol {
+  override get worldId(): string | symbol {
     // TODO: Understand how to handle this on BidiRealm
     throw new Error('worldId are defined only for CDP implementations.');
   }

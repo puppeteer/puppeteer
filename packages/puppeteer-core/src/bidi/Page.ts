@@ -12,8 +12,8 @@ import type {BluetoothEmulation} from '../api/BluetoothEmulation.js';
 import type {WindowId} from '../api/Browser.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
-import type {Extension} from '../api/Extension.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
+import type {Extension} from '../api/Extension.js';
 import type {WaitForOptions} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {
@@ -52,6 +52,7 @@ import type {PDFOptions} from '../common/PDFOptions.js';
 import type {Awaitable} from '../common/types.js';
 import {evaluationString, parsePDFOptions, timeout} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
+import type {Realm} from '../puppeteer-core.js';
 import {assert} from '../util/assert.js';
 import {bubble} from '../util/decorators.js';
 import {Deferred} from '../util/Deferred.js';
@@ -1009,6 +1010,10 @@ export class BidiPage extends Page {
 
   override get bluetooth(): BluetoothEmulation {
     return this.mainFrame().browsingContext.bluetooth;
+  }
+
+  override realms(): Array<[string | symbol, Realm]> {
+    return this.mainFrame().getRealms();
   }
 }
 

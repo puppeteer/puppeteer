@@ -949,6 +949,15 @@ This method iterates the JavaScript heap and finds all objects with the given pr
 </td></tr>
 <tr><td>
 
+<span id="realms">[realms()](./puppeteer.page.realms.md)</span>
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="reload">[reload(options)](./puppeteer.page.reload.md)</span>
 
 </td><td>
@@ -1324,6 +1333,17 @@ The page's title
 **Remarks:**
 
 Shortcut for [page.mainFrame().title()](./puppeteer.frame.title.md).
+
+</td></tr>
+<tr><td>
+
+<span id="triggerextensionaction">[triggerExtensionAction(extension)](./puppeteer.page.triggerextensionaction.md)</span>
+
+</td><td>
+
+</td><td>
+
+Triggers an extension action for the given extension.
 
 </td></tr>
 <tr><td>

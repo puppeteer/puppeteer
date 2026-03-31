@@ -53,7 +53,8 @@ export class CdpWebWorker extends WebWorker {
     this.#id = targetId;
     this.#client = client;
     this.#targetType = targetType;
-    // TODO: Understand how to define world name for WebWorkers (for now targetId+'_worker_world')
+    // TODO: Understand how to define world name for WebWorkers
+    // (for now targetId+'_worker_world')
     this.#world = new IsolatedWorld(
       this,
       new TimeoutSettings(),

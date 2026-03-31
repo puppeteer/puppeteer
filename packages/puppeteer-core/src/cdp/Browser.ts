@@ -23,6 +23,7 @@ import {
 } from '../api/Browser.js';
 import {BrowserContextEvent} from '../api/BrowserContext.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
+import {Extension} from '../api/Extension.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
@@ -41,7 +42,6 @@ import {
 } from './Target.js';
 import {TargetManagerEvent} from './TargetManageEvents.js';
 import {TargetManager} from './TargetManager.js';
-import {Extension} from '../api/Extension.js';
 
 /**
  * @internal
@@ -566,7 +566,9 @@ export class CdpBrowser extends BrowserBase {
   ): Promise<Extension | null> {
     const extensions = await this.extensions();
 
-    const extension = extensions.find(ext => ext.id === extensionId);
+    const extension = extensions.find(ext => {
+      return ext.id === extensionId;
+    });
     return extension || null;
   }
 }

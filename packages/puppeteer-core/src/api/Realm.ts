@@ -15,15 +15,32 @@ import {disposeSymbol} from '../util/disposable.js';
 
 import type {ElementHandle} from './ElementHandle.js';
 import type {Environment} from './Environment.js';
-import {Extension} from './Extension.js';
+import type {Extension} from './Extension.js';
 import type {JSHandle} from './JSHandle.js';
 
 /**
  * @public
  */
-export interface TinyRealm {
-  get worldId(): string | Symbol;
-  set worldId(worldId: string | Symbol);
+export abstract class Realm implements Disposable {
+  /** @internal */
+  protected readonly timeoutSettings: TimeoutSettings;
+  /** @internal */
+  readonly taskManager = new TaskManager();
+  /** @internal */
+  constructor(timeoutSettings: TimeoutSettings) {
+    this.timeoutSettings = timeoutSettings;
+  }
+  /** @internal */
+  abstract get environment(): Environment;
+
+  /**
+   * The identifier for this realm.
+   *
+   * @public
+   */
+  abstract get worldId(): string | symbol;
+
+  abstract set worldId(worldId: string | symbol);
 
   /**
    * This method returns the extension from the ExecutionContext paired with the realm
@@ -31,59 +48,15 @@ export interface TinyRealm {
    *
    * @public
    */
-  extension(): Promise<Extension | null>;
+  abstract extension(): Promise<Extension | null>;
 
-  evaluateHandle<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
-
-  evaluate<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-
-  waitForFunction<
-    Params extends unknown[],
-    Func extends EvaluateFunc<InnerLazyParams<Params>> = EvaluateFunc<
-      InnerLazyParams<Params>
-    >,
-  >(
-    pageFunction: Func | string,
-    options: {
-      polling?: 'raf' | 'mutation' | number;
-      timeout?: number;
-      root?: ElementHandle<Node>;
-      signal?: AbortSignal;
-    },
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
-}
-
-/**
- * @internal
- */
-export abstract class Realm implements Disposable, TinyRealm {
-  protected readonly timeoutSettings: TimeoutSettings;
-  readonly taskManager = new TaskManager();
-
-  constructor(timeoutSettings: TimeoutSettings) {
-    this.timeoutSettings = timeoutSettings;
-  }
-
-  abstract get environment(): Environment;
-
-  abstract get worldId(): string | Symbol;
-  abstract set worldId(worldId: string | Symbol);
-
+  /** @internal */
   abstract adoptHandle<T extends JSHandle<Node>>(handle: T): Promise<T>;
+
+  /** @internal */
   abstract transferHandle<T extends JSHandle<Node>>(handle: T): Promise<T>;
+
+  /** @public */
   abstract evaluateHandle<
     Params extends unknown[],
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
@@ -91,6 +64,8 @@ export abstract class Realm implements Disposable, TinyRealm {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
+
+  /** @public */
   abstract evaluate<
     Params extends unknown[],
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
@@ -99,6 +74,7 @@ export abstract class Realm implements Disposable, TinyRealm {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
 
+  /** @public */
   async waitForFunction<
     Params extends unknown[],
     Func extends EvaluateFunc<InnerLazyParams<Params>> = EvaluateFunc<
@@ -139,12 +115,15 @@ export abstract class Realm implements Disposable, TinyRealm {
     return await waitTask.result;
   }
 
+  /** @internal */
   abstract adoptBackendNode(backendNodeId?: number): Promise<JSHandle<Node>>;
 
+  /** @internal */
   get disposed(): boolean {
     return this.#disposed;
   }
 
+  /** @internal */
   #disposed = false;
   /** @internal */
   dispose(): void {
@@ -157,6 +136,4 @@ export abstract class Realm implements Disposable, TinyRealm {
   [disposeSymbol](): void {
     this.dispose();
   }
-
-  abstract extension(): Promise<Extension | null>;
 }

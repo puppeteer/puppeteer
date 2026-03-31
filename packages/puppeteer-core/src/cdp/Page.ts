@@ -61,6 +61,7 @@ import {
 } from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {environment} from '../environment.js';
+import type {Realm} from '../index-browser.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {AsyncDisposableStack} from '../util/disposable.js';
@@ -1316,6 +1317,10 @@ export class CdpPage extends Page {
 
   override get bluetooth(): BluetoothEmulation {
     return this.#cdpBluetoothEmulation;
+  }
+
+  override realms(): Array<[string | symbol, Realm]> {
+    return this.mainFrame().getRealms();
   }
 }
 

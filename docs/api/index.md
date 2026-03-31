@@ -228,6 +228,15 @@ The constructor for this class is marked as internal. Third-party code should no
 </td></tr>
 <tr><td>
 
+<span id="extension">[Extension](./puppeteer.extension.md)</span>
+
+</td><td>
+
+[Extension](./puppeteer.extension.md) represents an Extension instance installed in the browser.
+
+</td></tr>
+<tr><td>
+
 <span id="extensiontransport">[ExtensionTransport](./puppeteer.extensiontransport.md)</span>
 
 </td><td>
@@ -463,6 +472,17 @@ The most common method to use is [launch](./puppeteer.puppeteernode.launch.md), 
 See [the main Puppeteer class](./puppeteer.puppeteer.md) for methods common to all environments, such as [Puppeteer.connect()](./puppeteer.puppeteer.connect.md).
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `PuppeteerNode` class.
+
+</td></tr>
+<tr><td>
+
+<span id="realm">[Realm](./puppeteer.realm.md)</span>
+
+</td><td>
+
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Realm` class.
 
 </td></tr>
 <tr><td>
@@ -1312,13 +1332,6 @@ Represents a Node and the properties of it that are relevant to Accessibility.
 </td><td>
 
 WebDriver BiDi capabilities that are not set by Puppeteer itself.
-
-</td></tr>
-<tr><td>
-
-<span id="tinyrealm">[TinyRealm](./puppeteer.tinyrealm.md)</span>
-
-</td><td>
 
 </td></tr>
 <tr><td>

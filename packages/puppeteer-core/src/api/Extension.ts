@@ -5,10 +5,10 @@
  */
 /// <reference types="node"  preserve="true"/>
 
-import {Browser} from './Browser';
-import {Page} from './Page';
-import {Target} from './Target';
-import {WebWorker} from './WebWorker';
+import type {Browser} from './Browser.js';
+import type {Page} from './Page.js';
+import type {Target} from './Target.js';
+import type {WebWorker} from './WebWorker.js';
 
 /**
  * {@link Extension} represents an Extension instance installed in the browser.
@@ -22,7 +22,7 @@ export class Extension {
   #version: string;
   #name: string;
 
-  #pages: WeakMap<Target, Page> = new WeakMap();
+  #pages = new WeakMap<Target, Page>();
 
   constructor(id: string, version: string, name: string, browser: Browser) {
     this.#id = id;
@@ -35,15 +35,15 @@ export class Extension {
     }
   }
 
-  get version() {
+  get version(): string {
     return this.#version;
   }
 
-  get name() {
+  get name(): string {
     return this.#name;
   }
 
-  get id() {
+  get id(): string {
     return this.#id;
   }
 

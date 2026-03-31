@@ -44,4 +44,4 @@ string
 
 **Returns:**
 
-Promise&lt;Extension \| null&gt;
+Promise&lt;[Extension](./puppeteer.extension.md) \| null&gt;

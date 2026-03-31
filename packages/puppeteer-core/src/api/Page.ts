@@ -92,6 +92,7 @@ import type {
   ClickOptions,
   ElementHandle,
 } from './ElementHandle.js';
+import type {Extension} from './Extension.js';
 import type {
   Frame,
   FrameAddScriptTagOptions,
@@ -113,7 +114,7 @@ import {
   NodeLocator,
   type AwaitedLocator,
 } from './locators/locators.js';
-import type {Extension} from './Extension.js';
+import type {Realm} from './Realm.js';
 import type {Target} from './Target.js';
 import type {WebWorker} from './WebWorker.js';
 
@@ -3240,6 +3241,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * {@inheritDoc BluetoothEmulation}
    */
   abstract get bluetooth(): BluetoothEmulation;
+
+  /**
+   * @public
+   */
+  abstract realms(): Array<[string | symbol, Realm]>;
 }
 
 /**

@@ -7,8 +7,10 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {firstValueFrom, map, raceWith} from '../../third_party/rxjs/rxjs.js';
+import type {Browser} from '../api/Browser.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
+import type {Extension} from '../api/Extension.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -24,11 +26,10 @@ import {disposeSymbol} from '../util/disposable.js';
 import {CdpElementHandle} from './ElementHandle.js';
 import type {ExecutionContext} from './ExecutionContext.js';
 import type {CdpFrame} from './Frame.js';
-import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
+import type {PUPPETEER_WORLD} from './IsolatedWorlds.js';
+import {MAIN_WORLD} from './IsolatedWorlds.js';
 import {CdpJSHandle} from './JSHandle.js';
 import type {CdpWebWorker} from './WebWorker.js';
-import {Extension} from '../api/Extension.js';
-import {Browser} from '../api/Browser.js';
 
 /**
  * @internal
@@ -68,7 +69,7 @@ export type IsolatedWorldEmitter = EventEmitter<{
 export class IsolatedWorld extends Realm {
   #context?: ExecutionContext;
   #emitter: IsolatedWorldEmitter = new EventEmitter();
-  #worldId: string | Symbol;
+  #worldId: string | symbol;
   #browser?: Browser;
 
   readonly #frameOrWorker: CdpFrame | CdpWebWorker;
@@ -76,7 +77,7 @@ export class IsolatedWorld extends Realm {
   constructor(
     frameOrWorker: CdpFrame | CdpWebWorker,
     timeoutSettings: TimeoutSettings,
-    worldId: string | Symbol,
+    worldId: string | symbol,
     browser?: Browser,
   ) {
     super(timeoutSettings);
@@ -272,11 +273,11 @@ export class IsolatedWorld extends Realm {
     this.#emitter.removeAllListeners();
   }
 
-  override set worldId(worldId: string | Symbol) {
+  override set worldId(worldId: string | symbol) {
     this.#worldId = worldId;
   }
 
-  override get worldId(): string | Symbol {
+  override get worldId(): string | symbol {
     return this.#worldId;
   }
 

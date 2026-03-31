@@ -21,6 +21,7 @@ import {
   type DebugInfo,
 } from '../api/Browser.js';
 import {BrowserContextEvent} from '../api/BrowserContext.js';
+import type {Extension} from '../api/Extension.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {Connection as CdpConnection} from '../cdp/Connection.js';
@@ -37,7 +38,6 @@ import type {Browser as BrowserCore} from './core/Browser.js';
 import {Session} from './core/Session.js';
 import type {UserContext} from './core/UserContext.js';
 import {BidiBrowserTarget} from './Target.js';
-import {Extension} from '../api/Extension.js';
 
 /**
  * @internal

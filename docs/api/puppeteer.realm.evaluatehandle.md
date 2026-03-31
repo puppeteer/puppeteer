@@ -1,14 +1,14 @@
 ---
-sidebar_label: TinyRealm.evaluateHandle
+sidebar_label: Realm.evaluateHandle
 ---
 
-# TinyRealm.evaluateHandle() method
+# Realm.evaluateHandle() method
 
 ### Signature
 
 ```typescript
-interface TinyRealm {
-  evaluateHandle<
+class Realm {
+  abstract evaluateHandle<
     Params extends unknown[],
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(

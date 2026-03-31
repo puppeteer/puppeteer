@@ -16,4 +16,4 @@ class Browser {
 
 **Returns:**
 
-Promise&lt;Extension\[\]&gt;
+Promise&lt;[Extension](./puppeteer.extension.md)\[\]&gt;

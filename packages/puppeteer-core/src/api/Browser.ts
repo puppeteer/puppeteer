@@ -32,9 +32,9 @@ import {
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
 import type {BrowserContext} from './BrowserContext.js';
+import type {Extension} from './Extension.js';
 import type {Page} from './Page.js';
 import type {Target} from './Target.js';
-import {Extension} from './Extension.js';
 /**
  * @public
  */

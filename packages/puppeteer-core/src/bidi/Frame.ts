@@ -29,6 +29,7 @@ import {
   type WaitForOptions,
 } from '../api/Frame.js';
 import {PageEvent, type WaitTimeoutOptions} from '../api/Page.js';
+import type {Realm} from '../api/Realm.js';
 import {Accessibility} from '../cdp/Accessibility.js';
 import type {ConsoleMessageType} from '../common/ConsoleMessage.js';
 import {
@@ -62,7 +63,6 @@ import type {BidiRealm} from './Realm.js';
 import {BidiFrameRealm} from './Realm.js';
 import {rewriteNavigationError} from './util.js';
 import {BidiWebWorker} from './WebWorker.js';
-import {TinyRealm} from '../api/Realm.js';
 
 // TODO: Remove this and map CDP the correct method.
 // Requires breaking change.
@@ -640,7 +640,7 @@ export class BidiFrame extends Frame {
     );
   }
 
-  override getRealms(): [string | Symbol, TinyRealm][] {
+  override getRealms(): Array<[string | symbol, Realm]> {
     return [];
   }
 }
