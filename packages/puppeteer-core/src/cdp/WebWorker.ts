@@ -13,6 +13,7 @@ import {
   WebWorkerEvent,
   type WebWorkerEvents,
 } from '../api/WebWorker.js';
+import {EventEmitter} from '../common/EventEmitter.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import {debugError} from '../common/util.js';
 
@@ -20,7 +21,6 @@ import {ExecutionContext} from './ExecutionContext.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import type {NetworkManager} from './NetworkManager.js';
 import {createConsoleMessage} from './utils.js';
-import {EventEmitter} from '../common/EventEmitter.js';
 
 /**
  * @internal
@@ -39,7 +39,7 @@ export class CdpWebWorker extends WebWorker {
   readonly #targetType: TargetType;
   readonly #emitter: EventEmitter<WebWorkerEvents>;
 
-  get internalEmitter() {
+  get internalEmitter(): EventEmitter<WebWorkerEvents> {
     return this.#emitter;
   }
 
