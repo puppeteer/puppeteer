@@ -4,14 +4,38 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import type {ConsoleMessage} from '../common/ConsoleMessage.js';
 import {UnsupportedOperation} from '../common/Errors.js';
-import {EventEmitter, type EventType} from '../common/EventEmitter.js';
+import type {EventType} from '../common/EventEmitter.js';
+import {EventEmitter} from '../common/EventEmitter.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {EvaluateFunc, HandleFor} from '../common/types.js';
 import {withSourcePuppeteerURLIfNone} from '../common/util.js';
 
 import type {CDPSession} from './CDPSession.js';
 import type {Realm} from './Realm.js';
+
+/**
+ * @public
+ */
+export enum WebWorkerEvent {
+  /**
+   * Emitted when the worker calls a console API.
+   */
+  Console = 'console',
+  /**
+   * Emitted when the worker throws an exception.
+   */
+  Error = 'error',
+}
+
+/**
+ * @public
+ */
+export interface WebWorkerEvents extends Record<EventType, unknown> {
+  [WebWorkerEvent.Console]: ConsoleMessage;
+  [WebWorkerEvent.Error]: Error;
+}
 
 /**
  * This class represents a
@@ -39,9 +63,7 @@ import type {Realm} from './Realm.js';
  *
  * @public
  */
-export abstract class WebWorker extends EventEmitter<
-  Record<EventType, unknown>
-> {
+export abstract class WebWorker extends EventEmitter<WebWorkerEvents> {
   /**
    * @internal
    */

@@ -71,47 +71,72 @@ describe('console', function () {
 
     expect(message.text()).toEqual('SOME_LOG_MESSAGE');
   });
-  it('should work for different console API calls with logging functions', async () => {
+  it('should work for console.trace', async () => {
     const {page} = await getTestState();
 
-    const messages: ConsoleMessage[] = [];
-    page.on('console', msg => {
-      return messages.push(msg);
-    });
-    // All console events will be reported before `page.evaluate` is finished.
-    await page.evaluate(() => {
-      console.trace('calling console.trace');
-      console.dir('calling console.dir');
-      console.warn('calling console.warn');
-      console.error('calling console.error');
-      console.log(Promise.resolve('should not wait until resolved!'));
-    });
-    expect(
-      messages.map(msg => {
-        return msg.type();
+    const [message] = await Promise.all([
+      waitEvent<ConsoleMessage>(page, 'console'),
+      page.evaluate(() => {
+        console.trace('calling console.trace');
       }),
-    ).toEqual(['trace', 'dir', 'warn', 'error', 'log']);
-    const texts = messages.map(msg => {
-      return msg.text();
-    });
-    try {
-      expect(texts).toEqual([
-        'calling console.trace',
-        'calling console.dir',
-        'calling console.warn',
-        'calling console.error',
-        '[promise Promise]',
-      ]);
-    } catch {
-      // WebDriver BiDi expectation.
-      expect(texts).toEqual([
-        'calling console.trace',
-        'calling console.dir',
-        'calling console.warn',
-        'calling console.error',
-        'JSHandle@promise',
-      ]);
-    }
+    ]);
+    expect(message.type()).toBe('trace');
+    expect(message.text()).toBe('calling console.trace');
+  });
+
+  it('should work for console.dir', async () => {
+    const {page} = await getTestState();
+
+    const [message] = await Promise.all([
+      waitEvent<ConsoleMessage>(page, 'console'),
+      page.evaluate(() => {
+        console.dir('calling console.dir');
+      }),
+    ]);
+    expect(message.type()).toBe('dir');
+    expect(message.text()).toBe('calling console.dir');
+  });
+
+  it('should work for console.warn', async () => {
+    const {page} = await getTestState();
+
+    const [message] = await Promise.all([
+      waitEvent<ConsoleMessage>(page, 'console'),
+      page.evaluate(() => {
+        console.warn('calling console.warn');
+      }),
+    ]);
+    expect(message.type()).toBe('warn');
+    expect(message.text()).toBe('calling console.warn');
+  });
+
+  it('should work for console.error', async () => {
+    const {page} = await getTestState();
+
+    const [message] = await Promise.all([
+      waitEvent<ConsoleMessage>(page, 'console'),
+      page.evaluate(() => {
+        console.error('calling console.error');
+      }),
+    ]);
+    expect(message.type()).toBe('error');
+    expect(message.text()).toBe('calling console.error');
+  });
+
+  it('should work for console.log with promise', async () => {
+    const {page} = await getTestState();
+
+    const [message] = await Promise.all([
+      waitEvent<ConsoleMessage>(page, 'console'),
+      page.evaluate(() => {
+        console.log(Promise.resolve('should not wait until resolved!'));
+      }),
+    ]);
+    expect(message.type()).toBe('log');
+    expect(message.text()).atLeastOneToContain([
+      '[promise Promise]',
+      'JSHandle@promise', // WebDriver BiDi expectation.
+    ]);
   });
   it('should work for different console API calls with timing functions', async () => {
     const {page} = await getTestState();
@@ -164,7 +189,6 @@ describe('console', function () {
       }),
     ]);
     expect(message.text()).atLeastOneToContain([
-      '[object Object]',
       '[object Window]',
       'JSHandle@window', // WebDriver BiDi
     ]);
@@ -180,13 +204,27 @@ describe('console', function () {
     const log = await logPromise;
 
     expect(log.text()).atLeastOneToContain([
-      '1 2 3 [object Object]',
       '1 2 3 [object Window]',
-      '1 2 3 JSHandle@object', // WebDriver BiDi
+      '1 2 3 JSHandle@window', // WebDriver BiDi
     ]);
     expect(log.args()).toHaveLength(4);
     using property = await log.args()[3]!.getProperty('test');
     expect(await property.jsonValue()).toBe(1);
+  });
+  it('should not dispose handles when page has listeners', async () => {
+    const {page} = await getTestState();
+
+    const [message] = await Promise.all([
+      waitEvent<ConsoleMessage>(page, 'console'),
+      page.evaluate(() => {
+        return console.log({foo: 'bar'});
+      }),
+    ]);
+    using handle = message.args()[0]!;
+    expect(handle.disposed).toBe(false);
+    expect(await handle.jsonValue()).toEqual({foo: 'bar'});
+    await handle.dispose();
+    expect(handle.disposed).toBe(true);
   });
   it('should trigger correct Log', async () => {
     const {page, server, isChrome} = await getTestState();

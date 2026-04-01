@@ -7,8 +7,48 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {JSHandle} from '../api/JSHandle.js';
+import {
+  ConsoleMessage,
+  type ConsoleMessageType,
+} from '../common/ConsoleMessage.js';
 import {PuppeteerURL, evaluationString} from '../common/util.js';
 import {assert} from '../util/assert.js';
+
+/**
+ * @internal
+ */
+export function createConsoleMessage(
+  event: Protocol.Runtime.ConsoleAPICalledEvent,
+  values: JSHandle[],
+  targetId?: string,
+): ConsoleMessage {
+  const textTokens = [];
+  // eslint-disable-next-line max-len -- The comment is long.
+  // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
+  for (const arg of values) {
+    textTokens.push(valueFromJSHandle(arg));
+  }
+  const stackTraceLocations = [];
+  if (event.stackTrace) {
+    for (const callFrame of event.stackTrace.callFrames) {
+      stackTraceLocations.push({
+        url: callFrame.url,
+        lineNumber: callFrame.lineNumber,
+        columnNumber: callFrame.columnNumber,
+      });
+    }
+  }
+
+  return new ConsoleMessage(
+    convertConsoleMessageLevel(event.type),
+    textTokens.join(' '),
+    values,
+    stackTraceLocations,
+    undefined,
+    event.stackTrace,
+    targetId,
+  );
+}
 
 /**
  * @internal
@@ -268,4 +308,16 @@ export const CDP_BINDING_PREFIX = 'puppeteer_';
  */
 export function pageBindingInitString(type: string, name: string): string {
   return evaluationString(addPageBinding, type, name, CDP_BINDING_PREFIX);
+}
+
+/**
+ * @internal
+ */
+export function convertConsoleMessageLevel(method: string): ConsoleMessageType {
+  switch (method) {
+    case 'warning':
+      return 'warn';
+    default:
+      return method as ConsoleMessageType;
+  }
 }

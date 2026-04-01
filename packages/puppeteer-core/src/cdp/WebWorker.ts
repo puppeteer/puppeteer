@@ -8,21 +8,19 @@ import type {Protocol} from 'devtools-protocol';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {Realm} from '../api/Realm.js';
 import {TargetType} from '../api/Target.js';
-import {WebWorker} from '../api/WebWorker.js';
+import {
+  WebWorker,
+  WebWorkerEvent,
+  type WebWorkerEvents,
+} from '../api/WebWorker.js';
+import {EventEmitter} from '../common/EventEmitter.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import {debugError} from '../common/util.js';
 
 import {ExecutionContext} from './ExecutionContext.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import type {NetworkManager} from './NetworkManager.js';
-
-/**
- * @internal
- */
-export type ConsoleAPICalledCallback = (
-  world: IsolatedWorld,
-  event: Protocol.Runtime.ConsoleAPICalledEvent,
-) => void;
+import {createConsoleMessage} from './utils.js';
 
 /**
  * @internal
@@ -39,13 +37,17 @@ export class CdpWebWorker extends WebWorker {
   #client: CDPSession;
   readonly #id: string;
   readonly #targetType: TargetType;
+  readonly #emitter: EventEmitter<WebWorkerEvents>;
+
+  get internalEmitter(): EventEmitter<WebWorkerEvents> {
+    return this.#emitter;
+  }
 
   constructor(
     client: CDPSession,
     url: string,
     targetId: string,
     targetType: TargetType,
-    consoleAPICalled: ConsoleAPICalledCallback,
     exceptionThrown: ExceptionThrownCallback,
     networkManager?: NetworkManager,
   ) {
@@ -61,6 +63,7 @@ export class CdpWebWorker extends WebWorker {
       this.#id + '_worker_world',
       undefined,
     );
+    this.#emitter = new EventEmitter<WebWorkerEvents>();
 
     this.#client.once('Runtime.executionContextCreated', async event => {
       this.#world.setContext(
@@ -69,7 +72,29 @@ export class CdpWebWorker extends WebWorker {
     });
     this.#world.emitter.on('consoleapicalled', async event => {
       try {
-        return consoleAPICalled(this.#world, event);
+        const values = event.args.map(arg => {
+          return this.#world.createCdpHandle(arg);
+        });
+
+        const noInternalListeners =
+          this.#emitter.listenerCount(WebWorkerEvent.Console) === 0;
+        const noWorkerListeners =
+          this.listenerCount(WebWorkerEvent.Console) === 0;
+
+        if (noInternalListeners && noWorkerListeners) {
+          // eslint-disable-next-line max-len -- The comment is long.
+          // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
+          for (const value of values) {
+            void value.dispose().catch(debugError);
+          }
+          return;
+        }
+
+        const consoleMessages = createConsoleMessage(event, values, this.#id);
+        this.#emitter.emit(WebWorkerEvent.Console, consoleMessages);
+        if (!noWorkerListeners) {
+          this.emit(WebWorkerEvent.Console, consoleMessages);
+        }
       } catch (err) {
         debugError(err);
       }

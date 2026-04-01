@@ -6,10 +6,104 @@
 
 import type * as Bidi from 'webdriver-bidi-protocol';
 
+import type {Frame} from '../api/Frame.js';
+import {ConsoleMessage} from '../common/ConsoleMessage.js';
+import type {
+  ConsoleMessageLocation,
+  ConsoleMessageType,
+} from '../common/ConsoleMessage.js';
 import {ProtocolError, TimeoutError} from '../common/Errors.js';
 import {PuppeteerURL} from '../common/util.js';
 
+import type {BidiElementHandle} from './bidi.js';
 import {BidiDeserializer} from './Deserializer.js';
+import {BidiJSHandle} from './JSHandle.js';
+
+/**
+ * @internal
+ *
+ * TODO: Remove this and map CDP the correct method.
+ * Requires breaking change.
+ */
+export function convertConsoleMessageLevel(method: string): ConsoleMessageType {
+  switch (method) {
+    case 'group':
+      return 'startGroup';
+    case 'groupCollapsed':
+      return 'startGroupCollapsed';
+    case 'groupEnd':
+      return 'endGroup';
+    default:
+      return method as ConsoleMessageType;
+  }
+}
+
+/**
+ * @internal
+ */
+export function getStackTraceLocations(
+  stackTrace?: Bidi.Script.StackTrace,
+): ConsoleMessageLocation[] {
+  const stackTraceLocations: ConsoleMessageLocation[] = [];
+  if (stackTrace) {
+    for (const callFrame of stackTrace.callFrames) {
+      stackTraceLocations.push({
+        url: callFrame.url,
+        lineNumber: callFrame.lineNumber,
+        columnNumber: callFrame.columnNumber,
+      });
+    }
+  }
+  return stackTraceLocations;
+}
+
+/**
+ * @internal
+ */
+export function getConsoleMessage(
+  entry: Bidi.Log.ConsoleLogEntry,
+  args: Array<BidiJSHandle<unknown> | BidiElementHandle<Node>>,
+  frame?: Frame,
+  targetId?: string,
+): ConsoleMessage {
+  const text = args
+    .reduce((value, arg) => {
+      const parsedValue =
+        arg instanceof BidiJSHandle && arg.isPrimitiveValue
+          ? BidiDeserializer.deserialize(arg.remoteValue())
+          : arg.toString();
+      return `${value} ${parsedValue}`;
+    }, '')
+    .slice(1);
+
+  return new ConsoleMessage(
+    convertConsoleMessageLevel(entry.method),
+    text,
+    args,
+    getStackTraceLocations(entry.stackTrace),
+    frame,
+    undefined,
+    targetId,
+  );
+}
+
+/**
+ * @internal
+ */
+export function isConsoleLogEntry(
+  event: Bidi.Log.Entry,
+): event is Bidi.Log.ConsoleLogEntry {
+  return event.type === 'console';
+}
+
+/**
+ * @internal
+ */
+export function isJavaScriptLogEntry(
+  event: Bidi.Log.Entry,
+): event is Bidi.Log.JavascriptLogEntry {
+  return event.type === 'javascript';
+}
 
 /**
  * @internal

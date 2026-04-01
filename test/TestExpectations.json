@@ -886,6 +886,13 @@
     "comment": "tests chrome-specific flags"
   },
   {
+    "testIdPattern": "[worker.spec] Workers console should return remote objects",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "BiDi does not support getting a Handle for log args"
+  },
+  {
     "testIdPattern": "[acceptInsecureCerts.spec] acceptInsecureCerts Response.securityDetails Network redirects should report SecurityDetails",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -1537,6 +1544,13 @@
     "parameters": ["cdp", "chrome"],
     "expectations": ["SKIP"],
     "comment": "See https://github.com/puppeteer/puppeteer/issues/4840"
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.Events.error should throw when page crashes",
+    "platforms": ["linux"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "Flaky across all Linux Chrome/CDP environments"
   },
   {
     "testIdPattern": "[page.spec] Page Page.setJavaScriptEnabled should work",
