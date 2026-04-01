@@ -948,7 +948,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * TODO
    * @experimental
    */
-  abstract get webMCP(): WebMCP;
+  abstract get webmcp(): WebMCP;
 
   /**
    * {@inheritDoc Accessibility}

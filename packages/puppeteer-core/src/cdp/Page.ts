@@ -147,7 +147,7 @@ export class CdpPage extends Page {
   #frameManager: FrameManager;
   #emulationManager: EmulationManager;
   #tracing: Tracing;
-  #webMCP: WebMCP;
+  #webmcp: WebMCP;
   #bindings = new Map<string, Binding>();
   #exposedFunctions = new Map<string, string>();
   #coverage: Coverage;
@@ -174,7 +174,7 @@ export class CdpPage extends Page {
     this.#frameManager = new FrameManager(client, this, this._timeoutSettings);
     this.#emulationManager = new EmulationManager(client);
     this.#tracing = new Tracing(client);
-    this.#webMCP = new WebMCP(client);
+    this.#webmcp = new WebMCP(client);
     this.#coverage = new Coverage(client);
     this.#viewport = null;
 
@@ -296,7 +296,7 @@ export class CdpPage extends Page {
     this.#touchscreen.updateClient(newSession);
     this.#emulationManager.updateClient(newSession);
     this.#tracing.updateClient(newSession);
-    this.#webMCP.updateClient(newSession);
+    this.#webmcp.updateClient(newSession);
     this.#coverage.updateClient(newSession);
     await this.#frameManager.swapFrameTree(newSession);
     this.#setupPrimaryTargetListeners();
@@ -586,8 +586,8 @@ export class CdpPage extends Page {
     return this.#tracing;
   }
 
-  override get webMCP(): WebMCP {
-    return this.#webMCP;
+  override get webmcp(): WebMCP {
+    return this.#webmcp;
   }
 
   override frames(): Frame[] {

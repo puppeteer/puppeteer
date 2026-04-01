@@ -96,7 +96,7 @@ export class BidiPage extends Page {
   readonly mouse: BidiMouse;
   readonly touchscreen: BidiTouchscreen;
   readonly tracing: Tracing;
-  override get webMCP(): WebMCP {
+  override get webmcp(): WebMCP {
     throw new UnsupportedOperation();
   }
   readonly coverage: Coverage;

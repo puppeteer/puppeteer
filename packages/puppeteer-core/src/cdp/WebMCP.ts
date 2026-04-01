@@ -50,54 +50,34 @@ export interface WebMCPToolsRemovedEvent {
 /**
  * @public
  */
-export interface WebMCPToolInvokedEvent {
-  toolName: string;
-  frameId: string;
-  invocationId: string;
-  input: string;
-}
-
-/**
- * @public
- */
-export interface WebMCPToolRespondedEvent {
-  invocationId: string;
-  status: WebMCPInvocationStatus;
-  output?: unknown;
-  errorText?: string;
-  exception?: unknown;
-}
-
-/**
- * @public
- */
 export interface WebMCPEvents extends Record<PropertyKey, unknown> {
   toolsAdded: WebMCPToolsAddedEvent;
   toolsRemoved: WebMCPToolsRemovedEvent;
-  toolInvoked: WebMCPToolInvokedEvent;
-  toolResponded: WebMCPToolRespondedEvent;
 }
 
 /**
- * The WebMCP class provides an API for the WebMCP CDP domain.
+ * The WebMCP class provides an API for the WebMCP API.
  *
  * @public
  */
 export class WebMCP extends EventEmitter<WebMCPEvents> {
   #client: CDPSession;
-
-  #onToolsAdded = (event: any) => {
-    this.emit('toolsAdded', event);
-  };
+  #tools: Map<string, Map<string, WebMCPTool>>;
+  
   #onToolsRemoved = (event: any) => {
-    this.emit('toolsRemoved', event);
-  };
-  #onToolInvoked = (event: any) => {
-    this.emit('toolInvoked', event);
-  };
-  #onToolResponded = (event: any) => {
-    this.emit('toolResponded', event);
-  };
+    event.tools.forEach((tool: WebMCPTool) => this.#tools.get(tool.frameId)?.delete(tool.name));
+    this.emit('toolchange', this);
+  }
+  #onToolsAdded = (event: any) => {
+    event.tools.forEach((tool: WebMCPTool) => {
+      const frameTools = this.#tools.get(tool.frameId) ?? new Map();
+      if (!this.#tools.has(tool.frameId)) {
+        this.#tools.set(tool.frameId, frameTools);
+      }
+      frameTools.set(tool.name, tool);
+    });
+    this.emit('toolchange', this);
+  }
 
   /**
    * @internal
@@ -106,14 +86,20 @@ export class WebMCP extends EventEmitter<WebMCPEvents> {
     super();
     this.#client = client;
     this.#bindListeners();
+    this.#tools = new Map();
+  }
+
+  async tools(): Promise<Array<WebMCPTool>> {
+    await this.#client.send('WebMCP.enable' as any);
+    return Array.from(this.#tools.values()).flatMap(toolMap =>
+      Array.from(toolMap.values())
+    );
   }
 
   #bindListeners(): void {
     // We use type casting because WebMCP is not yet in the Protocol types.
     this.#client.on('WebMCP.toolsAdded' as any, this.#onToolsAdded);
     this.#client.on('WebMCP.toolsRemoved' as any, this.#onToolsRemoved);
-    this.#client.on('WebMCP.toolInvoked' as any, this.#onToolInvoked);
-    this.#client.on('WebMCP.toolResponded' as any, this.#onToolResponded);
   }
 
   /**
@@ -122,23 +108,8 @@ export class WebMCP extends EventEmitter<WebMCPEvents> {
   updateClient(client: CDPSession): void {
     this.#client.off('WebMCP.toolsAdded' as any, this.#onToolsAdded);
     this.#client.off('WebMCP.toolsRemoved' as any, this.#onToolsRemoved);
-    this.#client.off('WebMCP.toolInvoked' as any, this.#onToolInvoked);
-    this.#client.off('WebMCP.toolResponded' as any, this.#onToolResponded);
     this.#client = client;
     this.#bindListeners();
   }
 
-  /**
-   * Enables the WebMCP domain.
-   */
-  async enable(): Promise<void> {
-    await this.#client.send('WebMCP.enable' as any);
-  }
-
-  /**
-   * Disables the WebMCP domain.
-   */
-  async disable(): Promise<void> {
-    await this.#client.send('WebMCP.disable' as any);
-  }
 }
