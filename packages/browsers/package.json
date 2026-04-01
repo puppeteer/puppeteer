@@ -116,7 +116,7 @@
     "semver": "^7.7.4"
   },
   "devDependencies": {
-    "@types/debug": "4.1.12",
+    "@types/debug": "4.1.13",
     "@types/progress": "2.0.7",
     "@types/tar-fs": "2.0.4",
     "@types/yargs": "17.0.33",

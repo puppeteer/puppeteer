@@ -158,8 +158,8 @@
     "ws": "^8.19.0"
   },
   "devDependencies": {
-    "@types/chrome": "0.1.37",
-    "@types/debug": "4.1.12",
+    "@types/chrome": "0.1.38",
+    "@types/debug": "4.1.13",
     "@types/node": "^18.17.15",
     "@types/ws": "8.18.1",
     "mitt": "3.0.1",
