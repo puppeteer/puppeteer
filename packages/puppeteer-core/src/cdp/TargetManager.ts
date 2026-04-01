@@ -30,6 +30,15 @@ export type TargetFactory = (
   parentSession?: CdpCDPSession,
 ) => CdpTarget;
 
+/**
+ * @internal
+ */
+export interface CdpNetworkConditions {
+  offline: boolean;
+  matchedNetworkConditions: Protocol.Network.NetworkConditions[];
+  overrideNetworkState?: boolean;
+}
+
 function isPageTargetBecomingPrimary(
   target: CdpTarget,
   newTargetInfo: Protocol.Target.TargetInfo,
@@ -106,22 +115,21 @@ export class TargetManager
   // done. It indicates whethere we are running the initial auto-attach step or
   // if we are handling targets after that.
   #initialAttachDone = false;
-  #blockedUrlPatterns: Protocol.Network.SetBlockedURLsRequest['urlPatterns'] =
-    [];
+  #networkConditions?: CdpNetworkConditions;
 
   constructor(
     connection: Connection,
     targetFactory: TargetFactory,
     targetFilterCallback?: TargetFilterCallback,
     waitForInitiallyDiscoveredTargets = true,
-    blockedUrlPatterns: Protocol.Network.SetBlockedURLsRequest['urlPatterns'] = [],
+    networkConditions?: CdpNetworkConditions,
   ) {
     super();
     this.#connection = connection;
     this.#targetFilterCallback = targetFilterCallback;
     this.#targetFactory = targetFactory;
     this.#waitForInitiallyDiscoveredTargets = waitForInitiallyDiscoveredTargets;
-    this.#blockedUrlPatterns = blockedUrlPatterns;
+    this.#networkConditions = networkConditions;
 
     this.#connection.on('Target.targetCreated', this.#onTargetCreated);
     this.#connection.on('Target.targetDestroyed', this.#onTargetDestroyed);
@@ -399,15 +407,8 @@ export class TargetManager
         autoAttach: true,
         filter: this.#discoveryFilter,
       }),
-      (this.#blockedUrlPatterns?.length ?? 0) > 0
-        ? session
-            .send('Network.enable')
-            .then(() => {
-              return session.send('Network.setBlockedURLs', {
-                urlPatterns: this.#blockedUrlPatterns,
-              });
-            })
-            .catch(debugError)
+      this.#networkConditions
+        ? this.#setupNetworkConditions(session, this.#networkConditions)
         : Promise.resolve(),
     ]).catch(debugError);
 
@@ -453,5 +454,24 @@ export class TargetManager
     }
     this.#attachedTargetsByTargetId.delete(target._targetId);
     this.emit(TargetManagerEvent.TargetGone, target);
+  };
+
+  #setupNetworkConditions = async (
+    session: any,
+    networkConditions: any,
+  ): Promise<void> => {
+    if (!networkConditions) {
+      return;
+    }
+
+    try {
+      await session.send('Network.enable');
+      await session.send(
+        'Network.emulateNetworkConditionsByRule',
+        networkConditions,
+      );
+    } catch (err: unknown) {
+      throw err;
+    }
   };
 }

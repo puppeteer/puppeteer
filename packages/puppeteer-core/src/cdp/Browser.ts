@@ -42,7 +42,7 @@ import {
   type CdpTarget,
 } from './Target.js';
 import {TargetManagerEvent} from './TargetManageEvents.js';
-import {TargetManager} from './TargetManager.js';
+import {TargetManager, type CdpNetworkConditions} from './TargetManager.js';
 
 /**
  * @internal
@@ -74,19 +74,6 @@ export class CdpBrowser extends BrowserBase {
     allowlist?: string[],
     blocklist?: string[],
   ): Promise<CdpBrowser> {
-    const blockedUrlPatterns: Protocol.Network.SetBlockedURLsRequest['urlPatterns'] =
-      [];
-    if (allowlist) {
-      for (const pattern of allowlist) {
-        blockedUrlPatterns.push({urlPattern: pattern, block: false}); // TODO: add patterns validation
-      }
-      blockedUrlPatterns.push({urlPattern: '*://*:*/*', block: true});
-    }
-    if (blocklist) {
-      for (const pattern of blocklist) {
-        blockedUrlPatterns.push({urlPattern: pattern, block: true});
-      }
-    }
     const browser = new CdpBrowser(
       connection,
       contextIds,
@@ -99,7 +86,7 @@ export class CdpBrowser extends BrowserBase {
       networkEnabled,
       issuesEnabled,
       handleDevToolsAsPage,
-      blockedUrlPatterns,
+      getNetworkConditions(allowlist, blocklist),
     );
     if (acceptInsecureCerts) {
       await connection.send('Security.setIgnoreCertificateErrors', {
@@ -135,7 +122,7 @@ export class CdpBrowser extends BrowserBase {
     networkEnabled = true,
     issuesEnabled = true,
     handleDevToolsAsPage = false,
-    blockedUrlPatterns: Protocol.Network.SetBlockedURLsRequest['urlPatterns'] = [],
+    networkConditions?: CdpNetworkConditions,
   ) {
     super();
     this.#networkEnabled = networkEnabled;
@@ -156,7 +143,7 @@ export class CdpBrowser extends BrowserBase {
       this.#createTarget,
       this.#targetFilterCallback,
       waitForInitiallyDiscoveredTargets,
-      blockedUrlPatterns,
+      networkConditions,
     );
     this.#defaultContext = new CdpBrowserContext(this.#connection, this);
     for (const contextId of contextIds) {
@@ -611,4 +598,50 @@ export class CdpBrowser extends BrowserBase {
   override isIssuesEnabled(): boolean {
     return this.#issuesEnabled;
   }
+}
+
+function getNetworkConditions(
+  allowlist?: string[],
+  blocklist?: string[],
+): CdpNetworkConditions | undefined {
+  let networkConditions: CdpNetworkConditions | undefined;
+
+  if (allowlist || blocklist) {
+    const isAllowListMode = allowlist && allowlist.length > 0;
+
+    networkConditions = {
+      offline: !isAllowListMode,
+      matchedNetworkConditions: [],
+    };
+
+    if (isAllowListMode) {
+      for (const pattern of allowlist!) {
+        networkConditions.matchedNetworkConditions.push({
+          urlPattern: pattern,
+          downloadThroughput: -1,
+          uploadThroughput: -1,
+          latency: 0,
+        });
+      }
+
+      networkConditions.matchedNetworkConditions.push({
+        urlPattern: '',
+        downloadThroughput: 0,
+        uploadThroughput: 0,
+        latency: 1,
+      });
+    }
+
+    if (blocklist && blocklist.length > 0) {
+      for (const pattern of blocklist) {
+        networkConditions.matchedNetworkConditions.push({
+          urlPattern: pattern,
+          downloadThroughput: 0,
+          uploadThroughput: 0,
+          latency: 0,
+        });
+      }
+    }
+  }
+  return networkConditions;
 }

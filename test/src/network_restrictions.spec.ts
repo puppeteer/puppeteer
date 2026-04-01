@@ -7,121 +7,191 @@
 import expect from 'expect';
 
 import {launch} from './mocha-utils.js';
+import {html} from './utils.js';
 
 describe('Network Restrictions', function () {
-  it.only('should not block main frame navigation via page.goto', async () => {
+  it('should block page.goto when the destination is in the blocklist', async () => {
     const {page, close, server} = await launch(
       {
-        blocklist: ['*://*:*/*'],
+        acceptInsecureCerts: true,
+        blocklist: ['*://*:*/empty.html'],
       },
       {createContext: true},
     );
-    try {
-      const response = await page.goto(server.PREFIX + '/empty.html');
-      console.log('Main frame navigation status:', response?.status());
-      expect(response?.ok()).toBe(true);
-    } finally {
-      await close();
-    }
+
+    const initialUrl = server.PREFIX + '/title.html'; // should navigate
+    const blockedUrl = server.PREFIX + '/empty.html'; // should be blocked
+
+    await page.goto(initialUrl);
+    let error: Error | undefined;
+    await page.goto(blockedUrl).catch(e => {
+      return (error = e);
+    });
+
+    expect(error).toBeDefined();
+    expect(error?.message).toContain('net::ERR_INTERNET_DISCONNECTED');
+    await close();
   });
 
-  it.only('should block subresources (e.g., images) in blocklist', async () => {
+  it('should block window.location.href navigation to URLs in the blocklist', async () => {
     const {page, close, server} = await launch(
       {
-        blocklist: ['*://*:*/*'],
+        blocklist: ['*://*:*/empty.html'],
       },
       {createContext: true},
     );
 
-    let imageBlocked = false;
-    page.on('requestfailed', request => {
-      if (request.url().endsWith('.png')) {
-        console.log('Subresource blocked as expected:', request.url());
-        imageBlocked = true;
+    const initialUrl = server.PREFIX + '/title.html'; // should navigate
+    const blockedUrl = server.PREFIX + '/empty.html'; // should be blocked
+
+    await page.goto(initialUrl);
+    const navPromise = page.waitForNavigation({timeout: 2000}).catch(e => {
+      return e;
+    });
+    await page.evaluate(url => {
+      window.location.href = url;
+    }, blockedUrl);
+
+    await navPromise;
+    const finalUrl = page.url();
+    expect(finalUrl).not.toBe(blockedUrl);
+    await close();
+  });
+
+  it('should fail fetch requests to URLs in the blocklist', async () => {
+    const {page, close, server} = await launch(
+      {
+        blocklist: ['*://*:*/empty.html'],
+      },
+      {createContext: true},
+    );
+
+    const initialUrl = server.PREFIX + '/title.html'; // should fetch
+    const blockedUrl = server.PREFIX + '/empty.html'; // should fail
+
+    await page.goto(initialUrl);
+    const fetchError = await page.evaluate(async url => {
+      try {
+        await fetch(url);
+        return null;
+      } catch (e) {
+        return (e as Error).message;
       }
-    });
+    }, blockedUrl);
 
-    try {
-      // Main navigation succeeds
-      await page.goto(server.PREFIX + '/empty.html');
-
-      // Attempt to load a blocked subresource
-      await page.setContent('<img src="' + server.PREFIX + '/pptr.png">');
-
-      // Wait a short bit for the request to fail
-      await new Promise(r => setTimeout(r, 500));
-
-      expect(imageBlocked).toBe(true);
-    } finally {
-      await close();
-    }
+    expect(fetchError).toBeTruthy();
+    expect(fetchError).toContain('Failed to fetch');
+    await close();
   });
 
-  it.only('should NOT block js navigation in blocklist', async () => {
-    // Renamed to reflect expectation
+  it('should prevent loading of blocklisted subresources (e.g., images)', async () => {
     const {page, close, server} = await launch(
       {
-        blocklist: ['*://*:*/*'],
+        blocklist: ['*://*:*/pptr.png'],
       },
       {createContext: true},
     );
 
-    try {
-      await page.goto(server.PREFIX + '/empty.html');
+    const allowedUrl = server.PREFIX + '/one-style.css'; // should load
+    const blockedUrl = server.PREFIX + '/pptr.png'; // should not load
 
-      const navigationUrl = server.PREFIX + '/simple.html';
+    const imageBlockedErrorPromise = new Promise<string | undefined>(
+      resolve => {
+        page.on('requestfailed', request => {
+          if (request.url().endsWith('/pptr.png')) {
+            resolve(request.failure()?.errorText);
+          }
+        });
+      },
+    );
+    const cssFinishedPromise = new Promise<boolean>(resolve => {
+      page.on('requestfinished', request => {
+        if (request.url().endsWith('/one-style.css')) {
+          resolve(true);
+        }
+      });
+    });
 
-      // Attempt to navigate and wait for navigation to complete
-      await Promise.all([
-        page.waitForNavigation({waitUntil: 'networkidle0'}),
-        page.evaluate(url => {
-          window.location.href = url;
-        }, navigationUrl),
-      ]);
+    await page.goto(server.PREFIX + '/empty.html');
+    await page.setContent(html`
+      <img src="${blockedUrl}" />
+      <link
+        rel="stylesheet"
+        href="${allowedUrl}"
+      />
+    `);
 
-      // Check if the URL changed to the target
-      expect(page.url()).toBe(navigationUrl);
-      console.log('Navigation to', page.url(), 'succeeded.');
-    } finally {
-      await close();
-    }
+    const imageError = await Promise.race([
+      imageBlockedErrorPromise,
+      new Promise<string | undefined>(r => {
+        return setTimeout(() => {
+          return r(undefined);
+        }, 3000);
+      }),
+    ]);
+    const cssFinished = await Promise.race([
+      cssFinishedPromise,
+      new Promise<boolean>(r => {
+        return setTimeout(() => {
+          return r(false);
+        }, 3000);
+      }),
+    ]);
+
+    expect(imageError).toBeDefined();
+    expect(imageError).toContain('net::ERR_INTERNET_DISCONNECTED');
+    expect(cssFinished).toBe(true);
+
+    await close();
   });
 
-  it.only('should allow subresources in allowlist and block others', async () => {
+  it('should only allow page.goto to URLs present in the allowlist', async () => {
     const {page, close, server} = await launch(
       {
-        // Allow specifically the pptr.png image, block everything else
-        allowlist: ['*://*:*/pptr.png'],
+        acceptInsecureCerts: true,
+        allowlist: ['*://*:*/empty.html'],
       },
       {createContext: true},
     );
 
-    const failedRequests: string[] = [];
-    page.on('requestfailed', request => {
-      failedRequests.push(request.url());
+    const initialUrl = server.PREFIX + '/empty.html'; // should navigate
+    const blockedUrl = server.PREFIX + '/title.html'; // should be blocked
+
+    await page.goto(initialUrl);
+
+    let error: Error | undefined;
+    await page.goto(blockedUrl).catch(e => {
+      return (error = e);
+    });
+    expect(page.url()).toBe(initialUrl);
+    expect(error).toBeDefined();
+    expect(error?.message).toContain('net::ERR_INTERNET_DISCONNECTED');
+    await close();
+  });
+
+  it('should permit window.location.href only to URLs in the allowlist', async () => {
+    const {page, close, server} = await launch(
+      {
+        allowlist: ['*://*:*/empty.html'],
+      },
+      {createContext: true},
+    );
+
+    const initialUrl = server.PREFIX + '/empty.html'; // should navigate here
+    const blockedUrl = server.PREFIX + '/title.html'; // should be blocked
+
+    await page.goto(initialUrl);
+    const navPromise = page.waitForNavigation({timeout: 2000}).catch(e => {
+      return e;
     });
 
-    try {
-      await page.goto(server.PREFIX + '/empty.html');
+    await page.evaluate(url => {
+      window.location.href = url;
+    }, blockedUrl);
 
-      // Trigger multiple subresource requests
-      await page.setContent(`
-        <img src="${server.PREFIX}/pptr.png">
-        <script src="${server.PREFIX}/dummy.js"></script>
-      `);
-
-      await new Promise(r => setTimeout(r, 500));
-
-      const isPngBlocked = failedRequests.some(url => url.endsWith('.png'));
-      const isJsBlocked = failedRequests.some(url => url.endsWith('.js'));
-
-      console.log('JS blocked (expected):', isJsBlocked);
-      console.log('PNG blocked (NOT expected):', isPngBlocked);
-
-      expect(isJsBlocked).toBe(true);
-      expect(isPngBlocked).toBe(false);
-    } finally {
-      await close();
-    }
+    await navPromise;
+    const finalUrl = page.url();
+    expect(finalUrl).toBe(initialUrl);
+    await close();
   });
 });
