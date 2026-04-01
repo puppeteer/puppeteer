@@ -548,10 +548,8 @@ export class CdpBrowser extends BrowserBase {
   }
 
   override async extensions(): Promise<Extension[]> {
-    // @ts-expect-error Extensions domain is not yet in the type definitions
     const response = await this.#connection.send('Extensions.getExtensions');
-    // @ts-expect-error Extensions domain is not yet in the type definitions
-    return response.extensions.map((extension: any) => {
+    return response.extensions.map(extension => {
       return new Extension(
         extension.id,
         extension.version,

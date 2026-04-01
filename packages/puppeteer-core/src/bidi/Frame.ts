@@ -610,6 +610,6 @@ export class BidiFrame extends Frame {
   }
 
   override getRealms(): Array<[string | symbol, Realm]> {
-    return [];
+    return [['default', this.mainRealm()]];
   }
 }

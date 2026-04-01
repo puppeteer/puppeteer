@@ -7,10 +7,10 @@ sidebar_label: Realm
 ### Signature
 
 ```typescript
-export declare abstract class Realm implements Disposable, Realm
+export declare abstract class Realm implements Disposable
 ```
 
-**Implements:** Disposable, [Realm](./puppeteer.realm.md)
+**Implements:** Disposable
 
 ## Remarks
 

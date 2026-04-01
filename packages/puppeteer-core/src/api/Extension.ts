@@ -54,8 +54,7 @@ export class Extension {
       const targetUrl = target.url();
       return (
         target.type() === 'service_worker' &&
-        targetUrl.startsWith('chrome-extension://' + this.id) &&
-        targetUrl.includes('js')
+        targetUrl.startsWith('chrome-extension://' + this.id)
       );
     });
 
@@ -81,20 +80,18 @@ export class Extension {
 
       const targetUrl = target.url();
       return (
-        target.type() === 'page' &&
+        (target.type() === 'page' || target.type() === 'background_page') &&
         targetUrl.startsWith('chrome-extension://' + this.#id)
       );
     });
 
     const pages: Page[] = [];
     for (const target of extensionPages) {
-      if (this.#pages.has(target)) {
-        pages.push(this.#pages.get(target)!);
-        continue;
+      let page = this.#pages.get(target);
+      if (!page) {
+        page = await target.asPage();
+        this.#pages.set(target, page);
       }
-
-      const page = await target.asPage();
-      this.#pages.set(target, page);
 
       pages.push(page);
     }

@@ -540,9 +540,18 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     return origin.startsWith('chrome-extension://');
   }
 
-  #extractExtensionId(origin: string) {
-    const parts = origin.split('://');
-    return parts.length > 1 ? parts[1]!.split('/')[0] : undefined;
+  #extractExtensionId(origin: string): string | null {
+    if (!origin || !this.#isExtensionOrigin(origin)) {
+      return null;
+    }
+
+    // 19 is "chrome-extension://".length
+    const pathPart = origin.substring(19);
+    const slashIndex = pathPart.indexOf('/');
+
+    // if there's no / it means that pathPart is now the extensionId, otherwise
+    // we take everything until the first /
+    return slashIndex === -1 ? pathPart : pathPart.substring(0, slashIndex);
   }
 
   #onExecutionContextCreated(

@@ -283,18 +283,15 @@ export class IsolatedWorld extends Realm {
 
   extension(): Promise<Extension | null> {
     if (!this.#browser) {
-      throw new Error('unable to get extension from WebWorker');
+      throw new Error('unable to get extension from Realm');
     }
 
     if (this.#worldId === MAIN_WORLD) {
-      console.log('well here');
       return Promise.resolve(null);
     }
 
     if (typeof this.worldId === 'string') {
-      const extensionId = this.worldId;
-      console.log('the world id is:', extensionId);
-      return this.#browser.getExtensionById(extensionId);
+      return this.#browser.getExtensionById(this.worldId);
     }
 
     return Promise.resolve(null);

@@ -289,19 +289,19 @@ export abstract class BidiRealm extends Realm {
     return await transferredHandle;
   }
 
+  // TODO: BiDi implementation missing
   override set worldId(_worldId: string | symbol) {
-    // TODO: Understand how to handle this on BidiRealm
     throw new Error('worldId are defined only for CDP implementations.');
   }
 
   override get worldId(): string | symbol {
-    // TODO: Understand how to handle this on BidiRealm
     throw new Error('worldId are defined only for CDP implementations.');
   }
 
   extension(): Promise<Extension | null> {
-    // TODO: Understand how to handle this on BidiRealm
-    throw new Error('worldId are defined only for CDP implementations.');
+    throw new Error(
+      'Method not yet implemented for BiDi. Use CDP to interact with Extensions.',
+    );
   }
 }
 
