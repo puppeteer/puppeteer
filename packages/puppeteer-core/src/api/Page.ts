@@ -34,6 +34,7 @@ import type {Accessibility} from '../cdp/Accessibility.js';
 import type {Coverage} from '../cdp/Coverage.js';
 import type {NetworkConditions} from '../cdp/NetworkManager.js';
 import type {Tracing} from '../cdp/Tracing.js';
+import type {WebMCP} from '../cdp/WebMCP.js';
 import type {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {
   Cookie,
@@ -942,6 +943,12 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * {@inheritDoc Tracing}
    */
   abstract get tracing(): Tracing;
+
+  /**
+   * TODO
+   * @experimental
+   */
+  abstract get webMCP(): WebMCP;
 
   /**
    * {@inheritDoc Accessibility}

@@ -37,6 +37,7 @@ import type {
   NetworkConditions,
 } from '../cdp/NetworkManager.js';
 import {Tracing} from '../cdp/Tracing.js';
+import type {WebMCP} from '../cdp/WebMCP.js';
 import type {
   CookiePartitionKey,
   Cookie,
@@ -95,6 +96,9 @@ export class BidiPage extends Page {
   readonly mouse: BidiMouse;
   readonly touchscreen: BidiTouchscreen;
   readonly tracing: Tracing;
+  override get webMCP(): WebMCP {
+    throw new UnsupportedOperation();
+  }
   readonly coverage: Coverage;
   readonly #cdpEmulationManager: EmulationManager;
 

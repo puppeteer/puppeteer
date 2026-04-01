@@ -39,5 +39,6 @@ export * from './Target.js';
 export * from './TargetManager.js';
 export * from './TargetManageEvents.js';
 export * from './Tracing.js';
+export * from './WebMCP.js';
 export * from './utils.js';
 export * from './WebWorker.js';
