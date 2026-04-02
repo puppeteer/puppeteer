@@ -174,7 +174,7 @@ export class CdpPage extends Page {
     this.#frameManager = new FrameManager(client, this, this._timeoutSettings);
     this.#emulationManager = new EmulationManager(client);
     this.#tracing = new Tracing(client);
-    this.#webmcp = new WebMCP(client);
+    this.#webmcp = new WebMCP(client, this.#frameManager);
     this.#coverage = new Coverage(client);
     this.#viewport = null;
 

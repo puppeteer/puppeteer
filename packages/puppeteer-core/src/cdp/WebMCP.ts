@@ -5,7 +5,10 @@
  */
 
 import type {CDPSession} from '../api/CDPSession.js';
+import type {Frame} from '../api/Frame.js';
 import {EventEmitter} from '../common/EventEmitter.js';
+
+import type {FrameManager} from './FrameManager.js';
 
 /**
  * @public
@@ -46,19 +49,19 @@ export class WebMCPTool {
   description: string;
   inputSchema?: object;
   annotations?: WebMCPAnnotation;
-  frameId: string;
+  frame: Frame;
   backendNodeId?: number;
   stackTrace?: unknown;
 
   /**
    * @internal
    */
-  constructor(tool: ProtocolWebMCPTool) {
+  constructor(tool: ProtocolWebMCPTool, frame: Frame) {
     this.name = tool.name;
     this.description = tool.description;
     this.inputSchema = tool.inputSchema;
     this.annotations = tool.annotations;
-    this.frameId = tool.frameId;
+    this.frame = frame;
     this.backendNodeId = tool.backendNodeId;
     this.stackTrace = tool.stackTrace;
   }
@@ -91,16 +94,21 @@ export class WebMCP extends EventEmitter<{
   toolsremoved: WebMCPToolsRemovedEvent;
 }> {
   #client: CDPSession;
+  #frameManager: FrameManager;
   #tools: Map<string, Map<string, WebMCPTool>>;
 
   #onToolsAdded = (event: ProtocolWebMCPToolsAddedEvent) => {
     const tools: WebMCPTool[] = [];
     event.tools.forEach(tool => {
+      const frame = this.#frameManager.frame(tool.frameId);
+      if (!frame) {
+        return;
+      }
       const frameTools = this.#tools.get(tool.frameId) ?? new Map();
       if (!this.#tools.has(tool.frameId)) {
         this.#tools.set(tool.frameId, frameTools);
       }
-      const addedTool = new WebMCPTool(tool);
+      const addedTool = new WebMCPTool(tool, frame);
       frameTools.set(tool.name, addedTool);
       tools.push(addedTool);
     });
@@ -108,11 +116,24 @@ export class WebMCP extends EventEmitter<{
   };
   #onToolsRemoved = (event: ProtocolWebMCPToolsRemovedEvent) => {
     const tools = event.tools
-      .filter(tool => {
-        return this.#tools.get(tool.frameId)?.delete(tool.name);
-      })
       .map(tool => {
-        return new WebMCPTool(tool);
+        const frameTools = this.#tools.get(tool.frameId);
+        const removedTool = frameTools?.get(tool.name);
+        if (removedTool) {
+          frameTools?.delete(tool.name);
+          if (frameTools?.size === 0) {
+            this.#tools.delete(tool.frameId);
+          }
+          return removedTool;
+        }
+        const frame = this.#frameManager.frame(tool.frameId);
+        if (!frame) {
+          return null;
+        }
+        return new WebMCPTool(tool, frame);
+      })
+      .filter((tool): tool is WebMCPTool => {
+        return tool !== null;
       });
     this.emit('toolsremoved', {tools});
   };
@@ -120,9 +141,10 @@ export class WebMCP extends EventEmitter<{
   /**
    * @internal
    */
-  constructor(client: CDPSession) {
+  constructor(client: CDPSession, frameManager: FrameManager) {
     super();
     this.#client = client;
+    this.#frameManager = frameManager;
     this.#bindListeners();
     this.#tools = new Map();
   }

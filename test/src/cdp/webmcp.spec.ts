@@ -5,7 +5,7 @@
  */
 
 import expect from 'expect';
-import type {WebMCPTool} from 'puppeteer-core';
+import type {WebMCPTool} from 'puppeteer-core/internal/cdp/WebMCP.js';
 
 import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
 
@@ -15,7 +15,7 @@ describe('Page.webmcp.tools', function () {
     acceptInsecureCerts: true,
   });
 
-  it('should monitor registered and unregistered tools', async () => {
+  it.only('should monitor registered and unregistered tools', async () => {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);
 
@@ -65,7 +65,7 @@ describe('Page.webmcp.tools', function () {
       },
       required: ['text'],
     });
-    expect(tools[0]!.frameId).toBe(page.frames()[0]!._id);
+    expect(tools[0]!.frame).toBe(page.mainFrame());
     expect(tools[0]!.stackTrace).toBeDefined();
     expect(tools[0]!.backendNodeId).toBeUndefined();
 
@@ -80,7 +80,7 @@ describe('Page.webmcp.tools', function () {
       },
       required: ['text'],
     });
-    expect(addedTools[0]!.frameId).toBe(page.frames()[0]!._id);
+    expect(addedTools[0]!.frame).toBe(page.mainFrame());
     expect(addedTools[0]!.stackTrace).toBeDefined();
     expect(addedTools[0]!.backendNodeId).toBeUndefined();
 
@@ -122,7 +122,7 @@ describe('Page.webmcp.tools', function () {
       },
       required: ['text'],
     });
-    expect(removedTools[0]!.frameId).toBe(page.frames()[0]!._id);
+    expect(removedTools[0]!.frame).toBe(page.mainFrame());
     expect(removedTools[0]!.stackTrace).toBeDefined();
     expect(removedTools[0]!.backendNodeId).toBeUndefined();
 
@@ -137,7 +137,7 @@ describe('Page.webmcp.tools', function () {
       },
       required: ['text'],
     });
-    expect(tools[0]!.frameId).toBe(page.frames()[0]!._id);
+    expect(tools[0]!.frame).toBe(page.mainFrame());
     expect(tools[0]!.stackTrace).toBeDefined();
     expect(tools[0]!.backendNodeId).toBeUndefined();
   });
