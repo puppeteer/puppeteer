@@ -23,7 +23,7 @@ export type WebMCPInvocationStatus = 'Success' | 'Canceled' | 'Error';
 /**
  * @public
  */
-export interface WebMCPTool {
+export class WebMCPTool {
   name: string;
   description: string;
   inputSchema?: object;
@@ -31,6 +31,19 @@ export interface WebMCPTool {
   frameId: string;
   backendNodeId?: number;
   stackTrace?: unknown;
+
+  /**
+   * @internal
+   */
+  constructor(tool: WebMCPTool) {
+    this.name = tool.name;
+    this.description = tool.description;
+    this.inputSchema = tool.inputSchema;
+    this.annotations = tool.annotations;
+    this.frameId = tool.frameId;
+    this.backendNodeId = tool.backendNodeId;
+    this.stackTrace = tool.stackTrace;
+  }
 }
 
 /**
@@ -48,30 +61,27 @@ export interface WebMCPToolsRemovedEvent {
 }
 
 /**
- * @public
- */
-export interface WebMCPEvents extends Record<PropertyKey, unknown> {
-  toolsAdded: WebMCPToolsAddedEvent;
-  toolsRemoved: WebMCPToolsRemovedEvent;
-}
-
-/**
  * The WebMCP class provides an API for the WebMCP API.
  *
  * @public
  */
-export class WebMCP extends EventEmitter<WebMCPEvents> {
+
+export class WebMCP extends EventEmitter<{
+  /** Emitted when tools are added or removed. */
+  toolchange: WebMCP;
+}> {
   #client: CDPSession;
   #tools: Map<string, Map<string, WebMCPTool>>;
 
-  #onToolsRemoved = (event: any) => {
+  #onToolsRemoved = (event: WebMCPToolsRemovedEvent) => {
     event.tools.forEach((tool: WebMCPTool) => {
       return this.#tools.get(tool.frameId)?.delete(tool.name);
     });
     this.emit('toolchange', this);
   };
-  #onToolsAdded = (event: any) => {
-    event.tools.forEach((tool: WebMCPTool) => {
+  #onToolsAdded = (event: WebMCPToolsAddedEvent) => {
+    event.tools.forEach((toolData: WebMCPTool) => {
+      const tool = new WebMCPTool(toolData);
       const frameTools = this.#tools.get(tool.frameId) ?? new Map();
       if (!this.#tools.has(tool.frameId)) {
         this.#tools.set(tool.frameId, frameTools);
@@ -100,16 +110,16 @@ export class WebMCP extends EventEmitter<WebMCPEvents> {
 
   #bindListeners(): void {
     // We use type casting because WebMCP is not yet in the Protocol types.
-    this.#client.on('WebMCP.toolsAdded' as any, this.#onToolsAdded);
-    this.#client.on('WebMCP.toolsRemoved' as any, this.#onToolsRemoved);
+    this.#client.on('WebMCP.toolsAdded' as any, this.#onToolsAdded as any);
+    this.#client.on('WebMCP.toolsRemoved' as any, this.#onToolsRemoved as any);
   }
 
   /**
    * @internal
    */
   updateClient(client: CDPSession): void {
-    this.#client.off('WebMCP.toolsAdded' as any, this.#onToolsAdded);
-    this.#client.off('WebMCP.toolsRemoved' as any, this.#onToolsRemoved);
+    this.#client.off('WebMCP.toolsAdded' as any, this.#onToolsAdded as any);
+    this.#client.off('WebMCP.toolsRemoved' as any, this.#onToolsRemoved as any);
     this.#client = client;
     this.#bindListeners();
   }
