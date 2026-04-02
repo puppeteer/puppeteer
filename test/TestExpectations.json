@@ -217,6 +217,62 @@
     "comment": "See https://github.com/puppeteer/puppeteer/issues/13163"
   },
   {
+    "testIdPattern": "[webmcp.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Experimental support for WebMCP requires Chrome."
+  },
+  {
+    "testIdPattern": "[webmcp.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp"],
+    "expectations": ["FAIL"],
+    "comment": "Experimental support for WebMCP in Chrome requires flags that are not yet in Chrome Stable."
+  },
+  {
+    "testIdPattern": "[webmcp.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"],
+    "comment": "Experimental support for WebMCP in Chrome requires flags that are not yet in Chrome Stable."
+  },
+  {
+    "testIdPattern": "[webmcp.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["FAIL"],
+    "comment": "Experimental support for WebMCP in Chrome requires flags that are not yet in Chrome Stable."
+  },
+  {
+    "testIdPattern": "[webmcp.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["headful"],
+    "expectations": ["FAIL"],
+    "comment": "Experimental support for WebMCP in Chrome requires flags that are not yet in Chrome Stable."
+  },
+  {
+    "testIdPattern": "[webmcp.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["headless"],
+    "expectations": ["FAIL"],
+    "comment": "Experimental support for WebMCP in Chrome requires flags that are not yet in Chrome Stable."
+  },
+  {
+    "testIdPattern": "[webmcp.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["pipe"],
+    "expectations": ["FAIL"],
+    "comment": "Experimental support for WebMCP in Chrome requires flags that are not yet in Chrome Stable."
+  },
+  {
+    "testIdPattern": "[webmcp.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Experimental support for WebMCP is not supported in BiDi"
+  },
+  {
     "testIdPattern": "[worker.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -884,13 +940,6 @@
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
     "comment": "tests chrome-specific flags"
-  },
-  {
-    "testIdPattern": "[webmcp.spec] Page.webmcp.tools should monitor registered and unregistered tools",
-    "platforms": ["linux"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL"],
-    "comment": "Experimental support for WebMCP requires Chrome."
   },
   {
     "testIdPattern": "[worker.spec] Workers console should return remote objects",
@@ -1961,20 +2010,5 @@
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["FAIL", "PASS"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[webmcp.spec] Page.webmcp.tools should monitor registered and unregistered tools",
-    "platforms": ["linux"],
-    "parameters": [
-      "cdp",
-      "chrome",
-      "chrome-headless-shell",
-      "headful",
-      "headless",
-      "pipe",
-      "webDriverBiDi"
-    ],
-    "expectations": ["FAIL"],
-    "comment": "Experimental support for WebMCP in Chrome requires flags that are not yet in Chrome Stable."
   }
 ]
