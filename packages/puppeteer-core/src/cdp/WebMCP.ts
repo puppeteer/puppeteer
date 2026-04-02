@@ -74,14 +74,13 @@ export class WebMCP extends EventEmitter<{
   #tools: Map<string, Map<string, WebMCPTool>>;
 
   #onToolsRemoved = (event: WebMCPToolsRemovedEvent) => {
-    event.tools.forEach((tool: WebMCPTool) => {
+    event.tools.forEach(tool => {
       return this.#tools.get(tool.frameId)?.delete(tool.name);
     });
     this.emit('toolchange', this);
   };
   #onToolsAdded = (event: WebMCPToolsAddedEvent) => {
-    event.tools.forEach((toolData: WebMCPTool) => {
-      const tool = new WebMCPTool(toolData);
+    event.tools.forEach(tool => {
       const frameTools = this.#tools.get(tool.frameId) ?? new Map();
       if (!this.#tools.has(tool.frameId)) {
         this.#tools.set(tool.frameId, frameTools);
