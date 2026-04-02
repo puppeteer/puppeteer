@@ -27,7 +27,15 @@ describe('Page.webmcp.tools', function () {
         {
           name: 'test-tool',
           description: 'A test tool',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              text: {type: 'string', description: 'Some text'},
+            },
+            required: ['text'],
+          },
           execute: () => {},
+          annotations: {readOnlyHint: true},
         },
         {signal: (window as any).controller.signal},
       );
@@ -37,6 +45,17 @@ describe('Page.webmcp.tools', function () {
     expect(tools.length).toBe(1);
     expect(tools[0]!.name).toBe('test-tool');
     expect(tools[0]!.description).toBe('A test tool');
+    expect(tools[0]!.inputSchema).toStrictEqual({
+      type: 'object',
+      properties: {
+        text: {type: 'string', description: 'Some text'},
+      },
+      required: ['text'],
+    });
+    expect(tools[0]!.annotations).toStrictEqual({readonly: true});
+    expect(tools[0]!.frameId).toBe(page.frames()[0]!._id);
+    expect(tools[0]!.stackTrace).toBeDefined();
+    expect(tools[0]!.backendNodeId).toBeUndefined();
 
     // Unregister the WebMCP tool.
     await page.evaluate(() => {
