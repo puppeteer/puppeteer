@@ -13,6 +13,7 @@ import type {WindowId} from '../api/Browser.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
+import type {Extension} from '../api/Extension.js';
 import type {WaitForOptions} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {
@@ -215,6 +216,10 @@ export class BidiPage extends Page {
 
   override mainFrame(): BidiFrame {
     return this.#frame;
+  }
+
+  override async triggerExtensionAction(extension: Extension): Promise<void> {
+    return await extension.triggerAction(this);
   }
 
   override async emulateFocusedPage(enabled: boolean): Promise<void> {

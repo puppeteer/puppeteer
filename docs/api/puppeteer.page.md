@@ -1328,6 +1328,17 @@ Shortcut for [page.mainFrame().title()](./puppeteer.frame.title.md).
 </td></tr>
 <tr><td>
 
+<span id="triggerextensionaction">[triggerExtensionAction(extension)](./puppeteer.page.triggerextensionaction.md)</span>
+
+</td><td>
+
+</td><td>
+
+Triggers an extension action for the given extension.
+
+</td></tr>
+<tr><td>
+
 <span id="type">[type(selector, text, options)](./puppeteer.page.type.md)</span>
 
 </td><td>

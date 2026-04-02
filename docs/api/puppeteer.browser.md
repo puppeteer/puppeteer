@@ -253,6 +253,28 @@ Disconnects Puppeteer from this [browser](./puppeteer.browser.md), but leaves th
 </td></tr>
 <tr><td>
 
+<span id="extensions">[extensions()](./puppeteer.browser.extensions.md)</span>
+
+</td><td>
+
+</td><td>
+
+Get a list of the installed extensions in the browser.
+
+</td></tr>
+<tr><td>
+
+<span id="getextensionbyid">[getExtensionById(extensionId)](./puppeteer.browser.getextensionbyid.md)</span>
+
+</td><td>
+
+</td><td>
+
+Retrieve a specific extension that is installed in the browser starting from its id.
+
+</td></tr>
+<tr><td>
+
 <span id="getwindowbounds">[getWindowBounds(windowId)](./puppeteer.browser.getwindowbounds.md)</span>
 
 </td><td>

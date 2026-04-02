@@ -228,6 +228,15 @@ The constructor for this class is marked as internal. Third-party code should no
 </td></tr>
 <tr><td>
 
+<span id="extension">[Extension](./puppeteer.extension.md)</span>
+
+</td><td>
+
+[Extension](./puppeteer.extension.md) represents an Extension instance installed in the browser.
+
+</td></tr>
+<tr><td>
+
 <span id="extensiontransport">[ExtensionTransport](./puppeteer.extensiontransport.md)</span>
 
 </td><td>

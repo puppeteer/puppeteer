@@ -23,6 +23,7 @@ import {
 } from '../api/Browser.js';
 import {BrowserContextEvent} from '../api/BrowserContext.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
+import {Extension} from '../api/Extension.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
@@ -544,5 +545,28 @@ export class CdpBrowser extends BrowserBase {
 
   override isNetworkEnabled(): boolean {
     return this.#networkEnabled;
+  }
+
+  override async extensions(): Promise<Extension[]> {
+    const response = await this.#connection.send('Extensions.getExtensions');
+    return response.extensions.map(extension => {
+      return new Extension(
+        extension.id,
+        extension.version,
+        extension.name,
+        this,
+      );
+    });
+  }
+
+  override async getExtensionById(
+    extensionId: string,
+  ): Promise<Extension | null> {
+    const extensions = await this.extensions();
+
+    const extension = extensions.find(ext => {
+      return ext.id === extensionId;
+    });
+    return extension || null;
   }
 }
