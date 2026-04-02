@@ -226,21 +226,7 @@
   {
     "testIdPattern": "[webmcp.spec] *",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp"],
-    "expectations": ["FAIL"],
-    "comment": "Experimental support for WebMCP in Chrome requires flags that are not yet in Chrome Stable."
-  },
-  {
-    "testIdPattern": "[webmcp.spec] *",
-    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
-    "expectations": ["FAIL"],
-    "comment": "Experimental support for WebMCP in Chrome requires flags that are not yet in Chrome Stable."
-  },
-  {
-    "testIdPattern": "[webmcp.spec] *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome-headless-shell"],
     "expectations": ["FAIL"],
     "comment": "Experimental support for WebMCP in Chrome requires flags that are not yet in Chrome Stable."
   },

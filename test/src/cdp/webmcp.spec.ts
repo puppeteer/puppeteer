@@ -9,7 +9,7 @@ import type {WebMCPTool} from 'puppeteer-core/internal/cdp/WebMCP.js';
 
 import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
 
-describe('Page.webmcp.tools', function () {
+describe('Page.webmcp', function () {
   const state = setupSeparateTestBrowserHooks({
     args: ['--enable-features=WebMCPTesting,DevToolsWebMCPSupport'],
     acceptInsecureCerts: true,
