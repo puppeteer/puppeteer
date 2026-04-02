@@ -7,6 +7,8 @@
 import type {CDPSession} from '../api/CDPSession.js';
 import type {Frame} from '../api/Frame.js';
 import {EventEmitter} from '../common/EventEmitter.js';
+import type {ElementHandle} from '../puppeteer-core.js';
+import {MAIN_WORLD} from '../puppeteer-core.js';
 
 import type {FrameManager} from './FrameManager.js';
 
@@ -50,19 +52,23 @@ export class WebMCPTool {
   inputSchema?: object;
   annotations?: WebMCPAnnotation;
   frame: Frame;
-  backendNodeId?: number;
+  formElement?: ElementHandle<HTMLFormElement>;
   stackTrace?: unknown;
 
   /**
    * @internal
    */
-  constructor(tool: ProtocolWebMCPTool, frame: Frame) {
+  constructor(
+    tool: ProtocolWebMCPTool,
+    frame: Frame,
+    formElement: ElementHandle<HTMLFormElement> | undefined,
+  ) {
     this.name = tool.name;
     this.description = tool.description;
     this.inputSchema = tool.inputSchema;
     this.annotations = tool.annotations;
     this.frame = frame;
-    this.backendNodeId = tool.backendNodeId;
+    this.formElement = formElement;
     this.stackTrace = tool.stackTrace;
   }
 }
@@ -97,44 +103,45 @@ export class WebMCP extends EventEmitter<{
   #frameManager: FrameManager;
   #tools: Map<string, Map<string, WebMCPTool>>;
 
-  #onToolsAdded = (event: ProtocolWebMCPToolsAddedEvent) => {
-    const tools: WebMCPTool[] = [];
-    event.tools.forEach(tool => {
+  #onToolsAdded = async (event: ProtocolWebMCPToolsAddedEvent) => {
+    const toolPromises = event.tools.map(async tool => {
       const frame = this.#frameManager.frame(tool.frameId);
       if (!frame) {
-        return;
+        return null;
       }
+
       const frameTools = this.#tools.get(tool.frameId) ?? new Map();
       if (!this.#tools.has(tool.frameId)) {
         this.#tools.set(tool.frameId, frameTools);
       }
-      const addedTool = new WebMCPTool(tool, frame);
+
+      using formElement = tool.backendNodeId
+        ? ((await frame.worlds[MAIN_WORLD].adoptBackendNode(
+            tool.backendNodeId,
+          )) as ElementHandle<HTMLFormElement>)
+        : undefined;
+
+      const addedTool = new WebMCPTool(tool, frame, formElement);
       frameTools.set(tool.name, addedTool);
-      tools.push(addedTool);
+      return addedTool;
     });
+
+    const tools = (await Promise.all(toolPromises)).filter(
+      (tool): tool is WebMCPTool => {
+        return tool !== null;
+      },
+    );
     this.emit('toolsadded', {tools});
   };
   #onToolsRemoved = (event: ProtocolWebMCPToolsRemovedEvent) => {
-    const tools = event.tools
-      .map(tool => {
-        const frameTools = this.#tools.get(tool.frameId);
-        const removedTool = frameTools?.get(tool.name);
-        if (removedTool) {
-          frameTools?.delete(tool.name);
-          if (frameTools?.size === 0) {
-            this.#tools.delete(tool.frameId);
-          }
-          return removedTool;
-        }
-        const frame = this.#frameManager.frame(tool.frameId);
-        if (!frame) {
-          return null;
-        }
-        return new WebMCPTool(tool, frame);
-      })
-      .filter((tool): tool is WebMCPTool => {
-        return tool !== null;
-      });
+    const tools: WebMCPTool[] = [];
+    event.tools.forEach(tool => {
+      const removedTool = this.#tools.get(tool.frameId)?.get(tool.name);
+      if (removedTool) {
+        tools.push(removedTool);
+      }
+      this.#tools.get(tool.frameId)?.delete(tool.name);
+    });
     this.emit('toolsremoved', {tools});
   };
 

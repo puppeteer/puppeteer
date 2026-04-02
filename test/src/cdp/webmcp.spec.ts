@@ -21,8 +21,8 @@ describe('Page.webmcp.tools', function () {
 
     expect(page.webmcp).toBeDefined();
 
-    const toolsAdded = new Promise<WebMCPTool[]>(resolve => {
-      page.webmcp.once('toolsadded', event => {
+    let toolsAdded = new Promise<WebMCPTool[]>(resolve => {
+      page.webmcp.on('toolsadded', event => {
         return resolve(event.tools);
       });
     });
@@ -34,7 +34,7 @@ describe('Page.webmcp.tools', function () {
 
     // Register one WebMCP tool.
     await page.evaluate(() => {
-      (window as any).controller1 = new AbortController();
+      (window as any).controller = new AbortController();
 
       (window as any).navigator.modelContext.registerTool(
         {
@@ -50,7 +50,7 @@ describe('Page.webmcp.tools', function () {
           execute: () => {},
           annotations: {readOnlyHint: true},
         },
-        {signal: (window as any).controller1.signal},
+        {signal: (window as any).controller.signal},
       );
     });
 
@@ -67,9 +67,9 @@ describe('Page.webmcp.tools', function () {
     });
     expect(tools[0]!.frame).toBe(page.mainFrame());
     expect(tools[0]!.stackTrace).toBeDefined();
-    expect(tools[0]!.backendNodeId).toBeUndefined();
+    expect(tools[0]!.formElement).toBeUndefined();
 
-    const addedTools = await toolsAdded;
+    let addedTools = await toolsAdded;
     expect(addedTools.length).toBe(1);
     expect(addedTools[0]!.name).toBe('test-tool-1');
     expect(addedTools[0]!.description).toBe('A test tool 1');
@@ -82,33 +82,35 @@ describe('Page.webmcp.tools', function () {
     });
     expect(addedTools[0]!.frame).toBe(page.mainFrame());
     expect(addedTools[0]!.stackTrace).toBeDefined();
-    expect(addedTools[0]!.backendNodeId).toBeUndefined();
+    expect(addedTools[0]!.formElement).toBeUndefined();
+
+    toolsAdded = new Promise<WebMCPTool[]>(resolve => {
+      page.webmcp.on('toolsadded', event => {
+        console.log(event);
+        return resolve(event.tools);
+      });
+    });
 
     // Register a second WebMCP tool.
     await page.evaluate(() => {
-      (window as any).controller2 = new AbortController();
-
-      (window as any).navigator.modelContext.registerTool(
-        {
-          name: 'test-tool-2',
-          description: 'A test tool 2',
-          inputSchema: {
-            type: 'object',
-            properties: {
-              text: {type: 'string', description: 'Some text'},
-            },
-            required: ['text'],
-          },
-          execute: () => {},
-          annotations: {readOnlyHint: true},
-        },
-        {signal: (window as any).controller2.signal},
-      );
+      const form = document.createElement('form');
+      form.setAttribute('toolname', 'declarative tool name');
+      form.setAttribute('tooldescription', 'tool description');
+      (window as any).document.body.appendChild(form);
     });
+
+    addedTools = await toolsAdded;
+    expect(addedTools.length).toBe(1);
+    expect(addedTools[0]!.name).toBe('declarative tool name');
+    expect(addedTools[0]!.description).toBe('tool description');
+    expect(addedTools[0]!.inputSchema).toStrictEqual({});
+    expect(addedTools[0]!.frame).toBe(page.mainFrame());
+    expect(addedTools[0]!.stackTrace).toBeUndefined();
+    expect(addedTools[0]!.formElement).toBeDefined();
 
     // Unregister first WebMCP tool.
     await page.evaluate(() => {
-      (window as any).controller1.abort();
+      (window as any).controller.abort();
     });
 
     const removedTools = await toolsRemoved;
@@ -124,21 +126,15 @@ describe('Page.webmcp.tools', function () {
     });
     expect(removedTools[0]!.frame).toBe(page.mainFrame());
     expect(removedTools[0]!.stackTrace).toBeDefined();
-    expect(removedTools[0]!.backendNodeId).toBeUndefined();
+    expect(removedTools[0]!.formElement).toBeUndefined();
 
     tools = await page.webmcp.tools();
     expect(tools.length).toBe(1);
-    expect(tools[0]!.name).toBe('test-tool-2');
-    expect(tools[0]!.description).toBe('A test tool 2');
-    expect(tools[0]!.inputSchema).toStrictEqual({
-      type: 'object',
-      properties: {
-        text: {type: 'string', description: 'Some text'},
-      },
-      required: ['text'],
-    });
+    expect(tools[0]!.name).toBe('declarative tool name');
+    expect(tools[0]!.description).toBe('tool description');
+    expect(tools[0]!.inputSchema).toStrictEqual({});
     expect(tools[0]!.frame).toBe(page.mainFrame());
-    expect(tools[0]!.stackTrace).toBeDefined();
-    expect(tools[0]!.backendNodeId).toBeUndefined();
+    expect(tools[0]!.stackTrace).toBeUndefined();
+    expect(tools[0]!.formElement).toBeDefined();
   });
 });
