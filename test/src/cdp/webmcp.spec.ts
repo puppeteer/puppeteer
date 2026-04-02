@@ -15,7 +15,7 @@ describe('Page.webmcp', function () {
     acceptInsecureCerts: true,
   });
 
-  it.only('should list tools', async () => {
+  it('should list tools', async () => {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);
 
