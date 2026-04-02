@@ -233,30 +233,9 @@
   {
     "testIdPattern": "[webmcp.spec] *",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["headful"],
-    "expectations": ["FAIL"],
+    "parameters": ["cdp"],
+    "expectations": ["SKIP"],
     "comment": "Experimental support for WebMCP in Chrome requires flags that are not yet in Chrome Stable."
-  },
-  {
-    "testIdPattern": "[webmcp.spec] *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["headless"],
-    "expectations": ["FAIL"],
-    "comment": "Experimental support for WebMCP in Chrome requires flags that are not yet in Chrome Stable."
-  },
-  {
-    "testIdPattern": "[webmcp.spec] *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["pipe"],
-    "expectations": ["FAIL"],
-    "comment": "Experimental support for WebMCP in Chrome requires flags that are not yet in Chrome Stable."
-  },
-  {
-    "testIdPattern": "[webmcp.spec] *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Experimental support for WebMCP is not supported in BiDi"
   },
   {
     "testIdPattern": "[worker.spec] *",
