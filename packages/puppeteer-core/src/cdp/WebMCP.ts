@@ -63,11 +63,13 @@ export interface WebMCPEvents extends Record<PropertyKey, unknown> {
 export class WebMCP extends EventEmitter<WebMCPEvents> {
   #client: CDPSession;
   #tools: Map<string, Map<string, WebMCPTool>>;
-  
+
   #onToolsRemoved = (event: any) => {
-    event.tools.forEach((tool: WebMCPTool) => this.#tools.get(tool.frameId)?.delete(tool.name));
+    event.tools.forEach((tool: WebMCPTool) => {
+      return this.#tools.get(tool.frameId)?.delete(tool.name);
+    });
     this.emit('toolchange', this);
-  }
+  };
   #onToolsAdded = (event: any) => {
     event.tools.forEach((tool: WebMCPTool) => {
       const frameTools = this.#tools.get(tool.frameId) ?? new Map();
@@ -77,7 +79,7 @@ export class WebMCP extends EventEmitter<WebMCPEvents> {
       frameTools.set(tool.name, tool);
     });
     this.emit('toolchange', this);
-  }
+  };
 
   /**
    * @internal
@@ -89,11 +91,11 @@ export class WebMCP extends EventEmitter<WebMCPEvents> {
     this.#tools = new Map();
   }
 
-  async tools(): Promise<Array<WebMCPTool>> {
+  async tools(): Promise<WebMCPTool[]> {
     await this.#client.send('WebMCP.enable' as any);
-    return Array.from(this.#tools.values()).flatMap(toolMap =>
-      Array.from(toolMap.values())
-    );
+    return Array.from(this.#tools.values()).flatMap(toolMap => {
+      return Array.from(toolMap.values());
+    });
   }
 
   #bindListeners(): void {
@@ -111,5 +113,4 @@ export class WebMCP extends EventEmitter<WebMCPEvents> {
     this.#client = client;
     this.#bindListeners();
   }
-
 }

@@ -888,18 +888,9 @@
   {
     "testIdPattern": "[webmcp.spec] Page.webmcp.tools should monitor registered and unregistered tools",
     "platforms": ["linux"],
-    "parameters": [
-      "cdp",
-      "chrome",
-      "chrome-headless-shell",
-      "firefox",
-      "headful",
-      "headless",
-      "webDriverBiDi",
-      "pipe"
-    ],
+    "parameters": ["firefox"],
     "expectations": ["FAIL"],
-    "comment": "Experimental support for WebMCP in Chrome requires flags that are not yet in Chrome Stable."
+    "comment": "Experimental support for WebMCP requires Chrome."
   },
   {
     "testIdPattern": "[worker.spec] Workers console should return remote objects",
@@ -1970,5 +1961,20 @@
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["FAIL", "PASS"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[webmcp.spec] Page.webmcp.tools should monitor registered and unregistered tools",
+    "platforms": ["linux"],
+    "parameters": [
+      "cdp",
+      "chrome",
+      "chrome-headless-shell",
+      "headful",
+      "headless",
+      "pipe",
+      "webDriverBiDi"
+    ],
+    "expectations": ["FAIL"],
+    "comment": "Experimental support for WebMCP in Chrome requires flags that are not yet in Chrome Stable."
   }
 ]

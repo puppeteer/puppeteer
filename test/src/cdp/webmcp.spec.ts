@@ -5,6 +5,7 @@
  */
 
 import expect from 'expect';
+
 import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
 
 describe('Page.webmcp.tools', function () {
