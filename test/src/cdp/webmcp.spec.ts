@@ -5,13 +5,17 @@
  */
 
 import expect from 'expect';
-import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
+import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
 
 describe('Page.webmcp.tools', function () {
-  setupTestBrowserHooks();
+  const state = setupSeparateTestBrowserHooks({
+    args: ['--enable-features=WebMCPTesting,DevToolsWebMCPSupport'],
+    acceptInsecureCerts: true,
+  });
 
   it('should monitor registered and unregistered tools', async () => {
-    const {page} = await getTestState();
+    const {page, httpsServer} = state;
+    await page.goto(httpsServer.EMPTY_PAGE);
 
     expect(page.webmcp).toBeDefined();
 
@@ -19,8 +23,7 @@ describe('Page.webmcp.tools', function () {
     await page.evaluate(() => {
       (window as any).controller = new AbortController();
 
-      // @ts-expect-error type missing
-      navigator.modelContext.registerTool(
+      (window as any).navigator.modelContext.registerTool(
         {
           name: 'test-tool',
           description: 'A test tool',
