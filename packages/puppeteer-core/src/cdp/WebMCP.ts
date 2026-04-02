@@ -20,6 +20,24 @@ export interface WebMCPAnnotation {
  */
 export type WebMCPInvocationStatus = 'Success' | 'Canceled' | 'Error';
 
+interface ProtocolWebMCPTool {
+  name: string;
+  description: string;
+  inputSchema?: object;
+  annotations?: WebMCPAnnotation;
+  frameId: string;
+  backendNodeId?: number;
+  stackTrace?: unknown;
+}
+
+interface ProtocolWebMCPToolsAddedEvent {
+  tools: ProtocolWebMCPTool[];
+}
+
+interface ProtocolWebMCPToolsRemovedEvent {
+  tools: ProtocolWebMCPTool[];
+}
+
 /**
  * @public
  */
@@ -35,7 +53,7 @@ export class WebMCPTool {
   /**
    * @internal
    */
-  constructor(tool: WebMCPTool) {
+  constructor(tool: ProtocolWebMCPTool) {
     this.name = tool.name;
     this.description = tool.description;
     this.inputSchema = tool.inputSchema;
@@ -67,27 +85,36 @@ export interface WebMCPToolsRemovedEvent {
  */
 
 export class WebMCP extends EventEmitter<{
-  /** Emitted when tools are added or removed. */
-  toolchange: WebMCP;
+  /** Emitted when tools are added. */
+  toolsadded: WebMCPToolsAddedEvent;
+  /** Emitted when tools are removed. */
+  toolsremoved: WebMCPToolsRemovedEvent;
 }> {
   #client: CDPSession;
   #tools: Map<string, Map<string, WebMCPTool>>;
 
-  #onToolsRemoved = (event: WebMCPToolsRemovedEvent) => {
-    event.tools.forEach(tool => {
-      return this.#tools.get(tool.frameId)?.delete(tool.name);
-    });
-    this.emit('toolchange', this);
-  };
-  #onToolsAdded = (event: WebMCPToolsAddedEvent) => {
+  #onToolsAdded = (event: ProtocolWebMCPToolsAddedEvent) => {
+    const tools: WebMCPTool[] = [];
     event.tools.forEach(tool => {
       const frameTools = this.#tools.get(tool.frameId) ?? new Map();
       if (!this.#tools.has(tool.frameId)) {
         this.#tools.set(tool.frameId, frameTools);
       }
-      frameTools.set(tool.name, tool);
+      const addedTool = new WebMCPTool(tool);
+      frameTools.set(tool.name, addedTool);
+      tools.push(addedTool);
     });
-    this.emit('toolchange', this);
+    this.emit('toolsadded', {tools});
+  };
+  #onToolsRemoved = (event: ProtocolWebMCPToolsRemovedEvent) => {
+    const tools = event.tools
+      .filter(tool => {
+        return this.#tools.get(tool.frameId)?.delete(tool.name);
+      })
+      .map(tool => {
+        return new WebMCPTool(tool);
+      });
+    this.emit('toolsremoved', {tools});
   };
 
   /**

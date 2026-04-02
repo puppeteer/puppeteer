@@ -5,6 +5,7 @@
  */
 
 import expect from 'expect';
+import type {WebMCPTool} from 'puppeteer-core';
 
 import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
 
@@ -20,14 +21,25 @@ describe('Page.webmcp.tools', function () {
 
     expect(page.webmcp).toBeDefined();
 
-    // Register a WebMCP tool.
+    const toolsAdded = new Promise<WebMCPTool[]>(resolve => {
+      page.webmcp.once('toolsadded', event => {
+        return resolve(event.tools);
+      });
+    });
+    const toolsRemoved = new Promise<WebMCPTool[]>(resolve => {
+      page.webmcp.once('toolsremoved', event => {
+        return resolve(event.tools);
+      });
+    });
+
+    // Register one WebMCP tool.
     await page.evaluate(() => {
-      (window as any).controller = new AbortController();
+      (window as any).controller1 = new AbortController();
 
       (window as any).navigator.modelContext.registerTool(
         {
-          name: 'test-tool',
-          description: 'A test tool',
+          name: 'test-tool-1',
+          description: 'A test tool 1',
           inputSchema: {
             type: 'object',
             properties: {
@@ -38,14 +50,14 @@ describe('Page.webmcp.tools', function () {
           execute: () => {},
           annotations: {readOnlyHint: true},
         },
-        {signal: (window as any).controller.signal},
+        {signal: (window as any).controller1.signal},
       );
     });
 
     let tools = await page.webmcp.tools();
     expect(tools.length).toBe(1);
-    expect(tools[0]!.name).toBe('test-tool');
-    expect(tools[0]!.description).toBe('A test tool');
+    expect(tools[0]!.name).toBe('test-tool-1');
+    expect(tools[0]!.description).toBe('A test tool 1');
     expect(tools[0]!.inputSchema).toStrictEqual({
       type: 'object',
       properties: {
@@ -53,17 +65,80 @@ describe('Page.webmcp.tools', function () {
       },
       required: ['text'],
     });
-    expect(tools[0]!.annotations).toStrictEqual({readonly: true});
     expect(tools[0]!.frameId).toBe(page.frames()[0]!._id);
     expect(tools[0]!.stackTrace).toBeDefined();
     expect(tools[0]!.backendNodeId).toBeUndefined();
 
-    // Unregister the WebMCP tool.
+    const addedTools = await toolsAdded;
+    expect(addedTools.length).toBe(1);
+    expect(addedTools[0]!.name).toBe('test-tool-1');
+    expect(addedTools[0]!.description).toBe('A test tool 1');
+    expect(addedTools[0]!.inputSchema).toStrictEqual({
+      type: 'object',
+      properties: {
+        text: {type: 'string', description: 'Some text'},
+      },
+      required: ['text'],
+    });
+    expect(addedTools[0]!.frameId).toBe(page.frames()[0]!._id);
+    expect(addedTools[0]!.stackTrace).toBeDefined();
+    expect(addedTools[0]!.backendNodeId).toBeUndefined();
+
+    // Register a second WebMCP tool.
     await page.evaluate(() => {
-      (window as any).controller.abort();
+      (window as any).controller2 = new AbortController();
+
+      (window as any).navigator.modelContext.registerTool(
+        {
+          name: 'test-tool-2',
+          description: 'A test tool 2',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              text: {type: 'string', description: 'Some text'},
+            },
+            required: ['text'],
+          },
+          execute: () => {},
+          annotations: {readOnlyHint: true},
+        },
+        {signal: (window as any).controller2.signal},
+      );
     });
 
+    // Unregister first WebMCP tool.
+    await page.evaluate(() => {
+      (window as any).controller1.abort();
+    });
+
+    const removedTools = await toolsRemoved;
+    expect(removedTools.length).toBe(1);
+    expect(removedTools[0]!.name).toBe('test-tool-1');
+    expect(removedTools[0]!.description).toBe('A test tool 1');
+    expect(removedTools[0]!.inputSchema).toStrictEqual({
+      type: 'object',
+      properties: {
+        text: {type: 'string', description: 'Some text'},
+      },
+      required: ['text'],
+    });
+    expect(removedTools[0]!.frameId).toBe(page.frames()[0]!._id);
+    expect(removedTools[0]!.stackTrace).toBeDefined();
+    expect(removedTools[0]!.backendNodeId).toBeUndefined();
+
     tools = await page.webmcp.tools();
-    expect(tools.length).toBe(0);
+    expect(tools.length).toBe(1);
+    expect(tools[0]!.name).toBe('test-tool-2');
+    expect(tools[0]!.description).toBe('A test tool 2');
+    expect(tools[0]!.inputSchema).toStrictEqual({
+      type: 'object',
+      properties: {
+        text: {type: 'string', description: 'Some text'},
+      },
+      required: ['text'],
+    });
+    expect(tools[0]!.frameId).toBe(page.frames()[0]!._id);
+    expect(tools[0]!.stackTrace).toBeDefined();
+    expect(tools[0]!.backendNodeId).toBeUndefined();
   });
 });
