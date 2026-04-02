@@ -150,16 +150,9 @@ describe('Page.webmcp', function () {
 
     await page.webmcp.tools();
 
-    const imperativeToolRemoved = new Promise<WebMCPTool[]>(resolve => {
-      page.webmcp.once('toolsremoved', event => {
-        return resolve(event.tools);
-      });
-    });
-
     // Register an imperative WebMCP tool.
-    await page.evaluate(() => {
-      (window as any).controller = new AbortController();
-
+    const controllerHandle = await page.evaluateHandle(() => {
+      const controller = new AbortController();
       (window as any).navigator.modelContext.registerTool(
         {
           name: 'test-tool-1',
@@ -174,9 +167,11 @@ describe('Page.webmcp', function () {
           execute: () => {},
           annotations: {readOnlyHint: true},
         },
-        {signal: (window as any).controller.signal},
+        {signal: controller.signal},
       );
+      return controller;
     });
+
     // Register a declarative WebMCP tool.
     await page.evaluate(() => {
       const form = document.createElement('form');
@@ -185,9 +180,15 @@ describe('Page.webmcp', function () {
       (window as any).document.body.appendChild(form);
     });
 
+    const imperativeToolRemoved = new Promise<WebMCPTool[]>(resolve => {
+      page.webmcp.once('toolsremoved', event => {
+        return resolve(event.tools);
+      });
+    });
+
     // Unregister imperative WebMCP tool.
-    await page.evaluate(() => {
-      (window as any).controller.abort();
+    await controllerHandle.evaluate(el => {
+      el.abort();
     });
 
     let removedTools = await imperativeToolRemoved;
