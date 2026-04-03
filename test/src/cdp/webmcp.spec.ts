@@ -193,6 +193,7 @@ describe('Page.webmcp', function () {
 
     // Unregister imperative WebMCP tool.
     await controllerHandle.evaluate(el => {
+      (window as any).navigator.modelContext.unregisterTool?.('test-tool-1');
       el.abort();
     });
 
