@@ -7,6 +7,7 @@
 import type {CDPSession} from '../api/CDPSession.js';
 import type {Frame} from '../api/Frame.js';
 import {EventEmitter} from '../common/EventEmitter.js';
+import {debugError} from '../common/util.js';
 import type {ElementHandle} from '../puppeteer-core.js';
 import {MAIN_WORLD} from '../puppeteer-core.js';
 
@@ -121,7 +122,7 @@ export class WebMCP extends EventEmitter<{
           )) as ElementHandle<HTMLFormElement>)
         : undefined;
 
-      const addedTool = new WebMCPTool(tool, frame, formElement);
+      const addedTool = new WebMCPTool(tool, frame, formElement?.move());
       frameTools.set(tool.name, addedTool);
       return addedTool;
     });
@@ -156,8 +157,11 @@ export class WebMCP extends EventEmitter<{
     this.#tools = new Map();
   }
 
-  async tools(): Promise<WebMCPTool[]> {
-    await this.#client.send('WebMCP.enable' as any);
+  async initialize(): Promise<void> {
+    return await this.#client.send('WebMCP.enable' as any).catch(debugError);
+  }
+
+  tools(): WebMCPTool[] {
     return Array.from(this.#tools.values()).flatMap(toolMap => {
       return Array.from(toolMap.values());
     });

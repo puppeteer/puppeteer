@@ -396,6 +396,7 @@ export class CdpPage extends Page {
         this.#frameManager.initialize(this.#primaryTargetClient),
         this.#primaryTargetClient.send('Performance.enable'),
         this.#primaryTargetClient.send('Log.enable'),
+        this.#webmcp.initialize(),
       ]);
     } catch (err) {
       if (isErrorLike(err) && isTargetClosedError(err)) {

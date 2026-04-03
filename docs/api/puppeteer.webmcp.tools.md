@@ -8,10 +8,10 @@ sidebar_label: WebMCP.tools
 
 ```typescript
 class WebMCP {
-  tools(): Promise<WebMCPTool[]>;
+  tools(): WebMCPTool[];
 }
 ```
 
 **Returns:**
 
-Promise&lt;[WebMCPTool](./puppeteer.webmcptool.md)\[\]&gt;
+[WebMCPTool](./puppeteer.webmcptool.md)\[\]

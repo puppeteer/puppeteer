@@ -38,6 +38,15 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="initialize">[initialize()](./puppeteer.webmcp.initialize.md)</span>
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="tools">[tools()](./puppeteer.webmcp.tools.md)</span>
 
 </td><td>

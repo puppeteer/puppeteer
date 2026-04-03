@@ -21,8 +21,15 @@ describe('Page.webmcp', function () {
 
     expect(page.webmcp).toBeDefined();
 
-    // FIXME: Find a way to remove this.
-    await page.webmcp.tools();
+    const toolsAddedPromise = new Promise<void>(resolve => {
+      let count = 0;
+      page.webmcp.on('toolsadded', () => {
+        count++;
+        if (count === 2) {
+          resolve();
+        }
+      });
+    });
 
     // Register an imperative WebMCP tool.
     await page.evaluate(() => {
@@ -48,7 +55,9 @@ describe('Page.webmcp', function () {
       (window as any).document.body.appendChild(form);
     });
 
-    const tools = await page.webmcp.tools();
+    await toolsAddedPromise;
+
+    const tools = page.webmcp.tools();
     expect(tools.length).toBe(2);
 
     expect(tools[0]!.name).toBe('test-tool-1');
@@ -77,8 +86,6 @@ describe('Page.webmcp', function () {
     await page.goto(httpsServer.EMPTY_PAGE);
 
     expect(page.webmcp).toBeDefined();
-
-    await page.webmcp.tools();
 
     const imperativeToolAdded = new Promise<WebMCPTool[]>(resolve => {
       page.webmcp.once('toolsadded', event => {
@@ -148,10 +155,8 @@ describe('Page.webmcp', function () {
 
     expect(page.webmcp).toBeDefined();
 
-    await page.webmcp.tools();
-
     // Register an imperative WebMCP tool.
-    const controllerHandle = await page.evaluateHandle(() => {
+    using controllerHandle = await page.evaluateHandle(() => {
       const controller = new AbortController();
       (window as any).navigator.modelContext.registerTool(
         {
