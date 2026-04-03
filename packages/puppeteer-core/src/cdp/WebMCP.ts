@@ -4,8 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import type {Protocol} from 'devtools-protocol';
+
 import type {CDPSession} from '../api/CDPSession.js';
 import type {Frame} from '../api/Frame.js';
+import type {ConsoleMessageLocation} from '../common/ConsoleMessage.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import type {ElementHandle} from '../puppeteer-core.js';
@@ -33,7 +36,7 @@ interface ProtocolWebMCPTool {
   annotations?: WebMCPAnnotation;
   frameId: string;
   backendNodeId?: number;
-  stackTrace?: unknown;
+  stackTrace?: Protocol.Runtime.StackTrace;
 }
 
 interface ProtocolWebMCPToolsAddedEvent {
@@ -54,7 +57,11 @@ export class WebMCPTool {
   annotations?: WebMCPAnnotation;
   frame: Frame;
   formElement?: ElementHandle<HTMLFormElement>;
-  stackTrace?: unknown;
+  location?: ConsoleMessageLocation;
+  /**
+   * @internal
+   */
+  rawStackTrace?: Protocol.Runtime.StackTrace;
 
   /**
    * @internal
@@ -70,7 +77,14 @@ export class WebMCPTool {
     this.annotations = tool.annotations;
     this.frame = frame;
     this.formElement = formElement;
-    this.stackTrace = tool.stackTrace;
+    if (tool.stackTrace?.callFrames.length) {
+      this.location = {
+        url: tool.stackTrace.callFrames[0]!.url,
+        lineNumber: tool.stackTrace.callFrames[0]!.lineNumber,
+        columnNumber: tool.stackTrace.callFrames[0]!.columnNumber,
+      };
+    }
+    this.rawStackTrace = tool.stackTrace;
   }
 }
 

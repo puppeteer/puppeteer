@@ -106,20 +106,7 @@ object
 </td></tr>
 <tr><td>
 
-<span id="name">name</span>
-
-</td><td>
-
-</td><td>
-
-string
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
-<span id="stacktrace">stackTrace</span>
+<span id="location">location</span>
 
 </td><td>
 
@@ -127,7 +114,20 @@ string
 
 </td><td>
 
-unknown
+[ConsoleMessageLocation](./puppeteer.consolemessagelocation.md)
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="name">name</span>
+
+</td><td>
+
+</td><td>
+
+string
 
 </td><td>
 
