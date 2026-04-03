@@ -15,6 +15,7 @@ import type {ElementHandle} from '../puppeteer-core.js';
 import {MAIN_WORLD} from '../puppeteer-core.js';
 
 import type {FrameManager} from './FrameManager.js';
+import {FrameManagerEvent} from './FrameManagerEvents.js';
 
 /**
  * @public
@@ -160,6 +161,18 @@ export class WebMCP extends EventEmitter<{
     this.emit('toolsremoved', {tools});
   };
 
+  #onFrameNavigated = (frame: Frame) => {
+    const frameTools = this.#tools.get(frame._id);
+    if (!frameTools) {
+      return;
+    }
+    const tools = Array.from(frameTools.values());
+    this.#tools.delete(frame._id);
+    if (tools.length) {
+      this.emit('toolsremoved', {tools});
+    }
+  };
+
   /**
    * @internal
    */
@@ -167,6 +180,10 @@ export class WebMCP extends EventEmitter<{
     super();
     this.#client = client;
     this.#frameManager = frameManager;
+    this.#frameManager.on(
+      FrameManagerEvent.FrameNavigated,
+      this.#onFrameNavigated,
+    );
     this.#bindListeners();
     this.#tools = new Map();
   }

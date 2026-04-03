@@ -231,4 +231,39 @@ describe('Page.webmcp', function () {
     expect(removedTools[0]!.formElement).toBeDefined();
     expect(removedTools[0]!.location).toBeUndefined();
   });
+
+  it('should remove tools on frame navigation', async () => {
+    const {page, httpsServer} = state;
+    await page.goto(httpsServer.EMPTY_PAGE);
+
+    const toolsAddedPromise = new Promise<void>(resolve => {
+      page.webmcp.once('toolsadded', () => {
+        resolve();
+      });
+    });
+
+    // Register a declarative WebMCP tool.
+    await page.evaluate(() => {
+      const form = document.createElement('form');
+      form.setAttribute('toolname', 'declarative tool name');
+      form.setAttribute('tooldescription', 'tool description');
+      document.body.appendChild(form);
+    });
+
+    await toolsAddedPromise;
+
+    const toolsRemovedPromise = new Promise<WebMCPTool[]>(resolve => {
+      page.webmcp.once('toolsremoved', event => {
+        return resolve(event.tools);
+      });
+    });
+
+    // Reload page forces frame navigation.
+    await page.goto(httpsServer.EMPTY_PAGE);
+
+    const removedTools = await toolsRemovedPromise;
+    expect(removedTools.length).toBe(1);
+    expect(removedTools[0]!.name).toBe('declarative tool name');
+    expect(page.webmcp.tools().length).toBe(0);
+  });
 });
