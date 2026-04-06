@@ -26,6 +26,11 @@ This command generates static content into the `build` directory and can be serv
 
 ### Deployment
 
+Locally:
+```
+$ npm run serve
+```
+
 Using SSH:
 
 ```
