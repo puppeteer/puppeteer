@@ -15,6 +15,7 @@ import eslintPrettierPluginRecommended from 'eslint-plugin-prettier/recommended'
 import tsdoc from 'eslint-plugin-tsdoc';
 import globals from 'globals';
 import typescriptEslint from 'typescript-eslint';
+import unusedImports from 'eslint-plugin-unused-imports';
 
 function getThirdPartyPackages() {
   return fs
@@ -413,6 +414,24 @@ export default defineConfig([
       'mocha/no-pending-tests': 'error',
       'mocha/no-identical-title': 'error',
       '@puppeteer/no-quirks-mode-set-content': 'error',
+    },
+  },
+
+  {
+    files: ['**/*.d.ts'],
+
+    plugins: {
+      'unused-imports': unusedImports,
+    },
+
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      parser: typescriptEslint.parser,
+    },
+
+    rules: {
+      'unused-imports/no-unused-imports': 'error',
     },
   },
 ]);
