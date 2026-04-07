@@ -56,6 +56,13 @@ interface ProtocolWebMCPToolInvokedEvent {
   input: string;
 }
 
+interface ProtocolWebMCPToolRespondedEvent {
+  invocationId: string;
+  status: WebMCPInvocationStatus;
+  output?: any;
+  exception?: Protocol.Runtime.RemoteObject;
+}
+
 /**
  * @public
  */
@@ -154,6 +161,16 @@ export class WebMCPToolCall {
 }
 
 /**
+ * @public
+ */
+export interface WebMCPToolResponse {
+  id: string;
+  status: WebMCPInvocationStatus;
+  output?: any;
+  exception?: Protocol.Runtime.RemoteObject;
+}
+
+/**
  * The WebMCP class provides an API for the WebMCP API.
  *
  * @public
@@ -165,6 +182,8 @@ export class WebMCP extends EventEmitter<{
   toolsremoved: WebMCPToolsRemovedEvent;
   /** Emitted when a tool invocation starts. */
   toolinvoked: WebMCPToolCall;
+  /** Emitted when a tool invocation completes or fails. */
+  toolresponded: WebMCPToolResponse;
 }> {
   #client: CDPSession;
   #frameManager: FrameManager;
@@ -213,6 +232,16 @@ export class WebMCP extends EventEmitter<{
     this.emit('toolinvoked', call);
   };
 
+  #onToolResponded = (event: ProtocolWebMCPToolRespondedEvent) => {
+    const response: WebMCPToolResponse = {
+      id: event.invocationId,
+      status: event.status,
+      output: event.output,
+      exception: event.exception,
+    };
+    this.emit('toolresponded', response);
+  };
+
   #onFrameNavigated = (frame: Frame) => {
     const frameTools = this.#tools.get(frame._id);
     if (!frameTools) {
@@ -256,6 +285,10 @@ export class WebMCP extends EventEmitter<{
     this.#client.on('WebMCP.toolsAdded' as any, this.#onToolsAdded as any);
     this.#client.on('WebMCP.toolsRemoved' as any, this.#onToolsRemoved as any);
     this.#client.on('WebMCP.toolInvoked' as any, this.#onToolInvoked as any);
+    this.#client.on(
+      'WebMCP.toolResponded' as any,
+      this.#onToolResponded as any,
+    );
   }
 
   /**
@@ -265,6 +298,10 @@ export class WebMCP extends EventEmitter<{
     this.#client.off('WebMCP.toolsAdded' as any, this.#onToolsAdded as any);
     this.#client.off('WebMCP.toolsRemoved' as any, this.#onToolsRemoved as any);
     this.#client.off('WebMCP.toolInvoked' as any, this.#onToolInvoked as any);
+    this.#client.off(
+      'WebMCP.toolResponded' as any,
+      this.#onToolResponded as any,
+    );
     this.#client = client;
     this.#bindListeners();
   }
