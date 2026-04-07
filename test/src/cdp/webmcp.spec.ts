@@ -307,9 +307,9 @@ describe('Page.webmcp', function () {
 
     const call = await toolCalled;
 
+    expect(call.id).toBeDefined();
     expect(call.toolName).toBe('test-tool-1');
     expect(call.frame).toBe(page.mainFrame());
-    expect(call.invocationId).toBeDefined();
     expect(call.input).toStrictEqual({text: 'test'});
   });
 });

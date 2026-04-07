@@ -130,9 +130,9 @@ export interface WebMCPToolsRemovedEvent {
  * @public
  */
 export interface WebMCPToolCall {
+  id: string;
   toolName: string;
   frame: Frame;
-  invocationId: string;
   input: object;
 }
 
@@ -199,9 +199,9 @@ export class WebMCP extends EventEmitter<{
       debugError(error);
     }
     const call: WebMCPToolCall = {
+      id: event.invocationId,
       toolName: event.toolName,
       frame: frame,
-      invocationId: event.invocationId,
       input: input,
     };
     this.emit('toolinvoked', call);
