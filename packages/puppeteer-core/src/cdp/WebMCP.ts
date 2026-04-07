@@ -59,7 +59,6 @@ interface ProtocolWebMCPToolInvokedEvent {
 /**
  * @public
  */
-
 export class WebMCPTool extends EventEmitter<{
   /** Emitted when invocation starts. */
   toolinvoked: WebMCPTool;
@@ -142,11 +141,11 @@ export class WebMCPToolCall {
   /**
    * @internal
    */
-  constructor(event: ProtocolWebMCPToolInvokedEvent, tool: WebMCPTool) {
-    this.id = event.invocationId;
+  constructor(invocationId: string, tool: WebMCPTool, input: string) {
+    this.id = invocationId;
     this.tool = tool;
     try {
-      this.input = JSON.parse(event.input);
+      this.input = JSON.parse(input);
     } catch (error) {
       this.input = {};
       debugError(error);
@@ -159,7 +158,6 @@ export class WebMCPToolCall {
  *
  * @public
  */
-
 export class WebMCP extends EventEmitter<{
   /** Emitted when tools are added. */
   toolsadded: WebMCPToolsAddedEvent;
@@ -211,7 +209,7 @@ export class WebMCP extends EventEmitter<{
       return;
     }
     tool.emit('toolinvoked', tool);
-    const call = new WebMCPToolCall(event, tool);
+    const call = new WebMCPToolCall(event.invocationId, tool, event.input);
     this.emit('toolinvoked', call);
   };
 
