@@ -40,7 +40,7 @@ export default defineConfig([
   globalIgnores([
     '**/node_modules',
     '**/build/',
-    '**/lib/',
+    '**/lib/**/*',
     '**/bin/',
     '**/*.tsbuildinfo',
     '**/*.api.json',
@@ -418,7 +418,7 @@ export default defineConfig([
   },
 
   {
-    files: ['**/*.d.ts'],
+    files: ['**/types.d.ts'],
 
     plugins: {
       'unused-imports': unusedImports,
@@ -432,6 +432,9 @@ export default defineConfig([
 
     rules: {
       'unused-imports/no-unused-imports': 'error',
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
+      '@typescript-eslint/no-unsafe-function-type': 'off',
     },
   },
 ]);

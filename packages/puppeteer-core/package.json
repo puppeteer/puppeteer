@@ -108,7 +108,7 @@
       ]
     },
     "build:types": {
-      "command": "api-extractor run --local && eslint --cache-location .eslintcache --cache --fix lib/types.d.ts",
+      "command": "api-extractor run --local && eslint --fix lib/types.d.ts --ignore-pattern '!lib/**'",
       "files": [
         "api-extractor.json",
         "lib/esm/puppeteer/types.d.ts",
