@@ -199,7 +199,8 @@ export class WebMCP extends EventEmitter<{
   }
 
   #bindListeners(): void {
-    // We use type casting because WebMCP is not yet in the Protocol types.
+    // TODO: Remove type-casting. We use type casting because WebMCP is not yet in the
+    // Protocol types.
     this.#client.on('WebMCP.toolsAdded' as any, this.#onToolsAdded as any);
     this.#client.on('WebMCP.toolsRemoved' as any, this.#onToolsRemoved as any);
   }
