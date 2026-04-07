@@ -133,7 +133,7 @@ export interface WebMCPToolCall {
   toolName: string;
   frame: Frame;
   invocationId: string;
-  input: string;
+  input: object;
 }
 
 /**
@@ -192,11 +192,17 @@ export class WebMCP extends EventEmitter<{
     if (!frame) {
       return;
     }
+    let input;
+    try {
+      input = JSON.parse(event.input);
+    } catch(error) {
+      debugError(error);
+    }
     const call: WebMCPToolCall = {
       toolName: event.toolName,
       frame: frame,
       invocationId: event.invocationId,
-      input: event.input,
+      input: input,
     };
     this.emit('toolinvoked', call);
   };
