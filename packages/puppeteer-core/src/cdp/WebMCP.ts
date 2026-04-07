@@ -14,6 +14,7 @@ import {debugError} from '../common/util.js';
 import type {ElementHandle} from '../puppeteer-core.js';
 import {MAIN_WORLD} from '../puppeteer-core.js';
 
+import type {CdpFrame} from './Frame.js';
 import type {FrameManager} from './FrameManager.js';
 import {FrameManagerEvent} from './FrameManagerEvents.js';
 
@@ -52,12 +53,14 @@ interface ProtocolWebMCPToolsRemovedEvent {
  * @public
  */
 export class WebMCPTool {
+  #backendNodeId?: number;
+  #formElement?: ElementHandle<HTMLFormElement>;
+
   name: string;
   description: string;
   inputSchema?: object;
   annotations?: WebMCPAnnotation;
   frame: Frame;
-  formElement?: ElementHandle<HTMLFormElement>;
   location?: ConsoleMessageLocation;
   /**
    * @internal
@@ -67,17 +70,13 @@ export class WebMCPTool {
   /**
    * @internal
    */
-  constructor(
-    tool: ProtocolWebMCPTool,
-    frame: Frame,
-    formElement: ElementHandle<HTMLFormElement> | undefined,
-  ) {
+  constructor(tool: ProtocolWebMCPTool, frame: Frame) {
     this.name = tool.name;
     this.description = tool.description;
     this.inputSchema = tool.inputSchema;
     this.annotations = tool.annotations;
     this.frame = frame;
-    this.formElement = formElement;
+    this.#backendNodeId = tool.backendNodeId;
     if (tool.stackTrace?.callFrames.length) {
       this.location = {
         url: tool.stackTrace.callFrames[0]!.url,
@@ -86,6 +85,23 @@ export class WebMCPTool {
       };
     }
     this.rawStackTrace = tool.stackTrace;
+  }
+
+  get formElement(): Promise<ElementHandle<HTMLFormElement> | undefined> {
+    return (async () => {
+      if (this.#formElement && !this.#formElement.disposed) {
+        return this.#formElement;
+      }
+      if (!this.#backendNodeId) {
+        return undefined;
+      }
+      this.#formElement = (await (this.frame as CdpFrame).worlds[
+        MAIN_WORLD
+      ].adoptBackendNode(
+        this.#backendNodeId,
+      )) as ElementHandle<HTMLFormElement>;
+      return this.#formElement;
+    })();
   }
 }
 
@@ -119,11 +135,12 @@ export class WebMCP extends EventEmitter<{
   #frameManager: FrameManager;
   #tools: Map<string, Map<string, WebMCPTool>>;
 
-  #onToolsAdded = async (event: ProtocolWebMCPToolsAddedEvent) => {
-    const toolPromises = event.tools.map(async tool => {
+  #onToolsAdded = (event: ProtocolWebMCPToolsAddedEvent) => {
+    const tools: WebMCPTool[] = [];
+    for (const tool of event.tools) {
       const frame = this.#frameManager.frame(tool.frameId);
       if (!frame) {
-        return null;
+        continue;
       }
 
       const frameTools = this.#tools.get(tool.frameId) ?? new Map();
@@ -131,22 +148,11 @@ export class WebMCP extends EventEmitter<{
         this.#tools.set(tool.frameId, frameTools);
       }
 
-      using formElement = tool.backendNodeId
-        ? ((await frame.worlds[MAIN_WORLD].adoptBackendNode(
-            tool.backendNodeId,
-          )) as ElementHandle<HTMLFormElement>)
-        : undefined;
-
-      const addedTool = new WebMCPTool(tool, frame, formElement?.move());
+      const addedTool = new WebMCPTool(tool, frame);
       frameTools.set(tool.name, addedTool);
-      return addedTool;
-    });
+      tools.push(addedTool);
+    }
 
-    const tools = (await Promise.all(toolPromises)).filter(
-      (tool): tool is WebMCPTool => {
-        return tool !== null;
-      },
-    );
     this.emit('toolsadded', {tools});
   };
   #onToolsRemoved = (event: ProtocolWebMCPToolsRemovedEvent) => {

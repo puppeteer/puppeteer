@@ -67,11 +67,11 @@ string
 
 </td><td>
 
-`optional`
+`readonly`
 
 </td><td>
 
-[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLFormElement&gt;
+Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLFormElement&gt; \| undefined&gt;
 
 </td><td>
 
