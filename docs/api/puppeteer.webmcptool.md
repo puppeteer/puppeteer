@@ -7,8 +7,12 @@ sidebar_label: WebMCPTool
 ### Signature
 
 ```typescript
-export declare class WebMCPTool
+export declare class WebMCPTool extends EventEmitter<{
+    toolinvoked: WebMCPTool;
+}>
 ```
+
+**Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;&#123; toolinvoked: [WebMCPTool](./puppeteer.webmcptool.md); &#125;&gt;
 
 ## Remarks
 

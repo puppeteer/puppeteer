@@ -59,7 +59,11 @@ interface ProtocolWebMCPToolInvokedEvent {
 /**
  * @public
  */
-export class WebMCPTool {
+
+export class WebMCPTool extends EventEmitter<{
+  /** Emitted when invocation starts. */
+  toolinvoked: WebMCPTool;
+}> {
   #backendNodeId?: number;
   #formElement?: ElementHandle<HTMLFormElement>;
 
@@ -78,6 +82,7 @@ export class WebMCPTool {
    * @internal
    */
   constructor(tool: ProtocolWebMCPTool, frame: Frame) {
+    super();
     this.name = tool.name;
     this.description = tool.description;
     this.inputSchema = tool.inputSchema;
@@ -129,11 +134,24 @@ export interface WebMCPToolsRemovedEvent {
 /**
  * @public
  */
-export interface WebMCPToolCall {
+export class WebMCPToolCall {
   id: string;
-  toolName: string;
-  frame: Frame;
+  tool: WebMCPTool;
   input: object;
+
+  /**
+   * @internal
+   */
+  constructor(event: ProtocolWebMCPToolInvokedEvent, tool: WebMCPTool) {
+    this.id = event.invocationId;
+    this.tool = tool;
+    try {
+      this.input = JSON.parse(event.input);
+    } catch (error) {
+      this.input = {};
+      debugError(error);
+    }
+  }
 }
 
 /**
@@ -188,22 +206,12 @@ export class WebMCP extends EventEmitter<{
   };
 
   #onToolInvoked = (event: ProtocolWebMCPToolInvokedEvent) => {
-    const frame = this.#frameManager.frame(event.frameId);
-    if (!frame) {
+    const tool = this.#tools.get(event.frameId)?.get(event.toolName);
+    if (!tool) {
       return;
     }
-    let input;
-    try {
-      input = JSON.parse(event.input);
-    } catch(error) {
-      debugError(error);
-    }
-    const call: WebMCPToolCall = {
-      id: event.invocationId,
-      toolName: event.toolName,
-      frame: frame,
-      input: input,
-    };
+    tool.emit('toolinvoked', tool);
+    const call = new WebMCPToolCall(event, tool);
     this.emit('toolinvoked', call);
   };
 

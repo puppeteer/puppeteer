@@ -271,14 +271,16 @@ describe('Page.webmcp', function () {
     expect(page.webmcp.tools().length).toBe(0);
   });
 
-  it('should fire toolinvoked event', async () => {
+  it('should fire toolinvoked events', async () => {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);
 
     expect(page.webmcp).toBeDefined();
 
-    const toolCalled = new Promise<WebMCPToolCall>(resolve => {
-      page.webmcp.once('toolinvoked', resolve);
+    const toolAdded = new Promise<WebMCPTool[]>(resolve => {
+      page.webmcp.once('toolsadded', event => {
+        return resolve(event.tools);
+      });
     });
 
     // Register a WebMCP tool.
@@ -297,6 +299,16 @@ describe('Page.webmcp', function () {
       });
     });
 
+    const [addedTool] = await toolAdded;
+
+    const toolInvoked = new Promise<WebMCPTool>(resolve => {
+      addedTool!.once('toolinvoked', resolve);
+    });
+
+    const toolCalled = new Promise<WebMCPToolCall>(resolve => {
+      page.webmcp.once('toolinvoked', resolve);
+    });
+
     // Execute WebMCP tool.
     await page.evaluate(() => {
       (window as any).navigator.modelContextTesting.executeTool(
@@ -305,11 +317,36 @@ describe('Page.webmcp', function () {
       );
     });
 
-    const call = await toolCalled;
+    const [tool, call] = await Promise.all([toolInvoked, toolCalled]);
+
+    expect(tool).toBeDefined();
+    expect(tool.name).toBe('test-tool-1');
+    expect(tool.description).toBe('A test tool 1');
+    expect(tool.inputSchema).toStrictEqual({
+      type: 'object',
+      properties: {
+        text: {type: 'string', description: 'Some text'},
+      },
+      required: ['text'],
+    });
+    expect(tool.frame).toBe(page.mainFrame());
+    expect(await tool.formElement).toBeUndefined();
+    expect(tool.location).toBeDefined();
 
     expect(call.id).toBeDefined();
-    expect(call.toolName).toBe('test-tool-1');
-    expect(call.frame).toBe(page.mainFrame());
+    expect(call.tool).toBeDefined();
+    expect(call.tool.name).toBe('test-tool-1');
+    expect(call.tool.description).toBe('A test tool 1');
+    expect(call.tool.inputSchema).toStrictEqual({
+      type: 'object',
+      properties: {
+        text: {type: 'string', description: 'Some text'},
+      },
+      required: ['text'],
+    });
+    expect(call.tool.frame).toBe(page.mainFrame());
+    expect(await call.tool.formElement).toBeUndefined();
+    expect(call.tool.location).toBeDefined();
     expect(call.input).toStrictEqual({text: 'test'});
   });
 });
