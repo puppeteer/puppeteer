@@ -47,6 +47,8 @@ Default
 
 </td><td>
 
+The corresponding tool call if available.
+
 </td><td>
 
 </td></tr>
@@ -63,6 +65,8 @@ Default
 string
 
 </td><td>
+
+Error text.
 
 </td><td>
 
@@ -81,6 +85,8 @@ Protocol.Runtime.RemoteObject
 
 </td><td>
 
+The exception object, if the javascript tool threw an error.
+
 </td><td>
 
 </td></tr>
@@ -95,6 +101,8 @@ Protocol.Runtime.RemoteObject
 string
 
 </td><td>
+
+Tool invocation identifier.
 
 </td><td>
 
@@ -113,6 +121,8 @@ any
 
 </td><td>
 
+Output or error delivered as delivered to the agent. Missing if `status` is anything other than Success.
+
 </td><td>
 
 </td></tr>
@@ -127,6 +137,8 @@ any
 [WebMCPInvocationStatus](./puppeteer.webmcpinvocationstatus.md)
 
 </td><td>
+
+Status of the invocation.
 
 </td><td>
 

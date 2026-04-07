@@ -19,14 +19,24 @@ import {FrameManagerEvent} from './FrameManagerEvents.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
 
 /**
+ * Tool annotations
+ *
  * @public
  */
 export interface WebMCPAnnotation {
+  /**
+   * A hint indicating that the tool does not modify any state.
+   */
   readOnly?: boolean;
+  /**
+   * If the declarative tool was declared with the autosubmit attribute.
+   */
   autosubmit?: boolean;
 }
 
 /**
+ * Represents the status of a tool invocation.
+ *
  * @public
  */
 export type WebMCPInvocationStatus = 'Success' | 'Canceled' | 'Error';
@@ -76,9 +86,21 @@ export class WebMCPTool extends EventEmitter<{
   #backendNodeId?: number;
   #formElement?: ElementHandle<HTMLFormElement>;
 
+  /**
+   * Tool name.
+   */
   name: string;
+  /**
+   * Tool description.
+   */
   description: string;
+  /**
+   * Schema for the tool's input parameters.
+   */
   inputSchema?: object;
+  /**
+   * Optional annotations for the tool.
+   */
   annotations?: WebMCPAnnotation;
   /**
    * Frame the tool was defined for.
@@ -114,6 +136,9 @@ export class WebMCPTool extends EventEmitter<{
     this.rawStackTrace = tool.stackTrace;
   }
 
+  /**
+   * The corresponding ElementHandle when tool was registered via a form.
+   */
   get formElement(): Promise<ElementHandle<HTMLFormElement> | undefined> {
     return (async () => {
       if (this.#formElement && !this.#formElement.disposed) {
@@ -136,6 +161,9 @@ export class WebMCPTool extends EventEmitter<{
  * @public
  */
 export interface WebMCPToolsAddedEvent {
+  /**
+   * Array of tools that were added.
+   */
   tools: WebMCPTool[];
 }
 
@@ -143,6 +171,9 @@ export interface WebMCPToolsAddedEvent {
  * @public
  */
 export interface WebMCPToolsRemovedEvent {
+  /**
+   * Array of tools that were removed.
+   */
   tools: WebMCPTool[];
 }
 
@@ -150,8 +181,17 @@ export interface WebMCPToolsRemovedEvent {
  * @public
  */
 export class WebMCPToolCall {
+  /**
+   * Tool invocation identifier.
+   */
   id: string;
+  /**
+   * Tool that was called.
+   */
   tool: WebMCPTool;
+  /**
+   * The input parameters used for the call.
+   */
   input: object;
 
   /**
@@ -173,11 +213,30 @@ export class WebMCPToolCall {
  * @public
  */
 export interface WebMCPToolCallResult {
+  /**
+   * Tool invocation identifier.
+   */
   id: string;
+  /**
+   * The corresponding tool call if available.
+   */
   call?: WebMCPToolCall;
+  /**
+   * Status of the invocation.
+   */
   status: WebMCPInvocationStatus;
+  /**
+   * Output or error delivered as delivered to the agent. Missing if `status` is anything
+   * other than Success.
+   */
   output?: any;
+  /**
+   * Error text.
+   */
   errorText?: string;
+  /**
+   * The exception object, if the javascript tool threw an error.
+   */
   exception?: Protocol.Runtime.RemoteObject;
 }
 

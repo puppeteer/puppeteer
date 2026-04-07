@@ -4,6 +4,8 @@ sidebar_label: WebMCPAnnotation
 
 # WebMCPAnnotation interface
 
+Tool annotations
+
 ### Signature
 
 ```typescript
@@ -47,6 +49,8 @@ boolean
 
 </td><td>
 
+If the declarative tool was declared with the autosubmit attribute.
+
 </td><td>
 
 </td></tr>
@@ -63,6 +67,8 @@ boolean
 boolean
 
 </td><td>
+
+A hint indicating that the tool does not modify any state.
 
 </td><td>
 

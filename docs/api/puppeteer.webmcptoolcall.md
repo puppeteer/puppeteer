@@ -45,6 +45,8 @@ string
 
 </td><td>
 
+Tool invocation identifier.
+
 </td></tr>
 <tr><td>
 
@@ -58,6 +60,8 @@ object
 
 </td><td>
 
+The input parameters used for the call.
+
 </td></tr>
 <tr><td>
 
@@ -70,6 +74,8 @@ object
 [WebMCPTool](./puppeteer.webmcptool.md)
 
 </td><td>
+
+Tool that was called.
 
 </td></tr>
 </tbody></table>

@@ -53,6 +53,8 @@ Description
 
 </td><td>
 
+Optional annotations for the tool.
+
 </td></tr>
 <tr><td>
 
@@ -65,6 +67,8 @@ Description
 string
 
 </td><td>
+
+Tool description.
 
 </td></tr>
 <tr><td>
@@ -80,6 +84,8 @@ string
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLFormElement&gt; \| undefined&gt;
 
 </td><td>
+
+The corresponding ElementHandle when tool was registered via a form.
 
 </td></tr>
 <tr><td>
@@ -111,6 +117,8 @@ object
 
 </td><td>
 
+Schema for the tool's input parameters.
+
 </td></tr>
 <tr><td>
 
@@ -140,6 +148,8 @@ Source location that defined the tool (if available).
 string
 
 </td><td>
+
+Tool name.
 
 </td></tr>
 </tbody></table>

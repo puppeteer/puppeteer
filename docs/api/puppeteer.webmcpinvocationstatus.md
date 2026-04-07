@@ -4,6 +4,8 @@ sidebar_label: WebMCPInvocationStatus
 
 # WebMCPInvocationStatus type
 
+Represents the status of a tool invocation.
+
 ### Signature
 
 ```typescript
