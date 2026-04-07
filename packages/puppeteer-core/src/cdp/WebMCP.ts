@@ -49,6 +49,13 @@ interface ProtocolWebMCPToolsRemovedEvent {
   tools: ProtocolWebMCPTool[];
 }
 
+interface ProtocolWebMCPToolInvokedEvent {
+  toolName: string;
+  frameId: string;
+  invocationId: string;
+  input: string;
+}
+
 /**
  * @public
  */
@@ -120,6 +127,16 @@ export interface WebMCPToolsRemovedEvent {
 }
 
 /**
+ * @public
+ */
+export interface WebMCPToolCall {
+  toolName: string;
+  frame: Frame;
+  invocationId: string;
+  input: string;
+}
+
+/**
  * The WebMCP class provides an API for the WebMCP API.
  *
  * @public
@@ -130,6 +147,8 @@ export class WebMCP extends EventEmitter<{
   toolsadded: WebMCPToolsAddedEvent;
   /** Emitted when tools are removed. */
   toolsremoved: WebMCPToolsRemovedEvent;
+  /** Emitted when a tool invocation starts. */
+  toolinvoked: WebMCPToolCall;
 }> {
   #client: CDPSession;
   #frameManager: FrameManager;
@@ -155,6 +174,7 @@ export class WebMCP extends EventEmitter<{
 
     this.emit('toolsadded', {tools});
   };
+
   #onToolsRemoved = (event: ProtocolWebMCPToolsRemovedEvent) => {
     const tools: WebMCPTool[] = [];
     event.tools.forEach(tool => {
@@ -165,6 +185,20 @@ export class WebMCP extends EventEmitter<{
       this.#tools.get(tool.frameId)?.delete(tool.name);
     });
     this.emit('toolsremoved', {tools});
+  };
+
+  #onToolInvoked = (event: ProtocolWebMCPToolInvokedEvent) => {
+    const frame = this.#frameManager.frame(event.frameId);
+    if (!frame) {
+      return;
+    }
+    const call: WebMCPToolCall = {
+      toolName: event.toolName,
+      frame: frame,
+      invocationId: event.invocationId,
+      input: event.input,
+    };
+    this.emit('toolinvoked', call);
   };
 
   #onFrameNavigated = (frame: Frame) => {
@@ -209,6 +243,7 @@ export class WebMCP extends EventEmitter<{
     // Protocol types.
     this.#client.on('WebMCP.toolsAdded' as any, this.#onToolsAdded as any);
     this.#client.on('WebMCP.toolsRemoved' as any, this.#onToolsRemoved as any);
+    this.#client.on('WebMCP.toolInvoked' as any, this.#onToolInvoked as any);
   }
 
   /**
@@ -217,6 +252,7 @@ export class WebMCP extends EventEmitter<{
   updateClient(client: CDPSession): void {
     this.#client.off('WebMCP.toolsAdded' as any, this.#onToolsAdded as any);
     this.#client.off('WebMCP.toolsRemoved' as any, this.#onToolsRemoved as any);
+    this.#client.off('WebMCP.toolInvoked' as any, this.#onToolInvoked as any);
     this.#client = client;
     this.#bindListeners();
   }

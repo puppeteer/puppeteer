@@ -5,7 +5,10 @@
  */
 
 import expect from 'expect';
-import type {WebMCPTool} from 'puppeteer-core/internal/cdp/WebMCP.js';
+import type {
+  WebMCPTool,
+  WebMCPToolCall,
+} from 'puppeteer-core/internal/cdp/WebMCP.js';
 
 import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
 
@@ -266,5 +269,47 @@ describe('Page.webmcp', function () {
     expect(removedTools.length).toBe(1);
     expect(removedTools[0]!.name).toBe('declarative tool name');
     expect(page.webmcp.tools().length).toBe(0);
+  });
+
+  it('should fire toolinvoked event', async () => {
+    const {page, httpsServer} = state;
+    await page.goto(httpsServer.EMPTY_PAGE);
+
+    expect(page.webmcp).toBeDefined();
+
+    const toolCalled = new Promise<WebMCPToolCall>(resolve => {
+      page.webmcp.once('toolinvoked', resolve);
+    });
+
+    // Register a WebMCP tool.
+    await page.evaluate(() => {
+      (window as any).navigator.modelContext.registerTool({
+        name: 'test-tool-1',
+        description: 'A test tool 1',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            text: {type: 'string', description: 'Some text'},
+          },
+          required: ['text'],
+        },
+        execute: () => {},
+      });
+    });
+
+    // Execute WebMCP tool.
+    await page.evaluate(() => {
+      (window as any).navigator.modelContextTesting.executeTool(
+        'test-tool-1',
+        JSON.stringify({text: 'test'}),
+      );
+    });
+
+    const call = await toolCalled;
+
+    expect(call.toolName).toBe('test-tool-1');
+    expect(call.frame).toBe(page.mainFrame());
+    expect(call.invocationId).toBeDefined();
+    expect(call.input).toBe(JSON.stringify({text: 'test'}));
   });
 });

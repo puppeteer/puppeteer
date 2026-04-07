@@ -12,10 +12,11 @@ The WebMCP class provides an API for the WebMCP API.
 export declare class WebMCP extends EventEmitter<{
     toolsadded: WebMCPToolsAddedEvent;
     toolsremoved: WebMCPToolsRemovedEvent;
+    toolinvoked: WebMCPToolCall;
 }>
 ```
 
-**Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;&#123; toolsadded: [WebMCPToolsAddedEvent](./puppeteer.webmcptoolsaddedevent.md); toolsremoved: [WebMCPToolsRemovedEvent](./puppeteer.webmcptoolsremovedevent.md); &#125;&gt;
+**Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;&#123; toolsadded: [WebMCPToolsAddedEvent](./puppeteer.webmcptoolsaddedevent.md); toolsremoved: [WebMCPToolsRemovedEvent](./puppeteer.webmcptoolsremovedevent.md); toolinvoked: [WebMCPToolCall](./puppeteer.webmcptoolcall.md); &#125;&gt;
 
 ## Remarks
 
