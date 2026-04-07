@@ -69,6 +69,7 @@ export class CdpBrowser extends BrowserBase {
     isPageTargetCallback?: IsPageTargetCallback,
     waitForInitiallyDiscoveredTargets = true,
     networkEnabled = true,
+    issuesEnabled = true,
     handleDevToolsAsPage = false,
   ): Promise<CdpBrowser> {
     const browser = new CdpBrowser(
@@ -81,6 +82,7 @@ export class CdpBrowser extends BrowserBase {
       isPageTargetCallback,
       waitForInitiallyDiscoveredTargets,
       networkEnabled,
+      issuesEnabled,
       handleDevToolsAsPage,
     );
     if (acceptInsecureCerts) {
@@ -100,6 +102,7 @@ export class CdpBrowser extends BrowserBase {
   #defaultContext: CdpBrowserContext;
   #contexts = new Map<string, CdpBrowserContext>();
   #networkEnabled = true;
+  #issuesEnabled = true;
   #targetManager: TargetManager;
   #handleDevToolsAsPage = false;
   #extensions = new Map<string, Extension>();
@@ -114,10 +117,12 @@ export class CdpBrowser extends BrowserBase {
     isPageTargetCallback?: IsPageTargetCallback,
     waitForInitiallyDiscoveredTargets = true,
     networkEnabled = true,
+    issuesEnabled = true,
     handleDevToolsAsPage = false,
   ) {
     super();
     this.#networkEnabled = networkEnabled;
+    this.#issuesEnabled = issuesEnabled;
     this.#defaultViewport = defaultViewport;
     this.#process = process;
     this.#connection = connection;
@@ -583,5 +588,9 @@ export class CdpBrowser extends BrowserBase {
 
     this.#extensions = extensionsMap;
     return this.#extensions;
+  }
+
+  override isIssuesEnabled(): boolean {
+    return this.#issuesEnabled;
   }
 }

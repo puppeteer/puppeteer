@@ -1093,6 +1093,15 @@ Options for [Page.captureHeapSnapshot()](./puppeteer.page.captureheapsnapshot.md
 </td></tr>
 <tr><td>
 
+<span id="issue">[Issue](./puppeteer.issue.md)</span>
+
+</td><td>
+
+The Issue interface represents a DevTools issue.
+
+</td></tr>
+<tr><td>
+
 <span id="jscoverageentry">[JSCoverageEntry](./puppeteer.jscoverageentry.md)</span>
 
 </td><td>

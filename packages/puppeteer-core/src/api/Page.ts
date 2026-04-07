@@ -108,6 +108,7 @@ import type {
   Mouse,
   Touchscreen,
 } from './Input.js';
+import type {Issue} from './Issue.js';
 import type {JSHandle} from './JSHandle.js';
 import {
   FunctionLocator,
@@ -478,6 +479,11 @@ export const enum PageEvent {
    */
   DOMContentLoaded = 'domcontentloaded',
   /**
+   * Emitted when a DevTools issue is reported.
+   * @experimental
+   */
+  Issue = 'issue',
+  /**
    * Emitted when the page crashes. Will contain an `Error`.
    */
   Error = 'error',
@@ -599,6 +605,7 @@ export interface PageEvents extends Record<EventType, unknown> {
   [PageEvent.Console]: ConsoleMessage;
   [PageEvent.Dialog]: Dialog;
   [PageEvent.DOMContentLoaded]: undefined;
+  [PageEvent.Issue]: Issue;
   [PageEvent.Error]: Error;
   [PageEvent.FrameAttached]: Frame;
   [PageEvent.FrameDetached]: Frame;

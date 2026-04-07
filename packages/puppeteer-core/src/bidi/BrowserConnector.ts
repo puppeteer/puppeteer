@@ -31,6 +31,7 @@ export async function _connectToBiDiBrowser(
   const {
     acceptInsecureCerts = false,
     networkEnabled = true,
+    issuesEnabled = true,
     defaultViewport = DEFAULT_VIEWPORT,
   } = options;
 
@@ -45,6 +46,7 @@ export async function _connectToBiDiBrowser(
     defaultViewport: defaultViewport,
     acceptInsecureCerts: acceptInsecureCerts,
     networkEnabled,
+    issuesEnabled,
     capabilities: options.capabilities,
   });
   return bidiBrowser;

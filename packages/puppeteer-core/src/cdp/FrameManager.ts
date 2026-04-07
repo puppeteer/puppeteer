@@ -8,7 +8,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {FrameEvent} from '../api/Frame.js';
-import type {NewDocumentScriptEvaluation} from '../api/Page.js';
+import {PageEvent, type NewDocumentScriptEvaluation} from '../api/Page.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import {debugError, PuppeteerURL, UTILITY_WORLD_NAME} from '../common/util.js';
@@ -18,6 +18,7 @@ import {disposeSymbol} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {Binding} from './Binding.js';
+import {CdpIssue} from './CdpIssue.js';
 import {CdpPreloadScript} from './CdpPreloadScript.js';
 import type {CdpCDPSession} from './CdpSession.js';
 import {isTargetClosedError} from './Connection.js';
@@ -201,6 +202,9 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       await this.#frameTreeHandled?.valueOrThrow();
       this.#onLifecycleEvent(event);
     });
+    session.on('Audits.issueAdded', event => {
+      this.#page.emit(PageEvent.Issue, new CdpIssue(event.issue));
+    });
   }
 
   async initialize(client: CDPSession, frame?: CdpFrame | null): Promise<void> {
@@ -231,6 +235,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
         ...(frame ? Array.from(this.#bindings.values()) : []).map(binding => {
           return frame?.addExposedFunctionBinding(binding);
         }),
+        this.#page.browser().isIssuesEnabled() && client.send('Audits.enable'),
       ]);
     } catch (error) {
       this.#frameTreeHandled?.resolve();

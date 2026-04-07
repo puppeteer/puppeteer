@@ -79,6 +79,13 @@ export interface ConnectOptions {
    */
   networkEnabled?: boolean;
   /**
+   * Experimental setting to disable monitoring issue events by default.
+   *
+   * @experimental
+   * @defaultValue `true`
+   */
+  issuesEnabled?: boolean;
+  /**
    * Sets the viewport for each page.
    *
    * @defaultValue '\{width: 800, height: 600\}'

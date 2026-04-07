@@ -17,6 +17,7 @@ export * from './Frame.js';
 export * from './HTTPRequest.js';
 export * from './HTTPResponse.js';
 export * from './Input.js';
+export type * from './Issue.js';
 export * from './JSHandle.js';
 export * from './Page.js';
 export * from './Realm.js';

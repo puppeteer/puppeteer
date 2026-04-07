@@ -154,6 +154,13 @@
     "comment": "Bidi does not have equivalent field"
   },
   {
+    "testIdPattern": "[page.spec] Page Page.Events.Issue *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "BiDi does not support issue events"
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.metrics *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],

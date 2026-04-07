@@ -9,6 +9,7 @@ import type {ServerResponse} from 'node:http';
 import path from 'node:path';
 
 import expect from 'expect';
+import type {Issue} from 'puppeteer';
 import {KnownDevices, TimeoutError} from 'puppeteer';
 import {CDPSession} from 'puppeteer-core/internal/api/CDPSession.js';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
@@ -17,7 +18,11 @@ import type {CdpPage} from 'puppeteer-core/internal/cdp/Page.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 import sinon from 'sinon';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {
+  getTestState,
+  setupSeparateTestBrowserHooks,
+  setupTestBrowserHooks,
+} from './mocha-utils.js';
 import {
   attachFrame,
   detachFrame,
@@ -2476,6 +2481,62 @@ describe('Page', function () {
       const closedPromise = waitEvent(newPage, 'close');
       await newPage.close();
       await closedPromise;
+    });
+  });
+
+  describe('Page.Events.Issue', function () {
+    describe('when issues are disabled', () => {
+      const state = setupSeparateTestBrowserHooks({
+        issuesEnabled: false,
+      });
+
+      it('should be able to connect and disable issues', async () => {
+        const {page, server} = state;
+
+        let issueEmitted = false;
+        page.on('issue', () => {
+          issueEmitted = true;
+        });
+
+        await page.goto(server.PREFIX + '/csp.html');
+
+        expect(issueEmitted).toBe(false);
+      });
+    });
+    it('should emit issue event when CSP violation occurs', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.PREFIX + '/csp.html');
+
+      const issuePromise = waitEvent<Issue>(page, 'issue');
+
+      await page.addScriptTag({content: 'console.log("CSP test")'});
+
+      const issue = await issuePromise;
+      expect(issue).toBeTruthy();
+      expect(issue.code).toBe('ContentSecurityPolicyIssue');
+    });
+
+    it('should emit issue event from cross-origin iframe', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+
+      const issuePromise = waitEvent<Issue>(page, 'issue');
+
+      const crossOriginUrl = server.CROSS_PROCESS_PREFIX + '/csp.html';
+      await page.setContent(html`<iframe src="${crossOriginUrl}"></iframe>`);
+
+      const frame = await page.waitForFrame(crossOriginUrl);
+      expect(frame).toBeTruthy();
+
+      await frame.addScriptTag({
+        content: 'console.log("CSP test in iframe")',
+      });
+
+      const issue = await issuePromise;
+      expect(issue).toBeTruthy();
+      expect(issue.code).toBe('ContentSecurityPolicyIssue');
     });
   });
 

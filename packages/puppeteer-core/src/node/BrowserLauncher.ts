@@ -85,6 +85,7 @@ export abstract class BrowserLauncher {
       handleSIGHUP = true,
       acceptInsecureCerts = false,
       networkEnabled = true,
+      issuesEnabled = true,
       defaultViewport = DEFAULT_VIEWPORT,
       downloadBehavior,
       slowMo = 0,
@@ -201,6 +202,7 @@ export abstract class BrowserLauncher {
               defaultViewport,
               acceptInsecureCerts,
               networkEnabled,
+              issuesEnabled,
             },
           );
         } else {
@@ -216,6 +218,7 @@ export abstract class BrowserLauncher {
             undefined,
             undefined,
             networkEnabled,
+            issuesEnabled,
             handleDevToolsAsPage,
           );
         }
@@ -409,6 +412,7 @@ export abstract class BrowserLauncher {
       defaultViewport: Viewport | null;
       acceptInsecureCerts?: boolean;
       networkEnabled: boolean;
+      issuesEnabled: boolean;
     },
   ): Promise<Browser> {
     const bidiOnly = process.env['PUPPETEER_WEBDRIVER_BIDI_ONLY'] === 'true';
@@ -424,6 +428,7 @@ export abstract class BrowserLauncher {
       defaultViewport: opts.defaultViewport,
       acceptInsecureCerts: opts.acceptInsecureCerts,
       networkEnabled: opts.networkEnabled,
+      issuesEnabled: opts.issuesEnabled,
     });
   }
 
@@ -441,6 +446,7 @@ export abstract class BrowserLauncher {
       defaultViewport: Viewport | null;
       acceptInsecureCerts?: boolean;
       networkEnabled?: boolean;
+      issuesEnabled?: boolean;
     },
   ): Promise<Browser> {
     const browserWSEndpoint =
@@ -464,6 +470,7 @@ export abstract class BrowserLauncher {
       defaultViewport: opts.defaultViewport,
       acceptInsecureCerts: opts.acceptInsecureCerts,
       networkEnabled: opts.networkEnabled ?? true,
+      issuesEnabled: opts.issuesEnabled ?? true,
     });
   }
 

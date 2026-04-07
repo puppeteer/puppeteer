@@ -51,6 +51,7 @@ export interface BidiBrowserOptions {
   acceptInsecureCerts?: boolean;
   capabilities?: SupportedWebDriverCapabilities;
   networkEnabled: boolean;
+  issuesEnabled: boolean;
 }
 
 /**
@@ -154,6 +155,7 @@ export class BidiBrowser extends Browser {
   #target = new BidiBrowserTarget(this);
   #cdpConnection?: CdpConnection;
   #networkEnabled: boolean;
+  #issuesEnabled: boolean;
 
   private constructor(browserCore: BrowserCore, opts: BidiBrowserOptions) {
     super();
@@ -163,6 +165,7 @@ export class BidiBrowser extends Browser {
     this.#defaultViewport = opts.defaultViewport;
     this.#cdpConnection = opts.cdpConnection;
     this.#networkEnabled = opts.networkEnabled;
+    this.#issuesEnabled = opts.issuesEnabled;
   }
 
   #initialize() {
@@ -379,5 +382,9 @@ export class BidiBrowser extends Browser {
 
   override extensions(): Promise<Map<string, Extension>> {
     throw new UnsupportedOperation();
+  }
+
+  override isIssuesEnabled(): boolean {
+    return this.#issuesEnabled;
   }
 }

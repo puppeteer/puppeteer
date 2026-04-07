@@ -736,4 +736,8 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * @public
    */
   abstract extensions(): Promise<Map<string, Extension>>;
+  /**
+   * @internal
+   */
+  abstract isIssuesEnabled(): boolean;
 }
