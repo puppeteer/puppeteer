@@ -7,16 +7,16 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
+import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Frame} from '../api/Frame.js';
 import type {ConsoleMessageLocation} from '../common/ConsoleMessage.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
-import type {ElementHandle} from '../puppeteer-core.js';
-import {MAIN_WORLD} from '../puppeteer-core.js';
 
 import type {CdpFrame} from './Frame.js';
 import type {FrameManager} from './FrameManager.js';
 import {FrameManagerEvent} from './FrameManagerEvents.js';
+import {MAIN_WORLD} from './IsolatedWorlds.js';
 
 /**
  * @public
