@@ -8,11 +8,11 @@ sidebar_label: WebMCPTool
 
 ```typescript
 export declare class WebMCPTool extends EventEmitter<{
-    toolinvoked: WebMCPTool;
+    toolinvoked: WebMCPToolCall;
 }>
 ```
 
-**Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;&#123; toolinvoked: [WebMCPTool](./puppeteer.webmcptool.md); &#125;&gt;
+**Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;&#123; toolinvoked: [WebMCPToolCall](./puppeteer.webmcptoolcall.md); &#125;&gt;
 
 ## Remarks
 

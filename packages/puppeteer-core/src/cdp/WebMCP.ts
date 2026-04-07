@@ -61,7 +61,7 @@ interface ProtocolWebMCPToolInvokedEvent {
  */
 export class WebMCPTool extends EventEmitter<{
   /** Emitted when invocation starts. */
-  toolinvoked: WebMCPTool;
+  toolinvoked: WebMCPToolCall;
 }> {
   #backendNodeId?: number;
   #formElement?: ElementHandle<HTMLFormElement>;
@@ -208,8 +208,8 @@ export class WebMCP extends EventEmitter<{
     if (!tool) {
       return;
     }
-    tool.emit('toolinvoked', tool);
     const call = new WebMCPToolCall(event.invocationId, tool, event.input);
+    tool.emit('toolinvoked', call);
     this.emit('toolinvoked', call);
   };
 
