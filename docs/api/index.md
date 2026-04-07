@@ -232,7 +232,7 @@ The constructor for this class is marked as internal. Third-party code should no
 
 </td><td>
 
-[Extension](./puppeteer.extension.md) represents an Extension instance installed in the browser.
+**_(Experimental)_** [Extension](./puppeteer.extension.md) represents an Extension instance installed in the browser.
 
 </td></tr>
 <tr><td>

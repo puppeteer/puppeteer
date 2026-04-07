@@ -23,7 +23,7 @@ import {
 } from '../api/Browser.js';
 import {BrowserContextEvent} from '../api/BrowserContext.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
-import {Extension} from '../api/Extension.js';
+import type {Extension} from '../api/Extension.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
@@ -32,6 +32,7 @@ import type {Viewport} from '../common/Viewport.js';
 import {CdpBrowserContext} from './BrowserContext.js';
 import type {CdpCDPSession} from './CdpSession.js';
 import type {Connection} from './Connection.js';
+import {CdpExtension} from './Extension.js';
 import {
   DevToolsTarget,
   InitializationStatus,
@@ -101,6 +102,7 @@ export class CdpBrowser extends BrowserBase {
   #networkEnabled = true;
   #targetManager: TargetManager;
   #handleDevToolsAsPage = false;
+  #extensions = new Map<string, Extension>();
 
   constructor(
     connection: Connection,
@@ -443,11 +445,13 @@ export class CdpBrowser extends BrowserBase {
 
   override async installExtension(path: string): Promise<string> {
     const {id} = await this.#connection.send('Extensions.loadUnpacked', {path});
+    this.#extensions.delete(id);
     return id;
   }
 
-  override uninstallExtension(id: string): Promise<void> {
-    return this.#connection.send('Extensions.uninstall', {id});
+  override async uninstallExtension(id: string): Promise<void> {
+    await this.#connection.send('Extensions.uninstall', {id});
+    this.#extensions.delete(id);
   }
 
   override async screens(): Promise<ScreenInfo[]> {
@@ -529,6 +533,13 @@ export class CdpBrowser extends BrowserBase {
     return Promise.resolve();
   }
 
+  /**
+   * @internal
+   */
+  get _connection(): Connection {
+    return this.#connection;
+  }
+
   override get connected(): boolean {
     return !this.#connection._closed;
   }
@@ -547,26 +558,30 @@ export class CdpBrowser extends BrowserBase {
     return this.#networkEnabled;
   }
 
-  override async extensions(): Promise<Extension[]> {
+  override async extensions(): Promise<Map<string, Extension>> {
     const response = await this.#connection.send('Extensions.getExtensions');
-    return response.extensions.map(extension => {
-      return new Extension(
-        extension.id,
-        extension.version,
-        extension.name,
-        this,
-      );
-    });
-  }
 
-  override async getExtensionById(
-    extensionId: string,
-  ): Promise<Extension | null> {
-    const extensions = await this.extensions();
+    const extensionsMap = new Map<string, Extension>();
 
-    const extension = extensions.find(ext => {
-      return ext.id === extensionId;
-    });
-    return extension || null;
+    for (const currExtension of response.extensions) {
+      if (this.#extensions.has(currExtension.id)) {
+        extensionsMap.set(
+          currExtension.id,
+          this.#extensions.get(currExtension.id)!,
+        );
+      } else {
+        const newExtension = new CdpExtension(
+          currExtension.id,
+          currExtension.version,
+          currExtension.name,
+          this,
+        );
+
+        extensionsMap.set(currExtension.id, newExtension);
+      }
+    }
+
+    this.#extensions = extensionsMap;
+    return this.#extensions;
   }
 }

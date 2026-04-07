@@ -8,7 +8,7 @@ sidebar_label: Extension.workers
 
 ```typescript
 class Extension {
-  workers(): Promise<WebWorker[]>;
+  abstract workers(): Promise<WebWorker[]>;
 }
 ```
 

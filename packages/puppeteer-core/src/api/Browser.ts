@@ -730,16 +730,10 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
   abstract isNetworkEnabled(): boolean;
 
   /**
-   * Get a list of the installed extensions in the browser.
+   * Get a map with id as keys and extension as value of the installed extensions
+   * in the browser.
    *
    * @public
    */
-  abstract extensions(): Promise<Extension[]>;
-
-  /**
-   * Retrieve a specific extension that is installed in the browser starting from its id.
-   *
-   * @public
-   */
-  abstract getExtensionById(extensionId: string): Promise<Extension | null>;
+  abstract extensions(): Promise<Map<string, Extension>>;
 }

@@ -218,8 +218,8 @@ export class BidiPage extends Page {
     return this.#frame;
   }
 
-  override async triggerExtensionAction(extension: Extension): Promise<void> {
-    return await extension.triggerAction(this);
+  override async triggerExtensionAction(_extension: Extension): Promise<void> {
+    throw new UnsupportedOperation();
   }
 
   override async emulateFocusedPage(enabled: boolean): Promise<void> {

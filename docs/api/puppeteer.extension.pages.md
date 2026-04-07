@@ -8,7 +8,7 @@ sidebar_label: Extension.pages
 
 ```typescript
 class Extension {
-  pages(): Promise<Page[]>;
+  abstract pages(): Promise<Page[]>;
 }
 ```
 

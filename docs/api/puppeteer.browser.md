@@ -259,18 +259,7 @@ Disconnects Puppeteer from this [browser](./puppeteer.browser.md), but leaves th
 
 </td><td>
 
-Get a list of the installed extensions in the browser.
-
-</td></tr>
-<tr><td>
-
-<span id="getextensionbyid">[getExtensionById(extensionId)](./puppeteer.browser.getextensionbyid.md)</span>
-
-</td><td>
-
-</td><td>
-
-Retrieve a specific extension that is installed in the browser starting from its id.
+Get a map with id as keys and extension as value of the installed extensions in the browser.
 
 </td></tr>
 <tr><td>

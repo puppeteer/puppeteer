@@ -8,7 +8,7 @@ sidebar_label: Extension.triggerAction
 
 ```typescript
 class Extension {
-  triggerAction(page: Page): Promise<void>;
+  abstract triggerAction(page: Page): Promise<void>;
 }
 ```
 

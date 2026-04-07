@@ -10,7 +10,7 @@ Constructs a new instance of the `Extension` class
 
 ```typescript
 class Extension {
-  constructor(id: string, version: string, name: string, browser: Browser);
+  constructor(id: string, version: string, name: string);
 }
 ```
 
@@ -58,17 +58,6 @@ name
 </td><td>
 
 string
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
-browser
-
-</td><td>
-
-[Browser](./puppeteer.browser.md)
 
 </td><td>
 

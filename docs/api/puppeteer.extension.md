@@ -9,7 +9,7 @@ sidebar_label: Extension
 ### Signature
 
 ```typescript
-export declare class Extension
+export declare abstract class Extension
 ```
 
 ## Constructors
@@ -29,7 +29,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="_constructor_">[(constructor)(id, version, name, browser)](./puppeteer.extension._constructor_.md)</span>
+<span id="_constructor_">[(constructor)(id, version, name)](./puppeteer.extension._constructor_.md)</span>
 
 </td><td>
 
