@@ -305,6 +305,8 @@ export class WebMCP extends EventEmitter<{
     this.#client.on('WebMCP.toolsRemoved', this.#onToolsRemoved);
     // @ts-expect-error WebMCP is not yet in the Protocol types.
     this.#client.on('WebMCP.toolInvoked', this.#onToolInvoked);
+    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    this.#client.on('WebMCP.toolResponded', this.#onToolResponded);
   }
 
   /**
@@ -317,6 +319,8 @@ export class WebMCP extends EventEmitter<{
     this.#client.off('WebMCP.toolsRemoved', this.#onToolsRemoved);
     // @ts-expect-error WebMCP is not yet in the Protocol types.
     this.#client.off('WebMCP.toolInvoked', this.#onToolInvoked);
+    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    this.#client.off('WebMCP.toolResponded', this.#onToolResponded);
     this.#client = client;
     this.#bindListeners();
   }
