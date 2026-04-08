@@ -15,6 +15,7 @@ import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {WaitTimeoutOptions} from '../api/Page.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {debugError} from '../common/util.js';
+import type {Realm} from '../puppeteer-core.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
@@ -69,10 +70,17 @@ export class CdpFrame extends Frame {
 
     this._loaderId = '';
     this.worlds = {
-      [MAIN_WORLD]: new IsolatedWorld(this, this._frameManager.timeoutSettings),
+      [MAIN_WORLD]: new IsolatedWorld(
+        this,
+        this._frameManager.timeoutSettings,
+        MAIN_WORLD,
+        this._frameManager.page().browser(),
+      ),
       [PUPPETEER_WORLD]: new IsolatedWorld(
         this,
         this._frameManager.timeoutSettings,
+        PUPPETEER_WORLD,
+        this._frameManager.page().browser(),
       ),
     };
 
@@ -84,30 +92,23 @@ export class CdpFrame extends Frame {
       this._onLoadingStopped();
     });
 
-    this.worlds[MAIN_WORLD].emitter.on(
-      'consoleapicalled',
-      this.#onMainWorldConsoleApiCalled.bind(this),
-    );
-    this.worlds[MAIN_WORLD].emitter.on(
-      'bindingcalled',
-      this.#onMainWorldBindingCalled.bind(this),
-    );
+    this._registerWorldListeners(this.worlds[MAIN_WORLD]);
   }
 
-  #onMainWorldConsoleApiCalled(
-    event: Protocol.Runtime.ConsoleAPICalledEvent,
-  ): void {
-    this._frameManager.emit(FrameManagerEvent.ConsoleApiCalled, [
-      this.worlds[MAIN_WORLD],
-      event,
-    ]);
-  }
+  /**
+   * @internal
+   */
+  _registerWorldListeners(world: IsolatedWorld): void {
+    world.emitter.on('consoleapicalled', event => {
+      this._frameManager.emit(FrameManagerEvent.ConsoleApiCalled, [
+        world,
+        event,
+      ]);
+    });
 
-  #onMainWorldBindingCalled(event: Protocol.Runtime.BindingCalledEvent) {
-    this._frameManager.emit(FrameManagerEvent.BindingCalled, [
-      this.worlds[MAIN_WORLD],
-      event,
-    ]);
+    world.emitter.on('bindingcalled', event => {
+      this._frameManager.emit(FrameManagerEvent.BindingCalled, [world, event]);
+    });
   }
 
   /**
@@ -434,6 +435,16 @@ export class CdpFrame extends Frame {
     return (await parent
       .mainRealm()
       .adoptBackendNode(backendNodeId)) as ElementHandle<HTMLIFrameElement>;
+  }
+
+  /**
+   * @public
+   */
+  override getRealms(): Array<[string | symbol, Realm]> {
+    return [
+      [MAIN_WORLD, this.worlds[MAIN_WORLD]],
+      ...Object.entries(this.worlds),
+    ];
   }
 }
 

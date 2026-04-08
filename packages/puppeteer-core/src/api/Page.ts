@@ -116,6 +116,7 @@ import {
   NodeLocator,
   type AwaitedLocator,
 } from './locators/locators.js';
+import type {Realm} from './Realm.js';
 import type {Target} from './Target.js';
 import type {WebWorker} from './WebWorker.js';
 
@@ -2752,6 +2753,14 @@ export abstract class Page extends EventEmitter<PageEvents> {
   }
 
   /**
+   * Triggers an extension action for the given extension.
+   *
+   * @param extension - The extension to trigger the action for.
+   * @public
+   */
+  abstract triggerExtensionAction(extension: Extension): Promise<void>;
+
+  /**
    * Emulates focus state of the page.
    *
    * @param enabled - Whether to emulate focus.
@@ -3251,12 +3260,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
   abstract get bluetooth(): BluetoothEmulation;
 
   /**
-   * Triggers an extension action for the given extension.
-   *
-   * @param extension - The extension to trigger the action for.
    * @public
    */
-  abstract triggerExtensionAction(extension: Extension): Promise<void>;
+  abstract realms(): Array<[string | symbol, Realm]>;
 }
 
 /**

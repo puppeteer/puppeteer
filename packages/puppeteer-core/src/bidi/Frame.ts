@@ -29,6 +29,7 @@ import {
   type WaitForOptions,
 } from '../api/Frame.js';
 import {PageEvent, type WaitTimeoutOptions} from '../api/Page.js';
+import type {Realm} from '../api/Realm.js';
 import {Accessibility} from '../cdp/Accessibility.js';
 import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
@@ -606,5 +607,9 @@ export class BidiFrame extends Frame {
       // SAFETY: ElementHandles are always remote references.
       [element.remoteValue() as Bidi.Script.SharedReference],
     );
+  }
+
+  override getRealms(): Array<[string | symbol, Realm]> {
+    return [['default', this.mainRealm()]];
   }
 }

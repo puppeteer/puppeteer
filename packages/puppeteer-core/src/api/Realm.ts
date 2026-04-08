@@ -15,23 +15,48 @@ import {disposeSymbol} from '../util/disposable.js';
 
 import type {ElementHandle} from './ElementHandle.js';
 import type {Environment} from './Environment.js';
+import type {Extension} from './Extension.js';
 import type {JSHandle} from './JSHandle.js';
 
 /**
- * @internal
+ * @public
  */
 export abstract class Realm implements Disposable {
+  /** @internal */
   protected readonly timeoutSettings: TimeoutSettings;
+  /** @internal */
   readonly taskManager = new TaskManager();
-
+  /** @internal */
   constructor(timeoutSettings: TimeoutSettings) {
     this.timeoutSettings = timeoutSettings;
   }
-
+  /** @internal */
   abstract get environment(): Environment;
 
+  /**
+   * The identifier for this realm.
+   *
+   * @public
+   */
+  abstract get worldId(): string | symbol;
+
+  abstract set worldId(worldId: string | symbol);
+
+  /**
+   * This method returns the extension from the ExecutionContext paired with the realm
+   * at the moment of the execution.
+   *
+   * @public
+   */
+  abstract extension(): Promise<Extension | null>;
+
+  /** @internal */
   abstract adoptHandle<T extends JSHandle<Node>>(handle: T): Promise<T>;
+
+  /** @internal */
   abstract transferHandle<T extends JSHandle<Node>>(handle: T): Promise<T>;
+
+  /** @public */
   abstract evaluateHandle<
     Params extends unknown[],
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
@@ -39,6 +64,8 @@ export abstract class Realm implements Disposable {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
+
+  /** @public */
   abstract evaluate<
     Params extends unknown[],
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
@@ -47,6 +74,7 @@ export abstract class Realm implements Disposable {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
 
+  /** @public */
   async waitForFunction<
     Params extends unknown[],
     Func extends EvaluateFunc<InnerLazyParams<Params>> = EvaluateFunc<
@@ -87,12 +115,15 @@ export abstract class Realm implements Disposable {
     return await waitTask.result;
   }
 
+  /** @internal */
   abstract adoptBackendNode(backendNodeId?: number): Promise<JSHandle<Node>>;
 
+  /** @internal */
   get disposed(): boolean {
     return this.#disposed;
   }
 
+  /** @internal */
   #disposed = false;
   /** @internal */
   dispose(): void {

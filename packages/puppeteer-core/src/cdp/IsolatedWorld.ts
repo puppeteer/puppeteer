@@ -7,8 +7,10 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {firstValueFrom, map, raceWith} from '../../third_party/rxjs/rxjs.js';
+import type {Browser} from '../api/Browser.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
+import type {Extension} from '../api/Extension.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -24,7 +26,8 @@ import {disposeSymbol} from '../util/disposable.js';
 import {CdpElementHandle} from './ElementHandle.js';
 import type {ExecutionContext} from './ExecutionContext.js';
 import type {CdpFrame} from './Frame.js';
-import type {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
+import type {PUPPETEER_WORLD} from './IsolatedWorlds.js';
+import {MAIN_WORLD} from './IsolatedWorlds.js';
 import {CdpJSHandle} from './JSHandle.js';
 import type {CdpWebWorker} from './WebWorker.js';
 
@@ -66,15 +69,21 @@ export type IsolatedWorldEmitter = EventEmitter<{
 export class IsolatedWorld extends Realm {
   #context?: ExecutionContext;
   #emitter: IsolatedWorldEmitter = new EventEmitter();
+  #worldId: string | symbol;
+  #browser?: Browser;
 
   readonly #frameOrWorker: CdpFrame | CdpWebWorker;
 
   constructor(
     frameOrWorker: CdpFrame | CdpWebWorker,
     timeoutSettings: TimeoutSettings,
+    worldId: string | symbol,
+    browser?: Browser,
   ) {
     super(timeoutSettings);
     this.#frameOrWorker = frameOrWorker;
+    this.#worldId = worldId;
+    this.#browser = browser;
   }
 
   get environment(): CdpFrame | CdpWebWorker {
@@ -262,5 +271,30 @@ export class IsolatedWorld extends Realm {
     this.#emitter.emit('disposed', undefined);
     super[disposeSymbol]();
     this.#emitter.removeAllListeners();
+  }
+
+  override set worldId(worldId: string | symbol) {
+    this.#worldId = worldId;
+  }
+
+  override get worldId(): string | symbol {
+    return this.#worldId;
+  }
+
+  async extension(): Promise<Extension | null> {
+    if (!this.#browser) {
+      throw new Error('unable to get extension from Realm');
+    }
+
+    if (this.#worldId === MAIN_WORLD) {
+      return Promise.resolve(null);
+    }
+
+    if (typeof this.worldId === 'string') {
+      const extensions = await this.#browser.extensions();
+      return extensions.get(this.worldId) || null;
+    }
+
+    return Promise.resolve(null);
   }
 }

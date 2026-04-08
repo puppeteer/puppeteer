@@ -53,6 +53,7 @@ import type {PDFOptions} from '../common/PDFOptions.js';
 import type {Awaitable} from '../common/types.js';
 import {evaluationString, parsePDFOptions, timeout} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
+import type {Realm} from '../puppeteer-core.js';
 import {assert} from '../util/assert.js';
 import {bubble} from '../util/decorators.js';
 import {Deferred} from '../util/Deferred.js';
@@ -1013,6 +1014,10 @@ export class BidiPage extends Page {
 
   override get bluetooth(): BluetoothEmulation {
     return this.mainFrame().browsingContext.bluetooth;
+  }
+
+  override realms(): Array<[string | symbol, Realm]> {
+    return this.mainFrame().getRealms();
   }
 }
 

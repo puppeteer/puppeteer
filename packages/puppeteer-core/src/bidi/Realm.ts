@@ -5,6 +5,7 @@
  */
 import * as Bidi from 'webdriver-bidi-protocol';
 
+import type {Extension} from '../api/Extension.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
 import {WebWorkerEvent} from '../api/WebWorker.js';
@@ -286,6 +287,21 @@ export abstract class BidiRealm extends Realm {
     const transferredHandle = this.adoptHandle(handle);
     await handle.dispose();
     return await transferredHandle;
+  }
+
+  // TODO: BiDi implementation missing
+  override set worldId(_worldId: string | symbol) {
+    throw new Error('worldId are defined only for CDP implementations.');
+  }
+
+  override get worldId(): string | symbol {
+    throw new Error('worldId are defined only for CDP implementations.');
+  }
+
+  extension(): Promise<Extension | null> {
+    throw new Error(
+      'Method not yet implemented for BiDi. Use CDP to interact with Extensions.',
+    );
   }
 }
 
