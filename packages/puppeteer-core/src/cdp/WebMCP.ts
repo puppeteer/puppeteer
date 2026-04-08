@@ -60,6 +60,7 @@ interface ProtocolWebMCPToolRespondedEvent {
   invocationId: string;
   status: WebMCPInvocationStatus;
   output?: any;
+  errorText?: string;
   exception?: Protocol.Runtime.RemoteObject;
 }
 
@@ -167,6 +168,7 @@ export interface WebMCPToolResponse {
   id: string;
   status: WebMCPInvocationStatus;
   output?: any;
+  errorText?: string;
   exception?: Protocol.Runtime.RemoteObject;
 }
 
@@ -237,6 +239,7 @@ export class WebMCP extends EventEmitter<{
       id: event.invocationId,
       status: event.status,
       output: event.output,
+      errorText: event.errorText,
       exception: event.exception,
     };
     this.emit('toolresponded', response);
