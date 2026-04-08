@@ -344,7 +344,7 @@ describe('Page.webmcp', function () {
     await expectToolCall(toolCall);
   });
 
-  it('should fire success toolresponded event', async () => {
+  it('should fire toolresponded event with success', async () => {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);
 
@@ -394,7 +394,7 @@ describe('Page.webmcp', function () {
     expect(response.exception).toBeUndefined();
   });
 
-  it('should set exception in toolresponded event', async () => {
+  it('should fire toolresponded event with exception', async () => {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);
 
@@ -438,7 +438,7 @@ describe('Page.webmcp', function () {
     expect(response.exception?.description).toContain('sorry');
   });
 
-  it('should set errorText in toolresponded event', async () => {
+  it('should fire toolresponded event with errorText', async () => {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);
 
