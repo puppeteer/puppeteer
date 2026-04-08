@@ -35,6 +35,23 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="call">call</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[WebMCPToolCall](./puppeteer.webmcptoolcall.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="errortext">errorText</span>
 
 </td><td>
@@ -61,21 +78,6 @@ string
 </td><td>
 
 Protocol.Runtime.RemoteObject
-
-</td><td>
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
-<span id="id">id</span>
-
-</td><td>
-
-</td><td>
-
-string
 
 </td><td>
 

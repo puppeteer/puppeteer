@@ -324,7 +324,6 @@ describe('Page.webmcp', function () {
     ]);
 
     async function expectToolCall(call: WebMCPToolCall) {
-      expect(call.id).toBeDefined();
       expect(call.tool).toBeDefined();
       expect(call.tool.name).toBe('test-tool-1');
       expect(call.tool.description).toBe('A test tool 1');
@@ -387,7 +386,7 @@ describe('Page.webmcp', function () {
     const call = await toolCalled;
     const response = await toolResponded;
 
-    expect(response.id).toBe(call.id);
+    expect(response.call).toBe(call);
     expect(response.status).toBe('Success');
     expect(response.output).toBe('hello world');
     expect(response.errorText).toBeUndefined();
@@ -430,7 +429,7 @@ describe('Page.webmcp', function () {
     const call = await toolCalled;
     const response = await toolResponded;
 
-    expect(response.id).toBe(call.id);
+    expect(response.call).toBe(call);
     expect(response.status).toBe('Error');
     expect(response.output).toBeUndefined();
     expect(response.errorText).toBe('');
@@ -474,7 +473,7 @@ describe('Page.webmcp', function () {
 
     const response = await toolResponded;
 
-    expect(response.id).toBeDefined();
+    expect(response.call).toBeUndefined();
     expect(response.status).toBe('Error');
     expect(response.output).toBeUndefined();
     expect(response.errorText).toBe('Tool not found: unknown-tool-name');

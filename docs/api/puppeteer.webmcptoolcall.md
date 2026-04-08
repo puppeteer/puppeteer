@@ -35,19 +35,6 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="id">id</span>
-
-</td><td>
-
-</td><td>
-
-string
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
 <span id="input">input</span>
 
 </td><td>

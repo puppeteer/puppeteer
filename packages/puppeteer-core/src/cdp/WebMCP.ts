@@ -150,15 +150,13 @@ export interface WebMCPToolsRemovedEvent {
  * @public
  */
 export class WebMCPToolCall {
-  id: string;
   tool: WebMCPTool;
   input: object;
 
   /**
    * @internal
    */
-  constructor(invocationId: string, tool: WebMCPTool, input: string) {
-    this.id = invocationId;
+  constructor(tool: WebMCPTool, input: string) {
     this.tool = tool;
     try {
       this.input = JSON.parse(input);
@@ -173,7 +171,7 @@ export class WebMCPToolCall {
  * @public
  */
 export interface WebMCPToolResponse {
-  id: string;
+  call?: WebMCPToolCall;
   status: WebMCPInvocationStatus;
   output?: any;
   errorText?: string;
@@ -199,6 +197,7 @@ export class WebMCP extends EventEmitter<{
   #client: CDPSession;
   #frameManager: FrameManager;
   #tools: Map<string, Map<string, WebMCPTool>>;
+  #pendingCalls: Map<string, WebMCPToolCall>;
 
   #onToolsAdded = (event: ProtocolWebMCPToolsAddedEvent) => {
     const tools: WebMCPTool[] = [];
@@ -238,14 +237,19 @@ export class WebMCP extends EventEmitter<{
     if (!tool) {
       return;
     }
-    const call = new WebMCPToolCall(event.invocationId, tool, event.input);
+    const call = new WebMCPToolCall(tool, event.input);
+    this.#pendingCalls.set(event.invocationId, call);
     tool.emit('toolinvoked', call);
     this.emit('toolinvoked', call);
   };
 
   #onToolResponded = (event: ProtocolWebMCPToolRespondedEvent) => {
+    const call = this.#pendingCalls.get(event.invocationId);
+    if (call) {
+      this.#pendingCalls.delete(event.invocationId);
+    }
     const response: WebMCPToolResponse = {
-      id: event.invocationId,
+      call: call,
       status: event.status,
       output: event.output,
       errorText: event.errorText,
@@ -279,6 +283,7 @@ export class WebMCP extends EventEmitter<{
     );
     this.#bindListeners();
     this.#tools = new Map();
+    this.#pendingCalls = new Map();
   }
 
   /**
