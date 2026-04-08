@@ -1,13 +1,13 @@
 ---
-sidebar_label: WebMCPToolResponse
+sidebar_label: WebMCPToolCallResult
 ---
 
-# WebMCPToolResponse interface
+# WebMCPToolCallResult interface
 
 ### Signature
 
 ```typescript
-export interface WebMCPToolResponse
+export interface WebMCPToolCallResult
 ```
 
 ## Properties

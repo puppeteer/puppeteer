@@ -1425,7 +1425,7 @@ The TouchHandle interface exposes methods to manipulate touches that have been s
 </td></tr>
 <tr><td>
 
-<span id="webmcptoolresponse">[WebMCPToolResponse](./puppeteer.webmcptoolresponse.md)</span>
+<span id="webmcptoolcallresult">[WebMCPToolCallResult](./puppeteer.webmcptoolcallresult.md)</span>
 
 </td><td>
 

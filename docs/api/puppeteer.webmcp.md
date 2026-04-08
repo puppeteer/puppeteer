@@ -13,11 +13,11 @@ export declare class WebMCP extends EventEmitter<{
     toolsadded: WebMCPToolsAddedEvent;
     toolsremoved: WebMCPToolsRemovedEvent;
     toolinvoked: WebMCPToolCall;
-    toolresponded: WebMCPToolResponse;
+    toolresponded: WebMCPToolCallResult;
 }>
 ```
 
-**Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;&#123; toolsadded: [WebMCPToolsAddedEvent](./puppeteer.webmcptoolsaddedevent.md); toolsremoved: [WebMCPToolsRemovedEvent](./puppeteer.webmcptoolsremovedevent.md); toolinvoked: [WebMCPToolCall](./puppeteer.webmcptoolcall.md); toolresponded: [WebMCPToolResponse](./puppeteer.webmcptoolresponse.md); &#125;&gt;
+**Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;&#123; toolsadded: [WebMCPToolsAddedEvent](./puppeteer.webmcptoolsaddedevent.md); toolsremoved: [WebMCPToolsRemovedEvent](./puppeteer.webmcptoolsremovedevent.md); toolinvoked: [WebMCPToolCall](./puppeteer.webmcptoolcall.md); toolresponded: [WebMCPToolCallResult](./puppeteer.webmcptoolcallresult.md); &#125;&gt;
 
 ## Remarks
 

@@ -170,7 +170,7 @@ export class WebMCPToolCall {
 /**
  * @public
  */
-export interface WebMCPToolResponse {
+export interface WebMCPToolCallResult {
   call?: WebMCPToolCall;
   status: WebMCPInvocationStatus;
   output?: any;
@@ -192,7 +192,7 @@ export class WebMCP extends EventEmitter<{
   /** Emitted when a tool invocation starts. */
   toolinvoked: WebMCPToolCall;
   /** Emitted when a tool invocation completes or fails. */
-  toolresponded: WebMCPToolResponse;
+  toolresponded: WebMCPToolCallResult;
 }> {
   #client: CDPSession;
   #frameManager: FrameManager;
@@ -248,7 +248,7 @@ export class WebMCP extends EventEmitter<{
     if (call) {
       this.#pendingCalls.delete(event.invocationId);
     }
-    const response: WebMCPToolResponse = {
+    const response: WebMCPToolCallResult = {
       call: call,
       status: event.status,
       output: event.output,

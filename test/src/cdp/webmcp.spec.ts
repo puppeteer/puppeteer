@@ -8,7 +8,7 @@ import expect from 'expect';
 import type {
   WebMCPTool,
   WebMCPToolCall,
-  WebMCPToolResponse,
+  WebMCPToolCallResult,
 } from 'puppeteer-core/internal/cdp/WebMCP.js';
 
 import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
@@ -371,7 +371,7 @@ describe('Page.webmcp', function () {
       page.webmcp.once('toolinvoked', resolve);
     });
 
-    const toolResponded = new Promise<WebMCPToolResponse>(resolve => {
+    const toolResponded = new Promise<WebMCPToolCallResult>(resolve => {
       page.webmcp.once('toolresponded', resolve);
     });
 
@@ -414,7 +414,7 @@ describe('Page.webmcp', function () {
       page.webmcp.once('toolinvoked', resolve);
     });
 
-    const toolResponded = new Promise<WebMCPToolResponse>(resolve => {
+    const toolResponded = new Promise<WebMCPToolCallResult>(resolve => {
       page.webmcp.once('toolresponded', resolve);
     });
 
@@ -459,7 +459,7 @@ describe('Page.webmcp', function () {
       });
     });
 
-    const toolResponded = new Promise<WebMCPToolResponse>(resolve => {
+    const toolResponded = new Promise<WebMCPToolCallResult>(resolve => {
       page.webmcp.once('toolresponded', resolve);
     });
 
