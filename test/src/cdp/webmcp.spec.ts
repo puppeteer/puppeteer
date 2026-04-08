@@ -271,7 +271,7 @@ describe('Page.webmcp', function () {
     expect(page.webmcp.tools().length).toBe(0);
   });
 
-  it.only('should fire toolinvoked events', async () => {
+  it('should fire toolinvoked events', async () => {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);
 
