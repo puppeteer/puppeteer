@@ -86,6 +86,21 @@ Protocol.Runtime.RemoteObject
 </td></tr>
 <tr><td>
 
+<span id="id">id</span>
+
+</td><td>
+
+</td><td>
+
+string
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="output">output</span>
 
 </td><td>

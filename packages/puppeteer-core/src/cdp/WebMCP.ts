@@ -150,13 +150,15 @@ export interface WebMCPToolsRemovedEvent {
  * @public
  */
 export class WebMCPToolCall {
+  id: string;
   tool: WebMCPTool;
   input: object;
 
   /**
    * @internal
    */
-  constructor(tool: WebMCPTool, input: string) {
+  constructor(invocationId: string, tool: WebMCPTool, input: string) {
+    this.id = invocationId;
     this.tool = tool;
     try {
       this.input = JSON.parse(input);
@@ -171,6 +173,7 @@ export class WebMCPToolCall {
  * @public
  */
 export interface WebMCPToolCallResult {
+  id: string;
   call?: WebMCPToolCall;
   status: WebMCPInvocationStatus;
   output?: any;
@@ -237,8 +240,8 @@ export class WebMCP extends EventEmitter<{
     if (!tool) {
       return;
     }
-    const call = new WebMCPToolCall(tool, event.input);
-    this.#pendingCalls.set(event.invocationId, call);
+    const call = new WebMCPToolCall(event.invocationId, tool, event.input);
+    this.#pendingCalls.set(call.id, call);
     tool.emit('toolinvoked', call);
     this.emit('toolinvoked', call);
   };
@@ -249,6 +252,7 @@ export class WebMCP extends EventEmitter<{
       this.#pendingCalls.delete(event.invocationId);
     }
     const response: WebMCPToolCallResult = {
+      id: event.invocationId,
       call: call,
       status: event.status,
       output: event.output,
