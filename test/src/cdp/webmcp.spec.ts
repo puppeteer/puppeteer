@@ -69,6 +69,8 @@ describe('Page.webmcp', function () {
       },
       required: ['text'],
     });
+    expect(tools[0]!.annotations).toBeDefined();
+    expect(tools[0]!.annotations!.readOnly).toBe(true);
     expect(tools[0]!.frame).toBe(page.mainFrame());
     expect(await tools[0]!.formElement).toBeUndefined();
     expect(tools[0]!.location).toBeDefined();
@@ -76,6 +78,7 @@ describe('Page.webmcp', function () {
     expect(tools[1]!.name).toBe('declarative tool name');
     expect(tools[1]!.description).toBe('tool description');
     expect(tools[1]!.inputSchema).toStrictEqual({});
+    expect(tools[1]!.annotations).toBeUndefined();
     expect(tools[1]!.frame).toBe(page.mainFrame());
     expect(await tools[1]!.formElement).toBeDefined();
     expect(tools[1]!.location).toBeUndefined();
@@ -106,7 +109,6 @@ describe('Page.webmcp', function () {
           required: ['text'],
         },
         execute: () => {},
-        annotations: {readOnlyHint: true},
       });
     });
 
@@ -121,6 +123,7 @@ describe('Page.webmcp', function () {
       },
       required: ['text'],
     });
+    expect(addedTools[0]!.annotations).toBeUndefined();
     expect(addedTools[0]!.frame).toBe(page.mainFrame());
     expect(await addedTools[0]!.formElement).toBeUndefined();
     expect(addedTools[0]!.location).toBeDefined();
@@ -143,6 +146,7 @@ describe('Page.webmcp', function () {
     expect(addedTools.length).toBe(1);
     expect(addedTools[0]!.name).toBe('declarative tool name');
     expect(addedTools[0]!.description).toBe('tool description');
+    expect(addedTools[0]!.annotations).toBeUndefined();
     expect(addedTools[0]!.inputSchema).toStrictEqual({});
     expect(addedTools[0]!.frame).toBe(page.mainFrame());
     expect(await addedTools[0]!.formElement).toBeDefined();
@@ -170,7 +174,6 @@ describe('Page.webmcp', function () {
             required: ['text'],
           },
           execute: () => {},
-          annotations: {readOnlyHint: true},
         },
         {signal: controller.signal},
       );
@@ -208,6 +211,7 @@ describe('Page.webmcp', function () {
       },
       required: ['text'],
     });
+    expect(removedTools[0]!.annotations).toBeUndefined();
     expect(removedTools[0]!.frame).toBe(page.mainFrame());
     expect(await removedTools[0]!.formElement).toBeUndefined();
     expect(removedTools[0]!.location).toBeDefined();
@@ -228,6 +232,7 @@ describe('Page.webmcp', function () {
     expect(removedTools[0]!.name).toBe('declarative tool name');
     expect(removedTools[0]!.description).toBe('tool description');
     expect(removedTools[0]!.inputSchema).toStrictEqual({});
+    expect(removedTools[0]!.annotations).toBeUndefined();
     expect(removedTools[0]!.frame).toBe(page.mainFrame());
     expect(await removedTools[0]!.formElement).toBeDefined();
     expect(removedTools[0]!.location).toBeUndefined();
