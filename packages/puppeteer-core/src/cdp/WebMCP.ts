@@ -253,7 +253,8 @@ export class WebMCP extends EventEmitter<{
    * @internal
    */
   async initialize(): Promise<void> {
-    return await this.#client.send('WebMCP.enable' as any).catch(debugError);
+    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    return await this.#client.send('WebMCP.enable').catch(debugError);
   }
 
   /**
@@ -266,20 +267,24 @@ export class WebMCP extends EventEmitter<{
   }
 
   #bindListeners(): void {
-    // TODO: Remove type-casting. We use type casting because WebMCP is not yet in the
-    // Protocol types.
-    this.#client.on('WebMCP.toolsAdded' as any, this.#onToolsAdded as any);
-    this.#client.on('WebMCP.toolsRemoved' as any, this.#onToolsRemoved as any);
-    this.#client.on('WebMCP.toolInvoked' as any, this.#onToolInvoked as any);
+    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    this.#client.on('WebMCP.toolsAdded', this.#onToolsAdded);
+    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    this.#client.on('WebMCP.toolsRemoved', this.#onToolsRemoved);
+    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    this.#client.on('WebMCP.toolInvoked', this.#onToolInvoked);
   }
 
   /**
    * @internal
    */
   updateClient(client: CDPSession): void {
-    this.#client.off('WebMCP.toolsAdded' as any, this.#onToolsAdded as any);
-    this.#client.off('WebMCP.toolsRemoved' as any, this.#onToolsRemoved as any);
-    this.#client.off('WebMCP.toolInvoked' as any, this.#onToolInvoked as any);
+    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    this.#client.off('WebMCP.toolsAdded', this.#onToolsAdded);
+    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    this.#client.off('WebMCP.toolsRemoved', this.#onToolsRemoved);
+    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    this.#client.off('WebMCP.toolInvoked', this.#onToolInvoked);
     this.#client = client;
     this.#bindListeners();
   }
