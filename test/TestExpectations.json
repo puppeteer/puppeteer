@@ -1873,6 +1873,13 @@
     "comment": "Experimental support for WebMCP is not supported in BiDi"
   },
   {
+    "testIdPattern": "[webmcp.spec] Page.webmcp should fire toolinvoked events",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["TIMEOUT"],
+    "comment": "Experimental support for WebMCP tool invocation requires Chrome 148+."
+  },
+  {
     "testIdPattern": "[worker.spec] Workers can be closed",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
