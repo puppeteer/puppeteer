@@ -58,6 +58,7 @@ module.exports = {
         'guides/running-puppeteer-in-extensions',
         'guides/screen-configuration',
         'guides/window-management',
+        'guides/webmcp',
       ],
     },
     'examples',
