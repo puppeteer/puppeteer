@@ -966,6 +966,15 @@ This method iterates the JavaScript heap and finds all objects with the given pr
 </td></tr>
 <tr><td>
 
+<span id="realms">[realms()](./puppeteer.page.realms.md)</span>
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="reload">[reload(options)](./puppeteer.page.reload.md)</span>
 
 </td><td>

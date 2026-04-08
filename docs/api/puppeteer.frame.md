@@ -296,6 +296,17 @@ Focuses the first element that matches the `selector`.
 </td></tr>
 <tr><td>
 
+<span id="getrealms">[getRealms()](./puppeteer.frame.getrealms.md)</span>
+
+</td><td>
+
+</td><td>
+
+This method retrieves the list of realms inside of a Frame returned as a pair-like \[key, Object\] list
+
+</td></tr>
+<tr><td>
+
 <span id="goto">[goto(url, options)](./puppeteer.frame.goto.md)</span>
 
 </td><td>

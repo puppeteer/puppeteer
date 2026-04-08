@@ -476,6 +476,17 @@ The constructor for this class is marked as internal. Third-party code should no
 </td></tr>
 <tr><td>
 
+<span id="realm">[Realm](./puppeteer.realm.md)</span>
+
+</td><td>
+
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Realm` class.
+
+</td></tr>
+<tr><td>
+
 <span id="screenrecorder">[ScreenRecorder](./puppeteer.screenrecorder.md)</span>
 
 </td><td>
@@ -1545,6 +1556,15 @@ The default cooperative request interception resolution priority
 </td><td>
 
 A list of devices to be used with [Page.emulate()](./puppeteer.page.emulate.md).
+
+</td></tr>
+<tr><td>
+
+<span id="main_world">[MAIN_WORLD](./puppeteer.main_world.md)</span>
+
+</td><td>
+
+A unique key for to denote the default world. Execution contexts are automatically created in the default world.
 
 </td></tr>
 <tr><td>
