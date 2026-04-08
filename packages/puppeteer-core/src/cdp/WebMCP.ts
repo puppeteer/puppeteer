@@ -196,8 +196,8 @@ export class WebMCP extends EventEmitter<{
 }> {
   #client: CDPSession;
   #frameManager: FrameManager;
-  #tools: Map<string, Map<string, WebMCPTool>>;
-  #pendingCalls: Map<string, WebMCPToolCall>;
+  #tools = new Map<string, Map<string, WebMCPTool>>();
+  #pendingCalls = new Map<string, WebMCPToolCall>();
 
   #onToolsAdded = (event: ProtocolWebMCPToolsAddedEvent) => {
     const tools: WebMCPTool[] = [];
@@ -282,8 +282,6 @@ export class WebMCP extends EventEmitter<{
       this.#onFrameNavigated,
     );
     this.#bindListeners();
-    this.#tools = new Map();
-    this.#pendingCalls = new Map();
   }
 
   /**
