@@ -567,7 +567,7 @@ Puppeteer will throw this error if a method is not supported by the currently us
 
 </td><td>
 
-The WebMCP class provides an API for the WebMCP API.
+**_(Experimental)_** The experimental WebMCP class provides an API for the WebMCP API.
 
 **Remarks:**
 
@@ -579,6 +579,8 @@ The constructor for this class is marked as internal. Third-party code should no
 <span id="webmcptool">[WebMCPTool](./puppeteer.webmcptool.md)</span>
 
 </td><td>
+
+Represents a registered WebMCP tool available on the page.
 
 **Remarks:**
 

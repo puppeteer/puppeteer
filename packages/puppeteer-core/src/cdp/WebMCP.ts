@@ -57,6 +57,8 @@ interface ProtocolWebMCPToolInvokedEvent {
 }
 
 /**
+ * Represents a registered WebMCP tool available on the page.
+ *
  * @public
  */
 export class WebMCPTool extends EventEmitter<{
@@ -70,7 +72,13 @@ export class WebMCPTool extends EventEmitter<{
   description: string;
   inputSchema?: object;
   annotations?: WebMCPAnnotation;
+  /**
+   * Frame the tool was defined for.
+   */
   frame: Frame;
+  /**
+   * Source location that defined the tool (if available).
+   */
   location?: ConsoleMessageLocation;
   /**
    * @internal
@@ -154,8 +162,9 @@ export class WebMCPToolCall {
 }
 
 /**
- * The WebMCP class provides an API for the WebMCP API.
+ * The experimental WebMCP class provides an API for the WebMCP API.
  *
+ * @experimental
  * @public
  */
 export class WebMCP extends EventEmitter<{
@@ -240,10 +249,16 @@ export class WebMCP extends EventEmitter<{
     this.#tools = new Map();
   }
 
+  /**
+   * @internal
+   */
   async initialize(): Promise<void> {
     return await this.#client.send('WebMCP.enable' as any).catch(debugError);
   }
 
+  /**
+   * Gets all WebMCP tools defined by the page.
+   */
   tools(): WebMCPTool[] {
     return Array.from(this.#tools.values()).flatMap(toolMap => {
       return Array.from(toolMap.values());

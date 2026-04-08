@@ -4,6 +4,8 @@ sidebar_label: WebMCPTool
 
 # WebMCPTool class
 
+Represents a registered WebMCP tool available on the page.
+
 ### Signature
 
 ```typescript
@@ -92,6 +94,8 @@ Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLFormElement&gt; 
 
 </td><td>
 
+Frame the tool was defined for.
+
 </td></tr>
 <tr><td>
 
@@ -121,6 +125,8 @@ object
 [ConsoleMessageLocation](./puppeteer.consolemessagelocation.md)
 
 </td><td>
+
+Source location that defined the tool (if available).
 
 </td></tr>
 <tr><td>
