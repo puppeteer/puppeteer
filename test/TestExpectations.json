@@ -900,6 +900,13 @@
     "comment": "tests chrome-specific flags"
   },
   {
+    "testIdPattern": "[webmcp.spec] Page.webmcp should fire toolresponded event *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["TIMEOUT"],
+    "comment": "Experimental support for WebMCP tool invocation requires Chrome 148+."
+  },
+  {
     "testIdPattern": "[worker.spec] Workers console should return remote objects",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1874,13 +1881,6 @@
   },
   {
     "testIdPattern": "[webmcp.spec] Page.webmcp should fire toolinvoked events",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["TIMEOUT"],
-    "comment": "Experimental support for WebMCP tool invocation requires Chrome 148+."
-  },
-  {
-    "testIdPattern": "[webmcp.spec] Page.webmcp should fire toolresponded event *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["TIMEOUT"],
