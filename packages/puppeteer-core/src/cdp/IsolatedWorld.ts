@@ -287,7 +287,7 @@ export class IsolatedWorld extends Realm {
     }
 
     if (this.#worldId === MAIN_WORLD) {
-      return Promise.resolve(null);
+      return await Promise.resolve(null);
     }
 
     if (typeof this.worldId === 'string') {
@@ -295,6 +295,6 @@ export class IsolatedWorld extends Realm {
       return extensions.get(this.worldId) || null;
     }
 
-    return Promise.resolve(null);
+    return await Promise.resolve(null);
   }
 }

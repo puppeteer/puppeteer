@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import path from 'node:path';
+
 import expect from 'expect';
 import {MAIN_WORLD} from 'puppeteer-core';
-import path from 'path';
+
 import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
 
 const EXTENSION_PATH = path.join(
@@ -34,11 +36,15 @@ describe('realms', function () {
     const worldIds = realms.map(([id]) => {
       return id;
     });
-
-    expect(worldIds).toContain(MAIN_WORLD);
+    try {
+      expect(worldIds).toContain(MAIN_WORLD);
+      // eslint-disable-next-line
+    } catch (e) {
+      expect(worldIds).toContain('default'); // BiDi
+    }
   });
 
-  it('realms should have a worldId', async () => {
+  it('should have a worldId', async () => {
     const {browser} = state;
 
     const page = await browser.newPage();
@@ -46,80 +52,97 @@ describe('realms', function () {
 
     expect(realms.length).toBeGreaterThanOrEqual(1);
 
-    const mainRealm = realms.find(([id]) => {
-      return id === MAIN_WORLD;
-    })?.[1];
+    try {
+      const mainRealm = realms.find(([id]) => {
+        return id === MAIN_WORLD;
+      })?.[1];
 
-    expect(mainRealm?.worldId).toEqual(MAIN_WORLD);
+      expect(mainRealm?.worldId).toEqual(MAIN_WORLD);
+      // eslint-disable-next-line
+    } catch (e) {
+      const mainRealm = realms.find(([id]) => {
+        return id === 'default';
+      })?.[1];
+
+      expect(mainRealm?.worldId).toEqual('default'); // BiDi
+    }
   });
 
-  it('should include content script realms', async () => {
-    const {browser, server} = state;
+  describe('extension', function () {
+    it('should include content script realms', async () => {
+      const {browser, server} = state;
 
-    const page = await browser.newPage();
-    const extId = await browser.installExtension(EXTENSION_PATH);
-    await browser.waitForTarget(target => target.url().includes(extId));
+      const page = await browser.newPage();
+      const extId = await browser.installExtension(EXTENSION_PATH);
+      await browser.waitForTarget(target => {
+        return target.url().includes(extId);
+      });
 
-    await page.goto(server.EMPTY_PAGE);
+      await page.goto(server.EMPTY_PAGE);
 
-    const realms = page.realms();
-    expect(realms.length).toBeGreaterThanOrEqual(2);
+      const realms = page.realms();
+      expect(realms.length).toBeGreaterThanOrEqual(2);
 
-    const worldNames = realms.map(([id]) => {
-      return id.toString();
+      const worldNames = realms.map(([id]) => {
+        return id.toString();
+      });
+
+      expect(
+        worldNames.some(name => {
+          return name.includes(extId);
+        }),
+      ).toBe(true);
     });
 
-    expect(
-      worldNames.some(name => {
-        return name.includes(extId);
-      }),
-    ).toBe(true);
-  });
+    it('realm should return extension that created it', async () => {
+      const {browser, server} = state;
 
-  it('realm should return extension that created it', async () => {
-    const {browser, server} = state;
+      const page = await browser.newPage();
+      const extId = await browser.installExtension(EXTENSION_PATH);
+      await browser.waitForTarget(target => {
+        return target.url().includes(extId);
+      });
 
-    const page = await browser.newPage();
-    const extId = await browser.installExtension(EXTENSION_PATH);
-    await browser.waitForTarget(target => target.url().includes(extId));
+      await page.goto(server.EMPTY_PAGE);
+      const realms = page.realms();
 
-    await page.goto(server.EMPTY_PAGE);
-    const realms = page.realms();
+      const contentScriptRealm = realms.find(([id]) => {
+        return id.toString().includes(extId);
+      })?.[1];
 
-    const contentScriptRealm = realms.find(([id]) => {
-      return id.toString().includes(extId);
-    })?.[1];
+      const extension = await contentScriptRealm?.extension();
 
-    const extension = await contentScriptRealm?.extension();
-
-    expect(extension).toBeDefined();
-    expect(extension!.id).toEqual(extId);
-  });
-
-  it('should evaluate in content script realms', async () => {
-    const {browser, server} = state;
-
-    const page = await browser.newPage();
-    const extId = await browser.installExtension(EXTENSION_PATH);
-    await browser.waitForTarget(target => target.url().includes(extId));
-
-    await page.goto(server.EMPTY_PAGE);
-    const realms = page.realms();
-    const contentScriptRealm = realms.find(([id]) => {
-      return id.toString().includes(extId);
-    })?.[1];
-
-    expect(contentScriptRealm).toBeDefined();
-
-    const isContentScript = await contentScriptRealm!.evaluate(() => {
-      return (globalThis as any).thisIsTheContentScript;
-    });
-    expect(isContentScript).toBe(true);
-
-    const isContentScriptInMain = await page.evaluate(() => {
-      return (globalThis as any).thisIsTheContentScript;
+      expect(extension).toBeDefined();
+      expect(extension!.id).toEqual(extId);
     });
 
-    expect(isContentScriptInMain).toBeUndefined();
+    it('should evaluate in content script realms', async () => {
+      const {browser, server} = state;
+
+      const page = await browser.newPage();
+      const extId = await browser.installExtension(EXTENSION_PATH);
+      await browser.waitForTarget(target => {
+        return target.url().includes(extId);
+      });
+
+      await page.goto(server.EMPTY_PAGE);
+      const realms = page.realms();
+      const contentScriptRealm = realms.find(([id]) => {
+        return id.toString().includes(extId);
+      })?.[1];
+
+      expect(contentScriptRealm).toBeDefined();
+
+      const isContentScript = await contentScriptRealm!.evaluate(() => {
+        return (globalThis as any).thisIsTheContentScript;
+      });
+      expect(isContentScript).toBe(true);
+
+      const isContentScriptInMain = await page.evaluate(() => {
+        return (globalThis as any).thisIsTheContentScript;
+      });
+
+      expect(isContentScriptInMain).toBeUndefined();
+    });
   });
 });
