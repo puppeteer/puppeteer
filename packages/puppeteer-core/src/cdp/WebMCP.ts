@@ -263,6 +263,7 @@ export class WebMCP extends EventEmitter<{
   };
 
   #onFrameNavigated = (frame: Frame) => {
+    this.#pendingCalls.clear();
     const frameTools = this.#tools.get(frame._id);
     if (!frameTools) {
       return;
