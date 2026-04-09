@@ -2,7 +2,7 @@
 
 :::caution
 
-WebMCP is an experimental API and is subject to change. It is currently only supported in Chrome 148+ and requires specific flags to be enabled.
+WebMCP is an experimental API and is subject to change. It is currently only supported in Chrome 149+ and requires specific flags to be enabled.
 
 :::
 
@@ -12,7 +12,7 @@ WebMCP is an experimental API and is subject to change. It is currently only sup
 
 To use WebMCP with Puppeteer, you need:
 
-1.  **Chrome 148+**: The browser must support the WebMCP CDP domain.
+1.  **Chrome 149+**: The browser must support the WebMCP CDP domain.
 2.  **Enabled Flags**: You must launch the browser with the following flags:
     - `--enable-features=WebMCPTesting,DevToolsWebMCPSupport`
 
