@@ -161,6 +161,21 @@ Error
 </td></tr>
 <tr><td>
 
+<span id="issue">issue</span>
+
+</td><td>
+
+</td><td>
+
+[Issue](./puppeteer.issue.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="load">load</span>
 
 </td><td>

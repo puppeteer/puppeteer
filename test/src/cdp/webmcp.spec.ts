@@ -5,7 +5,11 @@
  */
 
 import expect from 'expect';
-import type {WebMCPTool} from 'puppeteer-core/internal/cdp/WebMCP.js';
+import type {
+  WebMCPTool,
+  WebMCPToolCall,
+  WebMCPToolCallResult,
+} from 'puppeteer-core/internal/cdp/WebMCP.js';
 
 import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
 
@@ -271,5 +275,217 @@ describe('Page.webmcp', function () {
     expect(removedTools.length).toBe(1);
     expect(removedTools[0]!.name).toBe('declarative tool name');
     expect(page.webmcp.tools().length).toBe(0);
+  });
+
+  it('should fire toolinvoked events', async () => {
+    const {page, httpsServer} = state;
+    await page.goto(httpsServer.EMPTY_PAGE);
+
+    expect(page.webmcp).toBeDefined();
+
+    const toolAdded = new Promise<WebMCPTool[]>(resolve => {
+      page.webmcp.once('toolsadded', event => {
+        return resolve(event.tools);
+      });
+    });
+
+    // Register a WebMCP tool.
+    await page.evaluate(() => {
+      (window as any).navigator.modelContext.registerTool({
+        name: 'test-tool-1',
+        description: 'A test tool 1',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            text: {type: 'string', description: 'Some text'},
+          },
+          required: ['text'],
+        },
+        execute: () => {},
+      });
+    });
+
+    const [addedTool] = await toolAdded;
+
+    const addedToolCalled = new Promise<WebMCPToolCall>(resolve => {
+      addedTool!.once('toolinvoked', resolve);
+    });
+
+    const toolCalled = new Promise<WebMCPToolCall>(resolve => {
+      page.webmcp.once('toolinvoked', resolve);
+    });
+
+    // Execute WebMCP tool.
+    await page.evaluate(() => {
+      (window as any).navigator.modelContextTesting.executeTool(
+        'test-tool-1',
+        JSON.stringify({text: 'test'}),
+      );
+    });
+
+    const [addedToolCall, toolCall] = await Promise.all([
+      addedToolCalled,
+      toolCalled,
+    ]);
+
+    async function expectToolCall(call: WebMCPToolCall) {
+      expect(call.id).toBeDefined();
+      expect(call.tool).toBeDefined();
+      expect(call.tool.name).toBe('test-tool-1');
+      expect(call.tool.description).toBe('A test tool 1');
+      expect(call.tool.inputSchema).toStrictEqual({
+        type: 'object',
+        properties: {
+          text: {type: 'string', description: 'Some text'},
+        },
+        required: ['text'],
+      });
+      expect(call.tool.frame).toBe(page.mainFrame());
+      expect(await call.tool.formElement).toBeUndefined();
+      expect(call.tool.location).toBeDefined();
+      expect(call.input).toStrictEqual({text: 'test'});
+    }
+    await expectToolCall(addedToolCall);
+    await expectToolCall(toolCall);
+  });
+
+  it('should fire toolresponded event with success', async () => {
+    const {page, httpsServer} = state;
+    await page.goto(httpsServer.EMPTY_PAGE);
+
+    expect(page.webmcp).toBeDefined();
+
+    // Register a WebMCP tool.
+    await page.evaluate(() => {
+      (window as any).navigator.modelContext.registerTool({
+        name: 'test-tool-1',
+        description: 'A test tool 1',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            text: {type: 'string', description: 'Some text'},
+          },
+          required: ['text'],
+        },
+        execute: () => {
+          return 'hello world';
+        },
+      });
+    });
+
+    const toolCalled = new Promise<WebMCPToolCall>(resolve => {
+      page.webmcp.once('toolinvoked', resolve);
+    });
+
+    const toolResponded = new Promise<WebMCPToolCallResult>(resolve => {
+      page.webmcp.once('toolresponded', resolve);
+    });
+
+    // Execute WebMCP tool.
+    await page.evaluate(() => {
+      (window as any).navigator.modelContextTesting.executeTool(
+        'test-tool-1',
+        JSON.stringify({text: 'test'}),
+      );
+    });
+
+    const call = await toolCalled;
+    const response = await toolResponded;
+
+    expect(response.id).toBe(call.id);
+    expect(response.call).toBe(call);
+    expect(response.status).toBe('Success');
+    expect(response.output).toBe('hello world');
+    expect(response.errorText).toBeUndefined();
+    expect(response.exception).toBeUndefined();
+  });
+
+  it('should fire toolresponded event with exception', async () => {
+    const {page, httpsServer} = state;
+    await page.goto(httpsServer.EMPTY_PAGE);
+
+    expect(page.webmcp).toBeDefined();
+
+    // Register a WebMCP tool.
+    await page.evaluate(() => {
+      (window as any).navigator.modelContext.registerTool({
+        name: 'raise-exception-tool',
+        description: 'A tool that raises JS exception',
+        execute: () => {
+          throw new Error('sorry!');
+        },
+      });
+    });
+
+    const toolCalled = new Promise<WebMCPToolCall>(resolve => {
+      page.webmcp.once('toolinvoked', resolve);
+    });
+
+    const toolResponded = new Promise<WebMCPToolCallResult>(resolve => {
+      page.webmcp.once('toolresponded', resolve);
+    });
+
+    // Execute WebMCP tool.
+    await page.evaluate(() => {
+      (window as any).navigator.modelContextTesting.executeTool(
+        'raise-exception-tool',
+        '{}',
+      );
+    });
+
+    const call = await toolCalled;
+    const response = await toolResponded;
+
+    expect(response.id).toBe(call.id);
+    expect(response.call).toBe(call);
+    expect(response.status).toBe('Error');
+    expect(response.output).toBeUndefined();
+    expect(response.errorText).toBe('');
+    expect(response.exception).toBeDefined();
+    expect(response.exception?.description).toContain('sorry');
+  });
+
+  it('should fire toolresponded event with errorText', async () => {
+    const {page, httpsServer} = state;
+    await page.goto(httpsServer.EMPTY_PAGE);
+
+    expect(page.webmcp).toBeDefined();
+
+    // Register a WebMCP tool.
+    await page.evaluate(() => {
+      (window as any).navigator.modelContext.registerTool({
+        name: 'test-tool-1',
+        description: 'A test tool 1',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            text: {type: 'string', description: 'Some text'},
+          },
+          required: ['text'],
+        },
+        execute: () => {},
+      });
+    });
+
+    const toolResponded = new Promise<WebMCPToolCallResult>(resolve => {
+      page.webmcp.once('toolresponded', resolve);
+    });
+
+    // Execute unknown WebMCP tool.
+    await page.evaluate(() => {
+      (window as any).navigator.modelContextTesting.executeTool(
+        'unknown-tool-name',
+        '{}',
+      );
+    });
+
+    const response = await toolResponded;
+
+    expect(response.id).toBeDefined();
+    expect(response.call).toBeUndefined();
+    expect(response.status).toBe('Error');
+    expect(response.output).toBeUndefined();
+    expect(response.errorText).toBe('Tool not found: unknown-tool-name');
+    expect(response.exception).toBeUndefined();
   });
 });

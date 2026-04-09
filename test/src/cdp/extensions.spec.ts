@@ -7,8 +7,17 @@
 import path from 'node:path';
 
 import expect from 'expect';
+import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
+
+const extensionWithPagePath = path.join(
+  import.meta.dirname,
+  '..',
+  '..',
+  'assets',
+  'extension-with-page',
+);
 
 const extensionPath = path.join(
   import.meta.dirname,
@@ -23,6 +32,7 @@ describe('extensions', function () {
     {
       enableExtensions: true,
       args: [`--load-extension=${extensionPath}`],
+      pipe: true,
     },
     {createContext: false},
   );
@@ -60,5 +70,158 @@ describe('extensions', function () {
       });
     }
     expect(result).toBe(42);
+  });
+
+  it('should list extensions and their properties', async () => {
+    const {browser} = state;
+
+    const extensionId = await browser.installExtension(extensionPath);
+    const extensions = await browser.extensions();
+
+    const extension = extensions.get(extensionId);
+
+    expect(extension).toBeDefined();
+    expect(extension?.name).toBe('Simple extension');
+    expect(extension?.version).toBe('0.1');
+    expect(extension?.id).toBe(extensionId);
+  });
+
+  it('should list extension workers', async () => {
+    const {browser} = state;
+
+    const extensionId = await browser.installExtension(extensionPath);
+    const extension = (await browser.extensions()).get(extensionId);
+
+    const page = await browser.newPage();
+    await extension?.triggerAction(page);
+
+    await browser.waitForTarget(target => {
+      return (
+        target.url().includes(extensionId) && target.type() === 'service_worker'
+      );
+    });
+
+    const workers = await extension!.workers();
+    expect(workers.length).toBeGreaterThan(0);
+  });
+
+  it('should trigger extension action', async () => {
+    const {browser} = state;
+    const page = await browser.newPage();
+    const extensionId = await browser.installExtension(extensionPath);
+    const extensions = await browser.extensions();
+    const extension = extensions.get(extensionId);
+
+    await page.triggerExtensionAction(extension!);
+    // If it doesn't throw, we consider it successful for this level of testing.
+  });
+
+  it('should list extension pages', async () => {
+    const {browser, server} = state;
+    const extensionId = await browser.installExtension(extensionWithPagePath);
+    const extensions = await browser.extensions();
+    const extension = extensions.get(extensionId);
+
+    const page = await browser.newPage();
+    await page.goto(server.EMPTY_PAGE);
+
+    await extension?.triggerAction(page);
+
+    await browser.waitForTarget(target => {
+      return (
+        target.url().includes('popup.html') &&
+        target.url().includes(extensionId)
+      );
+    });
+
+    const pages = await extension!.pages();
+    expect(pages.length).toBeGreaterThanOrEqual(1);
+    expect(
+      pages.some(p => {
+        return p.url().includes('popup.html');
+      }),
+    ).toBe(true);
+  });
+
+  it('should capture console logs from extension pages', async () => {
+    const {browser, server} = state;
+    const extensionId = await browser.installExtension(extensionWithPagePath);
+    const extensions = await browser.extensions();
+    const extension = extensions.get(extensionId);
+
+    const page = await browser.newPage();
+    await page.goto(server.EMPTY_PAGE);
+
+    await page.triggerExtensionAction(extension!);
+
+    const optionsPageTarget = await browser.waitForTarget(target => {
+      return (
+        target.url().includes('popup.html') &&
+        target.url().includes(extensionId)
+      );
+    });
+
+    const extPage = await optionsPageTarget.asPage();
+
+    const [message] = await Promise.all([
+      new Promise<string>(resolve => {
+        extPage.on('console', msg => {
+          resolve(msg.text());
+        });
+      }),
+      extPage.evaluate(() => {
+        console.log('hello from extension page');
+      }),
+    ]);
+
+    expect(message).toBe('hello from extension page');
+  });
+
+  it('should capture console logs from extension workers', async () => {
+    const {browser, server} = state;
+    const extensionId = await browser.installExtension(extensionWithPagePath);
+    const extensions = await browser.extensions();
+    const extension = extensions.get(extensionId);
+
+    const page = await browser.newPage();
+    await page.goto(server.EMPTY_PAGE);
+    await extension?.triggerAction(page);
+
+    const workerTarget = await browser.waitForTarget(target => {
+      return (
+        target.url().includes(extensionId) && target.type() === 'service_worker'
+      );
+    });
+
+    const worker = await workerTarget.worker();
+    const messageToLog = 'hello from extension worker';
+
+    const [message] = await Promise.all([
+      new Promise<string>(resolve => {
+        worker!.on('console', (msg: ConsoleMessage) => {
+          const msgText = msg.text();
+          if (msgText === messageToLog) {
+            resolve(msg.text());
+          }
+        });
+      }),
+      worker!.evaluate(msg => {
+        console.log(msg);
+      }, messageToLog),
+    ]);
+
+    expect(message).toBe(messageToLog);
+  });
+
+  it('should remove extension from list after uninstall', async () => {
+    const {browser} = state;
+    const id = await browser.installExtension(extensionPath);
+    let extensions = await browser.extensions();
+    expect(extensions.has(id)).toBe(true);
+
+    await browser.uninstallExtension(id);
+
+    extensions = await browser.extensions();
+    expect(extensions.has(id)).toBe(false);
   });
 });

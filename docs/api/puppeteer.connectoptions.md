@@ -220,6 +220,27 @@ Only works in the Node.js environment.
 </td></tr>
 <tr><td>
 
+<span id="issuesenabled">issuesEnabled</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+**_(Experimental)_** Experimental setting to disable monitoring issue events by default.
+
+</td><td>
+
+`true`
+
+</td></tr>
+<tr><td>
+
 <span id="networkenabled">networkEnabled</span>
 
 </td><td>

@@ -21,6 +21,7 @@ import {
   type DebugInfo,
 } from '../api/Browser.js';
 import {BrowserContextEvent} from '../api/BrowserContext.js';
+import type {Extension} from '../api/Extension.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {Connection as CdpConnection} from '../cdp/Connection.js';
@@ -50,6 +51,7 @@ export interface BidiBrowserOptions {
   acceptInsecureCerts?: boolean;
   capabilities?: SupportedWebDriverCapabilities;
   networkEnabled: boolean;
+  issuesEnabled: boolean;
 }
 
 /**
@@ -153,6 +155,7 @@ export class BidiBrowser extends Browser {
   #target = new BidiBrowserTarget(this);
   #cdpConnection?: CdpConnection;
   #networkEnabled: boolean;
+  #issuesEnabled: boolean;
 
   private constructor(browserCore: BrowserCore, opts: BidiBrowserOptions) {
     super();
@@ -162,6 +165,7 @@ export class BidiBrowser extends Browser {
     this.#defaultViewport = opts.defaultViewport;
     this.#cdpConnection = opts.cdpConnection;
     this.#networkEnabled = opts.networkEnabled;
+    this.#issuesEnabled = opts.issuesEnabled;
   }
 
   #initialize() {
@@ -374,5 +378,13 @@ export class BidiBrowser extends Browser {
 
   override isNetworkEnabled(): boolean {
     return this.#networkEnabled;
+  }
+
+  override extensions(): Promise<Map<string, Extension>> {
+    throw new UnsupportedOperation();
+  }
+
+  override isIssuesEnabled(): boolean {
+    return this.#issuesEnabled;
   }
 }

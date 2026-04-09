@@ -4,11 +4,17 @@ sidebar_label: WebMCPTool
 
 # WebMCPTool class
 
+Represents a registered WebMCP tool available on the page.
+
 ### Signature
 
 ```typescript
-export declare class WebMCPTool
+export declare class WebMCPTool extends EventEmitter<{
+    toolinvoked: WebMCPToolCall;
+}>
 ```
+
+**Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;&#123; toolinvoked: [WebMCPToolCall](./puppeteer.webmcptoolcall.md); &#125;&gt;
 
 ## Remarks
 
@@ -47,6 +53,8 @@ Description
 
 </td><td>
 
+Optional annotations for the tool.
+
 </td></tr>
 <tr><td>
 
@@ -59,6 +67,8 @@ Description
 string
 
 </td><td>
+
+Tool description.
 
 </td></tr>
 <tr><td>
@@ -75,6 +85,8 @@ Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLFormElement&gt; 
 
 </td><td>
 
+The corresponding ElementHandle when tool was registered via a form.
+
 </td></tr>
 <tr><td>
 
@@ -87,6 +99,8 @@ Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLFormElement&gt; 
 [Frame](./puppeteer.frame.md)
 
 </td><td>
+
+Frame the tool was defined for.
 
 </td></tr>
 <tr><td>
@@ -103,6 +117,8 @@ object
 
 </td><td>
 
+Schema for the tool's input parameters.
+
 </td></tr>
 <tr><td>
 
@@ -118,6 +134,8 @@ object
 
 </td><td>
 
+Source location that defined the tool (if available).
+
 </td></tr>
 <tr><td>
 
@@ -130,6 +148,8 @@ object
 string
 
 </td><td>
+
+Tool name.
 
 </td></tr>
 </tbody></table>

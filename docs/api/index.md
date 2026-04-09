@@ -228,6 +228,15 @@ The constructor for this class is marked as internal. Third-party code should no
 </td></tr>
 <tr><td>
 
+<span id="extension">[Extension](./puppeteer.extension.md)</span>
+
+</td><td>
+
+**_(Experimental)_** [Extension](./puppeteer.extension.md) represents an Extension instance installed in the browser.
+
+</td></tr>
+<tr><td>
+
 <span id="extensiontransport">[ExtensionTransport](./puppeteer.extensiontransport.md)</span>
 
 </td><td>
@@ -567,7 +576,7 @@ Puppeteer will throw this error if a method is not supported by the currently us
 
 </td><td>
 
-The WebMCP class provides an API for the WebMCP API.
+**_(Experimental)_** The experimental WebMCP class provides an API for the WebMCP API.
 
 **Remarks:**
 
@@ -580,9 +589,22 @@ The constructor for this class is marked as internal. Third-party code should no
 
 </td><td>
 
+Represents a registered WebMCP tool available on the page.
+
 **Remarks:**
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `WebMCPTool` class.
+
+</td></tr>
+<tr><td>
+
+<span id="webmcptoolcall">[WebMCPToolCall](./puppeteer.webmcptoolcall.md)</span>
+
+</td><td>
+
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `WebMCPToolCall` class.
 
 </td></tr>
 <tr><td>
@@ -1071,6 +1093,15 @@ Options for [Page.captureHeapSnapshot()](./puppeteer.page.captureheapsnapshot.md
 </td></tr>
 <tr><td>
 
+<span id="issue">[Issue](./puppeteer.issue.md)</span>
+
+</td><td>
+
+The Issue interface represents a DevTools issue.
+
+</td></tr>
+<tr><td>
+
 <span id="jscoverageentry">[JSCoverageEntry](./puppeteer.jscoverageentry.md)</span>
 
 </td><td>
@@ -1406,6 +1437,15 @@ The TouchHandle interface exposes methods to manipulate touches that have been s
 <tr><td>
 
 <span id="webmcpannotation">[WebMCPAnnotation](./puppeteer.webmcpannotation.md)</span>
+
+</td><td>
+
+Tool annotations
+
+</td></tr>
+<tr><td>
+
+<span id="webmcptoolcallresult">[WebMCPToolCallResult](./puppeteer.webmcptoolcallresult.md)</span>
 
 </td><td>
 
@@ -1938,6 +1978,8 @@ Whether to wait for the element to be [visible](./puppeteer.elementhandle.isvisi
 <span id="webmcpinvocationstatus">[WebMCPInvocationStatus](./puppeteer.webmcpinvocationstatus.md)</span>
 
 </td><td>
+
+Represents the status of a tool invocation.
 
 </td></tr>
 <tr><td>

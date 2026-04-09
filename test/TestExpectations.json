@@ -154,6 +154,13 @@
     "comment": "Bidi does not have equivalent field"
   },
   {
+    "testIdPattern": "[page.spec] Page Page.Events.Issue *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "BiDi does not support issue events"
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.metrics *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -898,6 +905,13 @@
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
     "comment": "tests chrome-specific flags"
+  },
+  {
+    "testIdPattern": "[webmcp.spec] Page.webmcp should fire toolresponded event *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["TIMEOUT"],
+    "comment": "Experimental support for WebMCP tool invocation requires Chrome 148+."
   },
   {
     "testIdPattern": "[worker.spec] Workers console should return remote objects",
@@ -1871,6 +1885,13 @@
     "parameters": ["chrome", "headless", "webDriverBiDiOnly"],
     "expectations": ["FAIL"],
     "comment": "Experimental support for WebMCP is not supported in BiDi"
+  },
+  {
+    "testIdPattern": "[webmcp.spec] Page.webmcp should fire toolinvoked events",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["TIMEOUT"],
+    "comment": "Experimental support for WebMCP tool invocation requires Chrome 148+."
   },
   {
     "testIdPattern": "[worker.spec] Workers can be closed",

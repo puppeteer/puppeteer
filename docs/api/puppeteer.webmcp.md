@@ -4,7 +4,7 @@ sidebar_label: WebMCP
 
 # WebMCP class
 
-The WebMCP class provides an API for the WebMCP API.
+The experimental WebMCP class provides an API for the WebMCP API.
 
 ### Signature
 
@@ -12,10 +12,12 @@ The WebMCP class provides an API for the WebMCP API.
 export declare class WebMCP extends EventEmitter<{
     toolsadded: WebMCPToolsAddedEvent;
     toolsremoved: WebMCPToolsRemovedEvent;
+    toolinvoked: WebMCPToolCall;
+    toolresponded: WebMCPToolCallResult;
 }>
 ```
 
-**Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;&#123; toolsadded: [WebMCPToolsAddedEvent](./puppeteer.webmcptoolsaddedevent.md); toolsremoved: [WebMCPToolsRemovedEvent](./puppeteer.webmcptoolsremovedevent.md); &#125;&gt;
+**Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;&#123; toolsadded: [WebMCPToolsAddedEvent](./puppeteer.webmcptoolsaddedevent.md); toolsremoved: [WebMCPToolsRemovedEvent](./puppeteer.webmcptoolsremovedevent.md); toolinvoked: [WebMCPToolCall](./puppeteer.webmcptoolcall.md); toolresponded: [WebMCPToolCallResult](./puppeteer.webmcptoolcallresult.md); &#125;&gt;
 
 ## Remarks
 
@@ -38,20 +40,13 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="initialize">[initialize()](./puppeteer.webmcp.initialize.md)</span>
-
-</td><td>
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
 <span id="tools">[tools()](./puppeteer.webmcp.tools.md)</span>
 
 </td><td>
 
 </td><td>
+
+Gets all WebMCP tools defined by the page.
 
 </td></tr>
 </tbody></table>

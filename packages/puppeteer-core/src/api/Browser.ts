@@ -32,6 +32,7 @@ import {
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
 import type {BrowserContext} from './BrowserContext.js';
+import type {Extension} from './Extension.js';
 import type {Page} from './Page.js';
 import type {Target} from './Target.js';
 /**
@@ -727,4 +728,16 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * @internal
    */
   abstract isNetworkEnabled(): boolean;
+
+  /**
+   * Get a map with id as keys and extension as value of the installed extensions
+   * in the browser.
+   *
+   * @public
+   */
+  abstract extensions(): Promise<Map<string, Extension>>;
+  /**
+   * @internal
+   */
+  abstract isIssuesEnabled(): boolean;
 }

@@ -45,6 +45,8 @@ Default
 
 </td><td>
 
+Array of tools that were removed.
+
 </td><td>
 
 </td></tr>

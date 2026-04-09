@@ -19,14 +19,24 @@ import {FrameManagerEvent} from './FrameManagerEvents.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
 
 /**
+ * Tool annotations
+ *
  * @public
  */
 export interface WebMCPAnnotation {
+  /**
+   * A hint indicating that the tool does not modify any state.
+   */
   readOnly?: boolean;
+  /**
+   * If the declarative tool was declared with the autosubmit attribute.
+   */
   autosubmit?: boolean;
 }
 
 /**
+ * Represents the status of a tool invocation.
+ *
  * @public
  */
 export type WebMCPInvocationStatus = 'Success' | 'Canceled' | 'Error';
@@ -49,18 +59,56 @@ interface ProtocolWebMCPToolsRemovedEvent {
   tools: ProtocolWebMCPTool[];
 }
 
+interface ProtocolWebMCPToolInvokedEvent {
+  toolName: string;
+  frameId: string;
+  invocationId: string;
+  input: string;
+}
+
+interface ProtocolWebMCPToolRespondedEvent {
+  invocationId: string;
+  status: WebMCPInvocationStatus;
+  output?: any;
+  errorText?: string;
+  exception?: Protocol.Runtime.RemoteObject;
+}
+
 /**
+ * Represents a registered WebMCP tool available on the page.
+ *
  * @public
  */
-export class WebMCPTool {
+export class WebMCPTool extends EventEmitter<{
+  /** Emitted when invocation starts. */
+  toolinvoked: WebMCPToolCall;
+}> {
   #backendNodeId?: number;
   #formElement?: ElementHandle<HTMLFormElement>;
 
+  /**
+   * Tool name.
+   */
   name: string;
+  /**
+   * Tool description.
+   */
   description: string;
+  /**
+   * Schema for the tool's input parameters.
+   */
   inputSchema?: object;
+  /**
+   * Optional annotations for the tool.
+   */
   annotations?: WebMCPAnnotation;
+  /**
+   * Frame the tool was defined for.
+   */
   frame: Frame;
+  /**
+   * Source location that defined the tool (if available).
+   */
   location?: ConsoleMessageLocation;
   /**
    * @internal
@@ -71,6 +119,7 @@ export class WebMCPTool {
    * @internal
    */
   constructor(tool: ProtocolWebMCPTool, frame: Frame) {
+    super();
     this.name = tool.name;
     this.description = tool.description;
     this.inputSchema = tool.inputSchema;
@@ -87,6 +136,9 @@ export class WebMCPTool {
     this.rawStackTrace = tool.stackTrace;
   }
 
+  /**
+   * The corresponding ElementHandle when tool was registered via a form.
+   */
   get formElement(): Promise<ElementHandle<HTMLFormElement> | undefined> {
     return (async () => {
       if (this.#formElement && !this.#formElement.disposed) {
@@ -109,6 +161,9 @@ export class WebMCPTool {
  * @public
  */
 export interface WebMCPToolsAddedEvent {
+  /**
+   * Array of tools that were added.
+   */
   tools: WebMCPTool[];
 }
 
@@ -116,24 +171,95 @@ export interface WebMCPToolsAddedEvent {
  * @public
  */
 export interface WebMCPToolsRemovedEvent {
+  /**
+   * Array of tools that were removed.
+   */
   tools: WebMCPTool[];
 }
 
 /**
- * The WebMCP class provides an API for the WebMCP API.
- *
  * @public
  */
+export class WebMCPToolCall {
+  /**
+   * Tool invocation identifier.
+   */
+  id: string;
+  /**
+   * Tool that was called.
+   */
+  tool: WebMCPTool;
+  /**
+   * The input parameters used for the call.
+   */
+  input: object;
 
+  /**
+   * @internal
+   */
+  constructor(invocationId: string, tool: WebMCPTool, input: string) {
+    this.id = invocationId;
+    this.tool = tool;
+    try {
+      this.input = JSON.parse(input);
+    } catch (error) {
+      this.input = {};
+      debugError(error);
+    }
+  }
+}
+
+/**
+ * @public
+ */
+export interface WebMCPToolCallResult {
+  /**
+   * Tool invocation identifier.
+   */
+  id: string;
+  /**
+   * The corresponding tool call if available.
+   */
+  call?: WebMCPToolCall;
+  /**
+   * Status of the invocation.
+   */
+  status: WebMCPInvocationStatus;
+  /**
+   * Output or error delivered as delivered to the agent. Missing if `status` is anything
+   * other than Success.
+   */
+  output?: any;
+  /**
+   * Error text.
+   */
+  errorText?: string;
+  /**
+   * The exception object, if the javascript tool threw an error.
+   */
+  exception?: Protocol.Runtime.RemoteObject;
+}
+
+/**
+ * The experimental WebMCP class provides an API for the WebMCP API.
+ *
+ * @experimental
+ * @public
+ */
 export class WebMCP extends EventEmitter<{
   /** Emitted when tools are added. */
   toolsadded: WebMCPToolsAddedEvent;
   /** Emitted when tools are removed. */
   toolsremoved: WebMCPToolsRemovedEvent;
+  /** Emitted when a tool invocation starts. */
+  toolinvoked: WebMCPToolCall;
+  /** Emitted when a tool invocation completes or fails. */
+  toolresponded: WebMCPToolCallResult;
 }> {
   #client: CDPSession;
   #frameManager: FrameManager;
-  #tools: Map<string, Map<string, WebMCPTool>>;
+  #tools = new Map<string, Map<string, WebMCPTool>>();
+  #pendingCalls = new Map<string, WebMCPToolCall>();
 
   #onToolsAdded = (event: ProtocolWebMCPToolsAddedEvent) => {
     const tools: WebMCPTool[] = [];
@@ -155,6 +281,7 @@ export class WebMCP extends EventEmitter<{
 
     this.emit('toolsadded', {tools});
   };
+
   #onToolsRemoved = (event: ProtocolWebMCPToolsRemovedEvent) => {
     const tools: WebMCPTool[] = [];
     event.tools.forEach(tool => {
@@ -167,7 +294,35 @@ export class WebMCP extends EventEmitter<{
     this.emit('toolsremoved', {tools});
   };
 
+  #onToolInvoked = (event: ProtocolWebMCPToolInvokedEvent) => {
+    const tool = this.#tools.get(event.frameId)?.get(event.toolName);
+    if (!tool) {
+      return;
+    }
+    const call = new WebMCPToolCall(event.invocationId, tool, event.input);
+    this.#pendingCalls.set(call.id, call);
+    tool.emit('toolinvoked', call);
+    this.emit('toolinvoked', call);
+  };
+
+  #onToolResponded = (event: ProtocolWebMCPToolRespondedEvent) => {
+    const call = this.#pendingCalls.get(event.invocationId);
+    if (call) {
+      this.#pendingCalls.delete(event.invocationId);
+    }
+    const response: WebMCPToolCallResult = {
+      id: event.invocationId,
+      call: call,
+      status: event.status,
+      output: event.output,
+      errorText: event.errorText,
+      exception: event.exception,
+    };
+    this.emit('toolresponded', response);
+  };
+
   #onFrameNavigated = (frame: Frame) => {
+    this.#pendingCalls.clear();
     const frameTools = this.#tools.get(frame._id);
     if (!frameTools) {
       return;
@@ -191,13 +346,19 @@ export class WebMCP extends EventEmitter<{
       this.#onFrameNavigated,
     );
     this.#bindListeners();
-    this.#tools = new Map();
   }
 
+  /**
+   * @internal
+   */
   async initialize(): Promise<void> {
-    return await this.#client.send('WebMCP.enable' as any).catch(debugError);
+    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    return await this.#client.send('WebMCP.enable').catch(debugError);
   }
 
+  /**
+   * Gets all WebMCP tools defined by the page.
+   */
   tools(): WebMCPTool[] {
     return Array.from(this.#tools.values()).flatMap(toolMap => {
       return Array.from(toolMap.values());
@@ -205,18 +366,28 @@ export class WebMCP extends EventEmitter<{
   }
 
   #bindListeners(): void {
-    // TODO: Remove type-casting. We use type casting because WebMCP is not yet in the
-    // Protocol types.
-    this.#client.on('WebMCP.toolsAdded' as any, this.#onToolsAdded as any);
-    this.#client.on('WebMCP.toolsRemoved' as any, this.#onToolsRemoved as any);
+    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    this.#client.on('WebMCP.toolsAdded', this.#onToolsAdded);
+    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    this.#client.on('WebMCP.toolsRemoved', this.#onToolsRemoved);
+    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    this.#client.on('WebMCP.toolInvoked', this.#onToolInvoked);
+    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    this.#client.on('WebMCP.toolResponded', this.#onToolResponded);
   }
 
   /**
    * @internal
    */
   updateClient(client: CDPSession): void {
-    this.#client.off('WebMCP.toolsAdded' as any, this.#onToolsAdded as any);
-    this.#client.off('WebMCP.toolsRemoved' as any, this.#onToolsRemoved as any);
+    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    this.#client.off('WebMCP.toolsAdded', this.#onToolsAdded);
+    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    this.#client.off('WebMCP.toolsRemoved', this.#onToolsRemoved);
+    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    this.#client.off('WebMCP.toolInvoked', this.#onToolInvoked);
+    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    this.#client.off('WebMCP.toolResponded', this.#onToolResponded);
     this.#client = client;
     this.#bindListeners();
   }

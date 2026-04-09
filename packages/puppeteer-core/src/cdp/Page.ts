@@ -13,6 +13,7 @@ import type {BrowserContext} from '../api/BrowserContext.js';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
+import type {Extension} from '../api/Extension.js';
 import type {Frame, WaitForOptions} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {JSHandle} from '../api/JSHandle.js';
@@ -1051,6 +1052,10 @@ export class CdpPage extends Page {
 
   override async setBypassCSP(enabled: boolean): Promise<void> {
     await this.#primaryTargetClient.send('Page.setBypassCSP', {enabled});
+  }
+
+  override async triggerExtensionAction(extension: Extension): Promise<void> {
+    return await extension.triggerAction(this);
   }
 
   override async emulateMediaType(type?: string): Promise<void> {

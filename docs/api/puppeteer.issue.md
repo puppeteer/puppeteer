@@ -1,15 +1,15 @@
 ---
-sidebar_label: WebMCPAnnotation
+sidebar_label: Issue
 ---
 
-# WebMCPAnnotation interface
+# Issue interface
 
-Tool annotations
+The Issue interface represents a DevTools issue.
 
 ### Signature
 
 ```typescript
-export interface WebMCPAnnotation
+export interface Issue
 ```
 
 ## Properties
@@ -37,38 +37,34 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="autosubmit">autosubmit</span>
+<span id="code">code</span>
 
 </td><td>
 
-`optional`
+</td><td>
+
+string
 
 </td><td>
 
-boolean
-
-</td><td>
-
-If the declarative tool was declared with the autosubmit attribute.
+The code of the issue.
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<span id="readonly">readOnly</span>
+<span id="details">details</span>
 
 </td><td>
 
-`optional`
+</td><td>
+
+Protocol.Audits.InspectorIssueDetails
 
 </td><td>
 
-boolean
-
-</td><td>
-
-A hint indicating that the tool does not modify any state.
+The details of the issue.
 
 </td><td>
 
