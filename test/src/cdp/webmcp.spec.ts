@@ -362,7 +362,7 @@ describe('Page.webmcp', function () {
           },
           required: ['text'],
         },
-        execute: (params: any) => {
+        execute: (params: {text: string}) => {
           return `hello ${params.text}`;
         },
       });
@@ -506,7 +506,7 @@ describe('Page.webmcp', function () {
           },
           required: ['text'],
         },
-        execute: (params: any) => {
+        execute: (params: {text: string}) => {
           return `hello ${params.text}`;
         },
       });
