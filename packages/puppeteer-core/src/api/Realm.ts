@@ -36,15 +36,17 @@ export abstract class Realm implements Disposable {
   /**
    * The identifier for this realm.
    *
-   * @public
+   * @internal
    */
   abstract get worldId(): string | symbol;
 
   abstract set worldId(worldId: string | symbol);
 
   /**
-   * This method returns the extension from the ExecutionContext paired with the realm
-   * at the moment of the execution.
+   * This method returns the extension that created this realm
+   * if the realm was created from an Extension.
+   * An example of this is an extension content script running
+   * on a page.
    *
    * @public
    */

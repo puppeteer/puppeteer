@@ -10,7 +10,7 @@
  *
  * @public
  */
-export const MAIN_WORLD = Symbol('mainWorld');
+export const MAIN_WORLD = 'default';
 /**
  * A unique key for {@link IsolatedWorldChart} to denote the puppeteer world.
  * This world contains all puppeteer-internal bindings/code.

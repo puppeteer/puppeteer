@@ -182,6 +182,27 @@
     "comment": "Chrome-specific test"
   },
   {
+    "testIdPattern": "[realms.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "No extensions in WebDriver BiDi so far"
+  },
+  {
+    "testIdPattern": "[realms.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "Chrome-specific test"
+  },
+  {
+    "testIdPattern": "[realms.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["SKIP"],
+    "comment": "no extension api for chrome-headless-shell"
+  },
+  {
     "testIdPattern": "[screencast.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
@@ -1983,36 +2004,6 @@
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["SKIP"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[realms.spec] realms extension realm should return extension that created it",
-    "platforms": ["darwin"],
-    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[realms.spec] realms extension should evaluate in content script realms",
-    "platforms": ["darwin"],
-    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[realms.spec] realms extension should include content script realms",
-    "platforms": ["darwin"],
-    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[realms.spec] realms should have a worldId",
-    "platforms": ["linux"],
-    "parameters": ["firefox", "headless", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[realms.spec] realms should have a worldId",
-    "platforms": ["linux"],
-    "parameters": ["chrome", "headless", "webDriverBiDi"],
-    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should be abortable",

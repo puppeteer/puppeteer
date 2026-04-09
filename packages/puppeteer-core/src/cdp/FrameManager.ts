@@ -550,8 +550,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       return null;
     }
 
-    // 19 is "chrome-extension://".length
-    const pathPart = origin.substring(19);
+    const pathPart = origin.substring('chrome-extension://'.length);
     const slashIndex = pathPart.indexOf('/');
 
     // if there's no / it means that pathPart is now the extensionId, otherwise
@@ -584,18 +583,14 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
         const extId = this.#extractExtensionId(origin);
 
         if (!extId) {
-          throw new Error('error while parsing extension id');
+          debugError('error while parsing extension id');
+          return;
         }
 
         if (frame.worlds[extId]) {
           world = frame.worlds[extId];
         } else {
-          world = new IsolatedWorld(
-            frame,
-            this.timeoutSettings,
-            extId,
-            this.#page.browser(),
-          );
+          world = new IsolatedWorld(frame, this.timeoutSettings, extId);
           frame.worlds[extId] = world;
           frame._registerWorldListeners(world);
         }

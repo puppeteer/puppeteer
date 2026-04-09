@@ -4,7 +4,7 @@ sidebar_label: Realm.extension
 
 # Realm.extension() method
 
-This method returns the extension from the ExecutionContext paired with the realm at the moment of the execution.
+This method returns the extension that created this realm if the realm was created from an Extension. An example of this is an extension content script running on a page.
 
 ### Signature
 

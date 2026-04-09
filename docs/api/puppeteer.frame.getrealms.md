@@ -10,10 +10,10 @@ This method retrieves the list of realms inside of a Frame returned as a pair-li
 
 ```typescript
 class Frame {
-  abstract getRealms(): Array<[string | symbol, Realm]>;
+  abstract getRealms(): Array<[string, Realm]>;
 }
 ```
 
 **Returns:**
 
-Array&lt;\[string \| symbol, [Realm](./puppeteer.realm.md)\]&gt;
+Array&lt;\[string, [Realm](./puppeteer.realm.md)\]&gt;

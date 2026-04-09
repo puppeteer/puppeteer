@@ -40,6 +40,7 @@ import {
   fromEmitterEvent,
   timeout,
 } from '../common/util.js';
+import {MAIN_WORLD} from '../index-browser.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {BidiCdpSession} from './CDPSession.js';
@@ -75,7 +76,7 @@ export class BidiFrame extends Frame {
   readonly #parent: BidiPage | BidiFrame;
   readonly browsingContext: BrowsingContext;
   readonly #frames = new WeakMap<BrowsingContext, BidiFrame>();
-  readonly realms: {default: BidiFrameRealm; internal: BidiFrameRealm};
+  readonly realms: {[MAIN_WORLD]: BidiFrameRealm; internal: BidiFrameRealm};
 
   override readonly _id: string;
   override readonly client: BidiCdpSession;
@@ -92,7 +93,10 @@ export class BidiFrame extends Frame {
     this._id = browsingContext.id;
     this.client = new BidiCdpSession(this);
     this.realms = {
-      default: BidiFrameRealm.from(this.browsingContext.defaultRealm, this),
+      [MAIN_WORLD]: BidiFrameRealm.from(
+        this.browsingContext.defaultRealm,
+        this,
+      ),
       internal: BidiFrameRealm.from(
         this.browsingContext.createWindowRealm(
           `__puppeteer_internal_${Math.ceil(Math.random() * 10000)}`,
@@ -229,7 +233,7 @@ export class BidiFrame extends Frame {
   }
 
   override mainRealm(): BidiFrameRealm {
-    return this.realms.default;
+    return this.realms[MAIN_WORLD];
   }
 
   override isolatedRealm(): BidiFrameRealm {
@@ -609,7 +613,7 @@ export class BidiFrame extends Frame {
     );
   }
 
-  override getRealms(): Array<[string | symbol, Realm]> {
-    return [['default', this.mainRealm()]];
+  override getRealms(): Array<[string, Realm]> {
+    return [[MAIN_WORLD, this.mainRealm()]];
   }
 }

@@ -74,13 +74,11 @@ export class CdpFrame extends Frame {
         this,
         this._frameManager.timeoutSettings,
         MAIN_WORLD,
-        this._frameManager.page().browser(),
       ),
       [PUPPETEER_WORLD]: new IsolatedWorld(
         this,
         this._frameManager.timeoutSettings,
         PUPPETEER_WORLD,
-        this._frameManager.page().browser(),
       ),
     };
 
@@ -440,7 +438,7 @@ export class CdpFrame extends Frame {
   /**
    * @public
    */
-  override getRealms(): Array<[string | symbol, Realm]> {
+  override getRealms(): Array<[string, Realm]> {
     return [
       [MAIN_WORLD, this.worlds[MAIN_WORLD]],
       ...Object.entries(this.worlds),

@@ -36,36 +36,7 @@ describe('realms', function () {
     const worldIds = realms.map(([id]) => {
       return id;
     });
-    try {
-      expect(worldIds).toContain(MAIN_WORLD);
-      // eslint-disable-next-line
-    } catch (e) {
-      expect(worldIds).toContain('default'); // BiDi
-    }
-  });
-
-  it('should have a worldId', async () => {
-    const {browser} = state;
-
-    const page = await browser.newPage();
-    const realms = page.realms();
-
-    expect(realms.length).toBeGreaterThanOrEqual(1);
-
-    try {
-      const mainRealm = realms.find(([id]) => {
-        return id === MAIN_WORLD;
-      })?.[1];
-
-      expect(mainRealm?.worldId).toEqual(MAIN_WORLD);
-      // eslint-disable-next-line
-    } catch (e) {
-      const mainRealm = realms.find(([id]) => {
-        return id === 'default';
-      })?.[1];
-
-      expect(mainRealm?.worldId).toEqual('default'); // BiDi
-    }
+    expect(worldIds).toContain(MAIN_WORLD);
   });
 
   describe('extension', function () {

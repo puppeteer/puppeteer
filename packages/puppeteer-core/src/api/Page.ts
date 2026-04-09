@@ -2753,14 +2753,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
   }
 
   /**
-   * Triggers an extension action for the given extension.
-   *
-   * @param extension - The extension to trigger the action for.
-   * @public
-   */
-  abstract triggerExtensionAction(extension: Extension): Promise<void>;
-
-  /**
    * Emulates focus state of the page.
    *
    * @param enabled - Whether to emulate focus.
@@ -3260,9 +3252,17 @@ export abstract class Page extends EventEmitter<PageEvents> {
   abstract get bluetooth(): BluetoothEmulation;
 
   /**
+   * Triggers an extension action for the given extension.
+   *
+   * @param extension - The extension to trigger the action for.
    * @public
    */
-  abstract realms(): Array<[string | symbol, Realm]>;
+  abstract triggerExtensionAction(extension: Extension): Promise<void>;
+
+  /**
+   * @public
+   */
+  abstract realms(): Array<[string, Realm]>;
 }
 
 /**

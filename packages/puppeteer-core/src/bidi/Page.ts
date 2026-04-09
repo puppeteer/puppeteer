@@ -1016,7 +1016,7 @@ export class BidiPage extends Page {
     return this.mainFrame().browsingContext.bluetooth;
   }
 
-  override realms(): Array<[string | symbol, Realm]> {
+  override realms(): Array<[string, Realm]> {
     return this.mainFrame().getRealms();
   }
 }

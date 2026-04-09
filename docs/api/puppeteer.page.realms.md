@@ -8,10 +8,10 @@ sidebar_label: Page.realms
 
 ```typescript
 class Page {
-  abstract realms(): Array<[string | symbol, Realm]>;
+  abstract realms(): Array<[string, Realm]>;
 }
 ```
 
 **Returns:**
 
-Array&lt;\[string \| symbol, [Realm](./puppeteer.realm.md)\]&gt;
+Array&lt;\[string, [Realm](./puppeteer.realm.md)\]&gt;

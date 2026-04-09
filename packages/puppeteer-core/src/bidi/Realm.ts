@@ -22,6 +22,7 @@ import {
   PuppeteerURL,
   SOURCE_URL_REGEX,
 } from '../common/util.js';
+import {UnsupportedOperation} from '../index-browser.js';
 import type {PuppeteerInjectedUtil} from '../injected/injected.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {stringifyFunction} from '../util/Function.js';
@@ -291,17 +292,15 @@ export abstract class BidiRealm extends Realm {
 
   // TODO: BiDi implementation missing
   override set worldId(_worldId: string | symbol) {
-    throw new Error('worldId are defined only for CDP implementations.');
+    throw new UnsupportedOperation();
   }
 
   override get worldId(): string | symbol {
-    throw new Error('worldId are defined only for CDP implementations.');
+    throw new UnsupportedOperation();
   }
 
   extension(): Promise<Extension | null> {
-    throw new Error(
-      'Method not yet implemented for BiDi. Use CDP to interact with Extensions.',
-    );
+    throw new UnsupportedOperation();
   }
 }
 

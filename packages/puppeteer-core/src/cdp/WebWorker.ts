@@ -19,6 +19,7 @@ import {debugError} from '../common/util.js';
 
 import {ExecutionContext} from './ExecutionContext.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
+import {MAIN_WORLD} from './IsolatedWorlds.js';
 import type {NetworkManager} from './NetworkManager.js';
 import {createConsoleMessage} from './utils.js';
 
@@ -57,12 +58,7 @@ export class CdpWebWorker extends WebWorker {
     this.#targetType = targetType;
     // TODO: Understand how to define world name for WebWorkers
     // (for now targetId+'_worker_world')
-    this.#world = new IsolatedWorld(
-      this,
-      new TimeoutSettings(),
-      this.#id + '_worker_world',
-      undefined,
-    );
+    this.#world = new IsolatedWorld(this, new TimeoutSettings(), MAIN_WORLD);
     this.#emitter = new EventEmitter<WebWorkerEvents>();
 
     this.#client.once('Runtime.executionContextCreated', async event => {

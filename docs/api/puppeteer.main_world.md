@@ -9,5 +9,5 @@ A unique key for to denote the default world. Execution contexts are automatical
 ### Signature
 
 ```typescript
-MAIN_WORLD: unique symbol
+MAIN_WORLD = 'default';
 ```

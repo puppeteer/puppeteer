@@ -7,7 +7,6 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {firstValueFrom, map, raceWith} from '../../third_party/rxjs/rxjs.js';
-import type {Browser} from '../api/Browser.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Extension} from '../api/Extension.js';
@@ -29,7 +28,7 @@ import type {CdpFrame} from './Frame.js';
 import type {PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
 import {CdpJSHandle} from './JSHandle.js';
-import type {CdpWebWorker} from './WebWorker.js';
+import {CdpWebWorker} from './WebWorker.js';
 
 /**
  * @internal
@@ -70,7 +69,6 @@ export class IsolatedWorld extends Realm {
   #context?: ExecutionContext;
   #emitter: IsolatedWorldEmitter = new EventEmitter();
   #worldId: string | symbol;
-  #browser?: Browser;
 
   readonly #frameOrWorker: CdpFrame | CdpWebWorker;
 
@@ -78,12 +76,10 @@ export class IsolatedWorld extends Realm {
     frameOrWorker: CdpFrame | CdpWebWorker,
     timeoutSettings: TimeoutSettings,
     worldId: string | symbol,
-    browser?: Browser,
   ) {
     super(timeoutSettings);
     this.#frameOrWorker = frameOrWorker;
     this.#worldId = worldId;
-    this.#browser = browser;
   }
 
   get environment(): CdpFrame | CdpWebWorker {
@@ -282,7 +278,7 @@ export class IsolatedWorld extends Realm {
   }
 
   async extension(): Promise<Extension | null> {
-    if (!this.#browser) {
+    if (this.#frameOrWorker instanceof CdpWebWorker) {
       throw new Error('unable to get extension from Realm');
     }
 
@@ -291,7 +287,10 @@ export class IsolatedWorld extends Realm {
     }
 
     if (typeof this.worldId === 'string') {
-      const extensions = await this.#browser.extensions();
+      const extensions = await this.#frameOrWorker._frameManager
+        .page()
+        .browser()
+        .extensions();
       return extensions.get(this.worldId) || null;
     }
 

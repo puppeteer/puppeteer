@@ -16,42 +16,6 @@ export declare abstract class Realm implements Disposable
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Realm` class.
 
-## Properties
-
-<table><thead><tr><th>
-
-Property
-
-</th><th>
-
-Modifiers
-
-</th><th>
-
-Type
-
-</th><th>
-
-Description
-
-</th></tr></thead>
-<tbody><tr><td>
-
-<span id="worldid">worldId</span>
-
-</td><td>
-
-</td><td>
-
-string \| symbol
-
-</td><td>
-
-The identifier for this realm.
-
-</td></tr>
-</tbody></table>
-
 ## Methods
 
 <table><thead><tr><th>
@@ -93,7 +57,7 @@ Description
 
 </td><td>
 
-This method returns the extension from the ExecutionContext paired with the realm at the moment of the execution.
+This method returns the extension that created this realm if the realm was created from an Extension. An example of this is an extension content script running on a page.
 
 </td></tr>
 <tr><td>
