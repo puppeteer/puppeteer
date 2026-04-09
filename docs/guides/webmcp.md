@@ -58,6 +58,24 @@ page.webmcp.on('toolsremoved', event => {
 });
 ```
 
+## Executing tools
+
+You can execute a discovered tool using the `execute` method on the `WebMCPTool` object. This method returns a promise that resolves with the tool's result.
+
+```ts
+const tools = page.webmcp.tools();
+const tool = tools.find(t => t.name === 'calculate_sum');
+
+if (tool) {
+  const result = await tool.execute({a: 5, b: 10});
+  if (result.status === 'Success') {
+    console.log('Result:', result.output);
+  } else {
+    console.error('Error:', result.errorText);
+  }
+}
+```
+
 ## Handling tool invocations
 
 You can observe when a tool is invoked by the page or the browser and when it responds.
