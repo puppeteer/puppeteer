@@ -13,9 +13,9 @@ import importPlugin from 'eslint-plugin-import';
 import mocha from 'eslint-plugin-mocha';
 import eslintPrettierPluginRecommended from 'eslint-plugin-prettier/recommended';
 import tsdoc from 'eslint-plugin-tsdoc';
+import unusedImports from 'eslint-plugin-unused-imports';
 import globals from 'globals';
 import typescriptEslint from 'typescript-eslint';
-import unusedImports from 'eslint-plugin-unused-imports';
 
 function getThirdPartyPackages() {
   return fs
