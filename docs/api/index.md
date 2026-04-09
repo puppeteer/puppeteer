@@ -578,6 +578,8 @@ Puppeteer will throw this error if a method is not supported by the currently us
 
 **_(Experimental)_** The experimental WebMCP class provides an API for the WebMCP API.
 
+See the [WebMCP guide](https://pptr.dev/guides/webmcp) for more details.
+
 **Remarks:**
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `WebMCP` class.

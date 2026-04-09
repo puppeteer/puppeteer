@@ -243,6 +243,20 @@ export interface WebMCPToolCallResult {
 /**
  * The experimental WebMCP class provides an API for the WebMCP API.
  *
+ * See the
+ * {@link https://pptr.dev/guides/webmcp|WebMCP guide}
+ * for more details.
+ *
+ * @example
+ *
+ * ```ts
+ * await page.goto('https://www.example.com');
+ * const tools = page.webmcp.tools();
+ * for (const tool of tools) {
+ *   console.log(`Tool found: ${tool.name} - ${tool.description}`);
+ * }
+ * ```
+ *
  * @experimental
  * @public
  */

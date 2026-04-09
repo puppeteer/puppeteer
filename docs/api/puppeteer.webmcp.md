@@ -6,6 +6,8 @@ sidebar_label: WebMCP
 
 The experimental WebMCP class provides an API for the WebMCP API.
 
+See the [WebMCP guide](https://pptr.dev/guides/webmcp) for more details.
+
 ### Signature
 
 ```typescript
@@ -22,6 +24,16 @@ export declare class WebMCP extends EventEmitter<{
 ## Remarks
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `WebMCP` class.
+
+## Example
+
+```ts
+await page.goto('https://www.example.com');
+const tools = page.webmcp.tools();
+for (const tool of tools) {
+  console.log(`Tool found: ${tool.name} - ${tool.description}`);
+}
+```
 
 ## Methods
 
