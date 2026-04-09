@@ -8,9 +8,9 @@
  * A unique key for {@link IsolatedWorldChart} to denote the default world.
  * Execution contexts are automatically created in the default world.
  *
- * @public
+ * @internal
  */
-export const MAIN_WORLD = 'default';
+export const MAIN_WORLD = Symbol('mainWorld');
 /**
  * A unique key for {@link IsolatedWorldChart} to denote the puppeteer world.
  * This world contains all puppeteer-internal bindings/code.

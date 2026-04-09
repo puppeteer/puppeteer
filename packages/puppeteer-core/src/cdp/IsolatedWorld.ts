@@ -20,6 +20,7 @@ import {
   timeout,
   withSourcePuppeteerURLIfNone,
 } from '../common/util.js';
+import {UnsupportedOperation} from '../index-browser.js';
 import {disposeSymbol} from '../util/disposable.js';
 
 import {CdpElementHandle} from './ElementHandle.js';
@@ -269,11 +270,14 @@ export class IsolatedWorld extends Realm {
     this.#emitter.removeAllListeners();
   }
 
-  override set worldId(worldId: string | symbol) {
+  override setRealmId(worldId: string | symbol): void {
     this.#worldId = worldId;
   }
 
-  override get worldId(): string | symbol {
+  override get realmId(): string {
+    if (typeof this.#worldId === 'symbol') {
+      throw new UnsupportedOperation();
+    }
     return this.#worldId;
   }
 
@@ -286,12 +290,12 @@ export class IsolatedWorld extends Realm {
       return await Promise.resolve(null);
     }
 
-    if (typeof this.worldId === 'string') {
+    if (typeof this.realmId === 'string') {
       const extensions = await this.#frameOrWorker._frameManager
         .page()
         .browser()
         .extensions();
-      return extensions.get(this.worldId) || null;
+      return extensions.get(this.realmId) || null;
     }
 
     return await Promise.resolve(null);

@@ -90,13 +90,13 @@ export class CdpFrame extends Frame {
       this._onLoadingStopped();
     });
 
-    this._registerWorldListeners(this.worlds[MAIN_WORLD]);
+    this.registerWorldListeners(this.worlds[MAIN_WORLD]);
   }
 
   /**
    * @internal
    */
-  _registerWorldListeners(world: IsolatedWorld): void {
+  registerWorldListeners(world: IsolatedWorld): void {
     world.emitter.on('consoleapicalled', event => {
       this._frameManager.emit(FrameManagerEvent.ConsoleApiCalled, [
         world,
@@ -438,11 +438,8 @@ export class CdpFrame extends Frame {
   /**
    * @public
    */
-  override getRealms(): Array<[string, Realm]> {
-    return [
-      [MAIN_WORLD, this.worlds[MAIN_WORLD]],
-      ...Object.entries(this.worlds),
-    ];
+  override extensionRealms(): Realm[] {
+    return Object.values(this.worlds);
   }
 }
 

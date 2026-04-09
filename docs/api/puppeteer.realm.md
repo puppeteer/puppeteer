@@ -16,6 +16,44 @@ export declare abstract class Realm implements Disposable
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Realm` class.
 
+## Properties
+
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+<span id="realmid">realmId</span>
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+string
+
+</td><td>
+
+The identifier for this realm.
+
+</td></tr>
+</tbody></table>
+
 ## Methods
 
 <table><thead><tr><th>

@@ -1677,24 +1677,6 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[realms.spec] realms extension *",
-    "platforms": ["linux"],
-    "parameters": ["firefox", "headless", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[realms.spec] realms extension *",
-    "platforms": ["linux"],
-    "parameters": ["firefox", "headful", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[realms.spec] realms extension *",
-    "platforms": ["linux"],
-    "parameters": ["chrome", "headless", "webDriverBiDi"],
-    "expectations": ["TIMEOUT"]
-  },
-  {
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should work with file URLs",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],

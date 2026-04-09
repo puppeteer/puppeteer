@@ -1323,8 +1323,8 @@ export class CdpPage extends Page {
     return this.#cdpBluetoothEmulation;
   }
 
-  override realms(): Array<[string, Realm]> {
-    return this.mainFrame().getRealms();
+  override extensionRealms(): Realm[] {
+    return this.mainFrame().extensionRealms();
   }
 }
 

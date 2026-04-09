@@ -35,7 +35,7 @@ import type {CdpPage} from './Page.js';
 import type {CdpTarget} from './Target.js';
 
 const TIME_FOR_WAITING_FOR_SWAP = 100; // ms.
-
+const CHROME_EXTENSION_PREFIX = 'chrome-extension://';
 /**
  * A frame manager manages the frames for a given {@link Page | page}.
  *
@@ -542,7 +542,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
   }
 
   #isExtensionOrigin(origin: string) {
-    return origin.startsWith('chrome-extension://');
+    return origin.startsWith(CHROME_EXTENSION_PREFIX);
   }
 
   #extractExtensionId(origin: string): string | null {
@@ -550,7 +550,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       return null;
     }
 
-    const pathPart = origin.substring('chrome-extension://'.length);
+    const pathPart = origin.substring(CHROME_EXTENSION_PREFIX.length);
     const slashIndex = pathPart.indexOf('/');
 
     // if there's no / it means that pathPart is now the extensionId, otherwise
@@ -592,10 +592,10 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
         } else {
           world = new IsolatedWorld(frame, this.timeoutSettings, extId);
           frame.worlds[extId] = world;
-          frame._registerWorldListeners(world);
+          frame.registerWorldListeners(world);
         }
 
-        world.worldId = extId;
+        world.setRealmId(extId);
       }
     }
 

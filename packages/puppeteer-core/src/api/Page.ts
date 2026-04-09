@@ -3262,7 +3262,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * @public
    */
-  abstract realms(): Array<[string, Realm]>;
+  abstract extensionRealms(): Realm[];
 }
 
 /**

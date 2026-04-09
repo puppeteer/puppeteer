@@ -36,11 +36,14 @@ export abstract class Realm implements Disposable {
   /**
    * The identifier for this realm.
    *
+   * @public
+   */
+  abstract get realmId(): string;
+
+  /**
    * @internal
    */
-  abstract get worldId(): string | symbol;
-
-  abstract set worldId(worldId: string | symbol);
+  abstract setRealmId(worldId: string | symbol): void;
 
   /**
    * This method returns the extension that created this realm
@@ -48,7 +51,6 @@ export abstract class Realm implements Disposable {
    * An example of this is an extension content script running
    * on a page.
    *
-   * @public
    */
   abstract extension(): Promise<Extension | null>;
 
@@ -58,7 +60,6 @@ export abstract class Realm implements Disposable {
   /** @internal */
   abstract transferHandle<T extends JSHandle<Node>>(handle: T): Promise<T>;
 
-  /** @public */
   abstract evaluateHandle<
     Params extends unknown[],
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
@@ -67,7 +68,6 @@ export abstract class Realm implements Disposable {
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
 
-  /** @public */
   abstract evaluate<
     Params extends unknown[],
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
@@ -76,7 +76,6 @@ export abstract class Realm implements Disposable {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
 
-  /** @public */
   async waitForFunction<
     Params extends unknown[],
     Func extends EvaluateFunc<InnerLazyParams<Params>> = EvaluateFunc<
@@ -125,7 +124,6 @@ export abstract class Realm implements Disposable {
     return this.#disposed;
   }
 
-  /** @internal */
   #disposed = false;
   /** @internal */
   dispose(): void {

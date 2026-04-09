@@ -1207,5 +1207,5 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    *
    * @public
    */
-  abstract getRealms(): Array<[string, Realm]>;
+  abstract extensionRealms(): Realm[];
 }

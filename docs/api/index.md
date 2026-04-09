@@ -1560,15 +1560,6 @@ A list of devices to be used with [Page.emulate()](./puppeteer.page.emulate.md).
 </td></tr>
 <tr><td>
 
-<span id="main_world">[MAIN_WORLD](./puppeteer.main_world.md)</span>
-
-</td><td>
-
-A unique key for to denote the default world. Execution contexts are automatically created in the default world.
-
-</td></tr>
-<tr><td>
-
 <span id="mousebutton">[MouseButton](./puppeteer.mousebutton.md)</span>
 
 </td><td>

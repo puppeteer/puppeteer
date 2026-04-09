@@ -291,11 +291,11 @@ export abstract class BidiRealm extends Realm {
   }
 
   // TODO: BiDi implementation missing
-  override set worldId(_worldId: string | symbol) {
+  override setRealmId(_worldId: string | symbol): void {
     throw new UnsupportedOperation();
   }
 
-  override get worldId(): string | symbol {
+  override get realmId(): string {
     throw new UnsupportedOperation();
   }
 

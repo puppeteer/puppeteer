@@ -276,6 +276,17 @@ See [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md) for details.
 </td></tr>
 <tr><td>
 
+<span id="extensionrealms">[extensionRealms()](./puppeteer.frame.extensionrealms.md)</span>
+
+</td><td>
+
+</td><td>
+
+This method retrieves the list of realms inside of a Frame returned as a pair-like \[key, Object\] list
+
+</td></tr>
+<tr><td>
+
 <span id="focus">[focus(selector)](./puppeteer.frame.focus.md)</span>
 
 </td><td>
@@ -292,17 +303,6 @@ Focuses the first element that matches the `selector`.
 </td><td>
 
 </td><td>
-
-</td></tr>
-<tr><td>
-
-<span id="getrealms">[getRealms()](./puppeteer.frame.getrealms.md)</span>
-
-</td><td>
-
-</td><td>
-
-This method retrieves the list of realms inside of a Frame returned as a pair-like \[key, Object\] list
 
 </td></tr>
 <tr><td>

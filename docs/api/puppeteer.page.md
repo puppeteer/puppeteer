@@ -710,6 +710,15 @@ Functions installed via `page.exposeFunction` survive navigations.
 </td></tr>
 <tr><td>
 
+<span id="extensionrealms">[extensionRealms()](./puppeteer.page.extensionrealms.md)</span>
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="focus">[focus(selector)](./puppeteer.page.focus.md)</span>
 
 </td><td>
@@ -962,15 +971,6 @@ By default, `page.pdf()` generates a pdf with modified colors for printing. Use 
 </td><td>
 
 This method iterates the JavaScript heap and finds all objects with the given prototype.
-
-</td></tr>
-<tr><td>
-
-<span id="realms">[realms()](./puppeteer.page.realms.md)</span>
-
-</td><td>
-
-</td><td>
 
 </td></tr>
 <tr><td>

@@ -1,8 +1,8 @@
 ---
-sidebar_label: Frame.getRealms
+sidebar_label: Frame.extensionRealms
 ---
 
-# Frame.getRealms() method
+# Frame.extensionRealms() method
 
 This method retrieves the list of realms inside of a Frame returned as a pair-like \[key, Object\] list
 
@@ -10,10 +10,10 @@ This method retrieves the list of realms inside of a Frame returned as a pair-li
 
 ```typescript
 class Frame {
-  abstract getRealms(): Array<[string, Realm]>;
+  abstract extensionRealms(): Array<Realm>;
 }
 ```
 
 **Returns:**
 
-Array&lt;\[string, [Realm](./puppeteer.realm.md)\]&gt;
+Array&lt;[Realm](./puppeteer.realm.md)&gt;
