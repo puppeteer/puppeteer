@@ -1887,6 +1887,24 @@
     "comment": "Experimental support for WebMCP is not supported in BiDi"
   },
   {
+    "testIdPattern": "[webmcp.spec] Page.webmcp should fire toolsadded events",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[webmcp.spec] Page.webmcp should fire toolsremoved events",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[webmcp.spec] Page.webmcp should remove tools on frame navigation",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[worker.spec] Workers can be closed",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
