@@ -228,7 +228,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["FAIL"],
-    "comment": "Experimental support for WebMCP requires Chrome."
+    "comment": "Experimental support for WebMCP is not supported in Firefox"
   },
   {
     "testIdPattern": "[webmcp.spec] *",
@@ -907,11 +907,11 @@
     "comment": "tests chrome-specific flags"
   },
   {
-    "testIdPattern": "[webmcp.spec] Page.webmcp should fire toolresponded event *",
+    "testIdPattern": "[webmcp.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
-    "expectations": ["TIMEOUT"],
-    "comment": "Experimental support for monitoring WebMCP tool invocation requires Chrome 148+."
+    "expectations": ["FAIL", "TIMEOUT"],
+    "comment": "Experimental support for WebMCP requires Chrome 149+."
   },
   {
     "testIdPattern": "[worker.spec] Workers console should return remote objects",
@@ -1887,18 +1887,22 @@
     "comment": "Experimental support for WebMCP is not supported in BiDi"
   },
   {
-    "testIdPattern": "[webmcp.spec] Page.webmcp should fire toolinvoked events",
+    "testIdPattern": "[webmcp.spec] Page.webmcp should fire toolsadded events",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
-    "expectations": ["TIMEOUT"],
-    "comment": "Experimental support for monitoring WebMCP tool invocation requires Chrome 148+."
+    "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[webmcp.spec] Page.webmcp should invoke tool",
+    "testIdPattern": "[webmcp.spec] Page.webmcp should fire toolsremoved events",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL"],
-    "comment": "Experimental support for WebMCP tool invocation requires Chrome 149+."
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[webmcp.spec] Page.webmcp should remove tools on frame navigation",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[worker.spec] Workers can be closed",

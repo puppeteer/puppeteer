@@ -251,7 +251,7 @@ The constructor for this class is marked as internal. Third-party code should no
 
 </td><td>
 
-**_(Experimental)_** Experimental API for [WebMCP](https://github.com/webmachinelearning/webmcp). Requires Chrome 148+ with the `--enable-features=WebMCPTesting,DevToolsWebMCPSupport` flags enabled. Supports tool discovery only; invocation is currently unsupported.
+**_(Experimental)_** Experimental API for [WebMCP](https://github.com/webmachinelearning/webmcp). Requires Chrome 149+ with the `--enable-features=WebMCPTesting,DevToolsWebMCPSupport` flags enabled. Supports tool discovery only; invocation is currently unsupported.
 
 </td></tr>
 </tbody></table>
