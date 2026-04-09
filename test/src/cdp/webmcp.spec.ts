@@ -362,8 +362,8 @@ describe('Page.webmcp', function () {
           },
           required: ['text'],
         },
-        execute: () => {
-          return 'hello world';
+        execute: (params: any) => {
+          return `hello ${params.text}`;
         },
       });
     });
@@ -380,7 +380,7 @@ describe('Page.webmcp', function () {
     await page.evaluate(() => {
       (window as any).navigator.modelContextTesting.executeTool(
         'test-tool-1',
-        JSON.stringify({text: 'test'}),
+        JSON.stringify({text: 'world'}),
       );
     });
 
@@ -481,6 +481,55 @@ describe('Page.webmcp', function () {
     expect(response.status).toBe('Error');
     expect(response.output).toBeUndefined();
     expect(response.errorText).toBe('Tool not found: unknown-tool-name');
+    expect(response.exception).toBeUndefined();
+  });
+
+  it('should invoke tool', async () => {
+    const {page, httpsServer} = state;
+    await page.goto(httpsServer.EMPTY_PAGE);
+
+    expect(page.webmcp).toBeDefined();
+
+    const toolAddedPromise = new Promise<any>(resolve => {
+      page.webmcp.on('toolsadded', resolve);
+    });
+
+    // Register an imperative WebMCP tool.
+    await page.evaluate(() => {
+      (window as any).navigator.modelContext.registerTool({
+        name: 'test-tool-1',
+        description: 'A test tool 1',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            text: {type: 'string', description: 'Some text'},
+          },
+          required: ['text'],
+        },
+        execute: (params: any) => {
+          return `hello ${params.text}`;
+        },
+      });
+    });
+
+    await toolAddedPromise;
+
+    const [tool] = page.webmcp.tools();
+
+    const toolCalled = new Promise<WebMCPToolCall>(resolve => {
+      page.webmcp.once('toolinvoked', resolve);
+    });
+
+    // Invoke WebMCP tool.
+    const response = await tool!.execute({text: 'world'});
+
+    const call = await toolCalled;
+
+    expect(response.id).toBe(call.id);
+    expect(response.call).toBe(call);
+    expect(response.status).toBe('Success');
+    expect(response.output).toBe('hello world');
+    expect(response.errorText).toBeUndefined();
     expect(response.exception).toBeUndefined();
   });
 });

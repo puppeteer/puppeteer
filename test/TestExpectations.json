@@ -911,7 +911,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["TIMEOUT"],
-    "comment": "Experimental support for WebMCP tool invocation requires Chrome 148+."
+    "comment": "Experimental support for monitoring WebMCP tool invocation requires Chrome 148+."
   },
   {
     "testIdPattern": "[worker.spec] Workers console should return remote objects",
@@ -1891,7 +1891,14 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["TIMEOUT"],
-    "comment": "Experimental support for WebMCP tool invocation requires Chrome 148+."
+    "comment": "Experimental support for monitoring WebMCP tool invocation requires Chrome 148+."
+  },
+  {
+    "testIdPattern": "[webmcp.spec] Page.webmcp should invoke tool",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["FAIL"],
+    "comment": "Experimental support for WebMCP tool invocation requires Chrome 149+."
   },
   {
     "testIdPattern": "[worker.spec] Workers can be closed",

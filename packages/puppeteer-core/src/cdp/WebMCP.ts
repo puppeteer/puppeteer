@@ -83,6 +83,7 @@ export class WebMCPTool extends EventEmitter<{
   /** Emitted when invocation starts. */
   toolinvoked: WebMCPToolCall;
 }> {
+  #webmcp: WebMCP;
   #backendNodeId?: number;
   #formElement?: ElementHandle<HTMLFormElement>;
 
@@ -118,8 +119,9 @@ export class WebMCPTool extends EventEmitter<{
   /**
    * @internal
    */
-  constructor(tool: ProtocolWebMCPTool, frame: Frame) {
+  constructor(webmcp: WebMCP, tool: ProtocolWebMCPTool, frame: Frame) {
     super();
+    this.#webmcp = webmcp;
     this.name = tool.name;
     this.description = tool.description;
     this.inputSchema = tool.inputSchema;
@@ -154,6 +156,22 @@ export class WebMCPTool extends EventEmitter<{
       )) as ElementHandle<HTMLFormElement>;
       return this.#formElement;
     })();
+  }
+
+  /**
+   * Executes tool with input parameters, matching tool's `inputSchema`.
+   */
+  async execute(input: object = {}): Promise<WebMCPToolCallResult> {
+    const {invocationId} = await this.#webmcp.invokeTool(this, input);
+    return await new Promise<WebMCPToolCallResult>(resolve => {
+      const handler = (event: WebMCPToolCallResult) => {
+        if (event.id === invocationId) {
+          this.#webmcp.off('toolresponded', handler);
+          resolve(event);
+        }
+      };
+      this.#webmcp.on('toolresponded', handler);
+    });
   }
 }
 
@@ -274,7 +292,7 @@ export class WebMCP extends EventEmitter<{
         this.#tools.set(tool.frameId, frameTools);
       }
 
-      const addedTool = new WebMCPTool(tool, frame);
+      const addedTool = new WebMCPTool(this, tool, frame);
       frameTools.set(tool.name, addedTool);
       tools.push(addedTool);
     }
@@ -354,6 +372,21 @@ export class WebMCP extends EventEmitter<{
   async initialize(): Promise<void> {
     // @ts-expect-error WebMCP is not yet in the Protocol types.
     return await this.#client.send('WebMCP.enable').catch(debugError);
+  }
+
+  /**
+   * @internal
+   */
+  async invokeTool(
+    tool: WebMCPTool,
+    input: object,
+  ): Promise<{invocationId: string}> {
+    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    return await this.#client.send('WebMCP.invokeTool', {
+      frameId: tool.frame._id,
+      toolName: tool.name,
+      input,
+    });
   }
 
   /**

@@ -153,3 +153,31 @@ Tool name.
 
 </td></tr>
 </tbody></table>
+
+## Methods
+
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+<span id="execute">[execute(input)](./puppeteer.webmcptool.execute.md)</span>
+
+</td><td>
+
+</td><td>
+
+Executes tool with input parameters, matching tool's `inputSchema`.
+
+</td></tr>
+</tbody></table>
