@@ -31,7 +31,6 @@ describe('extensions', function () {
   const state = setupSeparateTestBrowserHooks(
     {
       enableExtensions: true,
-      args: [`--load-extension=${extensionPath}`],
       pipe: true,
     },
     {createContext: false},
@@ -39,14 +38,17 @@ describe('extensions', function () {
 
   it('service_worker target type should be available', async function () {
     const {browser} = state;
+    const extensionId = await browser.installExtension(extensionPath);
     const serviceWorkerTarget = await browser.waitForTarget(target => {
       return target.type() === 'service_worker';
     });
     expect(serviceWorkerTarget).toBeTruthy();
+    await browser.uninstallExtension(extensionId);
   });
 
   it('can evaluate in the service worker', async function () {
     const {browser} = state;
+    const extensionId = await browser.installExtension(extensionPath);
     const serviceWorkerTarget = await browser.waitForTarget(target => {
       return target.type() === 'service_worker';
     });
@@ -70,6 +72,7 @@ describe('extensions', function () {
       });
     }
     expect(result).toBe(42);
+    await browser.uninstallExtension(extensionId);
   });
 
   it('should list extensions and their properties', async () => {
@@ -84,6 +87,7 @@ describe('extensions', function () {
     expect(extension?.name).toBe('Simple extension');
     expect(extension?.version).toBe('0.1');
     expect(extension?.id).toBe(extensionId);
+    await browser.uninstallExtension(extensionId);
   });
 
   it('should list extension workers', async () => {
@@ -103,6 +107,7 @@ describe('extensions', function () {
 
     const workers = await extension!.workers();
     expect(workers.length).toBeGreaterThan(0);
+    await browser.uninstallExtension(extensionId);
   });
 
   it('should trigger extension action', async () => {
@@ -114,6 +119,7 @@ describe('extensions', function () {
 
     await page.triggerExtensionAction(extension!);
     // If it doesn't throw, we consider it successful for this level of testing.
+    await browser.uninstallExtension(extensionId);
   });
 
   it('should list extension pages', async () => {
@@ -141,6 +147,7 @@ describe('extensions', function () {
         return p.url().includes('popup.html');
       }),
     ).toBe(true);
+    await browser.uninstallExtension(extensionId);
   });
 
   it('should capture console logs from extension pages', async () => {
@@ -175,6 +182,7 @@ describe('extensions', function () {
     ]);
 
     expect(message).toBe('hello from extension page');
+    await browser.uninstallExtension(extensionId);
   });
 
   it('should capture console logs from extension workers', async () => {
@@ -211,6 +219,7 @@ describe('extensions', function () {
     ]);
 
     expect(message).toBe(messageToLog);
+    await browser.uninstallExtension(extensionId);
   });
 
   it('should remove extension from list after uninstall', async () => {

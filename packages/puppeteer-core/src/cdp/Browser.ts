@@ -456,6 +456,18 @@ export class CdpBrowser extends BrowserBase {
 
   override async uninstallExtension(id: string): Promise<void> {
     await this.#connection.send('Extensions.uninstall', {id});
+
+    const targets = this.targets().filter(curr => curr.url().includes(id));
+
+    for (const target of targets) {
+      const targetType = target.type();
+      if (targetType === 'service_worker' || targetType === 'shared_worker') {
+        this.#connection.emit('Target.targetDestroyed', {
+          targetId: target._targetId,
+        });
+      }
+    }
+
     this.#extensions.delete(id);
   }
 
