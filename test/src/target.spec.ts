@@ -16,6 +16,23 @@ import {waitEvent} from './utils.js';
 describe('Target', function () {
   setupTestBrowserHooks();
 
+  it('Target.asPage() should return the same instance', async () => {
+    const {browser} = await getTestState();
+    const page = await browser.newPage();
+    const target = page.target();
+
+    // Test that target.page() and target.asPage() return the same instance
+    const page1 = await target.page();
+    const page2 = await target.asPage();
+    const page3 = await target.asPage();
+
+    expect(page1).toBe(page);
+    expect(page2).toBe(page);
+    expect(page3).toBe(page);
+
+    await page.close();
+  });
+
   it('Browser.targets should return all of the targets', async () => {
     const {browser} = await getTestState();
 

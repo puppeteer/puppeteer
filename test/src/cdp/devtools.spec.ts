@@ -113,6 +113,9 @@ describe('DevTools', function () {
       return target.type() === 'other';
     });
     const page = (await devtoolsPageTarget.asPage())!;
+    const page2 = (await devtoolsPageTarget.asPage())!;
+    expect(page).toBe(page2);
+
     expect(
       await page.evaluate(() => {
         return 2 * 3;

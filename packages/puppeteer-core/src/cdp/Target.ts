@@ -42,6 +42,7 @@ export class CdpTarget extends Target {
   _initializedDeferred = Deferred.create<InitializationStatus>();
   _isClosedDeferred = Deferred.create<void>();
   _targetId: string;
+  _pagePromise?: Promise<Page>;
 
   /**
    * To initialize the target for use, call initialize.
@@ -70,13 +71,17 @@ export class CdpTarget extends Target {
   }
 
   override async asPage(): Promise<Page> {
-    const session = this._session();
-    if (!session) {
-      return await this.createCDPSession().then(client => {
+    if (!this._pagePromise) {
+      const session = this._session();
+      this._pagePromise = (
+        session
+          ? Promise.resolve(session)
+          : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
+      ).then(client => {
         return CdpPage._create(client, this, null);
       });
     }
-    return await CdpPage._create(session, this, null);
+    return (await this._pagePromise) ?? null;
   }
 
   _subtype(): string | undefined {
@@ -206,7 +211,6 @@ export class CdpTarget extends Target {
  */
 export class PageTarget extends CdpTarget {
   #defaultViewport?: Viewport;
-  protected pagePromise?: Promise<Page>;
 
   constructor(
     targetInfo: Protocol.Target.TargetInfo,
@@ -231,10 +235,10 @@ export class PageTarget extends CdpTarget {
         if (!(opener instanceof PageTarget)) {
           return;
         }
-        if (!opener || !opener.pagePromise || this.type() !== 'page') {
+        if (!opener || !opener._pagePromise || this.type() !== 'page') {
           return true;
         }
-        const openerPage = await opener.pagePromise;
+        const openerPage = await opener._pagePromise;
         if (!openerPage.listenerCount(PageEvent.Popup)) {
           return true;
         }
@@ -247,9 +251,9 @@ export class PageTarget extends CdpTarget {
   }
 
   override async page(): Promise<Page | null> {
-    if (!this.pagePromise) {
+    if (!this._pagePromise) {
       const session = this._session();
-      this.pagePromise = (
+      this._pagePromise = (
         session
           ? Promise.resolve(session)
           : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
@@ -257,7 +261,7 @@ export class PageTarget extends CdpTarget {
         return CdpPage._create(client, this, this.#defaultViewport ?? null);
       });
     }
-    return (await this.pagePromise) ?? null;
+    return (await this._pagePromise) ?? null;
   }
 
   override _checkIfInitialized(): void {

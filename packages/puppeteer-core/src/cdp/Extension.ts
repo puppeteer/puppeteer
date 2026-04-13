@@ -11,7 +11,6 @@ import type {CdpBrowser} from './Browser.js';
 export class CdpExtension extends Extension {
   // needed to access the CDPSession to trigger an extension action.
   #browser: CdpBrowser;
-  #pages = new WeakMap<Target, Page>();
 
   /*
    * @internal
@@ -57,16 +56,7 @@ export class CdpExtension extends Extension {
 
     const pages: Page[] = [];
     for (const target of extensionPages) {
-      let page = this.#pages.get(target);
-      if (!page) {
-        // TODO: asPage should return always the same instance
-        // issue: https://github.com/puppeteer/puppeteer/issues/14843
-        page = await target.asPage();
-        if (page) {
-          this.#pages.set(target, page);
-        }
-      }
-
+      const page = await target.asPage();
       if (page) {
         pages.push(page);
       }
