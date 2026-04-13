@@ -397,6 +397,58 @@ describe('Emulation', () => {
         }),
       ).toBe(true);
     });
+    it('should work with forced-colors', async () => {
+      const {page} = await getTestState();
+
+      await page.emulateMediaFeatures([
+        {name: 'forced-colors', value: 'active'},
+      ]);
+      expect(
+        await page.evaluate(() => {
+          return matchMedia('(forced-colors: active)').matches;
+        }),
+      ).toBe(true);
+      expect(
+        await page.evaluate(() => {
+          return matchMedia('(forced-colors: none)').matches;
+        }),
+      ).toBe(false);
+    });
+    it('should work with prefers-contrast', async () => {
+      const {page} = await getTestState();
+
+      await page.emulateMediaFeatures([
+        {name: 'prefers-contrast', value: 'more'},
+      ]);
+      expect(
+        await page.evaluate(() => {
+          return matchMedia('(prefers-contrast: more)').matches;
+        }),
+      ).toBe(true);
+      expect(
+        await page.evaluate(() => {
+          return matchMedia('(prefers-contrast: no-preference)').matches;
+        }),
+      ).toBe(false);
+    });
+    it('should work with prefers-reduced-transparency', async () => {
+      const {page} = await getTestState();
+
+      await page.emulateMediaFeatures([
+        {name: 'prefers-reduced-transparency', value: 'reduce'},
+      ]);
+      expect(
+        await page.evaluate(() => {
+          return matchMedia('(prefers-reduced-transparency: reduce)').matches;
+        }),
+      ).toBe(true);
+      expect(
+        await page.evaluate(() => {
+          return matchMedia('(prefers-reduced-transparency: no-preference)')
+            .matches;
+        }),
+      ).toBe(false);
+    });
     it('should throw in case of bad argument', async () => {
       const {page} = await getTestState();
 
