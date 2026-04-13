@@ -74,7 +74,10 @@ export class CdpTarget extends Target {
 
   override async asPage(): Promise<Page> {
     if (this.pagePromise) {
-      return await this.pagePromise;
+      const page = await this.pagePromise;
+      if (page) {
+        return page;
+      }
     }
     if (!this._asPagePromise) {
       const session = this._session();
