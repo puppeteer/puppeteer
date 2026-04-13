@@ -13,6 +13,7 @@ import importPlugin from 'eslint-plugin-import';
 import mocha from 'eslint-plugin-mocha';
 import eslintPrettierPluginRecommended from 'eslint-plugin-prettier/recommended';
 import tsdoc from 'eslint-plugin-tsdoc';
+import unusedImports from 'eslint-plugin-unused-imports';
 import globals from 'globals';
 import typescriptEslint from 'typescript-eslint';
 
@@ -39,7 +40,7 @@ export default defineConfig([
   globalIgnores([
     '**/node_modules',
     '**/build/',
-    '**/lib/',
+    '**/lib/**/*',
     '**/bin/',
     '**/*.tsbuildinfo',
     '**/*.api.json',
@@ -413,6 +414,27 @@ export default defineConfig([
       'mocha/no-pending-tests': 'error',
       'mocha/no-identical-title': 'error',
       '@puppeteer/no-quirks-mode-set-content': 'error',
+    },
+  },
+
+  {
+    files: ['**/types.d.ts'],
+
+    plugins: {
+      'unused-imports': unusedImports,
+    },
+
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      parser: typescriptEslint.parser,
+    },
+
+    rules: {
+      'unused-imports/no-unused-imports': 'error',
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
+      '@typescript-eslint/no-unsafe-function-type': 'off',
     },
   },
 ]);
