@@ -182,7 +182,11 @@ describe('extensions', function () {
     ]);
 
     expect(message).toBe('hello from extension page');
+
+    const beforeTargets = browser.targets();
     await browser.uninstallExtension(extensionId);
+    const afterTargets = browser.targets();
+    expect(beforeTargets.length).toBeGreaterThan(afterTargets.length);
   });
 
   it('should capture console logs from extension workers', async () => {
