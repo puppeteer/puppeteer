@@ -152,6 +152,10 @@ export class TargetManager
     await this.#initializeDeferred.valueOrThrow();
   }
 
+  addToIgnoreTarget(targetId: string) {
+    this.#ignoredTargets.add(targetId);
+  }
+
   getChildTargets(target: CdpTarget): ReadonlySet<CdpTarget> {
     return target._childTargets();
   }
@@ -333,7 +337,10 @@ export class TargetManager
     // CDP.
     if (targetInfo.type === 'service_worker') {
       await this.#silentDetach(session, parentSession);
-      if (this.#attachedTargetsByTargetId.has(targetInfo.targetId)) {
+      if (
+        this.#attachedTargetsByTargetId.has(targetInfo.targetId) ||
+        this.#ignoredTargets.has(targetInfo.targetId)
+      ) {
         return;
       }
       const target = this.#targetFactory(targetInfo);

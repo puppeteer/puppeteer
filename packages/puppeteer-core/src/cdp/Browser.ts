@@ -464,6 +464,7 @@ export class CdpBrowser extends BrowserBase {
     for (const target of targets) {
       const targetType = target.type();
       if (targetType === 'service_worker' || targetType === 'shared_worker') {
+        this._targetManager().addToIgnoreTarget(target._targetId);
         await new Promise(resolve =>
           setTimeout(() => {
             this.#connection.emit('Target.targetDestroyed', {
