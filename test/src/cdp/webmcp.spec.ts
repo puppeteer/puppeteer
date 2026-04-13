@@ -394,7 +394,7 @@ describe('Page.webmcp', function () {
 
     expect(response.id).toBe(call.id);
     expect(response.call).toBe(call);
-    expect(response.status).toBe('Success');
+    expect(response.status).toBe('Completed');
     expect(response.output).toBe('hello world');
     expect(response.errorText).toBeUndefined();
     expect(response.exception).toBeUndefined();

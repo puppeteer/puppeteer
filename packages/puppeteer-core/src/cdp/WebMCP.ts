@@ -39,7 +39,7 @@ export interface WebMCPAnnotation {
  *
  * @public
  */
-export type WebMCPInvocationStatus = 'Success' | 'Canceled' | 'Error';
+export type WebMCPInvocationStatus = 'Completed' | 'Canceled' | 'Error';
 
 interface ProtocolWebMCPTool {
   name: string;
@@ -227,7 +227,7 @@ export interface WebMCPToolCallResult {
   status: WebMCPInvocationStatus;
   /**
    * Output or error delivered as delivered to the agent. Missing if `status` is anything
-   * other than Success.
+   * other than Completed.
    */
   output?: any;
   /**

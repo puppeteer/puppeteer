@@ -71,7 +71,7 @@ page.webmcp.on('toolresponded', response => {
   console.log(
     `Tool ${response.call?.tool.name} responded with status: ${response.status}`,
   );
-  if (response.status === 'Success') {
+  if (response.status === 'Completed') {
     console.log('Output:', response.output);
   } else {
     console.log('Error:', response.errorText);
