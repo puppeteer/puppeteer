@@ -152,7 +152,7 @@ export class TargetManager
     await this.#initializeDeferred.valueOrThrow();
   }
 
-  addToIgnoreTarget(targetId: string) {
+  addToIgnoreTarget(targetId: string): void {
     this.#ignoredTargets.add(targetId);
   }
 

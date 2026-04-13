@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import assert from 'node:assert';
 import path from 'node:path';
 
 import expect from 'expect';
+import type {Target} from 'puppeteer-core/internal/api/Target.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
-import assert from 'node:assert';
-import {Target} from 'puppeteer-core/internal/api/Target.js';
 
 const extensionWithPagePath = path.join(
   import.meta.dirname,
@@ -85,6 +85,14 @@ describe('extensions', function () {
     const {browser} = state;
 
     const extensionId = await browser.installExtension(extensionPath);
+
+    const target = await browser.waitForTarget(target => {
+      return (
+        target.url().includes(extensionId) && target.type() === 'service_worker'
+      );
+    });
+    expect(target).toBeTruthy();
+
     const extensions = await browser.extensions();
 
     const extension = extensions.get(extensionId);
@@ -129,6 +137,13 @@ describe('extensions', function () {
 
     await page.triggerExtensionAction(extension!);
     // If it doesn't throw, we consider it successful for this level of testing.
+    const target = await browser.waitForTarget(target => {
+      return (
+        target.url().includes(extensionId) && target.type() === 'service_worker'
+      );
+    });
+    expect(target).toBeTruthy();
+
     await browser.uninstallExtension(extensionId);
     const targets = browser.targets();
     ensureNoWorkerWithIdFound(targets, extensionId);
@@ -144,7 +159,12 @@ describe('extensions', function () {
     await page.goto(server.EMPTY_PAGE);
 
     await extension?.triggerAction(page);
-
+    const target = await browser.waitForTarget(target => {
+      return (
+        target.url().includes(extensionId) && target.type() === 'service_worker'
+      );
+    });
+    expect(target).toBeTruthy();
     await browser.waitForTarget(target => {
       return (
         target.url().includes('popup.html') &&
@@ -175,6 +195,12 @@ describe('extensions', function () {
 
     await page.triggerExtensionAction(extension!);
 
+    const target = await browser.waitForTarget(target => {
+      return (
+        target.url().includes(extensionId) && target.type() === 'service_worker'
+      );
+    });
+    expect(target).toBeTruthy();
     const optionsPageTarget = await browser.waitForTarget(target => {
       return (
         target.url().includes('popup.html') &&
@@ -244,6 +270,12 @@ describe('extensions', function () {
   it('should remove extension from list after uninstall', async () => {
     const {browser} = state;
     const id = await browser.installExtension(extensionPath);
+
+    const target = await browser.waitForTarget(target => {
+      return target.url().includes(id) && target.type() === 'service_worker';
+    });
+    expect(target).toBeTruthy();
+
     let extensions = await browser.extensions();
     expect(extensions.has(id)).toBe(true);
 
@@ -257,8 +289,8 @@ describe('extensions', function () {
 });
 
 function ensureNoWorkerWithIdFound(targets: Target[], id: string) {
-  const target = targets.find(
-    curr => curr.url().includes(id) && curr.type() === 'service_worker',
-  );
+  const target = targets.find(curr => {
+    return curr.url().includes(id) && curr.type() === 'service_worker';
+  });
   assert(target === undefined);
 }

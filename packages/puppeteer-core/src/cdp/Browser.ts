@@ -465,14 +465,14 @@ export class CdpBrowser extends BrowserBase {
       const targetType = target.type();
       if (targetType === 'service_worker' || targetType === 'shared_worker') {
         this._targetManager().addToIgnoreTarget(target._targetId);
-        await new Promise(resolve =>
-          setTimeout(() => {
+        await new Promise(resolve => {
+          return setTimeout(() => {
             this.#connection.emit('Target.targetDestroyed', {
               targetId: target._targetId,
             });
             resolve(null);
-          }, 0),
-        );
+          }, 0);
+        });
       }
     }
 
