@@ -42,7 +42,9 @@ export class CdpTarget extends Target {
   _initializedDeferred = Deferred.create<InitializationStatus>();
   _isClosedDeferred = Deferred.create<void>();
   _targetId: string;
-  _pagePromise?: Promise<Page>;
+  _asPagePromise?: Promise<Page>;
+  /** @internal */
+  pagePromise?: Promise<Page>;
 
   /**
    * To initialize the target for use, call initialize.
@@ -71,9 +73,12 @@ export class CdpTarget extends Target {
   }
 
   override async asPage(): Promise<Page> {
-    if (!this._pagePromise) {
+    if (this.pagePromise) {
+      return await this.pagePromise;
+    }
+    if (!this._asPagePromise) {
       const session = this._session();
-      this._pagePromise = (
+      this._asPagePromise = (
         session
           ? Promise.resolve(session)
           : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
@@ -81,7 +86,7 @@ export class CdpTarget extends Target {
         return CdpPage._create(client, this, null);
       });
     }
-    return (await this._pagePromise) ?? null;
+    return (await this._asPagePromise) ?? null;
   }
 
   _subtype(): string | undefined {
@@ -235,10 +240,10 @@ export class PageTarget extends CdpTarget {
         if (!(opener instanceof PageTarget)) {
           return;
         }
-        if (!opener || !opener._pagePromise || this.type() !== 'page') {
+        if (!opener || !opener.pagePromise || this.type() !== 'page') {
           return true;
         }
-        const openerPage = await opener._pagePromise;
+        const openerPage = await opener.pagePromise;
         if (!openerPage.listenerCount(PageEvent.Popup)) {
           return true;
         }
@@ -251,9 +256,9 @@ export class PageTarget extends CdpTarget {
   }
 
   override async page(): Promise<Page | null> {
-    if (!this._pagePromise) {
+    if (!this.pagePromise) {
       const session = this._session();
-      this._pagePromise = (
+      this.pagePromise = (
         session
           ? Promise.resolve(session)
           : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
@@ -261,7 +266,7 @@ export class PageTarget extends CdpTarget {
         return CdpPage._create(client, this, this.#defaultViewport ?? null);
       });
     }
-    return (await this._pagePromise) ?? null;
+    return (await this.pagePromise) ?? null;
   }
 
   override _checkIfInitialized(): void {
