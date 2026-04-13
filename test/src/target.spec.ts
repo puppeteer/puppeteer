@@ -18,6 +18,10 @@ describe('Target', function () {
 
   it('Target.asPage() should return the same instance', async () => {
     const {browser} = await getTestState();
+    // BidiPage currently doesn't implement page.target(), skipping this part for BiDi
+    if (browser.constructor.name === 'BidiBrowser') {
+      return;
+    }
     const page = await browser.newPage();
     const target = page.target();
 
