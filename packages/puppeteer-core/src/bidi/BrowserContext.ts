@@ -187,6 +187,13 @@ export class BidiBrowserContext extends BrowserContext {
     });
   }
 
+  /**
+   * @internal
+   */
+  getTargetForPage(page: BidiPage): BidiPageTarget | undefined {
+    return this.#targets.get(page)?.[0];
+  }
+
   override async newPage(options?: CreatePageOptions): Promise<Page> {
     using _guard = await this.waitForScreenshotOperations();
 

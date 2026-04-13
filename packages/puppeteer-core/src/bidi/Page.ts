@@ -31,6 +31,7 @@ import {
   type NewDocumentScriptEvaluation,
   type ScreenshotOptions,
 } from '../api/Page.js';
+import type {Target} from '../api/Target.js';
 import {Coverage} from '../cdp/Coverage.js';
 import {EmulationManager} from '../cdp/EmulationManager.js';
 import type {
@@ -671,8 +672,12 @@ export class BidiPage extends Page {
     throw new UnsupportedOperation();
   }
 
-  override target(): never {
-    throw new UnsupportedOperation();
+  override target(): Target {
+    const target = this.browserContext().getTargetForPage(this);
+    if (!target) {
+      throw new Error('Target not found for page');
+    }
+    return target;
   }
 
   override async waitForFileChooser(
