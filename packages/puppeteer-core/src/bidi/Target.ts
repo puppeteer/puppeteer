@@ -63,7 +63,7 @@ export class BidiPageTarget extends Target {
     return this.#page;
   }
   override async asPage(): Promise<BidiPage> {
-    return this.page();
+    return await this.page();
   }
   override url(): string {
     return this.#page.url();
@@ -107,7 +107,7 @@ export class BidiFrameTarget extends Target {
     return this.#page;
   }
   override async asPage(): Promise<BidiPage> {
-    return this.page();
+    return await this.page();
   }
   override url(): string {
     return this.#frame.url();
