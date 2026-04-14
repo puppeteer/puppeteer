@@ -47,7 +47,7 @@ describe('extensions', function () {
     expect(serviceWorkerTarget).toBeTruthy();
     await browser.uninstallExtension(extensionId);
     const targets = browser.targets();
-    ensureNoWorkerWithIdFound(targets, extensionId);
+    assertNoServiceWorkerReported(targets, extensionId);
   });
 
   it('can evaluate in the service worker', async function () {
@@ -78,7 +78,7 @@ describe('extensions', function () {
     expect(result).toBe(42);
     await browser.uninstallExtension(extensionId);
     const targets = browser.targets();
-    ensureNoWorkerWithIdFound(targets, extensionId);
+    assertNoServiceWorkerReported(targets, extensionId);
   });
 
   it('should list extensions and their properties', async () => {
@@ -103,7 +103,7 @@ describe('extensions', function () {
     expect(extension?.id).toBe(extensionId);
     await browser.uninstallExtension(extensionId);
     const targets = browser.targets();
-    ensureNoWorkerWithIdFound(targets, extensionId);
+    assertNoServiceWorkerReported(targets, extensionId);
   });
 
   it('should list extension workers', async () => {
@@ -125,7 +125,7 @@ describe('extensions', function () {
     expect(workers.length).toBeGreaterThan(0);
     await browser.uninstallExtension(extensionId);
     const targets = browser.targets();
-    ensureNoWorkerWithIdFound(targets, extensionId);
+    assertNoServiceWorkerReported(targets, extensionId);
   });
 
   it('should trigger extension action', async () => {
@@ -146,7 +146,7 @@ describe('extensions', function () {
 
     await browser.uninstallExtension(extensionId);
     const targets = browser.targets();
-    ensureNoWorkerWithIdFound(targets, extensionId);
+    assertNoServiceWorkerReported(targets, extensionId);
   });
 
   it('should list extension pages', async () => {
@@ -181,7 +181,7 @@ describe('extensions', function () {
     ).toBe(true);
     await browser.uninstallExtension(extensionId);
     const targets = browser.targets();
-    ensureNoWorkerWithIdFound(targets, extensionId);
+    assertNoServiceWorkerReported(targets, extensionId);
   });
 
   it('should capture console logs from extension pages', async () => {
@@ -225,7 +225,7 @@ describe('extensions', function () {
 
     await browser.uninstallExtension(extensionId);
     const targets = browser.targets();
-    ensureNoWorkerWithIdFound(targets, extensionId);
+    assertNoServiceWorkerReported(targets, extensionId);
   });
 
   it('should capture console logs from extension workers', async () => {
@@ -264,7 +264,7 @@ describe('extensions', function () {
     expect(message).toBe(messageToLog);
     await browser.uninstallExtension(extensionId);
     const targets = browser.targets();
-    ensureNoWorkerWithIdFound(targets, extensionId);
+    assertNoServiceWorkerReported(targets, extensionId);
   });
 
   it('should remove extension from list after uninstall', async () => {
@@ -281,16 +281,16 @@ describe('extensions', function () {
 
     await browser.uninstallExtension(id);
     const targets = browser.targets();
-    ensureNoWorkerWithIdFound(targets, id);
+    assertNoServiceWorkerReported(targets, id);
 
     extensions = await browser.extensions();
     expect(extensions.has(id)).toBe(false);
   });
 });
 
-function ensureNoWorkerWithIdFound(targets: Target[], id: string) {
-  const target = targets.find(curr => {
-    return curr.url().includes(id) && curr.type() === 'service_worker';
+function assertNoServiceWorkerReported(targets: Target[], id: string) {
+  const target = targets.find(target => {
+    return target.url().includes(id) && target.type() === 'service_worker';
   });
   assert(target === undefined);
 }
