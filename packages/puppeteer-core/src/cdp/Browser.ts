@@ -457,16 +457,19 @@ export class CdpBrowser extends BrowserBase {
   override async uninstallExtension(id: string): Promise<void> {
     await this.#connection.send('Extensions.uninstall', {id});
 
-    const targets = this.targets().filter(curr => {
-      return curr.url().includes(id);
+    // Currently sending the Extensions.uninstall command does not trigger
+    // the Target.targetDestroyed event for service workers. This causes
+    // flakiness in the extension tests.
+    // TODO(nroscino): Remove this once the event is correctly emitted.
+    const targets = this.targets().filter(target => {
+      return target.url().includes(id);
     });
 
-    const promises = [];
+    const targetDestroyedPromises = [];
     for (const target of targets) {
-      const targetType = target.type();
-      if (targetType === 'service_worker' || targetType === 'shared_worker') {
+      if (target.type() === 'service_worker') {
         this._targetManager().addToIgnoreTarget(target._targetId);
-        promises.push(
+        targetDestroyedPromises.push(
           new Promise(resolve => {
             return setTimeout(() => {
               this.#connection.emit('Target.targetDestroyed', {
@@ -478,8 +481,7 @@ export class CdpBrowser extends BrowserBase {
         );
       }
     }
-
-    await Promise.all(promises);
+    await Promise.all(targetDestroyedPromises);
 
     this.#extensions.delete(id);
   }
