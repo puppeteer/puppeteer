@@ -68,7 +68,7 @@ const tool = tools.find(t => t.name === 'calculate_sum');
 
 if (tool) {
   const result = await tool.execute({a: 5, b: 10});
-  if (result.status === 'Success') {
+  if (result.status === 'Completed') {
     console.log('Result:', result.output);
   } else {
     console.error('Error:', result.errorText);
