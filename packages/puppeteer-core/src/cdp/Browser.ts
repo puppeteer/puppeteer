@@ -461,20 +461,28 @@ export class CdpBrowser extends BrowserBase {
       return curr.url().includes(id);
     });
 
+    const promises = [];
+
+    console.log(`TARGETS at uninstall of ${id}: ${targets.length} targets`);
     for (const target of targets) {
       const targetType = target.type();
+      console.log('target', target._targetId, targetType);
       if (targetType === 'service_worker' || targetType === 'shared_worker') {
         this._targetManager().addToIgnoreTarget(target._targetId);
-        await new Promise(resolve => {
-          return setTimeout(() => {
-            this.#connection.emit('Target.targetDestroyed', {
-              targetId: target._targetId,
-            });
-            resolve(null);
-          }, 0);
-        });
+        promises.push(
+          new Promise(resolve => {
+            return setTimeout(() => {
+              this.#connection.emit('Target.targetDestroyed', {
+                targetId: target._targetId,
+              });
+              resolve(null);
+            }, 0);
+          }),
+        );
       }
     }
+
+    await Promise.all(promises);
 
     this.#extensions.delete(id);
   }
