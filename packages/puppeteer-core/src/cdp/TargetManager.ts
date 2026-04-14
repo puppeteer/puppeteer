@@ -30,10 +30,6 @@ export type TargetFactory = (
   parentSession?: CdpCDPSession,
 ) => CdpTarget;
 
-/**
- * @internal
- */
-
 function isPageTargetBecomingPrimary(
   target: CdpTarget,
   newTargetInfo: Protocol.Target.TargetInfo,
