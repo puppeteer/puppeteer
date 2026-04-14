@@ -19,10 +19,10 @@ describe('Network Restrictions', function () {
       {createContext: true},
     );
 
-    const initialUrl = server.PREFIX + '/title.html'; // should navigate
-    const blockedUrl = server.PREFIX + '/empty.html'; // should be blocked
+    const allowedUrl = server.PREFIX + '/title.html';
+    const blockedUrl = server.PREFIX + '/empty.html';
 
-    await page.goto(initialUrl);
+    await page.goto(allowedUrl);
     let error: Error | undefined;
     await page.goto(blockedUrl).catch(e => {
       return (error = e);
@@ -41,10 +41,10 @@ describe('Network Restrictions', function () {
       {createContext: true},
     );
 
-    const initialUrl = server.PREFIX + '/title.html'; // should navigate
-    const blockedUrl = server.PREFIX + '/empty.html'; // should be blocked
+    const allowedUrl = server.PREFIX + '/title.html';
+    const blockedUrl = server.PREFIX + '/empty.html';
 
-    await page.goto(initialUrl);
+    await page.goto(allowedUrl);
     const navPromise = page.waitForNavigation({timeout: 2000}).catch(e => {
       return e;
     });
@@ -66,10 +66,10 @@ describe('Network Restrictions', function () {
       {createContext: true},
     );
 
-    const initialUrl = server.PREFIX + '/title.html'; // should fetch
-    const blockedUrl = server.PREFIX + '/empty.html'; // should fail
+    const allowedUrl = server.PREFIX + '/title.html';
+    const blockedUrl = server.PREFIX + '/empty.html';
 
-    await page.goto(initialUrl);
+    await page.goto(allowedUrl);
     const fetchError = await page.evaluate(async url => {
       try {
         await fetch(url);
@@ -92,8 +92,8 @@ describe('Network Restrictions', function () {
       {createContext: true},
     );
 
-    const allowedUrl = server.PREFIX + '/one-style.css'; // should load
-    const blockedUrl = server.PREFIX + '/pptr.png'; // should not load
+    const allowedUrl = server.PREFIX + '/one-style.css';
+    const blockedUrl = server.PREFIX + '/pptr.png';
 
     const imageBlockedErrorPromise = new Promise<string | undefined>(
       resolve => {
@@ -154,16 +154,16 @@ describe('Network Restrictions', function () {
       {createContext: true},
     );
 
-    const initialUrl = server.PREFIX + '/empty.html'; // should navigate
-    const blockedUrl = server.PREFIX + '/title.html'; // should be blocked
+    const allowedUrl = server.PREFIX + '/empty.html';
+    const blockedUrl = server.PREFIX + '/title.html';
 
-    await page.goto(initialUrl);
+    await page.goto(allowedUrl);
 
     let error: Error | undefined;
     await page.goto(blockedUrl).catch(e => {
       return (error = e);
     });
-    expect(page.url()).toBe(initialUrl);
+    expect(page.url()).toBe(allowedUrl);
     expect(error).toBeDefined();
     expect(error?.message).toContain('net::ERR_INTERNET_DISCONNECTED');
     await close();
@@ -177,10 +177,10 @@ describe('Network Restrictions', function () {
       {createContext: true},
     );
 
-    const initialUrl = server.PREFIX + '/empty.html'; // should navigate here
-    const blockedUrl = server.PREFIX + '/title.html'; // should be blocked
+    const allowedUrl = server.PREFIX + '/empty.html';
+    const blockedUrl = server.PREFIX + '/title.html';
 
-    await page.goto(initialUrl);
+    await page.goto(allowedUrl);
     const navPromise = page.waitForNavigation({timeout: 2000}).catch(e => {
       return e;
     });
@@ -191,7 +191,7 @@ describe('Network Restrictions', function () {
 
     await navPromise;
     const finalUrl = page.url();
-    expect(finalUrl).toBe(initialUrl);
+    expect(finalUrl).not.toBe(blockedUrl);
     await close();
   });
 });

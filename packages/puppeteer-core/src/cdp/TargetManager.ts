@@ -33,11 +33,6 @@ export type TargetFactory = (
 /**
  * @internal
  */
-export interface CdpNetworkConditions {
-  offline: boolean;
-  matchedNetworkConditions: Protocol.Network.NetworkConditions[];
-  overrideNetworkState?: boolean;
-}
 
 function isPageTargetBecomingPrimary(
   target: CdpTarget,
@@ -115,14 +110,14 @@ export class TargetManager
   // done. It indicates whethere we are running the initial auto-attach step or
   // if we are handling targets after that.
   #initialAttachDone = false;
-  #networkConditions?: CdpNetworkConditions;
+  #networkConditions?: Protocol.Network.EmulateNetworkConditionsByRuleRequest;
 
   constructor(
     connection: Connection,
     targetFactory: TargetFactory,
     targetFilterCallback?: TargetFilterCallback,
     waitForInitiallyDiscoveredTargets = true,
-    networkConditions?: CdpNetworkConditions,
+    networkConditions?: Protocol.Network.EmulateNetworkConditionsByRuleRequest,
   ) {
     super();
     this.#connection = connection;
@@ -398,20 +393,6 @@ export class TargetManager
 
     parentTarget?._addChildTarget(target);
 
-    // TODO: the browser might be shutting down here. What do we do with the
-    // error?
-    await Promise.all([
-      session.send('Target.setAutoAttach', {
-        waitForDebuggerOnStart: true,
-        flatten: true,
-        autoAttach: true,
-        filter: this.#discoveryFilter,
-      }),
-      this.#networkConditions
-        ? this.#setupNetworkConditions(session, this.#networkConditions)
-        : Promise.resolve(),
-    ]).catch(debugError);
-
     parentSession.emit(CDPSessionEvent.Ready, session);
 
     if (!isExistingTarget) {
@@ -421,7 +402,18 @@ export class TargetManager
       this.#finishInitializationIfReady(parentTarget._targetId);
     }
 
-    await session.send('Runtime.runIfWaitingForDebugger').catch(debugError);
+    // TODO: the browser might be shutting down here. What do we do with the
+    // error?
+    await Promise.all([
+      session.send('Target.setAutoAttach', {
+        waitForDebuggerOnStart: true,
+        flatten: true,
+        autoAttach: true,
+        filter: this.#discoveryFilter,
+      }),
+      this.#maybeSetupNetworkConditions(session),
+      session.send('Runtime.runIfWaitingForDebugger'),
+    ]).catch(debugError);
   };
 
   #finishInitializationIfReady(targetId?: string): void {
@@ -456,22 +448,15 @@ export class TargetManager
     this.emit(TargetManagerEvent.TargetGone, target);
   };
 
-  #setupNetworkConditions = async (
-    session: any,
-    networkConditions: any,
-  ): Promise<void> => {
-    if (!networkConditions) {
+  #maybeSetupNetworkConditions = async (session: CDPSession): Promise<void> => {
+    if (!this.#networkConditions) {
       return;
     }
 
-    try {
-      await session.send('Network.enable');
-      await session.send(
-        'Network.emulateNetworkConditionsByRule',
-        networkConditions,
-      );
-    } catch (err: unknown) {
-      throw err;
-    }
+    await session.send('Network.enable');
+    await session.send(
+      'Network.emulateNetworkConditionsByRule',
+      this.#networkConditions,
+    );
   };
 }

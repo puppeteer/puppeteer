@@ -42,7 +42,7 @@ import {
   type CdpTarget,
 } from './Target.js';
 import {TargetManagerEvent} from './TargetManageEvents.js';
-import {TargetManager, type CdpNetworkConditions} from './TargetManager.js';
+import {TargetManager} from './TargetManager.js';
 
 /**
  * @internal
@@ -122,7 +122,7 @@ export class CdpBrowser extends BrowserBase {
     networkEnabled = true,
     issuesEnabled = true,
     handleDevToolsAsPage = false,
-    networkConditions?: CdpNetworkConditions,
+    networkConditions?: Protocol.Network.EmulateNetworkConditionsByRuleRequest,
   ) {
     super();
     this.#networkEnabled = networkEnabled;
@@ -603,45 +603,39 @@ export class CdpBrowser extends BrowserBase {
 function getNetworkConditions(
   allowlist?: string[],
   blocklist?: string[],
-): CdpNetworkConditions | undefined {
-  let networkConditions: CdpNetworkConditions | undefined;
-
-  if (allowlist || blocklist) {
-    const isAllowListMode = allowlist && allowlist.length > 0;
-
-    networkConditions = {
-      offline: !isAllowListMode,
-      matchedNetworkConditions: [],
-    };
-
-    if (isAllowListMode) {
-      for (const pattern of allowlist!) {
-        networkConditions.matchedNetworkConditions.push({
-          urlPattern: pattern,
-          downloadThroughput: -1,
-          uploadThroughput: -1,
-          latency: 0,
-        });
-      }
-
-      networkConditions.matchedNetworkConditions.push({
-        urlPattern: '',
-        downloadThroughput: 0,
-        uploadThroughput: 0,
-        latency: 1,
-      });
-    }
-
-    if (blocklist && blocklist.length > 0) {
-      for (const pattern of blocklist) {
-        networkConditions.matchedNetworkConditions.push({
-          urlPattern: pattern,
-          downloadThroughput: 0,
-          uploadThroughput: 0,
-          latency: 0,
-        });
-      }
-    }
+): Protocol.Network.EmulateNetworkConditionsByRuleRequest | undefined {
+  if (allowlist?.length) {
+    const matchedNetworkConditions = allowlist.map(pattern => {
+      return {
+        offline: false,
+        urlPattern: pattern,
+        latency: 0,
+        downloadThroughput: -1,
+        uploadThroughput: -1,
+      };
+    });
+    matchedNetworkConditions.push({
+      offline: true,
+      urlPattern: '',
+      latency: 0,
+      downloadThroughput: -1,
+      uploadThroughput: -1,
+    });
+    return {matchedNetworkConditions};
   }
-  return networkConditions;
+
+  if (blocklist?.length) {
+    const matchedNetworkConditions = blocklist.map(pattern => {
+      return {
+        offline: true,
+        urlPattern: pattern,
+        latency: 0,
+        downloadThroughput: -1,
+        uploadThroughput: -1,
+      };
+    });
+    return {matchedNetworkConditions};
+  }
+
+  return undefined;
 }
