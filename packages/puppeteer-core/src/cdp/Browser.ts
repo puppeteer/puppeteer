@@ -462,11 +462,8 @@ export class CdpBrowser extends BrowserBase {
     });
 
     const promises = [];
-
-    console.log(`TARGETS at uninstall of ${id}: ${targets.length} targets`);
     for (const target of targets) {
       const targetType = target.type();
-      console.log('target', target._targetId, targetType);
       if (targetType === 'service_worker' || targetType === 'shared_worker') {
         this._targetManager().addToIgnoreTarget(target._targetId);
         promises.push(
