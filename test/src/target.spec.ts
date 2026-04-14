@@ -16,7 +16,7 @@ import {waitEvent} from './utils.js';
 describe('Target', function () {
   setupTestBrowserHooks();
 
-  it.only('Target.asPage() should return the same instance', async () => {
+  it('Target.asPage() should return the same instance', async () => {
     const {browser} = await getTestState();
     const page = await browser.newPage();
     const target = page.target();
