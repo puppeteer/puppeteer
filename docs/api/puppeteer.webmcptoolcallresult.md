@@ -121,7 +121,7 @@ any
 
 </td><td>
 
-Output or error delivered as delivered to the agent. Missing if `status` is anything other than Success.
+Output or error delivered as delivered to the agent. Missing if `status` is anything other than Completed.
 
 </td><td>
 
