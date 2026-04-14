@@ -716,6 +716,10 @@ Functions installed via `page.exposeFunction` survive navigations.
 
 </td><td>
 
+This method retrieves the list of realms inside the main frame of a page.
+
+Shortcut for `mainFrame().extensionRealms()`.
+
 </td></tr>
 <tr><td>
 

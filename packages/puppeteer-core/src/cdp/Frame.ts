@@ -53,6 +53,7 @@ export class CdpFrame extends Frame {
   override accessibility: Accessibility;
 
   worlds: IsolatedWorldChart;
+  extensionWorlds: Record<string, IsolatedWorld> = {};
 
   constructor(
     frameManager: FrameManager,
@@ -416,6 +417,9 @@ export class CdpFrame extends Frame {
     this.#detached = true;
     this.worlds[MAIN_WORLD][disposeSymbol]();
     this.worlds[PUPPETEER_WORLD][disposeSymbol]();
+    for (const extensionWorld of Object.values(this.extensionWorlds)) {
+      extensionWorld[disposeSymbol]();
+    }
   }
 
   exposeFunction(): never {
@@ -439,7 +443,7 @@ export class CdpFrame extends Frame {
    * @public
    */
   override extensionRealms(): Realm[] {
-    return Object.values(this.worlds);
+    return Object.values(this.extensionWorlds);
   }
 }
 

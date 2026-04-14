@@ -3260,6 +3260,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
   abstract triggerExtensionAction(extension: Extension): Promise<void>;
 
   /**
+   * This method retrieves the list of realms inside the main frame
+   * of a page.
+   *
+   * Shortcut for `mainFrame().extensionRealms()`.
+   *
    * @public
    */
   abstract extensionRealms(): Realm[];

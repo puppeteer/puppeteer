@@ -39,9 +39,15 @@ describe('extension realms', function () {
     const realms = page.extensionRealms();
     expect(realms.length).toBeGreaterThanOrEqual(1);
 
-    const realm = realms.find(curr => {
-      return curr.realmId.includes(extId);
-    });
+    let realm;
+    for (realm of realms) {
+      const extension = await realm.extension();
+
+      assert(extension, 'there should always be an extension');
+      if (extension.id === extId) {
+        break;
+      }
+    }
 
     expect(realm).toBeDefined();
   });
@@ -58,9 +64,15 @@ describe('extension realms', function () {
     await page.goto(server.EMPTY_PAGE);
     const realms = page.extensionRealms();
 
-    const realm = realms.find(curr => {
-      return curr.realmId.includes(extId);
-    });
+    let realm;
+    for (realm of realms) {
+      const extension = await realm.extension();
+
+      assert(extension, 'there should always be an extension');
+      if (extension.id === extId) {
+        break;
+      }
+    }
     assert(realm, 'realm should be defined');
 
     const extension = await realm.extension();
@@ -80,10 +92,15 @@ describe('extension realms', function () {
     await page.goto(server.EMPTY_PAGE);
     const realms = page.extensionRealms();
 
-    const contentScriptRealm = realms.find(curr => {
-      return curr.realmId.includes(extId);
-    });
+    let contentScriptRealm;
+    for (contentScriptRealm of realms) {
+      const extension = await contentScriptRealm.extension();
 
+      assert(extension, 'there should always be an extension');
+      if (extension.id === extId) {
+        break;
+      }
+    }
     assert(contentScriptRealm, 'realm should be defined');
 
     const isContentScript = await contentScriptRealm!.evaluate(() => {

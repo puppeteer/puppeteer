@@ -191,13 +191,6 @@
   {
     "testIdPattern": "[realms.spec] *",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"],
-    "comment": "Chrome-specific test"
-  },
-  {
-    "testIdPattern": "[realms.spec] *",
-    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome-headless-shell"],
     "expectations": ["SKIP"],
     "comment": "no extension api for chrome-headless-shell"

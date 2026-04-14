@@ -583,19 +583,19 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
         const extId = this.#extractExtensionId(origin);
 
         if (!extId) {
-          debugError('error while parsing extension id');
+          debugError('Error while parsing extension id');
           return;
         }
 
-        if (frame.worlds[extId]) {
-          world = frame.worlds[extId];
+        if (frame.extensionWorlds[extId]) {
+          world = frame.extensionWorlds[extId];
         } else {
           world = new IsolatedWorld(frame, this.timeoutSettings, extId);
-          frame.worlds[extId] = world;
+          frame.extensionWorlds[extId] = world;
           frame.registerWorldListeners(world);
+          world.origin = origin;
+          world.setWorldId(extId);
         }
-
-        world.setRealmId(extId);
       }
     }
 

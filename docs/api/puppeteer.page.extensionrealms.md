@@ -4,14 +4,18 @@ sidebar_label: Page.extensionRealms
 
 # Page.extensionRealms() method
 
+This method retrieves the list of realms inside the main frame of a page.
+
+Shortcut for `mainFrame().extensionRealms()`.
+
 ### Signature
 
 ```typescript
 class Page {
-  abstract extensionRealms(): Array<Realm>;
+  abstract extensionRealms(): Realm[];
 }
 ```
 
 **Returns:**
 
-Array&lt;[Realm](./puppeteer.realm.md)&gt;
+[Realm](./puppeteer.realm.md)\[\]

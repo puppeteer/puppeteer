@@ -290,16 +290,11 @@ export abstract class BidiRealm extends Realm {
     return await transferredHandle;
   }
 
-  // TODO: BiDi implementation missing
-  override setRealmId(_worldId: string | symbol): void {
-    throw new UnsupportedOperation();
-  }
-
-  override get realmId(): string {
-    throw new UnsupportedOperation();
-  }
-
   extension(): Promise<Extension | null> {
+    throw new UnsupportedOperation();
+  }
+
+  override get origin(): string {
     throw new UnsupportedOperation();
   }
 }

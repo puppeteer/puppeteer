@@ -5,11 +5,7 @@
  */
 
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
-import type {
-  EvaluateFunc,
-  HandleFor,
-  InnerLazyParams,
-} from '../common/types.js';
+import type {EvaluateFunc, HandleFor} from '../common/types.js';
 import {TaskManager, WaitTask} from '../common/WaitTask.js';
 import {disposeSymbol} from '../util/disposable.js';
 
@@ -21,7 +17,7 @@ import type {JSHandle} from './JSHandle.js';
 /**
  * @public
  */
-export abstract class Realm implements Disposable {
+export abstract class Realm {
   /** @internal */
   protected readonly timeoutSettings: TimeoutSettings;
   /** @internal */
@@ -34,23 +30,18 @@ export abstract class Realm implements Disposable {
   abstract get environment(): Environment;
 
   /**
-   * The identifier for this realm.
-   *
-   * @public
+   * This method returns the origin that created the Realm.
+   * @experimental
+   * @example
+   * `chrome-extension://<chrome-extension-id>`
    */
-  abstract get realmId(): string;
-
-  /**
-   * @internal
-   */
-  abstract setRealmId(worldId: string | symbol): void;
-
+  abstract get origin(): string | undefined;
   /**
    * This method returns the extension that created this realm
    * if the realm was created from an Extension.
    * An example of this is an extension content script running
    * on a page.
-   *
+   * @experimental
    */
   abstract extension(): Promise<Extension | null>;
 
@@ -78,9 +69,7 @@ export abstract class Realm implements Disposable {
 
   async waitForFunction<
     Params extends unknown[],
-    Func extends EvaluateFunc<InnerLazyParams<Params>> = EvaluateFunc<
-      InnerLazyParams<Params>
-    >,
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     options: {
@@ -132,6 +121,7 @@ export abstract class Realm implements Disposable {
       new Error('waitForFunction failed: frame got detached.'),
     );
   }
+
   /** @internal */
   [disposeSymbol](): void {
     this.dispose();

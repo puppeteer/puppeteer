@@ -282,7 +282,7 @@ See [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md) for details.
 
 </td><td>
 
-This method retrieves the list of realms inside of a Frame returned as a pair-like \[key, Object\] list
+This method retrieves the list of realms within this frame
 
 </td></tr>
 <tr><td>

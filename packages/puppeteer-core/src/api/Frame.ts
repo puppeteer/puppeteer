@@ -1202,8 +1202,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   ): Promise<DeviceRequestPrompt>;
 
   /**
-   * This method retrieves the list of realms inside of a Frame returned
-   * as a pair-like [key, Object] list
+   * This method retrieves the list of realms within this frame
    *
    * @public
    */

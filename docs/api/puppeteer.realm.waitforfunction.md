@@ -10,9 +10,7 @@ sidebar_label: Realm.waitForFunction
 class Realm {
   waitForFunction<
     Params extends unknown[],
-    Func extends EvaluateFunc<InnerLazyParams<Params>> = EvaluateFunc<
-      InnerLazyParams<Params>
-    >,
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     options?: {

@@ -20,7 +20,6 @@ import {
   timeout,
   withSourcePuppeteerURLIfNone,
 } from '../common/util.js';
-import {UnsupportedOperation} from '../index-browser.js';
 import {disposeSymbol} from '../util/disposable.js';
 
 import {CdpElementHandle} from './ElementHandle.js';
@@ -70,6 +69,7 @@ export class IsolatedWorld extends Realm {
   #context?: ExecutionContext;
   #emitter: IsolatedWorldEmitter = new EventEmitter();
   #worldId: string | symbol;
+  #origin?: string;
 
   readonly #frameOrWorker: CdpFrame | CdpWebWorker;
 
@@ -270,34 +270,35 @@ export class IsolatedWorld extends Realm {
     this.#emitter.removeAllListeners();
   }
 
-  override setRealmId(worldId: string | symbol): void {
-    this.#worldId = worldId;
+  override get origin(): string | undefined {
+    return this.#origin;
   }
 
-  override get realmId(): string {
-    if (typeof this.#worldId === 'symbol') {
-      throw new UnsupportedOperation();
-    }
-    return this.#worldId;
+  set origin(origin: string) {
+    this.#origin = origin;
+  }
+
+  setWorldId(worldId: string | symbol): void {
+    this.#worldId = worldId;
   }
 
   async extension(): Promise<Extension | null> {
     if (this.#frameOrWorker instanceof CdpWebWorker) {
-      throw new Error('unable to get extension from Realm');
+      throw new Error('Unable to get extension from Realm');
     }
 
     if (this.#worldId === MAIN_WORLD) {
-      return await Promise.resolve(null);
+      return null;
     }
 
-    if (typeof this.realmId === 'string') {
+    if (typeof this.#worldId === 'string') {
       const extensions = await this.#frameOrWorker._frameManager
         .page()
         .browser()
         .extensions();
-      return extensions.get(this.realmId) || null;
+      return extensions.get(this.#worldId) ?? null;
     }
 
-    return await Promise.resolve(null);
+    return null;
   }
 }

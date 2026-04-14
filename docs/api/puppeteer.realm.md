@@ -7,10 +7,8 @@ sidebar_label: Realm
 ### Signature
 
 ```typescript
-export declare abstract class Realm implements Disposable
+export declare abstract class Realm
 ```
-
-**Implements:** Disposable
 
 ## Remarks
 
@@ -37,7 +35,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="realmid">realmId</span>
+<span id="origin">origin</span>
 
 </td><td>
 
@@ -45,11 +43,11 @@ Description
 
 </td><td>
 
-string
+string \| undefined
 
 </td><td>
 
-The identifier for this realm.
+**_(Experimental)_** This method returns the origin that created the Realm.
 
 </td></tr>
 </tbody></table>
@@ -95,7 +93,7 @@ Description
 
 </td><td>
 
-This method returns the extension that created this realm if the realm was created from an Extension. An example of this is an extension content script running on a page.
+**_(Experimental)_** This method returns the extension that created this realm if the realm was created from an Extension. An example of this is an extension content script running on a page.
 
 </td></tr>
 <tr><td>

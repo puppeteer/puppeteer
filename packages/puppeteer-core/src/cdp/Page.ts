@@ -634,10 +634,6 @@ export class CdpPage extends Page {
     );
   }
 
-  override async triggerExtensionAction(extension: Extension): Promise<void> {
-    return await extension.triggerAction(this);
-  }
-
   override async emulateFocusedPage(enabled: boolean): Promise<void> {
     return await this.#emulationManager.emulateFocus(enabled);
   }
@@ -1057,6 +1053,10 @@ export class CdpPage extends Page {
 
   override async setBypassCSP(enabled: boolean): Promise<void> {
     await this.#primaryTargetClient.send('Page.setBypassCSP', {enabled});
+  }
+
+  override async triggerExtensionAction(extension: Extension): Promise<void> {
+    return await extension.triggerAction(this);
   }
 
   override async emulateMediaType(type?: string): Promise<void> {
