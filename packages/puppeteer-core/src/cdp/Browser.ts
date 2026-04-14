@@ -462,24 +462,22 @@ export class CdpBrowser extends BrowserBase {
     // flakiness in the extension tests.
     // TODO(nroscino): Remove this once the event is correctly emitted.
     const targets = this.targets().filter(target => {
-      return target.url().includes(id);
+      return target.url().includes(id) && target.type() === 'service_worker';
     });
 
     const targetDestroyedPromises = [];
     for (const target of targets) {
-      if (target.type() === 'service_worker') {
-        this._targetManager().addToIgnoreTarget(target._targetId);
-        targetDestroyedPromises.push(
-          new Promise(resolve => {
-            return setTimeout(() => {
-              this.#connection.emit('Target.targetDestroyed', {
-                targetId: target._targetId,
-              });
-              resolve(null);
-            }, 0);
-          }),
-        );
-      }
+      this._targetManager().addToIgnoreTarget(target._targetId);
+      targetDestroyedPromises.push(
+        new Promise(resolve => {
+          return setTimeout(() => {
+            this.#connection.emit('Target.targetDestroyed', {
+              targetId: target._targetId,
+            });
+            resolve(null);
+          }, 0);
+        }),
+      );
     }
     await Promise.all(targetDestroyedPromises);
 
