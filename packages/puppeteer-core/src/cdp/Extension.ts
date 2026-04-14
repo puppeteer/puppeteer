@@ -54,15 +54,15 @@ export class CdpExtension extends Extension {
       );
     });
 
-    const pages: Page[] = [];
-    for (const target of extensionPages) {
-      const page = await target.asPage();
-      if (page) {
-        pages.push(page);
-      }
-    }
+    const pages = await Promise.all(
+      extensionPages.map(target => {
+        return target.asPage();
+      }),
+    );
 
-    return pages;
+    return pages.filter((page): page is Page => {
+      return page !== null;
+    });
   }
 
   async triggerAction(page: Page): Promise<void> {
