@@ -4,7 +4,7 @@ sidebar_label: Browser.extensions
 
 # Browser.extensions() method
 
-Get a map with id as keys and extension as value of the installed extensions in the browser.
+Retrieves a map of all extensions installed in the browser, where the keys are extension IDs and the values are the corresponding [Extension](./puppeteer.extension.md) instances.
 
 ### Signature
 

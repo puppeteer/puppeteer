@@ -47,7 +47,7 @@ string \| undefined
 
 </td><td>
 
-**_(Experimental)_** This method returns the origin that created the Realm.
+**_(Experimental)_** Returns the origin that created the Realm. For example, if the realm was created by an extension content script, this will return the origin of the extension (e.g., `chrome-extension://<extension-id>`).
 
 </td></tr>
 </tbody></table>
@@ -75,6 +75,12 @@ Description
 
 </td><td>
 
+Evaluates a function in the realm's context and returns the resulting value.
+
+If the function passed to `realm.evaluate` returns a Promise, the method will wait for the promise to resolve and return its value.
+
+[JSHandle](./puppeteer.jshandle.md) instances can be passed as arguments to the function.
+
 </td></tr>
 <tr><td>
 
@@ -83,6 +89,12 @@ Description
 </td><td>
 
 </td><td>
+
+Evaluates a function in the realm's context and returns a [JSHandle](./puppeteer.jshandle.md) to the result.
+
+If the function passed to `realm.evaluateHandle` returns a Promise, the method will wait for the promise to resolve and return its value.
+
+[JSHandle](./puppeteer.jshandle.md) instances can be passed as arguments to the function.
 
 </td></tr>
 <tr><td>
@@ -93,7 +105,7 @@ Description
 
 </td><td>
 
-**_(Experimental)_** This method returns the extension that created this realm if the realm was created from an Extension. An example of this is an extension content script running on a page.
+**_(Experimental)_** Returns the [Extension](./puppeteer.extension.md) that created this realm, if applicable. This is typically populated when the realm was created by an extension content script injected into a page.
 
 </td></tr>
 <tr><td>
@@ -103,6 +115,10 @@ Description
 </td><td>
 
 </td><td>
+
+Waits for a function to return a truthy value when evaluated in the realm's context.
+
+Arguments can be passed from Node.js to `pageFunction`.
 
 </td></tr>
 </tbody></table>

@@ -4,7 +4,7 @@ sidebar_label: Extension
 
 # Extension class
 
-[Extension](./puppeteer.extension.md) represents an Extension instance installed in the browser.
+[Extension](./puppeteer.extension.md) represents a browser extension installed in the browser. It provides access to the extension's ID, name, and version, as well as methods for interacting with the extension's background workers and pages.
 
 ### Signature
 
@@ -12,33 +12,20 @@ sidebar_label: Extension
 export declare abstract class Extension
 ```
 
-## Constructors
+## Remarks
 
-<table><thead><tr><th>
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Extension` class.
 
-Constructor
+## Example
 
-</th><th>
+To get all extensions installed in the browser:
 
-Modifiers
-
-</th><th>
-
-Description
-
-</th></tr></thead>
-<tbody><tr><td>
-
-<span id="_constructor_">[(constructor)(id, version, name)](./puppeteer.extension._constructor_.md)</span>
-
-</td><td>
-
-</td><td>
-
-Constructs a new instance of the `Extension` class
-
-</td></tr>
-</tbody></table>
+```ts
+const extensions = await browser.extensions();
+for (const [id, extension] of extensions) {
+  console.log(extension.name, id);
+}
+```
 
 ## Properties
 
@@ -73,6 +60,8 @@ string
 
 </td><td>
 
+The unique identifier of the extension.
+
 </td></tr>
 <tr><td>
 
@@ -88,6 +77,8 @@ string
 
 </td><td>
 
+The name of the extension as specified in its manifest.
+
 </td></tr>
 <tr><td>
 
@@ -102,6 +93,8 @@ string
 string
 
 </td><td>
+
+The version of the extension as specified in its manifest.
 
 </td></tr>
 </tbody></table>
@@ -129,6 +122,8 @@ Description
 
 </td><td>
 
+Returns a list of the currently active and visible pages belonging to the extension.
+
 </td></tr>
 <tr><td>
 
@@ -138,6 +133,8 @@ Description
 
 </td><td>
 
+Triggers the default action of the extension for a specified page. This typically simulates a user clicking the extension's action icon in the browser toolbar, potentially opening a popup or executing an action script.
+
 </td></tr>
 <tr><td>
 
@@ -146,6 +143,8 @@ Description
 </td><td>
 
 </td><td>
+
+Returns a list of the currently active service workers belonging to the extension.
 
 </td></tr>
 </tbody></table>

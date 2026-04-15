@@ -4,6 +4,10 @@ sidebar_label: Realm.waitForFunction
 
 # Realm.waitForFunction() method
 
+Waits for a function to return a truthy value when evaluated in the realm's context.
+
+Arguments can be passed from Node.js to `pageFunction`.
+
 ### Signature
 
 ```typescript
@@ -49,6 +53,8 @@ Func \| string
 
 </td><td>
 
+A function to evaluate in the realm.
+
 </td></tr>
 <tr><td>
 
@@ -60,7 +66,7 @@ options
 
 </td><td>
 
-_(Optional)_
+_(Optional)_ Options for polling and timeouts.
 
 </td></tr>
 <tr><td>
@@ -73,9 +79,24 @@ Params
 
 </td><td>
 
+Arguments to pass to the function.
+
 </td></tr>
 </tbody></table>
 
 **Returns:**
 
 Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;&gt;
+
+A promise that resolves when the function returns a truthy value.
+
+## Example
+
+```ts
+const selector = '.foo';
+await realm.waitForFunction(
+  selector => !!document.querySelector(selector),
+  {},
+  selector,
+);
+```

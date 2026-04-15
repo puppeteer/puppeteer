@@ -232,7 +232,11 @@ The constructor for this class is marked as internal. Third-party code should no
 
 </td><td>
 
-**_(Experimental)_** [Extension](./puppeteer.extension.md) represents an Extension instance installed in the browser.
+**_(Experimental)_** [Extension](./puppeteer.extension.md) represents a browser extension installed in the browser. It provides access to the extension's ID, name, and version, as well as methods for interacting with the extension's background workers and pages.
+
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Extension` class.
 
 </td></tr>
 <tr><td>

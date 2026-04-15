@@ -8,7 +8,19 @@ import type {Page} from './Page.js';
 import type {WebWorker} from './WebWorker.js';
 
 /**
- * {@link Extension} represents an Extension instance installed in the browser.
+ * {@link Extension} represents a browser extension installed in the browser.
+ * It provides access to the extension's ID, name, and version, as well as
+ * methods for interacting with the extension's background workers and pages.
+ *
+ * @example
+ * To get all extensions installed in the browser:
+ *
+ * ```ts
+ * const extensions = await browser.extensions();
+ * for (const [id, extension] of extensions) {
+ *   console.log(extension.name, id);
+ * }
+ * ```
  *
  * @experimental
  * @public
@@ -18,7 +30,7 @@ export abstract class Extension {
   #version: string;
   #name: string;
 
-  /*
+  /**
    * @internal
    */
   constructor(id: string, version: string, name: string) {
@@ -31,8 +43,8 @@ export abstract class Extension {
     this.#name = name;
   }
 
-  /*
-   * The version of the extension.
+  /**
+   * The version of the extension as specified in its manifest.
    *
    * @public
    */
@@ -40,8 +52,8 @@ export abstract class Extension {
     return this.#version;
   }
 
-  /*
-   * The name of the extension.
+  /**
+   * The name of the extension as specified in its manifest.
    *
    * @public
    */
@@ -49,8 +61,8 @@ export abstract class Extension {
     return this.#name;
   }
 
-  /*
-   * The id of the extension.
+  /**
+   * The unique identifier of the extension.
    *
    * @public
    */
@@ -58,23 +70,28 @@ export abstract class Extension {
     return this.#id;
   }
 
-  /*
-   * Returns the list of the currently active service workers of the extension.
+  /**
+   * Returns a list of the currently active service workers belonging
+   * to the extension.
    *
    * @public
    */
   abstract workers(): Promise<WebWorker[]>;
 
-  /*
-   * Returns the list of the visible pages of the extension.
+  /**
+   * Returns a list of the currently active and visible pages belonging
+   * to the extension.
    *
    * @public
    */
   abstract pages(): Promise<Page[]>;
 
-  /*
-   * Triggers an extension default action.
+  /**
+   * Triggers the default action of the extension for a specified page.
+   * This typically simulates a user clicking the extension's action icon
+   * in the browser toolbar, potentially opening a popup or executing an action script.
    *
+   * @param page - The page to trigger the action on.
    * @public
    */
   abstract triggerAction(page: Page): Promise<void>;

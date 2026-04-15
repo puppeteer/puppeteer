@@ -1202,7 +1202,9 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   ): Promise<DeviceRequestPrompt>;
 
   /**
-   * This method retrieves the list of realms within this frame
+   * Retrieves the list of extension execution realms associated with this frame.
+   * Extension execution realms are created by extension content scripts injected
+   * into the frame.
    *
    * @public
    */

@@ -716,9 +716,9 @@ Functions installed via `page.exposeFunction` survive navigations.
 
 </td><td>
 
-This method retrieves the list of realms inside the main frame of a page.
+Retrieves the list of extension execution realms in the main frame of the page. These realms correspond to extension content scripts running on the page.
 
-Shortcut for `mainFrame().extensionRealms()`.
+Shortcut for [mainFrame().extensionRealms()](./puppeteer.frame.extensionrealms.md).
 
 </td></tr>
 <tr><td>
@@ -1364,7 +1364,7 @@ Shortcut for [page.mainFrame().title()](./puppeteer.frame.title.md).
 
 </td><td>
 
-Triggers an extension action for the given extension.
+Triggers the default action of the specified extension for this page. This simulates clicking the extension's icon in the browser's toolbar.
 
 </td></tr>
 <tr><td>

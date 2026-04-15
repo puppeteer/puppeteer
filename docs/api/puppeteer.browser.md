@@ -259,7 +259,7 @@ Disconnects Puppeteer from this [browser](./puppeteer.browser.md), but leaves th
 
 </td><td>
 
-Get a map with id as keys and extension as value of the installed extensions in the browser.
+Retrieves a map of all extensions installed in the browser, where the keys are extension IDs and the values are the corresponding [Extension](./puppeteer.extension.md) instances.
 
 </td></tr>
 <tr><td>

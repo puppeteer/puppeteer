@@ -4,7 +4,7 @@ sidebar_label: Page.triggerExtensionAction
 
 # Page.triggerExtensionAction() method
 
-Triggers an extension action for the given extension.
+Triggers the default action of the specified extension for this page. This simulates clicking the extension's icon in the browser's toolbar.
 
 ### Signature
 
@@ -39,7 +39,7 @@ extension
 
 </td><td>
 
-The extension to trigger the action for.
+The [Extension](./puppeteer.extension.md) whose action to trigger.
 
 </td></tr>
 </tbody></table>

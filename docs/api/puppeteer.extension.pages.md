@@ -4,6 +4,8 @@ sidebar_label: Extension.pages
 
 # Extension.pages() method
 
+Returns a list of the currently active and visible pages belonging to the extension.
+
 ### Signature
 
 ```typescript
