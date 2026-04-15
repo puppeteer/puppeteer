@@ -91,7 +91,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="close">[close](./puppeteer.webworker.close.md)</span>
+<span id="close">[close()](./puppeteer.webworker.close.md)</span>
 
 </td><td>
 
@@ -100,7 +100,7 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="evaluate">[evaluate](./puppeteer.webworker.evaluate.md)</span>
+<span id="evaluate">[evaluate(func, args)](./puppeteer.webworker.evaluate.md)</span>
 
 </td><td>
 
@@ -119,7 +119,7 @@ In general, you should use [evaluateHandle](./puppeteer.webworker.evaluatehandle
 </td></tr>
 <tr><td>
 
-<span id="evaluatehandle">[evaluateHandle](./puppeteer.webworker.evaluatehandle.md)</span>
+<span id="evaluatehandle">[evaluateHandle(func, args)](./puppeteer.webworker.evaluatehandle.md)</span>
 
 </td><td>
 
@@ -136,7 +136,7 @@ In general, you should use [evaluateHandle](./puppeteer.webworker.evaluatehandle
 </td></tr>
 <tr><td>
 
-<span id="url">[url](./puppeteer.webworker.url.md)</span>
+<span id="url">[url()](./puppeteer.webworker.url.md)</span>
 
 </td><td>
 

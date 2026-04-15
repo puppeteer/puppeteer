@@ -130,7 +130,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="addscreen">[addScreen](./puppeteer.browser.addscreen.md)</span>
+<span id="addscreen">[addScreen(params)](./puppeteer.browser.addscreen.md)</span>
 
 </td><td>
 
@@ -145,7 +145,7 @@ Only supported in headless mode.
 </td></tr>
 <tr><td>
 
-<span id="browsercontexts">[browserContexts](./puppeteer.browser.browsercontexts.md)</span>
+<span id="browsercontexts">[browserContexts()](./puppeteer.browser.browsercontexts.md)</span>
 
 </td><td>
 
@@ -158,7 +158,7 @@ In a newly-created [browser](./puppeteer.browser.md), this will return a single 
 </td></tr>
 <tr><td>
 
-<span id="close">[close](./puppeteer.browser.close.md)</span>
+<span id="close">[close()](./puppeteer.browser.close.md)</span>
 
 </td><td>
 
@@ -169,7 +169,7 @@ Closes this [browser](./puppeteer.browser.md) and all associated [pages](./puppe
 </td></tr>
 <tr><td>
 
-<span id="cookies">[cookies](./puppeteer.browser.cookies.md)</span>
+<span id="cookies">[cookies()](./puppeteer.browser.cookies.md)</span>
 
 </td><td>
 
@@ -184,7 +184,7 @@ Shortcut for [browser.defaultBrowserContext().cookies()](./puppeteer.browsercont
 </td></tr>
 <tr><td>
 
-<span id="createbrowsercontext">[createBrowserContext](./puppeteer.browser.createbrowsercontext.md)</span>
+<span id="createbrowsercontext">[createBrowserContext(options)](./puppeteer.browser.createbrowsercontext.md)</span>
 
 </td><td>
 
@@ -197,7 +197,7 @@ This won't share cookies/cache with other [browser contexts](./puppeteer.browser
 </td></tr>
 <tr><td>
 
-<span id="defaultbrowsercontext">[defaultBrowserContext](./puppeteer.browser.defaultbrowsercontext.md)</span>
+<span id="defaultbrowsercontext">[defaultBrowserContext()](./puppeteer.browser.defaultbrowsercontext.md)</span>
 
 </td><td>
 
@@ -212,7 +212,7 @@ The default [browser context](./puppeteer.browsercontext.md) cannot be closed.
 </td></tr>
 <tr><td>
 
-<span id="deletecookie">[deleteCookie](./puppeteer.browser.deletecookie.md)</span>
+<span id="deletecookie">[deleteCookie(cookies)](./puppeteer.browser.deletecookie.md)</span>
 
 </td><td>
 
@@ -227,7 +227,7 @@ Shortcut for [browser.defaultBrowserContext().deleteCookie()](./puppeteer.browse
 </td></tr>
 <tr><td>
 
-<span id="deletematchingcookies">[deleteMatchingCookies](./puppeteer.browser.deletematchingcookies.md)</span>
+<span id="deletematchingcookies">[deleteMatchingCookies(filters)](./puppeteer.browser.deletematchingcookies.md)</span>
 
 </td><td>
 
@@ -242,7 +242,7 @@ Shortcut for [browser.defaultBrowserContext().deleteMatchingCookies()](./puppete
 </td></tr>
 <tr><td>
 
-<span id="disconnect">[disconnect](./puppeteer.browser.disconnect.md)</span>
+<span id="disconnect">[disconnect()](./puppeteer.browser.disconnect.md)</span>
 
 </td><td>
 
@@ -253,7 +253,7 @@ Disconnects Puppeteer from this [browser](./puppeteer.browser.md), but leaves th
 </td></tr>
 <tr><td>
 
-<span id="extensions">[extensions](./puppeteer.browser.extensions.md)</span>
+<span id="extensions">[extensions()](./puppeteer.browser.extensions.md)</span>
 
 </td><td>
 
@@ -264,7 +264,7 @@ Get a map with id as keys and extension as value of the installed extensions in 
 </td></tr>
 <tr><td>
 
-<span id="getwindowbounds">[getWindowBounds](./puppeteer.browser.getwindowbounds.md)</span>
+<span id="getwindowbounds">[getWindowBounds(windowId)](./puppeteer.browser.getwindowbounds.md)</span>
 
 </td><td>
 
@@ -275,7 +275,7 @@ Gets the specified window [bounds](./puppeteer.windowbounds.md).
 </td></tr>
 <tr><td>
 
-<span id="installextension">[installExtension](./puppeteer.browser.installextension.md)</span>
+<span id="installextension">[installExtension(path)](./puppeteer.browser.installextension.md)</span>
 
 </td><td>
 
@@ -286,7 +286,7 @@ Installs an extension and returns the ID. In Chrome, this is only available if t
 </td></tr>
 <tr><td>
 
-<span id="isconnected">[isConnected](./puppeteer.browser.isconnected.md)</span>
+<span id="isconnected">[isConnected()](./puppeteer.browser.isconnected.md)</span>
 
 </td><td>
 
@@ -303,7 +303,7 @@ Use [Browser.connected](./puppeteer.browser.md).
 </td></tr>
 <tr><td>
 
-<span id="newpage">[newPage](./puppeteer.browser.newpage.md)</span>
+<span id="newpage">[newPage(options)](./puppeteer.browser.newpage.md)</span>
 
 </td><td>
 
@@ -314,7 +314,7 @@ Creates a new [page](./puppeteer.page.md) in the [default browser context](./pup
 </td></tr>
 <tr><td>
 
-<span id="pages">[pages](./puppeteer.browser.pages.md)</span>
+<span id="pages">[pages(includeAll)](./puppeteer.browser.pages.md)</span>
 
 </td><td>
 
@@ -331,7 +331,7 @@ Non-visible [pages](./puppeteer.page.md), such as `"background_page"`, will not 
 </td></tr>
 <tr><td>
 
-<span id="process">[process](./puppeteer.browser.process.md)</span>
+<span id="process">[process()](./puppeteer.browser.process.md)</span>
 
 </td><td>
 
@@ -342,7 +342,7 @@ Gets the associated [ChildProcess](https://nodejs.org/api/child_process.html#cla
 </td></tr>
 <tr><td>
 
-<span id="removescreen">[removeScreen](./puppeteer.browser.removescreen.md)</span>
+<span id="removescreen">[removeScreen(screenId)](./puppeteer.browser.removescreen.md)</span>
 
 </td><td>
 
@@ -357,7 +357,7 @@ Only supported in headless mode. Fails if the primary screen id is specified.
 </td></tr>
 <tr><td>
 
-<span id="screens">[screens](./puppeteer.browser.screens.md)</span>
+<span id="screens">[screens()](./puppeteer.browser.screens.md)</span>
 
 </td><td>
 
@@ -368,7 +368,7 @@ Gets a list of [screen information objects](./puppeteer.screeninfo.md).
 </td></tr>
 <tr><td>
 
-<span id="setcookie">[setCookie](./puppeteer.browser.setcookie.md)</span>
+<span id="setcookie">[setCookie(cookies)](./puppeteer.browser.setcookie.md)</span>
 
 </td><td>
 
@@ -383,7 +383,7 @@ Shortcut for [browser.defaultBrowserContext().setCookie()](./puppeteer.browserco
 </td></tr>
 <tr><td>
 
-<span id="setpermission">[setPermission](./puppeteer.browser.setpermission.md)</span>
+<span id="setpermission">[setPermission(origin, permissions)](./puppeteer.browser.setpermission.md)</span>
 
 </td><td>
 
@@ -398,7 +398,7 @@ Shortcut for [browser.defaultBrowserContext().setPermission()](./puppeteer.brows
 </td></tr>
 <tr><td>
 
-<span id="setwindowbounds">[setWindowBounds](./puppeteer.browser.setwindowbounds.md)</span>
+<span id="setwindowbounds">[setWindowBounds(windowId, windowBounds)](./puppeteer.browser.setwindowbounds.md)</span>
 
 </td><td>
 
@@ -409,7 +409,7 @@ Sets the specified window [bounds](./puppeteer.windowbounds.md).
 </td></tr>
 <tr><td>
 
-<span id="target">[target](./puppeteer.browser.target.md)</span>
+<span id="target">[target()](./puppeteer.browser.target.md)</span>
 
 </td><td>
 
@@ -420,7 +420,7 @@ Gets the [target](./puppeteer.target.md) associated with the [default browser co
 </td></tr>
 <tr><td>
 
-<span id="targets">[targets](./puppeteer.browser.targets.md)</span>
+<span id="targets">[targets()](./puppeteer.browser.targets.md)</span>
 
 </td><td>
 
@@ -433,7 +433,7 @@ In case of multiple [browser contexts](./puppeteer.browsercontext.md), this retu
 </td></tr>
 <tr><td>
 
-<span id="uninstallextension">[uninstallExtension](./puppeteer.browser.uninstallextension.md)</span>
+<span id="uninstallextension">[uninstallExtension(id)](./puppeteer.browser.uninstallextension.md)</span>
 
 </td><td>
 
@@ -444,7 +444,7 @@ Uninstalls an extension. In Chrome, this is only available if the browser was cr
 </td></tr>
 <tr><td>
 
-<span id="useragent">[userAgent](./puppeteer.browser.useragent.md)</span>
+<span id="useragent">[userAgent()](./puppeteer.browser.useragent.md)</span>
 
 </td><td>
 
@@ -457,7 +457,7 @@ Gets this [browser's](./puppeteer.browser.md) original user agent.
 </td></tr>
 <tr><td>
 
-<span id="version">[version](./puppeteer.browser.version.md)</span>
+<span id="version">[version()](./puppeteer.browser.version.md)</span>
 
 </td><td>
 
@@ -472,7 +472,7 @@ The format of [Browser.version()](./puppeteer.browser.version.md) might change w
 </td></tr>
 <tr><td>
 
-<span id="waitfortarget">[waitForTarget](./puppeteer.browser.waitfortarget.md)</span>
+<span id="waitfortarget">[waitForTarget(predicate, options)](./puppeteer.browser.waitfortarget.md)</span>
 
 </td><td>
 
@@ -485,7 +485,7 @@ This will look all open [browser contexts](./puppeteer.browsercontext.md).
 </td></tr>
 <tr><td>
 
-<span id="wsendpoint">[wsEndpoint](./puppeteer.browser.wsendpoint.md)</span>
+<span id="wsendpoint">[wsEndpoint()](./puppeteer.browser.wsendpoint.md)</span>
 
 </td><td>
 

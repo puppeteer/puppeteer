@@ -131,7 +131,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="connect">[connect](./puppeteer.puppeteernode.connect.md)</span>
+<span id="connect">[connect(options)](./puppeteer.puppeteernode.connect.md)</span>
 
 </td><td>
 
@@ -142,7 +142,7 @@ This method attaches Puppeteer to an existing browser instance.
 </td></tr>
 <tr><td>
 
-<span id="defaultargs">[defaultArgs](./puppeteer.puppeteernode.defaultargs.md)</span>
+<span id="defaultargs">[defaultArgs(options)](./puppeteer.puppeteernode.defaultargs.md)</span>
 
 </td><td>
 
@@ -151,7 +151,7 @@ This method attaches Puppeteer to an existing browser instance.
 </td></tr>
 <tr><td>
 
-<span id="executablepath">[executablePath](./puppeteer.puppeteernode.executablepath.md)</span>
+<span id="executablepath">[executablePath(channel)](./puppeteer.puppeteernode.executablepath.md)</span>
 
 </td><td>
 
@@ -162,7 +162,7 @@ The default executable path for a given ChromeReleaseChannel.
 </td></tr>
 <tr><td>
 
-<span id="executablepath">[executablePath](./puppeteer.puppeteernode.executablepath.md#overload-2)</span>
+<span id="executablepath">[executablePath(options)](./puppeteer.puppeteernode.executablepath.md#overload-2)</span>
 
 </td><td>
 
@@ -173,7 +173,7 @@ The default executable path given LaunchOptions.
 </td></tr>
 <tr><td>
 
-<span id="executablepath">[executablePath](./puppeteer.puppeteernode.executablepath.md#overload-3)</span>
+<span id="executablepath">[executablePath()](./puppeteer.puppeteernode.executablepath.md#overload-3)</span>
 
 </td><td>
 
@@ -184,7 +184,7 @@ The default executable path.
 </td></tr>
 <tr><td>
 
-<span id="launch">[launch](./puppeteer.puppeteernode.launch.md)</span>
+<span id="launch">[launch(options)](./puppeteer.puppeteernode.launch.md)</span>
 
 </td><td>
 
@@ -201,7 +201,7 @@ Puppeteer can also be used to control the Chrome browser, but it works best with
 </td></tr>
 <tr><td>
 
-<span id="trimcache">[trimCache](./puppeteer.puppeteernode.trimcache.md)</span>
+<span id="trimcache">[trimCache()](./puppeteer.puppeteernode.trimcache.md)</span>
 
 </td><td>
 

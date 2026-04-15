@@ -92,7 +92,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="_">[$](./puppeteer.elementhandle._.md)</span>
+<span id="_">[$(selector)](./puppeteer.elementhandle._.md)</span>
 
 </td><td>
 
@@ -103,7 +103,7 @@ Queries the current element for an element matching the given selector.
 </td></tr>
 <tr><td>
 
-<span id="__">[$$](./puppeteer.elementhandle.__.md)</span>
+<span id="__">[$$(selector, options)](./puppeteer.elementhandle.__.md)</span>
 
 </td><td>
 
@@ -114,7 +114,7 @@ Queries the current element for all elements matching the given selector.
 </td></tr>
 <tr><td>
 
-<span id="__eval">[$$eval](./puppeteer.elementhandle.__eval.md)</span>
+<span id="__eval">[$$eval(selector, pageFunction, args)](./puppeteer.elementhandle.__eval.md)</span>
 
 </td><td>
 
@@ -127,7 +127,7 @@ If the given function returns a promise, then this method will wait till the pro
 </td></tr>
 <tr><td>
 
-<span id="_eval">[$eval](./puppeteer.elementhandle._eval.md)</span>
+<span id="_eval">[$eval(selector, pageFunction, args)](./puppeteer.elementhandle._eval.md)</span>
 
 </td><td>
 
@@ -140,7 +140,7 @@ If the given function returns a promise, then this method will wait till the pro
 </td></tr>
 <tr><td>
 
-<span id="aslocator">[asLocator](./puppeteer.elementhandle.aslocator.md)</span>
+<span id="aslocator">[asLocator(this)](./puppeteer.elementhandle.aslocator.md)</span>
 
 </td><td>
 
@@ -151,7 +151,7 @@ Creates a locator based on an ElementHandle. This would not allow refreshing the
 </td></tr>
 <tr><td>
 
-<span id="autofill">[autofill](./puppeteer.elementhandle.autofill.md)</span>
+<span id="autofill">[autofill(data)](./puppeteer.elementhandle.autofill.md)</span>
 
 </td><td>
 
@@ -181,7 +181,7 @@ await name.autofill({
 </td></tr>
 <tr><td>
 
-<span id="backendnodeid">[backendNodeId](./puppeteer.elementhandle.backendnodeid.md)</span>
+<span id="backendnodeid">[backendNodeId()](./puppeteer.elementhandle.backendnodeid.md)</span>
 
 </td><td>
 
@@ -192,7 +192,7 @@ When connected using Chrome DevTools Protocol, it returns a DOM.BackendNodeId fo
 </td></tr>
 <tr><td>
 
-<span id="boundingbox">[boundingBox](./puppeteer.elementhandle.boundingbox.md)</span>
+<span id="boundingbox">[boundingBox()](./puppeteer.elementhandle.boundingbox.md)</span>
 
 </td><td>
 
@@ -203,7 +203,7 @@ This method returns the bounding box of the element (relative to the main frame)
 </td></tr>
 <tr><td>
 
-<span id="boxmodel">[boxModel](./puppeteer.elementhandle.boxmodel.md)</span>
+<span id="boxmodel">[boxModel()](./puppeteer.elementhandle.boxmodel.md)</span>
 
 </td><td>
 
@@ -218,7 +218,7 @@ Boxes are represented as an array of points; Each Point is an object `{x, y}`. B
 </td></tr>
 <tr><td>
 
-<span id="click">[click](./puppeteer.elementhandle.click.md)</span>
+<span id="click">[click(this, options)](./puppeteer.elementhandle.click.md)</span>
 
 </td><td>
 
@@ -229,7 +229,7 @@ This method scrolls element into view if needed, and then uses [Page.mouse](./pu
 </td></tr>
 <tr><td>
 
-<span id="clickablepoint">[clickablePoint](./puppeteer.elementhandle.clickablepoint.md)</span>
+<span id="clickablepoint">[clickablePoint(offset)](./puppeteer.elementhandle.clickablepoint.md)</span>
 
 </td><td>
 
@@ -240,7 +240,7 @@ Returns the middle point within an element unless a specific offset is provided.
 </td></tr>
 <tr><td>
 
-<span id="contentframe">[contentFrame](./puppeteer.elementhandle.contentframe.md)</span>
+<span id="contentframe">[contentFrame(this)](./puppeteer.elementhandle.contentframe.md)</span>
 
 </td><td>
 
@@ -251,7 +251,7 @@ Resolves the frame associated with the element, if any. Always exists for HTMLIF
 </td></tr>
 <tr><td>
 
-<span id="contentframe">[contentFrame](./puppeteer.elementhandle.contentframe.md#overload-2)</span>
+<span id="contentframe">[contentFrame()](./puppeteer.elementhandle.contentframe.md#overload-2)</span>
 
 </td><td>
 
@@ -260,7 +260,7 @@ Resolves the frame associated with the element, if any. Always exists for HTMLIF
 </td></tr>
 <tr><td>
 
-<span id="drag">[drag](./puppeteer.elementhandle.drag.md)</span>
+<span id="drag">[drag(this, target)](./puppeteer.elementhandle.drag.md)</span>
 
 </td><td>
 
@@ -271,7 +271,7 @@ Drags an element over the given element or point.
 </td></tr>
 <tr><td>
 
-<span id="draganddrop">[dragAndDrop](./puppeteer.elementhandle.draganddrop.md)</span>
+<span id="draganddrop">[dragAndDrop(this, target, options)](./puppeteer.elementhandle.draganddrop.md)</span>
 
 </td><td>
 
@@ -286,7 +286,7 @@ Use `ElementHandle.drop` instead.
 </td></tr>
 <tr><td>
 
-<span id="dragenter">[dragEnter](./puppeteer.elementhandle.dragenter.md)</span>
+<span id="dragenter">[dragEnter(this, data)](./puppeteer.elementhandle.dragenter.md)</span>
 
 </td><td>
 
@@ -301,7 +301,7 @@ Do not use. `dragenter` will automatically be performed during dragging.
 </td></tr>
 <tr><td>
 
-<span id="dragover">[dragOver](./puppeteer.elementhandle.dragover.md)</span>
+<span id="dragover">[dragOver(this, data)](./puppeteer.elementhandle.dragover.md)</span>
 
 </td><td>
 
@@ -316,7 +316,7 @@ Do not use. `dragover` will automatically be performed during dragging.
 </td></tr>
 <tr><td>
 
-<span id="drop">[drop](./puppeteer.elementhandle.drop.md)</span>
+<span id="drop">[drop(this, element)](./puppeteer.elementhandle.drop.md)</span>
 
 </td><td>
 
@@ -327,7 +327,7 @@ Drops the given element onto the current one.
 </td></tr>
 <tr><td>
 
-<span id="drop">[drop](./puppeteer.elementhandle.drop.md#overload-2)</span>
+<span id="drop">[drop(this, data)](./puppeteer.elementhandle.drop.md#overload-2)</span>
 
 </td><td>
 
@@ -342,7 +342,7 @@ No longer supported.
 </td></tr>
 <tr><td>
 
-<span id="focus">[focus](./puppeteer.elementhandle.focus.md)</span>
+<span id="focus">[focus()](./puppeteer.elementhandle.focus.md)</span>
 
 </td><td>
 
@@ -353,7 +353,7 @@ Calls [focus](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus
 </td></tr>
 <tr><td>
 
-<span id="hover">[hover](./puppeteer.elementhandle.hover.md)</span>
+<span id="hover">[hover(this)](./puppeteer.elementhandle.hover.md)</span>
 
 </td><td>
 
@@ -364,7 +364,7 @@ This method scrolls element into view if needed, and then uses [Page.mouse](./pu
 </td></tr>
 <tr><td>
 
-<span id="ishidden">[isHidden](./puppeteer.elementhandle.ishidden.md)</span>
+<span id="ishidden">[isHidden()](./puppeteer.elementhandle.ishidden.md)</span>
 
 </td><td>
 
@@ -381,7 +381,7 @@ An element is considered to be hidden if at least one of the following is true:
 </td></tr>
 <tr><td>
 
-<span id="isintersectingviewport">[isIntersectingViewport](./puppeteer.elementhandle.isintersectingviewport.md)</span>
+<span id="isintersectingviewport">[isIntersectingViewport(this, options)](./puppeteer.elementhandle.isintersectingviewport.md)</span>
 
 </td><td>
 
@@ -392,7 +392,7 @@ Resolves to true if the element is visible in the current viewport. If an elemen
 </td></tr>
 <tr><td>
 
-<span id="isvisible">[isVisible](./puppeteer.elementhandle.isvisible.md)</span>
+<span id="isvisible">[isVisible()](./puppeteer.elementhandle.isvisible.md)</span>
 
 </td><td>
 
@@ -409,7 +409,7 @@ An element is considered to be visible if all of the following is true:
 </td></tr>
 <tr><td>
 
-<span id="press">[press](./puppeteer.elementhandle.press.md)</span>
+<span id="press">[press(key, options)](./puppeteer.elementhandle.press.md)</span>
 
 </td><td>
 
@@ -426,7 +426,7 @@ If `key` is a single character and no modifier keys besides `Shift` are being he
 </td></tr>
 <tr><td>
 
-<span id="screenshot">[screenshot](./puppeteer.elementhandle.screenshot.md)</span>
+<span id="screenshot">[screenshot(options)](./puppeteer.elementhandle.screenshot.md)</span>
 
 </td><td>
 
@@ -437,7 +437,7 @@ This method scrolls element into view if needed, and then uses [Page.screenshot(
 </td></tr>
 <tr><td>
 
-<span id="screenshot">[screenshot](./puppeteer.elementhandle.screenshot.md#overload-2)</span>
+<span id="screenshot">[screenshot(options)](./puppeteer.elementhandle.screenshot.md#overload-2)</span>
 
 </td><td>
 
@@ -446,7 +446,7 @@ This method scrolls element into view if needed, and then uses [Page.screenshot(
 </td></tr>
 <tr><td>
 
-<span id="scrollintoview">[scrollIntoView](./puppeteer.elementhandle.scrollintoview.md)</span>
+<span id="scrollintoview">[scrollIntoView(this)](./puppeteer.elementhandle.scrollintoview.md)</span>
 
 </td><td>
 
@@ -457,7 +457,7 @@ Scrolls the element into view using either the automation protocol client or by 
 </td></tr>
 <tr><td>
 
-<span id="select">[select](./puppeteer.elementhandle.select.md)</span>
+<span id="select">[select(values)](./puppeteer.elementhandle.select.md)</span>
 
 </td><td>
 
@@ -468,7 +468,7 @@ Triggers a `change` and `input` event once all the provided options have been se
 </td></tr>
 <tr><td>
 
-<span id="tap">[tap](./puppeteer.elementhandle.tap.md)</span>
+<span id="tap">[tap(this)](./puppeteer.elementhandle.tap.md)</span>
 
 </td><td>
 
@@ -479,7 +479,7 @@ This method scrolls element into view if needed, and then uses [Touchscreen.tap(
 </td></tr>
 <tr><td>
 
-<span id="toelement">[toElement](./puppeteer.elementhandle.toelement.md)</span>
+<span id="toelement">[toElement(tagName)](./puppeteer.elementhandle.toelement.md)</span>
 
 </td><td>
 
@@ -490,7 +490,7 @@ Converts the current handle to the given element type.
 </td></tr>
 <tr><td>
 
-<span id="touchend">[touchEnd](./puppeteer.elementhandle.touchend.md)</span>
+<span id="touchend">[touchEnd(this)](./puppeteer.elementhandle.touchend.md)</span>
 
 </td><td>
 
@@ -499,7 +499,7 @@ Converts the current handle to the given element type.
 </td></tr>
 <tr><td>
 
-<span id="touchmove">[touchMove](./puppeteer.elementhandle.touchmove.md)</span>
+<span id="touchmove">[touchMove(this, touch)](./puppeteer.elementhandle.touchmove.md)</span>
 
 </td><td>
 
@@ -510,7 +510,7 @@ This method scrolls the element into view if needed, and then moves the touch to
 </td></tr>
 <tr><td>
 
-<span id="touchstart">[touchStart](./puppeteer.elementhandle.touchstart.md)</span>
+<span id="touchstart">[touchStart(this)](./puppeteer.elementhandle.touchstart.md)</span>
 
 </td><td>
 
@@ -521,7 +521,7 @@ This method scrolls the element into view if needed, and then starts a touch in 
 </td></tr>
 <tr><td>
 
-<span id="type">[type](./puppeteer.elementhandle.type.md)</span>
+<span id="type">[type(text, options)](./puppeteer.elementhandle.type.md)</span>
 
 </td><td>
 
@@ -534,7 +534,7 @@ To press a special key, like `Control` or `ArrowDown`, use [ElementHandle.press(
 </td></tr>
 <tr><td>
 
-<span id="uploadfile">[uploadFile](./puppeteer.elementhandle.uploadfile.md)</span>
+<span id="uploadfile">[uploadFile(this, paths)](./puppeteer.elementhandle.uploadfile.md)</span>
 
 </td><td>
 
@@ -549,7 +549,7 @@ This will not validate whether the file paths exists. Also, if a path is relativ
 </td></tr>
 <tr><td>
 
-<span id="waitforselector">[waitForSelector](./puppeteer.elementhandle.waitforselector.md)</span>
+<span id="waitforselector">[waitForSelector(selector, options)](./puppeteer.elementhandle.waitforselector.md)</span>
 
 </td><td>
 

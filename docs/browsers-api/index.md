@@ -283,7 +283,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="buildarchivefilename">[buildArchiveFilename](./browsers.buildarchivefilename.md)</span>
+<span id="buildarchivefilename">[buildArchiveFilename(browser, platform, buildId, extension)](./browsers.buildarchivefilename.md)</span>
 
 </td><td>
 
@@ -292,21 +292,21 @@ Utility function to build a standard archive filename.
 </td></tr>
 <tr><td>
 
-<span id="candownload">[canDownload](./browsers.candownload.md)</span>
+<span id="candownload">[canDownload(options)](./browsers.candownload.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<span id="computeexecutablepath">[computeExecutablePath](./browsers.computeexecutablepath.md)</span>
+<span id="computeexecutablepath">[computeExecutablePath(options)](./browsers.computeexecutablepath.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<span id="computesystemexecutablepath">[computeSystemExecutablePath](./browsers.computesystemexecutablepath.md)</span>
+<span id="computesystemexecutablepath">[computeSystemExecutablePath(options)](./browsers.computesystemexecutablepath.md)</span>
 
 </td><td>
 
@@ -315,21 +315,21 @@ Returns a path to a system-wide Chrome installation given a release channel name
 </td></tr>
 <tr><td>
 
-<span id="createprofile">[createProfile](./browsers.createprofile.md)</span>
+<span id="createprofile">[createProfile(browser, opts)](./browsers.createprofile.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<span id="detectbrowserplatform">[detectBrowserPlatform](./browsers.detectbrowserplatform.md)</span>
+<span id="detectbrowserplatform">[detectBrowserPlatform()](./browsers.detectbrowserplatform.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<span id="getdownloadurl">[getDownloadUrl](./browsers.getdownloadurl.md)</span>
+<span id="getdownloadurl">[getDownloadUrl(browser, platform, buildId, baseUrl)](./browsers.getdownloadurl.md)</span>
 
 </td><td>
 
@@ -340,7 +340,7 @@ The archive is bound to the specific platform and build ID specified.
 </td></tr>
 <tr><td>
 
-<span id="getinstalledbrowsers">[getInstalledBrowsers](./browsers.getinstalledbrowsers.md)</span>
+<span id="getinstalledbrowsers">[getInstalledBrowsers(options)](./browsers.getinstalledbrowsers.md)</span>
 
 </td><td>
 
@@ -349,7 +349,7 @@ Returns metadata about browsers installed in the cache directory.
 </td></tr>
 <tr><td>
 
-<span id="getversioncomparator">[getVersionComparator](./browsers.getversioncomparator.md)</span>
+<span id="getversioncomparator">[getVersionComparator(browser)](./browsers.getversioncomparator.md)</span>
 
 </td><td>
 
@@ -358,7 +358,7 @@ Returns a version comparator for the given browser that can be used to sort brow
 </td></tr>
 <tr><td>
 
-<span id="install">[install](./browsers.install.md)</span>
+<span id="install">[install(options)](./browsers.install.md)</span>
 
 </td><td>
 
@@ -367,7 +367,7 @@ Downloads and unpacks the browser archive according to the [InstallOptions](./br
 </td></tr>
 <tr><td>
 
-<span id="install">[install](./browsers.install.md#overload-2)</span>
+<span id="install">[install(options)](./browsers.install.md#overload-2)</span>
 
 </td><td>
 
@@ -376,7 +376,7 @@ Downloads the browser archive according to the [InstallOptions](./browsers.insta
 </td></tr>
 <tr><td>
 
-<span id="launch">[launch](./browsers.launch.md)</span>
+<span id="launch">[launch(opts)](./browsers.launch.md)</span>
 
 </td><td>
 
@@ -385,21 +385,21 @@ Launches a browser process according to [LaunchOptions](./browsers.launchoptions
 </td></tr>
 <tr><td>
 
-<span id="makeprogresscallback">[makeProgressCallback](./browsers.makeprogresscallback.md)</span>
+<span id="makeprogresscallback">[makeProgressCallback(browser, buildId)](./browsers.makeprogresscallback.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<span id="resolvebuildid">[resolveBuildId](./browsers.resolvebuildid.md)</span>
+<span id="resolvebuildid">[resolveBuildId(browser, platform, tag)](./browsers.resolvebuildid.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<span id="resolvedefaultuserdatadir">[resolveDefaultUserDataDir](./browsers.resolvedefaultuserdatadir.md)</span>
+<span id="resolvedefaultuserdatadir">[resolveDefaultUserDataDir(browser, platform, channel)](./browsers.resolvedefaultuserdatadir.md)</span>
 
 </td><td>
 
@@ -408,7 +408,7 @@ Returns the expected default user data dir for the given channel. It does not ch
 </td></tr>
 <tr><td>
 
-<span id="uninstall">[uninstall](./browsers.uninstall.md)</span>
+<span id="uninstall">[uninstall(options)](./browsers.uninstall.md)</span>
 
 </td><td>
 

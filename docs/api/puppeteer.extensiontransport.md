@@ -86,7 +86,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="close">[close](./puppeteer.extensiontransport.close.md)</span>
+<span id="close">[close()](./puppeteer.extensiontransport.close.md)</span>
 
 </td><td>
 
@@ -95,7 +95,7 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="connecttab">[connectTab](./puppeteer.extensiontransport.connecttab.md)</span>
+<span id="connecttab">[connectTab(tabId)](./puppeteer.extensiontransport.connecttab.md)</span>
 
 </td><td>
 
@@ -106,7 +106,7 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="send">[send](./puppeteer.extensiontransport.send.md)</span>
+<span id="send">[send(message)](./puppeteer.extensiontransport.send.md)</span>
 
 </td><td>
 

@@ -86,7 +86,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="click">[click](./puppeteer.locator.click.md)</span>
+<span id="click">[click(this, options)](./puppeteer.locator.click.md)</span>
 
 </td><td>
 
@@ -97,7 +97,7 @@ Clicks the located element.
 </td></tr>
 <tr><td>
 
-<span id="clone">[clone](./puppeteer.locator.clone.md)</span>
+<span id="clone">[clone()](./puppeteer.locator.clone.md)</span>
 
 </td><td>
 
@@ -108,7 +108,7 @@ Clones the locator.
 </td></tr>
 <tr><td>
 
-<span id="fill">[fill](./puppeteer.locator.fill.md)</span>
+<span id="fill">[fill(this, value, options)](./puppeteer.locator.fill.md)</span>
 
 </td><td>
 
@@ -119,7 +119,7 @@ Fills out the input identified by the locator using the provided value. The type
 </td></tr>
 <tr><td>
 
-<span id="filter">[filter](./puppeteer.locator.filter.md)</span>
+<span id="filter">[filter(predicate)](./puppeteer.locator.filter.md)</span>
 
 </td><td>
 
@@ -132,7 +132,7 @@ If the expectations do not match, then the locator will retry.
 </td></tr>
 <tr><td>
 
-<span id="hover">[hover](./puppeteer.locator.hover.md)</span>
+<span id="hover">[hover(this, options)](./puppeteer.locator.hover.md)</span>
 
 </td><td>
 
@@ -143,7 +143,7 @@ Hovers over the located element.
 </td></tr>
 <tr><td>
 
-<span id="map">[map](./puppeteer.locator.map.md)</span>
+<span id="map">[map(mapper)](./puppeteer.locator.map.md)</span>
 
 </td><td>
 
@@ -154,7 +154,7 @@ Maps the locator using the provided mapper.
 </td></tr>
 <tr><td>
 
-<span id="race">[race](./puppeteer.locator.race.md)</span>
+<span id="race">[race(locators)](./puppeteer.locator.race.md)</span>
 
 </td><td>
 
@@ -167,7 +167,7 @@ Creates a race between multiple locators trying to locate elements in parallel b
 </td></tr>
 <tr><td>
 
-<span id="scroll">[scroll](./puppeteer.locator.scroll.md)</span>
+<span id="scroll">[scroll(this, options)](./puppeteer.locator.scroll.md)</span>
 
 </td><td>
 
@@ -178,7 +178,7 @@ Scrolls the located element.
 </td></tr>
 <tr><td>
 
-<span id="setensureelementisintheviewport">[setEnsureElementIsInTheViewport](./puppeteer.locator.setensureelementisintheviewport.md)</span>
+<span id="setensureelementisintheviewport">[setEnsureElementIsInTheViewport(this, value)](./puppeteer.locator.setensureelementisintheviewport.md)</span>
 
 </td><td>
 
@@ -189,7 +189,7 @@ Creates a new locator instance by cloning the current locator and specifying whe
 </td></tr>
 <tr><td>
 
-<span id="settimeout">[setTimeout](./puppeteer.locator.settimeout.md)</span>
+<span id="settimeout">[setTimeout(timeout)](./puppeteer.locator.settimeout.md)</span>
 
 </td><td>
 
@@ -202,7 +202,7 @@ Pass `0` to disable timeout.
 </td></tr>
 <tr><td>
 
-<span id="setvisibility">[setVisibility](./puppeteer.locator.setvisibility.md)</span>
+<span id="setvisibility">[setVisibility(this, visibility)](./puppeteer.locator.setvisibility.md)</span>
 
 </td><td>
 
@@ -213,7 +213,7 @@ Creates a new locator instance by cloning the current locator with the visibilit
 </td></tr>
 <tr><td>
 
-<span id="setwaitforenabled">[setWaitForEnabled](./puppeteer.locator.setwaitforenabled.md)</span>
+<span id="setwaitforenabled">[setWaitForEnabled(this, value)](./puppeteer.locator.setwaitforenabled.md)</span>
 
 </td><td>
 
@@ -224,7 +224,7 @@ Creates a new locator instance by cloning the current locator and specifying whe
 </td></tr>
 <tr><td>
 
-<span id="setwaitforstableboundingbox">[setWaitForStableBoundingBox](./puppeteer.locator.setwaitforstableboundingbox.md)</span>
+<span id="setwaitforstableboundingbox">[setWaitForStableBoundingBox(this, value)](./puppeteer.locator.setwaitforstableboundingbox.md)</span>
 
 </td><td>
 
@@ -235,7 +235,7 @@ Creates a new locator instance by cloning the current locator and specifying whe
 </td></tr>
 <tr><td>
 
-<span id="wait">[wait](./puppeteer.locator.wait.md)</span>
+<span id="wait">[wait(options)](./puppeteer.locator.wait.md)</span>
 
 </td><td>
 
@@ -248,7 +248,7 @@ Note this requires the value to be JSON-serializable.
 </td></tr>
 <tr><td>
 
-<span id="waithandle">[waitHandle](./puppeteer.locator.waithandle.md)</span>
+<span id="waithandle">[waitHandle(options)](./puppeteer.locator.waithandle.md)</span>
 
 </td><td>
 

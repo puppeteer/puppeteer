@@ -47,7 +47,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="disableemulation">[disableEmulation](./puppeteer.bluetoothemulation.disableemulation.md)</span>
+<span id="disableemulation">[disableEmulation()](./puppeteer.bluetoothemulation.disableemulation.md)</span>
 
 </td><td>
 
@@ -56,7 +56,7 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="emulateadapter">[emulateAdapter](./puppeteer.bluetoothemulation.emulateadapter.md)</span>
+<span id="emulateadapter">[emulateAdapter(state, leSupported)](./puppeteer.bluetoothemulation.emulateadapter.md)</span>
 
 </td><td>
 
@@ -65,7 +65,7 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="simulatepreconnectedperipheral">[simulatePreconnectedPeripheral](./puppeteer.bluetoothemulation.simulatepreconnectedperipheral.md)</span>
+<span id="simulatepreconnectedperipheral">[simulatePreconnectedPeripheral(preconnectedPeripheral)](./puppeteer.bluetoothemulation.simulatepreconnectedperipheral.md)</span>
 
 </td><td>
 

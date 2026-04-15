@@ -33,7 +33,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="stop">[stop](./puppeteer.screenrecorder.stop.md)</span>
+<span id="stop">[stop()](./puppeteer.screenrecorder.stop.md)</span>
 
 </td><td>
 

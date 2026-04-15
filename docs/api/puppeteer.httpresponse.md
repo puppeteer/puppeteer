@@ -33,7 +33,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="buffer">[buffer](./puppeteer.httpresponse.buffer.md)</span>
+<span id="buffer">[buffer()](./puppeteer.httpresponse.buffer.md)</span>
 
 </td><td>
 
@@ -48,7 +48,7 @@ The buffer might be re-encoded by the browser based on HTTP-headers or other heu
 </td></tr>
 <tr><td>
 
-<span id="content">[content](./puppeteer.httpresponse.content.md)</span>
+<span id="content">[content()](./puppeteer.httpresponse.content.md)</span>
 
 </td><td>
 
@@ -63,7 +63,7 @@ The buffer might be re-encoded by the browser based on HTTP-headers or other heu
 </td></tr>
 <tr><td>
 
-<span id="frame">[frame](./puppeteer.httpresponse.frame.md)</span>
+<span id="frame">[frame()](./puppeteer.httpresponse.frame.md)</span>
 
 </td><td>
 
@@ -74,7 +74,7 @@ A [Frame](./puppeteer.frame.md) that initiated this response, or `null` if navig
 </td></tr>
 <tr><td>
 
-<span id="fromcache">[fromCache](./puppeteer.httpresponse.fromcache.md)</span>
+<span id="fromcache">[fromCache()](./puppeteer.httpresponse.fromcache.md)</span>
 
 </td><td>
 
@@ -85,7 +85,7 @@ True if the response was served from either the browser's disk cache or memory c
 </td></tr>
 <tr><td>
 
-<span id="fromserviceworker">[fromServiceWorker](./puppeteer.httpresponse.fromserviceworker.md)</span>
+<span id="fromserviceworker">[fromServiceWorker()](./puppeteer.httpresponse.fromserviceworker.md)</span>
 
 </td><td>
 
@@ -96,7 +96,7 @@ True if the response was served by a service worker.
 </td></tr>
 <tr><td>
 
-<span id="headers">[headers](./puppeteer.httpresponse.headers.md)</span>
+<span id="headers">[headers()](./puppeteer.httpresponse.headers.md)</span>
 
 </td><td>
 
@@ -107,7 +107,7 @@ An object with HTTP headers associated with the response. All header names are l
 </td></tr>
 <tr><td>
 
-<span id="json">[json](./puppeteer.httpresponse.json.md)</span>
+<span id="json">[json()](./puppeteer.httpresponse.json.md)</span>
 
 </td><td>
 
@@ -122,7 +122,7 @@ This method will throw if the response body is not parsable via `JSON.parse`.
 </td></tr>
 <tr><td>
 
-<span id="ok">[ok](./puppeteer.httpresponse.ok.md)</span>
+<span id="ok">[ok()](./puppeteer.httpresponse.ok.md)</span>
 
 </td><td>
 
@@ -133,7 +133,7 @@ True if the response was successful (status in the range 200-299).
 </td></tr>
 <tr><td>
 
-<span id="remoteaddress">[remoteAddress](./puppeteer.httpresponse.remoteaddress.md)</span>
+<span id="remoteaddress">[remoteAddress()](./puppeteer.httpresponse.remoteaddress.md)</span>
 
 </td><td>
 
@@ -144,7 +144,7 @@ The IP address and port number used to connect to the remote server.
 </td></tr>
 <tr><td>
 
-<span id="request">[request](./puppeteer.httpresponse.request.md)</span>
+<span id="request">[request()](./puppeteer.httpresponse.request.md)</span>
 
 </td><td>
 
@@ -155,7 +155,7 @@ A matching [HTTPRequest](./puppeteer.httprequest.md) object.
 </td></tr>
 <tr><td>
 
-<span id="securitydetails">[securityDetails](./puppeteer.httpresponse.securitydetails.md)</span>
+<span id="securitydetails">[securityDetails()](./puppeteer.httpresponse.securitydetails.md)</span>
 
 </td><td>
 
@@ -166,7 +166,7 @@ A matching [HTTPRequest](./puppeteer.httprequest.md) object.
 </td></tr>
 <tr><td>
 
-<span id="status">[status](./puppeteer.httpresponse.status.md)</span>
+<span id="status">[status()](./puppeteer.httpresponse.status.md)</span>
 
 </td><td>
 
@@ -177,7 +177,7 @@ The status code of the response (e.g., 200 for a success).
 </td></tr>
 <tr><td>
 
-<span id="statustext">[statusText](./puppeteer.httpresponse.statustext.md)</span>
+<span id="statustext">[statusText()](./puppeteer.httpresponse.statustext.md)</span>
 
 </td><td>
 
@@ -188,7 +188,7 @@ The status text of the response (e.g. usually an "OK" for a success).
 </td></tr>
 <tr><td>
 
-<span id="text">[text](./puppeteer.httpresponse.text.md)</span>
+<span id="text">[text()](./puppeteer.httpresponse.text.md)</span>
 
 </td><td>
 
@@ -203,7 +203,7 @@ This method will throw if the content is not utf-8 string
 </td></tr>
 <tr><td>
 
-<span id="timing">[timing](./puppeteer.httpresponse.timing.md)</span>
+<span id="timing">[timing()](./puppeteer.httpresponse.timing.md)</span>
 
 </td><td>
 
@@ -214,7 +214,7 @@ Timing information related to the response.
 </td></tr>
 <tr><td>
 
-<span id="url">[url](./puppeteer.httpresponse.url.md)</span>
+<span id="url">[url()](./puppeteer.httpresponse.url.md)</span>
 
 </td><td>
 
