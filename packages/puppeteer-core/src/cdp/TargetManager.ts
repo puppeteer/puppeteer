@@ -265,14 +265,14 @@ export class TargetManager
     this.#discoveredTargetsByTargetId.delete(event.targetId);
     this.#finishInitializationIfReady(event.targetId);
 
-    const target = this.#attachedTargetsByTargetId.get(event.targetId);
-    if (
-      target &&
-      (target.type() === 'service_worker' ||
-        targetInfo?.type === 'service_worker')
-    ) {
-      this.#attachedTargetsByTargetId.delete(event.targetId);
-      this.emit(TargetManagerEvent.TargetGone, target);
+    if (targetInfo?.type === 'service_worker') {
+      // Special case for service workers: report TargetGone event when
+      // the worker is destroyed.
+      const target = this.#attachedTargetsByTargetId.get(event.targetId);
+      if (target) {
+        this.emit(TargetManagerEvent.TargetGone, target);
+        this.#attachedTargetsByTargetId.delete(event.targetId);
+      }
     }
   };
 
