@@ -253,6 +253,17 @@ Disconnects Puppeteer from this [browser](./puppeteer.browser.md), but leaves th
 </td></tr>
 <tr><td>
 
+<span id="extensions">[extensions()](./puppeteer.browser.extensions.md)</span>
+
+</td><td>
+
+</td><td>
+
+Retrieves a map of all extensions installed in the browser, where the keys are extension IDs and the values are the corresponding [Extension](./puppeteer.extension.md) instances.
+
+</td></tr>
+<tr><td>
+
 <span id="getwindowbounds">[getWindowBounds(windowId)](./puppeteer.browser.getwindowbounds.md)</span>
 
 </td><td>

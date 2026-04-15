@@ -276,6 +276,17 @@ See [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md) for details.
 </td></tr>
 <tr><td>
 
+<span id="extensionrealms">[extensionRealms()](./puppeteer.frame.extensionrealms.md)</span>
+
+</td><td>
+
+</td><td>
+
+Retrieves the list of extension execution realms associated with this frame. Extension execution realms are created by extension content scripts injected into the frame.
+
+</td></tr>
+<tr><td>
+
 <span id="focus">[focus(selector)](./puppeteer.frame.focus.md)</span>
 
 </td><td>

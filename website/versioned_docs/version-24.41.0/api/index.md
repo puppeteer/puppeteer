@@ -228,6 +228,19 @@ The constructor for this class is marked as internal. Third-party code should no
 </td></tr>
 <tr><td>
 
+<span id="extension">[Extension](./puppeteer.extension.md)</span>
+
+</td><td>
+
+**_(Experimental)_** [Extension](./puppeteer.extension.md) represents a browser extension installed in the browser. It provides access to the extension's ID, name, and version, as well as methods for interacting with the extension's background workers and pages.
+
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Extension` class.
+
+</td></tr>
+<tr><td>
+
 <span id="extensiontransport">[ExtensionTransport](./puppeteer.extensiontransport.md)</span>
 
 </td><td>
@@ -467,6 +480,17 @@ The constructor for this class is marked as internal. Third-party code should no
 </td></tr>
 <tr><td>
 
+<span id="realm">[Realm](./puppeteer.realm.md)</span>
+
+</td><td>
+
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Realm` class.
+
+</td></tr>
+<tr><td>
+
 <span id="screenrecorder">[ScreenRecorder](./puppeteer.screenrecorder.md)</span>
 
 </td><td>
@@ -563,6 +587,45 @@ Puppeteer will throw this error if a method is not supported by the currently us
 </td></tr>
 <tr><td>
 
+<span id="webmcp">[WebMCP](./puppeteer.webmcp.md)</span>
+
+</td><td>
+
+**_(Experimental)_** The experimental WebMCP class provides an API for the WebMCP API.
+
+See the [WebMCP guide](https://pptr.dev/guides/webmcp) for more details.
+
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `WebMCP` class.
+
+</td></tr>
+<tr><td>
+
+<span id="webmcptool">[WebMCPTool](./puppeteer.webmcptool.md)</span>
+
+</td><td>
+
+Represents a registered WebMCP tool available on the page.
+
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `WebMCPTool` class.
+
+</td></tr>
+<tr><td>
+
+<span id="webmcptoolcall">[WebMCPToolCall](./puppeteer.webmcptoolcall.md)</span>
+
+</td><td>
+
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `WebMCPToolCall` class.
+
+</td></tr>
+<tr><td>
+
 <span id="webworker">[WebWorker](./puppeteer.webworker.md)</span>
 
 </td><td>
@@ -633,6 +696,13 @@ All the events that a page instance may emit.
 <tr><td>
 
 <span id="targettype">[TargetType](./puppeteer.targettype.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="webworkerevent">[WebWorkerEvent](./puppeteer.webworkerevent.md)</span>
 
 </td><td>
 
@@ -1040,6 +1110,15 @@ Options for [Page.captureHeapSnapshot()](./puppeteer.page.captureheapsnapshot.md
 </td></tr>
 <tr><td>
 
+<span id="issue">[Issue](./puppeteer.issue.md)</span>
+
+</td><td>
+
+The Issue interface represents a DevTools issue.
+
+</td></tr>
+<tr><td>
+
 <span id="jscoverageentry">[JSCoverageEntry](./puppeteer.jscoverageentry.md)</span>
 
 </td><td>
@@ -1368,6 +1447,43 @@ The TouchHandle interface exposes methods to manipulate touches that have been s
 <tr><td>
 
 <span id="waittimeoutoptions">[WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="webmcpannotation">[WebMCPAnnotation](./puppeteer.webmcpannotation.md)</span>
+
+</td><td>
+
+Tool annotations
+
+</td></tr>
+<tr><td>
+
+<span id="webmcptoolcallresult">[WebMCPToolCallResult](./puppeteer.webmcptoolcallresult.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="webmcptoolsaddedevent">[WebMCPToolsAddedEvent](./puppeteer.webmcptoolsaddedevent.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="webmcptoolsremovedevent">[WebMCPToolsRemovedEvent](./puppeteer.webmcptoolsremovedevent.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="webworkerevents">[WebWorkerEvents](./puppeteer.webworkerevents.md)</span>
 
 </td><td>
 
@@ -1872,6 +1988,15 @@ Browsers supported by Puppeteer.
 </td><td>
 
 Whether to wait for the element to be [visible](./puppeteer.elementhandle.isvisible.md) or [hidden](./puppeteer.elementhandle.ishidden.md). `null` to disable visibility checks.
+
+</td></tr>
+<tr><td>
+
+<span id="webmcpinvocationstatus">[WebMCPInvocationStatus](./puppeteer.webmcpinvocationstatus.md)</span>
+
+</td><td>
+
+Represents the status of a tool invocation.
 
 </td></tr>
 <tr><td>

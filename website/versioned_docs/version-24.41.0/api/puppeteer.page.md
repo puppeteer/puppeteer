@@ -237,6 +237,23 @@ You can use `tracing.start` and `tracing.stop` to create a trace file which can 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Tracing` class.
 
 </td></tr>
+<tr><td>
+
+<span id="webmcp">webmcp</span>
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+[WebMCP](./puppeteer.webmcp.md)
+
+</td><td>
+
+**_(Experimental)_** Experimental API for [WebMCP](https://github.com/webmachinelearning/webmcp). Requires Chrome 149+ with the `--enable-features=WebMCPTesting,DevToolsWebMCPSupport` flags enabled.
+
+</td></tr>
 </tbody></table>
 
 ## Methods
@@ -689,6 +706,19 @@ If the puppeteerFunction returns a `Promise`, it will be awaited.
 Functions installed via `page.exposeFunction` survive navigations.
 
 :::
+
+</td></tr>
+<tr><td>
+
+<span id="extensionrealms">[extensionRealms()](./puppeteer.page.extensionrealms.md)</span>
+
+</td><td>
+
+</td><td>
+
+Retrieves the list of extension execution realms in the main frame of the page. These realms correspond to extension content scripts running on the page.
+
+Shortcut for [mainFrame().extensionRealms()](./puppeteer.frame.extensionrealms.md).
 
 </td></tr>
 <tr><td>
@@ -1324,6 +1354,17 @@ The page's title
 **Remarks:**
 
 Shortcut for [page.mainFrame().title()](./puppeteer.frame.title.md).
+
+</td></tr>
+<tr><td>
+
+<span id="triggerextensionaction">[triggerExtensionAction(extension)](./puppeteer.page.triggerextensionaction.md)</span>
+
+</td><td>
+
+</td><td>
+
+Triggers the default action of the specified extension for this page. This simulates clicking the extension's icon in the browser's toolbar.
 
 </td></tr>
 <tr><td>

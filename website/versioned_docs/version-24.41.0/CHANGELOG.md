@@ -2,6 +2,46 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.41.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.40.0...puppeteer-v24.41.0) (2026-04-15)
+
+### 🎉 Features
+
+- add support for Issues ([#14845](https://github.com/puppeteer/puppeteer/issues/14845)) ([6e8dbe7](https://github.com/puppeteer/puppeteer/commit/6e8dbe7a998a3619f089f549009ebcb860389fdd))
+- adds extension realms api ([#14824](https://github.com/puppeteer/puppeteer/issues/14824)) ([c14f4ae](https://github.com/puppeteer/puppeteer/commit/c14f4ae7ee65fd95a4a1f9d722e73f67c37da44b))
+- API to list installed browser extensions and trigger extension actions ([#14821](https://github.com/puppeteer/puppeteer/issues/14821)) ([d6395ef](https://github.com/puppeteer/puppeteer/commit/d6395ef88103a50cb2b2c43f61953ab6a495a8c3))
+- implement console event on web workers ([#14784](https://github.com/puppeteer/puppeteer/issues/14784)) ([fa6158a](https://github.com/puppeteer/puppeteer/commit/fa6158a1dfa327df8dc8eea1eb22c49efefb3be5))
+- roll to Chrome 147.0.7727.24 ([#14797](https://github.com/puppeteer/puppeteer/issues/14797)) ([ee81786](https://github.com/puppeteer/puppeteer/commit/ee81786a8285e20afdee70e4fb8660df4d6748b0))
+- roll to Firefox 149.0 ([#14799](https://github.com/puppeteer/puppeteer/issues/14799)) ([9fd5ceb](https://github.com/puppeteer/puppeteer/commit/9fd5ceb054b0508bd8f4b14ed950a011a31f101a))
+- **webmcp:** add hook for tool invocation ([#14835](https://github.com/puppeteer/puppeteer/issues/14835)) ([cf8169d](https://github.com/puppeteer/puppeteer/commit/cf8169d5dee0bbff06118c211969eb94849f6bbd))
+- **webmcp:** add hook for tool response ([#14841](https://github.com/puppeteer/puppeteer/issues/14841)) ([6fb05bc](https://github.com/puppeteer/puppeteer/commit/6fb05bc9e45fb2735a1c44b59ad868af2fb1ee9b))
+- **webmcp:** add initial API to inspect tool registrations ([#14814](https://github.com/puppeteer/puppeteer/issues/14814)) ([655c996](https://github.com/puppeteer/puppeteer/commit/655c996fed21d4ac7f5df841aef0c6b246ba2e9d))
+- **webmcp:** add WebMCPTool execute support ([#14851](https://github.com/puppeteer/puppeteer/issues/14851)) ([8f95117](https://github.com/puppeteer/puppeteer/commit/8f95117960af969ee31595406f985c924eb67bf1))
+- **webmcp:** expose WebMCPToolCall in WebMCPToolCallResult ([#14848](https://github.com/puppeteer/puppeteer/issues/14848)) ([242ac0b](https://github.com/puppeteer/puppeteer/commit/242ac0b2d364e9463f2b0e37f26d8bd0cfdf4d3e))
+- **webmcp:** Switch from WebMCPInvocationStatus Success to Completed ([#14859](https://github.com/puppeteer/puppeteer/issues/14859)) ([375e636](https://github.com/puppeteer/puppeteer/commit/375e636beedaa5fef53d5f198fa70229d47155b5))
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - puppeteer-core bumped from 24.40.0 to 24.41.0
+
+### 🛠️ Fixes
+
+- add missing onRelease to Mutex and add tests ([#14818](https://github.com/puppeteer/puppeteer/issues/14818)) ([bf1e972](https://github.com/puppeteer/puppeteer/commit/bf1e9722eef723c80250119d81fd9d9e0596c074))
+- make `Target.asPage` return the same Page instance ([#14862](https://github.com/puppeteer/puppeteer/issues/14862)) ([e484a91](https://github.com/puppeteer/puppeteer/commit/e484a918c432859efbf57a74b4957097b13f8575))
+- remove RenderDocument from disabled Chrome features ([#14745](https://github.com/puppeteer/puppeteer/issues/14745)) ([a48eba2](https://github.com/puppeteer/puppeteer/commit/a48eba24dcb2663da543bdf1f4597a2c1a56f0ff))
+- roll to Chrome 147.0.7727.50 ([#14819](https://github.com/puppeteer/puppeteer/issues/14819)) ([2be3002](https://github.com/puppeteer/puppeteer/commit/2be30023994ee2e7ebb15e43dc0e2804256f8ca2))
+- roll to Chrome 147.0.7727.56 ([#14842](https://github.com/puppeteer/puppeteer/issues/14842)) ([fdb3c64](https://github.com/puppeteer/puppeteer/commit/fdb3c64f8bfcff367eab862c0309f9c4bf6d6f20))
+- roll to Firefox 149.0.2 ([#14838](https://github.com/puppeteer/puppeteer/issues/14838)) ([55359a3](https://github.com/puppeteer/puppeteer/commit/55359a3d7383c03a9d9de7ff8e24b613655694e8))
+- without azimuthAngle the altitudeAngle should no be specified ([#14781](https://github.com/puppeteer/puppeteer/issues/14781)) ([6f9d975](https://github.com/puppeteer/puppeteer/commit/6f9d9752207d55be0e3b0d10ba9a416a81af4694))
+
+### 📄 Documentation
+
+- update extension and realm docs ([#14867](https://github.com/puppeteer/puppeteer/issues/14867)) ([080379b](https://github.com/puppeteer/puppeteer/commit/080379bf24c6bd021d664bcf993457542cf76dcc))
+- **webmcp:** Add JS example to WebMCP class ([#14852](https://github.com/puppeteer/puppeteer/issues/14852)) ([c514dba](https://github.com/puppeteer/puppeteer/commit/c514dba3316e742f2d2b428fd72a49890c0a2255))
+- **webmcp:** Add missing documentation ([#14849](https://github.com/puppeteer/puppeteer/issues/14849)) ([76b08d2](https://github.com/puppeteer/puppeteer/commit/76b08d20305283b9a2a2ccd5cf9c2f5bad63e337))
+- **webmcp:** tune tags and descriptions ([#14844](https://github.com/puppeteer/puppeteer/issues/14844)) ([5782958](https://github.com/puppeteer/puppeteer/commit/578295815ca559790626b8aeeddeea9f9cef67be))
+
 ## [24.40.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.39.1...puppeteer-v24.40.0) (2026-03-19)
 
 ### ♻️ Chores

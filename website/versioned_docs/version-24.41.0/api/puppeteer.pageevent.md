@@ -137,6 +137,19 @@ Emitted when a frame is navigated to a new URL. Will contain a [Frame](./puppete
 </td></tr>
 <tr><td>
 
+Issue
+
+</td><td>
+
+`"issue"`
+
+</td><td>
+
+**_(Experimental)_** Emitted when a DevTools issue is reported.
+
+</td></tr>
+<tr><td>
+
 Load
 
 </td><td>
