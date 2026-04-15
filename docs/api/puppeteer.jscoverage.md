@@ -31,7 +31,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="start">[start(options)](./puppeteer.jscoverage.start.md)</span>
+<span id="start">[start](./puppeteer.jscoverage.start.md)</span>
 
 </td><td>
 
@@ -40,7 +40,7 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="stop">[stop()](./puppeteer.jscoverage.stop.md)</span>
+<span id="stop">[stop](./puppeteer.jscoverage.stop.md)</span>
 
 </td><td>
 

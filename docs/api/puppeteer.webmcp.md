@@ -52,7 +52,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="tools">[tools()](./puppeteer.webmcp.tools.md)</span>
+<span id="tools">[tools](./puppeteer.webmcp.tools.md)</span>
 
 </td><td>
 

@@ -193,7 +193,7 @@
     "hereby": "1.14.0",
     "license-checker": "25.0.1",
     "mocha": "11.7.5",
-    "prettier": "3.8.2",
+    "prettier": "3.8.3",
     "rollup": "4.60.1",
     "semver": "7.7.4",
     "sinon": "21.1.2",

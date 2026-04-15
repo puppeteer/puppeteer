@@ -33,7 +33,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="tap">[tap(x, y)](./puppeteer.touchscreen.tap.md)</span>
+<span id="tap">[tap](./puppeteer.touchscreen.tap.md)</span>
 
 </td><td>
 
@@ -44,7 +44,7 @@ Dispatches a `touchstart` and `touchend` event.
 </td></tr>
 <tr><td>
 
-<span id="touchend">[touchEnd()](./puppeteer.touchscreen.touchend.md)</span>
+<span id="touchend">[touchEnd](./puppeteer.touchscreen.touchend.md)</span>
 
 </td><td>
 
@@ -55,7 +55,7 @@ Dispatches a `touchend` event on the first touch that is active.
 </td></tr>
 <tr><td>
 
-<span id="touchmove">[touchMove(x, y)](./puppeteer.touchscreen.touchmove.md)</span>
+<span id="touchmove">[touchMove](./puppeteer.touchscreen.touchmove.md)</span>
 
 </td><td>
 
@@ -70,7 +70,7 @@ Not every `touchMove` call results in a `touchmove` event being emitted, dependi
 </td></tr>
 <tr><td>
 
-<span id="touchstart">[touchStart(x, y)](./puppeteer.touchscreen.touchstart.md)</span>
+<span id="touchstart">[touchStart](./puppeteer.touchscreen.touchstart.md)</span>
 
 </td><td>
 

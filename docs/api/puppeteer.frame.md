@@ -125,7 +125,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="_">[$(selector)](./puppeteer.frame._.md)</span>
+<span id="_">[$](./puppeteer.frame._.md)</span>
 
 </td><td>
 
@@ -136,7 +136,7 @@ Queries the frame for an element matching the given selector.
 </td></tr>
 <tr><td>
 
-<span id="__">[$$(selector, options)](./puppeteer.frame.__.md)</span>
+<span id="__">[$$](./puppeteer.frame.__.md)</span>
 
 </td><td>
 
@@ -147,7 +147,7 @@ Queries the frame for all elements matching the given selector.
 </td></tr>
 <tr><td>
 
-<span id="__eval">[$$eval(selector, pageFunction, args)](./puppeteer.frame.__eval.md)</span>
+<span id="__eval">[$$eval](./puppeteer.frame.__eval.md)</span>
 
 </td><td>
 
@@ -160,7 +160,7 @@ If the given function returns a promise, then this method will wait till the pro
 </td></tr>
 <tr><td>
 
-<span id="_eval">[$eval(selector, pageFunction, args)](./puppeteer.frame._eval.md)</span>
+<span id="_eval">[$eval](./puppeteer.frame._eval.md)</span>
 
 </td><td>
 
@@ -173,7 +173,7 @@ If the given function returns a promise, then this method will wait till the pro
 </td></tr>
 <tr><td>
 
-<span id="addscripttag">[addScriptTag(options)](./puppeteer.frame.addscripttag.md)</span>
+<span id="addscripttag">[addScriptTag](./puppeteer.frame.addscripttag.md)</span>
 
 </td><td>
 
@@ -184,7 +184,7 @@ Adds a `<script>` tag into the page with the desired url or content.
 </td></tr>
 <tr><td>
 
-<span id="addstyletag">[addStyleTag(options)](./puppeteer.frame.addstyletag.md)</span>
+<span id="addstyletag">[addStyleTag](./puppeteer.frame.addstyletag.md)</span>
 
 </td><td>
 
@@ -195,7 +195,7 @@ Adds a `HTMLStyleElement` into the frame with the desired URL
 </td></tr>
 <tr><td>
 
-<span id="addstyletag">[addStyleTag(options)](./puppeteer.frame.addstyletag.md#overload-2)</span>
+<span id="addstyletag">[addStyleTag](./puppeteer.frame.addstyletag.md#overload-2)</span>
 
 </td><td>
 
@@ -206,7 +206,7 @@ Adds a `HTMLLinkElement` into the frame with the desired URL
 </td></tr>
 <tr><td>
 
-<span id="childframes">[childFrames()](./puppeteer.frame.childframes.md)</span>
+<span id="childframes">[childFrames](./puppeteer.frame.childframes.md)</span>
 
 </td><td>
 
@@ -217,7 +217,7 @@ An array of child frames.
 </td></tr>
 <tr><td>
 
-<span id="click">[click(selector, options)](./puppeteer.frame.click.md)</span>
+<span id="click">[click](./puppeteer.frame.click.md)</span>
 
 </td><td>
 
@@ -239,7 +239,7 @@ const [response] = await Promise.all([
 </td></tr>
 <tr><td>
 
-<span id="content">[content()](./puppeteer.frame.content.md)</span>
+<span id="content">[content](./puppeteer.frame.content.md)</span>
 
 </td><td>
 
@@ -250,7 +250,7 @@ The full HTML contents of the frame, including the DOCTYPE.
 </td></tr>
 <tr><td>
 
-<span id="evaluate">[evaluate(pageFunction, args)](./puppeteer.frame.evaluate.md)</span>
+<span id="evaluate">[evaluate](./puppeteer.frame.evaluate.md)</span>
 
 </td><td>
 
@@ -263,7 +263,7 @@ See [Page.evaluate()](./puppeteer.page.evaluate.md) for details.
 </td></tr>
 <tr><td>
 
-<span id="evaluatehandle">[evaluateHandle(pageFunction, args)](./puppeteer.frame.evaluatehandle.md)</span>
+<span id="evaluatehandle">[evaluateHandle](./puppeteer.frame.evaluatehandle.md)</span>
 
 </td><td>
 
@@ -276,7 +276,7 @@ See [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md) for details.
 </td></tr>
 <tr><td>
 
-<span id="focus">[focus(selector)](./puppeteer.frame.focus.md)</span>
+<span id="focus">[focus](./puppeteer.frame.focus.md)</span>
 
 </td><td>
 
@@ -287,7 +287,7 @@ Focuses the first element that matches the `selector`.
 </td></tr>
 <tr><td>
 
-<span id="frameelement">[frameElement()](./puppeteer.frame.frameelement.md)</span>
+<span id="frameelement">[frameElement](./puppeteer.frame.frameelement.md)</span>
 
 </td><td>
 
@@ -296,7 +296,7 @@ Focuses the first element that matches the `selector`.
 </td></tr>
 <tr><td>
 
-<span id="goto">[goto(url, options)](./puppeteer.frame.goto.md)</span>
+<span id="goto">[goto](./puppeteer.frame.goto.md)</span>
 
 </td><td>
 
@@ -319,7 +319,7 @@ In headless shell, this method will not throw an error when any valid HTTP statu
 </td></tr>
 <tr><td>
 
-<span id="hover">[hover(selector)](./puppeteer.frame.hover.md)</span>
+<span id="hover">[hover](./puppeteer.frame.hover.md)</span>
 
 </td><td>
 
@@ -330,7 +330,7 @@ Hovers the pointer over the center of the first element that matches the `select
 </td></tr>
 <tr><td>
 
-<span id="isdetached">[isDetached()](./puppeteer.frame.isdetached.md)</span>
+<span id="isdetached">[isDetached](./puppeteer.frame.isdetached.md)</span>
 
 </td><td>
 
@@ -347,7 +347,7 @@ Use the `detached` getter.
 </td></tr>
 <tr><td>
 
-<span id="locator">[locator(selector)](./puppeteer.frame.locator.md)</span>
+<span id="locator">[locator](./puppeteer.frame.locator.md)</span>
 
 </td><td>
 
@@ -358,7 +358,7 @@ Creates a locator for the provided selector. See [Locator](./puppeteer.locator.m
 </td></tr>
 <tr><td>
 
-<span id="locator">[locator(func)](./puppeteer.frame.locator.md#overload-2)</span>
+<span id="locator">[locator](./puppeteer.frame.locator.md#overload-2)</span>
 
 </td><td>
 
@@ -369,7 +369,7 @@ Creates a locator for the provided function. See [Locator](./puppeteer.locator.m
 </td></tr>
 <tr><td>
 
-<span id="name">[name()](./puppeteer.frame.name.md)</span>
+<span id="name">[name](./puppeteer.frame.name.md)</span>
 
 </td><td>
 
@@ -395,7 +395,7 @@ This value is calculated once when the frame is created, and will not update if 
 </td></tr>
 <tr><td>
 
-<span id="page">[page()](./puppeteer.frame.page.md)</span>
+<span id="page">[page](./puppeteer.frame.page.md)</span>
 
 </td><td>
 
@@ -406,7 +406,7 @@ The page associated with the frame.
 </td></tr>
 <tr><td>
 
-<span id="parentframe">[parentFrame()](./puppeteer.frame.parentframe.md)</span>
+<span id="parentframe">[parentFrame](./puppeteer.frame.parentframe.md)</span>
 
 </td><td>
 
@@ -417,7 +417,7 @@ The parent frame, if any. Detached and main frames return `null`.
 </td></tr>
 <tr><td>
 
-<span id="select">[select(selector, values)](./puppeteer.frame.select.md)</span>
+<span id="select">[select](./puppeteer.frame.select.md)</span>
 
 </td><td>
 
@@ -428,7 +428,7 @@ Selects a set of value on the first `<select>` element that matches the `selecto
 </td></tr>
 <tr><td>
 
-<span id="setcontent">[setContent(html, options)](./puppeteer.frame.setcontent.md)</span>
+<span id="setcontent">[setContent](./puppeteer.frame.setcontent.md)</span>
 
 </td><td>
 
@@ -439,7 +439,7 @@ Set the content of the frame.
 </td></tr>
 <tr><td>
 
-<span id="tap">[tap(selector)](./puppeteer.frame.tap.md)</span>
+<span id="tap">[tap](./puppeteer.frame.tap.md)</span>
 
 </td><td>
 
@@ -450,7 +450,7 @@ Taps the first element that matches the `selector`.
 </td></tr>
 <tr><td>
 
-<span id="title">[title()](./puppeteer.frame.title.md)</span>
+<span id="title">[title](./puppeteer.frame.title.md)</span>
 
 </td><td>
 
@@ -461,7 +461,7 @@ The frame's title.
 </td></tr>
 <tr><td>
 
-<span id="type">[type(selector, text, options)](./puppeteer.frame.type.md)</span>
+<span id="type">[type](./puppeteer.frame.type.md)</span>
 
 </td><td>
 
@@ -476,7 +476,7 @@ To press a special key, like `Control` or `ArrowDown`, use [Keyboard.press()](./
 </td></tr>
 <tr><td>
 
-<span id="url">[url()](./puppeteer.frame.url.md)</span>
+<span id="url">[url](./puppeteer.frame.url.md)</span>
 
 </td><td>
 
@@ -487,7 +487,7 @@ The frame's URL.
 </td></tr>
 <tr><td>
 
-<span id="waitforfunction">[waitForFunction(pageFunction, options, args)](./puppeteer.frame.waitforfunction.md)</span>
+<span id="waitforfunction">[waitForFunction](./puppeteer.frame.waitforfunction.md)</span>
 
 </td><td>
 
@@ -496,7 +496,7 @@ The frame's URL.
 </td></tr>
 <tr><td>
 
-<span id="waitfornavigation">[waitForNavigation(options)](./puppeteer.frame.waitfornavigation.md)</span>
+<span id="waitfornavigation">[waitForNavigation](./puppeteer.frame.waitfornavigation.md)</span>
 
 </td><td>
 
@@ -509,7 +509,7 @@ Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/Hist
 </td></tr>
 <tr><td>
 
-<span id="waitforselector">[waitForSelector(selector, options)](./puppeteer.frame.waitforselector.md)</span>
+<span id="waitforselector">[waitForSelector](./puppeteer.frame.waitforselector.md)</span>
 
 </td><td>
 

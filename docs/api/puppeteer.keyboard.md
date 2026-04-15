@@ -64,7 +64,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="down">[down(key, options)](./puppeteer.keyboard.down.md)</span>
+<span id="down">[down](./puppeteer.keyboard.down.md)</span>
 
 </td><td>
 
@@ -83,7 +83,7 @@ Modifier keys DO influence [Keyboard.down()](./puppeteer.keyboard.down.md). Hold
 </td></tr>
 <tr><td>
 
-<span id="press">[press(key, options)](./puppeteer.keyboard.press.md)</span>
+<span id="press">[press](./puppeteer.keyboard.press.md)</span>
 
 </td><td>
 
@@ -100,7 +100,7 @@ Modifier keys DO effect [Keyboard.press()](./puppeteer.keyboard.press.md). Holdi
 </td></tr>
 <tr><td>
 
-<span id="sendcharacter">[sendCharacter(char)](./puppeteer.keyboard.sendcharacter.md)</span>
+<span id="sendcharacter">[sendCharacter](./puppeteer.keyboard.sendcharacter.md)</span>
 
 </td><td>
 
@@ -115,7 +115,7 @@ Modifier keys DO NOT effect [Keyboard.sendCharacter](./puppeteer.keyboard.sendch
 </td></tr>
 <tr><td>
 
-<span id="type">[type(text, options)](./puppeteer.keyboard.type.md)</span>
+<span id="type">[type](./puppeteer.keyboard.type.md)</span>
 
 </td><td>
 
@@ -132,7 +132,7 @@ Modifier keys DO NOT effect `keyboard.type`. Holding down `Shift` will not type 
 </td></tr>
 <tr><td>
 
-<span id="up">[up(key)](./puppeteer.keyboard.up.md)</span>
+<span id="up">[up](./puppeteer.keyboard.up.md)</span>
 
 </td><td>
 

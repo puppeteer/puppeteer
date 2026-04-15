@@ -25,7 +25,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="end">[end()](./puppeteer.touchhandle.end.md)</span>
+<span id="end">[end](./puppeteer.touchhandle.end.md)</span>
 
 </td><td>
 
@@ -34,7 +34,7 @@ Dispatches a `touchend` event for this touch.
 </td></tr>
 <tr><td>
 
-<span id="move">[move(x, y)](./puppeteer.touchhandle.move.md)</span>
+<span id="move">[move](./puppeteer.touchhandle.move.md)</span>
 
 </td><td>
 

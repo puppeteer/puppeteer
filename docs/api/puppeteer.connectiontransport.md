@@ -82,14 +82,14 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="close">[close()](./puppeteer.connectiontransport.close.md)</span>
+<span id="close">[close](./puppeteer.connectiontransport.close.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<span id="send">[send(message)](./puppeteer.connectiontransport.send.md)</span>
+<span id="send">[send](./puppeteer.connectiontransport.send.md)</span>
 
 </td><td>
 

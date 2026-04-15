@@ -707,28 +707,28 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="connect">[connect(options)](./puppeteer.connect.md)</span>
+<span id="connect">[connect](./puppeteer.connect.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<span id="defaultargs">[defaultArgs(options)](./puppeteer.defaultargs.md)</span>
+<span id="defaultargs">[defaultArgs](./puppeteer.defaultargs.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<span id="launch">[launch(options)](./puppeteer.launch.md)</span>
+<span id="launch">[launch](./puppeteer.launch.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<span id="trimcache">[trimCache()](./puppeteer.trimcache.md)</span>
+<span id="trimcache">[trimCache](./puppeteer.trimcache.md)</span>
 
 </td><td>
 
