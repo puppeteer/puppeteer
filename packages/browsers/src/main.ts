@@ -26,6 +26,7 @@ export type {
 export {
   install,
   makeProgressCallback,
+  makeUnpackProgressCallback,
   getInstalledBrowsers,
   canDownload,
   uninstall,

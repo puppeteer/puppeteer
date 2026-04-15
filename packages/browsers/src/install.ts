@@ -84,6 +84,16 @@ export interface InstallOptions {
     | 'default'
     | ((downloadedBytes: number, totalBytes: number) => void);
   /**
+   * Provides information about the progress of the archive-unpacking step,
+   * which can run for many seconds after the download completes. Called
+   * with `'started'` before extraction begins and `'finished'` after it
+   * succeeds. If set to `'default'`, a short status line is written to
+   * stderr.
+   */
+  unpackProgressCallback?:
+    | 'default'
+    | ((event: 'started' | 'finished') => void);
+  /**
    * Determines the host that will be used for downloading.
    *
    * @defaultValue Either
@@ -367,6 +377,10 @@ async function installUrl(
       options.buildIdAlias ?? options.buildId,
     );
   }
+  const unpackProgressCallback =
+    options.unpackProgressCallback === 'default'
+      ? makeUnpackProgressCallback()
+      : options.unpackProgressCallback;
   const fileName = decodeURIComponent(url.toString()).split('/').pop();
   assert(fileName, `A malformed download URL was found: ${url}.`);
   const cache = new Cache(options.cacheDir);
@@ -450,7 +464,9 @@ async function installUrl(
     debugInstall(`Installing ${archivePath} to ${outputPath}`);
     try {
       debugTime('extract');
+      unpackProgressCallback?.('started');
       await unpackArchive(archivePath, outputPath);
+      unpackProgressCallback?.('finished');
     } finally {
       debugTimeEnd('extract');
     }
@@ -651,4 +667,26 @@ export function makeProgressCallback(
 function toMegabytes(bytes: number) {
   const mb = bytes / 1000 / 1000;
   return `${Math.round(mb * 10) / 10} MB`;
+}
+
+/**
+ * @public
+ */
+export function makeUnpackProgressCallback(): (
+  event: 'started' | 'finished',
+) => void {
+  const isTTY = Boolean(process.stderr.isTTY);
+  return (event: 'started' | 'finished') => {
+    if (event === 'started') {
+      process.stderr.write('Unpacking archive...');
+    } else if (event === 'finished') {
+      // Overwrite the "Unpacking archive..." line on TTYs so output stays
+      // compact; append a newline on non-TTYs so piped logs stay tidy.
+      if (isTTY) {
+        process.stderr.write('\rUnpacking archive... done.\n');
+      } else {
+        process.stderr.write(' done.\n');
+      }
+    }
+  };
 }
