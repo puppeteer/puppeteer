@@ -57,7 +57,8 @@
         "guides/running-puppeteer-in-the-browser",
         "guides/running-puppeteer-in-extensions",
         "guides/screen-configuration",
-        "guides/window-management"
+        "guides/window-management",
+        "guides/webmcp"
       ]
     },
     "examples",

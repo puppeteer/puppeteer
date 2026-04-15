@@ -276,6 +276,17 @@ See [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md) for details.
 </td></tr>
 <tr><td>
 
+<span id="extensionrealms">[extensionRealms()](./puppeteer.frame.extensionrealms.md)</span>
+
+</td><td>
+
+</td><td>
+
+This method retrieves the list of realms within this frame
+
+</td></tr>
+<tr><td>
+
 <span id="focus">[focus(selector)](./puppeteer.frame.focus.md)</span>
 
 </td><td>

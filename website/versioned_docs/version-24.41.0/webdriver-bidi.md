@@ -55,6 +55,11 @@ await chromeBrowser.close();
   - HTTPRequest.client()
   - HTTPRequest.resourceType()
   - Page.createCDPSession()
+  - Page.extensionRealms()
+  - Page.triggerExtensionAction()
+  - Frame.extensionRealms()
+  - Realm.extension()
+  - Realm.realmId()
 
 - Accessibility
 - Coverage
