@@ -632,12 +632,11 @@ function getNetworkConditions(
   }
   const matchedNetworkConditions = blockList.map(pattern => {
     return {
-      offline: true,
       urlPattern: pattern,
       latency: 0,
       downloadThroughput: -1,
       uploadThroughput: -1,
     };
   });
-  return {matchedNetworkConditions};
+  return {matchedNetworkConditions, offline: true};
 }
