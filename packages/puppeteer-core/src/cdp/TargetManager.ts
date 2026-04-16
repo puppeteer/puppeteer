@@ -6,6 +6,7 @@
 
 import type {Protocol} from 'devtools-protocol';
 
+import {URLPattern} from '../../third_party/urlpattern-polyfill/urlpattern-polyfill.js';
 import type {TargetFilterCallback} from '../api/Browser.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
@@ -106,18 +107,21 @@ export class TargetManager
   // done. It indicates whethere we are running the initial auto-attach step or
   // if we are handling targets after that.
   #initialAttachDone = false;
+  #networkConditions?: Protocol.Network.EmulateNetworkConditionsByRuleRequest;
 
   constructor(
     connection: Connection,
     targetFactory: TargetFactory,
     targetFilterCallback?: TargetFilterCallback,
     waitForInitiallyDiscoveredTargets = true,
+    networkConditions?: Protocol.Network.EmulateNetworkConditionsByRuleRequest,
   ) {
     super();
     this.#connection = connection;
     this.#targetFilterCallback = targetFilterCallback;
     this.#targetFactory = targetFactory;
     this.#waitForInitiallyDiscoveredTargets = waitForInitiallyDiscoveredTargets;
+    this.#networkConditions = networkConditions;
 
     this.#connection.on('Target.targetCreated', this.#onTargetCreated);
     this.#connection.on('Target.targetDestroyed', this.#onTargetDestroyed);
@@ -356,6 +360,13 @@ export class TargetManager
       return;
     }
 
+    // If we connect to a browser that is already open,
+    // immediately detach from any tab that is on the blocklist.
+    if (!this.#initialAttachDone && !this.#isUrlAllowed(targetInfo.url)) {
+      await this.#silentDetach(session, parentSession);
+      return;
+    }
+
     let target = this.#attachedTargetsByTargetId.get(targetInfo.targetId);
     const isExistingTarget = target !== undefined;
 
@@ -417,6 +428,7 @@ export class TargetManager
         autoAttach: true,
         filter: this.#discoveryFilter,
       }),
+      this.#maybeSetupNetworkConditions(session),
       session.send('Runtime.runIfWaitingForDebugger'),
     ]).catch(debugError);
   };
@@ -451,5 +463,47 @@ export class TargetManager
     }
     this.#attachedTargetsByTargetId.delete(target._targetId);
     this.emit(TargetManagerEvent.TargetGone, target);
+  };
+
+  /**
+   * Helper to validate URL against blocklist patterns
+   */
+  #isUrlAllowed = (url: string): boolean => {
+    if (!this.#networkConditions) {
+      return true;
+    }
+
+    // Always allow internal or setup pages
+    if (!url || url === 'about:blank') {
+      return true;
+    }
+
+    const rules = this.#networkConditions.matchedNetworkConditions;
+
+    for (const rule of rules) {
+      try {
+        const pattern = new URLPattern(rule.urlPattern);
+        if (pattern.test(url)) {
+          // Returns false if rule.offline is true (blocked)
+          return !rule.offline;
+        }
+      } catch {
+        debugError(`Invalid URL pattern: ${rule.urlPattern}`);
+      }
+    }
+
+    return true;
+  };
+
+  #maybeSetupNetworkConditions = async (session: CDPSession): Promise<void> => {
+    if (!this.#networkConditions) {
+      return;
+    }
+
+    await session.send('Network.enable');
+    await session.send(
+      'Network.emulateNetworkConditionsByRule',
+      this.#networkConditions,
+    );
   };
 }

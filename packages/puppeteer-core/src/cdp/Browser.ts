@@ -71,6 +71,7 @@ export class CdpBrowser extends BrowserBase {
     networkEnabled = true,
     issuesEnabled = true,
     handleDevToolsAsPage = false,
+    blockList?: string[],
   ): Promise<CdpBrowser> {
     const browser = new CdpBrowser(
       connection,
@@ -84,6 +85,7 @@ export class CdpBrowser extends BrowserBase {
       networkEnabled,
       issuesEnabled,
       handleDevToolsAsPage,
+      getNetworkConditions(blockList),
     );
     if (acceptInsecureCerts) {
       await connection.send('Security.setIgnoreCertificateErrors', {
@@ -119,6 +121,7 @@ export class CdpBrowser extends BrowserBase {
     networkEnabled = true,
     issuesEnabled = true,
     handleDevToolsAsPage = false,
+    networkConditions?: Protocol.Network.EmulateNetworkConditionsByRuleRequest,
   ) {
     super();
     this.#networkEnabled = networkEnabled;
@@ -139,6 +142,7 @@ export class CdpBrowser extends BrowserBase {
       this.#createTarget,
       this.#targetFilterCallback,
       waitForInitiallyDiscoveredTargets,
+      networkConditions,
     );
     this.#defaultContext = new CdpBrowserContext(this.#connection, this);
     for (const contextId of contextIds) {
@@ -618,4 +622,22 @@ export class CdpBrowser extends BrowserBase {
   override isIssuesEnabled(): boolean {
     return this.#issuesEnabled;
   }
+}
+
+function getNetworkConditions(
+  blockList?: string[],
+): Protocol.Network.EmulateNetworkConditionsByRuleRequest | undefined {
+  if (!blockList?.length) {
+    return undefined;
+  }
+  const matchedNetworkConditions = blockList.map(pattern => {
+    return {
+      offline: true,
+      urlPattern: pattern,
+      latency: 0,
+      downloadThroughput: -1,
+      uploadThroughput: -1,
+    };
+  });
+  return {matchedNetworkConditions};
 }

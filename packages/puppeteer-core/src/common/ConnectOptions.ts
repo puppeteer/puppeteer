@@ -161,4 +161,9 @@ export interface ConnectOptions {
    * Only works for `protocol="webDriverBiDi"` and {@link Puppeteer.connect}.
    */
   capabilities?: SupportedWebDriverCapabilities;
+
+  /**
+   * @experimental
+   */
+  blockList?: string[];
 }

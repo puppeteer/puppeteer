@@ -146,6 +146,15 @@ export const buildTask = task({
               'utf-8',
             );
             break;
+          case 'urlpattern-polyfill':
+            license = await readFile(
+              path.join(
+                path.dirname(require.resolve('urlpattern-polyfill')),
+                'LICENSE',
+              ),
+              'utf-8',
+            );
+            break;
           default:
             throw new Error(`Add license handling for ${path}`);
         }

@@ -94,6 +94,7 @@ export abstract class BrowserLauncher {
       protocolTimeout,
       handleDevToolsAsPage,
       idGenerator = createIncrementalIdGenerator(),
+      blockList,
     } = options;
 
     let {protocol} = options;
@@ -220,6 +221,7 @@ export abstract class BrowserLauncher {
             networkEnabled,
             issuesEnabled,
             handleDevToolsAsPage,
+            blockList,
           );
         }
       }
