@@ -177,7 +177,6 @@ export class ChromeLauncher extends BrowserLauncher {
       'AcceptCHFrame',
       'MediaRouter',
       'OptimizationHints',
-      'PartitionAllocSchedulerLoopQuarantineTaskControlledPurge', // https://crbug.com/489314676
       ...(turnOnExperimentalFeaturesForTesting
         ? []
         : [
