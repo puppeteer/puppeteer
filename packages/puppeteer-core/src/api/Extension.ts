@@ -29,11 +29,19 @@ export abstract class Extension {
   #id: string;
   #version: string;
   #name: string;
+  #path: string;
+  #enabled: boolean;
 
   /**
    * @internal
    */
-  constructor(id: string, version: string, name: string) {
+  constructor(
+    id: string,
+    version: string,
+    name: string,
+    path: string,
+    enabled: boolean,
+  ) {
     if (!id || !version) {
       throw new Error('Extension ID and version are required');
     }
@@ -41,6 +49,26 @@ export abstract class Extension {
     this.#id = id;
     this.#version = version;
     this.#name = name;
+    this.#path = path;
+    this.#enabled = enabled;
+  }
+
+  /**
+   * Whether the extension is enabled.
+   *
+   * @public
+   */
+  get enabled(): boolean {
+    return this.#enabled;
+  }
+
+  /**
+   * The path in the file system where the extension is located.
+   *
+   * @public
+   */
+  get path(): string {
+    return this.#path;
   }
 
   /**

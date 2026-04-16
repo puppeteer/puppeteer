@@ -100,6 +100,8 @@ describe('extensions', function () {
     expect(extension).toBeDefined();
     expect(extension?.name).toBe('Simple extension');
     expect(extension?.version).toBe('0.1');
+    expect(extension?.path).toBe(extensionPath);
+    expect(extension?.enabled).toBe(true);
     expect(extension?.id).toBe(extensionId);
     await browser.uninstallExtension(extensionId);
     const targets = browser.targets();

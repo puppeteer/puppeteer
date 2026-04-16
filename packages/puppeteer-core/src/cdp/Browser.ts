@@ -604,6 +604,8 @@ export class CdpBrowser extends BrowserBase {
           currExtension.id,
           currExtension.version,
           currExtension.name,
+          currExtension.path,
+          currExtension.enabled,
           this,
         );
 

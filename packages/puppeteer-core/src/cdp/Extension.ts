@@ -18,8 +18,15 @@ export class CdpExtension extends Extension {
   /*
    * @internal
    */
-  constructor(id: string, version: string, name: string, browser: CdpBrowser) {
-    super(id, version, name);
+  constructor(
+    id: string,
+    version: string,
+    name: string,
+    path: string,
+    enabled: boolean,
+    browser: CdpBrowser,
+  ) {
+    super(id, version, name, path, enabled);
     this.#browser = browser;
   }
 
