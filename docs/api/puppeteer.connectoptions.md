@@ -70,7 +70,17 @@ string\[\]
 
 </td><td>
 
-**_(Experimental)_**
+**_(Experimental)_** A list of URL patterns to block.
+
+This option allows you to restrict the browser from accessing specific URLs or origins. It uses the standard \[URLPattern\](https://urlpattern.spec.whatwg.org/) API to match URLs.
+
+When connecting to an existing browser, Puppeteer will silently detach from any already open targets that violate the patterns.
+
+For any network requests made by the browser (including navigations and subresources like images or scripts), the request will fail with an error if the URL matches a blocked pattern.
+
+**Remarks:**
+
+Currently only supported for CDP connections.
 
 </td><td>
 

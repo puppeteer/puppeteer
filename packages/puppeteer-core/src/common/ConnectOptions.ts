@@ -168,12 +168,12 @@ export interface ConnectOptions {
    * This option allows you to restrict the browser from accessing specific
    * URLs or origins. It uses the standard [URLPattern](https://urlpattern.spec.whatwg.org/) API to match URLs.
    *
-   * If a pattern matches:
+   * When connecting to an existing browser, Puppeteer will silently detach from any
+   * already open targets that violate the patterns.
    *
-   * - **During initial connection**: Puppeteer will silently detach from any
-   *   pre-existing targets (tabs) that violate the patterns.
-   * - **During navigation or resource fetching**: The request will be blocked
-   *   (resulting in `net::ERR_INTERNET_DISCONNECTED`).
+   * For any network requests made by the browser (including navigations and
+   * subresources like images or scripts), the request will fail with an error
+   * if the URL matches a blocked pattern.
    *
    * @example Pattern to block a specific domain:
    * `*://example.com/*`
