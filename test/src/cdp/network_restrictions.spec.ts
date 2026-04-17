@@ -7,8 +7,8 @@
 import expect from 'expect';
 import puppeteer from 'puppeteer/internal/puppeteer.js';
 
-import {launch} from './mocha-utils.js';
-import {html} from './utils.js';
+import {launch} from '../mocha-utils.js';
+import {html} from '../utils.js';
 
 describe('Network Restrictions', function () {
   it('should block page.goto when the destination is in the blocklist', async () => {
