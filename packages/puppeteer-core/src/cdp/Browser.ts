@@ -85,7 +85,7 @@ export class CdpBrowser extends BrowserBase {
       networkEnabled,
       issuesEnabled,
       handleDevToolsAsPage,
-      getNetworkConditions(blockList),
+      blockList,
     );
     if (acceptInsecureCerts) {
       await connection.send('Security.setIgnoreCertificateErrors', {
@@ -121,7 +121,7 @@ export class CdpBrowser extends BrowserBase {
     networkEnabled = true,
     issuesEnabled = true,
     handleDevToolsAsPage = false,
-    networkConditions?: Protocol.Network.EmulateNetworkConditionsByRuleRequest,
+    networkConditions?: string[],
   ) {
     super();
     this.#networkEnabled = networkEnabled;
@@ -622,21 +622,4 @@ export class CdpBrowser extends BrowserBase {
   override isIssuesEnabled(): boolean {
     return this.#issuesEnabled;
   }
-}
-
-function getNetworkConditions(
-  blockList?: string[],
-): Protocol.Network.EmulateNetworkConditionsByRuleRequest | undefined {
-  if (!blockList?.length) {
-    return undefined;
-  }
-  const matchedNetworkConditions = blockList.map(pattern => {
-    return {
-      urlPattern: pattern,
-      latency: 0,
-      downloadThroughput: -1,
-      uploadThroughput: -1,
-    };
-  });
-  return {matchedNetworkConditions, offline: true};
 }

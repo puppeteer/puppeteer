@@ -163,6 +163,27 @@ export interface ConnectOptions {
   capabilities?: SupportedWebDriverCapabilities;
 
   /**
+   * A list of URL patterns to block.
+   *
+   * This option allows you to restrict the browser from accessing specific
+   * URLs or origins. It uses the standard [URLPattern](https://urlpattern.spec.whatwg.org/) API to match URLs.
+   *
+   * If a pattern matches:
+   *
+   * - **During initial connection**: Puppeteer will silently detach from any
+   *   pre-existing targets (tabs) that violate the patterns.
+   * - **During navigation or resource fetching**: The request will be blocked
+   *   (resulting in `net::ERR_INTERNET_DISCONNECTED`).
+   *
+   * @example Pattern to block a specific domain:
+   * `*://example.com/*`
+   *
+   * @example Pattern to block all subdomains:
+   * `*://*.evil.com/*`
+   *
+   * @remarks
+   * Currently only supported for CDP connections.
+   *
    * @experimental
    */
   blockList?: string[];

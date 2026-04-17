@@ -107,21 +107,21 @@ export class TargetManager
   // done. It indicates whethere we are running the initial auto-attach step or
   // if we are handling targets after that.
   #initialAttachDone = false;
-  #networkConditions?: Protocol.Network.EmulateNetworkConditionsByRuleRequest;
+  #blockList?: string[];
 
   constructor(
     connection: Connection,
     targetFactory: TargetFactory,
     targetFilterCallback?: TargetFilterCallback,
     waitForInitiallyDiscoveredTargets = true,
-    networkConditions?: Protocol.Network.EmulateNetworkConditionsByRuleRequest,
+    networkConditions?: string[],
   ) {
     super();
     this.#connection = connection;
     this.#targetFilterCallback = targetFilterCallback;
     this.#targetFactory = targetFactory;
     this.#waitForInitiallyDiscoveredTargets = waitForInitiallyDiscoveredTargets;
-    this.#networkConditions = networkConditions;
+    this.#blockList = networkConditions;
 
     this.#connection.on('Target.targetCreated', this.#onTargetCreated);
     this.#connection.on('Target.targetDestroyed', this.#onTargetDestroyed);
@@ -337,6 +337,13 @@ export class TargetManager
       return;
     }
 
+    // If we connect to a browser that is already open,
+    // immediately detach from any tab that is on the blocklist.
+    if (!this.#initialAttachDone && !this.#isUrlAllowed(targetInfo.url)) {
+      await this.#silentDetach(session, parentSession);
+      return;
+    }
+
     // Special case for service workers: being attached to service workers will
     // prevent them from ever being destroyed. Therefore, we silently detach
     // from service workers unless the connection was manually created via
@@ -357,13 +364,6 @@ export class TargetManager
       target._initialize();
       this.#attachedTargetsByTargetId.set(targetInfo.targetId, target);
       this.emit(TargetManagerEvent.TargetAvailable, target);
-      return;
-    }
-
-    // If we connect to a browser that is already open,
-    // immediately detach from any tab that is on the blocklist.
-    if (!this.#initialAttachDone && !this.#isUrlAllowed(targetInfo.url)) {
-      await this.#silentDetach(session, parentSession);
       return;
     }
 
@@ -469,7 +469,7 @@ export class TargetManager
    * Helper to validate URL against blocklist patterns
    */
   #isUrlAllowed = (url: string): boolean => {
-    if (!this.#networkConditions) {
+    if (!this.#blockList) {
       return true;
     }
 
@@ -478,16 +478,14 @@ export class TargetManager
       return true;
     }
 
-    const rules = this.#networkConditions.matchedNetworkConditions;
-
-    for (const rule of rules) {
+    for (const rule of this.#blockList) {
       try {
-        const pattern = new URLPattern(rule.urlPattern);
+        const pattern = new URLPattern(rule);
         if (pattern.test(url)) {
           return false; // return false as url matches pattern from blockList
         }
       } catch {
-        debugError(`Invalid URL pattern: ${rule.urlPattern}`);
+        debugError(`Invalid URL pattern: ${rule}`);
       }
     }
 
@@ -495,14 +493,22 @@ export class TargetManager
   };
 
   #maybeSetupNetworkConditions = async (session: CDPSession): Promise<void> => {
-    if (!this.#networkConditions) {
+    if (!this.#blockList?.length) {
       return;
     }
 
-    await session.send('Network.enable');
-    await session.send(
-      'Network.emulateNetworkConditionsByRule',
-      this.#networkConditions,
-    );
+    const matchedNetworkConditions = this.#blockList.map(pattern => {
+      return {
+        urlPattern: pattern,
+        latency: 0,
+        downloadThroughput: -1,
+        uploadThroughput: -1,
+      };
+    });
+
+    await session.send('Network.emulateNetworkConditionsByRule', {
+      matchedNetworkConditions,
+      offline: true,
+    });
   };
 }
