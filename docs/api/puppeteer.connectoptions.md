@@ -58,6 +58,25 @@ Whether to ignore HTTPS errors during navigation.
 </td></tr>
 <tr><td>
 
+<span id="blocklist">blockList</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string\[\]
+
+</td><td>
+
+**_(Experimental)_**
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="browserurl">browserURL</span>
 
 </td><td>
