@@ -163,11 +163,15 @@ export class WebMCPTool extends EventEmitter<{
    */
   async execute(input: object = {}): Promise<WebMCPToolCallResult> {
     const {invocationId} = await this.#webmcp.invokeTool(this, input);
+    const completedResponse = this.#webmcp.consumeToolResponse(invocationId);
+    if (completedResponse) {
+      return completedResponse;
+    }
     return await new Promise<WebMCPToolCallResult>(resolve => {
       const handler = (event: WebMCPToolCallResult) => {
         if (event.id === invocationId) {
           this.#webmcp.off('toolresponded', handler);
-          resolve(event);
+          resolve(this.#webmcp.consumeToolResponse(invocationId) ?? event);
         }
       };
       this.#webmcp.on('toolresponded', handler);
@@ -292,6 +296,7 @@ export class WebMCP extends EventEmitter<{
   #frameManager: FrameManager;
   #tools = new Map<string, Map<string, WebMCPTool>>();
   #pendingCalls = new Map<string, WebMCPToolCall>();
+  #respondedCalls = new Map<string, WebMCPToolCallResult>();
 
   #onToolsAdded = (event: ProtocolWebMCPToolsAddedEvent) => {
     const tools: WebMCPTool[] = [];
@@ -350,11 +355,13 @@ export class WebMCP extends EventEmitter<{
       errorText: event.errorText,
       exception: event.exception,
     };
+    this.#respondedCalls.set(event.invocationId, response);
     this.emit('toolresponded', response);
   };
 
   #onFrameNavigated = (frame: Frame) => {
     this.#pendingCalls.clear();
+    this.#respondedCalls.clear();
     const frameTools = this.#tools.get(frame._id);
     if (!frameTools) {
       return;
@@ -401,6 +408,17 @@ export class WebMCP extends EventEmitter<{
       toolName: tool.name,
       input,
     });
+  }
+
+  /**
+   * @internal
+   */
+  consumeToolResponse(invocationId: string): WebMCPToolCallResult | undefined {
+    const response = this.#respondedCalls.get(invocationId);
+    if (response) {
+      this.#respondedCalls.delete(invocationId);
+    }
+    return response;
   }
 
   /**
