@@ -33,6 +33,20 @@ describe('Target', function () {
     await page.close();
   });
 
+  it('Target.page() should reuse the page created via Target.asPage()', async () => {
+    const {browser} = await getTestState();
+    const page = await browser.newPage();
+    const target = page.target();
+
+    const pageFromAsPage = await target.asPage();
+    const pageFromPage = await target.page();
+
+    expect(pageFromAsPage).toBe(page);
+    expect(pageFromPage).toBe(page);
+
+    await page.close();
+  });
+
   it('Browser.targets should return all of the targets', async () => {
     const {browser} = await getTestState();
 
