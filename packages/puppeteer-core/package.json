@@ -163,6 +163,7 @@
     "@types/ws": "8.18.1",
     "mitt": "3.0.1",
     "parsel-js": "1.2.2",
-    "rxjs": "7.8.2"
+    "rxjs": "7.8.2",
+    "urlpattern-polyfill": "10.1.0"
   }
 }
