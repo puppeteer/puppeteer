@@ -11,7 +11,7 @@ import {launch} from './mocha-utils.js';
 import {html} from './utils.js';
 
 describe('Network Restrictions', function () {
-  it.only('should block page.goto when the destination is in the blocklist', async () => {
+  it('should block page.goto when the destination is in the blocklist', async () => {
     const {page, close, server} = await launch(
       {
         blockList: ['*://*:*/empty.html'],
