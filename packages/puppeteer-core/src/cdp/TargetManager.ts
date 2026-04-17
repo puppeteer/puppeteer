@@ -484,8 +484,7 @@ export class TargetManager
       try {
         const pattern = new URLPattern(rule.urlPattern);
         if (pattern.test(url)) {
-          // Returns false if rule.offline is true (blocked)
-          return !rule.offline;
+          return false; // return false as url matches pattern from blockList
         }
       } catch {
         debugError(`Invalid URL pattern: ${rule.urlPattern}`);
