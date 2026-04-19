@@ -7,7 +7,7 @@
 import assert from 'node:assert';
 import {spawnSync} from 'node:child_process';
 import {existsSync, readFileSync} from 'node:fs';
-import {mkdir, unlink} from 'node:fs/promises';
+import {mkdir, rename, rm, unlink} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -43,6 +43,25 @@ function debugTimeEnd(label: string) {
   const duration =
     end[0] * 1000 + end[1] / 1e6 - (start[0] * 1000 + start[1] / 1e6); // calculate duration in milliseconds
   debugInstall(`Duration for ${label}: ${duration}ms`);
+}
+
+function createTemporaryInstallationId(): string {
+  return `${process.pid}-${Math.random().toString(36).slice(2)}`;
+}
+
+async function unlinkIfExists(filePath: string): Promise<void> {
+  try {
+    await unlink(filePath);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+      throw error;
+    }
+  }
+}
+
+function isExistingDestinationError(error: unknown): boolean {
+  const code = (error as NodeJS.ErrnoException).code;
+  return code === 'EEXIST' || code === 'ENOTEMPTY' || code === 'EPERM';
 }
 
 /**
@@ -372,6 +391,11 @@ async function installUrl(
   const cache = new Cache(options.cacheDir);
   const browserRoot = cache.browserRoot(options.browser);
   const archivePath = path.join(browserRoot, `${options.buildId}-${fileName}`);
+  const installationId = createTemporaryInstallationId();
+  const temporaryArchivePath = path.join(
+    browserRoot,
+    `${options.buildId}-${installationId}-${fileName}`,
+  );
   if (!existsSync(browserRoot)) {
     await mkdir(browserRoot, {recursive: true});
   }
@@ -392,6 +416,7 @@ async function installUrl(
     options.platform,
     options.buildId,
   );
+  const temporaryOutputPath = `${outputPath}.installing-${installationId}`;
 
   // Get executable path from provider once (used for both cached and new installations)
   const relativeExecutablePath = await provider.getExecutablePath({
@@ -434,25 +459,29 @@ async function installUrl(
       return installedBrowser;
     }
 
-    // Check if archive already exists (e.g., from a custom provider)
-    if (!existsSync(archivePath)) {
-      debugInstall(`Downloading binary from ${url}`);
-      try {
-        debugTime('download');
-        await downloadFile(url, archivePath, downloadProgressCallback);
-      } finally {
-        debugTimeEnd('download');
-      }
-    } else {
-      debugInstall(`Using existing archive at ${archivePath}`);
+    debugInstall(`Downloading binary from ${url}`);
+    try {
+      debugTime('download');
+      await downloadFile(url, temporaryArchivePath, downloadProgressCallback);
+    } finally {
+      debugTimeEnd('download');
     }
 
-    debugInstall(`Installing ${archivePath} to ${outputPath}`);
+    debugInstall(`Installing ${temporaryArchivePath} to ${temporaryOutputPath}`);
     try {
       debugTime('extract');
-      await unpackArchive(archivePath, outputPath);
+      await unpackArchive(temporaryArchivePath, temporaryOutputPath);
     } finally {
       debugTimeEnd('extract');
+    }
+
+    try {
+      await rename(temporaryOutputPath, outputPath);
+    } catch (error) {
+      if (!isExistingDestinationError(error) || !existsSync(outputPath)) {
+        throw error;
+      }
+      await rm(temporaryOutputPath, {recursive: true, force: true});
     }
 
     if (options.buildIdAlias) {
@@ -467,9 +496,10 @@ async function installUrl(
     }
     return installedBrowser;
   } finally {
-    if (existsSync(archivePath)) {
-      await unlink(archivePath);
+    if (existsSync(temporaryOutputPath)) {
+      await rm(temporaryOutputPath, {recursive: true, force: true});
     }
+    await unlinkIfExists(temporaryArchivePath);
   }
 }
 

@@ -6,6 +6,7 @@
 
 import assert from 'node:assert';
 import fs from 'node:fs';
+import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -214,6 +215,92 @@ describe('Install with providers', () => {
         // Verify both provider errors are included
         assert(error.message.includes('Network error'));
         assert(error.message.includes('Server error'));
+      }
+    });
+
+    it('should handle concurrent installs for the same browser build', async function () {
+      this.timeout(30000);
+
+      const fixturePath = path.join(
+        import.meta.dirname,
+        '..',
+        'fixtures',
+        'test.tar.bz2',
+      );
+      const fixture = fs.readFileSync(fixturePath);
+
+      const server = http.createServer((_req, res) => {
+        res.writeHead(200, {
+          'Content-Type': 'application/x-bzip2',
+          'Content-Length': fixture.length,
+        });
+
+        const halfway = Math.floor(fixture.length / 2);
+        res.write(fixture.subarray(0, halfway));
+        setTimeout(() => {
+          res.end(fixture.subarray(halfway));
+        }, 100);
+      });
+
+      await new Promise<void>(resolve => {
+        server.listen(0, '127.0.0.1', () => {
+          resolve();
+        });
+      });
+
+      const address = server.address();
+      assert.ok(address && typeof address === 'object');
+
+      const provider = new MockProvider({
+        supports: true,
+        getDownloadUrlResult: new URL(
+          `http://127.0.0.1:${address.port}/test.tar.bz2`,
+        ),
+        getExecutablePath: 'test/run.sh',
+      });
+
+      try {
+        for (let iteration = 0; iteration < 20; iteration++) {
+          const cacheDir = fs.mkdtempSync(
+            path.join(os.tmpdir(), 'puppeteer-concurrent-install'),
+          );
+          try {
+            const results = await Promise.all(
+              Array.from({length: 4}, () => {
+                return install({
+                  cacheDir,
+                  browser: Browser.CHROME,
+                  platform: BrowserPlatform.LINUX,
+                  buildId: '123.0.0.1',
+                  providers: [provider],
+                });
+              }),
+            );
+
+            for (const result of results) {
+              assert.ok(fs.existsSync(result.path));
+            }
+
+            const installedBrowsers = await getInstalledBrowsers({cacheDir});
+            const matchingBrowsers = installedBrowsers.filter(browser => {
+              return (
+                browser.browser === Browser.CHROME &&
+                browser.buildId === '123.0.0.1'
+              );
+            });
+
+            assert.strictEqual(matchingBrowsers.length, 1);
+            assert.ok(fs.existsSync(matchingBrowsers[0]!.executablePath));
+          } finally {
+            fs.rmSync(cacheDir, {recursive: true, force: true});
+          }
+        }
+      } finally {
+        await new Promise<void>(resolve => {
+          server.close(() => {
+            resolve();
+          });
+        });
       }
     });
   });
