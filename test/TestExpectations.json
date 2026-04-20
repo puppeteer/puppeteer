@@ -147,11 +147,11 @@
     "comment": "CDP-specific feature, not supported in WebDriver BiDi"
   },
   {
-    "testIdPattern": "[network_restrictions.spec] *",
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions should not block chrome://version/ even if it matches blocklist",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome-headless-shell"],
     "expectations": ["SKIP"],
-    "comment": "Not supported by chrome-headless-shell"
+    "comment": "chrome:// usrls are not supported by chrome-headless-shell"
   },
   {
     "testIdPattern": "[network.spec] network Page.setBypassServiceWorker *",
