@@ -147,13 +147,6 @@
     "comment": "CDP-specific feature, not supported in WebDriver BiDi"
   },
   {
-    "testIdPattern": "[network_restrictions.spec] Network Restrictions should not block chrome://version/ even if it matches blocklist",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome-headless-shell"],
-    "expectations": ["SKIP"],
-    "comment": "chrome:// usrls are not supported by chrome-headless-shell"
-  },
-  {
     "testIdPattern": "[network.spec] network Page.setBypassServiceWorker *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -640,6 +633,13 @@
     "parameters": ["pipe"],
     "expectations": ["SKIP"],
     "comment": "Verifies URL blocklist enforcement when connecting to a browser via WebSocket, which is not applicable for pipe mode"
+  },
+  {
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions should not block chrome://version/ even if it matches blocklist",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["SKIP"],
+    "comment": "chrome:// urls are not supported by chrome-headless-shell"
   },
   {
     "testIdPattern": "[network.spec] network Network Events should support redirects",
