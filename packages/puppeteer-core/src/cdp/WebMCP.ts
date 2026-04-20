@@ -55,8 +55,13 @@ interface ProtocolWebMCPToolsAddedEvent {
   tools: ProtocolWebMCPTool[];
 }
 
+interface ProtocolWebMCPRemovedTool {
+  name: string;
+  frameId: string;
+}
+
 interface ProtocolWebMCPToolsRemovedEvent {
-  tools: ProtocolWebMCPTool[];
+  tools: ProtocolWebMCPRemovedTool[];
 }
 
 interface ProtocolWebMCPToolInvokedEvent {
