@@ -324,9 +324,6 @@ export class BrowsingContext extends EventEmitter<{
       const request = Request.from(this, event);
       this.#requests.set(request.id, request);
       request.once('disposing', () => {
-        console.log(
-          `Removing request ${request.id} since it is getting disposed`,
-        );
         this.#requests.delete(request.id);
       });
       this.emit('request', {request});

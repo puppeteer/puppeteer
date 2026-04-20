@@ -341,7 +341,6 @@ export class Request extends EventEmitter<{
   }
 
   override [disposeSymbol](): void {
-    console.log(`Request ${this.id} is being disposed...`);
     this.emit('disposing', undefined);
     this.#response = undefined;
     this.#event = undefined;
