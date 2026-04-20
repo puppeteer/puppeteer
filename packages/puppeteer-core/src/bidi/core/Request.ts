@@ -29,6 +29,8 @@ export class Request extends EventEmitter<{
   response: Bidi.Network.ResponseData;
   /** Emitted when the request fails. */
   error: string;
+  /** Emitted when the request is being disposed. */
+  disposing: void;
 }> {
   static from(
     browsingContext: BrowsingContext,
@@ -46,7 +48,7 @@ export class Request extends EventEmitter<{
   #response?: Bidi.Network.ResponseData;
   readonly #browsingContext: BrowsingContext;
   readonly #disposables = new DisposableStack();
-  readonly #event: Bidi.Network.BeforeRequestSentParameters;
+  #event: Bidi.Network.BeforeRequestSentParameters | undefined;
 
   private constructor(
     browsingContext: BrowsingContext,
@@ -80,7 +82,7 @@ export class Request extends EventEmitter<{
       }
       // This is a workaround to detect if a beforeRequestSent is for a request
       // sent after continueWithAuth. Currently, only emitted in Firefox.
-      const previousRequestHasAuth = this.#event.request.headers.find(
+      const previousRequestHasAuth = this.#event!.request.headers.find(
         header => {
           return header.name.toLowerCase() === 'authorization';
         },
@@ -90,7 +92,7 @@ export class Request extends EventEmitter<{
       });
       const isAfterAuth = newRequestHasAuth && !previousRequestHasAuth;
       if (
-        event.redirectCount !== this.#event.redirectCount + 1 &&
+        event.redirectCount !== this.#event!.redirectCount + 1 &&
         !isAfterAuth
       ) {
         return;
@@ -114,7 +116,7 @@ export class Request extends EventEmitter<{
       if (
         event.context !== this.#browsingContext.id ||
         event.request.request !== this.id ||
-        this.#event.redirectCount !== event.redirectCount
+        this.#event!.redirectCount !== event.redirectCount
       ) {
         return;
       }
@@ -126,24 +128,24 @@ export class Request extends EventEmitter<{
       if (
         event.context !== this.#browsingContext.id ||
         event.request.request !== this.id ||
-        this.#event.redirectCount !== event.redirectCount
+        this.#event!.redirectCount !== event.redirectCount
       ) {
         return;
       }
       this.#response = event.response;
-      this.#event.request.timings = event.request.timings;
+      this.#event!.request.timings = event.request.timings;
       this.emit('response', this.#response);
     });
     sessionEmitter.on('network.responseCompleted', event => {
       if (
         event.context !== this.#browsingContext.id ||
         event.request.request !== this.id ||
-        this.#event.redirectCount !== event.redirectCount
+        this.#event!.redirectCount !== event.redirectCount
       ) {
         return;
       }
       this.#response = event.response;
-      this.#event.request.timings = event.request.timings;
+      this.#event!.request.timings = event.request.timings;
       this.emit('success', this.#response);
       // In case this is a redirect.
       if (this.#response.status >= 300 && this.#response.status < 400) {
@@ -163,26 +165,26 @@ export class Request extends EventEmitter<{
     return this.#error;
   }
   get headers(): Bidi.Network.Header[] {
-    return this.#event.request.headers;
+    return this.#event!.request.headers;
   }
   get id(): string {
-    return this.#event.request.request;
+    return this.#event!.request.request;
   }
   get initiator(): Bidi.Network.Initiator | undefined {
     return {
-      ...this.#event.initiator,
+      ...this.#event!.initiator,
       // Initiator URL is not specified in BiDi.
       // @ts-expect-error non-standard property.
-      url: this.#event.request['goog:resourceInitiator']?.url,
+      url: this.#event!.request['goog:resourceInitiator']?.url,
       // @ts-expect-error non-standard property.
-      stack: this.#event.request['goog:resourceInitiator']?.stack,
+      stack: this.#event!.request['goog:resourceInitiator']?.stack,
     };
   }
   get method(): string {
-    return this.#event.request.method;
+    return this.#event!.request.method;
   }
   get navigation(): string | undefined {
-    return this.#event.navigation ?? undefined;
+    return this.#event!.navigation ?? undefined;
   }
   get redirect(): Request | undefined {
     return this.#redirect;
@@ -201,24 +203,24 @@ export class Request extends EventEmitter<{
     return this.#response;
   }
   get url(): string {
-    return this.#event.request.url;
+    return this.#event!.request.url;
   }
   get isBlocked(): boolean {
-    return this.#event.isBlocked;
+    return this.#event!.isBlocked;
   }
 
   get resourceType(): string | undefined {
     // @ts-expect-error non-standard attribute.
-    return this.#event.request['goog:resourceType'] ?? undefined;
+    return this.#event!.request['goog:resourceType'] ?? undefined;
   }
 
   get postData(): string | undefined {
     // @ts-expect-error non-standard attribute.
-    return this.#event.request['goog:postData'] ?? undefined;
+    return this.#event!.request['goog:postData'] ?? undefined;
   }
 
   get hasPostData(): boolean {
-    return (this.#event.request.bodySize ?? 0) > 0;
+    return (this.#event!.request.bodySize ?? 0) > 0;
   }
 
   async continueRequest({
@@ -339,11 +341,15 @@ export class Request extends EventEmitter<{
   }
 
   override [disposeSymbol](): void {
+    console.log(`Request ${this.id} is being disposed...`);
+    this.emit('disposing', undefined);
+    this.#response = undefined;
+    this.#event = undefined;
     this.#disposables.dispose();
     super[disposeSymbol]();
   }
 
   timing(): Bidi.Network.FetchTimingInfo {
-    return this.#event.request.timings;
+    return this.#event!.request.timings;
   }
 }
