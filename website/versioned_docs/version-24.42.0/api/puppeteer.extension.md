@@ -48,6 +48,23 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="enabled">enabled</span>
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether the extension is enabled.
+
+</td></tr>
+<tr><td>
+
 <span id="id">id</span>
 
 </td><td>
@@ -78,6 +95,23 @@ string
 </td><td>
 
 The name of the extension as specified in its manifest.
+
+</td></tr>
+<tr><td>
+
+<span id="path">path</span>
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+string
+
+</td><td>
+
+The path in the file system where the extension is located.
 
 </td></tr>
 <tr><td>

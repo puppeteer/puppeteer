@@ -2,6 +2,29 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.42.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.41.0...puppeteer-v24.42.0) (2026-04-20)
+
+### ♻️ Chores
+
+- **puppeteer:** Synchronize puppeteer versions
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - puppeteer-core bumped from 24.41.0 to 24.42.0
+
+### 🎉 Features
+
+- add metadata to extensions object ([#14870](https://github.com/puppeteer/puppeteer/issues/14870)) ([d3e190e](https://github.com/puppeteer/puppeteer/commit/d3e190e8aea051bf1cfdfb466909bfeca3b453c9))
+- **cdp:** support autofilling address ([#14826](https://github.com/puppeteer/puppeteer/issues/14826)) ([c2acadc](https://github.com/puppeteer/puppeteer/commit/c2acadc29e28846d09a8d0e60879c44a6c2e0b05))
+- implement URL blocklist to restrict access to unauthorized sites ([#14873](https://github.com/puppeteer/puppeteer/issues/14873)) ([8ad881c](https://github.com/puppeteer/puppeteer/commit/8ad881c61895f2689ae2aaddef5f37586000aa88))
+
+### 🛠️ Fixes
+
+- remove PartitionAllocSchedulerLoopQuarantineTaskControlledPurge from disabled features ([#14872](https://github.com/puppeteer/puppeteer/issues/14872)) ([c9909a5](https://github.com/puppeteer/puppeteer/commit/c9909a56e6b6d0bcbf8bfb3a6af2b496e6fc489f))
+- roll to Chrome 147.0.7727.57 ([#14869](https://github.com/puppeteer/puppeteer/issues/14869)) ([51c4305](https://github.com/puppeteer/puppeteer/commit/51c4305c0bdefd4e6aca385c9c1097e7a4923cfb))
+
 ## [24.41.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.40.0...puppeteer-v24.41.0) (2026-04-15)
 
 ### 🎉 Features

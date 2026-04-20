@@ -654,6 +654,15 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="autofilladdressfield">[AutofillAddressField](./puppeteer.autofilladdressfield.md)</span>
+
+</td><td>
+
+Supported autofill address field names.
+
+</td></tr>
+<tr><td>
+
 <span id="browsercontextevent">[BrowserContextEvent](./puppeteer.browsercontextevent.md)</span>
 
 </td><td>
@@ -771,13 +780,6 @@ Description
 <tr><td>
 
 <span id="addscreenparams">[AddScreenParams](./puppeteer.addscreenparams.md)</span>
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
-<span id="autofilldata">[AutofillData](./puppeteer.autofilldata.md)</span>
 
 </td><td>
 
@@ -1614,6 +1616,13 @@ Description
 </td><td>
 
 Emulated bluetooth adapter state.
+
+</td></tr>
+<tr><td>
+
+<span id="autofilldata">[AutofillData](./puppeteer.autofilldata.md)</span>
+
+</td><td>
 
 </td></tr>
 <tr><td>
