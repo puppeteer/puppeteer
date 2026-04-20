@@ -132,12 +132,6 @@ describe('Page.webmcp', function () {
     expect(await addedTools[0]!.formElement).toBeUndefined();
     expect(addedTools[0]!.location).toBeDefined();
 
-    const declarativeToolAdded = new Promise<WebMCPTool[]>(resolve => {
-      page.webmcp.once('toolsadded', event => {
-        return resolve(event.tools);
-      });
-    });
-
     // Register a declarative WebMCP tool.
     await page.evaluate(() => {
       const form = document.createElement('form');
@@ -146,12 +140,22 @@ describe('Page.webmcp', function () {
       (window as any).document.body.appendChild(form);
     });
 
+    const declarativeToolAdded = new Promise<WebMCPTool[]>(resolve => {
+      page.webmcp.once('toolsadded', event => {
+        return resolve(event.tools);
+      });
+    });
+
     addedTools = await declarativeToolAdded;
     expect(addedTools.length).toBe(1);
     expect(addedTools[0]!.name).toBe('declarative tool name');
     expect(addedTools[0]!.description).toBe('tool description');
     expect(addedTools[0]!.annotations).toBeUndefined();
-    expect(addedTools[0]!.inputSchema).toStrictEqual({});
+    expect(addedTools[0]!.inputSchema).toStrictEqual({
+      type: 'object',
+      properties: {},
+      required: [],
+    });
     expect(addedTools[0]!.frame).toBe(page.mainFrame());
     expect(await addedTools[0]!.formElement).toBeDefined();
     expect(addedTools[0]!.location).toBeUndefined();
@@ -184,14 +188,6 @@ describe('Page.webmcp', function () {
       return controller;
     });
 
-    // Register a declarative WebMCP tool.
-    await page.evaluate(() => {
-      const form = document.createElement('form');
-      form.setAttribute('toolname', 'declarative tool name');
-      form.setAttribute('tooldescription', 'tool description');
-      (window as any).document.body.appendChild(form);
-    });
-
     const imperativeToolRemoved = new Promise<WebMCPTool[]>(resolve => {
       page.webmcp.once('toolsremoved', event => {
         return resolve(event.tools);
@@ -220,6 +216,20 @@ describe('Page.webmcp', function () {
     expect(await removedTools[0]!.formElement).toBeUndefined();
     expect(removedTools[0]!.location).toBeDefined();
 
+    // Register a declarative WebMCP tool.
+    await page.evaluate(() => {
+      const form = document.createElement('form');
+      form.setAttribute('toolname', 'declarative tool name');
+      form.setAttribute('tooldescription', 'tool description');
+      (window as any).document.body.appendChild(form);
+    });
+
+    await new Promise<WebMCPTool[]>(resolve => {
+      page.webmcp.once('toolsadded', event => {
+        return resolve(event.tools);
+      });
+    });
+
     const declarativeToolRemoved = new Promise<WebMCPTool[]>(resolve => {
       page.webmcp.once('toolsremoved', event => {
         return resolve(event.tools);
@@ -235,7 +245,11 @@ describe('Page.webmcp', function () {
     expect(removedTools.length).toBe(1);
     expect(removedTools[0]!.name).toBe('declarative tool name');
     expect(removedTools[0]!.description).toBe('tool description');
-    expect(removedTools[0]!.inputSchema).toStrictEqual({});
+    expect(removedTools[0]!.inputSchema).toStrictEqual({
+      type: 'object',
+      properties: {},
+      required: [],
+    });
     expect(removedTools[0]!.annotations).toBeUndefined();
     expect(removedTools[0]!.frame).toBe(page.mainFrame());
     expect(await removedTools[0]!.formElement).toBeDefined();
