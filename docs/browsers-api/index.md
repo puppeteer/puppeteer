@@ -87,6 +87,14 @@ npx puppeteer browsers install chrome --install-deps
 
 1. Launching the system browsers is only possible for Chrome/Chromium.
 
+## Proxies
+
+The library and CLI respect `HTTP_PROXY`, `HTTPS_PROXY` and `NO_PROXY` environment variables. For them to work, you must have the `proxy-agent` package installed:
+
+```bash
+npm install proxy-agent
+```
+
 ## Custom Providers
 
 You can implement custom browser providers to download from alternative sources like corporate mirrors, private repositories, or specialized browser builds.

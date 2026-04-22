@@ -109,12 +109,20 @@
   "dependencies": {
     "debug": "^4.4.3",
     "progress": "^2.0.3",
-    "proxy-agent": "^6.5.0",
     "tar-fs": "^3.1.1",
     "yargs": "^17.7.2",
     "semver": "^7.7.4"
   },
+  "peerDependencies": {
+    "proxy-agent": ">=8.0.1"
+  },
+  "peerDependenciesMeta": {
+    "proxy-agent": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "proxy-agent": ">=8.0.1",
     "@types/debug": "4.1.13",
     "@types/progress": "2.0.7",
     "@types/tar-fs": "2.0.4",
