@@ -239,7 +239,7 @@ describe('Network Restrictions', function () {
     }
   });
 
-  it.only('should throw an error for an invalid pattern', async () => {
+  it('should throw an error for an invalid pattern', async () => {
     let error: Error | undefined;
     await launch(
       {
