@@ -184,7 +184,37 @@ export interface ConnectOptions {
    * @remarks
    * Currently only supported for CDP connections.
    *
+   * Cannot be used along with {@link ConnectOptions.allowList}.
+   *
    * @experimental
    */
   blockList?: string[];
+  /**
+   * A list of URL patterns to allow.
+   *
+   * This option allows you to restrict the browser from accessing any URLs
+   * except for those that match the patterns in the allowList.
+   * It uses the standard [URLPattern](https://urlpattern.spec.whatwg.org/) API to match URLs.
+   *
+   * When connecting to an existing browser, Puppeteer will silently detach from any
+   * already open targets that violate the patterns.
+   *
+   * For any network requests made by the browser (including navigations and
+   * subresources like images or scripts), the request will fail with an error
+   * if the URL does not match any pattern in the allowList.
+   *
+   * @example Pattern to allow a specific domain:
+   * `*://example.com/*`
+   *
+   * @example Pattern to allow all subdomains:
+   * `*://*.example.com/*`
+   *
+   * @remarks
+   * Currently only supported for CDP connections.
+   *
+   * Cannot be used along with {@link ConnectOptions.blockList}.
+   *
+   * @experimental
+   */
+  allowList?: string[];
 }

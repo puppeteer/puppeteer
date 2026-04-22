@@ -76,6 +76,9 @@ export abstract class BrowserLauncher {
   }
 
   async launch(options: LaunchOptions = {}): Promise<Browser> {
+    if (options.blockList && options.allowList) {
+      throw new Error('Cannot specify both blockList and allowList');
+    }
     const {
       dumpio = false,
       enableExtensions = false,
@@ -95,6 +98,7 @@ export abstract class BrowserLauncher {
       handleDevToolsAsPage,
       idGenerator = createIncrementalIdGenerator(),
       blockList,
+      allowList,
     } = options;
 
     let {protocol} = options;
@@ -222,6 +226,7 @@ export abstract class BrowserLauncher {
             issuesEnabled,
             handleDevToolsAsPage,
             blockList,
+            allowList,
           );
         }
       }

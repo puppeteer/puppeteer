@@ -173,6 +173,87 @@ describe('Network Restrictions', function () {
     }
   });
 
+  it('should only allow navigation to URLs in the allowList', async () => {
+    const {page, close, server} = await launch(
+      {
+        allowList: ['*://*:*/empty.html'],
+      },
+      {createContext: true},
+    );
+
+    try {
+      const allowedUrl = server.PREFIX + '/empty.html';
+      const blockedUrl = server.PREFIX + '/title.html';
+
+      await page.goto(allowedUrl);
+      let error: Error | undefined;
+      await page.goto(blockedUrl).catch(e => {
+        return (error = e);
+      });
+      expect(page.url()).not.toBe(blockedUrl);
+      console.log('page url', page.url());
+      expect(error).toBeDefined();
+      expect(error?.message).toContain('net::ERR_INTERNET_DISCONNECTED');
+    } finally {
+      await close();
+    }
+  });
+
+  it('should throw an error when both blockList and allowList are specified', async () => {
+    let error: Error | undefined;
+    await launch(
+      {
+        blockList: ['*://*:*/empty.html'],
+        allowList: ['*://*:*/empty.html'],
+      },
+      {createContext: true},
+    ).catch(e => {
+      return (error = e);
+    });
+
+    expect(error).toBeDefined();
+    expect(error?.message).toContain(
+      'Cannot specify both blockList and allowList',
+    );
+
+    const {browser, close} = await launch({}, {createContext: false});
+    try {
+      const wsEndpoint = browser.wsEndpoint();
+      let connectError: Error | undefined;
+      await puppeteer
+        .connect({
+          browserWSEndpoint: wsEndpoint,
+          blockList: ['*://*:*/empty.html'],
+          allowList: ['*://*:*/empty.html'],
+        })
+        .catch(e => {
+          return (connectError = e);
+        });
+
+      expect(connectError).toBeDefined();
+      expect(connectError?.message).toContain(
+        'Cannot specify both blockList and allowList',
+      );
+    } finally {
+      await close();
+    }
+  });
+
+  it.only('should throw an error for an invalid pattern', async () => {
+    let error: Error | undefined;
+    await launch(
+      {
+        blockList: ['(invalid pattern'],
+      },
+      {createContext: true},
+    ).catch(e => {
+      return (error = e);
+    });
+
+    expect(error).toBeDefined();
+    expect(error?.message.includes('URLPattern')).toBeTruthy();
+  });
+
   it('should not block chrome://version/ even if it matches blocklist', async () => {
     const chromeUrl = 'chrome://version/';
     const {page, close} = await launch(

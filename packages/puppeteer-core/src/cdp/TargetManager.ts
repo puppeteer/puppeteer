@@ -107,21 +107,29 @@ export class TargetManager
   // done. It indicates whethere we are running the initial auto-attach step or
   // if we are handling targets after that.
   #initialAttachDone = false;
-  #blockList?: string[];
+  #blockList: Array<{pattern: URLPattern; rule: string}> = [];
+  #allowList: Array<{pattern: URLPattern; rule: string}> = [];
 
   constructor(
     connection: Connection,
     targetFactory: TargetFactory,
     targetFilterCallback?: TargetFilterCallback,
     waitForInitiallyDiscoveredTargets = true,
-    networkConditions?: string[],
+    blockList?: string[],
+    allowList?: string[],
   ) {
     super();
+    if (blockList && allowList) {
+      throw new Error('Cannot specify both blockList and allowList');
+    }
+
     this.#connection = connection;
     this.#targetFilterCallback = targetFilterCallback;
     this.#targetFactory = targetFactory;
     this.#waitForInitiallyDiscoveredTargets = waitForInitiallyDiscoveredTargets;
-    this.#blockList = networkConditions;
+
+    this.#blockList = this.#mapPatterns(blockList);
+    this.#allowList = this.#mapPatterns(allowList);
 
     this.#connection.on('Target.targetCreated', this.#onTargetCreated);
     this.#connection.on('Target.targetDestroyed', this.#onTargetDestroyed);
@@ -469,7 +477,7 @@ export class TargetManager
    * Helper to validate URL against blocklist patterns
    */
   #isUrlAllowed = (url: string): boolean => {
-    if (!this.#blockList) {
+    if (this.#blockList.length === 0 && this.#allowList.length === 0) {
       return true;
     }
 
@@ -478,37 +486,69 @@ export class TargetManager
       return true;
     }
 
-    for (const rule of this.#blockList) {
-      try {
-        const pattern = new URLPattern(rule);
-        if (pattern.test(url)) {
-          return false; // return false as url matches pattern from blockList
-        }
-      } catch {
-        debugError(`Invalid URL pattern: ${rule}`);
+    for (const item of this.#blockList) {
+      if (item.pattern.test(url)) {
+        return false;
       }
+    }
+
+    if (this.#allowList.length > 0) {
+      for (const item of this.#allowList) {
+        if (item.pattern.test(url)) {
+          return true;
+        }
+      }
+      return false;
     }
 
     return true;
   };
 
+  #mapPatterns(rules?: string[]): Array<{pattern: URLPattern; rule: string}> {
+    const result: Array<{pattern: URLPattern; rule: string}> = [];
+    for (const rule of rules ?? []) {
+      result.push({pattern: new URLPattern(rule), rule});
+    }
+    return result;
+  }
+
   #maybeSetupNetworkConditions = async (session: CDPSession): Promise<void> => {
-    if (!this.#blockList?.length) {
+    if (this.#blockList.length === 0 && this.#allowList.length === 0) {
       return;
     }
 
-    const matchedNetworkConditions = this.#blockList.map(pattern => {
-      return {
-        urlPattern: pattern,
+    const matchedNetworkConditions = [];
+    for (const item of this.#blockList) {
+      matchedNetworkConditions.push({
+        urlPattern: item.rule,
+        offline: true,
         latency: 0,
         downloadThroughput: -1,
         uploadThroughput: -1,
-      };
-    });
+      });
+    }
+
+    if (this.#allowList.length > 0) {
+      for (const item of this.#allowList) {
+        matchedNetworkConditions.push({
+          urlPattern: item.rule,
+          offline: false,
+          latency: 0,
+          downloadThroughput: -1,
+          uploadThroughput: -1,
+        });
+      }
+      matchedNetworkConditions.push({
+        urlPattern: '',
+        offline: true,
+        latency: 0,
+        downloadThroughput: -1,
+        uploadThroughput: -1,
+      });
+    }
 
     await session.send('Network.emulateNetworkConditionsByRule', {
       matchedNetworkConditions,
-      offline: true,
     });
   };
 }
