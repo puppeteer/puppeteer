@@ -107,19 +107,19 @@ export class TargetManager
   // done. It indicates whethere we are running the initial auto-attach step or
   // if we are handling targets after that.
   #initialAttachDone = false;
-  #blockList: Array<{pattern: URLPattern; rule: string}> = [];
-  #allowList: Array<{pattern: URLPattern; rule: string}> = [];
+  #blocklist: Array<{pattern: URLPattern; rule: string}> = [];
+  #allowlist: Array<{pattern: URLPattern; rule: string}> = [];
 
   constructor(
     connection: Connection,
     targetFactory: TargetFactory,
     targetFilterCallback?: TargetFilterCallback,
     waitForInitiallyDiscoveredTargets = true,
-    blockList?: string[],
-    allowList?: string[],
+    blocklist?: string[],
+    allowlist?: string[],
   ) {
     super();
-    if (blockList && allowList) {
+    if (blocklist && allowlist) {
       throw new Error('Cannot specify both blockList and allowList');
     }
 
@@ -128,8 +128,8 @@ export class TargetManager
     this.#targetFactory = targetFactory;
     this.#waitForInitiallyDiscoveredTargets = waitForInitiallyDiscoveredTargets;
 
-    this.#blockList = this.#mapPatterns(blockList);
-    this.#allowList = this.#mapPatterns(allowList);
+    this.#blocklist = this.#mapPatterns(blocklist);
+    this.#allowlist = this.#mapPatterns(allowlist);
 
     this.#connection.on('Target.targetCreated', this.#onTargetCreated);
     this.#connection.on('Target.targetDestroyed', this.#onTargetDestroyed);
@@ -477,7 +477,7 @@ export class TargetManager
    * Helper to validate URL against blocklist patterns
    */
   #isUrlAllowed = (url: string): boolean => {
-    if (this.#blockList.length === 0 && this.#allowList.length === 0) {
+    if (this.#blocklist.length === 0 && this.#allowlist.length === 0) {
       return true;
     }
 
@@ -486,14 +486,14 @@ export class TargetManager
       return true;
     }
 
-    for (const item of this.#blockList) {
+    for (const item of this.#blocklist) {
       if (item.pattern.test(url)) {
         return false;
       }
     }
 
-    if (this.#allowList.length > 0) {
-      for (const item of this.#allowList) {
+    if (this.#allowlist.length > 0) {
+      for (const item of this.#allowlist) {
         if (item.pattern.test(url)) {
           return true;
         }
@@ -513,12 +513,12 @@ export class TargetManager
   }
 
   #maybeSetupNetworkConditions = async (session: CDPSession): Promise<void> => {
-    if (this.#blockList.length === 0 && this.#allowList.length === 0) {
+    if (this.#blocklist.length === 0 && this.#allowlist.length === 0) {
       return;
     }
 
     const matchedNetworkConditions = [];
-    for (const item of this.#blockList) {
+    for (const item of this.#blocklist) {
       matchedNetworkConditions.push({
         urlPattern: item.rule,
         offline: true,
@@ -528,8 +528,8 @@ export class TargetManager
       });
     }
 
-    if (this.#allowList.length > 0) {
-      for (const item of this.#allowList) {
+    if (this.#allowlist.length > 0) {
+      for (const item of this.#allowlist) {
         matchedNetworkConditions.push({
           urlPattern: item.rule,
           offline: false,
@@ -548,6 +548,7 @@ export class TargetManager
     }
 
     await session.send('Network.emulateNetworkConditionsByRule', {
+      offline: true, // 'offline' will be deprecated in Chrome 149. Retained for compatibility with existing blocklist functionality.
       matchedNetworkConditions,
     });
   };

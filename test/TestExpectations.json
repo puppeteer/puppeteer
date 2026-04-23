@@ -1969,6 +1969,34 @@
     "comment": "TODO: started to fail with Chrome headless shell 135 on Windows"
   },
   {
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions should only allow navigation to URLs in the allowlist",
+    "platforms": ["linux"],
+    "parameters": ["cdp", "chrome", "headless"],
+    "expectations": ["FAIL"],
+    "comment": "allowlist option requires at least chrome 149 version"
+  },
+  {
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions should only allow navigation to URLs in the allowlist",
+    "platforms": ["linux"],
+    "parameters": ["cdp", "chrome", "headful"],
+    "expectations": ["FAIL"],
+    "comment": "allowlist option requires at least chrome 149 version"
+  },
+  {
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions should only allow navigation to URLs in the allowlist",
+    "platforms": ["linux"],
+    "parameters": ["chrome", "headless", "webDriverBiDiOnly"],
+    "expectations": ["FAIL"],
+    "comment": "allowlist option requires at least chrome 149 version"
+  },
+  {
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions should only allow navigation to URLs in the allowlist",
+    "platforms": ["linux"],
+    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
+    "expectations": ["FAIL"],
+    "comment": "allowlist option requires at least chrome 149 version"
+  },
+  {
     "testIdPattern": "[network.spec] network Network Events Page.Events.Request",
     "platforms": ["linux"],
     "parameters": ["cdp", "chrome", "headless"],

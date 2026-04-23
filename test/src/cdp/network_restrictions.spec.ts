@@ -14,7 +14,7 @@ describe('Network Restrictions', function () {
   it('should block page.goto when the destination is in the blocklist', async () => {
     const {page, close, server} = await launch(
       {
-        blockList: ['*://*:*/empty.html'],
+        blocklist: ['*://*:*/empty.html'],
       },
       {createContext: true},
     );
@@ -39,7 +39,7 @@ describe('Network Restrictions', function () {
   it('should block window.location.href navigation to URLs in the blocklist', async () => {
     const {page, close, server} = await launch(
       {
-        blockList: ['*://*:*/empty.html'],
+        blocklist: ['*://*:*/empty.html'],
       },
       {createContext: true},
     );
@@ -67,7 +67,7 @@ describe('Network Restrictions', function () {
   it('should fail fetch requests to URLs in the blocklist', async () => {
     const {page, close, server} = await launch(
       {
-        blockList: ['*://*:*/empty.html'],
+        blocklist: ['*://*:*/empty.html'],
       },
       {createContext: true},
     );
@@ -96,7 +96,7 @@ describe('Network Restrictions', function () {
   it('should prevent loading of blocklisted subresources (e.g., images)', async () => {
     const {page, close, server} = await launch(
       {
-        blockList: ['*://*:*/pptr.png'],
+        blocklist: ['*://*:*/pptr.png'],
       },
       {createContext: true},
     );
@@ -156,7 +156,7 @@ describe('Network Restrictions', function () {
 
       connectedBrowser = await puppeteer.connect({
         browserWSEndpoint: wsEndpoint,
-        blockList: ['*://*:*/empty.html'],
+        blocklist: ['*://*:*/empty.html'],
       });
 
       const targets = connectedBrowser.targets();
@@ -173,10 +173,10 @@ describe('Network Restrictions', function () {
     }
   });
 
-  it('should only allow navigation to URLs in the allowList', async () => {
+  it('should only allow navigation to URLs in the allowlist', async () => {
     const {page, close, server} = await launch(
       {
-        allowList: ['*://*:*/empty.html'],
+        allowlist: ['*://*:*/empty.html'],
       },
       {createContext: true},
     );
@@ -191,7 +191,6 @@ describe('Network Restrictions', function () {
         return (error = e);
       });
       expect(page.url()).not.toBe(blockedUrl);
-      console.log('page url', page.url());
       expect(error).toBeDefined();
       expect(error?.message).toContain('net::ERR_INTERNET_DISCONNECTED');
     } finally {
@@ -199,12 +198,12 @@ describe('Network Restrictions', function () {
     }
   });
 
-  it('should throw an error when both blockList and allowList are specified', async () => {
+  it('should throw an error when both blocklist and allowlist are specified', async () => {
     let error: Error | undefined;
     await launch(
       {
-        blockList: ['*://*:*/empty.html'],
-        allowList: ['*://*:*/empty.html'],
+        blocklist: ['*://*:*/empty.html'],
+        allowlist: ['*://*:*/empty.html'],
       },
       {createContext: true},
     ).catch(e => {
@@ -213,7 +212,7 @@ describe('Network Restrictions', function () {
 
     expect(error).toBeDefined();
     expect(error?.message).toContain(
-      'Cannot specify both blockList and allowList',
+      'Cannot specify both blocklist and allowlist',
     );
 
     const {browser, close} = await launch({}, {createContext: false});
@@ -223,8 +222,8 @@ describe('Network Restrictions', function () {
       await puppeteer
         .connect({
           browserWSEndpoint: wsEndpoint,
-          blockList: ['*://*:*/empty.html'],
-          allowList: ['*://*:*/empty.html'],
+          blocklist: ['*://*:*/empty.html'],
+          allowlist: ['*://*:*/empty.html'],
         })
         .catch(e => {
           return (connectError = e);
@@ -232,7 +231,7 @@ describe('Network Restrictions', function () {
 
       expect(connectError).toBeDefined();
       expect(connectError?.message).toContain(
-        'Cannot specify both blockList and allowList',
+        'Cannot specify both blocklist and allowlist',
       );
     } finally {
       await close();
@@ -243,7 +242,7 @@ describe('Network Restrictions', function () {
     let error: Error | undefined;
     await launch(
       {
-        blockList: ['(invalid pattern'],
+        blocklist: ['(invalid pattern'],
       },
       {createContext: true},
     ).catch(e => {
@@ -258,7 +257,7 @@ describe('Network Restrictions', function () {
     const chromeUrl = 'chrome://version/';
     const {page, close} = await launch(
       {
-        blockList: [chromeUrl],
+        blocklist: [chromeUrl],
       },
       {createContext: true},
     );

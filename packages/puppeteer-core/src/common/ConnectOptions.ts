@@ -184,11 +184,11 @@ export interface ConnectOptions {
    * @remarks
    * Currently only supported for CDP connections.
    *
-   * Cannot be used along with {@link ConnectOptions.allowList}.
+   * Cannot be used along with {@link ConnectOptions.allowlist}.
    *
    * @experimental
    */
-  blockList?: string[];
+  blocklist?: string[];
   /**
    * A list of URL patterns to allow.
    *
@@ -201,7 +201,7 @@ export interface ConnectOptions {
    *
    * For any network requests made by the browser (including navigations and
    * subresources like images or scripts), the request will fail with an error
-   * if the URL does not match any pattern in the allowList.
+   * if the URL does not match any pattern in the allowlist.
    *
    * @example Pattern to allow a specific domain:
    * `*://example.com/*`
@@ -212,9 +212,11 @@ export interface ConnectOptions {
    * @remarks
    * Currently only supported for CDP connections.
    *
-   * Cannot be used along with {@link ConnectOptions.blockList}.
+   * Requires Chrome 149+.
+   *
+   * Cannot be used along with {@link ConnectOptions.blocklist}.
    *
    * @experimental
    */
-  allowList?: string[];
+  allowlist?: string[];
 }

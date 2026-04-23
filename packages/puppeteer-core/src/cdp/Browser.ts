@@ -71,8 +71,8 @@ export class CdpBrowser extends BrowserBase {
     networkEnabled = true,
     issuesEnabled = true,
     handleDevToolsAsPage = false,
-    blockList?: string[],
-    allowList?: string[],
+    blocklist?: string[],
+    allowlist?: string[],
   ): Promise<CdpBrowser> {
     const browser = new CdpBrowser(
       connection,
@@ -86,8 +86,8 @@ export class CdpBrowser extends BrowserBase {
       networkEnabled,
       issuesEnabled,
       handleDevToolsAsPage,
-      blockList,
-      allowList,
+      blocklist,
+      allowlist,
     );
     if (acceptInsecureCerts) {
       await connection.send('Security.setIgnoreCertificateErrors', {
@@ -123,8 +123,8 @@ export class CdpBrowser extends BrowserBase {
     networkEnabled = true,
     issuesEnabled = true,
     handleDevToolsAsPage = false,
-    blockList?: string[],
-    allowList?: string[],
+    blocklist?: string[],
+    allowlist?: string[],
   ) {
     super();
     this.#networkEnabled = networkEnabled;
@@ -145,8 +145,8 @@ export class CdpBrowser extends BrowserBase {
       this.#createTarget,
       this.#targetFilterCallback,
       waitForInitiallyDiscoveredTargets,
-      blockList,
-      allowList,
+      blocklist,
+      allowlist,
     );
     this.#defaultContext = new CdpBrowserContext(this.#connection, this);
     for (const contextId of contextIds) {
