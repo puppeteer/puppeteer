@@ -481,13 +481,6 @@
     "comment": "shell always emulates a focused page"
   },
   {
-    "testIdPattern": "[emulation.spec] Emulation Page.emulateNetworkConditions should support offline",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL"],
-    "comment": "Not supported by WebDriver BiDi"
-  },
-  {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should replace symbols with undefined",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp"],
@@ -1082,11 +1075,11 @@
     "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1862018 - Requires multiple session support"
   },
   {
-    "testIdPattern": "[console.spec] console should work for different console API calls with timing functions",
+    "testIdPattern": "[console.spec] console should work for different console API calls with group functions",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1866749"
+    "comment": "Failing since 150.0 due to https://bugzilla.mozilla.org/show_bug.cgi?id=1866749, reported as https://github.com/w3c/webdriver-bidi/issues/1097"
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should default to setting secure cookie for HTTPS websites",
@@ -1248,6 +1241,13 @@
     "parameters": ["chrome", "pipe"],
     "expectations": ["SKIP"],
     "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[fixtures.spec] Fixtures should dump browser process stderr",
+    "platforms": ["win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "See https://github.com/puppeteer/puppeteer/issues/14774"
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should support framesets",
@@ -1628,20 +1628,6 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "Unknown command emulation.setScriptingEnabled"
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.setOfflineMode should emulate navigator.onLine",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Not supported by WebDriver BiDi"
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.setOfflineMode should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Not supported by WebDriver BiDi"
   },
   {
     "testIdPattern": "[page.spec] Page Page.setUserAgent should work with additional userAgentMetdata",
