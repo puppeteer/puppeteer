@@ -1432,6 +1432,13 @@
     "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1908952#c4 historyUpdated from beforeunload incorrectly comes before navigationStarted"
   },
   {
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions should only allow navigation to URLs in the allowlist",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["FAIL"],
+    "comment": "allowlist option requires at least chrome 149 version"
+  },
+  {
     "testIdPattern": "[network.spec] network Network Events Page.Events.Request",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome"],
@@ -1967,13 +1974,6 @@
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["FAIL"],
     "comment": "TODO: started to fail with Chrome headless shell 135 on Windows"
-  },
-  {
-    "testIdPattern": "[network_restrictions.spec] Network Restrictions should only allow navigation to URLs in the allowlist",
-    "platforms": ["linux", "win32", "darwin"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL"],
-    "comment": "allowlist option requires at least chrome 149 version"
   },
   {
     "testIdPattern": "[network_restrictions.spec] Network Restrictions should only allow navigation to URLs in the allowlist",

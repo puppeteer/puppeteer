@@ -219,11 +219,4 @@ export interface ConnectOptions {
    * @experimental
    */
   allowlist?: string[];
-
-  /**
-   * Specify browser version to connect to.
-   *
-   * @experimental
-   */
-  browserVersion?: string;
 }
