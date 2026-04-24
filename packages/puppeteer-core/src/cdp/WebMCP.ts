@@ -29,6 +29,11 @@ export interface WebMCPAnnotation {
    */
   readOnly?: boolean;
   /**
+   * A hint indicating that the tool output may contain untrusted content, ex: UGC, 3rd
+   * party data.
+   */
+  untrustedContent?: boolean;
+  /**
    * If the declarative tool was declared with the autosubmit attribute.
    */
   autosubmit?: boolean;

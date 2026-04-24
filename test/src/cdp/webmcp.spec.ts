@@ -47,8 +47,10 @@ describe('Page.webmcp', function () {
           },
           required: ['text'],
         },
-        execute: () => {},
-        annotations: {readOnlyHint: true},
+        execute: (params: {text: string}) => {
+          return params.text;
+        },
+        annotations: {readOnlyHint: true, untrustedContentHint: true},
       });
     });
     // Register a declarative WebMCP tool.
@@ -75,6 +77,7 @@ describe('Page.webmcp', function () {
     });
     expect(tools[0]!.annotations).toBeDefined();
     expect(tools[0]!.annotations!.readOnly).toBe(true);
+    expect(tools[0]!.annotations!.untrustedContent).toBe(true);
     expect(tools[0]!.frame).toBe(page.mainFrame());
     expect(await tools[0]!.formElement).toBeUndefined();
     expect(tools[0]!.location).toBeDefined();
