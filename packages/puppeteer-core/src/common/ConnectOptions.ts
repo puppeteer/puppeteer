@@ -192,6 +192,8 @@ export interface ConnectOptions {
   /**
    * A list of URL patterns to allow.
    *
+   * **Requires Chrome 149+.**
+   *
    * This option allows you to restrict the browser from accessing any URLs
    * except for those that match the patterns in the allowList.
    * It uses the standard [URLPattern](https://urlpattern.spec.whatwg.org/) API to match URLs.
@@ -212,11 +214,16 @@ export interface ConnectOptions {
    * @remarks
    * Currently only supported for CDP connections.
    *
-   * Requires Chrome 149+.
-   *
    * Cannot be used along with {@link ConnectOptions.blocklist}.
    *
    * @experimental
    */
   allowlist?: string[];
+
+  /**
+   * Specify browser version to connect to.
+   *
+   * @experimental
+   */
+  browserVersion?: string;
 }
