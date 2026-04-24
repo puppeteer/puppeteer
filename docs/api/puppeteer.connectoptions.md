@@ -72,6 +72,8 @@ string\[\]
 
 **_(Experimental)_** A list of URL patterns to allow.
 
+**Requires Chrome 149+.**
+
 This option allows you to restrict the browser from accessing any URLs except for those that match the patterns in the allowList. It uses the standard \[URLPattern\](https://urlpattern.spec.whatwg.org/) API to match URLs.
 
 When connecting to an existing browser, Puppeteer will silently detach from any already open targets that violate the patterns.
@@ -81,8 +83,6 @@ For any network requests made by the browser (including navigations and subresou
 **Remarks:**
 
 Currently only supported for CDP connections.
-
-Requires Chrome 149+.
 
 Cannot be used along with [ConnectOptions.blocklist](./puppeteer.connectoptions.md#blocklist).
 
