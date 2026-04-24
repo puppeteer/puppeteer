@@ -89,6 +89,11 @@ export class CdpBrowser extends BrowserBase {
       blocklist,
       allowlist,
     );
+    const version = await browser.#getVersion();
+    const majorVersion = parseInt(version.product.match(/\d+/)?.[0] ?? '0', 10);
+    if (allowlist && majorVersion < 149) {
+      throw new Error('The allowlist option require Chrome 149 or greater.');
+    }
     if (acceptInsecureCerts) {
       await connection.send('Security.setIgnoreCertificateErrors', {
         ignore: true,
