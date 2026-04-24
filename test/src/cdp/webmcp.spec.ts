@@ -58,6 +58,7 @@ describe('Page.webmcp', function () {
       const form = document.createElement('form');
       form.setAttribute('toolname', 'declarative tool name');
       form.setAttribute('tooldescription', 'tool description');
+      form.setAttribute('toolautosubmit', '');
       (window as any).document.body.appendChild(form);
     });
 
@@ -85,7 +86,8 @@ describe('Page.webmcp', function () {
     expect(tools[1]!.name).toBe('declarative tool name');
     expect(tools[1]!.description).toBe('tool description');
     expect(tools[1]!.inputSchema).toStrictEqual({});
-    expect(tools[1]!.annotations).toBeUndefined();
+    expect(tools[1]!.annotations).toBeDefined();
+    expect(tools[1]!.annotations!.autosubmit).toBe(true);
     expect(tools[1]!.frame).toBe(page.mainFrame());
     expect(await tools[1]!.formElement).toBeDefined();
     expect(tools[1]!.location).toBeUndefined();
