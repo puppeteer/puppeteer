@@ -136,7 +136,7 @@
     "cosmiconfig": "^9.0.0",
     "devtools-protocol": "0.0.1608973",
     "puppeteer-core": "24.42.0",
-    "typed-query-selector": "^2.12.1"
+    "typed-query-selector": "^2.12.2"
   },
   "devDependencies": {
     "@types/node": "^18.17.15"

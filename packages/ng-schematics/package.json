@@ -55,7 +55,7 @@
     "@angular-devkit/architect": "0.1801.4",
     "@angular-devkit/core": "18.1.4",
     "@angular-devkit/schematics": "18.1.4",
-    "rxjs": "7.8.1"
+    "rxjs": "7.8.2"
   },
   "devDependencies": {
     "@angular/cli": "^21.2.8",
