@@ -29,6 +29,8 @@ export class Request extends EventEmitter<{
   response: Bidi.Network.ResponseData;
   /** Emitted when the request fails. */
   error: string;
+  /** Emitted when the request is disposed. */
+  disposed: void;
 }> {
   static from(
     browsingContext: BrowsingContext,
@@ -46,7 +48,7 @@ export class Request extends EventEmitter<{
   #response?: Bidi.Network.ResponseData;
   readonly #browsingContext: BrowsingContext;
   readonly #disposables = new DisposableStack();
-  readonly #event: Bidi.Network.BeforeRequestSentParameters;
+  #event: Bidi.Network.BeforeRequestSentParameters;
 
   private constructor(
     browsingContext: BrowsingContext,
@@ -339,7 +341,10 @@ export class Request extends EventEmitter<{
   }
 
   override [disposeSymbol](): void {
+    this.emit('disposed', undefined);
     this.#disposables.dispose();
+    this.#event = undefined as unknown as Bidi.Network.BeforeRequestSentParameters;
+    this.#response = undefined;
     super[disposeSymbol]();
   }
 

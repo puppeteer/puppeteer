@@ -323,6 +323,9 @@ export class BrowsingContext extends EventEmitter<{
 
       const request = Request.from(this, event);
       this.#requests.set(request.id, request);
+      request.once('disposed', () => {
+        this.#requests.delete(request.id);
+      });
       this.emit('request', {request});
     });
 
