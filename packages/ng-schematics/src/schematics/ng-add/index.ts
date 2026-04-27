@@ -49,7 +49,7 @@ export function ngAdd(options: SchematicsOptions): Rule {
 }
 
 function addDependencies(options: SchematicsOptions): Rule {
-  return (tree: Tree, context: SchematicContext) => {
+  return ((tree: Tree, context: SchematicContext) => {
     context.logger.debug('Adding dependencies to "package.json"');
     const dependencies = getDependenciesFromOptions(options);
 
@@ -74,7 +74,7 @@ function addDependencies(options: SchematicsOptions): Rule {
         return tree;
       }),
     );
-  };
+  }) as unknown as Rule;
 }
 
 function updateScripts(): Rule {
