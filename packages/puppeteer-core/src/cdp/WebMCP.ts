@@ -394,7 +394,6 @@ export class WebMCP extends EventEmitter<{
    * @internal
    */
   async initialize(): Promise<void> {
-    // @ts-expect-error WebMCP is not yet in the Protocol types.
     return await this.#client.send('WebMCP.enable').catch(debugError);
   }
 
@@ -423,13 +422,10 @@ export class WebMCP extends EventEmitter<{
   }
 
   #bindListeners(): void {
-    // @ts-expect-error WebMCP is not yet in the Protocol types.
     this.#client.on('WebMCP.toolsAdded', this.#onToolsAdded);
-    // @ts-expect-error WebMCP is not yet in the Protocol types.
     this.#client.on('WebMCP.toolsRemoved', this.#onToolsRemoved);
-    // @ts-expect-error WebMCP is not yet in the Protocol types.
     this.#client.on('WebMCP.toolInvoked', this.#onToolInvoked);
-    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    // @ts-expect-error M148 has non-final status type, update expected in M149
     this.#client.on('WebMCP.toolResponded', this.#onToolResponded);
   }
 
@@ -437,13 +433,10 @@ export class WebMCP extends EventEmitter<{
    * @internal
    */
   updateClient(client: CDPSession): void {
-    // @ts-expect-error WebMCP is not yet in the Protocol types.
     this.#client.off('WebMCP.toolsAdded', this.#onToolsAdded);
-    // @ts-expect-error WebMCP is not yet in the Protocol types.
     this.#client.off('WebMCP.toolsRemoved', this.#onToolsRemoved);
-    // @ts-expect-error WebMCP is not yet in the Protocol types.
     this.#client.off('WebMCP.toolInvoked', this.#onToolInvoked);
-    // @ts-expect-error WebMCP is not yet in the Protocol types.
+    // @ts-expect-error M148 has non-final status type, update expected in M149
     this.#client.off('WebMCP.toolResponded', this.#onToolResponded);
     this.#client = client;
     this.#bindListeners();
