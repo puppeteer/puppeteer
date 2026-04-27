@@ -1439,6 +1439,13 @@
     "comment": "allowlist option requires at least chrome 149 version"
   },
   {
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions should throw an error for an invalid pattern",
+    "platforms": ["win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["SKIP"],
+    "comment": "Newly added flaky test, see https://github.com/puppeteer/puppeteer/issues/14919"
+  },
+  {
     "testIdPattern": "[network.spec] network Network Events Page.Events.Request",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome"],
