@@ -9,11 +9,9 @@ import * as http from 'node:http';
 import * as https from 'node:https';
 import {URL, urlToHttpOptions} from 'node:url';
 
-import {ProxyAgent} from 'proxy-agent';
-
 export function headHttpRequest(url: URL): Promise<boolean> {
-  return new Promise(resolve => {
-    const request = httpRequest(
+  return new Promise<boolean>(async resolve => {
+    const request = await httpRequest(
       url,
       'HEAD',
       response => {
@@ -29,12 +27,13 @@ export function headHttpRequest(url: URL): Promise<boolean> {
   });
 }
 
-export function httpRequest(
+export async function httpRequest(
   url: URL,
   method: string,
   response: (x: http.IncomingMessage) => void,
   keepAlive = true,
-): http.ClientRequest {
+): Promise<http.ClientRequest> {
+  const {ProxyAgent} = await import('proxy-agent');
   const options: http.RequestOptions = {
     protocol: url.protocol,
     hostname: url.hostname,
@@ -53,7 +52,7 @@ export function httpRequest(
       res.statusCode < 400 &&
       res.headers.location
     ) {
-      httpRequest(new URL(res.headers.location), method, response);
+      void httpRequest(new URL(res.headers.location), method, response);
       // consume response data to free up memory
       // And prevents the connection from being kept alive
       res.resume();
@@ -77,7 +76,7 @@ export function downloadFile(
   destinationPath: string,
   progressCallback?: (downloadedBytes: number, totalBytes: number) => void,
 ): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
+  return new Promise<void>(async (resolve, reject) => {
     let downloadedBytes = 0;
     let totalBytes = 0;
 
@@ -86,7 +85,7 @@ export function downloadFile(
       progressCallback!(downloadedBytes, totalBytes);
     }
 
-    const request = httpRequest(url, 'GET', response => {
+    const request = await httpRequest(url, 'GET', response => {
       if (response.statusCode !== 200) {
         const error = new Error(
           `Download failed: server returned code ${response.statusCode}. URL: ${url}`,
@@ -133,8 +132,8 @@ export async function getJSON(url: URL): Promise<unknown> {
 }
 
 export function getText(url: URL): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const request = httpRequest(
+  return new Promise(async (resolve, reject) => {
+    const request = await httpRequest(
       url,
       'GET',
       response => {
