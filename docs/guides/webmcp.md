@@ -10,7 +10,7 @@ WebMCP is an experimental API and is subject to change. It is currently only sup
 
 ## Prerequisites
 
-To use WebMCP with Puppeteer, you need:
+To use WebMCP with Puppeteer, you will need:
 
 1.  **Chrome 149+**: The browser must support the WebMCP CDP domain.
 2.  **Enabled Flags**: You must launch the browser with the following flags:
