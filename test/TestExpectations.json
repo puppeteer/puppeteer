@@ -2024,6 +2024,12 @@
   {
     "testIdPattern": "[page.spec] Page Page.Events.Issue should emit issue event from WebMCP form missing tooldescription",
     "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome", "headless"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.Events.Issue should emit issue event from WebMCP form missing tooldescription",
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headful"],
     "expectations": ["FAIL"]
   },
