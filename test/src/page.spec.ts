@@ -2538,6 +2538,20 @@ describe('Page', function () {
       expect(issue).toBeTruthy();
       expect(issue.code).toBe('ContentSecurityPolicyIssue');
     });
+
+    it('should emit issue event from WebMCP form missing tooldescription', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+
+      const issuePromise = waitEvent<Issue>(page, 'issue');
+
+      await page.setContent(html`<form toolname="mytool">`);
+
+      const issue = await issuePromise;
+      expect(issue).toBeTruthy();
+      expect(issue.code).toBe('GenericIssue');
+    });
   });
 
   describe('Page.browser', function () {
