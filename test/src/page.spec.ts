@@ -20,6 +20,7 @@ import sinon from 'sinon';
 
 import {
   getTestState,
+  launch,
   setupSeparateTestBrowserHooks,
   setupTestBrowserHooks,
 } from './mocha-utils.js';
@@ -2540,21 +2541,32 @@ describe('Page', function () {
     });
 
     it('should emit issue event from WebMCP form missing tooldescription', async () => {
-      const {page, server} = await getTestState();
+      const {defaultBrowserOptions, server} = await getTestState({
+        skipLaunch: true,
+      });
+      const options = Object.assign({}, defaultBrowserOptions);
+      options.args = [
+        '--enable-features=WebMCPTesting,DevToolsWebMCPSupport',
+      ].concat(options.args || []);
+      const {browser, close} = await launch(options);
+      try {
+        const page = await browser.newPage();
+        await page.goto(server.EMPTY_PAGE);
 
-      await page.goto(server.EMPTY_PAGE);
+        const issuePromise = waitEvent<Issue>(page, 'issue');
 
-      const issuePromise = waitEvent<Issue>(page, 'issue');
+        await page.setContent(html`<form toolname="mytool"></form>`);
 
-      await page.setContent(html`<form toolname="mytool"></form>`);
-
-      const issue = await issuePromise;
-      expect(issue).toBeTruthy();
-      expect(issue.code).toBe('GenericIssue');
-      expect(issue.details.genericIssueDetails).toBeTruthy();
-      expect(issue.details.genericIssueDetails.errorType).toBe(
-        'FormModelContextMissingToolDescription',
-      );
+        const issue = await issuePromise;
+        expect(issue).toBeTruthy();
+        expect(issue.code).toBe('GenericIssue');
+        expect(issue.details.genericIssueDetails).toBeTruthy();
+        expect(issue.details.genericIssueDetails!.errorType).toBe(
+          'FormModelContextMissingToolDescription',
+        );
+      } finally {
+        await close();
+      }
     });
   });
 
