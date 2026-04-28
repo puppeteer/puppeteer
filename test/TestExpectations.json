@@ -2022,18 +2022,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[page.spec] Page Page.Events.Issue should emit issue event from WebMCP form missing tooldescription",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome", "headless"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Issue should emit issue event from WebMCP form missing tooldescription",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome", "headful"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should be abortable",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headful"],

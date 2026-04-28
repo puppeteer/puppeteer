@@ -5,6 +5,7 @@
  */
 
 import expect from 'expect';
+import type {Issue} from 'puppeteer';
 import type {
   WebMCPTool,
   WebMCPToolCall,
@@ -12,6 +13,7 @@ import type {
 } from 'puppeteer-core/internal/cdp/WebMCP.js';
 
 import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
+import {html, waitEvent} from '../utils.js';
 
 describe('Page.webmcp', function () {
   const state = setupSeparateTestBrowserHooks({
@@ -555,5 +557,22 @@ describe('Page.webmcp', function () {
     expect(response.output).toBe('hello world');
     expect(response.errorText).toBeUndefined();
     expect(response.exception).toBeUndefined();
+  });
+
+  it('should emit issue event from WebMCP form missing tooldescription', async () => {
+    const {page, httpsServer} = state;
+    await page.goto(httpsServer.EMPTY_PAGE);
+
+    const issuePromise = waitEvent<Issue>(page, 'issue');
+
+    await page.setContent(html`<form toolname="mytool"></form>`);
+
+    const issue = await issuePromise;
+    expect(issue).toBeTruthy();
+    expect(issue.code).toBe('GenericIssue');
+    expect(issue.details.genericIssueDetails).toBeTruthy();
+    expect(issue.details.genericIssueDetails!.errorType).toBe(
+      'FormModelContextMissingToolDescription',
+    );
   });
 });
