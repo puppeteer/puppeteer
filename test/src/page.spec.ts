@@ -2546,11 +2546,15 @@ describe('Page', function () {
 
       const issuePromise = waitEvent<Issue>(page, 'issue');
 
-      await page.setContent(html`<form toolname="mytool">`);
+      await page.setContent(html`<form toolname="mytool"></form>`);
 
       const issue = await issuePromise;
       expect(issue).toBeTruthy();
       expect(issue.code).toBe('GenericIssue');
+      expect(issue.details.genericIssueDetails).toBeTruthy();
+      expect(issue.details.genericIssueDetails.errorType).toBe(
+        'FormModelContextMissingToolDescription',
+      );
     });
   });
 
