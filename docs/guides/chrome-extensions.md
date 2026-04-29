@@ -29,7 +29,7 @@ const browser = await puppeteer.launch({
   enableExtensions: true,
 });
 
-await browser.installExtension(pathToExtension);
+const extensionId = await browser.installExtension(pathToExtension);
 ```
 
 ## Background contexts
@@ -111,7 +111,32 @@ await browser.close();
 
 Content scripts are injected as normal. Use `browser.newPage()` and `page.goto()` to navigate to a page where a content script will be injected.
 
-It is not currently possible to evaluate code in the content script isolated world.
+To evaluate code in the context of a content script, you can use the `page.extensionRealms()` method to find the realm associated with the extension and then use its `evaluate()` method.
+
+```ts
+// Get the extension ID
+const extensionId = await browser.installExtension(pathToExtension);
+
+// Find the extension realm.
+const realms = page.extensionRealms();
+let extensionRealm;
+for (const realm of realms) {
+  const extension = await realm.extension();
+  if (extension?.id === extensionId) {
+    extensionRealm = realm;
+    break;
+  }
+}
+
+if (!extensionRealm) {
+  throw new Error('Extension realm not found');
+}
+
+// Evaluate code in the content script context.
+const result = await extensionRealm.evaluate(() => {
+  return document.title;
+});
+```
 
 ## Learn more
 
