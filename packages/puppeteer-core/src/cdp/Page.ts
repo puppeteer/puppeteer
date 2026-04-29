@@ -473,6 +473,12 @@ export class CdpPage extends Page {
   override async openDevTools(): Promise<Page> {
     const pageTargetId = this.target()._targetId;
     const browser = this.browser() as CdpBrowser;
+    const devtoolsTargetId = await browser._hasDevToolsTarget(
+      this.target()._targetId,
+    );
+    if (devtoolsTargetId) {
+      return await browser._getDevToolsTargetPage(devtoolsTargetId);
+    }
     const devtoolsPage = await browser._createDevToolsPage(pageTargetId);
     return devtoolsPage;
   }
