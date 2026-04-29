@@ -69,7 +69,7 @@ describe('Chromium', () => {
         '--disable-default-apps',
         '--disable-dev-shm-usage',
         '--disable-extensions',
-        '--disable-features=Translate,BackForwardCache,AcceptCHFrame,MediaRouter,OptimizationHints,DialMediaRouteProvider',
+        '--disable-features=Translate,BackForwardCache,AcceptCHFrame,MediaRouter,OptimizationHints,DialMediaRouteProvider,WebUIReloadButton',
         '--disable-hang-monitor',
         '--disable-ipc-flooding-protection',
         '--disable-popup-blocking',
