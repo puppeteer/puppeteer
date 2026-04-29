@@ -408,4 +408,25 @@ describe('Network Restrictions', function () {
       await close();
     }
   });
+
+  it('should block iframe content from loading if the iframe URL is in the blocklist', async () => {
+    const { page, close, server } = await launch(
+      {
+        blocklist: ['*://*:*/frames/frame.html'],
+      },
+      { createContext: true },
+    );
+
+    try {
+      await page.goto(server.PREFIX + '/frames/one-frame.html');
+      const frame = page.frames().find(f => {
+        return f !== page.mainFrame();
+      })!;
+
+      const content = await frame.content();
+      expect(content).not.toContain("Hi, I'm frame");
+    } finally {
+      await close();
+    }
+  });
 });
