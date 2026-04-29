@@ -6,8 +6,11 @@
 import {describe, it, beforeEach, afterEach} from 'node:test';
 
 import expect from 'expect';
+import type NodeWebSocket from 'ws';
 import type {WebSocket} from 'ws';
 import {WebSocketServer} from 'ws';
+
+import {getCapturedLogs, setLogCapture} from '../common/Debug.js';
 
 import {NodeWebSocketTransport} from './NodeWebSocketTransport.js';
 
@@ -27,6 +30,7 @@ describe('NodeWebSocketTransport', () => {
   afterEach(() => {
     transport.close();
     wss.close();
+    setLogCapture(false);
   });
 
   it('should dispatch messages in order handling microtasks for each message first', async () => {
@@ -56,5 +60,16 @@ describe('NodeWebSocketTransport', () => {
       'microtask1 m2',
       'microtask2 m2',
     ]);
+  });
+
+  it('should log WebSocket errors for debugging', () => {
+    const ws = new EventTarget() as unknown as NodeWebSocket;
+    new NodeWebSocketTransport(ws);
+
+    setLogCapture(true);
+    (ws as unknown as EventTarget).dispatchEvent(new Event('error'));
+
+    expect(getCapturedLogs()).toHaveLength(1);
+    expect(getCapturedLogs()[0]).toContain('puppeteer:error');
   });
 });
