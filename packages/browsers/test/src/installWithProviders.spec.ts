@@ -72,23 +72,6 @@ class MockProvider implements BrowserProvider {
 describe('Install with providers', () => {
   setupTestServer();
 
-  before(() => {
-    const fixturePath = path.join(
-      import.meta.dirname,
-      '..',
-      'fixtures',
-      'test.tar.bz2',
-    );
-    const serverAssetsDir = path.join(
-      import.meta.dirname,
-      '..',
-      '.cache',
-      'server',
-    );
-    fs.mkdirSync(serverAssetsDir, {recursive: true});
-    fs.copyFileSync(fixturePath, path.join(serverAssetsDir, 'test.tar.bz2'));
-  });
-
   let tmpDir: string;
 
   beforeEach(() => {
@@ -105,9 +88,21 @@ describe('Install with providers', () => {
     it('should handle custom provider with test archive', async function () {
       this.timeout(30000);
 
+      // Use the test.tar.bz2 fixture as a mock download
+      const fixturePath = path.join(
+        import.meta.dirname,
+        '..',
+        'fixtures',
+        'test.tar.bz2',
+      );
+      const archivePath = path.join(tmpDir, 'test-archive.tar.bz2');
+
+      // Copy the fixture to simulate a download
+      fs.copyFileSync(fixturePath, archivePath);
+
       const customProvider = new MockProvider({
         supports: true,
-        getDownloadUrlResult: new URL(`${getServerUrl()}/test.tar.bz2`),
+        getDownloadUrlResult: new URL(`file://${archivePath}`),
         getExecutablePath: path.join(tmpDir, 'test-executable'),
       });
 
@@ -257,11 +252,23 @@ describe('Install with providers', () => {
     it('should persist executable path in metadata for custom providers', async function () {
       this.timeout(60000);
 
+      // Use the test.tar.bz2 fixture as a mock download
+      const fixturePath = path.join(
+        import.meta.dirname,
+        '..',
+        'fixtures',
+        'test.tar.bz2',
+      );
+      const archivePath = path.join(tmpDir, 'test-archive.tar.bz2');
+
+      // Copy the fixture to simulate a download
+      fs.copyFileSync(fixturePath, archivePath);
+
       // Create a custom provider that uses the test fixture
       const customProvider = new MockProvider({
         supports: true,
-        getDownloadUrlResult: new URL(`${getServerUrl()}/test.tar.bz2`),
-        getExecutablePath: 'chrome-linux64/chrome',
+        getDownloadUrlResult: new URL('file://' + archivePath),
+        getExecutablePath: 'chrome-linux/chrome',
       });
 
       // Install using custom provider
@@ -304,10 +311,22 @@ describe('Install with providers', () => {
     it('should not write metadata for default provider installations', async function () {
       this.timeout(60000);
 
+      // Use the test.tar.bz2 fixture as a mock download
+      const fixturePath = path.join(
+        import.meta.dirname,
+        '..',
+        'fixtures',
+        'test.tar.bz2',
+      );
+      const archivePath = path.join(tmpDir, 'test-archive.tar.bz2');
+
+      // Copy the fixture to simulate a download
+      fs.copyFileSync(fixturePath, archivePath);
+
       // Create a custom provider that uses the test fixture
       const customProvider = new MockProvider({
         supports: true,
-        getDownloadUrlResult: new URL(`${getServerUrl()}/test.tar.bz2`),
+        getDownloadUrlResult: new URL('file://' + archivePath),
         getExecutablePath: 'chrome-linux/chrome',
       });
 
@@ -336,6 +355,9 @@ describe('Install with providers', () => {
         `${BrowserPlatform.LINUX}-${testChromeBuildId}`,
       );
       fs.rmSync(installDir, {recursive: true, force: true});
+
+      // Re-copy the fixture for the default provider install
+      fs.copyFileSync(fixturePath, archivePath);
 
       // Install using default provider
       await install({
