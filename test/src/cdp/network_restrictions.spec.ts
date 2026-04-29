@@ -410,11 +410,11 @@ describe('Network Restrictions', function () {
   });
 
   it('should block iframe content from loading if the iframe URL is in the blocklist', async () => {
-    const { page, close, server } = await launch(
+    const {page, close, server} = await launch(
       {
         blocklist: ['*://*:*/frames/frame.html'],
       },
-      { createContext: true },
+      {createContext: true},
     );
 
     try {
@@ -430,13 +430,13 @@ describe('Network Restrictions', function () {
     }
   });
 
-  it.only('should block out-of-process iframe (OOPIF) content from loading if the iframe URL is in the blocklist', async () => {
-    const { page, close, server } = await launch(
+  it('should block out-of-process iframe (OOPIF) content from loading if the iframe URL is in the blocklist', async () => {
+    const {page, close, server} = await launch(
       {
         blocklist: ['*://*:*/frames/frame.html'],
         args: ['--site-per-process'],
       },
-      { createContext: true },
+      {createContext: true},
     );
 
     try {
