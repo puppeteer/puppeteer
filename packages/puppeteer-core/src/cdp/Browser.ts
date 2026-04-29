@@ -435,12 +435,16 @@ export class CdpBrowser extends BrowserBase {
         targetId: pageTargetId,
       },
     );
+    return await this._getDevToolsTargetPage(openDevToolsResponse.targetId);
+  }
+
+  async _getDevToolsTargetPage(devtoolsTargetId: string): Promise<Page> {
     const target = (await this.waitForTarget(t => {
-      return (t as CdpTarget)._targetId === openDevToolsResponse.targetId;
+      return (t as CdpTarget)._targetId === devtoolsTargetId;
     })) as CdpTarget;
     if (!target) {
       throw new Error(
-        `Missing target for DevTools page (id = ${pageTargetId})`,
+        `Missing target for DevTools page (id = ${devtoolsTargetId})`,
       );
     }
     const initialized =
@@ -448,13 +452,13 @@ export class CdpBrowser extends BrowserBase {
       InitializationStatus.SUCCESS;
     if (!initialized) {
       throw new Error(
-        `Failed to create target for DevTools page (id = ${pageTargetId})`,
+        `Failed to create target for DevTools page (id = ${devtoolsTargetId})`,
       );
     }
     const page = await target.page();
     if (!page) {
       throw new Error(
-        `Failed to create a DevTools Page for target (id = ${pageTargetId})`,
+        `Failed to create a DevTools Page for target (id = ${devtoolsTargetId})`,
       );
     }
     return page;
