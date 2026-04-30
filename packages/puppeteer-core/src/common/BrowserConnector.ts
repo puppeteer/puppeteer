@@ -66,6 +66,7 @@ async function getConnectionTransport(
     channel,
     transport,
     headers = {},
+    maxPayload,
   } = options;
 
   assert(
@@ -82,7 +83,7 @@ async function getConnectionTransport(
   } else if (browserWSEndpoint) {
     const WebSocketClass = await getWebSocketTransportClass();
     const connectionTransport: ConnectionTransport =
-      await WebSocketClass.create(browserWSEndpoint, headers);
+      await WebSocketClass.create(browserWSEndpoint, headers, maxPayload);
     return {
       connectionTransport: connectionTransport,
       endpointUrl: browserWSEndpoint,
@@ -91,7 +92,7 @@ async function getConnectionTransport(
     const connectionURL = await getWSEndpoint(browserURL);
     const WebSocketClass = await getWebSocketTransportClass();
     const connectionTransport: ConnectionTransport =
-      await WebSocketClass.create(connectionURL);
+      await WebSocketClass.create(connectionURL, undefined, maxPayload);
     return {
       connectionTransport: connectionTransport,
       endpointUrl: connectionURL,
@@ -137,6 +138,7 @@ async function getConnectionTransport(
       const connectionTransport = await WebSocketClass.create(
         browserWSEndpoint,
         headers,
+        maxPayload,
       );
       return {
         connectionTransport: connectionTransport,

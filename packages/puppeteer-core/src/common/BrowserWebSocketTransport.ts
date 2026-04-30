@@ -9,7 +9,11 @@ import type {ConnectionTransport} from './ConnectionTransport.js';
  * @internal
  */
 export class BrowserWebSocketTransport implements ConnectionTransport {
-  static create(url: string): Promise<BrowserWebSocketTransport> {
+  static create(
+    url: string,
+    _headers?: Record<string, string>,
+    _maxPayload?: number,
+  ): Promise<BrowserWebSocketTransport> {
     return new Promise((resolve, reject) => {
       const ws = new WebSocket(url);
 
