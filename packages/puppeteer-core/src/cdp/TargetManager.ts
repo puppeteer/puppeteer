@@ -547,9 +547,23 @@ export class TargetManager
       });
     }
 
-    await session.send('Network.emulateNetworkConditionsByRule', {
-      offline: true, // 'offline' will be deprecated in Chrome 149. Retained for compatibility with existing blocklist functionality.
+    const versionData = await session
+      .send('Browser.getVersion')
+      .catch(() => null);
+    const product = versionData?.product;
+    const majorVersion = parseInt(product?.match(/\d+/)?.[0] ?? '0', 10);
+
+    const payload: any = {
       matchedNetworkConditions,
-    });
+    };
+
+    if (!majorVersion || majorVersion < 149) {
+      payload.offline = true;
+    }
+
+    await session.send(
+      'Network.emulateNetworkConditionsByRule' as any,
+      payload as any,
+    );
   };
 }
