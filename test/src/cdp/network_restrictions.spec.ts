@@ -459,4 +459,31 @@ describe('Network Restrictions', function () {
       await close();
     }
   });
+
+  it('should block fetch requests from within local iframes to URLs in the blocklist', async () => {
+    const {page, close, server} = await launch(
+      {
+        blocklist: ['*://*:*/title.html'],
+      },
+      {createContext: true},
+    );
+
+    try {
+      await page.goto(server.PREFIX + '/frames/one-frame.html');
+      const fetchError = await page.evaluate(async url => {
+        try {
+          const frame = document.querySelector('iframe');
+          await frame!.contentWindow!.fetch(url);
+          return null;
+        } catch (e) {
+          return (e as Error).message;
+        }
+      }, server.PREFIX + '/title.html');
+
+      expect(fetchError).toBeTruthy();
+      expect(fetchError).toContain('Failed to fetch');
+    } finally {
+      await close();
+    }
+  });
 });

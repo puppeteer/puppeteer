@@ -1453,6 +1453,20 @@
     "comment": "PASS in Chrome >= 149; FAIL in older revisions"
   },
   {
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions should block iframe content from loading if the iframe URL is in the blocklist",
+    "platforms": ["linux"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["FAIL"],
+    "comment": "Bug in Chromium DevTools Protocol"
+  },
+  {
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions should block out-of-process iframe (OOPIF) content from loading if the iframe URL is in the blocklist",
+    "platforms": ["linux"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["FAIL"],
+    "comment": "Bug in Chromium DevTools Protocol"
+  },
+  {
     "testIdPattern": "[network_restrictions.spec] Network Restrictions should only allow navigation to URLs in the allowlist",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
