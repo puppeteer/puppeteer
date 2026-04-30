@@ -460,7 +460,7 @@ describe('Network Restrictions', function () {
     }
   });
 
-  it.only('should block fetch requests from within local iframes to URLs in the blocklist', async () => {
+  it('should block fetch requests from within local iframes to URLs in the blocklist', async () => {
     const {page, close, server} = await launch(
       {
         blocklist: ['*://*:*/empty.html'],
@@ -470,10 +470,13 @@ describe('Network Restrictions', function () {
 
     try {
       await page.goto(server.PREFIX + '/frames/one-frame.html');
-      const fetchError = await page.evaluate(async url => {
+      const frame = page.frames().find(f => {
+        return f !== page.mainFrame();
+      })!;
+
+      const fetchError = await frame.evaluate(async url => {
         try {
-          const frame = document.querySelector('iframe');
-          await frame!.contentWindow!.fetch(url);
+          await fetch(url);
           return null;
         } catch (e) {
           return (e as Error).message;
