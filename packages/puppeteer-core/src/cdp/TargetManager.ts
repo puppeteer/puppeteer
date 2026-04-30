@@ -547,22 +547,16 @@ export class TargetManager
       });
     }
 
-    const versionData = await session.send('Browser.getVersion').catch(() => {
-      return null;
-    });
-    const product = versionData?.product;
-    const majorVersion = parseInt(product?.match(/\d+/)?.[0] ?? '0', 10);
-
     const payload = {
       matchedNetworkConditions,
     };
 
-    if (!majorVersion || majorVersion < 149) {
-      // @ts-expect-error offline is required for older versions of Chrome.
+    if (this.#blocklist.length > 0) {
+      // @ts-expect-error offline is required for blocklist emulation.
       payload.offline = true;
     }
 
-    // @ts-expect-error offline is required in the protocol types, but needs to be omitted for Chrome >= 149.
+    // @ts-expect-error offline is required in the protocol types, but omitted for allowlist which requires Chrome >= 149.
     await session.send('Network.emulateNetworkConditionsByRule', payload);
   };
 }
