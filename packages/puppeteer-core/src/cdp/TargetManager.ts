@@ -556,7 +556,7 @@ export class TargetManager
       payload.offline = true;
     }
 
-    // @ts-expect-error offline is required in the protocol types, but omitted for allowlist which requires Chrome >= 149.
+    // @ts-expect-error offline is blocklist only
     await session.send('Network.emulateNetworkConditionsByRule', payload);
   };
 }
