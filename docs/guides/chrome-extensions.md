@@ -137,7 +137,10 @@ await extension.triggerAction(page);
 
 // If the action opens a popup, you can then wait for the popup target.
 const popupTarget = await browser.waitForTarget(
-  target => target.type() === 'page' && target.url().includes(extensionId) && target.url().endsWith('popup.html'),
+  target =>
+    target.type() === 'page' &&
+    target.url().includes(extensionId) &&
+    target.url().endsWith('popup.html'),
 );
 ```
 
