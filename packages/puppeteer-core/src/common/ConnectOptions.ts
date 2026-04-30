@@ -184,6 +184,8 @@ export interface ConnectOptions {
    * @remarks
    * Currently only supported for CDP connections.
    *
+   * Inner `<iframe>` content loading is currently not blocked.
+   *
    * Cannot be used along with {@link ConnectOptions.allowlist}.
    *
    * @experimental
@@ -213,6 +215,8 @@ export interface ConnectOptions {
    *
    * @remarks
    * Currently only supported for CDP connections.
+   *
+   * Inner `<iframe>` content loading is currently not blocked.
    *
    * Cannot be used along with {@link ConnectOptions.blocklist}.
    *
