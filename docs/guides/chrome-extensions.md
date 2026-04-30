@@ -32,6 +32,20 @@ const browser = await puppeteer.launch({
 const extensionId = await browser.installExtension(pathToExtension);
 ```
 
+### Listing and uninstalling
+
+You can list all installed extensions and their properties using the `browser.extensions()` method. To uninstall an extension, use the `browser.uninstallExtension()` method.
+
+```ts
+const extensions = await browser.extensions();
+const extension = extensions.get(extensionId);
+
+console.log(extension?.name);
+console.log(extension?.version);
+
+await browser.uninstallExtension(extensionId);
+```
+
 ## Background contexts
 
 You can get a reference to the extension service worker or background page, which can be useful for evaluating code in the extension context or forcefully terminating the service worker.
@@ -105,6 +119,29 @@ const popupPage = await popupTarget.asPage();
 // Test the popup page as you would any other page.
 
 await browser.close();
+```
+
+## Triggering extension action
+
+You can trigger the default extension action for a page using the `page.triggerExtensionAction()` method. This will trigger the extension's action as if the user clicked the extension's button in the toolbar.
+
+```ts
+const extensions = await browser.extensions();
+const extension = extensions.get(extensionId);
+
+// You can trigger the action for a specific extension on a page.
+await page.triggerExtensionAction(extension);
+
+// Alternatively, you can trigger it from the extension object itself.
+await extension.triggerAction(page);
+
+// If the action opens a popup, you can then wait for the popup target.
+const popupTarget = await browser.waitForTarget(
+  target =>
+    target.type() === 'page' &&
+    target.url().includes(extensionId) &&
+    target.url().endsWith('popup.html'),
+);
 ```
 
 ## Content scripts
