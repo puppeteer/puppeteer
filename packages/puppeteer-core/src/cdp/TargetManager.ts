@@ -547,9 +547,9 @@ export class TargetManager
       });
     }
 
-    const versionData = await session
-      .send('Browser.getVersion')
-      .catch(() => null);
+    const versionData = await session.send('Browser.getVersion').catch(() => {
+      return null;
+    });
     const product = versionData?.product;
     const majorVersion = parseInt(product?.match(/\d+/)?.[0] ?? '0', 10);
 

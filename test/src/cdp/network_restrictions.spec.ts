@@ -335,7 +335,6 @@ describe('Network Restrictions', function () {
     }
   });
 
-
   it('should throw an error when both blocklist and allowlist are specified', async () => {
     let error: Error | undefined;
     await launch(
