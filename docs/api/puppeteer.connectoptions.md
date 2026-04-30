@@ -84,6 +84,8 @@ For any network requests made by the browser (including navigations and subresou
 
 Currently only supported for CDP connections.
 
+Inner `<iframe>` content loading is currently not blocked.
+
 Cannot be used along with [ConnectOptions.blocklist](./puppeteer.connectoptions.md#blocklist).
 
 </td><td>
@@ -114,6 +116,8 @@ For any network requests made by the browser (including navigations and subresou
 **Remarks:**
 
 Currently only supported for CDP connections.
+
+Inner `<iframe>` content loading is currently not blocked.
 
 Cannot be used along with [ConnectOptions.allowlist](./puppeteer.connectoptions.md#allowlist).
 
