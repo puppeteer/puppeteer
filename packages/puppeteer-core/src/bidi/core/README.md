@@ -13,19 +13,16 @@ developing `bidi/core`:
 
 - Required arguments are inlined as function arguments while optional arguments
   are put into an options object.
-
   - Function arguments are implicitly required in TypeScript, so by putting
     required arguments as function arguments, the semantic is automatically
     inherited.
 
 - The session shall never be exposed on any public method/getter on any
   object except the browser. Private getters are allowed.
-
   - Passing around the session is dangerous as it obfuscates the origin of the
     session. By only allowing it on the browser, the origin is well-defined.
 
 - `bidi/core` implements WebDriver BiDi plus its surrounding specifications.
-
   - A lot of WebDriver BiDi is not strictly written in WebDriver BiDi. Since WebDriver
     BiDi interacts with several other specs, there are other considerations that
     also influence the design of `bidi/core`. For example, for navigation,
@@ -34,14 +31,12 @@ developing `bidi/core`:
     hook.
 
 - `bidi/core` always follow the spec and never Puppeteer's needs.
-
   - By ensuring `bidi/core` follows the spec rather than Puppeteer's needs, we
     can identify the source of a bug precisely (i.e. whether the spec needs to
     be updated or Puppeteer needs to work around it).
 
 - `bidi/core` attempts to implement WebDriver BiDi comprehensively, but
   minimally.
-
   - Imagine the objects and events in WebDriver BiDi as a large
     [graph](<https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)>) where
     objects are nodes and events are edges. In `bidi/core`, we always implement

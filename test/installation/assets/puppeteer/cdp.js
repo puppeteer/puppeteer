@@ -10,7 +10,7 @@ import puppeteer from 'puppeteer';
     protocol: 'cdp',
   });
   const page = await browser.newPage();
-  await page.goto('http://example.com');
+  await page.goto('data:text/html,<!DOCTYPE html><h1>example</h1>');
   await page.$('h1');
   await page.screenshot({path: 'example.png'});
   await browser.close();

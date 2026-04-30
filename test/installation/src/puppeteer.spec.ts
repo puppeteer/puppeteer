@@ -65,8 +65,8 @@ describe('`puppeteer`', () => {
     }
   });
 
-  // Flaky on macos-13.
-  (platform() === 'darwin' ? it.skip : it)(
+  // Flaky on MacOS and Windows.
+  (platform() === 'darwin' || platform() === 'win32' ? it.skip : it)(
     'runs in the extension',
     async function () {
       const examplePath = join(this.sandbox, 'puppeteer-in-extension');

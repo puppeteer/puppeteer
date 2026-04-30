@@ -5,13 +5,13 @@
  */
 
 import type {JSHandle} from '../api/JSHandle.js';
-import type PuppeteerUtil from '../injected/injected.js';
+import type {PuppeteerInjectedUtil} from '../injected/injected.js';
 
 /**
  * @internal
  */
 export interface PuppeteerUtilWrapper {
-  puppeteerUtil: Promise<JSHandle<PuppeteerUtil>>;
+  puppeteerUtil: Promise<JSHandle<PuppeteerInjectedUtil>>;
 }
 
 /**

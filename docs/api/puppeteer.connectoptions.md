@@ -58,6 +58,70 @@ Whether to ignore HTTPS errors during navigation.
 </td></tr>
 <tr><td>
 
+<span id="allowlist">allowlist</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string\[\]
+
+</td><td>
+
+**_(Experimental)_** A list of URL patterns to allow.
+
+**Requires Chrome 149+.**
+
+This option allows you to restrict the browser from accessing any URLs except for those that match the patterns in the allowList. It uses the standard \[URLPattern\](https://urlpattern.spec.whatwg.org/) API to match URLs.
+
+When connecting to an existing browser, Puppeteer will silently detach from any already open targets that violate the patterns.
+
+For any network requests made by the browser (including navigations and subresources like images or scripts), the request will fail with an error if the URL does not match any pattern in the allowlist.
+
+**Remarks:**
+
+Currently only supported for CDP connections.
+
+Cannot be used along with [ConnectOptions.blocklist](./puppeteer.connectoptions.md#blocklist).
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="blocklist">blocklist</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string\[\]
+
+</td><td>
+
+**_(Experimental)_** A list of URL patterns to block.
+
+This option allows you to restrict the browser from accessing specific URLs or origins. It uses the standard \[URLPattern\](https://urlpattern.spec.whatwg.org/) API to match URLs.
+
+When connecting to an existing browser, Puppeteer will silently detach from any already open targets that violate the patterns.
+
+For any network requests made by the browser (including navigations and subresources like images or scripts), the request will fail with an error if the URL matches a blocked pattern.
+
+**Remarks:**
+
+Currently only supported for CDP connections.
+
+Cannot be used along with [ConnectOptions.allowlist](./puppeteer.connectoptions.md#allowlist).
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="browserurl">browserURL</span>
 
 </td><td>
@@ -115,6 +179,27 @@ Only works for `protocol="webDriverBiDi"` and [Puppeteer.connect()](./puppeteer.
 </td></tr>
 <tr><td>
 
+<span id="channel">channel</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[ChromeReleaseChannel](./puppeteer.chromereleasechannel.md)
+
+</td><td>
+
+**_(Experimental)_** If specified, puppeteer looks for an open WebSocket at the well-known default user data directory for the specified channel and attempts to connect to it using ws://localhost:$ActivePort/devtools/browser. Only works for Chrome and when run in Node.js.
+
+This option is experimental when used with puppeteer.connect().
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="defaultviewport">defaultViewport</span>
 
 </td><td>
@@ -155,6 +240,27 @@ Sets the download behavior for the context.
 </td></tr>
 <tr><td>
 
+<span id="handledevtoolsaspage">handleDevToolsAsPage</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether to handle the DevTools windows as pages in Puppeteer. Supported only in Chrome with CDP.
+
+</td><td>
+
+'false'
+
+</td></tr>
+<tr><td>
+
 <span id="headers">headers</span>
 
 </td><td>
@@ -174,6 +280,48 @@ Headers to use for the web socket connection.
 Only works in the Node.js environment.
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="issuesenabled">issuesEnabled</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+**_(Experimental)_** Experimental setting to disable monitoring issue events by default.
+
+</td><td>
+
+`true`
+
+</td></tr>
+<tr><td>
+
+<span id="networkenabled">networkEnabled</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+**_(Experimental)_** Experimental setting to disable monitoring network events by default. When set to `false`, parts of Puppeteer that depend on network events would not work such as HTTPRequest and HTTPResponse.
+
+</td><td>
+
+`true`
 
 </td></tr>
 <tr><td>

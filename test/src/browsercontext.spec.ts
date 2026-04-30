@@ -376,4 +376,85 @@ describe('BrowserContext', function () {
       expect(await getPermission(page, 'persistent-storage')).toBe('granted');
     });
   });
+
+  describe('BrowserContext.setPermission', function () {
+    function getPermission(page: Page, name: PermissionName) {
+      return page.evaluate(name => {
+        return navigator.permissions.query({name}).then(result => {
+          return result.state;
+        });
+      }, name);
+    }
+
+    it('should set permission', async () => {
+      const {page, server, context} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await context.setPermission(server.EMPTY_PAGE, {
+        permission: {name: 'geolocation'},
+        state: 'granted',
+      });
+      expect(await getPermission(page, 'geolocation')).toBe('granted');
+      await context.setPermission(server.EMPTY_PAGE, {
+        permission: {name: 'geolocation'},
+        state: 'denied',
+      });
+      expect(await getPermission(page, 'geolocation')).toBe('denied');
+      await context.setPermission(server.EMPTY_PAGE, {
+        permission: {name: 'geolocation'},
+        state: 'prompt',
+      });
+      expect(await getPermission(page, 'geolocation')).toBe('prompt');
+    });
+
+    it('should support * as origin', async () => {
+      const {page, server, context} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await context.setPermission('*', {
+        permission: {name: 'geolocation'},
+        state: 'granted',
+      });
+      expect(await getPermission(page, 'geolocation')).toBe('granted');
+      await context.setPermission('*', {
+        permission: {name: 'geolocation'},
+        state: 'denied',
+      });
+      expect(await getPermission(page, 'geolocation')).toBe('denied');
+      await context.setPermission('*', {
+        permission: {name: 'geolocation'},
+        state: 'prompt',
+      });
+      expect(await getPermission(page, 'geolocation')).toBe('prompt');
+    });
+
+    it('should support multiple permissions', async () => {
+      const {page, server, context} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await context.setPermission(
+        server.EMPTY_PAGE,
+        {permission: {name: 'geolocation'}, state: 'granted'},
+        {permission: {name: 'midi'}, state: 'granted'},
+      );
+      expect(await getPermission(page, 'geolocation')).toBe('granted');
+      expect(await getPermission(page, 'midi')).toBe('granted');
+
+      await context.setPermission(
+        server.EMPTY_PAGE,
+        {permission: {name: 'geolocation'}, state: 'denied'},
+        {permission: {name: 'midi'}, state: 'denied'},
+      );
+      expect(await getPermission(page, 'geolocation')).toBe('denied');
+      expect(await getPermission(page, 'midi')).toBe('denied');
+
+      await context.setPermission(
+        server.EMPTY_PAGE,
+        {permission: {name: 'geolocation'}, state: 'prompt'},
+        {permission: {name: 'midi'}, state: 'prompt'},
+      );
+      expect(await getPermission(page, 'geolocation')).toBe('prompt');
+      expect(await getPermission(page, 'midi')).toBe('prompt');
+    });
+  });
 });

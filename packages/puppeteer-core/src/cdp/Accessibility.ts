@@ -8,6 +8,8 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Realm} from '../api/Realm.js';
+import type {CdpFrame} from '../cdp/Frame.js';
+import {debugError} from '../common/util.js';
 
 /**
  * Represents a Node and the properties of it that are relevant to Accessibility.
@@ -77,9 +79,57 @@ export interface SerializedAXNode {
   invalid?: string;
   orientation?: string;
   /**
+   * Whether the node is {@link https://www.w3.org/TR/wai-aria/#aria-busy | busy}.
+   */
+  busy?: boolean;
+  /**
+   * The {@link https://www.w3.org/TR/wai-aria/#aria-live | live} status of the
+   * node.
+   */
+  live?: string;
+  /**
+   * Whether the live region is
+   * {@link https://www.w3.org/TR/wai-aria/#aria-atomic | atomic}.
+   */
+  atomic?: boolean;
+  /**
+   * The {@link https://www.w3.org/TR/wai-aria/#aria-relevant | relevant}
+   * changes for the live region.
+   */
+  relevant?: string;
+  /**
+   * The {@link https://www.w3.org/TR/wai-aria/#aria-errormessage | error message}
+   * for the node.
+   */
+  errormessage?: string;
+  /**
+   * The {@link https://www.w3.org/TR/wai-aria/#aria-details | details} for the
+   * node.
+   */
+  details?: string;
+
+  /**
+   * Url for link elements.
+   */
+  url?: string;
+  /**
    * Children of this node, if there are any.
    */
   children?: SerializedAXNode[];
+
+  /**
+   * CDP-specific ID to reference the DOM node.
+   *
+   * @internal
+   */
+  backendNodeId?: number;
+
+  /**
+   * CDP-specific documentId.
+   *
+   * @internal
+   */
+  loaderId: string;
 
   /**
    * Get an ElementHandle for this AXNode if available.
@@ -226,8 +276,13 @@ export class Accessibility {
         if (!frame) {
           return;
         }
-        const iframeSnapshot = await frame.accessibility.snapshot(options);
-        root.iframeSnapshot = iframeSnapshot ?? undefined;
+        try {
+          const iframeSnapshot = await frame.accessibility.snapshot(options);
+          root.iframeSnapshot = iframeSnapshot ?? undefined;
+        } catch (error) {
+          // Frames can get detached at any time resulting in errors.
+          debugError(error);
+        }
       }
       for (const child of root.children) {
         await populateIframes(child);
@@ -259,9 +314,7 @@ export class Accessibility {
 
     const interestingNodes = new Set<AXNode>();
     this.collectInterestingNodes(interestingNodes, defaultRoot, false);
-    if (!interestingNodes.has(needle)) {
-      return null;
-    }
+
     return this.serializeTree(needle, interestingNodes)[0] ?? null;
   }
 
@@ -318,17 +371,27 @@ class AXNode {
   #editable = false;
   #focusable = false;
   #hidden = false;
+  #busy = false;
+  #modal = false;
+  #hasErrormessage = false;
+  #hasDetails = false;
   #name: string;
   #role: string;
+  #description?: string;
+  #roledescription?: string;
+  #live?: string;
   #ignored: boolean;
   #cachedHasFocusableChild?: boolean;
   #realm: Realm;
 
   constructor(realm: Realm, payload: Protocol.Accessibility.AXNode) {
     this.payload = payload;
-    this.#name = this.payload.name ? this.payload.name.value : '';
     this.#role = this.payload.role ? this.payload.role.value : 'Unknown';
     this.#ignored = this.payload.ignored;
+    this.#name = this.payload.name ? this.payload.name.value : '';
+    this.#description = this.payload.description
+      ? this.payload.description.value
+      : undefined;
     this.#realm = realm;
     for (const property of this.payload.properties || []) {
       if (property.name === 'editable') {
@@ -340,6 +403,24 @@ class AXNode {
       }
       if (property.name === 'hidden') {
         this.#hidden = property.value.value;
+      }
+      if (property.name === 'busy') {
+        this.#busy = property.value.value;
+      }
+      if (property.name === 'live') {
+        this.#live = property.value.value;
+      }
+      if (property.name === 'modal') {
+        this.#modal = property.value.value;
+      }
+      if (property.name === 'roledescription') {
+        this.#roledescription = property.value.value;
+      }
+      if (property.name === 'errormessage') {
+        this.#hasErrormessage = true;
+      }
+      if (property.name === 'details') {
+        this.#hasDetails = true;
       }
     }
   }
@@ -422,16 +503,14 @@ class AXNode {
         break;
     }
 
-    // Here and below: Android heuristics
     if (this.#hasFocusableChild()) {
       return false;
     }
-    if (this.#focusable && this.#name) {
-      return true;
-    }
+
     if (this.#role === 'heading' && this.#name) {
       return true;
     }
+
     return false;
   }
 
@@ -464,13 +543,42 @@ class AXNode {
     }
   }
 
+  public isLandmark(): boolean {
+    switch (this.#role) {
+      case 'banner':
+      case 'complementary':
+      case 'contentinfo':
+      case 'form':
+      case 'main':
+      case 'navigation':
+      case 'region':
+      case 'search':
+        return true;
+      default:
+        return false;
+    }
+  }
+
   public isInteresting(insideControl: boolean): boolean {
     const role = this.#role;
     if (role === 'Ignored' || this.#hidden || this.#ignored) {
       return false;
     }
 
-    if (this.#focusable || this.#richlyEditable) {
+    if (this.isLandmark()) {
+      return true;
+    }
+
+    if (
+      this.#focusable ||
+      this.#richlyEditable ||
+      this.#busy ||
+      (this.#live && this.#live !== 'off') ||
+      this.#modal ||
+      this.#hasErrormessage ||
+      this.#hasDetails ||
+      this.#roledescription
+    ) {
       return true;
     }
 
@@ -484,7 +592,7 @@ class AXNode {
       return false;
     }
 
-    return this.isLeafNode() && !!this.#name;
+    return this.isLeafNode() && (!!this.#name || !!this.#description);
   }
 
   public serialize(): SerializedAXNode {
@@ -508,10 +616,20 @@ class AXNode {
         if (!this.payload.backendDOMNodeId) {
           return null;
         }
-        return (await this.#realm.adoptBackendNode(
+        using handle = await this.#realm.adoptBackendNode(
           this.payload.backendDOMNodeId,
-        )) as ElementHandle<Element>;
+        );
+
+        // Since Text nodes are not elements, we want to
+        // return a handle to the parent element for them.
+        return (await handle.evaluateHandle(node => {
+          return node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+        })) as ElementHandle<Element>;
       },
+      backendNodeId: this.payload.backendDOMNodeId,
+      // LoaderId is an experimental mechanism to establish unique IDs across
+      // navigations.
+      loaderId: (this.#realm.environment as CdpFrame)._loaderId,
     };
 
     type UserStringProperty =
@@ -520,7 +638,8 @@ class AXNode {
       | 'description'
       | 'keyshortcuts'
       | 'roledescription'
-      | 'valuetext';
+      | 'valuetext'
+      | 'url';
 
     const userStringProperties: UserStringProperty[] = [
       'name',
@@ -529,6 +648,7 @@ class AXNode {
       'keyshortcuts',
       'roledescription',
       'valuetext',
+      'url',
     ];
     const getUserStringPropertyValue = (key: UserStringProperty): string => {
       return properties.get(key) as string;
@@ -551,7 +671,9 @@ class AXNode {
       | 'multiselectable'
       | 'readonly'
       | 'required'
-      | 'selected';
+      | 'selected'
+      | 'busy'
+      | 'atomic';
     const booleanProperties: BooleanProperty[] = [
       'disabled',
       'expanded',
@@ -562,20 +684,21 @@ class AXNode {
       'readonly',
       'required',
       'selected',
+      'busy',
+      'atomic',
     ];
     const getBooleanPropertyValue = (key: BooleanProperty): boolean => {
-      return properties.get(key) as boolean;
+      return !!properties.get(key);
     };
 
     for (const booleanProperty of booleanProperties) {
       // RootWebArea's treat focus differently than other nodes. They report whether
-      // their frame  has focus, not whether focus is specifically on the root
+      // their frame has focus, not whether focus is specifically on the root
       // node.
       if (booleanProperty === 'focused' && this.#role === 'RootWebArea') {
         continue;
       }
-      const value = getBooleanPropertyValue(booleanProperty);
-      if (!value) {
+      if (!properties.has(booleanProperty)) {
         continue;
       }
       node[booleanProperty] = getBooleanPropertyValue(booleanProperty);
@@ -612,12 +735,20 @@ class AXNode {
       | 'autocomplete'
       | 'haspopup'
       | 'invalid'
-      | 'orientation';
+      | 'orientation'
+      | 'live'
+      | 'relevant'
+      | 'errormessage'
+      | 'details';
     const tokenProperties: TokenProperty[] = [
       'autocomplete',
       'haspopup',
       'invalid',
       'orientation',
+      'live',
+      'relevant',
+      'errormessage',
+      'details',
     ];
     const getTokenPropertyValue = (key: TokenProperty): string => {
       return properties.get(key) as string;

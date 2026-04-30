@@ -14,16 +14,15 @@ import {
   useEvent,
   useSearchQueryString,
 } from '@docusaurus/theme-common';
-import {useTitleFormatter} from '@docusaurus/theme-common/internal';
 import Translate, {translate} from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import {liteClient} from 'algoliasearch/lite';
 import algoliaSearchHelper from 'algoliasearch-helper';
 import clsx from 'clsx';
-import React, {useEffect, useState, useReducer, useRef} from 'react';
+import React, {useEffect, useState, useReducer, useRef, useMemo} from 'react';
 
-// eslint-disable-next-line rulesdir/extensions
+// eslint-disable-next-line @puppeteer/extensions
 import {tagToCounter} from '../SearchMetadata';
 
 import styles from './styles.module.css';
@@ -267,6 +266,10 @@ function SearchPageContent() {
           description: 'The search page title for empty query',
         });
   };
+  const pageTitle = useMemo(() => {
+    const title = getTitle();
+    return title || 'Search';
+  }, [searchQuery]);
   const makeSearch = useEvent((page = 0) => {
     algoliaHelper.addDisjunctiveFacetRefinement(
       'counter',
@@ -316,12 +319,15 @@ function SearchPageContent() {
   return (
     <Layout>
       <Head>
-        <title>{useTitleFormatter(getTitle())}</title>
+        <title>{pageTitle}</title>
         {/*
          We should not index search pages
           See https://github.com/facebook/docusaurus/pull/3233
         */}
-        <meta property="robots" content="noindex, follow" />
+        <meta
+          property="robots"
+          content="noindex, follow"
+        />
       </Head>
 
       <div className="container margin-vert--lg">
@@ -393,7 +399,10 @@ function SearchPageContent() {
                 description: 'The ARIA label for Algolia mention',
               })}
             >
-              <svg viewBox="0 0 168 24" className={styles.algoliaLogo}>
+              <svg
+                viewBox="0 0 168 24"
+                className={styles.algoliaLogo}
+              >
                 <g fill="none">
                   <path
                     className={styles.algoliaLogoPathFill}
@@ -418,7 +427,10 @@ function SearchPageContent() {
             {searchResultState.items.map(
               ({title, url, summary, breadcrumbs}, i) => {
                 return (
-                  <article key={i} className={styles.searchResultItem}>
+                  <article
+                    key={i}
+                    className={styles.searchResultItem}
+                  >
                     <h2 className={styles.searchResultItemHeading}>
                       <Link
                         to={url}
@@ -473,13 +485,19 @@ function SearchPageContent() {
               </p>
             ),
             !!searchResultState.loading && (
-              <div key="spinner" className={styles.loadingSpinner} />
+              <div
+                key="spinner"
+                className={styles.loadingSpinner}
+              />
             ),
           ]
         )}
 
         {searchResultState.hasMore && (
-          <div className={styles.loader} ref={setLoaderRef}>
+          <div
+            className={styles.loader}
+            ref={setLoaderRef}
+          >
             <Translate
               id="theme.SearchPage.fetchingNewResults"
               description="The paragraph for fetching new search results"

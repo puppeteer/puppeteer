@@ -45,7 +45,7 @@ const PuppeteerUtil = Object.freeze({
 /**
  * @internal
  */
-type PuppeteerUtil = typeof PuppeteerUtil;
+export type PuppeteerInjectedUtil = typeof PuppeteerUtil;
 
 /**
  * @internal

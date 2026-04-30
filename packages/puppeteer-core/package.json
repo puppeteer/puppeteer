@@ -1,6 +1,6 @@
 {
   "name": "puppeteer-core",
-  "version": "24.7.1",
+  "version": "24.42.0",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "keywords": [
     "puppeteer",
@@ -10,8 +10,9 @@
   ],
   "type": "commonjs",
   "main": "./lib/cjs/puppeteer/puppeteer-core.js",
-  "types": "./lib/types.d.ts",
   "browser": "./lib/esm/puppeteer/puppeteer-core-browser.js",
+  "module": "./lib/esm/puppeteer/puppeteer-core.js",
+  "types": "./lib/types.d.ts",
   "exports": {
     ".": {
       "types": "./lib/types.d.ts",
@@ -40,7 +41,8 @@
     "check": "wireit",
     "clean": "../../tools/clean.mjs",
     "prepack": "wireit",
-    "unit": "wireit"
+    "unit": "wireit",
+    "unit:only": "wireit"
   },
   "wireit": {
     "check": {
@@ -106,9 +108,8 @@
       ]
     },
     "build:types": {
-      "command": "api-extractor run --local && eslint --cache-location .eslintcache --cache --no-ignore --no-config-lookup -c=../../eslint.types.config.mjs --fix lib/types.d.ts",
+      "command": "api-extractor run --local && eslint --fix lib/types.d.ts --no-ignore",
       "files": [
-        "../../eslint.types.config.mjs",
         "api-extractor.json",
         "lib/esm/puppeteer/types.d.ts",
         "tsconfig.json"
@@ -125,11 +126,18 @@
       "dependencies": [
         "build"
       ]
+    },
+    "unit:only": {
+      "command": "node --test --test-only --test-reporter=spec \"lib/cjs/**/*.test.js\"",
+      "dependencies": [
+        "build"
+      ]
     }
   },
   "files": [
     "lib",
     "src",
+    "!function-fixture.mjs",
     "!*.test.ts",
     "!*.test.js",
     "!*.test.d.ts",
@@ -140,20 +148,22 @@
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "dependencies": {
-    "@puppeteer/browsers": "2.10.2",
-    "debug": "^4.4.0",
-    "chromium-bidi": "4.0.1",
-    "devtools-protocol": "0.0.1425554",
-    "typed-query-selector": "^2.12.0",
-    "ws": "^8.18.1"
+    "@puppeteer/browsers": "2.13.0",
+    "chromium-bidi": "14.0.0",
+    "debug": "^4.4.3",
+    "devtools-protocol": "0.0.1608973",
+    "typed-query-selector": "^2.12.2",
+    "webdriver-bidi-protocol": "0.4.1",
+    "ws": "^8.20.0"
   },
   "devDependencies": {
-    "@types/chrome": "0.0.315",
-    "@types/debug": "4.1.12",
+    "@types/chrome": "0.1.40",
+    "@types/debug": "4.1.13",
     "@types/node": "^18.17.15",
     "@types/ws": "8.18.1",
     "mitt": "3.0.1",
-    "parsel-js": "1.2.1",
-    "rxjs": "7.8.2"
+    "parsel-js": "1.2.2",
+    "rxjs": "^7.8.2",
+    "urlpattern-polyfill": "10.1.0"
   }
 }

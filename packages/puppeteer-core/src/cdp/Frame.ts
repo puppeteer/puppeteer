@@ -7,6 +7,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
+import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {WaitForOptions} from '../api/Frame.js';
 import {Frame, FrameEvent, throwIfDetached} from '../api/Frame.js';
@@ -14,6 +15,7 @@ import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {WaitTimeoutOptions} from '../api/Page.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {debugError} from '../common/util.js';
+import type {Realm} from '../puppeteer-core.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
@@ -21,10 +23,7 @@ import {isErrorLike} from '../util/ErrorLike.js';
 import {Accessibility} from './Accessibility.js';
 import type {Binding} from './Binding.js';
 import type {CdpPreloadScript} from './CdpPreloadScript.js';
-import type {
-  DeviceRequestPrompt,
-  DeviceRequestPromptManager,
-} from './DeviceRequestPrompt.js';
+import type {CdpDeviceRequestPromptManager} from './DeviceRequestPrompt.js';
 import type {FrameManager} from './FrameManager.js';
 import {FrameManagerEvent} from './FrameManagerEvents.js';
 import type {IsolatedWorldChart} from './IsolatedWorld.js';
@@ -54,6 +53,7 @@ export class CdpFrame extends Frame {
   override accessibility: Accessibility;
 
   worlds: IsolatedWorldChart;
+  extensionWorlds: Record<string, IsolatedWorld> = {};
 
   constructor(
     frameManager: FrameManager,
@@ -71,10 +71,15 @@ export class CdpFrame extends Frame {
 
     this._loaderId = '';
     this.worlds = {
-      [MAIN_WORLD]: new IsolatedWorld(this, this._frameManager.timeoutSettings),
+      [MAIN_WORLD]: new IsolatedWorld(
+        this,
+        this._frameManager.timeoutSettings,
+        MAIN_WORLD,
+      ),
       [PUPPETEER_WORLD]: new IsolatedWorld(
         this,
         this._frameManager.timeoutSettings,
+        PUPPETEER_WORLD,
       ),
     };
 
@@ -86,30 +91,23 @@ export class CdpFrame extends Frame {
       this._onLoadingStopped();
     });
 
-    this.worlds[MAIN_WORLD].emitter.on(
-      'consoleapicalled',
-      this.#onMainWorldConsoleApiCalled.bind(this),
-    );
-    this.worlds[MAIN_WORLD].emitter.on(
-      'bindingcalled',
-      this.#onMainWorldBindingCalled.bind(this),
-    );
+    this.registerWorldListeners(this.worlds[MAIN_WORLD]);
   }
 
-  #onMainWorldConsoleApiCalled(
-    event: Protocol.Runtime.ConsoleAPICalledEvent,
-  ): void {
-    this._frameManager.emit(FrameManagerEvent.ConsoleApiCalled, [
-      this.worlds[MAIN_WORLD],
-      event,
-    ]);
-  }
+  /**
+   * @internal
+   */
+  registerWorldListeners(world: IsolatedWorld): void {
+    world.emitter.on('consoleapicalled', event => {
+      this._frameManager.emit(FrameManagerEvent.ConsoleApiCalled, [
+        world,
+        event,
+      ]);
+    });
 
-  #onMainWorldBindingCalled(event: Protocol.Runtime.BindingCalledEvent) {
-    this._frameManager.emit(FrameManagerEvent.BindingCalled, [
-      this.worlds[MAIN_WORLD],
-      event,
-    ]);
+    world.emitter.on('bindingcalled', event => {
+      this._frameManager.emit(FrameManagerEvent.BindingCalled, [world, event]);
+    });
   }
 
   /**
@@ -168,7 +166,7 @@ export class CdpFrame extends Frame {
         this.#client,
         url,
         referer,
-        referrerPolicy as Protocol.Page.ReferrerPolicy,
+        referrerPolicy ? referrerPolicyToProtocol(referrerPolicy) : undefined,
         this._id,
       ),
       watcher.terminationPromise(),
@@ -317,7 +315,7 @@ export class CdpFrame extends Frame {
     return this._frameManager._frameTree.childFrames(this._id);
   }
 
-  #deviceRequestPromptManager(): DeviceRequestPromptManager {
+  #deviceRequestPromptManager(): CdpDeviceRequestPromptManager {
     return this._frameManager._deviceRequestPromptManager(this.#client);
   }
 
@@ -419,6 +417,9 @@ export class CdpFrame extends Frame {
     this.#detached = true;
     this.worlds[MAIN_WORLD][disposeSymbol]();
     this.worlds[PUPPETEER_WORLD][disposeSymbol]();
+    for (const extensionWorld of Object.values(this.extensionWorlds)) {
+      extensionWorld[disposeSymbol]();
+    }
   }
 
   exposeFunction(): never {
@@ -437,4 +438,25 @@ export class CdpFrame extends Frame {
       .mainRealm()
       .adoptBackendNode(backendNodeId)) as ElementHandle<HTMLIFrameElement>;
   }
+
+  /**
+   * @public
+   */
+  override extensionRealms(): Realm[] {
+    return Object.values(this.extensionWorlds);
+  }
+}
+
+/**
+ * @internal
+ */
+export function referrerPolicyToProtocol(
+  referrerPolicy: string,
+): Protocol.Page.ReferrerPolicy {
+  // See
+  // https://chromedevtools.github.io/devtools-protocol/tot/Page/#type-ReferrerPolicy
+  // We need to conver from Web-facing phase to CDP's camelCase.
+  return referrerPolicy.replaceAll(/-./g, match => {
+    return match[1]!.toUpperCase();
+  }) as Protocol.Page.ReferrerPolicy;
 }

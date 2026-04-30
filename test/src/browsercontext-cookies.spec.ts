@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import expect from 'expect';
+import type {DeleteCookiesRequest} from 'puppeteer-core';
 
 import {
   expectCookieEquals,
@@ -76,6 +77,26 @@ describe('BrowserContext cookies', () => {
             }
           : undefined,
       );
+    });
+
+    it('should properly report "Default" sameSite cookie', async () => {
+      const {context, server, page} = state;
+      await page.goto(server.EMPTY_PAGE);
+      const name = 'defaultSameSite';
+      await context.setCookie({
+        name,
+        value: 'b',
+        domain: 'localhost',
+        sameSite: 'Default',
+      });
+      const cookies = await context.cookies();
+      const cookie = cookies.find(c => {
+        return c.name === name;
+      });
+      expect(cookie).toBeDefined();
+      // Different browsers have different sameSite values for the "Default" sameSite.
+      expect(['Default', 'Lax', undefined]).toContain(cookie!.sameSite);
+      await context.deleteMatchingCookies({name, domain: 'localhost'});
     });
   });
   describe('BrowserContext.setCookie', function () {
@@ -182,5 +203,102 @@ describe('BrowserContext cookies', () => {
         }),
       ).toEqual('cookie2=2');
     });
+
+    it('should be able to delete "Default" sameSite cookie', async () => {
+      const {page, context, server} = state;
+      await page.goto(server.EMPTY_PAGE);
+      const name = 'deleteDefaultSameSite';
+      await context.setCookie({
+        name,
+        value: 'b',
+        domain: 'localhost',
+        sameSite: 'Default',
+      });
+      const cookies = await context.cookies();
+      const cookie = cookies.find(c => {
+        return c.name === name;
+      });
+      expect(cookie).toBeDefined();
+      await context.deleteMatchingCookies({name, domain: 'localhost'});
+      const cookiesAfter = await context.cookies();
+      expect(
+        cookiesAfter.find(c => {
+          return c.name === name;
+        }),
+      ).toBeUndefined();
+    });
+  });
+
+  describe('BrowserContext.deleteMatchingCookies', () => {
+    const filters: DeleteCookiesRequest[] = [
+      {
+        name: 'cookie1',
+      },
+      {
+        url: 'https://example.test/test',
+        name: 'cookie1',
+      },
+      {
+        domain: 'example.test',
+        name: 'cookie1',
+      },
+      {
+        path: '/test',
+        name: 'cookie1',
+      },
+      {
+        name: 'cookie1',
+        partitionKey: {
+          sourceOrigin: 'https://example.test',
+        },
+      },
+    ];
+    for (const filter of filters) {
+      it(`should delete cookies matching ${JSON.stringify(filter)}`, async () => {
+        const {page, context, server, isChrome} = state;
+        await page.goto(server.EMPTY_PAGE);
+        expect(await context.cookies()).toHaveLength(0);
+        const topLevelSite = 'https://example.test';
+        await context.setCookie(
+          {
+            name: 'cookie1',
+            value: 'secret',
+            domain: new URL(topLevelSite).hostname,
+            path: '/test',
+            sameParty: false,
+            expires: -1,
+            httpOnly: false,
+            secure: true,
+            partitionKey: isChrome
+              ? {
+                  sourceOrigin: topLevelSite,
+                  hasCrossSiteAncestor: false,
+                }
+              : undefined,
+          },
+          {
+            name: 'cookie2',
+            value: 'secret',
+            domain: new URL(topLevelSite).hostname,
+            path: '/test',
+            sameParty: false,
+            expires: -1,
+            httpOnly: false,
+            secure: true,
+            partitionKey: isChrome
+              ? {
+                  sourceOrigin: topLevelSite,
+                  hasCrossSiteAncestor: false,
+                }
+              : undefined,
+          },
+        );
+        expect(await context.cookies()).toHaveLength(2);
+        await context.deleteMatchingCookies(filter);
+        const cookies = await context.cookies();
+        expect(cookies).toHaveLength(1);
+        expect(cookies[0]!.name).toBe('cookie2');
+      });
+    }
   });
 });

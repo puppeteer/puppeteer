@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import assert from 'node:assert';
 import {readFile, readFileSync} from 'node:fs';
 import {
   createServer as createHttpServer,
@@ -21,10 +20,10 @@ import {
 import type {AddressInfo} from 'node:net';
 import {join} from 'node:path';
 import type {Duplex} from 'node:stream';
-import {gzip} from 'zlib';
+import {gzip} from 'node:zlib';
 
-import {getType as getMimeType} from 'mime';
-import {Server as WebSocketServer, type WebSocket} from 'ws';
+import mime from 'mime';
+import {WebSocketServer, type WebSocket} from 'ws';
 
 interface Subscriber {
   resolve: (msg: IncomingMessage) => void;
@@ -35,10 +34,10 @@ interface Subscriber {
 type TestIncomingMessage = IncomingMessage & {postBody?: Promise<string>};
 
 export class TestServer {
-  PORT!: number;
-  PREFIX!: string;
-  CROSS_PROCESS_PREFIX!: string;
-  EMPTY_PAGE!: string;
+  declare PORT: number;
+  declare PREFIX: string;
+  declare CROSS_PROCESS_PREFIX: string;
+  declare EMPTY_PAGE: string;
 
   #dirPath: string;
   #server: HttpsServer | HttpServer;
@@ -67,6 +66,9 @@ export class TestServer {
     server.#server.once('listening', res);
     server.#server.listen(0);
     await promise;
+
+    TestServer.setupProps(server);
+
     return server;
   }
 
@@ -76,14 +78,25 @@ export class TestServer {
       res = resolve;
     });
     const server = new TestServer(dirPath, {
-      key: readFileSync(join(__dirname, '..', 'key.pem')),
-      cert: readFileSync(join(__dirname, '..', 'cert.pem')),
+      key: readFileSync(join(import.meta.dirname, '..', 'key.pem')),
+      cert: readFileSync(join(import.meta.dirname, '..', 'cert.pem')),
       passphrase: 'aaaa',
     });
     server.#server.once('listening', res);
     server.#server.listen(0);
     await promise;
+
+    TestServer.setupProps(server, 'https');
+
     return server;
+  }
+
+  static setupProps(server: TestServer, protocol = 'http'): void {
+    const port = server.port;
+    server.PORT = port;
+    server.PREFIX = `${protocol}://localhost:${port}`;
+    server.CROSS_PROCESS_PREFIX = `${protocol}://127.0.0.1:${port}`;
+    server.EMPTY_PAGE = `${protocol}://localhost:${port}/empty.html`;
   }
 
   constructor(dirPath: string, sslOptions?: HttpsServerOptions) {
@@ -196,7 +209,7 @@ export class TestServer {
     }
     this.#requestSubscribers.clear();
     for (const request of this.#requests.values()) {
-      if (!request.writableEnded) {
+      if (!request.writableFinished) {
         request.destroy();
       }
     }
@@ -207,6 +220,10 @@ export class TestServer {
     request: TestIncomingMessage,
     response,
   ): void => {
+    if (!request.url) {
+      return;
+    }
+
     this.#requests.add(response);
 
     request.on('error', (error: {code: string}) => {
@@ -225,7 +242,6 @@ export class TestServer {
         return resolve(body);
       });
     });
-    assert(request.url);
     const url = new URL(request.url, `https://${request.headers.host}`);
     const path = url.pathname;
     const auth = this.#auths.get(path);
@@ -294,7 +310,7 @@ export class TestServer {
         response.end(`File not found: ${filePath}`);
         return;
       }
-      const mimeType = getMimeType(filePath);
+      const mimeType = mime.getType(filePath);
       if (mimeType) {
         const isTextEncoding = /^text\/|^application\/(javascript|json)/.test(
           mimeType,

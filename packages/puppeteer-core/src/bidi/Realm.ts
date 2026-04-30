@@ -3,11 +3,13 @@
  * Copyright 2024 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import * as Bidi from 'webdriver-bidi-protocol';
 
+import type {Extension} from '../api/Extension.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
-import {ARIAQueryHandler} from '../cdp/AriaQueryHandler.js';
+import {WebWorkerEvent} from '../api/WebWorker.js';
+import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
@@ -20,7 +22,8 @@ import {
   PuppeteerURL,
   SOURCE_URL_REGEX,
 } from '../common/util.js';
-import type PuppeteerUtil from '../injected/injected.js';
+import {UnsupportedOperation} from '../index-browser.js';
+import type {PuppeteerInjectedUtil} from '../injected/injected.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {stringifyFunction} from '../util/Function.js';
 
@@ -36,7 +39,12 @@ import {ExposableFunction} from './ExposedFunction.js';
 import type {BidiFrame} from './Frame.js';
 import {BidiJSHandle} from './JSHandle.js';
 import {BidiSerializer} from './Serializer.js';
-import {createEvaluationError} from './util.js';
+import {
+  createEvaluationError,
+  getConsoleMessage,
+  isConsoleLogEntry,
+  rewriteEvaluationError,
+} from './util.js';
 import type {BidiWebWorker} from './WebWorker.js';
 
 /**
@@ -61,8 +69,10 @@ export abstract class BidiRealm extends Realm {
     });
   }
 
-  protected internalPuppeteerUtil?: Promise<BidiJSHandle<PuppeteerUtil>>;
-  get puppeteerUtil(): Promise<BidiJSHandle<PuppeteerUtil>> {
+  protected internalPuppeteerUtil?: Promise<
+    BidiJSHandle<PuppeteerInjectedUtil>
+  >;
+  get puppeteerUtil(): Promise<BidiJSHandle<PuppeteerInjectedUtil>> {
     const promise = Promise.resolve() as Promise<unknown>;
     scriptInjector.inject(script => {
       if (this.internalPuppeteerUtil) {
@@ -72,11 +82,13 @@ export abstract class BidiRealm extends Realm {
       }
       this.internalPuppeteerUtil = promise.then(() => {
         return this.evaluateHandle(script) as Promise<
-          BidiJSHandle<PuppeteerUtil>
+          BidiJSHandle<PuppeteerInjectedUtil>
         >;
       });
     }, !this.internalPuppeteerUtil);
-    return this.internalPuppeteerUtil as Promise<BidiJSHandle<PuppeteerUtil>>;
+    return this.internalPuppeteerUtil as Promise<
+      BidiJSHandle<PuppeteerInjectedUtil>
+    >;
   }
 
   override async evaluateHandle<
@@ -177,7 +189,7 @@ export abstract class BidiRealm extends Realm {
       );
     }
 
-    const result = await responsePromise;
+    const result = await responsePromise.catch(rewriteEvaluationError);
 
     if ('type' in result && result.type === 'exception') {
       throw createEvaluationError(result.exceptionDetails);
@@ -277,6 +289,14 @@ export abstract class BidiRealm extends Realm {
     await handle.dispose();
     return await transferredHandle;
   }
+
+  extension(): Promise<Extension | null> {
+    throw new UnsupportedOperation();
+  }
+
+  override get origin(): string {
+    throw new UnsupportedOperation();
+  }
 }
 
 /**
@@ -308,18 +328,18 @@ export class BidiFrameRealm extends BidiRealm {
   }
 
   #bindingsInstalled = false;
-  override get puppeteerUtil(): Promise<BidiJSHandle<PuppeteerUtil>> {
+  override get puppeteerUtil(): Promise<BidiJSHandle<PuppeteerInjectedUtil>> {
     let promise = Promise.resolve() as Promise<unknown>;
     if (!this.#bindingsInstalled) {
       promise = Promise.all([
         ExposableFunction.from(
-          this.environment as BidiFrame,
+          this.environment,
           '__ariaQuerySelector',
           ARIAQueryHandler.queryOne,
           !!this.sandbox,
         ),
         ExposableFunction.from(
-          this.environment as BidiFrame,
+          this.environment,
           '__ariaQuerySelectorAll',
           async (
             element: BidiElementHandle<Node>,
@@ -394,6 +414,28 @@ export class BidiWorkerRealm extends BidiRealm {
   ) {
     super(realm, frame.timeoutSettings);
     this.#worker = frame;
+  }
+
+  override initialize(): void {
+    super.initialize();
+    this.realm.on('log', entry => {
+      if (
+        isConsoleLogEntry(entry) &&
+        this.#worker.listenerCount(WebWorkerEvent.Console)
+      ) {
+        const args = entry.args.map(arg => {
+          return this.createHandle(arg);
+        });
+
+        const message = getConsoleMessage(
+          entry,
+          args,
+          undefined,
+          this.realm.id,
+        );
+        this.#worker.emit(WebWorkerEvent.Console, message);
+      }
+    });
   }
 
   override get environment(): BidiWebWorker {

@@ -15,7 +15,7 @@
  * - `node tools/download_chrome_canary.mjs`
  * - `node tools/download_chrome_canary.mjs /tmp/cache`
  */
-import actions from '@actions/core';
+import * as actions from '@actions/core';
 import {
   Browser,
   computeExecutablePath,

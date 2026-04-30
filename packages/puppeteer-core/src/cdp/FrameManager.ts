@@ -8,7 +8,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {FrameEvent} from '../api/Frame.js';
-import type {NewDocumentScriptEvaluation} from '../api/Page.js';
+import {PageEvent, type NewDocumentScriptEvaluation} from '../api/Page.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import {debugError, PuppeteerURL, UTILITY_WORLD_NAME} from '../common/util.js';
@@ -18,23 +18,24 @@ import {disposeSymbol} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {Binding} from './Binding.js';
+import {CdpIssue} from './CdpIssue.js';
 import {CdpPreloadScript} from './CdpPreloadScript.js';
 import type {CdpCDPSession} from './CdpSession.js';
 import {isTargetClosedError} from './Connection.js';
-import {DeviceRequestPromptManager} from './DeviceRequestPrompt.js';
+import {CdpDeviceRequestPromptManager} from './DeviceRequestPrompt.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {CdpFrame} from './Frame.js';
 import type {FrameManagerEvents} from './FrameManagerEvents.js';
 import {FrameManagerEvent} from './FrameManagerEvents.js';
 import {FrameTree} from './FrameTree.js';
-import type {IsolatedWorld} from './IsolatedWorld.js';
+import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {NetworkManager} from './NetworkManager.js';
 import type {CdpPage} from './Page.js';
 import type {CdpTarget} from './Target.js';
 
 const TIME_FOR_WAITING_FOR_SWAP = 100; // ms.
-
+const CHROME_EXTENSION_PREFIX = 'chrome-extension://';
 /**
  * A frame manager manages the frames for a given {@link Page | page}.
  *
@@ -60,7 +61,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
 
   #deviceRequestPromptManagerMap = new WeakMap<
     CDPSession,
-    DeviceRequestPromptManager
+    CdpDeviceRequestPromptManager
   >();
 
   #frameTreeHandled?: Deferred<void>;
@@ -85,7 +86,10 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     super();
     this.#client = client;
     this.#page = page;
-    this.#networkManager = new NetworkManager(this);
+    this.#networkManager = new NetworkManager(
+      this,
+      page.browser().isNetworkEnabled(),
+    );
     this.#timeoutSettings = timeoutSettings;
     this.setupEventListeners(this.#client);
     client.once(CDPSessionEvent.Disconnected, () => {
@@ -198,6 +202,9 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       await this.#frameTreeHandled?.valueOrThrow();
       this.#onLifecycleEvent(event);
     });
+    session.on('Audits.issueAdded', event => {
+      this.#page.emit(PageEvent.Issue, new CdpIssue(event.issue));
+    });
   }
 
   async initialize(client: CDPSession, frame?: CdpFrame | null): Promise<void> {
@@ -228,6 +235,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
         ...(frame ? Array.from(this.#bindings.values()) : []).map(binding => {
           return frame?.addExposedFunctionBinding(binding);
         }),
+        this.#page.browser().isIssuesEnabled() && client.send('Audits.enable'),
       ]);
     } catch (error) {
       this.#frameTreeHandled?.resolve();
@@ -338,13 +346,18 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       frame.updateClient(target._session()!);
     }
     this.setupEventListeners(target._session()!);
-    void this.initialize(target._session()!, frame);
+    void this.initialize(target._session()!, frame).catch(debugError);
   }
 
-  _deviceRequestPromptManager(client: CDPSession): DeviceRequestPromptManager {
+  _deviceRequestPromptManager(
+    client: CDPSession,
+  ): CdpDeviceRequestPromptManager {
     let manager = this.#deviceRequestPromptManagerMap.get(client);
     if (manager === undefined) {
-      manager = new DeviceRequestPromptManager(client, this.#timeoutSettings);
+      manager = new CdpDeviceRequestPromptManager(
+        client,
+        this.#timeoutSettings,
+      );
       this.#deviceRequestPromptManagerMap.set(client, manager);
     }
     return manager;
@@ -528,11 +541,29 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     }
   }
 
+  #isExtensionOrigin(origin: string) {
+    return origin.startsWith(CHROME_EXTENSION_PREFIX);
+  }
+
+  #extractExtensionId(origin: string): string | null {
+    if (!origin || !this.#isExtensionOrigin(origin)) {
+      return null;
+    }
+
+    const pathPart = origin.substring(CHROME_EXTENSION_PREFIX.length);
+    const slashIndex = pathPart.indexOf('/');
+
+    // if there's no / it means that pathPart is now the extensionId, otherwise
+    // we take everything until the first /
+    return slashIndex === -1 ? pathPart : pathPart.substring(0, slashIndex);
+  }
+
   #onExecutionContextCreated(
     contextPayload: Protocol.Runtime.ExecutionContextDescription,
     session: CDPSession,
   ): void {
     const auxData = contextPayload.auxData as {frameId?: string} | undefined;
+    const origin = contextPayload.origin;
     const frameId = auxData && auxData.frameId;
     const frame = typeof frameId === 'string' ? this.frame(frameId) : undefined;
     let world: IsolatedWorld | undefined;
@@ -548,8 +579,26 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
         // connections so we might end up creating multiple isolated worlds.
         // We can use either.
         world = frame.worlds[PUPPETEER_WORLD];
+      } else if (this.#isExtensionOrigin(origin)) {
+        const extId = this.#extractExtensionId(origin);
+
+        if (!extId) {
+          debugError('Error while parsing extension id');
+          return;
+        }
+
+        if (frame.extensionWorlds[extId]) {
+          world = frame.extensionWorlds[extId];
+        } else {
+          world = new IsolatedWorld(frame, this.timeoutSettings, extId);
+          frame.extensionWorlds[extId] = world;
+          frame.registerWorldListeners(world);
+          world.origin = origin;
+          world.setWorldId(extId);
+        }
       }
     }
+
     // If there is no world, the context is not meant to be handled by us.
     if (!world) {
       return;

@@ -9,8 +9,6 @@ import type {ParseSelector} from 'typed-query-selector/parser.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 
-import type {LazyArg} from './LazyArg.js';
-
 /**
  * @public
  */
@@ -76,18 +74,6 @@ export type HandleOr<T> = HandleFor<T> | JSHandle<T> | T;
  * @public
  */
 export type FlattenHandle<T> = T extends HandleOr<infer U> ? U : never;
-
-/**
- * @internal
- */
-export type FlattenLazyArg<T> = T extends LazyArg<infer U> ? U : T;
-
-/**
- * @internal
- */
-export type InnerLazyParams<T extends unknown[]> = {
-  [K in keyof T]: FlattenLazyArg<T[K]>;
-};
 
 /**
  * @public

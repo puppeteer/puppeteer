@@ -119,7 +119,7 @@ export const getConfiguration = (): Configuration => {
   const result = cosmiconfigSync('puppeteer', {
     searchStrategy: 'global',
   }).search();
-  const configuration: Configuration = result ? result.config : {};
+  const configuration: Configuration = result ? {...result.config} : {};
 
   configuration.logLevel = getLogLevel(
     process.env['PUPPETEER_LOGLEVEL'] ?? configuration.logLevel,

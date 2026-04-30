@@ -4,11 +4,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type * as Bidi from 'webdriver-bidi-protocol';
 
+import type {BluetoothEmulation} from '../../api/BluetoothEmulation.js';
+import type {DeviceRequestPrompt} from '../../api/DeviceRequestPrompt.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
+import {isString} from '../../common/util.js';
+import {assert} from '../../util/assert.js';
 import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
+import {BidiBluetoothEmulation} from '../BluetoothEmulation.js';
+import {BidiDeviceRequestPromptManager} from '../DeviceRequestPrompt.js';
 
 import type {AddPreloadScriptOptions} from './Browser.js';
 import {Navigation} from './Navigation.js';
@@ -134,6 +140,7 @@ export class BrowsingContext extends EventEmitter<{
     id: string,
     url: string,
     originalOpener: string | null,
+    clientWindow: string,
   ): BrowsingContext {
     const browsingContext = new BrowsingContext(
       userContext,
@@ -141,6 +148,7 @@ export class BrowsingContext extends EventEmitter<{
       id,
       url,
       originalOpener,
+      clientWindow,
     );
     browsingContext.#initialize();
     return browsingContext;
@@ -149,6 +157,8 @@ export class BrowsingContext extends EventEmitter<{
   #navigation: Navigation | undefined;
   #reason?: string;
   #url: string;
+  // Indicated whether client hints have been set to non-default.
+  #clientHintsAreSet = false;
   readonly #children = new Map<string, BrowsingContext>();
   readonly #disposables = new DisposableStack();
   readonly #realms = new Map<string, WindowRealm>();
@@ -158,23 +168,39 @@ export class BrowsingContext extends EventEmitter<{
   readonly parent: BrowsingContext | undefined;
   readonly userContext: UserContext;
   readonly originalOpener: string | null;
+  readonly windowId: string;
+  readonly #emulationState: {
+    javaScriptEnabled: boolean;
+  } = {javaScriptEnabled: true};
+  readonly #bluetoothEmulation: BluetoothEmulation;
+  readonly #deviceRequestPromptManager: BidiDeviceRequestPromptManager;
 
   private constructor(
-    context: UserContext,
+    userContext: UserContext,
     parent: BrowsingContext | undefined,
     id: string,
     url: string,
     originalOpener: string | null,
+    clientWindow: string,
   ) {
     super();
 
     this.#url = url;
     this.id = id;
     this.parent = parent;
-    this.userContext = context;
+    this.userContext = userContext;
     this.originalOpener = originalOpener;
+    this.windowId = clientWindow;
 
     this.defaultRealm = this.#createWindowRealm();
+    this.#bluetoothEmulation = new BidiBluetoothEmulation(
+      this.id,
+      this.#session,
+    );
+    this.#deviceRequestPromptManager = new BidiDeviceRequestPromptManager(
+      this.id,
+      this.#session,
+    );
   }
 
   #initialize() {
@@ -205,6 +231,7 @@ export class BrowsingContext extends EventEmitter<{
         info.context,
         info.url,
         info.originalOpener,
+        info.clientWindow,
       );
       this.#children.set(info.context, browsingContext);
 
@@ -396,11 +423,9 @@ export class BrowsingContext extends EventEmitter<{
     return context.#reason!;
   })
   async close(promptUnload?: boolean): Promise<void> {
-    await Promise.all(
-      [...this.#children.values()].map(async child => {
-        await child.close(promptUnload);
-      }),
-    );
+    // The WebDriver BiDi specification only allows closing top-level browsing contexts.
+    // Closing a top-level context automatically closes all its children, so there is
+    // no need to explicitly close nested contexts.
     await this.#session.send('browsingContext.close', {
       context: this.id,
       promptUnload,
@@ -449,7 +474,6 @@ export class BrowsingContext extends EventEmitter<{
     return context.#reason!;
   })
   async setCacheBehavior(cacheBehavior: 'default' | 'bypass'): Promise<void> {
-    // @ts-expect-error not in BiDi types yet.
     await this.#session.send('network.setCacheBehavior', {
       contexts: [this.id],
       cacheBehavior,
@@ -489,6 +513,17 @@ export class BrowsingContext extends EventEmitter<{
     await this.#session.send('browsingContext.setViewport', {
       context: this.id,
       ...options,
+    });
+  }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
+  async setTouchOverride(maxTouchPoints: number | null): Promise<void> {
+    await this.#session.send('emulation.setTouchOverride', {
+      contexts: [this.id],
+      maxTouchPoints,
     });
   }
 
@@ -568,6 +603,9 @@ export class BrowsingContext extends EventEmitter<{
   async setGeolocationOverride(
     options: SetGeoLocationOverrideOptions,
   ): Promise<void> {
+    if (!('coordinates' in options)) {
+      throw new Error('Missing coordinates');
+    }
     await this.userContext.browser.session.send(
       'emulation.setGeolocationOverride',
       {
@@ -575,6 +613,38 @@ export class BrowsingContext extends EventEmitter<{
         contexts: [this.id],
       },
     );
+  }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
+  async setTimezoneOverride(timezoneId?: string): Promise<void> {
+    if (timezoneId?.startsWith('GMT')) {
+      // CDP requires `GMT` prefix before timezone offset, while BiDi does not. Remove the
+      // `GMT` for interop between CDP and BiDi.
+      timezoneId = timezoneId?.replace('GMT', '');
+    }
+    await this.userContext.browser.session.send(
+      'emulation.setTimezoneOverride',
+      {
+        timezone: timezoneId ?? null,
+        contexts: [this.id],
+      },
+    );
+  }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
+  async setScreenOrientationOverride(
+    screenOrientation: Bidi.Emulation.ScreenOrientation | null,
+  ): Promise<void> {
+    await this.#session.send('emulation.setScreenOrientationOverride', {
+      screenOrientation,
+      contexts: [this.id],
+    });
   }
 
   @throwIfDisposed<BrowsingContext>(context => {
@@ -676,14 +746,100 @@ export class BrowsingContext extends EventEmitter<{
   })
   async locateNodes(
     locator: Bidi.BrowsingContext.Locator,
-    startNodes: [Bidi.Script.SharedReference, ...Bidi.Script.SharedReference[]],
+    startNodes: Bidi.Script.SharedReference[] = [],
   ): Promise<Bidi.Script.NodeRemoteValue[]> {
     // TODO: add other locateNodes options if needed.
     const result = await this.#session.send('browsingContext.locateNodes', {
       context: this.id,
       locator,
-      startNodes: startNodes.length ? startNodes : undefined,
+      startNodes: startNodes.length
+        ? (startNodes as [
+            Bidi.Script.SharedReference,
+            ...Bidi.Script.SharedReference[],
+          ])
+        : undefined,
     });
     return result.result.nodes;
+  }
+
+  async setJavaScriptEnabled(enabled: boolean): Promise<void> {
+    await this.userContext.browser.session.send(
+      'emulation.setScriptingEnabled',
+      {
+        // Enabled `null` means `default`, `false` means `disabled`.
+        enabled: enabled ? null : false,
+        contexts: [this.id],
+      },
+    );
+    this.#emulationState.javaScriptEnabled = enabled;
+  }
+
+  isJavaScriptEnabled(): boolean {
+    return this.#emulationState.javaScriptEnabled;
+  }
+
+  async setUserAgent(userAgent: string | null): Promise<void> {
+    await this.#session.send('emulation.setUserAgentOverride', {
+      userAgent,
+      contexts: [this.id],
+    });
+  }
+
+  async setClientHintsOverride(
+    clientHints: Bidi.BidiUaClientHints.UserAgentClientHints.ClientHintsMetadata | null,
+  ): Promise<void> {
+    if (clientHints === null && !this.#clientHintsAreSet) {
+      // Ignore the call, as the client hints are not supposed to be changed. Required to
+      // avoid breakage with browsers that don't support client hints emulation.
+      return;
+    }
+    this.#clientHintsAreSet = true;
+
+    await this.#session.send('userAgentClientHints.setClientHintsOverride', {
+      clientHints,
+      contexts: [this.id],
+    });
+  }
+
+  async setOfflineMode(enabled: boolean): Promise<void> {
+    await this.#session.send('emulation.setNetworkConditions', {
+      networkConditions: enabled
+        ? {
+            type: 'offline',
+          }
+        : null,
+      contexts: [this.id],
+    });
+  }
+
+  get bluetooth(): BluetoothEmulation {
+    return this.#bluetoothEmulation;
+  }
+
+  async waitForDevicePrompt(
+    timeout: number,
+    signal?: AbortSignal,
+  ): Promise<DeviceRequestPrompt> {
+    return await this.#deviceRequestPromptManager.waitForDevicePrompt(
+      timeout,
+      signal,
+    );
+  }
+
+  async setExtraHTTPHeaders(headers: Record<string, string>): Promise<void> {
+    await this.#session.send('network.setExtraHeaders', {
+      headers: Object.entries(headers).map(([key, value]) => {
+        assert(
+          isString(value),
+          `Expected value of header "${key}" to be String, but "${typeof value}" is found.`,
+        );
+
+        return {
+          name: key.toLowerCase(),
+          value: {type: 'string', value: value},
+        };
+      }),
+      contexts: [this.id],
+    });
   }
 }

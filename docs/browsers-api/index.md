@@ -87,6 +87,78 @@ npx puppeteer browsers install chrome --install-deps
 
 1. Launching the system browsers is only possible for Chrome/Chromium.
 
+## Custom Providers
+
+You can implement custom browser providers to download from alternative sources like corporate mirrors, private repositories, or specialized browser builds.
+
+```typescript
+import {
+  BrowserProvider,
+  DownloadOptions,
+  Browser,
+  BrowserPlatform,
+} from '@puppeteer/browsers';
+
+class SimpleMirrorProvider implements BrowserProvider {
+  constructor(private mirrorUrl: string) {}
+
+  supports(options: DownloadOptions): boolean {
+    return options.browser === Browser.CHROME;
+  }
+
+  getDownloadUrl(options: DownloadOptions): URL | null {
+    const {buildId, platform} = options;
+    const filenameMap = {
+      [BrowserPlatform.LINUX]: 'chrome-linux64.zip',
+      [BrowserPlatform.MAC]: 'chrome-mac-x64.zip',
+      [BrowserPlatform.MAC_ARM]: 'chrome-mac-arm64.zip',
+      [BrowserPlatform.WIN32]: 'chrome-win32.zip',
+      [BrowserPlatform.WIN64]: 'chrome-win64.zip',
+    };
+    const filename = filenameMap[platform];
+    if (!filename) return null;
+    return new URL(`${this.mirrorUrl}/chrome/${buildId}/${filename}`);
+  }
+
+  getExecutablePath(options: DownloadOptions): string {
+    const {platform} = options;
+    if (
+      platform === BrowserPlatform.MAC ||
+      platform === BrowserPlatform.MAC_ARM
+    ) {
+      return 'chrome-mac/Chromium.app/Contents/MacOS/Chromium';
+    } else if (platform === BrowserPlatform.LINUX) {
+      return 'chrome-linux64/chrome';
+    } else if (platform.includes('win')) {
+      return 'chrome-win64/chrome.exe';
+    }
+    throw new Error(`Unsupported platform: ${platform}`);
+  }
+}
+```
+
+Use with the `install` API:
+
+```typescript
+import {install} from '@puppeteer/browsers';
+
+const customProvider = new SimpleMirrorProvider('https://internal.company.com');
+
+await install({
+  browser: Browser.CHROME,
+  buildId: '120.0.6099.109',
+  platform: BrowserPlatform.LINUX,
+  cacheDir: '/tmp/puppeteer-cache',
+  providers: [customProvider],
+});
+```
+
+Multiple providers can be chained - they're tried in order until one succeeds, with a default provider such as Chrome for Testing, as an automatic fallback.
+
+:::caution
+Custom providers are NOT officially supported by Puppeteer. You accept full responsibility for binary compatibility, testing, and maintenance.
+:::
+
 ## API
 
 The programmatic API allows installing and launching browsers from your code. See the `test` folder for examples on how to use the `install`, `canInstall`, `launch`, `computeExecutablePath`, `computeSystemExecutablePath` and other methods.
@@ -107,6 +179,15 @@ Description
 <span id="cli">[CLI](./browsers.cli.md)</span>
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="defaultprovider">[DefaultProvider](./browsers.defaultprovider.md)</span>
+
+</td><td>
+
+Default provider implementation that uses default sources. This is the standard provider used by Puppeteer.
 
 </td></tr>
 <tr><td>
@@ -202,6 +283,15 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="buildarchivefilename">[buildArchiveFilename(browser, platform, buildId, extension)](./browsers.buildarchivefilename.md)</span>
+
+</td><td>
+
+Utility function to build a standard archive filename.
+
+</td></tr>
+<tr><td>
+
 <span id="candownload">[canDownload(options)](./browsers.candownload.md)</span>
 
 </td><td>
@@ -220,7 +310,7 @@ Description
 
 </td><td>
 
-Returns a path to a system-wide Chrome installation given a release channel name by checking known installation locations (using https://pptr.dev/browsers-api/browsers.computesystemexecutablepath/). If Chrome instance is not found at the expected path, an error is thrown.
+Returns a path to a system-wide Chrome installation given a release channel name by checking known installation locations (using [https://pptr.dev/browsers-api/browsers.computesystemexecutablepath](https://pptr.dev/browsers-api/browsers.computesystemexecutablepath)). If Chrome instance is not found at the expected path, an error is thrown.
 
 </td></tr>
 <tr><td>
@@ -277,7 +367,7 @@ Downloads and unpacks the browser archive according to the [InstallOptions](./br
 </td></tr>
 <tr><td>
 
-<span id="install">[install(options)](./browsers.install.md)</span>
+<span id="install">[install(options)](./browsers.install.md#overload-2)</span>
 
 </td><td>
 
@@ -302,6 +392,15 @@ Launches a browser process according to [LaunchOptions](./browsers.launchoptions
 </td></tr>
 <tr><td>
 
+<span id="resolvedefaultuserdatadir">[resolveDefaultUserDataDir(browser, platform, channel)](./browsers.resolvedefaultuserdatadir.md)</span>
+
+</td><td>
+
+Returns the expected default user data dir for the given channel. It does not check if the dir actually exists.
+
+</td></tr>
+<tr><td>
+
 <span id="uninstall">[uninstall(options)](./browsers.uninstall.md)</span>
 
 </td><td>
@@ -322,6 +421,32 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="browserprovider">[BrowserProvider](./browsers.browserprovider.md)</span>
+
+</td><td>
+
+Interface for custom browser provider implementations. Allows users to implement alternative download sources for browsers.
+
+⚠️ **IMPORTANT**: Custom providers are NOT officially supported by Puppeteer.
+
+By implementing this interface, you accept full responsibility for:
+
+- Ensuring downloaded binaries are compatible with Puppeteer's expectations - Testing that browser launch and other features work with your binaries - Maintaining compatibility when Puppeteer or your download source changes - Version consistency across platforms if mixing sources
+
+Puppeteer only tests and guarantees Chrome for Testing binaries.
+
+</td></tr>
+<tr><td>
+
+<span id="downloadoptions">[DownloadOptions](./browsers.downloadoptions.md)</span>
+
+</td><td>
+
+Options passed to a provider.
+
+</td></tr>
+<tr><td>
+
 <span id="getinstalledbrowsersoptions">[GetInstalledBrowsersOptions](./browsers.getinstalledbrowsersoptions.md)</span>
 
 </td><td>
@@ -337,6 +462,13 @@ Description
 <tr><td>
 
 <span id="launchoptions">[LaunchOptions](./browsers.launchoptions.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="metadata">[Metadata](./browsers.metadata.md)</span>
 
 </td><td>
 

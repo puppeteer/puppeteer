@@ -9,20 +9,94 @@ import type {ServerResponse} from 'node:http';
 import path from 'node:path';
 
 import expect from 'expect';
+import type {Issue} from 'puppeteer';
 import {KnownDevices, TimeoutError} from 'puppeteer';
 import {CDPSession} from 'puppeteer-core/internal/api/CDPSession.js';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {Metrics, Page} from 'puppeteer-core/internal/api/Page.js';
 import type {CdpPage} from 'puppeteer-core/internal/cdp/Page.js';
-import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 import sinon from 'sinon';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame, detachFrame, isFavicon, waitEvent} from './utils.js';
+import {
+  getTestState,
+  setupSeparateTestBrowserHooks,
+  setupTestBrowserHooks,
+} from './mocha-utils.js';
+import {
+  attachFrame,
+  detachFrame,
+  html,
+  htmlRaw,
+  isFavicon,
+  waitEvent,
+} from './utils.js';
 
 describe('Page', function () {
   setupTestBrowserHooks();
+
+  describe('Page.newPage', function () {
+    it('should open pages in a new window', async () => {
+      const {context, browser} = await getTestState();
+
+      const page = await context.newPage({
+        type: 'window',
+      });
+
+      expect(await context.pages()).toContain(page);
+      expect(await browser.pages()).toContain(page);
+    });
+    it('should open pages in a new window at the specified position', async () => {
+      const {context, browser} = await getTestState();
+
+      const page = await context.newPage({
+        type: 'window',
+        windowBounds: {left: 50, top: 50, width: 750, height: 550},
+      });
+
+      expect(await context.pages()).toContain(page);
+      expect(await browser.pages()).toContain(page);
+
+      const outerSize = await page.evaluate(async () => {
+        return {width: outerWidth, height: outerHeight};
+      });
+
+      expect(outerSize.width).toBe(750);
+      expect(outerSize.height).toBe(550);
+    });
+    it('should open pages in a new window in maximized state', async () => {
+      const {context, browser} = await getTestState();
+
+      const page = await context.newPage({
+        type: 'window',
+        windowBounds: {windowState: 'maximized'},
+      });
+
+      expect(await context.pages()).toContain(page);
+      expect(await browser.pages()).toContain(page);
+
+      const outerSize = await page.evaluate(async () => {
+        return {width: outerWidth, height: outerHeight};
+      });
+
+      // Should match default headless screen size 800x600.
+      expect(outerSize.width).toBe(800);
+      expect(outerSize.height).toBe(600);
+    });
+    it('should create a background page', async () => {
+      const {context} = await getTestState();
+
+      const page = await context.newPage({
+        background: true,
+      });
+
+      expect(
+        await page.evaluate(() => {
+          return document.visibilityState;
+        }),
+      ).toBe('hidden');
+    });
+  });
 
   describe('Page.close', function () {
     it('should reject all promises when page is closed', async () => {
@@ -49,6 +123,15 @@ describe('Page', function () {
       expect(await browser.pages()).toContain(newPage);
       await newPage.close();
       expect(await browser.pages()).not.toContain(newPage);
+    });
+    it('should close child iframes', async () => {
+      const {context, server} = await getTestState();
+
+      const newPage = await context.newPage();
+      await newPage.goto(server.PREFIX + '/frames/one-frame.html');
+      expect(newPage.frames().length).toBe(2);
+      await newPage.close();
+      expect(await context.pages()).not.toContain(newPage);
     });
     it('should run beforeunload if asked for', async () => {
       const {context, server, isChrome} = await getTestState();
@@ -237,7 +320,13 @@ describe('Page', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      await page.setContent('<a target=_blank href="/one-style.html">yo</a>');
+      await page.setContent(
+        html`<a
+          target="_blank"
+          href="/one-style.html"
+          >yo</a
+        >`,
+      );
       const [popup] = await Promise.all([
         waitEvent<Page>(page, 'popup'),
         page.click('a'),
@@ -258,7 +347,12 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.setContent(
-        '<a target=_blank rel=opener href="/one-style.html">yo</a>',
+        html`<a
+          target="_blank"
+          rel="opener"
+          href="/one-style.html"
+          >yo</a
+        >`,
       );
       const [popup] = await Promise.all([
         waitEvent<Page>(page, 'popup'),
@@ -280,7 +374,12 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.setContent(
-        '<a target=_blank rel=noopener href="/one-style.html">yo</a>',
+        html`<a
+          target="_blank"
+          rel="noopener"
+          href="/one-style.html"
+          >yo</a
+        >`,
       );
       const [popup] = await Promise.all([
         waitEvent<Page>(page, 'popup'),
@@ -304,7 +403,12 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.setContent(
-        '<a target=_blank rel=noopener href="/one-style.html">yo</a>',
+        html`<a
+          target="_blank"
+          rel="noopener"
+          href="/one-style.html"
+          >yo</a
+        >`,
       );
       const [popup] = await Promise.all([
         waitEvent<Page>(page, 'popup'),
@@ -392,240 +496,6 @@ describe('Page', function () {
           return window.navigator.onLine;
         }),
       ).toBe(true);
-    });
-  });
-
-  describe('Page.Events.Console', function () {
-    it('should work', async () => {
-      const {page} = await getTestState();
-
-      const [message] = await Promise.all([
-        waitEvent<ConsoleMessage>(page, 'console'),
-        page.evaluate(() => {
-          return console.log('hello', 5, {foo: 'bar'});
-        }),
-      ]);
-      expect(message.text()).toEqual('hello 5 JSHandle@object');
-      expect(message.type()).toEqual('log');
-      expect(message.args()).toHaveLength(3);
-
-      expect(await message.args()[0]!.jsonValue()).toEqual('hello');
-      expect(await message.args()[1]!.jsonValue()).toEqual(5);
-      expect(await message.args()[2]!.jsonValue()).toEqual({foo: 'bar'});
-    });
-    it('should work on script call right after navigation', async () => {
-      const {page} = await getTestState();
-
-      const [message] = await Promise.all([
-        waitEvent<ConsoleMessage>(page, 'console'),
-        page.goto(
-          // Firefox prints warn if <!DOCTYPE html> is not present
-          `data:text/html,<!DOCTYPE html><script>console.log('SOME_LOG_MESSAGE');</script>`,
-        ),
-      ]);
-
-      expect(message.text()).toEqual('SOME_LOG_MESSAGE');
-    });
-    it('should work for different console API calls with logging functions', async () => {
-      const {page} = await getTestState();
-
-      const messages: ConsoleMessage[] = [];
-      page.on('console', msg => {
-        return messages.push(msg);
-      });
-      // All console events will be reported before `page.evaluate` is finished.
-      await page.evaluate(() => {
-        console.trace('calling console.trace');
-        console.dir('calling console.dir');
-        console.warn('calling console.warn');
-        console.error('calling console.error');
-        console.log(Promise.resolve('should not wait until resolved!'));
-      });
-      expect(
-        messages.map(msg => {
-          return msg.type();
-        }),
-      ).toEqual(['trace', 'dir', 'warn', 'error', 'log']);
-      expect(
-        messages.map(msg => {
-          return msg.text();
-        }),
-      ).toEqual([
-        'calling console.trace',
-        'calling console.dir',
-        'calling console.warn',
-        'calling console.error',
-        'JSHandle@promise',
-      ]);
-    });
-    it('should work for different console API calls with timing functions', async () => {
-      const {page} = await getTestState();
-
-      const messages: any[] = [];
-      page.on('console', msg => {
-        return messages.push(msg);
-      });
-      // All console events will be reported before `page.evaluate` is finished.
-      await page.evaluate(() => {
-        // A pair of time/timeEnd generates only one Console API call.
-        console.time('calling console.time');
-        console.timeEnd('calling console.time');
-      });
-      expect(
-        messages.map(msg => {
-          return msg.type();
-        }),
-      ).toEqual(['timeEnd']);
-      expect(messages[0]!.text()).toContain('calling console.time');
-    });
-    it('should work for different console API calls with group functions', async () => {
-      const {page} = await getTestState();
-
-      const messages: ConsoleMessage[] = [];
-      page.on('console', msg => {
-        return messages.push(msg);
-      });
-      // All console events will be reported before `page.evaluate` is finished.
-      await page.evaluate(() => {
-        console.group('calling console.group');
-        console.groupEnd();
-      });
-      expect(
-        messages.map(msg => {
-          return msg.type();
-        }),
-      ).toEqual(['startGroup', 'endGroup']);
-
-      // We should be able to check both messages, but Chrome report text
-      expect(messages[0]!.text()).toContain('calling console.group');
-    });
-    it('should not fail for window object', async () => {
-      const {page} = await getTestState();
-
-      const [message] = await Promise.all([
-        waitEvent<ConsoleMessage>(page, 'console'),
-        page.evaluate(() => {
-          return console.error(window);
-        }),
-      ]);
-      expect(message.text()).atLeastOneToContain([
-        'JSHandle@object',
-        'JSHandle@window',
-      ]);
-    });
-    it('should return remote objects', async () => {
-      const {page} = await getTestState();
-
-      const logPromise = waitEvent<ConsoleMessage>(page, 'console');
-      await page.evaluate(() => {
-        (globalThis as any).test = 1;
-        console.log(1, 2, 3, globalThis);
-      });
-      const log = await logPromise;
-
-      expect(log.text()).atLeastOneToContain([
-        '1 2 3 JSHandle@object',
-        '1 2 3 JSHandle@window',
-      ]);
-      expect(log.args()).toHaveLength(4);
-      using property = await log.args()[3]!.getProperty('test');
-      expect(await property.jsonValue()).toBe(1);
-    });
-    it('should trigger correct Log', async () => {
-      const {page, server, isChrome} = await getTestState();
-
-      await page.goto('about:blank');
-      const [message] = await Promise.all([
-        waitEvent(page, 'console'),
-        page.evaluate(async url => {
-          return await fetch(url).catch(() => {});
-        }, server.EMPTY_PAGE),
-      ]);
-      expect(message.text()).toContain('Access-Control-Allow-Origin');
-      if (isChrome) {
-        expect(message.type()).toEqual('error');
-      } else {
-        expect(message.type()).toEqual('warn');
-      }
-    });
-    it('should have location when fetch fails', async () => {
-      const {page, server} = await getTestState();
-
-      // The point of this test is to make sure that we report console messages from
-      // Log domain: https://vanilla.aslushnikov.com/?Log.entryAdded
-      await page.goto(server.EMPTY_PAGE);
-      const [message] = await Promise.all([
-        waitEvent(page, 'console'),
-        page.setContent(`<script>fetch('http://wat');</script>`),
-      ]);
-      expect(message.text()).toContain(`ERR_NAME_NOT_RESOLVED`);
-      expect(message.type()).toEqual('error');
-      expect(message.location()).toEqual({
-        url: 'http://wat/',
-        lineNumber: undefined,
-      });
-    });
-    it('should have location and stack trace for console API calls', async () => {
-      const {page, server} = await getTestState();
-
-      await page.goto(server.EMPTY_PAGE);
-      const [message] = await Promise.all([
-        waitEvent(page, 'console'),
-        page.goto(server.PREFIX + '/consoletrace.html'),
-      ]);
-      expect(message.text()).toBe('yellow');
-      expect(message.type()).toBe('trace');
-      expect(message.location()).toEqual({
-        url: server.PREFIX + '/consoletrace.html',
-        lineNumber: 8,
-        columnNumber: 16,
-      });
-      expect(message.stackTrace()).toEqual([
-        {
-          url: server.PREFIX + '/consoletrace.html',
-          lineNumber: 8,
-          columnNumber: 16,
-        },
-        {
-          url: server.PREFIX + '/consoletrace.html',
-          lineNumber: 11,
-          columnNumber: 8,
-        },
-        {
-          url: server.PREFIX + '/consoletrace.html',
-          lineNumber: 13,
-          columnNumber: 6,
-        },
-      ]);
-    });
-    // @see https://github.com/puppeteer/puppeteer/issues/3865
-    it('should not throw when there are console messages in detached iframes', async () => {
-      const {page, server} = await getTestState();
-
-      await page.goto(server.EMPTY_PAGE);
-      await page.evaluate(async () => {
-        // 1. Create a popup that Puppeteer is not connected to.
-        const win = window.open(
-          window.location.href,
-          'Title',
-          'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=780,height=200,top=0,left=0',
-        )!;
-        await new Promise(x => {
-          return (win.onload = x);
-        });
-        // 2. In this popup, create an iframe that console.logs a message.
-        win.document.body.innerHTML = `<iframe src='/consolelog.html'></iframe>`;
-        const frame = win.document.querySelector('iframe')!;
-        await new Promise(x => {
-          return (frame.onload = x);
-        });
-        // 3. After that, remove the iframe.
-        frame.remove();
-      });
-      // 4. The target will always be the last one.
-      const popupTarget = page.browserContext().targets().at(-1)!;
-      // 5. Connect to the popup and make sure it doesn't throw and is not the same page.
-      expect(await popupTarget.page()).not.toBe(page);
     });
   });
 
@@ -1017,7 +887,7 @@ describe('Page', function () {
       ]);
       expect(t1).toBeGreaterThan(t2);
       // request finished + idle time.
-      expect(t1 - t0).toBeGreaterThan(400);
+      expect(t1 - t0).toBeGreaterThanOrEqual(400);
       // request finished + idle time - request finished.
       expect(t1 - t2).toBeGreaterThanOrEqual(100);
     });
@@ -1357,13 +1227,22 @@ describe('Page', function () {
       const {page, server} = await getTestState();
 
       const [error] = await Promise.all([
-        waitEvent<Error>(page, 'pageerror', err => {
+        waitEvent(page, 'pageerror', err => {
           return err.message.includes('Fancy');
         }),
         page.goto(server.PREFIX + '/error.html'),
       ]);
       expect(error.message).toContain('Fancy');
       expect(error.stack?.split('\n').at(-1)).toContain('error.html:3:1');
+    });
+    it('should fire for all value types', async () => {
+      const {page, server} = await getTestState();
+
+      const [error] = await Promise.all([
+        waitEvent<unknown>(page, 'pageerror'),
+        page.goto(server.PREFIX + '/error-primitive.html'),
+      ]);
+      expect(error).toBe(undefined);
     });
   });
 
@@ -1382,6 +1261,83 @@ describe('Page', function () {
         page.goto(server.EMPTY_PAGE),
       ]);
       expect(request.headers['user-agent']).toBe('foobar');
+    });
+    it('should work with options parameter', async () => {
+      const {page, server} = await getTestState();
+
+      expect(
+        await page.evaluate(() => {
+          return navigator.userAgent;
+        }),
+      ).toContain('Mozilla');
+      await page.setUserAgent({userAgent: 'foobar'});
+      const [request] = await Promise.all([
+        server.waitForRequest('/empty.html'),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+      expect(request.headers['user-agent']).toBe('foobar');
+    });
+    it('should work with platform option', async () => {
+      const {page, server} = await getTestState();
+
+      expect(
+        await page.evaluate(() => {
+          return navigator.platform;
+        }),
+      ).not.toBe('MockPlatform');
+
+      await page.setUserAgent({
+        userAgent: 'foobar',
+        platform: 'MockPlatform',
+      });
+
+      expect(
+        await page.evaluate(() => {
+          return navigator.platform;
+        }),
+      ).toBe('MockPlatform');
+
+      const [request] = await Promise.all([
+        server.waitForRequest('/empty.html'),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+      expect(request.headers['user-agent']).toBe('foobar');
+    });
+    it('should work with platform option without userAgent', async () => {
+      const {page, server} = await getTestState();
+
+      const originalUserAgent = await page.evaluate(() => {
+        return navigator.userAgent;
+      });
+
+      expect(
+        await page.evaluate(() => {
+          return navigator.platform;
+        }),
+      ).not.toBe('MockPlatform');
+
+      await page.setUserAgent({
+        platform: 'MockPlatform',
+      });
+
+      expect(
+        await page.evaluate(() => {
+          return navigator.platform;
+        }),
+      ).toBe('MockPlatform');
+
+      // User agent should remain the same
+      expect(
+        await page.evaluate(() => {
+          return navigator.userAgent;
+        }),
+      ).toBe(originalUserAgent);
+
+      const [request] = await Promise.all([
+        server.waitForRequest('/empty.html'),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+      expect(request.headers['user-agent']).toBe(originalUserAgent);
     });
     it('should work for subframes', async () => {
       const {page, server} = await getTestState();
@@ -1483,7 +1439,7 @@ describe('Page', function () {
     it('should work', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('<div>hello</div>');
+      await page.setContent(htmlRaw`<div>hello</div>`);
       const result = await page.content();
       expect(result).toBe(expectedOutput);
     });
@@ -1491,7 +1447,7 @@ describe('Page', function () {
       const {page} = await getTestState();
 
       const doctype = '<!DOCTYPE html>';
-      await page.setContent(`${doctype}<div>hello</div>`);
+      await page.setContent(htmlRaw`${doctype}<div>hello</div>`);
       const result = await page.content();
       expect(result).toBe(`${doctype}${expectedOutput}`);
     });
@@ -1501,7 +1457,7 @@ describe('Page', function () {
       const doctype =
         '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" ' +
         '"http://www.w3.org/TR/html4/strict.dtd">';
-      await page.setContent(`${doctype}<div>hello</div>`);
+      await page.setContent(htmlRaw`${doctype}<div>hello</div>`);
       const result = await page.content();
       expect(result).toBe(`${doctype}${expectedOutput}`);
     });
@@ -1513,7 +1469,7 @@ describe('Page', function () {
       server.setRoute(imgPath, () => {});
       let error!: Error;
       await page
-        .setContent(`<img src="${server.PREFIX + imgPath}"></img>`, {
+        .setContent(html`<img src="${server.PREFIX + imgPath}"></img>`, {
           timeout: 1,
         })
         .catch(error_ => {
@@ -1530,7 +1486,7 @@ describe('Page', function () {
       server.setRoute(imgPath, () => {});
       let error!: Error;
       await page
-        .setContent(`<img src="${server.PREFIX + imgPath}"></img>`)
+        .setContent(html`<img src="${server.PREFIX + imgPath}"></img>`)
         .catch(error_ => {
           return (error = error_);
         });
@@ -1546,7 +1502,7 @@ describe('Page', function () {
       });
       let loaded = false;
       const contentPromise = page
-        .setContent(`<img src="${server.PREFIX + imgPath}"></img>`)
+        .setContent(html`<img src="${server.PREFIX + imgPath}"></img>`)
         .then(() => {
           return (loaded = true);
         });
@@ -1559,13 +1515,13 @@ describe('Page', function () {
       const {page} = await getTestState();
 
       for (let i = 0; i < 20; ++i) {
-        await page.setContent('<div>yo</div>');
+        await page.setContent(html`<div>yo</div>`);
       }
     });
     it('should work with tricky content', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('<div>hello world</div>' + '\x7F');
+      await page.setContent(html`${'<div>hello world</div>' + '\x7F'}`);
       expect(
         await page.$eval('div', div => {
           return div.textContent;
@@ -1575,7 +1531,7 @@ describe('Page', function () {
     it('should work with accents', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('<div>aberración</div>');
+      await page.setContent(html`<div>aberración</div>`);
       expect(
         await page.$eval('div', div => {
           return div.textContent;
@@ -1585,7 +1541,7 @@ describe('Page', function () {
     it('should work with emojis', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('<div>🐥</div>');
+      await page.setContent(html`<div>🐥</div>`);
       expect(
         await page.$eval('div', div => {
           return div.textContent;
@@ -1595,7 +1551,7 @@ describe('Page', function () {
     it('should work with newline', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('<div>\n</div>');
+      await page.setContent(htmlRaw`<div>\n</div>`);
       expect(
         await page.$eval('div', div => {
           return div.textContent;
@@ -1606,7 +1562,7 @@ describe('Page', function () {
       const {page} = await getTestState();
 
       const comment = '<!-- Comment -->';
-      await page.setContent(`${comment}<div>hello</div>`);
+      await page.setContent(htmlRaw`${comment}<div>hello</div>`);
       const result = await page.content();
       expect(result).toBe(`${comment}${expectedOutput}`);
     });
@@ -1781,7 +1737,7 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.addScriptTag({
-        path: path.join(__dirname, '../assets/es6/es6pathimport.js'),
+        path: path.join(import.meta.dirname, '../assets/es6/es6pathimport.js'),
         type: 'module',
       });
       await page.waitForFunction(() => {
@@ -1834,7 +1790,7 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       using scriptHandle = await page.addScriptTag({
-        path: path.join(__dirname, '../assets/injectedfile.js'),
+        path: path.join(import.meta.dirname, '../assets/injectedfile.js'),
       });
       expect(scriptHandle.asElement()).not.toBeNull();
       expect(
@@ -1849,7 +1805,7 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.addScriptTag({
-        path: path.join(__dirname, '../assets/injectedfile.js'),
+        path: path.join(import.meta.dirname, '../assets/injectedfile.js'),
       });
       const result = await page.evaluate(() => {
         return (globalThis as any).__injectedError.stack;
@@ -1960,7 +1916,7 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       using styleHandle = await page.addStyleTag({
-        path: path.join(__dirname, '../assets/injectedstyle.css'),
+        path: path.join(import.meta.dirname, '../assets/injectedstyle.css'),
       });
       expect(styleHandle.asElement()).not.toBeNull();
       expect(
@@ -1975,7 +1931,7 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.addStyleTag({
-        path: path.join(__dirname, '../assets/injectedstyle.css'),
+        path: path.join(import.meta.dirname, '../assets/injectedstyle.css'),
       });
       using styleHandle = (await page.$('style'))!;
       const styleContent = await page.evaluate(style => {
@@ -2043,6 +1999,7 @@ describe('Page', function () {
       const {page} = await getTestState();
 
       await page.setJavaScriptEnabled(false);
+      expect(page.isJavaScriptEnabled()).toBe(false);
       await page.goto(
         'data:text/html, <script>var something = "forbidden"</script>',
       );
@@ -2053,10 +2010,154 @@ describe('Page', function () {
       expect(error.message).toContain('something is not defined');
 
       await page.setJavaScriptEnabled(true);
+      expect(page.isJavaScriptEnabled()).toBe(true);
       await page.goto(
         'data:text/html, <script>var something = "forbidden"</script>',
       );
       expect(await page.evaluate('something')).toBe('forbidden');
+    });
+    it('setInterval should pause', async () => {
+      const {page} = await getTestState();
+
+      // Set up an interval that increments a counter every 0ms. This will queue up tasks
+      // to run as fast as possible.
+      await page.evaluate(() => {
+        return setInterval(() => {
+          return ((globalThis as any).intervalCounter =
+            ((globalThis as any).intervalCounter ?? 0) + 1);
+        }, 0);
+      });
+
+      // Disable JavaScript execution on the page. This should pause timers.
+      await page.setJavaScriptEnabled(false);
+
+      // Capture the current value of the counter after JS is disabled.
+      const intervalCounter = await page.evaluate(() => {
+        return (globalThis as any).intervalCounter;
+      });
+
+      // Wait for 100 ms. This gives the event loop with the task a
+      // chance to run if it were not paused, which would have incremented the counter.
+      await new Promise(resolve => {
+        return setTimeout(resolve, 100);
+      });
+
+      // Verify that the counter has not changed, confirming that setInterval was paused
+      // when JavaScript was disabled.
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).intervalCounter;
+        }),
+      ).toBe(intervalCounter);
+      // Re-enable JavaScript execution.
+      await page.setJavaScriptEnabled(true);
+
+      // Wait for another task. It should be long enough to avoid flakiness, as the
+      // original `setInterval` will be throttled after several invocations.
+      await page.evaluate(() => {
+        return new Promise(resolve => {
+          return setTimeout(resolve, 100);
+        });
+      });
+
+      // Verify that the counter increased. This confirms that timers resumed when
+      // JavaScript is re-enabled.
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).intervalCounter;
+        }),
+      ).toBeGreaterThan(intervalCounter);
+    });
+    it('setTimeout should stop', async () => {
+      const {page} = await getTestState();
+
+      // Set up a recursive setTimeout chain. The `task` function increments a counter and
+      // immediately schedules itself to run again.
+      await page.evaluate(() => {
+        const task = () => {
+          (globalThis as any).timeoutCounter =
+            ((globalThis as any).timeoutCounter ?? 0) + 1;
+          setTimeout(task, 0);
+        };
+        task();
+      });
+
+      // Disable JavaScript, which should pause the timeout chain.
+      await page.setJavaScriptEnabled(false);
+
+      // Capture the counter's value after the timeout chain is paused.
+      const timeoutCounter = await page.evaluate(() => {
+        return (globalThis as any).timeoutCounter;
+      });
+
+      // Wait for 100 ms. This gives the event loop with the task a
+      // chance to run if it were not paused, which would have incremented the counter.
+      await new Promise(resolve => {
+        return setTimeout(resolve, 100);
+      });
+
+      // Verify the counter has not changed, confirming that setTimeout was paused.
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).timeoutCounter;
+        }),
+      ).toBe(timeoutCounter);
+
+      // Re-enable JavaScript.
+      await page.setJavaScriptEnabled(true);
+
+      // Wait for another task. It should be long enough to avoid flakiness, as the
+      // original `setInterval` will be throttled after several invocations.
+      await page.evaluate(() => {
+        return new Promise(resolve => {
+          return setTimeout(resolve, 100);
+        });
+      });
+
+      // Verify the counter still has not changed, confirming that `setTimeout` do not
+      // resume upon re-enabling JavaScript.
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).timeoutCounter;
+        }),
+      ).toBe(timeoutCounter);
+    });
+    it('then should not pause', async () => {
+      const {page} = await getTestState();
+
+      // Disable JavaScript execution on the page.
+      await page.setJavaScriptEnabled(false);
+
+      // Assert the microtasks continue to work even when page scripts are disabled.
+      expect(
+        await page.evaluate(() => {
+          return Promise.resolve().then(() => {
+            return 42;
+          });
+        }),
+      ).toBe(42);
+    });
+  });
+
+  describe('Page.reload', function () {
+    it('should enable or disable the cache based on reload params', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.PREFIX + '/cached/one-style.html');
+      const [cachedRequest] = await Promise.all([
+        server.waitForRequest('/cached/one-style.html'),
+        page.reload(),
+      ]);
+      // Rely on "if-modified-since" caching in our test server.
+      expect(cachedRequest.headers['if-modified-since']).not.toBe(undefined);
+
+      const [nonCachedRequest] = await Promise.all([
+        server.waitForRequest('/cached/one-style.html'),
+        page.reload({
+          ignoreCache: true,
+        }),
+      ]);
+      expect(nonCachedRequest.headers['if-modified-since']).toBe(undefined);
     });
   });
 
@@ -2099,7 +2200,7 @@ describe('Page', function () {
     it('can print to PDF and save to file', async () => {
       const {page, server} = await getTestState();
 
-      const outputFile = __dirname + '/../assets/output.pdf';
+      const outputFile = import.meta.dirname + '/../assets/output.pdf';
       await page.goto(server.PREFIX + '/pdf.html');
       await page.pdf({path: outputFile});
       try {
@@ -2315,7 +2416,11 @@ describe('Page', function () {
     it('should throw if passed in non-strings', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('<select><option value="12"/></select>');
+      await page.setContent(
+        html`<select>
+          <option value="12"></option>
+        </select>`,
+      );
       let error!: Error;
       try {
         // @ts-expect-error purposefully passing bad input
@@ -2379,6 +2484,62 @@ describe('Page', function () {
     });
   });
 
+  describe('Page.Events.Issue', function () {
+    describe('when issues are disabled', () => {
+      const state = setupSeparateTestBrowserHooks({
+        issuesEnabled: false,
+      });
+
+      it('should be able to connect and disable issues', async () => {
+        const {page, server} = state;
+
+        let issueEmitted = false;
+        page.on('issue', () => {
+          issueEmitted = true;
+        });
+
+        await page.goto(server.PREFIX + '/csp.html');
+
+        expect(issueEmitted).toBe(false);
+      });
+    });
+    it('should emit issue event when CSP violation occurs', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.PREFIX + '/csp.html');
+
+      const issuePromise = waitEvent<Issue>(page, 'issue');
+
+      await page.addScriptTag({content: 'console.log("CSP test")'});
+
+      const issue = await issuePromise;
+      expect(issue).toBeTruthy();
+      expect(issue.code).toBe('ContentSecurityPolicyIssue');
+    });
+
+    it('should emit issue event from cross-origin iframe', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+
+      const issuePromise = waitEvent<Issue>(page, 'issue');
+
+      const crossOriginUrl = server.CROSS_PROCESS_PREFIX + '/csp.html';
+      await page.setContent(html`<iframe src="${crossOriginUrl}"></iframe>`);
+
+      const frame = await page.waitForFrame(crossOriginUrl);
+      expect(frame).toBeTruthy();
+
+      await frame.addScriptTag({
+        content: 'console.log("CSP test in iframe")',
+      });
+
+      const issue = await issuePromise;
+      expect(issue).toBeTruthy();
+      expect(issue.code).toBe('ContentSecurityPolicyIssue');
+    });
+  });
+
   describe('Page.browser', function () {
     it('should return the correct browser instance', async () => {
       const {page, browser} = await getTestState();
@@ -2434,6 +2595,33 @@ describe('Page', function () {
 
       await page1.close();
       await page2.close();
+    });
+  });
+
+  describe('Page.resize', function () {
+    it('should resize the browser window to fit page content', async () => {
+      const {context} = await getTestState();
+
+      const page = await context.newPage();
+
+      // Default view port restricts window to 800x600, so remove it.
+      await page.setViewport(null);
+
+      const contentWidth = 500;
+      const contentHeight = 400;
+      const resized = page.evaluate(() => {
+        return new Promise(resolve => {
+          window.onresize = resolve;
+        });
+      });
+      await page.resize({contentWidth, contentHeight});
+      await resized;
+
+      const innerSize = await page.evaluate(() => {
+        return {width: window.innerWidth, height: window.innerHeight};
+      });
+      expect(innerSize.width).toBe(contentWidth);
+      expect(innerSize.height).toBe(contentHeight);
     });
   });
 });

@@ -220,6 +220,8 @@ export async function createProfile(
 
 /**
  * @public
+ *
+ * Get's the first resolved system path
  */
 export function resolveSystemExecutablePath(
   browser: Browser,
@@ -235,7 +237,55 @@ export function resolveSystemExecutablePath(
         `System browser detection is not supported for ${browser} yet.`,
       );
     case Browser.CHROME:
-      return chrome.resolveSystemExecutablePath(platform, channel);
+      return chrome.resolveSystemExecutablePaths(platform, channel)[0];
+  }
+}
+
+/**
+ * Returns the expected default user data dir for the given channel. It does not
+ * check if the dir actually exists.
+ *
+ * @public
+ */
+export function resolveDefaultUserDataDir(
+  browser: Browser,
+  platform: BrowserPlatform,
+  channel: ChromeReleaseChannel,
+): string {
+  switch (browser) {
+    case Browser.CHROMEDRIVER:
+    case Browser.CHROMEHEADLESSSHELL:
+    case Browser.FIREFOX:
+    case Browser.CHROMIUM:
+      throw new Error(
+        `Default user dir detection is not supported for ${browser} yet.`,
+      );
+    case Browser.CHROME:
+      return chrome.resolveDefaultUserDataDir(platform, channel);
+  }
+}
+
+/**
+ * @internal
+ *
+ * Returns multiple paths where the executable may be located at on the current system
+ * ordered by likelihood (based on heuristics).
+ */
+export function resolveSystemExecutablePaths(
+  browser: Browser,
+  platform: BrowserPlatform,
+  channel: ChromeReleaseChannel,
+): [string, ...string[]] {
+  switch (browser) {
+    case Browser.CHROMEDRIVER:
+    case Browser.CHROMEHEADLESSSHELL:
+    case Browser.FIREFOX:
+    case Browser.CHROMIUM:
+      throw new Error(
+        `System browser detection is not supported for ${browser} yet.`,
+      );
+    case Browser.CHROME:
+      return chrome.resolveSystemExecutablePaths(platform, channel);
   }
 }
 

@@ -42,6 +42,9 @@ export class CdpTarget extends Target {
   _initializedDeferred = Deferred.create<InitializationStatus>();
   _isClosedDeferred = Deferred.create<void>();
   _targetId: string;
+  _asPagePromise?: Promise<Page>;
+  /** @internal */
+  pagePromise?: Promise<Page>;
 
   /**
    * To initialize the target for use, call initialize.
@@ -70,13 +73,23 @@ export class CdpTarget extends Target {
   }
 
   override async asPage(): Promise<Page> {
-    const session = this._session();
-    if (!session) {
-      return await this.createCDPSession().then(client => {
+    if (this.pagePromise) {
+      const page = await this.pagePromise;
+      if (page) {
+        return page;
+      }
+    }
+    if (!this._asPagePromise) {
+      const session = this._session();
+      this._asPagePromise = (
+        session
+          ? Promise.resolve(session)
+          : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
+      ).then(client => {
         return CdpPage._create(client, this, null);
       });
     }
-    return await CdpPage._create(session, this, null);
+    return (await this._asPagePromise) ?? null;
   }
 
   _subtype(): string | undefined {
@@ -206,7 +219,6 @@ export class CdpTarget extends Target {
  */
 export class PageTarget extends CdpTarget {
   #defaultViewport?: Viewport;
-  protected pagePromise?: Promise<Page>;
 
   constructor(
     targetInfo: Protocol.Target.TargetInfo,
@@ -284,7 +296,6 @@ export class WorkerTarget extends CdpTarget {
   override async worker(): Promise<CdpWebWorker | null> {
     if (!this.#workerPromise) {
       const session = this._session();
-      // TODO(einbinder): Make workers send their console logs.
       this.#workerPromise = (
         session
           ? Promise.resolve(session)
@@ -295,7 +306,6 @@ export class WorkerTarget extends CdpTarget {
           this._getTargetInfo().url,
           this._targetId,
           this.type(),
-          () => {} /* consoleAPICalled */,
           () => {} /* exceptionThrown */,
           undefined /* networkManager */,
         );

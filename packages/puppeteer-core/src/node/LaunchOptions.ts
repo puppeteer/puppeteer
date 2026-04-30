@@ -4,17 +4,33 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {ConnectOptions} from '../common/ConnectOptions.js';
+import {ChromeReleaseChannel as BrowsersChromeReleaseChannel} from '@puppeteer/browsers';
+
+import type {
+  ChromeReleaseChannel,
+  ConnectOptions,
+} from '../common/ConnectOptions.js';
 import type {SupportedBrowser} from '../common/SupportedBrowser.js';
 
+export type {ChromeReleaseChannel};
+
 /**
- * @public
+ * @internal
  */
-export type ChromeReleaseChannel =
-  | 'chrome'
-  | 'chrome-beta'
-  | 'chrome-canary'
-  | 'chrome-dev';
+export function convertPuppeteerChannelToBrowsersChannel(
+  channel: ChromeReleaseChannel,
+): BrowsersChromeReleaseChannel {
+  switch (channel) {
+    case 'chrome':
+      return BrowsersChromeReleaseChannel.STABLE;
+    case 'chrome-dev':
+      return BrowsersChromeReleaseChannel.DEV;
+    case 'chrome-beta':
+      return BrowsersChromeReleaseChannel.BETA;
+    case 'chrome-canary':
+      return BrowsersChromeReleaseChannel.CANARY;
+  }
+}
 
 /**
  * Generic launch options that can be passed when launching any browser.
@@ -43,6 +59,12 @@ export interface LaunchOptions extends ConnectOptions {
    * @defaultValue `false`
    */
   ignoreDefaultArgs?: boolean | string[];
+  /**
+   * If `true`, avoids passing default arguments to the browser that would
+   * prevent extensions from being enabled. Passing a list of strings will
+   * load the provided paths as unpacked extensions.
+   */
+  enableExtensions?: boolean | string[];
   /**
    * Close the browser process on `Ctrl+C`.
    * @defaultValue `true`
@@ -133,4 +155,8 @@ export interface LaunchOptions extends ConnectOptions {
    * Additional command line arguments to pass to the browser instance.
    */
   args?: string[];
+  /**
+   * If provided, the browser will be closed when the signal is aborted.
+   */
+  signal?: AbortSignal;
 }

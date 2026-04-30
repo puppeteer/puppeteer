@@ -17,7 +17,11 @@ import {
   handleError,
 } from '../api/HTTPRequest.js';
 import {debugError} from '../common/util.js';
-import {stringToBase64} from '../util/encoding.js';
+import {
+  mergeUint8Arrays,
+  stringToBase64,
+  stringToTypedArray,
+} from '../util/encoding.js';
 
 import type {CdpHTTPResponse} from './HTTPResponse.js';
 
@@ -92,7 +96,24 @@ export class CdpHTTPRequest extends HTTPRequest {
     this.#url = data.request.url + (data.request.urlFragment ?? '');
     this.#resourceType = (data.type || 'other').toLowerCase() as ResourceType;
     this.#method = data.request.method;
-    this.#postData = data.request.postData;
+    if (
+      data.request.postDataEntries &&
+      data.request.postDataEntries.length > 0
+    ) {
+      this.#postData = new TextDecoder().decode(
+        mergeUint8Arrays(
+          data.request.postDataEntries
+            .map(entry => {
+              return entry.bytes ? stringToTypedArray(entry.bytes, true) : null;
+            })
+            .filter((entry): entry is Uint8Array => {
+              return entry !== null;
+            }),
+        ),
+      );
+    } else {
+      this.#postData = data.request.postData;
+    }
     this.#hasPostData = data.request.hasPostData ?? false;
     this.#frame = frame;
     this._redirectChain = redirectChain;
@@ -100,7 +121,11 @@ export class CdpHTTPRequest extends HTTPRequest {
 
     this.interception.enabled = allowInterception;
 
-    for (const [key, value] of Object.entries(data.request.headers)) {
+    this.updateHeaders(data.request.headers);
+  }
+
+  updateHeaders(headers: Protocol.Network.Headers): void {
+    for (const [key, value] of Object.entries(headers)) {
       this.#headers[key.toLowerCase()] = value;
     }
   }
@@ -138,7 +163,8 @@ export class CdpHTTPRequest extends HTTPRequest {
   }
 
   override headers(): Record<string, string> {
-    return this.#headers;
+    // Callers should not be allowed to mutate internal structure.
+    return structuredClone(this.#headers);
   }
 
   override response(): CdpHTTPResponse | null {
@@ -168,6 +194,10 @@ export class CdpHTTPRequest extends HTTPRequest {
     return {
       errorText: this._failureText,
     };
+  }
+
+  protected canBeIntercepted(): boolean {
+    return !this.url().startsWith('data:') && !this._fromMemoryCache;
   }
 
   /**

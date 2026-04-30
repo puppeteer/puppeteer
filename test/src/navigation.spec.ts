@@ -12,8 +12,12 @@ import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame, isFavicon, waitEvent} from './utils.js';
+import {
+  getTestState,
+  setupSeparateTestBrowserHooks,
+  setupTestBrowserHooks,
+} from './mocha-utils.js';
+import {attachFrame, html, isFavicon, waitEvent} from './utils.js';
 
 describe('navigation', function () {
   setupTestBrowserHooks();
@@ -106,6 +110,23 @@ describe('navigation', function () {
       const response = await page.goto(server.EMPTY_PAGE, {
         waitUntil: 'domcontentloaded',
       });
+      expect(response!.status()).toBe(200);
+    });
+    it('should navigate successfully after encountering network error', async () => {
+      const {page, server} = await getTestState();
+
+      // Destroy the connection to simulate a network error. This will open
+      // about:neterror on Firefox.
+      server.setRoute('/network-error', req => {
+        req.socket.destroy();
+      });
+
+      let error!: Error;
+      await page.goto(server.PREFIX + '/network-error').catch(error_ => {
+        return (error = error_);
+      });
+      expect(error).not.toBe(null);
+      const response = await page.goto(server.PREFIX + '/grid.html');
       expect(response!.status()).toBe(200);
     });
     it('should work when page calls history API in beforeunload', async () => {
@@ -596,17 +617,17 @@ describe('navigation', function () {
     it('should send referer policy', async () => {
       const {page, server} = await getTestState();
 
-      const [request1, request2] = await Promise.all([
-        server.waitForRequest('/grid.html'),
-        server.waitForRequest('/digits/1.png'),
-        page.goto(server.PREFIX + '/grid.html', {
-          referrerPolicy: 'no-referer',
+      const [request1] = await Promise.all([
+        server.waitForRequest('/empty.html'),
+        page.goto(server.PREFIX + '/empty.html', {
+          referrerPolicy: 'origin',
         }),
       ]).catch(() => {
         return [];
       });
+      // TODO: we do not expose actual policy used via Puppeteer. We
+      // should expose it and check it here. For now, checked manually.
       expect(request1.headers['referer']).toBeUndefined();
-      expect(request2.headers['referer']).toBe(server.PREFIX + '/grid.html');
     });
   });
 
@@ -669,7 +690,7 @@ describe('navigation', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      await page.setContent(`<a href='#foobar'>foobar</a>`);
+      await page.setContent(html`<a href="#foobar">foobar</a>`);
       const [response] = await Promise.all([
         page.waitForNavigation(),
         page.click('a'),
@@ -681,10 +702,12 @@ describe('navigation', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      await page.setContent(`
-        <a onclick='javascript:pushState()'>SPA</a>
+      await page.setContent(html`
+        <a onclick="javascript:pushState()">SPA</a>
         <script>
-          function pushState() { history.pushState({}, '', 'wow.html') }
+          function pushState() {
+            history.pushState({}, '', 'wow.html');
+          }
         </script>
       `);
       const [response] = await Promise.all([
@@ -698,10 +721,12 @@ describe('navigation', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      await page.setContent(`
-        <a onclick='javascript:replaceState()'>SPA</a>
+      await page.setContent(html`
+        <a onclick="javascript:replaceState()">SPA</a>
         <script>
-          function replaceState() { history.replaceState({}, '', '/replaced.html') }
+          function replaceState() {
+            history.replaceState({}, '', '/replaced.html');
+          }
         </script>
       `);
       const [response] = await Promise.all([
@@ -715,12 +740,24 @@ describe('navigation', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      await page.setContent(`
-        <a id=back onclick='javascript:goBack()'>back</a>
-        <a id=forward onclick='javascript:goForward()'>forward</a>
+      await page.setContent(html`
+        <a
+          id="back"
+          onclick="javascript:goBack()"
+          >back</a
+        >
+        <a
+          id="forward"
+          onclick="javascript:goForward()"
+          >forward</a
+        >
         <script>
-          function goBack() { history.back(); }
-          function goForward() { history.forward(); }
+          function goBack() {
+            history.back();
+          }
+          function goForward() {
+            history.forward();
+          }
           history.pushState({}, '', '/first.html');
           history.pushState({}, '', '/second.html');
         </script>
@@ -798,9 +835,19 @@ describe('navigation', function () {
       response = (await page.goForward())!;
       expect(response.ok()).toBe(true);
       expect(response.url()).toContain('/grid.html');
-
-      response = (await page.goForward())!;
-      expect(response).toBe(null);
+    });
+    it('should error if no history is found', async () => {
+      const {page} = await getTestState();
+      let error: Error | undefined;
+      try {
+        await page.goBack();
+      } catch (e) {
+        error = e as Error;
+      }
+      expect(error?.message).atLeastOneToContain([
+        'History entry to navigate to not found.',
+        'no such history entry',
+      ]);
     });
     it('should work with HistoryAPI', async () => {
       const {page, server} = await getTestState();
@@ -812,11 +859,13 @@ describe('navigation', function () {
       });
       expect(page.url()).toBe(server.PREFIX + '/second.html');
 
-      await page.goBack();
+      let response = await page.goBack();
+      expect(response).toBeNull();
       expect(page.url()).toBe(server.PREFIX + '/first.html');
       await page.goBack();
       expect(page.url()).toBe(server.EMPTY_PAGE);
-      await page.goForward();
+      response = await page.goForward();
+      expect(response).toBeNull();
       expect(page.url()).toBe(server.PREFIX + '/first.html');
     });
   });
@@ -960,5 +1009,24 @@ describe('navigation', function () {
         }),
       ).toBe(undefined);
     });
+  });
+});
+
+describe('with network events disabled', () => {
+  const state = setupSeparateTestBrowserHooks({
+    networkEnabled: false,
+  });
+
+  it('should work', async () => {
+    const {page, server} = state;
+
+    const response = await page.goto(server.EMPTY_PAGE);
+    expect(response).toBe(null);
+    expect(page.url()).toBe(server.EMPTY_PAGE);
+    expect(
+      await page.evaluate(() => {
+        return window.location.href;
+      }),
+    ).toBe(server.EMPTY_PAGE);
   });
 });

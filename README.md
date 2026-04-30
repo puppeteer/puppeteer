@@ -19,13 +19,20 @@ npm i puppeteer # Downloads compatible Chrome during installation.
 npm i puppeteer-core # Alternatively, install as a library, without downloading Chrome.
 ```
 
+## MCP
+
+Install [`chrome-devtools-mcp`](https://github.com/ChromeDevTools/chrome-devtools-mcp),
+a Puppeteer-based MCP server for browser automation and debugging.
+
+Puppeteer also supports the experimental [WebMCP](https://pptr.dev/guides/webmcp) API.
+
 ## Example
 
 ```ts
 import puppeteer from 'puppeteer';
 // Or import puppeteer from 'puppeteer-core';
 
-// Launch the browser and open a new blank page
+// Launch the browser and open a new blank page.
 const browser = await puppeteer.launch();
 const page = await browser.newPage();
 
@@ -35,15 +42,18 @@ await page.goto('https://developer.chrome.com/');
 // Set screen size.
 await page.setViewport({width: 1080, height: 1024});
 
-// Type into search box.
-await page.locator('.devsite-search-field').fill('automate beyond recorder');
+// Open the search menu using the keyboard.
+await page.keyboard.press('/');
+
+// Type into search box using accessible input name.
+await page.locator('::-p-aria(Search)').fill('automate beyond recorder');
 
 // Wait and click on first result.
 await page.locator('.devsite-result-item-link').click();
 
 // Locate the full title with a unique string.
 const textSelector = await page
-  .locator('text/Customize and automate')
+  .locator('::-p-text(Customize and automate)')
   .waitHandle();
 const fullTitle = await textSelector?.evaluate(el => el.textContent);
 

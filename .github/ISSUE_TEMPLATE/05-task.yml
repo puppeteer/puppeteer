@@ -1,0 +1,17 @@
+name: Task
+description: Work tracking for mainainers only!
+title: '[Task]:'
+type: 'Task'
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### This issue type should be used only by mainainers!
+        Task are to track small non user facing issue or improvements. 
+        The issue will be closed if it does not follow those rules.
+  - type: textarea
+    attributes:
+      label: 'Task to do:'
+    id: task
+    validations:
+      required: true

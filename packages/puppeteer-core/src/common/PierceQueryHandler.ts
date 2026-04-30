@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type PuppeteerUtil from '../injected/injected.js';
+import type {PuppeteerInjectedUtil} from '../injected/injected.js';
 
 import {QueryHandler} from './QueryHandler.js';
 
@@ -15,14 +15,14 @@ export class PierceQueryHandler extends QueryHandler {
   static override querySelector = (
     element: Node,
     selector: string,
-    {pierceQuerySelector}: PuppeteerUtil,
+    {pierceQuerySelector}: PuppeteerInjectedUtil,
   ): Node | null => {
     return pierceQuerySelector(element, selector);
   };
   static override querySelectorAll = (
     element: Node,
     selector: string,
-    {pierceQuerySelectorAll}: PuppeteerUtil,
+    {pierceQuerySelectorAll}: PuppeteerInjectedUtil,
   ): Iterable<Node> => {
     return pierceQuerySelectorAll(element, selector);
   };

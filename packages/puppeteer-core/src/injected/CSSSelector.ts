@@ -4,6 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * @internal
+ */
 export const cssQuerySelector = (
   root: Node,
   selector: string,
@@ -11,6 +14,9 @@ export const cssQuerySelector = (
   // @ts-expect-error assume element root
   return root.querySelector(selector);
 };
+/**
+ * @internal
+ */
 export const cssQuerySelectorAll = function (
   root: Node,
   selector: string,

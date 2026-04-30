@@ -66,6 +66,11 @@ interface JavascriptEnabledState {
   active: boolean;
 }
 
+interface FocusState {
+  enabled: boolean;
+  active: boolean;
+}
+
 /**
  * @internal
  */
@@ -192,6 +197,14 @@ export class EmulationManager implements ClientProvider {
     },
     this,
     this.#setJavaScriptEnabled,
+  );
+  #focusState = new EmulatedState<FocusState>(
+    {
+      enabled: true,
+      active: false,
+    },
+    this,
+    this.#emulateFocus,
   );
 
   #secondaryClients = new Set<CDPSession>();
@@ -576,6 +589,23 @@ export class EmulationManager implements ClientProvider {
     await this.#javascriptEnabledState.setState({
       active: true,
       javaScriptEnabled: enabled,
+    });
+  }
+
+  @invokeAtMostOnceForArguments
+  async #emulateFocus(client: CDPSession, state: FocusState): Promise<void> {
+    if (!state.active) {
+      return;
+    }
+    await client.send('Emulation.setFocusEmulationEnabled', {
+      enabled: state.enabled,
+    });
+  }
+
+  async emulateFocus(enabled: boolean): Promise<void> {
+    await this.#focusState.setState({
+      active: true,
+      enabled,
     });
   }
 }

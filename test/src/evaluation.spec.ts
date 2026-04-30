@@ -7,7 +7,7 @@
 import expect from 'expect';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame} from './utils.js';
+import {attachFrame, html} from './utils.js';
 
 describe('Evaluation specs', function () {
   setupTestBrowserHooks();
@@ -83,6 +83,14 @@ describe('Evaluation specs', function () {
       );
       expect(result).toBe(true);
     });
+    it('should transfer RegEx', async () => {
+      const {page} = await getTestState();
+
+      const result = await page.evaluate(a => {
+        return `Hello World!`.match(a)![1];
+      }, /Hello (.*)/);
+      expect(result).toBe(`World!`);
+    });
     it('should modify global environment', async () => {
       const {page} = await getTestState();
 
@@ -121,6 +129,17 @@ describe('Evaluation specs', function () {
       expect(await page.evaluate(a.sum, 1, 2)).toBe(3);
       expect(await page.evaluate(a.mult, 2, 4)).toBe(8);
     });
+    it('should work with function shorthands and nested arrow functions', async () => {
+      const {page} = await getTestState();
+      const a = {
+        sum(a: number, b: number) {
+          const _arrow = () => {};
+          _arrow();
+          return a + b;
+        },
+      };
+      expect(await page.evaluate(a.sum, 1, 2)).toBe(3);
+    });
     it('should work with unicode chars', async () => {
       const {page} = await getTestState();
 
@@ -146,7 +165,10 @@ describe('Evaluation specs', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error.message).toContain('Protocol error');
+      expect(error.message).atLeastOneToContain([
+        'Execution context was destroyed', // Chrome
+        'no such frame', // Firefox
+      ]);
     });
     it('should await promise', async () => {
       const {page} = await getTestState();
@@ -230,6 +252,19 @@ describe('Evaluation specs', function () {
         });
       expect(error).toEqual(100500);
     });
+    it('should support thrown platform objects as error messages', async () => {
+      const {page} = await getTestState();
+
+      let error!: Error;
+      await page
+        .evaluate(() => {
+          throw new DOMException('some DOMException message');
+        })
+        .catch(error_ => {
+          return (error = error_);
+        });
+      expect(error.message).toContain('some DOMException message');
+    });
     it('should return complex objects', async () => {
       const {page} = await getTestState();
 
@@ -279,6 +314,14 @@ describe('Evaluation specs', function () {
         return -Infinity;
       });
       expect(Object.is(result, -Infinity)).toBe(true);
+    });
+    it('should return RegEx', async () => {
+      const {page} = await getTestState();
+
+      const result = await page.evaluate(() => {
+        return /(.*)/;
+      });
+      expect(result instanceof RegExp).toBe(true);
     });
     it('should accept "null" as one of multiple parameters', async () => {
       const {page} = await getTestState();
@@ -369,7 +412,7 @@ describe('Evaluation specs', function () {
     it('should accept element handle as an argument', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('<section>42</section>');
+      await page.setContent(html`<section>42</section>`);
       using element = (await page.$('section'))!;
       const text = await page.evaluate(e => {
         return e.textContent;
@@ -379,7 +422,7 @@ describe('Evaluation specs', function () {
     it('should throw if underlying element was disposed', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('<section>39</section>');
+      await page.setContent(html`<section>39</section>`);
       using element = (await page.$('section'))!;
       expect(element).toBeTruthy();
       // We want to dispose early.
@@ -463,7 +506,9 @@ describe('Evaluation specs', function () {
     it('should return properly serialize objects with unknown type fields', async () => {
       const {page} = await getTestState();
       await page.setContent(
-        "<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='>",
+        html`<img
+          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
+        />`,
       );
 
       const result = await page.evaluate(async () => {

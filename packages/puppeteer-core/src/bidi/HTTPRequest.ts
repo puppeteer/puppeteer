@@ -3,12 +3,13 @@
  * Copyright 2020 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type {Protocol} from 'devtools-protocol';
+import type * as Bidi from 'webdriver-bidi-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
 import type {
   ContinueRequestOverrides,
+  InterceptResolutionState,
   ResponseForRequest,
 } from '../api/HTTPRequest.js';
 import {
@@ -16,6 +17,7 @@ import {
   STATUS_TEXTS,
   type ResourceType,
   handleError,
+  InterceptResolutionAction,
 } from '../api/HTTPRequest.js';
 import {PageEvent} from '../api/Page.js';
 import {UnsupportedOperation} from '../common/Errors.js';
@@ -34,9 +36,15 @@ export class BidiHTTPRequest extends HTTPRequest {
   static from(
     bidiRequest: Request,
     frame: BidiFrame,
+    isNetworkInterceptionEnabled: boolean,
     redirect?: BidiHTTPRequest,
   ): BidiHTTPRequest {
-    const request = new BidiHTTPRequest(bidiRequest, frame, redirect);
+    const request = new BidiHTTPRequest(
+      bidiRequest,
+      frame,
+      isNetworkInterceptionEnabled,
+      redirect,
+    );
     request.#initialize();
     return request;
   }
@@ -50,12 +58,13 @@ export class BidiHTTPRequest extends HTTPRequest {
   private constructor(
     request: Request,
     frame: BidiFrame,
+    isNetworkInterceptionEnabled: boolean,
     redirect?: BidiHTTPRequest,
   ) {
     super();
     requests.set(request, this);
 
-    this.interception.enabled = request.isBlocked;
+    this.interception.enabled = isNetworkInterceptionEnabled;
 
     this.#request = request;
     this.#frame = frame;
@@ -69,7 +78,12 @@ export class BidiHTTPRequest extends HTTPRequest {
 
   #initialize() {
     this.#request.on('redirect', request => {
-      const httpRequest = BidiHTTPRequest.from(request, this.#frame, this);
+      const httpRequest = BidiHTTPRequest.from(
+        request,
+        this.#frame,
+        this.interception.enabled,
+        this,
+      );
       this.#redirectChain.push(this);
 
       request.once('success', () => {
@@ -85,7 +99,20 @@ export class BidiHTTPRequest extends HTTPRequest {
       });
       void httpRequest.finalizeInterceptions();
     });
+    this.#request.once('response', data => {
+      // Create new response with the initial data. Note: the data can be updated later
+      // on, when the `success` event is received.
+      this.#response = BidiHTTPResponse.from(
+        data,
+        this,
+        this.#frame.page().browser().cdpSupported,
+      );
+    });
     this.#request.once('success', data => {
+      // The `network.responseCompleted` event (mapped to `success` here)
+      // contains the most up-to-date and complete response data, including
+      // headers that might be missing from `network.responseStarted`
+      // (e.g., `Set-Cookie` for navigation requests in Chrome).
       this.#response = BidiHTTPResponse.from(
         data,
         this,
@@ -95,17 +122,17 @@ export class BidiHTTPRequest extends HTTPRequest {
     this.#request.on('authenticate', this.#handleAuthentication);
 
     this.#frame.page().trustedEmitter.emit(PageEvent.Request, this);
+  }
 
-    if (this.#hasInternalHeaderOverwrite) {
-      this.interception.handlers.push(async () => {
-        await this.continue(
-          {
-            headers: this.headers(),
-          },
-          0,
-        );
-      });
+  protected canBeIntercepted(): boolean {
+    return this.#request.isBlocked;
+  }
+
+  override interceptResolutionState(): InterceptResolutionState {
+    if (!this.#request.isBlocked) {
+      return {action: InterceptResolutionAction.Disabled};
     }
+    return super.interceptResolutionState();
   }
 
   override url(): string {
@@ -133,40 +160,21 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override hasPostData(): boolean {
-    if (!this.#frame.page().browser().cdpSupported) {
-      throw new UnsupportedOperation();
-    }
     return this.#request.hasPostData;
   }
 
   override async fetchPostData(): Promise<string | undefined> {
-    throw new UnsupportedOperation();
-  }
-
-  get #hasInternalHeaderOverwrite(): boolean {
-    return Boolean(
-      Object.keys(this.#extraHTTPHeaders).length ||
-        Object.keys(this.#userAgentHeaders).length,
-    );
-  }
-
-  get #extraHTTPHeaders(): Record<string, string> {
-    return this.#frame?.page()._extraHTTPHeaders ?? {};
-  }
-
-  get #userAgentHeaders(): Record<string, string> {
-    return this.#frame?.page()._userAgentHeaders ?? {};
+    return await this.#request.fetchPostData();
   }
 
   override headers(): Record<string, string> {
+    // Callers should not be allowed to mutate internal structure.
     const headers: Record<string, string> = {};
     for (const header of this.#request.headers) {
       headers[header.name.toLowerCase()] = header.value.value;
     }
     return {
       ...headers,
-      ...this.#extraHTTPHeaders,
-      ...this.#userAgentHeaders,
     };
   }
 
@@ -198,19 +206,6 @@ export class BidiHTTPRequest extends HTTPRequest {
 
   override frame(): BidiFrame {
     return this.#frame;
-  }
-
-  override async continue(
-    overrides?: ContinueRequestOverrides,
-    priority?: number | undefined,
-  ): Promise<void> {
-    return await super.continue(
-      {
-        headers: this.#hasInternalHeaderOverwrite ? this.headers() : undefined,
-        ...overrides,
-      },
-      priority,
-    );
   }
 
   override async _continue(
@@ -330,6 +325,10 @@ export class BidiHTTPRequest extends HTTPRequest {
 
   timing(): Bidi.Network.FetchTimingInfo {
     return this.#request.timing();
+  }
+
+  getResponseContent(): Promise<Uint8Array> {
+    return this.#request.getResponseContent();
   }
 }
 

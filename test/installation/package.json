@@ -6,7 +6,8 @@
   "scripts": {
     "build": "wireit",
     "clean": "../../tools/clean.mjs",
-    "test": "wireit"
+    "test": "wireit",
+    "test-ci": "mocha"
   },
   "wireit": {
     "build": {
@@ -51,7 +52,10 @@
     "assets"
   ],
   "devDependencies": {
-    "glob": "10.4.5",
-    "mocha": "11.1.0"
+    "glob": "13.0.6",
+    "mocha": "11.7.5"
+  },
+  "dependencies": {
+    "diff": "^9.0.0"
   }
 }

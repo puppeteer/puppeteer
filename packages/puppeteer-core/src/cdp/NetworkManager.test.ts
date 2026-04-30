@@ -11,6 +11,7 @@ import expect from 'expect';
 import type {CDPSessionEvents} from '../api/CDPSession.js';
 import type {HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
+import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
 
@@ -663,7 +664,7 @@ describe('NetworkManager', () => {
         connection: 'keep-alive',
         'content-length': '85862',
       },
-      resourceIPAddressSpace: 'Private',
+      resourceIPAddressSpace: 'Public',
       statusCode: 200,
       headersText:
         'HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n',
@@ -817,7 +818,7 @@ describe('NetworkManager', () => {
         Date: 'Wed, 10 Aug 2022 09:04:39 GMT',
         'Keep-Alive': 'timeout=5',
       },
-      resourceIPAddressSpace: 'Private',
+      resourceIPAddressSpace: 'Public',
       statusCode: 200,
       headersText:
         'HTTP/1.1 200 OK\\r\\nCache-Control: no-cache, no-store\\r\\nContent-Type: text/html; charset=utf-8\\r\\nDate: Wed, 10 Aug 2022 09:04:39 GMT\\r\\nConnection: keep-alive\\r\\nKeep-Alive: timeout=5\\r\\nContent-Length: 0\\r\\n\\r\\n',
@@ -909,7 +910,7 @@ describe('NetworkManager', () => {
       clientSecurityState: {
         initiatorIsSecureContext: true,
         initiatorIPAddressSpace: 'Local',
-        privateNetworkRequestPolicy: 'Allow',
+        localNetworkAccessRequestPolicy: 'Allow',
       },
     });
 
@@ -1548,5 +1549,84 @@ describe('NetworkManager', () => {
         return r.status();
       }),
     ).toEqual([200, 302, 200]);
+  });
+
+  describe('error handling', () => {
+    function createMockSession<E extends ErrorConstructor>(
+      ErrorCls: E,
+      message = 'error',
+    ) {
+      class MockCDPSession extends EventEmitter<CDPSessionEvents> {
+        async send(): Promise<any> {
+          throw new ErrorCls(message);
+        }
+        connection() {
+          return undefined;
+        }
+        readonly detached = false;
+        async detach() {}
+        id() {
+          return '1';
+        }
+        parentSession() {
+          return undefined;
+        }
+      }
+      return new MockCDPSession();
+    }
+
+    it('should not throw on target close error', async () => {
+      const mockCDPSession = createMockSession(
+        TargetCloseError as unknown as ErrorConstructor,
+      );
+      const manager = new NetworkManager({
+        frame(): CdpFrame | null {
+          return null;
+        },
+      });
+      await manager.addClient(mockCDPSession);
+      await manager.setCacheEnabled(true);
+      await manager.setExtraHTTPHeaders({});
+      await manager.setOfflineMode(true);
+      await manager.setUserAgent('test');
+    });
+
+    it('should not throw on unsupported errors', async () => {
+      const mockCDPSession = createMockSession(Error, 'Not supported');
+      const manager = new NetworkManager({
+        frame(): CdpFrame | null {
+          return null;
+        },
+      });
+      await manager.addClient(mockCDPSession);
+      await manager.setCacheEnabled(true);
+      await manager.setExtraHTTPHeaders({});
+      await manager.setOfflineMode(true);
+      await manager.setUserAgent('test');
+    });
+
+    it('should throw on non-TargetClose errors', async () => {
+      const mockCDPSession = createMockSession(Error);
+      const manager = new NetworkManager({
+        frame(): CdpFrame | null {
+          return null;
+        },
+      });
+      expect(async () => {
+        await manager.addClient(mockCDPSession);
+      }).rejects.toThrow();
+      expect(async () => {
+        await manager.setCacheEnabled(true);
+      }).rejects.toThrow();
+      expect(async () => {
+        await manager.setExtraHTTPHeaders({});
+      }).rejects.toThrow();
+      expect(async () => {
+        await manager.setOfflineMode(true);
+      }).rejects.toThrow();
+      expect(async () => {
+        await manager.setUserAgent('test');
+      }).rejects.toThrow();
+    });
   });
 });

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import * as Bidi from 'webdriver-bidi-protocol';
 
 import type {Point} from '../api/ElementHandle.js';
 import {
@@ -732,7 +732,6 @@ export class BidiTouchscreen extends Touchscreen {
       width: 0.5 * 2, // 2 times default touch radius.
       height: 0.5 * 2, // 2 times default touch radius.
       pressure: 0.5,
-      altitudeAngle: Math.PI / 2,
     };
     const touch = new BidiTouchHandle(this.#page, this, id, x, y, properties);
     await touch.start(options);

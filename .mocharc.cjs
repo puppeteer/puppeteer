@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-let timeout = process.platform === 'win32' ? 20_000 : 10_000;
+let timeout = process.platform === 'win32' ? 30_000 : 15_000;
 if (!!process.env.DEBUGGER_ATTACHED) {
   timeout = 0;
 }

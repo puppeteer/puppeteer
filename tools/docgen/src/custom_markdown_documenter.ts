@@ -13,22 +13,22 @@
 
 import * as path from 'node:path';
 
-import type {DocumenterConfig} from '@microsoft/api-documenter/lib/documenters/DocumenterConfig.js';
-import {CustomMarkdownEmitter as ApiFormatterMarkdownEmitter} from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter.js';
-import {CustomDocNodes} from '@microsoft/api-documenter/lib/nodes/CustomDocNodeKind.js';
-import {DocEmphasisSpan} from '@microsoft/api-documenter/lib/nodes/DocEmphasisSpan.js';
-import {DocHeading} from '@microsoft/api-documenter/lib/nodes/DocHeading.js';
-import {DocNoteBox} from '@microsoft/api-documenter/lib/nodes/DocNoteBox.js';
-import {DocTable} from '@microsoft/api-documenter/lib/nodes/DocTable.js';
-import {DocTableCell} from '@microsoft/api-documenter/lib/nodes/DocTableCell.js';
-import {DocTableRow} from '@microsoft/api-documenter/lib/nodes/DocTableRow.js';
-import {MarkdownDocumenterAccessor} from '@microsoft/api-documenter/lib/plugin/MarkdownDocumenterAccessor.js';
+import type {DocumenterConfig} from '@microsoft/api-documenter/lib/documenters/DocumenterConfig';
+import {CustomMarkdownEmitter as ApiFormatterMarkdownEmitter} from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
+import {CustomDocNodes} from '@microsoft/api-documenter/lib/nodes/CustomDocNodeKind';
+import {DocEmphasisSpan} from '@microsoft/api-documenter/lib/nodes/DocEmphasisSpan';
+import {DocHeading} from '@microsoft/api-documenter/lib/nodes/DocHeading';
+import {DocNoteBox} from '@microsoft/api-documenter/lib/nodes/DocNoteBox';
+import {DocTable} from '@microsoft/api-documenter/lib/nodes/DocTable';
+import {DocTableCell} from '@microsoft/api-documenter/lib/nodes/DocTableCell';
+import {DocTableRow} from '@microsoft/api-documenter/lib/nodes/DocTableRow';
+import {MarkdownDocumenterAccessor} from '@microsoft/api-documenter/lib/plugin/MarkdownDocumenterAccessor';
 import {
   type IMarkdownDocumenterFeatureOnBeforeWritePageArgs,
   MarkdownDocumenterFeatureContext,
-} from '@microsoft/api-documenter/lib/plugin/MarkdownDocumenterFeature.js';
-import {PluginLoader} from '@microsoft/api-documenter/lib/plugin/PluginLoader.js';
-import {Utilities} from '@microsoft/api-documenter/lib/utils/Utilities.js';
+} from '@microsoft/api-documenter/lib/plugin/MarkdownDocumenterFeature';
+import {PluginLoader} from '@microsoft/api-documenter/lib/plugin/PluginLoader';
+import {Utilities} from '@microsoft/api-documenter/lib/utils/Utilities';
 import {
   ApiClass,
   ApiDeclaredItem,
@@ -248,10 +248,7 @@ export class MarkdownDocumenter {
       ApiReturnTypeMixin.isBaseClassOf(apiItem) &&
       apiItem.getMergedSiblings().length > 1
     ) {
-      const name = apiItem.displayName;
-      const overloadIndex = apiItem.overloadIndex - 1;
-      const overloadId =
-        overloadIndex === 0 ? name : `${name}-${overloadIndex}`;
+      const overloadId = this._getOverloadElementId(apiItem.overloadIndex);
 
       // TODO: See if we don't need to create all of the on our own.
       const overLoadHeader = `${apiItem.displayName}(): ${apiItem.returnTypeExcerpt.text}`;
@@ -1606,6 +1603,13 @@ export class MarkdownDocumenter {
       }
     }
 
+    if (
+      ApiParameterListMixin.isBaseClassOf(apiItem) &&
+      apiItem.overloadIndex > 1
+    ) {
+      suffix = `#${this._getOverloadElementId(apiItem.overloadIndex)}`;
+    }
+
     return `${baseName}.md${suffix}`;
   }
 
@@ -1616,5 +1620,9 @@ export class MarkdownDocumenter {
   private _deleteOldOutputFiles(): void {
     console.log('Deleting old output from ' + this._outputFolder);
     FileSystem.ensureEmptyFolder(this._outputFolder);
+  }
+
+  private _getOverloadElementId(overloadIndex: number): string {
+    return `overload-${overloadIndex}`;
   }
 }

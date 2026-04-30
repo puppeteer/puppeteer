@@ -6,8 +6,49 @@
 
 import type {Protocol} from 'devtools-protocol';
 
+import type {JSHandle} from '../api/JSHandle.js';
+import {
+  ConsoleMessage,
+  type ConsoleMessageType,
+} from '../common/ConsoleMessage.js';
 import {PuppeteerURL, evaluationString} from '../common/util.js';
 import {assert} from '../util/assert.js';
+
+/**
+ * @internal
+ */
+export function createConsoleMessage(
+  event: Protocol.Runtime.ConsoleAPICalledEvent,
+  values: JSHandle[],
+  targetId?: string,
+): ConsoleMessage {
+  const textTokens = [];
+  // eslint-disable-next-line max-len -- The comment is long.
+  // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
+  for (const arg of values) {
+    textTokens.push(valueFromJSHandle(arg));
+  }
+  const stackTraceLocations = [];
+  if (event.stackTrace) {
+    for (const callFrame of event.stackTrace.callFrames) {
+      stackTraceLocations.push({
+        url: callFrame.url,
+        lineNumber: callFrame.lineNumber,
+        columnNumber: callFrame.columnNumber,
+      });
+    }
+  }
+
+  return new ConsoleMessage(
+    convertConsoleMessageLevel(event.type),
+    textTokens.join(' '),
+    values,
+    stackTraceLocations,
+    undefined,
+    event.stackTrace,
+    targetId,
+  );
+}
 
 /**
  * @internal
@@ -25,7 +66,7 @@ export function createEvaluationError(
       details.exception.subtype !== 'error') &&
     !details.exception.objectId
   ) {
-    return valueFromRemoteObject(details.exception);
+    return valueFromPrimitiveRemoteObject(details.exception);
   } else {
     const detail = getErrorDetails(details);
     name = detail.name;
@@ -94,7 +135,7 @@ const getErrorDetails = (details: Protocol.Runtime.ExceptionDetails) => {
  */
 export function createClientError(
   details: Protocol.Runtime.ExceptionDetails,
-): Error {
+): Error | unknown {
   let name: string;
   let message: string;
   if (!details.exception) {
@@ -105,7 +146,7 @@ export function createClientError(
       details.exception.subtype !== 'error') &&
     !details.exception.objectId
   ) {
-    return valueFromRemoteObject(details.exception);
+    return valueFromPrimitiveRemoteObject(details.exception);
   } else {
     const detail = getErrorDetails(details);
     name = detail.name;
@@ -139,9 +180,41 @@ export function createClientError(
 /**
  * @internal
  */
-export function valueFromRemoteObject(
+export function valueFromJSHandle(handle: JSHandle): unknown {
+  const remoteObject = handle.remoteObject();
+  if (remoteObject.objectId) {
+    return valueFromRemoteObjectReference(handle);
+  } else {
+    return valueFromPrimitiveRemoteObject(remoteObject);
+  }
+}
+
+/**
+ * @internal
+ */
+export function valueFromRemoteObjectReference(handle: JSHandle): string {
+  const remoteObject = handle.remoteObject();
+  assert(
+    remoteObject.objectId,
+    'Cannot extract value when no objectId is given',
+  );
+  const description = remoteObject.description ?? '';
+  if (remoteObject.subtype === 'error' && description) {
+    const newlineIdx = description.indexOf('\n');
+    if (newlineIdx === -1) {
+      return description;
+    }
+    return description.slice(0, newlineIdx);
+  }
+  return `[${remoteObject.subtype || remoteObject.type} ${remoteObject.className}]`;
+}
+
+/**
+ * @internal
+ */
+export function valueFromPrimitiveRemoteObject(
   remoteObject: Protocol.Runtime.RemoteObject,
-): any {
+): unknown {
   assert(!remoteObject.objectId, 'Cannot extract value when objectId is given');
   if (remoteObject.unserializableValue) {
     if (remoteObject.type === 'bigint') {
@@ -235,4 +308,16 @@ export const CDP_BINDING_PREFIX = 'puppeteer_';
  */
 export function pageBindingInitString(type: string, name: string): string {
   return evaluationString(addPageBinding, type, name, CDP_BINDING_PREFIX);
+}
+
+/**
+ * @internal
+ */
+export function convertConsoleMessageLevel(method: string): ConsoleMessageType {
+  switch (method) {
+    case 'warning':
+      return 'warn';
+    default:
+      return method as ConsoleMessageType;
+  }
 }

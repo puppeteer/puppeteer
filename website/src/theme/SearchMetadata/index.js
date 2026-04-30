@@ -34,8 +34,18 @@ export default function SearchMetadata({locale, tag}) {
   }
   return (
     <Head>
-      {language && <meta name="docsearch:language" content={language} />}
-      {counter && <meta name="docsearch:counter" content={counter} />}
+      {language && (
+        <meta
+          name="docsearch:language"
+          content={language}
+        />
+      )}
+      {counter && (
+        <meta
+          name="docsearch:counter"
+          content={counter}
+        />
+      )}
     </Head>
   );
 }

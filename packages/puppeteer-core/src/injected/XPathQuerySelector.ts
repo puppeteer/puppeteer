@@ -34,6 +34,6 @@ export const xpathQuerySelectorAll = function* (
   for (let i = 0; i < items.length; i++) {
     item = items[i];
     yield item as Node;
-    delete items[i];
+    items[i] = null;
   }
 };

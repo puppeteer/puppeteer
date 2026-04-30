@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type * as Bidi from 'webdriver-bidi-protocol';
 
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
@@ -43,6 +43,8 @@ export abstract class Realm extends EventEmitter<{
   worker: DedicatedWorkerRealm;
   /** Emitted when a shared worker is created in the realm. */
   sharedworker: SharedWorkerRealm;
+  /** Emitted whenever a log entry is added to the realm. */
+  log: Bidi.Log.Entry;
 }> {
   #reason?: string;
   protected readonly disposables = new DisposableStack();
@@ -207,6 +209,13 @@ export class WindowRealm extends Realm {
 
       this.emit('worker', realm);
     });
+
+    sessionEmitter.on('log.entryAdded', entry => {
+      if (entry.source.realm !== this.id) {
+        return;
+      }
+      this.emit('log', entry);
+    });
   }
 
   override get session(): Session {
@@ -278,6 +287,13 @@ export class DedicatedWorkerRealm extends Realm {
 
       this.emit('worker', realm);
     });
+
+    sessionEmitter.on('log.entryAdded', entry => {
+      if (entry.source.realm !== this.id) {
+        return;
+      }
+      this.emit('log', entry);
+    });
   }
 
   override get session(): Session {
@@ -329,6 +345,13 @@ export class SharedWorkerRealm extends Realm {
       });
 
       this.emit('worker', realm);
+    });
+
+    sessionEmitter.on('log.entryAdded', entry => {
+      if (entry.source.realm !== this.id) {
+        return;
+      }
+      this.emit('log', entry);
     });
   }
 

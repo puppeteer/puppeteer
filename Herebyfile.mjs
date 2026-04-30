@@ -6,7 +6,7 @@
 
 /* eslint-disable import/order */
 
-import {readFile, writeFile} from 'fs/promises';
+import {readFile, writeFile} from 'node:fs/promises';
 
 import versionData from './versions.json' with {type: 'json'};
 

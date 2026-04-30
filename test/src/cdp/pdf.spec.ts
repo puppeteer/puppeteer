@@ -16,9 +16,9 @@ describe('Page.pdf', () => {
   it('can print to PDF with accessible', async () => {
     const {page, server} = await getTestState();
 
-    const outputFile = __dirname + '/../../assets/output.pdf';
+    const outputFile = import.meta.dirname + '/../../assets/output.pdf';
     const outputFileAccessible =
-      __dirname + '/../../assets/output-accessible.pdf';
+      import.meta.dirname + '/../../assets/output-accessible.pdf';
     await page.goto(server.PREFIX + '/pdf.html');
     await page.pdf({path: outputFile, tagged: false});
     await page.pdf({path: outputFileAccessible, tagged: true});
@@ -36,8 +36,9 @@ describe('Page.pdf', () => {
   it('can print to PDF with outline', async () => {
     const {page, server} = await getTestState();
 
-    const outputFile = __dirname + '/../../assets/output.pdf';
-    const outputFileOutlined = __dirname + '/../../assets/output-outlined.pdf';
+    const outputFile = import.meta.dirname + '/../../assets/output.pdf';
+    const outputFileOutlined =
+      import.meta.dirname + '/../../assets/output-outlined.pdf';
     await page.goto(server.PREFIX + '/pdf.html');
     await page.pdf({path: outputFile, tagged: true});
     await page.pdf({path: outputFileOutlined, tagged: true, outline: true});

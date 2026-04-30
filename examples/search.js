@@ -19,6 +19,9 @@ const puppeteer = require('puppeteer');
 
   await page.goto('https://developers.google.com/web/');
 
+  // Open the search menu using the keyboard.
+  await page.keyboard.press('/');
+
   // Type into search box.
   await page.type('.devsite-search-field', 'Headless Chrome');
 

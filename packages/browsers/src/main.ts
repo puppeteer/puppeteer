@@ -39,7 +39,19 @@ export {
   ChromeReleaseChannel,
   createProfile,
   getVersionComparator,
+  resolveDefaultUserDataDir,
 } from './browser-data/browser-data.js';
 export {CLI} from './CLI.js';
-export {Cache, InstalledBrowser} from './Cache.js';
+export {
+  Cache,
+  InstalledBrowser,
+  type Metadata,
+  type ComputeExecutablePathOptions,
+} from './Cache.js';
 export {BrowserTag} from './browser-data/types.js';
+export {DefaultProvider} from './DefaultProvider.js';
+export {
+  type BrowserProvider,
+  buildArchiveFilename,
+  type DownloadOptions,
+} from './provider.js';

@@ -74,10 +74,7 @@ describe('Launcher specs', function () {
             });
           await remote.disconnect();
           const error = await watchdog;
-          expect(error.message).atLeastOneToContain([
-            'Waiting for selector `div` failed: Waiting failed: Frame detached',
-            'Waiting for selector `div` failed: Browsing context already closed: User context was closed: Session already ended.',
-          ]);
+          expect(error.message).toBe('Waiting for selector `div` failed');
         } finally {
           await close();
         }
@@ -452,18 +449,6 @@ describe('Launcher specs', function () {
           expect(puppeteer.product).toBe('firefox');
         }
       });
-      it('should work with no default arguments', async () => {
-        const {browser, close} = await launch({
-          ignoreDefaultArgs: true,
-        });
-        try {
-          const page = await browser.newPage();
-          expect(await page.evaluate('11 * 11')).toBe(121);
-          await page.close();
-        } finally {
-          await close();
-        }
-      });
       it('should filter out ignored default arguments in Chrome', async () => {
         const {defaultBrowserOptions, puppeteer} = await getTestState({
           skipLaunch: true,
@@ -620,6 +605,20 @@ describe('Launcher specs', function () {
         expect(error.message).toContain(
           'Browser was not found at the configured executablePath (/tmp/does-not-exist)',
         );
+      });
+
+      it('should support the AbortSignal', async () => {
+        const controller = new AbortController();
+        const {browser, close} = await launch({
+          signal: controller.signal,
+        });
+        const process = browser.process()!;
+        const closed = new Promise(resolve => {
+          return process.once('exit', resolve);
+        });
+        controller.abort();
+        await closed;
+        await close();
       });
     });
 

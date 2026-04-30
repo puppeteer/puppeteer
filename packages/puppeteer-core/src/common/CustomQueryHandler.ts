@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type PuppeteerUtil from '../injected/injected.js';
+import type {PuppeteerInjectedUtil} from '../injected/injected.js';
 import {assert} from '../util/assert.js';
 import {interpolateFunction, stringifyFunction} from '../util/Function.js';
 
@@ -104,7 +104,7 @@ export class CustomQueryHandlerRegistry {
       );
     };
     const registerScript = interpolateFunction(
-      (PuppeteerUtil: PuppeteerUtil) => {
+      (PuppeteerUtil: PuppeteerInjectedUtil) => {
         PuppeteerUtil.customQuerySelectors.register(PLACEHOLDER('name'), {
           queryAll: PLACEHOLDER('queryAll'),
           queryOne: PLACEHOLDER('queryOne'),

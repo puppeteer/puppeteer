@@ -44,13 +44,11 @@ import type {ChromeReleaseChannel, LaunchOptions} from './LaunchOptions.js';
  * ```ts
  * import puppeteer from 'puppeteer';
  *
- * (async () => {
- *   const browser = await puppeteer.launch();
- *   const page = await browser.newPage();
- *   await page.goto('https://www.google.com');
- *   // other actions...
- *   await browser.close();
- * })();
+ * const browser = await puppeteer.launch();
+ * const page = await browser.newPage();
+ * await page.goto('https://www.google.com');
+ * // other actions...
+ * await browser.close();
  * ```
  *
  * Once you have created a `page` you have access to a large API to interact
@@ -315,13 +313,15 @@ export class PuppeteerNode extends Puppeteer {
     ];
 
     // Resolve current buildIds.
-    for (const item of puppeteerBrowsers) {
-      const tag =
-        this.configuration?.[item.product]?.version ??
-        PUPPETEER_REVISIONS[item.product];
+    await Promise.all(
+      puppeteerBrowsers.map(async item => {
+        const tag =
+          this.configuration?.[item.product]?.version ??
+          PUPPETEER_REVISIONS[item.product];
 
-      item.currentBuildId = await resolveBuildId(item.browser, platform, tag);
-    }
+        item.currentBuildId = await resolveBuildId(item.browser, platform, tag);
+      }),
+    );
 
     const currentBrowserBuilds = new Set(
       puppeteerBrowsers.map(browser => {

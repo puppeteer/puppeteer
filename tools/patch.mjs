@@ -3,7 +3,7 @@
  * Copyright 2024 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import fs from 'fs';
+import fs from 'node:fs';
 
 const genJs = process.argv[2];
 const genTypes = process.argv[3];
@@ -42,7 +42,7 @@ file = fs.readFileSync(genTypes, 'utf-8');
 file = file.replaceAll('#private;', '');
 
 file = file.replaceAll(
-  `import { Session } from 'chromium-bidi/lib/cjs/protocol/protocol.js';`,
+  `import { Session } from 'webdriver-bidi-protocol';`,
   'type Session = any;',
 );
 file = file.replaceAll(

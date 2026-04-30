@@ -164,6 +164,16 @@ export enum FirefoxChannel {
   NIGHTLY = 'nightly',
 }
 
+let baseVersionUrl = 'https://product-details.mozilla.org/1.0';
+
+export function changeBaseVersionUrlForTesting(url: string): void {
+  baseVersionUrl = url;
+}
+
+export function resetBaseVersionUrlForTesting(): void {
+  baseVersionUrl = 'https://product-details.mozilla.org/1.0';
+}
+
 export async function resolveBuildId(
   channel: FirefoxChannel = FirefoxChannel.NIGHTLY,
 ): Promise<string> {
@@ -175,7 +185,7 @@ export async function resolveBuildId(
     [FirefoxChannel.NIGHTLY]: 'FIREFOX_NIGHTLY',
   };
   const versions = (await getJSON(
-    new URL('https://product-details.mozilla.org/1.0/firefox_versions.json'),
+    new URL(`${baseVersionUrl}/firefox_versions.json`),
   )) as Record<string, string>;
   const version = versions[channelToVersionKey[channel]];
   if (!version) {
@@ -218,7 +228,7 @@ function defaultProfilePreferences(
     // Prevent various error message on the console
     // jest-puppeteer asserts that no error message is emitted by the console
     'browser.contentblocking.features.standard':
-      '-tp,tpPrivate,cookieBehavior0,-cm,-fp',
+      '-tp,tpPrivate,cookieBehavior0,-cryptoTP,-fp',
 
     // Enable the dump function: which sends messages to the system
     // console
@@ -314,9 +324,6 @@ function defaultProfilePreferences(
     // Disable installing any distribution extensions or add-ons.
     'extensions.installDistroAddons': false,
 
-    // Disabled screenshots extension
-    'extensions.screenshots.disabled': true,
-
     // Turn off extension updates so they do not bother tests
     'extensions.update.enabled': false,
 
@@ -375,6 +382,13 @@ function defaultProfilePreferences(
     // Can be removed once Firefox 89 is no longer supported
     // https://bugzilla.mozilla.org/show_bug.cgi?id=1710839
     'remote.enabled': true,
+
+    // Until Bug 1999693 is resolved, this preference needs to be set to allow
+    // Webdriver BiDi to automatically dismiss file pickers.
+    'remote.bidi.dismiss_file_pickers.enabled': true,
+
+    // Disabled screenshots component
+    'screenshots.browser.component.enabled': false,
 
     // Don't do network connections for mitm priming
     'security.certerrors.mitm.priming.enabled': false,

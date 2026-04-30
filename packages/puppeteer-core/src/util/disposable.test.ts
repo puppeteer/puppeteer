@@ -75,28 +75,28 @@ describe('DisposableStack', () => {
   });
 
   it('should collect errors from disposals', async () => {
-    const dispose1 = sinon.stub().throws(new Error('dispose1'));
-    const dispose2 = sinon.stub().throws(new Error('dispose2'));
-    const dispose3 = sinon.stub().throws(new Error('dispose3'));
+    const error1 = new Error('dispose1');
+    const error2 = new Error('dispose2');
+    const error3 = new Error('dispose3');
+    const dispose1 = sinon.stub().throws(error1);
+    const dispose2 = sinon.stub().throws(error2);
+    const dispose3 = sinon.stub().throws(error3);
     stack.adopt({}, dispose1);
     stack.adopt({}, dispose2);
     stack.adopt({}, dispose3);
-    let error;
+    let error!: SuppressedError;
     try {
       stack.dispose();
     } catch (e) {
-      error = e;
+      error = e as SuppressedError;
     }
 
     expect(error instanceof SuppressedError).toBeTruthy();
-    expect((error as SuppressedError).name).toEqual('SuppressedError');
-    expect((error as SuppressedError).message).toEqual(
-      'An error was suppressed during disposal',
-    );
-    expect((error as SuppressedError).error).toEqual(new Error('dispose3'));
-    expect((error as SuppressedError).suppressed).toEqual(
-      new SuppressedError('dispose2', new Error('dispose1')),
-    );
+    expect(error.name).toEqual('SuppressedError');
+    expect(error.message).toEqual('An error was suppressed during disposal');
+    expect(error.error).toEqual(error1);
+    expect(error.suppressed.error).toEqual(error2);
+    expect(error.suppressed.suppressed).toEqual(error3);
   });
 });
 
@@ -112,15 +112,15 @@ describe('AsyncDisposableStack', () => {
     const dispose2 = sinon.stub().resolves();
     stack.adopt({}, dispose1);
     stack.adopt({}, dispose2);
-    await stack.dispose();
+    await stack.disposeAsync();
     expect(dispose2.calledBefore(dispose1)).toBeTruthy();
   });
 
   it('should not dispose resources if already disposed', async () => {
     const dispose = sinon.stub().resolves();
     stack.adopt({}, dispose);
-    await stack.dispose();
-    await stack.dispose();
+    await stack.disposeAsync();
+    await stack.disposeAsync();
     expect(dispose.calledOnce).toBeTruthy();
   });
 
@@ -129,14 +129,14 @@ describe('AsyncDisposableStack', () => {
       [asyncDisposeSymbol]: sinon.stub().resolves(),
     };
     stack.use(resource);
-    await stack.dispose();
+    await stack.disposeAsync();
     expect(resource[asyncDisposeSymbol].calledOnce).toBeTruthy();
   });
 
   it('should defer async disposal callbacks', async () => {
     const onDispose = sinon.stub().resolves();
     stack.defer(onDispose);
-    await stack.dispose();
+    await stack.disposeAsync();
     expect(onDispose.calledOnce).toBeTruthy();
   });
 
@@ -146,39 +146,39 @@ describe('AsyncDisposableStack', () => {
     const newStack = stack.move();
     expect(stack.disposed).toBeTruthy();
     expect(newStack.disposed).toBeFalsy();
-    await newStack.dispose();
+    await newStack.disposeAsync();
     expect(dispose.calledOnce).toBeTruthy();
   });
 
   it('should throw error if moving a disposed stack', () => {
-    stack.dispose();
+    stack.disposeAsync();
     expect(() => {
       return stack.move();
     }).toThrow(ReferenceError);
   });
 
   it('should collect errors from async disposals', async () => {
-    const dispose1 = sinon.stub().rejects(new Error('dispose1'));
-    const dispose2 = sinon.stub().rejects(new Error('dispose2'));
-    const dispose3 = sinon.stub().rejects(new Error('dispose3'));
+    const error1 = new Error('dispose1');
+    const error2 = new Error('dispose2');
+    const error3 = new Error('dispose3');
+    const dispose1 = sinon.stub().rejects(error1);
+    const dispose2 = sinon.stub().rejects(error2);
+    const dispose3 = sinon.stub().rejects(error3);
     stack.adopt({}, dispose1);
     stack.adopt({}, dispose2);
     stack.adopt({}, dispose3);
-    let error;
+    let error!: SuppressedError;
     try {
-      await stack.dispose();
+      await stack.disposeAsync();
     } catch (e) {
-      error = e;
+      error = e as SuppressedError;
     }
 
     expect(error instanceof SuppressedError).toBeTruthy();
-    expect((error as SuppressedError).name).toEqual('SuppressedError');
-    expect((error as SuppressedError).message).toEqual(
-      'An error was suppressed during disposal',
-    );
-    expect((error as SuppressedError).error).toEqual(new Error('dispose3'));
-    expect((error as SuppressedError).suppressed).toEqual(
-      new SuppressedError('dispose2', new Error('dispose1')),
-    );
+    expect(error.name).toEqual('SuppressedError');
+    expect(error.message).toEqual('An error was suppressed during disposal');
+    expect(error.error).toEqual(error1);
+    expect(error.suppressed.error).toEqual(error2);
+    expect(error.suppressed.suppressed).toEqual(error3);
   });
 });

@@ -16,7 +16,7 @@ import {
   install,
   Browser,
   BrowserPlatform,
-} from '../../../lib/cjs/main.js';
+} from '../../../lib/esm/main.js';
 import {getServerUrl, setupTestServer, clearCache} from '../utils.js';
 import {testChromeBuildId} from '../versions.js';
 
@@ -69,7 +69,7 @@ describe('Chrome', () => {
         '--disable-default-apps',
         '--disable-dev-shm-usage',
         '--disable-extensions',
-        '--disable-features=Translate,BackForwardCache,AcceptCHFrame,MediaRouter,OptimizationHints,DialMediaRouteProvider',
+        '--disable-features=Translate,BackForwardCache,AcceptCHFrame,MediaRouter,OptimizationHints,DialMediaRouteProvider,WebUIReloadButton',
         '--disable-hang-monitor',
         '--disable-ipc-flooding-protection',
         '--disable-popup-blocking',
@@ -116,6 +116,64 @@ describe('Chrome', () => {
       const url = await process.waitForLineOutput(CDP_WEBSOCKET_ENDPOINT_REGEX);
       await process.close();
       assert.ok(url.startsWith('ws://127.0.0.1:9222/devtools/browser'));
+    });
+
+    it('should return recent browser logs', async () => {
+      const executablePath = computeExecutablePath({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        buildId: testChromeBuildId,
+      });
+      const process = launch({
+        executablePath,
+        args: getArgs(),
+      });
+      const url = await process.waitForLineOutput(CDP_WEBSOCKET_ENDPOINT_REGEX);
+      await process.close();
+      assert.ok(url.startsWith('ws://127.0.0.1:9222/devtools/browser'));
+      assert.ok(process.getRecentLogs().length >= 1);
+      assert.ok(
+        process.getRecentLogs().some(line => {
+          return line.includes(url);
+        }),
+      );
+    });
+
+    it('should throw if signal is already aborted', async () => {
+      const executablePath = computeExecutablePath({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        buildId: testChromeBuildId,
+      });
+      const controller = new AbortController();
+      controller.abort('Launch aborted');
+      try {
+        launch({
+          executablePath,
+          args: getArgs(),
+          signal: controller.signal,
+        });
+        assert.fail('Should have thrown');
+      } catch (err) {
+        assert.strictEqual((err as Error).message, 'Launch aborted');
+      }
+    });
+
+    it('should kill the process when signal is aborted', async () => {
+      const executablePath = computeExecutablePath({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        buildId: testChromeBuildId,
+      });
+      const controller = new AbortController();
+      const process = launch({
+        executablePath,
+        args: getArgs(),
+        signal: controller.signal,
+      });
+      await process.waitForLineOutput(CDP_WEBSOCKET_ENDPOINT_REGEX);
+      controller.abort();
+      await process.hasClosed();
     });
   });
 });

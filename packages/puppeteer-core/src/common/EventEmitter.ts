@@ -56,9 +56,9 @@ export type EventsWithWildcard<Events extends Record<EventType, unknown>> =
  *
  * @public
  */
-export class EventEmitter<Events extends Record<EventType, unknown>>
-  implements CommonEventEmitter<EventsWithWildcard<Events>>
-{
+export class EventEmitter<
+  Events extends Record<EventType, unknown>,
+> implements CommonEventEmitter<EventsWithWildcard<Events>> {
   #emitter: Emitter<EventsWithWildcard<Events>> | EventEmitter<Events>;
   #handlers = new Map<keyof Events | '*', Array<Handler<any>>>();
 

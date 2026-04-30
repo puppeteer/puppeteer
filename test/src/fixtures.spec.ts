@@ -29,7 +29,7 @@ describe('Fixtures', function () {
       dumpio: true,
     });
     const res = spawn('node', [
-      path.join(__dirname, '../fixtures', 'dumpio.js'),
+      path.join(import.meta.dirname, '../fixtures', 'dumpio.mjs'),
       puppeteerPath,
       JSON.stringify(options),
     ]);
@@ -48,7 +48,7 @@ describe('Fixtures', function () {
     let dumpioData = '';
     const options = Object.assign({}, defaultBrowserOptions, {dumpio: true});
     const res = spawn('node', [
-      path.join(__dirname, '../fixtures', 'dumpio.js'),
+      path.join(import.meta.dirname, '../fixtures', 'dumpio.mjs'),
       puppeteerPath,
       JSON.stringify(options),
     ]);
@@ -73,7 +73,7 @@ describe('Fixtures', function () {
       dumpio: false,
     });
     const res = spawn('node', [
-      path.join(__dirname, '../fixtures', 'closeme.js'),
+      path.join(import.meta.dirname, '../fixtures', 'closeme.mjs'),
       puppeteerPath,
       JSON.stringify(options),
     ]);
@@ -96,10 +96,13 @@ describe('Fixtures', function () {
       });
       let output = '';
       res.stdout.on('data', data => {
-        output += data;
+        output += data.toString();
         if (output.indexOf('\n')) {
           wsEndPointCallback(output.substring(0, output.indexOf('\n')));
         }
+      });
+      res.stderr.on('data', data => {
+        console.log(data.toString());
       });
       const connectOptions = Object.assign({}, defaultBrowserOptions, {
         browserWSEndpoint: await wsEndPointPromise,

@@ -10,8 +10,8 @@
  * - moves older versions to versionsArchived.json
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const versionsFilename = path.join(__dirname, 'versions.json');
 const versionsArchivedFilename = path.join(__dirname, 'versionsArchived.json');

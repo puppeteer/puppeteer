@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type * as Bidi from 'webdriver-bidi-protocol';
 
+import type {BrowserContextOptions} from '../../api/Browser.js';
+import {UnsupportedOperation} from '../../common/Errors.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
@@ -218,11 +220,100 @@ export class Browser extends EventEmitter<{
     // SAFETY: By definition of `disposed`, `#reason` is defined.
     return browser.#reason!;
   })
-  async createUserContext(): Promise<UserContext> {
+  async createUserContext(
+    options: BrowserContextOptions,
+  ): Promise<UserContext> {
+    const proxyConfig: Bidi.Session.ProxyConfiguration | undefined =
+      options.proxyServer === undefined
+        ? undefined
+        : {
+            proxyType: 'manual',
+            httpProxy: options.proxyServer,
+            sslProxy: options.proxyServer,
+            noProxy: options.proxyBypassList,
+          };
     const {
-      result: {userContext: context},
-    } = await this.session.send('browser.createUserContext', {});
-    return this.#createUserContext(context);
+      result: {userContext},
+    } = await this.session.send('browser.createUserContext', {
+      proxy: proxyConfig,
+    });
+    if (options.downloadBehavior?.policy === 'allowAndName') {
+      throw new UnsupportedOperation(
+        '`allowAndName` is not supported in WebDriver BiDi',
+      );
+    }
+    if (options.downloadBehavior?.policy === 'allow') {
+      if (options.downloadBehavior.downloadPath === undefined) {
+        throw new UnsupportedOperation(
+          '`downloadPath` is required in `allow` download behavior',
+        );
+      }
+      await this.session.send('browser.setDownloadBehavior', {
+        downloadBehavior: {
+          type: 'allowed',
+          destinationFolder: options.downloadBehavior.downloadPath,
+        },
+        userContexts: [userContext],
+      });
+    }
+    if (options.downloadBehavior?.policy === 'deny') {
+      await this.session.send('browser.setDownloadBehavior', {
+        downloadBehavior: {type: 'denied'},
+        userContexts: [userContext],
+      });
+    }
+    return this.#createUserContext(userContext);
+  }
+
+  @throwIfDisposed<Browser>(browser => {
+    // SAFETY: By definition of `disposed`, `#reason` is defined.
+    return browser.#reason!;
+  })
+  async installExtension(path: string): Promise<string> {
+    const {
+      result: {extension},
+    } = await this.session.send('webExtension.install', {
+      extensionData: {type: 'path', path},
+    });
+    return extension;
+  }
+
+  @throwIfDisposed<Browser>(browser => {
+    // SAFETY: By definition of `disposed`, `#reason` is defined.
+    return browser.#reason!;
+  })
+  async uninstallExtension(id: string): Promise<void> {
+    await this.session.send('webExtension.uninstall', {extension: id});
+  }
+
+  @throwIfDisposed<Browser>(browser => {
+    // SAFETY: By definition of `disposed`, `#reason` is defined.
+    return browser.#reason!;
+  })
+  async setClientWindowState(
+    params: Bidi.Browser.SetClientWindowStateParameters,
+  ): Promise<void> {
+    await this.session.send('browser.setClientWindowState', params);
+  }
+
+  @throwIfDisposed<Browser>(browser => {
+    // SAFETY: By definition of `disposed`, `#reason` is defined.
+    return browser.#reason!;
+  })
+  async getClientWindowInfo(
+    windowId: string,
+  ): Promise<Bidi.Browser.ClientWindowInfo> {
+    const {
+      result: {clientWindows},
+    } = await this.session.send('browser.getClientWindows', {});
+
+    const window = clientWindows.find(window => {
+      return window.clientWindow === windowId;
+    });
+    if (!window) {
+      throw new Error('Window not found');
+    }
+    return window;
   }
 
   override [disposeSymbol](): void {

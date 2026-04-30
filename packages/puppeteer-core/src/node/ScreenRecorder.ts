@@ -6,7 +6,9 @@
 
 import type {ChildProcessWithoutNullStreams} from 'node:child_process';
 import {spawn, spawnSync} from 'node:child_process';
+import fs from 'node:fs';
 import os from 'node:os';
+import {dirname} from 'node:path';
 import {PassThrough} from 'node:stream';
 
 import debug from 'debug';
@@ -25,7 +27,7 @@ import {
 } from '../../third_party/rxjs/rxjs.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
-import type {Page, FileFormat} from '../api/Page.js';
+import type {Page, VideoFormat} from '../api/Page.js';
 import {debugError, fromEmitterEvent} from '../common/util.js';
 import {guarded} from '../util/decorators.js';
 import {asyncDisposeSymbol} from '../util/disposable.js';
@@ -39,16 +41,18 @@ const debugFfmpeg = debug('puppeteer:ffmpeg');
  * @internal
  */
 export interface ScreenRecorderOptions {
+  ffmpegPath?: string;
   speed?: number;
   crop?: BoundingBox;
-  format?: FileFormat;
+  format?: VideoFormat;
   fps?: number;
   loop?: number;
   delay?: number;
   quality?: number;
   colors?: number;
   scale?: number;
-  path?: string;
+  path?: `${string}.${VideoFormat}`;
+  overwrite?: boolean;
 }
 
 /**
@@ -72,6 +76,7 @@ export class ScreenRecorder extends PassThrough {
     width: number,
     height: number,
     {
+      ffmpegPath,
       speed,
       scale,
       crop,
@@ -82,10 +87,12 @@ export class ScreenRecorder extends PassThrough {
       quality,
       colors,
       path,
+      overwrite,
     }: ScreenRecorderOptions = {},
   ) {
     super({allowHalfOpen: false});
 
+    ffmpegPath ??= 'ffmpeg';
     format ??= 'webm';
     fps ??= DEFAULT_FPS;
     // Maps 0 to -1 as ffmpeg maps 0 to infinity.
@@ -93,12 +100,12 @@ export class ScreenRecorder extends PassThrough {
     delay ??= -1;
     quality ??= CRF_VALUE;
     colors ??= 256;
-    path ??= 'ffmpeg';
+    overwrite ??= true;
 
     this.#fps = fps;
 
     // Tests if `ffmpeg` exists.
-    const {error} = spawnSync(path);
+    const {error} = spawnSync(ffmpegPath);
     if (error) {
       throw error;
     }
@@ -130,8 +137,13 @@ export class ScreenRecorder extends PassThrough {
       filters.push(formatArgs.splice(vf, 2).at(-1) ?? '');
     }
 
+    // Ensure provided output directory path exists.
+    if (path) {
+      fs.mkdirSync(dirname(path), {recursive: overwrite});
+    }
+
     this.#process = spawn(
-      path,
+      ffmpegPath,
       // See https://trac.ffmpeg.org/wiki/Encode/VP9 for more information on flags.
       [
         ['-loglevel', 'error'],
@@ -150,9 +162,9 @@ export class ScreenRecorder extends PassThrough {
         ],
         // Forces input to be read from standard input, and forces png input
         // image format.
-        ['-f', 'image2pipe', '-c:v', 'png', '-i', 'pipe:0'],
-        // Overwrite output and no audio.
-        ['-y', '-an'],
+        ['-f', 'image2pipe', '-vcodec', 'png', '-i', 'pipe:0'],
+        // No audio
+        ['-an'],
         // This drastically reduces stalling when cpu is overbooked. By default
         // VP9 tries to use all available threads?
         ['-threads', '1'],
@@ -165,6 +177,8 @@ export class ScreenRecorder extends PassThrough {
         // Filters to ensure the images are piped correctly,
         // combined with any format-specific filters.
         ['-vf', filters.join()],
+        // Overwrite output, or exit immediately if file already exists.
+        [overwrite ? '-y' : '-n'],
         'pipe:1',
       ].flat(),
       {stdio: ['pipe', 'pipe', 'pipe']},
@@ -222,16 +236,15 @@ export class ScreenRecorder extends PassThrough {
   }
 
   #getFormatArgs(
-    format: FileFormat,
+    format: VideoFormat,
     fps: number | 'source_fps',
     loop: number,
     delay: number,
     quality: number,
     colors: number,
-  ) {
+  ): string[] {
     const libvpx = [
-      // Sets the codec to use.
-      ['-c:v', 'vp9'],
+      ['-vcodec', 'vp9'],
       // Sets the quality. Lower the better.
       ['-crf', `${quality}`],
       // Sets the quality and how efficient the compression will be.

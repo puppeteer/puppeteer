@@ -15,7 +15,7 @@ jobs:
       issues: write
       pull-requests: write
     steps:
-      - uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639 # v9.1.0
+      - uses: actions/stale@b5d41d4e1d5dceea10e7104786b73624c18a190f # v10.2.0
         with:
           days-before-close: 7
           days-before-stale: 14
@@ -32,6 +32,8 @@ jobs:
             new issue and include a minimal reproducible example or
             other details that would allow us to reproduce it.
           stale-issue-label: 'unconfirmed'
-          exempt-issue-labels: 'confirmed,feature'
+          exempt-issue-labels: 'confirmed'
+          only-issue-types: 'bug'
           # PR settings
           days-before-pr-close: -1
+          stale-pr-label: stale

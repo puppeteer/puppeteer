@@ -10,6 +10,7 @@ import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import type {ConnectOptions} from '../common/ConnectOptions.js';
 import {ProtocolError, UnsupportedOperation} from '../common/Errors.js';
 import {debugError, DEFAULT_VIEWPORT} from '../common/util.js';
+import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
 
 import type {BidiBrowser} from './Browser.js';
 import type {BidiConnection} from './Connection.js';
@@ -27,8 +28,12 @@ export async function _connectToBiDiBrowser(
   url: string,
   options: ConnectOptions,
 ): Promise<BidiBrowser> {
-  const {acceptInsecureCerts = false, defaultViewport = DEFAULT_VIEWPORT} =
-    options;
+  const {
+    acceptInsecureCerts = false,
+    networkEnabled = true,
+    issuesEnabled = true,
+    defaultViewport = DEFAULT_VIEWPORT,
+  } = options;
 
   const {bidiConnection, cdpConnection, closeCallback} =
     await getBiDiConnection(connectionTransport, url, options);
@@ -40,6 +45,8 @@ export async function _connectToBiDiBrowser(
     process: undefined,
     defaultViewport: defaultViewport,
     acceptInsecureCerts: acceptInsecureCerts,
+    networkEnabled,
+    issuesEnabled,
     capabilities: options.capabilities,
   });
   return bidiBrowser;
@@ -62,12 +69,17 @@ async function getBiDiConnection(
   closeCallback: BrowserCloseCallback;
 }> {
   const BiDi = await import(/* webpackIgnore: true */ './bidi.js');
-  const {slowMo = 0, protocolTimeout} = options;
+  const {
+    slowMo = 0,
+    protocolTimeout,
+    idGenerator = createIncrementalIdGenerator(),
+  } = options;
 
   // Try pure BiDi first.
   const pureBidiConnection = new BiDi.BidiConnection(
     url,
     connectionTransport,
+    idGenerator,
     slowMo,
     protocolTimeout,
   );
@@ -98,6 +110,7 @@ async function getBiDiConnection(
     slowMo,
     protocolTimeout,
     /* rawErrors= */ true,
+    idGenerator,
   );
 
   const version = await cdpConnection.send('Browser.getVersion');

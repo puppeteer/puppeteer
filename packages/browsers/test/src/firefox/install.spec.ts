@@ -9,7 +9,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import {install, Browser, BrowserPlatform} from '../../../lib/cjs/main.js';
+import {install, Browser, BrowserPlatform} from '../../../lib/esm/main.js';
 import {setupTestServer, getServerUrl, clearCache} from '../utils.js';
 import {testFirefoxBuildId} from '../versions.js';
 

@@ -19,7 +19,7 @@ import translations from '@theme/SearchTranslations';
 import React, {useState, useRef, useCallback, useMemo} from 'react';
 import {createPortal} from 'react-dom';
 
-// eslint-disable-next-line rulesdir/extensions
+// eslint-disable-next-line @puppeteer/extensions
 import {tagToCounter} from '../SearchMetadata';
 let DocSearchModal = null;
 function Hit({hit, children}) {
@@ -28,7 +28,10 @@ function Hit({hit, children}) {
 function ResultsFooter({state, onClose}) {
   const createSearchLink = useSearchLinkCreator();
   return (
-    <Link to={createSearchLink(state.query)} onClick={onClose}>
+    <Link
+      to={createSearchLink(state.query)}
+      onClick={onClose}
+    >
       <Translate
         id="theme.SearchBar.seeAll"
         values={{count: state.context.nbHits}}
@@ -139,7 +142,12 @@ function DocSearch({contextualSearch, externalUrlRegex, ...props}) {
   }).current;
   const resultsFooterComponent = useMemo(() => {
     return footerProps => {
-      return <ResultsFooter {...footerProps} onClose={onClose} />;
+      return (
+        <ResultsFooter
+          {...footerProps}
+          onClose={onClose}
+        />
+      );
     };
   }, [onClose]);
   const transformSearchClient = useCallback(

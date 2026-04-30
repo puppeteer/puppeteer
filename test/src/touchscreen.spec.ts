@@ -8,8 +8,6 @@ import expect from 'expect';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 
-declare const allEvents: Array<{type: string}>;
-
 describe('Touchscreen', () => {
   setupTestBrowserHooks();
 
@@ -20,8 +18,9 @@ describe('Touchscreen', () => {
 
       await page.tap('button');
       expect(
-        await page.evaluate(() => {
-          return allEvents;
+        await page.evaluate(async () => {
+          // @ts-expect-error executed on the page
+          return await globalThis.waitForEvents;
         }),
       ).toMatchObject([
         {
@@ -93,8 +92,9 @@ describe('Touchscreen', () => {
       await page.tap('button');
 
       expect(
-        await page.evaluate(() => {
-          return allEvents;
+        await page.evaluate(async () => {
+          // @ts-expect-error executed on the page
+          return await globalThis.waitForEvents;
         }),
       ).toMatchObject([
         {
@@ -212,8 +212,9 @@ describe('Touchscreen', () => {
       await page.touchscreen.touchEnd();
 
       expect(
-        await page.evaluate(() => {
-          return allEvents;
+        await page.evaluate(async () => {
+          // @ts-expect-error executed on the page
+          return await globalThis.waitForEvents;
         }),
       ).toMatchObject([
         {
@@ -364,8 +365,9 @@ describe('Touchscreen', () => {
       await page.touchscreen.touchMove(15, 15);
 
       expect(
-        await page.evaluate(() => {
-          return allEvents;
+        await page.evaluate(async () => {
+          // @ts-expect-error executed on the page
+          return await globalThis.waitForEvents;
         }),
       ).toMatchObject([
         {
@@ -502,8 +504,9 @@ describe('Touchscreen', () => {
       await touch1.end();
 
       expect(
-        await page.evaluate(() => {
-          return allEvents;
+        await page.evaluate(async () => {
+          // @ts-expect-error executed on the page
+          return await globalThis.waitForEvents;
         }),
       ).toMatchObject([
         {
@@ -737,8 +740,9 @@ describe('Touchscreen', () => {
       await touch3.move(60, 100);
 
       expect(
-        await page.evaluate(() => {
-          return allEvents;
+        await page.evaluate(async () => {
+          // @ts-expect-error executed on the page
+          return await globalThis.waitForEvents;
         }),
       ).toMatchObject([
         {
@@ -788,6 +792,20 @@ describe('Touchscreen', () => {
           ],
         },
         {
+          type: 'pointerdown',
+          x: 20,
+          y: 20,
+          width: 1,
+          height: 1,
+          altitudeAngle: 1.5707963267948966,
+          azimuthAngle: 0,
+          pressure: 0.5,
+          pointerType: 'touch',
+          twist: 0,
+          tiltX: 0,
+          tiltY: 0,
+        },
+        {
           type: 'touchstart',
           changedTouches: [
             {clientX: 20, clientY: 20, radiusX: 0.5, radiusY: 0.5, force: 0.5},
@@ -796,6 +814,20 @@ describe('Touchscreen', () => {
             {clientX: 50, clientY: 100, radiusX: 0.5, radiusY: 0.5, force: 0.5},
             {clientX: 20, clientY: 20, radiusX: 0.5, radiusY: 0.5, force: 0.5},
           ],
+        },
+        {
+          type: 'pointerup',
+          x: 50,
+          y: 100,
+          width: 1,
+          height: 1,
+          altitudeAngle: Math.PI / 2,
+          azimuthAngle: 0,
+          pressure: 0,
+          pointerType: 'touch',
+          twist: 0,
+          tiltX: 0,
+          tiltY: 0,
         },
         {
           type: 'touchend',
@@ -807,6 +839,20 @@ describe('Touchscreen', () => {
           ],
         },
         {
+          type: 'pointerdown',
+          x: 20,
+          y: 100,
+          width: 1,
+          height: 1,
+          altitudeAngle: 1.5707963267948966,
+          azimuthAngle: 0,
+          pressure: 0.5,
+          pointerType: 'touch',
+          twist: 0,
+          tiltX: 0,
+          tiltY: 0,
+        },
+        {
           type: 'touchstart',
           changedTouches: [
             {clientX: 20, clientY: 100, radiusX: 0.5, radiusY: 0.5, force: 0.5},
@@ -815,6 +861,20 @@ describe('Touchscreen', () => {
             {clientX: 20, clientY: 20, radiusX: 0.5, radiusY: 0.5, force: 0.5},
             {clientX: 20, clientY: 100, radiusX: 0.5, radiusY: 0.5, force: 0.5},
           ],
+        },
+        {
+          type: 'pointermove',
+          x: 60,
+          y: 100,
+          width: 1,
+          height: 1,
+          altitudeAngle: 1.5707963267948966,
+          azimuthAngle: 0,
+          pressure: 0.5,
+          pointerType: 'touch',
+          twist: 0,
+          tiltX: 0,
+          tiltY: 0,
         },
         {
           type: 'touchmove',

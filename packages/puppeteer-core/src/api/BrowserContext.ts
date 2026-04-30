@@ -10,7 +10,11 @@ import {
   merge,
   raceWith,
 } from '../../third_party/rxjs/rxjs.js';
-import type {Cookie, CookieData} from '../common/Cookie.js';
+import type {
+  Cookie,
+  CookieData,
+  DeleteCookiesRequest,
+} from '../common/Cookie.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {
   debugError,
@@ -21,7 +25,14 @@ import {
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 import {Mutex} from '../util/Mutex.js';
 
-import type {Browser, Permission, WaitForTargetOptions} from './Browser.js';
+import type {
+  Browser,
+  CreatePageOptions,
+  Permission,
+  PermissionDescriptor,
+  PermissionState,
+  WaitForTargetOptions,
+} from './Browser.js';
 import type {Page} from './Page.js';
 import type {Target} from './Target.js';
 
@@ -177,10 +188,12 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * Gets a list of all open {@link Page | pages} inside this
    * {@link BrowserContext | browser context}.
    *
+   * @param includeAll - experimental, setting to true includes all kinds of pages.
+   *
    * @remarks Non-visible {@link Page | pages}, such as `"background_page"`,
    * will not be listed here. You can find them using {@link Target.page}.
    */
-  abstract pages(): Promise<Page[]>;
+  abstract pages(includeAll?: boolean): Promise<Page[]>;
 
   /**
    * Grants this {@link BrowserContext | browser context} the given
@@ -200,10 +213,29 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * "https://example.com".
    * @param permissions - An array of permissions to grant. All permissions that
    * are not listed here will be automatically denied.
+   *
+   * @deprecated in favor of {@link BrowserContext.setPermission}.
    */
   abstract overridePermissions(
     origin: string,
     permissions: Permission[],
+  ): Promise<void>;
+
+  /**
+   * Sets the permission for a specific origin.
+   *
+   * @param origin - The origin to set the permission for.
+   * @param permission - The permission descriptor.
+   * @param state - The state of the permission.
+   *
+   * @public
+   */
+  abstract setPermission(
+    origin: string | '*',
+    ...permissions: Array<{
+      permission: PermissionDescriptor;
+      state: PermissionState;
+    }>
   ): Promise<void>;
 
   /**
@@ -226,7 +258,7 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * Creates a new {@link Page | page} in this
    * {@link BrowserContext | browser context}.
    */
-  abstract newPage(): Promise<Page>;
+  abstract newPage(options?: CreatePageOptions): Promise<Page>;
 
   /**
    * Gets the {@link Browser | browser} associated with this
@@ -255,8 +287,9 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
   abstract setCookie(...cookies: CookieData[]): Promise<void>;
 
   /**
-   * Removes cookie in the browser context
-   * @param cookies - {@link Cookie | cookie} to remove
+   * Removes cookie in this browser context.
+   *
+   * @param cookies - Complete {@link Cookie | cookie} object to be removed.
    */
   async deleteCookie(...cookies: Cookie[]): Promise<void> {
     return await this.setCookie(
@@ -267,6 +300,62 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
         };
       }),
     );
+  }
+
+  /**
+   * Deletes cookies matching the provided filters in this browser context.
+   *
+   * @param filters - {@link DeleteCookiesRequest}
+   */
+  async deleteMatchingCookies(
+    ...filters: DeleteCookiesRequest[]
+  ): Promise<void> {
+    const cookies = await this.cookies();
+    const cookiesToDelete = cookies.filter(cookie => {
+      return filters.some(filter => {
+        if (filter.name === cookie.name) {
+          if (filter.domain !== undefined && filter.domain === cookie.domain) {
+            return true;
+          }
+
+          if (filter.path !== undefined && filter.path === cookie.path) {
+            return true;
+          }
+          if (
+            filter.partitionKey !== undefined &&
+            cookie.partitionKey !== undefined
+          ) {
+            if (typeof cookie.partitionKey !== 'object') {
+              throw new Error('Unexpected string partition key');
+            }
+            if (typeof filter.partitionKey === 'string') {
+              if (filter.partitionKey === cookie.partitionKey?.sourceOrigin) {
+                return true;
+              }
+            } else {
+              if (
+                filter.partitionKey.sourceOrigin ===
+                cookie.partitionKey?.sourceOrigin
+              ) {
+                return true;
+              }
+            }
+          }
+          if (filter.url !== undefined) {
+            const url = new URL(filter.url);
+            if (
+              url.hostname === cookie.domain &&
+              url.pathname === cookie.path
+            ) {
+              return true;
+            }
+          }
+          return true;
+        }
+        return false;
+      });
+    });
+    await this.deleteCookie(...cookiesToDelete);
   }
 
   /**

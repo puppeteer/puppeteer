@@ -8,48 +8,9 @@ import assert from 'node:assert';
 import {spawnSync} from 'node:child_process';
 import {existsSync} from 'node:fs';
 import {readdir} from 'node:fs/promises';
-import {platform} from 'node:os';
 import {join} from 'node:path';
 
 import {configureSandbox} from './sandbox.js';
-import {readAsset} from './util.js';
-
-// Skipping this test on Windows as windows runners are much slower.
-(platform() === 'win32' ? describe.skip : describe)(
-  '`puppeteer` with Firefox',
-  () => {
-    configureSandbox({
-      dependencies: ['@puppeteer/browsers', 'puppeteer-core', 'puppeteer'],
-      env: cwd => {
-        return {
-          PUPPETEER_BROWSER: 'firefox',
-          PUPPETEER_CACHE_DIR: join(cwd, '.cache', 'puppeteer'),
-          PUPPETEER_CHROME_SKIP_DOWNLOAD: 'true',
-          PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD: 'true',
-          PUPPETEER_FIREFOX_SKIP_DOWNLOAD: 'false',
-        };
-      },
-    });
-
-    describe('with WebDriverBiDi', () => {
-      it('evaluates CommonJS', async function () {
-        const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));
-        assert.equal(files.length, 1, files.join());
-        assert.equal(files[0], 'firefox');
-        const script = await readAsset('puppeteer-core', 'requires.cjs');
-        await this.runScript(script, 'cjs');
-      });
-
-      it('evaluates ES modules', async function () {
-        const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));
-        assert.equal(files.length, 1, files.join());
-        assert.equal(files[0], 'firefox');
-        const script = await readAsset('puppeteer-core', 'imports.js');
-        await this.runScript(script, 'mjs');
-      });
-    });
-  },
-);
 
 describe('Firefox download', () => {
   configureSandbox({

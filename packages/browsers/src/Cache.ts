@@ -93,9 +93,14 @@ export interface ComputeExecutablePathOptions {
   buildId: string;
 }
 
+/**
+ * @public
+ */
 export interface Metadata {
   // Maps an alias (canary/latest/dev/etc.) to a buildId.
   aliases: Record<string, string>;
+  // Maps installation key (platform-buildId) to executable path.
+  executablePaths?: Record<string, string>;
 }
 
 /**
@@ -153,6 +158,31 @@ export class Cache {
     fs.writeFileSync(metatadaPath, JSON.stringify(metadata, null, 2));
   }
 
+  readExecutablePath(
+    browser: Browser,
+    platform: BrowserPlatform,
+    buildId: string,
+  ): string | null {
+    const metadata = this.readMetadata(browser);
+    const key = `${platform}-${buildId}`;
+    return metadata.executablePaths?.[key] ?? null;
+  }
+
+  writeExecutablePath(
+    browser: Browser,
+    platform: BrowserPlatform,
+    buildId: string,
+    executablePath: string,
+  ): void {
+    const metadata = this.readMetadata(browser);
+    if (!metadata.executablePaths) {
+      metadata.executablePaths = {};
+    }
+    const key = `${platform}-${buildId}`;
+    metadata.executablePaths[key] = executablePath;
+    this.writeMetadata(browser, metadata);
+  }
+
   resolveAlias(browser: Browser, alias: string): string | undefined {
     const metadata = this.readMetadata(browser);
     if (alias === 'latest') {
@@ -190,6 +220,12 @@ export class Cache {
       if (metadata.aliases[alias] === buildId) {
         delete metadata.aliases[alias];
       }
+    }
+    // Clean up executable path entry
+    const key = `${platform}-${buildId}`;
+    if (metadata.executablePaths?.[key]) {
+      delete metadata.executablePaths[key];
+      this.writeMetadata(browser, metadata);
     }
     fs.rmSync(this.installationDir(browser, platform, buildId), {
       force: true,
@@ -248,6 +284,17 @@ export class Cache {
       options.platform,
       options.buildId,
     );
+
+    const storedExecutablePath = this.readExecutablePath(
+      options.browser,
+      options.platform,
+      options.buildId,
+    );
+    if (storedExecutablePath) {
+      // The metadata contains a resolved relative path from the installation dir
+      return path.join(installationDir, storedExecutablePath);
+    }
+
     return path.join(
       installationDir,
       executablePathByBrowser[options.browser](

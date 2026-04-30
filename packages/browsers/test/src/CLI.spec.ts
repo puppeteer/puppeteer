@@ -3,12 +3,12 @@
  * Copyright 2025 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-
+import assert from 'node:assert';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import {CLI} from '../../lib/cjs/CLI.js';
+import {CLI} from '../../lib/esm/CLI.js';
 
 import {
   createMockedReadlineInterface,
@@ -91,5 +91,43 @@ describe('CLI', function () {
       clearTimeout(timeout);
       process.stdout.write = originalStdoutWrite;
     }
+  });
+
+  it('should format output', async () => {
+    const logs: string[] = [];
+    const originalLog = console.log;
+    console.log = (message: string) => {
+      logs.push(message);
+    };
+
+    try {
+      await new CLI(tmpDir).run([
+        'npx',
+        '@puppeteer/browsers',
+        'install',
+        `chrome@${testChromeBuildId}`,
+        `--path=${tmpDir}`,
+        `--base-url=${getServerUrl()}`,
+        '--format={{path}}@{{buildId}}@{{browser}}',
+      ]);
+    } finally {
+      console.log = originalLog;
+    }
+
+    const found = logs
+      .find(log => {
+        return log.includes('chrome');
+      })
+      ?.split('@');
+
+    assert(found, `No match found in ${JSON.stringify(logs)}`);
+
+    assert(found[0]?.startsWith(tmpDir), `Expected path to include tmpdir`);
+    assert.strictEqual(
+      found[1],
+      testChromeBuildId,
+      'Expected buildId to match',
+    );
+    assert.strictEqual(found[2], 'chrome', 'Expected browser to match');
   });
 });

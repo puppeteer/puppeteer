@@ -16,7 +16,7 @@ import {
   install,
   Browser,
   BrowserPlatform,
-} from '../../../lib/cjs/main.js';
+} from '../../../lib/esm/main.js';
 import {getServerUrl, setupTestServer, clearCache} from '../utils.js';
 import {testChromiumBuildId} from '../versions.js';
 
@@ -69,7 +69,7 @@ describe('Chromium', () => {
         '--disable-default-apps',
         '--disable-dev-shm-usage',
         '--disable-extensions',
-        '--disable-features=Translate,BackForwardCache,AcceptCHFrame,MediaRouter,OptimizationHints,DialMediaRouteProvider',
+        '--disable-features=Translate,BackForwardCache,AcceptCHFrame,MediaRouter,OptimizationHints,DialMediaRouteProvider,WebUIReloadButton',
         '--disable-hang-monitor',
         '--disable-ipc-flooding-protection',
         '--disable-popup-blocking',

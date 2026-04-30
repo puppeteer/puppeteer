@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {execSync} from 'node:child_process';
+import os from 'node:os';
 import path from 'node:path';
 
 import semver from 'semver';
@@ -66,13 +68,20 @@ export function relativeExecutablePath(
   }
 }
 
+let baseVersionUrl = 'https://googlechromelabs.github.io/chrome-for-testing';
+
+export function changeBaseVersionUrlForTesting(url: string): void {
+  baseVersionUrl = url;
+}
+export function resetBaseVersionUrlForTesting(): void {
+  baseVersionUrl = 'https://googlechromelabs.github.io/chrome-for-testing';
+}
+
 export async function getLastKnownGoodReleaseForChannel(
   channel: ChromeReleaseChannel,
 ): Promise<{version: string; revision: string}> {
   const data = (await getJSON(
-    new URL(
-      'https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json',
-    ),
+    new URL(`${baseVersionUrl}/last-known-good-versions.json`),
   )) as {
     channels: Record<string, {version: string}>;
   };
@@ -96,9 +105,7 @@ export async function getLastKnownGoodReleaseForMilestone(
   milestone: string,
 ): Promise<{version: string; revision: string} | undefined> {
   const data = (await getJSON(
-    new URL(
-      'https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json',
-    ),
+    new URL(`${baseVersionUrl}/latest-versions-per-milestone.json`),
   )) as {
     milestones: Record<string, {version: string; revision: string}>;
   };
@@ -114,9 +121,7 @@ export async function getLastKnownGoodReleaseForBuild(
   buildPrefix: string,
 ): Promise<{version: string; revision: string} | undefined> {
   const data = (await getJSON(
-    new URL(
-      'https://googlechromelabs.github.io/chrome-for-testing/latest-patch-versions-per-build.json',
-    ),
+    new URL(`${baseVersionUrl}/latest-patch-versions-per-build.json`),
   )) as {
     builds: Record<string, {version: string; revision: string}>;
   };
@@ -153,49 +158,251 @@ export async function resolveBuildId(
   }
   return;
 }
+const WINDOWS_ENV_PARAM_NAMES = [
+  'PROGRAMFILES',
+  'ProgramW6432',
+  'ProgramFiles(x86)',
+  // https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/mini_installer/README.md
+  'LOCALAPPDATA',
+];
 
-export function resolveSystemExecutablePath(
+function getChromeWindowsLocation(
+  channel: ChromeReleaseChannel,
+  locationsPrefixes: Set<string>,
+): [string, ...string[]] {
+  if (locationsPrefixes.size === 0) {
+    throw new Error('Non of the common Windows Env variables were set');
+  }
+
+  let suffix: string;
+  switch (channel) {
+    case ChromeReleaseChannel.STABLE:
+      suffix = 'Google\\Chrome\\Application\\chrome.exe';
+      break;
+    case ChromeReleaseChannel.BETA:
+      suffix = 'Google\\Chrome Beta\\Application\\chrome.exe';
+      break;
+    case ChromeReleaseChannel.CANARY:
+      suffix = 'Google\\Chrome SxS\\Application\\chrome.exe';
+      break;
+    case ChromeReleaseChannel.DEV:
+      suffix = 'Google\\Chrome Dev\\Application\\chrome.exe';
+      break;
+  }
+
+  return [...locationsPrefixes.values()].map(l => {
+    return path.win32.join(l, suffix);
+  }) as [string, ...string[]];
+}
+
+function getWslVariable(variable: string): string | undefined {
+  try {
+    // The Windows env for the paths are not passed down
+    // to WSL, so we evoke `cmd.exe` which is usually on the PATH
+    // from which the env can be access with all uppercase names.
+    // The return value is a Windows Path - `C:\Program Files`.
+
+    const result = execSync(
+      `cmd.exe /c echo %${variable.toLocaleUpperCase()}%`,
+      {
+        // We need to ignore the stderr as cmd.exe
+        // prints a message about wrong UNC path not supported.
+        stdio: ['ignore', 'pipe', 'ignore'],
+        encoding: 'utf-8',
+      },
+    ).trim();
+    if (result) {
+      return result;
+    }
+  } catch {}
+  return;
+}
+
+function getWslLocation(channel: ChromeReleaseChannel): [string, ...string[]] {
+  const wslVersion = execSync('wslinfo --version', {
+    stdio: ['ignore', 'pipe', 'ignore'],
+    encoding: 'utf-8',
+  }).trim();
+  if (!wslVersion) {
+    throw new Error('Not in WSL or unsupported version of WSL.');
+  }
+  const wslPrefixes = new Set<string>();
+  for (const name of WINDOWS_ENV_PARAM_NAMES) {
+    const wslPrefix = getWslVariable(name);
+    if (wslPrefix) {
+      wslPrefixes.add(wslPrefix);
+    }
+  }
+  const windowsPath = getChromeWindowsLocation(channel, wslPrefixes);
+
+  return windowsPath.map(path => {
+    // The above command returned the Windows paths `C:\Program Files\...\chrome.exe`
+    // Use the `wslpath` utility tool to transform into the mounted disk
+    return execSync(`wslpath "${path}"`).toString().trim();
+  }) as [string, ...string[]];
+}
+
+function getChromeLinuxOrWslLocation(
+  channel: ChromeReleaseChannel,
+): [string, ...string[]] {
+  const locations: string[] = [];
+
+  switch (channel) {
+    case ChromeReleaseChannel.STABLE:
+      locations.push('/opt/google/chrome/chrome');
+      break;
+    case ChromeReleaseChannel.BETA:
+      locations.push('/opt/google/chrome-beta/chrome');
+      break;
+    case ChromeReleaseChannel.CANARY:
+      locations.push('/opt/google/chrome-canary/chrome');
+      break;
+    case ChromeReleaseChannel.DEV:
+      locations.push('/opt/google/chrome-unstable/chrome');
+      break;
+  }
+
+  try {
+    const wslPath = getWslLocation(channel);
+    if (wslPath) {
+      locations.push(...wslPath);
+    }
+  } catch {
+    // Ignore WSL errors
+  }
+
+  return locations as [string, ...string[]];
+}
+
+export function resolveSystemExecutablePaths(
+  platform: BrowserPlatform,
+  channel: ChromeReleaseChannel,
+): [string, ...string[]] {
+  switch (platform) {
+    case BrowserPlatform.WIN64:
+    case BrowserPlatform.WIN32:
+      const prefixLocation = new Set<string>(
+        WINDOWS_ENV_PARAM_NAMES.map(name => {
+          return process.env[name];
+        }).filter((l): l is string => {
+          return !!l;
+        }),
+      );
+      // Fallbacks in case env vars are misconfigured.
+      prefixLocation.add('C:\\Program Files');
+      prefixLocation.add('C:\\Program Files (x86)');
+      prefixLocation.add('D:\\Program Files');
+      prefixLocation.add('D:\\Program Files (x86)');
+      return getChromeWindowsLocation(channel, prefixLocation);
+    case BrowserPlatform.MAC_ARM:
+    case BrowserPlatform.MAC:
+      switch (channel) {
+        case ChromeReleaseChannel.STABLE:
+          return [
+            '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+          ];
+        case ChromeReleaseChannel.BETA:
+          return [
+            '/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta',
+          ];
+        case ChromeReleaseChannel.CANARY:
+          return [
+            '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary',
+          ];
+        case ChromeReleaseChannel.DEV:
+          return [
+            '/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev',
+          ];
+      }
+    case BrowserPlatform.LINUX_ARM:
+    case BrowserPlatform.LINUX:
+      return getChromeLinuxOrWslLocation(channel);
+  }
+}
+
+export function resolveDefaultUserDataDir(
   platform: BrowserPlatform,
   channel: ChromeReleaseChannel,
 ): string {
   switch (platform) {
     case BrowserPlatform.WIN64:
     case BrowserPlatform.WIN32:
+      // https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/chrome_paths_win.cc;l=42;drc=4c86c7940a47c36b8bf52c134483ef2da86caa62
       switch (channel) {
         case ChromeReleaseChannel.STABLE:
-          return `${process.env['PROGRAMFILES']}\\Google\\Chrome\\Application\\chrome.exe`;
+          return path.join(
+            getLocalAppDataWin(),
+            'Google',
+            'Chrome',
+            'User Data',
+          );
         case ChromeReleaseChannel.BETA:
-          return `${process.env['PROGRAMFILES']}\\Google\\Chrome Beta\\Application\\chrome.exe`;
+          return path.join(
+            getLocalAppDataWin(),
+            'Google',
+            'Chrome Beta',
+            'User Data',
+          );
         case ChromeReleaseChannel.CANARY:
-          return `${process.env['PROGRAMFILES']}\\Google\\Chrome SxS\\Application\\chrome.exe`;
+          return path.join(
+            getLocalAppDataWin(),
+            'Google',
+            'Chrome SxS',
+            'User Data',
+          );
         case ChromeReleaseChannel.DEV:
-          return `${process.env['PROGRAMFILES']}\\Google\\Chrome Dev\\Application\\chrome.exe`;
+          return path.join(
+            getLocalAppDataWin(),
+            'Google',
+            'Chrome Dev',
+            'User Data',
+          );
       }
     case BrowserPlatform.MAC_ARM:
     case BrowserPlatform.MAC:
+      // https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/chrome_paths_mac.mm;l=86;drc=4c86c7940a47c36b8bf52c134483ef2da86caa62
       switch (channel) {
         case ChromeReleaseChannel.STABLE:
-          return '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+          return path.join(getBaseUserDataDirPathMac(), 'Chrome');
         case ChromeReleaseChannel.BETA:
-          return '/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta';
-        case ChromeReleaseChannel.CANARY:
-          return '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary';
+          return path.join(getBaseUserDataDirPathMac(), 'Chrome Beta');
         case ChromeReleaseChannel.DEV:
-          return '/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev';
+          return path.join(getBaseUserDataDirPathMac(), 'Chrome Dev');
+        case ChromeReleaseChannel.CANARY:
+          return path.join(getBaseUserDataDirPathMac(), 'Chrome Canary');
       }
     case BrowserPlatform.LINUX_ARM:
     case BrowserPlatform.LINUX:
+      // https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/chrome_paths_linux.cc;l=80;drc=4c86c7940a47c36b8bf52c134483ef2da86caa62
       switch (channel) {
         case ChromeReleaseChannel.STABLE:
-          return '/opt/google/chrome/chrome';
+          return path.join(getConfigHomeLinux(), 'google-chrome');
         case ChromeReleaseChannel.BETA:
-          return '/opt/google/chrome-beta/chrome';
+          return path.join(getConfigHomeLinux(), 'google-chrome-beta');
         case ChromeReleaseChannel.CANARY:
-          return '/opt/google/chrome-canary/chrome';
+          return path.join(getConfigHomeLinux(), 'google-chrome-canary');
         case ChromeReleaseChannel.DEV:
-          return '/opt/google/chrome-unstable/chrome';
+          return path.join(getConfigHomeLinux(), 'google-chrome-unstable');
       }
   }
+}
+
+function getLocalAppDataWin() {
+  return (
+    process.env['LOCALAPPDATA'] || path.join(os.homedir(), 'AppData', 'Local')
+  );
+}
+
+function getConfigHomeLinux() {
+  return (
+    process.env['CHROME_CONFIG_HOME'] ||
+    process.env['XDG_CONFIG_HOME'] ||
+    path.join(os.homedir(), '.config')
+  );
+}
+
+function getBaseUserDataDirPathMac() {
+  return path.join(os.homedir(), 'Library', 'Application Support', 'Google');
 }
 
 export function compareVersions(a: string, b: string): number {

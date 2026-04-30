@@ -1,0 +1,393 @@
+---
+sidebar_label: ConnectOptions
+---
+
+# ConnectOptions interface
+
+Generic browser options that can be passed when launching any browser or when connecting to an existing browser instance.
+
+### Signature
+
+```typescript
+export interface ConnectOptions
+```
+
+## Properties
+
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th><th>
+
+Default
+
+</th></tr></thead>
+<tbody><tr><td>
+
+<span id="acceptinsecurecerts">acceptInsecureCerts</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether to ignore HTTPS errors during navigation.
+
+</td><td>
+
+`false`
+
+</td></tr>
+<tr><td>
+
+<span id="blocklist">blockList</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string\[\]
+
+</td><td>
+
+**_(Experimental)_** A list of URL patterns to block.
+
+This option allows you to restrict the browser from accessing specific URLs or origins. It uses the standard \[URLPattern\](https://urlpattern.spec.whatwg.org/) API to match URLs.
+
+When connecting to an existing browser, Puppeteer will silently detach from any already open targets that violate the patterns.
+
+For any network requests made by the browser (including navigations and subresources like images or scripts), the request will fail with an error if the URL matches a blocked pattern.
+
+**Remarks:**
+
+Currently only supported for CDP connections.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="browserurl">browserURL</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="browserwsendpoint">browserWSEndpoint</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="capabilities">capabilities</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[SupportedWebDriverCapabilities](./puppeteer.supportedwebdrivercapabilities.md)
+
+</td><td>
+
+WebDriver BiDi capabilities passed to BiDi `session.new`.
+
+**Remarks:**
+
+Only works for `protocol="webDriverBiDi"` and [Puppeteer.connect()](./puppeteer.puppeteer.connect.md).
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="channel">channel</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[ChromeReleaseChannel](./puppeteer.chromereleasechannel.md)
+
+</td><td>
+
+**_(Experimental)_** If specified, puppeteer looks for an open WebSocket at the well-known default user data directory for the specified channel and attempts to connect to it using ws://localhost:$ActivePort/devtools/browser. Only works for Chrome and when run in Node.js.
+
+This option is experimental when used with puppeteer.connect().
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="defaultviewport">defaultViewport</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[Viewport](./puppeteer.viewport.md) \| null
+
+</td><td>
+
+Sets the viewport for each page.
+
+</td><td>
+
+'&#123;width: 800, height: 600&#125;'
+
+</td></tr>
+<tr><td>
+
+<span id="downloadbehavior">downloadBehavior</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[DownloadBehavior](./puppeteer.downloadbehavior.md)
+
+</td><td>
+
+Sets the download behavior for the context.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="handledevtoolsaspage">handleDevToolsAsPage</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether to handle the DevTools windows as pages in Puppeteer. Supported only in Chrome with CDP.
+
+</td><td>
+
+'false'
+
+</td></tr>
+<tr><td>
+
+<span id="headers">headers</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+Record&lt;string, string&gt;
+
+</td><td>
+
+Headers to use for the web socket connection.
+
+**Remarks:**
+
+Only works in the Node.js environment.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="issuesenabled">issuesEnabled</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+**_(Experimental)_** Experimental setting to disable monitoring issue events by default.
+
+</td><td>
+
+`true`
+
+</td></tr>
+<tr><td>
+
+<span id="networkenabled">networkEnabled</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+**_(Experimental)_** Experimental setting to disable monitoring network events by default. When set to `false`, parts of Puppeteer that depend on network events would not work such as HTTPRequest and HTTPResponse.
+
+</td><td>
+
+`true`
+
+</td></tr>
+<tr><td>
+
+<span id="protocol">protocol</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[ProtocolType](./puppeteer.protocoltype.md)
+
+</td><td>
+
+</td><td>
+
+Determined at run time:
+
+- Launching Chrome - 'cdp'.
+
+- Launching Firefox - 'webDriverBiDi'.
+
+- Connecting to a browser - 'cdp'.
+
+</td></tr>
+<tr><td>
+
+<span id="protocoltimeout">protocolTimeout</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Timeout setting for individual protocol (CDP) calls.
+
+</td><td>
+
+`180_000`
+
+</td></tr>
+<tr><td>
+
+<span id="slowmo">slowMo</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Slows down Puppeteer operations by the specified amount of milliseconds to aid debugging.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="targetfilter">targetFilter</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[TargetFilterCallback](./puppeteer.targetfiltercallback.md)
+
+</td><td>
+
+Callback to decide if Puppeteer should connect to a given target or not.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="transport">transport</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[ConnectionTransport](./puppeteer.connectiontransport.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+</tbody></table>

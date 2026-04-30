@@ -4,15 +4,21 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import * as Bidi from 'webdriver-bidi-protocol';
 
-import type {Permission} from '../api/Browser.js';
+import type {
+  CreatePageOptions,
+  Permission,
+  PermissionDescriptor,
+  PermissionState,
+} from '../api/Browser.js';
 import {WEB_PERMISSION_TO_PROTOCOL_PERMISSION} from '../api/Browser.js';
 import type {BrowserContextEvents} from '../api/BrowserContext.js';
 import {BrowserContext, BrowserContextEvent} from '../api/BrowserContext.js';
 import {PageEvent, type Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {Cookie, CookieData} from '../common/Cookie.js';
+import {UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -181,12 +187,24 @@ export class BidiBrowserContext extends BrowserContext {
     });
   }
 
-  override async newPage(): Promise<Page> {
+  /**
+   * @internal
+   */
+  getTargetForPage(page: BidiPage): BidiPageTarget | undefined {
+    return this.#targets.get(page)?.[0];
+  }
+
+  override async newPage(options?: CreatePageOptions): Promise<Page> {
     using _guard = await this.waitForScreenshotOperations();
 
-    const context = await this.userContext.createBrowsingContext(
-      Bidi.BrowsingContext.CreateType.Tab,
-    );
+    const type =
+      options?.type === 'window'
+        ? Bidi.BrowsingContext.CreateType.Window
+        : Bidi.BrowsingContext.CreateType.Tab;
+
+    const context = await this.userContext.createBrowsingContext(type, {
+      background: options?.background,
+    });
     const page = this.#pages.get(context)!;
     if (!page) {
       throw new Error('Page is not found');
@@ -194,8 +212,20 @@ export class BidiBrowserContext extends BrowserContext {
     if (this.#defaultViewport) {
       try {
         await page.setViewport(this.#defaultViewport);
-      } catch {
-        // No support for setViewport in Firefox.
+      } catch (error) {
+        // Tolerate not supporting `browsingContext.setViewport`. Only log it.
+        debugError(error);
+      }
+    }
+    if (options?.type === 'window' && options?.windowBounds !== undefined) {
+      try {
+        await this.browser().setWindowBounds(
+          context.windowId,
+          options.windowBounds,
+        );
+      } catch (error) {
+        // Tolerate not supporting `browser.setClientWindowState`. Only log it.
+        debugError(error);
       }
     }
 
@@ -221,7 +251,7 @@ export class BidiBrowserContext extends BrowserContext {
     return this.#browser;
   }
 
-  override async pages(): Promise<BidiPage[]> {
+  override async pages(_includeAll = false): Promise<BidiPage[]> {
     return [...this.userContext.browsingContexts].map(context => {
       return this.#pages.get(context)!;
     });
@@ -262,6 +292,46 @@ export class BidiBrowserContext extends BrowserContext {
           return result;
         },
       ),
+    );
+  }
+
+  override async setPermission(
+    origin: string | '*',
+    ...permissions: Array<{
+      permission: PermissionDescriptor;
+      state: PermissionState;
+    }>
+  ): Promise<void> {
+    if (origin === '*') {
+      throw new UnsupportedOperation(
+        'Origin (*) is not supported by WebDriver BiDi',
+      );
+    }
+    await Promise.all(
+      permissions.map(permission => {
+        if (permission.permission.allowWithoutSanitization) {
+          throw new UnsupportedOperation(
+            'allowWithoutSanitization is not supported by WebDriver BiDi',
+          );
+        }
+        if (permission.permission.panTiltZoom) {
+          throw new UnsupportedOperation(
+            'panTiltZoom is not supported by WebDriver BiDi',
+          );
+        }
+        if (permission.permission.userVisibleOnly) {
+          throw new UnsupportedOperation(
+            'userVisibleOnly is not supported by WebDriver BiDi',
+          );
+        }
+        return this.userContext.setPermissions(
+          origin,
+          {
+            name: permission.permission.name,
+          },
+          permission.state as Bidi.Permissions.PermissionState,
+        );
+      }),
     );
   }
 

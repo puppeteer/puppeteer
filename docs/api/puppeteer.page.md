@@ -31,13 +31,11 @@ This example creates a page, navigates it to a URL, and then saves a screenshot:
 ```ts
 import puppeteer from 'puppeteer';
 
-(async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.goto('https://example.com');
-  await page.screenshot({path: 'screenshot.png'});
-  await browser.close();
-})();
+const browser = await puppeteer.launch();
+const page = await browser.newPage();
+await page.goto('https://example.com');
+await page.screenshot({path: 'screenshot.png'});
+await browser.close();
 ```
 
 The Page class extends from Puppeteer's [EventEmitter](./puppeteer.eventemitter.md) class and will emit various events which are documented in the [PageEvent](./puppeteer.pageevent.md) enum.
@@ -105,6 +103,27 @@ Blink - Chrome's rendering engine - has a concept of "accessibility tree", which
 Most of the accessibility tree gets filtered out when converting from Blink AX Tree to Platform-specific AX-Tree or by assistive technologies themselves. By default, Puppeteer tries to approximate this filtering, exposing only the "interesting" nodes of the tree.
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Accessibility` class.
+
+</td></tr>
+<tr><td>
+
+<span id="bluetooth">bluetooth</span>
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+[BluetoothEmulation](./puppeteer.bluetoothemulation.md)
+
+</td><td>
+
+Exposes the bluetooth emulation abilities.
+
+**Remarks:**
+
+[Web Bluetooth specification](https://webbluetoothcg.github.io/web-bluetooth/#simulated-bluetooth-adapter) requires the emulated adapters should be isolated per top-level navigable. However, at the moment Chromium's bluetooth emulation implementation is tight to the browser context, not the page. This means the bluetooth emulation exposed from different pages of the same browser context would interfere their states.
 
 </td></tr>
 <tr><td>
@@ -218,6 +237,23 @@ You can use `tracing.start` and `tracing.stop` to create a trace file which can 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Tracing` class.
 
 </td></tr>
+<tr><td>
+
+<span id="webmcp">webmcp</span>
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+[WebMCP](./puppeteer.webmcp.md)
+
+</td><td>
+
+**_(Experimental)_** Experimental API for [WebMCP](https://github.com/webmachinelearning/webmcp). Requires Chrome 149+ with the `--enable-features=WebMCPTesting,DevToolsWebMCPSupport` flags enabled.
+
+</td></tr>
 </tbody></table>
 
 ## Methods
@@ -322,12 +358,12 @@ Shortcut for [page.mainFrame().addScriptTag(options)](./puppeteer.frame.addscrip
 
 Adds a `<link rel="stylesheet">` tag into the page with the desired URL or a `<style type="text/css">` tag with the content.
 
-Shortcut for [page.mainFrame().addStyleTag(options)](./puppeteer.frame.addstyletag.md).
+Shortcut for [page.mainFrame().addStyleTag(options)](./puppeteer.frame.addstyletag.md#overload-2).
 
 </td></tr>
 <tr><td>
 
-<span id="addstyletag">[addStyleTag(options)](./puppeteer.page.addstyletag.md)</span>
+<span id="addstyletag">[addStyleTag(options)](./puppeteer.page.addstyletag.md#overload-2)</span>
 
 </td><td>
 
@@ -386,6 +422,17 @@ Get the browser the page belongs to.
 </td><td>
 
 Get the browser context that the page belongs to.
+
+</td></tr>
+<tr><td>
+
+<span id="captureheapsnapshot">[captureHeapSnapshot(options)](./puppeteer.page.captureheapsnapshot.md)</span>
+
+</td><td>
+
+</td><td>
+
+Captures a snapshot of the JavaScript heap and writes it to a file.
 
 </td></tr>
 <tr><td>
@@ -489,7 +536,7 @@ By default, `page.pdf()` generates a pdf with modified colors for printing. Use 
 
 **Deprecated:**
 
-Page-level cookie API is deprecated. Use [Browser.deleteCookie()](./puppeteer.browser.deletecookie.md) or [BrowserContext.deleteCookie()](./puppeteer.browsercontext.deletecookie.md) instead.
+Page-level cookie API is deprecated. Use [Browser.deleteCookie()](./puppeteer.browser.deletecookie.md), [BrowserContext.deleteCookie()](./puppeteer.browsercontext.deletecookie.md), [Browser.deleteMatchingCookies()](./puppeteer.browser.deletematchingcookies.md) or [BrowserContext.deleteMatchingCookies()](./puppeteer.browsercontext.deletematchingcookies.md) instead.
 
 </td></tr>
 <tr><td>
@@ -506,7 +553,7 @@ To aid emulation, Puppeteer provides a list of known devices that can be via [Kn
 
 **Remarks:**
 
-This method is a shortcut for calling two methods: [Page.setUserAgent()](./puppeteer.page.setuseragent.md) and [Page.setViewport()](./puppeteer.page.setviewport.md).
+This method is a shortcut for calling two methods: [Page.setUserAgent()](./puppeteer.page.setuseragent.md#overload-2) and [Page.setViewport()](./puppeteer.page.setviewport.md).
 
 This method will resize the page. A lot of websites don't expect phones to change size, so you should emulate before navigating to the page.
 
@@ -520,6 +567,17 @@ This method will resize the page. A lot of websites don't expect phones to chang
 </td><td>
 
 Enables CPU throttling to emulate slow CPUs.
+
+</td></tr>
+<tr><td>
+
+<span id="emulatefocusedpage">[emulateFocusedPage(enabled)](./puppeteer.page.emulatefocusedpage.md)</span>
+
+</td><td>
+
+</td><td>
+
+Emulates focus state of the page.
 
 </td></tr>
 <tr><td>
@@ -652,6 +710,19 @@ Functions installed via `page.exposeFunction` survive navigations.
 </td></tr>
 <tr><td>
 
+<span id="extensionrealms">[extensionRealms()](./puppeteer.page.extensionrealms.md)</span>
+
+</td><td>
+
+</td><td>
+
+Retrieves the list of extension execution realms in the main frame of the page. These realms correspond to extension content scripts running on the page.
+
+Shortcut for [mainFrame().extensionRealms()](./puppeteer.frame.extensionrealms.md).
+
+</td></tr>
+<tr><td>
+
 <span id="focus">[focus(selector)](./puppeteer.page.focus.md)</span>
 
 </td><td>
@@ -745,6 +816,17 @@ In headless shell, this method will not throw an error when any valid HTTP statu
 </td></tr>
 <tr><td>
 
+<span id="hasdevtools">[hasDevTools()](./puppeteer.page.hasdevtools.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Returns true if DevTools is attached to the current page. Use [Page.openDevTools()](./puppeteer.page.opendevtools.md) to get the DevTools page.
+
+</td></tr>
+<tr><td>
+
 <span id="hover">[hover(selector)](./puppeteer.page.hover.md)</span>
 
 </td><td>
@@ -821,7 +903,7 @@ Creates a locator for the provided selector. See [Locator](./puppeteer.locator.m
 </td></tr>
 <tr><td>
 
-<span id="locator">[locator(func)](./puppeteer.page.locator.md)</span>
+<span id="locator">[locator(func)](./puppeteer.page.locator.md#overload-2)</span>
 
 </td><td>
 
@@ -854,6 +936,17 @@ Object containing metrics as key/value pairs.
 **Remarks:**
 
 All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
+
+</td></tr>
+<tr><td>
+
+<span id="opendevtools">[openDevTools()](./puppeteer.page.opendevtools.md)</span>
+
+</td><td>
+
+</td><td>
+
+Opens DevTools for the this page if not already open and returns the DevTools page. This method is only available in Chrome.
 
 </td></tr>
 <tr><td>
@@ -919,6 +1012,17 @@ Removes script that injected into page by Page.evaluateOnNewDocument.
 </td></tr>
 <tr><td>
 
+<span id="resize">[resize(params)](./puppeteer.page.resize.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Resizes the browser window of this page so that the content area (excluding browser UI) has the specified width and height.
+
+</td></tr>
+<tr><td>
+
 <span id="screencast">[screencast(options)](./puppeteer.page.screencast.md)</span>
 
 </td><td>
@@ -953,7 +1057,7 @@ Calling [Page.bringToFront()](./puppeteer.page.bringtofront.md) will not wait fo
 </td></tr>
 <tr><td>
 
-<span id="screenshot">[screenshot(options)](./puppeteer.page.screenshot.md)</span>
+<span id="screenshot">[screenshot(options)](./puppeteer.page.screenshot.md#overload-2)</span>
 
 </td><td>
 
@@ -1144,9 +1248,9 @@ NOTE: changing this value won't affect scripts that have already been run. It wi
 
 </td><td>
 
-Sets the network connection to offline.
+Emulates the offline mode.
 
-It does not change the parameters used in [Page.emulateNetworkConditions()](./puppeteer.page.emulatenetworkconditions.md)
+It does not change the download/upload/latency parameters set by [Page.emulateNetworkConditions()](./puppeteer.page.emulatenetworkconditions.md)
 
 </td></tr>
 <tr><td>
@@ -1167,6 +1271,21 @@ See the [Request interception guide](https://pptr.dev/guides/network-interceptio
 <tr><td>
 
 <span id="setuseragent">[setUserAgent(userAgent, userAgentMetadata)](./puppeteer.page.setuseragent.md)</span>
+
+</td><td>
+
+`deprecated`
+
+</td><td>
+
+**Deprecated:**
+
+Use [Page.setUserAgent()](./puppeteer.page.setuseragent.md#overload-2) instead.
+
+</td></tr>
+<tr><td>
+
+<span id="setuseragent">[setUserAgent(options)](./puppeteer.page.setuseragent.md#overload-2)</span>
 
 </td><td>
 
@@ -1235,6 +1354,17 @@ The page's title
 **Remarks:**
 
 Shortcut for [page.mainFrame().title()](./puppeteer.frame.title.md).
+
+</td></tr>
+<tr><td>
+
+<span id="triggerextensionaction">[triggerExtensionAction(extension)](./puppeteer.page.triggerextensionaction.md)</span>
+
+</td><td>
+
+</td><td>
+
+Triggers the default action of the specified extension for this page. This simulates clicking the extension's icon in the browser's toolbar.
 
 </td></tr>
 <tr><td>
@@ -1369,6 +1499,10 @@ Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/Hist
 
 Waits for the network to be idle.
 
+**Remarks:**
+
+The function will always wait at least the set [IdleTime](./puppeteer.waitfornetworkidleoptions.md#idletime).
+
 </td></tr>
 <tr><td>
 
@@ -1384,6 +1518,8 @@ Optional Waiting Parameters have:
 
 - `timeout`: Maximum wait time in milliseconds, defaults to `30` seconds, pass `0` to disable the timeout. The default value can be changed by using the [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) method.
 
+- `signal`: A signal object that allows you to cancel a waitForRequest call.
+
 </td></tr>
 <tr><td>
 
@@ -1398,6 +1534,8 @@ Optional Waiting Parameters have:
 Optional Parameter have:
 
 - `timeout`: Maximum wait time in milliseconds, defaults to `30` seconds, pass `0` to disable the timeout. The default value can be changed by using the [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) method.
+
+- `signal`: A signal object that allows you to cancel a waitForResponse call.
 
 </td></tr>
 <tr><td>
@@ -1419,6 +1557,19 @@ The optional Parameter in Arguments `options` are:
 - `hidden`: Wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
 
 - `timeout`: maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The default value can be changed by using the [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) method.
+
+- `signal`: A signal object that allows you to cancel a waitForSelector call.
+
+</td></tr>
+<tr><td>
+
+<span id="windowid">[windowId()](./puppeteer.page.windowid.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Returns the page's window id.
 
 </td></tr>
 <tr><td>

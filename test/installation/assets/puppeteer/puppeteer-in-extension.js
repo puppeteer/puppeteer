@@ -9,8 +9,8 @@ const pathToExtension = path.join(
 
 const browser = await puppeteer.launch({
   headless: true,
+  enableExtensions: true,
   args: [
-    `--disable-extensions-except=${pathToExtension}`,
     `--load-extension=${pathToExtension}`,
     '--silent-debugger-extension-api',
   ],

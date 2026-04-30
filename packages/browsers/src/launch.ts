@@ -5,16 +5,18 @@
  */
 
 import childProcess from 'node:child_process';
+import {EventEmitter} from 'node:events';
 import {accessSync} from 'node:fs';
 import os from 'node:os';
 import readline from 'node:readline';
+import type Stream from 'node:stream';
 
 import {
   type Browser,
   type BrowserPlatform,
-  resolveSystemExecutablePath,
   type ChromeReleaseChannel,
   executablePathByBrowser,
+  resolveSystemExecutablePaths,
 } from './browser-data/browser-data.js';
 import {Cache} from './Cache.js';
 import {debug} from './debug.js';
@@ -95,8 +97,8 @@ export interface SystemOptions {
 /**
  * Returns a path to a system-wide Chrome installation given a release channel
  * name by checking known installation locations (using
- * https://pptr.dev/browsers-api/browsers.computesystemexecutablepath/). If
- * Chrome instance is not found at the expected path, an error is thrown.
+ * {@link https://pptr.dev/browsers-api/browsers.computesystemexecutablepath}).
+ * If Chrome instance is not found at the expected path, an error is thrown.
  *
  * @public
  */
@@ -107,19 +109,24 @@ export function computeSystemExecutablePath(options: SystemOptions): string {
       `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`,
     );
   }
-  const path = resolveSystemExecutablePath(
+  const paths = resolveSystemExecutablePaths(
     options.browser,
     options.platform,
     options.channel,
   );
-  try {
-    accessSync(path);
-  } catch {
-    throw new Error(
-      `Could not find Google Chrome executable for channel '${options.channel}' at '${path}'.`,
-    );
+  for (const path of paths) {
+    try {
+      accessSync(path);
+      return path;
+    } catch {}
   }
-  return path;
+  throw new Error(
+    `Could not find Google Chrome executable for channel '${options.channel}' at:${paths.map(
+      path => {
+        return `\n - ${path}`;
+      },
+    )}.`,
+  );
 }
 
 /**
@@ -184,6 +191,10 @@ export interface LaunchOptions {
    * signals). The callback is only run once.
    */
   onExit?: () => Promise<void>;
+  /**
+   * If provided, the process will be killed when the signal is aborted.
+   */
+  signal?: AbortSignal;
 }
 
 /**
@@ -274,10 +285,25 @@ export class Process {
   #hooksRan = false;
   #onExitHook = async () => {};
   #browserProcessExiting: Promise<void>;
+  #logs: string[] = [];
+  #maxLogLinesSize = 1000;
+  #lineEmitter = new EventEmitter();
+  #onAbort = (): void => {
+    this.kill();
+  };
+  #signal?: AbortSignal;
 
   constructor(opts: LaunchOptions) {
     this.#executablePath = opts.executablePath;
     this.#args = opts.args ?? [];
+
+    this.#signal = opts.signal;
+    if (this.#signal?.aborted) {
+      throw new Error(
+        this.#signal.reason ? this.#signal.reason : 'Launch aborted',
+      );
+    }
+    this.#signal?.addEventListener('abort', this.#onAbort, {once: true});
 
     opts.pipe ??= false;
     opts.dumpio ??= false;
@@ -289,10 +315,8 @@ export class Process {
     // process tree with `.kill(-pid)` command. @see
     // https://nodejs.org/api/child_process.html#child_process_options_detached
     opts.detached ??= process.platform !== 'win32';
-
     const stdio = this.#configureStdio({
       pipe: opts.pipe,
-      dumpio: opts.dumpio,
     });
 
     const env = opts.env || {};
@@ -320,6 +344,8 @@ export class Process {
         stdio,
       },
     );
+    this.#recordStream(this.#browserProcess.stderr!);
+    this.#recordStream(this.#browserProcess.stdout!);
 
     debugLaunch(`Launched ${this.#browserProcess.pid}`);
     if (opts.dumpio) {
@@ -367,22 +393,11 @@ export class Process {
     return this.#browserProcess;
   }
 
-  #configureStdio(opts: {
-    pipe: boolean;
-    dumpio: boolean;
-  }): Array<'ignore' | 'pipe'> {
+  #configureStdio(opts: {pipe: boolean}): Array<'ignore' | 'pipe'> {
     if (opts.pipe) {
-      if (opts.dumpio) {
-        return ['ignore', 'pipe', 'pipe', 'pipe', 'pipe'];
-      } else {
-        return ['ignore', 'ignore', 'ignore', 'pipe', 'pipe'];
-      }
+      return ['pipe', 'pipe', 'pipe', 'pipe', 'pipe'];
     } else {
-      if (opts.dumpio) {
-        return ['pipe', 'pipe', 'pipe'];
-      } else {
-        return ['pipe', 'ignore', 'pipe'];
-      }
+      return ['pipe', 'pipe', 'pipe'];
     }
   }
 
@@ -391,6 +406,7 @@ export class Process {
     unsubscribeFromProcessEvent('SIGINT', this.#onDriverProcessSignal);
     unsubscribeFromProcessEvent('SIGTERM', this.#onDriverProcessSignal);
     unsubscribeFromProcessEvent('SIGHUP', this.#onDriverProcessSignal);
+    this.#signal?.removeEventListener('abort', this.#onAbort);
   }
 
   #onDriverProcessExit = (_code: number) => {
@@ -477,46 +493,77 @@ export class Process {
     this.#clearListeners();
   }
 
-  waitForLineOutput(regex: RegExp, timeout = 0): Promise<string> {
-    if (!this.#browserProcess.stderr) {
-      throw new Error('`browserProcess` does not have stderr.');
-    }
-    const rl = readline.createInterface(this.#browserProcess.stderr);
-    let stderr = '';
-
-    return new Promise((resolve, reject) => {
-      rl.on('line', onLine);
-      rl.on('close', onClose);
-      this.#browserProcess.on('exit', onClose);
-      this.#browserProcess.on('error', onClose);
-      const timeoutId =
-        timeout > 0 ? setTimeout(onTimeout, timeout) : undefined;
-
-      const cleanup = (): void => {
-        clearTimeout(timeoutId);
-        rl.off('line', onLine);
-        rl.off('close', onClose);
+  #recordStream(stream: Stream.Readable): void {
+    const rl = readline.createInterface(stream);
+    const cleanup = (): void => {
+      rl.off('line', onLine);
+      rl.off('close', onClose);
+      try {
         rl.close();
-        this.#browserProcess.off('exit', onClose);
-        this.#browserProcess.off('error', onClose);
-      };
+      } catch {}
+    };
+    const onLine = (line: string) => {
+      if (line.trim() === '') {
+        return;
+      }
+      this.#logs.push(line);
+      const delta = this.#logs.length - this.#maxLogLinesSize;
+      if (delta) {
+        this.#logs.splice(0, delta);
+      }
+      this.#lineEmitter.emit('line', line);
+    };
+    const onClose = (): void => {
+      cleanup();
+    };
+    rl.on('line', onLine);
+    rl.on('close', onClose);
+  }
 
-      function onClose(error?: Error): void {
+  /**
+   * Get recent logs (stderr + stdout) emitted by the browser.
+   *
+   * @public
+   */
+  getRecentLogs(): string[] {
+    return [...this.#logs];
+  }
+
+  waitForLineOutput(regex: RegExp, timeout = 0): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const onClose = (errorOrCode?: Error | number): void => {
         cleanup();
         reject(
           new Error(
             [
-              `Failed to launch the browser process!${
-                error ? ' ' + error.message : ''
+              `Failed to launch the browser process: ${
+                errorOrCode instanceof Error
+                  ? ` ${errorOrCode.message}`
+                  : ` Code: ${errorOrCode}`
               }`,
-              stderr,
+              '',
+              `stderr:`,
+              this.getRecentLogs().join('\n'),
               '',
               'TROUBLESHOOTING: https://pptr.dev/troubleshooting',
               '',
             ].join('\n'),
           ),
         );
-      }
+      };
+
+      this.#browserProcess.on('exit', onClose);
+      this.#browserProcess.on('error', onClose);
+      const timeoutId =
+        timeout > 0 ? setTimeout(onTimeout, timeout) : undefined;
+
+      this.#lineEmitter.on('line', onLine);
+      const cleanup = (): void => {
+        clearTimeout(timeoutId);
+        this.#lineEmitter.off('line', onLine);
+        this.#browserProcess.off('exit', onClose);
+        this.#browserProcess.off('error', onClose);
+      };
 
       function onTimeout(): void {
         cleanup();
@@ -527,8 +574,11 @@ export class Process {
         );
       }
 
+      for (const line of this.#logs) {
+        onLine(line);
+      }
+
       function onLine(line: string): void {
-        stderr += line + '\n';
         const match = line.match(regex);
         if (!match) {
           return;

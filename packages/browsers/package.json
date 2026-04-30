@@ -1,6 +1,6 @@
 {
   "name": "@puppeteer/browsers",
-  "version": "2.10.2",
+  "version": "2.13.0",
   "description": "Download and launch browsers",
   "scripts": {
     "build:docs": "wireit",
@@ -12,6 +12,7 @@
   "type": "commonjs",
   "bin": "lib/cjs/main-cli.js",
   "main": "./lib/cjs/main.js",
+  "module": "./lib/esm/main.js",
   "exports": {
     "import": "./lib/esm/main.js",
     "require": "./lib/cjs/main.js"
@@ -41,6 +42,15 @@
         "lib/esm/package.json"
       ]
     },
+    "generate:package-json:test": {
+      "command": "node --experimental-strip-types ../../tools/generate_module_package_json.ts test/build/package.json",
+      "files": [
+        "../../tools/generate_module_package_json.ts"
+      ],
+      "output": [
+        "test/build/package.json"
+      ]
+    },
     "build:docs": {
       "command": "api-extractor run --local --config \"./api-extractor.docs.json\"",
       "files": [
@@ -59,10 +69,12 @@
         "test/src/tsconfig.json"
       ],
       "output": [
-        "test/build/**"
+        "test/build/**",
+        "!test/build/package.json"
       ],
       "dependencies": [
         "build",
+        "generate:package-json:test",
         "../testserver:build"
       ]
     },
@@ -95,16 +107,16 @@
     "!*.tsbuildinfo"
   ],
   "dependencies": {
-    "debug": "^4.4.0",
+    "debug": "^4.4.3",
     "extract-zip": "^2.0.1",
     "progress": "^2.0.3",
     "proxy-agent": "^6.5.0",
-    "tar-fs": "^3.0.8",
+    "tar-fs": "^3.1.1",
     "yargs": "^17.7.2",
-    "semver": "^7.7.1"
+    "semver": "^7.7.4"
   },
   "devDependencies": {
-    "@types/debug": "4.1.12",
+    "@types/debug": "4.1.13",
     "@types/progress": "2.0.7",
     "@types/tar-fs": "2.0.4",
     "@types/yargs": "17.0.33",

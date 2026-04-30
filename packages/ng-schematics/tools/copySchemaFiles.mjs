@@ -4,11 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import fs from 'fs/promises';
-import path from 'path';
-import url from 'url';
-
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
 /**
  *
@@ -36,8 +33,8 @@ async function findSchemaFiles(directory, files = []) {
 }
 
 async function copySchemaFiles() {
-  const srcDir = path.join(__dirname, '..', 'src');
-  const outputDir = path.join(__dirname, '..', 'lib');
+  const srcDir = path.join(import.meta.dirname, '..', 'src');
+  const outputDir = path.join(import.meta.dirname, '..', 'lib');
   const files = await findSchemaFiles(srcDir);
 
   const moves = files.map(file => {

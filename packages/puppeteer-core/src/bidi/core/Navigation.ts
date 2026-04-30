@@ -99,6 +99,7 @@ export class Navigation extends EventEmitter<{
     for (const eventName of [
       'browsingContext.domContentLoaded',
       'browsingContext.load',
+      'browsingContext.navigationCommitted',
     ] as const) {
       sessionEmitter.on(eventName, info => {
         if (

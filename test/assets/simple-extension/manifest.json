@@ -1,4 +1,5 @@
 {
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkdj/foSvjYv+9rAjepZIQ3ghb4630EA+xEuUal77xb/NVKcHEamKHEsDKMLTSsmA0qv8biWEqSiZ5JQIdO7KagYCkFOFjHlyPkHgMCmLo14x6sqzQh1XGlALIWiLJXEA3/Z2Kde+dt0iQEbn0B9PBLo+2yghwxlS+YeP3k9YVEpvtq6Yj8v4JUqVT+8rF0A9GIHUvga30wFUpi2W1Fpiqpu+3DbOUn4LXDSgyK8q9h4H21rnAa9Y0tGkxf2Tl7Hy+Q2JuibUa6GrRKojY0TRaFv5H0Y33CtnvIbYFct/6ZpvJCTT1HmDm5yUR1aUY5PGGVREmj5PMbmPK4EwybYckQIDAQAB",
   "name": "Simple extension",
   "version": "0.1",
   "background": {

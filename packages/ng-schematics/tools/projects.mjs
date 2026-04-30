@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {spawn} from 'child_process';
-import {randomUUID} from 'crypto';
-import {readFile, writeFile} from 'fs/promises';
-import {join} from 'path';
-import {cwd} from 'process';
+import {spawn} from 'node:child_process';
+import {randomUUID} from 'node:crypto';
+import {readFile, writeFile} from 'node:fs/promises';
+import {join} from 'node:path';
+import {cwd} from 'node:process';
 
 class AngularProject {
   static ports = new Set();
@@ -39,10 +39,10 @@ class AngularProject {
       'delete:file':
         'rm -f .puppeteerrc.cjs && rm -f tsconfig.e2e.json && rm -R -f e2e/',
       // Runs the Puppeteer Ng-Schematics against the sandbox
-      schematics: 'schematics ../../:ng-add --dry-run=false',
-      'schematics:e2e': 'schematics ../../:e2e --dry-run=false',
-      'schematics:config': 'schematics ../../:config --dry-run=false',
-      'schematics:add': `schematics ../../:ng-add --dry-run=false --test-runner="${testRunner}"`,
+      schematics: 'schematics ../../:ng-add --no-dry-run',
+      'schematics:e2e': 'schematics ../../:e2e --no-dry-run',
+      'schematics:config': 'schematics ../../:config --no-dry-run',
+      'schematics:add': `schematics ../../:ng-add --no-dry-run --test-runner="${testRunner}"`,
       'schematics:smoke': 'ng e2e',
     };
   };

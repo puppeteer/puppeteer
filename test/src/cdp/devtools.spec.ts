@@ -67,7 +67,8 @@ describe('DevTools', function () {
     ).toBe(6);
     expect(await browser.pages()).toContain(page);
   });
-  it('target.page() should return Page when calling asPage on DevTools target', async function () {
+
+  it('browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in connect()', async function () {
     const {puppeteer} = await getTestState({skipLaunch: true});
     const originalBrowser = await launchBrowser(launchOptions);
 
@@ -75,11 +76,46 @@ describe('DevTools', function () {
 
     using browser = await puppeteer.connect({
       browserWSEndpoint,
+      handleDevToolsAsPage: true,
     });
+    const devtoolsPageTarget = await browser.waitForTarget(target => {
+      return target.type() === 'other' && target.url().startsWith('devtools');
+    });
+    const page = (await devtoolsPageTarget.page())!;
+    await page.waitForFunction(() => {
+      // @ts-expect-error devtools context.
+      return Boolean(window.DevToolsAPI);
+    });
+    expect(await browser.pages()).toContain(page);
+  });
+
+  it('browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in launch()', async function () {
+    const browser = await launchBrowser({
+      ...launchOptions,
+      handleDevToolsAsPage: true,
+    });
+
+    const devtoolsPageTarget = await browser.waitForTarget(target => {
+      return target.type() === 'other' && target.url().startsWith('devtools');
+    });
+    const page = (await devtoolsPageTarget.page())!;
+
+    await page.waitForFunction(() => {
+      // @ts-expect-error devtools context.
+      return Boolean(window.DevToolsAPI);
+    });
+    expect(await browser.pages()).toContain(page);
+  });
+
+  it('target.page() should return Page when calling asPage on DevTools target', async function () {
+    const browser = await launchBrowser(launchOptions);
     const devtoolsPageTarget = await browser.waitForTarget(target => {
       return target.type() === 'other';
     });
     const page = (await devtoolsPageTarget.asPage())!;
+    const page2 = (await devtoolsPageTarget.asPage())!;
+    expect(page).toBe(page2);
+
     expect(
       await page.evaluate(() => {
         return 2 * 3;
@@ -101,6 +137,7 @@ describe('DevTools', function () {
     ]);
     await browser.close();
   });
+
   it('should expose DevTools as a page', async () => {
     const browser = await launchBrowser(
       Object.assign({devtools: true}, launchOptions),
@@ -115,8 +152,71 @@ describe('DevTools', function () {
     const page = await target.page();
     await page!.waitForFunction(() => {
       // @ts-expect-error wrong context.
-      return Boolean(DevToolsAPI);
+      return Boolean(window.DevToolsAPI);
     });
     await browser.close();
+  });
+
+  it('should support opening DevTools on a page', async () => {
+    const browser = await launchBrowser({
+      ...launchOptions,
+      devtools: false,
+    });
+    const page = await browser.newPage();
+    await page.goto('about:blank');
+    const devtoolsPage = await page.openDevTools();
+    await devtoolsPage!.waitForFunction(() => {
+      // @ts-expect-error wrong context.
+      return Boolean(window.DevToolsAPI);
+    });
+    await browser.close();
+  });
+
+  it('should retrun same object when calling openDevTools twice', async () => {
+    const browser = await launchBrowser({
+      ...launchOptions,
+      devtools: false,
+    });
+    const page = await browser.newPage();
+    await page.goto('about:blank');
+    const devtoolsPage = await page.openDevTools();
+    const devtoolsPage2 = await page.openDevTools();
+    expect(devtoolsPage).toBe(devtoolsPage2);
+    await browser.close();
+  });
+
+  describe('hasDevTools', () => {
+    it('should report correctly after DevTools is opened', async () => {
+      const browser = await launchBrowser({
+        ...launchOptions,
+        devtools: false,
+      });
+      const page = await browser.newPage();
+      await page.goto('about:blank');
+      expect(await page.hasDevTools()).toBe(false);
+      await page.openDevTools();
+      expect(await page.hasDevTools()).toBe(true);
+      await browser.close();
+    });
+
+    it('should report when DevTools is attached by default', async () => {
+      const browser = await launchBrowser(launchOptions);
+      const page = await browser.newPage();
+      await page.goto('about:blank');
+      expect(await page.hasDevTools()).toBe(true);
+      await browser.close();
+    });
+
+    it('should report when DevTools has been attached to a page with devtools:false', async () => {
+      const browser = await launchBrowser({
+        ...launchOptions,
+        devtools: false,
+      });
+      const page = await browser.newPage();
+      await page.goto('about:blank');
+      await page.openDevTools();
+      expect(await page.hasDevTools()).toBe(true);
+      await browser.close();
+    });
   });
 });

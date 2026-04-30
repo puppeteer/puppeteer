@@ -5,13 +5,11 @@
  */
 
 // TODO: this could be an eslint rule probably.
-import fs from 'fs';
-import path from 'path';
-import url from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import prettier from 'prettier';
 
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const source = 'test/TestExpectations.json';
 let testExpectations = JSON.parse(fs.readFileSync(source, 'utf-8'));
 const committedExpectations = structuredClone(testExpectations);
@@ -30,7 +28,7 @@ function testIdMatchesExpectationPattern(title, pattern) {
 }
 
 const prettierConfig = await import(
-  path.join(__dirname, '..', '.prettierrc.cjs')
+  path.join(import.meta.dirname, '..', '.prettierrc.cjs')
 );
 
 function getSpecificity(item) {

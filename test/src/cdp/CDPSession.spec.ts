@@ -153,7 +153,7 @@ describe('Target.createCDPSession', function () {
           timeout: 50,
         },
       ),
-    ).rejects.toThrowError(
+    ).rejects.toThrow(
       /Increase the 'protocolTimeout' setting in launch\/connect calls for a higher timeout if needed./gi,
     );
   });

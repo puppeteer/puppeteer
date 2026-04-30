@@ -3,8 +3,8 @@
  * Copyright 2020 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type {Protocol} from 'devtools-protocol';
+import type * as Bidi from 'webdriver-bidi-protocol';
 
 import type {Frame} from '../api/Frame.js';
 import {HTTPResponse, type RemoteAddress} from '../api/HTTPResponse.js';
@@ -19,11 +19,21 @@ import type {BidiHTTPRequest} from './HTTPRequest.js';
  * @internal
  */
 export class BidiHTTPResponse extends HTTPResponse {
+  /**
+   * Returns a new BidiHTTPResponse or updates the existing one if it already exists.
+   */
   static from(
     data: Bidi.Network.ResponseData,
     request: BidiHTTPRequest,
     cdpSupported: boolean,
   ): BidiHTTPResponse {
+    const existingResponse = request.response();
+    if (existingResponse) {
+      // Update existing response data with up-to-date data.
+      existingResponse.#data = data;
+      return existingResponse;
+    }
+
     const response = new BidiHTTPResponse(data, request, cdpSupported);
     response.#initialize();
     return response;
@@ -146,7 +156,7 @@ export class BidiHTTPResponse extends HTTPResponse {
     return this.#securityDetails ?? null;
   }
 
-  override content(): never {
-    throw new UnsupportedOperation();
+  async content(): Promise<Uint8Array> {
+    return await this.#request.getResponseContent();
   }
 }

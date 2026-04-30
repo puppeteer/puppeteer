@@ -2,7 +2,8 @@
   "name": "@puppeteer/eslint",
   "version": "0.1.0",
   "private": true,
-  "type": "commonjs",
+  "type": "module",
+  "main": "./lib/plugin.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/puppeteer/puppeteer/tree/main/tools/eslint"
@@ -32,7 +33,7 @@
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@prettier/sync": "0.5.5",
+    "@prettier/sync": "0.6.1",
     "@typescript-eslint/utils": "8.26.1"
   }
 }

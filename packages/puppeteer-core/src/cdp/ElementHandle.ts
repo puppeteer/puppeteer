@@ -170,6 +170,7 @@ export class CdpElementHandle<
       fieldId,
       frameId,
       card: data.creditCard,
+      address: data.address,
     });
   }
 

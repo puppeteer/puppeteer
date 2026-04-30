@@ -20,7 +20,7 @@ import {
   shortWaitForArrayToHaveAtLeastNElements,
 } from './mocha-utils.js';
 import {initializeTouchEventReport} from './touch-event-utils.js';
-import {attachFrame} from './utils.js';
+import {attachFrame, html} from './utils.js';
 
 describe('ElementHandle specs', function () {
   setupTestBrowserHooks();
@@ -48,7 +48,7 @@ describe('ElementHandle specs', function () {
     it('should return null for invisible elements', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('<div style="display:none">hi</div>');
+      await page.setContent(html`<div style="display:none">hi</div>`);
       using element = (await page.$('div'))!;
       expect(await element.boundingBox()).toBe(null);
     });
@@ -57,7 +57,7 @@ describe('ElementHandle specs', function () {
 
       await page.setViewport({width: 500, height: 500});
       await page.setContent(
-        '<div style="width: 100px; height: 100px">hello</div>',
+        html`<div style="width: 100px; height: 100px">hello</div>`,
       );
       using elementHandle = (await page.$('div'))!;
       await page.evaluate(element => {
@@ -69,13 +69,23 @@ describe('ElementHandle specs', function () {
     it('should work with SVG nodes', async () => {
       const {page} = await getTestState();
 
-      await page.setContent(`
-        <svg xmlns="http://www.w3.org/2000/svg" width="500" height="500">
-          <rect id="theRect" x="30" y="50" width="200" height="300"></rect>
+      await page.setContent(html`
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="500"
+          height="500"
+        >
+          <rect
+            id="theRect"
+            x="30"
+            y="50"
+            width="200"
+            height="300"
+          ></rect>
         </svg>
       `);
       using element = (await page.$(
-        '#therect',
+        '#theRect',
       )) as ElementHandle<SVGRectElement>;
       const pptrBoundingBox = await element.boundingBox();
       const webBoundingBox = await page.evaluate(e => {
@@ -145,7 +155,7 @@ describe('ElementHandle specs', function () {
     it('should return null for invisible elements', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('<div style="display:none">hi</div>');
+      await page.setContent(html`<div style="display:none">hi</div>`);
       using element = (await page.$('div'))!;
       expect(await element.boxModel()).toBe(null);
     });
@@ -159,10 +169,12 @@ describe('ElementHandle specs', function () {
       const height = 100;
       const verticalOffset = 100;
       const horizontalOffset = 100;
-      await page.setContent(`<div
-        style='position:absolute; left: ${horizontalOffset}px; top: ${verticalOffset}px; width: ${width}px; height: ${height}px; border: ${border}px solid green; padding: ${padding}px; margin: ${margin}px;'
-        id='box'>
-      </div>`);
+      await page.setContent(
+        html`<div
+          style="position:absolute; left: ${horizontalOffset}px; top: ${verticalOffset}px; width: ${width}px; height: ${height}px; border: ${border}px solid green; padding: ${padding}px; margin: ${margin}px;"
+          id="box"
+        ></div>`,
+      );
       using element = (await page.$('#box'))!;
       const boxModel = await element.boxModel();
 
@@ -249,7 +261,7 @@ describe('ElementHandle specs', function () {
   describe('ElementHandle.isVisible and ElementHandle.isHidden', function () {
     it('should work', async () => {
       const {page} = await getTestState();
-      await page.setContent('<div style="display: none">text</div>');
+      await page.setContent(html`<div style="display: none">text</div>`);
       using element = (await page.waitForSelector('div'))!;
       await expect(element.isVisible()).resolves.toBeFalsy();
       await expect(element.isHidden()).resolves.toBeTruthy();
@@ -392,7 +404,7 @@ describe('ElementHandle specs', function () {
     it('should throw for <br> elements', async () => {
       const {page} = await getTestState();
 
-      await page.setContent('hello<br>goodbye');
+      await page.setContent(html`hello<br />goodbye`);
       using br = (await page.$('br'))!;
       const error = await br.click().catch(error_ => {
         return error_;
@@ -606,25 +618,33 @@ describe('ElementHandle specs', function () {
       const {page} = await getTestState();
 
       await page.setContent(
-        '<button style="width: 10px; height: 10px; position: absolute; left: -20px"></button>',
+        html`<button
+          style="width: 10px; height: 10px; position: absolute; left: -20px"
+        ></button>`,
       );
       using handle = await page.locator('button').waitHandle();
       await expect(handle.clickablePoint()).rejects.toBeInstanceOf(Error);
 
       await page.setContent(
-        '<button style="width: 10px; height: 10px; position: absolute; right: -20px"></button>',
+        html`<button
+          style="width: 10px; height: 10px; position: absolute; right: -20px"
+        ></button>`,
       );
       using handle2 = await page.locator('button').waitHandle();
       await expect(handle2.clickablePoint()).rejects.toBeInstanceOf(Error);
 
       await page.setContent(
-        '<button style="width: 10px; height: 10px; position: absolute; top: -20px"></button>',
+        html`<button
+          style="width: 10px; height: 10px; position: absolute; top: -20px"
+        ></button>`,
       );
       using handle3 = await page.locator('button').waitHandle();
       await expect(handle3.clickablePoint()).rejects.toBeInstanceOf(Error);
 
       await page.setContent(
-        '<button style="width: 10px; height: 10px; position: absolute; bottom: -20px"></button>',
+        html`<button
+          style="width: 10px; height: 10px; position: absolute; bottom: -20px"
+        ></button>`,
       );
       using handle4 = await page.locator('button').waitHandle();
       await expect(handle4.clickablePoint()).rejects.toBeInstanceOf(Error);
@@ -634,7 +654,11 @@ describe('ElementHandle specs', function () {
       const {page} = await getTestState();
 
       await page.setContent(
-        `<iframe name='frame' style='position: absolute; left: -100px' srcdoc="<button style='width: 10px; height: 10px;'></button>"></iframe>`,
+        html`<iframe
+          name="frame"
+          style="position: absolute; left: -100px"
+          srcdoc="<button style='width: 10px; height: 10px;'></button>"
+        ></iframe>`,
       );
       const frame = await page.waitForFrame(async frame => {
         using element = await frame.frameElement();
@@ -651,7 +675,11 @@ describe('ElementHandle specs', function () {
       await expect(handle.clickablePoint()).rejects.toBeInstanceOf(Error);
 
       await page.setContent(
-        `<iframe name='frame2' style='position: absolute; top: -100px' srcdoc="<button style='width: 10px; height: 10px;'></button>"></iframe>`,
+        html`<iframe
+          name="frame2"
+          style="position: absolute; top: -100px"
+          srcdoc="<button style='width: 10px; height: 10px;'></button>"
+        ></iframe>`,
       );
       const frame2 = await page.waitForFrame(async frame => {
         using element = await frame.frameElement();
@@ -708,7 +736,9 @@ describe('ElementHandle specs', function () {
       }) as Promise<ElementHandle<HTMLDivElement>>;
       // Set the page content after the waitFor has been started.
       await page.setContent(
-        '<div id="not-foo"></div><div class="bar">bar2</div><div class="foo">Foo1</div>',
+        html`<div id="not-foo"></div>
+          <div class="bar">bar2</div>
+          <div class="foo">Foo1</div>`,
       );
       using element = (await waitFor)!;
       if (element instanceof Error) {
@@ -738,15 +768,11 @@ describe('ElementHandle specs', function () {
       const {page} = await getTestState();
       // Set the page content after the waitFor has been started.
       await page.setContent(
-        `<div id=el1>
-          el1
-          <div id=el2>
-            el2
+        html`<div id="el1">
+            el1
+            <div id="el2">el2</div>
           </div>
-        </div>
-        <div id=el3>
-          el3
-        </div>`,
+          <div id="el3">el3</div>`,
       );
 
       using elById = (await page.waitForSelector(
@@ -904,7 +930,9 @@ describe('ElementHandle specs', function () {
     });
     it('should register and unregister', async () => {
       const {page} = await getTestState();
-      await page.setContent('<div id="not-foo"></div><div id="foo"></div>');
+      await page.setContent(
+        html`<div id="not-foo"></div> <div id="foo"></div>`,
+      );
 
       // Register.
       Puppeteer.registerCustomQueryHandler('getById', {
@@ -956,7 +984,9 @@ describe('ElementHandle specs', function () {
     it('should work for multiple elements', async () => {
       const {page} = await getTestState();
       await page.setContent(
-        '<div id="not-foo"></div><div class="foo">Foo1</div><div class="foo baz">Foo2</div>',
+        html`<div id="not-foo"></div>
+          <div class="foo">Foo1</div>
+          <div class="foo baz">Foo2</div>`,
       );
       Puppeteer.registerCustomQueryHandler('getByClass', {
         queryAll: (_element, selector) => {
@@ -979,7 +1009,9 @@ describe('ElementHandle specs', function () {
     it('should eval correctly', async () => {
       const {page} = await getTestState();
       await page.setContent(
-        '<div id="not-foo"></div><div class="foo">Foo1</div><div class="foo baz">Foo2</div>',
+        html`<div id="not-foo"></div>
+          <div class="foo">Foo1</div>
+          <div class="foo baz">Foo2</div>`,
       );
       Puppeteer.registerCustomQueryHandler('getByClass', {
         queryAll: (_element, selector) => {
@@ -1005,7 +1037,7 @@ describe('ElementHandle specs', function () {
 
       // Set the page content after the waitFor has been started.
       await page.setContent(
-        '<div id="not-foo"></div><div class="foo">Foo1</div>',
+        html`<div id="not-foo"></div> <div class="foo">Foo1</div>`,
       );
       const element = await waitFor;
 
@@ -1029,7 +1061,9 @@ describe('ElementHandle specs', function () {
 
       // Set the page content after the waitFor has been started.
       await page.setContent(
-        '<div id="not-foo"></div><div class="bar">bar2</div><div class="foo">Foo1</div>',
+        html`<div id="not-foo"></div>
+          <div class="bar">bar2</div>
+          <div class="foo">Foo1</div>`,
       );
       using element = (await waitFor)!;
       if (element instanceof Error) {
@@ -1062,7 +1096,14 @@ describe('ElementHandle specs', function () {
     it('should work when both queryOne and queryAll are registered', async () => {
       const {page} = await getTestState();
       await page.setContent(
-        '<div id="not-foo"></div><div class="foo"><div id="nested-foo" class="foo"/></div><div class="foo baz">Foo2</div>',
+        html`<div id="not-foo"></div>
+          <div class="foo"
+            ><div
+              id="nested-foo"
+              class="foo"
+            ></div
+          ></div>
+          <div class="foo baz">Foo2</div>`,
       );
       Puppeteer.registerCustomQueryHandler('getByClass', {
         queryOne: (element, selector) => {
@@ -1082,7 +1123,9 @@ describe('ElementHandle specs', function () {
     it('should eval when both queryOne and queryAll are registered', async () => {
       const {page} = await getTestState();
       await page.setContent(
-        '<div id="not-foo"></div><div class="foo">text</div><div class="foo baz">content</div>',
+        html`<div id="not-foo"></div>
+          <div class="foo">text</div>
+          <div class="foo baz">content</div>`,
       );
       Puppeteer.registerCustomQueryHandler('getByClass', {
         queryOne: (element, selector) => {
@@ -1110,7 +1153,9 @@ describe('ElementHandle specs', function () {
 
     it('should work with function shorthands', async () => {
       const {page} = await getTestState();
-      await page.setContent('<div id="not-foo"></div><div id="foo"></div>');
+      await page.setContent(
+        html`<div id="not-foo"></div> <div id="foo"></div>`,
+      );
 
       Puppeteer.registerCustomQueryHandler('getById', {
         // This is a function shorthand
@@ -1133,7 +1178,7 @@ describe('ElementHandle specs', function () {
   describe('ElementHandle.toElement', () => {
     it('should work', async () => {
       const {page} = await getTestState();
-      await page.setContent('<div class="foo">Foo1</div>');
+      await page.setContent(html`<div class="foo">Foo1</div>`);
       using element = await page.$('.foo');
       using div = await element?.toElement('div');
       expect(div).toBeDefined();
@@ -1144,7 +1189,7 @@ describe('ElementHandle specs', function () {
     it('should dispose cached isolated handler', async () => {
       const {page} = await getTestState();
 
-      await page.setContent(`<button>Click me!</button>`);
+      await page.setContent(html`<button>Click me!</button>`);
 
       using button = (await page.waitForSelector('button'))!;
 

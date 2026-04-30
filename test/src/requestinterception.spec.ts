@@ -12,7 +12,7 @@ import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {isFavicon, waitEvent} from './utils.js';
+import {html, isFavicon, waitEvent} from './utils.js';
 
 describe('request interception', function () {
   setupTestBrowserHooks();
@@ -60,9 +60,17 @@ describe('request interception', function () {
       page.on('request', request => {
         return request.continue();
       });
-      await page.setContent(`
-        <form action='/rredirect' method='post'>
-          <input type="hidden" id="foo" name="foo" value="FOOBAR">
+      await page.setContent(html`
+        <form
+          action="/rredirect"
+          method="post"
+        >
+          <input
+            type="hidden"
+            id="foo"
+            name="foo"
+            value="FOOBAR"
+          />
         </form>
       `);
       await Promise.all([
@@ -71,6 +79,49 @@ describe('request interception', function () {
         }),
         page.waitForNavigation(),
       ]);
+    });
+    it('should work with keep alive redirects', async () => {
+      const {page, server} = await getTestState();
+      server.setRoute('/rredirect', (_req, res) => {
+        res.writeHead(302, {location: '/target'});
+        res.end();
+      });
+      server.setRoute('/target', (_req, res) => {
+        res.end('Hello World');
+      });
+      await page.goto(server.EMPTY_PAGE);
+      page.on('request', request => {
+        void request.continue();
+      });
+      await page.setRequestInterception(true);
+      const redirectRequest = page.waitForRequest(
+        request => {
+          return request.url().endsWith('/rredirect');
+        },
+        {
+          timeout: 1000,
+        },
+      );
+      const targetResponse = page.waitForResponse(
+        response => {
+          return response.request().url().endsWith('/target');
+        },
+        {
+          timeout: 1000,
+        },
+      );
+      await page.evaluate(async url => {
+        void fetch(url, {
+          method: 'POST',
+          body: JSON.stringify({test: 'test'}),
+          mode: 'no-cors',
+          keepalive: true,
+        }).then(async res => {
+          console.log(await res.text());
+        });
+      }, server.PREFIX + '/rredirect');
+      await redirectRequest;
+      await targetResponse;
     });
     // @see https://github.com/puppeteer/puppeteer/issues/3973
     it('should work when header manipulation headers with redirect', async () => {
@@ -124,6 +175,22 @@ describe('request interception', function () {
       await page.goto(server.PREFIX + '/one-style.html');
       expect(requests[1]!.url()).toContain('/one-style.css');
       expect(requests[1]!.headers()['referer']).toContain('/one-style.html');
+    });
+    it('should not allow mutating request headers', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setRequestInterception(true);
+      const requests: HTTPRequest[] = [];
+      page.on('request', request => {
+        if (!isFavicon(request)) {
+          requests.push(request);
+        }
+        const headers = request.headers();
+        headers['test'] = 'test';
+        void request.continue({headers: request.headers()});
+      });
+      await page.goto(server.EMPTY_PAGE);
+      expect(Object.keys(requests[0]!.headers())).not.toContain('test');
     });
     it('should work with requests without networkId', async () => {
       const {page, server} = await getTestState();
@@ -546,7 +613,7 @@ describe('request interception', function () {
     it('should not throw "Invalid Interception Id" if the request was cancelled', async () => {
       const {page, server} = await getTestState();
 
-      await page.setContent('<iframe></iframe>');
+      await page.setContent(html`<iframe></iframe>`);
       await page.setRequestInterception(true);
       let request!: HTTPRequest;
       page.on('request', async r => {
@@ -583,6 +650,7 @@ describe('request interception', function () {
         }
       });
       await page.goto(server.EMPTY_PAGE);
+      expect(error).toBeDefined();
       expect(error.message).toContain('Request Interception is not enabled');
     });
     it('should work with file URLs', async () => {
@@ -595,7 +663,9 @@ describe('request interception', function () {
         void request.continue();
       });
       await page.goto(
-        pathToFileURL(path.join(__dirname, '../assets', 'one-style.html')),
+        pathToFileURL(
+          path.join(import.meta.dirname, '../assets', 'one-style.html'),
+        ),
       );
       expect(urls.size).toBe(2);
       expect(urls.has('one-style.html')).toBe(true);
@@ -677,6 +747,16 @@ describe('request interception', function () {
       });
       await page.goto(server.PREFIX + '/cached/one-style-font.html');
       await responsePromise;
+    });
+    it('should work with worker', async () => {
+      const {page, server} = await getTestState();
+
+      await Promise.all([
+        waitEvent(page, 'workercreated'),
+        page.goto(server.PREFIX + '/worker/worker.html'),
+      ]);
+
+      await page.setRequestInterception(true);
     });
   });
 
@@ -912,7 +992,7 @@ describe('request interception', function () {
       await page.setRequestInterception(true);
       page.on('request', request => {
         const imageBuffer = fs.readFileSync(
-          path.join(__dirname, '../assets', 'pptr.png'),
+          path.join(import.meta.dirname, '../assets', 'pptr.png'),
         );
         void request.respond({
           contentType: 'image/png',

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {Session} from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type {Session} from 'webdriver-bidi-protocol';
 
 import type {
   IsPageTargetCallback,
@@ -39,6 +39,15 @@ export interface SupportedWebDriverCapabilities {
 }
 
 /**
+ * @public
+ */
+export type ChromeReleaseChannel =
+  | 'chrome'
+  | 'chrome-beta'
+  | 'chrome-canary'
+  | 'chrome-dev';
+
+/**
  * Generic browser options that can be passed when launching any browser or when
  * connecting to an existing browser instance.
  * @public
@@ -49,6 +58,33 @@ export interface ConnectOptions {
    * @defaultValue `false`
    */
   acceptInsecureCerts?: boolean;
+  /**
+   * If specified, puppeteer looks for an open WebSocket at the well-known
+   * default user data directory for the specified channel and attempts to
+   * connect to it using ws://localhost:$ActivePort/devtools/browser. Only works
+   * for Chrome and when run in Node.js.
+   *
+   * This option is experimental when used with puppeteer.connect().
+   *
+   * @experimental
+   */
+  channel?: ChromeReleaseChannel;
+  /**
+   * Experimental setting to disable monitoring network events by default. When
+   * set to `false`, parts of Puppeteer that depend on network events would not
+   * work such as HTTPRequest and HTTPResponse.
+   *
+   * @experimental
+   * @defaultValue `true`
+   */
+  networkEnabled?: boolean;
+  /**
+   * Experimental setting to disable monitoring issue events by default.
+   *
+   * @experimental
+   * @defaultValue `true`
+   */
+  issuesEnabled?: boolean;
   /**
    * Sets the viewport for each page.
    *
@@ -74,6 +110,14 @@ export interface ConnectOptions {
   _isPageTarget?: IsPageTargetCallback;
 
   /**
+   * Whether to handle the DevTools windows as pages in Puppeteer. Supported
+   * only in Chrome with CDP.
+   *
+   * @defaultValue 'false'
+   */
+  handleDevToolsAsPage?: boolean;
+
+  /**
    * @defaultValue Determined at run time:
    *
    * - Launching Chrome - 'cdp'.
@@ -96,6 +140,14 @@ export interface ConnectOptions {
   browserURL?: string;
   transport?: ConnectionTransport;
   /**
+   * @internal
+   *
+   * Custom ID generator for CDP / BiDi messages. Useful if the same transport
+   * is shared for multiple connections.
+   */
+  idGenerator?: () => number;
+
+  /**
    * Headers to use for the web socket connection.
    * @remarks
    * Only works in the Node.js environment.
@@ -109,4 +161,62 @@ export interface ConnectOptions {
    * Only works for `protocol="webDriverBiDi"` and {@link Puppeteer.connect}.
    */
   capabilities?: SupportedWebDriverCapabilities;
+
+  /**
+   * A list of URL patterns to block.
+   *
+   * This option allows you to restrict the browser from accessing specific
+   * URLs or origins. It uses the standard [URLPattern](https://urlpattern.spec.whatwg.org/) API to match URLs.
+   *
+   * When connecting to an existing browser, Puppeteer will silently detach from any
+   * already open targets that violate the patterns.
+   *
+   * For any network requests made by the browser (including navigations and
+   * subresources like images or scripts), the request will fail with an error
+   * if the URL matches a blocked pattern.
+   *
+   * @example Pattern to block a specific domain:
+   * `*://example.com/*`
+   *
+   * @example Pattern to block all subdomains:
+   * `*://*.evil.com/*`
+   *
+   * @remarks
+   * Currently only supported for CDP connections.
+   *
+   * Cannot be used along with {@link ConnectOptions.allowlist}.
+   *
+   * @experimental
+   */
+  blocklist?: string[];
+  /**
+   * A list of URL patterns to allow.
+   *
+   * **Requires Chrome 149+.**
+   *
+   * This option allows you to restrict the browser from accessing any URLs
+   * except for those that match the patterns in the allowList.
+   * It uses the standard [URLPattern](https://urlpattern.spec.whatwg.org/) API to match URLs.
+   *
+   * When connecting to an existing browser, Puppeteer will silently detach from any
+   * already open targets that violate the patterns.
+   *
+   * For any network requests made by the browser (including navigations and
+   * subresources like images or scripts), the request will fail with an error
+   * if the URL does not match any pattern in the allowlist.
+   *
+   * @example Pattern to allow a specific domain:
+   * `*://example.com/*`
+   *
+   * @example Pattern to allow all subdomains:
+   * `*://*.example.com/*`
+   *
+   * @remarks
+   * Currently only supported for CDP connections.
+   *
+   * Cannot be used along with {@link ConnectOptions.blocklist}.
+   *
+   * @experimental
+   */
+  allowlist?: string[];
 }

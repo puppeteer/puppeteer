@@ -7,14 +7,21 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {firstValueFrom, from, raceWith} from '../../third_party/rxjs/rxjs.js';
-import type {Browser} from '../api/Browser.js';
+import type {BluetoothEmulation} from '../api/BluetoothEmulation.js';
+import type {Browser, WindowId} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
+import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
+import type {Extension} from '../api/Extension.js';
 import type {Frame, WaitForOptions} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {JSHandle} from '../api/JSHandle.js';
-import type {Credentials} from '../api/Page.js';
+import type {
+  Credentials,
+  HeapSnapshotOptions,
+  ReloadOptions,
+} from '../api/Page.js';
 import {
   Page,
   PageEvent,
@@ -26,15 +33,14 @@ import {
   type ScreenshotOptions,
   type WaitTimeoutOptions,
 } from '../api/Page.js';
-import {
-  ConsoleMessage,
-  type ConsoleMessageType,
-} from '../common/ConsoleMessage.js';
+import {WebWorker, WebWorkerEvent} from '../api/WebWorker.js';
+import {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {
   Cookie,
   DeleteCookiesRequest,
   CookieParam,
   CookiePartitionKey,
+  CookieSameSite,
 } from '../common/Cookie.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -52,16 +58,19 @@ import {
   validateDialogType,
 } from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
+import {environment} from '../environment.js';
+import type {Realm} from '../index-browser.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {AsyncDisposableStack} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {Binding} from './Binding.js';
+import {CdpBluetoothEmulation} from './BluetoothEmulation.js';
+import type {CdpBrowser} from './Browser.js';
 import {CdpCDPSession} from './CdpSession.js';
 import {isTargetClosedError} from './Connection.js';
 import {Coverage} from './Coverage.js';
-import type {DeviceRequestPrompt} from './DeviceRequestPrompt.js';
 import {CdpDialog} from './Dialog.js';
 import {EmulationManager} from './EmulationManager.js';
 import type {CdpFrame} from './Frame.js';
@@ -77,18 +86,27 @@ import {TargetManagerEvent} from './TargetManageEvents.js';
 import type {TargetManager} from './TargetManager.js';
 import {Tracing} from './Tracing.js';
 import {
+  convertConsoleMessageLevel,
   createClientError,
+  createConsoleMessage,
   pageBindingInitString,
-  valueFromRemoteObject,
 } from './utils.js';
+import {WebMCP} from './WebMCP.js';
 import {CdpWebWorker} from './WebWorker.js';
 
-function convertConsoleMessageLevel(method: string): ConsoleMessageType {
-  switch (method) {
-    case 'warning':
-      return 'warn';
+/**
+ * @internal
+ */
+export function convertSameSiteFromPuppeteerToCdp(
+  sameSite: CookieSameSite | undefined,
+): Protocol.Network.CookieSameSite | undefined {
+  switch (sameSite) {
+    case 'Strict':
+    case 'Lax':
+    case 'None':
+      return sameSite;
     default:
-      return method as ConsoleMessageType;
+      return undefined;
   }
 }
 
@@ -119,6 +137,7 @@ export class CdpPage extends Page {
 
   #closed = false;
   readonly #targetManager: TargetManager;
+  readonly #cdpBluetoothEmulation: CdpBluetoothEmulation;
 
   #primaryTargetClient: CdpCDPSession;
   #primaryTarget: CdpTarget;
@@ -130,6 +149,7 @@ export class CdpPage extends Page {
   #frameManager: FrameManager;
   #emulationManager: EmulationManager;
   #tracing: Tracing;
+  #webmcp: WebMCP;
   #bindings = new Map<string, Binding>();
   #exposedFunctions = new Map<string, string>();
   #coverage: Coverage;
@@ -147,6 +167,7 @@ export class CdpPage extends Page {
     assert(this.#tabTargetClient, 'Tab target session is not defined.');
     this.#tabTarget = (this.#tabTargetClient as CdpCDPSession).target();
     assert(this.#tabTarget, 'Tab target is not defined.');
+    this._tabId = this.#tabTarget._getTargetInfo().targetId;
     this.#primaryTarget = target;
     this.#targetManager = target._targetManager();
     this.#keyboard = new CdpKeyboard(client);
@@ -155,8 +176,15 @@ export class CdpPage extends Page {
     this.#frameManager = new FrameManager(client, this, this._timeoutSettings);
     this.#emulationManager = new EmulationManager(client);
     this.#tracing = new Tracing(client);
+    this.#webmcp = new WebMCP(client, this.#frameManager);
     this.#coverage = new Coverage(client);
     this.#viewport = null;
+
+    // Use browser context's connection, as current Bluetooth emulation in Chromium is
+    // implemented on the browser context level, and not tight to the specific tab.
+    this.#cdpBluetoothEmulation = new CdpBluetoothEmulation(
+      this.#primaryTargetClient.connection(),
+    );
 
     const frameManagerEmitter = new EventEmitter(this.#frameManager);
     frameManagerEmitter.on(FrameManagerEvent.FrameAttached, frame => {
@@ -270,6 +298,7 @@ export class CdpPage extends Page {
     this.#touchscreen.updateClient(newSession);
     this.#emulationManager.updateClient(newSession);
     this.#tracing.updateClient(newSession);
+    this.#webmcp.updateClient(newSession);
     this.#coverage.updateClient(newSession);
     await this.#frameManager.swapFrameTree(newSession);
     this.#setupPrimaryTargetListeners();
@@ -335,11 +364,29 @@ export class CdpPage extends Page {
         session.target().url(),
         session.target()._targetId,
         session.target().type(),
-        this.#addConsoleMessage.bind(this),
         this.#handleException.bind(this),
         this.#frameManager.networkManager,
       );
       this.#workers.set(session.id(), worker);
+      worker.internalEmitter.on(WebWorkerEvent.Console, message => {
+        const noListenersForConsoleOnPage =
+          this.listenerCount(PageEvent.Console) === 0;
+        const noListenersForConsoleOnWorker =
+          worker.listenerCount(WebWorkerEvent.Console) === 0;
+
+        if (noListenersForConsoleOnPage && noListenersForConsoleOnWorker) {
+          // eslint-disable-next-line max-len -- The comment is long.
+          // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
+          for (const arg of message.args()) {
+            void arg.dispose().catch(debugError);
+          }
+          return;
+        }
+
+        if (!noListenersForConsoleOnPage) {
+          this.emit(PageEvent.Console, message);
+        }
+      });
       this.emit(PageEvent.WorkerCreated, worker);
     }
     session.on(CDPSessionEvent.Ready, this.#onAttachedToTarget);
@@ -351,6 +398,7 @@ export class CdpPage extends Page {
         this.#frameManager.initialize(this.#primaryTargetClient),
         this.#primaryTargetClient.send('Performance.enable'),
         this.#primaryTargetClient.send('Log.enable'),
+        this.#webmcp.initialize(),
       ]);
     } catch (err) {
       if (isErrorLike(err) && isTargetClosedError(err)) {
@@ -359,6 +407,26 @@ export class CdpPage extends Page {
         throw err;
       }
     }
+  }
+
+  override async resize(params: {
+    contentWidth: number;
+    contentHeight: number;
+  }): Promise<void> {
+    const windowId = await this.windowId();
+    await this.#primaryTargetClient.send('Browser.setContentsSize', {
+      windowId: Number(windowId),
+      width: params.contentWidth,
+      height: params.contentHeight,
+    });
+  }
+
+  override async windowId(): Promise<WindowId> {
+    const {windowId} = await this.#primaryTargetClient.send(
+      'Browser.getWindowForTarget',
+    );
+
+    return windowId.toString();
   }
 
   async #onFileChooser(
@@ -400,6 +468,25 @@ export class CdpPage extends Page {
 
   override isJavaScriptEnabled(): boolean {
     return this.#emulationManager.javascriptEnabled;
+  }
+
+  override async openDevTools(): Promise<Page> {
+    const pageTargetId = this.target()._targetId;
+    const browser = this.browser() as CdpBrowser;
+    const devtoolsTargetId = await browser._hasDevToolsTarget(
+      this.target()._targetId,
+    );
+    if (devtoolsTargetId) {
+      return await browser._getDevToolsTargetPage(devtoolsTargetId);
+    }
+    const devtoolsPage = await browser._createDevToolsPage(pageTargetId);
+    return devtoolsPage;
+  }
+
+  override async hasDevTools(): Promise<boolean> {
+    const browser = this.browser() as CdpBrowser;
+    const targetId = await browser._hasDevToolsTarget(this.target()._targetId);
+    return Boolean(targetId);
   }
 
   override async waitForFileChooser(
@@ -465,7 +552,8 @@ export class CdpPage extends Page {
   }
 
   #onLogEntryAdded(event: Protocol.Log.EntryAddedEvent): void {
-    const {level, text, args, source, url, lineNumber} = event.entry;
+    const {level, text, args, source, url, lineNumber, stackTrace} =
+      event.entry;
     if (args) {
       args.map(arg => {
         void releaseObject(this.#primaryTargetClient, arg);
@@ -479,6 +567,9 @@ export class CdpPage extends Page {
           text,
           [],
           [{url, lineNumber}],
+          undefined,
+          stackTrace,
+          this.#primaryTarget._targetId,
         ),
       );
     }
@@ -502,6 +593,10 @@ export class CdpPage extends Page {
 
   override get tracing(): Tracing {
     return this.#tracing;
+  }
+
+  override get webmcp(): WebMCP {
+    return this.#webmcp;
   }
 
   override frames(): Frame[] {
@@ -543,6 +638,10 @@ export class CdpPage extends Page {
     return await this.#frameManager.networkManager.emulateNetworkConditions(
       networkConditions,
     );
+  }
+
+  override async emulateFocusedPage(enabled: boolean): Promise<void> {
+    return await this.#emulationManager.emulateFocus(enabled);
   }
 
   override setDefaultNavigationTimeout(timeout: number): void {
@@ -604,6 +703,8 @@ export class CdpPage extends Page {
         partitionKey: cookie.partitionKey
           ? cookie.partitionKey.topLevelSite
           : undefined,
+        // TODO: remove sameParty as it is removed from Chrome.
+        sameParty: false,
       };
     });
   }
@@ -664,6 +765,7 @@ export class CdpPage extends Page {
             partitionKey: convertCookiesPartitionKeyFromPuppeteerToCdp(
               cookieParam.partitionKey,
             ),
+            sameSite: convertSameSiteFromPuppeteerToCdp(cookieParam.sameSite),
           };
         }),
       });
@@ -732,13 +834,29 @@ export class CdpPage extends Page {
   }
 
   override async setUserAgent(
-    userAgent: string,
+    userAgentOrOptions:
+      | string
+      | {
+          userAgent?: string;
+          userAgentMetadata?: Protocol.Emulation.UserAgentMetadata;
+          platform?: string;
+        },
     userAgentMetadata?: Protocol.Emulation.UserAgentMetadata,
   ): Promise<void> {
-    return await this.#frameManager.networkManager.setUserAgent(
-      userAgent,
-      userAgentMetadata,
-    );
+    if (typeof userAgentOrOptions === 'string') {
+      return await this.#frameManager.networkManager.setUserAgent(
+        userAgentOrOptions,
+        userAgentMetadata,
+      );
+    } else {
+      const userAgent =
+        userAgentOrOptions.userAgent ?? (await this.browser().userAgent());
+      return await this.#frameManager.networkManager.setUserAgent(
+        userAgent,
+        userAgentOrOptions.userAgentMetadata,
+        userAgentOrOptions.platform,
+      );
+    }
   }
 
   override async metrics(): Promise<Metrics> {
@@ -746,6 +864,40 @@ export class CdpPage extends Page {
       'Performance.getMetrics',
     );
     return this.#buildMetricsObject(response.metrics);
+  }
+
+  override async captureHeapSnapshot(
+    options: HeapSnapshotOptions,
+  ): Promise<void> {
+    const {createWriteStream} = environment.value.fs;
+    const stream = createWriteStream(options.path);
+    const streamPromise = new Promise<void>((resolve, reject) => {
+      stream.on('error', reject);
+      stream.on('finish', resolve);
+    });
+
+    const client = this.#primaryTargetClient;
+    await client.send('HeapProfiler.enable');
+    await client.send('HeapProfiler.collectGarbage');
+
+    const handler = (
+      event: Protocol.HeapProfiler.AddHeapSnapshotChunkEvent,
+    ) => {
+      stream.write(event.chunk);
+    };
+    client.on('HeapProfiler.addHeapSnapshotChunk', handler);
+
+    try {
+      await client.send('HeapProfiler.takeHeapSnapshot', {
+        reportProgress: false,
+      });
+    } finally {
+      client.off('HeapProfiler.addHeapSnapshotChunk', handler);
+      await client.send('HeapProfiler.disable');
+    }
+
+    stream.end();
+    await streamPromise;
   }
 
   #emitMetrics(event: Protocol.Performance.MetricsEvent): void {
@@ -778,15 +930,36 @@ export class CdpPage extends Page {
   #onConsoleAPI(
     world: IsolatedWorld,
     event: Protocol.Runtime.ConsoleAPICalledEvent,
+    values?: JSHandle[],
   ): void {
-    const values = event.args.map(arg => {
-      return world.createCdpHandle(arg);
-    });
-    this.#addConsoleMessage(
-      convertConsoleMessageLevel(event.type),
-      values,
-      event.stackTrace,
-    );
+    if (!values) {
+      values = event.args.map(arg => {
+        return world.createCdpHandle(arg);
+      });
+    }
+
+    const hasPageConsoleListeners = this.listenerCount(PageEvent.Console) > 0;
+    const hasWorkerConsoleListeners =
+      world.environment instanceof WebWorker &&
+      world.environment.listenerCount(WebWorkerEvent.Console) > 0;
+
+    if (!hasPageConsoleListeners) {
+      if (!hasWorkerConsoleListeners) {
+        // eslint-disable-next-line max-len -- The comment is long.
+        // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
+        for (const value of values) {
+          void value.dispose().catch(debugError);
+        }
+      }
+      return;
+    }
+
+    let targetId;
+    if (world.environment.client instanceof CdpCDPSession) {
+      targetId = world.environment.client.target()._targetId;
+    }
+
+    this.emit(PageEvent.Console, createConsoleMessage(event, values, targetId));
   }
 
   async #onBindingCalled(
@@ -815,47 +988,6 @@ export class CdpPage extends Page {
     await binding?.run(context, seq, args, isTrivial);
   }
 
-  #addConsoleMessage(
-    eventType: string,
-    args: JSHandle[],
-    stackTrace?: Protocol.Runtime.StackTrace,
-  ): void {
-    if (!this.listenerCount(PageEvent.Console)) {
-      args.forEach(arg => {
-        return arg.dispose();
-      });
-      return;
-    }
-    const textTokens = [];
-    // eslint-disable-next-line max-len -- The comment is long.
-    // eslint-disable-next-line rulesdir/use-using -- These are not owned by this function.
-    for (const arg of args) {
-      const remoteObject = arg.remoteObject();
-      if (remoteObject.objectId) {
-        textTokens.push(arg.toString());
-      } else {
-        textTokens.push(valueFromRemoteObject(remoteObject));
-      }
-    }
-    const stackTraceLocations = [];
-    if (stackTrace) {
-      for (const callFrame of stackTrace.callFrames) {
-        stackTraceLocations.push({
-          url: callFrame.url,
-          lineNumber: callFrame.lineNumber,
-          columnNumber: callFrame.columnNumber,
-        });
-      }
-    }
-    const message = new ConsoleMessage(
-      convertConsoleMessageLevel(eventType),
-      textTokens.join(' '),
-      args,
-      stackTraceLocations,
-    );
-    this.emit(PageEvent.Console, message);
-  }
-
   #onDialog(event: Protocol.Page.JavascriptDialogOpeningEvent): void {
     const type = validateDialogType(event.type);
     const dialog = new CdpDialog(
@@ -867,15 +999,15 @@ export class CdpPage extends Page {
     this.emit(PageEvent.Dialog, dialog);
   }
 
-  override async reload(
-    options?: WaitForOptions,
-  ): Promise<HTTPResponse | null> {
+  override async reload(options?: ReloadOptions): Promise<HTTPResponse | null> {
     const [result] = await Promise.all([
       this.waitForNavigation({
         ...options,
         ignoreSameDocumentNavigation: true,
       }),
-      this.#primaryTargetClient.send('Page.reload'),
+      this.#primaryTargetClient.send('Page.reload', {
+        ignoreCache: options?.ignoreCache ?? false,
+      }),
     ]);
 
     return result;
@@ -906,7 +1038,7 @@ export class CdpPage extends Page {
     );
     const entry = history.entries[history.currentIndex + delta];
     if (!entry) {
-      return null;
+      throw new Error('History entry to navigate to not found.');
     }
     const result = await Promise.all([
       this.waitForNavigation(options),
@@ -927,6 +1059,10 @@ export class CdpPage extends Page {
 
   override async setBypassCSP(enabled: boolean): Promise<void> {
     await this.#primaryTargetClient.send('Page.setBypassCSP', {enabled});
+  }
+
+  override async triggerExtensionAction(extension: Extension): Promise<void> {
+    return await extension.triggerAction(this);
   }
 
   override async emulateMediaType(type?: string): Promise<void> {
@@ -1139,7 +1275,7 @@ export class CdpPage extends Page {
     const connection = this.#primaryTargetClient.connection();
     assert(
       connection,
-      'Protocol error: Connection closed. Most likely the page has been closed.',
+      'Connection closed. Most likely the page has been closed.',
     );
     const runBeforeUnload = !!options.runBeforeUnload;
     if (runBeforeUnload) {
@@ -1188,6 +1324,14 @@ export class CdpPage extends Page {
   ): Promise<DeviceRequestPrompt> {
     return await this.mainFrame().waitForDevicePrompt(options);
   }
+
+  override get bluetooth(): BluetoothEmulation {
+    return this.#cdpBluetoothEmulation;
+  }
+
+  override extensionRealms(): Realm[] {
+    return this.mainFrame().extensionRealms();
+  }
 }
 
 const supportedMetrics = new Set<string>([
@@ -1228,6 +1372,9 @@ function getIntersectionRect(
   };
 }
 
+/**
+ * @internal
+ */
 export function convertCookiesPartitionKeyFromPuppeteerToCdp(
   partitionKey: CookiePartitionKey | string | undefined,
 ): Protocol.Network.CookiePartitionKey | undefined {

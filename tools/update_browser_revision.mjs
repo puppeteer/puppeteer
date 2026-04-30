@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {execSync, exec} from 'child_process';
-import {writeFile, readFile} from 'fs/promises';
-import {promisify} from 'util';
+import {execSync, exec} from 'node:child_process';
+import {writeFile, readFile} from 'node:fs/promises';
+import {promisify} from 'node:util';
 
-import actions from '@actions/core';
+import * as actions from '@actions/core';
 import {resolveBuildId} from '@puppeteer/browsers';
 import {SemVer} from 'semver';
 
@@ -211,21 +211,11 @@ async function updateLastMaintainedChromeVersion(oldVersion, newVersion) {
       return browserVersions['chrome'];
     },
   );
-  if (browserVersions.indexOf(newVersion) !== -1) {
-    // Already updated.
-    return;
-  }
-
   const oldSemVer = new SemVer(oldVersion, true);
   const newSemVer = new SemVer(newVersion, true);
 
   if (newSemVer.compareMain(oldSemVer) !== 0) {
-    const lastMaintainedSemVer = new SemVer(
-      versionData.lastMaintainedChromeVersion,
-      true,
-    );
-    const newLastMaintainedMajor = lastMaintainedSemVer.major + 1;
-
+    const newLastMaintainedMajor = newSemVer.major - 3;
     const nextMaintainedVersion = browserVersions.find(version => {
       return new SemVer(version, true).major === newLastMaintainedMajor;
     });

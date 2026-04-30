@@ -87,7 +87,8 @@ export abstract class HTTPResponse {
    * The buffer might be re-encoded by the browser
    * based on HTTP-headers or other heuristics. If the browser
    * failed to detect the correct encoding, the buffer might
-   * be encoded incorrectly. See https://github.com/puppeteer/puppeteer/issues/6478.
+   * be encoded incorrectly. See
+   * https://github.com/puppeteer/puppeteer/issues/6478.
    */
   abstract content(): Promise<Uint8Array>;
 
@@ -100,10 +101,14 @@ export abstract class HTTPResponse {
   }
   /**
    * Promise which resolves to a text (utf8) representation of response body.
+   *
+   * @remarks
+   *
+   * This method will throw if the content is not utf-8 string
    */
   async text(): Promise<string> {
     const content = await this.content();
-    return new TextDecoder().decode(content);
+    return new TextDecoder('utf-8', {fatal: true}).decode(content);
   }
 
   /**
