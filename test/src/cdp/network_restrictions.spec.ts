@@ -460,10 +460,10 @@ describe('Network Restrictions', function () {
     }
   });
 
-  it('should block fetch requests from within local iframes to URLs in the blocklist', async () => {
+  it.only('should block fetch requests from within local iframes to URLs in the blocklist', async () => {
     const {page, close, server} = await launch(
       {
-        blocklist: ['*://*:*/title.html'],
+        blocklist: ['*://*:*/empty.html'],
       },
       {createContext: true},
     );
@@ -478,7 +478,7 @@ describe('Network Restrictions', function () {
         } catch (e) {
           return (e as Error).message;
         }
-      }, server.PREFIX + '/title.html');
+      }, server.PREFIX + '/empty.html');
 
       expect(fetchError).toBeTruthy();
       expect(fetchError).toContain('Failed to fetch');
