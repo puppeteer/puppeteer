@@ -553,17 +553,16 @@ export class TargetManager
     const product = versionData?.product;
     const majorVersion = parseInt(product?.match(/\d+/)?.[0] ?? '0', 10);
 
-    const payload: any = {
+    const payload = {
       matchedNetworkConditions,
     };
 
     if (!majorVersion || majorVersion < 149) {
+      // @ts-expect-error offline is required for older versions of Chrome.
       payload.offline = true;
     }
 
-    await session.send(
-      'Network.emulateNetworkConditionsByRule' as any,
-      payload as any,
-    );
+    // @ts-expect-error offline is required in the protocol types, but needs to be omitted for Chrome >= 149.
+    await session.send('Network.emulateNetworkConditionsByRule', payload);
   };
 }
