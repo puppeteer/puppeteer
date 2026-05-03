@@ -58,8 +58,8 @@
     "rxjs": "7.8.2"
   },
   "devDependencies": {
-    "@angular/cli": "^21.2.8",
-    "@schematics/angular": "21.2.8"
+    "@angular/cli": "^21.2.9",
+    "@schematics/angular": "21.2.9"
   },
   "files": [
     "lib",
