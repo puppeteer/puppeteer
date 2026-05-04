@@ -1454,7 +1454,7 @@
   },
   {
     "testIdPattern": "[network_restrictions.spec] Network Restrictions should block iframe content from loading if the iframe URL is in the blocklist",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL"],
     "comment": "Bug in Chromium DevTools Protocol"
