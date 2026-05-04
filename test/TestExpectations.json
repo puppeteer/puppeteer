@@ -1435,35 +1435,35 @@
     "testIdPattern": "[network_restrictions.spec] Network Restrictions should block window.location.href navigation to URLs not in the allowlist",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL", "PASS"],
+    "expectations": ["FAIL"],
     "comment": "PASS in Chrome >= 149; FAIL in older revisions"
   },
   {
     "testIdPattern": "[network_restrictions.spec] Network Restrictions should detach from targets violating allowlist when connecting to a running browser",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL", "PASS"],
+    "expectations": ["FAIL"],
     "comment": "PASS in Chrome >= 149; FAIL in older revisions"
   },
   {
     "testIdPattern": "[network_restrictions.spec] Network Restrictions should fail fetch requests to URLs not in the allowlist",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL", "PASS"],
+    "expectations": ["FAIL"],
     "comment": "PASS in Chrome >= 149; FAIL in older revisions"
   },
   {
     "testIdPattern": "[network_restrictions.spec] Network Restrictions should only allow navigation to URLs in the allowlist",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL", "PASS"],
+    "expectations": ["FAIL"],
     "comment": "PASS in Chrome >= 149; FAIL in older revisions"
   },
   {
     "testIdPattern": "[network_restrictions.spec] Network Restrictions should prevent loading of subresources not in the allowlist (e.g., images)",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL", "PASS"],
+    "expectations": ["FAIL"],
     "comment": "PASS in Chrome >= 149; FAIL in older revisions"
   },
   {
