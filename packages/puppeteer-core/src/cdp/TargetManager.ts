@@ -547,16 +547,10 @@ export class TargetManager
       });
     }
 
-    const payload = {
+    await session.send('Network.emulateNetworkConditionsByRule', {
+      // @ts-expect-error offline cannot be undefined before M149.
+      offline: this.#blocklist.length > 0 ? true : undefined,
       matchedNetworkConditions,
-    };
-
-    if (this.#blocklist.length > 0) {
-      // @ts-expect-error offline is required for blocklist emulation.
-      payload.offline = true;
-    }
-
-    // @ts-expect-error offline is blocklist only
-    await session.send('Network.emulateNetworkConditionsByRule', payload);
+    });
   };
 }
