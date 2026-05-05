@@ -411,7 +411,7 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
 
   #fill<ElementType extends Element>(
     this: Locator<ElementType>,
-    value: string,
+    value: string | boolean,
     options?: Readonly<LocatorFillOptions>,
   ): Observable<void> {
     const signal = options?.signal;
@@ -439,22 +439,28 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
               return 'typeable-input';
             }
             if (el instanceof HTMLInputElement) {
-              if (
-                new Set([
-                  'textarea',
-                  'text',
-                  'url',
-                  'tel',
-                  'search',
-                  'password',
-                  'number',
-                  'email',
-                ]).has(el.type)
-              ) {
-                return 'typeable-input';
-              } else {
-                return 'other-input';
+              switch (el.type) {
+                case 'checkbox':
+                case 'radio':
+                  return 'checkable-input';
+                case 'text':
+                case 'url':
+                case 'tel':
+                case 'search':
+                case 'password':
+                case 'number':
+                case 'email':
+                  return 'typeable-input';
+                default:
+                  return 'other-input';
               }
+            }
+
+            switch (el.getAttribute('role')) {
+              case 'checkbox':
+              case 'radio':
+              case 'switch':
+                return 'checkable-input';
             }
 
             if (el.isContentEditable) {
@@ -472,16 +478,17 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
                     return from(
                       handle.evaluate((input, newValue) => {
                         const element = input as HTMLElement;
+                        const valString = String(newValue);
                         const currentValue = element.isContentEditable
                           ? element.innerText
                           : (element as HTMLInputElement).value;
-                        if (currentValue === newValue) {
+                        if (currentValue === valString) {
                           return;
                         }
                         if (element.isContentEditable) {
-                          element.innerText = newValue;
+                          element.innerText = valString;
                         } else {
-                          (element as HTMLInputElement).value = newValue;
+                          (element as HTMLInputElement).value = valString;
                         }
                         element.dispatchEvent(
                           new Event('input', {bubbles: true}),
@@ -495,33 +502,67 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
                 );
               };
 
+              const toggleIfNeeded = (): Observable<void> => {
+                return from(
+                  handle.evaluate(toggleEl => {
+                    if (
+                      (toggleEl as HTMLInputElement).indeterminate ||
+                      toggleEl.getAttribute('aria-checked') === 'mixed'
+                    ) {
+                      return 'mixed';
+                    }
+                    return (
+                      (toggleEl as HTMLInputElement).checked ||
+                      toggleEl.getAttribute('aria-checked') === 'true'
+                    );
+                  }),
+                ).pipe(
+                  mergeMap(currentState => {
+                    if (currentState === 'mixed' || currentState !== !!value) {
+                      return from(handle.click());
+                    }
+                    return of(undefined);
+                  }),
+                );
+              };
+
               switch (inputType) {
+                case 'checkable-input':
+                  return toggleIfNeeded();
                 case 'select':
-                  return from(handle.select(value).then(noop));
+                  return from(handle.select(value as string).then(noop));
                 case 'contenteditable':
                 case 'typeable-input':
-                  if (value.length < typingThreshold) {
+                  if (
+                    typeof value === 'string' &&
+                    value.length < typingThreshold
+                  ) {
                     return from(
                       (
                         handle as unknown as ElementHandle<HTMLInputElement>
                       ).evaluate((input, newValue) => {
                         const element = input as HTMLElement;
+                        const valString = String(newValue);
                         const currentValue = element.isContentEditable
                           ? element.innerText
                           : (input as HTMLInputElement).value;
 
+                        if (currentValue === valString) {
+                          return '';
+                        }
+
                         // Clear the input if the current value does not match the filled
                         // out value.
                         if (
-                          newValue.length <= currentValue.length ||
-                          !newValue.startsWith(currentValue)
+                          !valString.startsWith(currentValue) ||
+                          !currentValue
                         ) {
                           if (element.isContentEditable) {
                             element.innerText = '';
                           } else {
                             (input as HTMLInputElement).value = '';
                           }
-                          return newValue;
+                          return valString;
                         }
 
                         // If the value is partially filled out, only type the rest. Move
@@ -533,7 +574,7 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
                           (input as HTMLInputElement).value = '';
                           (input as HTMLInputElement).value = currentValue;
                         }
-                        return newValue.substring(currentValue.length);
+                        return valString.substring(currentValue.length);
                       }, value),
                     ).pipe(
                       mergeMap(textToType => {
@@ -743,11 +784,12 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
    * Fills out the input identified by the locator using the provided value. The
    * type of the input is determined at runtime and the appropriate fill-out
    * method is chosen based on the type. `contenteditable`, select, textarea and
-   * input elements are supported.
+   * input elements are supported. For checkboxes, radio buttons and switches
+   * specify a boolean value.
    */
   fill<ElementType extends Element>(
     this: Locator<ElementType>,
-    value: string,
+    value: string | boolean,
     options?: Readonly<LocatorFillOptions>,
   ): Promise<void> {
     return firstValueFrom(this.#fill(value, options));

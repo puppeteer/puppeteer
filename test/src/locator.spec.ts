@@ -590,6 +590,163 @@ describe('Locator', function () {
         }),
       ).toBe(text);
     });
+
+    it('should work for checkboxes', async () => {
+      const {page} = await getTestState();
+      await page.setContent(html`<input type="checkbox" />`);
+
+      await page.locator('input').fill(true);
+      expect(
+        await page.evaluate(() => {
+          return document.querySelector('input')?.checked === true;
+        }),
+      ).toBe(true);
+
+      await page.locator('input').fill(false);
+      expect(
+        await page.evaluate(() => {
+          return document.querySelector('input')?.checked === true;
+        }),
+      ).toBe(false);
+    });
+
+    it('should work for radio buttons', async () => {
+      const {page} = await getTestState();
+      await page.setContent(html`<input type="radio" />`);
+
+      await page.locator('input').fill(true);
+      expect(
+        await page.evaluate(() => {
+          return document.querySelector('input')?.checked === true;
+        }),
+      ).toBe(true);
+    });
+
+    it('should work for custom ARIA checkboxes', async () => {
+      const {page} = await getTestState();
+      await page.setContent(
+        html`<div
+          role="checkbox"
+          style="width: 100px; height: 100px;"
+          onclick="this.setAttribute('aria-checked', this.getAttribute('aria-checked') !== 'true')"
+          aria-checked="false"
+        ></div>`,
+      );
+
+      await page.locator('[role="checkbox"]').fill(true);
+      expect(
+        await page.evaluate(() => {
+          return (
+            document
+              .querySelector('[role="checkbox"]')
+              ?.getAttribute('aria-checked') === 'true'
+          );
+        }),
+      ).toBe(true);
+
+      await page.locator('[role="checkbox"]').fill(false);
+      expect(
+        await page.evaluate(() => {
+          return (
+            document
+              .querySelector('[role="checkbox"]')
+              ?.getAttribute('aria-checked') === 'false'
+          );
+        }),
+      ).toBe(true);
+    });
+
+    it('should work for custom ARIA radio buttons', async () => {
+      const {page} = await getTestState();
+      await page.setContent(
+        html`<div
+          role="radio"
+          style="width: 100px; height: 100px;"
+          onclick="this.setAttribute('aria-checked', 'true')"
+          aria-checked="false"
+        ></div>`,
+      );
+
+      await page.locator('[role="radio"]').fill(true);
+      expect(
+        await page.evaluate(() => {
+          return (
+            document
+              .querySelector('[role="radio"]')
+              ?.getAttribute('aria-checked') === 'true'
+          );
+        }),
+      ).toBe(true);
+    });
+
+    it('should work for custom ARIA switches', async () => {
+      const {page} = await getTestState();
+      await page.setContent(
+        html`<div
+          role="switch"
+          style="width: 100px; height: 100px;"
+          onclick="this.setAttribute('aria-checked', this.getAttribute('aria-checked') !== 'true')"
+          aria-checked="false"
+        ></div>`,
+      );
+
+      await page.locator('[role="switch"]').fill(true);
+      expect(
+        await page.evaluate(() => {
+          // Verify the ARIA attribute was updated by the fill command
+          return (
+            document
+              .querySelector('[role="switch"]')
+              ?.getAttribute('aria-checked') === 'true'
+          );
+        }),
+      ).toBe(true);
+
+      await page.locator('[role="switch"]').fill(false);
+      expect(
+        await page.evaluate(() => {
+          return (
+            document
+              .querySelector('[role="switch"]')
+              ?.getAttribute('aria-checked') === 'false'
+          );
+        }),
+      ).toBe(true);
+    });
+
+    it('should work for custom ARIA mixed checkboxes', async () => {
+      const {page} = await getTestState();
+      await page.setContent(
+        html`<div
+          role="checkbox"
+          style="width: 100px; height: 100px;"
+          onclick="const next = {'mixed': 'true', 'true': 'false', 'false': 'true'}; this.setAttribute('aria-checked', next[this.getAttribute('aria-checked')])"
+          aria-checked="mixed"
+        ></div>`,
+      );
+
+      await page.locator('[role="checkbox"]').fill(true);
+      expect(
+        await page.evaluate(() => {
+          return (
+            document
+              .querySelector('[role="checkbox"]')
+              ?.getAttribute('aria-checked') === 'true'
+          );
+        }),
+      ).toBe(true);
+
+      await page.locator('[role="checkbox"]').fill(false);
+      expect(
+        await page.evaluate(() => {
+          return (
+            document
+              .querySelector('[role="checkbox"]')
+              ?.getAttribute('aria-checked') === 'false'
+          );
+        }),
+      ).toBe(true);
+    });
   });
 
   describe('Locator.race', () => {
