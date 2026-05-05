@@ -48,23 +48,7 @@ export class Request extends EventEmitter<{
   #response?: Bidi.Network.ResponseData;
   readonly #browsingContext: BrowsingContext;
   readonly #disposables = new DisposableStack();
-  #event: Bidi.Network.BeforeRequestSentParameters | undefined;
-
-  // Cached values from #event so getters remain safe after disposal.
-  // #event holds the full URL string (potentially megabytes for data: URLs),
-  // so we null it on dispose to release memory while preserving getter access.
-  readonly #id: string;
-  readonly #url: string;
-  readonly #method: string;
-  readonly #headers: Bidi.Network.Header[];
-  readonly #initiator: Bidi.Network.Initiator;
-  readonly #navigation: string | undefined;
-  readonly #isBlocked: boolean;
-  readonly #redirectCount: number;
-  readonly #resourceType: string | undefined;
-  readonly #postData: string | undefined;
-  readonly #hasPostData: boolean;
-  #timings: Bidi.Network.FetchTimingInfo;
+  readonly #event: Bidi.Network.BeforeRequestSentParameters;
 
   private constructor(
     browsingContext: BrowsingContext,
@@ -74,29 +58,6 @@ export class Request extends EventEmitter<{
 
     this.#browsingContext = browsingContext;
     this.#event = event;
-
-    // Cache values accessed by getters so they survive #event being nulled.
-    this.#id = event.request.request;
-    this.#url = event.request.url;
-    this.#method = event.request.method;
-    this.#headers = event.request.headers;
-    this.#initiator = {
-      ...event.initiator,
-      // Initiator URL is not specified in BiDi.
-      // @ts-expect-error non-standard property.
-      url: event.request['goog:resourceInitiator']?.url,
-      // @ts-expect-error non-standard property.
-      stack: event.request['goog:resourceInitiator']?.stack,
-    };
-    this.#navigation = event.navigation ?? undefined;
-    this.#isBlocked = event.isBlocked;
-    this.#redirectCount = event.redirectCount;
-    // @ts-expect-error non-standard attribute.
-    this.#resourceType = event.request['goog:resourceType'] ?? undefined;
-    // @ts-expect-error non-standard attribute.
-    this.#postData = event.request['goog:postData'] ?? undefined;
-    this.#hasPostData = (event.request.bodySize ?? 0) > 0;
-    this.#timings = event.request.timings;
   }
 
   #initialize() {
@@ -121,7 +82,7 @@ export class Request extends EventEmitter<{
       }
       // This is a workaround to detect if a beforeRequestSent is for a request
       // sent after continueWithAuth. Currently, only emitted in Firefox.
-      const previousRequestHasAuth = this.#headers.find(
+      const previousRequestHasAuth = this.#event.request.headers.find(
         header => {
           return header.name.toLowerCase() === 'authorization';
         },
@@ -131,7 +92,7 @@ export class Request extends EventEmitter<{
       });
       const isAfterAuth = newRequestHasAuth && !previousRequestHasAuth;
       if (
-        event.redirectCount !== this.#redirectCount + 1 &&
+        event.redirectCount !== this.#event.redirectCount + 1 &&
         !isAfterAuth
       ) {
         return;
@@ -155,7 +116,7 @@ export class Request extends EventEmitter<{
       if (
         event.context !== this.#browsingContext.id ||
         event.request.request !== this.id ||
-        this.#redirectCount !== event.redirectCount
+        this.#event.redirectCount !== event.redirectCount
       ) {
         return;
       }
@@ -167,24 +128,24 @@ export class Request extends EventEmitter<{
       if (
         event.context !== this.#browsingContext.id ||
         event.request.request !== this.id ||
-        this.#redirectCount !== event.redirectCount
+        this.#event.redirectCount !== event.redirectCount
       ) {
         return;
       }
       this.#response = event.response;
-      this.#timings = event.request.timings;
+      this.#event.request.timings = event.request.timings;
       this.emit('response', this.#response);
     });
     sessionEmitter.on('network.responseCompleted', event => {
       if (
         event.context !== this.#browsingContext.id ||
         event.request.request !== this.id ||
-        this.#redirectCount !== event.redirectCount
+        this.#event.redirectCount !== event.redirectCount
       ) {
         return;
       }
       this.#response = event.response;
-      this.#timings = event.request.timings;
+      this.#event.request.timings = event.request.timings;
       this.emit('success', this.#response);
       // In case this is a redirect.
       if (this.#response.status >= 300 && this.#response.status < 400) {
@@ -204,19 +165,26 @@ export class Request extends EventEmitter<{
     return this.#error;
   }
   get headers(): Bidi.Network.Header[] {
-    return this.#headers;
+    return this.#event.request.headers;
   }
   get id(): string {
-    return this.#id;
+    return this.#event.request.request;
   }
   get initiator(): Bidi.Network.Initiator | undefined {
-    return this.#initiator;
+    return {
+      ...this.#event.initiator,
+      // Initiator URL is not specified in BiDi.
+      // @ts-expect-error non-standard property.
+      url: this.#event.request['goog:resourceInitiator']?.url,
+      // @ts-expect-error non-standard property.
+      stack: this.#event.request['goog:resourceInitiator']?.stack,
+    };
   }
   get method(): string {
-    return this.#method;
+    return this.#event.request.method;
   }
   get navigation(): string | undefined {
-    return this.#navigation;
+    return this.#event.navigation ?? undefined;
   }
   get redirect(): Request | undefined {
     return this.#redirect;
@@ -235,22 +203,24 @@ export class Request extends EventEmitter<{
     return this.#response;
   }
   get url(): string {
-    return this.#url;
+    return this.#event.request.url;
   }
   get isBlocked(): boolean {
-    return this.#isBlocked;
+    return this.#event.isBlocked;
   }
 
   get resourceType(): string | undefined {
-    return this.#resourceType;
+    // @ts-expect-error non-standard attribute.
+    return this.#event.request['goog:resourceType'] ?? undefined;
   }
 
   get postData(): string | undefined {
-    return this.#postData;
+    // @ts-expect-error non-standard attribute.
+    return this.#event.request['goog:postData'] ?? undefined;
   }
 
   get hasPostData(): boolean {
-    return this.#hasPostData;
+    return (this.#event.request.bodySize ?? 0) > 0;
   }
 
   async continueRequest({
@@ -373,15 +343,10 @@ export class Request extends EventEmitter<{
   override [disposeSymbol](): void {
     this.emit('disposed', undefined);
     this.#disposables.dispose();
-    // Null #event to release the large URL string (the main memory leak source
-    // for data: URLs). Cached fields preserve getter access after disposal.
-    this.#event = undefined;
-    // Keep #response intact — callers rely on request.response as a
-    // "request finished" signal even after disposal.
     super[disposeSymbol]();
   }
 
   timing(): Bidi.Network.FetchTimingInfo {
-    return this.#timings;
+    return this.#event.request.timings;
   }
 }

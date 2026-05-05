@@ -27,6 +27,13 @@ import {UserPrompt} from './UserPrompt.js';
 /**
  * @internal
  */
+function createRequestWeakRef(request: Request): WeakRef<Request> {
+  return new WeakRef(request);
+}
+
+/**
+ * @internal
+ */
 export type AddInterceptOptions = Omit<
   Bidi.Network.AddInterceptParameters,
   'contexts'
@@ -162,7 +169,7 @@ export class BrowsingContext extends EventEmitter<{
   readonly #children = new Map<string, BrowsingContext>();
   readonly #disposables = new DisposableStack();
   readonly #realms = new Map<string, WindowRealm>();
-  readonly #requests = new Map<string, Request>();
+  readonly #requests = new Map<string, WeakRef<Request>>();
   readonly defaultRealm: WindowRealm;
   readonly id: string;
   readonly parent: BrowsingContext | undefined;
@@ -284,8 +291,9 @@ export class BrowsingContext extends EventEmitter<{
       // Note: we should not update this.#url at this point since the context
       // has not finished navigating to the info.url yet.
 
-      for (const [id, request] of this.#requests) {
-        if (request.disposed) {
+      for (const [id, requestRef] of this.#requests) {
+        const request = requestRef.deref();
+        if (!request || request.disposed) {
           this.#requests.delete(id);
         }
       }
@@ -322,10 +330,7 @@ export class BrowsingContext extends EventEmitter<{
       }
 
       const request = Request.from(this, event);
-      this.#requests.set(request.id, request);
-      request.once('disposed', () => {
-        this.#requests.delete(request.id);
-      });
+      this.#requests.set(request.id, createRequestWeakRef(request));
       this.emit('request', {request});
     });
 
@@ -722,8 +727,9 @@ export class BrowsingContext extends EventEmitter<{
     // Dispose any remaining undisposed requests and clear the map.
     // This catches requests that never received responseCompleted (e.g.,
     // aborted, network errors) and prevents them from leaking.
-    for (const request of this.#requests.values()) {
-      if (!request.disposed) {
+    for (const [, requestRef] of this.#requests) {
+      const request = requestRef.deref();
+      if (request && !request.disposed) {
         request[disposeSymbol]();
       }
     }
