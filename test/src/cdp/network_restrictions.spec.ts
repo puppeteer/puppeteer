@@ -116,16 +116,15 @@ describe('Network Restrictions', function () {
 
       await page.goto(server.PREFIX + '/empty.html');
 
-      await page.setContent(
-        html`
-          <img src="${blockedUrl}" />
-          <link
-            rel="stylesheet"
-            href="${allowedUrl}"
-          />
-        `,
-        {waitUntil: 'networkidle0'},
-      );
+      const idle = page.waitForNetworkIdle();
+      await page.setContent(html`
+        <img src="${blockedUrl}" />
+        <link
+          rel="stylesheet"
+          href="${allowedUrl}"
+        />
+      `);
+      await idle;
 
       expect(failedRequests.has(blockedUrl)).toBe(true);
       expect(failedRequests.get(blockedUrl)).toContain(
@@ -279,16 +278,15 @@ describe('Network Restrictions', function () {
 
       await page.goto(server.PREFIX + '/empty.html');
 
-      await page.setContent(
-        html`
-          <img src="${blockedUrl}" />
-          <link
-            rel="stylesheet"
-            href="${allowedUrl}"
-          />
-        `,
-        {waitUntil: 'networkidle0'},
-      );
+      const idle = page.waitForNetworkIdle();
+      await page.setContent(html`
+        <img src="${blockedUrl}" />
+        <link
+          rel="stylesheet"
+          href="${allowedUrl}"
+        />
+      `);
+      await idle;
 
       expect(failedRequests.has(blockedUrl)).toBe(true);
       expect(failedRequests.get(blockedUrl)).toContain(

@@ -100,6 +100,7 @@ import type {
   FrameAddStyleTagOptions,
   FrameWaitForFunctionOptions,
   GoToOptions,
+  SetContentWaitForOptions,
   WaitForOptions,
 } from './Frame.js';
 import type {
@@ -1781,7 +1782,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @param html - HTML markup to assign to the page.
    * @param options - Parameters that has some properties.
    */
-  async setContent(html: string, options?: WaitForOptions): Promise<void> {
+  async setContent(
+    html: string,
+    options?: SetContentWaitForOptions,
+  ): Promise<void> {
     await this.mainFrame().setContent(html, options);
   }
 

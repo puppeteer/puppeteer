@@ -9,7 +9,7 @@ import type {Protocol} from 'devtools-protocol';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
-import type {WaitForOptions} from '../api/Frame.js';
+import type {SetContentWaitForOptions, WaitForOptions} from '../api/Frame.js';
 import {Frame, FrameEvent, throwIfDetached} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {WaitTimeoutOptions} from '../api/Page.js';
@@ -273,10 +273,7 @@ export class CdpFrame extends Frame {
   @throwIfDetached
   override async setContent(
     html: string,
-    options: {
-      timeout?: number;
-      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    } = {},
+    options: SetContentWaitForOptions = {},
   ): Promise<void> {
     const {
       waitUntil = ['load'],

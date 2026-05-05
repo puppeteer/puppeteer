@@ -1381,6 +1381,13 @@ Represents a Node and the properties of it that are relevant to Accessibility.
 </td></tr>
 <tr><td>
 
+<span id="setcontentwaitforoptions">[SetContentWaitForOptions](./puppeteer.setcontentwaitforoptions.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="snapshotoptions">[SnapshotOptions](./puppeteer.snapshotoptions.md)</span>
 
 </td><td>

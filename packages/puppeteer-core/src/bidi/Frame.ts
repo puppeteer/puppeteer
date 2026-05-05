@@ -26,6 +26,7 @@ import {
   Frame,
   throwIfDetached,
   type GoToOptions,
+  type SetContentWaitForOptions,
   type WaitForOptions,
 } from '../api/Frame.js';
 import {PageEvent, type WaitTimeoutOptions} from '../api/Page.js';
@@ -333,7 +334,7 @@ export class BidiFrame extends Frame {
   @throwIfDetached
   override async setContent(
     html: string,
-    options: WaitForOptions = {},
+    options: SetContentWaitForOptions = {},
   ): Promise<void> {
     await Promise.all([
       this.setFrameContent(html),
