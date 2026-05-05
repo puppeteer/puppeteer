@@ -1436,14 +1436,14 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL"],
-    "comment": "Bug in Chromium DevTools Protocol"
+    "comment": "Bug in CDP crbug.com/469591372"
   },
   {
     "testIdPattern": "[network_restrictions.spec] Network Restrictions should block out-of-process iframe (OOPIF) content from loading if the iframe URL is in the blocklist",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL"],
-    "comment": "Bug in Chromium DevTools Protocol"
+    "comment": "Bug in CDP crbug.com/469591372"
   },
   {
     "testIdPattern": "[network_restrictions.spec] Network Restrictions should block window.location.href navigation to URLs not in the allowlist",
