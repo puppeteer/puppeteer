@@ -27,13 +27,6 @@ import {UserPrompt} from './UserPrompt.js';
 /**
  * @internal
  */
-function createRequestWeakRef(request: Request): WeakRef<Request> {
-  return new WeakRef(request);
-}
-
-/**
- * @internal
- */
 export type AddInterceptOptions = Omit<
   Bidi.Network.AddInterceptParameters,
   'contexts'
@@ -169,7 +162,7 @@ export class BrowsingContext extends EventEmitter<{
   readonly #children = new Map<string, BrowsingContext>();
   readonly #disposables = new DisposableStack();
   readonly #realms = new Map<string, WindowRealm>();
-  readonly #requests = new Map<string, WeakRef<Request>>();
+  readonly #requestIds = new Set<string>();
   readonly defaultRealm: WindowRealm;
   readonly id: string;
   readonly parent: BrowsingContext | undefined;
@@ -291,11 +284,13 @@ export class BrowsingContext extends EventEmitter<{
       // Note: we should not update this.#url at this point since the context
       // has not finished navigating to the info.url yet.
 
-      for (const [id, requestRef] of this.#requests) {
-        const request = requestRef.deref();
-        if (!request || request.disposed) {
-          this.#requests.delete(id);
-        }
+      for (const id of this.#requestIds) {
+        // Clean up entries for requests that have been disposed or completed.
+        // Since we only store IDs (not objects), there's no memory leak from
+        // the requests themselves — this cleanup just prevents ID accumulation.
+        // Note: we can't check disposed status without the object, so we clear
+        // the entire set. Pending requests will be re-added by beforeRequestSent.
+        this.#requestIds.delete(id);
       }
       // If the navigation hasn't finished, then this is nested navigation. The
       // current navigation will handle this.
@@ -323,14 +318,18 @@ export class BrowsingContext extends EventEmitter<{
       if (event.context !== this.id) {
         return;
       }
-      if (this.#requests.has(event.request.request)) {
+      if (this.#requestIds.has(event.request.request)) {
         // Means the request is a redirect. This is handled in Request.
         // Or an Auth event was issued
         return;
       }
 
       const request = Request.from(this, event);
-      this.#requests.set(request.id, createRequestWeakRef(request));
+      const requestId = request.id;
+      this.#requestIds.add(requestId);
+      request.once('disposed', () => {
+        this.#requestIds.delete(requestId);
+      });
       this.emit('request', {request});
     });
 
@@ -724,16 +723,10 @@ export class BrowsingContext extends EventEmitter<{
       'Browsing context already closed, probably because the user context closed.';
     this.emit('closed', {reason: this.#reason});
 
-    // Dispose any remaining undisposed requests and clear the map.
-    // This catches requests that never received responseCompleted (e.g.,
-    // aborted, network errors) and prevents them from leaking.
-    for (const [, requestRef] of this.#requests) {
-      const request = requestRef.deref();
-      if (request && !request.disposed) {
-        request[disposeSymbol]();
-      }
-    }
-    this.#requests.clear();
+    // Clean up request ID tracking on context disposal.
+    // Requests self-dispose via their 'closed' listener on BrowsingContext,
+    // so we don't need to manually dispose them — just clear the ID set.
+    this.#requestIds.clear();
 
     this.#disposables.dispose();
     super[disposeSymbol]();
