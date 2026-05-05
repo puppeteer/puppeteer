@@ -153,8 +153,8 @@ describe('Accessibility', function () {
                 {
                   role: 'search',
                   name: '',
-                }
-              ]
+                },
+              ],
             },
           ],
         },
