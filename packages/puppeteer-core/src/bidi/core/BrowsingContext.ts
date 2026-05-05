@@ -719,6 +719,16 @@ export class BrowsingContext extends EventEmitter<{
       'Browsing context already closed, probably because the user context closed.';
     this.emit('closed', {reason: this.#reason});
 
+    // Dispose any remaining undisposed requests and clear the map.
+    // This catches requests that never received responseCompleted (e.g.,
+    // aborted, network errors) and prevents them from leaking.
+    for (const request of this.#requests.values()) {
+      if (!request.disposed) {
+        request[disposeSymbol]();
+      }
+    }
+    this.#requests.clear();
+
     this.#disposables.dispose();
     super[disposeSymbol]();
   }
