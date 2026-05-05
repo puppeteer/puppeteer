@@ -147,8 +147,14 @@ describe('Accessibility', function () {
           name: '',
           children: [
             {
-              role: 'search',
+              role: 'form',
               name: '',
+              children: [
+                {
+                  role: 'search',
+                  name: '',
+                }
+              ]
             },
           ],
         },
