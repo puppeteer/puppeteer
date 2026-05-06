@@ -30,7 +30,9 @@ describe('Network Restrictions', function () {
       });
 
       expect(error).toBeDefined();
-      expect(error?.message).toContain('is blocked by blocklist/allowlist rules');
+      expect(error?.message).toContain(
+        'is blocked by blocklist/allowlist rules',
+      );
     } finally {
       await close();
     }
@@ -191,7 +193,9 @@ describe('Network Restrictions', function () {
       });
       expect(page.url()).not.toBe(blockedUrl);
       expect(error).toBeDefined();
-      expect(error?.message).toContain('is blocked by blocklist/allowlist rules');
+      expect(error?.message).toContain(
+        'is blocked by blocklist/allowlist rules',
+      );
     } finally {
       await close();
     }
@@ -511,7 +515,9 @@ describe('Network Restrictions', function () {
       });
 
       expect(error).toBeDefined();
-      expect(error?.message).toContain('is blocked by blocklist/allowlist rules');
+      expect(error?.message).toContain(
+        'is blocked by blocklist/allowlist rules',
+      );
     } finally {
       await close();
     }
