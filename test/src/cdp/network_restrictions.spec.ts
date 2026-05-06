@@ -394,20 +394,24 @@ describe('Network Restrictions', function () {
     expect(error?.message.includes('URLPattern')).toBeTruthy();
   });
 
-  it('should not block chrome://version/ even if it matches blocklist', async () => {
-    const chromeUrl = 'chrome://version/';
+  it('should block chrome://version/ when it matches blocklist', async () => {
+    const blockedUrl = 'chrome://version/';
     const {page, close} = await launch(
       {
-        blocklist: [chromeUrl],
+        blocklist: [blockedUrl],
       },
       {createContext: true},
     );
 
     try {
-      await page.goto(chromeUrl);
+      const result = await page.goto(blockedUrl).catch(e => {
+        return e;
+      });
 
-      // Navigation should succeed as chrome:// URLs usually bypass the network
-      expect(page.url()).toBe(chromeUrl);
+      expect(result).toBeInstanceOf(Error);
+      expect(result?.message).toContain(
+        'is blocked by blocklist/allowlist rules',
+      );
     } finally {
       await close();
     }
