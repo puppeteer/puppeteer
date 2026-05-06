@@ -80,6 +80,8 @@ If:
 
 - the main resource failed to load.
 
+- the URL is blocked by blocklist/allowlist rules.
+
 ## Remarks
 
 Navigation to `about:blank` or navigation to the same URL with a different hash will succeed and return `null`.
