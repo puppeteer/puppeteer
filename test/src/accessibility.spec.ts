@@ -93,24 +93,31 @@ describe('Accessibility', function () {
     const snapshot = await page.accessibility.snapshot();
 
     try {
-      expect(snapshot).toMatchObject(buildTestAxTree([
-        // State before 149.0.7819.0. TODO: remove after roll
-        {
-          role: 'form',
-          name: '',
-          children: [
-            {
-              role: 'search',
-              name: '',
-            },
-          ],
-        },
-      ]));
-    } catch { // State after 149.0.7819.0
-      expect(snapshot).toMatchObject(buildTestAxTree([{
-        role: 'search',
-        name: '',
-      }]));
+      expect(snapshot).toMatchObject(
+        buildTestAxTree([
+          // State before 149.0.7819.0. TODO: remove after roll
+          {
+            role: 'form',
+            name: '',
+            children: [
+              {
+                role: 'search',
+                name: '',
+              },
+            ],
+          },
+        ]),
+      );
+    } catch {
+      // State after 149.0.7819.0
+      expect(snapshot).toMatchObject(
+        buildTestAxTree([
+          {
+            role: 'search',
+            name: '',
+          },
+        ]),
+      );
     }
   });
 
@@ -957,81 +964,81 @@ interface TestAXNode {
 
 function buildTestAxTree(children: TestAXNode[]) {
   return {
-      role: 'RootWebArea',
-      name: 'HTML Elements Showcase',
-      children: [
-        {
-          role: 'banner',
-          name: '',
-          children: [
-            {
-              role: 'heading',
-              name: 'HTML Elements Showcase',
-              level: 1,
-            },
-            {
-              role: 'navigation',
-              name: '',
-              children: [
-                {
-                  role: 'link',
-                  name: 'Forms',
-                  children: [
-                    {
-                      role: 'StaticText',
-                      name: 'Forms',
-                    },
-                  ],
-                },
-                {
-                  role: 'link',
-                  name: 'Media',
-                  children: [
-                    {
-                      role: 'StaticText',
-                      name: 'Media',
-                    },
-                  ],
-                },
-                {
-                  role: 'link',
-                  name: 'Interactive',
-                  children: [
-                    {
-                      role: 'StaticText',
-                      name: 'Interactive',
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-        {
-          role: 'main',
-          name: '',
-          children,
-        },
-        {
-          role: 'complementary',
-          name: '',
-          children: [
-            {
-              role: 'StaticText',
-              name: 'complementary',
-            },
-          ],
-        },
-        {
-          role: 'contentinfo',
-          name: '',
-          children: [
-            {
-              role: 'StaticText',
-              name: 'contentinfo',
-            },
-          ],
-        },
-      ],
-    }
+    role: 'RootWebArea',
+    name: 'HTML Elements Showcase',
+    children: [
+      {
+        role: 'banner',
+        name: '',
+        children: [
+          {
+            role: 'heading',
+            name: 'HTML Elements Showcase',
+            level: 1,
+          },
+          {
+            role: 'navigation',
+            name: '',
+            children: [
+              {
+                role: 'link',
+                name: 'Forms',
+                children: [
+                  {
+                    role: 'StaticText',
+                    name: 'Forms',
+                  },
+                ],
+              },
+              {
+                role: 'link',
+                name: 'Media',
+                children: [
+                  {
+                    role: 'StaticText',
+                    name: 'Media',
+                  },
+                ],
+              },
+              {
+                role: 'link',
+                name: 'Interactive',
+                children: [
+                  {
+                    role: 'StaticText',
+                    name: 'Interactive',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        role: 'main',
+        name: '',
+        children,
+      },
+      {
+        role: 'complementary',
+        name: '',
+        children: [
+          {
+            role: 'StaticText',
+            name: 'complementary',
+          },
+        ],
+      },
+      {
+        role: 'contentinfo',
+        name: '',
+        children: [
+          {
+            role: 'StaticText',
+            name: 'contentinfo',
+          },
+        ],
+      },
+    ],
+  };
 }
