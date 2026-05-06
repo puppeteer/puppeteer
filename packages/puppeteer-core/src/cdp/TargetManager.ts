@@ -482,7 +482,18 @@ export class TargetManager
     }
 
     // Always allow internal or setup pages
-    if (!url || url === 'about:blank') {
+    const ALLOWED_URLS = ['about:blank'];
+    const ALLOWED_SCHEMES = ['chrome:'];
+
+    if (!url) {
+      return true;
+    }
+
+    if (ALLOWED_URLS.includes(url)) {
+      return true;
+    }
+
+    if (ALLOWED_SCHEMES.some(scheme => url.startsWith(scheme + '//'))) {
       return true;
     }
 
