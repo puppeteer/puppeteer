@@ -493,7 +493,11 @@ export class TargetManager
       return true;
     }
 
-    if (ALLOWED_SCHEMES.some(scheme => url.startsWith(scheme + '//'))) {
+    if (
+      ALLOWED_SCHEMES.some(scheme => {
+        return url.startsWith(scheme + '//');
+      })
+    ) {
       return true;
     }
 
