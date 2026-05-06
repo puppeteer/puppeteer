@@ -58,7 +58,42 @@ Whether to ignore HTTPS errors during navigation.
 </td></tr>
 <tr><td>
 
-<span id="blocklist">blockList</span>
+<span id="allowlist">allowlist</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string\[\]
+
+</td><td>
+
+**_(Experimental)_** A list of URL patterns to allow.
+
+**Requires Chrome 149+.**
+
+This option allows you to restrict the browser from accessing any URLs except for those that match the patterns in the allowList. It uses the standard \[URLPattern\](https://urlpattern.spec.whatwg.org/) API to match URLs.
+
+When connecting to an existing browser, Puppeteer will silently detach from any already open targets that violate the patterns.
+
+For any network requests made by the browser (including navigations and subresources like images or scripts), the request will fail with an error if the URL does not match any pattern in the allowlist.
+
+**Remarks:**
+
+Currently only supported for CDP connections.
+
+Inner `<iframe>` content loading is currently not blocked.
+
+Cannot be used along with [ConnectOptions.blocklist](./puppeteer.connectoptions.md#blocklist).
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="blocklist">blocklist</span>
 
 </td><td>
 
@@ -81,6 +116,10 @@ For any network requests made by the browser (including navigations and subresou
 **Remarks:**
 
 Currently only supported for CDP connections.
+
+Inner `<iframe>` content loading is currently not blocked.
+
+Cannot be used along with [ConnectOptions.allowlist](./puppeteer.connectoptions.md#allowlist).
 
 </td><td>
 

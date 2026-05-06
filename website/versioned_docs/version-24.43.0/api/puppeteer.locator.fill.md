@@ -4,7 +4,7 @@ sidebar_label: Locator.fill
 
 # Locator.fill() method
 
-Fills out the input identified by the locator using the provided value. The type of the input is determined at runtime and the appropriate fill-out method is chosen based on the type. `contenteditable`, select, textarea and input elements are supported.
+Fills out the input identified by the locator using the provided value. The type of the input is determined at runtime and the appropriate fill-out method is chosen based on the type. `contenteditable`, select, textarea and input elements are supported. For checkboxes, radio buttons and switches specify a boolean value.
 
 ### Signature
 
@@ -12,7 +12,7 @@ Fills out the input identified by the locator using the provided value. The type
 class Locator {
   fill<ElementType extends Element>(
     this: Locator<ElementType>,
-    value: string,
+    value: string | boolean,
     options?: Readonly<LocatorFillOptions>,
   ): Promise<void>;
 }
@@ -50,7 +50,7 @@ value
 
 </td><td>
 
-string
+string \| boolean
 
 </td><td>
 
