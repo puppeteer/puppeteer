@@ -1,5 +1,32 @@
 # Changelog
 
+## [24.43.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.42.0...puppeteer-core-v24.43.0) (2026-05-06)
+
+
+### 🎉 Features
+
+* Implement allowlist ([#14897](https://github.com/puppeteer/puppeteer/issues/14897)) ([e7e31f8](https://github.com/puppeteer/puppeteer/commit/e7e31f8a33b95bb79958ca6077f418c21ea6c88d))
+* roll to Chrome 148.0.7778.56 ([#14918](https://github.com/puppeteer/puppeteer/issues/14918)) ([65890b7](https://github.com/puppeteer/puppeteer/commit/65890b7fe735d6706ea614ba04613f7132b1e08f))
+* roll to Firefox 150.0 ([#14900](https://github.com/puppeteer/puppeteer/issues/14900)) ([beab61b](https://github.com/puppeteer/puppeteer/commit/beab61bdb011679a00e7a0719632f7d09f00431a))
+* support checkboxes and radios in locator.fill ([#14939](https://github.com/puppeteer/puppeteer/issues/14939)) ([fec05a0](https://github.com/puppeteer/puppeteer/commit/fec05a099b1b762b997c5d0bbb210900f4790e1c))
+* **webmcp:** Add support for untrustedContent WebMCPAnnotation ([#14901](https://github.com/puppeteer/puppeteer/issues/14901)) ([0314942](https://github.com/puppeteer/puppeteer/commit/0314942d5a1997c34afb8bb8660f8263c4975921))
+
+
+### 🛠️ Fixes
+
+* Disable WebUIReloadButton experiment ([#14925](https://github.com/puppeteer/puppeteer/issues/14925)) ([d9639e9](https://github.com/puppeteer/puppeteer/commit/d9639e9dfec81ddd0631bf88c0e673d0056f0632))
+* do not open DevTools if it is already open ([#14922](https://github.com/puppeteer/puppeteer/issues/14922)) ([84c9d34](https://github.com/puppeteer/puppeteer/commit/84c9d34b687c2ba7af13d0e484450edd285c4cd2))
+* do not set global offline flag for allowlist ([#14931](https://github.com/puppeteer/puppeteer/issues/14931)) ([d6a1003](https://github.com/puppeteer/puppeteer/commit/d6a1003384b9fe9810a9b109ef649fbf0f44dd1f))
+* roll to Chrome 148.0.7778.97 ([#14929](https://github.com/puppeteer/puppeteer/issues/14929)) ([536eb11](https://github.com/puppeteer/puppeteer/commit/536eb11c6787be43a3fdbafa153080619b4eaeec))
+* roll to Firefox 150.0.1 ([#14923](https://github.com/puppeteer/puppeteer/issues/14923)) ([50438cf](https://github.com/puppeteer/puppeteer/commit/50438cff577f8f27d34aefeb2af84658b62d7db5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.13.0 to 2.13.1
+
 ## [24.42.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.41.0...puppeteer-core-v24.42.0) (2026-04-20)
 
 

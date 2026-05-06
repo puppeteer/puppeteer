@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.13.1](https://github.com/puppeteer/puppeteer/compare/browsers-v2.13.0...browsers-v2.13.1) (2026-05-06)
+
+
+### 🛠️ Fixes
+
+* Disable WebUIReloadButton experiment ([#14925](https://github.com/puppeteer/puppeteer/issues/14925)) ([d9639e9](https://github.com/puppeteer/puppeteer/commit/d9639e9dfec81ddd0631bf88c0e673d0056f0632))
+
 ## [2.13.0](https://github.com/puppeteer/puppeteer/compare/browsers-v2.12.1...browsers-v2.13.0) (2026-02-18)
 
 
