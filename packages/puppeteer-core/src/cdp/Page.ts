@@ -458,6 +458,10 @@ export class CdpPage extends Page {
     return this.#primaryTargetClient;
   }
 
+  _isUrlAllowed(url: string): boolean {
+    return this.#targetManager.isUrlAllowed(url);
+  }
+
   override isServiceWorkerBypassed(): boolean {
     return this.#serviceWorkerBypassed;
   }

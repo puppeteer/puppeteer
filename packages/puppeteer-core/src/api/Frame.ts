@@ -348,6 +348,8 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * - the remote server does not respond or is unreachable.
    *
    * - the main resource failed to load.
+   *
+   * - the URL is blocked by blocklist/allowlist rules.
    */
   abstract goto(
     url: string,

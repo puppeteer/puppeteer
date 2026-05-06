@@ -30,7 +30,7 @@ describe('Network Restrictions', function () {
       });
 
       expect(error).toBeDefined();
-      expect(error?.message).toContain('net::ERR_INTERNET_DISCONNECTED');
+      expect(error?.message).toContain('is blocked by blocklist/allowlist rules');
     } finally {
       await close();
     }
@@ -191,7 +191,7 @@ describe('Network Restrictions', function () {
       });
       expect(page.url()).not.toBe(blockedUrl);
       expect(error).toBeDefined();
-      expect(error?.message).toContain('net::ERR_INTERNET_DISCONNECTED');
+      expect(error?.message).toContain('is blocked by blocklist/allowlist rules');
     } finally {
       await close();
     }
@@ -485,6 +485,33 @@ describe('Network Restrictions', function () {
 
       expect(fetchError).toBeTruthy();
       expect(fetchError).toContain('Failed to fetch');
+    } finally {
+      await close();
+    }
+  });
+
+  it('should block frame.goto when the destination is in the blocklist', async () => {
+    const {page, close, server} = await launch(
+      {
+        blocklist: ['*://*:*/empty.html'],
+      },
+      {createContext: true},
+    );
+
+    try {
+      await page.goto(server.PREFIX + '/frames/one-frame.html');
+      const frame = page.frames().find(f => {
+        return f !== page.mainFrame();
+      })!;
+
+      const blockedUrl = server.PREFIX + '/empty.html';
+      let error: Error | undefined;
+      await frame.goto(blockedUrl).catch(e => {
+        return (error = e);
+      });
+
+      expect(error).toBeDefined();
+      expect(error?.message).toContain('is blocked by blocklist/allowlist rules');
     } finally {
       await close();
     }

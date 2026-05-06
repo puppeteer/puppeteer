@@ -145,6 +145,12 @@ export class CdpFrame extends Frame {
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
     } = {},
   ): Promise<HTTPResponse | null> {
+    if (!this.page()._isUrlAllowed(url)) {
+      throw new Error(
+        `Navigation to ${url} is blocked by blocklist/allowlist rules`,
+      );
+    }
+
     const {
       referer = this._frameManager.networkManager.extraHTTPHeaders()['referer'],
       referrerPolicy = this._frameManager.networkManager.extraHTTPHeaders()[

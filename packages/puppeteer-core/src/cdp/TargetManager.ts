@@ -347,7 +347,7 @@ export class TargetManager
 
     // If we connect to a browser that is already open,
     // immediately detach from any tab that is on the blocklist.
-    if (!this.#initialAttachDone && !this.#isUrlAllowed(targetInfo.url)) {
+    if (!this.#initialAttachDone && !this.isUrlAllowed(targetInfo.url)) {
       await this.#silentDetach(session, parentSession);
       return;
     }
@@ -476,7 +476,7 @@ export class TargetManager
   /**
    * Helper to validate URL against blocklist patterns
    */
-  #isUrlAllowed = (url: string): boolean => {
+  isUrlAllowed = (url: string): boolean => {
     if (this.#blocklist.length === 0 && this.#allowlist.length === 0) {
       return true;
     }
