@@ -447,18 +447,11 @@ describe('Network Restrictions', function () {
 
     try {
       await page.goto(server.EMPTY_PAGE);
-
-      const framePromise = page.waitForFrame(frame => {
-        return frame.url().endsWith('/frame.html');
-      });
-
-      await attachFrame(
+      const frame = await attachFrame(
         page,
         'frame1',
         server.CROSS_PROCESS_PREFIX + '/frames/frame.html',
       );
-
-      const frame = await framePromise;
       const content = await frame.content();
       expect(content).not.toContain("Hi, I'm frame");
     } finally {
