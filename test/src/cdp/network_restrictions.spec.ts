@@ -454,6 +454,7 @@ describe('Network Restrictions', function () {
       );
       const content = await frame.content();
       expect(content).not.toContain("Hi, I'm frame");
+      expect(content).toContain("ERR_INTERNET_DISCONNECTED");
     } finally {
       await close();
     }
