@@ -284,14 +284,9 @@ export class BrowsingContext extends EventEmitter<{
       // Note: we should not update this.#url at this point since the context
       // has not finished navigating to the info.url yet.
 
-      for (const id of this.#requestIds) {
-        // Clean up entries for requests that have been disposed or completed.
-        // Since we only store IDs (not objects), there's no memory leak from
-        // the requests themselves — this cleanup just prevents ID accumulation.
-        // Note: we can't check disposed status without the object, so we clear
-        // the entire set. Pending requests will be re-added by beforeRequestSent.
-        this.#requestIds.delete(id);
-      }
+      // Clear all request IDs on navigation start. Pending requests will be
+      // re-added by beforeRequestSent.
+      this.#requestIds.clear();
       // If the navigation hasn't finished, then this is nested navigation. The
       // current navigation will handle this.
       if (this.#navigation !== undefined && !this.#navigation.disposed) {
