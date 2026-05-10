@@ -23,13 +23,13 @@
     "@docusaurus/remark-plugin-npm2yarn": "3.10.1",
     "@docusaurus/theme-common": "3.10.1",
     "@mdx-js/react": "3.1.1",
-    "algoliasearch-helper": "3.28.2",
+    "algoliasearch-helper": "3.29.1",
     "clsx": "2.1.1",
     "prism-react-renderer": "2.4.1",
-    "react": "19.2.5",
+    "react": "19.2.6",
     "react-cookie-consent": "10.0.1",
-    "react-dom": "19.2.5",
-    "semver": "7.7.4"
+    "react-dom": "19.2.6",
+    "semver": "7.8.0"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.10.1",
