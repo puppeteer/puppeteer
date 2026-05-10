@@ -26,6 +26,7 @@ import {
 import type {Browser, BrowserCloseCallback} from '../api/Browser.js';
 import {CdpBrowser} from '../cdp/Browser.js';
 import {Connection} from '../cdp/Connection.js';
+import {assertSupportedUrlRestrictions} from '../common/BrowserConnector.js';
 import {TimeoutError} from '../common/Errors.js';
 import type {SupportedBrowser} from '../common/SupportedBrowser.js';
 import {debugError, DEFAULT_VIEWPORT} from '../common/util.js';
@@ -76,9 +77,6 @@ export abstract class BrowserLauncher {
   }
 
   async launch(options: LaunchOptions = {}): Promise<Browser> {
-    if (options.blocklist && options.allowlist) {
-      throw new Error('Cannot specify both blocklist and allowlist');
-    }
     const {
       dumpio = false,
       enableExtensions = false,
@@ -107,6 +105,12 @@ export abstract class BrowserLauncher {
     if (this.#browser === 'firefox' && protocol === undefined) {
       protocol = 'webDriverBiDi';
     }
+
+    assertSupportedUrlRestrictions({
+      allowlist,
+      blocklist,
+      protocol,
+    });
 
     if (this.#browser === 'firefox' && protocol === 'cdp') {
       throw new Error('Connecting to Firefox using CDP is no longer supported');
