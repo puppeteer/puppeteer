@@ -27,12 +27,28 @@ const getWebSocketTransportClass = async () => {
  *
  * @internal
  */
-export async function _connectToBrowser(
-  options: ConnectOptions,
-): Promise<Browser> {
+export function assertSupportedUrlRestrictions(options: {
+  allowlist?: string[];
+  blocklist?: string[];
+  protocol?: string;
+}): void {
   if (options.blocklist && options.allowlist) {
     throw new Error('Cannot specify both blocklist and allowlist');
   }
+  if (
+    options.protocol === 'webDriverBiDi' &&
+    (options.blocklist || options.allowlist)
+  ) {
+    throw new Error(
+      'blocklist and allowlist are only supported with the CDP protocol',
+    );
+  }
+}
+
+export async function _connectToBrowser(
+  options: ConnectOptions,
+): Promise<Browser> {
+  assertSupportedUrlRestrictions(options);
   const {connectionTransport, endpointUrl} =
     await getConnectionTransport(options);
 
