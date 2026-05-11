@@ -492,7 +492,7 @@ async function runSetup(installedBrowser: InstalledBrowser): Promise<void> {
         path.join(browserDir, 'setup.exe'),
         [`--configure-browser-in-directory=` + browserDir],
         {
-          shell: true,
+          shell: false,
         },
       );
       // TODO: Handle error here. Currently the setup.exe sometimes
