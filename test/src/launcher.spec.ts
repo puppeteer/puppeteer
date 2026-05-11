@@ -219,7 +219,7 @@ describe('Launcher specs', function () {
           rmSync(userDataDir);
         } catch {}
       });
-      it.only('tmp profile should be cleaned up', async () => {
+      it('tmp profile should be cleaned up', async () => {
         const {puppeteer, isFirefox} = await getTestState({skipLaunch: true});
 
         // Set a custom test tmp dir so that we can validate that
