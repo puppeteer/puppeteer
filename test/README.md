@@ -8,7 +8,7 @@ We have some common setup that runs before each test and is defined in `mocha-ut
 
 You can use the `getTestState` function to read state. It exposes the following that you can use in your tests. These will be reset/tidied between tests automatically for you:
 
-- `puppeteer`: an instance of the Puppeteer library. This is exactly what you'd get if you ran `require('puppeteer')`.
+- `puppeteer`: an instance of the Puppeteer library. This is exactly what you'd get if you ran `import puppeteer from 'puppeteer'`.
 - `puppeteerPath`: the path to the root source file for Puppeteer.
 - `defaultBrowserOptions`: the default options the Puppeteer browser is launched from in test mode, so tests can use them and override if required.
 - `server`: a dummy test server instance (see `packages/testserver` for more).

@@ -7,52 +7,50 @@ The following script opens a window at the default position on a primary 800x600
 ```ts
 import puppeteer from 'puppeteer-core';
 
-(async () => {
-  const browser = await puppeteer.launch({
-    args: ['--screen-info={800x600}'],
-  });
+const browser = await puppeteer.launch({
+  args: ['--screen-info={800x600}'],
+});
 
-  async function logWindowBounds() {
-    const bounds = await browser.getWindowBounds(windowId);
-    console.log(
-      `${bounds.left},${bounds.top}` +
-        ` ${bounds.width}x${bounds.height}` +
-        ` ${bounds.windowState}`,
-    );
-  }
+async function logWindowBounds() {
+  const bounds = await browser.getWindowBounds(windowId);
+  console.log(
+    `${bounds.left},${bounds.top}` +
+      ` ${bounds.width}x${bounds.height}` +
+      ` ${bounds.windowState}`,
+  );
+}
 
-  // Create new page.
-  const page = await browser.newPage({type: 'window'});
-  const windowId = await page.windowId();
-  await logWindowBounds();
+// Create new page.
+const page = await browser.newPage({type: 'window'});
+const windowId = await page.windowId();
+await logWindowBounds();
 
-  // Add a screen to the right of the primary screen.
-  const screenInfo = await browser.addScreen({
-    left: 800,
-    top: 0,
-    width: 1600,
-    height: 1200,
-  });
+// Add a screen to the right of the primary screen.
+const screenInfo = await browser.addScreen({
+  left: 800,
+  top: 0,
+  width: 1600,
+  height: 1200,
+});
 
-  // Move the window to the newly created secondary screen.
-  await browser.setWindowBounds(windowId, {
-    left: screenInfo.left + 50,
-    top: screenInfo.top + 50,
-    width: screenInfo.width - 100,
-    height: screenInfo.height - 100,
-  });
-  await logWindowBounds();
+// Move the window to the newly created secondary screen.
+await browser.setWindowBounds(windowId, {
+  left: screenInfo.left + 50,
+  top: screenInfo.top + 50,
+  width: screenInfo.width - 100,
+  height: screenInfo.height - 100,
+});
+await logWindowBounds();
 
-  // Maximize the window.
-  await browser.setWindowBounds(windowId, {windowState: 'maximized'});
-  await logWindowBounds();
+// Maximize the window.
+await browser.setWindowBounds(windowId, {windowState: 'maximized'});
+await logWindowBounds();
 
-  // Restore the window.
-  await browser.setWindowBounds(windowId, {windowState: 'normal'});
-  await logWindowBounds();
+// Restore the window.
+await browser.setWindowBounds(windowId, {windowState: 'normal'});
+await logWindowBounds();
 
-  await browser.close();
-})();
+await browser.close();
 ```
 
 Output:
@@ -73,38 +71,36 @@ Example:
 ```ts
 import puppeteer from 'puppeteer-core';
 
-(async () => {
-  const browser = await puppeteer.launch({
-    args: ['--screen-info={800x600}'],
+const browser = await puppeteer.launch({
+  args: ['--screen-info={800x600}'],
+});
+
+const page = (await browser.pages())[0];
+
+// Default viewport restricts window to 800x600, so remove it.
+await page.setViewport(null);
+
+// Inner window size is updated asynchronously, so wait for
+// the window size change to get reported before logging it.
+const resized = page.evaluate(() => {
+  return new Promise(resolve => {
+    window.onresize = resolve;
   });
+});
 
-  const page = (await browser.pages())[0];
+await page.resize({contentWidth: 600, contentHeight: 400});
+await resized;
 
-  // Default viewport restricts window to 800x600, so remove it.
-  await page.setViewport(null);
+const result = await page.evaluate(() => {
+  return (
+    `Inner size: ${window.innerWidth}x${window.innerHeight}\n` +
+    `Outer size: ${window.outerWidth}x${window.outerHeight}`
+  );
+});
 
-  // Inner window size is updated asynchronously, so wait for
-  // the window size change to get reported before logging it.
-  const resized = page.evaluate(() => {
-    return new Promise(resolve => {
-      window.onresize = resolve;
-    });
-  });
+console.log(result);
 
-  await page.resize({contentWidth: 600, contentHeight: 400});
-  await resized;
-
-  const result = await page.evaluate(() => {
-    return (
-      `Inner size: ${window.innerWidth}x${window.innerHeight}\n` +
-      `Outer size: ${window.outerWidth}x${window.outerHeight}`
-    );
-  });
-
-  console.log(result);
-
-  await browser.close();
-})();
+await browser.close();
 ```
 
 Output:
@@ -121,35 +117,33 @@ The following example demonstrates how to request full-screen mode for an elemen
 ```ts
 import puppeteer from 'puppeteer-core';
 
-(async () => {
-  const browser = await puppeteer.launch({
-    args: ['--screen-info={1600x1200}'],
-  });
+const browser = await puppeteer.launch({
+  args: ['--screen-info={1600x1200}'],
+});
 
-  const page = (await browser.pages())[0];
-  await page.setContent(`
+const page = (await browser.pages())[0];
+await page.setContent(`
     <div id="click-box" style="width: 10px; height: 10px;"/>
   `);
 
-  await page.evaluate(() => {
-    const element = document.getElementById('click-box');
-    element.addEventListener('click', () => {
-      element.requestFullscreen();
-    });
+await page.evaluate(() => {
+  const element = document.getElementById('click-box');
+  element.addEventListener('click', () => {
+    element.requestFullscreen();
   });
+});
 
-  await page.click('#click-box');
+await page.click('#click-box');
 
-  const windowId = await page.windowId();
-  const bounds = await browser.getWindowBounds(windowId);
-  console.log(
-    `${bounds.left},${bounds.top}` +
-      ` ${bounds.width}x${bounds.height}` +
-      ` ${bounds.windowState}`,
-  );
+const windowId = await page.windowId();
+const bounds = await browser.getWindowBounds(windowId);
+console.log(
+  `${bounds.left},${bounds.top}` +
+    ` ${bounds.width}x${bounds.height}` +
+    ` ${bounds.windowState}`,
+);
 
-  await browser.close();
-})();
+await browser.close();
 ```
 
 Output:
