@@ -59,7 +59,7 @@ export abstract class BidiRealm extends Realm {
   }
 
   protected initialize(): void {
-    this.realm.on('destroyed', ({reason}) => {
+    this.realm.on('destroyed', reason => {
       this.taskManager.terminateAll(new Error(reason));
       this.dispose();
     });

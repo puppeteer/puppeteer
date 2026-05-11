@@ -62,7 +62,7 @@ export class Navigation extends EventEmitter<{
       this.dispose();
     });
 
-    browsingContextEmitter.on('request', ({request}) => {
+    browsingContextEmitter.on('request', request => {
       if (
         request.navigation === undefined ||
         // If a request with a navigation ID comes in, then the navigation ID is

@@ -97,7 +97,7 @@ export class BidiBrowserContext extends BrowserContext {
       this.#createPage(browsingContext);
     }
 
-    this.userContext.on('browsingcontext', ({browsingContext}) => {
+    this.userContext.on('browsingcontext', browsingContext => {
       const page = this.#createPage(browsingContext);
 
       // We need to wait for the DOMContentLoaded as the

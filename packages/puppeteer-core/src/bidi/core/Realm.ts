@@ -38,7 +38,7 @@ export abstract class Realm extends EventEmitter<{
   /** Emitted whenever the realm has updated. */
   updated: Realm;
   /** Emitted when the realm is destroyed. */
-  destroyed: {reason: string};
+  destroyed: string;
   /** Emitted when a dedicated worker is created in the realm. */
   worker: DedicatedWorkerRealm;
   /** Emitted when a shared worker is created in the realm. */
@@ -139,7 +139,7 @@ export abstract class Realm extends EventEmitter<{
   override [disposeSymbol](): void {
     this.#reason ??=
       'Realm already destroyed, probably because all associated browsing contexts closed.';
-    this.emit('destroyed', {reason: this.#reason});
+    this.emit('destroyed', this.#reason);
 
     this.disposables.dispose();
     super[disposeSymbol]();
@@ -172,7 +172,7 @@ export class WindowRealm extends Realm {
     const browsingContextEmitter = this.disposables.use(
       new EventEmitter(this.browsingContext),
     );
-    browsingContextEmitter.on('closed', ({reason}) => {
+    browsingContextEmitter.on('closed', reason => {
       this.dispose(reason);
     });
 

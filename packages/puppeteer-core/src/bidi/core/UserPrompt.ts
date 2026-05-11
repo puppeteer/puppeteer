@@ -35,10 +35,7 @@ export class UserPrompt extends EventEmitter<{
   /** Emitted when the user prompt is handled. */
   handled: UserPromptResult;
   /** Emitted when the user prompt is closed. */
-  closed: {
-    /** The reason the user prompt was closed. */
-    reason: string;
-  };
+  closed: string;
 }> {
   static from(
     browsingContext: BrowsingContext,
@@ -69,7 +66,7 @@ export class UserPrompt extends EventEmitter<{
     const browserContextEmitter = this.#disposables.use(
       new EventEmitter(this.browsingContext),
     );
-    browserContextEmitter.once('closed', ({reason}) => {
+    browserContextEmitter.once('closed', reason => {
       this.dispose(`User prompt already closed: ${reason}`);
     });
 
@@ -130,7 +127,7 @@ export class UserPrompt extends EventEmitter<{
   override [disposeSymbol](): void {
     this.#reason ??=
       'User prompt already closed, probably because the associated browsing context was destroyed.';
-    this.emit('closed', {reason: this.#reason});
+    this.emit('closed', this.#reason);
 
     this.#disposables.dispose();
     super[disposeSymbol]();

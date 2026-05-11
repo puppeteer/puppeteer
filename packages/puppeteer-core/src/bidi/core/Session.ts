@@ -21,8 +21,8 @@ import type {BidiEvents, Commands, Connection} from './Connection.js';
  * @internal
  */
 export class Session
-  extends EventEmitter<BidiEvents & {ended: {reason: string}}>
-  implements Connection<BidiEvents & {ended: {reason: string}}>
+  extends EventEmitter<BidiEvents & {ended: string}>
+  implements Connection<BidiEvents & {ended: string}>
 {
   static async from(
     connection: Connection,
@@ -56,7 +56,7 @@ export class Session
     (this as any).browser = await Browser.from(this);
 
     const browserEmitter = this.#disposables.use(this.browser);
-    browserEmitter.once('closed', ({reason}) => {
+    browserEmitter.once('closed', reason => {
       this.dispose(reason);
     });
 
@@ -154,7 +154,7 @@ export class Session
   override [disposeSymbol](): void {
     this.#reason ??=
       'Session already destroyed, probably because the connection broke.';
-    this.emit('ended', {reason: this.#reason});
+    this.emit('ended', this.#reason);
 
     this.#disposables.dispose();
     super[disposeSymbol]();

@@ -62,9 +62,9 @@ export class Request extends EventEmitter<{
     const browsingContextEmitter = this.#disposables.use(
       new EventEmitter(this.#browsingContext),
     );
-    browsingContextEmitter.once('closed', ({reason}) => {
+    browsingContextEmitter.once('closed', reason => {
       this.#error = reason;
-      this.emit('error', this.#error);
+      this.emit('error', reason);
       this.dispose();
     });
 

@@ -33,17 +33,11 @@ export class UserContext extends EventEmitter<{
   /**
    * Emitted when a new browsing context is created.
    */
-  browsingcontext: {
-    /** The new browsing context. */
-    browsingContext: BrowsingContext;
-  };
+  browsingcontext: BrowsingContext;
   /**
    * Emitted when the user context is closed.
    */
-  closed: {
-    /** The reason the user context was closed. */
-    reason: string;
-  };
+  closed: string;
 }> {
   static DEFAULT = 'default' as const;
 
@@ -71,10 +65,10 @@ export class UserContext extends EventEmitter<{
     const browserEmitter = this.#disposables.use(
       new EventEmitter(this.browser),
     );
-    browserEmitter.once('closed', ({reason}) => {
+    browserEmitter.once('closed', reason => {
       this.dispose(`User context was closed: ${reason}`);
     });
-    browserEmitter.once('disconnected', ({reason}) => {
+    browserEmitter.once('disconnected', reason => {
       this.dispose(`User context was closed: ${reason}`);
     });
 
@@ -109,7 +103,7 @@ export class UserContext extends EventEmitter<{
         this.#browsingContexts.delete(browsingContext.id);
       });
 
-      this.emit('browsingcontext', {browsingContext});
+      this.emit('browsingcontext', browsingContext);
     });
   }
 
@@ -236,7 +230,7 @@ export class UserContext extends EventEmitter<{
   override [disposeSymbol](): void {
     this.#reason ??=
       'User context already closed, probably because the browser disconnected/closed.';
-    this.emit('closed', {reason: this.#reason});
+    this.emit('closed', this.#reason);
 
     this.#disposables.dispose();
     super[disposeSymbol]();

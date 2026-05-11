@@ -109,7 +109,7 @@ export class BidiFrame extends Frame {
       this.#createFrameTarget(browsingContext);
     }
 
-    this.browsingContext.on('browsingcontext', ({browsingContext}) => {
+    this.browsingContext.on('browsingcontext', browsingContext => {
       this.#createFrameTarget(browsingContext);
     });
     this.browsingContext.on('closed', () => {
@@ -121,7 +121,7 @@ export class BidiFrame extends Frame {
       this.page().trustedEmitter.emit(PageEvent.FrameDetached, this);
     });
 
-    this.browsingContext.on('request', ({request}) => {
+    this.browsingContext.on('request', request => {
       const httpRequest = BidiHTTPRequest.from(
         request,
         this,
@@ -137,7 +137,7 @@ export class BidiFrame extends Frame {
       void httpRequest.finalizeInterceptions();
     });
 
-    this.browsingContext.on('navigation', ({navigation}) => {
+    this.browsingContext.on('navigation', navigation => {
       navigation.once('fragment', () => {
         this.page().trustedEmitter.emit(PageEvent.FrameNavigated, this);
       });
@@ -151,14 +151,14 @@ export class BidiFrame extends Frame {
       this.page().trustedEmitter.emit(PageEvent.FrameNavigated, this);
     });
 
-    this.browsingContext.on('userprompt', ({userPrompt}) => {
+    this.browsingContext.on('userprompt', userPrompt => {
       this.page().trustedEmitter.emit(
         PageEvent.Dialog,
         BidiDialog.from(userPrompt),
       );
     });
 
-    this.browsingContext.on('log', ({entry}) => {
+    this.browsingContext.on('log', entry => {
       if (this._id !== entry.source.context) {
         return;
       }
@@ -204,7 +204,7 @@ export class BidiFrame extends Frame {
       }
     });
 
-    this.browsingContext.on('worker', ({realm}) => {
+    this.browsingContext.on('worker', realm => {
       const worker = BidiWebWorker.from(this, realm);
       realm.on('destroyed', () => {
         this.page().trustedEmitter.emit(PageEvent.WorkerDestroyed, worker);
@@ -363,13 +363,13 @@ export class BidiFrame extends Frame {
           fromEmitterEvent(this.browsingContext, 'navigation'),
           fromEmitterEvent(this.browsingContext, 'historyUpdated').pipe(
             map(() => {
-              return {navigation: null};
+              return null;
             }),
           ),
         )
           .pipe(first())
           .pipe(
-            switchMap(({navigation}) => {
+            switchMap(navigation => {
               if (navigation === null) {
                 return of(null);
               }

@@ -32,20 +32,11 @@ export type AddPreloadScriptOptions = Omit<
  */
 export class Browser extends EventEmitter<{
   /** Emitted before the browser closes. */
-  closed: {
-    /** The reason for closing the browser. */
-    reason: string;
-  };
+  closed: string;
   /** Emitted after the browser disconnects. */
-  disconnected: {
-    /** The reason for disconnecting the browser. */
-    reason: string;
-  };
+  disconnected: string;
   /** Emitted when a shared worker is created. */
-  sharedworker: {
-    /** The realm of the shared worker. */
-    realm: SharedWorkerRealm;
-  };
+  sharedworker: SharedWorkerRealm;
 }> {
   static async from(session: Session): Promise<Browser> {
     const browser = new Browser(session);
@@ -70,7 +61,7 @@ export class Browser extends EventEmitter<{
     const sessionEmitter = this.#disposables.use(
       new EventEmitter(this.session),
     );
-    sessionEmitter.once('ended', ({reason}) => {
+    sessionEmitter.once('ended', reason => {
       this.dispose(reason);
     });
 
@@ -320,9 +311,9 @@ export class Browser extends EventEmitter<{
     this.#reason ??=
       'Browser was disconnected, probably because the session ended.';
     if (this.closed) {
-      this.emit('closed', {reason: this.#reason});
+      this.emit('closed', this.#reason);
     }
-    this.emit('disconnected', {reason: this.#reason});
+    this.emit('disconnected', this.#reason);
 
     this.#disposables.dispose();
     super[disposeSymbol]();
