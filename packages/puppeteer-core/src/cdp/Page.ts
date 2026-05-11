@@ -690,7 +690,7 @@ export class CdpPage extends Page {
       })
     ).cookies;
 
-    const unsupportedCookieAttributes = ['sourcePort', 'sameParty'];
+    const unsupportedCookieAttributes = ['sourcePort'];
     const filterUnsupportedAttributes = (
       cookie: Protocol.Network.Cookie,
     ): Protocol.Network.Cookie => {
@@ -707,8 +707,6 @@ export class CdpPage extends Page {
         partitionKey: cookie.partitionKey
           ? cookie.partitionKey.topLevelSite
           : undefined,
-        // TODO: remove sameParty as it is removed from Chrome.
-        sameParty: false,
       };
     });
   }
