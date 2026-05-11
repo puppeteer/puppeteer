@@ -54,29 +54,4 @@ Determines which button will be pressed.
 `'left'`
 
 </td></tr>
-<tr><td>
-
-<span id="clickcount">clickCount</span>
-
-</td><td>
-
-`optional, deprecated`
-
-</td><td>
-
-number
-
-</td><td>
-
-Determines the click count for the mouse event. This does not perform multiple clicks.
-
-**Deprecated:**
-
-Use [MouseClickOptions.count](./puppeteer.mouseclickoptions.md#count).
-
-</td><td>
-
-`1`
-
-</td></tr>
 </tbody></table>

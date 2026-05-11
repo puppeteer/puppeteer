@@ -437,20 +437,20 @@ export class CdpMouse extends Mouse {
     y: number,
     options: Readonly<MouseClickOptions> = {},
   ): Promise<void> {
-    const {delay, count = 1, clickCount = count} = options;
+    const {delay, count = 1} = options;
     if (count < 1) {
       throw new Error('Click must occur a positive number of times.');
     }
     const actions: Array<Promise<void>> = [this.move(x, y)];
-    if (clickCount === count) {
-      for (let i = 1; i < count; ++i) {
-        actions.push(
-          this.down({...options, clickCount: i}),
-          this.up({...options, clickCount: i}),
-        );
-      }
+
+    for (let i = 1; i < count; ++i) {
+      actions.push(
+        this.down({...options, clickCount: i}),
+        this.up({...options, clickCount: i}),
+      );
     }
-    actions.push(this.down({...options, clickCount}));
+
+    actions.push(this.down({...options, clickCount: count}));
     if (typeof delay === 'number') {
       await Promise.all(actions);
       actions.length = 0;
@@ -458,7 +458,7 @@ export class CdpMouse extends Mouse {
         setTimeout(resolve, delay);
       });
     }
-    actions.push(this.up({...options, clickCount}));
+    actions.push(this.up({...options, clickCount: count}));
     await Promise.all(actions);
   }
 

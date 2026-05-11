@@ -66,7 +66,7 @@ export class CdpBrowserContext extends BrowserContext {
           return target.page();
         }),
     );
-    return pages.filter((page): page is Page => {
+    return pages.filter(page => {
       return !!page;
     });
   }
