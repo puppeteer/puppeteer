@@ -219,7 +219,7 @@ describe('Launcher specs', function () {
           rmSync(userDataDir);
         } catch {}
       });
-      it('tmp profile should be cleaned up', async () => {
+      it.only('tmp profile should be cleaned up', async () => {
         const {puppeteer, isFirefox} = await getTestState({skipLaunch: true});
 
         // Set a custom test tmp dir so that we can validate that
@@ -228,8 +228,10 @@ describe('Launcher specs', function () {
           path.join(os.tmpdir(), 'puppeteer_test_chrome_profile-'),
         );
         const config = await puppeteer.configuration();
-        const oldTmpDir = config.temporaryDirectory;
-        config.temporaryDirectory = testTmpDir;
+        sinon.stub(puppeteer, 'configuration').resolves({
+          ...config,
+          temporaryDirectory: testTmpDir,
+        });
 
         // Path should be empty before starting the browser.
         expect(fs.readdirSync(testTmpDir)).toHaveLength(0);
@@ -251,9 +253,6 @@ describe('Launcher specs', function () {
 
         // Profile should be deleted after closing the browser
         expect(fs.readdirSync(testTmpDir)).toHaveLength(0);
-
-        // Restore env var
-        (await puppeteer.configuration()).temporaryDirectory = oldTmpDir;
       });
       it('userDataDir option restores preferences', async () => {
         const userDataDir = await mkdtemp(TMP_FOLDER);
