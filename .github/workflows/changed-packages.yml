@@ -44,6 +44,7 @@ jobs:
             puppeteer:
               - '.github/workflows/ci.yml'
               - 'packages/browsers/src/browser-data/firefox.ts'
+              - 'packages/browsers/src/fileUtil.ts'
               - 'packages/puppeteer/**'
               - 'packages/puppeteer-core/**'
               - 'packages/testserver/**'

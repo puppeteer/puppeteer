@@ -5,15 +5,17 @@
  */
 
 import type {ChildProcessByStdio} from 'node:child_process';
-import {spawnSync, spawn} from 'node:child_process';
+import {spawnSync, spawn, execFile} from 'node:child_process';
 import {createReadStream} from 'node:fs';
 import {mkdir, readdir} from 'node:fs/promises';
 import * as path from 'node:path';
 import type {Readable, Transform, Writable} from 'node:stream';
 import {Stream} from 'node:stream';
+import {promisify} from 'node:util';
 
 import debug from 'debug';
 
+const execFileAsync = promisify(execFile);
 const debugFileUtil = debug('puppeteer:browsers:fileUtil');
 
 /**
@@ -27,8 +29,8 @@ export async function unpackArchive(
     folderPath = path.resolve(process.cwd(), folderPath);
   }
   if (archivePath.endsWith('.zip')) {
-    const extractZip = await import('extract-zip');
-    await extractZip.default(archivePath, {dir: folderPath});
+    await mkdir(folderPath, {recursive: true});
+    await extractZip(archivePath, folderPath);
   } else if (archivePath.endsWith('.tar.bz2')) {
     await extractTar(archivePath, folderPath, 'bzip2');
   } else if (archivePath.endsWith('.dmg')) {
@@ -179,5 +181,35 @@ async function installDMG(dmgPath: string, folderPath: string): Promise<void> {
     spawnSync('cp', ['-R', mountedPath, folderPath]);
   } finally {
     spawnSync('hdiutil', ['detach', mountPath, '-quiet']);
+  }
+}
+
+/**
+ * @internal
+ */
+async function extractZip(
+  archivePath: string,
+  folderPath: string,
+): Promise<void> {
+  try {
+    if (process.platform === 'win32') {
+      // -x: extract files
+      // -f: specify the archive file
+      // -C: extract to the specified directory
+      await execFileAsync('tar.exe', ['-xf', archivePath, '-C', folderPath]);
+    } else {
+      // -o: overwrite existing files without prompting
+      // -d: extract files into the specified directory
+      await execFileAsync('unzip', ['-o', archivePath, '-d', folderPath]);
+    }
+  } catch (error: any) {
+    if (error?.code === 'ENOENT') {
+      throw new Error(
+        `Extraction failed: Required native binary ('tar.exe' or 'unzip') was not found in the system PATH.`,
+      );
+    }
+    throw new Error(
+      `Extraction failed: ${error?.stderr?.toString() || error?.message}`,
+    );
   }
 }
