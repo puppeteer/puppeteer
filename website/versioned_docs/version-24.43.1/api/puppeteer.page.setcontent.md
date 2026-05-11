@@ -10,7 +10,7 @@ Set the content of the page.
 
 ```typescript
 class Page {
-  setContent(html: string, options?: WaitForOptions): Promise<void>;
+  setContent(html: string, options?: SetContentWaitForOptions): Promise<void>;
 }
 ```
 
@@ -48,7 +48,7 @@ options
 
 </td><td>
 
-[WaitForOptions](./puppeteer.waitforoptions.md)
+[SetContentWaitForOptions](./puppeteer.setcontentwaitforoptions.md)
 
 </td><td>
 

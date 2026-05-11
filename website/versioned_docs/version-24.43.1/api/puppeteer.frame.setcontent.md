@@ -10,7 +10,10 @@ Set the content of the frame.
 
 ```typescript
 class Frame {
-  abstract setContent(html: string, options?: WaitForOptions): Promise<void>;
+  abstract setContent(
+    html: string,
+    options?: SetContentWaitForOptions,
+  ): Promise<void>;
 }
 ```
 
@@ -48,7 +51,7 @@ options
 
 </td><td>
 
-[WaitForOptions](./puppeteer.waitforoptions.md)
+[SetContentWaitForOptions](./puppeteer.setcontentwaitforoptions.md)
 
 </td><td>
 
