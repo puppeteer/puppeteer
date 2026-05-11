@@ -147,6 +147,11 @@ async function updateDevToolsProtocolVersion(browserVersion) {
     process.exit(1);
   }
 
+  if (!/^\d+$/.test(String(revision))) {
+    console.error(`Invalid revision number: ${revision}`);
+    process.exit(1);
+  }
+
   const currentProtocol = packageJson.dependencies['devtools-protocol'];
   const command = `npm view "devtools-protocol@<=0.0.${revision}" version | tail -1`;
 
