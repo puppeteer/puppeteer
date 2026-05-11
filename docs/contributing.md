@@ -312,11 +312,11 @@ For bisecting Chrome/Chromium changes use https://www.chromium.org/developers/bi
 python3 <path-to-chromium-checkout>/tools/bisect-builds.py -g <known-good> -b <known-bad> -cft -v --verify-range --not-interactive -c "BINARY=%p npm run test:chrome:<test-type>"
 ```
 
-Or run the wrapper in `tools/bisect.mjs` that warps the above functionality for Puppeteer tests.
+Or run the wrapper in `npx puppeteer browsers bisect` that wraps the above functionality for Puppeteer tests.
 
 ```bash
 # From Puppeteer repo root
-node tools/bisect.mjs -g <known-good> -b <known-bad>
+npx puppeteer browsers bisect -g <known-good> -b <known-bad>
 ```
 
 ## Releasing to npm

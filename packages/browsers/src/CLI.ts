@@ -502,7 +502,7 @@ export class CLI {
       )
       .command(
         'bisect <path>',
-        'Bisect the specified test or script',
+        'Bisect Chrome for Testing using the specified script',
         yargs => {
           return yargs
             .positional('path', {
@@ -521,6 +521,11 @@ export class CLI {
               alias: 'b',
               demandOption: true,
               desc: 'First known bad version',
+            })
+            .option('cft', {
+              type: 'boolean',
+              desc: 'Use -cft',
+              default: true,
             });
         },
         async args => {
@@ -559,7 +564,7 @@ export class CLI {
             args.good,
             '-b',
             args.bad,
-            '-cft',
+            args.cft ? '-cft' : '-s',
             '-v',
             '--verify-range',
             '--not-interactive',
