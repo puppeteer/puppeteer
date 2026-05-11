@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.13.2](https://github.com/puppeteer/puppeteer/compare/browsers-v2.13.1...browsers-v2.13.2) (2026-05-11)
+
+
+### 🛠️ Fixes
+
+* do not use shell for setup.exe ([#14959](https://github.com/puppeteer/puppeteer/issues/14959)) ([d8b5fd9](https://github.com/puppeteer/puppeteer/commit/d8b5fd9f5fe035d5246890872c4c7a1d758fa6cf))
+
 ## [2.13.1](https://github.com/puppeteer/puppeteer/compare/browsers-v2.13.0...browsers-v2.13.1) (2026-05-06)
 
 

@@ -1,5 +1,27 @@
 # Changelog
 
+## [24.43.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.43.0...puppeteer-core-v24.43.1) (2026-05-11)
+
+
+### 🛠️ Fixes
+
+* reject BiDi URL restrictions ([#14956](https://github.com/puppeteer/puppeteer/issues/14956)) ([b2140ae](https://github.com/puppeteer/puppeteer/commit/b2140ae75411bc5c9dc13d10e853372d9dbc9cb5))
+* remove networkidle options from setContent ([#14940](https://github.com/puppeteer/puppeteer/issues/14940)) ([54254e4](https://github.com/puppeteer/puppeteer/commit/54254e49668ecf2130e0e6b5ef8d25223264ce14))
+* roll to Firefox 150.0.2 ([#14946](https://github.com/puppeteer/puppeteer/issues/14946)) ([a588310](https://github.com/puppeteer/puppeteer/commit/a58831074136da60b3a8ea1c28be799d9027c830))
+
+
+### ⚡ Performance
+
+* dispose sub-classes correctly ([#14430](https://github.com/puppeteer/puppeteer/issues/14430)) ([e285ff2](https://github.com/puppeteer/puppeteer/commit/e285ff2dec00dd4f3e0b125a4f26c394ac369e72))
+* optimize url blocking on navigation ([#14945](https://github.com/puppeteer/puppeteer/issues/14945)) ([e4002a4](https://github.com/puppeteer/puppeteer/commit/e4002a4264626982a5228e72b07e2e47b0187189))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.13.1 to 2.13.2
+
 ## [24.43.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.42.0...puppeteer-core-v24.43.0) (2026-05-06)
 
 
