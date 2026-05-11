@@ -51,6 +51,12 @@ async function main() {
   const chromeRevision = releases.versions.find(release => {
     return release.version === chromeVersion;
   }).revision;
+
+  if (!/^\d+$/.test(String(chromeRevision))) {
+    console.error(`Invalid revision number: ${chromeRevision}`);
+    process.exit(1);
+  }
+
   console.log(`Revisions for ${chromeVersion}: ${chromeRevision}`);
 
   const command = `npm view "devtools-protocol@<=0.0.${chromeRevision}" version | tail -1`;
