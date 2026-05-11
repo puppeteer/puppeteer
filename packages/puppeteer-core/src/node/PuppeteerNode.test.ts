@@ -27,8 +27,10 @@ describe('PuppeteerNode', () => {
     it('returns the default path', async () => {
       const puppeteer = new PuppeteerNode({
         isPuppeteerCore: false,
-        configuration: {
-          cacheDirectory: tmpDir,
+        configuration: () => {
+          return Promise.resolve({
+            cacheDirectory: tmpDir,
+          });
         },
       });
       expect(await puppeteer.executablePath()).toContain('chrome');
@@ -37,9 +39,11 @@ describe('PuppeteerNode', () => {
     it('returns the default path based on the default browser configuration', async () => {
       const puppeteer = new PuppeteerNode({
         isPuppeteerCore: false,
-        configuration: {
-          cacheDirectory: tmpDir,
-          defaultBrowser: 'firefox',
+        configuration: () => {
+          return Promise.resolve({
+            cacheDirectory: tmpDir,
+            defaultBrowser: 'firefox',
+          });
         },
       });
       expect((await puppeteer.executablePath()).toLowerCase()).toContain(
@@ -50,8 +54,10 @@ describe('PuppeteerNode', () => {
     it('returns the default path for a given Chrome channel', async () => {
       const puppeteer = new PuppeteerNode({
         isPuppeteerCore: false,
-        configuration: {
-          cacheDirectory: tmpDir,
+        configuration: () => {
+          return Promise.resolve({
+            cacheDirectory: tmpDir,
+          });
         },
       });
       expect(
@@ -62,8 +68,10 @@ describe('PuppeteerNode', () => {
     it('returns the default path for chrome-headless-shell', async () => {
       const puppeteer = new PuppeteerNode({
         isPuppeteerCore: false,
-        configuration: {
-          cacheDirectory: tmpDir,
+        configuration: () => {
+          return Promise.resolve({
+            cacheDirectory: tmpDir,
+          });
         },
       });
       expect(
@@ -80,8 +88,10 @@ describe('PuppeteerNode', () => {
     it('returns the default args without arguments', () => {
       const puppeteer = new PuppeteerNode({
         isPuppeteerCore: false,
-        configuration: {
-          cacheDirectory: tmpDir,
+        configuration: () => {
+          return Promise.resolve({
+            cacheDirectory: tmpDir,
+          });
         },
       });
       expect(puppeteer.defaultArgs()).toBeInstanceOf(Array);

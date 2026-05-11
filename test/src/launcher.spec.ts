@@ -447,9 +447,9 @@ describe('Launcher specs', function () {
           skipLaunch: true,
         });
         if (isChrome) {
-          expect(puppeteer.product).toBe('chrome');
+          expect(await puppeteer.product()).toBe('chrome');
         } else if (isFirefox) {
-          expect(puppeteer.product).toBe('firefox');
+          expect(await puppeteer.product()).toBe('firefox');
         }
       });
       it('should filter out ignored default arguments in Chrome', async () => {

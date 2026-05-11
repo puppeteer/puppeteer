@@ -535,8 +535,8 @@ export abstract class BrowserLauncher {
       headless,
     );
 
-    const defaultDownloadPath = await this.puppeteer.defaultDownloadPath;
-    const browserVersion = await this.puppeteer.browserVersion;
+    const defaultDownloadPath = await this.puppeteer.defaultDownloadPath();
+    const browserVersion = await this.puppeteer.browserVersion();
 
     executablePath = computeExecutablePath({
       cacheDir: defaultDownloadPath!,
