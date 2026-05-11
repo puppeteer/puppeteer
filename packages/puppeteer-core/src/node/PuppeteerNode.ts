@@ -65,11 +65,6 @@ export class PuppeteerNode extends Puppeteer {
   /**
    * @internal
    */
-  defaultBrowserRevision?: string;
-
-  /**
-   * @internal
-   */
   constructor(
     settings: {
       configuration?: () => Promise<Configuration>;
@@ -141,15 +136,8 @@ export class PuppeteerNode extends Puppeteer {
   async launch(options: LaunchOptions = {}): Promise<Browser> {
     const {browser = await this.defaultBrowser()} = options;
     this.#lastLaunchedBrowser = browser;
-    switch (browser) {
-      case 'chrome':
-        this.defaultBrowserRevision = PUPPETEER_REVISIONS.chrome;
-        break;
-      case 'firefox':
-        this.defaultBrowserRevision = PUPPETEER_REVISIONS.firefox;
-        break;
-      default:
-        throw new Error(`Unknown product: ${browser}`);
+    if (!['chrome', 'firefox'].includes(browser)) {
+      throw new Error(`Unknown product: ${browser}`);
     }
     this.#launcher = this.#getLauncher(browser);
     return await this.#launcher.launch(options);
@@ -209,11 +197,7 @@ export class PuppeteerNode extends Puppeteer {
   async browserVersion(): Promise<string> {
     const config = await this.configuration();
     const lastLaunched = await this.lastLaunchedBrowser();
-    return (
-      config?.[lastLaunched]?.version ??
-      this.defaultBrowserRevision ??
-      PUPPETEER_REVISIONS[lastLaunched]
-    );
+    return config?.[lastLaunched]?.version ?? PUPPETEER_REVISIONS[lastLaunched];
   }
 
   /**
