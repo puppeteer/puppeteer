@@ -85,7 +85,7 @@ describe('PuppeteerNode', () => {
   });
 
   describe('defaultArgs()', () => {
-    it('returns the default args without arguments', () => {
+    it('returns the default args without arguments', async () => {
       const puppeteer = new PuppeteerNode({
         isPuppeteerCore: false,
         configuration: () => {
@@ -94,7 +94,8 @@ describe('PuppeteerNode', () => {
           });
         },
       });
-      expect(puppeteer.defaultArgs()).toBeInstanceOf(Array);
+      const args = await puppeteer.defaultArgs();
+      expect(args).toBeInstanceOf(Array);
     });
   });
 });

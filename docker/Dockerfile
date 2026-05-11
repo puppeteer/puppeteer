@@ -36,4 +36,10 @@ RUN PUPPETEER_CACHE_DIR=/home/pptruser/.cache/puppeteer \
 
 USER $PPTRUSER_UID
 # Generate THIRD_PARTY_NOTICES using chrome --credits.
-RUN node -e "require('child_process').execSync(require('puppeteer').executablePath() + ' --credits', {stdio: 'inherit'})" > THIRD_PARTY_NOTICES
+ARG JS_CODE=" \
+  import { execSync } from 'node:child_process'; \
+  import puppeteer from 'puppeteer'; \
+  const executable = await puppeteer.executablePath(); \
+  execSync(executable + ' --credits', {stdio: 'inherit'}); \
+"
+RUN node --input-type=module -e "$JS_CODE" > THIRD_PARTY_NOTICES
