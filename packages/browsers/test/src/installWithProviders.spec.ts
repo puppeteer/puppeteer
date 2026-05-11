@@ -16,7 +16,7 @@ import {
   install,
   type BrowserProvider,
   type DownloadOptions,
-} from '../../lib/esm/main.js';
+} from '../../lib/main.js';
 
 import {getServerUrl, setupTestServer} from './utils.js';
 import {testChromeBuildId} from './versions.js';
