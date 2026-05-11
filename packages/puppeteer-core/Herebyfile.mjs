@@ -95,7 +95,7 @@ export const buildTask = task({
           outfile: entrypoint,
           bundle: true,
           allowOverwrite: true,
-          format,
+          format: 'esm',
           target: 'node20',
           // Do not minify for readability and leave minification to
           // consumers.

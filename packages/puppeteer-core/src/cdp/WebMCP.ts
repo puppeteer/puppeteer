@@ -46,7 +46,10 @@ export interface WebMCPAnnotation {
  */
 export type WebMCPInvocationStatus = 'Completed' | 'Canceled' | 'Error';
 
-interface ProtocolWebMCPTool {
+/**
+ * @internal
+ */
+export interface ProtocolWebMCPTool {
   name: string;
   description: string;
   inputSchema?: object;
