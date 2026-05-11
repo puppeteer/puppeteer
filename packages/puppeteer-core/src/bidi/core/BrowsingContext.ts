@@ -162,7 +162,6 @@ export class BrowsingContext extends EventEmitter<{
   readonly #children = new Map<string, BrowsingContext>();
   readonly #disposables = new DisposableStack();
   readonly #realms = new Map<string, WindowRealm>();
-  readonly #requests = new Map<string, Request>();
   readonly defaultRealm: WindowRealm;
   readonly id: string;
   readonly parent: BrowsingContext | undefined;
@@ -284,11 +283,6 @@ export class BrowsingContext extends EventEmitter<{
       // Note: we should not update this.#url at this point since the context
       // has not finished navigating to the info.url yet.
 
-      for (const [id, request] of this.#requests) {
-        if (request.disposed) {
-          this.#requests.delete(id);
-        }
-      }
       // If the navigation hasn't finished, then this is nested navigation. The
       // current navigation will handle this.
       if (this.#navigation !== undefined && !this.#navigation.disposed) {
@@ -315,14 +309,13 @@ export class BrowsingContext extends EventEmitter<{
       if (event.context !== this.id) {
         return;
       }
-      if (this.#requests.has(event.request.request)) {
+      if (event.redirectCount > 0) {
         // Means the request is a redirect. This is handled in Request.
         // Or an Auth event was issued
         return;
       }
 
       const request = Request.from(this, event);
-      this.#requests.set(request.id, request);
       this.emit('request', {request});
     });
 
