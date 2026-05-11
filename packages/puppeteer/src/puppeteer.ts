@@ -10,15 +10,13 @@ import {PuppeteerNode} from 'puppeteer-core';
 
 import {getConfiguration} from './getConfiguration.js';
 
-const configuration = getConfiguration();
-
 /**
  * @public
  */
 // @ts-expect-error using internal API.
 const puppeteer = new PuppeteerNode({
   isPuppeteerCore: false,
-  configuration,
+  configuration: getConfiguration,
 });
 
 export const {

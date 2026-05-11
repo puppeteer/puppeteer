@@ -8,7 +8,7 @@ sidebar_label: PuppeteerNode.defaultArgs
 
 ```typescript
 class PuppeteerNode {
-  defaultArgs(options?: LaunchOptions): string[];
+  defaultArgs(options?: LaunchOptions): Promise<string[]>;
 }
 ```
 
@@ -44,6 +44,6 @@ _(Optional)_ Set of configurable options to set on the browser.
 
 **Returns:**
 
-string\[\]
+Promise&lt;string\[\]&gt;
 
 The default arguments that the browser will be launched with.

@@ -112,7 +112,7 @@ defaultBrowserOptions.args!.push(
 defaultBrowserOptions.args!.push(`--force-device-scale-factor=1`);
 
 let executableExists = false;
-function verifyExecutable() {
+async function verifyExecutable() {
   if (executableExists) {
     return;
   }
@@ -127,7 +127,7 @@ function verifyExecutable() {
       );
     }
   } else {
-    const executablePath = puppeteer.executablePath();
+    const executablePath = await puppeteer.executablePath();
     if (!fs.existsSync(executablePath)) {
       throw new Error(
         `Browser is not downloaded at ${executablePath}. Run 'npm install' and try to re-run tests`,
@@ -195,7 +195,7 @@ export const setupTestBrowserHooks = (): void => {
     const defaultTimeout = this.timeout() || 10_000;
     // Let mocha fail after the 1s of timeout.
     this.timeout(defaultTimeout + 1_000);
-    verifyExecutable();
+    await verifyExecutable();
     try {
       if (!state.browser) {
         if (!browserPromise) {
@@ -371,7 +371,7 @@ if (
     processVariables.defaultBrowserOptions.executablePath ||
     path.relative(
       process.cwd(),
-      puppeteer.executablePath({
+      await puppeteer.executablePath({
         headless: isHeadless
           ? processVariables.headless === 'shell'
             ? 'shell'

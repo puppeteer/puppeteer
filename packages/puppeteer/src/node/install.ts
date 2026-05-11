@@ -67,7 +67,7 @@ async function downloadBrowser({
 export async function downloadBrowsers(): Promise<void> {
   overrideProxy();
 
-  const configuration = getConfiguration();
+  const configuration = await getConfiguration();
   if (configuration.skipDownload) {
     logPolitely('**INFO** Skipping downloading browsers as instructed.');
     return;

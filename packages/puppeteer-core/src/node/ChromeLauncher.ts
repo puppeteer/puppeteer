@@ -34,9 +34,10 @@ export class ChromeLauncher extends BrowserLauncher {
     super(puppeteer, 'chrome');
   }
 
-  override launch(options: LaunchOptions = {}): Promise<Browser> {
+  override async launch(options: LaunchOptions = {}): Promise<Browser> {
+    const config = await this.puppeteer.configuration();
     if (
-      this.puppeteer.configuration.logLevel === 'warn' &&
+      config.logLevel === 'warn' &&
       process.platform === 'darwin' &&
       process.arch === 'x64'
     ) {
@@ -55,7 +56,7 @@ export class ChromeLauncher extends BrowserLauncher {
       }
     }
 
-    return super.launch(options);
+    return await super.launch(options);
   }
 
   /**
@@ -112,7 +113,7 @@ export class ChromeLauncher extends BrowserLauncher {
     if (userDataDirIndex < 0) {
       isTempUserDataDir = true;
       chromeArguments.push(
-        `--user-data-dir=${await mkdtemp(this.getProfilePath())}`,
+        `--user-data-dir=${await mkdtemp(await this.getProfilePath())}`,
       );
       userDataDirIndex = chromeArguments.length - 1;
     }
@@ -127,8 +128,8 @@ export class ChromeLauncher extends BrowserLauncher {
         `An \`executablePath\` or \`channel\` must be specified for \`puppeteer-core\``,
       );
       chromeExecutable = channel
-        ? this.executablePath(channel)
-        : this.resolveExecutablePath(options.headless ?? true);
+        ? await this.executablePath(channel)
+        : await this.resolveExecutablePath(options.headless ?? true);
     }
 
     return {
@@ -284,17 +285,17 @@ export class ChromeLauncher extends BrowserLauncher {
     return chromeArguments;
   }
 
-  override executablePath(
+  override async executablePath(
     channel?: ChromeReleaseChannel,
     validatePath = true,
-  ): string {
+  ): Promise<string> {
     if (channel) {
       return computeSystemExecutablePath({
         browser: SupportedBrowsers.CHROME,
         channel: convertPuppeteerChannelToBrowsersChannel(channel),
       });
     } else {
-      return this.resolveExecutablePath(undefined, validatePath);
+      return await this.resolveExecutablePath(undefined, validatePath);
     }
   }
 }

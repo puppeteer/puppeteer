@@ -11,7 +11,7 @@ class BrowserLauncher {
   abstract executablePath(
     channel?: ChromeReleaseChannel,
     validatePath?: boolean,
-  ): string;
+  ): Promise<string>;
 }
 ```
 
@@ -60,4 +60,4 @@ _(Optional)_
 
 **Returns:**
 
-string
+Promise&lt;string&gt;

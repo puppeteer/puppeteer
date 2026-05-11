@@ -100,7 +100,8 @@ export class FirefoxLauncher extends BrowserLauncher {
       // with required preferences.
       isTempUserDataDir = false;
     } else {
-      userDataDir = await mkdtemp(this.getProfilePath());
+      const profilePath = await this.getProfilePath();
+      userDataDir = await mkdtemp(profilePath);
       firefoxArguments.push('--profile');
       firefoxArguments.push(userDataDir);
     }
@@ -118,7 +119,7 @@ export class FirefoxLauncher extends BrowserLauncher {
       );
       firefoxExecutable = executablePath;
     } else {
-      firefoxExecutable = this.executablePath(undefined);
+      firefoxExecutable = await this.executablePath(undefined);
     }
 
     return {
@@ -169,8 +170,11 @@ export class FirefoxLauncher extends BrowserLauncher {
     }
   }
 
-  override executablePath(_: unknown, validatePath = true): string {
-    return this.resolveExecutablePath(
+  override async executablePath(
+    _: unknown,
+    validatePath = true,
+  ): Promise<string> {
+    return await this.resolveExecutablePath(
       undefined,
       /* validatePath=*/ validatePath,
     );

@@ -227,8 +227,9 @@ describe('Launcher specs', function () {
         const testTmpDir = await fs.promises.mkdtemp(
           path.join(os.tmpdir(), 'puppeteer_test_chrome_profile-'),
         );
-        const oldTmpDir = puppeteer.configuration.temporaryDirectory;
-        puppeteer.configuration.temporaryDirectory = testTmpDir;
+        const config = await puppeteer.configuration();
+        const oldTmpDir = config.temporaryDirectory;
+        config.temporaryDirectory = testTmpDir;
 
         // Path should be empty before starting the browser.
         expect(fs.readdirSync(testTmpDir)).toHaveLength(0);
@@ -252,7 +253,7 @@ describe('Launcher specs', function () {
         expect(fs.readdirSync(testTmpDir)).toHaveLength(0);
 
         // Restore env var
-        puppeteer.configuration.temporaryDirectory = oldTmpDir;
+        (await puppeteer.configuration()).temporaryDirectory = oldTmpDir;
       });
       it('userDataDir option restores preferences', async () => {
         const userDataDir = await mkdtemp(TMP_FOLDER);
@@ -404,37 +405,39 @@ describe('Launcher specs', function () {
         });
 
         if (isChrome) {
-          expect(puppeteer.defaultArgs()).toContain('--no-first-run');
-          expect(puppeteer.defaultArgs()).toContain('--headless=new');
-          expect(puppeteer.defaultArgs({headless: false})).not.toContain(
+          expect(await puppeteer.defaultArgs()).toContain('--no-first-run');
+          expect(await puppeteer.defaultArgs()).toContain('--headless=new');
+          expect(await puppeteer.defaultArgs({headless: false})).not.toContain(
             '--headless=new',
           );
-          expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
+          expect(await puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
             `--user-data-dir=${path.resolve('foo')}`,
           );
         } else if (isFirefox) {
-          expect(puppeteer.defaultArgs()).toContain('--headless');
+          expect(await puppeteer.defaultArgs()).toContain('--headless');
           if (os.platform() === 'darwin') {
-            expect(puppeteer.defaultArgs()).toContain('--foreground');
+            expect(await puppeteer.defaultArgs()).toContain('--foreground');
           } else {
-            expect(puppeteer.defaultArgs()).not.toContain('--foreground');
+            expect(await puppeteer.defaultArgs()).not.toContain('--foreground');
           }
-          expect(puppeteer.defaultArgs({headless: false})).not.toContain(
+          expect(await puppeteer.defaultArgs({headless: false})).not.toContain(
             '--headless',
           );
-          expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
+          expect(await puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
             '--profile',
           );
-          expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain('foo');
+          expect(await puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
+            'foo',
+          );
         } else {
-          expect(puppeteer.defaultArgs()).toContain('-headless');
-          expect(puppeteer.defaultArgs({headless: false})).not.toContain(
+          expect(await puppeteer.defaultArgs()).toContain('-headless');
+          expect(await puppeteer.defaultArgs({headless: false})).not.toContain(
             '-headless',
           );
-          expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
+          expect(await puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
             '-profile',
           );
-          expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
+          expect(await puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
             path.resolve('foo'),
           );
         }
@@ -454,7 +457,7 @@ describe('Launcher specs', function () {
           skipLaunch: true,
         });
         // Make sure we launch with `--enable-automation` by default.
-        const defaultArgs = puppeteer.defaultArgs();
+        const defaultArgs = await puppeteer.defaultArgs();
         const {browser, close} = await launch(
           Object.assign({}, defaultBrowserOptions, {
             // Ignore first and third default argument.
@@ -478,7 +481,7 @@ describe('Launcher specs', function () {
           skipLaunch: true,
         });
 
-        const defaultArgs = puppeteer.defaultArgs();
+        const defaultArgs = await puppeteer.defaultArgs();
         const {browser, close} = await launch(
           Object.assign({}, defaultBrowserOptions, {
             // All arguments are optional.
@@ -877,7 +880,7 @@ describe('Launcher specs', function () {
           skipLaunch: true,
         });
 
-        const executablePath = puppeteer.executablePath();
+        const executablePath = await puppeteer.executablePath();
         expect(fs.existsSync(executablePath)).toBe(true);
         expect(fs.realpathSync(executablePath)).toBe(executablePath);
       });
@@ -886,7 +889,7 @@ describe('Launcher specs', function () {
           skipLaunch: true,
         });
 
-        const executablePath = puppeteer.executablePath('chrome');
+        const executablePath = await puppeteer.executablePath('chrome');
         expect(executablePath).toBeTruthy();
       });
       describe('when executable path is configured', () => {
@@ -897,8 +900,8 @@ describe('Launcher specs', function () {
             skipLaunch: true,
           });
           sandbox
-            .stub(puppeteer.configuration, 'executablePath')
-            .value('SOME_CUSTOM_EXECUTABLE');
+            .stub(puppeteer, 'configuration')
+            .resolves({executablePath: 'SOME_CUSTOM_EXECUTABLE'});
         });
 
         afterEach(() => {
@@ -910,7 +913,7 @@ describe('Launcher specs', function () {
             skipLaunch: true,
           });
           try {
-            puppeteer.executablePath();
+            await puppeteer.executablePath();
           } catch (error) {
             expect((error as Error).message).toContain(
               'SOME_CUSTOM_EXECUTABLE',

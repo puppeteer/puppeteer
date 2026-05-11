@@ -13,11 +13,10 @@ import {packageVersion} from 'puppeteer-core/internal/util/version.js';
 
 import puppeteer from '../puppeteer.js';
 
-const cacheDir = (puppeteer as unknown as PuppeteerNode).configuration
-  .cacheDirectory!;
+const config = await (puppeteer as unknown as PuppeteerNode).configuration();
 
 void new CLI({
-  cachePath: cacheDir,
+  cachePath: config.cacheDirectory!,
   scriptName: 'puppeteer',
   version: packageVersion,
   prefixCommand: {
@@ -28,34 +27,20 @@ void new CLI({
   pinnedBrowsers: {
     [Browser.CHROME]: {
       buildId:
-        (puppeteer as unknown as PuppeteerNode).configuration.chrome?.version ||
-        PUPPETEER_REVISIONS['chrome'] ||
-        'latest',
-      skipDownload:
-        (puppeteer as unknown as PuppeteerNode).configuration.chrome
-          ?.skipDownload ?? false,
+        config.chrome?.version || PUPPETEER_REVISIONS['chrome'] || 'latest',
+      skipDownload: config.chrome?.skipDownload ?? false,
     },
     [Browser.FIREFOX]: {
       buildId:
-        (puppeteer as unknown as PuppeteerNode).configuration.firefox
-          ?.version ||
-        PUPPETEER_REVISIONS['firefox'] ||
-        'latest',
-      skipDownload:
-        (puppeteer as unknown as PuppeteerNode).configuration.firefox
-          ?.skipDownload ?? true,
+        config.firefox?.version || PUPPETEER_REVISIONS['firefox'] || 'latest',
+      skipDownload: config.firefox?.skipDownload ?? true,
     },
     [Browser.CHROMEHEADLESSSHELL]: {
       buildId:
-        (puppeteer as unknown as PuppeteerNode).configuration[
-          'chrome-headless-shell'
-        ]?.version ||
+        config['chrome-headless-shell']?.version ||
         PUPPETEER_REVISIONS['chrome-headless-shell'] ||
         'latest',
-      skipDownload:
-        (puppeteer as unknown as PuppeteerNode).configuration[
-          'chrome-headless-shell'
-        ]?.skipDownload ?? false,
+      skipDownload: config['chrome-headless-shell']?.skipDownload ?? false,
     },
   },
 }).run(process.argv);

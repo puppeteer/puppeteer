@@ -69,7 +69,7 @@ Description
 
 </td><td>
 
-[SupportedBrowser](./puppeteer.supportedbrowser.md)
+Promise&lt;[SupportedBrowser](./puppeteer.supportedbrowser.md)&gt;
 
 </td><td>
 
@@ -86,7 +86,7 @@ The name of the browser that will be launched by default. For `puppeteer`, this 
 
 </td><td>
 
-[SupportedBrowser](./puppeteer.supportedbrowser.md)
+Promise&lt;[SupportedBrowser](./puppeteer.supportedbrowser.md)&gt;
 
 </td><td>
 
@@ -103,7 +103,7 @@ The name of the browser that was last launched.
 
 </td><td>
 
-string
+Promise&lt;string&gt;
 
 </td><td>
 

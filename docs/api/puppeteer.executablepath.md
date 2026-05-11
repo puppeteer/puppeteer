@@ -8,8 +8,8 @@ sidebar_label: executablePath
 
 ```typescript
 executablePath: {
-    (channel: PuppeteerCore.ChromeReleaseChannel): string;
-    (options: PuppeteerCore.LaunchOptions): string;
-    (): string;
+    (channel: PuppeteerCore.ChromeReleaseChannel): Promise<string>;
+    (options: PuppeteerCore.LaunchOptions): Promise<string>;
+    (): Promise<string>;
 }
 ```

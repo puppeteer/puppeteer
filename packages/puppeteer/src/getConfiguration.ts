@@ -7,7 +7,7 @@
 import {homedir} from 'node:os';
 import {join} from 'node:path';
 
-import {cosmiconfigSync} from 'cosmiconfig';
+import {cosmiconfig} from 'cosmiconfig';
 import type {
   ChromeHeadlessShellSettings,
   ChromeSettings,
@@ -115,8 +115,8 @@ function getBrowserSetting(
 /**
  * @internal
  */
-export const getConfiguration = (): Configuration => {
-  const result = cosmiconfigSync('puppeteer', {
+export const getConfiguration = async (): Promise<Configuration> => {
+  const result = await cosmiconfig('puppeteer', {
     searchStrategy: 'global',
   }).search();
   const configuration: Configuration = result ? {...result.config} : {};

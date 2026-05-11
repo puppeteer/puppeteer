@@ -60,38 +60,29 @@ import type {ChromeReleaseChannel, LaunchOptions} from './LaunchOptions.js';
 export class PuppeteerNode extends Puppeteer {
   #launcher?: BrowserLauncher;
   #lastLaunchedBrowser?: SupportedBrowser;
+  configuration: () => Promise<Configuration>;
 
   /**
    * @internal
    */
-  defaultBrowserRevision: string;
-
-  /**
-   * @internal
-   */
-  configuration: Configuration = {};
+  defaultBrowserRevision?: string;
 
   /**
    * @internal
    */
   constructor(
     settings: {
-      configuration?: Configuration;
+      configuration?: () => Promise<Configuration>;
     } & CommonPuppeteerSettings,
   ) {
     const {configuration, ...commonSettings} = settings;
     super(commonSettings);
     if (configuration) {
       this.configuration = configuration;
-    }
-    switch (this.configuration.defaultBrowser) {
-      case 'firefox':
-        this.defaultBrowserRevision = PUPPETEER_REVISIONS.firefox;
-        break;
-      default:
-        this.configuration.defaultBrowser = 'chrome';
-        this.defaultBrowserRevision = PUPPETEER_REVISIONS.chrome;
-        break;
+    } else {
+      this.configuration = () => {
+        return Promise.resolve({});
+      };
     }
 
     this.connect = this.connect.bind(this);
@@ -147,8 +138,8 @@ export class PuppeteerNode extends Puppeteer {
    *
    * @param options - Options to configure launching behavior.
    */
-  launch(options: LaunchOptions = {}): Promise<Browser> {
-    const {browser = this.defaultBrowser} = options;
+  async launch(options: LaunchOptions = {}): Promise<Browser> {
+    const {browser = await this.defaultBrowser} = options;
     this.#lastLaunchedBrowser = browser;
     switch (browser) {
       case 'chrome':
@@ -161,7 +152,7 @@ export class PuppeteerNode extends Puppeteer {
         throw new Error(`Unknown product: ${browser}`);
     }
     this.#launcher = this.#getLauncher(browser);
-    return this.#launcher.launch(options);
+    return await this.#launcher.launch(options);
   }
 
   /**
@@ -184,41 +175,47 @@ export class PuppeteerNode extends Puppeteer {
   /**
    * The default executable path for a given ChromeReleaseChannel.
    */
-  executablePath(channel: ChromeReleaseChannel): string;
+  executablePath(channel: ChromeReleaseChannel): Promise<string>;
   /**
    * The default executable path given LaunchOptions.
    */
-  executablePath(options: LaunchOptions): string;
+  executablePath(options: LaunchOptions): Promise<string>;
   /**
    * The default executable path.
    */
-  executablePath(): string;
-  executablePath(optsOrChannel?: ChromeReleaseChannel | LaunchOptions): string {
+  executablePath(): Promise<string>;
+  async executablePath(
+    optsOrChannel?: ChromeReleaseChannel | LaunchOptions,
+  ): Promise<string> {
     if (optsOrChannel === undefined) {
-      return this.#getLauncher(this.lastLaunchedBrowser).executablePath(
-        undefined,
-        /* validatePath= */ false,
-      );
+      return await this.#getLauncher(
+        await this.lastLaunchedBrowser,
+      ).executablePath(undefined, /* validatePath= */ false);
     }
     if (typeof optsOrChannel === 'string') {
-      return this.#getLauncher('chrome').executablePath(
+      return await this.#getLauncher('chrome').executablePath(
         optsOrChannel,
         /* validatePath= */ false,
       );
     }
-    return this.#getLauncher(
-      optsOrChannel.browser ?? this.lastLaunchedBrowser,
+    return await this.#getLauncher(
+      optsOrChannel.browser ?? (await this.lastLaunchedBrowser),
     ).resolveExecutablePath(optsOrChannel.headless, /* validatePath= */ false);
   }
 
   /**
    * @internal
    */
-  get browserVersion(): string {
-    return (
-      this.configuration?.[this.lastLaunchedBrowser]?.version ??
-      this.defaultBrowserRevision!
-    );
+  get browserVersion(): Promise<string> {
+    return (async () => {
+      const config = await this.configuration();
+      const lastLaunched = await this.lastLaunchedBrowser;
+      return (
+        config?.[lastLaunched]?.version ??
+        this.defaultBrowserRevision ??
+        PUPPETEER_REVISIONS[lastLaunched]
+      );
+    })();
   }
 
   /**
@@ -227,15 +224,20 @@ export class PuppeteerNode extends Puppeteer {
    *
    * @internal
    */
-  get defaultDownloadPath(): string | undefined {
-    return this.configuration.cacheDirectory;
+  get defaultDownloadPath(): Promise<string | undefined> {
+    return (async () => {
+      const config = await this.configuration();
+      return config.cacheDirectory;
+    })();
   }
 
   /**
    * The name of the browser that was last launched.
    */
-  get lastLaunchedBrowser(): SupportedBrowser {
-    return this.#lastLaunchedBrowser ?? this.defaultBrowser;
+  get lastLaunchedBrowser(): Promise<SupportedBrowser> {
+    return (async () => {
+      return this.#lastLaunchedBrowser ?? (await this.defaultBrowser);
+    })();
   }
 
   /**
@@ -243,8 +245,11 @@ export class PuppeteerNode extends Puppeteer {
    * `puppeteer`, this is influenced by your configuration. Otherwise, it's
    * `chrome`.
    */
-  get defaultBrowser(): SupportedBrowser {
-    return this.configuration.defaultBrowser ?? 'chrome';
+  get defaultBrowser(): Promise<SupportedBrowser> {
+    return (async () => {
+      const config = await this.configuration();
+      return config.defaultBrowser ?? 'chrome';
+    })();
   }
 
   /**
@@ -255,7 +260,7 @@ export class PuppeteerNode extends Puppeteer {
    *
    * @returns The name of the browser that is under automation.
    */
-  get product(): string {
+  get product(): Promise<string> {
     return this.lastLaunchedBrowser;
   }
 
@@ -264,9 +269,9 @@ export class PuppeteerNode extends Puppeteer {
    *
    * @returns The default arguments that the browser will be launched with.
    */
-  defaultArgs(options: LaunchOptions = {}): string[] {
+  async defaultArgs(options: LaunchOptions = {}): Promise<string[]> {
     return this.#getLauncher(
-      options.browser ?? this.lastLaunchedBrowser,
+      options.browser ?? (await this.lastLaunchedBrowser),
     ).defaultArgs(options);
   }
 
@@ -290,7 +295,8 @@ export class PuppeteerNode extends Puppeteer {
       throw new Error('The current platform is not supported.');
     }
 
-    const cacheDir = this.configuration.cacheDirectory!;
+    const config = await this.configuration();
+    const cacheDir = config.cacheDirectory!;
     const installedBrowsers = await getInstalledBrowsers({
       cacheDir,
     });
@@ -316,8 +322,7 @@ export class PuppeteerNode extends Puppeteer {
     await Promise.all(
       puppeteerBrowsers.map(async item => {
         const tag =
-          this.configuration?.[item.product]?.version ??
-          PUPPETEER_REVISIONS[item.product];
+          config?.[item.product]?.version ?? PUPPETEER_REVISIONS[item.product];
 
         item.currentBuildId = await resolveBuildId(item.browser, platform, tag);
       }),
