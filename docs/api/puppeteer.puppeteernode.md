@@ -61,55 +61,15 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="defaultbrowser">defaultBrowser</span>
+<span id="configuration">configuration</span>
 
 </td><td>
 
-`readonly`
-
 </td><td>
 
-Promise&lt;[SupportedBrowser](./puppeteer.supportedbrowser.md)&gt;
+() =&gt; Promise&lt;[Configuration](./puppeteer.configuration.md)&gt;
 
 </td><td>
-
-The name of the browser that will be launched by default. For `puppeteer`, this is influenced by your configuration. Otherwise, it's `chrome`.
-
-</td></tr>
-<tr><td>
-
-<span id="lastlaunchedbrowser">lastLaunchedBrowser</span>
-
-</td><td>
-
-`readonly`
-
-</td><td>
-
-Promise&lt;[SupportedBrowser](./puppeteer.supportedbrowser.md)&gt;
-
-</td><td>
-
-The name of the browser that was last launched.
-
-</td></tr>
-<tr><td>
-
-<span id="product">product</span>
-
-</td><td>
-
-`readonly, deprecated`
-
-</td><td>
-
-Promise&lt;string&gt;
-
-</td><td>
-
-**Deprecated:**
-
-Do not use as this field as it does not take into account multiple browsers of different types. Use [defaultBrowser](./puppeteer.puppeteernode.md#defaultbrowser) or [lastLaunchedBrowser](./puppeteer.puppeteernode.md#lastlaunchedbrowser).
 
 </td></tr>
 </tbody></table>
@@ -151,6 +111,17 @@ This method attaches Puppeteer to an existing browser instance.
 </td></tr>
 <tr><td>
 
+<span id="defaultbrowser">[defaultBrowser()](./puppeteer.puppeteernode.defaultbrowser.md)</span>
+
+</td><td>
+
+</td><td>
+
+The name of the browser that will be launched by default. For `puppeteer`, this is influenced by your configuration. Otherwise, it's `chrome`.
+
+</td></tr>
+<tr><td>
+
 <span id="executablepath">[executablePath(channel)](./puppeteer.puppeteernode.executablepath.md)</span>
 
 </td><td>
@@ -184,6 +155,17 @@ The default executable path.
 </td></tr>
 <tr><td>
 
+<span id="lastlaunchedbrowser">[lastLaunchedBrowser()](./puppeteer.puppeteernode.lastlaunchedbrowser.md)</span>
+
+</td><td>
+
+</td><td>
+
+The name of the browser that was last launched.
+
+</td></tr>
+<tr><td>
+
 <span id="launch">[launch(options)](./puppeteer.puppeteernode.launch.md)</span>
 
 </td><td>
@@ -197,6 +179,21 @@ When using with `puppeteer-core`, [options.executablePath](./puppeteer.launchopt
 **Remarks:**
 
 Puppeteer can also be used to control the Chrome browser, but it works best with the version of Chrome for Testing downloaded by default. There is no guarantee it will work with any other version. If Google Chrome (rather than Chrome for Testing) is preferred, a [Chrome Canary](https://www.google.com/chrome/browser/canary.html) or [Dev Channel](https://www.chromium.org/getting-involved/dev-channel) build is suggested. See [this article](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) for a description of the differences between Chromium and Chrome. [This article](https://chromium.googlesource.com/chromium/src/+/lkgr/docs/chromium_browser_vs_google_chrome.md) describes some differences for Linux users. See [this doc](https://developer.chrome.com/blog/chrome-for-testing/) for the description of Chrome for Testing.
+
+</td></tr>
+<tr><td>
+
+<span id="product">[product()](./puppeteer.puppeteernode.product.md)</span>
+
+</td><td>
+
+`deprecated`
+
+</td><td>
+
+**Deprecated:**
+
+Do not use as this field as it does not take into account multiple browsers of different types. Use [defaultBrowser](./puppeteer.puppeteernode.defaultbrowser.md) or [lastLaunchedBrowser](./puppeteer.puppeteernode.lastlaunchedbrowser.md).
 
 </td></tr>
 <tr><td>
