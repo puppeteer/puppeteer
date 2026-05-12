@@ -33,7 +33,7 @@
     "url": "https://github.com/puppeteer/puppeteer/tree/main/packages/puppeteer-core"
   },
   "engines": {
-    "node": ">=20.19.0 <22.0.0 || >=22.12.0"
+    "node": ">=22.12.0"
   },
   "scripts": {
     "build:docs": "wireit",

@@ -112,7 +112,7 @@ runner in
 ### Unit tests
 
 Tests that only test code (without the running browser) are put next to the classes they test
-and run using the Node test runner (requires Node 20+):
+and run using the Node test runner (requires Node 22+):
 
 ```bash
 npm run unit

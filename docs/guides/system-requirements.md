@@ -1,6 +1,6 @@
 # System requirements
 
-- Node 20.19+. Puppeteer follows the latest
+- Node 22.12+. Puppeteer follows the latest
   [maintenance LTS](https://github.com/nodejs/Release#release-schedule) version of
   Node
 

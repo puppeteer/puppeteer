@@ -72,7 +72,7 @@
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=20.19.0 <22.0.0 || >=22.12.0"
+    "node": ">=22.12.0"
   },
   "files": [
     "lib",
