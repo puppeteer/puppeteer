@@ -151,6 +151,9 @@ export class CdpBrowser extends BrowserBase {
       });
     this.#handleDevToolsAsPage = handleDevToolsAsPage;
     this.#setIsPageTargetCallback(isPageTargetCallback);
+    connection.ruleBasedEmulationConfigured = Boolean(
+      (blocklist && blocklist.length > 0) || (allowlist && allowlist.length > 0),
+    );
     this.#targetManager = new TargetManager(
       connection,
       this.#createTarget,

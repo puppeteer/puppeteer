@@ -40,6 +40,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
   #sessions = new Map<string, CdpCDPSession>();
   #closed = false;
   #manuallyAttached = new Set<string>();
+  #ruleBasedEmulationConfigured = false;
   #callbacks: CallbackRegistry;
   #rawErrors = false;
   #idGenerator: GetIdFn;
@@ -78,6 +79,14 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
 
   get timeout(): number {
     return this.#timeout;
+  }
+
+  get ruleBasedEmulationConfigured(): boolean {
+    return this.#ruleBasedEmulationConfigured;
+  }
+
+  set ruleBasedEmulationConfigured(value: boolean) {
+    this.#ruleBasedEmulationConfigured = value;
   }
 
   /**
@@ -146,6 +155,16 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
     if (this.#closed) {
       return Promise.reject(new ConnectionClosedError('Connection closed.'));
+    }
+    if (
+      method === 'Network.emulateNetworkConditions' &&
+      this.ruleBasedEmulationConfigured
+    ) {
+      return Promise.reject(
+        new Error(
+          'Cannot reset network conditions: rule-based emulation is enabled.',
+        ),
+      );
     }
     return callbacks.create(method, options?.timeout ?? this.#timeout, id => {
       const stringifiedMessage = JSON.stringify({

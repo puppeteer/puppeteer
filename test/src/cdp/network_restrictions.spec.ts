@@ -518,4 +518,52 @@ describe('Network Restrictions', function () {
       await close();
     }
   });
+
+  it.only('should block standard emulation reset when blocklist/allowlist is active', async () => {
+    const {page, close} = await launch(
+      {
+        blocklist: ['*://*:*/empty.html'],
+      },
+      {createContext: true},
+    );
+
+    try {
+      const session = await page.createCDPSession();
+
+      await expect(
+        session.send('Network.emulateNetworkConditions', {
+          offline: false,
+          latency: 0,
+          downloadThroughput: 0,
+          uploadThroughput: 0,
+        })
+      ).rejects.toThrow(
+        'Cannot reset network conditions: rule-based emulation is enabled.'
+      );
+    } finally {
+      await close();
+    }
+  });
+
+  it('should allow standard emulation reset when no blocklist/allowlist is active', async () => {
+    const {page, close} = await launch(
+      {},
+      {createContext: true},
+    );
+
+    try {
+      const session = await page.createCDPSession();
+
+      // Attempt to reset/clear standard network emulation on the same session
+      // This should succeed because no blocklist/allowlist rules are configured
+      await session.send('Network.emulateNetworkConditions', {
+        offline: false,
+        latency: 0,
+        downloadThroughput: 0,
+        uploadThroughput: 0,
+      });
+    } finally {
+      await close();
+    }
+  });
 });
