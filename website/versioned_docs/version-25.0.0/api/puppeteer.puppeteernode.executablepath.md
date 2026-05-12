@@ -4,7 +4,7 @@ sidebar_label: PuppeteerNode.executablePath
 
 # PuppeteerNode.executablePath() method
 
-<h2 id="overload-1">executablePath(): string</h2>
+<h2 id="overload-1">executablePath(): Promise&lt;string&gt;</h2>
 
 The default executable path for a given ChromeReleaseChannel.
 
@@ -12,7 +12,7 @@ The default executable path for a given ChromeReleaseChannel.
 
 ```typescript
 class PuppeteerNode {
-  executablePath(channel: ChromeReleaseChannel): string;
+  executablePath(channel: ChromeReleaseChannel): Promise<string>;
 }
 ```
 
@@ -46,9 +46,9 @@ channel
 
 **Returns:**
 
-string
+Promise&lt;string&gt;
 
-<h2 id="overload-2">executablePath(): string</h2>
+<h2 id="overload-2">executablePath(): Promise&lt;string&gt;</h2>
 
 The default executable path given LaunchOptions.
 
@@ -56,7 +56,7 @@ The default executable path given LaunchOptions.
 
 ```typescript
 class PuppeteerNode {
-  executablePath(options: LaunchOptions): string;
+  executablePath(options: LaunchOptions): Promise<string>;
 }
 ```
 
@@ -90,9 +90,9 @@ options
 
 **Returns:**
 
-string
+Promise&lt;string&gt;
 
-<h2 id="overload-3">executablePath(): string</h2>
+<h2 id="overload-3">executablePath(): Promise&lt;string&gt;</h2>
 
 The default executable path.
 
@@ -100,10 +100,10 @@ The default executable path.
 
 ```typescript
 class PuppeteerNode {
-  executablePath(): string;
+  executablePath(): Promise<string>;
 }
 ```
 
 **Returns:**
 
-string
+Promise&lt;string&gt;

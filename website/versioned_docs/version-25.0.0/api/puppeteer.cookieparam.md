@@ -1,15 +1,15 @@
 ---
-sidebar_label: CookieData
+sidebar_label: CookieParam
 ---
 
-# CookieData interface
+# CookieParam interface
 
-Cookie parameter object used to set cookies in the browser-level cookies API.
+Cookie parameter object used to set cookies in the page-level cookies API.
 
 ### Signature
 
 ```typescript
-export interface CookieData
+export interface CookieParam
 ```
 
 ## Properties
@@ -40,6 +40,8 @@ Default
 <span id="domain">domain</span>
 
 </td><td>
+
+`optional`
 
 </td><td>
 
@@ -166,27 +168,6 @@ Cookie Priority. Supported only in Chrome.
 </td></tr>
 <tr><td>
 
-<span id="sameparty">sameParty</span>
-
-</td><td>
-
-`optional, deprecated`
-
-</td><td>
-
-boolean
-
-</td><td>
-
-**Deprecated:**
-
-Always set to false. Supported only in Chrome.
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
 <span id="samesite">sameSite</span>
 
 </td><td>
@@ -238,6 +219,25 @@ True if cookie is secure.
 </td><td>
 
 Cookie source scheme type. Supported only in Chrome.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="url">url</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+The request-URI to associate with the setting of the cookie. This value can affect the default domain, path, and source scheme values of the created cookie.
 
 </td><td>
 

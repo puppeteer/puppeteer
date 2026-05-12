@@ -23,13 +23,13 @@ See https://github.com/puppeteer/puppeteer/tree/main/examples/puppeteer-in-exten
 
 To run Puppeteer in an extension, first you need to produce a browser-compatible build using a bundler such as rollup or webpack:
 
-1. When importing Puppeteer use the browser-specific entrypoint from puppeteer-core `puppeteer-core/lib/esm/puppeteer/puppeteer-core-browser.js'`:
+1. When importing Puppeteer use the browser-specific entrypoint from puppeteer-core `puppeteer-core/lib/puppeteer/puppeteer-core-browser.js'`:
 
 ```ts
 import {
   connect,
   ExtensionTransport,
-} from 'puppeteer-core/lib/esm/puppeteer/puppeteer-core-browser.js';
+} from 'puppeteer-core/lib/puppeteer/puppeteer-core-browser.js';
 
 // Create a tab or find a tab to attach to.
 const tab = await chrome.tabs.create({
@@ -59,8 +59,8 @@ export default {
     dir: 'out',
   },
   // If you do not need to use WebDriver BiDi protocol,
-  // exclude chromium-bidi/lib/cjs/bidiMapper/BidiMapper.js to minimize the bundle size.
-  external: ['chromium-bidi/lib/cjs/bidiMapper/BidiMapper.js'],
+  // exclude chromium-bidi/lib/bidiMapper/BidiMapper.js to minimize the bundle size.
+  external: ['chromium-bidi/lib/bidiMapper/BidiMapper.js'],
   plugins: [
     nodeResolve({
       // Indicate that we target a browser environment.

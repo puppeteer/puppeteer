@@ -128,5 +128,12 @@ The following options are _environment-only_ options
 - `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are
   used to download and run the browser.
 
+:::note
+
+To use a proxy for downloading browsers, you must have the `proxy-agent` package
+installed as an optional peer dependency.
+
+:::
+
 All other options can be found in the documentation for the
 [`Configuration`](../api/puppeteer.configuration) interface.

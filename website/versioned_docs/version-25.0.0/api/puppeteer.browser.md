@@ -286,23 +286,6 @@ Installs an extension and returns the ID. In Chrome, this is only available if t
 </td></tr>
 <tr><td>
 
-<span id="isconnected">[isConnected()](./puppeteer.browser.isconnected.md)</span>
-
-</td><td>
-
-`deprecated`
-
-</td><td>
-
-Whether Puppeteer is connected to this [browser](./puppeteer.browser.md).
-
-**Deprecated:**
-
-Use [Browser.connected](./puppeteer.browser.md).
-
-</td></tr>
-<tr><td>
-
 <span id="newpage">[newPage(options)](./puppeteer.browser.newpage.md)</span>
 
 </td><td>

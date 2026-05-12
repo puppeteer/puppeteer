@@ -7,7 +7,7 @@ sidebar_label: defaultArgs
 ### Signature
 
 ```typescript
-defaultArgs: (options?: PuppeteerCore.LaunchOptions) => string[]
+defaultArgs: (options?: PuppeteerCore.LaunchOptions) => Promise<string[]>;
 ```
 
 ## Parameters
@@ -42,4 +42,4 @@ _(Optional)_
 
 **Returns:**
 
-string\[\]
+Promise&lt;string\[\]&gt;

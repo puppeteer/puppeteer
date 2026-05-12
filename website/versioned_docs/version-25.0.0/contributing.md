@@ -130,7 +130,7 @@ information on using pull requests.
 Our coding style is fully defined in
 [`eslint.config`](https://github.com/puppeteer/puppeteer/blob/main/eslint.config.mjs)
 ([ESLint](https://eslint.org/)) and
-[`.prettierrc.cjs`](https://github.com/puppeteer/puppeteer/blob/main/.prettierrc.cjs)
+[`prettier.config.js`](https://github.com/puppeteer/puppeteer/blob/main/prettier.config.js)
 ([Prettier](https://prettier.io)).
 
 Code is checked for PRs automatically and you can check your code
@@ -312,11 +312,11 @@ For bisecting Chrome/Chromium changes use https://www.chromium.org/developers/bi
 python3 <path-to-chromium-checkout>/tools/bisect-builds.py -g <known-good> -b <known-bad> -cft -v --verify-range --not-interactive -c "BINARY=%p npm run test:chrome:<test-type>"
 ```
 
-Or run the wrapper in `tools/bisect.mjs` that warps the above functionality for Puppeteer tests.
+Or run the wrapper in `npx puppeteer browsers bisect` that wraps the above functionality for Puppeteer tests.
 
 ```bash
 # From Puppeteer repo root
-node tools/bisect.mjs -g <known-good> -b <known-bad>
+npx puppeteer browsers bisect -g <known-good> -b <known-bad>
 ```
 
 ## Releasing to npm
