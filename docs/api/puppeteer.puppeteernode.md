@@ -183,21 +183,6 @@ Puppeteer can also be used to control the Chrome browser, but it works best with
 </td></tr>
 <tr><td>
 
-<span id="product">[product()](./puppeteer.puppeteernode.product.md)</span>
-
-</td><td>
-
-`deprecated`
-
-</td><td>
-
-**Deprecated:**
-
-Do not use as this field as it does not take into account multiple browsers of different types. Use [defaultBrowser](./puppeteer.puppeteernode.defaultbrowser.md) or [lastLaunchedBrowser](./puppeteer.puppeteernode.lastlaunchedbrowser.md).
-
-</td></tr>
-<tr><td>
-
 <span id="trimcache">[trimCache()](./puppeteer.puppeteernode.trimcache.md)</span>
 
 </td><td>

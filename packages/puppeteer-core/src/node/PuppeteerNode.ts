@@ -229,18 +229,6 @@ export class PuppeteerNode extends Puppeteer {
   }
 
   /**
-   * @deprecated Do not use as this field as it does not take into account
-   * multiple browsers of different types. Use
-   * {@link PuppeteerNode.defaultBrowser | defaultBrowser} or
-   * {@link PuppeteerNode.lastLaunchedBrowser | lastLaunchedBrowser}.
-   *
-   * @returns The name of the browser that is under automation.
-   */
-  product(): Promise<string> {
-    return this.lastLaunchedBrowser();
-  }
-
-  /**
    * @param options - Set of configurable options to set on the browser.
    *
    * @returns The default arguments that the browser will be launched with.

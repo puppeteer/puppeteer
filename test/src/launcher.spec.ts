@@ -441,14 +441,14 @@ describe('Launcher specs', function () {
           );
         }
       });
-      it('should report the correct product', async () => {
+      it('should report the correct lastLaunchedBrowser', async () => {
         const {isChrome, isFirefox, puppeteer} = await getTestState({
           skipLaunch: true,
         });
         if (isChrome) {
-          expect(await puppeteer.product()).toBe('chrome');
+          expect(await puppeteer.lastLaunchedBrowser()).toBe('chrome');
         } else if (isFirefox) {
-          expect(await puppeteer.product()).toBe('firefox');
+          expect(await puppeteer.lastLaunchedBrowser()).toBe('firefox');
         }
       });
       it('should filter out ignored default arguments in Chrome', async () => {
