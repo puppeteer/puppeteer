@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.8.0](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.7.0...ng-schematics-v0.8.0) (2026-05-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* bump min NodeJS to 22 ([#14973](https://github.com/puppeteer/puppeteer/issues/14973))
+* update min version - Node v20.19 and Typescript v5.0.1 ([#14364](https://github.com/puppeteer/puppeteer/issues/14364))
+* move packages to ESM only ([#14355](https://github.com/puppeteer/puppeteer/issues/14355))
+
+### 🎉 Features
+
+* move packages to ESM only ([#14355](https://github.com/puppeteer/puppeteer/issues/14355)) ([4c22177](https://github.com/puppeteer/puppeteer/commit/4c22177a7dcbd5a5fe6922eec75351bb56cd0336))
+
+
+### 📄 Documentation
+
+* bump min NodeJS to 22 ([#14973](https://github.com/puppeteer/puppeteer/issues/14973)) ([4b6ddc3](https://github.com/puppeteer/puppeteer/commit/4b6ddc3a2631518651187b7795e36fae9a976121))
+* update min version - Node v20.19 and Typescript v5.0.1 ([#14364](https://github.com/puppeteer/puppeteer/issues/14364)) ([96f3780](https://github.com/puppeteer/puppeteer/commit/96f3780289d42557b648a18d806843a28da7e2f5))
+
 ## [0.7.0](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.6.1...ng-schematics-v0.7.0) (2024-09-11)
 
 
