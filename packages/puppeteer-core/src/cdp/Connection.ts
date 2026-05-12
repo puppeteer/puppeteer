@@ -225,28 +225,10 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
           this.#callbacks.resolve(object.id, object.result);
         }
       } else {
-        let sessionWithCallback: CdpCDPSession | undefined;
         for (const session of this.#sessions.values()) {
           if (session.hasCallback(object.id)) {
-            sessionWithCallback = session;
+            session.onMessage(object);
             break;
-          }
-        }
-        if (sessionWithCallback) {
-          sessionWithCallback.onMessage(object);
-        } else {
-          if (object.error) {
-            if (this.#rawErrors) {
-              this.#callbacks.rejectRaw(object.id, object.error);
-            } else {
-              this.#callbacks.reject(
-                object.id,
-                createProtocolErrorMessage(object),
-                object.error.message,
-              );
-            }
-          } else {
-            this.#callbacks.resolve(object.id, object.result);
           }
         }
       }
