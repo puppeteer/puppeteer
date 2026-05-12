@@ -13,7 +13,7 @@ import type {Readable, Transform, Writable} from 'node:stream';
 import {Stream} from 'node:stream';
 import {promisify} from 'node:util';
 
-import debug from 'debug';
+import {debug} from './debug.js';
 
 const execFileAsync = promisify(execFile);
 const debugFileUtil = debug('puppeteer:browsers:fileUtil');
@@ -141,7 +141,7 @@ async function extractTar(
     )
       .once('error', handleError(decompressUtilityName))
       .once('exit', code => {
-        debugFileUtil(`${decompressUtilityName} exited, code=${code}`);
+        debugFileUtil?.(`${decompressUtilityName} exited, code=${code}`);
       });
 
     const tar = tarFs.extract(folderPath);

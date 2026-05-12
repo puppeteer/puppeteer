@@ -321,7 +321,7 @@ export class Process {
 
     const env = opts.env || {};
 
-    debugLaunch(`Launching ${this.#executablePath} ${this.#args.join(' ')}`, {
+    debugLaunch?.(`Launching ${this.#executablePath} ${this.#args.join(' ')}`, {
       detached: opts.detached,
       env: Object.keys(env).reduce<Record<string, string | undefined>>(
         (res, key) => {
@@ -347,7 +347,7 @@ export class Process {
     this.#recordStream(this.#browserProcess.stderr!);
     this.#recordStream(this.#browserProcess.stdout!);
 
-    debugLaunch(`Launched ${this.#browserProcess.pid}`);
+    debugLaunch?.(`Launched ${this.#browserProcess.pid}`);
     if (opts.dumpio) {
       this.#browserProcess.stderr?.pipe(process.stderr);
       this.#browserProcess.stdout?.pipe(process.stdout);
@@ -367,7 +367,7 @@ export class Process {
     }
     this.#browserProcessExiting = new Promise((resolve, reject) => {
       this.#browserProcess.once('exit', async () => {
-        debugLaunch(`Browser process ${this.#browserProcess.pid} onExit`);
+        debugLaunch?.(`Browser process ${this.#browserProcess.pid} onExit`);
         this.#clearListeners();
         this.#exited = true;
         try {
@@ -438,7 +438,7 @@ export class Process {
   }
 
   kill(): void {
-    debugLaunch(`Trying to kill ${this.#browserProcess.pid}`);
+    debugLaunch?.(`Trying to kill ${this.#browserProcess.pid}`);
     // If the process failed to launch (for example if the browser executable path
     // is invalid), then the process does not get a pid assigned. A call to
     // `proc.kill` would error, as the `pid` to-be-killed can not be found.
@@ -448,14 +448,14 @@ export class Process {
       pidExists(this.#browserProcess.pid)
     ) {
       try {
-        debugLaunch(`Browser process ${this.#browserProcess.pid} exists`);
+        debugLaunch?.(`Browser process ${this.#browserProcess.pid} exists`);
         if (process.platform === 'win32') {
           try {
             childProcess.execSync(
               `taskkill /pid ${this.#browserProcess.pid} /T /F`,
             );
           } catch (error) {
-            debugLaunch(
+            debugLaunch?.(
               `Killing ${this.#browserProcess.pid} using taskkill failed`,
               error,
             );
@@ -472,7 +472,7 @@ export class Process {
           try {
             process.kill(processGroupId, 'SIGKILL');
           } catch (error) {
-            debugLaunch(
+            debugLaunch?.(
               `Killing ${this.#browserProcess.pid} using process.kill failed`,
               error,
             );

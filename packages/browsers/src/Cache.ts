@@ -8,14 +8,13 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import debug from 'debug';
-
 import {
   Browser,
   type BrowserPlatform,
   executablePathByBrowser,
   getVersionComparator,
 } from './browser-data/browser-data.js';
+import {debug} from './debug.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 
 const debugCache = debug('puppeteer:browsers:cache');
@@ -277,7 +276,7 @@ export class Cache {
       options.buildId =
         this.resolveAlias(options.browser, options.buildId) ?? options.buildId;
     } catch {
-      debugCache('could not read .metadata file for the browser');
+      debugCache?.('could not read .metadata file for the browser');
     }
     const installationDir = this.installationDir(
       options.browser,
