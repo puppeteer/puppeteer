@@ -81,6 +81,9 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     return this.#timeout;
   }
 
+  /**
+   * @internal
+   */
   get rejectEmulateNetworkConditionsCalls(): boolean {
     return this.#rejectEmulateNetworkConditionsCalls;
   }
