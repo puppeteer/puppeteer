@@ -40,7 +40,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
   #sessions = new Map<string, CdpCDPSession>();
   #closed = false;
   #manuallyAttached = new Set<string>();
-  #ruleBasedEmulationConfigured = false;
+  #rejectEmulateNetworkConditionsCalls = false;
   #callbacks: CallbackRegistry;
   #rawErrors = false;
   #idGenerator: GetIdFn;
@@ -81,12 +81,12 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     return this.#timeout;
   }
 
-  get ruleBasedEmulationConfigured(): boolean {
-    return this.#ruleBasedEmulationConfigured;
+  get rejectEmulateNetworkConditionsCalls(): boolean {
+    return this.#rejectEmulateNetworkConditionsCalls;
   }
 
-  set ruleBasedEmulationConfigured(value: boolean) {
-    this.#ruleBasedEmulationConfigured = value;
+  set rejectEmulateNetworkConditionsCalls(value: boolean) {
+    this.#rejectEmulateNetworkConditionsCalls = value;
   }
 
   /**
@@ -158,7 +158,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     }
     if (
       method === 'Network.emulateNetworkConditions' &&
-      this.ruleBasedEmulationConfigured
+      this.rejectEmulateNetworkConditionsCalls
     ) {
       return Promise.reject(
         new Error(

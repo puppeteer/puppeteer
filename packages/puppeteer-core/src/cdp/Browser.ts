@@ -151,7 +151,7 @@ export class CdpBrowser extends BrowserBase {
       });
     this.#handleDevToolsAsPage = handleDevToolsAsPage;
     this.#setIsPageTargetCallback(isPageTargetCallback);
-    connection.ruleBasedEmulationConfigured = Boolean(
+    connection.rejectEmulateNetworkConditionsCalls = Boolean(
       (blocklist && blocklist.length > 0) ||
       (allowlist && allowlist.length > 0),
     );
