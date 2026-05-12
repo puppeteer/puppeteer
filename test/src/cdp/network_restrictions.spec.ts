@@ -536,9 +536,9 @@ describe('Network Restrictions', function () {
           latency: 0,
           downloadThroughput: 0,
           uploadThroughput: 0,
-        })
+        }),
       ).rejects.toThrow(
-        'Cannot reset network conditions: rule-based emulation is enabled.'
+        'Cannot reset network conditions: rule-based emulation is enabled.',
       );
     } finally {
       await close();
@@ -546,10 +546,7 @@ describe('Network Restrictions', function () {
   });
 
   it('should allow standard emulation reset when no blocklist/allowlist is active', async () => {
-    const {page, close} = await launch(
-      {},
-      {createContext: true},
-    );
+    const {page, close} = await launch({}, {createContext: true});
 
     try {
       const session = await page.createCDPSession();
