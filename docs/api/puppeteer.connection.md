@@ -61,6 +61,19 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="rejectemulatenetworkconditionscalls">rejectEmulateNetworkConditionsCalls</span>
+
+</td><td>
+
+</td><td>
+
+boolean
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="timeout">timeout</span>
 
 </td><td>
