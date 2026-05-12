@@ -502,7 +502,7 @@ export class CLI {
       )
       .command(
         'bisect <path>',
-        'Bisect Chrome for Testing using the specified script',
+        '(experimental) Bisect Chrome for Testing using the specified script. Downloads https://chromium.googlesource.com/chromium/src.git/+/main/tools/bisect-builds.py to ~/bisect-builds.py if needed.',
         yargs => {
           return yargs
             .positional('path', {
