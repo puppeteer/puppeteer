@@ -6,6 +6,7 @@
 
 import expect from 'expect';
 import type {Target} from 'puppeteer-core/internal/api/Target.js';
+import {CdpCDPSession} from 'puppeteer-core/internal/cdp/CdpSession.js';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 
 import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
@@ -181,5 +182,25 @@ describe('Target.createCDPSession', function () {
     expect(client.detached).toBe(false);
     await client.detach();
     expect(client.detached).toBe(true);
+  });
+
+  it('should handle session callbacks when Chrome sends error without sessionId', async () => {
+    const {page} = await getTestState();
+    const connection = (await page.createCDPSession()).connection()!;
+
+    const fakeSession = new CdpCDPSession(
+      connection,
+      'other',
+      'fake-session-id',
+      undefined,
+      false,
+    );
+    connection._sessions.set('fake-session-id', fakeSession);
+
+    await expect(
+      fakeSession.send('Runtime.evaluate', {
+        expression: '1 + 1',
+      }),
+    ).rejects.toThrow(/Session with given id not found/);
   });
 });

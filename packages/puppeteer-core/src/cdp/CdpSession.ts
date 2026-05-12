@@ -175,6 +175,13 @@ export class CdpCDPSession extends CDPSession {
   /**
    * @internal
    */
+  hasCallback(id: number): boolean {
+    return this.#callbacks.has(id);
+  }
+
+  /**
+   * @internal
+   */
   getPendingProtocolErrors(): Error[] {
     return this.#callbacks.getPendingProtocolErrors();
   }

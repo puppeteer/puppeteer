@@ -24,6 +24,10 @@ export class CallbackRegistry {
     this.#idGenerator = idGenerator;
   }
 
+  has(id: number): boolean {
+    return this.#callbacks.has(id);
+  }
+
   create(
     label: string,
     timeout: number | undefined,
