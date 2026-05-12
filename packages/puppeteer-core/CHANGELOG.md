@@ -1,5 +1,60 @@
 # Changelog
 
+## [25.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.43.1...puppeteer-core-v25.0.0) (2026-05-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove deprecated Puppeteer.product ([#14977](https://github.com/puppeteer/puppeteer/issues/14977))
+* bump min NodeJS to 22 ([#14973](https://github.com/puppeteer/puppeteer/issues/14973))
+* return a Promise for executablePath, defaultArgs ([#14965](https://github.com/puppeteer/puppeteer/issues/14965))
+* remove deprecated MouseOptions.clickCount ([#13865](https://github.com/puppeteer/puppeteer/issues/13865))
+* update min version - Node v20.19 and Typescript v5.0.1 ([#14364](https://github.com/puppeteer/puppeteer/issues/14364))
+* remove deprecated Browser.isConnected() ([#14910](https://github.com/puppeteer/puppeteer/issues/14910))
+* move packages to ESM only ([#14355](https://github.com/puppeteer/puppeteer/issues/14355))
+* **puppeteer-core:** Remove Cookie attribute sameParty ([#14545](https://github.com/puppeteer/puppeteer/issues/14545))
+* normalize newline-separated headers to comma-separated format ([#14492](https://github.com/puppeteer/puppeteer/issues/14492))
+
+### 🎉 Features
+
+* move packages to ESM only ([#14355](https://github.com/puppeteer/puppeteer/issues/14355)) ([4c22177](https://github.com/puppeteer/puppeteer/commit/4c22177a7dcbd5a5fe6922eec75351bb56cd0336))
+
+
+### 🛠️ Fixes
+
+* block standard network emulation reset if allowlist or blocklist are enabled ([#14976](https://github.com/puppeteer/puppeteer/issues/14976)) ([4e75b66](https://github.com/puppeteer/puppeteer/commit/4e75b66e333803960c77d88f9357fba411796f36))
+* Handle missing sessionId when looking up callbacks ([#14975](https://github.com/puppeteer/puppeteer/issues/14975)) ([4faa0e6](https://github.com/puppeteer/puppeteer/commit/4faa0e6ce9dd5db3ab41407c427de89d08ca20bd))
+* normalize newline-separated headers to comma-separated format ([#14492](https://github.com/puppeteer/puppeteer/issues/14492)) ([1ea5dea](https://github.com/puppeteer/puppeteer/commit/1ea5deabbcb6ea81095a3fef5dfd0f1b94d9df61))
+* **puppeteer-core:** Remove Cookie attribute sameParty ([#14545](https://github.com/puppeteer/puppeteer/issues/14545)) ([be2d86a](https://github.com/puppeteer/puppeteer/commit/be2d86a5659b8391ece6a4026582cf69716aae8c))
+* **webdriver:** don't store request on BrowsingContext ([#14966](https://github.com/puppeteer/puppeteer/issues/14966)) ([4e4daec](https://github.com/puppeteer/puppeteer/commit/4e4daec603f62f206a93019693d24ba7b93ad9d4))
+
+
+### 📄 Documentation
+
+* bump min NodeJS to 22 ([#14973](https://github.com/puppeteer/puppeteer/issues/14973)) ([4b6ddc3](https://github.com/puppeteer/puppeteer/commit/4b6ddc3a2631518651187b7795e36fae9a976121))
+* update min version - Node v20.19 and Typescript v5.0.1 ([#14364](https://github.com/puppeteer/puppeteer/issues/14364)) ([96f3780](https://github.com/puppeteer/puppeteer/commit/96f3780289d42557b648a18d806843a28da7e2f5))
+
+
+### ⚡ Performance
+
+* **webdriver:** remove intermediate object wrappers ([#14967](https://github.com/puppeteer/puppeteer/issues/14967)) ([c19b855](https://github.com/puppeteer/puppeteer/commit/c19b855390e94a6e571fa540c872e3351fec4e7d))
+
+
+### 🏗️ Refactor
+
+* don't use debug lib directly ([#14969](https://github.com/puppeteer/puppeteer/issues/14969)) ([7cbebc6](https://github.com/puppeteer/puppeteer/commit/7cbebc6ea1d881ce6538a82014e73dd0e785e754))
+* remove deprecated Browser.isConnected() ([#14910](https://github.com/puppeteer/puppeteer/issues/14910)) ([f2cdffc](https://github.com/puppeteer/puppeteer/commit/f2cdffc4d4d6c965098666cdb79bb8a39de0ea0d))
+* remove deprecated MouseOptions.clickCount ([#13865](https://github.com/puppeteer/puppeteer/issues/13865)) ([1f6bd1f](https://github.com/puppeteer/puppeteer/commit/1f6bd1f98fc9090b632442538b066aa04368a87c))
+* remove deprecated Puppeteer.product ([#14977](https://github.com/puppeteer/puppeteer/issues/14977)) ([2b097b7](https://github.com/puppeteer/puppeteer/commit/2b097b714ebf2e0e61e71002194caacecbdcedf8))
+* return a Promise for executablePath, defaultArgs ([#14965](https://github.com/puppeteer/puppeteer/issues/14965)) ([74059fd](https://github.com/puppeteer/puppeteer/commit/74059fd3352b789df73cb297c56be6694b2200ab))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 2.13.2 to 3.0.0
+
 ## [24.43.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.43.0...puppeteer-core-v24.43.1) (2026-05-11)
 
 
