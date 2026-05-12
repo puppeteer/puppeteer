@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type {ConnectionTransport} from './ConnectionTransport.js';
+import {debugError} from './util.js';
 
 /**
  * @internal
@@ -36,8 +37,8 @@ export class BrowserWebSocketTransport implements ConnectionTransport {
         this.onclose.call(null);
       }
     });
-    // Silently ignore all errors - we don't know what to do with them.
-    this.#ws.addEventListener('error', () => {});
+    // Silently log all errors - we don't know what to do with them.
+    this.#ws.addEventListener('error', debugError);
   }
 
   send(message: string): void {
