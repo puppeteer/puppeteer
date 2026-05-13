@@ -2,6 +2,24 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [25.0.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.0.0...puppeteer-v25.0.1) (2026-05-13)
+
+### ♻️ Chores
+
+- **puppeteer:** Synchronize puppeteer versions
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - @puppeteer/browsers bumped from 3.0.0 to 3.0.1
+
+### 🛠️ Fixes
+
+- enabled features should take precedence over disabled features ([#14985](https://github.com/puppeteer/puppeteer/issues/14985)) ([f6fd7c2](https://github.com/puppeteer/puppeteer/commit/f6fd7c29f92e6183b2fd48f0571957306c58d440))
+- roll to Chrome 148.0.7778.167 ([#14980](https://github.com/puppeteer/puppeteer/issues/14980)) ([84c46fe](https://github.com/puppeteer/puppeteer/commit/84c46fede6b02a1e9a00104b97b28c263f0c84df))
+- roll to Firefox 150.0.3 ([#14983](https://github.com/puppeteer/puppeteer/issues/14983)) ([872f778](https://github.com/puppeteer/puppeteer/commit/872f77822d6b6b9b6510752d838107a967241bdb))
+
 ## [25.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.43.1...puppeteer-v25.0.0) (2026-05-12)
 
 ### ⚠ BREAKING CHANGES
