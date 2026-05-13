@@ -171,6 +171,20 @@ export class ChromeLauncher extends BrowserLauncher {
     const turnOnExperimentalFeaturesForTesting =
       process.env['PUPPETEER_TEST_EXPERIMENTAL_CHROME_FEATURES'] === 'true';
 
+    const userEnabledFeatures = getFeatures('--enable-features', options.args);
+    if (options.args && userEnabledFeatures.length > 0) {
+      removeMatchingFlags(options.args, '--enable-features');
+    }
+
+    // Merge default enabled features with user-provided ones, if any.
+    const enabledFeatures = [
+      'PdfOopif',
+      // Add features to enable by default here.
+      ...userEnabledFeatures,
+    ].filter(feature => {
+      return feature !== '';
+    });
+
     // Merge default disabled features with user-provided ones, if any.
     const disabledFeatures = [
       'Translate',
@@ -188,23 +202,13 @@ export class ChromeLauncher extends BrowserLauncher {
             'IsolateSandboxedIframes',
           ]),
       ...userDisabledFeatures,
-    ].filter(feature => {
-      return feature !== '';
-    });
-
-    const userEnabledFeatures = getFeatures('--enable-features', options.args);
-    if (options.args && userEnabledFeatures.length > 0) {
-      removeMatchingFlags(options.args, '--enable-features');
-    }
-
-    // Merge default enabled features with user-provided ones, if any.
-    const enabledFeatures = [
-      'PdfOopif',
-      // Add features to enable by default here.
-      ...userEnabledFeatures,
-    ].filter(feature => {
-      return feature !== '';
-    });
+    ]
+      .filter(feature => {
+        return feature !== '';
+      })
+      .filter(disabledFeature => {
+        return !enabledFeatures.includes(disabledFeature);
+      });
 
     const chromeArguments = [
       '--allow-pre-commit-input',
@@ -313,16 +317,23 @@ export class ChromeLauncher extends BrowserLauncher {
  * @internal
  */
 export function getFeatures(flag: string, options: string[] = []): string[] {
+  const prefix = flag.endsWith('=') ? flag : `${flag}=`;
   return options
     .filter(s => {
-      return s.startsWith(flag.endsWith('=') ? flag : `${flag}=`);
+      return s.startsWith(prefix);
     })
-    .map(s => {
-      return s.split(new RegExp(`${flag}=\\s*`))[1]?.trim();
+    .flatMap(s => {
+      return s
+        .substring(s.indexOf('=') + 1)
+        .trim()
+        .split(',')
+        .map(feature => {
+          return feature.trim();
+        });
     })
     .filter(s => {
       return s;
-    }) as string[];
+    });
 }
 
 /**
@@ -332,10 +343,10 @@ export function getFeatures(flag: string, options: string[] = []): string[] {
  * @internal
  */
 export function removeMatchingFlags(array: string[], flag: string): string[] {
-  const regex = new RegExp(`^${flag}=.*`);
+  const prefix = flag.endsWith('=') ? flag : `${flag}=`;
   let i = 0;
   while (i < array.length) {
-    if (regex.test(array[i]!)) {
+    if (array[i]!.startsWith(prefix)) {
       array.splice(i, 1);
     } else {
       i++;

@@ -7,7 +7,11 @@ import {describe, it} from 'node:test';
 
 import expect from 'expect';
 
-import {getFeatures, removeMatchingFlags} from './ChromeLauncher.js';
+import {
+  ChromeLauncher,
+  getFeatures,
+  removeMatchingFlags,
+} from './ChromeLauncher.js';
 
 describe('getFeatures', () => {
   it('returns an empty array when no options are provided', () => {
@@ -34,6 +38,11 @@ describe('getFeatures', () => {
     const result = getFeatures('--foo', ['--foo=bar', '--foo=baz ']);
     expect(result).toEqual(['bar', 'baz']);
   });
+
+  it('handles comma-separated values', () => {
+    const result = getFeatures('--foo', ['--foo=bar,baz', '--foo=qux']);
+    expect(result).toEqual(['bar', 'baz', 'qux']);
+  });
 });
 
 describe('removeMatchingFlags', () => {
@@ -55,5 +64,20 @@ describe('removeMatchingFlags', () => {
   it('with no matches', () => {
     const a: string[] = ['--foo=1', '--bar=baz'];
     expect(removeMatchingFlags(a, '--baz')).toEqual(['--foo=1', '--bar=baz']);
+  });
+});
+
+describe('ChromeLauncher', () => {
+  it('removes disabled features if they are enabled explicitly', () => {
+    const launcher = new ChromeLauncher({} as any);
+    const args = launcher.defaultArgs({
+      args: ['--enable-features=Translate'],
+    });
+    const disableFeaturesFlag = args.find(arg => {
+      return arg.startsWith('--disable-features=');
+    });
+    expect(disableFeaturesFlag).toBeDefined();
+    const disabledFeatures = disableFeaturesFlag!.split('=')[1]!.split(',');
+    expect(disabledFeatures).not.toContain('Translate');
   });
 });
