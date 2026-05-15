@@ -39,7 +39,7 @@ const page = await browser.newPage();
 // Navigate the page to a URL.
 await page.goto('https://developer.chrome.com/');
 
-// Set screen size.
+// Set the screen size.
 await page.setViewport({width: 1080, height: 1024});
 
 // Open the search menu using the keyboard.
