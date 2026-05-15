@@ -77,7 +77,7 @@ const browser = await puppeteer.launch({
 
 ## Chrome doesn't launch on Windows
 
-Some [chrome policies](https://support.google.com/chrome/a/answer/7532015) might
+Some [Chrome policies](https://support.google.com/chrome/a/answer/7532015) might
 enforce running Chrome/Chromium with certain extensions.
 
 Puppeteer passes `--disable-extensions` flag by default and will fail to launch
