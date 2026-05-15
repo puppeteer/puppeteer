@@ -26,7 +26,7 @@ on Windows), but occasionally the home directory may not be available. In this
 case, we provide the `PUPPETEER_CACHE_DIR` variable which allows you to change
 the installation directory.
 
-For example,
+For example:
 
 ```bash npm2yarn
 PUPPETEER_CACHE_DIR=$(pwd) npm install puppeteer
