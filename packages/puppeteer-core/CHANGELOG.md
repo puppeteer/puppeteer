@@ -1,5 +1,19 @@
 # Changelog
 
+## [25.0.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.0.1...puppeteer-core-v25.0.2) (2026-05-15)
+
+
+### 🛠️ Fixes
+
+* update docs text ([#14992](https://github.com/puppeteer/puppeteer/issues/14992)) ([36527b8](https://github.com/puppeteer/puppeteer/commit/36527b8b9dd856e11a372b46cba23409e5613573))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.0.1 to 3.0.2
+
 ## [25.0.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.0.0...puppeteer-core-v25.0.1) (2026-05-13)
 
 

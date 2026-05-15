@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.2](https://github.com/puppeteer/puppeteer/compare/browsers-v3.0.1...browsers-v3.0.2) (2026-05-15)
+
+
+### 🛠️ Fixes
+
+* update docs text ([#14992](https://github.com/puppeteer/puppeteer/issues/14992)) ([36527b8](https://github.com/puppeteer/puppeteer/commit/36527b8b9dd856e11a372b46cba23409e5613573))
+
 ## [3.0.1](https://github.com/puppeteer/puppeteer/compare/browsers-v3.0.0...browsers-v3.0.1) (2026-05-13)
 
 
