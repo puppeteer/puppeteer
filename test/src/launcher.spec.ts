@@ -441,6 +441,34 @@ describe('Launcher specs', function () {
           );
         }
       });
+      it('should set the launch locale in Chrome', async () => {
+        const {isChrome} = await getTestState({
+          skipLaunch: true,
+        });
+        if (!isChrome) {
+          return;
+        }
+
+        const {browser, close} = await launch({locale: 'de-DE'});
+        try {
+          const page = await browser.newPage();
+          const locale = await page.evaluate(() => {
+            return {
+              language: navigator.language,
+              dateLocale: new Intl.DateTimeFormat().resolvedOptions().locale,
+              numberLocale: new Intl.NumberFormat().resolvedOptions().locale,
+            };
+          });
+
+          expect(locale).toEqual({
+            language: 'de-DE',
+            dateLocale: 'de-DE',
+            numberLocale: 'de-DE',
+          });
+        } finally {
+          await close();
+        }
+      });
       it('should report the correct lastLaunchedBrowser', async () => {
         const {isChrome, isFirefox, puppeteer} = await getTestState({
           skipLaunch: true,

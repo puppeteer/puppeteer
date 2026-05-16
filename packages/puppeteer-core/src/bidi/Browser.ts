@@ -48,6 +48,7 @@ export interface BidiBrowserOptions {
   connection: BidiConnection;
   cdpConnection?: CdpConnection;
   defaultViewport: Viewport | null;
+  defaultLocale?: string;
   acceptInsecureCerts?: boolean;
   capabilities?: SupportedWebDriverCapabilities;
   networkEnabled: boolean;
@@ -151,6 +152,7 @@ export class BidiBrowser extends Browser {
   #closeCallback?: BrowserCloseCallback;
   #browserCore: BrowserCore;
   #defaultViewport: Viewport | null;
+  #defaultLocale?: string;
   #browserContexts = new WeakMap<UserContext, BidiBrowserContext>();
   #target = new BidiBrowserTarget(this);
   #cdpConnection?: CdpConnection;
@@ -163,6 +165,7 @@ export class BidiBrowser extends Browser {
     this.#closeCallback = opts.closeCallback;
     this.#browserCore = browserCore;
     this.#defaultViewport = opts.defaultViewport;
+    this.#defaultLocale = opts.defaultLocale;
     this.#cdpConnection = opts.cdpConnection;
     this.#networkEnabled = opts.networkEnabled;
     this.#issuesEnabled = opts.issuesEnabled;
@@ -206,6 +209,7 @@ export class BidiBrowser extends Browser {
   #createBrowserContext(userContext: UserContext) {
     const browserContext = BidiBrowserContext.from(this, userContext, {
       defaultViewport: this.#defaultViewport,
+      defaultLocale: this.#defaultLocale,
     });
     this.#browserContexts.set(userContext, browserContext);
 

@@ -114,6 +114,13 @@ export interface LaunchOptions extends ConnectOptions {
    */
   extraPrefsFirefox?: Record<string, unknown>;
   /**
+   * Specify the browser locale, for example `en-GB`, `de-DE`, etc.
+   *
+   * The locale affects `navigator.language`, `Accept-Language` request header
+   * value as well as number and date formatting rules.
+   */
+  locale?: string;
+  /**
    * Whether to wait for the initial page to be ready.
    * Useful when a user explicitly disables that (e.g. `--no-startup-window` for Chrome).
    * @defaultValue `true`

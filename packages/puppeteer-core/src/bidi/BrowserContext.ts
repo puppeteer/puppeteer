@@ -46,6 +46,7 @@ import type {BidiWebWorker} from './WebWorker.js';
  */
 export interface BidiBrowserContextOptions {
   defaultViewport: Viewport | null;
+  defaultLocale?: string;
 }
 
 /**
@@ -67,6 +68,7 @@ export class BidiBrowserContext extends BrowserContext {
 
   readonly #browser: BidiBrowser;
   readonly #defaultViewport: Viewport | null;
+  readonly #defaultLocale?: string;
   // This is public because of cookies.
   readonly userContext: UserContext;
   readonly #pages = new WeakMap<BrowsingContext, BidiPage>();
@@ -89,6 +91,7 @@ export class BidiBrowserContext extends BrowserContext {
     this.#browser = browser;
     this.userContext = userContext;
     this.#defaultViewport = options.defaultViewport;
+    this.#defaultLocale = options.defaultLocale;
   }
 
   #initialize() {
@@ -118,6 +121,9 @@ export class BidiBrowserContext extends BrowserContext {
   }
 
   #createPage(browsingContext: BrowsingContext): BidiPage {
+    if (this.#defaultLocale) {
+      browsingContext.setLocaleOverride(this.#defaultLocale).catch(debugError);
+    }
     const page = BidiPage.from(this, browsingContext);
     this.#pages.set(browsingContext, page);
     page.trustedEmitter.on(PageEvent.Close, () => {
@@ -208,6 +214,9 @@ export class BidiBrowserContext extends BrowserContext {
     const page = this.#pages.get(context)!;
     if (!page) {
       throw new Error('Page is not found');
+    }
+    if (this.#defaultLocale) {
+      await context.setLocaleOverride(this.#defaultLocale);
     }
     if (this.#defaultViewport) {
       try {

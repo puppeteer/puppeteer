@@ -29,9 +29,16 @@ export class FirefoxLauncher extends BrowserLauncher {
 
   static getPreferences(
     extraPrefsFirefox?: Record<string, unknown>,
+    locale?: string,
   ): Record<string, unknown> {
     return {
       ...extraPrefsFirefox,
+      ...(locale
+        ? {
+            'intl.accept_languages': locale,
+            'intl.locale.requested': locale,
+          }
+        : {}),
       // Force all web content to use a single content process. TODO: remove
       // this once Firefox supports mouse event dispatch from the main frame
       // context. See https://bugzilla.mozilla.org/show_bug.cgi?id=1773393.
@@ -51,6 +58,7 @@ export class FirefoxLauncher extends BrowserLauncher {
       executablePath,
       pipe = false,
       extraPrefsFirefox = {},
+      locale,
       debuggingPort = null,
     } = options;
 
@@ -108,7 +116,7 @@ export class FirefoxLauncher extends BrowserLauncher {
 
     await createProfile(SupportedBrowsers.FIREFOX, {
       path: userDataDir,
-      preferences: FirefoxLauncher.getPreferences(extraPrefsFirefox),
+      preferences: FirefoxLauncher.getPreferences(extraPrefsFirefox, locale),
     });
 
     let firefoxExecutable: string;

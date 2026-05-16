@@ -219,6 +219,7 @@ export class CdpTarget extends Target {
  */
 export class PageTarget extends CdpTarget {
   #defaultViewport?: Viewport;
+  #defaultLocale?: string;
 
   constructor(
     targetInfo: Protocol.Target.TargetInfo,
@@ -227,9 +228,11 @@ export class PageTarget extends CdpTarget {
     targetManager: TargetManager,
     sessionFactory: (isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>,
     defaultViewport: Viewport | null,
+    defaultLocale?: string,
   ) {
     super(targetInfo, session, browserContext, targetManager, sessionFactory);
     this.#defaultViewport = defaultViewport ?? undefined;
+    this.#defaultLocale = defaultLocale;
   }
 
   override _initialize(): void {
@@ -266,7 +269,12 @@ export class PageTarget extends CdpTarget {
           ? Promise.resolve(session)
           : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
       ).then(client => {
-        return CdpPage._create(client, this, this.#defaultViewport ?? null);
+        return CdpPage._create(
+          client,
+          this,
+          this.#defaultViewport ?? null,
+          this.#defaultLocale,
+        );
       });
     }
     return (await this.pagePromise) ?? null;

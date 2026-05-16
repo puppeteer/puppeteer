@@ -352,6 +352,27 @@ If `true`, do not use `puppeteer.defaultArgs()` when creating a browser. If an a
 </td></tr>
 <tr><td>
 
+<span id="locale">locale</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+Specify the browser locale, for example `en-GB`, `de-DE`, etc.
+
+The locale affects `navigator.language`, `Accept-Language` request header value as well as number and date formatting rules.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="pipe">pipe</span>
 
 </td><td>

@@ -118,9 +118,13 @@ export class CdpPage extends Page {
     client: CdpCDPSession,
     target: CdpTarget,
     defaultViewport: Viewport | null,
+    defaultLocale?: string,
   ): Promise<CdpPage> {
     const page = new CdpPage(client, target);
     await page.#initialize();
+    if (defaultLocale) {
+      await page.#emulationManager.emulateLocale(defaultLocale);
+    }
     if (defaultViewport) {
       try {
         await page.setViewport(defaultViewport);

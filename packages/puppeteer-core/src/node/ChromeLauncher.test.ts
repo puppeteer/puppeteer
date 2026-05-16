@@ -68,6 +68,14 @@ describe('removeMatchingFlags', () => {
 });
 
 describe('ChromeLauncher', () => {
+  it('sets the locale for Chrome', () => {
+    const launcher = new ChromeLauncher({} as any);
+    const args = launcher.defaultArgs({
+      locale: 'de-DE',
+    });
+    expect(args).toContain('--accept-lang=de-DE');
+  });
+
   it('removes disabled features if they are enabled explicitly', () => {
     const launcher = new ChromeLauncher({} as any);
     const args = launcher.defaultArgs({

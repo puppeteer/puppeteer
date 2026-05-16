@@ -97,6 +97,7 @@ export abstract class BrowserLauncher {
       idGenerator = createIncrementalIdGenerator(),
       blocklist,
       allowlist,
+      locale,
     } = options;
 
     let {protocol} = options;
@@ -212,6 +213,7 @@ export abstract class BrowserLauncher {
               acceptInsecureCerts,
               networkEnabled,
               issuesEnabled,
+              defaultLocale: locale,
             },
           );
         } else {
@@ -231,6 +233,7 @@ export abstract class BrowserLauncher {
             handleDevToolsAsPage,
             blocklist,
             allowlist,
+            locale,
           );
         }
       }
@@ -423,6 +426,7 @@ export abstract class BrowserLauncher {
       acceptInsecureCerts?: boolean;
       networkEnabled: boolean;
       issuesEnabled: boolean;
+      defaultLocale?: string;
     },
   ): Promise<Browser> {
     const bidiOnly = process.env['PUPPETEER_WEBDRIVER_BIDI_ONLY'] === 'true';
@@ -439,6 +443,7 @@ export abstract class BrowserLauncher {
       acceptInsecureCerts: opts.acceptInsecureCerts,
       networkEnabled: opts.networkEnabled,
       issuesEnabled: opts.issuesEnabled,
+      defaultLocale: opts.defaultLocale,
     });
   }
 

@@ -73,6 +73,7 @@ export class CdpBrowser extends BrowserBase {
     handleDevToolsAsPage = false,
     blocklist?: string[],
     allowlist?: string[],
+    defaultLocale?: string,
   ): Promise<CdpBrowser> {
     const browser = new CdpBrowser(
       connection,
@@ -88,6 +89,7 @@ export class CdpBrowser extends BrowserBase {
       handleDevToolsAsPage,
       blocklist,
       allowlist,
+      defaultLocale,
     );
 
     if (allowlist) {
@@ -121,6 +123,7 @@ export class CdpBrowser extends BrowserBase {
   #targetManager: TargetManager;
   #handleDevToolsAsPage = false;
   #extensions = new Map<string, Extension>();
+  #defaultLocale?: string;
 
   constructor(
     connection: Connection,
@@ -136,6 +139,7 @@ export class CdpBrowser extends BrowserBase {
     handleDevToolsAsPage = false,
     blocklist?: string[],
     allowlist?: string[],
+    defaultLocale?: string,
   ) {
     super();
     this.#networkEnabled = networkEnabled;
@@ -150,6 +154,7 @@ export class CdpBrowser extends BrowserBase {
         return true;
       });
     this.#handleDevToolsAsPage = handleDevToolsAsPage;
+    this.#defaultLocale = defaultLocale;
     this.#setIsPageTargetCallback(isPageTargetCallback);
     connection.rejectEmulateNetworkConditionsCalls = Boolean(
       (blocklist && blocklist.length > 0) ||
@@ -321,6 +326,7 @@ export class CdpBrowser extends BrowserBase {
         this.#targetManager,
         createSession,
         this.#defaultViewport ?? null,
+        this.#defaultLocale,
       );
     }
     if (this.#isPageTargetCallback(otherTarget)) {
@@ -331,6 +337,7 @@ export class CdpBrowser extends BrowserBase {
         this.#targetManager,
         createSession,
         this.#defaultViewport ?? null,
+        this.#defaultLocale,
       );
     }
     if (

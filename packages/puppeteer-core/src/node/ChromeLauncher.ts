@@ -248,6 +248,7 @@ export class ChromeLauncher extends BrowserLauncher {
       args = [],
       userDataDir,
       enableExtensions = false,
+      locale,
     } = options;
 
     if (
@@ -272,6 +273,9 @@ export class ChromeLauncher extends BrowserLauncher {
         '--hide-scrollbars',
         '--mute-audio',
       );
+    }
+    if (locale) {
+      chromeArguments.push(`--accept-lang=${locale}`);
     }
     chromeArguments.push(
       enableExtensions
