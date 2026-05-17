@@ -196,6 +196,7 @@ async function extractZip(
       // -x: extract files
       // -f: specify the archive file
       // -C: extract to the specified directory
+      // Relative dir to avoid disk paths.
       await execFileAsync('tar.exe', [
         '-xf',
         path.relative(process.cwd(), archivePath),
