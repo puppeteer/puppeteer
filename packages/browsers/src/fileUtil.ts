@@ -196,7 +196,12 @@ async function extractZip(
       // -x: extract files
       // -f: specify the archive file
       // -C: extract to the specified directory
-      await execFileAsync('tar.exe', ['-xf', archivePath, '-C', folderPath]);
+      await execFileAsync('tar.exe', [
+        '-xf',
+        path.relative(process.cwd(), archivePath),
+        '-C',
+        path.relative(process.cwd(), folderPath),
+      ]);
     } else {
       // -o: overwrite existing files without prompting
       // -d: extract files into the specified directory
