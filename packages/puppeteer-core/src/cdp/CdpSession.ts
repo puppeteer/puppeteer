@@ -108,6 +108,7 @@ export class CdpCDPSession extends CDPSession {
           error instanceof Error &&
           error.message.includes('Session with given id not found')
         ) {
+          this.onClosed();
           throw new TargetCloseError(
             `Protocol error (${method}): Session with given id not found.`,
           );
