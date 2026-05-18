@@ -196,7 +196,10 @@ async function extractZip(
       // -x: extract files
       // -f: specify the archive file
       // -C: extract to the specified directory
-      await execFileAsync('tar.exe', ['-xf', archivePath, '-C', folderPath]);
+      const systemRoot =
+        process.env['SystemRoot'] ?? process.env['SYSTEMROOT'] ?? 'C:\\Windows';
+      const systemTar = `${systemRoot}\\System32\\tar.exe`;
+      await execFileAsync(systemTar, ['-xf', archivePath, '-C', folderPath]);
     } else {
       // -o: overwrite existing files without prompting
       // -d: extract files into the specified directory
