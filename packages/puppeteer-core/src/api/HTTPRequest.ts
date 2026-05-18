@@ -622,17 +622,17 @@ export function headersArray(
   headers: Record<string, string | string[]>,
 ): Array<{name: string; value: string}> {
   const result = [];
-  for (const name in headers) {
+  for (const name of Object.keys(headers)) {
     const value = headers[name];
 
-    if (!Object.is(value, undefined)) {
-      const values = Array.isArray(value) ? value : [value];
-
-      result.push(
-        ...values.map(value => {
-          return {name, value: value + ''};
-        }),
-      );
+    if (value !== undefined) {
+      if (Array.isArray(value)) {
+        for (const v of value) {
+          result.push({name, value: v + ''});
+        }
+      } else {
+        result.push({name, value: value + ''});
+      }
     }
   }
   return result;
