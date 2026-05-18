@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.3](https://github.com/puppeteer/puppeteer/compare/browsers-v3.0.2...browsers-v3.0.3) (2026-05-18)
+
+
+### 🛠️ Fixes
+
+* fix tar.exe invocation ([#14997](https://github.com/puppeteer/puppeteer/issues/14997)) ([cce47de](https://github.com/puppeteer/puppeteer/commit/cce47de9040963d4ad8ec249c76569fd4fc8517e))
+
 ## [3.0.2](https://github.com/puppeteer/puppeteer/compare/browsers-v3.0.1...browsers-v3.0.2) (2026-05-15)
 
 
