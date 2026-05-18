@@ -87,7 +87,11 @@ describe('Page.webmcp', function () {
 
     expect(tools[1]!.name).toBe('declarative tool name');
     expect(tools[1]!.description).toBe('tool description');
-    expect(tools[1]!.inputSchema).toStrictEqual({});
+    expect(tools[1]!.inputSchema).toStrictEqual({
+      type: 'object',
+      properties: {},
+      required: [],
+    });
     expect(tools[1]!.annotations).toBeDefined();
     expect(tools[1]!.annotations!.autosubmit).toBe(true);
     expect(tools[1]!.frame).toBe(page.mainFrame());
