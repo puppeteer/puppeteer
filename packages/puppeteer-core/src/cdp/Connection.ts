@@ -217,13 +217,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     } else if (object.method === 'Target.detachedFromTarget') {
       const session = this.#sessions.get(object.params.sessionId);
       if (session) {
-        session.onClosed();
-        this.#sessions.delete(object.params.sessionId);
-        this.emit(CDPSessionEvent.SessionDetached, session);
-        const parentSession = this.#sessions.get(object.sessionId);
-        if (parentSession) {
-          parentSession.emit(CDPSessionEvent.SessionDetached, session);
-        }
+        this.#onSessionDetached(session);
       }
     }
     if (object.sessionId) {
@@ -256,6 +250,28 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
       }
     } else {
       this.emit(object.method, object.params);
+    }
+  }
+
+  #onSessionDetached(session: CdpCDPSession): void {
+    const children = [];
+    for (const child of this.#sessions.values()) {
+      if (child.getParentSessionId() === session.id()) {
+        children.push(child);
+      }
+    }
+    for (const child of children) {
+      this.#onSessionDetached(child);
+    }
+    session.onClosed();
+    this.#sessions.delete(session.id());
+    this.emit(CDPSessionEvent.SessionDetached, session);
+    const parentSessionId = session.getParentSessionId();
+    const parentSession = parentSessionId
+      ? this.#sessions.get(parentSessionId)
+      : undefined;
+    if (parentSession) {
+      parentSession.emit(CDPSessionEvent.SessionDetached, session);
     }
   }
 

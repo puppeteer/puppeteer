@@ -7,7 +7,6 @@
 import expect from 'expect';
 import type {Target} from 'puppeteer-core/internal/api/Target.js';
 import {CdpCDPSession} from 'puppeteer-core/internal/cdp/CdpSession.js';
-import {TargetCloseError} from 'puppeteer-core/internal/common/Errors.js';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 
 import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
@@ -198,16 +197,34 @@ describe('Target.createCDPSession', function () {
     );
     connection._sessions.set('fake-session-id', fakeSession);
 
-    const error = await fakeSession
-      .send('Runtime.evaluate', {
+    await expect(
+      fakeSession.send('Runtime.evaluate', {
         expression: '1 + 1',
-      })
-      .catch(error => {
-        return error;
-      });
-    expect(error).toBeInstanceOf(TargetCloseError);
-    expect(error.message).toBe(
-      'Protocol error (Runtime.evaluate): Session with given id not found.',
+      }),
+    ).rejects.toThrow(/Session with given id not found/);
+  });
+
+  it('should detach child sessions when a parent session is detached', async () => {
+    const {page} = await getTestState();
+    const parentSession = (await page.createCDPSession()) as CdpCDPSession;
+    const connection = parentSession.connection()!;
+
+    const childSession = new CdpCDPSession(
+      connection,
+      'other',
+      'child-session-id',
+      parentSession.id(),
+      false,
     );
+    connection._sessions.set('child-session-id', childSession);
+
+    expect(connection._sessions.has('child-session-id')).toBe(true);
+    expect(childSession.detached).toBe(false);
+
+    await parentSession.detach();
+
+    expect(parentSession.detached).toBe(true);
+    expect(childSession.detached).toBe(true);
+    expect(connection._sessions.has('child-session-id')).toBe(false);
   });
 });
