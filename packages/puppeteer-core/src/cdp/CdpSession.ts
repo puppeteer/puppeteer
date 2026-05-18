@@ -101,15 +101,20 @@ export class CdpCDPSession extends CDPSession {
         ),
       );
     }
-    return this.#connection._rawSend(
-      this.#callbacks,
-      method,
-      params,
-      this.#sessionId,
-      options,
-    );
+    return this.#connection
+      ._rawSend(this.#callbacks, method, params, this.#sessionId, options)
+      .catch(error => {
+        if (
+          error instanceof Error &&
+          error.message.includes('Session with given id not found')
+        ) {
+          throw new TargetCloseError(
+            `Protocol error (${method}): Session with given id not found.`,
+          );
+        }
+        throw error;
+      });
   }
-
   /**
    * @internal
    */
