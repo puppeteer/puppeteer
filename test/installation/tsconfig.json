@@ -4,7 +4,8 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "outDir": "build",
-    "rootDir": "src"
+    "rootDir": "src",
+    "types": ["node", "mocha"]
   },
   "include": ["src"]
 }

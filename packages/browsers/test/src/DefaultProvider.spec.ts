@@ -6,7 +6,7 @@
 
 import assert from 'node:assert';
 
-import {Browser, BrowserPlatform, DefaultProvider} from './main.js';
+import {Browser, BrowserPlatform, DefaultProvider} from '../../src/main.js';
 
 describe('DefaultProvider', () => {
   let provider: DefaultProvider;

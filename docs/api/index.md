@@ -1694,7 +1694,7 @@ Represents the cookie's 'Priority' status: https://tools.ietf.org/html/draft-wes
 </td></tr>
 <tr><td>
 
-<span id="cookiesamesite">[CookieSameSite](./puppeteer.cookiesamesite.md)</span>
+<span id="cookiesamesite_2">[CookieSameSite_2](./puppeteer.cookiesamesite_2.md)</span>
 
 </td><td>
 
