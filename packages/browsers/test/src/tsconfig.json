@@ -4,7 +4,8 @@
     "lib": ["ES2024.Promise"],
     "module": "ES2022",
     "moduleResolution": "Bundler",
-    "outDir": "../build"
+    "outDir": "../build",
+    "types": ["mocha", "node"]
   },
   "references": [{"path": "../../tsconfig.json"}]
 }

@@ -27,7 +27,7 @@
     "strictFunctionTypes": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
-    "target": "ES2022",
+    "target": "ES2024",
     "typeRoots": [
       "./node_modules/@types",
       "${configDir}/node_modules/@types",
