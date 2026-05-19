@@ -4,7 +4,8 @@
     "module": "ES2022",
     "moduleResolution": "Bundler",
     "outDir": "build",
-    "rootDir": "src"
+    "rootDir": "src",
+    "types": ["node", "mocha"]
   },
   "include": ["src"]
 }

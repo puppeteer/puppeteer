@@ -6,7 +6,8 @@
     "module": "ES2022",
     "moduleResolution": "Bundler",
     "outDir": "lib",
-    "rootDir": "src"
+    "rootDir": "src",
+    "types": ["node"]
   },
   "include": ["src"]
 }

@@ -17,8 +17,9 @@ export interface CustomQuerySelector {
 
 /**
  * This class mimics the injected {@link CustomQuerySelectorRegistry}.
+ *
  */
-class CustomQuerySelectorRegistry {
+export class CustomQuerySelectorRegistry {
   #selectors = new Map<string, CustomQuerySelector>();
 
   register(name: string, handler: CustomQueryHandler): void {
@@ -54,7 +55,7 @@ class CustomQuerySelectorRegistry {
     return this.#selectors.get(name);
   }
 
-  clear() {
+  clear(): void {
     this.#selectors.clear();
   }
 }
