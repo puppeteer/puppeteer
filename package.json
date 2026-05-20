@@ -208,7 +208,8 @@
   "overrides": {
     "@microsoft/api-extractor": {
       "typescript": "$typescript"
-    }
+    },
+    "picomatch": "^4.0.4"
   },
   "workspaces": [
     "packages/*",
@@ -218,8 +219,5 @@
     "tools/doctest",
     "tools/docgen",
     "tools/mocha-runner"
-  ],
-  "dependencies": {
-    "picomatch": "^4.0.4"
-  }
+  ]
 }
