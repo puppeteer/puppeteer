@@ -28,6 +28,14 @@ import type {BrowserProvider} from './provider.js';
 
 const debugInstall = debug('puppeteer:browsers:install');
 
+interface InstallProgressCallbackSet {
+  downloadProgressCallback?: (
+    downloadedBytes: number,
+    totalBytes: number,
+  ) => void;
+  statusProgressCallback?: (message: string) => (error?: unknown) => void;
+}
+
 const times = new Map<string, [number, number]>();
 function debugTime(label: string) {
   times.set(label, process.hrtime());
@@ -42,6 +50,42 @@ function debugTimeEnd(label: string) {
   const duration =
     end[0] * 1000 + end[1] / 1e6 - (start[0] * 1000 + start[1] / 1e6); // calculate duration in milliseconds
   debugInstall?.(`Duration for ${label}: ${duration}ms`);
+}
+
+function createStatusProgress(
+  statusProgressCallback: InstallProgressCallbackSet['statusProgressCallback'],
+  message: string,
+): (error?: unknown) => void {
+  let finishStatus: ((error?: unknown) => void) | undefined;
+  try {
+    finishStatus = statusProgressCallback?.(message);
+  } catch (error) {
+    debugInstall?.(`Status progress failed to start: ${error}`);
+  }
+  return error => {
+    try {
+      finishStatus?.(error);
+    } catch (error) {
+      debugInstall?.(`Status progress failed to finish: ${error}`);
+    }
+  };
+}
+
+async function runWithStatus<T>(
+  statusProgressCallback: InstallProgressCallbackSet['statusProgressCallback'],
+  message: string,
+  action: () => Promise<T> | T,
+): Promise<T> {
+  const finishStatus = createStatusProgress(statusProgressCallback, message);
+  let actionError: unknown;
+  try {
+    return await action();
+  } catch (error) {
+    actionError = error;
+    throw error;
+  } finally {
+    finishStatus(actionError);
+  }
 }
 
 /**
@@ -75,9 +119,8 @@ export interface InstallOptions {
    */
   buildIdAlias?: string;
   /**
-   * Provides information about the progress of the download. If set to
-   * 'default', the default callback implementing a progress bar will be
-   * used.
+   * Provides information about the progress of the download and install. If set
+   * to 'default', the default terminal reporter will be used.
    */
   downloadProgressCallback?:
     | 'default'
@@ -304,7 +347,10 @@ export async function install(
   return await installWithProviders(options);
 }
 
-async function installDeps(installedBrowser: InstalledBrowser) {
+async function installDeps(
+  installedBrowser: InstalledBrowser,
+  statusProgressCallback?: InstallProgressCallbackSet['statusProgressCallback'],
+) {
   if (
     process.platform !== 'linux' ||
     installedBrowser.platform !== BrowserPlatform.LINUX
@@ -321,28 +367,36 @@ async function installDeps(installedBrowser: InstalledBrowser) {
     return;
   }
   const data = readFileSync(depsPath, 'utf-8').split('\n').join(',');
-  if (process.getuid?.() !== 0) {
-    throw new Error('Installing system dependencies requires root privileges');
-  }
-  let result = spawnSync('apt-get', ['-v']);
-  if (result.status !== 0) {
-    throw new Error(
-      'Failed to install system dependencies: apt-get does not seem to be available',
-    );
-  }
-  debugInstall?.(`Trying to install dependencies: ${data}`);
-  result = spawnSync('apt-get', [
-    'satisfy',
-    '-y',
-    data,
-    '--no-install-recommends',
-  ]);
-  if (result.status !== 0) {
-    throw new Error(
-      `Failed to install system dependencies: status=${result.status},error=${result.error},stdout=${result.stdout.toString('utf8')},stderr=${result.stderr.toString('utf8')}`,
-    );
-  }
-  debugInstall?.(`Installed system dependencies ${data}`);
+  await runWithStatus(
+    statusProgressCallback,
+    `Installing system dependencies for ${installedBrowser.browser} ${installedBrowser.buildId}`,
+    () => {
+      if (process.getuid?.() !== 0) {
+        throw new Error(
+          'Installing system dependencies requires root privileges',
+        );
+      }
+      let result = spawnSync('apt-get', ['-v']);
+      if (result.status !== 0) {
+        throw new Error(
+          'Failed to install system dependencies: apt-get does not seem to be available',
+        );
+      }
+      debugInstall?.(`Trying to install dependencies: ${data}`);
+      result = spawnSync('apt-get', [
+        'satisfy',
+        '-y',
+        data,
+        '--no-install-recommends',
+      ]);
+      if (result.status !== 0) {
+        throw new Error(
+          `Failed to install system dependencies: status=${result.status},error=${result.error},stdout=${result.stdout.toString('utf8')},stderr=${result.stderr.toString('utf8')}`,
+        );
+      }
+      debugInstall?.(`Installed system dependencies ${data}`);
+    },
+  );
 }
 
 async function installUrl(
@@ -360,11 +414,14 @@ async function installUrl(
     );
   }
   let downloadProgressCallback = options.downloadProgressCallback;
+  let statusProgressCallback: InstallProgressCallbackSet['statusProgressCallback'];
   if (downloadProgressCallback === 'default') {
-    downloadProgressCallback = await makeProgressCallback(
+    const progressCallbacks = await makeProgressCallbackSet(
       options.browser,
       options.buildIdAlias ?? options.buildId,
     );
+    downloadProgressCallback = progressCallbacks.downloadProgressCallback;
+    statusProgressCallback = progressCallbacks.statusProgressCallback;
   }
   const fileName = decodeURIComponent(url.toString()).split('/').pop();
   assert(fileName, `A malformed download URL was found: ${url}.`);
@@ -426,9 +483,9 @@ async function installUrl(
           `The browser folder (${outputPath}) exists but the executable (${installedBrowser.executablePath}) is missing`,
         );
       }
-      await runSetup(installedBrowser);
+      await runSetup(installedBrowser, statusProgressCallback);
       if (options.installDeps) {
-        await installDeps(installedBrowser);
+        await installDeps(installedBrowser, statusProgressCallback);
       }
       return installedBrowser;
     }
@@ -447,12 +504,18 @@ async function installUrl(
     }
 
     debugInstall?.(`Installing ${archivePath} to ${outputPath}`);
-    try {
-      debugTime('extract');
-      await unpackArchive(archivePath, outputPath);
-    } finally {
-      debugTimeEnd('extract');
-    }
+    await runWithStatus(
+      statusProgressCallback,
+      `Unpacking ${options.browser} ${options.buildIdAlias ?? options.buildId}`,
+      async () => {
+        try {
+          debugTime('extract');
+          await unpackArchive(archivePath, outputPath);
+        } finally {
+          debugTimeEnd('extract');
+        }
+      },
+    );
 
     if (options.buildIdAlias) {
       const metadata = installedBrowser.readMetadata();
@@ -460,9 +523,9 @@ async function installUrl(
       installedBrowser.writeMetadata(metadata);
     }
 
-    await runSetup(installedBrowser);
+    await runSetup(installedBrowser, statusProgressCallback);
     if (options.installDeps) {
-      await installDeps(installedBrowser);
+      await installDeps(installedBrowser, statusProgressCallback);
     }
     return installedBrowser;
   } finally {
@@ -472,7 +535,10 @@ async function installUrl(
   }
 }
 
-async function runSetup(installedBrowser: InstalledBrowser): Promise<void> {
+async function runSetup(
+  installedBrowser: InstalledBrowser,
+  statusProgressCallback?: InstallProgressCallbackSet['statusProgressCallback'],
+): Promise<void> {
   // On Windows for Chrome invoke setup.exe to configure sandboxes.
   if (
     (installedBrowser.platform === BrowserPlatform.WIN32 ||
@@ -487,15 +553,21 @@ async function runSetup(installedBrowser: InstalledBrowser): Promise<void> {
       if (!existsSync(setupExePath)) {
         return;
       }
-      spawnSync(
-        path.join(browserDir, 'setup.exe'),
-        [`--configure-browser-in-directory=` + browserDir],
-        {
-          shell: false,
+      await runWithStatus(
+        statusProgressCallback,
+        `Configuring ${installedBrowser.browser} ${installedBrowser.buildId}`,
+        () => {
+          spawnSync(
+            path.join(browserDir, 'setup.exe'),
+            [`--configure-browser-in-directory=` + browserDir],
+            {
+              shell: false,
+            },
+          );
+          // TODO: Handle error here. Currently the setup.exe sometimes
+          // errors although it sets the permissions correctly.
         },
       );
-      // TODO: Handle error here. Currently the setup.exe sometimes
-      // errors although it sets the permissions correctly.
     } finally {
       debugTimeEnd('permissions');
     }
@@ -638,25 +710,76 @@ export async function makeProgressCallback(
   browser: Browser,
   buildId: string,
 ): Promise<(downloadedBytes: number, totalBytes: number) => void> {
+  return (await makeProgressCallbackSet(browser, buildId))
+    .downloadProgressCallback!;
+}
+
+async function makeProgressCallbackSet(
+  browser: Browser,
+  buildId: string,
+): Promise<InstallProgressCallbackSet> {
   const ProgressBarClass = await importProgressBarIfNeeded();
   let progressBar: ProgressBar;
 
   let lastDownloadedBytes = 0;
-  return (downloadedBytes: number, totalBytes: number) => {
-    if (!progressBar) {
-      progressBar = new ProgressBarClass(
-        `Downloading ${browser} ${buildId} - ${toMegabytes(totalBytes)} [:bar] :percent :etas `,
-        {
-          complete: '=',
-          incomplete: ' ',
-          width: 20,
-          total: totalBytes,
-        },
-      );
-    }
-    const delta = downloadedBytes - lastDownloadedBytes;
-    lastDownloadedBytes = downloadedBytes;
-    progressBar.tick(delta);
+  return {
+    downloadProgressCallback: (downloadedBytes: number, totalBytes: number) => {
+      if (!progressBar) {
+        progressBar = new ProgressBarClass(
+          `Downloading ${browser} ${buildId} - ${toMegabytes(totalBytes)} [:bar] :percent :etas `,
+          {
+            complete: '=',
+            incomplete: ' ',
+            width: 20,
+            total: totalBytes,
+          },
+        );
+      }
+      const delta = downloadedBytes - lastDownloadedBytes;
+      lastDownloadedBytes = downloadedBytes;
+      progressBar.tick(delta);
+    },
+    statusProgressCallback: message => {
+      if (!process.stderr.isTTY) {
+        return () => {};
+      }
+      let tick = 0;
+      let stopped = false;
+      let stopInterval = () => {};
+      const writeStatus = (status: string) => {
+        try {
+          process.stderr.write(status);
+          return true;
+        } catch (error) {
+          debugInstall?.(`Status progress failed to write: ${error}`);
+          return false;
+        }
+      };
+      const render = () => {
+        if (stopped) {
+          return;
+        }
+        const dots = '.'.repeat((tick % 3) + 1).padEnd(3, ' ');
+        if (!writeStatus(`\r${message}${dots}`)) {
+          stopped = true;
+          stopInterval();
+        }
+        tick++;
+      };
+      render();
+      if (stopped) {
+        return () => {};
+      }
+      const interval = setInterval(render, 200);
+      stopInterval = () => {
+        clearInterval(interval);
+      };
+      return error => {
+        stopped = true;
+        stopInterval();
+        writeStatus(`\r${message}${error ? ' failed' : ' done'}\n`);
+      };
+    },
   };
 }
 

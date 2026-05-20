@@ -130,4 +130,68 @@ describe('CLI', function () {
     );
     assert.strictEqual(found[2], 'chrome', 'Expected browser to match');
   });
+
+  it('should report unpacking status', async () => {
+    const sourceArchivePath = path.join(
+      import.meta.dirname,
+      '..',
+      '.cache',
+      'server',
+      testChromeBuildId,
+      'linux64',
+      'chrome-linux64.zip',
+    );
+    const archivePath = path.join(
+      tmpDir,
+      'chrome',
+      `${testChromeBuildId}-chrome-linux64.zip`,
+    );
+    fs.mkdirSync(path.dirname(archivePath), {recursive: true});
+    fs.copyFileSync(sourceArchivePath, archivePath);
+
+    const logs: string[] = [];
+    const originalStderrWrite = process.stderr.write.bind(process.stderr);
+    const originalIsTTY = Object.getOwnPropertyDescriptor(
+      process.stderr,
+      'isTTY',
+    );
+
+    Object.defineProperty(process.stderr, 'isTTY', {
+      configurable: true,
+      value: true,
+    });
+    process.stderr.write = chunk => {
+      logs.push(chunk.toString());
+      return true;
+    };
+
+    try {
+      await new CLI(tmpDir).run([
+        'npx',
+        '@puppeteer/browsers',
+        'install',
+        `chrome@${testChromeBuildId}`,
+        `--path=${tmpDir}`,
+        `--platform=linux`,
+        `--base-url=${getServerUrl()}`,
+      ]);
+    } finally {
+      process.stderr.write = originalStderrWrite;
+      if (originalIsTTY) {
+        Object.defineProperty(process.stderr, 'isTTY', originalIsTTY);
+      } else {
+        delete (process.stderr as {isTTY?: boolean}).isTTY;
+      }
+    }
+
+    const output = logs.join('');
+    assert(
+      output.includes(`Unpacking chrome ${testChromeBuildId}`),
+      `Expected unpacking status in ${JSON.stringify(logs)}`,
+    );
+    assert(
+      output.includes(`Unpacking chrome ${testChromeBuildId} done`),
+      `Expected unpacking completion in ${JSON.stringify(logs)}`,
+    );
+  });
 });

@@ -140,7 +140,7 @@ Determines the path to download browsers to.
 
 </td><td>
 
-Provides information about the progress of the download. If set to 'default', the default callback implementing a progress bar will be used.
+Provides information about the progress of the download and install. If set to 'default', the default terminal reporter will be used.
 
 </td><td>
 
