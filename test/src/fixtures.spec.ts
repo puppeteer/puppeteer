@@ -47,29 +47,17 @@ describe('Fixtures', function () {
 
     let dumpioData = '';
     const options = Object.assign({}, defaultBrowserOptions, {dumpio: true});
-    console.log('In should dump browser process stderr: running dumpio.njs...');
     const res = spawn('node', [
       path.join(import.meta.dirname, '../fixtures', 'dumpio.mjs'),
       puppeteerPath,
       JSON.stringify(options),
     ]);
     res.stderr.on('data', data => {
-      console.log(
-        'In should dump browser process stderr, on data:',
-        data.toString('utf8'),
-      );
       dumpioData += data.toString('utf8');
     });
-    await new Promise<void>(resolve => {
-      return res.on('close', () => {
-        console.log('In should dump browser process stderr, on close');
-        resolve();
-      });
+    await new Promise(resolve => {
+      return res.on('close', resolve);
     });
-    console.log(
-      'In should dump browser process stderr, finishing, dumpioData =',
-      dumpioData,
-    );
     if (isFirefox && defaultBrowserOptions.protocol === 'webDriverBiDi') {
       expect(dumpioData).toContain('WebDriver BiDi listening on ws://');
     } else {
