@@ -93,6 +93,11 @@ export interface InstallOptions {
    */
   baseUrl?: string;
   /**
+   * Provides information about the progress of the unpacking.
+   * If set to 'default', a default spinner indicator will be used.
+   */
+  unpackProgressCallback?: 'default' | ((message: string) => void);
+  /**
    * Whether to unpack and install browser archives.
    *
    * @defaultValue `true`
@@ -447,11 +452,17 @@ async function installUrl(
     }
 
     debugInstall?.(`Installing ${archivePath} to ${outputPath}`);
+    const unpackCallback =
+      options.unpackProgressCallback === 'default'
+        ? makeDefaultUnpackCallback(options.browser, options.buildId)
+        : options.unpackProgressCallback;
+    unpackCallback?.(`Unpacking ${options.browser} ${options.buildId}`);
     try {
       debugTime('extract');
       await unpackArchive(archivePath, outputPath);
     } finally {
       debugTimeEnd('extract');
+      unpackCallback?.(`Unpacking ${options.browser} ${options.buildId} done`);
     }
 
     if (options.buildIdAlias) {
@@ -630,6 +641,43 @@ const importProgressBarIfNeeded = async () => {
 
   return ProgressBarClass;
 };
+
+/**
+ * @internal
+ */
+export function makeDefaultUnpackCallback(
+  browser: Browser,
+  buildId: string,
+): (message: string) => void {
+  const spinnerFrames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+  let frameIndex = 0;
+  let interval: ReturnType<typeof setInterval> | undefined;
+
+  return (message: string) => {
+    if (message.endsWith('done')) {
+      if (interval) {
+        clearInterval(interval);
+        interval = undefined;
+      }
+      process.stdout.write(
+        `\r${' '.repeat(60)}\r`,
+      );
+      process.stdout.write(
+        `Unpacking ${browser} ${buildId} done\n`,
+      );
+    } else {
+      process.stdout.write(
+        `\r${spinnerFrames[frameIndex]} ${message}`,
+      );
+      interval = setInterval(() => {
+        frameIndex = (frameIndex + 1) % spinnerFrames.length;
+        process.stdout.write(
+          `\r${spinnerFrames[frameIndex]} ${message}`,
+        );
+      }, 80);
+    }
+  };
+}
 
 /**
  * @internal

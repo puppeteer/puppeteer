@@ -46,6 +46,7 @@ async function downloadBrowser({
       platform,
       buildId,
       downloadProgressCallback: 'default',
+      unpackProgressCallback: 'default',
       baseUrl,
       buildIdAlias:
         buildId !== unresolvedBuildId ? unresolvedBuildId : undefined,

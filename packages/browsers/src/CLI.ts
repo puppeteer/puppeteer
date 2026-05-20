@@ -642,6 +642,7 @@ export class CLI {
       platform: args.platform,
       cacheDir: args.path ?? this.#cachePath,
       downloadProgressCallback: 'default',
+      unpackProgressCallback: 'default',
       baseUrl: args.baseUrl,
       buildIdAlias:
         originalBuildId !== args.browser.buildId ? originalBuildId : undefined,
