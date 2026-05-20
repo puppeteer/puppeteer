@@ -1981,6 +1981,13 @@
   },
   {
     "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should get and set browser window bounds",
+    "platforms": ["darwin"],
+    "parameters": ["firefox", "headful", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Different dimensions on Mac for headful"
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should get and set browser window bounds",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome", "headful"],
     "expectations": ["FAIL"],
