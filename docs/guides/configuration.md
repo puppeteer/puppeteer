@@ -67,7 +67,7 @@ without the need to run multiple commands.
 
 Update the Puppeteer configuration file:
 
-```js title="project-directory/.puppeteerrc.cjs"
+```js title="project-directory/.puppeteerrc.js"
 /**
  * @type {import("puppeteer").Configuration}
  */
@@ -97,7 +97,7 @@ globally cache browsers between installation. This can cause problems if
 following configuration can solve this issue (reinstall `puppeteer` to take
 effect):
 
-```js title="project-directory/.puppeteerrc.cjs"
+```js title="project-directory/.puppeteerrc.js"
 import {join} from 'path';
 
 /**

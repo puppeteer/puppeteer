@@ -33,8 +33,8 @@ PUPPETEER_CACHE_DIR=$(pwd) npm install puppeteer
 PUPPETEER_CACHE_DIR=$(pwd) node <script-path>
 ```
 
-You can also create a configuration file named `.puppeteerrc.cjs` (or
-`puppeteer.config.cjs`) at the root of your application with the contents
+You can also create a configuration file named `.puppeteerrc.js` (or
+`puppeteer.config.js`) at the root of your application with the contents
 
 ```js
 import {join} from 'path';
@@ -632,7 +632,7 @@ comes with all system packages needed to run Headless Chrome.
 
 To use `puppeteer`, specify the module as a dependency in your `package.json`
 and then override the puppeteer cache directory by including a file named
-`.puppeteerrc.cjs` at the root of your application with the contents:
+`.puppeteerrc.js` at the root of your application with the contents:
 
 ```ts
 import {join} from 'path';
@@ -659,7 +659,7 @@ comes with all system packages needed to run Headless Chrome.
 
 To use `puppeteer`, specify the module as a dependency in your `package.json`
 and then override the puppeteer cache directory by including a file named
-`.puppeteerrc.cjs` at the root of your application with the contents:
+`.puppeteerrc.js` at the root of your application with the contents:
 
 ```ts
 import {join} from 'path';
