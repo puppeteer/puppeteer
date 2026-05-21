@@ -17,9 +17,12 @@ export const createFunction = (
   if (fn) {
     return fn;
   }
-  fn = new Function(`return ${functionValue}`)() as (
-    ...args: unknown[]
-  ) => unknown;
+  fn = function puppeteerBackendPlaceholder() {
+    throw new Error(
+      'This function is a serialization placeholder. It should not be called directly in the Node.js process -- it exists only to carry source code to the browser via CDP.',
+    );
+  } as (...args: unknown[]) => unknown;
+  fn.toString = () => functionValue;
   createdFunctions.set(functionValue, fn);
   return fn;
 };
