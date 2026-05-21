@@ -11,8 +11,6 @@ import {mkdir, unlink} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-import type * as ProgressBar from 'progress';
-
 import {
   Browser,
   BrowserPlatform,
@@ -24,6 +22,7 @@ import {DefaultProvider} from './DefaultProvider.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {unpackArchive} from './fileUtil.js';
 import {downloadFile, headHttpRequest} from './httpUtil.js';
+import {ProgressBar} from './ProgressBar.js';
 import type {BrowserProvider} from './provider.js';
 
 const debugInstall = debug('puppeteer:browsers:install');
@@ -618,19 +617,6 @@ export function getDownloadUrl(
 ): URL {
   return new URL(downloadUrls[browser](platform, buildId, baseUrl));
 }
-
-let ProgressBarClass: new (
-  format: string,
-  options: ProgressBar.ProgressBarOptions,
-) => ProgressBar;
-const importProgressBarIfNeeded = async () => {
-  if (!ProgressBarClass) {
-    ProgressBarClass = (await import('progress')).default;
-  }
-
-  return ProgressBarClass;
-};
-
 /**
  * @internal
  */
@@ -638,18 +624,14 @@ export async function makeProgressCallback(
   browser: Browser,
   buildId: string,
 ): Promise<(downloadedBytes: number, totalBytes: number) => void> {
-  const ProgressBarClass = await importProgressBarIfNeeded();
   let progressBar: ProgressBar;
 
   let lastDownloadedBytes = 0;
   return (downloadedBytes: number, totalBytes: number) => {
     if (!progressBar) {
-      progressBar = new ProgressBarClass(
-        `Downloading ${browser} ${buildId} - ${toMegabytes(totalBytes)} [:bar] :percent :etas `,
+      progressBar = new ProgressBar(
+        `Downloading ${browser} ${buildId} - ${toMegabytes(totalBytes)}`,
         {
-          complete: '=',
-          incomplete: ' ',
-          width: 20,
           total: totalBytes,
         },
       );
