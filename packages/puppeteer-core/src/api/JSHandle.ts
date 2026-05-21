@@ -193,12 +193,10 @@ export abstract class JSHandle<T = unknown> {
    */
   abstract remoteObject(): Protocol.Runtime.RemoteObject;
 
-  /** @internal */
   [disposeSymbol](): void {
     return void this[asyncDisposeSymbol]().catch(debugCatchError);
   }
 
-  /** @internal */
   [asyncDisposeSymbol](): Promise<void> {
     return this.dispose();
   }

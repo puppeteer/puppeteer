@@ -1546,11 +1546,25 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="asyncdisposesymbol">[asyncDisposeSymbol](./puppeteer.asyncdisposesymbol.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="default_intercept_resolution_priority">[DEFAULT\_INTERCEPT\_RESOLUTION\_PRIORITY](./puppeteer.default_intercept_resolution_priority.md)</span>
 
 </td><td>
 
 The default cooperative request interception resolution priority
+
+</td></tr>
+<tr><td>
+
+<span id="disposesymbol">[disposeSymbol](./puppeteer.disposesymbol.md)</span>
+
+</td><td>
 
 </td></tr>
 <tr><td>

@@ -175,7 +175,7 @@
     "@rollup/plugin-node-resolve": "16.0.3",
     "@stylistic/eslint-plugin": "5.10.0",
     "@types/mocha": "10.0.10",
-    "@types/node": "22.13.10",
+    "@types/node": "22.20.0",
     "@types/semver": "7.7.1",
     "@types/sinon": "22.0.0",
     "typescript-eslint": "8.62.1",
