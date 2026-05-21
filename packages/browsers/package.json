@@ -84,8 +84,7 @@
   ],
   "dependencies": {
     "modern-tar": "^0.7.6",
-    "yargs": "^17.7.2",
-    "semver": "^7.7.4"
+    "yargs": "^17.7.2"
   },
   "peerDependencies": {
     "proxy-agent": ">=8.0.1"

@@ -8,8 +8,6 @@ import {execSync} from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 
-import semver from 'semver';
-
 import {getJSON} from '../httpUtil.js';
 
 import {BrowserPlatform, ChromeReleaseChannel} from './types.js';
@@ -406,17 +404,31 @@ function getBaseUserDataDirPathMac() {
 }
 
 export function compareVersions(a: string, b: string): number {
-  if (!semver.valid(a)) {
-    throw new Error(`Version ${a} is not a valid semver version`);
+  const cleanA = a.trim();
+  const cleanB = b.trim();
+
+  const versionRegex = /^\d+(?:\.\d+){0,3}$/;
+  if (!versionRegex.test(cleanA)) {
+    throw new Error(`Version ${a} is not a valid Chrome version`);
   }
-  if (!semver.valid(b)) {
-    throw new Error(`Version ${b} is not a valid semver version`);
+  if (!versionRegex.test(cleanB)) {
+    throw new Error(`Version ${b} is not a valid Chrome version`);
   }
-  if (semver.gt(a, b)) {
-    return 1;
-  } else if (semver.lt(a, b)) {
-    return -1;
-  } else {
-    return 0;
+
+  const aParts = cleanA.split('.').map(Number);
+  const bParts = cleanB.split('.').map(Number);
+
+  for (let i = 0; i < 4; i++) {
+    const aPart = aParts[i] ?? 0;
+    const bPart = bParts[i] ?? 0;
+
+    if (aPart > bPart) {
+      return 1;
+    }
+    if (aPart < bPart) {
+      return -1;
+    }
   }
+
+  return 0;
 }

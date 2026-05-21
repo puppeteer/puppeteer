@@ -382,9 +382,58 @@ describe('Chrome', () => {
     assert.strictEqual(await resolveBuildId('115.0.5790'), '115.0.5790.170');
   });
 
-  it('should compare versions', async () => {
-    assert.ok(compareVersions('115.0.5790', '115.0.5789') >= 1);
-    assert.ok(compareVersions('115.0.5789', '115.0.5790') <= -1);
-    assert.ok(compareVersions('115.0.5790', '115.0.5790') === 0);
+  it('should compare versions', () => {
+    // 3-part comparison (like '115.0.5789')
+    assert.strictEqual(compareVersions('115.0.5790', '115.0.5789'), 1);
+    assert.strictEqual(compareVersions('115.0.5789', '115.0.5790'), -1);
+    assert.strictEqual(compareVersions('115.0.5789', '115.0.5789'), 0);
+
+    // 4-part comparison
+    assert.strictEqual(compareVersions('115.0.5790.170', '115.0.5790.169'), 1);
+    assert.strictEqual(compareVersions('115.0.5790.169', '115.0.5790.170'), -1);
+    assert.strictEqual(compareVersions('115.0.5790.170', '115.0.5790.170'), 0);
+
+    // Major version difference
+    assert.strictEqual(compareVersions('116.0.0.0', '115.100.1000.10000'), 1);
+    assert.strictEqual(compareVersions('115.100.1000.10000', '116.0.0.0'), -1);
+
+    // Minor/build/patch differences
+    assert.strictEqual(compareVersions('115.1.5790.170', '115.0.5790.170'), 1);
+    assert.strictEqual(compareVersions('115.0.5791.170', '115.0.5790.170'), 1);
+
+    // Different number of parts (missing parts treated as 0)
+    assert.strictEqual(compareVersions('115.0.5790', '115.0.5790.0'), 0);
+    assert.strictEqual(compareVersions('115.0.5790.1', '115.0.5790'), 1);
+    assert.strictEqual(compareVersions('115.0.5790', '115.0.5790.1'), -1);
+    assert.strictEqual(compareVersions('115', '115.0.0.0'), 0);
+
+    // Leading/trailing whitespace
+    assert.strictEqual(
+      compareVersions(' 115.0.5790.170 ', '115.0.5790.170'),
+      0,
+    );
+
+    // Invalid formats should throw
+    assert.throws(() => {
+      return compareVersions('invalid', '115.0.5790');
+    });
+    assert.throws(() => {
+      return compareVersions('115.0.5790', '115.a.5790');
+    });
+    assert.throws(() => {
+      return compareVersions('115.0.5790.170.5', '115.0.5790');
+    });
+    assert.throws(() => {
+      return compareVersions('115.0.5790.', '115.0.5790');
+    });
+    assert.throws(() => {
+      return compareVersions('.115', '115.0.5790');
+    });
+    assert.throws(() => {
+      return compareVersions('-115', '115.0.5790');
+    });
+    assert.throws(() => {
+      return compareVersions('115.-1.0', '115.0.5790');
+    });
   });
 });
