@@ -52,13 +52,16 @@
       ]
     },
     "test": {
-      "command": "node tools/downloadTestBrowsers.mjs && NODE_DEBUG='puppeteer:*' mocha",
+      "command": "node tools/downloadTestBrowsers.mjs && mocha",
       "files": [
         ".mocharc.cjs"
       ],
       "dependencies": [
         "build:test"
-      ]
+      ],
+      "env": {
+        "NODE_DEBUG": "puppeteer:*"
+      }
     }
   },
   "keywords": [
