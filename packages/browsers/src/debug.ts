@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {Debugger} from 'debug';
-import debugModule from 'debug';
+import {debuglog} from 'node:util';
 
-export const debug = (prefix: string): Debugger | undefined => {
-  const log = debugModule(prefix);
+export const debug = (
+  prefix: string,
+): ((msg: string, ...param: unknown[]) => void) | undefined => {
+  const log = debuglog(prefix);
   return log.enabled ? log : undefined;
 };

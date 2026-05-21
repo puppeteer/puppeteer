@@ -98,6 +98,20 @@ The library and CLI respect `HTTP_PROXY`, `HTTPS_PROXY` and `NO_PROXY` environme
 npm install proxy-agent
 ```
 
+## Debugging
+
+To enable verbose logging for `@puppeteer/browsers` operations (like download progress, installation steps, and launching parameters), use Node.js's built-in `NODE_DEBUG` environment variable.
+
+```bash
+env NODE_DEBUG="puppeteer:browsers:*" npx @puppeteer/browsers install chrome@stable
+```
+
+The following debug channels are available:
+- `puppeteer:browsers:cache`: Caching operations.
+- `puppeteer:browsers:fileUtil`: Decompressing and other file utility operations.
+- `puppeteer:browsers:install`: Download and install progress.
+- `puppeteer:browsers:launcher`: Browser launching parameters and process state.
+
 ## Custom Providers
 
 You can implement custom browser providers to download from alternative sources like corporate mirrors, private repositories, or specialized browser builds.

@@ -153,7 +153,7 @@ async function main() {
       // https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables
       const githubActionDebugging = process.env['RUNNER_DEBUG']
         ? {
-            DEBUG: 'puppeteer:*',
+            NODE_DEBUG: 'puppeteer:*',
             EXTRA_LAUNCH_OPTIONS: JSON.stringify({
               dumpio: true,
               extraPrefsFirefox: {

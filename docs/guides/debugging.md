@@ -122,9 +122,9 @@ if you want to try something out, you have to add it to your test file.
 ### Log DevTools protocol traffic
 
 If all else fails, it's possible there may be an issue between Puppeteer and the
-DevTools protocol. You can debug this by setting the `DEBUG` environment
-variable before running your script. This will log internal traffic via
-[`debug`](https://github.com/visionmedia/debug) under the `puppeteer` namespace.
+DevTools protocol. You can debug this by setting the `NODE_DEBUG` environment
+variable before running your script. This will log internal traffic via Node's
+built-in [`util.debuglog`](https://nodejs.org/api/util.html#utildebuglogsection-callback) under the `puppeteer` namespace.
 
 :::warning
 
@@ -134,16 +134,7 @@ The logs may include sensitive information.
 
 ```bash
 # Basic verbose logging
-env DEBUG="puppeteer:*" node script.js
-
-# Prevent truncating of long messages
-env DEBUG="puppeteer:*" env DEBUG_MAX_STRING_LENGTH=null node script.js
-
-# Protocol traffic can be rather noisy. This example filters out all Network domain messages
-env DEBUG="puppeteer:*" env DEBUG_COLORS=true node script.js 2>&1 | grep -v '"Network'
-
-# Filter out all protocol messages but keep all other logging
-env DEBUG="puppeteer:*,-puppeteer:protocol:*" node script.js
+env NODE_DEBUG="puppeteer:*" node script.js
 ```
 
 ### Log pending protocol calls
