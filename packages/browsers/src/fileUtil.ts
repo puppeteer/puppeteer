@@ -117,7 +117,7 @@ async function extractTar(
   folderPath: string,
   decompressUtilityName: keyof typeof internalConstantsForTesting,
 ): Promise<void> {
-  const tarFs = await import('tar-fs');
+  const {unpackTar} = await import('modern-tar/fs');
   return await new Promise<void>((fulfill, reject) => {
     function handleError(utilityName: string) {
       return (error: Error) => {
@@ -144,7 +144,7 @@ async function extractTar(
         debugFileUtil?.(`${decompressUtilityName} exited, code=${code}`);
       });
 
-    const tar = tarFs.extract(folderPath);
+    const tar = unpackTar(folderPath);
     tar.once('error', handleError('tar'));
     tar.once('finish', fulfill);
     createReadStream(tarPath).pipe(createTransformStream(unpack)).pipe(tar);
