@@ -83,7 +83,6 @@
     "!*.tsbuildinfo"
   ],
   "dependencies": {
-    "progress": "^2.0.3",
     "tar-fs": "^3.1.1",
     "yargs": "^17.7.2",
     "semver": "^7.7.4"
@@ -98,9 +97,7 @@
   },
   "devDependencies": {
     "proxy-agent": ">=8.0.1",
-    "@types/progress": "2.0.7",
     "@types/tar-fs": "2.0.4",
-    "@types/yargs": "17.0.33",
-    "@types/ws": "8.18.1"
+    "@types/yargs": "17.0.33"
   }
 }
