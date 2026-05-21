@@ -52,7 +52,7 @@
       ]
     },
     "test": {
-      "command": "node tools/downloadTestBrowsers.mjs && mocha",
+      "command": "node tools/downloadTestBrowsers.mjs && NODE_DEBUG='puppeteer:*' mocha",
       "files": [
         ".mocharc.cjs"
       ],
@@ -80,7 +80,6 @@
     "!*.tsbuildinfo"
   ],
   "dependencies": {
-    "debug": "^4.4.3",
     "progress": "^2.0.3",
     "tar-fs": "^3.1.1",
     "yargs": "^17.7.2",
@@ -96,7 +95,6 @@
   },
   "devDependencies": {
     "proxy-agent": ">=8.0.1",
-    "@types/debug": "4.1.13",
     "@types/progress": "2.0.7",
     "@types/tar-fs": "2.0.4",
     "@types/yargs": "17.0.33",
