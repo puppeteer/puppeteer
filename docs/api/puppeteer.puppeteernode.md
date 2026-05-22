@@ -6,7 +6,7 @@ sidebar_label: PuppeteerNode
 
 Extends the main [Puppeteer](./puppeteer.puppeteer.md) class with Node specific behaviour for fetching and downloading browsers.
 
-If you're using Puppeteer in a Node environment, this is the class you'll get when you run `require('puppeteer')` (or the equivalent ES `import`).
+If you're using Puppeteer in a Node environment, this is the class you'll get when you run `import puppeteer from 'puppeteer'`.
 
 ### Signature
 
