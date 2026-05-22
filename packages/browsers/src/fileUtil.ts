@@ -193,13 +193,39 @@ async function extractZip(
 ): Promise<void> {
   try {
     if (process.platform === 'win32') {
-      // -x: extract files
-      // -f: specify the archive file
-      // -C: extract to the specified directory
       const systemRoot =
         process.env['SystemRoot'] ?? process.env['SYSTEMROOT'] ?? 'C:\\Windows';
-      const systemTar = `${systemRoot}\\System32\\tar.exe`;
-      await execFileAsync(systemTar, ['-xf', archivePath, '-C', folderPath]);
+      try {
+        const systemTar = `${systemRoot}\\System32\\tar.exe`;
+        // -x: extract files
+        // -f: specify the archive file
+        // -C: extract to the specified directory
+        await execFileAsync(systemTar, ['-xf', archivePath, '-C', folderPath]);
+        return;
+      } catch (tarError) {
+        debugFileUtil?.(`tar.exe extraction failed: ${tarError}`);
+      }
+      try {
+        await execFileAsync('powershell.exe', [
+          '-NoProfile',
+          '-NonInteractive',
+          '-Command',
+          '& { Expand-Archive -LiteralPath $args[0] -DestinationPath $args[1] -Force }',
+          archivePath,
+          folderPath,
+        ]);
+        return;
+      } catch (powershellError) {
+        debugFileUtil?.(`powershell.exe extraction failed: ${powershellError}`);
+      }
+      await execFileAsync('pwsh.exe', [
+        '-NoProfile',
+        '-NonInteractive',
+        '-Command',
+        '& { Expand-Archive -LiteralPath $args[0] -DestinationPath $args[1] -Force }',
+        archivePath,
+        folderPath,
+      ]);
     } else {
       // -o: overwrite existing files without prompting
       // -d: extract files into the specified directory
@@ -208,7 +234,7 @@ async function extractZip(
   } catch (error: any) {
     if (error?.code === 'ENOENT') {
       throw new Error(
-        `Extraction failed: Required native binary ('tar.exe' or 'unzip') was not found in the system PATH.`,
+        `Extraction failed: Required native binary ('tar.exe', 'powershell.exe', 'pwsh.exe' or 'unzip') was not found in the system PATH.`,
       );
     }
     throw new Error(
