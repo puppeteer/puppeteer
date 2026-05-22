@@ -921,13 +921,6 @@
     "comment": "tests chrome-specific flags"
   },
   {
-    "testIdPattern": "[webmcp.spec] *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL", "TIMEOUT"],
-    "comment": "Experimental support for WebMCP requires Chrome 149+."
-  },
-  {
     "testIdPattern": "[worker.spec] Workers console should return remote objects",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1409,41 +1402,6 @@
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL"],
     "comment": "Bug in CDP crbug.com/469591372"
-  },
-  {
-    "testIdPattern": "[network_restrictions.spec] Network Restrictions should block window.location.href navigation to URLs not in the allowlist",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL"],
-    "comment": "PASS in Chrome >= 149; FAIL in older revisions"
-  },
-  {
-    "testIdPattern": "[network_restrictions.spec] Network Restrictions should detach from targets violating allowlist when connecting to a running browser",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL"],
-    "comment": "PASS in Chrome >= 149; FAIL in older revisions"
-  },
-  {
-    "testIdPattern": "[network_restrictions.spec] Network Restrictions should fail fetch requests to URLs not in the allowlist",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL"],
-    "comment": "PASS in Chrome >= 149; FAIL in older revisions"
-  },
-  {
-    "testIdPattern": "[network_restrictions.spec] Network Restrictions should only allow navigation to URLs in the allowlist",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL"],
-    "comment": "PASS in Chrome >= 149; FAIL in older revisions"
-  },
-  {
-    "testIdPattern": "[network_restrictions.spec] Network Restrictions should prevent loading of subresources not in the allowlist (e.g., images)",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL"],
-    "comment": "PASS in Chrome >= 149; FAIL in older revisions"
   },
   {
     "testIdPattern": "[network_restrictions.spec] Network Restrictions should throw an error for an invalid pattern",
@@ -1999,13 +1957,6 @@
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["FAIL"],
     "comment": "TODO: started to fail with Chrome headless shell 135 on Windows"
-  },
-  {
-    "testIdPattern": "[network_restrictions.spec] Network Restrictions should only allow navigation to URLs in the allowlist",
-    "platforms": ["linux"],
-    "parameters": ["chrome", "headless", "webDriverBiDiOnly"],
-    "expectations": ["SKIP"],
-    "comment": "allowlist option requires at least chrome 149 version"
   },
   {
     "testIdPattern": "[network.spec] network Network Events Page.Events.Request",

@@ -407,7 +407,6 @@ export class WebMCP extends EventEmitter<{
     tool: WebMCPTool,
     input: object,
   ): Promise<{invocationId: string}> {
-    // @ts-expect-error WebMCP is not yet in the Protocol types.
     return await this.#client.send('WebMCP.invokeTool', {
       frameId: tool.frame._id,
       toolName: tool.name,
@@ -428,7 +427,6 @@ export class WebMCP extends EventEmitter<{
     this.#client.on('WebMCP.toolsAdded', this.#onToolsAdded);
     this.#client.on('WebMCP.toolsRemoved', this.#onToolsRemoved);
     this.#client.on('WebMCP.toolInvoked', this.#onToolInvoked);
-    // @ts-expect-error M148 has non-final status type, update expected in M149
     this.#client.on('WebMCP.toolResponded', this.#onToolResponded);
   }
 
@@ -439,7 +437,6 @@ export class WebMCP extends EventEmitter<{
     this.#client.off('WebMCP.toolsAdded', this.#onToolsAdded);
     this.#client.off('WebMCP.toolsRemoved', this.#onToolsRemoved);
     this.#client.off('WebMCP.toolInvoked', this.#onToolInvoked);
-    // @ts-expect-error M148 has non-final status type, update expected in M149
     this.#client.off('WebMCP.toolResponded', this.#onToolResponded);
     this.#client = client;
     this.#bindListeners();
