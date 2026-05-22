@@ -27,7 +27,7 @@ import 'source-map-support/register.js';
 
 import assert from 'node:assert';
 import {createHash} from 'node:crypto';
-import {mkdtemp, readFile, rm, writeFile} from 'node:fs/promises';
+import {glob, mkdtemp, readFile, rm, writeFile} from 'node:fs/promises';
 import {basename, dirname, join, relative, resolve} from 'node:path';
 import {test} from 'node:test';
 import {pathToFileURL} from 'node:url';
@@ -35,7 +35,6 @@ import {pathToFileURL} from 'node:url';
 import {transform, type Output} from '@swc/core';
 import {parse as parseJs} from 'acorn';
 import {parse, type Tag} from 'doctrine';
-import {Glob} from 'glob';
 import {packageDirectory} from 'package-directory';
 import {
   SourceMapConsumer,
@@ -95,31 +94,38 @@ const {files = []} = await yargs(hideBin(process.argv))
   .help()
   .parse();
 
-for await (const file of new Glob(files, {})) {
-  void test(file, async context => {
-    const testDirectory = await createTestDirectory(file);
-    context.after(async () => {
-      if (!process.env['KEEP_TESTS']) {
-        await rm(testDirectory, {force: true, recursive: true});
-      }
-    });
-    const tests = [];
-    for (const example of await extractJSDocComments(file).then(
-      extractExampleCode,
-    )) {
-      tests.push(
-        context.test(
-          `${file}:${example.positions[0]!.original.line}:${
-            example.positions[0]!.original.column
-          }`,
-          async () => {
-            await run(testDirectory, example);
-          },
-        ),
-      );
+const seenFiles = new Set<string>();
+for (const pattern of files) {
+  for await (const file of glob(pattern, {})) {
+    if (seenFiles.has(file)) {
+      continue;
     }
-    await Promise.all(tests);
-  });
+    seenFiles.add(file);
+    void test(file, async context => {
+      const testDirectory = await createTestDirectory(file);
+      context.after(async () => {
+        if (!process.env['KEEP_TESTS']) {
+          await rm(testDirectory, {force: true, recursive: true});
+        }
+      });
+      const tests = [];
+      for (const example of await extractJSDocComments(file).then(
+        extractExampleCode,
+      )) {
+        tests.push(
+          context.test(
+            `${file}:${example.positions[0]!.original.line}:${
+              example.positions[0]!.original.column
+            }`,
+            async () => {
+              await run(testDirectory, example);
+            },
+          ),
+        );
+      }
+      await Promise.all(tests);
+    });
+  }
 }
 
 async function createTestDirectory(file: string) {

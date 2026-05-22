@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {globSync} from 'node:fs';
 import {dirname, join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
-
-import {globSync} from 'glob';
 
 export const PUPPETEER_CORE_PACKAGE_PATH = resolve(
   globSync('puppeteer-core-*.tgz')[0]!,
