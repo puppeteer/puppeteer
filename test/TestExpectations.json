@@ -1215,13 +1215,6 @@
     "comment": "We can't connect to a browser started with pipe:true"
   },
   {
-    "testIdPattern": "[fixtures.spec] Fixtures should dump browser process stderr",
-    "platforms": ["win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "See https://github.com/puppeteer/puppeteer/issues/14774"
-  },
-  {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should support framesets",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
