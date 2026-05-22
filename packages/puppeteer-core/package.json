@@ -150,7 +150,7 @@
   "dependencies": {
     "@puppeteer/browsers": "3.0.3",
     "chromium-bidi": "16.0.1",
-    "devtools-protocol": "0.0.1608973",
+    "devtools-protocol": "0.0.1624250",
     "typed-query-selector": "^2.12.2",
     "webdriver-bidi-protocol": "0.4.1",
     "ws": "^8.20.1"
