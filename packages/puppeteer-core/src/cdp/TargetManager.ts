@@ -548,7 +548,6 @@ export class TargetManager
     }
 
     await session.send('Network.emulateNetworkConditionsByRule', {
-      // @ts-expect-error offline cannot be undefined before M149.
       offline: this.#blocklist.length > 0 ? true : undefined,
       matchedNetworkConditions,
     });

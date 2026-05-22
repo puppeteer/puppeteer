@@ -607,6 +607,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions should detach from targets violating allowlist when connecting to a running browser",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["pipe"],
+    "expectations": ["SKIP"],
+    "comment": "Verifies URL allowlist enforcement when connecting to a browser via WebSocket, which is not applicable for pipe mode"
+  },
+  {
     "testIdPattern": "[network_restrictions.spec] Network Restrictions should detach from targets violating blocklist when connecting to a running browser",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["pipe"],
@@ -919,13 +926,6 @@
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
     "comment": "tests chrome-specific flags"
-  },
-  {
-    "testIdPattern": "[webmcp.spec] *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL", "TIMEOUT"],
-    "comment": "Experimental support for WebMCP requires Chrome 149+."
   },
   {
     "testIdPattern": "[worker.spec] Workers console should return remote objects",
@@ -1409,41 +1409,6 @@
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL"],
     "comment": "Bug in CDP crbug.com/469591372"
-  },
-  {
-    "testIdPattern": "[network_restrictions.spec] Network Restrictions should block window.location.href navigation to URLs not in the allowlist",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL"],
-    "comment": "PASS in Chrome >= 149; FAIL in older revisions"
-  },
-  {
-    "testIdPattern": "[network_restrictions.spec] Network Restrictions should detach from targets violating allowlist when connecting to a running browser",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL"],
-    "comment": "PASS in Chrome >= 149; FAIL in older revisions"
-  },
-  {
-    "testIdPattern": "[network_restrictions.spec] Network Restrictions should fail fetch requests to URLs not in the allowlist",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL"],
-    "comment": "PASS in Chrome >= 149; FAIL in older revisions"
-  },
-  {
-    "testIdPattern": "[network_restrictions.spec] Network Restrictions should only allow navigation to URLs in the allowlist",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL"],
-    "comment": "PASS in Chrome >= 149; FAIL in older revisions"
-  },
-  {
-    "testIdPattern": "[network_restrictions.spec] Network Restrictions should prevent loading of subresources not in the allowlist (e.g., images)",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL"],
-    "comment": "PASS in Chrome >= 149; FAIL in older revisions"
   },
   {
     "testIdPattern": "[network_restrictions.spec] Network Restrictions should throw an error for an invalid pattern",
@@ -1936,30 +1901,6 @@
     "comment": "Experimental support for WebMCP is not supported in BiDi"
   },
   {
-    "testIdPattern": "[webmcp.spec] Page.webmcp should fire toolinvoked events",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[webmcp.spec] Page.webmcp should fire toolresponded event with errorText",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[webmcp.spec] Page.webmcp should fire toolresponded event with exception",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[webmcp.spec] Page.webmcp should remove tools on frame navigation",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["PASS"]
-  },
-  {
     "testIdPattern": "[worker.spec] Workers can be closed",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
@@ -1999,13 +1940,6 @@
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["FAIL"],
     "comment": "TODO: started to fail with Chrome headless shell 135 on Windows"
-  },
-  {
-    "testIdPattern": "[network_restrictions.spec] Network Restrictions should only allow navigation to URLs in the allowlist",
-    "platforms": ["linux"],
-    "parameters": ["chrome", "headless", "webDriverBiDiOnly"],
-    "expectations": ["SKIP"],
-    "comment": "allowlist option requires at least chrome 149 version"
   },
   {
     "testIdPattern": "[network.spec] network Network Events Page.Events.Request",
