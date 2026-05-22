@@ -4,20 +4,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-'use strict';
+import puppeteer from 'puppeteer';
 
-const puppeteer = require('puppeteer');
+const browser = await puppeteer.launch();
+const page = await browser.newPage();
+await page.goto('https://news.ycombinator.com', {
+  waitUntil: 'networkidle2',
+});
+await page.pdf({
+  path: 'hn.pdf',
+  format: 'letter',
+});
 
-(async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.goto('https://news.ycombinator.com', {
-    waitUntil: 'networkidle2',
-  });
-  await page.pdf({
-    path: 'hn.pdf',
-    format: 'letter',
-  });
-
-  await browser.close();
-})();
+await browser.close();
