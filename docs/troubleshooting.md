@@ -478,6 +478,35 @@ the command:
 There's a full example at https://github.com/ebidel/try-puppeteer that shows how
 to run this Dockerfile from a webserver running on App Engine Flex (Node).
 
+### Running in read-only containers
+
+Chrome writes profile, configuration, and cache files during startup. In a
+read-only container, or in a container that only mounts specific writable
+locations, make sure those paths point to writable directories. Otherwise Chrome
+can fail before Puppeteer connects; one common error is
+`chrome_crashpad_handler: --database is required`.
+
+If your container provides a writable `/tmp`, point Chrome's XDG config and cache
+locations there:
+
+```Dockerfile
+ENV XDG_CONFIG_HOME=/tmp/.chromium
+ENV XDG_CACHE_HOME=/tmp/.chromium
+```
+
+Puppeteer also needs a writable user data directory. By default Puppeteer creates
+a temporary profile under the operating system temporary directory, but you can
+set an explicit location if needed:
+
+```ts
+const browser = await puppeteer.launch({
+  userDataDir: '/tmp/.puppeteer-profile',
+});
+```
+
+Alternatively, mount these directories as writable volumes and make sure the user
+running Chrome owns them.
+
 ### Running on Alpine
 
 Note that Chrome [does not support Alpine out of the box](https://support.google.com/chrome/a/answer/7100626?hl=en#:~:text=10.15%20or%20later-,Linux,-To%20use%20Chrome) so make sure you have compatible system dependencies installed on Alpine and test the image before using it. See https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/rpm/dist_package_provides.json and https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/debian/dist_package_versions.json for the list of system packages required on supported distros.
