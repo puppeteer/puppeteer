@@ -33,66 +33,77 @@ describe('ProgressBar', () => {
         clearLineCalls.push(dir);
         return this;
       },
+      moveCursor(_dx: number, _dy: number) {
+        return this;
+      },
     } as unknown as NodeJS.WriteStream;
   }
 
-  it('should not render when isTTY is false', () => {
+  it('should not render when isTTY is false', async () => {
     const stream = createMockStream(false);
-    const bar = new ProgressBar('Downloading', {
-      total: 100,
-      stream,
-    });
+    const tick = ProgressBar.createBarTicker('Downloading', 100, stream);
 
-    bar.tick(50);
+    tick(50);
+    await Promise.resolve();
     assert.strictEqual(writes.length, 0);
   });
 
-  it('should not write newline on completion when isTTY is false', () => {
+  it('should not write newline on completion when isTTY is false', async () => {
     const stream = createMockStream(false);
-    const bar = new ProgressBar('Downloading', {
-      total: 100,
-      stream,
-    });
+    const tick = ProgressBar.createBarTicker('Downloading', 100, stream);
 
-    bar.tick(100);
+    tick(100);
+    await Promise.resolve();
     assert.strictEqual(writes.length, 0);
   });
 
-  it('should render bar and percent tokens on TTY streams', () => {
+  it('should render bar and percent tokens on TTY streams', async () => {
     const stream = createMockStream(true, 80);
-    const bar = new ProgressBar('Downloading', {
-      total: 10,
-      stream,
-    });
+    const tick = ProgressBar.createBarTicker('Downloading', 10, stream);
 
-    bar.tick(5);
+    tick(5);
+    await Promise.resolve();
     assert.strictEqual(writes.length, 1);
     assert.strictEqual(
       writes[0],
       'Downloading [==========          ] 50% 0.0s ',
     );
-    assert.deepStrictEqual(cursorToCalls, [0]);
+    assert.deepStrictEqual(cursorToCalls, [0, 0]); // write + park
     assert.deepStrictEqual(clearLineCalls, [1]);
   });
 
-  it('should complete the progress bar and print a newline', () => {
+  it('should complete the bar and print a newline when the last bar finishes', async () => {
     const stream = createMockStream(true, 80);
-    const bar = new ProgressBar('Downloading', {
-      total: 4,
-      stream,
-    });
+    const tick = ProgressBar.createBarTicker('Downloading', 4, stream);
 
-    bar.tick(2);
+    tick(2);
+    await Promise.resolve(); // flush microtask
     assert.strictEqual(
       writes[writes.length - 1],
       'Downloading [==========          ] 50% 0.0s ',
     );
 
-    bar.tick(2);
+    tick(2);
+    await Promise.resolve(); // flush microtask
     assert.strictEqual(
       writes[writes.length - 2],
-      'Downloading [====================] 100% 0.0s ',
+      'Downloading [====================] unpacking ',
     );
+    assert.strictEqual(writes[writes.length - 1], '\n');
+  });
+
+  it('should auto-group concurrent bars on separate lines', async () => {
+    const stream = createMockStream(true, 80);
+    const tick1 = ProgressBar.createBarTicker('Browser1', 10, stream);
+    const tick2 = ProgressBar.createBarTicker('Browser2', 10, stream);
+
+    // \n separates the two rows
+    assert.strictEqual(writes[0], '\n');
+
+    tick1(10); // bar1 done
+    tick2(10); // bar2 done — session ends, trailing \n emitted
+    await Promise.resolve();
+
     assert.strictEqual(writes[writes.length - 1], '\n');
   });
 });
