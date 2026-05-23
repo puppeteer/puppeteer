@@ -155,14 +155,14 @@ async function extractTar(
  * @internal
  */
 async function installDMG(dmgPath: string, folderPath: string): Promise<void> {
-  const {stdout} = spawnSync(`hdiutil`, [
+  const {stdout} = await execFileAsync('hdiutil', [
     'attach',
     '-nobrowse',
     '-noautoopen',
     dmgPath,
   ]);
 
-  const volumes = stdout.toString('utf8').match(/\/Volumes\/(.*)/m);
+  const volumes = stdout.match(/\/Volumes\/(.*)/m);
   if (!volumes) {
     throw new Error(`Could not find volume path in ${stdout}`);
   }
@@ -178,9 +178,9 @@ async function installDMG(dmgPath: string, folderPath: string): Promise<void> {
     }
     const mountedPath = path.join(mountPath!, appName);
 
-    spawnSync('cp', ['-R', mountedPath, folderPath]);
+    await execFileAsync('cp', ['-R', mountedPath, folderPath]);
   } finally {
-    spawnSync('hdiutil', ['detach', mountPath, '-quiet']);
+    await execFileAsync('hdiutil', ['detach', mountPath, '-quiet']);
   }
 }
 

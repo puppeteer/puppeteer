@@ -624,21 +624,19 @@ export async function makeProgressCallback(
   browser: Browser,
   buildId: string,
 ): Promise<(downloadedBytes: number, totalBytes: number) => void> {
-  let progressBar: ProgressBar;
-
+  let ticker: ((delta: number) => void) | undefined;
   let lastDownloadedBytes = 0;
+
   return (downloadedBytes: number, totalBytes: number) => {
-    if (!progressBar) {
-      progressBar = new ProgressBar(
+    if (!ticker) {
+      ticker = ProgressBar.createBarTicker(
         `Downloading ${browser} ${buildId} - ${toMegabytes(totalBytes)}`,
-        {
-          total: totalBytes,
-        },
+        totalBytes,
       );
     }
     const delta = downloadedBytes - lastDownloadedBytes;
     lastDownloadedBytes = downloadedBytes;
-    progressBar.tick(delta);
+    ticker(delta);
   };
 }
 

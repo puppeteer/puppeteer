@@ -33,7 +33,7 @@ async function downloadBrowser({
   configuration: ChromeSettings | ChromeHeadlessShellSettings | FirefoxSettings;
   platform: BrowserPlatform;
   cacheDir: string;
-}) {
+}): Promise<string> {
   const unresolvedBuildId =
     configuration?.version || PUPPETEER_REVISIONS[browser] || 'latest';
   const baseUrl = configuration?.downloadBaseUrl;
@@ -50,7 +50,7 @@ async function downloadBrowser({
       buildIdAlias:
         buildId !== unresolvedBuildId ? unresolvedBuildId : undefined,
     });
-    logPolitely(`${browser} (${result.buildId}) downloaded to ${result.path}`);
+    return `${browser} (${result.buildId}) downloaded to ${result.path}`;
   } catch (error) {
     throw new Error(
       `ERROR: Failed to set up ${browser} v${buildId}! Set "PUPPETEER_SKIP_DOWNLOAD" env variable to skip download.`,
@@ -125,6 +125,15 @@ export async function downloadBrowsers(): Promise<void> {
   }
 
   const results = await Promise.allSettled(installationJobs);
+
+  // Log success messages only after all downloads+extraction complete so they
+  // never land mid-progress-bar while the cursor is on a bar line.
+  for (const result of results) {
+    if (result.status === 'fulfilled') {
+      logPolitely(result.value);
+    }
+  }
+
   const failures = results.filter(r => {
     return r.status === 'rejected';
   });
