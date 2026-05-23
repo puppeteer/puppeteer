@@ -47,6 +47,17 @@ describe('ProgressBar', () => {
     assert.strictEqual(writes.length, 0);
   });
 
+  it('should not write newline on completion when isTTY is false', () => {
+    const stream = createMockStream(false);
+    const bar = new ProgressBar('Downloading', {
+      total: 100,
+      stream,
+    });
+
+    bar.tick(100);
+    assert.strictEqual(writes.length, 0);
+  });
+
   it('should render bar and percent tokens on TTY streams', () => {
     const stream = createMockStream(true, 80);
     const bar = new ProgressBar('Downloading', {
