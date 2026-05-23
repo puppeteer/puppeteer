@@ -124,10 +124,14 @@ export async function downloadBrowsers(): Promise<void> {
     );
   }
 
-  try {
-    await Promise.all(installationJobs);
-  } catch (error) {
-    console.error(error);
+  const results = await Promise.allSettled(installationJobs);
+  const failures = results.filter(r => {
+    return r.status === 'rejected';
+  });
+  if (failures.length > 0) {
+    for (const failure of failures) {
+      console.error(failure.reason);
+    }
     process.exit(1);
   }
 }

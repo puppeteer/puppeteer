@@ -37,7 +37,7 @@ export class ProgressBar {
 
     this.#render();
 
-    if (this.#downloaded >= this.#total) {
+    if (this.#downloaded >= this.#total && this.#stream.isTTY) {
       this.#stream.write('\n');
     }
   }
