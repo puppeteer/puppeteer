@@ -53,7 +53,7 @@
   ],
   "devDependencies": {
     "glob": "13.0.6",
-    "mocha": "11.7.5"
+    "mocha": "11.7.6"
   },
   "dependencies": {
     "diff": "^9.0.0"
