@@ -174,7 +174,7 @@ Cookie Priority. Supported only in Chrome.
 
 </td><td>
 
-[CookieSameSite](./puppeteer.cookiesamesite.md)
+[CookieSameSite](./puppeteer.cookiesamesite_2.md)
 
 </td><td>
 

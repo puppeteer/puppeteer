@@ -2,7 +2,7 @@
   "lastMaintainedChromeVersion": "146.0.7680.153",
   "versions": [
     [
-      "NEXT",
+      "v25.1.0",
       {
         "chrome": "149.0.7827.22",
         "firefox": "stable_151.0"

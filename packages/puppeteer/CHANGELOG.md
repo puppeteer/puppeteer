@@ -1,5 +1,31 @@
 # Changelog
 
+## [25.1.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.0.4...puppeteer-v25.1.0) (2026-05-26)
+
+
+### 🎉 Features
+
+* roll to Chrome 149.0.7827.2 ([af1b9be](https://github.com/puppeteer/puppeteer/commit/af1b9be6b6a178f7ea6e197f738ca3cf99d786f7))
+
+
+### 🛠️ Fixes
+
+* improve progress bar and install ([#15042](https://github.com/puppeteer/puppeteer/issues/15042)) ([51db32a](https://github.com/puppeteer/puppeteer/commit/51db32a5bb48f40cc635ac3eaa2ebb60e6f5bfd5))
+* support concurrency in progress bars ([#15045](https://github.com/puppeteer/puppeteer/issues/15045)) ([ab0171d](https://github.com/puppeteer/puppeteer/commit/ab0171d8f4206bdb9dd4e93c2db8d28530bf3fb9))
+
+
+### 🏗️ Refactor
+
+* replace cosmiconfig with lilconfig ([#15031](https://github.com/puppeteer/puppeteer/issues/15031)) ([4a1c2ff](https://github.com/puppeteer/puppeteer/commit/4a1c2fffe634d430228cac3f8bc7a72f4b5a4a29))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.0.3 to 3.0.4
+    * puppeteer-core bumped from 25.0.4 to 25.1.0
+
 ## [25.0.4](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.0.3...puppeteer-v25.0.4) (2026-05-18)
 
 

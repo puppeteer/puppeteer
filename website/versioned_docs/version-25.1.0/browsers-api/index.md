@@ -107,6 +107,7 @@ env NODE_DEBUG="puppeteer:browsers:*" npx @puppeteer/browsers install chrome@sta
 ```
 
 The following debug channels are available:
+
 - `puppeteer:browsers:cache`: Caching operations.
 - `puppeteer:browsers:fileUtil`: Decompressing and other file utility operations.
 - `puppeteer:browsers:install`: Download and install progress.
