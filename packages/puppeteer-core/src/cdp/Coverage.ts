@@ -281,7 +281,7 @@ export class JSCoverage {
       this.#scriptSources.set(event.scriptId, response.scriptSource);
     } catch (error) {
       // This might happen if the page has already navigated away.
-      debugError(error);
+      debugError?.(error);
     }
   }
 
@@ -393,7 +393,7 @@ export class CSSCoverage {
       this.#stylesheetSources.set(header.styleSheetId, response.text);
     } catch (error) {
       // This might happen if the page has already navigated away.
-      debugError(error);
+      debugError?.(error);
     }
   }
 

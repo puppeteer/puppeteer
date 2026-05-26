@@ -130,7 +130,7 @@ export class BidiBrowser extends Browser {
             });
           } catch (err) {
             if (err instanceof ProtocolError) {
-              debugError(err);
+              debugError?.(err);
             } else {
               throw err;
             }
@@ -250,7 +250,7 @@ export class BidiBrowser extends Browser {
       await this.#closeCallback?.call(null);
     } catch (error) {
       // Fail silently.
-      debugError(error);
+      debugError?.(error);
     } finally {
       this.connection.dispose();
     }
@@ -364,7 +364,7 @@ export class BidiBrowser extends Browser {
       await this.#browserCore.session.end();
     } catch (error) {
       // Fail silently.
-      debugError(error);
+      debugError?.(error);
     } finally {
       this.connection.dispose();
     }

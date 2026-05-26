@@ -90,7 +90,7 @@ export class CdpWebWorker extends WebWorker {
           this.emit(WebWorkerEvent.Console, consoleMessages);
         }
       } catch (err) {
-        debugError(err);
+        debugError?.(err);
       }
     });
     this.#client.on('Runtime.exceptionThrown', exceptionThrown);
@@ -99,8 +99,8 @@ export class CdpWebWorker extends WebWorker {
     });
 
     // This might fail if the target is closed before we receive all execution contexts.
-    networkManager?.addClient(this.#client).catch(debugError);
-    this.#client.send('Runtime.enable').catch(debugError);
+    networkManager?.addClient(this.#client).catch(debugError ?? (() => {}));
+    this.#client.send('Runtime.enable').catch(debugError ?? (() => {}));
   }
 
   mainRealm(): Realm {

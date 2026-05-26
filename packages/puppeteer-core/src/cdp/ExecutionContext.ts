@@ -159,7 +159,7 @@ export class ExecutionContext
         }
       }
 
-      debugError(error);
+      debugError?.(error);
     }
   }
 
@@ -192,7 +192,7 @@ export class ExecutionContext
       const binding = this.#bindings.get(name);
       await binding?.run(this, seq, args, isTrivial);
     } catch (err) {
-      debugError(err);
+      debugError?.(err);
     }
   }
 
@@ -239,7 +239,7 @@ export class ExecutionContext
     } catch (err) {
       // If the binding cannot be added, the context is broken. We cannot
       // recover so we ignore the error.
-      debugError(err);
+      debugError?.(err);
     }
   }
 

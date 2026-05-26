@@ -42,7 +42,7 @@ export class PipeTransport implements ConnectionTransport {
         this.onclose.call(null);
       }
     });
-    pipeReadEmitter.on('error', debugError);
+    pipeReadEmitter.on('error', debugError ?? (() => {}));
     const pipeWriteEmitter = this.#subscriptions.use(
       // NodeJS event emitters don't support `*` so we need to typecast
       // As long as we don't use it we should be OK.
@@ -50,7 +50,7 @@ export class PipeTransport implements ConnectionTransport {
         pipeWrite as unknown as EventEmitter<Record<string, any>>,
       ),
     );
-    pipeWriteEmitter.on('error', debugError);
+    pipeWriteEmitter.on('error', debugError ?? (() => {}));
   }
 
   send(message: string): void {

@@ -230,7 +230,7 @@ export async function getReadableAsTypedArray(
     }
     return concat;
   } catch (error) {
-    debugError(error);
+    debugError?.(error);
     return null;
   }
 }

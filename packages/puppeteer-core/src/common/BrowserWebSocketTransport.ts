@@ -38,7 +38,7 @@ export class BrowserWebSocketTransport implements ConnectionTransport {
       }
     });
     // Silently log all errors - we don't know what to do with them.
-    this.#ws.addEventListener('error', debugError);
+    this.#ws.addEventListener('error', debugError ?? (() => {}));
   }
 
   send(message: string): void {

@@ -281,7 +281,7 @@ export class Accessibility {
           root.iframeSnapshot = iframeSnapshot ?? undefined;
         } catch (error) {
           // Frames can get detached at any time resulting in errors.
-          debugError(error);
+          debugError?.(error);
         }
       }
       for (const child of root.children) {

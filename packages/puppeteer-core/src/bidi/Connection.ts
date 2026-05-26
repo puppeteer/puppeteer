@@ -131,7 +131,7 @@ export class BidiConnection
         method,
         params,
       } as Bidi.Command);
-      debugProtocolSend(stringifiedMessage);
+      debugProtocolSend?.(stringifiedMessage);
       this.#transport.send(stringifiedMessage);
     }) as Promise<{result: Commands[T]['returnType']}>;
   }
@@ -145,7 +145,7 @@ export class BidiConnection
         return setTimeout(f, this.#delay);
       });
     }
-    debugProtocolReceive(message);
+    debugProtocolReceive?.(message);
     const object: Bidi.Message | CdpEvent = JSON.parse(message);
     if ('type' in object) {
       switch (object.type) {
@@ -183,7 +183,7 @@ export class BidiConnection
         object.message,
       );
     }
-    debugError(object);
+    debugError?.(object);
   }
 
   /**

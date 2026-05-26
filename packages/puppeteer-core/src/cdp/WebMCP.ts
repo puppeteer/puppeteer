@@ -235,7 +235,7 @@ export class WebMCPToolCall {
       this.input = JSON.parse(input);
     } catch (error) {
       this.input = {};
-      debugError(error);
+      debugError?.(error);
     }
   }
 }

@@ -583,7 +583,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
         const extId = this.#extractExtensionId(origin);
 
         if (!extId) {
-          debugError('Error while parsing extension id');
+          debugError?.('Error while parsing extension id');
           return;
         }
 

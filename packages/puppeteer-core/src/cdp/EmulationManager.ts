@@ -308,7 +308,7 @@ export class EmulationManager implements ClientProvider {
           if (
             err.message.includes('Target does not support metrics override')
           ) {
-            debugError(err);
+            debugError?.(err);
             return;
           }
           throw err;

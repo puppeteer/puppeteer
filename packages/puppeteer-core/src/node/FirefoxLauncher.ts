@@ -141,7 +141,7 @@ export class FirefoxLauncher extends BrowserLauncher {
       try {
         await rm(userDataDir);
       } catch (error) {
-        debugError(error);
+        debugError?.(error);
         throw error;
       }
     } else {
@@ -165,7 +165,7 @@ export class FirefoxLauncher extends BrowserLauncher {
           }
         }
       } catch (error) {
-        debugError(error);
+        debugError?.(error);
       }
     }
   }

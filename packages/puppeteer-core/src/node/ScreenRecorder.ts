@@ -184,7 +184,7 @@ export class ScreenRecorder extends PassThrough {
     );
     this.#process.stdout.pipe(this);
     this.#process.stderr.on('data', (data: Buffer) => {
-      debugFfmpeg(data.toString('utf8'));
+      debugFfmpeg?.(data.toString('utf8'));
     });
 
     this.#page = page;

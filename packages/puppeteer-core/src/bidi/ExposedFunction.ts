@@ -119,7 +119,7 @@ export class ExposableFunction<Args extends unknown[], Ret> {
         } catch (error) {
           // If it errors, the frame probably doesn't support call function. We
           // fail gracefully.
-          debugError(error);
+          debugError?.(error);
         }
       }),
     );
@@ -192,7 +192,7 @@ export class ExposableFunction<Args extends unknown[], Ret> {
           }, error);
         }
       } catch (error) {
-        debugError(error);
+        debugError?.(error);
       }
       return;
     }
@@ -202,7 +202,7 @@ export class ExposableFunction<Args extends unknown[], Ret> {
         resolve(result);
       }, result);
     } catch (error) {
-      debugError(error);
+      debugError?.(error);
     }
   };
 
@@ -248,7 +248,7 @@ export class ExposableFunction<Args extends unknown[], Ret> {
             frame.browsingContext.removePreloadScript(script),
           ]);
         } catch (error) {
-          debugError(error);
+          debugError?.(error);
         }
       }),
     );

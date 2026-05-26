@@ -176,7 +176,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
         id,
         sessionId,
       });
-      debugProtocolSend(stringifiedMessage);
+      debugProtocolSend?.(stringifiedMessage);
       this.#transport.send(stringifiedMessage);
     }) as Promise<ProtocolMapping.Commands[T]['returnType']>;
   }
@@ -197,7 +197,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
         return setTimeout(r, this.#delay);
       });
     }
-    debugProtocolReceive(message);
+    debugProtocolReceive?.(message);
     const object = JSON.parse(message);
     if (object.method === 'Target.attachedToTarget') {
       const sessionId = object.params.sessionId;

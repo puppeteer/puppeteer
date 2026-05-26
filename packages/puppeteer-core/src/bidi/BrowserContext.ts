@@ -214,7 +214,7 @@ export class BidiBrowserContext extends BrowserContext {
         await page.setViewport(this.#defaultViewport);
       } catch (error) {
         // Tolerate not supporting `browsingContext.setViewport`. Only log it.
-        debugError(error);
+        debugError?.(error);
       }
     }
     if (options?.type === 'window' && options?.windowBounds !== undefined) {
@@ -225,7 +225,7 @@ export class BidiBrowserContext extends BrowserContext {
         );
       } catch (error) {
         // Tolerate not supporting `browser.setClientWindowState`. Only log it.
-        debugError(error);
+        debugError?.(error);
       }
     }
 
@@ -241,7 +241,7 @@ export class BidiBrowserContext extends BrowserContext {
     try {
       await this.userContext.remove();
     } catch (error) {
-      debugError(error);
+      debugError?.(error);
     }
 
     this.#targets.clear();

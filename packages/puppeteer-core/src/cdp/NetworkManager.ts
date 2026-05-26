@@ -602,7 +602,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       request = this.#networkEventManager.getRequest(event.requestId);
     }
     if (!request) {
-      debugError(
+      debugError?.(
         new Error(
           `Request ${event.requestId} was served from cache but we could not find the corresponding request object`,
         ),
@@ -646,7 +646,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       responseReceived.requestId,
     );
     if (extraInfos.length) {
-      debugError(
+      debugError?.(
         new Error(
           'Unexpected extraInfo events for request ' +
             responseReceived.requestId,

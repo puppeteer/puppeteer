@@ -126,7 +126,7 @@ export class CdpPage extends Page {
         await page.setViewport(defaultViewport);
       } catch (err) {
         if (isErrorLike(err) && isTargetClosedError(err)) {
-          debugError(err);
+          debugError?.(err);
         } else {
           throw err;
         }
@@ -402,7 +402,7 @@ export class CdpPage extends Page {
       ]);
     } catch (err) {
       if (isErrorLike(err) && isTargetClosedError(err)) {
-        debugError(err);
+        debugError?.(err);
       } else {
         throw err;
       }
