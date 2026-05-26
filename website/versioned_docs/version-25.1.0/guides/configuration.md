@@ -67,11 +67,11 @@ without the need to run multiple commands.
 
 Update the Puppeteer configuration file:
 
-```js title="project-directory/.puppeteerrc.cjs"
+```js title="project-directory/.puppeteerrc.js"
 /**
  * @type {import("puppeteer").Configuration}
  */
-module.exports = {
+export default {
   // Download Chrome (default `skipDownload: false`).
   chrome: {
     skipDownload: false,
@@ -97,24 +97,17 @@ globally cache browsers between installation. This can cause problems if
 following configuration can solve this issue (reinstall `puppeteer` to take
 effect):
 
-```js title="project-directory/.puppeteerrc.cjs"
-const {join} = require('path');
+```js title="project-directory/.puppeteerrc.js"
+import {join} from 'path';
 
 /**
  * @type {import("puppeteer").Configuration}
  */
-module.exports = {
+export default {
   // Changes the cache location for Puppeteer.
-  cacheDirectory: join(__dirname, '.cache', 'puppeteer'),
+  cacheDirectory: join(import.meta.dirname, '.cache', 'puppeteer'),
 };
 ```
-
-:::note
-
-Notice this is only possible with CommonJS configuration files as information
-about the ambient environment is needed (in this case, `__dirname`).
-
-:::
 
 ## Environment variables
 

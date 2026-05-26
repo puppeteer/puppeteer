@@ -2,6 +2,31 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [25.1.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.0.4...puppeteer-v25.1.0) (2026-05-26)
+
+### 🎉 Features
+
+- roll to Chrome 149.0.7827.2 ([af1b9be](https://github.com/puppeteer/puppeteer/commit/af1b9be6b6a178f7ea6e197f738ca3cf99d786f7))
+- roll to Firefox 151.0 ([#15013](https://github.com/puppeteer/puppeteer/issues/15013)) ([767ea54](https://github.com/puppeteer/puppeteer/commit/767ea549da1510f0838987f250b5d6be4e0f8960))
+
+### 🛠️ Fixes
+
+- roll to Chrome 148.0.7778.178 ([#15014](https://github.com/puppeteer/puppeteer/issues/15014)) ([59764ac](https://github.com/puppeteer/puppeteer/commit/59764acccc9e1c7bca75a60472b288595d3f6cbf))
+
+### 🏗️ Refactor
+
+- remove debug dependency ([#15023](https://github.com/puppeteer/puppeteer/issues/15023)) ([94d1e1c](https://github.com/puppeteer/puppeteer/commit/94d1e1c3dc84ed102d2e801a4e6343cd9fd4a9af))
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - @puppeteer/browsers bumped from 3.0.3 to 3.0.4
+
+### 📄 Documentation
+
+- use ESM and top level await ([#15030](https://github.com/puppeteer/puppeteer/issues/15030)) ([34ecc62](https://github.com/puppeteer/puppeteer/commit/34ecc62957bdd2c83820a51d5d1a6acb81e2957d))
+
 ## [25.0.4](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.0.3...puppeteer-v25.0.4) (2026-05-18)
 
 ### ♻️ Chores

@@ -7,33 +7,29 @@ The following script configures Chrome to run in a dual-screen configuration. Th
 ```ts
 import puppeteer from 'puppeteer-core';
 
-(async () => {
-  const browser = await puppeteer.launch({
-    args: ['--screen-info={800x600 label=1st}{600x800 label=2nd}'],
-  });
+const browser = await puppeteer.launch({
+  args: ['--screen-info={800x600 label=1st}{600x800 label=2nd}'],
+});
 
-  const screens = await browser.screens();
-  const screenInfos = screens.map(
-    s =>
-      `Screen [${s.id}]` +
-      ` ${s.left},${s.top} ${s.width}x${s.height}` +
-      ` label='${s.label}'` +
-      ` isPrimary=${s.isPrimary}` +
-      ` isExtended=${s.isExtended}` +
-      ` isInternal=${s.isInternal}` +
-      ` colorDepth=${s.colorDepth}` +
-      ` devicePixelRatio=${s.devicePixelRatio}` +
-      ` avail=${s.availLeft},${s.availTop} ${s.availWidth}x${s.availHeight}` +
-      ` orientation.type=${s.orientation.type}` +
-      ` orientation.angle=${s.orientation.angle}`,
-  );
+const screens = await browser.screens();
+const screenInfos = screens.map(
+  s =>
+    `Screen [${s.id}]` +
+    ` ${s.left},${s.top} ${s.width}x${s.height}` +
+    ` label='${s.label}'` +
+    ` isPrimary=${s.isPrimary}` +
+    ` isExtended=${s.isExtended}` +
+    ` isInternal=${s.isInternal}` +
+    ` colorDepth=${s.colorDepth}` +
+    ` devicePixelRatio=${s.devicePixelRatio}` +
+    ` avail=${s.availLeft},${s.availTop} ${s.availWidth}x${s.availHeight}` +
+    ` orientation.type=${s.orientation.type}` +
+    ` orientation.angle=${s.orientation.angle}`,
+);
 
-  console.log(
-    `Number of screens: ${screens.length}\n` + screenInfos.join('\n'),
-  );
+console.log(`Number of screens: ${screens.length}\n` + screenInfos.join('\n'));
 
-  await browser.close();
-})();
+await browser.close();
 ```
 
 Output:
@@ -61,53 +57,51 @@ The following script adds and removes a secondary screen while logging the scree
 ```ts
 import puppeteer from 'puppeteer-core';
 
-(async () => {
-  const browser = await puppeteer.launch({
-    args: ['--screen-info={800x600 label=1st}'],
-  });
+const browser = await puppeteer.launch({
+  args: ['--screen-info={800x600 label=1st}'],
+});
 
-  function getScreenInfo(s) {
-    return (
-      `Screen [${s.id}]` +
-      ` ${s.left},${s.top} ${s.width}x${s.height}` +
-      ` label='${s.label}'` +
-      ` isPrimary=${s.isPrimary}` +
-      ` isExtended=${s.isExtended}`
-    );
+function getScreenInfo(s) {
+  return (
+    `Screen [${s.id}]` +
+    ` ${s.left},${s.top} ${s.width}x${s.height}` +
+    ` label='${s.label}'` +
+    ` isPrimary=${s.isPrimary}` +
+    ` isExtended=${s.isExtended}`
+  );
+}
+
+async function logScreenConfig(text) {
+  if (text !== undefined) {
+    console.log(text);
   }
+  const screens = await browser.screens();
+  const screenInfos = screens.map(s => getScreenInfo(s));
 
-  async function logScreenConfig(text) {
-    if (text !== undefined) {
-      console.log(text);
-    }
-    const screens = await browser.screens();
-    const screenInfos = screens.map(s => getScreenInfo(s));
+  console.log(
+    `Number of screens: ${screens.length}\n` + screenInfos.join('\n'),
+  );
+}
 
-    console.log(
-      `Number of screens: ${screens.length}\n` + screenInfos.join('\n'),
-    );
-  }
+await logScreenConfig('---- Initial:');
 
-  await logScreenConfig('---- Initial:');
+// Add a screen.
+const addedScreenInfo = await browser.addScreen({
+  left: 800,
+  top: 0,
+  width: 800,
+  height: 600,
+  label: '2nd',
+});
 
-  // Add a screen.
-  const addedScreenInfo = await browser.addScreen({
-    left: 800,
-    top: 0,
-    width: 800,
-    height: 600,
-    label: '2nd',
-  });
+console.log('Added screen: ' + getScreenInfo(addedScreenInfo));
+await logScreenConfig('---- With the screen added:');
 
-  console.log('Added screen: ' + getScreenInfo(addedScreenInfo));
-  await logScreenConfig('---- With the screen added:');
+// Remove the added screen.
+await browser.removeScreen(addedScreenInfo.id);
+await logScreenConfig('---- With added screen removed:');
 
-  // Remove the added screen.
-  await browser.removeScreen(addedScreenInfo.id);
-  await logScreenConfig('---- With added screen removed:');
-
-  await browser.close();
-})();
+await browser.close();
 ```
 
 Output:
