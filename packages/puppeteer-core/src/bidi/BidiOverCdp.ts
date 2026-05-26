@@ -28,22 +28,22 @@ export async function connectBidiOverCdp(
   const transportBiDi = new NoOpTransport();
   const cdpConnectionAdapter = new CdpConnectionAdapter(cdp);
   const pptrTransport = {
-    send(message: string): void {
+    send(message: string|object): void {
       // Forwards a BiDi command sent by Puppeteer to the input of the BidiServer.
-      transportBiDi.emitMessage(JSON.parse(message));
+      transportBiDi.emitMessage(message);
     },
     close(): void {
       bidiServer.close();
       cdpConnectionAdapter.close();
       cdp.dispose();
     },
-    onmessage(_message: string): void {
+    onmessage(_message: string|object): void {
       // The method is overridden by the Connection.
     },
   };
   transportBiDi.on('bidiResponse', (message: object) => {
     // Forwards a BiDi event sent by BidiServer to Puppeteer.
-    pptrTransport.onmessage(JSON.stringify(message));
+    pptrTransport.onmessage(message);
   });
   const pptrBiDiConnection = new BidiConnection(
     cdp.url(),

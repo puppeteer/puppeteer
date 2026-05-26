@@ -38,7 +38,7 @@ export class ExtensionTransport implements ConnectionTransport {
     return new ExtensionTransport(tabId);
   }
 
-  onmessage?: (message: string) => void;
+  onmessage?: (message: string|object) => void;
   onclose?: () => void;
 
   #tabId: number;

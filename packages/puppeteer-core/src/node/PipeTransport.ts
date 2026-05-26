@@ -20,7 +20,7 @@ export class PipeTransport implements ConnectionTransport {
   #pendingMessage: Buffer[] = [];
 
   onclose?: () => void;
-  onmessage?: (value: string) => void;
+  onmessage?: (value: string|object) => void;
 
   constructor(
     pipeWrite: NodeJS.WritableStream,
@@ -53,10 +53,10 @@ export class PipeTransport implements ConnectionTransport {
     pipeWriteEmitter.on('error', debugError);
   }
 
-  send(message: string): void {
+  send(message: string|object): void {
     assert(!this.#isClosed, '`PipeTransport` is closed.');
 
-    this.#pipeWrite.write(message);
+    this.#pipeWrite.write(message as string);
     this.#pipeWrite.write('\0');
   }
 
