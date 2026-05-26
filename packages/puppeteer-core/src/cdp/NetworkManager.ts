@@ -403,7 +403,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       username: undefined,
       password: undefined,
     };
-    client
+    void client
       .send('Fetch.continueWithAuth', {
         requestId: event.requestId,
         authChallengeResponse: {response, username, password},
@@ -426,7 +426,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       !this.#userRequestInterceptionEnabled &&
       this.#protocolRequestInterceptionEnabled
     ) {
-      client
+      void client
         .send('Fetch.continueRequest', {
           requestId: event.requestId,
         })

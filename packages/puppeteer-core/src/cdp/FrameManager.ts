@@ -93,7 +93,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     this.#timeoutSettings = timeoutSettings;
     this.setupEventListeners(this.#client);
     client.once(CDPSessionEvent.Disconnected, () => {
-      this.#onClientDisconnect().catch(debugError);
+      void this.#onClientDisconnect().catch(debugError);
     });
   }
 
@@ -149,7 +149,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     }
     this.setupEventListeners(client);
     client.once(CDPSessionEvent.Disconnected, () => {
-      this.#onClientDisconnect().catch(debugError);
+      void this.#onClientDisconnect().catch(debugError);
     });
     await this.initialize(client, frame);
     await this.#networkManager.addClient(client);

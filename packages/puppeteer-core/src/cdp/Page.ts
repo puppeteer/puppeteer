@@ -246,7 +246,7 @@ export class CdpPage extends Page {
       this.#onDetachedFromTarget,
     );
 
-    this.#tabTarget._isClosedDeferred
+    void this.#tabTarget._isClosedDeferred
       .valueOrThrow()
       .then(() => {
         this.#targetManager.off(
@@ -309,8 +309,10 @@ export class CdpPage extends Page {
     if (session.target()._subtype() !== 'prerender') {
       return;
     }
-    this.#frameManager.registerSpeculativeSession(session).catch(debugError);
-    this.#emulationManager
+    void this.#frameManager
+      .registerSpeculativeSession(session)
+      .catch(debugError);
+    void this.#emulationManager
       .registerSpeculativeSession(session)
       .catch(debugError);
   }

@@ -233,7 +233,7 @@ export class PageTarget extends CdpTarget {
   }
 
   override _initialize(): void {
-    this._initializedDeferred
+    void this._initializedDeferred
       .valueOrThrow()
       .then(async result => {
         if (result === InitializationStatus.ABORTED) {

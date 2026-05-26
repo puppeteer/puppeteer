@@ -40,7 +40,7 @@ export class CallbackRegistry {
     } catch (error) {
       // We still throw sync errors synchronously and clean up the scheduled
       // callback.
-      callback.promise.catch(debugError).finally(() => {
+      void callback.promise.catch(debugError).finally(() => {
         this.#callbacks.delete(callback.id);
       });
       callback.reject(error as Error);
