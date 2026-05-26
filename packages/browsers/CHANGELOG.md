@@ -1,5 +1,22 @@
 # Changelog
 
+## [3.0.4](https://github.com/puppeteer/puppeteer/compare/browsers-v3.0.3...browsers-v3.0.4) (2026-05-26)
+
+
+### 🛠️ Fixes
+
+* improve progress bar and install ([#15042](https://github.com/puppeteer/puppeteer/issues/15042)) ([51db32a](https://github.com/puppeteer/puppeteer/commit/51db32a5bb48f40cc635ac3eaa2ebb60e6f5bfd5))
+* support concurrency in progress bars ([#15045](https://github.com/puppeteer/puppeteer/issues/15045)) ([ab0171d](https://github.com/puppeteer/puppeteer/commit/ab0171d8f4206bdb9dd4e93c2db8d28530bf3fb9))
+* use powershell as fallback to unzip on Windows ([#15033](https://github.com/puppeteer/puppeteer/issues/15033)) ([05f7b18](https://github.com/puppeteer/puppeteer/commit/05f7b1829b0157d8ef46939fe86e43dbbcbad10e))
+
+
+### 🏗️ Refactor
+
+* drop semver ([#15029](https://github.com/puppeteer/puppeteer/issues/15029)) ([058cd5a](https://github.com/puppeteer/puppeteer/commit/058cd5ab994eb9a291001a9de37c767776e83be4))
+* remove debug dependency ([#15023](https://github.com/puppeteer/puppeteer/issues/15023)) ([94d1e1c](https://github.com/puppeteer/puppeteer/commit/94d1e1c3dc84ed102d2e801a4e6343cd9fd4a9af))
+* remove progress dependency ([#15026](https://github.com/puppeteer/puppeteer/issues/15026)) ([e7d1a14](https://github.com/puppeteer/puppeteer/commit/e7d1a14b6e580567a8c897c2bc5d6bcfc90b26e5))
+* replace tar-fs with modern-tar ([#15028](https://github.com/puppeteer/puppeteer/issues/15028)) ([054afed](https://github.com/puppeteer/puppeteer/commit/054afedbd39a6d4e57420c9edab437fbda706321))
+
 ## [3.0.3](https://github.com/puppeteer/puppeteer/compare/browsers-v3.0.2...browsers-v3.0.3) (2026-05-18)
 
 
