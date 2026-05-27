@@ -15,7 +15,7 @@ import {
 } from '../mocha-utils.js';
 import {attachFrame, html} from '../utils.js';
 
-describe.only('Network Restrictions', function () {
+describe('Network Restrictions', function () {
   setupTestBrowserHooks();
 
   describe('blocklist validation', () => {

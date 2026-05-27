@@ -628,6 +628,12 @@
     "comment": "chrome:// urls are not supported by chrome-headless-shell"
   },
   {
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions should throw an error when both blocklist and allowlist are specified",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[network.spec] network Network Events should support redirects",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
@@ -1411,19 +1417,13 @@
     "comment": "Bug in CDP crbug.com/469591372"
   },
   {
-    "testIdPattern": "[network_restrictions.spec] Network Restrictions should throw an error when both blocklist and allowlist are specified",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[network_restrictions.spec] Network Restrictions should detach from targets violating blocklist when connecting to a running browser",
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions should detach from targets violating allowlist when connecting to a running browser",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[network_restrictions.spec] Network Restrictions should detach from targets violating allowlist when connecting to a running browser",
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions should detach from targets violating blocklist when connecting to a running browser",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
