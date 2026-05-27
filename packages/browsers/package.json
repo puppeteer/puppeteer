@@ -84,7 +84,7 @@
   ],
   "dependencies": {
     "modern-tar": "^0.7.6",
-    "yargs": "^17.7.2"
+    "yargs": "^18.0.0"
   },
   "peerDependencies": {
     "proxy-agent": ">=8.0.1"
@@ -96,6 +96,6 @@
   },
   "devDependencies": {
     "proxy-agent": ">=8.0.1",
-    "@types/yargs": "17.0.33"
+    "@types/yargs": "17.0.35"
   }
 }
