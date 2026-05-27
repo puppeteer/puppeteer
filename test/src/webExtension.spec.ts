@@ -35,7 +35,6 @@ describe('webExtension', function () {
     const expectedId = isChrome ? EXPECTED_ID : /temporary-addon/;
     if (isChrome) {
       options.enableExtensions = true;
-      options.pipe = true;
     }
 
     const {browser, close} = await launch(options);

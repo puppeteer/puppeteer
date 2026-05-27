@@ -262,12 +262,6 @@ export abstract class BrowserLauncher {
     }
 
     if (Array.isArray(enableExtensions)) {
-      if (this.#browser === 'chrome' && !usePipe) {
-        throw new Error(
-          'To use `enableExtensions` with a list of paths in Chrome, you must be connected with `--remote-debugging-pipe` (`pipe: true`).',
-        );
-      }
-
       await Promise.all([
         enableExtensions.map(path => {
           return browser.installExtension(path);
