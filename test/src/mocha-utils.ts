@@ -596,6 +596,10 @@ export const launch = async (
       ...(initState.defaultBrowserOptions.args ?? []),
       ...(launchOptions.args ?? []),
     ];
+    console.log('Will spawn from');
+    console.log(new Error().stack);
+    console.log('Args', args);
+
     const browser = await (puppeteer as unknown as PuppeteerNode).launch({
       ...initState.defaultBrowserOptions,
       ...launchOptions,
