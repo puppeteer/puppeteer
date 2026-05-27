@@ -10,7 +10,7 @@ import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {PageEvent, type Page} from '../api/Page.js';
 import {Target, TargetType} from '../api/Target.js';
-import {debugError} from '../common/util.js';
+import {debugCatchError} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
 
@@ -254,7 +254,7 @@ export class PageTarget extends CdpTarget {
         openerPage.emit(PageEvent.Popup, popupPage);
         return true;
       })
-      .catch(debugError);
+      .catch(debugCatchError);
     this._checkIfInitialized();
   }
 

@@ -7,7 +7,7 @@
 import mitt, {type Emitter} from '../../third_party/mitt/mitt.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
-import {debugError} from './util.js';
+import {debugCatchError} from './util.js';
 
 /**
  * @public
@@ -185,7 +185,7 @@ export class EventEmitter<
    * @internal
    */
   [disposeSymbol](): void {
-    return void this[asyncDisposeSymbol]().catch(debugError);
+    return void this[asyncDisposeSymbol]().catch(debugCatchError);
   }
 
   /**

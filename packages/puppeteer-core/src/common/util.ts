@@ -38,6 +38,14 @@ export const debugError = debug('puppeteer:error');
 
 /**
  * @internal
+ *
+ * Use this isntead of debugError so the catch functions
+ * don't re-throw the error.
+ */
+export const debugCatchError = debugError ?? (() => {});
+
+/**
+ * @internal
  */
 export const DEFAULT_VIEWPORT = Object.freeze({width: 800, height: 600});
 

@@ -11,7 +11,7 @@ import type {TargetFilterCallback} from '../api/Browser.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
 import {EventEmitter} from '../common/EventEmitter.js';
-import {debugError} from '../common/util.js';
+import {debugCatchError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
@@ -229,14 +229,16 @@ export class TargetManager
     session: CdpCDPSession,
     parentSession: Connection | CDPSession,
   ): Promise<void> => {
-    await session.send('Runtime.runIfWaitingForDebugger').catch(debugError);
+    await session
+      .send('Runtime.runIfWaitingForDebugger')
+      .catch(debugCatchError);
     // We don't use `session.detach()` because that dispatches all commands on
     // the connection instead of the parent session.
     await parentSession
       .send('Target.detachFromTarget', {
         sessionId: session.id(),
       })
-      .catch(debugError);
+      .catch(debugCatchError);
   };
 
   #getParentTarget = (
@@ -438,7 +440,7 @@ export class TargetManager
       }),
       this.#maybeSetupNetworkConditions(session),
       session.send('Runtime.runIfWaitingForDebugger'),
-    ]).catch(debugError);
+    ]).catch(debugCatchError);
   };
 
   #finishInitializationIfReady(targetId?: string): void {

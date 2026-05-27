@@ -8,7 +8,7 @@ import * as Bidi from 'webdriver-bidi-protocol';
 
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {Awaitable, FlattenHandle} from '../common/types.js';
-import {debugError} from '../common/util.js';
+import {debugError, debugCatchError} from '../common/util.js';
 import {DisposableStack} from '../util/disposable.js';
 import {interpolateFunction, stringifyFunction} from '../util/Function.js';
 
@@ -227,7 +227,7 @@ export class ExposableFunction<Args extends unknown[], Ret> {
   }
 
   [Symbol.dispose](): void {
-    void this[Symbol.asyncDispose]().catch(debugError);
+    void this[Symbol.asyncDispose]().catch(debugCatchError);
   }
 
   async [Symbol.asyncDispose](): Promise<void> {

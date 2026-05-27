@@ -56,6 +56,7 @@ import {
   parsePDFOptions,
   timeout,
   validateDialogType,
+  debugCatchError,
 } from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {environment} from '../environment.js';
@@ -257,7 +258,7 @@ export class CdpPage extends Page {
         this.emit(PageEvent.Close, undefined);
         this.#closed = true;
       })
-      .catch(debugError);
+      .catch(debugCatchError);
 
     this.#setupPrimaryTargetListeners();
     this.#attachExistingTargets();
@@ -311,10 +312,10 @@ export class CdpPage extends Page {
     }
     void this.#frameManager
       .registerSpeculativeSession(session)
-      .catch(debugError);
+      .catch(debugCatchError);
     void this.#emulationManager
       .registerSpeculativeSession(session)
-      .catch(debugError);
+      .catch(debugCatchError);
   }
 
   /**
@@ -380,7 +381,7 @@ export class CdpPage extends Page {
           // eslint-disable-next-line max-len -- The comment is long.
           // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
           for (const arg of message.args()) {
-            void arg.dispose().catch(debugError);
+            void arg.dispose().catch(debugCatchError);
           }
           return;
         }
@@ -952,7 +953,7 @@ export class CdpPage extends Page {
         // eslint-disable-next-line max-len -- The comment is long.
         // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
         for (const value of values) {
-          void value.dispose().catch(debugError);
+          void value.dispose().catch(debugCatchError);
         }
       }
       return;
@@ -1154,7 +1155,7 @@ export class CdpPage extends Page {
       stack.defer(async () => {
         await this.#emulationManager
           .resetDefaultBackgroundColor()
-          .catch(debugError);
+          .catch(debugCatchError);
       });
     }
 

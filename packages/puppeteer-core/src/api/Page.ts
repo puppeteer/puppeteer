@@ -61,7 +61,6 @@ import type {
   NodeFor,
 } from '../common/types.js';
 import {
-  debugError,
   fromEmitterEvent,
   filterAsync,
   isString,
@@ -69,6 +68,7 @@ import {
   timeout,
   withSourcePuppeteerURLIfNone,
   fromAbortSignal,
+  debugCatchError,
 } from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {environment} from '../environment.js';
@@ -2614,7 +2614,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
     if (viewport && viewport.deviceScaleFactor !== 0) {
       await this.setViewport({...viewport, deviceScaleFactor: 0});
       stack.defer(() => {
-        void this.setViewport(viewport).catch(debugError);
+        void this.setViewport(viewport).catch(debugCatchError);
       });
     }
     return await this.mainFrame()
@@ -2738,7 +2738,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
             ...scrollDimensions,
           });
           stack.defer(async () => {
-            await this.setViewport(viewport).catch(debugError);
+            await this.setViewport(viewport).catch(debugCatchError);
           });
         }
       } else {
@@ -3228,7 +3228,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
   /** @internal */
   override [disposeSymbol](): void {
-    return void this[asyncDisposeSymbol]().catch(debugError);
+    return void this[asyncDisposeSymbol]().catch(debugCatchError);
   }
 
   /** @internal */

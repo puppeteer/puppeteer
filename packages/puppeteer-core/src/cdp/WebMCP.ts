@@ -11,7 +11,7 @@ import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Frame} from '../api/Frame.js';
 import type {ConsoleMessageLocation} from '../common/ConsoleMessage.js';
 import {EventEmitter} from '../common/EventEmitter.js';
-import {debugError} from '../common/util.js';
+import {debugError, debugCatchError} from '../common/util.js';
 
 import type {CdpFrame} from './Frame.js';
 import type {FrameManager} from './FrameManager.js';
@@ -397,7 +397,7 @@ export class WebMCP extends EventEmitter<{
    * @internal
    */
   async initialize(): Promise<void> {
-    return await this.#client.send('WebMCP.enable').catch(debugError);
+    return await this.#client.send('WebMCP.enable').catch(debugCatchError);
   }
 
   /**

@@ -14,7 +14,7 @@ import {
   NetworkManagerEvent,
   type NetworkManagerEvents,
 } from '../common/NetworkManagerEvents.js';
-import {debugError, isString} from '../common/util.js';
+import {debugError, isString, debugCatchError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {DisposableStack} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
@@ -408,7 +408,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
         requestId: event.requestId,
         authChallengeResponse: {response, username, password},
       })
-      .catch(debugError);
+      .catch(debugCatchError);
   }
 
   /**
@@ -430,7 +430,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
         .send('Fetch.continueRequest', {
           requestId: event.requestId,
         })
-        .catch(debugError);
+        .catch(debugCatchError);
     }
 
     const {networkId: networkRequestId, requestId: fetchRequestId} = event;

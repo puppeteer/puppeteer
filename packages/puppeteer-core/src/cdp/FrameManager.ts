@@ -11,7 +11,12 @@ import {FrameEvent} from '../api/Frame.js';
 import {PageEvent, type NewDocumentScriptEvaluation} from '../api/Page.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
-import {debugError, PuppeteerURL, UTILITY_WORLD_NAME} from '../common/util.js';
+import {
+  debugError,
+  PuppeteerURL,
+  UTILITY_WORLD_NAME,
+  debugCatchError,
+} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
@@ -93,7 +98,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     this.#timeoutSettings = timeoutSettings;
     this.setupEventListeners(this.#client);
     client.once(CDPSessionEvent.Disconnected, () => {
-      void this.#onClientDisconnect().catch(debugError);
+      void this.#onClientDisconnect().catch(debugCatchError);
     });
   }
 
@@ -149,7 +154,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     }
     this.setupEventListeners(client);
     client.once(CDPSessionEvent.Disconnected, () => {
-      void this.#onClientDisconnect().catch(debugError);
+      void this.#onClientDisconnect().catch(debugCatchError);
     });
     await this.initialize(client, frame);
     await this.#networkManager.addClient(client);
@@ -331,7 +336,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
           .send('Page.removeScriptToEvaluateOnNewDocument', {
             identifier,
           })
-          .catch(debugError);
+          .catch(debugCatchError);
       }),
     );
   }
@@ -346,7 +351,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       frame.updateClient(target._session()!);
     }
     this.setupEventListeners(target._session()!);
-    void this.initialize(target._session()!, frame).catch(debugError);
+    void this.initialize(target._session()!, frame).catch(debugCatchError);
   }
 
   _deviceRequestPromptManager(
@@ -500,7 +505,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
               worldName: name,
               grantUniveralAccess: true,
             })
-            .catch(debugError);
+            .catch(debugCatchError);
         }),
     );
 

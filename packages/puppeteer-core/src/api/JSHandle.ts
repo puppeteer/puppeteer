@@ -7,7 +7,7 @@
 import type Protocol from 'devtools-protocol';
 
 import type {EvaluateFuncWith, HandleFor, HandleOr} from '../common/types.js';
-import {debugError, withSourcePuppeteerURLIfNone} from '../common/util.js';
+import {withSourcePuppeteerURLIfNone, debugCatchError} from '../common/util.js';
 import {moveable, throwIfDisposed} from '../util/decorators.js';
 import {disposeSymbol, asyncDisposeSymbol} from '../util/disposable.js';
 
@@ -202,7 +202,7 @@ export abstract class JSHandle<T = unknown> {
 
   /** @internal */
   [disposeSymbol](): void {
-    return void this[asyncDisposeSymbol]().catch(debugError);
+    return void this[asyncDisposeSymbol]().catch(debugCatchError);
   }
 
   /** @internal */

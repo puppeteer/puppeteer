@@ -9,7 +9,7 @@ import {rewriteError} from '../util/ErrorLike.js';
 import type {GetIdFn} from '../util/incremental-id-generator.js';
 
 import {ProtocolError, TargetCloseError} from './Errors.js';
-import {debugError} from './util.js';
+import {debugCatchError} from './util.js';
 
 /**
  * Manages callbacks and their IDs for the protocol request/response communication.
@@ -40,7 +40,7 @@ export class CallbackRegistry {
     } catch (error) {
       // We still throw sync errors synchronously and clean up the scheduled
       // callback.
-      void callback.promise.catch(debugError).finally(() => {
+      void callback.promise.catch(debugCatchError).finally(() => {
         this.#callbacks.delete(callback.id);
       });
       callback.reject(error as Error);

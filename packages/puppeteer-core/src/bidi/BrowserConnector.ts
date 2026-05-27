@@ -9,7 +9,7 @@ import {Connection} from '../cdp/Connection.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import type {ConnectOptions} from '../common/ConnectOptions.js';
 import {ProtocolError, UnsupportedOperation} from '../common/Errors.js';
-import {debugError, DEFAULT_VIEWPORT} from '../common/util.js';
+import {DEFAULT_VIEWPORT, debugCatchError} from '../common/util.js';
 import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
 
 import type {BidiBrowser} from './Browser.js';
@@ -90,7 +90,9 @@ async function getBiDiConnection(
       return {
         bidiConnection: pureBidiConnection,
         closeCallback: async () => {
-          await pureBidiConnection.send('browser.close', {}).catch(debugError);
+          await pureBidiConnection
+            .send('browser.close', {})
+            .catch(debugCatchError);
         },
       };
     }
@@ -126,7 +128,7 @@ async function getBiDiConnection(
     bidiConnection: bidiOverCdpConnection,
     closeCallback: async () => {
       // In case of BiDi over CDP, we need to close browser via CDP.
-      await cdpConnection.send('Browser.close').catch(debugError);
+      await cdpConnection.send('Browser.close').catch(debugCatchError);
     },
   };
 }
