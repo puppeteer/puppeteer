@@ -128,7 +128,6 @@ export class ChromeLauncher extends BrowserLauncher {
       );
       userDataDir = parsedUserDataDir;
     }
-    console.log('Will create dir with name', userDataDir);
 
     let chromeExecutable = executablePath;
     if (!chromeExecutable) {
