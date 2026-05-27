@@ -339,7 +339,7 @@ describe('Network Restrictions', function () {
 
   it('should throw an error when both blocklist and allowlist are specified', async () => {
     let error: Error | undefined;
-    await launch(
+    const {close: close1} = await launch(
       {
         blocklist: ['*://*:*/empty.html'],
         allowlist: ['*://*:*/empty.html'],
@@ -354,7 +354,7 @@ describe('Network Restrictions', function () {
       'Cannot specify both blocklist and allowlist',
     );
 
-    const {browser, close} = await launch({}, {createContext: false});
+    const {browser, close: close2} = await launch({}, {createContext: false});
     try {
       const wsEndpoint = browser.wsEndpoint();
       let connectError: Error | undefined;
@@ -373,7 +373,8 @@ describe('Network Restrictions', function () {
         'Cannot specify both blocklist and allowlist',
       );
     } finally {
-      await close();
+      await close1();
+      await close2();
     }
   });
 
