@@ -337,8 +337,7 @@ describe('Network Restrictions', function () {
     }
   });
 
-  // eslint-disable-next-line mocha/no-pending-tests
-  it.skip('should throw an error when both blocklist and allowlist are specified', async () => {
+  it('should throw an error when both blocklist and allowlist are specified', async () => {
     let error: Error | undefined;
     await launch(
       {

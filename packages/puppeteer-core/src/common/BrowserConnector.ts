@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {URLPattern} from '../../third_party/urlpattern-polyfill/urlpattern-polyfill.js';
 import type {Browser} from '../api/Browser.js';
 import {_connectToBiDiBrowser} from '../bidi/BrowserConnector.js';
 import {_connectToCdpBrowser} from '../cdp/BrowserConnector.js';
@@ -42,6 +43,16 @@ export function assertSupportedUrlRestrictions(options: {
     throw new Error(
       'blocklist and allowlist are only supported with the CDP protocol',
     );
+  }
+  if (options.blocklist) {
+    for (const rule of options.blocklist) {
+      new URLPattern(rule);
+    }
+  }
+  if (options.allowlist) {
+    for (const rule of options.allowlist) {
+      new URLPattern(rule);
+    }
   }
 }
 
