@@ -273,11 +273,9 @@ export class ChromeLauncher extends BrowserLauncher {
         '--mute-audio',
       );
     }
-    chromeArguments.push(
-      enableExtensions
-        ? '--enable-unsafe-extension-debugging'
-        : '--disable-extensions',
-    );
+    if (!enableExtensions) {
+      chromeArguments.push('--disable-extensions');
+    }
     if (
       args.every(arg => {
         return arg.startsWith('-');

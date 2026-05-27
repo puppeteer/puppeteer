@@ -20,7 +20,6 @@ describe('extension realms', function () {
   const state = setupSeparateTestBrowserHooks(
     {
       enableExtensions: true,
-      pipe: true,
     },
     {createContext: false},
   );

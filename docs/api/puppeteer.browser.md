@@ -281,7 +281,7 @@ Gets the specified window [bounds](./puppeteer.windowbounds.md).
 
 </td><td>
 
-Installs an extension and returns the ID. In Chrome, this is only available if the browser was created using `pipe: true` and the `--enable-unsafe-extension-debugging` flag is set.
+Installs an extension and returns the ID.
 
 </td></tr>
 <tr><td>
@@ -422,7 +422,7 @@ In case of multiple [browser contexts](./puppeteer.browsercontext.md), this retu
 
 </td><td>
 
-Uninstalls an extension. In Chrome, this is only available if the browser was created using `pipe: true` and the `--enable-unsafe-extension-debugging` flag is set.
+Uninstalls an extension.
 
 </td></tr>
 <tr><td>
