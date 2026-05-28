@@ -7,19 +7,24 @@
 import expect from 'expect';
 import puppeteer from 'puppeteer/internal/puppeteer.js';
 
-import {launch} from '../mocha-utils.js';
+import {
+  launch,
+  setupSeparateTestBrowserHooks,
+  getTestState,
+  setupTestBrowserHooks,
+} from '../mocha-utils.js';
 import {attachFrame, html} from '../utils.js';
 
 describe('Network Restrictions', function () {
-  it('should block page.goto when the destination is in the blocklist', async () => {
-    const {page, close, server} = await launch(
-      {
-        blocklist: ['*://*:*/empty.html'],
-      },
-      {createContext: true},
-    );
+  setupTestBrowserHooks();
 
-    try {
+  describe('blocklist validation', () => {
+    const state = setupSeparateTestBrowserHooks({
+      blocklist: ['*://*:*/empty.html', '*://*:*/pptr.png'],
+    });
+
+    it('should block page.goto when the destination is in the blocklist', async () => {
+      const {page, server} = state;
       const allowedUrl = server.PREFIX + '/title.html';
       const blockedUrl = server.PREFIX + '/empty.html';
 
@@ -33,20 +38,10 @@ describe('Network Restrictions', function () {
       expect(error?.message).toContain(
         'is blocked by blocklist/allowlist rules',
       );
-    } finally {
-      await close();
-    }
-  });
+    });
 
-  it('should block window.location.href navigation to URLs in the blocklist', async () => {
-    const {page, close, server} = await launch(
-      {
-        blocklist: ['*://*:*/empty.html'],
-      },
-      {createContext: true},
-    );
-
-    try {
+    it('should block window.location.href navigation to URLs in the blocklist', async () => {
+      const {page, server} = state;
       const allowedUrl = server.PREFIX + '/title.html';
       const blockedUrl = server.PREFIX + '/empty.html';
 
@@ -61,20 +56,10 @@ describe('Network Restrictions', function () {
       await navPromise;
       const finalUrl = page.url();
       expect(finalUrl).not.toBe(blockedUrl);
-    } finally {
-      await close();
-    }
-  });
+    });
 
-  it('should fail fetch requests to URLs in the blocklist', async () => {
-    const {page, close, server} = await launch(
-      {
-        blocklist: ['*://*:*/empty.html'],
-      },
-      {createContext: true},
-    );
-
-    try {
+    it('should fail fetch requests to URLs in the blocklist', async () => {
+      const {page, server} = state;
       const allowedUrl = server.PREFIX + '/title.html';
       const blockedUrl = server.PREFIX + '/empty.html';
 
@@ -89,20 +74,10 @@ describe('Network Restrictions', function () {
       }, blockedUrl);
 
       expect(fetchError).toContain('Failed to fetch');
-    } finally {
-      await close();
-    }
-  });
+    });
 
-  it('should prevent loading of blocklisted subresources (e.g., images)', async () => {
-    const {page, close, server} = await launch(
-      {
-        blocklist: ['*://*:*/pptr.png'],
-      },
-      {createContext: true},
-    );
-
-    try {
+    it('should prevent loading of blocklisted subresources (e.g., images)', async () => {
+      const {page, server} = state;
       const allowedUrl = server.PREFIX + '/one-style.css';
       const blockedUrl = server.PREFIX + '/pptr.png';
 
@@ -116,7 +91,7 @@ describe('Network Restrictions', function () {
         finishedRequests.add(request.url());
       });
 
-      await page.goto(server.PREFIX + '/empty.html');
+      await page.goto(server.PREFIX + '/title.html');
 
       const idle = page.waitForNetworkIdle();
       await page.setContent(html`
@@ -133,55 +108,86 @@ describe('Network Restrictions', function () {
         'net::ERR_INTERNET_DISCONNECTED',
       );
       expect(finishedRequests.has(allowedUrl)).toBe(true);
-    } finally {
-      await close();
-    }
-  });
+    });
 
-  it('should detach from targets violating blocklist when connecting to a running browser', async () => {
-    const {
-      browser: originalBrowser,
-      server,
-      close,
-    } = await launch({}, {createContext: false, createPage: false});
+    it('should block frame.goto when the destination is in the blocklist', async () => {
+      const {page, server} = state;
+      await page.goto(server.PREFIX + '/frames/one-frame.html');
+      const frame = page.frames().find(f => {
+        return f !== page.mainFrame();
+      })!;
 
-    let connectedBrowser: any;
-    try {
-      const page = await originalBrowser.newPage();
       const blockedUrl = server.PREFIX + '/empty.html';
-
-      await page.goto(blockedUrl);
-
-      const wsEndpoint = originalBrowser.wsEndpoint();
-
-      connectedBrowser = await puppeteer.connect({
-        browserWSEndpoint: wsEndpoint,
-        blocklist: ['*://*:*/empty.html'],
+      let error: Error | undefined;
+      await frame.goto(blockedUrl).catch(e => {
+        return (error = e);
       });
 
-      const targets = connectedBrowser.targets();
-      const blockedTarget = targets.find((t: any) => {
-        return t.url() === blockedUrl;
-      });
+      expect(error).toBeDefined();
+      expect(error?.message).toContain(
+        'is blocked by blocklist/allowlist rules',
+      );
+    });
 
-      expect(blockedTarget).toBeUndefined();
-    } finally {
-      if (connectedBrowser) {
-        await connectedBrowser.disconnect();
-      }
-      await close();
-    }
+    it('should block CDP standard emulation reset when blocklist is active', async () => {
+      const {page} = state;
+      const session = await page.createCDPSession();
+
+      await expect(
+        session.send('Network.emulateNetworkConditions', {
+          offline: false,
+          latency: 0,
+          downloadThroughput: 0,
+          uploadThroughput: 0,
+        }),
+      ).rejects.toThrow(
+        'Cannot reset network conditions: rule-based emulation is enabled.',
+      );
+    });
+
+    it('should block page.emulateNetworkConditions reset when blocklist is active', async () => {
+      const {page} = state;
+
+      await expect(
+        page.emulateNetworkConditions({
+          offline: false,
+          latency: 0,
+          download: 0,
+          upload: 0,
+        }),
+      ).rejects.toThrow(
+        'Cannot reset network conditions: rule-based emulation is enabled.',
+      );
+    });
+
+    it('should block fetch requests from within local iframes to URLs in the blocklist', async () => {
+      const {page, server} = state;
+      await page.goto(server.PREFIX + '/frames/one-frame.html');
+      const frame = page.frames().find(f => {
+        return f !== page.mainFrame();
+      })!;
+
+      const fetchError = await frame.evaluate(async url => {
+        try {
+          await fetch(url);
+          return null;
+        } catch (e) {
+          return (e as Error).message;
+        }
+      }, server.PREFIX + '/empty.html');
+
+      expect(fetchError).toBeTruthy();
+      expect(fetchError).toContain('Failed to fetch');
+    });
   });
 
-  it('should only allow navigation to URLs in the allowlist', async () => {
-    const {page, close, server} = await launch(
-      {
-        allowlist: ['*://*:*/empty.html'],
-      },
-      {createContext: true},
-    );
+  describe('allowlist validation', () => {
+    const state = setupSeparateTestBrowserHooks({
+      allowlist: ['*://*:*/empty.html', '*://*:*/one-style.css'],
+    });
 
-    try {
+    it('should only allow navigation to URLs in the allowlist', async () => {
+      const {page, server} = state;
       const allowedUrl = server.PREFIX + '/empty.html';
       const blockedUrl = server.PREFIX + '/title.html';
 
@@ -195,20 +201,10 @@ describe('Network Restrictions', function () {
       expect(error?.message).toContain(
         'is blocked by blocklist/allowlist rules',
       );
-    } finally {
-      await close();
-    }
-  });
+    });
 
-  it('should block window.location.href navigation to URLs not in the allowlist', async () => {
-    const {page, close, server} = await launch(
-      {
-        allowlist: ['*://*:*/empty.html'],
-      },
-      {createContext: true},
-    );
-
-    try {
+    it('should block window.location.href navigation to URLs not in the allowlist', async () => {
+      const {page, server} = state;
       const allowedUrl = server.PREFIX + '/empty.html';
       const blockedUrl = server.PREFIX + '/title.html';
 
@@ -225,20 +221,10 @@ describe('Network Restrictions', function () {
       const content = await page.content();
       expect(finalUrl).not.toBe(blockedUrl);
       expect(content).not.toContain('Woof-Woof');
-    } finally {
-      await close();
-    }
-  });
+    });
 
-  it('should fail fetch requests to URLs not in the allowlist', async () => {
-    const {page, close, server} = await launch(
-      {
-        allowlist: ['*://*:*/empty.html'],
-      },
-      {createContext: true},
-    );
-
-    try {
+    it('should fail fetch requests to URLs not in the allowlist', async () => {
+      const {page, server} = state;
       const allowedUrl = server.PREFIX + '/empty.html';
       const blockedUrl = server.PREFIX + '/title.html';
 
@@ -253,20 +239,10 @@ describe('Network Restrictions', function () {
       }, blockedUrl);
 
       expect(fetchError).toContain('Failed to fetch');
-    } finally {
-      await close();
-    }
-  });
+    });
 
-  it('should prevent loading of subresources not in the allowlist (e.g., images)', async () => {
-    const {page, close, server} = await launch(
-      {
-        allowlist: ['*://*:*/empty.html', '*://*:*/one-style.css'],
-      },
-      {createContext: true},
-    );
-
-    try {
+    it('should prevent loading of subresources not in the allowlist (e.g., images)', async () => {
+      const {page, server} = state;
       const allowedUrl = server.PREFIX + '/one-style.css';
       const blockedUrl = server.PREFIX + '/pptr.png';
 
@@ -297,21 +273,85 @@ describe('Network Restrictions', function () {
         'net::ERR_INTERNET_DISCONNECTED',
       );
       expect(finishedRequests.has(allowedUrl)).toBe(true);
+    });
+
+    it('should block CDP standard emulation reset when allowlist is active', async () => {
+      const {page} = state;
+      const session = await page.createCDPSession();
+
+      await expect(
+        session.send('Network.emulateNetworkConditions', {
+          offline: false,
+          latency: 0,
+          downloadThroughput: 0,
+          uploadThroughput: 0,
+        }),
+      ).rejects.toThrow(
+        'Cannot reset network conditions: rule-based emulation is enabled.',
+      );
+    });
+
+    it('should block page.emulateNetworkConditions reset when allowlist is active', async () => {
+      const {page} = state;
+
+      await expect(
+        page.emulateNetworkConditions({
+          offline: false,
+          latency: 0,
+          download: 0,
+          upload: 0,
+        }),
+      ).rejects.toThrow(
+        'Cannot reset network conditions: rule-based emulation is enabled.',
+      );
+    });
+  });
+
+  it('should detach from targets violating blocklist when connecting to a running browser', async () => {
+    const {browser: originalBrowser, server} = await getTestState({
+      skipContextCreation: true,
+    });
+
+    let connectedBrowser: any;
+    let page: any;
+    try {
+      page = await originalBrowser.newPage();
+      const blockedUrl = server.PREFIX + '/empty.html';
+
+      await page.goto(blockedUrl);
+
+      const wsEndpoint = originalBrowser.wsEndpoint();
+
+      connectedBrowser = await puppeteer.connect({
+        browserWSEndpoint: wsEndpoint,
+        blocklist: ['*://*:*/empty.html'],
+      });
+
+      const targets = connectedBrowser.targets();
+      const blockedTarget = targets.find((t: any) => {
+        return t.url() === blockedUrl;
+      });
+
+      expect(blockedTarget).toBeUndefined();
     } finally {
-      await close();
+      if (connectedBrowser) {
+        await connectedBrowser.disconnect();
+      }
+      if (page) {
+        await page.close();
+      }
     }
   });
 
   it('should detach from targets violating allowlist when connecting to a running browser', async () => {
-    const {
-      browser: originalBrowser,
-      server,
-      close,
-    } = await launch({}, {createContext: false, createPage: false});
+    const {browser: originalBrowser, server} = await getTestState({
+      skipContextCreation: true,
+    });
 
     let connectedBrowser: any;
+    let page: any;
     try {
-      const page = await originalBrowser.newPage();
+      page = await originalBrowser.newPage();
       const blockedUrl = server.PREFIX + '/title.html';
 
       await page.goto(blockedUrl);
@@ -333,7 +373,9 @@ describe('Network Restrictions', function () {
       if (connectedBrowser) {
         await connectedBrowser.disconnect();
       }
-      await close();
+      if (page) {
+        await page.close();
+      }
     }
   });
 
@@ -354,27 +396,24 @@ describe('Network Restrictions', function () {
       'Cannot specify both blocklist and allowlist',
     );
 
-    const {browser, close} = await launch({}, {createContext: false});
-    try {
-      const wsEndpoint = browser.wsEndpoint();
-      let connectError: Error | undefined;
-      await puppeteer
-        .connect({
-          browserWSEndpoint: wsEndpoint,
-          blocklist: ['*://*:*/empty.html'],
-          allowlist: ['*://*:*/empty.html'],
-        })
-        .catch(e => {
-          return (connectError = e);
-        });
+    const {browser} = await getTestState({skipContextCreation: true});
 
-      expect(connectError).toBeDefined();
-      expect(connectError?.message).toContain(
-        'Cannot specify both blocklist and allowlist',
-      );
-    } finally {
-      await close();
-    }
+    const wsEndpoint = browser.wsEndpoint();
+    let connectError: Error | undefined;
+    await puppeteer
+      .connect({
+        browserWSEndpoint: wsEndpoint,
+        blocklist: ['*://*:*/empty.html'],
+        allowlist: ['*://*:*/empty.html'],
+      })
+      .catch(e => {
+        return (connectError = e);
+      });
+
+    expect(connectError).toBeDefined();
+    expect(connectError?.message).toContain(
+      'Cannot specify both blocklist and allowlist',
+    );
   });
 
   it('should throw an error for an invalid pattern', async () => {
@@ -446,102 +485,6 @@ describe('Network Restrictions', function () {
       const content = await frame.content();
       expect(content).not.toContain("Hi, I'm frame");
       expect(content).toContain('ERR_INTERNET_DISCONNECTED');
-    } finally {
-      await close();
-    }
-  });
-
-  it('should block fetch requests from within local iframes to URLs in the blocklist', async () => {
-    const {page, close, server} = await launch(
-      {
-        blocklist: ['*://*:*/empty.html'],
-      },
-      {createContext: true},
-    );
-
-    try {
-      await page.goto(server.PREFIX + '/frames/one-frame.html');
-      const frame = page.frames().find(f => {
-        return f !== page.mainFrame();
-      })!;
-
-      const fetchError = await frame.evaluate(async url => {
-        try {
-          await fetch(url);
-          return null;
-        } catch (e) {
-          return (e as Error).message;
-        }
-      }, server.PREFIX + '/empty.html');
-
-      expect(fetchError).toBeTruthy();
-      expect(fetchError).toContain('Failed to fetch');
-    } finally {
-      await close();
-    }
-  });
-
-  it('should block frame.goto when the destination is in the blocklist', async () => {
-    const {page, close, server} = await launch(
-      {
-        blocklist: ['*://*:*/empty.html'],
-      },
-      {createContext: true},
-    );
-
-    try {
-      await page.goto(server.PREFIX + '/frames/one-frame.html');
-      const frame = page.frames().find(f => {
-        return f !== page.mainFrame();
-      })!;
-
-      const blockedUrl = server.PREFIX + '/empty.html';
-      let error: Error | undefined;
-      await frame.goto(blockedUrl).catch(e => {
-        return (error = e);
-      });
-
-      expect(error).toBeDefined();
-      expect(error?.message).toContain(
-        'is blocked by blocklist/allowlist rules',
-      );
-    } finally {
-      await close();
-    }
-  });
-
-  it('should block standard emulation reset when blocklist/allowlist is active', async () => {
-    const {page, close} = await launch(
-      {
-        blocklist: ['*://*:*/empty.html'],
-      },
-      {createContext: true},
-    );
-
-    try {
-      const session = await page.createCDPSession();
-
-      await expect(
-        session.send('Network.emulateNetworkConditions', {
-          offline: false,
-          latency: 0,
-          downloadThroughput: 0,
-          uploadThroughput: 0,
-        }),
-      ).rejects.toThrow(
-        'Cannot reset network conditions: rule-based emulation is enabled.',
-      );
-
-      await expect(
-        page.emulateNetworkConditions({
-          offline: false,
-          latency: 0,
-          download: 0,
-          upload: 0,
-        }),
-      ).rejects.toThrow(
-        'Cannot reset network conditions: rule-based emulation is enabled.',
-      );
     } finally {
       await close();
     }

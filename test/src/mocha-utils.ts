@@ -596,6 +596,7 @@ export const launch = async (
       ...(initState.defaultBrowserOptions.args ?? []),
       ...(launchOptions.args ?? []),
     ];
+
     const browser = await (puppeteer as unknown as PuppeteerNode).launch({
       ...initState.defaultBrowserOptions,
       ...launchOptions,
