@@ -129,7 +129,7 @@ describe('Network Restrictions', function () {
       );
     });
 
-    it('should block standard emulation reset when blocklist/allowlist is active', async () => {
+    it('should block CDP standard emulation reset when blocklist is active', async () => {
       const {page} = state;
       const session = await page.createCDPSession();
 
@@ -143,6 +143,10 @@ describe('Network Restrictions', function () {
       ).rejects.toThrow(
         'Cannot reset network conditions: rule-based emulation is enabled.',
       );
+    });
+
+    it('should block page.emulateNetworkConditions reset when blocklist is active', async () => {
+      const {page} = state;
 
       await expect(
         page.emulateNetworkConditions({
@@ -269,6 +273,37 @@ describe('Network Restrictions', function () {
         'net::ERR_INTERNET_DISCONNECTED',
       );
       expect(finishedRequests.has(allowedUrl)).toBe(true);
+    });
+
+    it('should block CDP standard emulation reset when allowlist is active', async () => {
+      const {page} = state;
+      const session = await page.createCDPSession();
+
+      await expect(
+        session.send('Network.emulateNetworkConditions', {
+          offline: false,
+          latency: 0,
+          downloadThroughput: 0,
+          uploadThroughput: 0,
+        }),
+      ).rejects.toThrow(
+        'Cannot reset network conditions: rule-based emulation is enabled.',
+      );
+    });
+
+    it('should block page.emulateNetworkConditions reset when allowlist is active', async () => {
+      const {page} = state;
+
+      await expect(
+        page.emulateNetworkConditions({
+          offline: false,
+          latency: 0,
+          download: 0,
+          upload: 0,
+        }),
+      ).rejects.toThrow(
+        'Cannot reset network conditions: rule-based emulation is enabled.',
+      );
     });
   });
 
