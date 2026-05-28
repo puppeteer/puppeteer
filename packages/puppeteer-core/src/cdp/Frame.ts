@@ -14,7 +14,7 @@ import {Frame, FrameEvent, throwIfDetached} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {WaitTimeoutOptions} from '../api/Page.js';
 import {UnsupportedOperation} from '../common/Errors.js';
-import {debugError} from '../common/util.js';
+import {debugCatchError} from '../common/util.js';
 import type {Realm} from '../puppeteer-core.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
@@ -351,7 +351,7 @@ export class CdpFrame extends Frame {
       this.#client.send('Runtime.addBinding', {
         name: CDP_BINDING_PREFIX + binding.name,
       }),
-      this.evaluate(binding.initSource).catch(debugError),
+      this.evaluate(binding.initSource).catch(debugCatchError),
     ]);
   }
 
@@ -370,7 +370,7 @@ export class CdpFrame extends Frame {
         // Removes the dangling Puppeteer binding wrapper.
         // @ts-expect-error: In a different context.
         globalThis[name] = undefined;
-      }, binding.name).catch(debugError),
+      }, binding.name).catch(debugCatchError),
     ]);
   }
 

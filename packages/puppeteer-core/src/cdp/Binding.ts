@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import {JSHandle} from '../api/JSHandle.js';
-import {debugError} from '../common/util.js';
+import {debugCatchError} from '../common/util.js';
 import {DisposableStack} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
@@ -112,7 +112,7 @@ export class Binding {
             error.message,
             error.stack,
           )
-          .catch(debugError);
+          .catch(debugCatchError);
       } else {
         await context
           .evaluate(
@@ -126,7 +126,7 @@ export class Binding {
             id,
             error,
           )
-          .catch(debugError);
+          .catch(debugCatchError);
       }
     }
   }

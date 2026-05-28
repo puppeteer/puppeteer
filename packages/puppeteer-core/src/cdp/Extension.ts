@@ -51,7 +51,7 @@ export class CdpExtension extends Extension {
         }
       } catch (err) {
         if (this.#canIgnoreError(err)) {
-          debugError(err);
+          debugError?.(err);
           continue;
         }
         throw err;
@@ -78,7 +78,7 @@ export class CdpExtension extends Extension {
           return await target.asPage();
         } catch (err) {
           if (this.#canIgnoreError(err)) {
-            debugError(err);
+            debugError?.(err);
             return null;
           }
           throw err;

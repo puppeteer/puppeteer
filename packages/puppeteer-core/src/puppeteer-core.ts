@@ -8,6 +8,7 @@ export * from './index.js';
 
 import fs from 'node:fs';
 import path from 'node:path';
+import {debuglog} from 'node:util';
 
 import {environment} from './environment.js';
 
@@ -18,6 +19,7 @@ environment.value = {
   fs,
   path,
   ScreenRecorder: Puppeteer.ScreenRecorder,
+  debuglog,
 };
 /**
  * @public

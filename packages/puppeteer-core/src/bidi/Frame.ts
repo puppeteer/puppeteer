@@ -198,7 +198,7 @@ export class BidiFrame extends Frame {
         error.stack = [...messageLines, ...stackLines].join('\n');
         this.page().trustedEmitter.emit(PageEvent.PageError, error);
       } else {
-        debugError(
+        debugError?.(
           `Unhandled LogEntry with type "${entry.type}", text "${entry.text}" and level "${entry.level}"`,
         );
       }

@@ -20,7 +20,7 @@ import type {Target} from '../api/Target.js';
 import type {Cookie, CookieData} from '../common/Cookie.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
-import {debugError} from '../common/util.js';
+import {debugError, debugCatchError} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
 import {bubble} from '../util/decorators.js';
@@ -214,7 +214,7 @@ export class BidiBrowserContext extends BrowserContext {
         await page.setViewport(this.#defaultViewport);
       } catch (error) {
         // Tolerate not supporting `browsingContext.setViewport`. Only log it.
-        debugError(error);
+        debugError?.(error);
       }
     }
     if (options?.type === 'window' && options?.windowBounds !== undefined) {
@@ -225,7 +225,7 @@ export class BidiBrowserContext extends BrowserContext {
         );
       } catch (error) {
         // Tolerate not supporting `browser.setClientWindowState`. Only log it.
-        debugError(error);
+        debugError?.(error);
       }
     }
 
@@ -241,7 +241,7 @@ export class BidiBrowserContext extends BrowserContext {
     try {
       await this.userContext.remove();
     } catch (error) {
-      debugError(error);
+      debugError?.(error);
     }
 
     this.#targets.clear();
@@ -287,7 +287,7 @@ export class BidiBrowserContext extends BrowserContext {
           // TODO: some permissions are outdated and setting them to denied does
           // not work.
           if (!permissionsSet.has(permission)) {
-            return result.catch(debugError);
+            return result.catch(debugCatchError);
           }
           return result;
         },
@@ -345,7 +345,7 @@ export class BidiBrowserContext extends BrowserContext {
           },
           Bidi.Permissions.PermissionState.Prompt,
         )
-        .catch(debugError);
+        .catch(debugCatchError);
     });
     this.#overrides = [];
     await Promise.all(promises);

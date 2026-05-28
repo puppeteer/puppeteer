@@ -27,7 +27,7 @@ import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
 import type {Page, VideoFormat} from '../api/Page.js';
 import {debug} from '../common/Debug.js';
-import {debugError, fromEmitterEvent} from '../common/util.js';
+import {fromEmitterEvent, debugCatchError} from '../common/util.js';
 import {guarded} from '../util/decorators.js';
 import {asyncDisposeSymbol} from '../util/disposable.js';
 
@@ -184,14 +184,14 @@ export class ScreenRecorder extends PassThrough {
     );
     this.#process.stdout.pipe(this);
     this.#process.stderr.on('data', (data: Buffer) => {
-      debugFfmpeg(data.toString('utf8'));
+      debugFfmpeg?.(data.toString('utf8'));
     });
 
     this.#page = page;
 
     const {client} = this.#page.mainFrame();
     client.once(CDPSessionEvent.Disconnected, () => {
-      void this.stop().catch(debugError);
+      void this.stop().catch(debugCatchError);
     });
 
     this.#lastFrame = lastValueFrom(
@@ -316,7 +316,7 @@ export class ScreenRecorder extends PassThrough {
       return;
     }
     // Stopping the screencast will flush the frames.
-    await this.#page._stopScreencast().catch(debugError);
+    await this.#page._stopScreencast().catch(debugCatchError);
 
     this.#controller.abort();
 

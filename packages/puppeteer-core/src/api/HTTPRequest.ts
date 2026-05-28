@@ -746,5 +746,5 @@ export function handleError(error: ProtocolError): void {
   // In certain cases, protocol will return error if the request was
   // already canceled or the page was closed. We should tolerate these
   // errors.
-  debugError(error);
+  debugError?.(error);
 }

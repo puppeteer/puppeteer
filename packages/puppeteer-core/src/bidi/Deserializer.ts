@@ -14,7 +14,7 @@ import {debugError} from '../common/util.js';
 export class BidiDeserializer {
   static deserialize(result: Bidi.Script.RemoteValue): any {
     if (!result) {
-      debugError('Service did not produce a result.');
+      debugError?.('Service did not produce a result.');
       return undefined;
     }
 
@@ -58,7 +58,7 @@ export class BidiDeserializer {
         return result.value;
     }
 
-    debugError(`Deserialization of type ${result.type} not supported.`);
+    debugError?.(`Deserialization of type ${result.type} not supported.`);
     return undefined;
   }
 

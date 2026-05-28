@@ -4,28 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {debuglog} from 'node:util';
-
-import {isNode} from '../environment.js';
+import {isNode, environment} from '../environment.js';
 
 declare global {
   const __PUPPETEER_DEBUG: string;
 }
-
-/**
- * @internal
- */
-let debugModule: typeof debuglog | null = null;
-/**
- * @internal
- */
-export async function importDebug(): Promise<typeof debuglog> {
-  if (!debugModule) {
-    debugModule = (await import('node:util')).debuglog;
-  }
-  return debugModule;
-}
-
 /**
  * A debug function that can be used in any environment.
  *
@@ -64,39 +47,46 @@ export async function importDebug(): Promise<typeof debuglog> {
  *
  * @internal
  */
-export const debug = (prefix: string): ((...args: unknown[]) => void) => {
+export const debug = (
+  prefix: string,
+): ((...args: unknown[]) => void) | undefined => {
   if (isNode) {
-    return async (...logArgs: unknown[]) => {
+    const nodeDebug = environment.value.debuglog?.(prefix);
+    if (!nodeDebug || !nodeDebug.enabled) {
+      return;
+    }
+
+    return (...logArgs: unknown[]) => {
       if (captureLogs) {
         capturedLogs.push(prefix + logArgs);
       }
-      ((await importDebug())(prefix) as (...args: any[]) => void)(...logArgs);
+      (nodeDebug as (...args: any[]) => void)(...logArgs);
     };
   }
 
+  const debugLevel = (globalThis as any).__PUPPETEER_DEBUG;
+  if (!debugLevel) {
+    return;
+  }
+
+  const everythingShouldBeLogged = debugLevel === '*';
+
+  const prefixMatchesDebugLevel =
+    everythingShouldBeLogged ||
+    /**
+     * If the debug level is `foo*`, that means we match any prefix that
+     * starts with `foo`. If the level is `foo`, we match only the prefix
+     * `foo`.
+     */
+    (debugLevel.endsWith('*')
+      ? prefix.startsWith(debugLevel.slice(0, -1))
+      : prefix === debugLevel);
+
+  if (!prefixMatchesDebugLevel) {
+    return;
+  }
+
   return (...logArgs: unknown[]): void => {
-    const debugLevel = (globalThis as any).__PUPPETEER_DEBUG;
-    if (!debugLevel) {
-      return;
-    }
-
-    const everythingShouldBeLogged = debugLevel === '*';
-
-    const prefixMatchesDebugLevel =
-      everythingShouldBeLogged ||
-      /**
-       * If the debug level is `foo*`, that means we match any prefix that
-       * starts with `foo`. If the level is `foo`, we match only the prefix
-       * `foo`.
-       */
-      (debugLevel.endsWith('*')
-        ? prefix.startsWith(debugLevel)
-        : prefix === debugLevel);
-
-    if (!prefixMatchesDebugLevel) {
-      return;
-    }
-
     console.log(`${prefix}:`, ...logArgs);
   };
 };

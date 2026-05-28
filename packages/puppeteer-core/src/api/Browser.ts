@@ -23,11 +23,11 @@ import type {
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {
-  debugError,
   fromEmitterEvent,
   filterAsync,
   timeout,
   fromAbortSignal,
+  debugCatchError,
 } from '../common/util.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
@@ -680,7 +680,7 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
 
   /** @internal */
   override [disposeSymbol](): void {
-    return void this[asyncDisposeSymbol]().catch(debugError);
+    return void this[asyncDisposeSymbol]().catch(debugCatchError);
   }
 
   /** @internal */

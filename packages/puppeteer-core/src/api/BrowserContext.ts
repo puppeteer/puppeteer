@@ -17,10 +17,10 @@ import type {
 } from '../common/Cookie.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {
-  debugError,
   fromEmitterEvent,
   filterAsync,
   timeout,
+  debugCatchError,
 } from '../common/util.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 import {Mutex} from '../util/Mutex.js';
@@ -374,7 +374,7 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
 
   /** @internal */
   override [disposeSymbol](): void {
-    return void this[asyncDisposeSymbol]().catch(debugError);
+    return void this[asyncDisposeSymbol]().catch(debugCatchError);
   }
 
   /** @internal */

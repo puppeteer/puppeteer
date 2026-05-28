@@ -151,7 +151,7 @@ export class ChromeLauncher extends BrowserLauncher {
       try {
         await rm(path);
       } catch (error) {
-        debugError(error);
+        debugError?.(error);
         throw error;
       }
     }

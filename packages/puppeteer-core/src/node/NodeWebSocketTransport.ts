@@ -6,7 +6,7 @@
 import NodeWebSocket from 'ws';
 
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
-import {debugError} from '../common/util.js';
+import {debugCatchError} from '../common/util.js';
 import {packageVersion} from '../util/version.js';
 
 /**
@@ -53,7 +53,7 @@ export class NodeWebSocketTransport implements ConnectionTransport {
       }
     });
     // Silently log all errors - we don't know what to do with them.
-    this.#ws.addEventListener('error', debugError);
+    this.#ws.addEventListener('error', debugCatchError);
   }
 
   send(message: string): void {

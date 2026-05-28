@@ -5,7 +5,7 @@
  */
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {EventEmitter} from '../common/EventEmitter.js';
-import {debugError} from '../common/util.js';
+import {debugCatchError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {DisposableStack} from '../util/disposable.js';
 
@@ -42,7 +42,7 @@ export class PipeTransport implements ConnectionTransport {
         this.onclose.call(null);
       }
     });
-    pipeReadEmitter.on('error', debugError);
+    pipeReadEmitter.on('error', debugCatchError);
     const pipeWriteEmitter = this.#subscriptions.use(
       // NodeJS event emitters don't support `*` so we need to typecast
       // As long as we don't use it we should be OK.
@@ -50,7 +50,7 @@ export class PipeTransport implements ConnectionTransport {
         pipeWrite as unknown as EventEmitter<Record<string, any>>,
       ),
     );
-    pipeWriteEmitter.on('error', debugError);
+    pipeWriteEmitter.on('error', debugCatchError);
   }
 
   send(message: string): void {

@@ -311,7 +311,7 @@ export abstract class BrowserLauncher {
         await cdpConnection.closeBrowser();
         await browserProcess.hasClosed();
       } catch (error) {
-        debugError(error);
+        debugError?.(error);
         await browserProcess.close();
       }
     } else {
