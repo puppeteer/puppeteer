@@ -15,7 +15,6 @@ import {debugError} from '../common/util.js';
 
 import type {CdpFrame} from './Frame.js';
 import type {FrameManager} from './FrameManager.js';
-import {FrameManagerEvent} from './FrameManagerEvents.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
 
 /**
@@ -317,6 +316,7 @@ export class WebMCP extends EventEmitter<{
       const frameTools = this.#tools.get(tool.frameId) ?? new Map();
       if (!this.#tools.has(tool.frameId)) {
         this.#tools.set(tool.frameId, frameTools);
+        this.#listenToContextDestroyed(frame as CdpFrame);
       }
 
       const addedTool = new WebMCPTool(this, tool, frame);
@@ -366,7 +366,7 @@ export class WebMCP extends EventEmitter<{
     this.emit('toolresponded', response);
   };
 
-  #onFrameNavigated = (frame: Frame) => {
+  #onContextDisposed = (frame: CdpFrame) => {
     this.#pendingCalls.clear();
     const frameTools = this.#tools.get(frame._id);
     if (!frameTools) {
@@ -379,6 +379,12 @@ export class WebMCP extends EventEmitter<{
     }
   };
 
+  #listenToContextDestroyed(frame: CdpFrame): void {
+    frame.mainRealm().context?.once('disposed', () => {
+      this.#onContextDisposed(frame);
+    });
+  }
+
   /**
    * @internal
    */
@@ -386,10 +392,6 @@ export class WebMCP extends EventEmitter<{
     super();
     this.#client = client;
     this.#frameManager = frameManager;
-    this.#frameManager.on(
-      FrameManagerEvent.FrameNavigated,
-      this.#onFrameNavigated,
-    );
     this.#bindListeners();
   }
 

@@ -302,6 +302,89 @@ describe('Page.webmcp', function () {
     expect(page.webmcp.tools().length).toBe(0);
   });
 
+  it('should handle multiple navigations and report tools correctly', async () => {
+    const {page, httpsServer} = state;
+    await page.goto(httpsServer.EMPTY_PAGE);
+
+    // 1. Register tool on C1
+    let toolsAddedPromise = new Promise<void>(resolve => {
+      page.webmcp.once('toolsadded', () => {
+        return resolve();
+      });
+    });
+    await page.evaluate(() => {
+      const form = document.createElement('form');
+      form.setAttribute('toolname', 'tool-1');
+      form.setAttribute('tooldescription', 'desc-1');
+      document.body.appendChild(form);
+    });
+    await toolsAddedPromise;
+    expect(page.webmcp.tools().length).toBe(1);
+    expect(page.webmcp.tools()[0]!.name).toBe('tool-1');
+
+    // 2. Navigate to C2
+    let toolsRemovedPromise = new Promise<void>(resolve => {
+      page.webmcp.once('toolsremoved', () => {
+        return resolve();
+      });
+    });
+    await page.goto(httpsServer.EMPTY_PAGE);
+    await toolsRemovedPromise;
+    expect(page.webmcp.tools().length).toBe(0);
+
+    // 3. Register tool on C2
+    toolsAddedPromise = new Promise<void>(resolve => {
+      page.webmcp.once('toolsadded', () => {
+        return resolve();
+      });
+    });
+    await page.evaluate(() => {
+      const form = document.createElement('form');
+      form.setAttribute('toolname', 'tool-2');
+      form.setAttribute('tooldescription', 'desc-2');
+      document.body.appendChild(form);
+    });
+    await toolsAddedPromise;
+    expect(page.webmcp.tools().length).toBe(1);
+    expect(page.webmcp.tools()[0]!.name).toBe('tool-2');
+
+    // 4. Navigate to C3
+    toolsRemovedPromise = new Promise<void>(resolve => {
+      page.webmcp.once('toolsremoved', () => {
+        return resolve();
+      });
+    });
+    await page.goto(httpsServer.EMPTY_PAGE);
+    await toolsRemovedPromise;
+    expect(page.webmcp.tools().length).toBe(0);
+  });
+
+  it('should not reset tools on same-document navigation', async () => {
+    const {page, httpsServer} = state;
+    await page.goto(httpsServer.EMPTY_PAGE);
+
+    const toolsAddedPromise = new Promise<void>(resolve => {
+      page.webmcp.once('toolsadded', () => {
+        return resolve();
+      });
+    });
+    await page.evaluate(() => {
+      const form = document.createElement('form');
+      form.setAttribute('toolname', 'declarative tool name');
+      form.setAttribute('tooldescription', 'tool description');
+      document.body.appendChild(form);
+    });
+    await toolsAddedPromise;
+    expect(page.webmcp.tools().length).toBe(1);
+
+    // Same document/hash navigation should not reset tools.
+    await page.goto(httpsServer.EMPTY_PAGE + '#hash');
+
+    // Tools should still be present because context was not destroyed.
+    expect(page.webmcp.tools().length).toBe(1);
+    expect(page.webmcp.tools()[0]!.name).toBe('declarative tool name');
+  });
+
   it('should fire toolinvoked events', async () => {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);
