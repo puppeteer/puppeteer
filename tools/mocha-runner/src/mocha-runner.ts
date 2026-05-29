@@ -162,7 +162,6 @@ async function main() {
           }
         : {};
 
-      // change to trigger tests.
       const env = extendProcessEnv([
         ...parameters.map(param => {
           return parsedSuitesFile.parameterDefinitions[param];
