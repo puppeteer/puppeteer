@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import * as BidiMapper from 'chromium-bidi/lib/bidiMapper/BidiMapper.js';
+import {BidiMapper} from 'chromium-bidi';
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 import type {CDPEvents, CDPSession} from '../api/CDPSession.js';
