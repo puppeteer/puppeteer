@@ -1088,6 +1088,14 @@ export class CdpPage extends Page {
     return await this.#emulationManager.emulateTimezone(timezoneId);
   }
 
+  override async emulateLocale(locale?: string): Promise<void> {
+    await this.#emulationManager.emulateLocale(locale);
+    await this.#frameManager.networkManager.setAcceptLanguage(
+      locale,
+      await this.browser().userAgent(),
+    );
+  }
+
   override async emulateIdleState(overrides?: {
     isUserActive: boolean;
     isScreenUnlocked: boolean;

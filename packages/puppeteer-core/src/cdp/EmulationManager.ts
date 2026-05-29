@@ -31,6 +31,11 @@ interface TimezoneState {
   active: boolean;
 }
 
+interface LocaleState {
+  locale?: string;
+  active: boolean;
+}
+
 interface VisionDeficiencyState {
   visionDeficiency?: Protocol.Emulation.SetEmulatedVisionDeficiencyRequest['type'];
   active: boolean;
@@ -147,6 +152,13 @@ export class EmulationManager implements ClientProvider {
     },
     this,
     this.#emulateTimezone,
+  );
+  #localeState = new EmulatedState<LocaleState>(
+    {
+      active: false,
+    },
+    this,
+    this.#emulateLocale,
   );
   #visionDeficiencyState = new EmulatedState<VisionDeficiencyState>(
     {
@@ -370,6 +382,26 @@ export class EmulationManager implements ClientProvider {
   async emulateTimezone(timezoneId?: string): Promise<void> {
     await this.#timezoneState.setState({
       timezoneId,
+      active: true,
+    });
+  }
+
+  @invokeAtMostOnceForArguments
+  async #emulateLocale(
+    client: CDPSession,
+    localeState: LocaleState,
+  ): Promise<void> {
+    if (!localeState.active) {
+      return;
+    }
+    await client.send('Emulation.setLocaleOverride', {
+      locale: localeState.locale || '',
+    });
+  }
+
+  async emulateLocale(locale?: string): Promise<void> {
+    await this.#localeState.setState({
+      locale,
       active: true,
     });
   }

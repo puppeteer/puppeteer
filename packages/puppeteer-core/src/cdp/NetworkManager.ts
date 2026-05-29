@@ -81,8 +81,10 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   #userCacheDisabled?: boolean;
   #emulatedNetworkConditions?: InternalNetworkConditions;
   #userAgent?: string;
+  #defaultUserAgent?: string;
   #userAgentMetadata?: Protocol.Emulation.UserAgentMetadata;
   #platform?: string;
+  #acceptLanguage?: string;
 
   readonly #handlers = [
     ['Fetch.requestPaused', this.#onRequestPaused],
@@ -277,13 +279,24 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     await this.#applyToAllClients(this.#applyUserAgent.bind(this));
   }
 
+  async setAcceptLanguage(
+    acceptLanguage: string | undefined,
+    defaultUserAgent: string,
+  ): Promise<void> {
+    this.#acceptLanguage = acceptLanguage;
+    this.#defaultUserAgent = defaultUserAgent;
+    await this.#applyToAllClients(this.#applyUserAgent.bind(this));
+  }
+
   async #applyUserAgent(client: CDPSession) {
-    if (this.#userAgent === undefined) {
+    const userAgent = this.#userAgent ?? this.#defaultUserAgent;
+    if (userAgent === undefined) {
       return;
     }
     try {
       await client.send('Network.setUserAgentOverride', {
-        userAgent: this.#userAgent,
+        userAgent,
+        acceptLanguage: this.#acceptLanguage,
         userAgentMetadata: this.#userAgentMetadata,
         platform: this.#platform,
       });

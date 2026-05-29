@@ -382,6 +382,10 @@ export class BidiPage extends Page {
     return await this.#frame.browsingContext.setTimezoneOverride(timezoneId);
   }
 
+  override async emulateLocale(locale?: string): Promise<void> {
+    return await this.#frame.browsingContext.setLocaleOverride(locale);
+  }
+
   override async emulateIdleState(overrides?: {
     isUserActive: boolean;
     isScreenUnlocked: boolean;

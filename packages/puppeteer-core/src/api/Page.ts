@@ -2221,6 +2221,12 @@ export abstract class Page extends EventEmitter<PageEvents> {
   abstract emulateMediaFeatures(features?: MediaFeature[]): Promise<void>;
 
   /**
+   * @param locale - Locale to emulate on the page. Passing no locale disables
+   * locale emulation.
+   */
+  abstract emulateLocale(locale?: string): Promise<void>;
+
+  /**
    * @param timezoneId - Changes the timezone of the page. See
    * {@link https://source.chromium.org/chromium/chromium/deps/icu.git/+/faee8bc70570192d82d2978a71e2a615788597d1:source/data/misc/metaZones.txt | ICU’s metaZones.txt}
    * for a list of supported timezone IDs. Passing

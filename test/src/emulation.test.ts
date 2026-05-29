@@ -496,6 +496,59 @@ describe('Emulation', () => {
     });
   });
 
+  describe('Page.emulateLocale', function () {
+    it('should work', async () => {
+      const {page} = await getTestState();
+      const defaultLocale = await page.evaluate(() => {
+        return Intl.NumberFormat().resolvedOptions().locale;
+      });
+      const defaultLanguage = await page.evaluate(() => {
+        return navigator.language;
+      });
+
+      await page.emulateLocale('de-DE');
+      expect(
+        await page.evaluate(() => {
+          return Intl.NumberFormat().resolvedOptions().locale;
+        }),
+      ).toBe('de-DE');
+      expect(
+        await page.evaluate(() => {
+          return new Intl.NumberFormat().format(123456.78);
+        }),
+      ).toBe('123.456,78');
+      expect(
+        await page.evaluate(() => {
+          return navigator.language;
+        }),
+      ).toBe('de-DE');
+      expect(
+        await page.evaluate(() => {
+          return navigator.languages[0];
+        }),
+      ).toBe('de-DE');
+
+      await page.emulateLocale('fr-FR');
+      expect(
+        await page.evaluate(() => {
+          return Intl.DateTimeFormat().resolvedOptions().locale;
+        }),
+      ).toBe('fr-FR');
+
+      await page.emulateLocale();
+      expect(
+        await page.evaluate(() => {
+          return Intl.NumberFormat().resolvedOptions().locale;
+        }),
+      ).toBe(defaultLocale);
+      expect(
+        await page.evaluate(() => {
+          return navigator.language;
+        }),
+      ).toBe(defaultLanguage);
+    });
+  });
+
   describe('Page.emulateVisionDeficiency', function () {
     it('should work', async () => {
       const {page, server} = await getTestState();
