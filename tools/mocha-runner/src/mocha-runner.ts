@@ -162,6 +162,7 @@ async function main() {
           }
         : {};
 
+      // change to trigger tests.
       const env = extendProcessEnv([
         ...parameters.map(param => {
           return parsedSuitesFile.parameterDefinitions[param];
@@ -175,10 +176,6 @@ async function main() {
               };
             }),
           ),
-          // Workaround for potential issues with file watching on Windows.
-          // Assertion failed: !_wcsnicmp(filename, dir, dirlen),
-          // file src\win\fs-event.c, line 72.
-          CHOKIDAR_USEPOLLING: '1',
         },
         githubActionDebugging,
       ]);
