@@ -16,6 +16,12 @@ import type {
   SupportedBrowser,
 } from 'puppeteer-core';
 
+/**
+ * @internal
+ *
+ * We define custom search places for lilconfig since we want to support
+ * .puppeteerrc (without extension) which is not in lilconfig's default places.
+ */
 function getBooleanEnvVar(name: string): boolean | undefined {
   const env = process.env[name];
   if (env === undefined) {
@@ -116,7 +122,27 @@ function getBrowserSetting(
  * @internal
  */
 export const getConfiguration = async (): Promise<Configuration> => {
-  const result = await lilconfig('puppeteer').search();
+  const searchPlaces = [
+    '.puppeteerrc',
+    '.puppeteerrc.json',
+    '.puppeteerrc.yaml',
+    '.puppeteerrc.yml',
+    '.puppeteerrc.js',
+    '.puppeteerrc.cjs',
+    '.puppeteerrc.mjs',
+    '.config/puppeteer',
+    '.config/puppeteer.json',
+    '.config/puppeteer.yaml',
+    '.config/puppeteer.yml',
+    '.config/puppeteer.js',
+    '.config/puppeteer.cjs',
+    '.config/puppeteer.mjs',
+    'puppeteer.config.js',
+    'puppeteer.config.cjs',
+    'puppeteer.config.mjs',
+    'puppeteer.config.ts',
+  ];
+  const result = await lilconfig('puppeteer', {searchPlaces}).search();
   const configuration: Configuration = result ? {...result.config} : {};
 
   configuration.logLevel = getLogLevel(
