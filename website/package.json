@@ -25,7 +25,7 @@
     "@mdx-js/react": "3.1.1",
     "algoliasearch-helper": "3.29.1",
     "clsx": "2.1.1",
-    "docusaurus-plugin-copy-page-button": "0.6.2",
+    "docusaurus-plugin-copy-page-button": "0.7.0",
     "prism-react-renderer": "2.4.1",
     "react": "19.2.6",
     "react-cookie-consent": "10.0.1",
