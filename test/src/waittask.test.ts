@@ -780,7 +780,7 @@ describe('waittask specs', function () {
       });
       expect(error?.stack).toContain('Waiting for selector `.zombo` failed');
       // The extension is ts here as Mocha maps back via sourcemaps.
-      expect(error?.stack).toContain('waittask.spec.ts');
+      expect(error?.stack).toContain('waittask.test.ts');
     });
 
     describe('xpath', function () {
@@ -949,7 +949,7 @@ describe('waittask specs', function () {
 
       expect(error).toBeInstanceOf(Error);
       expect(error.message).toBe('Waiting failed');
-      expect(error.stack).toContain('waittask.spec.ts');
+      expect(error.stack).toContain('waittask.test.ts');
       expect(error.cause).toBeInstanceOf(Error);
     });
   });

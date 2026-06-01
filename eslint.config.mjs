@@ -380,7 +380,7 @@ export default defineConfig([
   },
   {
     name: 'Mocha Tests',
-    files: ['test/**/*.spec.ts'],
+    files: ['test/**/*.test.ts'],
 
     rules: {
       '@typescript-eslint/no-unused-vars': [

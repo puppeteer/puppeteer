@@ -992,7 +992,7 @@ describe('Page', function () {
         }
       });
       expect(message).toBe('WOOF WOOF');
-      expect(stack).toContain('page.spec.ts');
+      expect(stack).toContain('page.test.ts');
     });
     it('should support throwing "null"', async () => {
       const {page} = await getTestState();

@@ -201,7 +201,7 @@ async function main() {
         args.push('-n', 'expose-gc');
       }
 
-      const specPattern = 'test/build/**/*.spec.js';
+      const specPattern = 'test/build/**/*.test.js';
       const specs = globSync(specPattern, {
         exclude: !includeCdpTests
           ? (file: string) => {
