@@ -7,7 +7,7 @@ process.env.NODE_DEBUG = 'puppeteer:*';
 
 module.exports = {
   logLevel: 'debug',
-  spec: 'test/build/**/*.spec.js',
+  spec: 'test/build/**/*.test.js',
   require: ['source-map-support/register'],
   exit: !!process.env.CI,
   reporter: 'spec',

@@ -8,7 +8,7 @@
  * @type {import('mocha').MochaOptions}
  */
 module.exports = {
-  spec: ['build/**/*.spec.js'],
+  spec: ['build/**/*.test.js'],
   require: ['source-map-support/register'],
   exit: !!process.env.CI,
   timeout: 240_000,

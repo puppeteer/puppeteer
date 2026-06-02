@@ -5,7 +5,7 @@
  */
 module.exports = {
   logLevel: 'debug',
-  spec: 'test/build/**/*.spec.js',
+  spec: 'test/build/**/*.test.js',
   exit: !!process.env.CI,
   reporter: process.env.CI ? 'spec' : 'dot',
 };
