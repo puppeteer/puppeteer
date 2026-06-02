@@ -284,9 +284,11 @@ export class Accessibility {
           debugError?.(error);
         }
       }
-      for (const child of root.children) {
-        await populateIframes(child);
-      }
+      await Promise.all(
+        root.children.map(child => {
+          return populateIframes(child);
+        }),
+      );
     };
 
     let needle: AXNode | null = defaultRoot;
