@@ -52,6 +52,21 @@ export interface ResolvedLaunchArgs {
 }
 
 /**
+ * @internal
+ */
+export function getBrowserTypeDisplayName(
+  browserType: InstalledBrowser,
+): string {
+  switch (browserType) {
+    case InstalledBrowser.FIREFOX:
+    case InstalledBrowser.CHROME:
+      return browserType.charAt(0).toUpperCase() + browserType.slice(1);
+    default:
+      return browserType;
+  }
+}
+
+/**
  * Describes a launcher - a class that is able to create and launch a browser instance.
  *
  * @public
@@ -544,22 +559,13 @@ export abstract class BrowserLauncher {
           `Tried to find the browser at the configured path (${executablePath}) for version ${configVersion}, but no executable was found.`,
         );
       }
-      switch (this.browser) {
-        case 'chrome':
-          throw new Error(
-            `Could not find Chrome (ver. ${browserVersion}). This can occur if either\n` +
-              ` 1. you did not perform an installation before running the script (e.g. \`npx puppeteer browsers install ${browserType}\`) or\n` +
-              ` 2. your cache path is incorrectly configured (which is: ${config.cacheDirectory}).\n` +
-              'For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.',
-          );
-        case 'firefox':
-          throw new Error(
-            `Could not find Firefox (rev. ${browserVersion}). This can occur if either\n` +
-              ' 1. you did not perform an installation for Firefox before running the script (e.g. `npx puppeteer browsers install firefox`) or\n' +
-              ` 2. your cache path is incorrectly configured (which is: ${config.cacheDirectory}).\n` +
-              'For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.',
-          );
-      }
+
+      throw new Error(
+        `Could not find ${getBrowserTypeDisplayName(browserType)} (ver. ${browserVersion}). This can occur if either\n` +
+          ` 1. you did not perform an installation before running the script (e.g. \`npx puppeteer browsers install ${browserType}\`) or\n` +
+          ` 2. your cache path is incorrectly configured (which is: ${config.cacheDirectory}).\n` +
+          'For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.',
+      );
     }
     return executablePath;
   }
