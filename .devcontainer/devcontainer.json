@@ -1,10 +1,10 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "image": "mcr.microsoft.com/devcontainers/universal:6",
   "features": {
-    "ghcr.io/devcontainers/features/node:1": {
+    "ghcr.io/devcontainers/features/node:2": {
       "version": "22"
     },
-    "ghcr.io/devcontainers/features/docker-in-docker:1": {
+    "ghcr.io/devcontainers/features/docker-in-docker:3": {
       "version": "latest",
       "moby": true
     }
