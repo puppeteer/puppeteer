@@ -49,6 +49,9 @@ function isSupportedBrowser(product: unknown): product is SupportedBrowser {
  * @internal
  */
 function getDefaultBrowser(browser?: unknown): SupportedBrowser {
+  if (!browser) {
+    return 'chrome';
+  }
   if (!isSupportedBrowser(browser)) {
     throw new Error(`Unsupported browser ${browser}`);
   }
