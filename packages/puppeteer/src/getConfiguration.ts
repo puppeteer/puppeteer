@@ -48,17 +48,11 @@ function isSupportedBrowser(product: unknown): product is SupportedBrowser {
 /**
  * @internal
  */
-function getDefaultBrowser(browser: unknown): SupportedBrowser {
-  // Validate configuration.
-  if (browser && !isSupportedBrowser(browser)) {
+function getDefaultBrowser(browser?: unknown): SupportedBrowser {
+  if (!isSupportedBrowser(browser)) {
     throw new Error(`Unsupported browser ${browser}`);
   }
-  switch (browser) {
-    case 'firefox':
-      return 'firefox';
-    default:
-      return 'chrome';
-  }
+  return browser;
 }
 
 /**
