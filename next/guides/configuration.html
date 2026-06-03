@@ -8,7 +8,7 @@
 <script>window.__COPY_PAGE_BUTTON_OPTIONS__={customStyles:{},generateMarkdownRoutes:!1,placement:"auto",mcpServer:null,id:"default"}</script>
 <script src="https://www.googletagmanager.com/gtag/js?id=G-J15CTWBVHX" async></script>
 <script src="/fix-location.js"></script><link rel="stylesheet" href="/assets/css/styles.37f6a43f.css">
-<script src="/assets/js/runtime~main.fa02c4b5.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.6c2dc619.js" defer="defer"></script>
 <script src="/assets/js/main.a591602b.js" defer="defer"></script>
 </head>
 <body>
@@ -36,13 +36,19 @@ as <code>HTTPS_PROXY</code>).</p></div></div>
 <p>Configuration files are the <strong>recommended</strong> choice for configuring Puppeteer.
 Puppeteer will look up the file tree for any of the following formats:</p>
 <ul>
-<li class=""><code>.puppeteerrc.cjs</code>,</li>
-<li class=""><code>.puppeteerrc.js</code>,</li>
-<li class=""><code>.puppeteerrc</code> (YAML/JSON),</li>
-<li class=""><code>.puppeteerrc.json</code>,</li>
-<li class=""><code>.puppeteerrc.yaml</code>,</li>
-<li class=""><code>puppeteer.config.js</code>, and</li>
+<li class=""><code>package.json</code></li>
+<li class=""><code>.config/puppeteer.config.cjs</code></li>
+<li class=""><code>.config/puppeteer.config.js</code></li>
+<li class=""><code>.config/puppeteerrc.cjs</code></li>
+<li class=""><code>.config/puppeteerrc.js</code></li>
+<li class=""><code>.config/puppeteerrc.json</code></li>
+<li class=""><code>.config/puppeteerrc</code> (JSON)</li>
+<li class=""><code>.puppeteerrc.cjs</code></li>
+<li class=""><code>.puppeteerrc.js</code></li>
+<li class=""><code>.puppeteerrc.json</code></li>
+<li class=""><code>.puppeteerrc</code> (JSON)</li>
 <li class=""><code>puppeteer.config.cjs</code></li>
+<li class=""><code>puppeteer.config.js</code></li>
 </ul>
 <p>See the <a class="" href="/next/api/puppeteer.configuration"><code>Configuration</code></a> interface for possible
 options.</p>
