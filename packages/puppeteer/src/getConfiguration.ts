@@ -113,7 +113,23 @@ function getBrowserSetting(
  * @internal
  */
 export const getConfiguration = async (): Promise<Configuration> => {
-  const result = await lilconfig('puppeteer').search();
+  const result = await lilconfig('puppeteer', {
+    searchPlaces: [
+      'package.json',
+      '.config/puppeteer.config.cjs',
+      '.config/puppeteer.config.js',
+      '.config/puppeteerrc.cjs',
+      '.config/puppeteerrc.js',
+      '.config/puppeteerrc.json',
+      '.config/puppeteerrc',
+      '.puppeteerrc.cjs',
+      '.puppeteerrc.js',
+      '.puppeteerrc.json',
+      '.puppeteerrc',
+      'puppeteer.config.cjs',
+      'puppeteer.config.js',
+    ],
+  }).search();
   const configuration: Configuration = result ? {...result.config} : {};
 
   configuration.logLevel = getLogLevel(
