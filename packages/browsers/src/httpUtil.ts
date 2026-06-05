@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {createWriteStream} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {createWriteStream, unlinkSync} from 'node:fs';
 import * as http from 'node:http';
 import * as https from 'node:https';
 import {URL, urlToHttpOptions} from 'node:url';
@@ -87,15 +88,12 @@ export function downloadFile(
   url: URL,
   destinationPath: string,
   progressCallback?: (downloadedBytes: number, totalBytes: number) => void,
+  expectedHash?: string,
 ): Promise<void> {
   return new Promise<void>(async (resolve, reject) => {
     let downloadedBytes = 0;
     let totalBytes = 0;
-
-    function onData(chunk: string): void {
-      downloadedBytes += chunk.length;
-      progressCallback!(downloadedBytes, totalBytes);
-    }
+    const hash = createHash('sha256');
 
     try {
       const request = await httpRequest(url, 'GET', response => {
@@ -110,24 +108,37 @@ export function downloadFile(
         }
         const file = createWriteStream(destinationPath);
         file.on('close', () => {
-          // The 'close' event is emitted when the stream and any of its
-          // underlying resources (a file descriptor, for example) have been
-          // closed. The event indicates that no more events will be emitted, and
-          // no further computation will occur.
+          if (expectedHash) {
+            const actualHash = hash.digest('hex');
+            if (actualHash !== expectedHash.toLowerCase()) {
+              try {
+                unlinkSync(destinationPath);
+              } catch {}
+              reject(
+                new Error(
+                  `Integrity check failed for downloaded browser archive.\n` +
+                    `  URL:      ${url}\n` +
+                    `  Expected: ${expectedHash.toLowerCase()}\n` +
+                    `  Actual:   ${actualHash}`,
+                ),
+              );
+              return;
+            }
+          }
           return resolve();
         });
         file.on('error', error => {
-          // The 'error' event may be emitted by a Readable implementation at any
-          // time. Typically, this may occur if the underlying stream is unable to
-          // generate data due to an underlying internal failure, or when a stream
-          // implementation attempts to push an invalid chunk of data.
           return reject(error);
         });
-        response.pipe(file);
         totalBytes = parseInt(response.headers['content-length']!, 10);
-        if (progressCallback) {
-          response.on('data', onData);
-        }
+        response.on('data', (chunk: Buffer) => {
+          downloadedBytes += chunk.length;
+          hash.update(chunk);
+          if (progressCallback) {
+            progressCallback(downloadedBytes, totalBytes);
+          }
+        });
+        response.pipe(file);
       });
       request.on('error', error => {
         return reject(error);
@@ -136,6 +147,27 @@ export function downloadFile(
       reject(error);
     }
   });
+}
+
+/**
+ * Attempts to fetch a SHA-256 checksum from a sidecar file at `{url}.sha256`.
+ * Returns the lowercase hex hash string if found and valid, or undefined.
+ *
+ * @internal
+ */
+export async function fetchChecksumFile(url: URL): Promise<string | undefined> {
+  const checksumUrl = new URL(url.toString() + '.sha256');
+  try {
+    const text = await getText(checksumUrl);
+    // Checksum files may contain "hash  filename" or just "hash"
+    const candidate = text.trim().split(/\s+/)[0];
+    if (candidate && /^[0-9a-f]{64}$/i.test(candidate)) {
+      return candidate.toLowerCase();
+    }
+  } catch {
+    // Sidecar not available — proceed without checksum verification
+  }
+  return undefined;
 }
 export async function getJSON(url: URL): Promise<unknown> {
   const text = await getText(url);

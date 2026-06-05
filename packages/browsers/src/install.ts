@@ -21,7 +21,7 @@ import {debug} from './debug.js';
 import {DefaultProvider} from './DefaultProvider.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {unpackArchive} from './fileUtil.js';
-import {downloadFile, headHttpRequest} from './httpUtil.js';
+import {downloadFile, fetchChecksumFile, headHttpRequest} from './httpUtil.js';
 import {ProgressBar} from './ProgressBar.js';
 import type {BrowserProvider} from './provider.js';
 
@@ -113,6 +113,15 @@ export interface InstallOptions {
    * @defaultValue `false`
    */
   installDeps?: boolean;
+  /**
+   * Expected SHA-256 checksum (lowercase hex) of the downloaded browser archive.
+   * If provided, installation will fail when the downloaded file does not match.
+   * If omitted, an attempt is made to fetch a checksum from a `.sha256` sidecar
+   * file published alongside the archive. When no checksum is available the
+   * download proceeds without integrity verification.
+   */
+  expectedHash?: string;
+
   /**
    * Custom provider implementation for alternative download sources.
    *
@@ -374,13 +383,25 @@ async function installUrl(
     await mkdir(browserRoot, {recursive: true});
   }
 
+  // Resolve expected hash: use caller-provided value or attempt to fetch a
+  // .sha256 sidecar published alongside the archive.
+  const expectedHash =
+    options.expectedHash ?? (await fetchChecksumFile(url));
+  if (expectedHash) {
+    debugInstall?.(`Checksum found for ${fileName}: ${expectedHash}`);
+  } else {
+    debugInstall?.(
+      `No checksum available for ${fileName} — skipping integrity verification`,
+    );
+  }
+
   if (!options.unpack) {
     if (existsSync(archivePath)) {
       return archivePath;
     }
     debugInstall?.(`Downloading binary from ${url}`);
     debugTime('download');
-    await downloadFile(url, archivePath, downloadProgressCallback);
+    await downloadFile(url, archivePath, downloadProgressCallback, expectedHash);
     debugTimeEnd('download');
     return archivePath;
   }
@@ -437,7 +458,12 @@ async function installUrl(
       debugInstall?.(`Downloading binary from ${url}`);
       try {
         debugTime('download');
-        await downloadFile(url, archivePath, downloadProgressCallback);
+        await downloadFile(
+          url,
+          archivePath,
+          downloadProgressCallback,
+          expectedHash,
+        );
       } finally {
         debugTimeEnd('download');
       }
