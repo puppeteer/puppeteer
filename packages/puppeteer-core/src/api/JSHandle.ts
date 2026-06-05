@@ -137,7 +137,7 @@ export abstract class JSHandle<T = unknown> {
     const propertyNames = await this.evaluate(object => {
       const enumerableProperties = [];
       const descriptors = Object.getOwnPropertyDescriptors(object);
-      for (const propertyName in descriptors) {
+      for (const propertyName of Object.keys(descriptors)) {
         if (descriptors[propertyName]?.enumerable) {
           enumerableProperties.push(propertyName);
         }
