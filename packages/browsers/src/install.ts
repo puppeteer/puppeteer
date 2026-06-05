@@ -21,7 +21,7 @@ import {debug} from './debug.js';
 import {DefaultProvider} from './DefaultProvider.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {unpackArchive} from './fileUtil.js';
-import {downloadFile, fetchChecksumFile, headHttpRequest} from './httpUtil.js';
+import {downloadFile, headHttpRequest} from './httpUtil.js';
 import {ProgressBar} from './ProgressBar.js';
 import type {BrowserProvider} from './provider.js';
 
@@ -383,16 +383,9 @@ async function installUrl(
     await mkdir(browserRoot, {recursive: true});
   }
 
-  // Resolve expected hash: use caller-provided value or attempt to fetch a
-  // .sha256 sidecar published alongside the archive.
-  const expectedHash =
-    options.expectedHash ?? (await fetchChecksumFile(url));
+  const {expectedHash} = options;
   if (expectedHash) {
-    debugInstall?.(`Checksum found for ${fileName}: ${expectedHash}`);
-  } else {
-    debugInstall?.(
-      `No checksum available for ${fileName} — skipping integrity verification`,
-    );
+    debugInstall?.(`Using provided checksum for ${fileName}: ${expectedHash}`);
   }
 
   if (!options.unpack) {

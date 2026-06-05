@@ -149,26 +149,7 @@ export function downloadFile(
   });
 }
 
-/**
- * Attempts to fetch a SHA-256 checksum from a sidecar file at `{url}.sha256`.
- * Returns the lowercase hex hash string if found and valid, or undefined.
- *
- * @internal
- */
-export async function fetchChecksumFile(url: URL): Promise<string | undefined> {
-  const checksumUrl = new URL(url.toString() + '.sha256');
-  try {
-    const text = await getText(checksumUrl);
-    // Checksum files may contain "hash  filename" or just "hash"
-    const candidate = text.trim().split(/\s+/)[0];
-    if (candidate && /^[0-9a-f]{64}$/i.test(candidate)) {
-      return candidate.toLowerCase();
-    }
-  } catch {
-    // Sidecar not available — proceed without checksum verification
-  }
-  return undefined;
-}
+
 export async function getJSON(url: URL): Promise<unknown> {
   const text = await getText(url);
   try {
