@@ -16,6 +16,8 @@ import {
 import {EventEmitter} from '../common/EventEmitter.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import {debugError, debugCatchError} from '../common/util.js';
+import type {EvaluateFunc, HandleFor} from '../index-browser.js';
+import {Deferred} from '../util/Deferred.js';
 
 import {ExecutionContext} from './ExecutionContext.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
@@ -39,6 +41,7 @@ export class CdpWebWorker extends WebWorker {
   readonly #id: string;
   readonly #targetType: TargetType;
   readonly #emitter: EventEmitter<WebWorkerEvents>;
+  #workerLoaded = new Deferred<void>();
 
   get internalEmitter(): EventEmitter<WebWorkerEvents> {
     return this.#emitter;
@@ -64,6 +67,10 @@ export class CdpWebWorker extends WebWorker {
         new ExecutionContext(client, event.context, this.#world),
       );
     });
+    this.#client.once('Inspector.workerScriptLoaded', () => {
+      this.#workerLoaded.resolve();
+    });
+
     this.#world.emitter.on('consoleapicalled', async event => {
       try {
         const values = event.args.map(arg => {
@@ -137,5 +144,24 @@ export class CdpWebWorker extends WebWorker {
           self.close();
         });
     }
+  }
+
+  override async evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
+  >(func: Func | string, ...args: Params): Promise<Awaited<ReturnType<Func>>> {
+    await this.#workerLoaded.valueOrThrow();
+    return await super.evaluate(func, ...args);
+  }
+
+  override async evaluateHandle<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
+  >(
+    func: Func | string,
+    ...args: Params
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    await this.#workerLoaded.valueOrThrow();
+    return await super.evaluateHandle(func, ...args);
   }
 }
