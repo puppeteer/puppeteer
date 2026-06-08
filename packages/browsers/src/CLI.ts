@@ -17,7 +17,7 @@ import {
   Browser,
   resolveBuildId,
   BrowserPlatform,
-  type ChromeReleaseChannel,
+  ChromeReleaseChannel,
 } from './browser-data/browser-data.js';
 import {Cache} from './Cache.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
@@ -424,10 +424,20 @@ export class CLI {
             args.browser.name,
           );
 
+          if (
+            args.system &&
+            !Object.values(ChromeReleaseChannel).includes(
+              args.browser.buildId as ChromeReleaseChannel,
+            )
+          ) {
+            throw new Error(
+              `Cannot launch a system browser for the provided release channel: ${args.browser.buildId}`,
+            );
+          }
+
           const executablePath = args.system
             ? computeSystemExecutablePath({
                 browser: args.browser.name,
-                // TODO: throw an error if not a ChromeReleaseChannel is provided.
                 channel: args.browser.buildId as ChromeReleaseChannel,
                 platform: args.platform,
               })
