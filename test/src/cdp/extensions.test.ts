@@ -49,24 +49,22 @@ describe('extensions', function () {
     assertNoServiceWorkerReported(targets, extensionId);
   });
 
-  for (let index = 0; index < 100; index++) {
-    it.only('can evaluate in the service worker', async function () {
-      const {browser} = state;
-      const extensionId = await browser.installExtension(extensionPath);
-      const serviceWorkerTarget = await browser.waitForTarget(target => {
-        return target.type() === 'service_worker';
-      });
-      const worker = await serviceWorkerTarget.worker();
-      const result = await worker!.evaluate(() => {
-        // @ts-expect-error different context.
-        return globalThis.MAGIC;
-      });
-      expect(result).toBe(42);
-      await browser.uninstallExtension(extensionId);
-      const targets = browser.targets();
-      assertNoServiceWorkerReported(targets, extensionId);
+  it('can evaluate in the service worker', async function () {
+    const {browser} = state;
+    const extensionId = await browser.installExtension(extensionPath);
+    const serviceWorkerTarget = await browser.waitForTarget(target => {
+      return target.type() === 'service_worker';
     });
-  }
+    const worker = await serviceWorkerTarget.worker();
+    const result = await worker!.evaluate(() => {
+      // @ts-expect-error different context.
+      return globalThis.MAGIC;
+    });
+    expect(result).toBe(42);
+    await browser.uninstallExtension(extensionId);
+    const targets = browser.targets();
+    assertNoServiceWorkerReported(targets, extensionId);
+  });
 
   it('should list extensions and their properties', async () => {
     const {browser} = state;

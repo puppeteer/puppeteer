@@ -15,26 +15,25 @@ import {waitEvent} from './utils.js';
 describe('Workers', function () {
   setupTestBrowserHooks();
 
-  for (let index = 0; index < 100; index++) {
-    it.only('Page.workers', async () => {
-      const {page, server} = await getTestState();
+  it('Page.workers', async () => {
+    const {page, server} = await getTestState();
 
-      await Promise.all([
-        waitEvent(page, 'workercreated'),
-        page.goto(server.PREFIX + '/worker/worker.html'),
-      ]);
-      const worker = page.workers()[0]!;
-      expect(worker.url()).toContain('worker.js');
+    await Promise.all([
+      waitEvent(page, 'workercreated'),
+      page.goto(server.PREFIX + '/worker/worker.html'),
+    ]);
+    const worker = page.workers()[0]!;
+    expect(worker.url()).toContain('worker.js');
 
-      const result = await worker.evaluate(() => {
-        return (globalThis as any).workerFunction();
-      });
-      expect(result).toBe('worker function result');
-
-      await page.goto(server.EMPTY_PAGE);
-      expect(page.workers()).toHaveLength(0);
+    const result = await worker.evaluate(() => {
+      return (globalThis as any).workerFunction();
     });
-  }
+    expect(result).toBe('worker function result');
+
+    await page.goto(server.EMPTY_PAGE);
+    expect(page.workers()).toHaveLength(0);
+  });
+
   it('should emit created and destroyed events', async () => {
     const {page} = await getTestState();
 
