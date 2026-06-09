@@ -41,24 +41,23 @@ export class CdpExtension extends Extension {
       );
     });
 
-    const workers: WebWorker[] = [];
-    for (const target of extensionWorkers) {
-      try {
-        const worker = await target.worker();
-
-        if (worker) {
-          workers.push(worker);
+    const workers = await Promise.all(
+      extensionWorkers.map(async target => {
+        try {
+          return await target.worker();
+        } catch (err) {
+          if (this.#canIgnoreError(err)) {
+            debugError?.(err);
+            return null;
+          }
+          throw err;
         }
-      } catch (err) {
-        if (this.#canIgnoreError(err)) {
-          debugError?.(err);
-          continue;
-        }
-        throw err;
-      }
-    }
+      }),
+    );
 
-    return workers;
+    return workers.filter((worker): worker is WebWorker => {
+      return worker !== null;
+    });
   }
 
   async pages(): Promise<Page[]> {
