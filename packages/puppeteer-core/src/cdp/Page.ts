@@ -121,6 +121,10 @@ export class CdpPage extends Page {
     defaultViewport: Viewport | null,
   ): Promise<CdpPage> {
     const page = new CdpPage(client, target);
+    await page.#frameManager.networkManager.setAcceptLanguage(
+      undefined,
+      await page.browser().userAgent(),
+    );
     await page.#initialize();
     if (defaultViewport) {
       try {
@@ -1090,10 +1094,7 @@ export class CdpPage extends Page {
 
   override async emulateLocale(locale?: string): Promise<void> {
     await this.#emulationManager.emulateLocale(locale);
-    await this.#frameManager.networkManager.setAcceptLanguage(
-      locale,
-      await this.browser().userAgent(),
-    );
+    await this.#frameManager.networkManager.setAcceptLanguage(locale);
   }
 
   override async emulateIdleState(overrides?: {

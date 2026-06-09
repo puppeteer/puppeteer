@@ -395,7 +395,7 @@ export class EmulationManager implements ClientProvider {
       return;
     }
     await client.send('Emulation.setLocaleOverride', {
-      locale: localeState.locale || '',
+      locale: localeState.locale,
     });
   }
 

@@ -281,10 +281,12 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
 
   async setAcceptLanguage(
     acceptLanguage: string | undefined,
-    defaultUserAgent: string,
+    defaultUserAgent?: string,
   ): Promise<void> {
     this.#acceptLanguage = acceptLanguage;
-    this.#defaultUserAgent = defaultUserAgent;
+    if (defaultUserAgent !== undefined) {
+      this.#defaultUserAgent = defaultUserAgent;
+    }
     await this.#applyToAllClients(this.#applyUserAgent.bind(this));
   }
 
