@@ -171,8 +171,8 @@ export abstract class WebWorker extends EventEmitter<WebWorkerEvents> {
     return this.mainRealm().waitForFunction(
       pageFunction,
       {
-        polling,
-        ...remainingOptions,
+        polling: 100,
+        ...options,
       },
       ...args
     );
