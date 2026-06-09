@@ -55,25 +55,11 @@ describe('extensions', function () {
     const serviceWorkerTarget = await browser.waitForTarget(target => {
       return target.type() === 'service_worker';
     });
-    const worker = await serviceWorkerTarget.worker()!;
-
-    let result = '';
-    // TODO: Chrome is flaky and MAGIC is sometimes not yet
-    // defined. Generally, it should not be the case but it look like
-    // there is a race condition between Runtime.evaluate and the
-    // worker's main script execution.
-    for (let i = 0; i < 5; i++) {
-      try {
-        result = await worker!.evaluate(() => {
-          // @ts-expect-error different context.
-          return globalThis.MAGIC;
-        });
-        break;
-      } catch {}
-      await new Promise(resolve => {
-        return setTimeout(resolve, 200);
-      });
-    }
+    const worker = await serviceWorkerTarget.worker();
+    const result = await worker!.evaluate(() => {
+      // @ts-expect-error different context.
+      return globalThis.MAGIC;
+    });
     expect(result).toBe(42);
     await browser.uninstallExtension(extensionId);
     const targets = browser.targets();

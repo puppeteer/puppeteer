@@ -25,27 +25,15 @@ describe('Workers', function () {
     const worker = page.workers()[0]!;
     expect(worker.url()).toContain('worker.js');
 
-    let result = '';
-    // TODO: Chrome is flaky and workerFunction is sometimes not yet
-    // defined. Generally, it should not be the case but it look like
-    // there is a race condition between Runtime.evaluate and the
-    // worker's main script execution.
-    for (let i = 0; i < 5; i++) {
-      try {
-        result = await worker.evaluate(() => {
-          return (globalThis as any).workerFunction();
-        });
-        break;
-      } catch {}
-      await new Promise(resolve => {
-        return setTimeout(resolve, 200);
-      });
-    }
+    const result = await worker.evaluate(() => {
+      return (globalThis as any).workerFunction();
+    });
     expect(result).toBe('worker function result');
 
     await page.goto(server.EMPTY_PAGE);
     expect(page.workers()).toHaveLength(0);
   });
+
   it('should emit created and destroyed events', async () => {
     const {page} = await getTestState();
 
