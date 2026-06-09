@@ -68,3 +68,12 @@ export enum ChromeReleaseChannel {
   CANARY = 'canary',
   BETA = 'beta',
 }
+
+/**
+ * @internal
+ */
+export function isChromeReleaseChannel(
+  value: unknown,
+): value is ChromeReleaseChannel {
+  return Object.values(ChromeReleaseChannel).includes(value as any);
+}
