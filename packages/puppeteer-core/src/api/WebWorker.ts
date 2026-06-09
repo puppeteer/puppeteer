@@ -155,6 +155,36 @@ export abstract class WebWorker extends EventEmitter<WebWorkerEvents> {
     return await this.mainRealm().evaluateHandle(func, ...args);
   }
 
+  /**
+   * Waits for the provided function, `workerFunction`, to return a truthy value when
+   * evaluated in the page's context.
+   *
+   * @param workerFunction - Function to be evaluated in browser context until it
+   * returns a truthy value.
+   * @param options - Options for configuring waiting behavior.
+   */
+  waitForFunction<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
+  >(
+    workerFunction: Func | string,
+    options: {
+      polling?: number;
+      timeout?: number;
+      signal?: AbortSignal;
+    } = {},
+    ...args: Params
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    return this.mainRealm().waitForFunction(
+      workerFunction,
+      {
+        polling: 100,
+        ...options,
+      },
+      ...args,
+    );
+  }
+
   async close(): Promise<void> {
     throw new UnsupportedOperation('WebWorker.close() is not supported');
   }
