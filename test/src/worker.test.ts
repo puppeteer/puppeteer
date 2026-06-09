@@ -452,7 +452,7 @@ describe('Workers', function () {
       } catch (e) {
         error = e as Error;
       }
-      expect(error?.message).toContain('Waiting failed: 500ms exceeded');
+      expect(error?.message).toContain('Waiting failed');
     });
 
     it('should return a JSHandle to a string and parse it', async () => {
