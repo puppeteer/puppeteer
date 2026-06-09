@@ -410,4 +410,91 @@ describe('Workers', function () {
       expect(handle.disposed).toBe(true);
     });
   });
+
+  describe('waitForFunction', function () {
+    setupTestBrowserHooks();
+
+    it('should wait for a condition', async () => {
+      const {page} = await getTestState();
+
+      const workerCreatedPromise = waitEvent<WebWorker>(page, 'workercreated');
+      await page.evaluate(() => {
+        return new Worker(`data:text/javascript,
+          setTimeout(() => {
+            self.foo = true;
+          }, 500);
+        `);
+      });
+      const worker = await workerCreatedPromise;
+
+      await worker.waitForFunction(() => {
+        return (self as any).foo === true;
+      });
+    });
+
+    it('should timeout if condition is not met', async () => {
+      const {page} = await getTestState();
+
+      const workerCreatedPromise = waitEvent<WebWorker>(page, 'workercreated');
+      await page.evaluate(() => {
+        return new Worker(`data:text/javascript,1`);
+      });
+      const worker = await workerCreatedPromise;
+
+      let error: Error | undefined;
+      try {
+        await worker.waitForFunction(
+          () => {
+            return false;
+          },
+          {timeout: 500},
+        );
+      } catch (e) {
+        error = e as Error;
+      }
+      expect(error?.message).toContain('Waiting failed: 500ms exceeded');
+    });
+
+    it('should return a JSHandle to a string and parse it', async () => {
+      const {page} = await getTestState();
+      const workerCreatedPromise = waitEvent<WebWorker>(page, 'workercreated');
+      await page.evaluate(() => {
+        return new Worker(`data:text/javascript,
+          setTimeout(() => {
+            self.status = 'ready';
+          }, 500);
+        `);
+      });
+      const worker = await workerCreatedPromise;
+
+      const handle = await worker.waitForFunction(() => {
+        return (self as any).status === 'ready' ? 'Operation Success' : false;
+      });
+
+      const result = await handle.jsonValue();
+      expect(result).toBe('Operation Success');
+    });
+
+    it('should work with JSHandle as an argument', async () => {
+      const {page} = await getTestState();
+      const workerCreatedPromise = waitEvent<WebWorker>(page, 'workercreated');
+      await page.evaluate(() => {
+        return new Worker(`data:text/javascript,
+          self.targetValue = 42;
+        `);
+      });
+      const worker = await workerCreatedPromise;
+
+      // Create a handle in Node.js to pass into the worker
+      const argHandle = await worker.evaluateHandle(() => 42);
+
+      await worker.waitForFunction(
+        expected => {
+          return (self as any).targetValue === expected;
+        },
+        {},
+        argHandle,
+      );
+    });
+  });
 });

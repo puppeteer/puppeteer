@@ -73,11 +73,11 @@ const eraseFromCache = (node: Node | null) => {
  * Erases the cache when the tree has mutated text.
  */
 const observedNodes = new WeakSet<Node>();
-let textChangeObserver: MutationObserver | undefined;
+let textChangeObserver: MutationObserver;
 const getTextChangeObserver = () => {
   const MutationObserverImpl = globalThis.MutationObserver;
   if (!MutationObserverImpl) {
-    return;
+    throw new Error('MutationObserver is not available in this environment.');
   }
   if (!textChangeObserver) {
     textChangeObserver = new MutationObserverImpl(mutations => {
@@ -143,7 +143,7 @@ export const createTextContent = (root: Node): TextContent => {
     }
 
     if (!observedNodes.has(root)) {
-      getTextChangeObserver()?.observe(root, {
+      getTextChangeObserver().observe(root, {
         childList: true,
         characterData: true,
         subtree: true,

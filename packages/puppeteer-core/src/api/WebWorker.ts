@@ -167,14 +167,13 @@ export abstract class WebWorker extends EventEmitter<WebWorkerEvents> {
     } = {},
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    const {polling = 100, ...remainingOptions} = options;
     return this.mainRealm().waitForFunction(
       pageFunction,
       {
         polling: 100,
         ...options,
       },
-      ...args
+      ...args,
     );
   }
 
