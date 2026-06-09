@@ -447,7 +447,7 @@ describe('Workers', function () {
           () => {
             return false;
           },
-          {timeout: 500},
+          {timeout: 50},
         );
       } catch (e) {
         error = e as Error;
