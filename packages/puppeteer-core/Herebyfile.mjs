@@ -46,8 +46,8 @@ export const generateInjectedTask = task({
     } = await esbuild.build({
       entryPoints: ['src/injected/injected.ts'],
       bundle: true,
-      format: 'cjs',
-      target: ['chrome125', 'firefox125'],
+      format: 'esm',
+      target: ['chrome149', 'firefox151'],
       minify: true,
       write: false,
       legalComments: 'none',
