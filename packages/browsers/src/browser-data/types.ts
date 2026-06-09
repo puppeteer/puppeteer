@@ -68,3 +68,15 @@ export enum ChromeReleaseChannel {
   CANARY = 'canary',
   BETA = 'beta',
 }
+
+/**
+ * @internal
+ */
+export function verifyChromeReleaseChannel(
+  value: unknown,
+): ChromeReleaseChannel {
+  if (Object.values(ChromeReleaseChannel).includes(value as any)) {
+    return value as ChromeReleaseChannel;
+  }
+  throw new Error(`Invalid Chrome channel: ${value}`);
+}

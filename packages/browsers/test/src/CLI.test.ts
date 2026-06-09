@@ -38,6 +38,35 @@ describe('CLI', function () {
     ]);
   });
 
+  it('should throw an error if an invalid system browser channel is provided', async () => {
+    let error: Error | undefined;
+
+    // Yargs may log the error and we want to capture it through thrown errors
+    const originalConsoleError = console.error;
+    console.error = () => {};
+    const originalExit = process.exit;
+    try {
+      (process as any).exit = (code: number) => {
+        throw new Error(`process.exit called with ${code}`);
+      };
+      await new CLI(tmpDir).run([
+        'npx',
+        '@puppeteer/browsers',
+        'launch',
+        'chrome@invalid-channel',
+        `--path=${tmpDir}`,
+        '--system',
+      ]);
+    } catch (err) {
+      error = err as Error;
+    } finally {
+      console.error = originalConsoleError;
+      process.exit = originalExit;
+    }
+    assert.ok(error, 'Expected an error to be thrown');
+    assert.ok(error.message.includes('Invalid Chrome channel'));
+  });
+
   it('should pass argument to binary', async () => {
     if (os.platform() === 'win32') {
       // Windows executable behaves differently

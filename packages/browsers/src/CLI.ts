@@ -17,7 +17,7 @@ import {
   Browser,
   resolveBuildId,
   BrowserPlatform,
-  type ChromeReleaseChannel,
+  verifyChromeReleaseChannel,
 } from './browser-data/browser-data.js';
 import {Cache} from './Cache.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
@@ -427,8 +427,7 @@ export class CLI {
           const executablePath = args.system
             ? computeSystemExecutablePath({
                 browser: args.browser.name,
-                // TODO: throw an error if not a ChromeReleaseChannel is provided.
-                channel: args.browser.buildId as ChromeReleaseChannel,
+                channel: verifyChromeReleaseChannel(args.browser.buildId),
                 platform: args.platform,
               })
             : computeExecutablePath({
