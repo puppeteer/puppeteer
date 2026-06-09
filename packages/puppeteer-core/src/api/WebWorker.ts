@@ -155,6 +155,29 @@ export abstract class WebWorker extends EventEmitter<WebWorkerEvents> {
     return await this.mainRealm().evaluateHandle(func, ...args);
   }
 
+  waitForFunction<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
+  >(
+    pageFunction: Func | string,
+    options: {
+      polling?: number;
+      timeout?: number;
+      signal?: AbortSignal;
+    } = {},
+    ...args: Params
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    const {polling = 100, ...remainingOptions} = options;
+    return this.mainRealm().waitForFunction(
+      pageFunction,
+      {
+        polling,
+        ...remainingOptions,
+      },
+      ...args
+    );
+  }
+
   async close(): Promise<void> {
     throw new UnsupportedOperation('WebWorker.close() is not supported');
   }
