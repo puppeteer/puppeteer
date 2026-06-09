@@ -14,7 +14,7 @@ import {
   BrowserPlatform,
   BrowserTag,
   ChromeReleaseChannel,
-  isChromeReleaseChannel,
+  verifyChromeReleaseChannel,
   type ProfileOptions,
 } from './types.js';
 
@@ -52,7 +52,12 @@ export const versionComparators = {
   [Browser.FIREFOX]: firefox.compareVersions,
 };
 
-export {Browser, BrowserPlatform, ChromeReleaseChannel, isChromeReleaseChannel};
+export {
+  Browser,
+  BrowserPlatform,
+  ChromeReleaseChannel,
+  verifyChromeReleaseChannel,
+};
 
 /**
  * @internal

@@ -72,8 +72,11 @@ export enum ChromeReleaseChannel {
 /**
  * @internal
  */
-export function isChromeReleaseChannel(
+export function verifyChromeReleaseChannel(
   value: unknown,
-): value is ChromeReleaseChannel {
-  return Object.values(ChromeReleaseChannel).includes(value as any);
+): ChromeReleaseChannel {
+  if (Object.values(ChromeReleaseChannel).includes(value as any)) {
+    return value as ChromeReleaseChannel;
+  }
+  throw new Error(`Invalid Chrome channel: ${value}`);
 }

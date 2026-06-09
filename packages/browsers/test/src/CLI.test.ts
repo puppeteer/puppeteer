@@ -64,12 +64,7 @@ describe('CLI', function () {
       process.exit = originalExit;
     }
     assert.ok(error, 'Expected an error to be thrown');
-    assert.ok(
-      error.message.includes(
-        'Cannot launch a system browser for the provided release channel: invalid-channel',
-      ) || error.message.includes('process.exit'),
-      'Expected error message to contain validation output',
-    );
+    assert.ok(error.message.includes('Invalid Chrome channel'));
   });
 
   it('should pass argument to binary', async () => {
