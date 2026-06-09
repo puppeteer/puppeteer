@@ -467,7 +467,7 @@ describe('Workers', function () {
       });
       const worker = await workerCreatedPromise;
 
-      const handle = await worker.waitForFunction(() => {
+      using handle = await worker.waitForFunction(() => {
         return (self as any).status === 'ready' ? 'Operation Success' : false;
       });
 
@@ -486,7 +486,9 @@ describe('Workers', function () {
       const worker = await workerCreatedPromise;
 
       // Create a handle in Node.js to pass into the worker
-      const argHandle = await worker.evaluateHandle(() => 42);
+      using argHandle = await worker.evaluateHandle(() => {
+        return 42;
+      });
 
       await worker.waitForFunction(
         expected => {
