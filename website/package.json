@@ -25,12 +25,12 @@
     "@mdx-js/react": "3.1.1",
     "algoliasearch-helper": "3.29.1",
     "clsx": "2.1.1",
-    "docusaurus-plugin-copy-page-button": "0.7.0",
+    "docusaurus-plugin-copy-page-button": "0.8.1",
     "prism-react-renderer": "2.4.1",
-    "react": "19.2.6",
+    "react": "19.2.7",
     "react-cookie-consent": "10.0.1",
-    "react-dom": "19.2.6",
-    "semver": "7.8.1"
+    "react-dom": "19.2.7",
+    "semver": "7.8.2"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.10.1",
