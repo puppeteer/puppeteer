@@ -135,14 +135,7 @@ export abstract class JSHandle<T = unknown> {
   @throwIfDisposed()
   async getProperties(): Promise<Map<string, JSHandle>> {
     const propertyNames = await this.evaluate(object => {
-      const enumerableProperties = [];
-      const descriptors = Object.getOwnPropertyDescriptors(object);
-      for (const propertyName in descriptors) {
-        if (descriptors[propertyName]?.enumerable) {
-          enumerableProperties.push(propertyName);
-        }
-      }
-      return enumerableProperties;
+      return Object.keys(object ?? {});
     });
     const map = new Map<string, JSHandle>();
     const results = await Promise.all(
