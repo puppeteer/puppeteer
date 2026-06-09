@@ -1338,7 +1338,7 @@ A target this page was created from.
 
 **Deprecated:**
 
-Use [Page.createCDPSession()](./puppeteer.page.createcdpsession.md) directly.
+Use [Page.createCDPSession()](./puppeteer.page.createcdpsession.md) directly for CDP work. To wait for a page opened by this page, listen for [PageEvent.Popup](./puppeteer.pageevent.md#popup).
 
 </td></tr>
 <tr><td>
