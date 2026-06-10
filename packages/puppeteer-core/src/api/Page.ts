@@ -522,6 +522,11 @@ export const enum PageEvent {
    */
   PageError = 'pageerror',
   /**
+   * Emitted when an uncaught exception happens within the page. Contains the
+   * exception details.
+   */
+  Exception = 'exception',
+  /**
    * Emitted when the page opens a new tab or window.
    *
    * Contains a {@link Page} corresponding to the popup window.
@@ -615,6 +620,7 @@ export interface PageEvents extends Record<EventType, unknown> {
   [PageEvent.Load]: undefined;
   [PageEvent.Metrics]: {title: string; metrics: Metrics};
   [PageEvent.PageError]: Error | unknown;
+  [PageEvent.Exception]: Protocol.Runtime.ExceptionDetails;
   [PageEvent.Popup]: Page | null;
   [PageEvent.Request]: HTTPRequest;
   [PageEvent.Response]: HTTPResponse;

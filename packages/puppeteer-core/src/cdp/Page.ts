@@ -939,6 +939,7 @@ export class CdpPage extends Page {
   }
 
   #handleException(exception: Protocol.Runtime.ExceptionThrownEvent): void {
+    this.emit(PageEvent.Exception, exception.exceptionDetails);
     this.emit(
       PageEvent.PageError,
       createClientError(exception.exceptionDetails),

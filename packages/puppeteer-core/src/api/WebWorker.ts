@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import type {Protocol} from 'devtools-protocol';
+
 import type {ConsoleMessage} from '../common/ConsoleMessage.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import type {EventType} from '../common/EventEmitter.js';
@@ -27,6 +29,13 @@ export enum WebWorkerEvent {
    * Emitted when the worker throws an exception.
    */
   Error = 'error',
+  /**
+   * Emitted when the worker throws an exception.
+   *
+   * @remarks
+   * Contains the exception details.
+   */
+  Exception = 'exception',
 }
 
 /**
@@ -35,6 +44,7 @@ export enum WebWorkerEvent {
 export interface WebWorkerEvents extends Record<EventType, unknown> {
   [WebWorkerEvent.Console]: ConsoleMessage;
   [WebWorkerEvent.Error]: Error;
+  [WebWorkerEvent.Exception]: Protocol.Runtime.ExceptionDetails;
 }
 
 /**

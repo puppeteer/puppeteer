@@ -100,7 +100,13 @@ export class CdpWebWorker extends WebWorker {
         debugError?.(err);
       }
     });
-    this.#client.on('Runtime.exceptionThrown', exceptionThrown);
+    this.#client.on('Runtime.exceptionThrown', event => {
+      this.#emitter.emit(WebWorkerEvent.Exception, event.exceptionDetails);
+      this.emit(WebWorkerEvent.Exception, event.exceptionDetails);
+      if (exceptionThrown) {
+        exceptionThrown(event);
+      }
+    });
     this.#client.once(CDPSessionEvent.Disconnected, () => {
       this.#world.dispose();
     });
