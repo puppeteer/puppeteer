@@ -98,6 +98,19 @@ Emitted when the page crashes. Will contain an `Error`.
 </td></tr>
 <tr><td>
 
+Exception
+
+</td><td>
+
+`"exception"`
+
+</td><td>
+
+Emitted when an uncaught exception happens within the page. Contains the exception details.
+
+</td></tr>
+<tr><td>
+
 FrameAttached
 
 </td><td>

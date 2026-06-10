@@ -116,6 +116,21 @@ Error
 </td></tr>
 <tr><td>
 
+<span id="exception">exception</span>
+
+</td><td>
+
+</td><td>
+
+Protocol.Runtime.ExceptionDetails
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="frameattached">frameattached</span>
 
 </td><td>
