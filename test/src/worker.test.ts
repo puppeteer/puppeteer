@@ -115,6 +115,22 @@ describe('Workers', function () {
     expect(errorLog.message).toContain('this is my error');
   });
 
+  it('should report exceptions', async () => {
+    const {page} = await getTestState();
+
+    const workerCreatedPromise = waitEvent(page, 'workercreated');
+    await page.evaluate(() => {
+      return new Worker(
+        `data:text/javascript, throw new Error('this is my error');`,
+      );
+    });
+    const worker = await workerCreatedPromise;
+    const exceptionDetails = await waitEvent(worker, 'exception');
+    expect(exceptionDetails.exception?.description).toContain(
+      'this is my error',
+    );
+  });
+
   it('can be closed', async () => {
     const {page, server} = await getTestState();
 

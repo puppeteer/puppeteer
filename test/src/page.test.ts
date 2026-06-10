@@ -1246,6 +1246,20 @@ describe('Page', function () {
     });
   });
 
+  describe('Page.Events.Exception', function () {
+    it('should fire', async () => {
+      const {page, server} = await getTestState();
+
+      const [exceptionDetails] = await Promise.all([
+        waitEvent(page, 'exception'),
+        page.goto(server.PREFIX + '/error.html'),
+      ]);
+      expect(exceptionDetails.exception?.description).toContain('Fancy');
+      expect(exceptionDetails.lineNumber).toBe(13);
+      expect(exceptionDetails.columnNumber).toBe(10);
+    });
+  });
+
   describe('Page.setUserAgent', function () {
     it('should work', async () => {
       const {page, server} = await getTestState();

@@ -254,6 +254,46 @@ describe('extensions', function () {
     assertNoServiceWorkerReported(targets, extensionId);
   });
 
+  it('should capture exceptions from extension workers', async () => {
+    const {browser} = state;
+    const extensionId = await browser.installExtension(extensionPath);
+    const serviceWorkerTarget = await browser.waitForTarget(target => {
+      return (
+        target.url().includes(extensionId) && target.type() === 'service_worker'
+      );
+    });
+
+    const worker = await serviceWorkerTarget.worker();
+    const errorMessage = 'error from extension worker';
+
+    let capturedDetails: any;
+    worker!.on('exception', details => {
+      capturedDetails = details;
+    });
+
+    await worker!.evaluate(msg => {
+      setTimeout(() => {
+        // @ts-expect-error global variable for test
+        globalThis.didThrow = true;
+        throw new Error(msg);
+      }, 0);
+    }, errorMessage);
+
+    await worker!.waitForFunction(() => {
+      // @ts-expect-error global variable for test
+      return globalThis.didThrow;
+    });
+
+    expect(capturedDetails).toBeDefined();
+    const errorText =
+      capturedDetails.exception?.description || capturedDetails.text;
+    expect(errorText).toContain(errorMessage);
+
+    await browser.uninstallExtension(extensionId);
+    const targets = browser.targets();
+    assertNoServiceWorkerReported(targets, extensionId);
+  });
+
   it('should remove extension from list after uninstall', async () => {
     const {browser} = state;
     const id = await browser.installExtension(extensionPath);
