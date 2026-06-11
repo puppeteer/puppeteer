@@ -102,10 +102,15 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   #clients = new Map<CDPSession, DisposableStack>();
   #networkEnabled = true;
 
-  constructor(frameManager: FrameProvider, networkEnabled?: boolean) {
+  constructor(
+    frameManager: FrameProvider,
+    networkEnabled?: boolean,
+    defaultUserAgent?: string,
+  ) {
     super();
     this.#frameManager = frameManager;
     this.#networkEnabled = networkEnabled ?? true;
+    this.#defaultUserAgent = defaultUserAgent;
   }
 
   #canIgnoreError(error: unknown) {
@@ -279,14 +284,8 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     await this.#applyToAllClients(this.#applyUserAgent.bind(this));
   }
 
-  async setAcceptLanguage(
-    acceptLanguage: string | undefined,
-    defaultUserAgent?: string,
-  ): Promise<void> {
+  async setAcceptLanguage(acceptLanguage: string | undefined): Promise<void> {
     this.#acceptLanguage = acceptLanguage;
-    if (defaultUserAgent !== undefined) {
-      this.#defaultUserAgent = defaultUserAgent;
-    }
     await this.#applyToAllClients(this.#applyUserAgent.bind(this));
   }
 

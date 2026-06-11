@@ -120,11 +120,7 @@ export class CdpPage extends Page {
     target: CdpTarget,
     defaultViewport: Viewport | null,
   ): Promise<CdpPage> {
-    const page = new CdpPage(client, target);
-    await page.#frameManager.networkManager.setAcceptLanguage(
-      undefined,
-      await page.browser().userAgent(),
-    );
+    const page = new CdpPage(client, target, await target.browser().userAgent());
     await page.#initialize();
     if (defaultViewport) {
       try {
@@ -165,7 +161,11 @@ export class CdpPage extends Page {
   #serviceWorkerBypassed = false;
   #userDragInterceptionEnabled = false;
 
-  constructor(client: CdpCDPSession, target: CdpTarget) {
+  constructor(
+    client: CdpCDPSession,
+    target: CdpTarget,
+    defaultUserAgent?: string,
+  ) {
     super();
     this.#primaryTargetClient = client;
     this.#tabTargetClient = client.parentSession()!;
@@ -178,7 +178,12 @@ export class CdpPage extends Page {
     this.#keyboard = new CdpKeyboard(client);
     this.#mouse = new CdpMouse(client, this.#keyboard);
     this.#touchscreen = new CdpTouchscreen(client, this.#keyboard);
-    this.#frameManager = new FrameManager(client, this, this._timeoutSettings);
+    this.#frameManager = new FrameManager(
+      client,
+      this,
+      this._timeoutSettings,
+      defaultUserAgent,
+    );
     this.#emulationManager = new EmulationManager(client);
     this.#tracing = new Tracing(client);
     this.#webmcp = new WebMCP(client, this.#frameManager);

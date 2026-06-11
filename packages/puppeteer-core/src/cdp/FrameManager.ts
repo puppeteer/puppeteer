@@ -87,6 +87,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     client: CdpCDPSession,
     page: CdpPage,
     timeoutSettings: TimeoutSettings,
+    defaultUserAgent?: string,
   ) {
     super();
     this.#client = client;
@@ -94,6 +95,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     this.#networkManager = new NetworkManager(
       this,
       page.browser().isNetworkEnabled(),
+      defaultUserAgent,
     );
     this.#timeoutSettings = timeoutSettings;
     this.setupEventListeners(this.#client);
