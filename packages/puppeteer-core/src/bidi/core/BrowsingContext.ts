@@ -610,6 +610,17 @@ export class BrowsingContext extends EventEmitter<{
     // SAFETY: Disposal implies this exists.
     return context.#reason!;
   })
+  async setLocaleOverride(locale?: string): Promise<void> {
+    await this.userContext.browser.session.send('emulation.setLocaleOverride', {
+      locale: locale ?? null,
+      contexts: [this.id],
+    });
+  }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
   async setScreenOrientationOverride(
     screenOrientation: Bidi.Emulation.ScreenOrientation | null,
   ): Promise<void> {
