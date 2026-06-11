@@ -120,7 +120,11 @@ export class CdpPage extends Page {
     target: CdpTarget,
     defaultViewport: Viewport | null,
   ): Promise<CdpPage> {
-    const page = new CdpPage(client, target, await target.browser().userAgent());
+    const page = new CdpPage(
+      client,
+      target,
+      await target.browser().userAgent(),
+    );
     await page.#initialize();
     if (defaultViewport) {
       try {
