@@ -910,7 +910,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * A target this page was created from.
    *
-   * @deprecated Use {@link Page.createCDPSession} directly.
+   * @deprecated To create CDP session use {@link Page.createCDPSession} directly. To
+   * identify pages spawned by this one, use {@link PageEvent.Popup} event instead.
    */
   abstract target(): Target;
 

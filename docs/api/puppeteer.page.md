@@ -1347,7 +1347,7 @@ A target this page was created from.
 
 **Deprecated:**
 
-Use [Page.createCDPSession()](./puppeteer.page.createcdpsession.md) directly.
+To create CDP session use [Page.createCDPSession()](./puppeteer.page.createcdpsession.md) directly. To identify pages spawned by this one, use [PageEvent.Popup](./puppeteer.pageevent.md) event instead.
 
 </td></tr>
 <tr><td>
