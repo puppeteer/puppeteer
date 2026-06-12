@@ -10,8 +10,10 @@ import path from 'node:path';
 import expect from 'expect';
 import type {Target} from 'puppeteer-core/internal/api/Target.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
+import type {ExceptionMessage} from 'puppeteer-core/internal/common/ExceptionMessage.js';
 
 import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
+import {waitEvent} from '../utils.js';
 
 const extensionWithPagePath = path.join(
   import.meta.dirname,
@@ -266,27 +268,20 @@ describe('extensions', function () {
     const worker = await serviceWorkerTarget.worker();
     const errorMessage = 'error from extension worker';
 
-    let capturedDetails: any;
-    worker!.on('exception', details => {
-      capturedDetails = details;
-    });
+    const exceptionMessagePromise = waitEvent(worker!, 'exception');
 
     await worker!.evaluate(msg => {
       setTimeout(() => {
-        // @ts-expect-error global variable for test
-        globalThis.didThrow = true;
         throw new Error(msg);
       }, 0);
     }, errorMessage);
 
-    await worker!.waitForFunction(() => {
-      // @ts-expect-error global variable for test
-      return globalThis.didThrow;
-    });
+    const exceptionMessage = await exceptionMessagePromise as ExceptionMessage;
 
-    expect(capturedDetails).toBeDefined();
-    const errorText =
-      capturedDetails.exception?.description || capturedDetails.text;
+    expect(exceptionMessage).toBeDefined();
+    
+    const handle = exceptionMessage.exception();
+    const errorText = handle ? handle.remoteObject().description : exceptionMessage.text();
     expect(errorText).toContain(errorMessage);
 
     await browser.uninstallExtension(extensionId);

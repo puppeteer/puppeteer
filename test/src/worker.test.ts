@@ -116,7 +116,7 @@ describe('Workers', function () {
   });
 
   it('should report exceptions', async () => {
-    const {page} = await getTestState();
+    const {page, defaultBrowserOptions} = await getTestState();
 
     const workerCreatedPromise = waitEvent(page, 'workercreated');
     await page.evaluate(() => {
@@ -125,10 +125,17 @@ describe('Workers', function () {
       );
     });
     const worker = await workerCreatedPromise;
-    const exceptionDetails = await waitEvent(worker, 'exception');
-    expect(exceptionDetails.exception?.description).toContain(
-      'this is my error',
-    );
+    const exceptionMessage = await waitEvent(worker, 'exception');
+
+    const isBidi = defaultBrowserOptions.protocol === 'webDriverBiDi';
+    if (isBidi) {
+      expect(exceptionMessage.text()).toContain('this is my error');
+    } else {
+      expect(exceptionMessage.text()).toContain('Uncaught');
+      const handle = exceptionMessage.exception()!;
+      expect(handle).toBeDefined();
+      expect(handle.remoteObject().description).toContain('this is my error');
+    }
   });
 
   it('can be closed', async () => {
