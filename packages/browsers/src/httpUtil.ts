@@ -81,6 +81,29 @@ export async function httpRequest(
   return request;
 }
 
+class HashVerifier {
+  readonly #hash = createHash('sha256');
+
+  update(chunk: Buffer): void {
+    this.#hash.update(chunk);
+  }
+
+  verify(url: URL, destinationPath: string, expectedHash: string): void {
+    const actualHash = this.#hash.digest('hex');
+    if (actualHash !== expectedHash.toLowerCase()) {
+      try {
+        unlinkSync(destinationPath);
+      } catch {}
+      throw new Error(
+        `Integrity check failed for downloaded browser archive.\n` +
+          `  URL:      ${url}\n` +
+          `  Expected: ${expectedHash.toLowerCase()}\n` +
+          `  Actual:   ${actualHash}`,
+      );
+    }
+  }
+}
+
 /**
  * @internal
  */
@@ -93,7 +116,7 @@ export function downloadFile(
   return new Promise<void>(async (resolve, reject) => {
     let downloadedBytes = 0;
     let totalBytes = 0;
-    const hash = createHash('sha256');
+    const verifier = expectedHash ? new HashVerifier() : null;
 
     try {
       const request = await httpRequest(url, 'GET', response => {
@@ -108,20 +131,11 @@ export function downloadFile(
         }
         const file = createWriteStream(destinationPath);
         file.on('close', () => {
-          if (expectedHash) {
-            const actualHash = hash.digest('hex');
-            if (actualHash !== expectedHash.toLowerCase()) {
-              try {
-                unlinkSync(destinationPath);
-              } catch {}
-              reject(
-                new Error(
-                  `Integrity check failed for downloaded browser archive.\n` +
-                    `  URL:      ${url}\n` +
-                    `  Expected: ${expectedHash.toLowerCase()}\n` +
-                    `  Actual:   ${actualHash}`,
-                ),
-              );
+          if (verifier && expectedHash) {
+            try {
+              verifier.verify(url, destinationPath, expectedHash);
+            } catch (err) {
+              reject(err);
               return;
             }
           }
@@ -133,7 +147,7 @@ export function downloadFile(
         totalBytes = parseInt(response.headers['content-length']!, 10);
         response.on('data', (chunk: Buffer) => {
           downloadedBytes += chunk.length;
-          hash.update(chunk);
+          verifier?.update(chunk);
           if (progressCallback) {
             progressCallback(downloadedBytes, totalBytes);
           }
@@ -148,7 +162,6 @@ export function downloadFile(
     }
   });
 }
-
 
 export async function getJSON(url: URL): Promise<unknown> {
   const text = await getText(url);
