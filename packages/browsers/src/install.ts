@@ -384,7 +384,9 @@ async function installUrl(
   }
 
   if (options.expectedHash) {
-    debugInstall?.(`Using provided checksum for ${fileName}: ${options.expectedHash}`);
+    debugInstall?.(
+      `Using provided checksum for ${fileName}: ${options.expectedHash}`,
+    );
   }
 
   if (!options.unpack) {
@@ -393,7 +395,12 @@ async function installUrl(
     }
     debugInstall?.(`Downloading binary from ${url}`);
     debugTime('download');
-    await downloadFile(url, archivePath, downloadProgressCallback, options.expectedHash);
+    await downloadFile(
+      url,
+      archivePath,
+      downloadProgressCallback,
+      options.expectedHash,
+    );
     debugTimeEnd('download');
     return archivePath;
   }

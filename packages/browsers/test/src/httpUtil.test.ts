@@ -22,9 +22,7 @@ describe('downloadFile', function () {
   const correctHash = createHash('sha256').update(testContent).digest('hex');
 
   beforeEach(async () => {
-    tmpDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), 'puppeteer-httputil-test'),
-    );
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'puppeteer-httputil-test'));
     server = http.createServer((_req, res) => {
       res.writeHead(200, {'Content-Length': String(testContent.length)});
       res.end(testContent);
@@ -43,7 +41,12 @@ describe('downloadFile', function () {
       });
     });
     try {
-      fs.rmSync(tmpDir, {force: true, recursive: true, maxRetries: 10, retryDelay: 500});
+      fs.rmSync(tmpDir, {
+        force: true,
+        recursive: true,
+        maxRetries: 10,
+        retryDelay: 500,
+      });
     } catch {}
   });
 
@@ -100,7 +103,12 @@ describe('downloadFile', function () {
 
   it('accepts an uppercase expected hash', async () => {
     const destPath = path.join(tmpDir, 'download.bin');
-    await downloadFile(serverUrl, destPath, undefined, correctHash.toUpperCase());
+    await downloadFile(
+      serverUrl,
+      destPath,
+      undefined,
+      correctHash.toUpperCase(),
+    );
     assert.ok(fs.existsSync(destPath));
   });
 });
