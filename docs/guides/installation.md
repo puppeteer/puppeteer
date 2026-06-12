@@ -12,6 +12,29 @@ work](https://pptr.dev/faq#q-why-doesnt-puppeteer-vxxx-work-with-a-certain-versi
 with Puppeteer. The browser is downloaded to the `$HOME/.cache/puppeteer` folder
 by default (starting with Puppeteer v19.0.0). See [configuration](https://pptr.dev/api/puppeteer.configuration) for configuration options and environmental variables to control the download behavior.
 
+:::caution
+
+### Automatic downloads can be blocked
+
+Many modern package managers (such as npm under the new [RFC](https://github.com/npm/rfcs/pull/868), pnpm, Yarn Berry, Bun, and Deno) block dependency install scripts by default. If your package manager is configured to block these scripts, the automatic download will be skipped, and running Puppeteer will throw an error: `Could not find Chrome (ver. ...).`
+
+To resolve this, you can:
+
+1. **Manually install the browser** after package installation by running:
+   ```bash npm2yarn
+   npx puppeteer browsers install
+   ```
+2. **Opt back in** to running the postinstall scripts for Puppeteer (e.g. for npm, by adding `"puppeteer"` to `"allowScripts"` in your `package.json`):
+   ```json
+   {
+     "allowScripts": {
+       "puppeteer": true
+     }
+   }
+   ```
+
+:::
+
 For every release since v1.7.0 we publish two packages:
 
 - [`puppeteer`](https://www.npmjs.com/package/puppeteer)
