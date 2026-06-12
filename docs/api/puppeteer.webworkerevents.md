@@ -73,7 +73,7 @@ Error
 
 </td><td>
 
-Protocol.Runtime.ExceptionDetails
+[ExceptionMessage](./puppeteer.exceptionmessage.md)
 
 </td><td>
 
