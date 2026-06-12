@@ -51,6 +51,26 @@ You will need to reinstall `puppeteer` in order for the configuration to take
 effect. See [Configuring Puppeteer](./guides/configuration) for more
 information.
 
+### Blocked install scripts
+
+If you are using a package manager that blocks dependency install scripts by default (such as npm under the new [RFC](https://github.com/npm/rfcs/pull/868), pnpm, Yarn Berry, Bun, or Deno), the postinstall script that automatically downloads the browser will not run.
+
+To manually download the required browsers, run:
+
+```bash npm2yarn
+npx puppeteer browsers install
+```
+
+Alternatively, you can opt back in to running the postinstall scripts by updating your project's `package.json` (for npm):
+
+```json
+{
+  "allowScripts": {
+    "puppeteer": true
+  }
+}
+```
+
 ## `net::ERR_BLOCKED_BY_CLIENT` when navigating to an HTTP URL in Chrome
 
 Chrome is rolling out a feature called `HttpsFirstBalancedModeAutoEnable` that
