@@ -116,9 +116,7 @@ export interface InstallOptions {
   /**
    * Expected SHA-256 checksum (lowercase hex) of the downloaded browser archive.
    * If provided, installation will fail when the downloaded file does not match.
-   * If omitted, an attempt is made to fetch a checksum from a `.sha256` sidecar
-   * file published alongside the archive. When no checksum is available the
-   * download proceeds without integrity verification.
+   * If omitted, the download proceeds without integrity verification.
    */
   expectedHash?: string;
 
