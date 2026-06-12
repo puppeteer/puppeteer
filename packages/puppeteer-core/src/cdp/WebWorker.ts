@@ -14,6 +14,7 @@ import {
   type WebWorkerEvents,
 } from '../api/WebWorker.js';
 import {EventEmitter} from '../common/EventEmitter.js';
+import {ExceptionMessage} from '../common/ExceptionMessage.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import {debugError, debugCatchError} from '../common/util.js';
 import type {EvaluateFunc, HandleFor} from '../index-browser.js';
@@ -101,8 +102,42 @@ export class CdpWebWorker extends WebWorker {
       }
     });
     this.#client.on('Runtime.exceptionThrown', event => {
-      this.#emitter.emit(WebWorkerEvent.Exception, event.exceptionDetails);
-      this.emit(WebWorkerEvent.Exception, event.exceptionDetails);
+      const {exceptionDetails} = event;
+
+      // eslint-disable-next-line max-len -- The comment is long.
+      // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
+      let exceptionHandle: HandleFor<unknown> | undefined;
+      if (exceptionDetails.exception) {
+        exceptionHandle = this.#world.createCdpHandle(
+          exceptionDetails.exception,
+        );
+      }
+
+      const locations = exceptionDetails.stackTrace?.callFrames.map(frame => {
+        return {
+          url: frame.url,
+          lineNumber: frame.lineNumber,
+          columnNumber: frame.columnNumber,
+        };
+      }) || [
+        {
+          url: exceptionDetails.url,
+          lineNumber: exceptionDetails.lineNumber,
+          columnNumber: exceptionDetails.columnNumber,
+        },
+      ];
+
+      const exceptionMessage = new ExceptionMessage(
+        exceptionDetails.text,
+        locations,
+        exceptionHandle,
+        exceptionDetails.exceptionId,
+        exceptionDetails.stackTrace,
+        undefined,
+      );
+
+      this.#emitter.emit(WebWorkerEvent.Exception, exceptionMessage);
+      this.emit(WebWorkerEvent.Exception, exceptionMessage);
       if (exceptionThrown) {
         exceptionThrown(event);
       }

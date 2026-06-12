@@ -1247,16 +1247,68 @@ describe('Page', function () {
   });
 
   describe('Page.Events.Exception', function () {
-    it('should fire', async () => {
-      const {page, server} = await getTestState();
+    it('should fire and map properties correctly', async () => {
+      const {page, server, defaultBrowserOptions} = await getTestState();
 
-      const [exceptionDetails] = await Promise.all([
+      const [exceptionMessage] = await Promise.all([
         waitEvent(page, 'exception'),
         page.goto(server.PREFIX + '/error.html'),
       ]);
-      expect(exceptionDetails.exception?.description).toContain('Fancy');
-      expect(exceptionDetails.lineNumber).toBe(13);
-      expect(exceptionDetails.columnNumber).toBe(10);
+
+      const isBidi = defaultBrowserOptions.protocol === 'webDriverBiDi';
+
+      if (isBidi) {
+        expect(exceptionMessage.text()).toContain('Error: Fancy error!');
+      } else {
+        expect(exceptionMessage.text()).toContain('Uncaught');
+      }
+
+      const location = exceptionMessage.location();
+      expect(location.url).toContain('error.html');
+
+      const stackTrace = exceptionMessage.stackTrace();
+      expect(stackTrace.length).toBeGreaterThan(0);
+      expect(stackTrace[0]!.url).toContain('error.html');
+
+      if (!isBidi) {
+        expect(exceptionMessage.exception()).toBeDefined();
+        expect(exceptionMessage.exceptionId()).toBeDefined();
+        expect(exceptionMessage._rawCdpStackTrace()).toBeDefined();
+        expect(exceptionMessage._rawBidiStackTrace()).toBeUndefined();
+      } else {
+        expect(exceptionMessage.exception()).toBeUndefined();
+        expect(exceptionMessage.exceptionId()).toBeUndefined();
+        expect(exceptionMessage._rawCdpStackTrace()).toBeUndefined();
+        expect(exceptionMessage._rawBidiStackTrace()).toBeDefined();
+      }
+    });
+
+    it('should provide the remote exception object in CDP', async () => {
+      const {page, server, defaultBrowserOptions} = await getTestState();
+
+      const isBidi = defaultBrowserOptions.protocol === 'webDriverBiDi';
+      if (isBidi) {
+        // BiDi does not supply the remote object for exceptions currently.
+        return;
+      }
+
+      const [exceptionMessage] = await Promise.all([
+        waitEvent(page, 'exception'),
+        page.goto(server.PREFIX + '/error.html'),
+      ]);
+
+      const handle = exceptionMessage.exception()!;
+      expect(handle).toBeDefined();
+
+      const errorName = await handle.evaluate((err: unknown) => {
+        return (err as Error).name;
+      });
+      expect(errorName).toBe('Error');
+
+      const errorMessage = await handle.evaluate((err: unknown) => {
+        return (err as Error).message;
+      });
+      expect(errorMessage).toBe('Fancy error!');
     });
   });
 

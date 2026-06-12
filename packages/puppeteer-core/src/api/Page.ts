@@ -49,6 +49,7 @@ import {
   type EventType,
   type Handler,
 } from '../common/EventEmitter.js';
+import type {ExceptionMessage} from '../common/ExceptionMessage.js';
 import type {FileChooser} from '../common/FileChooser.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
@@ -620,7 +621,7 @@ export interface PageEvents extends Record<EventType, unknown> {
   [PageEvent.Load]: undefined;
   [PageEvent.Metrics]: {title: string; metrics: Metrics};
   [PageEvent.PageError]: Error | unknown;
-  [PageEvent.Exception]: Protocol.Runtime.ExceptionDetails;
+  [PageEvent.Exception]: ExceptionMessage;
   [PageEvent.Popup]: Page | null;
   [PageEvent.Request]: HTTPRequest;
   [PageEvent.Response]: HTTPResponse;

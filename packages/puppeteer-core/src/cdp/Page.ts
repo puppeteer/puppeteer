@@ -44,6 +44,7 @@ import type {
 } from '../common/Cookie.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
+import {ExceptionMessage} from '../common/ExceptionMessage.js';
 import {FileChooser} from '../common/FileChooser.js';
 import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
@@ -939,7 +940,41 @@ export class CdpPage extends Page {
   }
 
   #handleException(exception: Protocol.Runtime.ExceptionThrownEvent): void {
-    this.emit(PageEvent.Exception, exception.exceptionDetails);
+    const {exceptionDetails} = exception;
+
+    // eslint-disable-next-line max-len -- The comment is long.
+    // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
+    let exceptionHandle: JSHandle | undefined;
+    if (exceptionDetails.exception) {
+      exceptionHandle = this.mainFrame()
+        .mainRealm()
+        .createCdpHandle(exceptionDetails.exception);
+    }
+
+    const locations = exceptionDetails.stackTrace?.callFrames.map(frame => {
+      return {
+        url: frame.url,
+        lineNumber: frame.lineNumber,
+        columnNumber: frame.columnNumber,
+      };
+    }) || [
+      {
+        url: exceptionDetails.url,
+        lineNumber: exceptionDetails.lineNumber,
+        columnNumber: exceptionDetails.columnNumber,
+      },
+    ];
+
+    const exceptionMessage = new ExceptionMessage(
+      exceptionDetails.text,
+      locations,
+      exceptionHandle,
+      exceptionDetails.exceptionId,
+      exceptionDetails.stackTrace,
+      undefined,
+    );
+
+    this.emit(PageEvent.Exception, exceptionMessage);
     this.emit(
       PageEvent.PageError,
       createClientError(exception.exceptionDetails),

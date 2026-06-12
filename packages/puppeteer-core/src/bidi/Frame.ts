@@ -33,6 +33,7 @@ import {PageEvent, type WaitTimeoutOptions} from '../api/Page.js';
 import type {Realm} from '../api/Realm.js';
 import {Accessibility} from '../cdp/Accessibility.js';
 import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
+import {ExceptionMessage} from '../common/ExceptionMessage.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {Awaitable, HandleFor} from '../common/types.js';
 import {
@@ -181,8 +182,14 @@ export class BidiFrame extends Frame {
         const messageLines = error.stack!.split('\n').splice(0, messageHeight);
 
         const stackLines = [];
+        const locations = [];
         if (entry.stackTrace) {
           for (const frame of entry.stackTrace.callFrames) {
+            locations.push({
+              url: frame.url,
+              lineNumber: frame.lineNumber + 1,
+              columnNumber: frame.columnNumber + 1,
+            });
             // Note we need to add `1` because the values are 0-indexed.
             stackLines.push(
               `    at ${frame.functionName || '<anonymous>'} (${frame.url}:${
@@ -193,7 +200,23 @@ export class BidiFrame extends Frame {
               break;
             }
           }
+        } else {
+          locations.push({
+            url: entry.source.realm,
+            lineNumber: 0,
+            columnNumber: 0,
+          });
         }
+
+        const exceptionMessage = new ExceptionMessage(
+          entry.text ?? '',
+          locations,
+          undefined,
+          undefined,
+          undefined,
+          entry.stackTrace,
+        );
+        this.page().trustedEmitter.emit(PageEvent.Exception, exceptionMessage);
 
         error.stack = [...messageLines, ...stackLines].join('\n');
         this.page().trustedEmitter.emit(PageEvent.PageError, error);
