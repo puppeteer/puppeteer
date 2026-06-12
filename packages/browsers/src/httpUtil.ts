@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {createWriteStream} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {createWriteStream, unlinkSync} from 'node:fs';
 import * as http from 'node:http';
 import * as https from 'node:https';
 import {URL, urlToHttpOptions} from 'node:url';
@@ -80,6 +81,29 @@ export async function httpRequest(
   return request;
 }
 
+class HashVerifier {
+  readonly #hash = createHash('sha256');
+
+  update(chunk: Buffer): void {
+    this.#hash.update(chunk);
+  }
+
+  verify(url: URL, destinationPath: string, expectedHash: string): void {
+    const actualHash = this.#hash.digest('hex');
+    if (actualHash !== expectedHash.toLowerCase()) {
+      try {
+        unlinkSync(destinationPath);
+      } catch {}
+      throw new Error(
+        `Integrity check failed for downloaded browser archive.\n` +
+          `  URL:      ${url}\n` +
+          `  Expected: ${expectedHash.toLowerCase()}\n` +
+          `  Actual:   ${actualHash}`,
+      );
+    }
+  }
+}
+
 /**
  * @internal
  */
@@ -87,15 +111,12 @@ export function downloadFile(
   url: URL,
   destinationPath: string,
   progressCallback?: (downloadedBytes: number, totalBytes: number) => void,
+  expectedHash?: string,
 ): Promise<void> {
   return new Promise<void>(async (resolve, reject) => {
     let downloadedBytes = 0;
     let totalBytes = 0;
-
-    function onData(chunk: string): void {
-      downloadedBytes += chunk.length;
-      progressCallback!(downloadedBytes, totalBytes);
-    }
+    const verifier = expectedHash ? new HashVerifier() : null;
 
     try {
       const request = await httpRequest(url, 'GET', response => {
@@ -110,24 +131,28 @@ export function downloadFile(
         }
         const file = createWriteStream(destinationPath);
         file.on('close', () => {
-          // The 'close' event is emitted when the stream and any of its
-          // underlying resources (a file descriptor, for example) have been
-          // closed. The event indicates that no more events will be emitted, and
-          // no further computation will occur.
+          if (verifier && expectedHash) {
+            try {
+              verifier.verify(url, destinationPath, expectedHash);
+            } catch (err) {
+              reject(err);
+              return;
+            }
+          }
           return resolve();
         });
         file.on('error', error => {
-          // The 'error' event may be emitted by a Readable implementation at any
-          // time. Typically, this may occur if the underlying stream is unable to
-          // generate data due to an underlying internal failure, or when a stream
-          // implementation attempts to push an invalid chunk of data.
           return reject(error);
         });
-        response.pipe(file);
         totalBytes = parseInt(response.headers['content-length']!, 10);
-        if (progressCallback) {
-          response.on('data', onData);
-        }
+        response.on('data', (chunk: Buffer) => {
+          downloadedBytes += chunk.length;
+          verifier?.update(chunk);
+          if (progressCallback) {
+            progressCallback(downloadedBytes, totalBytes);
+          }
+        });
+        response.pipe(file);
       });
       request.on('error', error => {
         return reject(error);
@@ -137,6 +162,7 @@ export function downloadFile(
     }
   });
 }
+
 export async function getJSON(url: URL): Promise<unknown> {
   const text = await getText(url);
   try {

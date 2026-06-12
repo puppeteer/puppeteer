@@ -114,6 +114,13 @@ export interface InstallOptions {
    */
   installDeps?: boolean;
   /**
+   * Expected SHA-256 checksum (lowercase hex) of the downloaded browser archive.
+   * If provided, installation will fail when the downloaded file does not match.
+   * If omitted, the download proceeds without integrity verification.
+   */
+  expectedHash?: string;
+
+  /**
    * Custom provider implementation for alternative download sources.
    *
    * If not provided, uses the default provider.
@@ -374,13 +381,24 @@ async function installUrl(
     await mkdir(browserRoot, {recursive: true});
   }
 
+  if (options.expectedHash) {
+    debugInstall?.(
+      `Using provided checksum for ${fileName}: ${options.expectedHash}`,
+    );
+  }
+
   if (!options.unpack) {
     if (existsSync(archivePath)) {
       return archivePath;
     }
     debugInstall?.(`Downloading binary from ${url}`);
     debugTime('download');
-    await downloadFile(url, archivePath, downloadProgressCallback);
+    await downloadFile(
+      url,
+      archivePath,
+      downloadProgressCallback,
+      options.expectedHash,
+    );
     debugTimeEnd('download');
     return archivePath;
   }
@@ -437,7 +455,12 @@ async function installUrl(
       debugInstall?.(`Downloading binary from ${url}`);
       try {
         debugTime('download');
-        await downloadFile(url, archivePath, downloadProgressCallback);
+        await downloadFile(
+          url,
+          archivePath,
+          downloadProgressCallback,
+          options.expectedHash,
+        );
       } finally {
         debugTimeEnd('download');
       }

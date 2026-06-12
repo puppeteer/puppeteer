@@ -147,6 +147,25 @@ Provides information about the progress of the download. If set to 'default', th
 </td></tr>
 <tr><td>
 
+<span id="expectedhash">expectedHash</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+Expected SHA-256 checksum (lowercase hex) of the downloaded browser archive. If provided, installation will fail when the downloaded file does not match. If omitted, the download proceeds without integrity verification.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="installdeps">installDeps</span>
 
 </td><td>
