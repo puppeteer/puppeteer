@@ -178,7 +178,7 @@
     "@types/semver": "7.7.1",
     "@types/sinon": "21.0.1",
     "typescript-eslint": "8.60.1",
-    "esbuild": "0.28.0",
+    "esbuild": "0.28.1",
     "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-typescript": "4.4.5",
     "eslint-plugin-import": "2.32.0",
