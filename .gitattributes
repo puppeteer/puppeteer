@@ -1,2 +1,3 @@
 # Declare files that will always have LF line endings on checkout.
 *.txt eol=lf
+test/fixtures/headless_shell filter=lfs diff=lfs merge=lfs -text

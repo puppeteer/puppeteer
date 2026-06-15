@@ -1,0 +1,46 @@
+name: Test Screencast
+
+on:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+jobs:
+  test-screencast:
+    name: Run Screencast Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: npm
+          node-version-file: '.nvmrc'
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
+
+      - name: Build Puppeteer
+        run: npm run build -w puppeteer
+
+      - name: Disable AppArmor
+        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
+
+      - name: Run Test Script
+        run: node test-screencast.js
+
+      - name: Upload Screencast Video
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screencast-video
+          path: screencast.mp4
+          if-no-files-found: warn
