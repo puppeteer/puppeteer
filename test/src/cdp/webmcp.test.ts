@@ -40,8 +40,8 @@ describe('Page.webmcp', function () {
     });
 
     // Register an imperative WebMCP tool.
-    await page.evaluate(() => {
-      void document.modelContext?.registerTool({
+    await page.evaluate(async () => {
+      await document.modelContext?.registerTool({
         name: 'test-tool-1',
         description: 'A test tool 1',
         inputSchema: {
@@ -114,8 +114,8 @@ describe('Page.webmcp', function () {
     });
 
     // Register an imperative WebMCP tool.
-    await page.evaluate(() => {
-      void document.modelContext?.registerTool({
+    await page.evaluate(async () => {
+      await document.modelContext?.registerTool({
         name: 'test-tool-1',
         description: 'A test tool 1',
         inputSchema: {
@@ -181,9 +181,9 @@ describe('Page.webmcp', function () {
     expect(page.webmcp).toBeDefined();
 
     // Register an imperative WebMCP tool.
-    using controllerHandle = await page.evaluateHandle(() => {
+    using controllerHandle = await page.evaluateHandle(async () => {
       const controller = new AbortController();
-      void document.modelContext?.registerTool(
+      await document.modelContext?.registerTool(
         {
           name: 'test-tool-1',
           description: 'A test tool 1',
@@ -399,8 +399,8 @@ describe('Page.webmcp', function () {
     });
 
     // Register a WebMCP tool.
-    await page.evaluate(() => {
-      void document.modelContext?.registerTool({
+    await page.evaluate(async () => {
+      await document.modelContext?.registerTool({
         name: 'test-tool-1',
         description: 'A test tool 1',
         inputSchema: {
@@ -426,8 +426,8 @@ describe('Page.webmcp', function () {
 
     // Execute WebMCP tool.
     await page.evaluate(async () => {
-      const [tool] = await (window as any).navigator.modelContext.getTools();
-      (window as any).navigator.modelContext.executeTool(
+      const [tool] = await (document as any).modelContext.getTools();
+      (document as any).modelContext.executeTool(
         tool,
         JSON.stringify({text: 'test'}),
       );
@@ -466,8 +466,8 @@ describe('Page.webmcp', function () {
     expect(page.webmcp).toBeDefined();
 
     // Register a WebMCP tool.
-    await page.evaluate(() => {
-      void document.modelContext?.registerTool({
+    await page.evaluate(async () => {
+      await document.modelContext?.registerTool({
         name: 'test-tool-1',
         description: 'A test tool 1',
         inputSchema: {
@@ -493,8 +493,8 @@ describe('Page.webmcp', function () {
 
     // Execute WebMCP tool.
     await page.evaluate(async () => {
-      const [tool] = await (window as any).navigator.modelContext.getTools();
-      (window as any).navigator.modelContext.executeTool(
+      const [tool] = await (document as any).modelContext.getTools();
+      (document as any).modelContext.executeTool(
         tool,
         JSON.stringify({text: 'world'}),
       );
@@ -518,8 +518,8 @@ describe('Page.webmcp', function () {
     expect(page.webmcp).toBeDefined();
 
     // Register a WebMCP tool.
-    await page.evaluate(() => {
-      void document.modelContext?.registerTool({
+    await page.evaluate(async () => {
+      await document.modelContext?.registerTool({
         name: 'raise-exception-tool',
         description: 'A tool that raises JS exception',
         execute: () => {
@@ -538,8 +538,8 @@ describe('Page.webmcp', function () {
 
     // Execute WebMCP tool.
     await page.evaluate(async () => {
-      const [tool] = await (window as any).navigator.modelContext.getTools();
-      (window as any).navigator.modelContext.executeTool(tool, '{}');
+      const [tool] = await (document as any).modelContext.getTools();
+      (document as any).modelContext.executeTool(tool, '{}');
     });
 
     const call = await toolCalled;
@@ -561,8 +561,8 @@ describe('Page.webmcp', function () {
     expect(page.webmcp).toBeDefined();
 
     // Register a WebMCP tool.
-    await page.evaluate(() => {
-      void document.modelContext?.registerTool({
+    await page.evaluate(async () => {
+      await document.modelContext?.registerTool({
         name: 'test-tool-1',
         description: 'A test tool 1',
         inputSchema: {
@@ -586,8 +586,8 @@ describe('Page.webmcp', function () {
 
     // Execute unknown WebMCP tool.
     await page.evaluate(async () => {
-      const [tool] = await (window as any).navigator.modelContext.getTools();
-      (window as any).navigator.modelContext.executeTool(tool, 'invalid json');
+      const [tool] = await (document as any).modelContext.getTools();
+      (document as any).modelContext.executeTool(tool, 'invalid json');
     });
 
     const call = await toolCalled;
@@ -612,8 +612,8 @@ describe('Page.webmcp', function () {
     });
 
     // Register an imperative WebMCP tool.
-    await page.evaluate(() => {
-      void document.modelContext?.registerTool({
+    await page.evaluate(async () => {
+      await document.modelContext?.registerTool({
         name: 'test-tool-1',
         description: 'A test tool 1',
         inputSchema: {
