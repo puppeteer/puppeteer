@@ -17,7 +17,7 @@ import {html, waitEvent} from '../utils.js';
 
 describe('Page.webmcp', function () {
   const state = setupSeparateTestBrowserHooks({
-    args: ['--enable-features=WebMCPTesting,DevToolsWebMCPSupport'],
+    args: ['--enable-features=WebMCP,DevToolsWebMCPSupport'],
     acceptInsecureCerts: true,
   });
 

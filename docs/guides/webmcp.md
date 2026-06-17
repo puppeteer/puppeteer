@@ -14,7 +14,7 @@ To use WebMCP with Puppeteer, you need:
 
 1.  **Chrome 149+**: The browser must support the WebMCP CDP domain.
 2.  **Enabled Flags**: You must launch the browser with the following flags:
-    - `--enable-features=WebMCPTesting,DevToolsWebMCPSupport`
+    - `--enable-features=WebMCP,DevToolsWebMCPSupport`
 
 ## Enabling WebMCP
 
@@ -24,7 +24,7 @@ In Puppeteer, WebMCP support is available through the [`page.webmcp`](../api/pup
 import puppeteer from 'puppeteer';
 
 const browser = await puppeteer.launch({
-  args: ['--enable-features=WebMCPTesting,DevToolsWebMCPSupport'],
+  args: ['--enable-features=WebMCP,DevToolsWebMCPSupport'],
 });
 const page = await browser.newPage();
 
