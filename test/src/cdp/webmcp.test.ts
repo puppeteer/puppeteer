@@ -424,9 +424,10 @@ describe('Page.webmcp', function () {
     });
 
     // Execute WebMCP tool.
-    await page.evaluate(() => {
+    await page.evaluate(async () => {
+      const [tool] = await (window as any).navigator.modelContext.getTools();
       (window as any).navigator.modelContext.executeTool(
-        'test-tool-1',
+        tool,
         JSON.stringify({text: 'test'}),
       );
     });
@@ -490,9 +491,10 @@ describe('Page.webmcp', function () {
     });
 
     // Execute WebMCP tool.
-    await page.evaluate(() => {
+    await page.evaluate(async () => {
+      const [tool] = await (window as any).navigator.modelContext.getTools();
       (window as any).navigator.modelContext.executeTool(
-        'test-tool-1',
+        tool,
         JSON.stringify({text: 'world'}),
       );
     });
@@ -534,11 +536,9 @@ describe('Page.webmcp', function () {
     });
 
     // Execute WebMCP tool.
-    await page.evaluate(() => {
-      (window as any).navigator.modelContext.executeTool(
-        'raise-exception-tool',
-        '{}',
-      );
+    await page.evaluate(async () => {
+      const [tool] = await (window as any).navigator.modelContext.getTools();
+      (window as any).navigator.modelContext.executeTool(tool, '{}');
     });
 
     const call = await toolCalled;
@@ -575,25 +575,28 @@ describe('Page.webmcp', function () {
       });
     });
 
+    const toolCalled = new Promise<WebMCPToolCall>(resolve => {
+      page.webmcp.once('toolinvoked', resolve);
+    });
+
     const toolResponded = new Promise<WebMCPToolCallResult>(resolve => {
       page.webmcp.once('toolresponded', resolve);
     });
 
     // Execute unknown WebMCP tool.
-    await page.evaluate(() => {
-      (window as any).navigator.modelContext.executeTool(
-        'unknown-tool-name',
-        '{}',
-      );
+    await page.evaluate(async () => {
+      const [tool] = await (window as any).navigator.modelContext.getTools();
+      (window as any).navigator.modelContext.executeTool(tool, 'invalid json');
     });
 
+    const call = await toolCalled;
     const response = await toolResponded;
 
-    expect(response.id).toBeDefined();
-    expect(response.call).toBeUndefined();
+    expect(response.id).toBe(call.id);
+    expect(response.call).toBe(call);
     expect(response.status).toBe('Error');
     expect(response.output).toBeUndefined();
-    expect(response.errorText).toBe('Tool not found: unknown-tool-name');
+    expect(response.errorText).toBe('Failed to parse input arguments');
     expect(response.exception).toBeUndefined();
   });
 
