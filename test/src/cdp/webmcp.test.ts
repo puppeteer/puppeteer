@@ -425,7 +425,7 @@ describe('Page.webmcp', function () {
 
     // Execute WebMCP tool.
     await page.evaluate(() => {
-      (window as any).navigator.modelContextTesting.executeTool(
+      (window as any).navigator.modelContext.executeTool(
         'test-tool-1',
         JSON.stringify({text: 'test'}),
       );
@@ -491,7 +491,7 @@ describe('Page.webmcp', function () {
 
     // Execute WebMCP tool.
     await page.evaluate(() => {
-      (window as any).navigator.modelContextTesting.executeTool(
+      (window as any).navigator.modelContext.executeTool(
         'test-tool-1',
         JSON.stringify({text: 'world'}),
       );
@@ -535,7 +535,7 @@ describe('Page.webmcp', function () {
 
     // Execute WebMCP tool.
     await page.evaluate(() => {
-      (window as any).navigator.modelContextTesting.executeTool(
+      (window as any).navigator.modelContext.executeTool(
         'raise-exception-tool',
         '{}',
       );
@@ -581,7 +581,7 @@ describe('Page.webmcp', function () {
 
     // Execute unknown WebMCP tool.
     await page.evaluate(() => {
-      (window as any).navigator.modelContextTesting.executeTool(
+      (window as any).navigator.modelContext.executeTool(
         'unknown-tool-name',
         '{}',
       );
