@@ -9,8 +9,8 @@ import {spawnSync, spawn, execFile} from 'node:child_process';
 import {constants, createReadStream, createWriteStream} from 'node:fs';
 import {mkdir, readdir, symlink} from 'node:fs/promises';
 import * as path from 'node:path';
-import type {Readable, Transform} from 'node:stream';
-import {Stream, Writable} from 'node:stream';
+import type {Transform} from 'node:stream';
+import {Readable, Stream, Writable} from 'node:stream';
 import {pipeline} from 'node:stream/promises';
 import {promisify} from 'node:util';
 
@@ -52,7 +52,7 @@ export async function unpackArchive(
       );
     }
   } else if (archivePath.endsWith('.tar.xz')) {
-    await extractTar(archivePath, folderPath, 'xz');
+    await extractTarXz(archivePath, folderPath);
   } else {
     throw new Error(`Unsupported archive format: ${archivePath}`);
   }
@@ -115,6 +115,11 @@ export const internalConstantsForTesting = {
 /**
  * @internal
  */
+class ArchiverUnavailableError extends Error {}
+
+/**
+ * @internal
+ */
 async function extractTar(
   tarPath: string,
   folderPath: string,
@@ -125,12 +130,13 @@ async function extractTar(
     function handleError(utilityName: string) {
       return (error: Error) => {
         if ('code' in error && error.code === 'ENOENT') {
-          error = new Error(
-            `\`${utilityName}\` utility is required to unpack this archive`,
-            {
-              cause: error,
-            },
+          reject(
+            new ArchiverUnavailableError(
+              `\`${utilityName}\` utility is required to unpack this archive`,
+              {cause: error},
+            ),
           );
+          return;
         }
         reject(error);
       };
@@ -152,6 +158,54 @@ async function extractTar(
     tar.once('finish', fulfill);
     createReadStream(tarPath).pipe(createTransformStream(unpack)).pipe(tar);
   });
+}
+
+/**
+ * @internal
+ */
+async function extractTarXz(
+  tarPath: string,
+  folderPath: string,
+): Promise<void> {
+  for (const extract of [
+    () => {
+      return extractTar(tarPath, folderPath, 'xz');
+    },
+    () => {
+      return extractTarXzWithLib(tarPath, folderPath);
+    },
+  ]) {
+    try {
+      await extract();
+      return;
+    } catch (error) {
+      if (!(error instanceof ArchiverUnavailableError)) {
+        throw error;
+      }
+    }
+  }
+  throw new Error(
+    '`xz` utility or the optional `xz-decompress` dependency is required to unpack this archive.',
+  );
+}
+
+/**
+ * @internal
+ */
+export async function extractTarXzWithLib(
+  tarPath: string,
+  folderPath: string,
+): Promise<void> {
+  const {default: xzDecompress} = await import('xz-decompress').catch(() => {
+    throw new ArchiverUnavailableError(
+      'The optional `xz-decompress` dependency is not installed.',
+    );
+  });
+  const {unpackTar} = await import('modern-tar/fs');
+  const decompressed = new xzDecompress.XzReadableStream(
+    Readable.toWeb(createReadStream(tarPath)),
+  );
+  await pipeline(Readable.fromWeb(decompressed), unpackTar(folderPath));
 }
 
 /**
@@ -186,11 +240,6 @@ async function installDMG(dmgPath: string, folderPath: string): Promise<void> {
     await execFileAsync('hdiutil', ['detach', mountPath, '-quiet']);
   }
 }
-
-/**
- * @internal
- */
-class ArchiverUnavailableError extends Error {}
 
 /**
  * @internal
