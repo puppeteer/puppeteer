@@ -87,15 +87,21 @@
     "yargs": "^18.0.0"
   },
   "peerDependencies": {
-    "proxy-agent": ">=8.0.1"
+    "proxy-agent": ">=8.0.1",
+    "yauzl": ">=2.4.0"
   },
   "peerDependenciesMeta": {
     "proxy-agent": {
+      "optional": true
+    },
+    "yauzl": {
       "optional": true
     }
   },
   "devDependencies": {
     "proxy-agent": ">=8.0.1",
-    "@types/yargs": "17.0.35"
+    "@types/yargs": "17.0.35",
+    "@types/yauzl": "3.4.0",
+    "yauzl": ">=2.4.0"
   }
 }

@@ -6,12 +6,16 @@
 
 import type {ChildProcessByStdio} from 'node:child_process';
 import {spawnSync, spawn, execFile} from 'node:child_process';
-import {createReadStream} from 'node:fs';
-import {mkdir, readdir} from 'node:fs/promises';
+import {constants, createReadStream, createWriteStream} from 'node:fs';
+import {mkdir, readdir, symlink} from 'node:fs/promises';
 import * as path from 'node:path';
 import type {Readable, Transform, Writable} from 'node:stream';
 import {Stream} from 'node:stream';
+import {text} from 'node:stream/consumers';
+import {pipeline} from 'node:stream/promises';
 import {promisify} from 'node:util';
+
+import type {Entry, Options, ZipFile} from 'yauzl';
 
 import {debug} from './debug.js';
 
@@ -187,7 +191,65 @@ async function installDMG(dmgPath: string, folderPath: string): Promise<void> {
 /**
  * @internal
  */
+class ArchiverUnavailableError extends Error {}
+
+/**
+ * @internal
+ */
 async function extractZip(
+  archivePath: string,
+  folderPath: string,
+): Promise<void> {
+  for (const extract of [extractZipWithCli, extractZipWithYauzl]) {
+    try {
+      await extract(archivePath, folderPath);
+      return;
+    } catch (error) {
+      if (!(error instanceof ArchiverUnavailableError)) {
+        throw error;
+      }
+    }
+  }
+  throw new Error(
+    `Extraction failed: no zip archiver is available. Install \`unzip\` (or \`tar.exe\`/Powershell on Windows), or add the optional \`yauzl\` dependency.`,
+  );
+}
+
+/**
+ * @internal
+ */
+async function extractZipWithYauzl(
+  archivePath: string,
+  folderPath: string,
+): Promise<void> {
+  const {default: yauzl} = await import('yauzl').catch(() => {
+    throw new ArchiverUnavailableError(
+      'Extraction failed: The optional `yauzl` dependency is not installed.',
+    );
+  });
+  const open = promisify<string, Options, ZipFile>(yauzl.open);
+  try {
+    const zipFile = await open(archivePath, {lazyEntries: true});
+    await new Promise((resolve, reject) => {
+      zipFile
+        .on('error', reject)
+        .on('end', resolve)
+        .on('entry', entry => {
+          extractZipEntry(zipFile, entry, folderPath).then(() => {
+            zipFile.readEntry();
+          }, reject);
+        })
+        .readEntry();
+    });
+  } catch (error) {
+    throw new Error(`Extraction failed: ${archivePath}`, {cause: error});
+  }
+}
+
+/**
+ * @internal
+ */
+async function extractZipWithCli(
   archivePath: string,
   folderPath: string,
 ): Promise<void> {
@@ -233,7 +295,7 @@ async function extractZip(
     }
   } catch (error: any) {
     if (error?.code === 'ENOENT') {
-      throw new Error(
+      throw new ArchiverUnavailableError(
         `Extraction failed: Required native binary ('tar.exe', 'powershell.exe', 'pwsh.exe' or 'unzip') was not found in the system PATH.`,
       );
     }
@@ -241,4 +303,42 @@ async function extractZip(
       `Extraction failed: ${error?.stderr?.toString() || error?.message}`,
     );
   }
+}
+
+/**
+ * @internal
+ */
+async function extractZipEntry(
+  zipFile: ZipFile,
+  entry: Entry,
+  folderPath: string,
+): Promise<void> {
+  const {S_IFMT, S_IFDIR, S_IFLNK} = constants;
+
+  // see https://github.com/max-mapper/extract-zip/blob/v2.0.1/index.js#L90-L107
+  const unixMode = entry.externalFileAttributes >>> 16;
+  const isDirectory =
+    (unixMode & S_IFMT) === S_IFDIR ||
+    entry.fileName.endsWith('/') ||
+    (entry.versionMadeBy >> 8 === 0 && entry.externalFileAttributes === 0x10);
+  const isSymlink = (unixMode & S_IFMT) === S_IFLNK;
+  // Fall back to sensible defaults for archives without Unix attributes.
+  const mode =
+    unixMode === 0 ? (isDirectory ? 0o755 : 0o644) : unixMode & 0o777;
+
+  const destination = path.join(folderPath, entry.fileName);
+  if (isDirectory) {
+    await mkdir(destination, {recursive: true, mode});
+    return;
+  }
+  await mkdir(path.dirname(destination), {recursive: true});
+
+  const readStream = await promisify(zipFile.openReadStream.bind(zipFile))(
+    entry,
+  );
+  if (isSymlink) {
+    await symlink(await text(readStream), destination);
+    return;
+  }
+  await pipeline(readStream, createWriteStream(destination, {mode}));
 }
