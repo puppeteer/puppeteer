@@ -18,4 +18,4 @@
 
 - Firefox browser system requirements:
   - https://www.mozilla.org/en-US/firefox/system-requirements/
-  - The `xz` or `bzip2` utilities are required to unpack Firefox versions for Linux.
+  - The `xz` (unless the optional `xz-decompress` dependency is installed) or `bzip2` utilities are required to unpack Firefox versions for Linux.
