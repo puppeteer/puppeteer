@@ -1403,20 +1403,6 @@
     "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1908952#c4 historyUpdated from beforeunload incorrectly comes before navigationStarted"
   },
   {
-    "testIdPattern": "[network_restrictions.test] Network Restrictions should block iframe content from loading if the iframe URL is in the blocklist",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL"],
-    "comment": "Bug in CDP crbug.com/469591372"
-  },
-  {
-    "testIdPattern": "[network_restrictions.test] Network Restrictions should block out-of-process iframe (OOPIF) content from loading if the iframe URL is in the blocklist",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL"],
-    "comment": "Bug in CDP crbug.com/469591372"
-  },
-  {
     "testIdPattern": "[network_restrictions.test] Network Restrictions should detach from targets violating allowlist when connecting to a running browser",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
@@ -1951,6 +1937,13 @@
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["FAIL"],
     "comment": "TODO: started to fail with Chrome headless shell 135 on Windows"
+  },
+  {
+    "testIdPattern": "[network_restrictions.test] Network Restrictions should block out-of-process iframe (OOPIF) content from loading if the iframe URL is in the blocklist",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
+    "expectations": ["FAIL"],
+    "comment": "Bug in CDP crbug.com/469591372"
   },
   {
     "testIdPattern": "[network.test] network Network Events Page.Events.Request",
