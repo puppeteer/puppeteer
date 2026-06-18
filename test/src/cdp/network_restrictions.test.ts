@@ -13,7 +13,7 @@ import {
   getTestState,
   setupTestBrowserHooks,
 } from '../mocha-utils.js';
-import {attachFrame, html} from '../utils.js';
+import {attachFrame, html, waitEvent} from '../utils.js';
 
 describe('Network Restrictions', function () {
   setupTestBrowserHooks();
@@ -485,6 +485,47 @@ describe('Network Restrictions', function () {
       const content = await frame.content();
       expect(content).not.toContain("Hi, I'm frame");
       expect(content).toContain('ERR_INTERNET_DISCONNECTED');
+    } finally {
+      await close();
+    }
+  });
+
+  it('should block fetch requests from service workers to blocklisted URLs', async () => {
+    const {page, close, server, context} = await launch(
+      {
+        blocklist: ['*://*:*/empty.html'],
+      },
+      {createContext: true},
+    );
+
+    try {
+      const createdTargetPromise = waitEvent(context, 'targetcreated');
+
+      await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
+
+      const target = await createdTargetPromise;
+      const worker = (await target.worker())!;
+
+      const blockedUrl = server.PREFIX + '/empty.html';
+      const allowedUrl = server.PREFIX + '/title.html';
+
+      const fetchError = await worker.evaluate(async (url: string) => {
+        try {
+          await fetch(url);
+          return null;
+        } catch (e) {
+          return (e as Error).message;
+        }
+      }, blockedUrl);
+
+      expect(fetchError).toContain('Failed to fetch');
+
+      const allowedResult = await worker.evaluate(async (url: string) => {
+        const response = await fetch(url);
+        return await response.text();
+      }, allowedUrl);
+
+      expect(allowedResult).toContain('Woof-Woof');
     } finally {
       await close();
     }
