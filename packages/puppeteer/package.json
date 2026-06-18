@@ -40,7 +40,9 @@
     "build": "wireit",
     "clean": "../../tools/clean.mjs",
     "postinstall": "node install.mjs",
-    "prepack": "wireit"
+    "prepack": "wireit",
+    "unit": "wireit",
+    "unit:only": "wireit"
   },
   "wireit": {
     "prepack": {
@@ -96,6 +98,18 @@
       ],
       "dependencies": [
         "build:tsc"
+      ]
+    },
+    "unit": {
+      "command": "node --test --test-reporter=spec \"lib/**/*.test.js\"",
+      "dependencies": [
+        "build"
+      ]
+    },
+    "unit:only": {
+      "command": "node --test --test-only --test-reporter=spec \"lib/**/*.test.js\"",
+      "dependencies": [
+        "build"
       ]
     }
   },
