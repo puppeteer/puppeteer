@@ -361,21 +361,21 @@ export class TargetManager
     // `this.#connection.isAutoAttached(targetInfo.targetId)`. In the future, we
     // should determine if a target is auto-attached or not with the help of
     // CDP.
-    if (targetInfo.type === 'service_worker') {
-      await this.#silentDetach(session, parentSession);
-      if (
-        this.#attachedTargetsByTargetId.has(targetInfo.targetId) ||
-        this.#ignoredTargets.has(targetInfo.targetId) ||
-        !this.#discoveredTargetsByTargetId.has(targetInfo.targetId)
-      ) {
-        return;
-      }
-      const target = this.#targetFactory(targetInfo);
-      target._initialize();
-      this.#attachedTargetsByTargetId.set(targetInfo.targetId, target);
-      this.emit(TargetManagerEvent.TargetAvailable, target);
-      return;
-    }
+    // if (targetInfo.type === 'service_worker') {
+    //   await this.#silentDetach(session, parentSession);
+    //   if (
+    //     this.#attachedTargetsByTargetId.has(targetInfo.targetId) ||
+    //     this.#ignoredTargets.has(targetInfo.targetId) ||
+    //     !this.#discoveredTargetsByTargetId.has(targetInfo.targetId)
+    //   ) {
+    //     return;
+    //   }
+    //   const target = this.#targetFactory(targetInfo);
+    //   target._initialize();
+    //   this.#attachedTargetsByTargetId.set(targetInfo.targetId, target);
+    //   this.emit(TargetManagerEvent.TargetAvailable, target);
+    //   return;
+    // }
 
     let target = this.#attachedTargetsByTargetId.get(targetInfo.targetId);
     const isExistingTarget = target !== undefined;
@@ -431,16 +431,21 @@ export class TargetManager
 
     // TODO: the browser might be shutting down here. What do we do with the
     // error?
-    await Promise.all([
-      session.send('Target.setAutoAttach', {
-        waitForDebuggerOnStart: true,
-        flatten: true,
-        autoAttach: true,
-        filter: this.#discoveryFilter,
-      }),
+    const promises: Array<Promise<any>> = [
       this.#maybeSetupNetworkConditions(session),
       session.send('Runtime.runIfWaitingForDebugger'),
-    ]).catch(debugCatchError);
+    ];
+    if (targetInfo.type !== 'service_worker') {
+      promises.push(
+        session.send('Target.setAutoAttach', {
+          waitForDebuggerOnStart: true,
+          flatten: true,
+          autoAttach: true,
+          filter: this.#discoveryFilter,
+        }),
+      );
+    }
+    await Promise.all(promises).catch(debugCatchError);
   };
 
   #finishInitializationIfReady(targetId?: string): void {
@@ -518,6 +523,10 @@ export class TargetManager
     if (this.#blocklist.length === 0 && this.#allowlist.length === 0) {
       return;
     }
+
+    // We need to enable the Network domain manually because some targets (like
+    // service workers) do not have a NetworkManager that enables it for them.
+    await session.send('Network.enable').catch(debugCatchError);
 
     const matchedNetworkConditions = [];
     for (const item of this.#blocklist) {
