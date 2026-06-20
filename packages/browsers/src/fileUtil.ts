@@ -308,6 +308,18 @@ async function extractZipWithCli(
 /**
  * @internal
  */
+function isInsideDirectory(directory: string, candidate: string): boolean {
+  const resolvedDirectory = path.resolve(directory);
+  const resolvedCandidate = path.resolve(candidate);
+  return (
+    resolvedCandidate === resolvedDirectory ||
+    resolvedCandidate.startsWith(resolvedDirectory + path.sep)
+  );
+}
+
+/**
+ * @internal
+ */
 async function extractZipEntry(
   zipFile: ZipFile,
   entry: Entry,
@@ -337,7 +349,18 @@ async function extractZipEntry(
     entry,
   );
   if (isSymlink) {
-    await symlink(await text(readStream), destination);
+    const linkTarget = await text(readStream);
+    // Verify that the link does not resolve outside of the target directory.
+    const resolvedLinkTarget = path.resolve(
+      path.dirname(destination),
+      linkTarget,
+    );
+    if (!isInsideDirectory(folderPath, resolvedLinkTarget)) {
+      throw new Error(
+        `Zip symlink "${entry.fileName}" would point outside of the target directory.`,
+      );
+    }
+    await symlink(linkTarget, destination);
     return;
   }
   await pipeline(readStream, createWriteStream(destination, {mode}));

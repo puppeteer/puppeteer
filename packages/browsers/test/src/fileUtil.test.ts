@@ -195,6 +195,33 @@ describe('fileUtil', function () {
     },
   );
 
+  // We create symlinks ourselves only on the yauzl path, which cannot be
+  // tested on Windows (see the note above).
+  (os.platform() === 'win32' ? it.skip : it)(
+    'rejects symlinks that point outside the target directory',
+    async () => {
+      await withoutSystemArchiver(async () => {
+        await assert.rejects(
+          () => {
+            return unpackArchive(
+              path.join(fixturesPath, 'test-symlink-escape.zip'),
+              tmpDir,
+            );
+          },
+          (error: unknown) => {
+            const {cause} = error as {cause?: Error};
+            assert.match(cause?.message ?? '', /point outside/);
+            return true;
+          },
+        );
+      });
+      assert.ok(
+        !fs.existsSync(path.join(tmpDir, 'browser', 'evil-link')),
+        'symlink pointing outside the target directory was created',
+      );
+    },
+  );
+
   it('throws an error if xz is not found', async () => {
     internalConstantsForTesting.xz = 'xz-not-existent';
     try {
