@@ -362,6 +362,13 @@ export class TargetManager
     // should determine if a target is auto-attached or not with the help of
     // CDP.
     if (targetInfo.type === 'service_worker') {
+      if (!this.isUrlAllowed(targetInfo.url)) {
+        await Promise.all([
+          this.#maybeSetupNetworkConditions(session),
+          session.send('Runtime.runIfWaitingForDebugger'),
+        ]).catch(debugCatchError);
+        return;
+      }
       await this.#silentDetach(session, parentSession);
       if (
         this.#attachedTargetsByTargetId.has(targetInfo.targetId) ||

@@ -20,7 +20,11 @@ describe('Network Restrictions', function () {
 
   describe('blocklist validation', () => {
     const state = setupSeparateTestBrowserHooks({
-      blocklist: ['*://*:*/empty.html', '*://*:*/pptr.png'],
+      blocklist: [
+        '*://*:*/empty.html',
+        '*://*:*/pptr.png',
+        '*://*:*/serviceworkers/empty/sw.js',
+      ],
     });
 
     it('should block page.goto when the destination is in the blocklist', async () => {
@@ -74,6 +78,25 @@ describe('Network Restrictions', function () {
       }, blockedUrl);
 
       expect(fetchError).toContain('Failed to fetch');
+    });
+
+    it('should fail service worker registration for blocklisted script URLs', async () => {
+      const {page, server} = state;
+      const allowedUrl = server.PREFIX + '/title.html';
+      const blockedUrl = server.PREFIX + '/serviceworkers/empty/sw.js';
+
+      await page.goto(allowedUrl);
+      const swError = await page.evaluate(async url => {
+        try {
+          await navigator.serviceWorker.register(url);
+          return null;
+        } catch (e) {
+          return (e as Error).message;
+        }
+      }, blockedUrl);
+
+      expect(swError).toBeTruthy();
+      expect(swError).toContain('Failed to register a ServiceWorker');
     });
 
     it('should prevent loading of blocklisted subresources (e.g., images)', async () => {
@@ -239,6 +262,25 @@ describe('Network Restrictions', function () {
       }, blockedUrl);
 
       expect(fetchError).toContain('Failed to fetch');
+    });
+
+    it('should fail service worker registration for script URLs not in the allowlist', async () => {
+      const {page, server} = state;
+      const allowedUrl = server.PREFIX + '/empty.html';
+      const blockedUrl = server.PREFIX + '/serviceworkers/empty/sw.js';
+
+      await page.goto(allowedUrl);
+      const swError = await page.evaluate(async url => {
+        try {
+          await navigator.serviceWorker.register(url);
+          return null;
+        } catch (e) {
+          return (e as Error).message;
+        }
+      }, blockedUrl);
+
+      expect(swError).toBeTruthy();
+      expect(swError).toContain('Failed to register a ServiceWorker');
     });
 
     it('should prevent loading of subresources not in the allowlist (e.g., images)', async () => {
