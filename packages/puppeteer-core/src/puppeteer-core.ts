@@ -13,10 +13,7 @@ import {environment} from './environment.js';
 
 import * as Puppeteer from './index.js';
 
-environment.value = {
-  ...environment.value,
-  ScreenRecorder: Puppeteer.ScreenRecorder,
-};
+environment.value.ScreenRecorder = Puppeteer.ScreenRecorder;
 
 /**
  * @public
