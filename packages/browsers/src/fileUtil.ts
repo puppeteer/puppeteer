@@ -221,7 +221,9 @@ async function extractZipWithYauzl(
   archivePath: string,
   folderPath: string,
 ): Promise<void> {
-  const {default: yauzl} = await import('yauzl').catch(() => {
+  const {default: yauzl} = await import(
+    /* webpackIgnore: true */ 'yauzl'
+  ).catch(() => {
     throw new ArchiverUnavailableError(
       'Extraction failed: The optional `yauzl` dependency is not installed.',
     );
