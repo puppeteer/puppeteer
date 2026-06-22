@@ -1,5 +1,26 @@
 # Changelog
 
+## [25.2.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.1.0...puppeteer-v25.2.0) (2026-06-22)
+
+
+### 🎉 Features
+
+* roll to Chrome 150.0.7871.24 ([#15126](https://github.com/puppeteer/puppeteer/issues/15126)) ([b74ed1c](https://github.com/puppeteer/puppeteer/commit/b74ed1c81caffa7c727b8e21498dda42899467ed))
+
+
+### 🛠️ Fixes
+
+* remove global skipDownload early return to include other configs ([#15130](https://github.com/puppeteer/puppeteer/issues/15130)) ([5b1cb20](https://github.com/puppeteer/puppeteer/commit/5b1cb20ce060c88c5f43f1a4bbfdcfd513db6cc3))
+* restore the reading config `.puppeteerrc` ([#15089](https://github.com/puppeteer/puppeteer/issues/15089)) ([797faff](https://github.com/puppeteer/puppeteer/commit/797faff26d96d1a509bff01607634b8088ed8631))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.0.4 to 3.0.5
+    * puppeteer-core bumped from 25.1.0 to 25.2.0
+
 ## [25.1.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.0.4...puppeteer-v25.1.0) (2026-05-26)
 
 

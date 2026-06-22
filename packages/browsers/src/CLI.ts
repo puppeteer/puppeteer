@@ -51,7 +51,7 @@ function isValidPlatform(platform: unknown): platform is BrowserPlatform {
 
 // If moved update release-please config
 // x-release-please-start-version
-const packageVersion = '3.0.4';
+const packageVersion = '3.0.5';
 // x-release-please-end
 
 /**

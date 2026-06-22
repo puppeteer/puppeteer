@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.0.5](https://github.com/puppeteer/puppeteer/compare/browsers-v3.0.4...browsers-v3.0.5) (2026-06-22)
+
+
+### 🛠️ Fixes
+
+* **browsers:** add SHA-256 integrity verification for downloaded browser archives ([#15093](https://github.com/puppeteer/puppeteer/issues/15093)) ([65a0a8d](https://github.com/puppeteer/puppeteer/commit/65a0a8d2af4bf0e0acc974df8127ab9f25e84c9f))
+* **browsers:** validate channel in CLI launch for system browsers ([#15098](https://github.com/puppeteer/puppeteer/issues/15098)) ([873b993](https://github.com/puppeteer/puppeteer/commit/873b993eb6b002ddf79b762a3ca1c4f82e7db4b0))
+
 ## [3.0.4](https://github.com/puppeteer/puppeteer/compare/browsers-v3.0.3...browsers-v3.0.4) (2026-05-26)
 
 
