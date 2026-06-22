@@ -11,8 +11,8 @@ import {debuglog} from 'node:util';
 import {environment} from './environment.js';
 
 environment.value = {
-  ...environment.value,
   fs,
   path,
   debuglog,
+  ScreenRecorder: environment.value.ScreenRecorder,
 };
