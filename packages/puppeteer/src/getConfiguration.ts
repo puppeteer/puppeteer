@@ -72,7 +72,10 @@ function getLogLevel(logLevel: unknown): 'silent' | 'error' | 'warn' {
   }
 }
 
-function getBrowserSetting(
+/**
+ * @internal
+ */
+export function getBrowserSetting(
   browser: 'chrome' | 'chrome-headless-shell' | 'firefox',
   configuration: Configuration,
   defaultConfig:
@@ -80,11 +83,6 @@ function getBrowserSetting(
     | ChromeHeadlessShellSettings
     | FirefoxSettings = {},
 ): ChromeSettings | ChromeHeadlessShellSettings | FirefoxSettings {
-  if (configuration.skipDownload) {
-    return {
-      skipDownload: true,
-    };
-  }
   const browserSetting:
     | ChromeSettings
     | ChromeHeadlessShellSettings
@@ -95,6 +93,7 @@ function getBrowserSetting(
     process.env[`PUPPETEER_${browserEnvName}_VERSION`] ??
     configuration[browser]?.version ??
     defaultConfig.version;
+
   browserSetting.downloadBaseUrl =
     process.env[`PUPPETEER_${browserEnvName}_DOWNLOAD_BASE_URL`] ??
     configuration[browser]?.downloadBaseUrl ??
@@ -104,6 +103,7 @@ function getBrowserSetting(
     getBooleanEnvVar(`PUPPETEER_${browserEnvName}_SKIP_DOWNLOAD`) ??
     getBooleanEnvVar(`PUPPETEER_SKIP_${browserEnvName}_DOWNLOAD`) ??
     configuration[browser]?.skipDownload ??
+    configuration.skipDownload ??
     defaultConfig.skipDownload;
 
   return browserSetting;
