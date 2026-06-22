@@ -9,9 +9,8 @@ import {spawnSync, spawn, execFile} from 'node:child_process';
 import {constants, createReadStream, createWriteStream} from 'node:fs';
 import {mkdir, readdir, symlink} from 'node:fs/promises';
 import * as path from 'node:path';
-import type {Readable, Transform, Writable} from 'node:stream';
-import {Stream} from 'node:stream';
-import {text} from 'node:stream/consumers';
+import type {Readable, Transform} from 'node:stream';
+import {Stream, Writable} from 'node:stream';
 import {pipeline} from 'node:stream/promises';
 import {promisify} from 'node:util';
 
@@ -349,7 +348,23 @@ async function extractZipEntry(
     entry,
   );
   if (isSymlink) {
-    const linkTarget = await text(readStream);
+    // Consume the symlink target in pipe semantics rather than via async
+    // iteration (e.g. stream/consumers `text()`): yauzl <3.3.1 read streams
+    // never emit "close", which hangs consumers (thejoshwolfe/yauzl#169)
+    const chunks: Buffer[] = [];
+    await pipeline(
+      readStream,
+      new Writable({
+        write(chunk: unknown, _encoding, callback) {
+          // yauzl opens entries in binary mode, so chunks are always Buffers.
+          if (chunk instanceof Buffer) {
+            chunks.push(chunk);
+          }
+          callback();
+        },
+      }),
+    );
+    const linkTarget = Buffer.concat(chunks).toString();
     // Verify that the link does not resolve outside of the target directory.
     const resolvedLinkTarget = path.resolve(
       path.dirname(destination),
