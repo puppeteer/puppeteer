@@ -19,7 +19,7 @@ export interface EnvironmentDependencies {
   fs: typeof FS;
   path?: typeof Path;
   ScreenRecorder: typeof ScreenRecorder;
-  debuglog: typeof debuglog;
+  debuglog?: typeof debuglog;
 }
 
 /**
@@ -38,8 +38,5 @@ export const environment: {
         throw new Error('ScreenRecorder is not available in this environment');
       }
     } as unknown as typeof ScreenRecorder,
-    debuglog: () => {
-      throw new Error('debuglog is not available in this environment');
-    },
   },
 };

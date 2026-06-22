@@ -51,7 +51,7 @@ export const debug = (
   prefix: string,
 ): ((...args: unknown[]) => void) | undefined => {
   if (isNode) {
-    const nodeDebug = environment.value.debuglog(prefix);
+    const nodeDebug = environment.value.debuglog?.(prefix);
     if (!nodeDebug || !nodeDebug.enabled) {
       return;
     }
