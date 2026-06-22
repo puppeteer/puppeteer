@@ -9,7 +9,14 @@ import './node-env-setup.js';
 
 export * from './index.js';
 
+import {environment} from './environment.js';
+
 import * as Puppeteer from './index.js';
+
+environment.value = {
+  ...environment.value,
+  ScreenRecorder: Puppeteer.ScreenRecorder,
+};
 
 /**
  * @public

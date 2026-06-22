@@ -9,11 +9,10 @@ import path from 'node:path';
 import {debuglog} from 'node:util';
 
 import {environment} from './environment.js';
-import {ScreenRecorder} from './node/ScreenRecorder.js';
 
 environment.value = {
+  ...environment.value,
   fs,
   path,
-  ScreenRecorder,
   debuglog,
 };
