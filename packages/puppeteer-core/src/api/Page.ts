@@ -956,9 +956,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
   abstract get tracing(): Tracing;
 
   /**
-   * Experimental API for {@link https://github.com/webmachinelearning/webmcp
-   * | WebMCP}. Requires Chrome 149+ with the
-   * `--enable-features=WebMCP,DevToolsWebMCPSupport` flags enabled.
+   * Experimental API for {@link https://github.com/webmachinelearning/webmcp| WebMCP}.
+   * Requires Chrome 150+ with the `--enable-features=WebMCP` flag enabled.
    *
    * @experimental
    */

@@ -2,7 +2,7 @@
 
 :::caution
 
-WebMCP is an experimental API and is subject to change. It is currently only supported in Chrome 149+ and requires specific flags to be enabled.
+WebMCP is an experimental API and is subject to change. It is currently only supported in Chrome 150+ and requires specific flag to be enabled.
 
 :::
 
@@ -12,9 +12,9 @@ WebMCP is an experimental API and is subject to change. It is currently only sup
 
 To use WebMCP with Puppeteer, you need:
 
-1.  **Chrome 149+**: The browser must support the WebMCP CDP domain.
-2.  **Enabled Flags**: You must launch the browser with the following flags:
-    - `--enable-features=WebMCP,DevToolsWebMCPSupport`
+1.  **Chrome 150+**: The browser must support the WebMCP CDP domain.
+2.  **Enabled Flag**: You must launch the browser with the following flag:
+    - `--enable-features=WebMCP`
 
 ## Enabling WebMCP
 
@@ -24,7 +24,7 @@ In Puppeteer, WebMCP support is available through the [`page.webmcp`](../api/pup
 import puppeteer from 'puppeteer';
 
 const browser = await puppeteer.launch({
-  args: ['--enable-features=WebMCP,DevToolsWebMCPSupport'],
+  args: ['--enable-features=WebMCP'],
 });
 const page = await browser.newPage();
 
@@ -105,7 +105,7 @@ Tools can be registered in the page either imperatively via JavaScript or declar
 
 ```ts
 await page.evaluate(() => {
-  window.navigator.modelContext.registerTool({
+  document.modelContext.registerTool({
     name: 'calculate_sum',
     description: 'Calculates the sum of two numbers',
     inputSchema: {
