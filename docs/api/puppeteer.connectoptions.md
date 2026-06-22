@@ -82,9 +82,9 @@ For any network requests made by the browser (including navigations and subresou
 
 **Remarks:**
 
-Currently only supported for CDP connections.
+Currently only supported for Chrome.
 
-Inner `<iframe>` content loading is currently not blocked.
+The feature works while Puppeteer is attached to the CDP targets. It intercepts requests in the network service in Chrome. Chrome may perform some network access in other ways or some web features may omit the network service. The feature is meant as an additional guardrails to LLM-based usage under Puppeteer control and not a complete network sandbox. For complete network sandboxing, we recommend using container/OS-level sandbox mechanism.
 
 Cannot be used along with [ConnectOptions.blocklist](./puppeteer.connectoptions.md#blocklist).
 
@@ -115,9 +115,9 @@ For any network requests made by the browser (including navigations and subresou
 
 **Remarks:**
 
-Currently only supported for CDP connections.
+Currently only supported for Chrome.
 
-Inner `<iframe>` content loading is currently not blocked.
+The feature works while Puppeteer is attached to the CDP targets. It intercepts requests in the network service in Chrome. Chrome may perform some network access in other ways or some web features may omit the network service. The feature is meant as an additional guardrails to LLM-based usage under Puppeteer control and not a complete network sandbox. For complete network sandboxing, we recommend using container/OS-level sandbox mechanism.
 
 Cannot be used along with [ConnectOptions.allowlist](./puppeteer.connectoptions.md#allowlist).
 
