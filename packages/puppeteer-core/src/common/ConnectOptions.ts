@@ -165,26 +165,32 @@ export interface ConnectOptions {
   /**
    * A list of URL patterns to block.
    *
-   * This option allows you to restrict the browser from accessing specific
-   * URLs or origins. It uses the standard [URLPattern](https://urlpattern.spec.whatwg.org/) API to match URLs.
+   * This option allows you to restrict the browser from accessing specific URLs
+   * or origins. It uses the standard
+   * [URLPattern](https://urlpattern.spec.whatwg.org/) API to match URLs.
    *
-   * When connecting to an existing browser, Puppeteer will silently detach from any
-   * already open targets that violate the patterns.
+   * When connecting to an existing browser, Puppeteer will silently detach from
+   * any already open targets that violate the patterns.
    *
    * For any network requests made by the browser (including navigations and
    * subresources like images or scripts), the request will fail with an error
    * if the URL matches a blocked pattern.
    *
-   * @example Pattern to block a specific domain:
-   * `*://example.com/*`
+   * @example Pattern to block a specific domain: `*://example.com/*`
    *
-   * @example Pattern to block all subdomains:
-   * `*://*.evil.com/*`
+   * @example Pattern to block all subdomains: `*://*.evil.com/*`
    *
    * @remarks
-   * Currently only supported for CDP connections.
+   * Currently only supported for Chrome.
    *
-   * Inner `<iframe>` content loading is currently not blocked.
+   * The feature works while Puppeteer is attached to the CDP targets.
+   * It intercepts requests in the network service in Chrome.
+   * Chrome may perform some network access in other ways or
+   * some web features may omit the network service.
+   * The feature is meant as an additional guardrails to LLM-based
+   * usage under Puppeteer control and not a complete network sandbox.
+   * For complete network sandboxing, we recommend using
+   * container/OS-level sandbox mechanism.
    *
    * Cannot be used along with {@link ConnectOptions.allowlist}.
    *
@@ -214,9 +220,16 @@ export interface ConnectOptions {
    * `*://*.example.com/*`
    *
    * @remarks
-   * Currently only supported for CDP connections.
+   * Currently only supported for Chrome.
    *
-   * Inner `<iframe>` content loading is currently not blocked.
+   * The feature works while Puppeteer is attached to the CDP targets.
+   * It intercepts requests in the network service in Chrome.
+   * Chrome may perform some network access in other ways or
+   * some web features may omit the network service.
+   * The feature is meant as an additional guardrails to LLM-based
+   * usage under Puppeteer control and not a complete network sandbox.
+   * For complete network sandboxing, we recommend using
+   * container/OS-level sandbox mechanism.
    *
    * Cannot be used along with {@link ConnectOptions.blocklist}.
    *
