@@ -181,6 +181,27 @@ describe('Network Restrictions', function () {
       );
     });
 
+    it('should block OOPIF frame.goto when the destination is in the blocklist', async () => {
+      const {page, server} = state;
+      await page.goto(server.PREFIX + '/title.html');
+      const frame = await attachFrame(
+        page,
+        'frame1',
+        server.CROSS_PROCESS_PREFIX + '/title.html',
+      );
+
+      const blockedUrl = server.PREFIX + '/empty.html';
+      let error: Error | undefined;
+      await frame.goto(blockedUrl).catch(e => {
+        return (error = e);
+      });
+
+      expect(error).toBeDefined();
+      expect(error?.message).toContain(
+        'is blocked by blocklist/allowlist rules',
+      );
+    });
+
     it('should block CDP standard emulation reset when blocklist is active', async () => {
       const {page} = state;
       const session = await page.createCDPSession();
@@ -230,6 +251,53 @@ describe('Network Restrictions', function () {
 
       expect(fetchError).toBeTruthy();
       expect(fetchError).toContain('Failed to fetch');
+    });
+
+    it('should block fetch requests from within OOPIFs to URLs in the blocklist', async () => {
+      const {page, server} = state;
+      await page.goto(server.PREFIX + '/title.html');
+      const frame = await attachFrame(
+        page,
+        'frame1',
+        server.CROSS_PROCESS_PREFIX + '/title.html',
+      );
+
+      const fetchError = await frame.evaluate(async url => {
+        try {
+          await fetch(url);
+          return null;
+        } catch (e) {
+          return (e as Error).message;
+        }
+      }, server.PREFIX + '/empty.html');
+
+      expect(fetchError).toBeTruthy();
+      expect(fetchError).toContain('Failed to fetch');
+    });
+
+    it('should block iframe content from loading if the iframe URL is in the blocklist', async () => {
+      const {page, server} = state;
+      await page.goto(server.PREFIX + '/title.html');
+      await page.setContent(html`
+        <iframe src="${server.PREFIX}/empty.html"></iframe>
+      `);
+      const frame = page.frames().find(f => {
+        return f !== page.mainFrame();
+      })!;
+
+      const content = await frame.content();
+      expect(content).not.toContain("Hi, I'm frame");
+    });
+
+    it('should block out-of-process iframe (OOPIF) content from loading if the iframe URL is in the blocklist', async () => {
+      const {page, server} = state;
+      await page.goto(server.PREFIX + '/title.html');
+      const frame = await attachFrame(
+        page,
+        'frame1',
+        server.CROSS_PROCESS_PREFIX + '/empty.html',
+      );
+      expect(frame.url()).toBe('chrome-error://chromewebdata/');
     });
   });
 
@@ -344,6 +412,74 @@ describe('Network Restrictions', function () {
         'net::ERR_INTERNET_DISCONNECTED',
       );
       expect(finishedRequests.has(allowedUrl)).toBe(true);
+    });
+
+    it('should block OOPIF frame.goto when the destination is not in the allowlist', async () => {
+      const {page, server} = state;
+      await page.goto(server.PREFIX + '/empty.html');
+      const frame = await attachFrame(
+        page,
+        'frame1',
+        server.CROSS_PROCESS_PREFIX + '/empty.html',
+      );
+
+      const blockedUrl = server.PREFIX + '/title.html';
+      let error: Error | undefined;
+      await frame.goto(blockedUrl).catch(e => {
+        return (error = e);
+      });
+
+      expect(error).toBeDefined();
+      expect(error?.message).toContain(
+        'is blocked by blocklist/allowlist rules',
+      );
+    });
+
+    it('should block fetch requests from within OOPIFs to URLs not in the allowlist', async () => {
+      const {page, server} = state;
+      await page.goto(server.PREFIX + '/empty.html');
+      const frame = await attachFrame(
+        page,
+        'frame1',
+        server.CROSS_PROCESS_PREFIX + '/empty.html',
+      );
+
+      const fetchError = await frame.evaluate(async url => {
+        try {
+          await fetch(url);
+          return null;
+        } catch (e) {
+          return (e as Error).message;
+        }
+      }, server.PREFIX + '/title.html');
+
+      expect(fetchError).toBeTruthy();
+      expect(fetchError).toContain('Failed to fetch');
+    });
+
+    it('should block iframe content from loading if the iframe URL is not in the allowlist', async () => {
+      const {page, server} = state;
+      await page.goto(server.PREFIX + '/empty.html');
+      await page.setContent(html`
+        <iframe src="${server.PREFIX}/title.html"></iframe>
+      `);
+      const frame = page.frames().find(f => {
+        return f !== page.mainFrame();
+      })!;
+
+      const content = await frame.content();
+      expect(content).not.toContain("Hi, I'm frame");
+    });
+
+    it('should block out-of-process iframe (OOPIF) content from loading if the iframe URL is not in the allowlist', async () => {
+      const {page, server} = state;
+      await page.goto(server.PREFIX + '/empty.html');
+      const frame = await attachFrame(
+        page,
+        'frame1',
+        server.CROSS_PROCESS_PREFIX + '/title.html',
+      );
+      expect(frame.url()).toBe('chrome-error://chromewebdata/');
     });
 
     it('should block CDP standard emulation reset when allowlist is active', async () => {
@@ -511,51 +647,6 @@ describe('Network Restrictions', function () {
       await expect(page.goto(blockedUrl)).rejects.toThrow(
         'is blocked by blocklist/allowlist rules',
       );
-    } finally {
-      await close();
-    }
-  });
-
-  it('should block iframe content from loading if the iframe URL is in the blocklist', async () => {
-    const {page, close, server} = await launch(
-      {
-        blocklist: ['*://*:*/frames/frame.html'],
-      },
-      {createContext: true},
-    );
-
-    try {
-      await page.goto(server.PREFIX + '/frames/one-frame.html');
-      const frame = page.frames().find(f => {
-        return f !== page.mainFrame();
-      })!;
-
-      const content = await frame.content();
-      expect(content).not.toContain("Hi, I'm frame");
-    } finally {
-      await close();
-    }
-  });
-
-  it('should block out-of-process iframe (OOPIF) content from loading if the iframe URL is in the blocklist', async () => {
-    const {page, close, server} = await launch(
-      {
-        blocklist: ['*://*:*/frames/frame.html'],
-        args: ['--site-per-process'],
-      },
-      {createContext: true},
-    );
-
-    try {
-      await page.goto(server.EMPTY_PAGE);
-      const frame = await attachFrame(
-        page,
-        'frame1',
-        server.CROSS_PROCESS_PREFIX + '/frames/frame.html',
-      );
-      const content = await frame.content();
-      expect(content).not.toContain("Hi, I'm frame");
-      expect(content).toContain('ERR_INTERNET_DISCONNECTED');
     } finally {
       await close();
     }
