@@ -33,8 +33,10 @@ export const environment: {
     get fs(): typeof FS {
       throw new Error('fs is not available in this environment');
     },
-    get ScreenRecorder(): typeof ScreenRecorder {
-      throw new Error('ScreenRecorder is not available in this environment');
-    },
+    ScreenRecorder: class {
+      constructor() {
+        throw new Error('ScreenRecorder is not available in this environment');
+      }
+    } as unknown as typeof ScreenRecorder,
   },
 };

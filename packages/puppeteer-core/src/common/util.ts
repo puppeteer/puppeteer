@@ -39,7 +39,7 @@ export const debugError = debug('puppeteer:error');
 /**
  * @internal
  *
- * Use this isntead of debugError so the catch functions
+ * Use this instead of debugError so the catch functions
  * don't re-throw the error.
  */
 export const debugCatchError = debugError ?? (() => {});

@@ -114,7 +114,8 @@ export class TestServer {
     this.#server.on('clientError', err => {
       if (
         'code' in err &&
-        err.code === 'ERR_SSL_SSLV3_ALERT_CERTIFICATE_UNKNOWN'
+        (err.code === 'ERR_SSL_SSLV3_ALERT_CERTIFICATE_UNKNOWN' ||
+          err.code === 'ERR_SSL_SSL/TLS_ALERT_CERTIFICATE_UNKNOWN')
       ) {
         return;
       }

@@ -4,23 +4,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export * from './index.js';
+// Set up Node-specific environment dependencies before importing other modules.
+import './node-env-setup.js';
 
-import fs from 'node:fs';
-import path from 'node:path';
-import {debuglog} from 'node:util';
+export * from './index.js';
 
 import {environment} from './environment.js';
 
 import * as Puppeteer from './index.js';
 
-// Set up Node-specific environment dependencies.
-environment.value = {
-  fs,
-  path,
-  ScreenRecorder: Puppeteer.ScreenRecorder,
-  debuglog,
-};
+environment.value.ScreenRecorder = Puppeteer.ScreenRecorder;
+
 /**
  * @public
  */
