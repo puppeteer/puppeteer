@@ -72,6 +72,9 @@ function getLogLevel(logLevel: unknown): 'silent' | 'error' | 'warn' {
   }
 }
 
+/**
+ * @internal
+ */
 export function getBrowserSetting(
   browser: 'chrome' | 'chrome-headless-shell' | 'firefox',
   configuration: Configuration,

@@ -58,9 +58,11 @@ export interface Configuration {
    */
   temporaryDirectory?: string;
   /**
-   * Tells Puppeteer to not download during installation.
+   * Tells Puppeteer to not download any of the browsers during installation.
    *
-   * Can be overridden by `PUPPETEER_SKIP_DOWNLOAD`.
+   * Can be overridden by `PUPPETEER_SKIP_DOWNLOAD` or by specifying either
+   * `skipDownload` property in each browser specific config or by providing
+   * `PUPPETEER_FIREFOX_SKIP_DOWNLOAD` and `PUPPETEER_CHROME_SKIP_DOWNLOAD`.
    */
   skipDownload?: boolean;
   /**

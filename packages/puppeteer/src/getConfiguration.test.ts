@@ -19,7 +19,25 @@ void describe('getConfiguration', () => {
         },
       });
 
-      assert.notStrictEqual(result, {skipDownload: true, version: 'latest'});
+      assert.partialDeepStrictEqual(result, {
+        skipDownload: true,
+        version: 'latest',
+      });
+    });
+
+    void it('picks the correct skipDownload when both global and local properies are used', () => {
+      const result = getBrowserSetting('chrome', {
+        skipDownload: true,
+        chrome: {
+          skipDownload: false,
+          version: 'latest',
+        },
+        firefox: {
+          version: 'stable',
+        },
+      });
+
+      assert.equal(result.skipDownload, false);
     });
 
     void it('picks the correct browser config when global skipDownload is true', () => {
@@ -30,7 +48,10 @@ void describe('getConfiguration', () => {
         },
       });
 
-      assert.notStrictEqual(result, {skipDownload: true, version: 'latest'});
+      assert.partialDeepStrictEqual(result, {
+        skipDownload: true,
+        version: 'latest',
+      });
     });
   });
 });
