@@ -24,6 +24,7 @@ describe('Network Restrictions', function () {
         '*://*:*/empty.html',
         '*://*:*/pptr.png',
         '*://*:*/serviceworkers/empty/sw.js',
+        '*://*:*/serviceworkers/fetch/style.css',
       ],
     });
 
@@ -97,6 +98,34 @@ describe('Network Restrictions', function () {
 
       expect(swError).toBeTruthy();
       expect(swError).toContain('Failed to register a ServiceWorker');
+    });
+
+    it('should fail fetch requests from within a service worker to URLs in the blocklist', async () => {
+      const {page, server, context} = state;
+      const allowedUrl = server.PREFIX + '/serviceworkers/fetch/sw.html';
+      const blockedUrl = server.PREFIX + '/serviceworkers/fetch/style.css';
+
+      await page.goto(allowedUrl);
+
+      const target = await context.waitForTarget(
+        target => {
+          return target.type() === 'service_worker';
+        },
+        {timeout: 3000},
+      );
+      const worker = (await target.worker())!;
+
+      const fetchError = await worker.evaluate(async url => {
+        try {
+          await fetch(url);
+          return null;
+        } catch (e) {
+          return (e as Error).message;
+        }
+      }, blockedUrl);
+
+      expect(fetchError).toBeTruthy();
+      expect(fetchError).toContain('Failed to fetch');
     });
 
     it('should prevent loading of blocklisted subresources (e.g., images)', async () => {
