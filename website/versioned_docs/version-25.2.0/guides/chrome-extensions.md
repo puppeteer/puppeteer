@@ -12,7 +12,6 @@ import path from 'path';
 
 const pathToExtension = path.join(process.cwd(), 'my-extension');
 const browser = await puppeteer.launch({
-  pipe: true,
   enableExtensions: [pathToExtension],
 });
 ```
@@ -25,7 +24,6 @@ import path from 'path';
 
 const pathToExtension = path.join(process.cwd(), 'my-extension');
 const browser = await puppeteer.launch({
-  pipe: true,
   enableExtensions: true,
 });
 
@@ -58,7 +56,6 @@ import path from 'path';
 
 const pathToExtension = path.join(process.cwd(), 'my-extension');
 const browser = await puppeteer.launch({
-  pipe: true,
   enableExtensions: [pathToExtension],
 });
 
@@ -88,7 +85,6 @@ import path from 'path';
 
 const pathToExtension = path.join(process.cwd(), 'my-extension');
 const browser = await puppeteer.launch({
-  pipe: true,
   enableExtensions: [pathToExtension],
 });
 const backgroundPageTarget = await browser.waitForTarget(
