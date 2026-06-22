@@ -145,4 +145,15 @@ In general, you should use [evaluateHandle](./puppeteer.webworker.evaluatehandle
 The URL of this web worker.
 
 </td></tr>
+<tr><td>
+
+<span id="waitforfunction">[waitForFunction(workerFunction, options, args)](./puppeteer.webworker.waitforfunction.md)</span>
+
+</td><td>
+
+</td><td>
+
+Waits for the provided function, `workerFunction`, to return a truthy value when evaluated in the page's context.
+
+</td></tr>
 </tbody></table>

@@ -36,13 +36,19 @@ Puppeteer's configuration files and environment variables are ignored by `puppet
 Configuration files are the **recommended** choice for configuring Puppeteer.
 Puppeteer will look up the file tree for any of the following formats:
 
-- `.puppeteerrc.cjs`,
-- `.puppeteerrc.js`,
-- `.puppeteerrc` (YAML/JSON),
-- `.puppeteerrc.json`,
-- `.puppeteerrc.yaml`,
-- `puppeteer.config.js`, and
+- `package.json`
+- `.config/puppeteer.config.cjs`
+- `.config/puppeteer.config.js`
+- `.config/puppeteerrc.cjs`
+- `.config/puppeteerrc.js`
+- `.config/puppeteerrc.json`
+- `.config/puppeteerrc` (JSON)
+- `.puppeteerrc.cjs`
+- `.puppeteerrc.js`
+- `.puppeteerrc.json`
+- `.puppeteerrc` (JSON)
 - `puppeteer.config.cjs`
+- `puppeteer.config.js`
 
 See the [`Configuration`](../api/puppeteer.configuration) interface for possible
 options.

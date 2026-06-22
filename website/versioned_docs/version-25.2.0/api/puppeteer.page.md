@@ -251,7 +251,7 @@ The constructor for this class is marked as internal. Third-party code should no
 
 </td><td>
 
-**_(Experimental)_** Experimental API for [WebMCP](https://github.com/webmachinelearning/webmcp). Requires Chrome 149+ with the `--enable-features=WebMCPTesting,DevToolsWebMCPSupport` flags enabled.
+**_(Experimental)_** Experimental API for [WebMCP](https://github.com/webmachinelearning/webmcp). Requires Chrome 150+ with the `--enable-features=WebMCP` flag enabled.
 
 </td></tr>
 </tbody></table>
@@ -589,6 +589,15 @@ Emulates focus state of the page.
 </td><td>
 
 Emulates the idle state. If no arguments set, clears idle state emulation.
+
+</td></tr>
+<tr><td>
+
+<span id="emulatelocale">[emulateLocale(locale)](./puppeteer.page.emulatelocale.md)</span>
+
+</td><td>
+
+</td><td>
 
 </td></tr>
 <tr><td>
@@ -1338,7 +1347,7 @@ A target this page was created from.
 
 **Deprecated:**
 
-Use [Page.createCDPSession()](./puppeteer.page.createcdpsession.md) directly.
+To create CDP session use [Page.createCDPSession()](./puppeteer.page.createcdpsession.md) directly. To identify pages spawned by this one, use [PageEvent.Popup](./puppeteer.pageevent.md) event instead.
 
 </td></tr>
 <tr><td>
