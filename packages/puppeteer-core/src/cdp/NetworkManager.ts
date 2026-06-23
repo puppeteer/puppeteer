@@ -8,7 +8,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {Frame} from '../api/Frame.js';
-import type {Credentials} from '../api/Page.js';
+import type {Credentials, Page} from '../api/Page.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {
   NetworkManagerEvent,
@@ -65,6 +65,7 @@ export interface InternalNetworkConditions extends NetworkConditions {
  */
 export interface FrameProvider {
   frame(id: string): Frame | null;
+  page(): Page;
 }
 
 /**
@@ -81,7 +82,6 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   #userCacheDisabled?: boolean;
   #emulatedNetworkConditions?: InternalNetworkConditions;
   #userAgent?: string;
-  #defaultUserAgent?: string;
   #userAgentMetadata?: Protocol.Emulation.UserAgentMetadata;
   #platform?: string;
   #acceptLanguage?: string;
@@ -100,17 +100,12 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   ] as const;
 
   #clients = new Map<CDPSession, DisposableStack>();
-  #networkEnabled = true;
+  #networkEnabled: boolean;
 
-  constructor(
-    frameManager: FrameProvider,
-    networkEnabled?: boolean,
-    defaultUserAgent?: string,
-  ) {
+  constructor(frameManager: FrameProvider, networkEnabled?: boolean) {
     super();
     this.#frameManager = frameManager;
     this.#networkEnabled = networkEnabled ?? true;
-    this.#defaultUserAgent = defaultUserAgent;
   }
 
   #canIgnoreError(error: unknown) {
@@ -290,7 +285,9 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   }
 
   async #applyUserAgent(client: CDPSession) {
-    const userAgent = this.#userAgent ?? this.#defaultUserAgent;
+    const userAgent =
+      this.#userAgent ??
+      (await this.#frameManager.page().browser().userAgent());
     if (userAgent === undefined) {
       return;
     }

@@ -21,6 +21,25 @@ import {NetworkManager} from './NetworkManager.js';
 // TODO: develop a helper to generate fake network events for attributes that
 // are not relevant for the network manager to make tests shorter.
 
+function createNetworkManager() {
+  return new NetworkManager({
+    frame(): CdpFrame | null {
+      return null;
+    },
+    page() {
+      return {
+        browser() {
+          return {
+            userAgent() {
+              return 'user-agent';
+            },
+          };
+        },
+      } as any;
+    },
+  });
+}
+
 class MockCDPSession extends EventEmitter<CDPSessionEvents> {
   async send(): Promise<any> {}
   connection() {
@@ -39,11 +58,7 @@ class MockCDPSession extends EventEmitter<CDPSessionEvents> {
 describe('NetworkManager', () => {
   it('should process extra info on multiple redirects', async () => {
     const mockCDPSession = new MockCDPSession();
-    const manager = new NetworkManager({
-      frame(): CdpFrame | null {
-        return null;
-      },
-    });
+    const manager = createNetworkManager();
     await manager.addClient(mockCDPSession);
     mockCDPSession.emit('Network.requestWillBeSent', {
       requestId: '7760711DEFCFA23132D98ABA6B4E175C',
@@ -479,11 +494,7 @@ describe('NetworkManager', () => {
   });
   it(`should handle "double pause" (crbug.com/1196004) Fetch.requestPaused events for the same Network.requestWillBeSent event`, async () => {
     const mockCDPSession = new MockCDPSession();
-    const manager = new NetworkManager({
-      frame(): CdpFrame | null {
-        return null;
-      },
-    });
+    const manager = createNetworkManager();
     await manager.addClient(mockCDPSession);
     await manager.setRequestInterception(true);
 
@@ -563,11 +574,7 @@ describe('NetworkManager', () => {
   });
   it(`should handle Network.responseReceivedExtraInfo event after Network.responseReceived event (github.com/puppeteer/puppeteer/issues/8234)`, async () => {
     const mockCDPSession = new MockCDPSession();
-    const manager = new NetworkManager({
-      frame(): CdpFrame | null {
-        return null;
-      },
-    });
+    const manager = createNetworkManager();
     await manager.addClient(mockCDPSession);
 
     const requests: HTTPRequest[] = [];
@@ -680,11 +687,7 @@ describe('NetworkManager', () => {
 
   it(`should resolve the response once the late responseReceivedExtraInfo event arrives`, async () => {
     const mockCDPSession = new MockCDPSession();
-    const manager = new NetworkManager({
-      frame(): CdpFrame | null {
-        return null;
-      },
-    });
+    const manager = createNetworkManager();
     await manager.addClient(mockCDPSession);
 
     const finishedRequests: HTTPRequest[] = [];
@@ -831,11 +834,7 @@ describe('NetworkManager', () => {
 
   it(`should send responses for iframe that don't receive loadingFinished event`, async () => {
     const mockCDPSession = new MockCDPSession();
-    const manager = new NetworkManager({
-      frame(): CdpFrame | null {
-        return null;
-      },
-    });
+    const manager = createNetworkManager();
     await manager.addClient(mockCDPSession);
 
     const responses: HTTPResponse[] = [];
@@ -994,11 +993,7 @@ describe('NetworkManager', () => {
 
   it(`should send responses for iframe that don't receive loadingFinished event`, async () => {
     const mockCDPSession = new MockCDPSession();
-    const manager = new NetworkManager({
-      frame(): CdpFrame | null {
-        return null;
-      },
-    });
+    const manager = createNetworkManager();
     await manager.addClient(mockCDPSession);
 
     const responses: HTTPResponse[] = [];
@@ -1139,11 +1134,7 @@ describe('NetworkManager', () => {
 
   it(`should handle cached redirects`, async () => {
     const mockCDPSession = new MockCDPSession();
-    const manager = new NetworkManager({
-      frame(): CdpFrame | null {
-        return null;
-      },
-    });
+    const manager = createNetworkManager();
     await manager.addClient(mockCDPSession);
 
     const responses: HTTPResponse[] = [];
@@ -1579,11 +1570,7 @@ describe('NetworkManager', () => {
       const mockCDPSession = createMockSession(
         TargetCloseError as unknown as ErrorConstructor,
       );
-      const manager = new NetworkManager({
-        frame(): CdpFrame | null {
-          return null;
-        },
-      });
+      const manager = createNetworkManager();
       await manager.addClient(mockCDPSession);
       await manager.setCacheEnabled(true);
       await manager.setExtraHTTPHeaders({});
@@ -1593,11 +1580,7 @@ describe('NetworkManager', () => {
 
     it('should not throw on unsupported errors', async () => {
       const mockCDPSession = createMockSession(Error, 'Not supported');
-      const manager = new NetworkManager({
-        frame(): CdpFrame | null {
-          return null;
-        },
-      });
+      const manager = createNetworkManager();
       await manager.addClient(mockCDPSession);
       await manager.setCacheEnabled(true);
       await manager.setExtraHTTPHeaders({});
@@ -1607,11 +1590,7 @@ describe('NetworkManager', () => {
 
     it('should throw on non-TargetClose errors', async () => {
       const mockCDPSession = createMockSession(Error);
-      const manager = new NetworkManager({
-        frame(): CdpFrame | null {
-          return null;
-        },
-      });
+      const manager = createNetworkManager();
       expect(async () => {
         await manager.addClient(mockCDPSession);
       }).rejects.toThrow();
@@ -1627,6 +1606,27 @@ describe('NetworkManager', () => {
       expect(async () => {
         await manager.setUserAgent('test');
       }).rejects.toThrow();
+    });
+
+    it('should not throw if page().browser().userAgent() throws', async () => {
+      const mockCDPSession = new MockCDPSession();
+      const manager = new NetworkManager({
+        frame(): CdpFrame | null {
+          return null;
+        },
+        page() {
+          return {
+            browser() {
+              return {
+                userAgent() {
+                  throw new TargetCloseError('Target closed');
+                },
+              };
+            },
+          } as any;
+        },
+      });
+      await manager.addClient(mockCDPSession);
     });
   });
 });
