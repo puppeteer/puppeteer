@@ -27,7 +27,15 @@ function createNetworkManager() {
       return null;
     },
     page() {
-      return {} as any;
+      return {
+        browser() {
+          return {
+            userAgent() {
+              return 'user-agent';
+            },
+          };
+        },
+      } as any;
     },
   });
 }
@@ -1598,6 +1606,27 @@ describe('NetworkManager', () => {
       expect(async () => {
         await manager.setUserAgent('test');
       }).rejects.toThrow();
+    });
+
+    it('should not throw if page().browser().userAgent() throws', async () => {
+      const mockCDPSession = new MockCDPSession();
+      const manager = new NetworkManager({
+        frame(): CdpFrame | null {
+          return null;
+        },
+        page() {
+          return {
+            browser() {
+              return {
+                userAgent() {
+                  throw new TargetCloseError('Target closed');
+                },
+              };
+            },
+          } as any;
+        },
+      });
+      await manager.addClient(mockCDPSession);
     });
   });
 });
