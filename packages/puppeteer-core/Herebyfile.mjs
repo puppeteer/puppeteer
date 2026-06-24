@@ -18,7 +18,7 @@ export const updateVersionTask = task({
   name: 'update:version',
   run: async () => {
     // x-release-please-start-version
-    const version = '25.2.0';
+    const version = '25.2.1';
     // x-release-please-end
 
     // We only want to do this once we are trying to publish
