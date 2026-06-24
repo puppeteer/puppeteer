@@ -529,7 +529,7 @@ running Chrome owns them.
 
 ### Running on Alpine
 
-Note that Chrome [does not support Alpine out of the box](https://support.google.com/chrome/a/answer/7100626?hl=en#:~:text=10.15%20or%20later-,Linux,-To%20use%20Chrome) so make sure you have compatible system dependencies installed on Alpine and test the image before using it. See https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/rpm/dist_package_provides.json and https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/debian/dist_package_versions.json for the list of system packages required on supported distros.
+Note that Chrome [does not support Alpine out of the box](https://support.google.com/chrome/a/answer/7100626?hl=en#:~:text=Linux) so make sure you have compatible system dependencies installed on Alpine and test the image before using it. See [chrome/installer/linux/rpm/dist_package_provides.json](https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/rpm/dist_package_provides.json) and [chrome/installer/linux/debian/dist_package_versions.json](https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/debian/dist_package_versions.json) for the list of system packages required on supported distros.
 
 > **CAUTION**
 >
