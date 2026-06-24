@@ -217,7 +217,7 @@ async function extractZip(
 /**
  * @internal
  */
-async function extractZipWithYauzl(
+export async function extractZipWithYauzl(
   archivePath: string,
   folderPath: string,
 ): Promise<void> {

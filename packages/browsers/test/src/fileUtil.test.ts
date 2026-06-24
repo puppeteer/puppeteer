@@ -10,6 +10,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import {
+  extractZipWithYauzl,
   internalConstantsForTesting,
   unpackArchive,
 } from '../../lib/fileUtil.js';
@@ -74,22 +75,6 @@ describe('fileUtil', function () {
     assert.deepStrictEqual(dir, []);
   }
 
-  async function withoutSystemArchiver(
-    run: () => Promise<void>,
-  ): Promise<void> {
-    const originalPath = process.env['PATH'];
-    process.env['PATH'] = '';
-    try {
-      await run();
-    } finally {
-      if (originalPath === undefined) {
-        delete process.env['PATH'];
-      } else {
-        process.env['PATH'] = originalPath;
-      }
-    }
-  }
-
   function assertTestZipUnpacked(): void {
     const entries = fs
       .readdirSync(tmpDir, {recursive: true})
@@ -144,83 +129,55 @@ describe('fileUtil', function () {
     assertTestZipUnpacked();
   });
 
-  // Symlinks appear only in the macOS archives. Verified against
-  // Chrome for Testing 149.0.7827.54 on 2026-06-02.
-  (os.platform() === 'darwin' ? it : it.skip)(
-    'unpacks zip preserving symlinks',
-    async () => {
-      await unpackArchive(path.join(fixturesPath, 'test-symlink.zip'), tmpDir);
-      assertSymlink();
-    },
-  );
+  describe('extractZipWithYauzl', () => {
+    it('extracts every entry with its structure and contents', async () => {
+      await extractZipWithYauzl(path.join(fixturesPath, 'test.zip'), tmpDir);
+      assertTestZipUnpacked();
+    });
 
-  // Node.js does not honor POSIX permission bits on Windows.
-  (os.platform() !== 'win32' ? it : it.skip)(
-    'unpacks zip preserving owner permissions',
-    async () => {
-      await unpackArchive(path.join(fixturesPath, 'test.zip'), tmpDir);
-      assertOwnerPermissions();
-    },
-  );
+    // Node.js does not honor POSIX permission bits on Windows.
+    (os.platform() === 'win32' ? it.skip : it)(
+      'preserves owner permissions',
+      async () => {
+        await extractZipWithYauzl(path.join(fixturesPath, 'test.zip'), tmpDir);
+        assertOwnerPermissions();
+      },
+    );
 
-  // On Windows, `.zip` extraction currently runs tar by an absolute path, so
-  // emptying PATH cannot force the yauzl fallback there; the non-Windows run
-  // covers it, as the yauzl path is platform-independent.
-  (os.platform() === 'win32' ? describe.skip : describe)(
-    'unpacks zip via the yauzl fallback',
-    () => {
-      it('extracting every entry with its structure and contents', async () => {
-        await withoutSystemArchiver(() => {
-          return unpackArchive(path.join(fixturesPath, 'test.zip'), tmpDir);
-        });
-        assertTestZipUnpacked();
-      });
+    // Creating symlinks on Windows requires elevated privileges.
+    (os.platform() === 'win32' ? it.skip : it)(
+      'preserves symlinks',
+      async () => {
+        await extractZipWithYauzl(
+          path.join(fixturesPath, 'test-symlink.zip'),
+          tmpDir,
+        );
+        assertSymlink();
+      },
+    );
 
-      it('preserving symlinks', async () => {
-        await withoutSystemArchiver(() => {
-          return unpackArchive(
-            path.join(fixturesPath, 'test-symlink.zip'),
+    // The target is validated before any symlink is created, so unlike the
+    // preceding symlink test the rejection can be checked on Windows too.
+    it('rejects symlinks that point outside the target directory', async () => {
+      await assert.rejects(
+        () => {
+          return extractZipWithYauzl(
+            path.join(fixturesPath, 'test-symlink-escape.zip'),
             tmpDir,
           );
-        });
-        assertSymlink();
-      });
-
-      it('preserving owner permissions', async () => {
-        await withoutSystemArchiver(() => {
-          return unpackArchive(path.join(fixturesPath, 'test.zip'), tmpDir);
-        });
-        assertOwnerPermissions();
-      });
-    },
-  );
-
-  // We create symlinks ourselves only on the yauzl path, which cannot be
-  // tested on Windows (see the note above).
-  (os.platform() === 'win32' ? it.skip : it)(
-    'rejects symlinks that point outside the target directory',
-    async () => {
-      await withoutSystemArchiver(async () => {
-        await assert.rejects(
-          () => {
-            return unpackArchive(
-              path.join(fixturesPath, 'test-symlink-escape.zip'),
-              tmpDir,
-            );
-          },
-          (error: unknown) => {
-            const {cause} = error as {cause?: Error};
-            assert.match(cause?.message ?? '', /point outside/);
-            return true;
-          },
-        );
-      });
+        },
+        (error: unknown) => {
+          const {cause} = error as {cause?: Error};
+          assert.match(cause?.message ?? '', /point outside/);
+          return true;
+        },
+      );
       assert.ok(
         !fs.existsSync(path.join(tmpDir, 'browser', 'evil-link')),
         'symlink pointing outside the target directory was created',
       );
-    },
-  );
+    });
+  });
 
   it('throws an error if xz is not found', async () => {
     internalConstantsForTesting.xz = 'xz-not-existent';
