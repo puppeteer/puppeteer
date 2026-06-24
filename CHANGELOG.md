@@ -2,6 +2,27 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [25.2.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.2.0...puppeteer-v25.2.1) (2026-06-24)
+
+
+### ♻️ Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 25.2.0 to 25.2.1
+
+
+### 🛠️ Fixes
+
+* regression when using Puppeteer with untrusted sessions ([#15150](https://github.com/puppeteer/puppeteer/issues/15150)) ([801c212](https://github.com/puppeteer/puppeteer/commit/801c2124cfbc4a4a19bb0a40bc3b8a25d7504691))
+* roll to Firefox 152.0.2 ([#15153](https://github.com/puppeteer/puppeteer/issues/15153)) ([d2908b2](https://github.com/puppeteer/puppeteer/commit/d2908b2cdf3e3fa721a063d40b50d532b39bbc72))
+
+
 ## [25.2.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.1.0...puppeteer-v25.2.0) (2026-06-22)
 
 
