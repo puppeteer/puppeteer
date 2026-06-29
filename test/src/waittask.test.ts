@@ -934,7 +934,7 @@ describe('waittask specs', function () {
       protocolTimeout: 5000,
     });
 
-    it('should error if underyling protocol command times out with raf polling', async () => {
+    it('should error if underlying protocol command times out with raf polling', async () => {
       let error!: Error;
       await state.page
         .waitForFunction(

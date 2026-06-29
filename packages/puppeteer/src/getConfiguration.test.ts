@@ -25,7 +25,7 @@ void describe('getConfiguration', () => {
       });
     });
 
-    void it('picks the correct skipDownload when both global and local properies are used', () => {
+    void it('picks the correct skipDownload when both global and local properties are used', () => {
       const result = getBrowserSetting('chrome', {
         skipDownload: true,
         chrome: {
