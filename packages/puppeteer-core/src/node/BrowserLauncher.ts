@@ -95,6 +95,7 @@ export abstract class BrowserLauncher {
     const {
       dumpio = false,
       enableExtensions = false,
+      extensionsEnabledInIncognito = [],
       env = process.env,
       handleSIGINT = true,
       handleSIGTERM = true,
@@ -279,7 +280,9 @@ export abstract class BrowserLauncher {
     if (Array.isArray(enableExtensions)) {
       await Promise.all([
         enableExtensions.map(path => {
-          return browser.installExtension(path);
+          return browser.installExtension(path, {
+            enabledInIncognito: extensionsEnabledInIncognito.includes(path),
+          });
         }),
       ]);
     }

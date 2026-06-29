@@ -66,6 +66,11 @@ export interface LaunchOptions extends ConnectOptions {
    */
   enableExtensions?: boolean | string[];
   /**
+   * List of extensions that will be enable in Incognito and off-the-record
+   * profiles.
+   */
+  extensionsEnabledInIncognito?: string[];
+  /**
    * Close the browser process on `Ctrl+C`.
    * @defaultValue `true`
    */
