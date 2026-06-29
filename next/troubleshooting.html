@@ -8,7 +8,7 @@
 <script>window.__COPY_PAGE_BUTTON_OPTIONS__={customStyles:{},generateMarkdownRoutes:!1,placement:"auto",mcpServer:null,id:"default"}</script>
 <script src="https://www.googletagmanager.com/gtag/js?id=G-J15CTWBVHX" async></script>
 <script src="/fix-location.js"></script><link rel="stylesheet" href="/assets/css/styles.37f6a43f.css">
-<script src="/assets/js/runtime~main.e0080f82.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.827204e5.js" defer="defer"></script>
 <script src="/assets/js/main.f285fe74.js" defer="defer"></script>
 </head>
 <body>
@@ -238,7 +238,7 @@ set an explicit location if needed:</p>
 <p>Alternatively, mount these directories as writable volumes and make sure the user
 running Chrome owns them.</p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="running-on-alpine">Running on Alpine<a href="#running-on-alpine" class="hash-link" aria-label="Direct link to Running on Alpine" title="Direct link to Running on Alpine" translate="no">​</a></h3>
-<p>Note that Chrome <a href="https://support.google.com/chrome/a/answer/7100626?hl=en#:~:text=10.15%20or%20later-,Linux,-To%20use%20Chrome" target="_blank" rel="noopener noreferrer" class="">does not support Alpine out of the box</a> so make sure you have compatible system dependencies installed on Alpine and test the image before using it. See <a href="https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/rpm/dist_package_provides.json" target="_blank" rel="noopener noreferrer" class="">https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/rpm/dist_package_provides.json</a> and <a href="https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/debian/dist_package_versions.json" target="_blank" rel="noopener noreferrer" class="">https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/debian/dist_package_versions.json</a> for the list of system packages required on supported distros.</p>
+<p>Note that Chrome <a href="https://support.google.com/chrome/a/answer/7100626?hl=en#:~:text=Linux" target="_blank" rel="noopener noreferrer" class="">does not support Alpine out of the box</a> so make sure you have compatible system dependencies installed on Alpine and test the image before using it. See <a href="https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/rpm/dist_package_provides.json" target="_blank" rel="noopener noreferrer" class="">chrome/installer/linux/rpm/dist_package_provides.json</a> and <a href="https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/debian/dist_package_versions.json" target="_blank" rel="noopener noreferrer" class="">chrome/installer/linux/debian/dist_package_versions.json</a> for the list of system packages required on supported distros.</p>
 <blockquote>
 <p><strong>CAUTION</strong></p>
 <p>The current Chromium version in Alpine 3.20 is causing timeout issues with Puppeteer. Downgrading to Alpine 3.19 fixes the issue.
