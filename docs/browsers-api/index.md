@@ -43,7 +43,7 @@ You can specify the version of the `@puppeteer/browsers` when using
 ```bash
 # Always install and use the latest version from the registry.
 npx @puppeteer/browsers@latest --help
-# Always use a specifc version.
+# Always use a specific version.
 npx @puppeteer/browsers@2.4.1 --help
 # Always install the latest version and automatically confirm the installation.
 npx --yes @puppeteer/browsers@latest --help

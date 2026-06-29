@@ -3,7 +3,7 @@
 :::caution
 
 Chrome extensions environment is significantly different from the usual Node.JS environment, therefore, the support for running Puppeteer in chrome.debugger
-is currently experimental. Please submit issues https://github.com/puppeteer/puppeteer/issues/new/choose if you encounted bugs.
+is currently experimental. Please submit issues https://github.com/puppeteer/puppeteer/issues/new/choose if you encountered bugs.
 
 :::
 
