@@ -155,6 +155,16 @@ export interface ConnectOptions {
   headers?: Record<string, string>;
 
   /**
+   * Maximum web socket payload size in bytes.
+   *
+   * @remarks
+   * Only works in the Node.js environment.
+   *
+   * @defaultValue `256 * 1024 * 1024`
+   */
+  maxPayload?: number;
+
+  /**
    * WebDriver BiDi capabilities passed to BiDi `session.new`.
    *
    * @remarks
