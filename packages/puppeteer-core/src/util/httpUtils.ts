@@ -6,11 +6,19 @@
 
 /**
  * Normalizes HTTP header values by handling multiline values.
- * Multiline header values are joined with commas according to HTTP/1.1 spec.
+ * Folded multiline header values are unfolded with spaces. Set-Cookie is
+ * preserved because multiple Set-Cookie fields cannot be combined safely.
  *
  * @internal
  */
-export function normalizeHeaderValue(header: string): string {
+export function normalizeHeaderValue(
+  header: string,
+  headerName?: string,
+): string {
+  if (headerName?.toLowerCase() === 'set-cookie') {
+    return header;
+  }
+
   if (!header.includes('\n')) {
     return header;
   }
@@ -21,5 +29,5 @@ export function normalizeHeaderValue(header: string): string {
       return v.trim();
     })
     .filter(Boolean)
-    .join(', ');
+    .join(' ');
 }

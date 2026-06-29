@@ -52,7 +52,7 @@ export class CdpHTTPResponse extends HTTPResponse {
     this.#status = extraInfo ? extraInfo.statusCode : responsePayload.status;
     const headers = extraInfo ? extraInfo.headers : responsePayload.headers;
     for (const [key, value] of Object.entries(headers)) {
-      this.#headers[key.toLowerCase()] = normalizeHeaderValue(value);
+      this.#headers[key.toLowerCase()] = normalizeHeaderValue(value, key);
     }
 
     this.#securityDetails = responsePayload.securityDetails
