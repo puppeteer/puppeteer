@@ -177,8 +177,8 @@
     "@types/node": "22.13.10",
     "@types/semver": "7.7.1",
     "@types/sinon": "21.0.1",
-    "typescript-eslint": "8.60.1",
     "esbuild": "0.28.1",
+    "eslint": "9.39.4",
     "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-typescript": "4.4.5",
     "eslint-plugin-import": "2.32.0",
@@ -186,7 +186,6 @@
     "eslint-plugin-prettier": "5.5.6",
     "eslint-plugin-tsdoc": "0.5.2",
     "eslint-plugin-unused-imports": "4.1.4",
-    "eslint": "9.39.4",
     "execa": "9.6.1",
     "expect": "30.4.1",
     "globals": "17.6.0",
@@ -201,7 +200,8 @@
     "spdx-satisfies": "6.0.0",
     "tsd": "0.33.0",
     "typescript": "6.0.3",
-    "wireit": "0.14.12",
+    "typescript-eslint": "8.60.1",
+    "wireit": "^0.14.12",
     "yargs": "18.0.0"
   },
   "overrides": {

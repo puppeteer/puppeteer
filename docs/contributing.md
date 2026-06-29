@@ -71,7 +71,7 @@ npm run build --watch --workspace <package> # e.g. puppeteer
 
 You have to only specify a single package to watch else things will not work as expected
 As stated above because of [wireit](https://github.com/google/wireit) when a change happens
-all dependencies will be build or rebuild (if needed).
+all dependencies will be built or rebuilt (if needed).
 
 ## Removing stale artifacts
 
@@ -90,7 +90,7 @@ npm run clean --workspace <package>
 
 Outside of `npm test`, there are several other
 [`npm` scripts](https://docs.npmjs.com/cli/using-npm/scripts) that are
-usually check through CI:
+usually checked through CI:
 
 - `test-install` - Tests whether `puppeteer` and `puppeteer-core` install
   properly and are functional.
@@ -233,7 +233,7 @@ A barrier for introducing new installation dependencies is especially high:
   success.
 
 There are additional considerations for dependencies that are environment
-agonistic. See the
+agnostic. See the
 [`third_party/README.md`](https://github.com/puppeteer/puppeteer/blob/main/packages/puppeteer-core/third_party/README.md)
 for details.
 
@@ -261,7 +261,7 @@ See [Debugging Tips](https://pptr.dev/guides/debugging).
 
 ### Debugging Puppeteer tests via VSCode
 
-Copy the provided default `.vscode/launch.template.json` to `.vscode/launch.json` and then use the integrated VSCode debugger to debug test.
+Copy the provided default `.vscode/launch.template.json` to `.vscode/launch.json` and then use the integrated VSCode debugger to debug tests.
 
 Remember to build test before launching via:
 
@@ -279,7 +279,7 @@ The action has a manual trigger that can be found on the [Actions Tab](https://g
 ### Manual instructions
 
 You can run the [`tools/update_browser_revision.mjs`](https://github.com/puppeteer/puppeteer/blob/main/tools/update_browser_revision.mjs) locally
-and try see if any changes need to be committed.
+and try to see if any changes need to be committed.
 
 > Note: You may need to run `node --experimental-fetch tools/update_browser_revision.mjs` as the script relies on `fetch`
 
