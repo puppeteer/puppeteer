@@ -275,7 +275,7 @@ Gets the specified window [bounds](./puppeteer.windowbounds.md).
 </td></tr>
 <tr><td>
 
-<span id="installextension">[installExtension(path)](./puppeteer.browser.installextension.md)</span>
+<span id="installextension">[installExtension(path, options)](./puppeteer.browser.installextension.md)</span>
 
 </td><td>
 

@@ -10,7 +10,10 @@ Installs an extension and returns the ID.
 
 ```typescript
 class Browser {
-  abstract installExtension(path: string): Promise<string>;
+  abstract installExtension(
+    path: string,
+    options?: ExtensionInstallOptions,
+  ): Promise<string>;
 }
 ```
 
@@ -38,6 +41,19 @@ path
 string
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+[ExtensionInstallOptions](./puppeteer.extensioninstalloptions.md)
+
+</td><td>
+
+_(Optional)_
 
 </td></tr>
 </tbody></table>

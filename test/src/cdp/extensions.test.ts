@@ -273,6 +273,46 @@ describe('extensions', function () {
     extensions = await browser.extensions();
     expect(extensions.has(id)).toBe(false);
   });
+
+  it('should be available in Incognito profiles if enabledInIncognito is true', async () => {
+    const {browser, server} = state;
+    const extensionId = await browser.installExtension(extensionPath, {
+      enabledInIncognito: true,
+    });
+
+    const context = await browser.createBrowserContext();
+    const page = await context.newPage();
+    await page.goto(server.EMPTY_PAGE);
+
+    const target = await browser.waitForTarget(target => {
+      return (
+        target.url().includes(extensionId) && target.type() === 'service_worker'
+      );
+    });
+    expect(target).toBeTruthy();
+
+    const realms = page.extensionRealms();
+
+    let contentScriptRealm;
+    for (const realm of realms) {
+      const extension = await realm.extension();
+      if (extension && extension.id === extensionId) {
+        contentScriptRealm = realm;
+        break;
+      }
+    }
+    assert(contentScriptRealm, 'realm should be defined');
+
+    const isContentScript = await contentScriptRealm.evaluate(() => {
+      return (globalThis as any).thisIsTheContentScript;
+    });
+    expect(isContentScript).toBe(true);
+
+    await browser.uninstallExtension(extensionId);
+    await context.close();
+    const targets = browser.targets();
+    assertNoServiceWorkerReported(targets, extensionId);
+  });
 });
 
 function assertNoServiceWorkerReported(targets: Target[], id: string) {

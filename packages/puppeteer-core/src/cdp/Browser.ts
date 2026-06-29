@@ -8,7 +8,11 @@ import type {ChildProcess} from 'node:child_process';
 
 import type {Protocol} from 'devtools-protocol';
 
-import type {CreatePageOptions, DebugInfo} from '../api/Browser.js';
+import type {
+  CreatePageOptions,
+  DebugInfo,
+  ExtensionInstallOptions,
+} from '../api/Browser.js';
 import {
   Browser as BrowserBase,
   BrowserEvent,
@@ -477,8 +481,14 @@ export class CdpBrowser extends BrowserBase {
     return response.targetId;
   }
 
-  override async installExtension(path: string): Promise<string> {
-    const {id} = await this.#connection.send('Extensions.loadUnpacked', {path});
+  override async installExtension(
+    path: string,
+    options?: ExtensionInstallOptions,
+  ): Promise<string> {
+    const {id} = await this.#connection.send('Extensions.loadUnpacked', {
+      path,
+      enableInIncognito: options?.enabledInIncognito ?? false,
+    });
     this.#extensions.delete(id);
     return id;
   }

@@ -1040,6 +1040,13 @@ Device in a request prompt.
 </td></tr>
 <tr><td>
 
+<span id="extensioninstalloptions">[ExtensionInstallOptions](./puppeteer.extensioninstalloptions.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="firefoxsettings">[FirefoxSettings](./puppeteer.firefoxsettings.md)</span>
 
 </td><td>

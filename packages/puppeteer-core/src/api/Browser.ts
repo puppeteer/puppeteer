@@ -324,6 +324,15 @@ export interface AddScreenParams {
   label?: string;
   isInternal?: boolean;
 }
+/**
+ * @public
+ */
+export interface ExtensionInstallOptions {
+  /**
+   * Whether to enable the extension in Incognito or OTR profiles in Chrome.
+   */
+  enabledInIncognito: boolean;
+}
 
 /**
  * {@link Browser} represents a browser instance that is either:
@@ -643,7 +652,10 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
   /**
    * Installs an extension and returns the ID.
    */
-  abstract installExtension(path: string): Promise<string>;
+  abstract installExtension(
+    path: string,
+    options?: ExtensionInstallOptions,
+  ): Promise<string>;
 
   /**
    * Uninstalls an extension.

@@ -222,6 +222,25 @@ When using this is recommended to set the `browser` property as well as Puppetee
 </td></tr>
 <tr><td>
 
+<span id="extensionsenabledinincognito">extensionsEnabledInIncognito</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string\[\]
+
+</td><td>
+
+List of extensions that will be enable in Incognito and off-the-record profiles.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="extraprefsfirefox">extraPrefsFirefox</span>
 
 </td><td>
