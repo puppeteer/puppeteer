@@ -163,6 +163,7 @@
   },
   "devDependencies": {
     "@actions/core": "3.0.1",
+    "@babel/core": "8.0.1",
     "@babel/plugin-transform-class-properties": "8.0.1",
     "@babel/plugin-transform-class-static-block": "8.0.1",
     "@babel/plugin-transform-dynamic-import": "8.0.1",
@@ -207,6 +208,9 @@
   "overrides": {
     "@microsoft/api-extractor": {
       "typescript": "$typescript"
+    },
+    "@rollup/plugin-babel": {
+      "@babel/core": "$@babel/core"
     }
   },
   "workspaces": [
