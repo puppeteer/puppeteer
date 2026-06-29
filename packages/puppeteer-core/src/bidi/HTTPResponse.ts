@@ -103,6 +103,7 @@ export class BidiHTTPResponse extends HTTPResponse {
       if (header.value.type === 'string') {
         headers[header.name.toLowerCase()] = normalizeHeaderValue(
           header.value.value,
+          header.name,
         );
       }
     }
