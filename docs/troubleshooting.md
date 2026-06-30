@@ -538,7 +538,7 @@ Note that Chrome [does not support Alpine out of the box](https://support.google
 
 You need to find [the newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium),
 then look up the [supported browser version](https://pptr.dev/supported-browsers) for Puppeteer
-and use the coresponding version.
+and use the corresponding version.
 
 **Example:**
 
@@ -622,7 +622,7 @@ passing them as an arguments to your `.launch()` call:
 
 Google Cloud Run disables the CPU by default, after an HTTP response is written to the client. This means that puppeteer will appear extremely slow (taking 1-5 minutes to launch), if you "run puppeteer in the background" after your response has been written.
 
-So this simple express app will be percievably slow:
+So this simple express app will be perceivably slow:
 
 ```js
 import express from 'express';
