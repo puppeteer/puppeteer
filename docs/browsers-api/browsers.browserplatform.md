@@ -40,7 +40,7 @@ LINUX
 </td></tr>
 <tr><td>
 
-LINUX_ARM
+LINUX\_ARM
 
 </td><td>
 
@@ -62,7 +62,7 @@ MAC
 </td></tr>
 <tr><td>
 
-MAC_ARM
+MAC\_ARM
 
 </td><td>
 

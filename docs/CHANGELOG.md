@@ -3940,7 +3940,7 @@ Combined changelog for puppeteer and puppeteer-core.
 
 ### Bug Fixes
 
-- call \_detach on disconnect ([#9807](https://github.com/puppeteer/puppeteer/issues/9807)) ([bc1a04d](https://github.com/puppeteer/puppeteer/commit/bc1a04def8f699ad245c12ec69ac176e3e7e888d))
+- call _detach on disconnect ([#9807](https://github.com/puppeteer/puppeteer/issues/9807)) ([bc1a04d](https://github.com/puppeteer/puppeteer/commit/bc1a04def8f699ad245c12ec69ac176e3e7e888d))
 - restore rimraf for puppeteer-core code ([#9815](https://github.com/puppeteer/puppeteer/issues/9815)) ([cefc4ea](https://github.com/puppeteer/puppeteer/commit/cefc4eab4750d2c1209eb36ca44f6963a4a6bf4c))
 - update troubleshooting guide links in errors ([#9821](https://github.com/puppeteer/puppeteer/issues/9821)) ([0165f06](https://github.com/puppeteer/puppeteer/commit/0165f06deef9e45862fd127a205ade5ad30ddaa3))
 
@@ -4490,7 +4490,7 @@ Combined changelog for puppeteer and puppeteer-core.
 
 ### Bug Fixes
 
-- ignore \*.tsbuildinfo ([#8662](https://github.com/puppeteer/puppeteer/issues/8662)) ([edcdf21](https://github.com/puppeteer/puppeteer/commit/edcdf217cefbf31aee5a2f571abac429dd81f3a0))
+- ignore *.tsbuildinfo ([#8662](https://github.com/puppeteer/puppeteer/issues/8662)) ([edcdf21](https://github.com/puppeteer/puppeteer/commit/edcdf217cefbf31aee5a2f571abac429dd81f3a0))
 
 ## [15.3.2](https://github.com/puppeteer/puppeteer/compare/v15.3.1...v15.3.2) (2022-07-08)
 
@@ -4690,7 +4690,7 @@ Combined changelog for puppeteer and puppeteer-core.
 - disable bfcache in the launcher ([#8196](https://github.com/puppeteer/puppeteer/issues/8196)) ([9ac7318](https://github.com/puppeteer/puppeteer/commit/9ac7318506ac858b3465e9b4ede8ad75fbbcee11)), closes [#8182](https://github.com/puppeteer/puppeteer/issues/8182)
 - enable page.spec event handler test for firefox ([#8214](https://github.com/puppeteer/puppeteer/issues/8214)) ([2b45027](https://github.com/puppeteer/puppeteer/commit/2b45027d256f85f21a0c824183696b237e00ad33))
 - forget queuedEventGroup when emitting response in responseReceivedExtraInfo ([#8234](https://github.com/puppeteer/puppeteer/issues/8234)) ([#8239](https://github.com/puppeteer/puppeteer/issues/8239)) ([91a8e73](https://github.com/puppeteer/puppeteer/commit/91a8e73b1196e4128b1e7c25e08080f2faaf3cf7))
-- forget request will be sent from the \_requestWillBeSentMap list. ([#8226](https://github.com/puppeteer/puppeteer/issues/8226)) ([4b786c9](https://github.com/puppeteer/puppeteer/commit/4b786c904cbfe3f059322292f3b788b8a5ebd9bf))
+- forget request will be sent from the _requestWillBeSentMap list. ([#8226](https://github.com/puppeteer/puppeteer/issues/8226)) ([4b786c9](https://github.com/puppeteer/puppeteer/commit/4b786c904cbfe3f059322292f3b788b8a5ebd9bf))
 - ignore favicon requests in page.spec event handler tests ([#8208](https://github.com/puppeteer/puppeteer/issues/8208)) ([04e5c88](https://github.com/puppeteer/puppeteer/commit/04e5c889973432c6163a8539cdec23c0e8726bff))
 - **network.spec.ts:** typo in the word should ([#8223](https://github.com/puppeteer/puppeteer/issues/8223)) ([e93faad](https://github.com/puppeteer/puppeteer/commit/e93faadc21b7fcb1e03b69c451c28b769f9cde51))
 
@@ -4738,14 +4738,14 @@ Combined changelog for puppeteer and puppeteer-core.
 - change kill to signal the whole process group to terminate ([#6859](https://github.com/puppeteer/puppeteer/issues/6859)) ([0eb9c78](https://github.com/puppeteer/puppeteer/commit/0eb9c7861717ebba7012c03e76b7a46063e4e5dd))
 - element screenshot issue in headful mode ([#8018](https://github.com/puppeteer/puppeteer/issues/8018)) ([5346e70](https://github.com/puppeteer/puppeteer/commit/5346e70ffc15b33c1949657cf1b465f1acc5d84d)), closes [#7999](https://github.com/puppeteer/puppeteer/issues/7999)
 - ensure dom binding is not called after detach ([#8024](https://github.com/puppeteer/puppeteer/issues/8024)) ([5c308b0](https://github.com/puppeteer/puppeteer/commit/5c308b0704123736ddb085f97596c201ea18cf4a)), closes [#7814](https://github.com/puppeteer/puppeteer/issues/7814)
-- use both \_\_dirname and require.resolve to support different bundlers ([#8046](https://github.com/puppeteer/puppeteer/issues/8046)) ([e6a6295](https://github.com/puppeteer/puppeteer/commit/e6a6295d9a7480bb59ee58a2cc7785171fa0fa2c)), closes [#8044](https://github.com/puppeteer/puppeteer/issues/8044)
+- use both __dirname and require.resolve to support different bundlers ([#8046](https://github.com/puppeteer/puppeteer/issues/8046)) ([e6a6295](https://github.com/puppeteer/puppeteer/commit/e6a6295d9a7480bb59ee58a2cc7785171fa0fa2c)), closes [#8044](https://github.com/puppeteer/puppeteer/issues/8044)
 
 ## [13.3.2](https://github.com/puppeteer/puppeteer/compare/v13.3.1...v13.3.2) (2022-02-14)
 
 ### Bug Fixes
 
 - always use ENV executable path when present ([#7985](https://github.com/puppeteer/puppeteer/issues/7985)) ([6d6ea9b](https://github.com/puppeteer/puppeteer/commit/6d6ea9bf59daa3fb851b3da8baa27887e0aa2c28))
-- use require.resolve instead of \_\_dirname ([#8003](https://github.com/puppeteer/puppeteer/issues/8003)) ([bbb186d](https://github.com/puppeteer/puppeteer/commit/bbb186d88cb99e4914299c983c822fa41a80f356))
+- use require.resolve instead of __dirname ([#8003](https://github.com/puppeteer/puppeteer/issues/8003)) ([bbb186d](https://github.com/puppeteer/puppeteer/commit/bbb186d88cb99e4914299c983c822fa41a80f356))
 
 ## [13.3.1](https://github.com/puppeteer/puppeteer/compare/v13.3.0...v13.3.1) (2022-02-10)
 

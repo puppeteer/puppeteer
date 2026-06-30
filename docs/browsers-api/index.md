@@ -542,14 +542,14 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="cdp_websocket_endpoint_regex">[CDP_WEBSOCKET_ENDPOINT_REGEX](./browsers.cdp_websocket_endpoint_regex.md)</span>
+<span id="cdp_websocket_endpoint_regex">[CDP\_WEBSOCKET\_ENDPOINT\_REGEX](./browsers.cdp_websocket_endpoint_regex.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<span id="webdriver_bidi_websocket_endpoint_regex">[WEBDRIVER_BIDI_WEBSOCKET_ENDPOINT_REGEX](./browsers.webdriver_bidi_websocket_endpoint_regex.md)</span>
+<span id="webdriver_bidi_websocket_endpoint_regex">[WEBDRIVER\_BIDI\_WEBSOCKET\_ENDPOINT\_REGEX](./browsers.webdriver_bidi_websocket_endpoint_regex.md)</span>
 
 </td><td>
 
