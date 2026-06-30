@@ -8,7 +8,7 @@
 <script>window.__COPY_PAGE_BUTTON_OPTIONS__={customStyles:{},generateMarkdownRoutes:!1,placement:"auto",mcpServer:null,id:"default"}</script>
 <script src="https://www.googletagmanager.com/gtag/js?id=G-J15CTWBVHX" async></script>
 <script src="/fix-location.js"></script><link rel="stylesheet" href="/assets/css/styles.37f6a43f.css">
-<script src="/assets/js/runtime~main.1d6b56be.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.c0a8927d.js" defer="defer"></script>
 <script src="/assets/js/main.5029b663.js" defer="defer"></script>
 </head>
 <body>
@@ -60,7 +60,7 @@ package is sufficient. This is all possible due to
 <div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token function" style="color:#d73a49">npm</span><span class="token plain"> run build </span><span class="token parameter variable" style="color:#36acaa">--watch</span><span class="token plain"> </span><span class="token parameter variable" style="color:#36acaa">--workspace</span><span class="token plain"> </span><span class="token operator" style="color:#393A34">&lt;</span><span class="token plain">package</span><span class="token operator" style="color:#393A34">&gt;</span><span class="token plain"> </span><span class="token comment" style="color:#999988;font-style:italic"># e.g. puppeteer</span><br></div></code></pre></div></div>
 <p>You have to only specify a single package to watch else things will not work as expected
 As stated above because of <a href="https://github.com/google/wireit" target="_blank" rel="noopener noreferrer" class="">wireit</a> when a change happens
-all dependencies will be build or rebuild (if needed).</p>
+all dependencies will be built or rebuilt (if needed).</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="removing-stale-artifacts">Removing stale artifacts<a href="#removing-stale-artifacts" class="hash-link" aria-label="Direct link to Removing stale artifacts" title="Direct link to Removing stale artifacts" translate="no">​</a></h2>
 <p>It&#x27;s possible some generated artifacts (such as
 <code>packages/puppeteer-core/src/types.ts</code>) can become stale since these artifacts
@@ -70,7 +70,7 @@ captured by the build system. To clean artifacts, you can run</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="comprehensive-testing">Comprehensive testing<a href="#comprehensive-testing" class="hash-link" aria-label="Direct link to Comprehensive testing" title="Direct link to Comprehensive testing" translate="no">​</a></h2>
 <p>Outside of <code>npm test</code>, there are several other
 <a href="https://docs.npmjs.com/cli/using-npm/scripts" target="_blank" rel="noopener noreferrer" class=""><code>npm</code> scripts</a> that are
-usually check through CI:</p>
+usually checked through CI:</p>
 <ul>
 <li class=""><code>test-install</code> - Tests whether <code>puppeteer</code> and <code>puppeteer-core</code> install
 properly and are functional.</li>
@@ -176,7 +176,7 @@ implementable.</li>
 success.</li>
 </ul>
 <p>There are additional considerations for dependencies that are environment
-agonistic. See the
+agnostic. See the
 <a href="https://github.com/puppeteer/puppeteer/blob/main/packages/puppeteer-core/third_party/README.md" target="_blank" rel="noopener noreferrer" class=""><code>third_party/README.md</code></a>
 for details.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="testing-tips">Testing tips<a href="#testing-tips" class="hash-link" aria-label="Direct link to Testing tips" title="Direct link to Testing tips" translate="no">​</a></h2>
@@ -197,7 +197,7 @@ ensure this, the main <code>test</code> command runs coverage during testing.</p
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="debugging-puppeteer">Debugging Puppeteer<a href="#debugging-puppeteer" class="hash-link" aria-label="Direct link to Debugging Puppeteer" title="Direct link to Debugging Puppeteer" translate="no">​</a></h2>
 <p>See <a href="https://pptr.dev/guides/debugging" target="_blank" rel="noopener noreferrer" class="">Debugging Tips</a>.</p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="debugging-puppeteer-tests-via-vscode">Debugging Puppeteer tests via VSCode<a href="#debugging-puppeteer-tests-via-vscode" class="hash-link" aria-label="Direct link to Debugging Puppeteer tests via VSCode" title="Direct link to Debugging Puppeteer tests via VSCode" translate="no">​</a></h3>
-<p>Copy the provided default <code>.vscode/launch.template.json</code> to <code>.vscode/launch.json</code> and then use the integrated VSCode debugger to debug test.</p>
+<p>Copy the provided default <code>.vscode/launch.template.json</code> to <code>.vscode/launch.json</code> and then use the integrated VSCode debugger to debug tests.</p>
 <p>Remember to build test before launching via:</p>
 <div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token function" style="color:#d73a49">npm</span><span class="token plain"> run build </span><span class="token parameter variable" style="color:#36acaa">--workspace</span><span class="token plain"> @puppeteer-test/test</span><br></div></code></pre></div></div>
 <h1>For Project Maintainers</h1>
@@ -206,7 +206,7 @@ ensure this, the main <code>test</code> command runs coverage during testing.</p
 The action has a manual trigger that can be found on the <a href="https://github.com/puppeteer/puppeteer/actions/workflows/update-browser-pins.yml" target="_blank" rel="noopener noreferrer" class="">Actions Tab</a>.</p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="manual-instructions">Manual instructions<a href="#manual-instructions" class="hash-link" aria-label="Direct link to Manual instructions" title="Direct link to Manual instructions" translate="no">​</a></h3>
 <p>You can run the <a href="https://github.com/puppeteer/puppeteer/blob/main/tools/update_browser_revision.mjs" target="_blank" rel="noopener noreferrer" class=""><code>tools/update_browser_revision.mjs</code></a> locally
-and try see if any changes need to be committed.</p>
+and try to see if any changes need to be committed.</p>
 <blockquote>
 <p>Note: You may need to run <code>node --experimental-fetch tools/update_browser_revision.mjs</code> as the script relies on <code>fetch</code></p>
 </blockquote>
