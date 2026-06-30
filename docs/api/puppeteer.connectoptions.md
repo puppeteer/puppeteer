@@ -51,6 +51,8 @@ boolean
 
 Whether to ignore HTTPS errors during navigation.
 
+For Chrome and Firefox, use this option instead of browser-specific certificate-error flags such as Chromium's `--ignore-certificate-errors`.
+
 </td><td>
 
 `false`

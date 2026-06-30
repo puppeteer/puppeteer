@@ -52,6 +52,10 @@ export type ChromeReleaseChannel =
 export interface ConnectOptions {
   /**
    * Whether to ignore HTTPS errors during navigation.
+   *
+   * For Chrome and Firefox, use this option instead of browser-specific
+   * certificate-error flags such as Chromium's `--ignore-certificate-errors`.
+   *
    * @defaultValue `false`
    */
   acceptInsecureCerts?: boolean;
