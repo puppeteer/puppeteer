@@ -519,7 +519,7 @@ The constructor for this class is marked as internal. Third-party code should no
 
 </td><td>
 
-Target represents a [CDP target](https://chromedevtools.github.io/devtools-protocol/tot/Target/). In CDP a target is something that can be debugged such a frame, a page or a worker.
+Target represents a [CDP target](https://chromedevtools.github.io/devtools-protocol/tot/Target/). In CDP a target is something that can be debugged, such as a frame, a page or a worker.
 
 **Remarks:**
 
