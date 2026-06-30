@@ -268,6 +268,34 @@ const browser = await puppeteer.launch({
 Generally, Chrome should be able to detect and enable GPU if the system has appropriate drivers.
 For additional tips, see the following blog post https://developer.chrome.com/blog/supercharge-web-ai-testing.
 
+## Configuring window and screen size in headless Chrome
+
+Puppeteer's viewport APIs, including `defaultViewport` and
+[`page.setViewport()`](./api/puppeteer.page.setviewport), configure the page
+viewport. When you launch headless Chrome on Linux with `defaultViewport: null`,
+the browser-level `--window-size` flag changes the browser window size, but it
+might not change the dimensions exposed through `window.screen`.
+
+If the page under test reads `window.screen.width` or `window.screen.height`,
+pass Chrome's `--ozone-override-screen-size` flag with the same size:
+
+```ts
+const width = 1280;
+const height = 1024;
+
+const browser = await puppeteer.launch({
+  defaultViewport: null,
+  args: [
+    `--window-size=${width},${height}`,
+    `--ozone-override-screen-size=${width},${height}`,
+  ],
+});
+```
+
+Prefer `defaultViewport` or `page.setViewport()` when you only need to control
+the page viewport. Use these Chrome flags when the code running in the page
+depends on the native screen dimensions.
+
 ## Setting Up Chrome Linux Sandbox
 
 In order to protect the host environment from untrusted web content, Chrome uses
