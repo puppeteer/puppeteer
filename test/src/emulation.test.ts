@@ -397,6 +397,23 @@ describe('Emulation', () => {
         }),
       ).toBe(true);
     });
+    it('should emulate forced colors', async () => {
+      const {page} = await getTestState();
+
+      await page.emulateMediaFeatures([
+        {name: 'forced-colors', value: 'active'},
+      ]);
+      expect(
+        await page.evaluate(() => {
+          return matchMedia('(forced-colors: active)').matches;
+        }),
+      ).toBe(true);
+      expect(
+        await page.evaluate(() => {
+          return matchMedia('(forced-colors: none)').matches;
+        }),
+      ).toBe(false);
+    });
     it('should throw in case of bad argument', async () => {
       const {page} = await getTestState();
 

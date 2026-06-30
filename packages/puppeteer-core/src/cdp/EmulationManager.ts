@@ -485,7 +485,7 @@ export class EmulationManager implements ClientProvider {
       for (const mediaFeature of features) {
         const name = mediaFeature.name;
         assert(
-          /^(?:prefers-(?:color-scheme|reduced-motion)|color-gamut)$/.test(
+          /^(?:prefers-(?:color-scheme|reduced-motion)|color-gamut|forced-colors)$/.test(
             name,
           ),
           'Unsupported media feature: ' + name,
