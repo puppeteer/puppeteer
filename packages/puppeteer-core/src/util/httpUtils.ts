@@ -10,16 +10,16 @@
  *
  * @internal
  */
-export function normalizeHeaderValue(header: string): string {
-  if (!header.includes('\n')) {
-    return header;
+export function normalizeHeaderValue(name: string, value: string): string {
+  if (!value.includes('\n')) {
+    return value;
   }
 
-  return header
+  return value
     .split('\n')
     .map(v => {
       return v.trim();
     })
     .filter(Boolean)
-    .join(', ');
+    .join(name === 'set-cookie' ? '\n ' : ', ');
 }
