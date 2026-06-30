@@ -51,6 +51,16 @@ interface MediaFeaturesState {
   active: boolean;
 }
 
+const SUPPORTED_MEDIA_FEATURES = new Set([
+  'prefers-color-scheme',
+  'prefers-reduced-motion',
+  'color-gamut',
+  'hover',
+  'any-hover',
+  'pointer',
+  'any-pointer',
+]);
+
 interface MediaTypeState {
   type?: string;
   active: boolean;
@@ -485,9 +495,7 @@ export class EmulationManager implements ClientProvider {
       for (const mediaFeature of features) {
         const name = mediaFeature.name;
         assert(
-          /^(?:prefers-(?:color-scheme|reduced-motion)|color-gamut)$/.test(
-            name,
-          ),
+          SUPPORTED_MEDIA_FEATURES.has(name),
           'Unsupported media feature: ' + name,
         );
       }

@@ -397,6 +397,36 @@ describe('Emulation', () => {
         }),
       ).toBe(true);
     });
+    it('should support interaction media features', async () => {
+      const {page} = await getTestState();
+
+      await page.emulateMediaFeatures([
+        {name: 'hover', value: 'hover'},
+        {name: 'any-hover', value: 'hover'},
+        {name: 'pointer', value: 'fine'},
+        {name: 'any-pointer', value: 'fine'},
+      ]);
+      expect(
+        await page.evaluate(() => {
+          return matchMedia('(hover: hover)').matches;
+        }),
+      ).toBe(true);
+      expect(
+        await page.evaluate(() => {
+          return matchMedia('(any-hover: hover)').matches;
+        }),
+      ).toBe(true);
+      expect(
+        await page.evaluate(() => {
+          return matchMedia('(pointer: fine)').matches;
+        }),
+      ).toBe(true);
+      expect(
+        await page.evaluate(() => {
+          return matchMedia('(any-pointer: fine)').matches;
+        }),
+      ).toBe(true);
+    });
     it('should throw in case of bad argument', async () => {
       const {page} = await getTestState();
 
