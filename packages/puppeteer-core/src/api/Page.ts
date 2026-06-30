@@ -2216,6 +2216,12 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * // → true
    * await page.evaluate(() => matchMedia('(color-gamut: rec2020)').matches);
    * // → false
+   *
+   * await page.emulateMediaFeatures([{name: 'forced-colors', value: 'active'}]);
+   * await page.evaluate(() => matchMedia('(forced-colors: active)').matches);
+   * // → true
+   * await page.evaluate(() => matchMedia('(forced-colors: none)').matches);
+   * // → false
    * ```
    */
   abstract emulateMediaFeatures(features?: MediaFeature[]): Promise<void>;
