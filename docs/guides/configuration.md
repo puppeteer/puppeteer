@@ -134,5 +134,19 @@ installed as an optional peer dependency.
 
 :::
 
+Browser downloads are performed by the Node.js process that runs Puppeteer's
+install script or CLI. If that process must trust a private certificate
+authority, set
+[`NODE_EXTRA_CA_CERTS`](https://nodejs.org/api/cli.html#node_extra_ca_certsfile)
+to the path of the certificate file before installing Puppeteer or running the
+browser installer:
+
+```bash npm2yarn
+NODE_EXTRA_CA_CERTS=/path/to/corporate-ca.pem npx puppeteer browsers install
+```
+
+This configures the Node.js process that downloads the browser. It does not
+change the certificates trusted by the browser after launch.
+
 All other options can be found in the documentation for the
 [`Configuration`](../api/puppeteer.configuration) interface.
