@@ -38,6 +38,17 @@ to make sure all processes started by Puppeteer are managed properly.
 
 :::
 
+## Fonts and rendering
+
+The image includes the dependencies needed to run Chrome, but it cannot include
+every font that a page might use. If screenshots or PDFs render with different
+text metrics, missing glyphs, or unexpected fallback fonts, install the fonts your
+page depends on in the image or load them as web fonts.
+
+Rendering can also differ slightly between Docker and a local desktop even when
+Chrome versions match, because the operating system, available fonts, and GPU or
+software rendering path can be different.
+
 ## dbus
 
 The image installs and configures dbus for Chrome. Usually you would not
