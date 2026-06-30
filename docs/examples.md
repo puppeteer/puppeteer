@@ -56,6 +56,9 @@ See the following list for use cases and examples from categories like Rendering
 - **[jest-puppeteer](https://github.com/smooth-code/jest-puppeteer)**: (almost)
   Zero configuration tool for setting up and running Jest and Puppeteer. Also
   includes an assertion library for Puppeteer.
+- **[BrowserStack Automate](https://www.browserstack.com/docs/automate/puppeteer)**:
+  Run Puppeteer tests across remote browser and device combinations on
+  BrowserStack.
 - **[puppeteer-har](https://github.com/Everettss/puppeteer-har)**: Generate HAR
   file with puppeteer.
 - **[puppetry](https://puppetry.app/)**: A desktop app to build Puppeteer and
