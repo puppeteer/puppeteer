@@ -12,7 +12,9 @@ import {EventEmitter, type EventType} from '../common/EventEmitter.js';
  * @public
  */
 export type CDPEvents = {
-  [Property in keyof ProtocolMapping.Events]: ProtocolMapping.Events[Property][0];
+  [
+    Property in keyof ProtocolMapping.Events
+  ]: ProtocolMapping.Events[Property][0];
 };
 
 /**

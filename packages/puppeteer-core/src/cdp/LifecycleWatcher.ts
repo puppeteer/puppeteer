@@ -47,10 +47,7 @@ export type PuppeteerLifeCycleEvent =
  * @public
  */
 export type ProtocolLifeCycleEvent =
-  | 'load'
-  | 'DOMContentLoaded'
-  | 'networkIdle'
-  | 'networkAlmostIdle';
+  'load' | 'DOMContentLoaded' | 'networkIdle' | 'networkAlmostIdle';
 
 const puppeteerToProtocolLifecycle = new Map<
   PuppeteerLifeCycleEvent,

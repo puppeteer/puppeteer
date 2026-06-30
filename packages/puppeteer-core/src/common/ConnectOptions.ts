@@ -42,10 +42,7 @@ export interface SupportedWebDriverCapabilities {
  * @public
  */
 export type ChromeReleaseChannel =
-  | 'chrome'
-  | 'chrome-beta'
-  | 'chrome-canary'
-  | 'chrome-dev';
+  'chrome' | 'chrome-beta' | 'chrome-canary' | 'chrome-dev';
 
 /**
  * Generic browser options that can be passed when launching any browser or when

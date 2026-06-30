@@ -8,8 +8,5 @@ sidebar_label: ProtocolLifeCycleEvent
 
 ```typescript
 export type ProtocolLifeCycleEvent =
-  | 'load'
-  | 'DOMContentLoaded'
-  | 'networkIdle'
-  | 'networkAlmostIdle';
+  'load' | 'DOMContentLoaded' | 'networkIdle' | 'networkAlmostIdle';
 ```

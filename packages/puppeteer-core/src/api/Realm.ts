@@ -176,8 +176,7 @@ export abstract class Realm {
         signal,
       },
       pageFunction as unknown as
-        | ((...args: unknown[]) => Promise<Awaited<ReturnType<Func>>>)
-        | string,
+        ((...args: unknown[]) => Promise<Awaited<ReturnType<Func>>>) | string,
       ...args,
     );
     return await waitTask.result;

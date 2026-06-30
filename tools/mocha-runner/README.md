@@ -59,12 +59,13 @@ pattern to achieve.
 Pattern are defined with the use of `*` (using greedy method).
 
 Examples:
-| Pattern | Description | Example Pattern | Example match |
-|------------------------|---------------------------------------------------------------------------------------------|-----------------------------------|-------------------------------------------------------------------------------------------------------------------------|
-| `*` | Match all tests | - | - |
-| `[test.spec] *` | Matches tests for the given file | `[jshandle.spec] *` | `[jshandle] JSHandle JSHandle.toString should work for primitives` |
-| `[test.spec] <text> *` | Matches tests with for a given test with a specific prefixed test (usually a describe node) | `[page.spec] Page Page.goto *` | `[page.spec] Page Page.goto should work`,<br>`[page.spec] Page Page.goto should work with anchor navigation` |
-| `[test.spec] * <text>` | Matches test with a surfix | `[navigation.spec] * should work` | `[navigation.spec] navigation Page.goto should work`,<br>`[navigation.spec] navigation Page.waitForNavigation should work` |
+
+| Pattern                | Description                                                                                 | Example Pattern                   | Example match                                                                                                              |
+| ---------------------- | ------------------------------------------------------------------------------------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `*`                    | Match all tests                                                                             | -                                 | -                                                                                                                          |
+| `[test.spec] *`        | Matches tests for the given file                                                            | `[jshandle.spec] *`               | `[jshandle] JSHandle JSHandle.toString should work for primitives`                                                         |
+| `[test.spec] <text> *` | Matches tests with for a given test with a specific prefixed test (usually a describe node) | `[page.spec] Page Page.goto *`    | `[page.spec] Page Page.goto should work`,<br>`[page.spec] Page Page.goto should work with anchor navigation`               |
+| `[test.spec] * <text>` | Matches test with a surfix                                                                  | `[navigation.spec] * should work` | `[navigation.spec] navigation Page.goto should work`,<br>`[navigation.spec] navigation Page.waitForNavigation should work` |
 
 ## Updating Expectations
 

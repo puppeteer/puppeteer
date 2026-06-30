@@ -27,7 +27,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-BACKGROUND_PAGE
+BACKGROUND\_PAGE
 
 </td><td>
 
@@ -71,7 +71,7 @@ PAGE
 </td></tr>
 <tr><td>
 
-SERVICE_WORKER
+SERVICE\_WORKER
 
 </td><td>
 
@@ -82,7 +82,7 @@ SERVICE_WORKER
 </td></tr>
 <tr><td>
 
-SHARED_WORKER
+SHARED\_WORKER
 
 </td><td>
 

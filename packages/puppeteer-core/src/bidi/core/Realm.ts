@@ -231,9 +231,7 @@ export class WindowRealm extends Realm {
  * @internal
  */
 export type DedicatedWorkerOwnerRealm =
-  | DedicatedWorkerRealm
-  | SharedWorkerRealm
-  | WindowRealm;
+  DedicatedWorkerRealm | SharedWorkerRealm | WindowRealm;
 
 /**
  * @internal
