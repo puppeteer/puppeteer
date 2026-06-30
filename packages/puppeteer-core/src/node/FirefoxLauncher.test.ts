@@ -18,8 +18,8 @@ describe('FirefoxLauncher', function () {
         test: 1,
       });
       expect(prefs['test']).toBe(1);
-      expect(prefs['fission.bfcacheInParent']).toBe(undefined);
-      expect(prefs['fission.webContentIsolationStrategy']).toBe(0);
+      expect(prefs).not.toHaveProperty('fission.bfcacheInParent');
+      expect(prefs).not.toHaveProperty('fission.webContentIsolationStrategy');
     });
   });
 
