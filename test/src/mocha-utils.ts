@@ -65,15 +65,12 @@ const product =
   process.env['PRODUCT'] || process.env['PUPPETEER_BROWSER'] || 'chrome';
 
 const headless = (process.env['HEADLESS'] || 'true').trim().toLowerCase() as
-  | 'true'
-  | 'false'
-  | 'shell';
+  'true' | 'false' | 'shell';
 export const isHeadless = headless === 'true' || headless === 'shell';
 const isFirefox = product === 'firefox';
 const isChrome = product === 'chrome';
 const protocol = (process.env['PUPPETEER_PROTOCOL'] || 'cdp') as
-  | 'cdp'
-  | 'webDriverBiDi';
+  'cdp' | 'webDriverBiDi';
 const pipeTransport = process.env['PUPPETEER_PIPE'] === 'true';
 
 let extraLaunchOptions = {};

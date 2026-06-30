@@ -150,8 +150,7 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * @internal
    */
   waitForScreenshotOperations():
-    | Promise<InstanceType<typeof Mutex.Guard>>
-    | undefined {
+    Promise<InstanceType<typeof Mutex.Guard>> | undefined {
     return this.#pageScreenshotMutex?.acquire();
   }
 

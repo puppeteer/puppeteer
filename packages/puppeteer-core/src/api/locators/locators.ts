@@ -862,8 +862,7 @@ export class FunctionLocator<T> extends Locator<T> {
  * @public
  */
 export type Predicate<From, To extends From = From> =
-  | ((value: From) => value is To)
-  | ((value: From) => Awaitable<boolean>);
+  ((value: From) => value is To) | ((value: From) => Awaitable<boolean>);
 /**
  * @internal
  */

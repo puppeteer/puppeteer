@@ -36,8 +36,7 @@ export class CdpTarget extends Target {
   #targetInfo: Protocol.Target.TargetInfo;
   #targetManager?: TargetManager;
   #sessionFactory:
-    | ((isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>)
-    | undefined;
+    ((isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>) | undefined;
   #childTargets = new Set<CdpTarget>();
   _initializedDeferred = Deferred.create<InitializationStatus>();
   _isClosedDeferred = Deferred.create<void>();
@@ -57,8 +56,7 @@ export class CdpTarget extends Target {
     browserContext: BrowserContext | undefined,
     targetManager: TargetManager | undefined,
     sessionFactory:
-      | ((isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>)
-      | undefined,
+      ((isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>) | undefined,
   ) {
     super();
     this.#session = session;
