@@ -52,7 +52,10 @@ export class CdpHTTPResponse extends HTTPResponse {
     this.#status = extraInfo ? extraInfo.statusCode : responsePayload.status;
     const headers = extraInfo ? extraInfo.headers : responsePayload.headers;
     for (const [key, value] of Object.entries(headers)) {
-      this.#headers[key.toLowerCase()] = normalizeHeaderValue(value);
+      const headerName = key.toLowerCase();
+      // See https://www.rfc-editor.org/rfc/rfc9110.html#name-field-order for
+      // the set-cookie exception.
+      this.#headers[headerName] = normalizeHeaderValue(headerName, value);
     }
 
     this.#securityDetails = responsePayload.securityDetails
