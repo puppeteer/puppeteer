@@ -108,8 +108,7 @@ export async function getLastKnownGoodReleaseForMilestone(
     milestones: Record<string, {version: string; revision: string}>;
   };
   return data.milestones[milestone] as
-    | {version: string; revision: string}
-    | undefined;
+    {version: string; revision: string} | undefined;
 }
 
 export async function getLastKnownGoodReleaseForBuild(
@@ -124,8 +123,7 @@ export async function getLastKnownGoodReleaseForBuild(
     builds: Record<string, {version: string; revision: string}>;
   };
   return data.builds[buildPrefix] as
-    | {version: string; revision: string}
-    | undefined;
+    {version: string; revision: string} | undefined;
 }
 
 export async function resolveBuildId(

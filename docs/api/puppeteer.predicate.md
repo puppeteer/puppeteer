@@ -8,8 +8,7 @@ sidebar_label: Predicate
 
 ```typescript
 export type Predicate<From, To extends From = From> =
-  | ((value: From) => value is To)
-  | ((value: From) => Awaitable<boolean>);
+  ((value: From) => value is To) | ((value: From) => Awaitable<boolean>);
 ```
 
 **References:** [Awaitable](./puppeteer.awaitable.md)

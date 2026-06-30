@@ -79,8 +79,7 @@ export interface InstallOptions {
    * used.
    */
   downloadProgressCallback?:
-    | 'default'
-    | ((downloadedBytes: number, totalBytes: number) => void);
+    'default' | ((downloadedBytes: number, totalBytes: number) => void);
   /**
    * Determines the host that will be used for downloading.
    *

@@ -2,7 +2,7 @@
 sidebar_label: ScreenOrientation_2
 ---
 
-# ScreenOrientation_2 interface
+# ScreenOrientation\_2 interface
 
 ### Signature
 

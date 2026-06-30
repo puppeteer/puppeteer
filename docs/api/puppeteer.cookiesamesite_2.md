@@ -2,7 +2,7 @@
 sidebar_label: CookieSameSite_2
 ---
 
-# CookieSameSite_2 type
+# CookieSameSite\_2 type
 
 Represents the cookie's 'SameSite' status: https://tools.ietf.org/html/draft-west-first-party-cookies
 

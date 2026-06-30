@@ -459,7 +459,7 @@ export function referrerPolicyToProtocol(
 ): Protocol.Page.ReferrerPolicy {
   // See
   // https://chromedevtools.github.io/devtools-protocol/tot/Page/#type-ReferrerPolicy
-  // We need to conver from Web-facing phase to CDP's camelCase.
+  // We need to convert from Web-facing phase to CDP's camelCase.
   return referrerPolicy.replaceAll(/-./g, match => {
     return match[1]!.toUpperCase();
   }) as Protocol.Page.ReferrerPolicy;

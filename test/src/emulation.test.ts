@@ -133,7 +133,7 @@ describe('Emulation', () => {
         }),
       ).toBe('portrait-primary');
     });
-    it('should update media queries when resoltion changes', async () => {
+    it('should update media queries when resolution changes', async () => {
       const {page, server} = await getTestState();
 
       async function getFontSize() {

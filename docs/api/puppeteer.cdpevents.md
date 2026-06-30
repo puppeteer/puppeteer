@@ -8,6 +8,8 @@ sidebar_label: CDPEvents
 
 ```typescript
 export type CDPEvents = {
-  [Property in keyof ProtocolMapping.Events]: ProtocolMapping.Events[Property][0];
+  [
+    Property in keyof ProtocolMapping.Events
+  ]: ProtocolMapping.Events[Property][0];
 };
 ```

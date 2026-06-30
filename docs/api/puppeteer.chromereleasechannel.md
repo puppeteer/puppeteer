@@ -8,8 +8,5 @@ sidebar_label: ChromeReleaseChannel
 
 ```typescript
 export type ChromeReleaseChannel =
-  | 'chrome'
-  | 'chrome-beta'
-  | 'chrome-canary'
-  | 'chrome-dev';
+  'chrome' | 'chrome-beta' | 'chrome-canary' | 'chrome-dev';
 ```

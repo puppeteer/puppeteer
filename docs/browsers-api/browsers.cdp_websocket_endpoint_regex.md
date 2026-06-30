@@ -2,7 +2,7 @@
 sidebar_label: CDP_WEBSOCKET_ENDPOINT_REGEX
 ---
 
-# CDP_WEBSOCKET_ENDPOINT_REGEX variable
+# CDP\_WEBSOCKET\_ENDPOINT\_REGEX variable
 
 ### Signature
 

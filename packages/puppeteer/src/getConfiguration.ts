@@ -79,14 +79,10 @@ export function getBrowserSetting(
   browser: 'chrome' | 'chrome-headless-shell' | 'firefox',
   configuration: Configuration,
   defaultConfig:
-    | ChromeSettings
-    | ChromeHeadlessShellSettings
-    | FirefoxSettings = {},
+    ChromeSettings | ChromeHeadlessShellSettings | FirefoxSettings = {},
 ): ChromeSettings | ChromeHeadlessShellSettings | FirefoxSettings {
   const browserSetting:
-    | ChromeSettings
-    | ChromeHeadlessShellSettings
-    | FirefoxSettings = {};
+    ChromeSettings | ChromeHeadlessShellSettings | FirefoxSettings = {};
   const browserEnvName = browser.replaceAll('-', '_').toUpperCase();
 
   browserSetting.version =

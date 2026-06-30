@@ -189,7 +189,7 @@ Puppeteer can also be used to control the Chrome browser, but it works best with
 
 </td><td>
 
-Removes all non-current Firefox and Chrome binaries in the cache directory identified by the provided Puppeteer configuration. The current browser version is determined by resolving PUPPETEER_REVISIONS from Puppeteer unless `configuration.browserRevision` is provided.
+Removes all non-current Firefox and Chrome binaries in the cache directory identified by the provided Puppeteer configuration. The current browser version is determined by resolving PUPPETEER\_REVISIONS from Puppeteer unless `configuration.browserRevision` is provided.
 
 **Remarks:**
 

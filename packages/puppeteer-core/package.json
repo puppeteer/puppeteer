@@ -156,11 +156,11 @@
     "ws": "^8.21.0"
   },
   "devDependencies": {
-    "@types/chrome": "0.1.43",
+    "@types/chrome": "0.2.0",
     "@types/node": "^18.17.15",
     "@types/ws": "8.18.1",
     "mitt": "3.0.1",
-    "parsel-js": "1.2.2",
+    "parsel-js": "1.2.3",
     "rxjs": "^7.8.2",
     "urlpattern-polyfill": "10.1.0"
   }

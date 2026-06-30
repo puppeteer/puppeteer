@@ -1289,7 +1289,7 @@ Valid options to configure PDF generation via [Page.pdf()](./puppeteer.page.pdf.
 </td></tr>
 <tr><td>
 
-<span id="permissiondescriptor_2">[PermissionDescriptor_2](./puppeteer.permissiondescriptor_2.md)</span>
+<span id="permissiondescriptor_2">[PermissionDescriptor\_2](./puppeteer.permissiondescriptor_2.md)</span>
 
 </td><td>
 
@@ -1358,7 +1358,7 @@ Required response data to fulfill a request with.
 </td></tr>
 <tr><td>
 
-<span id="screenorientation_2">[ScreenOrientation_2](./puppeteer.screenorientation_2.md)</span>
+<span id="screenorientation_2">[ScreenOrientation\_2](./puppeteer.screenorientation_2.md)</span>
 
 </td><td>
 
@@ -1555,7 +1555,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="default_intercept_resolution_priority">[DEFAULT_INTERCEPT_RESOLUTION_PRIORITY](./puppeteer.default_intercept_resolution_priority.md)</span>
+<span id="default_intercept_resolution_priority">[DEFAULT\_INTERCEPT\_RESOLUTION\_PRIORITY](./puppeteer.default_intercept_resolution_priority.md)</span>
 
 </td><td>
 
@@ -1701,7 +1701,7 @@ Represents the cookie's 'Priority' status: https://tools.ietf.org/html/draft-wes
 </td></tr>
 <tr><td>
 
-<span id="cookiesamesite_2">[CookieSameSite_2](./puppeteer.cookiesamesite_2.md)</span>
+<span id="cookiesamesite_2">[CookieSameSite\_2](./puppeteer.cookiesamesite_2.md)</span>
 
 </td><td>
 
@@ -1925,7 +1925,7 @@ in favor of .
 </td></tr>
 <tr><td>
 
-<span id="permissionstate_2">[PermissionState_2](./puppeteer.permissionstate_2.md)</span>
+<span id="permissionstate_2">[PermissionState\_2](./puppeteer.permissionstate_2.md)</span>
 
 </td><td>
 

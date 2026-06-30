@@ -2,7 +2,7 @@
 sidebar_label: PermissionState_2
 ---
 
-# PermissionState_2 type
+# PermissionState\_2 type
 
 ### Signature
 

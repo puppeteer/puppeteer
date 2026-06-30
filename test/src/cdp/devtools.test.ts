@@ -172,7 +172,7 @@ describe('DevTools', function () {
     await browser.close();
   });
 
-  it('should retrun same object when calling openDevTools twice', async () => {
+  it('should return same object when calling openDevTools twice', async () => {
     const browser = await launchBrowser({
       ...launchOptions,
       devtools: false,

@@ -4,7 +4,7 @@ sidebar_label: HTTPResponse.headers
 
 # HTTPResponse.headers() method
 
-An object with HTTP headers associated with the response. All header names are lower-case.
+An object with HTTP headers associated with the response. All header names are lower-case. Duplicate header values are combined into a single comma-separated list except for `Set-Cookie` that is separated by `\n`.
 
 ### Signature
 

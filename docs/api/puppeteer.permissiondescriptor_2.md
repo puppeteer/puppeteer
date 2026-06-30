@@ -2,7 +2,7 @@
 sidebar_label: PermissionDescriptor_2
 ---
 
-# PermissionDescriptor_2 interface
+# PermissionDescriptor\_2 interface
 
 ### Signature
 

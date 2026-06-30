@@ -125,7 +125,7 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
   abstract targets(): Target[];
 
   /**
-   * If defined, indicates an ongoing screenshot opereation.
+   * If defined, indicates an ongoing screenshot operation.
    */
   #pageScreenshotMutex?: Mutex;
   #screenshotOperationsCount = 0;
@@ -150,8 +150,7 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
    * @internal
    */
   waitForScreenshotOperations():
-    | Promise<InstanceType<typeof Mutex.Guard>>
-    | undefined {
+    Promise<InstanceType<typeof Mutex.Guard>> | undefined {
     return this.#pageScreenshotMutex?.acquire();
   }
 
