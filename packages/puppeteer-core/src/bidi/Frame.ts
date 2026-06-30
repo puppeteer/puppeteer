@@ -289,9 +289,10 @@ export class BidiFrame extends Frame {
 
   @throwIfDetached
   override async goto(
-    url: string,
+    url: string | URL,
     options: GoToOptions = {},
   ): Promise<BidiHTTPResponse | null> {
+    const urlString = url.toString();
     const [response] = await Promise.all([
       this.waitForNavigation(options),
       // Some implementations currently only report errors when the
@@ -299,7 +300,7 @@ export class BidiFrame extends Frame {
       //
       // Related: https://bugzilla.mozilla.org/show_bug.cgi?id=1846601
       this.browsingContext
-        .navigate(url, Bidi.BrowsingContext.ReadinessState.Interactive)
+        .navigate(urlString, Bidi.BrowsingContext.ReadinessState.Interactive)
         .catch(error => {
           if (
             isErrorLike(error) &&
@@ -324,7 +325,7 @@ export class BidiFrame extends Frame {
         }),
     ]).catch(
       rewriteNavigationError(
-        url,
+        urlString,
         options.timeout ?? this.timeoutSettings.navigationTimeout(),
       ),
     );

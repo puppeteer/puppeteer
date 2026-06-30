@@ -11,7 +11,7 @@ Navigates the frame or page to the given `url`.
 ```typescript
 class Frame {
   abstract goto(
-    url: string,
+    url: string | URL,
     options?: GoToOptions,
   ): Promise<HTTPResponse | null>;
 }
@@ -38,7 +38,7 @@ url
 
 </td><td>
 
-string
+string \| URL
 
 </td><td>
 

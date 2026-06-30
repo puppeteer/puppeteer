@@ -367,7 +367,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
    * - the URL is blocked by blocklist/allowlist rules.
    */
   abstract goto(
-    url: string,
+    url: string | URL,
     options?: GoToOptions,
   ): Promise<HTTPResponse | null>;
 

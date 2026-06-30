@@ -1792,7 +1792,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * {@inheritDoc Frame.goto}
    */
-  async goto(url: string, options?: GoToOptions): Promise<HTTPResponse | null> {
+  async goto(
+    url: string | URL,
+    options?: GoToOptions,
+  ): Promise<HTTPResponse | null> {
     return await this.mainFrame().goto(url, options);
   }
 
