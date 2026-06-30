@@ -227,7 +227,7 @@ export async function createProfile(
 /**
  * @public
  *
- * Get's the first resolved system path
+ * Gets the first resolved system path
  */
 export function resolveSystemExecutablePath(
   browser: Browser,

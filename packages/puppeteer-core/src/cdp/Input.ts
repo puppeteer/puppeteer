@@ -292,7 +292,7 @@ export class CdpMouse extends Mouse {
     return Object.assign({...this.#_state}, ...this.#transactions);
   }
 
-  // Transactions can run in parallel, so we store each of thme in this array.
+  // Transactions can run in parallel, so we store each of them in this array.
   #transactions: Array<Partial<MouseState>> = [];
   #createTransaction(): {
     update: (updates: Partial<MouseState>) => void;
