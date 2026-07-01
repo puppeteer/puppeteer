@@ -7,11 +7,12 @@
       "type": "array",
       "items": {
         "type": "array",
-        "item": {
+        "items": {
           "type": "string"
-        }
+        },
+        "minItems": 1
       },
-      "description": "Commands to execute in the repo. Commands prefixed with `./node_modules/bin` (Exception: 'node')."
+      "description": "Custom commands to run instead of the selected test runner. Commands are prefixed with `./node_modules/.bin` (Exception: 'node')."
     },
     "devServerTarget": {
       "type": "string",
