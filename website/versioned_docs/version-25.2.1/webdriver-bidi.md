@@ -61,6 +61,10 @@ await chromeBrowser.close();
   - Realm.extension()
   - Realm.realmId()
 
+- Firefox extension and browser UI automation
+  - Firefox WebDriver BiDi currently supports web pages only. Extension pages
+    and other browser UI surfaces are not available for automation yet.
+
 - Accessibility
 - Coverage
 - Tracing
