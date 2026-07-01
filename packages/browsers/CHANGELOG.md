@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.0.6](https://github.com/puppeteer/puppeteer/compare/browsers-v3.0.5...browsers-v3.0.6) (2026-07-01)
+
+
+### 📄 Documentation
+
+* fix the typos on documentation ([#15167](https://github.com/puppeteer/puppeteer/issues/15167)) ([ab74e6a](https://github.com/puppeteer/puppeteer/commit/ab74e6a6720ec05768979e3c2d9b26bcb5cd763f))
+
+
+### 🏗️ Refactor
+
+* extract zip archives with yauzl instead of CLI tools ([#15085](https://github.com/puppeteer/puppeteer/issues/15085)) ([04a9587](https://github.com/puppeteer/puppeteer/commit/04a95878db8eec2263d895fed2e98180a158ec76))
+
 ## [3.0.5](https://github.com/puppeteer/puppeteer/compare/browsers-v3.0.4...browsers-v3.0.5) (2026-06-22)
 
 
