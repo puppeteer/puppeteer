@@ -73,6 +73,25 @@ number
 </td></tr>
 <tr><td>
 
+<span id="scriptid">scriptId</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+string
+
+</td><td>
+
+Script identifier if known or `undefined` otherwise.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="url">url</span>
 
 </td><td>
