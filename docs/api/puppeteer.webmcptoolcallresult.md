@@ -134,7 +134,7 @@ Output or error delivered as delivered to the agent. Missing if `status` is anyt
 
 </td><td>
 
-[WebMCPInvocationStatus](./puppeteer.webmcpinvocationstatus.md)
+Protocol.WebMCP.InvocationStatus
 
 </td><td>
 
