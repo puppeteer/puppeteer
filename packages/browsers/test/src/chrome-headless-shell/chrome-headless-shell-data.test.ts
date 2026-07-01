@@ -36,6 +36,9 @@ describe('chrome-headless-shell', () => {
       resolveDownloadUrl(BrowserPlatform.WIN64, '118.0.5950.0'),
       'https://storage.googleapis.com/chrome-for-testing-public/118.0.5950.0/win64/chrome-headless-shell-win64.zip',
     );
+    assert.throws(() => {
+      return resolveDownloadUrl(BrowserPlatform.LINUX_ARM, '118.0.5950.0');
+    }, /chrome-headless-shell is not available for linux_arm/);
   });
 
   // TODO: once no new releases happen for the milestone, we can use the exact match.

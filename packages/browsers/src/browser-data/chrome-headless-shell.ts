@@ -10,6 +10,7 @@ import {BrowserPlatform} from './types.js';
 function folder(platform: BrowserPlatform): string {
   switch (platform) {
     case BrowserPlatform.LINUX_ARM:
+      throw new Error('chrome-headless-shell is not available for linux_arm.');
     case BrowserPlatform.LINUX:
       return 'linux64';
     case BrowserPlatform.MAC_ARM:
