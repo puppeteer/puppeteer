@@ -85,6 +85,8 @@ export interface PDFOptions {
    * HTML template for the print header. Should be valid HTML with the following
    * classes used to inject values into them:
    *
+   * Script tags inside templates are not evaluated.
+   *
    * - `date` formatted print date
    *
    * - `title` document title
@@ -98,7 +100,8 @@ export interface PDFOptions {
   headerTemplate?: string;
   /**
    * HTML template for the print footer. Has the same constraints and support
-   * for special classes as {@link PDFOptions.headerTemplate}.
+   * for special classes as {@link PDFOptions.headerTemplate}. Script tags
+   * inside templates are not evaluated.
    */
   footerTemplate?: string;
   /**

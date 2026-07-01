@@ -72,6 +72,8 @@ string
 
 HTML template for the print footer. Has the same constraints and support for special classes as [PDFOptions.headerTemplate](./puppeteer.pdfoptions.md#headertemplate).
 
+Script tags inside templates are not evaluated.
+
 </td><td>
 
 </td></tr>
@@ -113,6 +115,8 @@ string
 </td><td>
 
 HTML template for the print header. Should be valid HTML with the following classes used to inject values into them:
+
+Script tags inside templates are not evaluated.
 
 - `date` formatted print date
 
