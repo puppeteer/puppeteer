@@ -390,6 +390,8 @@ Request interception will be turned on behind the scenes to implement authentica
 
 To disable authentication, pass `null`.
 
+To cancel authentication challenges, pass credentials that are not accepted by the server. Puppeteer will then cancel repeated authentication challenges.
+
 </td></tr>
 <tr><td>
 
