@@ -5,7 +5,10 @@
  */
 import NodeWebSocket from 'ws';
 
-import type {ConnectionTransport} from '../common/ConnectionTransport.js';
+import type {
+  ConnectionCloseDetails,
+  ConnectionTransport,
+} from '../common/ConnectionTransport.js';
 import {debugCatchError} from '../common/util.js';
 import {packageVersion} from '../util/version.js';
 
@@ -38,7 +41,7 @@ export class NodeWebSocketTransport implements ConnectionTransport {
 
   #ws: NodeWebSocket;
   onmessage?: (message: NodeWebSocket.Data) => void;
-  onclose?: () => void;
+  onclose?: (details?: ConnectionCloseDetails) => void;
 
   constructor(ws: NodeWebSocket) {
     this.#ws = ws;
@@ -47,9 +50,12 @@ export class NodeWebSocketTransport implements ConnectionTransport {
         this.onmessage.call(null, event.data);
       }
     });
-    this.#ws.addEventListener('close', () => {
+    this.#ws.addEventListener('close', event => {
       if (this.onclose) {
-        this.onclose.call(null);
+        this.onclose.call(null, {
+          closeCode: event.code,
+          closeMessage: event.reason.toString(),
+        });
       }
     });
     // Silently log all errors - we don't know what to do with them.

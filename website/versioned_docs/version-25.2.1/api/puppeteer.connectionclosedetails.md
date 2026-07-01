@@ -1,18 +1,16 @@
 ---
-sidebar_label: ConnectionClosedError
+sidebar_label: ConnectionCloseDetails
 ---
 
-# ConnectionClosedError class
+# ConnectionCloseDetails interface
 
-Thrown if underlying protocol connection has been closed.
+Details provided by the underlying transport when it closes.
 
 ### Signature
 
 ```typescript
-export declare class ConnectionClosedError extends ProtocolError
+export interface ConnectionCloseDetails
 ```
-
-**Extends:** [ProtocolError](./puppeteer.protocolerror.md)
 
 ## Properties
 
@@ -32,6 +30,10 @@ Type
 
 Description
 
+</th><th>
+
+Default
+
 </th></tr></thead>
 <tbody><tr><td>
 
@@ -39,15 +41,17 @@ Description
 
 </td><td>
 
-`readonly`
+`optional`
 
 </td><td>
 
-number \| undefined
+number
 
 </td><td>
 
 WebSocket close code reported by the underlying transport if known.
+
+</td><td>
 
 </td></tr>
 <tr><td>
@@ -56,15 +60,17 @@ WebSocket close code reported by the underlying transport if known.
 
 </td><td>
 
-`readonly`
+`optional`
 
 </td><td>
 
-string \| undefined
+string
 
 </td><td>
 
 WebSocket close reason reported by the underlying transport if known.
+
+</td><td>
 
 </td></tr>
 </tbody></table>
