@@ -25,9 +25,40 @@ describe('Prerender', function () {
     await Promise.all([page.waitForNavigation(), link?.click()]);
     expect(
       await page.evaluate(() => {
-        return document.body.innerText;
+        return document.querySelector('div')?.innerText;
       }),
-    ).toBe('target');
+    ).toBe('true');
+  });
+
+  it('can navigate to a prerendered page via Locator', async () => {
+    const {page, server} = await getTestState();
+    const timeout = 5000;
+    for (let i = 0; i < 3; i++) {
+      {
+        const targetPage = page;
+        await targetPage.goto(server.PREFIX + '/prerender/declarative.html');
+      }
+      {
+        const targetPage = page;
+        const promises: Array<Promise<any>> = [];
+        const startWaitingForEvents = () => {
+          promises.push(targetPage.waitForNavigation());
+        };
+        await targetPage
+          .locator('a')
+          .setTimeout(timeout)
+          .on('action', () => {
+            return startWaitingForEvents();
+          })
+          .click();
+        await Promise.all(promises);
+      }
+      expect(
+        await page.evaluate(() => {
+          return document.querySelector('div')?.innerText;
+        }),
+      ).toBe('true');
+    }
   });
 
   it('can navigate to a prerendered page via Puppeteer', async () => {
@@ -40,9 +71,9 @@ describe('Prerender', function () {
     await page.goto(server.PREFIX + '/prerender/target.html');
     expect(
       await page.evaluate(() => {
-        return document.body.innerText;
+        return document.querySelector('div')?.innerText;
       }),
-    ).toBe('target');
+    ).toBe('false');
   });
 
   describe('via frame', () => {
@@ -59,9 +90,9 @@ describe('Prerender', function () {
       expect(mainFrame).toBe(page.mainFrame());
       expect(
         await mainFrame.evaluate(() => {
-          return document.body.innerText;
+          return document.querySelector('div')?.innerText;
         }),
-      ).toBe('target');
+      ).toBe('true');
       expect(mainFrame).toBe(page.mainFrame());
     });
 
@@ -76,9 +107,9 @@ describe('Prerender', function () {
       await mainFrame.goto(server.PREFIX + '/prerender/target.html');
       expect(
         await mainFrame.evaluate(() => {
-          return document.body.innerText;
+          return document.querySelector('div')?.innerText;
         }),
-      ).toBe('target');
+      ).toBe('false');
       expect(mainFrame).toBe(page.mainFrame());
     });
   });
@@ -128,9 +159,9 @@ describe('Prerender', function () {
       expect(mainFrame).toBe(page.mainFrame());
       expect(
         await mainFrame.evaluate(() => {
-          return document.body.innerText;
+          return document.querySelector('div')?.innerText;
         }),
-      ).toBe('target');
+      ).toBe('true');
       expect(mainFrame).toBe(page.mainFrame());
       expect(
         urls.find(url => {
