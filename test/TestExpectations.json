@@ -1797,14 +1797,14 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "WebDriver BiDi reports target changes for initial about:blank navigations; see https://github.com/puppeteer/puppeteer/issues/10980 and https://github.com/puppeteer/puppeteer/issues/11267"
   },
   {
     "testIdPattern": "[target.test] Target should not report uninitialized pages",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "WebDriver BiDi reports target changes for initial about:blank navigations; see https://github.com/puppeteer/puppeteer/issues/10980 and https://github.com/puppeteer/puppeteer/issues/11267"
   },
   {
     "testIdPattern": "[target.test] Target should report when a service worker is created and destroyed",
