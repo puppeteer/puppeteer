@@ -265,7 +265,9 @@ describe('console', function () {
     });
   });
   it('should have location and stack trace for console API calls', async () => {
-    const {page, server} = await getTestState();
+    const {page, server, protocol} = await getTestState();
+    const maybeScriptId =
+      protocol === 'cdp' ? {scriptId: expect.any(String)} : {};
 
     await page.goto(server.EMPTY_PAGE);
     const [message] = await Promise.all([
@@ -278,24 +280,54 @@ describe('console', function () {
       url: server.PREFIX + '/consoletrace.html',
       lineNumber: 8,
       columnNumber: 16,
+      ...maybeScriptId,
     });
     expect(message.stackTrace()).toEqual([
       {
         url: server.PREFIX + '/consoletrace.html',
         lineNumber: 8,
         columnNumber: 16,
+        ...maybeScriptId,
       },
       {
         url: server.PREFIX + '/consoletrace.html',
         lineNumber: 11,
         columnNumber: 8,
+        ...maybeScriptId,
       },
       {
         url: server.PREFIX + '/consoletrace.html',
         lineNumber: 13,
         columnNumber: 6,
+        ...maybeScriptId,
       },
     ]);
+  });
+  it('should include script ids in stack trace locations', async function () {
+    const {page, protocol} = await getTestState();
+
+    if (protocol !== 'cdp') {
+      this.skip();
+    }
+
+    const [message] = await Promise.all([
+      waitEvent<ConsoleMessage>(page, 'console'),
+      page.evaluate(() => {
+        eval(`
+          function logFromEval() {
+            console.trace('from eval');
+          }
+          logFromEval();
+        `);
+      }),
+    ]);
+
+    expect(message.text()).toBe('from eval');
+    expect(
+      message.stackTrace().some(location => {
+        return location.url === '' && !!location.scriptId;
+      }),
+    ).toBe(true);
   });
   // @see https://github.com/puppeteer/puppeteer/issues/3865
   it('should not throw when there are console messages in detached iframes', async () => {
