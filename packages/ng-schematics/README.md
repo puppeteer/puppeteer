@@ -54,7 +54,6 @@ Update either `e2e` or `puppeteer` (depending on the initial setup) to:
   "e2e": {
     "builder": "@puppeteer/ng-schematics:puppeteer",
     "options": {
-      "commands": [...],
       "devServerTarget": "sandbox:serve",
       "testRunner": "<TestRunner>",
       "port": 8080
@@ -67,6 +66,32 @@ Now update the E2E test file `utils.ts` baseUrl to:
 
 ```ts
 const baseUrl = 'http://localhost:8080';
+```
+
+### Debugging test runners
+
+The builder can run custom commands instead of the default command for the configured `testRunner`. For example, a Jest project can launch the runner through Node's inspector:
+
+```json
+{
+  "e2e": {
+    "builder": "@puppeteer/ng-schematics:puppeteer",
+    "options": {
+      "commands": [
+        [
+          "node",
+          "--inspect-brk",
+          "node_modules/jest/bin/jest.js",
+          "--runInBand",
+          "-c",
+          "e2e/jest.config.js"
+        ]
+      ],
+      "devServerTarget": "sandbox:serve",
+      "testRunner": "jest"
+    }
+  }
+}
 ```
 
 ## Contributing

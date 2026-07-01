@@ -49,6 +49,32 @@ export function getCommandForRunner(runner: TestRunner): [string, ...string[]] {
   throw new Error(`Unknown test runner ${runner}!`);
 }
 
+export function getCommandsForOptions(
+  options: PuppeteerBuilderOptions,
+): [string, ...string[]][] {
+  if (!options.commands?.length) {
+    return [getCommandForRunner(options.testRunner)];
+  }
+
+  return options.commands.map(command => {
+    if (!Array.isArray(command)) {
+      throw new Error('Custom test commands must be arrays.');
+    }
+    const [executable, ...args] = command;
+    if (typeof executable !== 'string') {
+      throw new Error('Custom test commands must include an executable.');
+    }
+    if (
+      !args.every(arg => {
+        return typeof arg === 'string';
+      })
+    ) {
+      throw new Error('Custom test command arguments must be strings.');
+    }
+    return [executable, ...args];
+  });
+}
+
 function getExecutable(command: string[]) {
   const executable = command.shift()!;
   const debugError = `Error running '${executable}' with arguments '${command.join(
@@ -211,10 +237,12 @@ async function executeE2ETest(
     server = result.server;
 
     message('\n Running tests 🧪 ... \n', context);
-    const testRunnerCommand = getCommandForRunner(options.testRunner);
-    await executeCommand(context, testRunnerCommand, {
-      baseUrl: result.baseUrl,
-    });
+    const testRunnerCommands = getCommandsForOptions(options);
+    for (const testRunnerCommand of testRunnerCommands) {
+      await executeCommand(context, [...testRunnerCommand], {
+        baseUrl: result.baseUrl,
+      });
+    }
 
     message('\n 🚀 Test ran successfully! 🚀 ', context, 'success');
     return {success: true};

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {JsonObject} from '@angular-devkit/core';
+import type {JsonArray, JsonObject} from '@angular-devkit/core';
 
 import type {TestRunner} from '../../schematics/utils/types.js';
 
@@ -13,4 +13,5 @@ export interface PuppeteerBuilderOptions extends JsonObject {
   devServerTarget: string;
   port: number | null;
   baseUrl: string | null;
+  commands: JsonArray | null;
 }
