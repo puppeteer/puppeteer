@@ -78,6 +78,10 @@ export interface PDFOptions {
   scale?: number;
   /**
    * Whether to show the header and footer.
+   *
+   * @remarks
+   * WebDriver BiDi does not currently support PDF header and footer templates.
+   *
    * @defaultValue `false`
    */
   displayHeaderFooter?: boolean;
