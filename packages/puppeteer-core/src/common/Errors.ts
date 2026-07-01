@@ -95,4 +95,37 @@ export class TargetCloseError extends ProtocolError {}
  *
  * @public
  */
-export class ConnectionClosedError extends ProtocolError {}
+export class ConnectionClosedError extends ProtocolError {
+  #closeCode?: number;
+  #closeMessage?: string;
+
+  /**
+   * @internal
+   */
+  constructor(
+    message?: string,
+    options?: ErrorOptions & {closeCode?: number; closeMessage?: string},
+  ) {
+    super(message, options);
+    this.#closeCode = options?.closeCode;
+    this.#closeMessage = options?.closeMessage;
+  }
+
+  /**
+   * WebSocket close code reported by the underlying transport if known.
+   *
+   * @public
+   */
+  get closeCode(): number | undefined {
+    return this.#closeCode;
+  }
+
+  /**
+   * WebSocket close reason reported by the underlying transport if known.
+   *
+   * @public
+   */
+  get closeMessage(): string | undefined {
+    return this.#closeMessage;
+  }
+}

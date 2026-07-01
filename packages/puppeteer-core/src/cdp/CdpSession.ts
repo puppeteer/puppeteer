@@ -13,6 +13,7 @@ import {
   type CommandOptions,
 } from '../api/CDPSession.js';
 import {CallbackRegistry} from '../common/CallbackRegistry.js';
+import type {ProtocolError} from '../common/Errors.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {assert} from '../util/assert.js';
 import {createProtocolErrorMessage} from '../util/ErrorLike.js';
@@ -165,8 +166,8 @@ export class CdpCDPSession extends CDPSession {
   /**
    * @internal
    */
-  onClosed(): void {
-    this.#callbacks.clear();
+  onClosed(errorFactory?: () => ProtocolError): void {
+    this.#callbacks.clear(errorFactory);
     this.#detached = true;
     this.emit(CDPSessionEvent.Disconnected, undefined);
   }

@@ -101,10 +101,13 @@ export class CallbackRegistry {
     callback.resolve(value);
   }
 
-  clear(): void {
+  clear(
+    errorFactory: () => ProtocolError = () => {
+      return new TargetCloseError('Target closed');
+    },
+  ): void {
     for (const callback of this.#callbacks.values()) {
-      // TODO: probably we can accept error messages as params.
-      this._reject(callback, new TargetCloseError('Target closed'));
+      this._reject(callback, errorFactory());
     }
     this.#callbacks.clear();
   }

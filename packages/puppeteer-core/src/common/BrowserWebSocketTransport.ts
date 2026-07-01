@@ -3,7 +3,10 @@
  * Copyright 2020 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import type {ConnectionTransport} from './ConnectionTransport.js';
+import type {
+  ConnectionCloseDetails,
+  ConnectionTransport,
+} from './ConnectionTransport.js';
 import {debugCatchError} from './util.js';
 
 /**
@@ -23,7 +26,7 @@ export class BrowserWebSocketTransport implements ConnectionTransport {
 
   #ws: WebSocket;
   onmessage?: (message: string) => void;
-  onclose?: () => void;
+  onclose?: (details?: ConnectionCloseDetails) => void;
 
   constructor(ws: WebSocket) {
     this.#ws = ws;
@@ -32,9 +35,12 @@ export class BrowserWebSocketTransport implements ConnectionTransport {
         this.onmessage.call(null, event.data);
       }
     });
-    this.#ws.addEventListener('close', () => {
+    this.#ws.addEventListener('close', event => {
       if (this.onclose) {
-        this.onclose.call(null);
+        this.onclose.call(null, {
+          closeCode: event.code,
+          closeMessage: event.reason,
+        });
       }
     });
     // Silently log all errors - we don't know what to do with them.

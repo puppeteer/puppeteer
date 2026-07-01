@@ -896,6 +896,14 @@ See individual properties for more information.
 </td></tr>
 <tr><td>
 
+<span id="connectionclosedetails">[ConnectionCloseDetails](./puppeteer.connectionclosedetails.md)</span>
+
+</td><td>
+
+Details provided by the underlying transport when it closes.
+
+</td></tr>
+<tr><td>
 <span id="connectiontransport">[ConnectionTransport](./puppeteer.connectiontransport.md)</span>
 
 </td><td>

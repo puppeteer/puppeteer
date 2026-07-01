@@ -5,11 +5,21 @@
  */
 
 /**
+ * Details provided by the underlying transport when it closes.
+ *
+ * @public
+ */
+export interface ConnectionCloseDetails {
+  closeCode?: number;
+  closeMessage?: string;
+}
+
+/**
  * @public
  */
 export interface ConnectionTransport {
   send(message: string): void;
   close(): void;
   onmessage?: (message: string) => void;
-  onclose?: () => void;
+  onclose?: (details?: ConnectionCloseDetails) => void;
 }

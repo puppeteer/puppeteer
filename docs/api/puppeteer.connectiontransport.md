@@ -43,7 +43,7 @@ Default
 
 </td><td>
 
-() =&gt; void
+(details?: [ConnectionCloseDetails](./puppeteer.connectionclosedetails.md)) =&gt; void
 
 </td><td>
 

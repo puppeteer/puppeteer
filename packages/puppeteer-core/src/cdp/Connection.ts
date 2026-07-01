@@ -14,7 +14,10 @@ import {
   type CDPSessionEvents,
 } from '../api/CDPSession.js';
 import {CallbackRegistry} from '../common/CallbackRegistry.js';
-import type {ConnectionTransport} from '../common/ConnectionTransport.js';
+import type {
+  ConnectionCloseDetails,
+  ConnectionTransport,
+} from '../common/ConnectionTransport.js';
 import {debug} from '../common/Debug.js';
 import {ConnectionClosedError, TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -39,6 +42,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
   #timeout: number;
   #sessions = new Map<string, CdpCDPSession>();
   #closed = false;
+  #closedDetails?: ConnectionCloseDetails;
   #manuallyAttached = new Set<string>();
   #rejectEmulateNetworkConditionsCalls = false;
   #callbacks: CallbackRegistry;
@@ -157,7 +161,9 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     options?: CommandOptions,
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
     if (this.#closed) {
-      return Promise.reject(new ConnectionClosedError('Connection closed.'));
+      return Promise.reject(
+        new ConnectionClosedError('Connection closed.', this.#closedDetails),
+      );
     }
     if (
       method === 'Network.emulateNetworkConditions' &&
@@ -259,16 +265,20 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     }
   }
 
-  #onClose(): void {
+  #onClose(details?: ConnectionCloseDetails): void {
     if (this.#closed) {
       return;
     }
     this.#closed = true;
+    this.#closedDetails = details;
     this.#transport.onmessage = undefined;
     this.#transport.onclose = undefined;
-    this.#callbacks.clear();
+    const errorFactory = () => {
+      return new ConnectionClosedError('Connection closed.', details);
+    };
+    this.#callbacks.clear(errorFactory);
     for (const session of this.#sessions.values()) {
-      session.onClosed();
+      session.onClosed(errorFactory);
     }
     this.#sessions.clear();
     this.emit(CDPSessionEvent.Disconnected, undefined);
