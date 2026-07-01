@@ -49,7 +49,7 @@ Description
 
 </td><td>
 
-[WebMCPAnnotation](./puppeteer.webmcpannotation.md)
+Protocol.WebMCP.Annotation
 
 </td><td>
 

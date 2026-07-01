@@ -1469,15 +1469,6 @@ The TouchHandle interface exposes methods to manipulate touches that have been s
 </td></tr>
 <tr><td>
 
-<span id="webmcpannotation">[WebMCPAnnotation](./puppeteer.webmcpannotation.md)</span>
-
-</td><td>
-
-Tool annotations
-
-</td></tr>
-<tr><td>
-
 <span id="webmcptoolcallresult">[WebMCPToolCallResult](./puppeteer.webmcptoolcallresult.md)</span>
 
 </td><td>
@@ -2011,15 +2002,6 @@ Browsers supported by Puppeteer.
 </td><td>
 
 Whether to wait for the element to be [visible](./puppeteer.elementhandle.isvisible.md) or [hidden](./puppeteer.elementhandle.ishidden.md). `null` to disable visibility checks.
-
-</td></tr>
-<tr><td>
-
-<span id="webmcpinvocationstatus">[WebMCPInvocationStatus](./puppeteer.webmcpinvocationstatus.md)</span>
-
-</td><td>
-
-Represents the status of a tool invocation.
 
 </td></tr>
 <tr><td>
