@@ -10,8 +10,10 @@ import path from 'node:path';
 import expect from 'expect';
 import type {Target} from 'puppeteer-core/internal/api/Target.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
+import type {ExceptionMessage} from 'puppeteer-core/internal/common/ExceptionMessage.js';
 
 import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
+import {waitEvent} from '../utils.js';
 
 const extensionWithPagePath = path.join(
   import.meta.dirname,
@@ -249,6 +251,39 @@ describe('extensions', function () {
     ]);
 
     expect(message).toBe(messageToLog);
+    await browser.uninstallExtension(extensionId);
+    const targets = browser.targets();
+    assertNoServiceWorkerReported(targets, extensionId);
+  });
+
+  it('should capture exceptions from extension workers', async () => {
+    const {browser} = state;
+    const extensionId = await browser.installExtension(extensionPath);
+    const serviceWorkerTarget = await browser.waitForTarget(target => {
+      return (
+        target.url().includes(extensionId) && target.type() === 'service_worker'
+      );
+    });
+
+    const worker = await serviceWorkerTarget.worker();
+    const errorMessage = 'error from extension worker';
+
+    const exceptionMessagePromise = waitEvent(worker!, 'exception');
+
+    await worker!.evaluate(msg => {
+      setTimeout(() => {
+        throw new Error(msg);
+      }, 0);
+    }, errorMessage);
+
+    const exceptionMessage = await exceptionMessagePromise as ExceptionMessage;
+
+    expect(exceptionMessage).toBeDefined();
+    
+    const handle = exceptionMessage.exception();
+    const errorText = handle ? handle.remoteObject().description : exceptionMessage.text();
+    expect(errorText).toContain(errorMessage);
+
     await browser.uninstallExtension(extensionId);
     const targets = browser.targets();
     assertNoServiceWorkerReported(targets, extensionId);

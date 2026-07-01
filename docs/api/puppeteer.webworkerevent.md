@@ -51,4 +51,21 @@ Error
 Emitted when the worker throws an exception.
 
 </td></tr>
+<tr><td>
+
+Exception
+
+</td><td>
+
+`"exception"`
+
+</td><td>
+
+Emitted when the worker throws an exception.
+
+**Remarks:**
+
+Contains the exception details.
+
+</td></tr>
 </tbody></table>

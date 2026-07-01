@@ -10,6 +10,7 @@ import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
 import {WebWorkerEvent} from '../api/WebWorker.js';
 import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
+import {ExceptionMessage} from '../common/ExceptionMessage.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
@@ -39,6 +40,7 @@ import {ExposableFunction} from './ExposedFunction.js';
 import type {BidiFrame} from './Frame.js';
 import {BidiJSHandle} from './JSHandle.js';
 import {BidiSerializer} from './Serializer.js';
+import {isJavaScriptLogEntry} from './util.js';
 import {
   createEvaluationError,
   getConsoleMessage,
@@ -434,6 +436,51 @@ export class BidiWorkerRealm extends BidiRealm {
           this.realm.id,
         );
         this.#worker.emit(WebWorkerEvent.Console, message);
+      } else if (isJavaScriptLogEntry(entry)) {
+        const error = new Error(entry.text ?? '');
+
+        const messageHeight = error.message.split('\n').length;
+        const messageLines = error.stack!.split('\n').splice(0, messageHeight);
+
+        const stackLines = [];
+        const locations = [];
+        if (entry.stackTrace) {
+          for (const frame of entry.stackTrace.callFrames) {
+            locations.push({
+              url: frame.url,
+              lineNumber: frame.lineNumber,
+              columnNumber: frame.columnNumber,
+            });
+            // Note we need to add `1` because the values are 0-indexed.
+            stackLines.push(
+              `    at ${frame.functionName || '<anonymous>'} (${frame.url}:${
+                frame.lineNumber + 1
+              }:${frame.columnNumber + 1})`,
+            );
+            if (stackLines.length >= Error.stackTraceLimit) {
+              break;
+            }
+          }
+        } else {
+          locations.push({
+            url: entry.source.realm,
+            lineNumber: 0,
+            columnNumber: 0,
+          });
+        }
+
+        const exceptionMessage = new ExceptionMessage(
+          entry.text ?? '',
+          locations,
+          undefined,
+          undefined,
+          undefined,
+          entry.stackTrace,
+        );
+        this.#worker.emit(WebWorkerEvent.Exception, exceptionMessage);
+
+        error.stack = [...messageLines, ...stackLines].join('\n');
+        this.#worker.emit(WebWorkerEvent.Error, error);
       }
     });
   }
