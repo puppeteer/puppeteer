@@ -1,5 +1,32 @@
 # Changelog
 
+## [25.3.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.2.1...puppeteer-core-v25.3.0) (2026-07-01)
+
+
+### 🎉 Features
+
+* support installing extensions for browser contexts ([#15164](https://github.com/puppeteer/puppeteer/issues/15164)) ([118d84d](https://github.com/puppeteer/puppeteer/commit/118d84d2622306f1b9e85ed9acee22b2931f12c7))
+
+
+### 🛠️ Fixes
+
+* handle swaps without a timer ([#15198](https://github.com/puppeteer/puppeteer/issues/15198)) ([2356a15](https://github.com/puppeteer/puppeteer/commit/2356a15404acca1e00243a4f72408ecdb916ac11))
+* normalize duplicate set-cookie headers using newline ([#15173](https://github.com/puppeteer/puppeteer/issues/15173)) ([55787d5](https://github.com/puppeteer/puppeteer/commit/55787d515570109ba7e5cb97df18499d743923fb))
+* roll to Firefox 152.0.3 ([#15158](https://github.com/puppeteer/puppeteer/issues/15158)) ([2d64852](https://github.com/puppeteer/puppeteer/commit/2d648522d4a90ed7fc5c79e6298f36f0dc0781f4))
+* roll to Firefox 152.0.4 ([#15195](https://github.com/puppeteer/puppeteer/issues/15195)) ([d382a21](https://github.com/puppeteer/puppeteer/commit/d382a218051c323e1d4d4d1a528c53370a6b1ee7))
+
+
+### 📄 Documentation
+
+* fix the typos on documentation ([#15167](https://github.com/puppeteer/puppeteer/issues/15167)) ([ab74e6a](https://github.com/puppeteer/puppeteer/commit/ab74e6a6720ec05768979e3c2d9b26bcb5cd763f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.0.5 to 3.0.6
+
 ## [25.2.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.2.0...puppeteer-core-v25.2.1) (2026-06-24)
 
 

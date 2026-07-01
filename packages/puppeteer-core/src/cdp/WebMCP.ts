@@ -18,75 +18,6 @@ import type {FrameManager} from './FrameManager.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
 
 /**
- * Tool annotations
- *
- * @public
- */
-export interface WebMCPAnnotation {
-  /**
-   * A hint indicating that the tool does not modify any state.
-   */
-  readOnly?: boolean;
-  /**
-   * A hint indicating that the tool output may contain untrusted content, ex: UGC, 3rd
-   * party data.
-   */
-  untrustedContent?: boolean;
-  /**
-   * If the declarative tool was declared with the autosubmit attribute.
-   */
-  autosubmit?: boolean;
-}
-
-/**
- * Represents the status of a tool invocation.
- *
- * @public
- */
-export type WebMCPInvocationStatus = 'Completed' | 'Canceled' | 'Error';
-
-/**
- * @internal
- */
-export interface ProtocolWebMCPTool {
-  name: string;
-  description: string;
-  inputSchema?: object;
-  annotations?: WebMCPAnnotation;
-  frameId: string;
-  backendNodeId?: number;
-  stackTrace?: Protocol.Runtime.StackTrace;
-}
-
-interface ProtocolWebMCPToolsAddedEvent {
-  tools: ProtocolWebMCPTool[];
-}
-
-interface ProtocolWebMCPRemovedTool {
-  name: string;
-  frameId: string;
-}
-
-interface ProtocolWebMCPToolsRemovedEvent {
-  tools: ProtocolWebMCPRemovedTool[];
-}
-
-interface ProtocolWebMCPToolInvokedEvent {
-  toolName: string;
-  frameId: string;
-  invocationId: string;
-  input: string;
-}
-
-interface ProtocolWebMCPToolRespondedEvent {
-  invocationId: string;
-  status: WebMCPInvocationStatus;
-  output?: any;
-  errorText?: string;
-  exception?: Protocol.Runtime.RemoteObject;
-}
-
-/**
  * Represents a registered WebMCP tool available on the page.
  *
  * @public
@@ -114,7 +45,7 @@ export class WebMCPTool extends EventEmitter<{
   /**
    * Optional annotations for the tool.
    */
-  annotations?: WebMCPAnnotation;
+  annotations?: Protocol.WebMCP.Annotation;
   /**
    * Frame the tool was defined for.
    */
@@ -131,7 +62,7 @@ export class WebMCPTool extends EventEmitter<{
   /**
    * @internal
    */
-  constructor(webmcp: WebMCP, tool: ProtocolWebMCPTool, frame: Frame) {
+  constructor(webmcp: WebMCP, tool: Protocol.WebMCP.Tool, frame: Frame) {
     super();
     this.#webmcp = webmcp;
     this.name = tool.name;
@@ -254,7 +185,7 @@ export interface WebMCPToolCallResult {
   /**
    * Status of the invocation.
    */
-  status: WebMCPInvocationStatus;
+  status: Protocol.WebMCP.InvocationStatus;
   /**
    * Output or error delivered as delivered to the agent. Missing if `status` is anything
    * other than Completed.
@@ -305,7 +236,7 @@ export class WebMCP extends EventEmitter<{
   #tools = new Map<string, Map<string, WebMCPTool>>();
   #pendingCalls = new Map<string, WebMCPToolCall>();
 
-  #onToolsAdded = (event: ProtocolWebMCPToolsAddedEvent) => {
+  #onToolsAdded = (event: Protocol.WebMCP.ToolsAddedEvent) => {
     const tools: WebMCPTool[] = [];
     for (const tool of event.tools) {
       const frame = this.#frameManager.frame(tool.frameId);
@@ -327,7 +258,7 @@ export class WebMCP extends EventEmitter<{
     this.emit('toolsadded', {tools});
   };
 
-  #onToolsRemoved = (event: ProtocolWebMCPToolsRemovedEvent) => {
+  #onToolsRemoved = (event: Protocol.WebMCP.ToolsRemovedEvent) => {
     const tools: WebMCPTool[] = [];
     event.tools.forEach(tool => {
       const removedTool = this.#tools.get(tool.frameId)?.get(tool.name);
@@ -339,7 +270,7 @@ export class WebMCP extends EventEmitter<{
     this.emit('toolsremoved', {tools});
   };
 
-  #onToolInvoked = (event: ProtocolWebMCPToolInvokedEvent) => {
+  #onToolInvoked = (event: Protocol.WebMCP.ToolInvokedEvent) => {
     const tool = this.#tools.get(event.frameId)?.get(event.toolName);
     if (!tool) {
       return;
@@ -350,7 +281,7 @@ export class WebMCP extends EventEmitter<{
     this.emit('toolinvoked', call);
   };
 
-  #onToolResponded = (event: ProtocolWebMCPToolRespondedEvent) => {
+  #onToolResponded = (event: Protocol.WebMCP.ToolRespondedEvent) => {
     const call = this.#pendingCalls.get(event.invocationId);
     if (call) {
       this.#pendingCalls.delete(event.invocationId);
