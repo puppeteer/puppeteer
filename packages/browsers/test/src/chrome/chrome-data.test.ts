@@ -43,6 +43,9 @@ describe('Chrome', () => {
       resolveDownloadUrl(BrowserPlatform.WIN64, '113.0.5672.0'),
       'https://storage.googleapis.com/chrome-for-testing-public/113.0.5672.0/win64/chrome-win64.zip',
     );
+    assert.throws(() => {
+      return resolveDownloadUrl(BrowserPlatform.LINUX_ARM, '113.0.5672.0');
+    }, /Chrome for Testing is not available for linux_arm/);
   });
 
   it('should resolve executable paths', () => {

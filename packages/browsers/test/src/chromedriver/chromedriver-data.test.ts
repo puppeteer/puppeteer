@@ -36,6 +36,9 @@ describe('ChromeDriver', () => {
       resolveDownloadUrl(BrowserPlatform.WIN64, '115.0.5763.0'),
       'https://storage.googleapis.com/chrome-for-testing-public/115.0.5763.0/win64/chromedriver-win64.zip',
     );
+    assert.throws(() => {
+      return resolveDownloadUrl(BrowserPlatform.LINUX_ARM, '115.0.5763.0');
+    }, /ChromeDriver is not available for linux_arm/);
   });
 
   it('should resolve milestones', async () => {
