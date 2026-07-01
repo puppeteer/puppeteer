@@ -1668,6 +1668,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @remarks
    * To disable authentication, pass `null`.
+   *
+   * To cancel authentication challenges, pass credentials that are not accepted
+   * by the server. Puppeteer will then cancel repeated authentication
+   * challenges.
    */
   abstract authenticate(credentials: Credentials | null): Promise<void>;
 

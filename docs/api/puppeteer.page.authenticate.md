@@ -55,3 +55,5 @@ Promise&lt;void&gt;
 ## Remarks
 
 To disable authentication, pass `null`.
+
+To cancel authentication challenges, pass credentials that are not accepted by the server. Puppeteer will then cancel repeated authentication challenges.
