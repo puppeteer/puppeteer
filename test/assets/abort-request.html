@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<button id="abort"></button>
+
+<script>
+  const button = document.getElementById('abort');
+  button.addEventListener('click', getJson)
+  async function getJson() {
+    const abort = new AbortController();
+    const result = fetch("/simple.json", {
+      signal: abort.signal
+    });
+    abort.abort();
+  }
+</script>

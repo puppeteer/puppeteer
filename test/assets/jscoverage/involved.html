@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<script>
+function foo() {
+  if (1 > 2)
+    console.log(1);
+  if (1 < 2)
+    console.log(2);
+  let x = 1 > 2 ? 'foo' : 'bar';
+  let y = 1 < 2 ? 'foo' : 'bar';
+  let p = {a:1 > 2?function(){console.log('unused');}:function(){console.log('unused');}};
+  let z = () => {};
+  let q = () => {};
+  q();
+}
+
+foo();
+</script>

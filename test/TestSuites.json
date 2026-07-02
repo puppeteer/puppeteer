@@ -1,0 +1,64 @@
+{
+  "testSuites": [
+    {
+      "id": "chrome-headless",
+      "parameters": ["chrome", "headless", "cdp"]
+    },
+    {
+      "id": "chrome-headful",
+      "parameters": ["chrome", "headful", "cdp"]
+    },
+    {
+      "id": "chrome-headless-shell",
+      "parameters": ["chrome", "chrome-headless-shell", "cdp"]
+    },
+    {
+      "id": "firefox-headless",
+      "parameters": ["firefox", "headless", "webDriverBiDi"]
+    },
+    {
+      "id": "firefox-headful",
+      "parameters": ["firefox", "headful", "webDriverBiDi"]
+    },
+    {
+      "id": "chrome-bidi",
+      "parameters": ["chrome", "headless", "webDriverBiDi"]
+    },
+    {
+      "id": "chrome-bidi-only",
+      "parameters": ["chrome", "headless", "webDriverBiDiOnly"]
+    },
+    {
+      "id": "chrome-pipe",
+      "parameters": ["chrome", "headless", "cdp", "pipe"]
+    }
+  ],
+  "parameterDefinitions": {
+    "chrome": {
+      "PUPPETEER_BROWSER": "chrome"
+    },
+    "firefox": {
+      "PUPPETEER_BROWSER": "firefox"
+    },
+    "headless": {
+      "HEADLESS": "true"
+    },
+    "headful": {
+      "HEADLESS": "false"
+    },
+    "chrome-headless-shell": {
+      "HEADLESS": "shell"
+    },
+    "webDriverBiDi": {
+      "PUPPETEER_PROTOCOL": "webDriverBiDi"
+    },
+    "webDriverBiDiOnly": {
+      "PUPPETEER_PROTOCOL": "webDriverBiDi",
+      "PUPPETEER_WEBDRIVER_BIDI_ONLY": "true"
+    },
+    "cdp": {},
+    "pipe": {
+      "PUPPETEER_PIPE": "true"
+    }
+  }
+}

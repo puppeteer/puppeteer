@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<head>
+  <script>fetch('target.html?fromPrerendered')</script>
+</head>
+<body>target<input></input>
+<h1>Is this page prerendered?</h1>
+<script>
+  function pagePrerendered() {
+    return (
+      document.prerendering ||
+      self.performance?.getEntriesByType?.('navigation')[0]?.activationStart > 0
+    );
+  }
+  const div = document.createElement('div');
+  div.innerText = String(pagePrerendered());
+  document.body.append(div);
+</script>
+</body>

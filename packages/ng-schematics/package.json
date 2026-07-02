@@ -1,0 +1,73 @@
+{
+  "name": "@puppeteer/ng-schematics",
+  "version": "0.8.0",
+  "description": "Puppeteer Angular schematics",
+  "type": "module",
+  "scripts": {
+    "build": "wireit",
+    "clean": "../../tools/clean.mjs",
+    "dev:test": "npm run test --watch",
+    "dev": "npm run build --watch",
+    "unit": "wireit"
+  },
+  "wireit": {
+    "build": {
+      "command": "tsc -b && node tools/copySchemaFiles.mjs",
+      "clean": "if-file-deleted",
+      "files": [
+        "tsconfig.json",
+        "tsconfig.test.json",
+        "src/**",
+        "test/src/**"
+      ],
+      "output": [
+        "lib/**",
+        "test/build/**",
+        "*.tsbuildinfo"
+      ]
+    },
+    "build:test": {
+      "command": "tsc -b test/tsconfig.json"
+    },
+    "unit": {
+      "command": "node --test --test-reporter=spec \"test/build/**/*.test.js\"",
+      "dependencies": [
+        "build",
+        "build:test"
+      ]
+    }
+  },
+  "keywords": [
+    "angular",
+    "puppeteer",
+    "schematics"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/puppeteer/puppeteer/tree/main/packages/ng-schematics"
+  },
+  "author": "The Chromium Authors",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "dependencies": {
+    "@angular-devkit/architect": "0.1801.4",
+    "@angular-devkit/core": "18.1.4",
+    "@angular-devkit/schematics": "18.1.4",
+    "rxjs": "7.8.2"
+  },
+  "devDependencies": {
+    "@angular/cli": "^22.0.4",
+    "@schematics/angular": "22.0.4"
+  },
+  "files": [
+    "lib",
+    "!*.tsbuildinfo"
+  ],
+  "ng-add": {
+    "save": "devDependencies"
+  },
+  "schematics": "./lib/schematics/collection.json",
+  "builders": "./lib/builders/builders.json"
+}

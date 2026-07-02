@@ -1,0 +1,8 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "Puppeteer",
+  "title": "Puppeteer Config Schema",
+  "type": "object",
+  "properties": {},
+  "required": []
+}

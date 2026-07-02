@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<div id="a">hello <button id="b">world</button>
+    <span id="f"></span>
+    <div id="c"></div>
+</div>
+<a>My name is Jun (pronounced like "June")</a>
+
+<script>
+    const topShadow = document.querySelector('#c');
+    topShadow.attachShadow({ mode: "open" });
+    topShadow.shadowRoot.innerHTML = `shadow dom<div id="d"></div>`;
+
+    const innerShadow = topShadow.shadowRoot.querySelector('#d');
+    innerShadow.attachShadow({ mode: "open" });
+    innerShadow.shadowRoot.innerHTML = `<a id="e">deep text</a>`;
+</script>

@@ -1,0 +1,30 @@
+{
+  "title": "Puppeteer",
+  "description": "Options for Puppeteer Angular Schematics",
+  "type": "object",
+  "properties": {
+    "commands": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "item": {
+          "type": "string"
+        }
+      },
+      "description": "Commands to execute in the repo. Commands prefixed with `./node_modules/bin` (Exception: 'node')."
+    },
+    "devServerTarget": {
+      "type": "string",
+      "description": "Angular target that spawns the server."
+    },
+    "port": {
+      "type": ["number", "null"],
+      "description": "Port to run the test server on."
+    },
+    "baseUrl": {
+      "type": ["string", "null"],
+      "description": "Base Url to run test ageist. If provided no test server will be spawned."
+    }
+  },
+  "additionalProperties": true
+}

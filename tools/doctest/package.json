@@ -1,0 +1,39 @@
+{
+  "name": "@puppeteer/doctest",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "bin": "./bin/doctest.js",
+  "description": "Tests JSDoc @example code within a file.",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "wireit",
+    "clean": "../clean.mjs"
+  },
+  "wireit": {
+    "build": {
+      "command": "tsc -b && node --experimental-strip-types ../../tools/chmod.ts 755 ./bin/doctest.js",
+      "clean": "if-file-deleted",
+      "files": [
+        "src/**"
+      ],
+      "output": [
+        "bin/**",
+        "tsconfig.tsbuildinfo"
+      ]
+    }
+  },
+  "devDependencies": {
+    "@swc/core": "1.15.43",
+    "@types/doctrine": "0.0.9",
+    "@types/source-map-support": "0.5.10",
+    "@types/yargs": "17.0.33",
+    "acorn": "8.17.0",
+    "doctrine": "3.0.0",
+    "glob": "13.0.6",
+    "package-directory": "8.2.0",
+    "source-map-support": "0.5.21",
+    "source-map": "0.7.6",
+    "yargs": "17.7.2"
+  }
+}

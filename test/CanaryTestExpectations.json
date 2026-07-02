@@ -1,0 +1,37 @@
+[
+  {
+    "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work with three touches",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"],
+    "comment": "crbug.com/433304196"
+  },
+  {
+    "testIdPattern": "[webExtension.spec] webExtension can install and uninstall an extension",
+    "platforms": ["darwin", "linux"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["TIMEOUT"],
+    "comment": "Needs investigation"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option in puppeteer.launch",
+    "platforms": ["win32"],
+    "parameters": ["cdp"],
+    "expectations": ["TIMEOUT"],
+    "comment": "Needs investigation"
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs protocol timeout *",
+    "platforms": ["darwin"],
+    "parameters": ["firefox", "headful", "webDriverBiDi"],
+    "expectations": ["PASS"],
+    "comment": "Fixed by https://bugzilla.mozilla.org/show_bug.cgi?id=2010507"
+  },
+  {
+    "testIdPattern": "[console.spec] console should work for different console API calls with group functions",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "See https://github.com/w3c/webdriver-bidi/issues/1097"
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./lib/puppeteer",
+    "rootDir": "./src",
+    "types": ["node", "chrome"]
+  },
+  "include": ["src/**/*"],
+  "references": [{"path": "./third_party/tsconfig.json"}]
+}

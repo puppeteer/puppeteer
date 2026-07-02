@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script>
+a();
+
+function a() {
+    b();
+}
+
+function b() {
+    c();
+}
+
+function c() {
+    throw new Error('Fancy error!');
+}
+</script>

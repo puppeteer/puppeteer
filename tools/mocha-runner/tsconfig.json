@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./bin",
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "sourceMap": true,
+    "declaration": false,
+    "declarationMap": false,
+    "composite": false,
+    "types": ["node", "mocha"]
+  }
+}

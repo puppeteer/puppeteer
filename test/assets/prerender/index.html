@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<head>
+<script>
+  function addRules() {
+    const script = document.createElement('script');
+    script.type = 'speculationrules';
+    script.innerText = `
+      {
+        "prerender": [
+          {"source": "list", "urls": ["target.html"]}
+        ]
+      }
+    `;
+    document.head.append(script);
+  }
+</script>
+</head>
+<body>
+  <button onclick="addRules()">add rules</button>
+  <a href="target.html">test</a>
+</body>

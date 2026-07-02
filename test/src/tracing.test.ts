@@ -1,0 +1,122 @@
+/**
+ * @license
+ * Copyright 2017 Google Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import fs from 'node:fs';
+import path from 'node:path';
+
+import expect from 'expect';
+
+import {setupSeparateTestBrowserHooks} from './mocha-utils.js';
+
+describe('Tracing', function () {
+  let outputFile!: string;
+  const state = setupSeparateTestBrowserHooks({});
+
+  beforeEach(async () => {
+    outputFile = path.join(import.meta.dirname, 'trace.json');
+  });
+
+  afterEach(async () => {
+    if (fs.existsSync(outputFile)) {
+      fs.unlinkSync(outputFile);
+    }
+  });
+
+  it('should output a trace', async () => {
+    const {server, page} = state;
+    await page.tracing.start({screenshots: true, path: outputFile});
+    await page.goto(server.PREFIX + '/grid.html');
+    await page.tracing.stop();
+    expect(fs.existsSync(outputFile)).toBe(true);
+  });
+
+  it('should run with custom categories if provided', async () => {
+    const {page} = state;
+    await page.tracing.start({
+      path: outputFile,
+      categories: ['-*', 'disabled-by-default-devtools.timeline.frame'],
+    });
+    await page.tracing.stop();
+
+    const traceJson = JSON.parse(
+      fs.readFileSync(outputFile, {encoding: 'utf8'}),
+    );
+    expect(traceJson.traceEvents).not.toContainEqual(
+      expect.objectContaining({
+        cat: 'toplevel',
+      }),
+    );
+  });
+
+  it('should run with default categories', async () => {
+    const {page} = state;
+    await page.tracing.start({
+      path: outputFile,
+    });
+    await page.tracing.stop();
+
+    const traceJson = JSON.parse(
+      fs.readFileSync(outputFile, {encoding: 'utf8'}),
+    );
+    expect(traceJson.traceEvents).toContainEqual(
+      expect.objectContaining({
+        cat: 'toplevel',
+      }),
+    );
+  });
+  it('should throw if tracing on two pages', async () => {
+    const {page, browser} = state;
+    await page.tracing.start({path: outputFile});
+    const newPage = await browser.newPage();
+    let error!: Error;
+    await newPage.tracing.start({path: outputFile}).catch(error_ => {
+      return (error = error_);
+    });
+    await newPage.close();
+    expect(error).toBeTruthy();
+    await page.tracing.stop();
+  });
+  it('should return a typedArray', async () => {
+    const {page, server} = state;
+
+    await page.tracing.start({screenshots: true, path: outputFile});
+    await page.goto(server.PREFIX + '/grid.html');
+    const trace = (await page.tracing.stop())!;
+    const buf = fs.readFileSync(outputFile);
+    expect(trace).toBeInstanceOf(Uint8Array);
+    expect(Buffer.from(trace).toString()).toEqual(buf.toString());
+  });
+  it('should work without options', async () => {
+    const {page, server} = state;
+
+    await page.tracing.start();
+    await page.goto(server.PREFIX + '/grid.html');
+    const trace = await page.tracing.stop();
+    expect(trace).toBeTruthy();
+  });
+
+  it('should support a typedArray without a path', async () => {
+    const {page, server} = state;
+
+    await page.tracing.start();
+    await page.goto(server.PREFIX + '/grid.html');
+    const trace = (await page.tracing.stop())!;
+    expect(Buffer.from(trace).toString().length).toBeGreaterThan(10);
+  });
+
+  it('should properly fail if readProtocolStream errors out', async () => {
+    const {page} = state;
+    await page.tracing.start({path: import.meta.dirname});
+
+    let error!: Error;
+    try {
+      await page.tracing.stop();
+    } catch (error_) {
+      error = error_ as Error;
+    }
+    expect(error).toBeDefined();
+  });
+});

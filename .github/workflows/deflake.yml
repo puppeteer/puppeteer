@@ -1,0 +1,131 @@
+name: Deflake Puppeteer test
+
+# Declare default permissions as read only.
+permissions: read-all
+
+concurrency:
+  group: deflake-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+    inputs:
+      tests:
+        description: Tests to deflake (e.g. '[network.spec] *')
+        required: true
+        type: string
+      suite:
+        description: Which suite to run?
+        required: true
+        type: choice
+        options:
+          - chrome-headless
+          - chrome-headful
+          - chrome-headless-shell
+          - chrome-bidi
+          - firefox-headful
+          - firefox-headless
+      os:
+        description: On which OS to run?
+        required: true
+        type: choice
+        options:
+          - ubuntu-latest
+          - windows-latest
+          - macos-15
+      retries:
+        description: Number of retries per test
+        required: false
+        default: 100
+        type: number
+
+jobs:
+  chrome-deflake:
+    name: Deflake test with pattern ${{ inputs.tests }} on ${{ inputs.os }}
+    runs-on: ${{ inputs.os }}
+    if: ${{ contains(inputs.suite, 'chrome') }}
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          cache: npm
+          node-version-file: '.nvmrc'
+      - name: Install dependencies
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
+      # Set up GitHub Actions caching for Wireit.
+      - uses: google/wireit@9d7c2e5346f8ef1b1ab6014c4e96c74e234f7ed5 # setup-github-actions-caching/v2.0.4
+      - name: Build packages
+        run: npm run build -w @puppeteer-test/test
+      - name: Setup cache for browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/puppeteer/
+          key: Browsers-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
+      - name: Install browsers
+        run: npm run postinstall
+      - name: Run all tests (MacOS)
+        if: ${{ matrix.os == 'macos-15' }}
+        run: npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        env:
+          PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
+          PUPPETEER_DEFLAKE_RETRIES: ${{ inputs.retries }}
+      - name: Run all tests (Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        env:
+          PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
+          PUPPETEER_DEFLAKE_RETRIES: ${{ inputs.retries }}
+      - name: Run all tests (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        env:
+          PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
+          PUPPETEER_DEFLAKE_RETRIES: ${{ inputs.retries }}
+
+  firefox-tests:
+    name: Deflake test with pattern ${{ inputs.tests }} on ${{ inputs.os }}
+    runs-on: ${{ inputs.os }}
+    if: ${{ contains(inputs.suite, 'firefox') }}
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          cache: npm
+          node-version-file: '.nvmrc'
+      - name: Install dependencies
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
+      # Set up GitHub Actions caching for Wireit.
+      - uses: google/wireit@9d7c2e5346f8ef1b1ab6014c4e96c74e234f7ed5 # setup-github-actions-caching/v2.0.4
+      - name: Build packages
+        run: npm run build -w @puppeteer-test/test
+      - name: Setup cache for browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/puppeteer/
+          key: Browsers-${{ runner.os }}-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
+      - name: Install browsers
+        run: npm run postinstall
+      - name: Run all tests (for non-Linux)
+        if: ${{ inputs.os != 'ubuntu-latest' }}
+        run: npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        env:
+          PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
+          PUPPETEER_DEFLAKE_RETRIES: ${{ inputs.retries }}
+      - name: Run all tests (for Linux)
+        if: ${{ inputs.os == 'ubuntu-latest' }}
+        run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ inputs.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        env:
+          PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
+          PUPPETEER_DEFLAKE_RETRIES: ${{ inputs.retries }}

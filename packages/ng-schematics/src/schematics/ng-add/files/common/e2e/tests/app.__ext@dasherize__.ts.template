@@ -1,0 +1,20 @@
+<% if(testRunner == 'node') { %>
+import * as assert from 'assert';
+import {describe, it} from 'node:test';
+<% } %><% if(testRunner == 'mocha') { %>
+import * as assert from 'assert';
+<% } %>
+import {setupBrowserHooks, getBrowserState} from './utils';
+
+describe('App test', function () {
+  setupBrowserHooks();
+  it('is running', async function () {
+    const {page} = getBrowserState();
+    const element = await page.locator('::-p-text(<%= project %>)').wait();
+<% if(testRunner == 'jasmine' || testRunner == 'jest') { %>
+    expect(element).not.toBeNull();
+<% } %><% if(testRunner == 'mocha' || testRunner == 'node') { %>
+    assert.ok(element);
+<% } %>
+  });
+});

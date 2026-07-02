@@ -1,0 +1,225 @@
+{
+  "name": "puppeteer-repo",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/puppeteer/puppeteer"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "wireit",
+    "build:tools": "wireit",
+    "check": "npm run check --workspaces --if-present",
+    "clean": "npm run clean --workspaces --if-present",
+    "debug": "mocha --inspect-brk",
+    "docs": "wireit",
+    "doctest": "wireit",
+    "format": "wireit",
+    "format:eslint": "wireit",
+    "format:expectations": "node tools/sort-test-expectations.mjs",
+    "format:prettier": "prettier --write --cache . ",
+    "lint": "wireit",
+    "lint:eslint": "wireit",
+    "lint:prettier": "prettier --check --cache .",
+    "lint:expectations": "node tools/sort-test-expectations.mjs --lint",
+    "postinstall": "npm run postinstall --workspaces --if-present",
+    "prepare": "npm run prepare --workspaces --if-present",
+    "test": "wireit",
+    "test-install": "npm run test --workspace @puppeteer-test/installation",
+    "test-types": "wireit",
+    "test:chrome": "wireit",
+    "test:chrome:bidi": "wireit",
+    "test:chrome:bidi-only": "wireit",
+    "test:chrome:headful": "wireit",
+    "test:chrome:headless": "wireit",
+    "test:chrome:shell": "wireit",
+    "test:chrome:pipe": "wireit",
+    "test:firefox": "wireit",
+    "test:firefox:headful": "wireit",
+    "test:firefox:headless": "wireit",
+    "validate-licenses": "node --experimental-strip-types tools/third_party/validate-licenses.ts",
+    "validate-deps": "node tools/validate-deps.mjs",
+    "unit": "npm run unit --workspaces --if-present",
+    "changelog": "node --experimental-strip-types tools/merge-changelogs.ts",
+    "release-please-dry-run": "release-please release-pr --token=$GITHUB_TOKEN --repo-url=puppeteer/puppeteer --dry-run"
+  },
+  "wireit": {
+    "build": {
+      "dependencies": [
+        "./packages/browsers:build",
+        "./packages/ng-schematics:build",
+        "./packages/puppeteer-core:build",
+        "./packages/puppeteer:build",
+        "./packages/testserver:build",
+        "./test:build",
+        "./test/installation:build",
+        "build:tools"
+      ]
+    },
+    "build:tools": {
+      "dependencies": [
+        "./tools/docgen:build",
+        "./tools/doctest:build",
+        "./tools/mocha-runner:build",
+        "./tools/eslint:build",
+        "./packages/testserver:build"
+      ]
+    },
+    "docs": {
+      "command": "hereby docs",
+      "dependencies": [
+        "./packages/browsers:build:docs",
+        "./packages/puppeteer:build:docs",
+        "./packages/puppeteer-core:build:docs",
+        "./tools/docgen:build"
+      ]
+    },
+    "doctest": {
+      "command": "npx ./tools/doctest 'packages/puppeteer-core/lib/**/*.js'",
+      "dependencies": [
+        "./packages/puppeteer-core:build",
+        "./tools/doctest:build"
+      ]
+    },
+    "lint": {
+      "dependencies": [
+        "lint:eslint",
+        "lint:prettier",
+        "lint:expectations"
+      ]
+    },
+    "lint:eslint": {
+      "command": "eslint --cache .",
+      "dependencies": [
+        "build:tools"
+      ]
+    },
+    "format": {
+      "dependencies": [
+        "format:eslint",
+        "format:prettier",
+        "format:expectations"
+      ]
+    },
+    "format:eslint": {
+      "command": "eslint --cache --fix .",
+      "dependencies": [
+        "build:tools"
+      ]
+    },
+    "test:chrome": {
+      "dependencies": [
+        "test:chrome:bidi",
+        "test:chrome:headful",
+        "test:chrome:headless",
+        "test:chrome:shell",
+        "test:chrome:pipe"
+      ]
+    },
+    "test:chrome:bidi": {
+      "command": "npm test -- --test-suite chrome-bidi"
+    },
+    "test:chrome:bidi-only": {
+      "command": "npm test -- --test-suite chrome-bidi-only"
+    },
+    "test:chrome:headful": {
+      "command": "npm test -- --test-suite chrome-headful"
+    },
+    "test:chrome:headless": {
+      "command": "npm test -- --test-suite chrome-headless"
+    },
+    "test:chrome:shell": {
+      "command": "npm test -- --test-suite chrome-headless-shell"
+    },
+    "test:chrome:pipe": {
+      "command": "npm test -- --test-suite chrome-pipe"
+    },
+    "test:firefox:headful": {
+      "command": "npm test -- --test-suite firefox-headful"
+    },
+    "test:firefox:headless": {
+      "command": "npm test -- --test-suite firefox-headless"
+    },
+    "test:firefox": {
+      "dependencies": [
+        "test:firefox:headful",
+        "test:firefox:headless"
+      ]
+    },
+    "test": {
+      "command": "npx ./tools/mocha-runner",
+      "dependencies": [
+        "build:tools",
+        "./test:build",
+        "./tools/mocha-runner:build"
+      ]
+    },
+    "test-types": {
+      "command": "tsd -t packages/puppeteer",
+      "dependencies": [
+        "./packages/puppeteer:build"
+      ]
+    }
+  },
+  "devDependencies": {
+    "@actions/core": "3.0.1",
+    "@babel/core": "8.0.1",
+    "@babel/plugin-transform-class-properties": "8.0.1",
+    "@babel/plugin-transform-class-static-block": "8.0.1",
+    "@babel/plugin-transform-dynamic-import": "8.0.1",
+    "@babel/plugin-transform-modules-commonjs": "8.0.1",
+    "@babel/plugin-transform-private-methods": "8.0.1",
+    "@babel/plugin-transform-private-property-in-object": "8.0.1",
+    "@microsoft/api-extractor": "7.58.9",
+    "@rollup/plugin-babel": "7.1.0",
+    "@rollup/plugin-node-resolve": "16.0.3",
+    "@stylistic/eslint-plugin": "5.10.0",
+    "@types/mocha": "10.0.10",
+    "@types/node": "22.13.10",
+    "@types/semver": "7.7.1",
+    "@types/sinon": "21.0.1",
+    "typescript-eslint": "8.62.0",
+    "esbuild": "0.28.1",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-import-resolver-typescript": "4.4.5",
+    "eslint-plugin-import": "2.32.0",
+    "eslint-plugin-mocha": "11.3.0",
+    "eslint-plugin-prettier": "5.5.6",
+    "eslint-plugin-tsdoc": "0.5.2",
+    "eslint-plugin-unused-imports": "4.1.4",
+    "eslint": "9.39.4",
+    "execa": "9.6.1",
+    "expect": "30.4.1",
+    "globals": "17.7.0",
+    "hereby": "1.15.1",
+    "license-checker": "25.0.1",
+    "mocha": "11.7.6",
+    "prettier": "3.9.1",
+    "rollup": "4.62.2",
+    "semver": "7.8.5",
+    "sinon": "22.0.0",
+    "source-map-support": "0.5.21",
+    "spdx-satisfies": "6.0.0",
+    "tsd": "0.33.0",
+    "typescript": "6.0.3",
+    "wireit": "0.14.13",
+    "yargs": "18.0.0"
+  },
+  "overrides": {
+    "@microsoft/api-extractor": {
+      "typescript": "$typescript"
+    },
+    "@rollup/plugin-babel": {
+      "@babel/core": "$@babel/core"
+    }
+  },
+  "workspaces": [
+    "packages/*",
+    "test",
+    "test/installation",
+    "tools/eslint",
+    "tools/doctest",
+    "tools/docgen",
+    "tools/mocha-runner"
+  ]
+}

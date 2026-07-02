@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<head>
+    <style type="text/css">
+    #outofviewport
+    {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+    }
+    </style>
+</head>
+<body>
+    <input id="outofviewport"/>
+    <script>
+        const element = document.getElementById('outofviewport');
+        element.style.top = `${window.innerHeight + 200}px`;
+    </script>
+</body>
+</html>

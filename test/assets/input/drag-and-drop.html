@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Drag-and-drop test</title>
+    <style>
+      #drop {
+        width: 5em;
+        height: 5em;
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="drag" draggable="true">drag me</div>
+    <div id="drop"></div>
+    <div id="drag-state">0</div>
+    <script>
+      const drag = document.getElementById('drag');
+      const drop = document.getElementById('drop');
+      drag.addEventListener('dragstart', function(event) {
+        event.dataTransfer.setData('id', event.target.id);
+        document.getElementById('drag-state').textContent += '1';
+      });
+      drop.addEventListener('dragenter', function(event) {
+        event.preventDefault();
+        document.getElementById('drag-state').textContent += '2';
+      });
+      drop.addEventListener('dragover', function(event) {
+        event.preventDefault();
+        document.getElementById('drag-state').textContent += '3';
+      });
+      drop.addEventListener('drop', function(event) {
+        event.preventDefault();
+        const id = event.dataTransfer.getData('id');
+        const el = document.getElementById(id);
+        if (el) {
+          event.target.appendChild(el);
+          document.getElementById('drag-state').textContent += '4';
+        }
+      });
+    </script>
+  </body>
+</html>

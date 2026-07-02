@@ -1,0 +1,53 @@
+{
+  "name": "website",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "docusaurus": "docusaurus",
+    "start": "docusaurus start",
+    "build": "docusaurus build",
+    "swizzle": "docusaurus swizzle",
+    "deploy": "docusaurus deploy",
+    "clear": "docusaurus clear",
+    "serve": "docusaurus serve",
+    "write-translations": "docusaurus write-translations",
+    "write-heading-ids": "docusaurus write-heading-ids",
+    "archive": "node archive.js"
+  },
+  "dependencies": {
+    "@docsearch/react": "4.6.3",
+    "@docusaurus/core": "3.10.1",
+    "@docusaurus/plugin-client-redirects": "3.10.1",
+    "@docusaurus/plugin-content-docs": "3.10.1",
+    "@docusaurus/preset-classic": "3.10.1",
+    "@docusaurus/remark-plugin-npm2yarn": "3.10.1",
+    "@docusaurus/theme-common": "3.10.1",
+    "@mdx-js/react": "3.1.1",
+    "algoliasearch-helper": "3.29.1",
+    "clsx": "2.1.1",
+    "docusaurus-plugin-copy-page-button": "0.8.3",
+    "prism-react-renderer": "2.4.1",
+    "react": "19.2.7",
+    "react-cookie-consent": "10.0.1",
+    "react-dom": "19.2.7",
+    "semver": "7.8.5"
+  },
+  "devDependencies": {
+    "@docusaurus/module-type-aliases": "3.10.1",
+    "@docusaurus/types": "3.10.1",
+    "@swc/core": "1.15.43",
+    "swc-loader": "0.2.7"
+  },
+  "browserslist": {
+    "production": [
+      ">0.5%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "@puppeteer-test/test",
+  "version": "latest",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "wireit",
+    "clean": "../tools/clean.mjs"
+  },
+  "wireit": {
+    "build": {
+      "command": "tsc -b",
+      "clean": "if-file-deleted",
+      "dependencies": [
+        "../packages/puppeteer:build",
+        "../packages/testserver:build"
+      ],
+      "files": [
+        "src/**"
+      ],
+      "output": [
+        "build/**",
+        "tsconfig.tsbuildinfo"
+      ]
+    }
+  },
+  "dependencies": {
+    "diff": "9.0.0",
+    "mime": "4.1.0",
+    "jpeg-js": "0.4.4",
+    "pixelmatch": "7.1.0",
+    "pngjs": "7.0.0"
+  },
+  "devDependencies": {
+    "@types/pngjs": "6.0.5"
+  }
+}
