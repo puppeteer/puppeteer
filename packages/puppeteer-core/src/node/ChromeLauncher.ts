@@ -24,7 +24,7 @@ import {
   type LaunchOptions,
 } from './LaunchOptions.js';
 import type {PuppeteerNode} from './PuppeteerNode.js';
-import {rm} from './util/fs.js';
+import {rm, rmSync} from './util/fs.js';
 
 /**
  * @internal
@@ -161,6 +161,19 @@ export class ChromeLauncher extends BrowserLauncher {
       } catch (error) {
         debugError?.(error);
         throw error;
+      }
+    }
+  }
+
+  /**
+   * @internal
+   */
+  override cleanUserDataDirSync(path: string, opts: {isTemp: boolean}): void {
+    if (opts.isTemp) {
+      try {
+        rmSync(path);
+      } catch (error) {
+        debugError?.(error);
       }
     }
   }

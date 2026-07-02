@@ -192,6 +192,14 @@ export interface LaunchOptions {
    */
   onExit?: () => Promise<void>;
   /**
+   * A synchronous callback to run after the browser process is killed because
+   * the driver process is exiting.
+   *
+   * This is intended for cleanup that must happen from Node's `exit` event,
+   * where asynchronous work cannot be awaited.
+   */
+  onDriverProcessExit?: () => void;
+  /**
    * If provided, the process will be killed when the signal is aborted.
    */
   signal?: AbortSignal;
@@ -284,6 +292,8 @@ export class Process {
   // we will be invoked.
   #hooksRan = false;
   #onExitHook = async () => {};
+  #driverProcessExitHookRan = false;
+  #onDriverProcessExitHook = () => {};
   #browserProcessExiting: Promise<void>;
   #logs: string[] = [];
   #maxLogLinesSize = 1000;
@@ -365,6 +375,9 @@ export class Process {
     if (opts.onExit) {
       this.#onExitHook = opts.onExit;
     }
+    if (opts.onDriverProcessExit) {
+      this.#onDriverProcessExitHook = opts.onDriverProcessExit;
+    }
     this.#browserProcessExiting = new Promise((resolve, reject) => {
       this.#browserProcess.once('exit', async () => {
         debugLaunch?.(`Browser process ${this.#browserProcess.pid} onExit`);
@@ -389,6 +402,14 @@ export class Process {
     await this.#onExitHook();
   }
 
+  #runDriverProcessExitHook() {
+    if (this.#driverProcessExitHookRan) {
+      return;
+    }
+    this.#driverProcessExitHookRan = true;
+    this.#onDriverProcessExitHook();
+  }
+
   get nodeProcess(): childProcess.ChildProcess {
     return this.#browserProcess;
   }
@@ -411,12 +432,14 @@ export class Process {
 
   #onDriverProcessExit = (_code: number) => {
     this.kill();
+    this.#runDriverProcessExitHook();
   };
 
   #onDriverProcessSignal = (signal: string): void => {
     switch (signal) {
       case 'SIGINT':
         this.kill();
+        this.#runDriverProcessExitHook();
         process.exit(130);
       case 'SIGTERM':
       case 'SIGHUP':
