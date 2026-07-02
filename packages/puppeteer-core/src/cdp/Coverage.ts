@@ -48,7 +48,11 @@ export interface JSCoverageEntry extends CoverageEntry {
  */
 export interface JSCoverageOptions {
   /**
-   * Whether to reset coverage on every navigation.
+   * Whether to reset coverage on every navigation. When this is `false`,
+   * coverage from before a navigation can still be unavailable if the browser
+   * discards the previous document's execution context. Stop coverage before
+   * navigating and merge the reports when you need reliable coverage across
+   * navigations.
    */
   resetOnNavigation?: boolean;
   /**
@@ -147,6 +151,11 @@ export class Coverage {
    * `new Function`. If `reportAnonymousScripts` is set to `true`, anonymous
    * scripts URL will start with `debugger://VM` (unless a magic //# sourceURL
    * comment is present, in which case that will the be URL).
+   *
+   * If `resetOnNavigation` is `false`, coverage from before a navigation can
+   * still be unavailable if the browser discards the previous document's
+   * execution context. Stop coverage before navigating and merge the reports
+   * when you need reliable coverage across navigations.
    */
   async startJSCoverage(options: JSCoverageOptions = {}): Promise<void> {
     return await this.#jsCoverage.start(options);
