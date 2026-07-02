@@ -150,6 +150,11 @@ export abstract class BrowserLauncher {
         isTemp: launchArgs.isTempUserDataDir,
       });
     };
+    const onDriverProcessExit = () => {
+      this.cleanUserDataDirSync(launchArgs.userDataDir, {
+        isTemp: launchArgs.isTempUserDataDir,
+      });
+    };
 
     if (
       this.#browser === 'firefox' &&
@@ -171,6 +176,7 @@ export abstract class BrowserLauncher {
       env,
       pipe: usePipe,
       onExit: onProcessExit,
+      onDriverProcessExit,
       signal: options.signal,
     });
 
@@ -315,6 +321,14 @@ export abstract class BrowserLauncher {
     path: string,
     opts: {isTemp: boolean},
   ): Promise<void>;
+
+  /**
+   * @internal
+   */
+  protected cleanUserDataDirSync(
+    _path: string,
+    _opts: {isTemp: boolean},
+  ): void {}
 
   /**
    * @internal

@@ -17,7 +17,7 @@ import {assert} from '../util/assert.js';
 import {BrowserLauncher, type ResolvedLaunchArgs} from './BrowserLauncher.js';
 import type {LaunchOptions} from './LaunchOptions.js';
 import type {PuppeteerNode} from './PuppeteerNode.js';
-import {rm} from './util/fs.js';
+import {rm, rmSync} from './util/fs.js';
 
 /**
  * @internal
@@ -164,6 +164,22 @@ export class FirefoxLauncher extends BrowserLauncher {
             throw result.reason;
           }
         }
+      } catch (error) {
+        debugError?.(error);
+      }
+    }
+  }
+
+  /**
+   * @internal
+   */
+  override cleanUserDataDirSync(
+    userDataDir: string,
+    opts: {isTemp: boolean},
+  ): void {
+    if (opts.isTemp) {
+      try {
+        rmSync(userDataDir);
       } catch (error) {
         debugError?.(error);
       }
