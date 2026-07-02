@@ -102,10 +102,11 @@ export class BidiHTTPResponse extends HTTPResponse {
       // https://w3c.github.io/webdriver-bidi/#type-network-Header
       if (header.value.type === 'string') {
         const headerName = header.name.toLowerCase();
-        headers[headerName] = normalizeHeaderValue(
-          headerName,
-          header.value.value,
-        );
+        const value =
+          headerName in headers
+            ? `${headers[headerName]}\n${header.value.value}`
+            : header.value.value;
+        headers[headerName] = normalizeHeaderValue(headerName, value);
       }
     }
     return headers;
