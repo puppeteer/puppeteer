@@ -87,7 +87,7 @@ boolean
 
 </td><td>
 
-Whether to reset coverage on every navigation.
+Whether to reset coverage on every navigation. When this is `false`, coverage from before a navigation can still be unavailable if the browser discards the previous document's execution context. Stop coverage before navigating and merge the reports when you need reliable coverage across navigations.
 
 </td><td>
 
