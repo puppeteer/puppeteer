@@ -20,7 +20,10 @@ export const checkVisibility = (
   }
   const element = (
     node.nodeType === Node.TEXT_NODE ? node.parentElement : node
-  ) as Element;
+  ) as Element | null;
+  if (!element) {
+    return visible === false;
+  }
 
   const style = window.getComputedStyle(element);
   const isVisible =

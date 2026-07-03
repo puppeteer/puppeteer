@@ -271,6 +271,17 @@ describe('ElementHandle specs', function () {
       await expect(element.isVisible()).resolves.toBeTruthy();
       await expect(element.isHidden()).resolves.toBeFalsy();
     });
+
+    it('should not throw for a detached text node with no parent element', async () => {
+      const {page} = await getTestState();
+      await page.setContent(html`<div>x</div>`);
+      using handle = await page.evaluateHandle(() => {
+        return document.createTextNode('orphan');
+      });
+      using textHandle = handle.asElement()!;
+      await expect(textHandle.isHidden()).resolves.toBeTruthy();
+      await expect(textHandle.isVisible()).resolves.toBeFalsy();
+    });
   });
 
   describe('ElementHandle.click', function () {
