@@ -171,6 +171,9 @@ export abstract class BrowserLauncher {
       env,
       pipe: usePipe,
       onExit: onProcessExit,
+      tempDirectory: launchArgs.isTempUserDataDir
+        ? launchArgs.userDataDir
+        : undefined,
       signal: options.signal,
     });
 
