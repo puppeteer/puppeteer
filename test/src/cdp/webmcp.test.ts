@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import 'webmcp-types';
+
 import expect from 'expect';
 import type {Issue} from 'puppeteer';
 import type {
@@ -39,7 +41,7 @@ describe('Page.webmcp', function () {
 
     // Register an imperative WebMCP tool.
     await page.evaluate(() => {
-      (document as any).modelContext.registerTool({
+      void document.modelContext?.registerTool({
         name: 'test-tool-1',
         description: 'A test tool 1',
         inputSchema: {
@@ -49,8 +51,9 @@ describe('Page.webmcp', function () {
           },
           required: ['text'],
         },
-        execute: (params: {text: string}) => {
-          return params.text;
+        execute: (params: any) => {
+          const {text} = params as {text: string};
+          return text;
         },
         annotations: {readOnlyHint: true, untrustedContentHint: true},
       });
@@ -113,7 +116,7 @@ describe('Page.webmcp', function () {
 
     // Register an imperative WebMCP tool.
     await page.evaluate(() => {
-      (document as any).modelContext.registerTool({
+      void document.modelContext?.registerTool({
         name: 'test-tool-1',
         description: 'A test tool 1',
         inputSchema: {
@@ -181,7 +184,7 @@ describe('Page.webmcp', function () {
     // Register an imperative WebMCP tool.
     using controllerHandle = await page.evaluateHandle(() => {
       const controller = new AbortController();
-      (document as any).modelContext.registerTool(
+      void document.modelContext?.registerTool(
         {
           name: 'test-tool-1',
           description: 'A test tool 1',
@@ -398,7 +401,7 @@ describe('Page.webmcp', function () {
 
     // Register a WebMCP tool.
     await page.evaluate(() => {
-      (document as any).modelContext.registerTool({
+      void document.modelContext?.registerTool({
         name: 'test-tool-1',
         description: 'A test tool 1',
         inputSchema: {
@@ -465,7 +468,7 @@ describe('Page.webmcp', function () {
 
     // Register a WebMCP tool.
     await page.evaluate(() => {
-      (document as any).modelContext.registerTool({
+      void document.modelContext?.registerTool({
         name: 'test-tool-1',
         description: 'A test tool 1',
         inputSchema: {
@@ -475,8 +478,9 @@ describe('Page.webmcp', function () {
           },
           required: ['text'],
         },
-        execute: (params: {text: string}) => {
-          return `hello ${params.text}`;
+        execute: (params: any) => {
+          const {text} = params as {text: string};
+          return `hello ${text}`;
         },
       });
     });
@@ -517,7 +521,7 @@ describe('Page.webmcp', function () {
 
     // Register a WebMCP tool.
     await page.evaluate(() => {
-      (document as any).modelContext.registerTool({
+      void document.modelContext?.registerTool({
         name: 'raise-exception-tool',
         description: 'A tool that raises JS exception',
         execute: () => {
@@ -560,7 +564,7 @@ describe('Page.webmcp', function () {
 
     // Register a WebMCP tool.
     await page.evaluate(() => {
-      (document as any).modelContext.registerTool({
+      void document.modelContext?.registerTool({
         name: 'test-tool-1',
         description: 'A test tool 1',
         inputSchema: {
@@ -611,7 +615,7 @@ describe('Page.webmcp', function () {
 
     // Register an imperative WebMCP tool.
     await page.evaluate(() => {
-      (document as any).modelContext.registerTool({
+      void document.modelContext?.registerTool({
         name: 'test-tool-1',
         description: 'A test tool 1',
         inputSchema: {
@@ -621,8 +625,9 @@ describe('Page.webmcp', function () {
           },
           required: ['text'],
         },
-        execute: (params: {text: string}) => {
-          return `hello ${params.text}`;
+        execute: (params: any) => {
+          const {text} = params as {text: string};
+          return `hello ${text}`;
         },
       });
     });
