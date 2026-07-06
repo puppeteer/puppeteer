@@ -33,6 +33,6 @@
   },
   "devDependencies": {
     "@types/pngjs": "6.0.5",
-    "webmcp-types": "0.1.1"
+    "webmcp-types": "0.1.2"
   }
 }

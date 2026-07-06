@@ -51,9 +51,8 @@ describe('Page.webmcp', function () {
           },
           required: ['text'],
         },
-        execute: (params: any) => {
-          const {text} = params as {text: string};
-          return text;
+        execute: (params: {text: string}) => {
+          return params.text;
         },
         annotations: {readOnlyHint: true, untrustedContentHint: true},
       });
@@ -478,9 +477,8 @@ describe('Page.webmcp', function () {
           },
           required: ['text'],
         },
-        execute: (params: any) => {
-          const {text} = params as {text: string};
-          return `hello ${text}`;
+        execute: (params: {text: string}) => {
+          return `hello ${params.text}`;
         },
       });
     });
@@ -625,9 +623,8 @@ describe('Page.webmcp', function () {
           },
           required: ['text'],
         },
-        execute: (params: any) => {
-          const {text} = params as {text: string};
-          return `hello ${text}`;
+        execute: (params: {text: string}) => {
+          return `hello ${params.text}`;
         },
       });
     });
