@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import 'webmcp-types';
+/// <reference types="webmcp-types" />
 
 import expect from 'expect';
 import type {Issue} from 'puppeteer';
