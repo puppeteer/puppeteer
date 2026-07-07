@@ -11,17 +11,12 @@ import os from 'node:os';
 import {dirname} from 'node:path';
 import {PassThrough} from 'node:stream';
 
-import type {OperatorFunction} from '../../third_party/rxjs/rxjs.js';
 import {
-  bufferCount,
   concatMap,
   filter,
-  from,
   fromEvent,
   lastValueFrom,
-  map,
   takeUntil,
-  tap,
 } from '../../third_party/rxjs/rxjs.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
@@ -96,6 +91,7 @@ export class ScreenRecorder extends PassThrough {
   #lastFrame: Promise<readonly [Buffer, number]>;
 
   #fps: number;
+  #disconnectHandler: () => void;
 
   /**
    * @internal
@@ -222,45 +218,51 @@ export class ScreenRecorder extends PassThrough {
     this.#page = page;
 
     const {client} = this.#page.mainFrame();
-    client.once(CDPSessionEvent.Disconnected, () => {
+
+    this.#disconnectHandler = () => {
       void this.stop().catch(debugCatchError);
-    });
+    };
+    client.once(CDPSessionEvent.Disconnected, this.#disconnectHandler);
 
     // Anchor for the constant-fps grid; set to the first frame's timestamp.
     let startTimestamp: number | undefined;
+    let previousFrame: {buffer: Buffer; timestamp: number} | undefined;
+
     this.#lastFrame = lastValueFrom(
       fromEmitterEvent(client, 'Page.screencastFrame').pipe(
-        tap(event => {
-          void client.send('Page.screencastFrameAck', {
-            sessionId: event.sessionId,
-          });
-        }),
         filter(event => {
           return event.metadata.timestamp !== undefined;
         }),
-        map(event => {
-          return {
-            buffer: Buffer.from(event.data, 'base64'),
-            timestamp: event.metadata.timestamp!,
-          };
-        }),
-        bufferCount(2, 1) as OperatorFunction<
-          {buffer: Buffer; timestamp: number},
-          [
-            {buffer: Buffer; timestamp: number},
-            {buffer: Buffer; timestamp: number},
-          ]
-        >,
-        concatMap(([{timestamp: previousTimestamp, buffer}, {timestamp}]) => {
-          startTimestamp ??= previousTimestamp;
-          return from(
-            Array<Buffer>(
-              countFrames(startTimestamp, previousTimestamp, timestamp, fps),
-            ).fill(buffer),
-          );
-        }),
-        map(buffer => {
-          void this.#writeFrame(buffer);
+        concatMap(async event => {
+          const timestamp = event.metadata.timestamp!;
+          const buffer = Buffer.from(event.data, 'base64');
+          const sessionId = event.sessionId;
+
+          if (previousFrame) {
+            startTimestamp ??= previousFrame.timestamp;
+            const framesToEmit = countFrames(
+              startTimestamp,
+              previousFrame.timestamp,
+              timestamp,
+              fps,
+            );
+
+            for (let i = 0; i < framesToEmit; i++) {
+              if (this.#controller.signal.aborted) {
+                break;
+              }
+              await this.#writeFrame(previousFrame.buffer);
+            }
+          }
+
+          previousFrame = {buffer, timestamp};
+
+          void client
+            .send('Page.screencastFrameAck', {
+              sessionId: sessionId,
+            })
+            .catch(debugCatchError);
+
           return [buffer, performance.now()] as const;
         }),
         takeUntil(fromEvent(this.#controller.signal, 'abort')),
@@ -332,8 +334,15 @@ export class ScreenRecorder extends PassThrough {
 
   @guarded()
   async #writeFrame(buffer: Buffer) {
+    if (this.#process.stdin.destroyed || !this.#process.stdin.writable) {
+      return;
+    }
+
     const error = await new Promise<Error | null | undefined>(resolve => {
-      this.#process.stdin.write(buffer, resolve);
+      const canWrite = this.#process.stdin.write(buffer, resolve);
+      if (canWrite) {
+        resolve(null);
+      }
     });
     if (error) {
       console.log(`ffmpeg failed to write: ${error.message}.`);
@@ -350,6 +359,10 @@ export class ScreenRecorder extends PassThrough {
     if (this.#controller.signal.aborted) {
       return;
     }
+
+    const {client} = this.#page.mainFrame();
+    client.off(CDPSessionEvent.Disconnected, this.#disconnectHandler);
+
     // Stopping the screencast will flush the frames.
     await this.#page._stopScreencast().catch(debugCatchError);
 
