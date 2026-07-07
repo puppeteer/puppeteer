@@ -7,7 +7,7 @@
 import assert from 'node:assert';
 import {spawnSync} from 'node:child_process';
 import {existsSync, readFileSync} from 'node:fs';
-import {mkdir, rename, rm, stat, unlink, writeFile} from 'node:fs/promises';
+import {mkdir, rm, stat, unlink, writeFile} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import {setTimeout as sleep} from 'node:timers/promises';
@@ -30,7 +30,6 @@ const debugInstall = debug('puppeteer:browsers:install');
 const INSTALL_LOCK_RETRY_DELAY = 100;
 const INSTALL_LOCK_STALE_THRESHOLD = 5 * 60 * 1000;
 const INSTALL_LOCK_HEARTBEAT_INTERVAL = 10 * 1000;
-let staleInstallLockCounter = 0;
 
 const times = new Map<string, [number, number]>();
 function debugTime(label: string) {
@@ -87,14 +86,14 @@ async function installLockStats(
   }
 }
 
-async function removeStaleInstallLock(lockPath: string): Promise<boolean> {
+async function claimStaleInstallLock(lockPath: string): Promise<boolean> {
   const reaperPath = path.join(lockPath, 'reaper');
   try {
     const lockStats = await installLockStats(lockPath);
     if (Date.now() - lockStats.mtimeMs <= INSTALL_LOCK_STALE_THRESHOLD) {
       return false;
     }
-    debugInstall?.(`Removing stale browser install lock at ${lockPath}`);
+    debugInstall?.(`Claiming stale browser install lock at ${lockPath}`);
     try {
       await mkdir(reaperPath);
     } catch (error) {
@@ -117,19 +116,8 @@ async function removeStaleInstallLock(lockPath: string): Promise<boolean> {
       await rm(reaperPath, {recursive: true, force: true});
       return false;
     }
-    const stalePath = path.join(
-      path.dirname(lockPath),
-      `${path.basename(lockPath)}.stale-${process.pid}-${Date.now()}-${staleInstallLockCounter++}`,
-    );
-    try {
-      await rename(lockPath, stalePath);
-    } catch (error) {
-      if (isErrorWithCode(error, 'ENOENT')) {
-        return false;
-      }
-      throw error;
-    }
-    await rm(stalePath, {recursive: true, force: true});
+    await refreshInstallLock(lockPath);
+    await rm(reaperPath, {recursive: true, force: true});
     return true;
   } catch (error) {
     if (isErrorWithCode(error, 'ENOENT')) {
@@ -158,7 +146,10 @@ async function withInstallLock<T>(
       if (!isErrorWithCode(error, 'EEXIST')) {
         throw error;
       }
-      recoveredStaleLock ||= await removeStaleInstallLock(lockPath);
+      if (await claimStaleInstallLock(lockPath)) {
+        recoveredStaleLock = true;
+        break;
+      }
       await sleep(INSTALL_LOCK_RETRY_DELAY);
     }
   }
