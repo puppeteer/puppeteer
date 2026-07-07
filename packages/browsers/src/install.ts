@@ -7,7 +7,7 @@
 import assert from 'node:assert';
 import {spawnSync} from 'node:child_process';
 import {existsSync, readFileSync} from 'node:fs';
-import {mkdir, rm, stat, unlink, writeFile} from 'node:fs/promises';
+import {mkdir, rename, rm, stat, unlink, writeFile} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import {setTimeout as sleep} from 'node:timers/promises';
@@ -30,6 +30,7 @@ const debugInstall = debug('puppeteer:browsers:install');
 const INSTALL_LOCK_RETRY_DELAY = 100;
 const INSTALL_LOCK_STALE_THRESHOLD = 5 * 60 * 1000;
 const INSTALL_LOCK_HEARTBEAT_INTERVAL = 10 * 1000;
+let staleInstallLockCounter = 0;
 
 const times = new Map<string, [number, number]>();
 function debugTime(label: string) {
@@ -65,24 +66,70 @@ function installLockPath(
   const encodedBuildId = encodeURIComponent(buildId);
   return path.join(
     cache.browserRoot(browser),
-    `.${platform}-${encodedBuildId}.install.lock`,
+    '.installLocks',
+    `${platform}-${encodedBuildId}`,
   );
 }
 
-async function removeStaleInstallLock(lockPath: string): Promise<boolean> {
+async function installLockStats(
+  lockPath: string,
+): Promise<{mtimeMs: number; hasHeartbeat: boolean}> {
   const heartbeatPath = path.join(lockPath, 'heartbeat');
   try {
-    const lockStats = await stat(heartbeatPath).catch(async error => {
-      if (isErrorWithCode(error, 'ENOENT')) {
-        return await stat(lockPath);
-      }
+    const stats = await stat(heartbeatPath);
+    return {mtimeMs: stats.mtimeMs, hasHeartbeat: true};
+  } catch (error) {
+    if (!isErrorWithCode(error, 'ENOENT')) {
       throw error;
-    });
+    }
+    const stats = await stat(lockPath);
+    return {mtimeMs: stats.mtimeMs, hasHeartbeat: false};
+  }
+}
+
+async function removeStaleInstallLock(lockPath: string): Promise<boolean> {
+  const reaperPath = path.join(lockPath, 'reaper');
+  try {
+    const lockStats = await installLockStats(lockPath);
     if (Date.now() - lockStats.mtimeMs <= INSTALL_LOCK_STALE_THRESHOLD) {
       return false;
     }
     debugInstall?.(`Removing stale browser install lock at ${lockPath}`);
-    await rm(lockPath, {recursive: true, force: true});
+    try {
+      await mkdir(reaperPath);
+    } catch (error) {
+      if (isErrorWithCode(error, 'EEXIST')) {
+        const reaperStats = await stat(reaperPath);
+        if (Date.now() - reaperStats.mtimeMs > INSTALL_LOCK_STALE_THRESHOLD) {
+          await rm(reaperPath, {recursive: true, force: true});
+        }
+        return false;
+      }
+      if (isErrorWithCode(error, 'ENOENT')) {
+        return false;
+      }
+      throw error;
+    }
+    const claimedLockStats = lockStats.hasHeartbeat
+      ? await installLockStats(lockPath)
+      : lockStats;
+    if (Date.now() - claimedLockStats.mtimeMs <= INSTALL_LOCK_STALE_THRESHOLD) {
+      await rm(reaperPath, {recursive: true, force: true});
+      return false;
+    }
+    const stalePath = path.join(
+      path.dirname(lockPath),
+      `${path.basename(lockPath)}.stale-${process.pid}-${Date.now()}-${staleInstallLockCounter++}`,
+    );
+    try {
+      await rename(lockPath, stalePath);
+    } catch (error) {
+      if (isErrorWithCode(error, 'ENOENT')) {
+        return false;
+      }
+      throw error;
+    }
+    await rm(stalePath, {recursive: true, force: true});
     return true;
   } catch (error) {
     if (isErrorWithCode(error, 'ENOENT')) {
@@ -98,8 +145,9 @@ async function refreshInstallLock(lockPath: string): Promise<void> {
 
 async function withInstallLock<T>(
   lockPath: string,
-  task: () => Promise<T>,
+  task: (options: {recoveredStaleLock: boolean}) => Promise<T>,
 ): Promise<T> {
+  let recoveredStaleLock = false;
   await mkdir(path.dirname(lockPath), {recursive: true});
   while (true) {
     try {
@@ -110,7 +158,7 @@ async function withInstallLock<T>(
       if (!isErrorWithCode(error, 'EEXIST')) {
         throw error;
       }
-      await removeStaleInstallLock(lockPath);
+      recoveredStaleLock ||= await removeStaleInstallLock(lockPath);
       await sleep(INSTALL_LOCK_RETRY_DELAY);
     }
   }
@@ -123,7 +171,7 @@ async function withInstallLock<T>(
   heartbeat.unref();
 
   try {
-    return await task();
+    return await task({recoveredStaleLock});
   } finally {
     clearInterval(heartbeat);
     await rm(lockPath, {recursive: true, force: true});
@@ -481,19 +529,28 @@ async function installUrl(
   }
 
   if (!options.unpack) {
-    return await withInstallLock(lockPath, async () => {
+    return await withInstallLock(lockPath, async ({recoveredStaleLock}) => {
+      if (recoveredStaleLock) {
+        await rm(archivePath, {force: true});
+      }
       if (existsSync(archivePath)) {
         return archivePath;
       }
       debugInstall?.(`Downloading binary from ${url}`);
-      debugTime('download');
-      await downloadFile(
-        url,
-        archivePath,
-        downloadProgressCallback,
-        options.expectedHash,
-      );
-      debugTimeEnd('download');
+      try {
+        debugTime('download');
+        await downloadFile(
+          url,
+          archivePath,
+          downloadProgressCallback,
+          options.expectedHash,
+        );
+      } catch (error) {
+        await rm(archivePath, {force: true});
+        throw error;
+      } finally {
+        debugTimeEnd('download');
+      }
       return archivePath;
     });
   }
@@ -514,7 +571,7 @@ async function installUrl(
     `Using executable path from provider: ${relativeExecutablePath}`,
   );
 
-  return await withInstallLock(lockPath, async () => {
+  return await withInstallLock(lockPath, async ({recoveredStaleLock}) => {
     // Write metadata for the installation (only for non-default providers)
     if (!(provider instanceof DefaultProvider)) {
       cache.writeExecutablePath(
@@ -551,6 +608,10 @@ async function installUrl(
         });
       }
 
+      if (recoveredStaleLock) {
+        await rm(archivePath, {force: true});
+      }
+
       // Check if archive already exists (e.g., from a custom provider)
       if (!existsSync(archivePath)) {
         debugInstall?.(`Downloading binary from ${url}`);
@@ -562,6 +623,10 @@ async function installUrl(
             downloadProgressCallback,
             options.expectedHash,
           );
+        } catch (error) {
+          await rm(archivePath, {force: true});
+          await rm(outputPath, {recursive: true, force: true});
+          throw error;
         } finally {
           debugTimeEnd('download');
         }
@@ -573,6 +638,10 @@ async function installUrl(
       try {
         debugTime('extract');
         await unpackArchive(archivePath, outputPath);
+      } catch (error) {
+        await rm(archivePath, {force: true});
+        await rm(outputPath, {recursive: true, force: true});
+        throw error;
       } finally {
         debugTimeEnd('extract');
       }

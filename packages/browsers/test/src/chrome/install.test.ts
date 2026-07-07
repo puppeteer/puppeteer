@@ -96,6 +96,76 @@ describe('Chrome install', () => {
     assert.strictEqual(fs.existsSync(browser.executablePath), true);
   });
 
+  it('does not list install lock directories as installed browsers', () => {
+    const lockPath = path.join(
+      tmpDir,
+      'chrome',
+      '.installLocks',
+      `${BrowserPlatform.LINUX}-${testChromeBuildId}`,
+    );
+    fs.mkdirSync(lockPath, {recursive: true});
+
+    assert.deepStrictEqual(new Cache(tmpDir).getInstalledBrowsers(), []);
+  });
+
+  it('recovers from stale install locks', async function () {
+    this.timeout(60000);
+    const browserRoot = path.join(tmpDir, 'chrome');
+    const archivePath = path.join(
+      browserRoot,
+      `${testChromeBuildId}-chrome-linux64.zip`,
+    );
+    const lockPath = path.join(
+      browserRoot,
+      '.installLocks',
+      `${BrowserPlatform.LINUX}-${testChromeBuildId}`,
+    );
+    fs.mkdirSync(lockPath, {recursive: true});
+    fs.writeFileSync(path.join(lockPath, 'heartbeat'), `${process.pid}\n`);
+    fs.writeFileSync(archivePath, 'not a zip archive');
+    const staleTime = new Date(Date.now() - 10 * 60 * 1000);
+    fs.utimesSync(path.join(lockPath, 'heartbeat'), staleTime, staleTime);
+
+    const browser = await install({
+      cacheDir: tmpDir,
+      browser: Browser.CHROME,
+      platform: BrowserPlatform.LINUX,
+      buildId: testChromeBuildId,
+      baseUrl: getServerUrl(),
+    });
+
+    assert.strictEqual(fs.existsSync(lockPath), false);
+    assert.strictEqual(fs.existsSync(browser.executablePath), true);
+  });
+
+  it('removes partial browser state after extraction failures', async function () {
+    this.timeout(60000);
+    const browserRoot = path.join(tmpDir, 'chrome');
+    const archivePath = path.join(
+      browserRoot,
+      `${testChromeBuildId}-chrome-linux64.zip`,
+    );
+    const expectedOutputPath = path.join(
+      browserRoot,
+      `${BrowserPlatform.LINUX}-${testChromeBuildId}`,
+    );
+    fs.mkdirSync(browserRoot, {recursive: true});
+    fs.writeFileSync(archivePath, 'not a zip archive');
+
+    await assert.rejects(
+      install({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        platform: BrowserPlatform.LINUX,
+        buildId: testChromeBuildId,
+        baseUrl: getServerUrl(),
+      }),
+    );
+
+    assert.strictEqual(fs.existsSync(archivePath), false);
+    assert.strictEqual(fs.existsSync(expectedOutputPath), false);
+  });
+
   it('should download a buildId that is a zip archive', async function () {
     this.timeout(60000);
     const expectedOutputPath = path.join(
