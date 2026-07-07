@@ -15,8 +15,10 @@ import type {Handler} from '../common/EventEmitter.js';
 
 import {BidiConnection} from './Connection.js';
 
-const bidiServerLogger = (prefix: string, ...args: unknown[]): void => {
-  debug(`bidi:${prefix}`)?.(args);
+const bidiServerLogger = (
+  prefix: string,
+): ((...args: unknown[]) => void) | undefined => {
+  return debug(`bidi:${prefix}`);
 };
 
 /**
