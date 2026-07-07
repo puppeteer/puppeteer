@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {ExecFileException, ExecFileOptions} from 'node:child_process';
+import type {ExecFileOptions} from 'node:child_process';
 import {execFile as nodeExecFile} from 'node:child_process';
 import {readFile} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -35,15 +35,17 @@ export const execFile = async (
     file,
     args,
     options,
-    (error: ExecFileException | null, stdout: string, stderr: string) => {
-      console.log('stdout', stdout);
-      console.log('stderr', stderr);
+    (error, stdout, stderr) => {
+      const stdoutStr = stdout.toString();
+      const stderrStr = stderr.toString();
+      console.log('stdout', stdoutStr);
+      console.log('stderr', stderrStr);
       if (error) {
         reject(error);
       }
       resolve({
-        stdout,
-        stderr,
+        stdout: stdoutStr,
+        stderr: stderrStr,
       });
     },
   );
