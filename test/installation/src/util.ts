@@ -31,24 +31,19 @@ export const execFile = async (
     resolve = res;
     reject = rej;
   });
-  nodeExecFile(
-    file,
-    args,
-    options,
-    (error, stdout, stderr) => {
-      const stdoutStr = stdout.toString();
-      const stderrStr = stderr.toString();
-      console.log('stdout', stdoutStr);
-      console.log('stderr', stderrStr);
-      if (error) {
-        reject(error);
-      }
-      resolve({
-        stdout: stdoutStr,
-        stderr: stderrStr,
-      });
-    },
-  );
+  nodeExecFile(file, args, options, (error, stdout, stderr) => {
+    const stdoutStr = stdout.toString();
+    const stderrStr = stderr.toString();
+    console.log('stdout', stdoutStr);
+    console.log('stderr', stderrStr);
+    if (error) {
+      reject(error);
+    }
+    resolve({
+      stdout: stdoutStr,
+      stderr: stderrStr,
+    });
+  });
 
   return await promise;
 };
