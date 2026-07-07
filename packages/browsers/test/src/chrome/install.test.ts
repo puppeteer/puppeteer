@@ -10,6 +10,7 @@ import http from 'node:http';
 import https from 'node:https';
 import os from 'node:os';
 import path from 'node:path';
+import {setTimeout as sleep} from 'node:timers/promises';
 
 import {
   install,
@@ -21,6 +22,35 @@ import {
 } from '../../../lib/main.js';
 import {getServerUrl, setupTestServer} from '../utils.js';
 import {testChromeBuildId} from '../versions.js';
+
+async function waitForStaleLockClaim(
+  lockPath: string,
+  staleTime: Date,
+): Promise<void> {
+  const heartbeatPath = path.join(lockPath, 'heartbeat');
+  for (let i = 0; i < 1000; i++) {
+    if (!fs.existsSync(lockPath)) {
+      return;
+    }
+    try {
+      if (fs.statSync(heartbeatPath).mtimeMs > staleTime.getTime()) {
+        return;
+      }
+    } catch (error) {
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'code' in error &&
+        error.code === 'ENOENT'
+      ) {
+        return;
+      }
+      throw error;
+    }
+    await sleep(5);
+  }
+  throw new Error(`Timed out waiting for stale lock claim at ${lockPath}`);
+}
 
 /**
  * Tests in this spec use real download URLs and unpack live browser archives
@@ -136,6 +166,50 @@ describe('Chrome install', () => {
 
     assert.strictEqual(fs.existsSync(lockPath), false);
     assert.strictEqual(fs.existsSync(browser.executablePath), true);
+  });
+
+  it('serializes concurrent recovery from stale install locks', async function () {
+    this.timeout(60000);
+    const browserRoot = path.join(tmpDir, 'chrome');
+    const archivePath = path.join(
+      browserRoot,
+      `${testChromeBuildId}-chrome-linux64.zip`,
+    );
+    const lockPath = path.join(
+      browserRoot,
+      '.installLocks',
+      `${BrowserPlatform.LINUX}-${testChromeBuildId}`,
+    );
+    fs.mkdirSync(lockPath, {recursive: true});
+    fs.writeFileSync(path.join(lockPath, 'heartbeat'), `${process.pid}\n`);
+    fs.writeFileSync(archivePath, 'not a zip archive');
+    const staleTime = new Date(Date.now() - 10 * 60 * 1000);
+    fs.utimesSync(path.join(lockPath, 'heartbeat'), staleTime, staleTime);
+
+    const firstInstall = install({
+      cacheDir: tmpDir,
+      browser: Browser.CHROME,
+      platform: BrowserPlatform.LINUX,
+      buildId: testChromeBuildId,
+      baseUrl: getServerUrl(),
+    });
+    await waitForStaleLockClaim(lockPath, staleTime);
+
+    const browsers = await Promise.all([
+      firstInstall,
+      install({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        platform: BrowserPlatform.LINUX,
+        buildId: testChromeBuildId,
+        baseUrl: getServerUrl(),
+      }),
+    ]);
+
+    assert.strictEqual(fs.existsSync(lockPath), false);
+    for (const browser of browsers) {
+      assert.strictEqual(fs.existsSync(browser.executablePath), true);
+    }
   });
 
   it('removes partial browser state after extraction failures', async function () {
