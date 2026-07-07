@@ -690,12 +690,10 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    */
   abstract get connected(): boolean;
 
-  /** @internal */
   override [disposeSymbol](): void {
     return void this[asyncDisposeSymbol]().catch(debugCatchError);
   }
 
-  /** @internal */
   override async [asyncDisposeSymbol](): Promise<void> {
     if (this.process()) {
       await this.close();

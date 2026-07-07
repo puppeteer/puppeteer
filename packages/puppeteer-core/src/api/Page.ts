@@ -3232,12 +3232,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    */
   abstract windowId(): Promise<WindowId>;
 
-  /** @internal */
   override [disposeSymbol](): void {
     return void this[asyncDisposeSymbol]().catch(debugCatchError);
   }
 
-  /** @internal */
   override async [asyncDisposeSymbol](): Promise<void> {
     await this.close();
     await super[asyncDisposeSymbol]();

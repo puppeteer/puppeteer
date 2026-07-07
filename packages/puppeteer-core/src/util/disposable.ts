@@ -32,12 +32,12 @@ declare global {
 (Symbol as any).asyncDispose ??= Symbol('asyncDispose');
 
 /**
- * @internal
+ * @public
  */
 export const disposeSymbol: typeof Symbol.dispose = Symbol.dispose;
 
 /**
- * @internal
+ * @public
  */
 export const asyncDisposeSymbol: typeof Symbol.asyncDispose =
   Symbol.asyncDispose;

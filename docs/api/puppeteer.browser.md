@@ -130,6 +130,24 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="_asyncdisposesymbol_">[\[asyncDisposeSymbol\]()](./puppeteer.browser._asyncdisposesymbol_.md)</span>
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="_disposesymbol_">[\[disposeSymbol\]()](./puppeteer.browser._disposesymbol_.md)</span>
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="addscreen">[addScreen(params)](./puppeteer.browser.addscreen.md)</span>
 
 </td><td>

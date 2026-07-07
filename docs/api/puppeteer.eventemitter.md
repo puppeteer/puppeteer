@@ -37,6 +37,24 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="_asyncdisposesymbol_">[\[asyncDisposeSymbol\]()](./puppeteer.eventemitter._asyncdisposesymbol_.md)</span>
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="_disposesymbol_">[\[disposeSymbol\]()](./puppeteer.eventemitter._disposesymbol_.md)</span>
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="emit">[emit(type, event)](./puppeteer.eventemitter.emit.md)</span>
 
 </td><td>

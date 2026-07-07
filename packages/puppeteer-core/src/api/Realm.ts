@@ -199,7 +199,6 @@ export abstract class Realm {
     );
   }
 
-  /** @internal */
   [disposeSymbol](): void {
     this.dispose();
   }
