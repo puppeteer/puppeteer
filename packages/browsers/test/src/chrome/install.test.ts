@@ -166,6 +166,10 @@ describe('Chrome install', () => {
 
     assert.strictEqual(fs.existsSync(lockPath), false);
     assert.strictEqual(fs.existsSync(browser.executablePath), true);
+    assert.strictEqual(
+      fs.existsSync(path.join(browserRoot, '.installLocks')),
+      false,
+    );
   });
 
   it('serializes concurrent recovery from stale install locks', async function () {
@@ -302,6 +306,10 @@ describe('Chrome install', () => {
       assert.strictEqual(browser.path, expectedOutputPath);
       assert.strictEqual(fs.existsSync(browser.executablePath), true);
     }
+    assert.strictEqual(
+      fs.existsSync(path.join(tmpDir, 'chrome', '.installLocks')),
+      false,
+    );
   });
 
   it('falls back to the chrome-for-testing dashboard URLs if URL is not available', async function () {
