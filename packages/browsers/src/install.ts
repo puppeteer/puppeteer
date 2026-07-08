@@ -7,7 +7,7 @@
 import assert from 'node:assert';
 import {spawnSync} from 'node:child_process';
 import {existsSync, readFileSync} from 'node:fs';
-import {mkdir, rm, stat, unlink, writeFile} from 'node:fs/promises';
+import {mkdir, rm, rmdir, stat, unlink, writeFile} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import {setTimeout as sleep} from 'node:timers/promises';
@@ -136,13 +136,18 @@ async function withInstallLock<T>(
   task: (options: {recoveredStaleLock: boolean}) => Promise<T>,
 ): Promise<T> {
   let recoveredStaleLock = false;
-  await mkdir(path.dirname(lockPath), {recursive: true});
+  const lockRoot = path.dirname(lockPath);
+  await mkdir(lockRoot, {recursive: true});
   while (true) {
     try {
       await mkdir(lockPath);
       await refreshInstallLock(lockPath);
       break;
     } catch (error) {
+      if (isErrorWithCode(error, 'ENOENT')) {
+        await mkdir(lockRoot, {recursive: true});
+        continue;
+      }
       if (!isErrorWithCode(error, 'EEXIST')) {
         throw error;
       }
@@ -166,6 +171,16 @@ async function withInstallLock<T>(
   } finally {
     clearInterval(heartbeat);
     await rm(lockPath, {recursive: true, force: true});
+    try {
+      await rmdir(lockRoot);
+    } catch (error) {
+      if (
+        !isErrorWithCode(error, 'ENOENT') &&
+        !isErrorWithCode(error, 'ENOTEMPTY')
+      ) {
+        throw error;
+      }
+    }
   }
 }
 
