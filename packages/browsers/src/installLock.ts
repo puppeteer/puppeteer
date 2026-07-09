@@ -8,9 +8,9 @@ import {mkdir, rm, rmdir, stat, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {setTimeout as sleep} from 'node:timers/promises';
 
-import {debug} from './debug.js';
 import type {Browser, BrowserPlatform} from './browser-data/browser-data.js';
 import type {Cache} from './Cache.js';
+import {debug} from './debug.js';
 
 const debugInstall = debug('puppeteer:browsers:install');
 
