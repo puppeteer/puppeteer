@@ -19,7 +19,7 @@ const DEFAULT_INSTALL_LOCK_STALE_THRESHOLD = 5 * 60 * 1000;
 const DEFAULT_INSTALL_LOCK_HEARTBEAT_INTERVAL = 10 * 1000;
 const MAX_TRANSIENT_LOCK_ERROR_RETRIES = 10;
 
-export interface InstallLockOptions {
+interface InstallLockOptions {
   retryDelay?: number;
   staleThreshold?: number;
   heartbeatInterval?: number;
@@ -132,7 +132,7 @@ async function refreshInstallLock(lockPath: string): Promise<void> {
 
 export async function withInstallLock<T>(
   lockPath: string,
-  task: (options: {recoveredStaleLock: boolean}) => Promise<T>,
+  task: () => Promise<T>,
   options: InstallLockOptions = {},
 ): Promise<T> {
   const retryDelay = options.retryDelay ?? DEFAULT_INSTALL_LOCK_RETRY_DELAY;
@@ -140,7 +140,6 @@ export async function withInstallLock<T>(
     options.staleThreshold ?? DEFAULT_INSTALL_LOCK_STALE_THRESHOLD;
   const heartbeatInterval =
     options.heartbeatInterval ?? DEFAULT_INSTALL_LOCK_HEARTBEAT_INTERVAL;
-  let recoveredStaleLock = false;
   let transientLockErrorRetries = 0;
   const lockRoot = path.dirname(lockPath);
   await mkdir(lockRoot, {recursive: true});
@@ -167,7 +166,6 @@ export async function withInstallLock<T>(
       }
       transientLockErrorRetries = 0;
       if (await claimStaleInstallLock(lockPath, staleThreshold)) {
-        recoveredStaleLock = true;
         break;
       }
       await sleep(retryDelay);
@@ -182,7 +180,7 @@ export async function withInstallLock<T>(
   heartbeat.unref();
 
   try {
-    return await task({recoveredStaleLock});
+    return await task();
   } finally {
     clearInterval(heartbeat);
     await rm(lockPath, {recursive: true, force: true});

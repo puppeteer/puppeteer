@@ -61,9 +61,8 @@ describe('installLock', function () {
 
     const secondLock = withInstallLock(
       lockPath,
-      async ({recoveredStaleLock}) => {
+      async () => {
         secondLockEntered = true;
-        assert.strictEqual(recoveredStaleLock, false);
       },
       testLockOptions,
     );
@@ -81,18 +80,55 @@ describe('installLock', function () {
     fs.writeFileSync(heartbeatPath, `${process.pid}\n`);
     const staleTime = new Date(Date.now() - 20000);
     fs.utimesSync(heartbeatPath, staleTime, staleTime);
-    let recoveredStaleLock = false;
 
     await withInstallLock(
       lockPath,
-      async options => {
-        recoveredStaleLock = options.recoveredStaleLock;
+      async () => {
         assert.ok(fs.statSync(heartbeatPath).mtimeMs > staleTime.getTime());
       },
       testLockOptions,
     );
 
-    assert.strictEqual(recoveredStaleLock, true);
+    assert.strictEqual(fs.existsSync(lockRoot), false);
+  });
+
+  it('claims stale lock directories without heartbeat files', async () => {
+    fs.mkdirSync(lockPath, {recursive: true});
+    const heartbeatPath = path.join(lockPath, 'heartbeat');
+    const staleTime = new Date(Date.now() - 20000);
+    fs.utimesSync(lockPath, staleTime, staleTime);
+
+    await withInstallLock(
+      lockPath,
+      async () => {
+        assert.ok(fs.existsSync(heartbeatPath));
+        assert.ok(fs.statSync(heartbeatPath).mtimeMs > staleTime.getTime());
+      },
+      testLockOptions,
+    );
+
+    assert.strictEqual(fs.existsSync(lockRoot), false);
+  });
+
+  it('recovers when stale reaper directories are left behind', async () => {
+    fs.mkdirSync(lockPath, {recursive: true});
+    const heartbeatPath = path.join(lockPath, 'heartbeat');
+    const reaperPath = path.join(lockPath, 'reaper');
+    fs.writeFileSync(heartbeatPath, `${process.pid}\n`);
+    fs.mkdirSync(reaperPath);
+    const staleTime = new Date(Date.now() - 20000);
+    fs.utimesSync(heartbeatPath, staleTime, staleTime);
+    fs.utimesSync(reaperPath, staleTime, staleTime);
+
+    await withInstallLock(
+      lockPath,
+      async () => {
+        assert.strictEqual(fs.existsSync(reaperPath), false);
+        assert.ok(fs.statSync(heartbeatPath).mtimeMs > staleTime.getTime());
+      },
+      testLockOptions,
+    );
+
     assert.strictEqual(fs.existsSync(lockRoot), false);
   });
 
@@ -104,16 +140,12 @@ describe('installLock', function () {
     fs.utimesSync(heartbeatPath, staleTime, staleTime);
     let activeTasks = 0;
     let maxActiveTasks = 0;
-    let recoveredStaleLockCount = 0;
 
     await Promise.all(
       Array.from({length: 2}, () => {
         return withInstallLock(
           lockPath,
-          async ({recoveredStaleLock}) => {
-            if (recoveredStaleLock) {
-              recoveredStaleLockCount++;
-            }
+          async () => {
             activeTasks++;
             maxActiveTasks = Math.max(maxActiveTasks, activeTasks);
             await sleep(10);
@@ -124,7 +156,6 @@ describe('installLock', function () {
       }),
     );
 
-    assert.strictEqual(recoveredStaleLockCount, 1);
     assert.strictEqual(maxActiveTasks, 1);
     assert.strictEqual(fs.existsSync(lockRoot), false);
   });
