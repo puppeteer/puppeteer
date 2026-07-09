@@ -18,7 +18,7 @@ class Page {
 
 Promise&lt;[Metrics](./puppeteer.metrics.md)&gt;
 
-- `Timestamp` : The timestamp when the metrics sample was taken.
+- `Timestamp` : The timestamp when the metrics sample was taken, in monotonic time (seconds).
 
 - `Documents` : Number of documents in the page.
 
@@ -32,17 +32,17 @@ Promise&lt;[Metrics](./puppeteer.metrics.md)&gt;
 
 - `RecalcStyleCount` : Total number of page style recalculations.
 
-- `LayoutDuration` : Combined durations of all page layouts.
+- `LayoutDuration` : Combined durations of all page layouts, in seconds.
 
-- `RecalcStyleDuration` : Combined duration of all page style recalculations.
+- `RecalcStyleDuration` : Combined duration of all page style recalculations, in seconds.
 
-- `ScriptDuration` : Combined duration of JavaScript execution.
+- `ScriptDuration` : Combined duration of JavaScript execution, in seconds.
 
-- `TaskDuration` : Combined duration of all tasks performed by the browser.
+- `TaskDuration` : Combined duration of all tasks performed by the browser, in seconds.
 
-- `JSHeapUsedSize` : Used JavaScript heap size.
+- `JSHeapUsedSize` : Used JavaScript heap size, in bytes.
 
-- `JSHeapTotalSize` : Total JavaScript heap size.
+- `JSHeapTotalSize` : Total JavaScript heap size, in bytes.
 
 ## Remarks
 
