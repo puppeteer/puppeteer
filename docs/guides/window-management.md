@@ -110,6 +110,19 @@ Inner size: 600x400
 Outer size: 600x487
 ```
 
+On Linux in headless mode, Chrome may report `window.screen` dimensions that do
+not match the configured window size. If your script depends on those screen
+dimensions, pass `--ozone-override-screen-size=WIDTH,HEIGHT` together with the
+window size flag:
+
+```ts
+const browser = await puppeteer.launch({
+  defaultViewport: null,
+  headless: true,
+  args: ['--window-size=1280,1024', '--ozone-override-screen-size=1280,1024'],
+});
+```
+
 ## Fullscreen element
 
 The following example demonstrates how to request full-screen mode for an element on click.
