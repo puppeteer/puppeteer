@@ -34,10 +34,18 @@ export abstract class Dialog {
   #type: Protocol.Page.DialogType;
   #message: string;
   #defaultValue: string;
+  #handled = false;
+
   /**
-   * @internal
+   * A boolean value indicating whether the dialog has been handled.
    */
-  protected handled = false;
+  public get handled(): boolean {
+    return this.#handled;
+  }
+
+  protected set handled(handled: boolean) {
+    this.#handled = handled;
+  }
 
   /**
    * @internal
