@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {mkdir, rm, rmdir, stat, writeFile} from 'node:fs/promises';
+import {mkdir, readFile, rm, rmdir, stat, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {setTimeout as sleep} from 'node:timers/promises';
 
@@ -68,17 +68,42 @@ async function isExistingDirectoryError(
 
 async function installLockStats(
   lockPath: string,
-): Promise<{mtimeMs: number; hasHeartbeat: boolean}> {
+): Promise<{mtimeMs: number; hasHeartbeat: boolean; ownerPid?: number}> {
   const heartbeatPath = path.join(lockPath, 'heartbeat');
   try {
+    const heartbeat = await readFile(heartbeatPath, 'utf8');
     const stats = await stat(heartbeatPath);
-    return {mtimeMs: stats.mtimeMs, hasHeartbeat: true};
+    const ownerPid = Number(heartbeat.trim());
+    return {
+      mtimeMs: stats.mtimeMs,
+      hasHeartbeat: true,
+      ownerPid:
+        Number.isSafeInteger(ownerPid) && ownerPid > 0 ? ownerPid : undefined,
+    };
   } catch (error) {
     if (!isErrorWithCode(error, 'ENOENT')) {
       throw error;
     }
     const stats = await stat(lockPath);
     return {mtimeMs: stats.mtimeMs, hasHeartbeat: false};
+  }
+}
+
+function canClaimInstallLock(
+  lockStats: {mtimeMs: number; ownerPid?: number},
+  staleThreshold: number,
+): boolean {
+  if (Date.now() - lockStats.mtimeMs <= staleThreshold) {
+    return false;
+  }
+  if (lockStats.ownerPid === undefined) {
+    return true;
+  }
+  try {
+    process.kill(lockStats.ownerPid, 0);
+    return false;
+  } catch (error) {
+    return isErrorWithCode(error, 'ESRCH');
   }
 }
 
@@ -89,7 +114,7 @@ async function claimStaleInstallLock(
   const reaperPath = path.join(lockPath, 'reaper');
   try {
     const lockStats = await installLockStats(lockPath);
-    if (Date.now() - lockStats.mtimeMs <= staleThreshold) {
+    if (!canClaimInstallLock(lockStats, staleThreshold)) {
       return false;
     }
     debugInstall?.(`Claiming stale browser install lock at ${lockPath}`);
@@ -111,7 +136,7 @@ async function claimStaleInstallLock(
     const claimedLockStats = lockStats.hasHeartbeat
       ? await installLockStats(lockPath)
       : lockStats;
-    if (Date.now() - claimedLockStats.mtimeMs <= staleThreshold) {
+    if (!canClaimInstallLock(claimedLockStats, staleThreshold)) {
       await rm(reaperPath, {recursive: true, force: true});
       return false;
     }
