@@ -114,35 +114,6 @@ describe('Chrome install', () => {
     assert.deepStrictEqual(new Cache(tmpDir).getInstalledBrowsers(), []);
   });
 
-  it('recovers from stale install locks', async function () {
-    this.timeout(60000);
-    const browserRoot = path.join(tmpDir, 'chrome');
-    const lockPath = path.join(
-      browserRoot,
-      '.installLocks',
-      `${BrowserPlatform.LINUX}-${testChromeBuildId}`,
-    );
-    fs.mkdirSync(lockPath, {recursive: true});
-    fs.writeFileSync(path.join(lockPath, 'heartbeat'), `${process.pid}\n`);
-    const staleTime = new Date(Date.now() - 10 * 60 * 1000);
-    fs.utimesSync(path.join(lockPath, 'heartbeat'), staleTime, staleTime);
-
-    const browser = await install({
-      cacheDir: tmpDir,
-      browser: Browser.CHROME,
-      platform: BrowserPlatform.LINUX,
-      buildId: testChromeBuildId,
-      baseUrl: getServerUrl(),
-    });
-
-    assert.strictEqual(fs.existsSync(lockPath), false);
-    assert.strictEqual(fs.existsSync(browser.executablePath), true);
-    assert.strictEqual(
-      fs.existsSync(path.join(browserRoot, '.installLocks')),
-      false,
-    );
-  });
-
   it('should download a buildId that is a zip archive', async function () {
     this.timeout(60000);
     const expectedOutputPath = path.join(

@@ -5,6 +5,8 @@
  */
 
 import assert from 'node:assert';
+import {spawn} from 'node:child_process';
+import {once} from 'node:events';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -38,46 +40,45 @@ describe('installLock', function () {
     staleThreshold: 10000,
   };
 
-  it('waits for an active lock to be released', async () => {
-    let releaseFirstLock!: () => void;
-    const firstLockReleased = new Promise<void>(resolve => {
-      releaseFirstLock = resolve;
+  async function exitedProcessPid(): Promise<number> {
+    const child = spawn(process.execPath, ['-e', ''], {
+      stdio: 'ignore',
+      windowsHide: true,
     });
-    let firstLockEntered!: () => void;
-    const firstLockStarted = new Promise<void>(resolve => {
-      firstLockEntered = resolve;
-    });
-    let secondLockEntered = false;
+    const exited = once(child, 'exit');
+    const pid = child.pid;
+    assert.ok(pid);
+    await exited;
+    return pid;
+  }
 
-    const firstLock = withInstallLock(
+  it('does not claim stale locks owned by live processes', async () => {
+    fs.mkdirSync(lockPath, {recursive: true});
+    const heartbeatPath = path.join(lockPath, 'heartbeat');
+    fs.writeFileSync(heartbeatPath, `${process.pid}\n`);
+    const staleTime = new Date(Date.now() - 20000);
+    fs.utimesSync(heartbeatPath, staleTime, staleTime);
+    let lockEntered = false;
+
+    const lock = withInstallLock(
       lockPath,
       async () => {
-        firstLockEntered();
-        await firstLockReleased;
-      },
-      testLockOptions,
-    );
-    await firstLockStarted;
-
-    const secondLock = withInstallLock(
-      lockPath,
-      async () => {
-        secondLockEntered = true;
+        lockEntered = true;
       },
       testLockOptions,
     );
 
     await sleep(20);
-    assert.strictEqual(secondLockEntered, false);
-    releaseFirstLock();
-    await Promise.all([firstLock, secondLock]);
-    assert.strictEqual(secondLockEntered, true);
+    assert.strictEqual(lockEntered, false);
+    fs.rmSync(lockPath, {recursive: true, force: true});
+    await lock;
+    assert.strictEqual(lockEntered, true);
   });
 
   it('claims stale locks', async () => {
     fs.mkdirSync(lockPath, {recursive: true});
     const heartbeatPath = path.join(lockPath, 'heartbeat');
-    fs.writeFileSync(heartbeatPath, `${process.pid}\n`);
+    fs.writeFileSync(heartbeatPath, `${await exitedProcessPid()}\n`);
     const staleTime = new Date(Date.now() - 20000);
     fs.utimesSync(heartbeatPath, staleTime, staleTime);
 
@@ -114,7 +115,7 @@ describe('installLock', function () {
     fs.mkdirSync(lockPath, {recursive: true});
     const heartbeatPath = path.join(lockPath, 'heartbeat');
     const reaperPath = path.join(lockPath, 'reaper');
-    fs.writeFileSync(heartbeatPath, `${process.pid}\n`);
+    fs.writeFileSync(heartbeatPath, `${await exitedProcessPid()}\n`);
     fs.mkdirSync(reaperPath);
     const staleTime = new Date(Date.now() - 20000);
     fs.utimesSync(heartbeatPath, staleTime, staleTime);
@@ -135,7 +136,7 @@ describe('installLock', function () {
   it('serializes concurrent stale lock recovery', async () => {
     fs.mkdirSync(lockPath, {recursive: true});
     const heartbeatPath = path.join(lockPath, 'heartbeat');
-    fs.writeFileSync(heartbeatPath, `${process.pid}\n`);
+    fs.writeFileSync(heartbeatPath, `${await exitedProcessPid()}\n`);
     const staleTime = new Date(Date.now() - 20000);
     fs.utimesSync(heartbeatPath, staleTime, staleTime);
     let activeTasks = 0;
