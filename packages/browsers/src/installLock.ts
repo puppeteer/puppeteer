@@ -17,7 +17,6 @@ const debugInstall = debug('puppeteer:browsers:install');
 const DEFAULT_INSTALL_LOCK_RETRY_DELAY = 100;
 const DEFAULT_INSTALL_LOCK_STALE_THRESHOLD = 5 * 60 * 1000;
 const DEFAULT_INSTALL_LOCK_HEARTBEAT_INTERVAL = 10 * 1000;
-const MAX_TRANSIENT_LOCK_ERROR_RETRIES = 10;
 
 interface InstallLockOptions {
   retryDelay?: number;
@@ -46,24 +45,6 @@ function isErrorWithCode(error: unknown, code: string): boolean {
     'code' in error &&
     error.code === code
   );
-}
-
-async function directoryExists(directory: string): Promise<boolean> {
-  try {
-    return (await stat(directory)).isDirectory();
-  } catch {
-    return false;
-  }
-}
-
-async function isExistingDirectoryError(
-  error: unknown,
-  directory: string,
-): Promise<boolean> {
-  if (isErrorWithCode(error, 'EEXIST')) {
-    return true;
-  }
-  return isErrorWithCode(error, 'EPERM') && (await directoryExists(directory));
 }
 
 async function installLockStats(
@@ -121,7 +102,7 @@ async function claimStaleInstallLock(
     try {
       await mkdir(reaperPath);
     } catch (error) {
-      if (await isExistingDirectoryError(error, reaperPath)) {
+      if (isErrorWithCode(error, 'EEXIST')) {
         const reaperStats = await stat(reaperPath);
         if (Date.now() - reaperStats.mtimeMs > staleThreshold) {
           await rm(reaperPath, {recursive: true, force: true});
@@ -165,36 +146,32 @@ export async function withInstallLock<T>(
     options.staleThreshold ?? DEFAULT_INSTALL_LOCK_STALE_THRESHOLD;
   const heartbeatInterval =
     options.heartbeatInterval ?? DEFAULT_INSTALL_LOCK_HEARTBEAT_INTERVAL;
-  let transientLockErrorRetries = 0;
   const lockRoot = path.dirname(lockPath);
   await mkdir(lockRoot, {recursive: true});
   while (true) {
     try {
       await mkdir(lockPath);
-      await refreshInstallLock(lockPath);
-      break;
     } catch (error) {
       if (isErrorWithCode(error, 'ENOENT')) {
         await mkdir(lockRoot, {recursive: true});
         continue;
       }
-      if (
-        isErrorWithCode(error, 'EPERM') &&
-        transientLockErrorRetries < MAX_TRANSIENT_LOCK_ERROR_RETRIES
-      ) {
-        transientLockErrorRetries++;
-        await sleep(retryDelay);
-        continue;
-      }
-      if (!(await isExistingDirectoryError(error, lockPath))) {
+      if (!isErrorWithCode(error, 'EEXIST')) {
         throw error;
       }
-      transientLockErrorRetries = 0;
       if (await claimStaleInstallLock(lockPath, staleThreshold)) {
         break;
       }
       await sleep(retryDelay);
+      continue;
     }
+    try {
+      await refreshInstallLock(lockPath);
+    } catch (error) {
+      await rm(lockPath, {recursive: true, force: true});
+      throw error;
+    }
+    break;
   }
 
   const heartbeat = setInterval(() => {
