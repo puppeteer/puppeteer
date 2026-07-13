@@ -16,14 +16,14 @@
   },
   "dependencies": {
     "@docsearch/react": "4.6.3",
-    "@docusaurus/core": "3.10.1",
-    "@docusaurus/plugin-client-redirects": "3.10.1",
-    "@docusaurus/plugin-content-docs": "3.10.1",
-    "@docusaurus/preset-classic": "3.10.1",
-    "@docusaurus/remark-plugin-npm2yarn": "3.10.1",
-    "@docusaurus/theme-common": "3.10.1",
+    "@docusaurus/core": "3.10.2",
+    "@docusaurus/plugin-client-redirects": "3.10.2",
+    "@docusaurus/plugin-content-docs": "3.10.2",
+    "@docusaurus/preset-classic": "3.10.2",
+    "@docusaurus/remark-plugin-npm2yarn": "3.10.2",
+    "@docusaurus/theme-common": "3.10.2",
     "@mdx-js/react": "3.1.1",
-    "algoliasearch-helper": "3.29.1",
+    "algoliasearch-helper": "3.29.2",
     "clsx": "2.1.1",
     "docusaurus-plugin-copy-page-button": "0.8.4",
     "prism-react-renderer": "2.4.1",
@@ -33,8 +33,8 @@
     "semver": "7.8.5"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.10.1",
-    "@docusaurus/types": "3.10.1",
+    "@docusaurus/module-type-aliases": "3.10.2",
+    "@docusaurus/types": "3.10.2",
     "@swc/core": "1.15.43",
     "swc-loader": "0.2.7"
   },
