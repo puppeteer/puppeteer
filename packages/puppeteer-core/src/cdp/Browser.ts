@@ -12,6 +12,10 @@ import type {
   CreatePageOptions,
   DebugInfo,
   ExtensionInstallOptions,
+  PWAInstallOptions,
+  PWALaunchOptions,
+  PWAState,
+  PWAUninstallOptions,
 } from '../api/Browser.js';
 import {
   Browser as BrowserBase,
@@ -521,6 +525,58 @@ export class CdpBrowser extends BrowserBase {
     await Promise.all(targetDestroyedPromises);
 
     this.#extensions.delete(id);
+  }
+
+  async _installPWA(
+    options: PWAInstallOptions,
+    session?: CdpCDPSession,
+  ): Promise<string> {
+    const {displayMode, ...installOptions} = options;
+    const client = session ?? this.#connection;
+    await client.send('PWA.install', installOptions);
+    if (displayMode) {
+      await client.send('PWA.changeAppUserSettings', {
+        manifestId: options.manifestId,
+        displayMode,
+      });
+    }
+    return options.manifestId;
+  }
+
+  override async installPWA(options: PWAInstallOptions): Promise<string> {
+    return await this._installPWA(options);
+  }
+
+  override async uninstallPWA(options: PWAUninstallOptions): Promise<void> {
+    await this.#connection.send('PWA.uninstall', options);
+  }
+
+  override async launchPWA(options: PWALaunchOptions): Promise<Page> {
+    const {targetId: launchedTargetId} = await this.#connection.send(
+      'PWA.launch',
+      options,
+    );
+    const target = (await this.waitForTarget(candidate => {
+      // PWA.launch returns the tab target, while Puppeteer exposes its page child.
+      const launchedTarget = this.#targetManager
+        .getAvailableTargets()
+        .get(launchedTargetId);
+      return (
+        candidate.type() === 'page' &&
+        launchedTarget?._childTargets().has(candidate as CdpTarget) === true
+      );
+    })) as CdpTarget;
+    const page = await target.page();
+    if (!page) {
+      throw new Error(
+        `Failed to create a page for PWA target (id = ${launchedTargetId})`,
+      );
+    }
+    return page;
+  }
+
+  override async getPWAState(options: {manifestId: string}): Promise<PWAState> {
+    return await this.#connection.send('PWA.getOsAppState', options);
   }
 
   override async screens(): Promise<ScreenInfo[]> {

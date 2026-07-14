@@ -335,6 +335,111 @@ export interface ExtensionInstallOptions {
 }
 
 /**
+ * @public
+ */
+export type PWADisplayMode = 'standalone' | 'browser';
+
+/**
+ * @public
+ */
+export interface PWAInstallOptions {
+  /**
+   * The ID from the web app's manifest.
+   */
+  manifestId: string;
+
+  /**
+   * The app or bundle location to use instead of the one derived from the
+   * manifest ID.
+   */
+  installUrlOrBundleUrl?: string;
+
+  /**
+   * Whether to open the installed app in a browser tab or standalone window.
+   *
+   * @remarks
+   * Chrome applies this setting after installing the app. If applying the
+   * setting fails, the method rejects but the app remains installed.
+   */
+  displayMode?: PWADisplayMode;
+}
+
+/**
+ * @public
+ */
+export interface PWAUninstallOptions {
+  /**
+   * The ID from the web app's manifest.
+   */
+  manifestId: string;
+}
+
+/**
+ * @public
+ */
+export interface PWALaunchOptions {
+  /**
+   * The ID from the web app's manifest.
+   */
+  manifestId: string;
+
+  /**
+   * The URL to open in the launched app.
+   */
+  url?: string;
+}
+
+/**
+ * @public
+ */
+export interface PWAFileHandlerAccept {
+  /**
+   * The MIME type accepted by the file handler.
+   */
+  mediaType: string;
+
+  /**
+   * The file extensions accepted for the MIME type.
+   */
+  fileExtensions: string[];
+}
+
+/**
+ * @public
+ */
+export interface PWAFileHandler {
+  /**
+   * The URL handling the files.
+   */
+  action: string;
+
+  /**
+   * The MIME types and file extensions accepted by the handler.
+   */
+  accepts: PWAFileHandlerAccept[];
+
+  /**
+   * The handler name displayed to the user.
+   */
+  displayName: string;
+}
+
+/**
+ * @public
+ */
+export interface PWAState {
+  /**
+   * The app's current badge count.
+   */
+  badgeCount: number;
+
+  /**
+   * The app's registered file handlers.
+   */
+  fileHandlers: PWAFileHandler[];
+}
+
+/**
  * {@link Browser} represents a browser instance that is either:
  *
  * - connected to via {@link Puppeteer.connect} or
@@ -661,6 +766,46 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * Uninstalls an extension.
    */
   abstract uninstallExtension(id: string): Promise<void>;
+
+  /**
+   * Installs a progressive web app and returns its manifest ID.
+   *
+   * @remarks
+   * This Chrome-only API requires a pipe connection.
+   *
+   * @experimental
+   */
+  abstract installPWA(options: PWAInstallOptions): Promise<string>;
+
+  /**
+   * Uninstalls a progressive web app.
+   *
+   * @remarks
+   * This Chrome-only API requires a pipe connection.
+   *
+   * @experimental
+   */
+  abstract uninstallPWA(options: PWAUninstallOptions): Promise<void>;
+
+  /**
+   * Launches a progressive web app and returns its page.
+   *
+   * @remarks
+   * This Chrome-only API requires a pipe connection.
+   *
+   * @experimental
+   */
+  abstract launchPWA(options: PWALaunchOptions): Promise<Page>;
+
+  /**
+   * Returns the operating system state for a progressive web app.
+   *
+   * @remarks
+   * This Chrome-only API requires a pipe connection.
+   *
+   * @experimental
+   */
+  abstract getPWAState(options: {manifestId: string}): Promise<PWAState>;
 
   /**
    * Gets a list of {@link ScreenInfo | screen information objects}.
