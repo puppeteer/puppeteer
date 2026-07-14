@@ -106,8 +106,7 @@ describe('Chrome install', () => {
     const lockPath = path.join(
       tmpDir,
       'chrome',
-      '.installLocks',
-      `${BrowserPlatform.LINUX}-${testChromeBuildId}`,
+      `.installLock-${BrowserPlatform.LINUX}-${testChromeBuildId}`,
     );
     fs.mkdirSync(lockPath, {recursive: true});
 
@@ -176,10 +175,12 @@ describe('Chrome install', () => {
       assert.strictEqual(browser.path, expectedOutputPath);
       assert.strictEqual(fs.existsSync(browser.executablePath), true);
     }
-    assert.strictEqual(
-      fs.existsSync(path.join(tmpDir, 'chrome', '.installLocks')),
-      false,
+    const lockPath = path.join(
+      tmpDir,
+      'chrome',
+      `.installLock-${BrowserPlatform.LINUX}-${testChromeBuildId}`,
     );
+    assert.strictEqual(fs.existsSync(lockPath), false);
   });
 
   it('falls back to the chrome-for-testing dashboard URLs if URL is not available', async function () {

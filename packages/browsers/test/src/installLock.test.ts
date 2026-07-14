@@ -17,12 +17,12 @@ import {withInstallLock} from '../../lib/installLock.js';
 describe('installLock', function () {
   let tmpDir = '/tmp/puppeteer-browsers-test';
   let lockPath = '';
-  let lockRoot = '';
+  let lockParent = '';
 
   beforeEach(() => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'puppeteer-browsers-test'));
-    lockRoot = path.join(tmpDir, '.installLocks');
-    lockPath = path.join(lockRoot, 'chrome-linux-test');
+    lockParent = path.join(tmpDir, 'chrome');
+    lockPath = path.join(lockParent, '.installLock-linux-test');
   });
 
   afterEach(() => {
@@ -73,6 +73,8 @@ describe('installLock', function () {
     fs.rmSync(lockPath, {recursive: true, force: true});
     await lock;
     assert.strictEqual(lockEntered, true);
+    assert.strictEqual(fs.existsSync(lockPath), false);
+    assert.strictEqual(fs.existsSync(lockParent), true);
   });
 
   it('claims stale locks', async () => {
@@ -90,7 +92,8 @@ describe('installLock', function () {
       testLockOptions,
     );
 
-    assert.strictEqual(fs.existsSync(lockRoot), false);
+    assert.strictEqual(fs.existsSync(lockPath), false);
+    assert.strictEqual(fs.existsSync(lockParent), true);
   });
 
   it('claims stale lock directories without heartbeat files', async () => {
@@ -108,7 +111,8 @@ describe('installLock', function () {
       testLockOptions,
     );
 
-    assert.strictEqual(fs.existsSync(lockRoot), false);
+    assert.strictEqual(fs.existsSync(lockPath), false);
+    assert.strictEqual(fs.existsSync(lockParent), true);
   });
 
   it('recovers when stale reaper directories are left behind', async () => {
@@ -130,7 +134,8 @@ describe('installLock', function () {
       testLockOptions,
     );
 
-    assert.strictEqual(fs.existsSync(lockRoot), false);
+    assert.strictEqual(fs.existsSync(lockPath), false);
+    assert.strictEqual(fs.existsSync(lockParent), true);
   });
 
   it('serializes concurrent stale lock recovery', async () => {
@@ -158,16 +163,7 @@ describe('installLock', function () {
     );
 
     assert.strictEqual(maxActiveTasks, 1);
-    assert.strictEqual(fs.existsSync(lockRoot), false);
-  });
-
-  it('keeps the lock root when other locks exist', async () => {
-    const siblingLockPath = path.join(lockRoot, 'chrome-linux-other');
-    fs.mkdirSync(siblingLockPath, {recursive: true});
-
-    await withInstallLock(lockPath, async () => {}, testLockOptions);
-
-    assert.strictEqual(fs.existsSync(siblingLockPath), true);
-    assert.strictEqual(fs.existsSync(lockRoot), true);
+    assert.strictEqual(fs.existsSync(lockPath), false);
+    assert.strictEqual(fs.existsSync(lockParent), true);
   });
 });
