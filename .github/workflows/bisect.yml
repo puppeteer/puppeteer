@@ -14,6 +14,10 @@ on:
         required: true
         type: string
         default: 'test:chrome:headless'
+      tests:
+        description: Tests to run (e.g. '[network.spec] *')
+        required: false
+        type: string
       good:
         description: Last known good version (e.g. 152.0.7946.0)
         required: true
@@ -65,6 +69,12 @@ jobs:
       - name: Run bisect (Non-Linux)
         if: ${{ inputs.os != 'ubuntu-latest' }}
         run: npx @puppeteer/browsers bisect ${{ inputs.script }} -g ${{ inputs.good }} -b ${{ inputs.bad }} ${{ inputs.cft && '--cft' || '--no-cft' }}
+        env:
+          PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
+          PUPPETEER_DEFLAKE_RETRIES: 3
       - name: Run bisect (Linux)
         if: ${{ inputs.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npx @puppeteer/browsers bisect ${{ inputs.script }} -g ${{ inputs.good }} -b ${{ inputs.bad }} ${{ inputs.cft && '--cft' || '--no-cft' }}
+        env:
+          PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
+          PUPPETEER_DEFLAKE_RETRIES: 3
