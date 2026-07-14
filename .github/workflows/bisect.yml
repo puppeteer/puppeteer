@@ -68,13 +68,13 @@ jobs:
         run: npm run build
       - name: Run bisect (Non-Linux)
         if: ${{ inputs.os != 'ubuntu-latest' }}
-        run: npx @puppeteer/browsers bisect ${{ inputs.script }} -g ${{ inputs.good }} -b ${{ inputs.bad }} ${{ inputs.cft && '--cft' || '--no-cft' }}
+        run: node packages/browsers/lib/main-cli.js bisect ${{ inputs.script }} -g ${{ inputs.good }} -b ${{ inputs.bad }} ${{ inputs.cft && '--cft' || '--no-cft' }}
         env:
           PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
           PUPPETEER_DEFLAKE_RETRIES: 3
       - name: Run bisect (Linux)
         if: ${{ inputs.os == 'ubuntu-latest' }}
-        run: xvfb-run --auto-servernum npx @puppeteer/browsers bisect ${{ inputs.script }} -g ${{ inputs.good }} -b ${{ inputs.bad }} ${{ inputs.cft && '--cft' || '--no-cft' }}
+        run: xvfb-run --auto-servernum node packages/browsers/lib/main-cli.js bisect ${{ inputs.script }} -g ${{ inputs.good }} -b ${{ inputs.bad }} ${{ inputs.cft && '--cft' || '--no-cft' }}
         env:
           PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
           PUPPETEER_DEFLAKE_RETRIES: 3
