@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {mkdir, readFile, rm, rmdir, stat, writeFile} from 'node:fs/promises';
+import {mkdir, readFile, rm, stat, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {setTimeout as sleep} from 'node:timers/promises';
 
@@ -33,8 +33,7 @@ export function installLockPath(
   const encodedBuildId = encodeURIComponent(buildId);
   return path.join(
     cache.browserRoot(browser),
-    '.installLocks',
-    `${platform}-${encodedBuildId}`,
+    `.installLock-${platform}-${encodedBuildId}`,
   );
 }
 
@@ -146,14 +145,14 @@ export async function withInstallLock<T>(
     options.staleThreshold ?? DEFAULT_INSTALL_LOCK_STALE_THRESHOLD;
   const heartbeatInterval =
     options.heartbeatInterval ?? DEFAULT_INSTALL_LOCK_HEARTBEAT_INTERVAL;
-  const lockRoot = path.dirname(lockPath);
-  await mkdir(lockRoot, {recursive: true});
+  const lockParent = path.dirname(lockPath);
+  await mkdir(lockParent, {recursive: true});
   while (true) {
     try {
       await mkdir(lockPath);
     } catch (error) {
       if (isErrorWithCode(error, 'ENOENT')) {
-        await mkdir(lockRoot, {recursive: true});
+        await mkdir(lockParent, {recursive: true});
         continue;
       }
       if (!isErrorWithCode(error, 'EEXIST')) {
@@ -186,15 +185,5 @@ export async function withInstallLock<T>(
   } finally {
     clearInterval(heartbeat);
     await rm(lockPath, {recursive: true, force: true});
-    try {
-      await rmdir(lockRoot);
-    } catch (error) {
-      if (
-        !isErrorWithCode(error, 'ENOENT') &&
-        !isErrorWithCode(error, 'ENOTEMPTY')
-      ) {
-        throw error;
-      }
-    }
   }
 }
