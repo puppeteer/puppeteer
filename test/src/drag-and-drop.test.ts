@@ -181,8 +181,25 @@ describe("Drag n' Drop", () => {
     await draggable.drag(dropzone);
     await expect(dropzone.drop(draggable)).rejects.toThrow();
 
-    // The drag pressed the mouse button down. The failed drop must not leave
-    // it pressed, otherwise the next click fires twice.
-    await expect(page.mouse.up()).rejects.toThrow("'left' is not pressed");
+    // The drag pressed the mouse button down. If the failed drop leaves it
+    // pressed, every later mouse event still carries it, and the next click
+    // fires twice.
+    await page.evaluate(() => {
+      (globalThis as unknown as {buttons?: number}).buttons = undefined;
+      document.addEventListener(
+        'mousemove',
+        event => {
+          (globalThis as unknown as {buttons?: number}).buttons = event.buttons;
+        },
+        {once: true},
+      );
+    });
+    await page.mouse.move(20, 20);
+
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as unknown as {buttons?: number}).buttons;
+      }),
+    ).toBe(0);
   });
 });
