@@ -83,7 +83,7 @@ import {
 import {stringToTypedArray} from '../util/encoding.js';
 
 import type {BluetoothEmulation} from './BluetoothEmulation.js';
-import type {Browser, WindowId} from './Browser.js';
+import type {Browser, PWADisplayMode, WindowId} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';
 import type {CDPSession} from './CDPSession.js';
 import type {DeviceRequestPrompt} from './DeviceRequestPrompt.js';
@@ -3254,6 +3254,31 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @experimental
    */
   abstract hasDevTools(): Promise<boolean>;
+
+  /**
+   * Installs the current page as a progressive web app and returns its
+   * manifest ID.
+   *
+   * @remarks
+   * This Chrome-only API requires a pipe connection.
+   *
+   * @experimental
+   */
+  abstract installAsPWA(options?: {
+    displayMode?: PWADisplayMode;
+  }): Promise<string>;
+
+  /**
+   * Opens the current page in its installed progressive web app.
+   *
+   * @remarks
+   * This Chrome-only API requires a pipe connection.
+   * The method returns when Chrome accepts the command, without waiting for the
+   * app page to finish loading.
+   *
+   * @experimental
+   */
+  abstract openInPWA(): Promise<void>;
 
   /**
    * {@inheritDoc BluetoothEmulation}

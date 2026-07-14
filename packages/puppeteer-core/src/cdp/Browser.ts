@@ -12,6 +12,10 @@ import type {
   CreatePageOptions,
   DebugInfo,
   ExtensionInstallOptions,
+  PWAInstallOptions,
+  PWALaunchOptions,
+  PWAState,
+  PWAUninstallOptions,
 } from '../api/Browser.js';
 import {
   Browser as BrowserBase,
@@ -31,6 +35,7 @@ import type {Extension} from '../api/Extension.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
+import {debugError} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
 
@@ -521,6 +526,95 @@ export class CdpBrowser extends BrowserBase {
     await Promise.all(targetDestroyedPromises);
 
     this.#extensions.delete(id);
+  }
+
+  async #withPWASession<T>(
+    callback: (session: CdpCDPSession) => Promise<T>,
+  ): Promise<T> {
+    const session = await this.target().createCDPSession();
+    let callbackFailed = true;
+    try {
+      const result = await callback(session);
+      callbackFailed = false;
+      return result;
+    } finally {
+      if (!session.detached) {
+        const detach = session.detach();
+        if (callbackFailed) {
+          await detach.catch(debugError);
+        } else {
+          await detach;
+        }
+      }
+    }
+  }
+
+  async _installPWA(
+    options: PWAInstallOptions,
+    session?: CdpCDPSession,
+  ): Promise<string> {
+    const {displayMode, ...installOptions} = options;
+    const install = async (client: CdpCDPSession): Promise<void> => {
+      await client.send('PWA.install', installOptions);
+      if (displayMode) {
+        await client.send('PWA.changeAppUserSettings', {
+          manifestId: options.manifestId,
+          displayMode,
+        });
+      }
+    };
+    if (session) {
+      await install(session);
+    } else {
+      await this.#withPWASession(install);
+    }
+    return options.manifestId;
+  }
+
+  override async installPWA(options: PWAInstallOptions): Promise<string> {
+    return await this._installPWA(options);
+  }
+
+  override async uninstallPWA(options: PWAUninstallOptions): Promise<void> {
+    await this.#withPWASession(async session => {
+      await session.send('PWA.uninstall', options);
+    });
+  }
+
+  override async launchPWA(options: PWALaunchOptions): Promise<Page> {
+    const {targetId: launchedTargetId} = await this.#withPWASession(
+      async session => {
+        return await session.send('PWA.launch', options);
+      },
+    );
+    const target = (await this.waitForTarget(candidate => {
+      const launchedTarget = this.#targetManager
+        .getAvailableTargets()
+        .get(launchedTargetId);
+      return (
+        candidate.type() === 'page' &&
+        launchedTarget?._childTargets().has(candidate as CdpTarget) === true
+      );
+    })) as CdpTarget;
+    const initialized =
+      (await target._initializedDeferred.valueOrThrow()) ===
+      InitializationStatus.SUCCESS;
+    if (!initialized) {
+      throw new Error(`Failed to launch PWA target (id = ${launchedTargetId})`);
+    }
+    const page = await target.page();
+    if (!page) {
+      throw new Error(
+        `Failed to create a page for PWA target (id = ${launchedTargetId})`,
+      );
+    }
+    return page;
+  }
+
+  override async getPWAState(options: {manifestId: string}): Promise<PWAState> {
+    return await this.#withPWASession(async session => {
+      return await session.send('PWA.getOsAppState', options);
+    });
   }
 
   override async screens(): Promise<ScreenInfo[]> {
