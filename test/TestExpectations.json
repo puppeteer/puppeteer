@@ -467,6 +467,12 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[drag-and-drop.test] Drag n' Drop should release the mouse button when the drop fails",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[emulation.test] Emulation Page.emulateFocusedPage should reset focus",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome-headless-shell"],
@@ -1107,13 +1113,6 @@
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[drag-and-drop.test] Drag n' Drop should release the mouse button when the drop fails",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["PASS"],
-    "comment": "The rest of [drag-and-drop.test] is expected to FAIL on firefox, but this test only asserts that the mouse button is not left pressed after a failed drop, which works there."
   },
   {
     "testIdPattern": "[elementhandle.test] ElementHandle specs ElementHandle.touchMove should work",
