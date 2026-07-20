@@ -416,8 +416,12 @@ export class Process {
   #onDriverProcessSignal = (signal: string): void => {
     switch (signal) {
       case 'SIGINT':
-        this.kill();
-        process.exit(130);
+        this.close()
+          .catch(() => {})
+          .finally(() => {
+            process.exit(130);
+          });
+        break;
       case 'SIGTERM':
       case 'SIGHUP':
         void this.close();
@@ -426,7 +430,6 @@ export class Process {
   };
 
   async close(): Promise<void> {
-    await this.#runHooks();
     if (!this.#exited) {
       this.kill();
     }
