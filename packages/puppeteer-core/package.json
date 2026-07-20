@@ -153,7 +153,7 @@
     "devtools-protocol": "0.0.1638949",
     "typed-query-selector": "^2.12.2",
     "webdriver-bidi-protocol": "0.4.2",
-    "ws": "^8.21.0"
+    "ws": "^8.21.1"
   },
   "devDependencies": {
     "@types/chrome": "0.2.2",
