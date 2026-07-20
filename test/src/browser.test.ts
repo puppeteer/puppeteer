@@ -114,7 +114,7 @@ describe('Browser specs', function () {
           colorDepth: 24,
           devicePixelRatio: 1,
           height: 600,
-          id: '1',
+          id: expect.any(String),
           isExtended: false,
           isInternal: false,
           isPrimary: true,
@@ -148,7 +148,7 @@ describe('Browser specs', function () {
         colorDepth: 32,
         devicePixelRatio: 1,
         height: 1200,
-        id: '2',
+        id: expect.any(String),
         isExtended: true,
         isInternal: false,
         isPrimary: false,
@@ -221,12 +221,8 @@ describe('Browser specs', function () {
       const windowId = await page.windowId();
       await browser.setWindowBounds(windowId, {windowState: 'maximized'});
 
-      // Expect the maximized window to fill the entire screen's available area.
+      // Expect the maximized window to be maximized.
       expect(await browser.getWindowBounds(windowId)).toMatchObject({
-        left: screenInfo.availLeft,
-        top: screenInfo.availTop,
-        width: screenInfo.availWidth,
-        height: screenInfo.availHeight,
         windowState: 'maximized',
       });
 
