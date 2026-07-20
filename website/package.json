@@ -30,7 +30,8 @@
     "react": "19.2.7",
     "react-cookie-consent": "10.0.1",
     "react-dom": "19.2.7",
-    "semver": "7.8.5"
+    "semver": "7.8.5",
+    "serialize-javascript": "^7.0.3"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.10.2",
