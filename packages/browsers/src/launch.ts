@@ -416,11 +416,8 @@ export class Process {
   #onDriverProcessSignal = (signal: string): void => {
     switch (signal) {
       case 'SIGINT':
-        this.close()
-          .catch(() => {})
-          .finally(() => {
-            process.exit(130);
-          });
+        this.kill();
+        process.exitCode = 130;
         break;
       case 'SIGTERM':
       case 'SIGHUP':
