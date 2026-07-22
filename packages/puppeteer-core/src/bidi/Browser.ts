@@ -19,6 +19,7 @@ import {
   type WindowBounds,
   type WindowId,
   type DebugInfo,
+  type PWAState,
 } from '../api/Browser.js';
 import {BrowserContextEvent} from '../api/BrowserContext.js';
 import type {Extension} from '../api/Extension.js';
@@ -295,6 +296,22 @@ export class BidiBrowser extends Browser {
 
   override async uninstallExtension(id: string): Promise<void> {
     await this.#browserCore.uninstallExtension(id);
+  }
+
+  override installPWA(): Promise<string> {
+    throw new UnsupportedOperation();
+  }
+
+  override uninstallPWA(): Promise<void> {
+    throw new UnsupportedOperation();
+  }
+
+  override launchPWA(): Promise<Page> {
+    throw new UnsupportedOperation();
+  }
+
+  override getPWAState(): Promise<PWAState> {
+    throw new UnsupportedOperation();
   }
 
   override screens(): Promise<ScreenInfo[]> {

@@ -24,6 +24,11 @@ import {
   type AddScreenParams,
   type WindowBounds,
   type WindowId,
+  type InstallPWAOptions,
+  type UninstallPWAOptions,
+  type LaunchPWAOptions,
+  type GetPWAStateOptions,
+  type PWAState,
 } from '../api/Browser.js';
 import {BrowserContextEvent} from '../api/BrowserContext.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
@@ -521,6 +526,58 @@ export class CdpBrowser extends BrowserBase {
     await Promise.all(targetDestroyedPromises);
 
     this.#extensions.delete(id);
+  }
+
+  override async installPWA(options: InstallPWAOptions): Promise<string> {
+    await this.#connection.send('PWA.install', {
+      manifestId: options.manifestId,
+      installUrlOrBundleUrl: options.installUrlOrBundleUrl,
+    });
+    if (options.displayMode) {
+      await this.#connection.send('PWA.changeAppUserSettings', {
+        manifestId: options.manifestId,
+        displayMode: options.displayMode,
+      });
+    }
+    return options.manifestId;
+  }
+
+  override async uninstallPWA(options: UninstallPWAOptions): Promise<void> {
+    await this.#connection.send('PWA.uninstall', {
+      manifestId: options.manifestId,
+    });
+  }
+
+  override async launchPWA(options: LaunchPWAOptions): Promise<Page> {
+    const {targetId} = await this.#connection.send('PWA.launch', {
+      manifestId: options.manifestId,
+      url: options.url,
+    });
+    const target = (await this.waitForTarget(t => {
+      return (t as CdpTarget)._targetId === targetId;
+    })) as CdpTarget;
+    if (!target) {
+      throw new Error(`Missing target for launched PWA (id = ${targetId})`);
+    }
+    const initialized =
+      (await target._initializedDeferred.valueOrThrow()) ===
+      InitializationStatus.SUCCESS;
+    if (!initialized) {
+      throw new Error(`Failed to create target for PWA (id = ${targetId})`);
+    }
+    const page = await target.page();
+    if (!page) {
+      throw new Error(`Failed to create a page for PWA (id = ${targetId})`);
+    }
+    return page;
+  }
+
+  override async getPWAState(options: GetPWAStateOptions): Promise<PWAState> {
+    const {badgeCount, fileHandlers} = await this.#connection.send(
+      'PWA.getOsAppState',
+      {manifestId: options.manifestId},
+    );
+    return {badgeCount, fileHandlers};
   }
 
   override async screens(): Promise<ScreenInfo[]> {

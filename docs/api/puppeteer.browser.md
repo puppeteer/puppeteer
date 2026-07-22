@@ -264,6 +264,21 @@ Retrieves a map of all extensions installed in the browser, where the keys are e
 </td></tr>
 <tr><td>
 
+<span id="getpwastate">[getPWAState(options)](./puppeteer.browser.getpwastate.md)</span>
+
+</td><td>
+
+</td><td>
+
+Returns the OS-integration state of an installed Progressive Web App (PWA), such as its badge count and registered file handlers.
+
+**Remarks:**
+
+Only available over a pipe connection. See [Browser.installPWA()](./puppeteer.browser.installpwa.md). Meaningful only for an app that is currently installed; querying an unknown manifest id rejects.
+
+</td></tr>
+<tr><td>
+
 <span id="getwindowbounds">[getWindowBounds(windowId)](./puppeteer.browser.getwindowbounds.md)</span>
 
 </td><td>
@@ -282,6 +297,38 @@ Gets the specified window [bounds](./puppeteer.windowbounds.md).
 </td><td>
 
 Installs an extension and returns the ID.
+
+</td></tr>
+<tr><td>
+
+<span id="installpwa">[installPWA(options)](./puppeteer.browser.installpwa.md)</span>
+
+</td><td>
+
+</td><td>
+
+Installs a Progressive Web App (PWA) and returns its manifest id.
+
+**Remarks:**
+
+Only available when connected to the browser over a pipe connection (the default when Puppeteer launches the browser). The underlying `PWA` CDP domain is not exposed over a WebSocket connection.
+
+The returned manifest id echoes [InstallPWAOptions.manifestId](./puppeteer.installpwaoptions.md#manifestid), so it can be passed directly to [Browser.launchPWA()](./puppeteer.browser.launchpwa.md), [Browser.getPWAState()](./puppeteer.browser.getpwastate.md), or [Browser.uninstallPWA()](./puppeteer.browser.uninstallpwa.md).
+
+</td></tr>
+<tr><td>
+
+<span id="launchpwa">[launchPWA(options)](./puppeteer.browser.launchpwa.md)</span>
+
+</td><td>
+
+</td><td>
+
+Launches an installed Progressive Web App (PWA) and resolves with the [page](./puppeteer.page.md) backing the app window.
+
+**Remarks:**
+
+Only available over a pipe connection. See [Browser.installPWA()](./puppeteer.browser.installpwa.md).
 
 </td></tr>
 <tr><td>
@@ -423,6 +470,21 @@ In case of multiple [browser contexts](./puppeteer.browsercontext.md), this retu
 </td><td>
 
 Uninstalls an extension.
+
+</td></tr>
+<tr><td>
+
+<span id="uninstallpwa">[uninstallPWA(options)](./puppeteer.browser.uninstallpwa.md)</span>
+
+</td><td>
+
+</td><td>
+
+Uninstalls a previously installed Progressive Web App (PWA).
+
+**Remarks:**
+
+Only available over a pipe connection. See [Browser.installPWA()](./puppeteer.browser.installpwa.md).
 
 </td></tr>
 <tr><td>
