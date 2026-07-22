@@ -549,25 +549,70 @@ export class CdpBrowser extends BrowserBase {
   }
 
   override async launchPWA(options: LaunchPWAOptions): Promise<Page> {
-    const {targetId} = await this.#connection.send('PWA.launch', {
+    // `PWA.launch` returns the id of the launched app-window target, which is
+    // not surfaced through the `Target` domain and therefore never appears in
+    // `browser.targets()`. The app's actual page (web contents) is a separate
+    // target with its own id. So instead of matching the returned id, we wait
+    // for the new page target that the launch creates, scoped to the app's
+    // origin (a PWA's launch URL is same-origin as its manifest id).
+    const appOrigin = (() => {
+      try {
+        return new URL(options.url ?? options.manifestId).origin;
+      } catch {
+        return undefined;
+      }
+    })();
+    const knownPageTargetIds = new Set(
+      this.targets()
+        .filter(target => {
+          return target.type() === 'page';
+        })
+        .map(target => {
+          return (target as CdpTarget)._targetId;
+        }),
+    );
+    await this.#connection.send('PWA.launch', {
       manifestId: options.manifestId,
       url: options.url,
     });
-    const target = (await this.waitForTarget(t => {
-      return (t as CdpTarget)._targetId === targetId;
-    })) as CdpTarget;
+    const target = (await this.waitForTarget(
+      candidate => {
+        if (candidate.type() !== 'page') {
+          return false;
+        }
+        const targetId = (candidate as CdpTarget)._targetId;
+        if (knownPageTargetIds.has(targetId)) {
+          return false;
+        }
+        if (appOrigin === undefined) {
+          return true;
+        }
+        try {
+          return new URL(candidate.url()).origin === appOrigin;
+        } catch {
+          return false;
+        }
+      },
+      {timeout: options.timeout},
+    )) as CdpTarget;
     if (!target) {
-      throw new Error(`Missing target for launched PWA (id = ${targetId})`);
+      throw new Error(
+        `Missing target for launched PWA (manifestId = ${options.manifestId})`,
+      );
     }
     const initialized =
       (await target._initializedDeferred.valueOrThrow()) ===
       InitializationStatus.SUCCESS;
     if (!initialized) {
-      throw new Error(`Failed to create target for PWA (id = ${targetId})`);
+      throw new Error(
+        `Failed to create target for PWA (manifestId = ${options.manifestId})`,
+      );
     }
     const page = await target.page();
     if (!page) {
-      throw new Error(`Failed to create a page for PWA (id = ${targetId})`);
+      throw new Error(
+        `Failed to create a page for PWA (manifestId = ${options.manifestId})`,
+      );
     }
     return page;
   }

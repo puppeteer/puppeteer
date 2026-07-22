@@ -19,7 +19,9 @@ describe('PWA', function () {
     {createContext: false},
   );
 
-  async function installTestPWA(): Promise<{
+  async function installTestPWA(
+    displayMode?: 'standalone' | 'browser',
+  ): Promise<{
     manifestId: string;
     startUrl: string;
   }> {
@@ -29,6 +31,7 @@ describe('PWA', function () {
     const returnedId = await browser.installPWA({
       manifestId,
       installUrlOrBundleUrl: startUrl,
+      displayMode,
     });
     expect(returnedId).toBe(manifestId);
     return {manifestId, startUrl};
@@ -51,7 +54,7 @@ describe('PWA', function () {
 
   it('launches an installed PWA and returns its Page', async () => {
     const {browser} = state;
-    const {manifestId, startUrl} = await installTestPWA();
+    const {manifestId, startUrl} = await installTestPWA('standalone');
 
     const page = await browser.launchPWA({manifestId});
     try {
@@ -60,6 +63,19 @@ describe('PWA', function () {
         return matchMedia('(display-mode: standalone)').matches;
       });
       expect(isStandalone).toBe(true);
+    } finally {
+      await page.close().catch(() => {});
+      await browser.uninstallPWA({manifestId}).catch(() => {});
+    }
+  });
+
+  it('launches an installed PWA at an explicit url', async () => {
+    const {browser} = state;
+    const {manifestId, startUrl} = await installTestPWA('standalone');
+
+    const page = await browser.launchPWA({manifestId, url: startUrl});
+    try {
+      expect(page.url()).toBe(startUrl);
     } finally {
       await page.close().catch(() => {});
       await browser.uninstallPWA({manifestId}).catch(() => {});

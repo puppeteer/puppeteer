@@ -398,6 +398,11 @@ export interface LaunchPWAOptions {
    * start URL.
    */
   url?: string;
+  /**
+   * Maximum wait time in milliseconds for the app window to open. Defaults to
+   * 30 seconds.
+   */
+  timeout?: number;
 }
 
 /**
@@ -764,7 +769,9 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    *
    * Only available when connected to the browser over a pipe connection (the
    * default when Puppeteer launches the browser). The underlying `PWA` CDP
-   * domain is not exposed over a WebSocket connection.
+   * domain is not exposed over a WebSocket connection, and additionally
+   * requires launching the browser with the `--enable-devtools-pwa-handler`
+   * argument.
    *
    * The returned manifest id echoes {@link InstallPWAOptions.manifestId}, so it
    * can be passed directly to {@link Browser.launchPWA},
@@ -788,6 +795,12 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * @remarks
    *
    * Only available over a pipe connection. See {@link Browser.installPWA}.
+   *
+   * Resolves with the newly opened app-window page. Because the launched
+   * app-window target is not surfaced through the CDP `Target` domain, the
+   * page is matched by origin; launching an app that already has an open
+   * window (which the browser may focus instead of opening a new one) rejects
+   * once {@link LaunchPWAOptions.timeout} elapses.
    */
   abstract launchPWA(options: LaunchPWAOptions): Promise<Page>;
 

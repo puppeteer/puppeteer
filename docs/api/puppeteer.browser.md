@@ -311,7 +311,7 @@ Installs a Progressive Web App (PWA) and returns its manifest id.
 
 **Remarks:**
 
-Only available when connected to the browser over a pipe connection (the default when Puppeteer launches the browser). The underlying `PWA` CDP domain is not exposed over a WebSocket connection.
+Only available when connected to the browser over a pipe connection (the default when Puppeteer launches the browser). The underlying `PWA` CDP domain is not exposed over a WebSocket connection, and additionally requires launching the browser with the `--enable-devtools-pwa-handler` argument.
 
 The returned manifest id echoes [InstallPWAOptions.manifestId](./puppeteer.installpwaoptions.md#manifestid), so it can be passed directly to [Browser.launchPWA()](./puppeteer.browser.launchpwa.md), [Browser.getPWAState()](./puppeteer.browser.getpwastate.md), or [Browser.uninstallPWA()](./puppeteer.browser.uninstallpwa.md).
 
@@ -329,6 +329,8 @@ Launches an installed Progressive Web App (PWA) and resolves with the [page](./p
 **Remarks:**
 
 Only available over a pipe connection. See [Browser.installPWA()](./puppeteer.browser.installpwa.md).
+
+Resolves with the newly opened app-window page. Because the launched app-window target is not surfaced through the CDP `Target` domain, the page is matched by origin; launching an app that already has an open window (which the browser may focus instead of opening a new one) rejects once [LaunchPWAOptions.timeout](./puppeteer.launchpwaoptions.md#timeout) elapses.
 
 </td></tr>
 <tr><td>

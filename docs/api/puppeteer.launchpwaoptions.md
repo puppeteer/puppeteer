@@ -54,6 +54,25 @@ The id from the web app's manifest file.
 </td></tr>
 <tr><td>
 
+<span id="timeout">timeout</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Maximum wait time in milliseconds for the app window to open. Defaults to 30 seconds.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="url">url</span>
 
 </td><td>
