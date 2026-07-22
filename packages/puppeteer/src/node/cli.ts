@@ -15,7 +15,7 @@ import puppeteer from '../puppeteer.js';
 
 const config = await (puppeteer as unknown as PuppeteerNode).configuration();
 
-void new CLI({
+await new CLI({
   cachePath: config.cacheDirectory!,
   scriptName: 'puppeteer',
   version: packageVersion,
@@ -42,5 +42,16 @@ void new CLI({
         'latest',
       skipDownload: config['chrome-headless-shell']?.skipDownload ?? false,
     },
+  },
+  setupCommands: yargs => {
+    yargs.command(
+      'clear-tmp-profiles',
+      'Cleans up any leftover temporary profiles from older browser sessions',
+      () => {},
+      async () => {
+        const puppeteerNode = puppeteer as unknown as PuppeteerNode;
+        await puppeteerNode.clearCustomProfiles();
+      },
+    );
   },
 }).run(process.argv);

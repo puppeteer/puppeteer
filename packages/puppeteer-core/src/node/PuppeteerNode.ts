@@ -4,6 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {readdir, rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+
 import {
   Browser as browsers_SupportedBrowser,
   resolveBuildId,
@@ -17,6 +21,7 @@ import type {Configuration} from '../common/Configuration.js';
 import type {ConnectOptions} from '../common/ConnectOptions.js';
 import {type CommonPuppeteerSettings, Puppeteer} from '../common/Puppeteer.js';
 import type {SupportedBrowser} from '../common/SupportedBrowser.js';
+import {debugError} from '../common/util.js';
 import {PUPPETEER_REVISIONS} from '../revisions.js';
 
 import type {BrowserLauncher} from './BrowserLauncher.js';
@@ -240,6 +245,19 @@ export class PuppeteerNode extends Puppeteer {
   }
 
   /**
+   * @internal
+   */
+  readonly profileNamePrefix = 'puppeteer_dev_';
+
+  /**
+   * @internal
+   */
+  async getProfileDirectory(): Promise<string> {
+    const config = await this.configuration();
+    return config.temporaryDirectory ?? tmpdir();
+  }
+
+  /**
    * Removes all non-current Firefox and Chrome binaries in the cache directory
    * identified by the provided Puppeteer configuration. The current browser
    * version is determined by resolving PUPPETEER_REVISIONS from Puppeteer
@@ -324,6 +342,35 @@ export class PuppeteerNode extends Puppeteer {
         cacheDir,
         buildId: installedBrowser.buildId,
       });
+    }
+  }
+
+  /**
+   * Cleans up any leftover temporary profiles from older browser sessions.
+   *
+   * @internal
+   */
+  async clearCustomProfiles(): Promise<void> {
+    const tmpDir = await this.getProfileDirectory();
+    let files: string[];
+    try {
+      files = await readdir(tmpDir);
+    } catch {
+      return;
+    }
+
+    for (const file of files) {
+      if (file.startsWith(this.profileNamePrefix)) {
+        const fullPath = join(tmpDir, file);
+        try {
+          await rm(fullPath, {recursive: true, force: true});
+        } catch (error) {
+          debugError?.(
+            `Could not delete temporary profile at ${fullPath}:`,
+            error,
+          );
+        }
+      }
     }
   }
 }

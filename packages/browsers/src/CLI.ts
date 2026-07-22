@@ -73,6 +73,7 @@ export class CLI {
     >
   >;
   #prefixCommand?: {cmd: string; description: string};
+  #setupCommands?: (yargs: Yargs.Argv<unknown>) => void;
 
   constructor(
     opts?:
@@ -92,6 +93,7 @@ export class CLI {
               }
             >
           >;
+          setupCommands?: (yargs: Yargs.Argv<unknown>) => void;
         },
     rl?: readline.Interface,
   ) {
@@ -110,6 +112,7 @@ export class CLI {
     this.#allowCachePathOverride = opts.allowCachePathOverride ?? true;
     this.#pinnedBrowsers = opts.pinnedBrowsers;
     this.#prefixCommand = opts.prefixCommand;
+    this.#setupCommands = opts.setupCommands;
   }
 
   #defineBrowserParameter<T>(
@@ -194,14 +197,14 @@ export class CLI {
       .demandCommand(1)
       .help()
       .wrap(Math.min(120, yargsInstance.terminalWidth()))
-      .parseAsync();
+      .parseAsync(hideBin(argv));
   }
 
   #build(yargs: Yargs.Argv<unknown>) {
     const latestOrPinned = this.#pinnedBrowsers ? 'pinned' : 'latest';
     // If there are pinned browsers allow the positional arg to be optional
     const browserArgType = this.#pinnedBrowsers ? '[browser]' : '<browser>';
-    return yargs
+    yargs
       .command(
         `install ${browserArgType}`,
         'Download and install the specified browser. If successful, the command outputs the actual browser buildId that was installed and the absolute path to the browser executable (see --format).',
@@ -589,9 +592,11 @@ export class CLI {
             });
           });
         },
-      )
-      .demandCommand(1)
-      .help();
+      );
+
+    this.#setupCommands?.(yargs);
+
+    return yargs.demandCommand(1).help();
   }
 
   #parseBrowser(version: string): Browser {

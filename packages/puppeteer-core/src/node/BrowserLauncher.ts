@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import {existsSync} from 'node:fs';
-import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 
 import {
@@ -500,10 +499,9 @@ export abstract class BrowserLauncher {
    * @internal
    */
   protected async getProfilePath(): Promise<string> {
-    const config = await this.puppeteer.configuration();
     return join(
-      config.temporaryDirectory ?? tmpdir(),
-      `puppeteer_dev_${this.browser}_profile-`,
+      await this.puppeteer.getProfileDirectory(),
+      `${this.puppeteer.profileNamePrefix}${this.browser}_profile-`,
     );
   }
 
