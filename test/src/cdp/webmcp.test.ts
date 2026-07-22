@@ -426,7 +426,7 @@ describe('Page.webmcp', function () {
 
     // Execute WebMCP tool.
     await page.evaluate(async () => {
-      const [tool] = await (window as any).navigator.modelContext.getTools();
+      const [tool] = await document.modelContext!.getTools();
       (window as any).navigator.modelContext.executeTool(
         tool,
         JSON.stringify({text: 'test'}),
@@ -493,7 +493,7 @@ describe('Page.webmcp', function () {
 
     // Execute WebMCP tool.
     await page.evaluate(async () => {
-      const [tool] = await (window as any).navigator.modelContext.getTools();
+      const [tool] = await document.modelContext!.getTools();
       (window as any).navigator.modelContext.executeTool(
         tool,
         JSON.stringify({text: 'world'}),
@@ -538,7 +538,7 @@ describe('Page.webmcp', function () {
 
     // Execute WebMCP tool.
     await page.evaluate(async () => {
-      const [tool] = await (window as any).navigator.modelContext.getTools();
+      const [tool] = await document.modelContext!.getTools();
       (window as any).navigator.modelContext.executeTool(tool, '{}');
     });
 
@@ -586,7 +586,7 @@ describe('Page.webmcp', function () {
 
     // Execute unknown WebMCP tool.
     await page.evaluate(async () => {
-      const [tool] = await (window as any).navigator.modelContext.getTools();
+      const [tool] = await document.modelContext!.getTools();
       (window as any).navigator.modelContext.executeTool(tool, 'invalid json');
     });
 
