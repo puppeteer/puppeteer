@@ -181,8 +181,9 @@ async function getConnectionTransport(
   throw new Error('Invalid connection options');
 }
 
-async function getWSEndpoint(browserURL: string): Promise<string> {
-  const endpointURL = new URL('/json/version', browserURL);
+export async function getWSEndpoint(browserURL: string): Promise<string> {
+  const endpointURL = new URL(browserURL);
+  endpointURL.pathname = `${endpointURL.pathname.replace(/\/$/, '')}/json/version`;
 
   try {
     const result = await globalThis.fetch(endpointURL.toString(), {
