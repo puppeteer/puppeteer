@@ -330,7 +330,7 @@ Launches an installed Progressive Web App (PWA) and resolves with the [page](./p
 
 Only available over a pipe connection. See [Browser.installPWA()](./puppeteer.browser.installpwa.md).
 
-Resolves with the newly opened app-window page. Because the launched app-window target is not surfaced through the CDP `Target` domain, the page is matched by origin; launching an app that already has an open window (which the browser may focus instead of opening a new one) rejects once [LaunchPWAOptions.timeout](./puppeteer.launchpwaoptions.md#timeout) elapses.
+`PWA.launch` resolves with the id of the launched \_tab\_ target, which is not exposed through the CDP `Target` domain; this method resolves with the tab's child page target (the app's web contents). Launching an app that already has an open window (which the browser may focus instead of opening a new one) rejects once [LaunchPWAOptions.timeout](./puppeteer.launchpwaoptions.md#timeout) elapses.
 
 </td></tr>
 <tr><td>

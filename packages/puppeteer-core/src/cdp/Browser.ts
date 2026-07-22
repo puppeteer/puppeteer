@@ -549,69 +549,35 @@ export class CdpBrowser extends BrowserBase {
   }
 
   override async launchPWA(options: LaunchPWAOptions): Promise<Page> {
-    // `PWA.launch` returns the id of the launched app-window target, which is
-    // not surfaced through the `Target` domain and therefore never appears in
-    // `browser.targets()`. The app's actual page (web contents) is a separate
-    // target with its own id. So instead of matching the returned id, we wait
-    // for the new page target that the launch creates, scoped to the app's
-    // origin (a PWA's launch URL is same-origin as its manifest id).
-    const appOrigin = (() => {
-      try {
-        return new URL(options.url ?? options.manifestId).origin;
-      } catch {
-        return undefined;
-      }
-    })();
-    const knownPageTargetIds = new Set(
-      this.targets()
-        .filter(target => {
-          return target.type() === 'page';
-        })
-        .map(target => {
-          return (target as CdpTarget)._targetId;
-        }),
-    );
-    await this.#connection.send('PWA.launch', {
+    // `PWA.launch` resolves with the id of the launched *tab* target (see the
+    // CDP `PWA.LaunchResponse` docs). Tab targets sit above page targets in the
+    // target hierarchy and are not exposed through `browser.targets()`, so the
+    // returned id can't be awaited directly. Instead we wait for the tab's
+    // child page target (the web contents), which the target manager links to
+    // its parent tab as a child target before exposing it.
+    const {targetId: tabTargetId} = await this.#connection.send('PWA.launch', {
       manifestId: options.manifestId,
       url: options.url,
     });
     const target = (await this.waitForTarget(
       candidate => {
-        if (candidate.type() !== 'page') {
+        const tab = this.#targetManager.getAvailableTargets().get(tabTargetId);
+        if (tab?.type() !== 'tab') {
           return false;
         }
-        const targetId = (candidate as CdpTarget)._targetId;
-        if (knownPageTargetIds.has(targetId)) {
-          return false;
+        for (const child of tab._childTargets()) {
+          if (child === candidate) {
+            return true;
+          }
         }
-        if (appOrigin === undefined) {
-          return true;
-        }
-        try {
-          return new URL(candidate.url()).origin === appOrigin;
-        } catch {
-          return false;
-        }
+        return false;
       },
       {timeout: options.timeout},
     )) as CdpTarget;
-    if (!target) {
-      throw new Error(
-        `Missing target for launched PWA (manifestId = ${options.manifestId})`,
-      );
-    }
-    const initialized =
-      (await target._initializedDeferred.valueOrThrow()) ===
-      InitializationStatus.SUCCESS;
-    if (!initialized) {
-      throw new Error(
-        `Failed to create target for PWA (manifestId = ${options.manifestId})`,
-      );
-    }
     const page = await target.page();
     if (!page) {
       throw new Error(
-        `Failed to create a page for PWA (manifestId = ${options.manifestId})`,
+        `Failed to create a page for the launched PWA (manifestId = ${options.manifestId})`,
       );
     }
     return page;
