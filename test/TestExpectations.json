@@ -217,6 +217,13 @@
     "comment": "No PWA domain in WebDriver BiDi"
   },
   {
+    "testIdPattern": "[pwa.test] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDiOnly"],
+    "expectations": ["SKIP"],
+    "comment": "No PWA domain in WebDriver BiDi"
+  },
+  {
     "testIdPattern": "[realms.test] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],

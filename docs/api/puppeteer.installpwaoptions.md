@@ -64,15 +64,15 @@ Whether the app should open in a standalone window or a browser tab.
 
 </td><td>
 
-`optional`
-
 </td><td>
 
 string
 
 </td><td>
 
-The location of the app or bundle overriding the one derived from the `manifestId`.
+The URL used to install the app, or the URL of its signed web bundle.
+
+This is required because the browser-scoped CDP session has no associated page from which Chromium could derive an install URL.
 
 </td><td>
 

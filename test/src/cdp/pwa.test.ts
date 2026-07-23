@@ -9,12 +9,10 @@ import expect from 'expect';
 import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
 
 describe('PWA', function () {
-  // The `PWA` CDP domain is only available over a pipe connection and requires
-  // the `--enable-devtools-pwa-handler` flag.
+  // The `PWA` CDP domain is only available over a pipe connection.
   const state = setupSeparateTestBrowserHooks(
     {
       pipe: true,
-      args: ['--enable-devtools-pwa-handler'],
     },
     {createContext: false},
   );

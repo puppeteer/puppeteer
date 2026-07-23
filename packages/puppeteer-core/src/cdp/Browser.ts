@@ -549,38 +549,59 @@ export class CdpBrowser extends BrowserBase {
   }
 
   override async launchPWA(options: LaunchPWAOptions): Promise<Page> {
-    // `PWA.launch` resolves with the id of the launched *tab* target (see the
-    // CDP `PWA.LaunchResponse` docs). Tab targets sit above page targets in the
-    // target hierarchy and are not exposed through `browser.targets()`, so the
-    // returned id can't be awaited directly. Instead we wait for the tab's
-    // child page target (the web contents), which the target manager links to
-    // its parent tab as a child target before exposing it.
-    const {targetId: tabTargetId} = await this.#connection.send('PWA.launch', {
-      manifestId: options.manifestId,
-      url: options.url,
+    const timeout = options.timeout ?? 30_000;
+    const controller = new AbortController();
+    const timeoutDeferred = Deferred.create<Page>({
+      timeout,
+      message: `Timed out after waiting ${timeout}ms`,
     });
-    const target = (await this.waitForTarget(
-      candidate => {
-        const tab = this.#targetManager.getAvailableTargets().get(tabTargetId);
-        if (tab?.type() !== 'tab') {
-          return false;
-        }
-        for (const child of tab._childTargets()) {
-          if (child === candidate) {
-            return true;
+
+    try {
+      return await Deferred.race([
+        (async () => {
+          // `PWA.launch` resolves with the id of the launched *tab* target (see
+          // the CDP `PWA.LaunchResponse` docs). Tab targets sit above page
+          // targets in the target hierarchy and are not exposed through
+          // `browser.targets()`, so the returned id can't be awaited directly.
+          const {targetId: tabTargetId} = await this.#connection.send(
+            'PWA.launch',
+            {
+              manifestId: options.manifestId,
+              url: options.url,
+            },
+            {timeout},
+          );
+          controller.signal.throwIfAborted();
+          const target = (await this.waitForTarget(
+            candidate => {
+              const tab = this.#targetManager
+                .getAvailableTargets()
+                .get(tabTargetId);
+              if (tab?.type() !== 'tab') {
+                return false;
+              }
+              for (const child of tab._childTargets()) {
+                if (child === candidate) {
+                  return true;
+                }
+              }
+              return false;
+            },
+            {timeout: 0, signal: controller.signal},
+          )) as CdpTarget;
+          const page = await target.page();
+          if (!page) {
+            throw new Error(
+              `Failed to create a page for the launched PWA (manifestId = ${options.manifestId})`,
+            );
           }
-        }
-        return false;
-      },
-      {timeout: options.timeout},
-    )) as CdpTarget;
-    const page = await target.page();
-    if (!page) {
-      throw new Error(
-        `Failed to create a page for the launched PWA (manifestId = ${options.manifestId})`,
-      );
+          return page;
+        })(),
+        timeoutDeferred,
+      ]);
+    } finally {
+      controller.abort();
     }
-    return page;
   }
 
   override async getPWAState(options: GetPWAStateOptions): Promise<PWAState> {

@@ -66,7 +66,7 @@ number
 
 </td><td>
 
-Maximum wait time in milliseconds for the app window to open. Defaults to 30 seconds.
+Maximum time in milliseconds for launching the app and resolving its page. Defaults to 30 seconds. Pass `0` to disable the timeout.
 
 </td><td>
 

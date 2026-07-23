@@ -355,10 +355,12 @@ export interface InstallPWAOptions {
    */
   manifestId: string;
   /**
-   * The location of the app or bundle overriding the one derived from the
-   * `manifestId`.
+   * The URL used to install the app, or the URL of its signed web bundle.
+   *
+   * This is required because the browser-scoped CDP session has no associated
+   * page from which Chromium could derive an install URL.
    */
-  installUrlOrBundleUrl?: string;
+  installUrlOrBundleUrl: string;
   /**
    * Whether the app should open in a standalone window or a browser tab.
    *
@@ -399,8 +401,8 @@ export interface LaunchPWAOptions {
    */
   url?: string;
   /**
-   * Maximum wait time in milliseconds for the app window to open. Defaults to
-   * 30 seconds.
+   * Maximum time in milliseconds for launching the app and resolving its page.
+   * Defaults to 30 seconds. Pass `0` to disable the timeout.
    */
   timeout?: number;
 }
@@ -767,11 +769,10 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    *
    * @remarks
    *
-   * Only available when connected to the browser over a pipe connection (the
-   * default when Puppeteer launches the browser). The underlying `PWA` CDP
-   * domain is not exposed over a WebSocket connection, and additionally
-   * requires launching the browser with the `--enable-devtools-pwa-handler`
-   * argument.
+   * Only available when connected to the browser over a pipe connection. Set
+   * `pipe: true` in {@link PuppeteerNode.launch | puppeteer.launch}; the launch
+   * option defaults to `false`. The underlying `PWA` CDP domain is not exposed
+   * over a WebSocket connection.
    *
    * The returned manifest id echoes {@link InstallPWAOptions.manifestId}, so it
    * can be passed directly to {@link Browser.launchPWA},
@@ -796,11 +797,11 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    *
    * Only available over a pipe connection. See {@link Browser.installPWA}.
    *
-   * `PWA.launch` resolves with the id of the launched _tab_ target, which is
-   * not exposed through the CDP `Target` domain; this method resolves with the
-   * tab's child page target (the app's web contents). Launching an app that
-   * already has an open window (which the browser may focus instead of opening
-   * a new one) rejects once {@link LaunchPWAOptions.timeout} elapses.
+   * `PWA.launch` resolves with the id of the launched _tab_ target. Puppeteer
+   * does not expose tab targets through {@link Browser.targets}; this method
+   * instead resolves with the tab's child page target (the app's web contents).
+   * If Chromium focuses an existing app window, this returns that window's
+   * existing page.
    */
   abstract launchPWA(options: LaunchPWAOptions): Promise<Page>;
 
