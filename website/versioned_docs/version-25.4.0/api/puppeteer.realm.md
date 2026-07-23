@@ -69,6 +69,15 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="_disposesymbol_">[\[disposeSymbol\]()](./puppeteer.realm._disposesymbol_.md)</span>
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="evaluate">[evaluate(pageFunction, args)](./puppeteer.realm.evaluate.md)</span>
 
 </td><td>
