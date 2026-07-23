@@ -102,6 +102,17 @@ describe('Chrome install', () => {
     assert.strictEqual(fs.existsSync(expectedOutputPath), true);
   });
 
+  it('does not list install lock directories as installed browsers', () => {
+    const lockPath = path.join(
+      tmpDir,
+      'chrome',
+      `.installLock-${BrowserPlatform.LINUX}-${testChromeBuildId}`,
+    );
+    fs.mkdirSync(lockPath, {recursive: true});
+
+    assert.deepStrictEqual(new Cache(tmpDir).getInstalledBrowsers(), []);
+  });
+
   it('should download a buildId that is a zip archive', async function () {
     this.timeout(60000);
     const expectedOutputPath = path.join(
@@ -137,6 +148,39 @@ describe('Chrome install', () => {
       browser!.executablePath,
       installed[0]?.executablePath,
     );
+  });
+
+  it('should serialize concurrent installs for the same buildId', async function () {
+    this.timeout(60000);
+    const expectedOutputPath = path.join(
+      tmpDir,
+      'chrome',
+      `${BrowserPlatform.LINUX}-${testChromeBuildId}`,
+    );
+    assert.strictEqual(fs.existsSync(expectedOutputPath), false);
+
+    const browsers = await Promise.all(
+      Array.from({length: 3}, () => {
+        return install({
+          cacheDir: tmpDir,
+          browser: Browser.CHROME,
+          platform: BrowserPlatform.LINUX,
+          buildId: testChromeBuildId,
+          baseUrl: getServerUrl(),
+        });
+      }),
+    );
+
+    for (const browser of browsers) {
+      assert.strictEqual(browser.path, expectedOutputPath);
+      assert.strictEqual(fs.existsSync(browser.executablePath), true);
+    }
+    const lockPath = path.join(
+      tmpDir,
+      'chrome',
+      `.installLock-${BrowserPlatform.LINUX}-${testChromeBuildId}`,
+    );
+    assert.strictEqual(fs.existsSync(lockPath), false);
   });
 
   it('falls back to the chrome-for-testing dashboard URLs if URL is not available', async function () {
