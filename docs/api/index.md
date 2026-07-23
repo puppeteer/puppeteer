@@ -228,6 +228,19 @@ The constructor for this class is marked as internal. Third-party code should no
 </td></tr>
 <tr><td>
 
+<span id="exceptionmessage">[ExceptionMessage](./puppeteer.exceptionmessage.md)</span>
+
+</td><td>
+
+ExceptionMessage objects are dispatched by page via the 'exception' event.
+
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ExceptionMessage` class.
+
+</td></tr>
+<tr><td>
+
 <span id="extension">[Extension](./puppeteer.extension.md)</span>
 
 </td><td>

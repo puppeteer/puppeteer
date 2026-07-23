@@ -115,6 +115,29 @@ describe('Workers', function () {
     expect(errorLog.message).toContain('this is my error');
   });
 
+  it('should report exceptions', async () => {
+    const {page, defaultBrowserOptions} = await getTestState();
+
+    const workerCreatedPromise = waitEvent(page, 'workercreated');
+    await page.evaluate(() => {
+      return new Worker(
+        `data:text/javascript, throw new Error('this is my error');`,
+      );
+    });
+    const worker = await workerCreatedPromise;
+    const exceptionMessage = await waitEvent(worker, 'exception');
+
+    const isBidi = defaultBrowserOptions.protocol === 'webDriverBiDi';
+    if (isBidi) {
+      expect(exceptionMessage.text()).toContain('this is my error');
+    } else {
+      expect(exceptionMessage.text()).toContain('Uncaught');
+      const handle = exceptionMessage.exception()!;
+      expect(handle).toBeDefined();
+      expect(handle.remoteObject().description).toContain('this is my error');
+    }
+  });
+
   it('can be closed', async () => {
     const {page, server} = await getTestState();
 
