@@ -175,5 +175,26 @@ describe('Chrome', () => {
       controller.abort();
       await process.hasClosed();
     });
+
+    it('should clean up the temp userDataDir if the host process exits without closing the browser', async () => {
+      const executablePath = computeExecutablePath({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        buildId: testChromeBuildId,
+      });
+      const profileDir = path.join(tmpDir, 'profile');
+      const browserProcess = launch({
+        executablePath,
+        args: getArgs(),
+        tempDirectory: profileDir,
+      });
+      await browserProcess.waitForLineOutput(CDP_WEBSOCKET_ENDPOINT_REGEX);
+
+      // Simulate the Node.js host process exiting abnormally (e.g. an
+      // uncaught exception) without ever calling close()/browser.close().
+      process.emit('exit', 1);
+
+      assert.ok(!fs.existsSync(profileDir));
+    });
   });
 });

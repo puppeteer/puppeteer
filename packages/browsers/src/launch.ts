@@ -6,7 +6,7 @@
 
 import childProcess from 'node:child_process';
 import {EventEmitter} from 'node:events';
-import {accessSync} from 'node:fs';
+import {accessSync, rmSync} from 'node:fs';
 import os from 'node:os';
 import readline from 'node:readline';
 import type Stream from 'node:stream';
@@ -195,6 +195,17 @@ export interface LaunchOptions {
    * If provided, the process will be killed when the signal is aborted.
    */
   signal?: AbortSignal;
+  /**
+   * If provided, this directory is forcefully removed when the Node.js
+   * process exits, even if the browser process crashes or the Node.js
+   * process itself terminates unexpectedly (e.g. an uncaught exception or
+   * `process.exit()`) before the normal {@link LaunchOptions.onExit} cleanup
+   * can run.
+   *
+   * This should only be set to a directory Puppeteer itself created (e.g. a
+   * temporary `userDataDir`), never a user-supplied directory.
+   */
+  tempDirectory?: string;
 }
 
 /**
@@ -220,26 +231,30 @@ export const WEBDRIVER_BIDI_WEBSOCKET_ENDPOINT_REGEX =
 
 type EventHandler = (...args: any[]) => void;
 const processListeners = new Map<string, EventHandler[]>();
+// Dispatchers iterate over a snapshot copy of the listeners array: some
+// listeners (e.g. Process#onDriverProcessExit) synchronously unsubscribe
+// themselves while being invoked here, which would otherwise mutate the
+// array mid-iteration and cause later listeners to be skipped.
 const dispatchers = {
   exit: (...args: any[]) => {
-    processListeners.get('exit')?.forEach(handler => {
-      return handler(...args);
-    });
+    for (const handler of [...(processListeners.get('exit') ?? [])]) {
+      handler(...args);
+    }
   },
   SIGINT: (...args: any[]) => {
-    processListeners.get('SIGINT')?.forEach(handler => {
-      return handler(...args);
-    });
+    for (const handler of [...(processListeners.get('SIGINT') ?? [])]) {
+      handler(...args);
+    }
   },
   SIGHUP: (...args: any[]) => {
-    processListeners.get('SIGHUP')?.forEach(handler => {
-      return handler(...args);
-    });
+    for (const handler of [...(processListeners.get('SIGHUP') ?? [])]) {
+      handler(...args);
+    }
   },
   SIGTERM: (...args: any[]) => {
-    processListeners.get('SIGTERM')?.forEach(handler => {
-      return handler(...args);
-    });
+    for (const handler of [...(processListeners.get('SIGTERM') ?? [])]) {
+      handler(...args);
+    }
   },
 };
 
@@ -271,6 +286,42 @@ function unsubscribeFromProcessEvent(
   }
 }
 
+// Temp directories (e.g. a temp `userDataDir`) that must be forcefully
+// removed if the Node.js process exits before the normal async cleanup
+// (triggered by the browser's own 'exit' event) has a chance to run, e.g.
+// on an uncaught exception. Node's 'exit' event handler must be fully
+// synchronous, so this uses `rmSync` instead of the regular async cleanup.
+const tempDirectoriesToDelete = new Set<string>();
+
+function cleanUpTempDirectories(): void {
+  for (const dir of tempDirectoriesToDelete) {
+    try {
+      rmSync(dir, {
+        force: true,
+        recursive: true,
+        maxRetries: 10,
+        retryDelay: 500,
+      });
+    } catch (error) {
+      debugLaunch?.(`Failed to remove temp directory ${dir} on exit`, error);
+    }
+  }
+}
+
+function trackTempDirectory(dir: string): void {
+  if (tempDirectoriesToDelete.size === 0) {
+    subscribeToProcessEvent('exit', cleanUpTempDirectories);
+  }
+  tempDirectoriesToDelete.add(dir);
+}
+
+function untrackTempDirectory(dir: string): void {
+  tempDirectoriesToDelete.delete(dir);
+  if (tempDirectoriesToDelete.size === 0) {
+    unsubscribeFromProcessEvent('exit', cleanUpTempDirectories);
+  }
+}
+
 /**
  * @public
  */
@@ -292,6 +343,7 @@ export class Process {
     this.kill();
   };
   #signal?: AbortSignal;
+  #tempDirectory?: string;
 
   constructor(opts: LaunchOptions) {
     this.#executablePath = opts.executablePath;
@@ -365,6 +417,10 @@ export class Process {
     if (opts.onExit) {
       this.#onExitHook = opts.onExit;
     }
+    if (opts.tempDirectory) {
+      this.#tempDirectory = opts.tempDirectory;
+      trackTempDirectory(this.#tempDirectory);
+    }
     this.#browserProcessExiting = new Promise((resolve, reject) => {
       this.#browserProcess.once('exit', async () => {
         debugLaunch?.(`Browser process ${this.#browserProcess.pid} onExit`);
@@ -387,6 +443,12 @@ export class Process {
     }
     this.#hooksRan = true;
     await this.#onExitHook();
+    // The async cleanup above succeeded, so the synchronous exit-time
+    // fallback is no longer needed for this directory.
+    if (this.#tempDirectory) {
+      untrackTempDirectory(this.#tempDirectory);
+      this.#tempDirectory = undefined;
+    }
   }
 
   get nodeProcess(): childProcess.ChildProcess {
