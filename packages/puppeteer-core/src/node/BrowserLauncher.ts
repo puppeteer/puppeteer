@@ -326,8 +326,21 @@ export abstract class BrowserLauncher {
     if (cdpConnection) {
       // Attempt to close the browser gracefully
       try {
-        await cdpConnection.closeBrowser();
-        await browserProcess.hasClosed();
+        await firstValueFrom(
+          race(
+            from(
+              (async () => {
+                await cdpConnection.closeBrowser();
+                await browserProcess.hasClosed();
+              })(),
+            ),
+            timer(5000).pipe(
+              map(() => {
+                throw new Error('Timeout waiting for browser to close');
+              }),
+            ),
+          ),
+        );
       } catch (error) {
         debugError?.(error);
         await browserProcess.close();
