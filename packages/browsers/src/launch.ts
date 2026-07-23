@@ -417,7 +417,8 @@ export class Process {
     switch (signal) {
       case 'SIGINT':
         this.kill();
-        process.exit(130);
+        process.exitCode = 130;
+        break;
       case 'SIGTERM':
       case 'SIGHUP':
         void this.close();
